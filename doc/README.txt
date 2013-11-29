@@ -22,4 +22,9 @@ following functions in their code to receive input and generate output:
     5) m_mouse->turnRight()
     6) m_mouse->turnLeft()
 
+Note that after any changes have been made, you must remake the project from the
+root directory (the project folder that contains "src", "bin", etc.) as follows:
+
+    make
+
 Any questions can be directed to mward4@buffalo.edu
