@@ -26,7 +26,8 @@ void Solution::solve(){
     // ------------------ Put maze solution below this line ------------------- //
     // ------------------------------------------------------------------------ //
 
-        exampleSolutionForMaze3();
+        //exampleSolutionForMaze3();
+        exampleWallFollow();
 
     // ------------------------------------------------------------------------ //
     // ------------------ Put maze solution above this line ------------------- //
@@ -98,4 +99,19 @@ void Solution::exampleSolutionForMaze3(){
         while (true){
             m_mouse->turnRight();
         }
+}
+
+void Solution::exampleWallFollow(){
+    while (true){
+        if (!m_mouse->wallRight()){
+            m_mouse->turnRight();
+            m_mouse->moveForward();
+        }
+        else if (m_mouse->wallFront()){
+            m_mouse->turnLeft();
+        }
+        else{
+            m_mouse->moveForward();
+        }
+    }
 }

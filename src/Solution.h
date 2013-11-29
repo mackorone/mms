@@ -14,6 +14,7 @@ private:
     MouseInterface* m_mouse;
 
     void exampleSolutionForMaze3();
+    void exampleWallFollow();
 };
 
 #endif // SOLUTION_H_
