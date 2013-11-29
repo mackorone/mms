@@ -1,0 +1,3 @@
+Enter this command in the "src" directory to see current TODOs:
+
+    grep -RI TODO .
