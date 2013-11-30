@@ -28,7 +28,7 @@ bool Mouse::inGoal(){
     // The goal is defined to be the center of the maze 
     // This means that it's 4 squares of length if even, 1 if odd
     
-    bool horizontal = (MAZE_WIDTH - 1) / 2 == getX(); 
+    bool horizontal = (MAZE_WIDTH - 1) / 2 == getX(); // TODO: This should be a property of the maze, as in maze.width()
     if (MAZE_WIDTH % 2 == 0){
         horizontal = horizontal || (MAZE_WIDTH) / 2 == getX();
     }
