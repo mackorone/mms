@@ -33,6 +33,14 @@ Maze::Maze(std::string mazeFile){
 Maze::~Maze()
 { }
 
+int getLength(){
+    // TODO
+}
+
+int getWidth(){
+    // TODO
+}
+
 Tile* Maze::getTile(int xPos, int yPos){
     return &m_maze[xPos][yPos];
 }

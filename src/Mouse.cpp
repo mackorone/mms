@@ -28,7 +28,7 @@ bool Mouse::inGoal(){
     // The goal is defined to be the center of the maze 
     // This means that it's 4 squares of length if even, 1 if odd
     
-    bool horizontal = (MAZE_WIDTH - 1) / 2 == getX(); // TODO: This should be a property of the maze, as in maze.width()
+    bool horizontal = (MAZE_WIDTH - 1) / 2 == getX(); // TODO: This should be a property of the maze
     if (MAZE_WIDTH % 2 == 0){
         horizontal = horizontal || (MAZE_WIDTH) / 2 == getX();
     }
@@ -51,58 +51,30 @@ bool Mouse::wallRight(){
 }
 
 bool Mouse::wallLeft(){
-    return m_maze->getTile(m_mousePosX, m_mousePosY)->isWall((m_mouseDirection-1)%4);
+    // Modulo operations don't work for negative numbers, so we add 3 instead
+    return m_maze->getTile(m_mousePosX, m_mousePosY)->isWall((m_mouseDirection+3)%4);
 }
 
 void Mouse::moveForward(){
     if (!wallFront()){
         switch(m_mouseDirection){
             case NORTH:
-                m_mousePosY += 1;
-                break;
+                m_mousePosY += 1; break;
             case EAST:
-                m_mousePosX += 1;
-                break;
+                m_mousePosX += 1; break;
             case SOUTH:
-                m_mousePosY -= 1;
-                break;
+                m_mousePosY -= 1; break;
             case WEST:
-                m_mousePosX -= 1;
-                break;
+                m_mousePosX -= 1; break;
         }
     }
 }
 
 void Mouse::turnRight(){
-    switch(m_mouseDirection){
-        case NORTH:
-            m_mouseDirection = EAST;
-            break;
-        case EAST:
-            m_mouseDirection = SOUTH;
-            break;
-        case SOUTH:
-            m_mouseDirection = WEST;
-            break;
-        case WEST:
-            m_mouseDirection = NORTH;
-            break;
-    }
+    m_mouseDirection = (m_mouseDirection + 1) % 4;
 }
 
 void Mouse::turnLeft(){
-    switch(m_mouseDirection){
-        case NORTH:
-            m_mouseDirection = WEST;
-            break;
-        case EAST:
-            m_mouseDirection = NORTH;
-            break;
-        case SOUTH:
-            m_mouseDirection = EAST;
-            break;
-        case WEST:
-            m_mouseDirection = SOUTH;
-            break;
-    }
+    // Modulo operations don't work with subtraction
+    m_mouseDirection = (m_mouseDirection + 3) % 4;
 }
