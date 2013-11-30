@@ -6,7 +6,7 @@
 class MouseInterface{
 
 public:
-    MouseInterface(Mouse* mouse);
+    MouseInterface(Mouse* mouse, int sleepTime);
     ~MouseInterface();
 
     bool wallFront();
@@ -18,5 +18,6 @@ public:
 
 private:
     Mouse* m_mouse;
+    int m_sleepTime;
 };
 #endif // MOUSEINTERFACE_H_

@@ -2,8 +2,9 @@
 
 #include <GL/freeglut.h>
 #include <unistd.h>
+#include "Parameters.h"
 
-MouseInterface::MouseInterface(Mouse* mouse) : m_mouse(mouse)
+MouseInterface::MouseInterface(Mouse* mouse, int sleepTime) : m_mouse(mouse), m_sleepTime(sleepTime)
 { }
 
 MouseInterface::~MouseInterface()
@@ -23,15 +24,15 @@ bool MouseInterface::wallLeft(){
 
 void MouseInterface::moveForward(){
     m_mouse->moveForward();
-    usleep(SLEEP_TIME*1000);
+    usleep(m_sleepTime*1000);
 }
 
 void MouseInterface::turnRight(){
     m_mouse->turnRight();
-    usleep(SLEEP_TIME*1000);
+    usleep(m_sleepTime*1000);
 }
 
 void MouseInterface::turnLeft(){
     m_mouse->turnLeft();
-    usleep(SLEEP_TIME*1000);
+    usleep(m_sleepTime*1000);
 }

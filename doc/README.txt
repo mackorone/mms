@@ -1,16 +1,23 @@
-This is a small application for simulatiing MicroMouse algorithms. Note that
-freeglut must be installed for this application to work. As it stands now,
-all solution code is to be placed in the "solve" method of the Solution class
-(preferably between the lines that indication where the code should go).
-Additionlly, the simulation (for now) must be run from the "src" folder, as in:
-
-    * From the "src" directory *
+This is a small application for simulating MicroMouse algorithms. Note that
+freeglut *must* be installed for this application to work. As it stands now,
+all solution code is to be placed in the "solve" method of the Solution class.
+The simulation can be run by executing the binary in the "bin" directory, as
+in:
     
-        ../bin/MMSim
+        ./<path-to-bin>/MMSim
+
+For example, if you are in the "src" directory, enter the following to run the
+simulation:
+
+    ../bin/MMSim
+
+If you already in the "bin" directory, simply enter
+
+    ./MMsim
 
 Right now, there are two algorithms defined in the Solution class. The first is
-a hard-coded solution for maze3 and the second is a simple wall-following 
-algorithm. Note that neither of these solutions is sufficient.
+a simple right-wall-following algorithm and the second, a simple left-wall
+-following algorithm. Neither of these solutions is satisfactory.
 
 For users writing their own algorithms, they should call any one of the
 following functions in their code to receive input and generate output:
@@ -22,9 +29,25 @@ following functions in their code to receive input and generate output:
     5) m_mouse->turnRight()
     6) m_mouse->turnLeft()
 
-Note that after any changes have been made, you must remake the project from the
-root directory (the project folder that contains "src", "bin", etc.) as follows:
+Functions 1-3 return true or false values correpsonding to whether or not there
+is a wall to the front, right, or left of the robot. Functions 4-6 instruct the
+robot to move froward, turn left, or turn right. No other functions are
+provided to the user and all other functionality must be supplied else-where, 
+as is the case with the actual MicroMouse robot.
+
+After any changes have been made to your code, you must remake the project from
+the root directory (the project folder that contains "src", "bin", etc.) as
+follows:
 
     make
+
+If your code doesn't seem to be working properly, try entering the following,
+again from the root directory:
+
+    make clean
+    make
+
+The use of "make clean" simply requires the computer to recompile your files, 
+despite it potentially thinking that changes have not been made.
 
 Any questions can be directed to mward4@buffalo.edu

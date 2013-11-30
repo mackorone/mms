@@ -13,8 +13,8 @@ public:
 private:
     MouseInterface* m_mouse;
 
-    void exampleSolutionForMaze3();
-    void exampleWallFollow();
+    void rightWallFollow();
+    void leftWallFollow();
 };
 
 #endif // SOLUTION_H_

@@ -11,19 +11,13 @@
 #include "Parameters.h"
 #include "Tile.h"
 
-// TODO: Change operator[] to .at() in all locations in this file
-
-Maze::Maze(int width, int height, std::string mazeFile){
+Maze::Maze(std::string mazeFile){
 
     // Initialize the tile positions
-    for (int i = 0; i < width; i++){
-        std::vector<Tile> col;
-        for (int j = 0; j < height; j++){
-            Tile tile;
-            tile.setPos(i, j);
-            col.push_back(tile);
+    for (int i = 0; i < MAZE_WIDTH; i++){
+        for (int j = 0; j < MAZE_HEIGHT; j++){
+            m_maze[i][j].setPos(i, j);
         }
-        m_maze.push_back(col);
     }
 
     // Initialize the tile wall values
@@ -39,19 +33,16 @@ Maze::Maze(int width, int height, std::string mazeFile){
 Maze::~Maze()
 { }
 
-int Maze::getWidth(){
-    return m_maze.size();
+int getWidth(){
+    // TODO
 }
 
-int Maze::getHeight(){
-    if (m_maze.size() > 0){
-        return m_maze.at(0).size();
-    }
-    return 0;
+int getHeight(){
+    // TODO
 }
 
 Tile* Maze::getTile(int xPos, int yPos){
-    return &m_maze.at(xPos).at(yPos);
+    return &m_maze[xPos][yPos];
 }
 
 void Maze::randomize(){
@@ -62,14 +53,14 @@ void Maze::randomize(){
     // The probability of any one wall is 1/probDenom
     int probDenom = 2;
 
-    for (int i = 0; i < getWidth(); i++){
-        for (int j = 0; j < getHeight(); j++){
+    for (int i = 0; i < MAZE_WIDTH; i++){
+        for (int j = 0; j < MAZE_HEIGHT; j++){
             bool walls[4]; // Make a walls array for tile (i, j)
             for (int k = 0; k < 4; k++){
                 walls[k] = rand() % probDenom == 0;
                 switch (k){
                     case NORTH:
-                        if (j + 1 < getHeight()){
+                        if (j + 1 < MAZE_HEIGHT){
                             m_maze[i][j+1].setWall(SOUTH, walls[k]);
                             m_maze[i][j].setWall(NORTH, walls[k]);
                         }
@@ -78,7 +69,7 @@ void Maze::randomize(){
                         }
                         break;
                     case EAST:
-                        if (i + 1 < getWidth()){
+                        if (i + 1 < MAZE_WIDTH){
                             m_maze[i+1][j].setWall(WEST, walls[k]);
                             m_maze[i][j].setWall(EAST, walls[k]);
                         }
@@ -110,22 +101,22 @@ void Maze::randomize(){
     }
 
     // Ensures that the middle is hallowed out
-    if (getWidth() % 2 == 0){
-        if (getHeight() % 2 == 0){
-            m_maze[getWidth()/2-1][getHeight()/2-1].setWall(NORTH, false);
-            m_maze[getWidth()/2-1][getHeight()/2].setWall(SOUTH, false);
-            m_maze[getWidth()/2][getHeight()/2-1].setWall(NORTH, false);
-            m_maze[getWidth()/2][getHeight()/2].setWall(SOUTH, false);
-            m_maze[getWidth()/2-1][getHeight()/2-1].setWall(EAST, false);
-            m_maze[getWidth()/2][getHeight()/2-1].setWall(WEST, false);
+    if (MAZE_WIDTH % 2 == 0){
+        if (MAZE_HEIGHT % 2 == 0){
+            m_maze[MAZE_WIDTH/2-1][MAZE_HEIGHT/2-1].setWall(NORTH, false);
+            m_maze[MAZE_WIDTH/2-1][MAZE_HEIGHT/2].setWall(SOUTH, false);
+            m_maze[MAZE_WIDTH/2][MAZE_HEIGHT/2-1].setWall(NORTH, false);
+            m_maze[MAZE_WIDTH/2][MAZE_HEIGHT/2].setWall(SOUTH, false);
+            m_maze[MAZE_WIDTH/2-1][MAZE_HEIGHT/2-1].setWall(EAST, false);
+            m_maze[MAZE_WIDTH/2][MAZE_HEIGHT/2-1].setWall(WEST, false);
         }
-        m_maze[getWidth()/2-1][getHeight()/2].setWall(EAST, false);
-        m_maze[getWidth()/2][getHeight()/2].setWall(WEST, false);
+        m_maze[MAZE_WIDTH/2-1][MAZE_HEIGHT/2].setWall(EAST, false);
+        m_maze[MAZE_WIDTH/2][MAZE_HEIGHT/2].setWall(WEST, false);
             
     }
-    if (getHeight() % 2 == 0){
-        m_maze[getWidth()/2][getHeight()/2-1].setWall(NORTH, false);
-        m_maze[getWidth()/2][getHeight()/2].setWall(SOUTH, false);
+    if (MAZE_HEIGHT % 2 == 0){
+        m_maze[MAZE_WIDTH/2][MAZE_HEIGHT/2-1].setWall(NORTH, false);
+        m_maze[MAZE_WIDTH/2][MAZE_HEIGHT/2].setWall(SOUTH, false);
     }
 }
 
@@ -137,8 +128,8 @@ void Maze::saveMaze(std::string mazeFile){
     if (file.is_open()){
 
         // Very primitive, but will work
-        for (int i = 0; i <  getWidth(); i++){
-            for (int j = 0; j < getHeight(); j++){
+        for (int i = 0; i <  MAZE_WIDTH; i++){
+            for (int j = 0; j < MAZE_HEIGHT; j++){
                 file << i << " " << j;
                 for (int k = 0; k < 4; k++){
                     file << " " << (m_maze[i][j].isWall(k) ? 1 : 0);

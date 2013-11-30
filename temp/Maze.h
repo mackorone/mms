@@ -2,13 +2,13 @@
 #define MAZE_H_
 
 #include <string>
-#include <vector>
+#include "Parameters.h"
 #include "Tile.h"
 
 class Maze{
 
 public:
-    Maze(int width, int height, std::string mazeFile = "");
+    Maze(std::string mazeFile = "");
     ~Maze();
     int getWidth();
     int getHeight();
@@ -18,7 +18,7 @@ public:
     void loadMaze(std::string mazeFile);
 
 private:
-    std::vector<std::vector<Tile>> m_maze;
+    Tile m_maze[MAZE_WIDTH][MAZE_HEIGHT]; // TODO: The reason why we needed static ints is because we needed to specify size here...
 };
 
 #endif // MAZE_H_

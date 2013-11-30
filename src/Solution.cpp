@@ -26,82 +26,18 @@ void Solution::solve(){
     // ------------------ Put maze solution below this line ------------------- //
     // ------------------------------------------------------------------------ //
 
-        //exampleSolutionForMaze3();
-        exampleWallFollow();
+
+
+        rightWallFollow();
+
+
 
     // ------------------------------------------------------------------------ //
     // ------------------ Put maze solution above this line ------------------- //
     // ------------------------------------------------------------------------ //
 }
 
-void Solution::exampleSolutionForMaze3(){
-        m_mouse->moveForward();
-        m_mouse->moveForward();
-        m_mouse->turnRight();
-        m_mouse->moveForward();
-        m_mouse->moveForward();
-        m_mouse->turnLeft();
-        m_mouse->moveForward();
-        m_mouse->turnRight();
-        m_mouse->moveForward();
-        m_mouse->moveForward();
-        m_mouse->turnLeft();
-        m_mouse->moveForward();
-        m_mouse->moveForward();
-        m_mouse->turnRight();
-        m_mouse->moveForward();
-        m_mouse->turnLeft();
-        m_mouse->moveForward();
-        m_mouse->moveForward();
-        m_mouse->turnLeft();
-        m_mouse->moveForward();
-        m_mouse->moveForward();
-        m_mouse->moveForward();
-        m_mouse->turnRight();
-        m_mouse->moveForward();
-        m_mouse->turnLeft();
-        m_mouse->moveForward();
-        m_mouse->turnRight();
-        m_mouse->moveForward();
-        m_mouse->turnLeft();
-        m_mouse->moveForward();
-        m_mouse->turnRight();
-        m_mouse->moveForward();
-        m_mouse->turnRight();
-        m_mouse->moveForward();
-        m_mouse->turnLeft();
-        m_mouse->moveForward();
-        m_mouse->turnRight();
-        m_mouse->moveForward();
-        m_mouse->moveForward();
-        m_mouse->moveForward();
-        m_mouse->moveForward();
-        m_mouse->moveForward();
-        m_mouse->turnRight();
-        m_mouse->moveForward();
-        m_mouse->moveForward();
-        m_mouse->moveForward();
-        m_mouse->moveForward();
-        m_mouse->turnLeft();
-        m_mouse->moveForward();
-        m_mouse->moveForward();
-        m_mouse->turnLeft();
-        m_mouse->moveForward();
-        m_mouse->turnLeft();
-        m_mouse->moveForward();
-        m_mouse->turnLeft();
-        m_mouse->moveForward();
-        m_mouse->turnRight();
-        m_mouse->moveForward();
-        m_mouse->turnRight();
-        m_mouse->turnRight();
-        m_mouse->moveForward();
-        while (true){
-            m_mouse->turnRight();
-        }
-}
-
-void Solution::exampleWallFollow(){
+void Solution::rightWallFollow(){
     while (true){
         if (!m_mouse->wallRight()){
             m_mouse->turnRight();
@@ -109,6 +45,21 @@ void Solution::exampleWallFollow(){
         }
         else if (m_mouse->wallFront()){
             m_mouse->turnLeft();
+        }
+        else{
+            m_mouse->moveForward();
+        }
+    }
+}
+
+void Solution::leftWallFollow(){
+    while (true){
+        if (!m_mouse->wallLeft()){
+            m_mouse->turnLeft();
+            m_mouse->moveForward();
+        }
+        else if (m_mouse->wallFront()){
+            m_mouse->turnRight();
         }
         else{
             m_mouse->moveForward();
