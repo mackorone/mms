@@ -29,13 +29,6 @@ bool Tile::isWall(int direction){
     return m_walls[direction%4];
 }
 
-/*void Tile::setWalls(bool* walls){ // TODO
-    m_walls[0] = walls[0];
-    m_walls[1] = walls[1];
-    m_walls[2] = walls[2];
-    m_walls[3] = walls[3];
-}*/
-
 void Tile::setWall(int wall, bool exists){
     m_walls[wall] = exists;
 }

@@ -55,21 +55,25 @@ Tile* Maze::getTile(int xPos, int yPos){
 }
 
 void Maze::randomize(){
+    
+    // Declare width and height locally to reduce function calls
+    int width = getWidth();
+    int height = getHeight();
 
     // Seed the random number generator
     srand(time(NULL));
     
-    // The probability of any one wall is 1/probDenom
-    int probDenom = 2;
+    // The probability of any one wall appearing is 1/probDenom
+    int probDenom = 3;
 
-    for (int i = 0; i < getWidth(); i++){
-        for (int j = 0; j < getHeight(); j++){
+    for (int i = 0; i < width; i++){
+        for (int j = 0; j < height; j++){
             bool walls[4]; // Make a walls array for tile (i, j)
             for (int k = 0; k < 4; k++){
                 walls[k] = rand() % probDenom == 0;
                 switch (k){
                     case NORTH:
-                        if (j + 1 < getHeight()){
+                        if (j + 1 < height){
                             m_maze[i][j+1].setWall(SOUTH, walls[k]);
                             m_maze[i][j].setWall(NORTH, walls[k]);
                         }
@@ -78,7 +82,7 @@ void Maze::randomize(){
                         }
                         break;
                     case EAST:
-                        if (i + 1 < getWidth()){
+                        if (i + 1 < width){
                             m_maze[i+1][j].setWall(WEST, walls[k]);
                             m_maze[i][j].setWall(EAST, walls[k]);
                         }
@@ -110,22 +114,22 @@ void Maze::randomize(){
     }
 
     // Ensures that the middle is hallowed out
-    if (getWidth() % 2 == 0){
-        if (getHeight() % 2 == 0){
-            m_maze[getWidth()/2-1][getHeight()/2-1].setWall(NORTH, false);
-            m_maze[getWidth()/2-1][getHeight()/2].setWall(SOUTH, false);
-            m_maze[getWidth()/2][getHeight()/2-1].setWall(NORTH, false);
-            m_maze[getWidth()/2][getHeight()/2].setWall(SOUTH, false);
-            m_maze[getWidth()/2-1][getHeight()/2-1].setWall(EAST, false);
-            m_maze[getWidth()/2][getHeight()/2-1].setWall(WEST, false);
+    if (width % 2 == 0){
+        if (height % 2 == 0){
+            m_maze[width/2-1][height/2-1].setWall(NORTH, false);
+            m_maze[width/2-1][height/2].setWall(SOUTH, false);
+            m_maze[width/2][height/2-1].setWall(NORTH, false);
+            m_maze[width/2][height/2].setWall(SOUTH, false);
+            m_maze[width/2-1][height/2-1].setWall(EAST, false);
+            m_maze[width/2][height/2-1].setWall(WEST, false);
         }
-        m_maze[getWidth()/2-1][getHeight()/2].setWall(EAST, false);
-        m_maze[getWidth()/2][getHeight()/2].setWall(WEST, false);
+        m_maze[width/2-1][height/2].setWall(EAST, false);
+        m_maze[width/2][height/2].setWall(WEST, false);
             
     }
-    if (getHeight() % 2 == 0){
-        m_maze[getWidth()/2][getHeight()/2-1].setWall(NORTH, false);
-        m_maze[getWidth()/2][getHeight()/2].setWall(SOUTH, false);
+    if (height % 2 == 0){
+        m_maze[width/2][height/2-1].setWall(NORTH, false);
+        m_maze[width/2][height/2].setWall(SOUTH, false);
     }
 }
 

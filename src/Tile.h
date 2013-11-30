@@ -12,7 +12,6 @@ public:
     int getY();
     void setPos(int x, int y);
     bool isWall(int direction);
-    //void setWalls(bool* walls); // TODO
     void setWall(int wall, bool exists);
 
 private:

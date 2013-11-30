@@ -1,5 +1,6 @@
 #include "Mouse.h"
 
+#include <iostream>
 #include "Constants.h"
 #include "Maze.h"
 #include "Parameters.h"
@@ -67,6 +68,9 @@ void Mouse::moveForward(){
             case WEST:
                 m_mousePosX -= 1; break;
         }
+    }
+    else{ // TODO: Is this necessary?
+        std::cout << "*bump*" << std::endl;
     }
 }
 

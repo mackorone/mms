@@ -13,9 +13,9 @@
 #include "Solution.h"
 #include "Tile.h"
 
-// TODO: 1.) Make terminal style output at bottom or right of window
-//       2.) Ensure that any file can be loaded regardless of maze size specification
-//       3.) Remove as much dependency on the parameter file as possible, other than in "main.cpp"
+// TODO: 1.) *med* Make terminal style output at bottom or right of window
+//       2.) *high* Ensure that any file can be loaded regardless of maze size specification
+//       3.) *med* Remove as much dependency on the parameter file as possible, other than in "main.cpp"
 
 // Function declarations
 void draw();
@@ -29,6 +29,8 @@ MouseGraphic* g_mouseGraphic;
 
 int main(int argc, char* argv[]){
     
+    // TODO: read input file, and check size, use this as value instead of parameter
+
     // Ensure that the size parameters are valid
     if (MAZE_WIDTH < 1 || MAZE_HEIGHT < 1){
         std::cout << "Impossible maze size - check \"Parameters.h\"" << std::endl;
@@ -81,6 +83,12 @@ void solve(){
 // Initially, path is a path to the binary file that is executed
 std::string getMazeFilePath(std::string path, std::string mazeFile){
     
+    // Don't attempt to find a file if no argument is supplied
+    if (mazeFile == ""){
+        std::cout << "No maze file provided. Generating random maze..." << std::endl;
+        return "";
+    }
+
     // Remove bin directory path
     for (int i = 0; i < 2; i++){
         int index = path.find_last_of("/\\");

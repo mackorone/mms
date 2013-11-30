@@ -31,10 +31,10 @@ void MouseGraphic::draw(){
     float dirC2X = c2X;
     float dirC2Y = c2Y;
 
-    c1X = convertPoint(c1X);
-    c1Y = convertPoint(c1Y);
-    c2X = convertPoint(c2X);
-    c2Y = convertPoint(c2Y);
+    c1X = convertHorizontalPoint(c1X);
+    c1Y = convertVerticalPoint(c1Y);
+    c2X = convertHorizontalPoint(c2X);
+    c2Y = convertVerticalPoint(c2Y);
 
     m_mouse->inGoal() ? glColor3fv(DARKGREEN) : glColor3fv(m_color);
     glBegin(GL_POLYGON);
@@ -91,12 +91,12 @@ void MouseGraphic::drawDirection(float c1X, float c1Y, float c2X, float c2Y){
             break;
     }
     
-    p1X = convertPoint(p1X);
-    p1Y = convertPoint(p1Y);
-    p2X = convertPoint(p2X);
-    p2Y = convertPoint(p2Y);
-    p3X = convertPoint(p3X);
-    p3Y = convertPoint(p3Y);
+    p1X = convertHorizontalPoint(p1X);
+    p1Y = convertVerticalPoint(p1Y);
+    p2X = convertHorizontalPoint(p2X);
+    p2Y = convertVerticalPoint(p2Y);
+    p3X = convertHorizontalPoint(p3X);
+    p3Y = convertVerticalPoint(p3Y);
 
     glColor3fv(GREEN);
     glBegin(GL_POLYGON);

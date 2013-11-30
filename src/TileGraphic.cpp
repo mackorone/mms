@@ -32,10 +32,10 @@ void TileGraphic::draw(){
 
 void TileGraphic::drawRect(float c1X, float c1Y, float c2X, float c2Y, GLfloat* color){
 
-    c1X = convertPoint(c1X);
-    c1Y = convertPoint(c1Y);
-    c2X = convertPoint(c2X);
-    c2Y = convertPoint(c2Y);
+    c1X = convertHorizontalPoint(c1X);
+    c1Y = convertVerticalPoint(c1Y);
+    c2X = convertHorizontalPoint(c2X);
+    c2Y = convertVerticalPoint(c2Y);
 
     glColor3fv(color);
     glBegin(GL_POLYGON);
