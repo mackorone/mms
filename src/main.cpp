@@ -27,6 +27,8 @@ MouseGraphic* g_mouseGraphic;
 
 int main(int argc, char* argv[]){
     
+    std::cout << argv[0] << std::endl;
+
     // TODO: read input file, and check size, use this as value instead of parameter
 
     // Ensure that the size parameters are valid
@@ -101,6 +103,9 @@ void keyInput(unsigned char key, int x, int y){
 // Initially, path is a path to the binary file that is executed
 std::string getMazeFilePath(std::string path, std::string mazeFile){
     
+    // TODO: Better parser to locates the maze files relative to execution
+    // Maybe append ".." to the front or something like that
+
     // Don't attempt to find a file if no argument is supplied
     if (mazeFile == ""){
         std::cout << "No maze file provided. Generating random maze..." << std::endl;

@@ -6,18 +6,25 @@ in:
     
         ./<path-to-bin>/MMSim
 
+
 For example, if you are in the "src" directory, enter the following to run the
 simulation:
 
     ../bin/MMSim
 
-If you already in the "bin" directory, simply enter
 
-    ./MMsim
+During the simulation, the user may either pause/resume or speed-up/slow-down
+the mouse speed, as follows:
+
+    <space> -> pause/resume
+     <f/F>  -> faster
+     <s/S>  -> slower
+
 
 Right now, there are two algorithms defined in the Solution class. The first is
 a simple right-wall-following algorithm and the second, a simple left-wall
 -following algorithm. Neither of these solutions is satisfactory.
+
 
 For users writing their own algorithms, they should call any one of the
 following functions in their code to receive input and generate output:
@@ -29,11 +36,13 @@ following functions in their code to receive input and generate output:
     5) m_mouse->turnRight()
     6) m_mouse->turnLeft()
 
+
 Functions 1-3 return true or false values correpsonding to whether or not there
 is a wall to the front, right, or left of the robot. Functions 4-6 instruct the
 robot to move froward, turn left, or turn right. No other functions are
 provided to the user and all other functionality must be supplied else-where, 
 as is the case with the actual MicroMouse robot.
+
 
 After any changes have been made to your code, you must remake the project from
 the root directory (the project folder that contains "src", "bin", etc.) as
@@ -49,5 +58,6 @@ again from the root directory:
 
 The use of "make clean" simply requires the computer to recompile your files, 
 despite it potentially thinking that changes have not been made.
+
 
 Any questions can be directed to mward4@buffalo.edu
