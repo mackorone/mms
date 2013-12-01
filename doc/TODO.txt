@@ -1,3 +1,18 @@
-Enter this command in the "src" directory to see current TODOs:
+High Priority
+=============
+- Maze files are not recognized when sim is run from the "bin" directory
+- Ensure that any file can be loaded regardless of maze size specification
 
-    grep -RI TODO .
+Medium Priority
+===============
+- Make terminal style output at bottom or right of window
+- Remove as much dependency on the parameter file as possible, other than in "main.cpp"
+- Toggle on/off shortest path (write code to find shortest path)
+
+Low Priority
+===============
+- Make the mouse look prettier (draw black box around, or something)
+
+Long Term
+=========
+- Make this a more realistic simulation by allowing angles, sensors, etc.

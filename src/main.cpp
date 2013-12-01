@@ -14,14 +14,6 @@
 #include "Solution.h"
 #include "Tile.h"
 
-// TODO: 1.) *med* Make terminal style output at bottom or right of window
-//       2.) *high* Ensure that any file can be loaded regardless of maze size specification
-//       3.) *med* Remove as much dependency on the parameter file as possible, other than in "main.cpp"
-//       4.) *high* maze files are not recognized when sim is run from the "bin" directory
-//       5.) *med* allow the solution to pause and resume execution
-//       6.) *low* make the mouse look prettier (draw black box around, or something)
-//       7.) *long-term* make this an "analog" simulation by allowing angles, etc.
-
 // Function declarations
 void draw();
 void solve();
@@ -46,7 +38,7 @@ int main(int argc, char* argv[]){
     // Initialize local simulation objects
     Maze maze(MAZE_WIDTH, MAZE_HEIGHT, getMazeFilePath(argv[0], MAZE_FILE));
     Mouse mouse(&maze);
-    MouseInterface mouseInterface(&mouse, SLEEP_TIME);
+    MouseInterface mouseInterface(&mouse, &SLEEP_TIME, &PAUSED);
     Solution solution(&mouseInterface);
     MazeGraphic mazeGraphic(&maze);
     MouseGraphic mouseGraphic(&mouse);
@@ -90,8 +82,19 @@ void solve(){
 
 void keyInput(unsigned char key, int x, int y){
     if (key == 32){ // Space bar
-        // TODO: pause/resume the solve thread
-        //std::cout << "PauseResume" << std::endl;
+        PAUSED = !PAUSED;
+    }
+    else if (key == 'f' || key == 'F'){ // Faster
+        SLEEP_TIME /= 1.15;
+        if (SLEEP_TIME < SLEEP_TIME_MIN){
+            SLEEP_TIME = SLEEP_TIME_MIN;
+        }
+    }
+    else if (key == 's' || key == 'S'){ // Slower
+        SLEEP_TIME *= 1.2;
+        if (SLEEP_TIME > SLEEP_TIME_MAX){
+            SLEEP_TIME = SLEEP_TIME_MAX;
+        }
     }
 }
 
