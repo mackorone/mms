@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <thread>
+#include <unistd.h>
 
 #include "Constants.h"
 #include "Maze.h"
@@ -16,10 +17,15 @@
 // TODO: 1.) *med* Make terminal style output at bottom or right of window
 //       2.) *high* Ensure that any file can be loaded regardless of maze size specification
 //       3.) *med* Remove as much dependency on the parameter file as possible, other than in "main.cpp"
+//       4.) *high* maze files are not recognized when sim is run from the "bin" directory
+//       5.) *med* allow the solution to pause and resume execution
+//       6.) *low* make the mouse look prettier (draw black box around, or something)
+//       7.) *long-term* make this an "analog" simulation by allowing angles, etc.
 
 // Function declarations
 void draw();
 void solve();
+void keyInput(unsigned char key, int x, int y);
 std::string getMazeFilePath(std::string path, std::string mazeFile);
 
 // Global variable declarations
@@ -59,6 +65,7 @@ int main(int argc, char* argv[]){
     glClearColor (0.0,0.0,0.0,1.0);
     glClear(GL_COLOR_BUFFER_BIT);
     glutDisplayFunc(draw);
+    glutKeyboardFunc(keyInput);
 
     // Start the solving loop
     std::thread first(solve);
@@ -77,7 +84,15 @@ void draw(){
 }
 
 void solve(){
+    usleep(1000*500); // Wait for 0.5 seconds for GLUT to intialize
     g_solution->solve();
+}
+
+void keyInput(unsigned char key, int x, int y){
+    if (key == 32){ // Space bar
+        // TODO: pause/resume the solve thread
+        //std::cout << "PauseResume" << std::endl;
+    }
 }
 
 // Initially, path is a path to the binary file that is executed

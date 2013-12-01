@@ -68,8 +68,9 @@ void Mouse::moveForward(){
             case WEST:
                 m_mousePosX -= 1; break;
         }
+        m_maze->getTile(m_mousePosX, m_mousePosY)->incrementPasses();
     }
-    else{ // TODO: Is this necessary?
+    else{
         std::cout << "*bump*" << std::endl;
     }
 }

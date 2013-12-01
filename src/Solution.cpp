@@ -1,6 +1,5 @@
 #include "Solution.h"
 
-#include <unistd.h>
 #include "MouseInterface.h"
 
 Solution::Solution(MouseInterface* mouse) : m_mouse(mouse)
@@ -10,8 +9,6 @@ Solution::~Solution()
 { }
 
 void Solution::solve(){
-
-    usleep(1000*500); // Wait for 0.5 seconds for GLUT to intialize
 
     /* Valid function calls:
      * 1) m_mouse->wallFront()
@@ -43,11 +40,11 @@ void Solution::rightWallFollow(){
             m_mouse->turnRight();
             m_mouse->moveForward();
         }
-        else if (m_mouse->wallFront()){
-            m_mouse->turnLeft();
+        else if (!m_mouse->wallFront()){
+            m_mouse->moveForward();
         }
         else{
-            m_mouse->moveForward();
+            m_mouse->turnLeft();
         }
     }
 }
@@ -58,11 +55,11 @@ void Solution::leftWallFollow(){
             m_mouse->turnLeft();
             m_mouse->moveForward();
         }
-        else if (m_mouse->wallFront()){
-            m_mouse->turnRight();
+        else if (!m_mouse->wallFront()){
+            m_mouse->moveForward();
         }
         else{
-            m_mouse->moveForward();
+            m_mouse->turnRight();
         }
     }
 }

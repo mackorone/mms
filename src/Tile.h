@@ -1,8 +1,6 @@
 #ifndef TILE_H_
 #define TILE_H_
 
-// TODO: Keep track of how many times the mouse passes over the tile
-
 class Tile{
 
 public:
@@ -13,11 +11,14 @@ public:
     void setPos(int x, int y);
     bool isWall(int direction);
     void setWall(int wall, bool exists);
+    int getPasses();
+    void incrementPasses();
 
 private:
     int m_x;
     int m_y;
     bool m_walls[4]; // NORTH, EAST, SOUTH, WEST
+    int m_passes;
 };
 
 #endif // TILE_H_

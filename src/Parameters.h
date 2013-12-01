@@ -6,10 +6,10 @@
 // TODO: Figure out how to get rid of this file
 
 // Simulation parameters
-static const int SLEEP_TIME = 250; // ms between simulation steps
-static const int MAZE_WIDTH = 8; // Number or tiles wide
-static const int MAZE_HEIGHT = 8; // Number or tiles tall
-static const std::string MAZE_FILE = "smallMaze1.maz";
+static const int SLEEP_TIME = 150; // ms between simulation steps
+static const int MAZE_WIDTH = 16; // Number or tiles wide
+static const int MAZE_HEIGHT = 16; // Number or tiles tall
+static const std::string MAZE_FILE = "maze9.maz";
 
 // Graphics parameters
 static const int PIXELS_PER_UNIT = 4; // Choose the window size of the simulation (4 is a good size)

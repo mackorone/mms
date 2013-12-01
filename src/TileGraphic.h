@@ -5,7 +5,6 @@
 #include "Parameters.h"
 #include "Tile.h"
 
-// TODO: Update color based on how many times mouse has passed over tile
 class TileGraphic{
 
 public:
