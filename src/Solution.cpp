@@ -34,7 +34,7 @@ void Solution::solve(){
     // ------------------------------------------------------------------------ //
 }
 
-void Solution::rightWallStep(){
+void Solution::rightWallFollowStep(){
     if (!m_mouse->wallRight()){
         m_mouse->turnRight();
     }
@@ -44,7 +44,7 @@ void Solution::rightWallStep(){
     m_mouse->moveForward();
 }
 
-void Solution::leftWallStep(){
+void Solution::leftWallFollowStep(){
     if (!m_mouse->wallLeft()){
         m_mouse->turnLeft();
     }
@@ -56,23 +56,23 @@ void Solution::leftWallStep(){
 
 void Solution::rightWallFollow(){
     while (true){
-        rightWallStep();
+        rightWallFollowStep();
     }
 }
 
 void Solution::leftWallFollow(){
     while (true){
-        leftWallStep();
+        leftWallFollowStep();
     }
 }
 
 void Solution::randomizedWallFollow(){
     while (true){
         if (rand() % 2 == 0){
-            rightWallStep();
+            rightWallFollowStep();
         }
         else{
-            leftWallStep();
+            leftWallFollowStep();
         }
     }
 }

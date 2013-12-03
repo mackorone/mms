@@ -14,8 +14,8 @@ private:
     MouseInterface* m_mouse;
 
     // Built-in algorithms
-    void rightWallStep();
-    void leftWallStep();
+    void rightWallFollowStep();
+    void leftWallFollowStep();
     void rightWallFollow();
     void leftWallFollow();
     void randomizedWallFollow();

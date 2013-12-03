@@ -25,27 +25,27 @@ bool MouseInterface::wallLeft(){
 
 void MouseInterface::moveForward(){
     m_mouse->moveForward();
-    // Break the sleep into 100 steps, allow pause interrupt
-    for (int i = 0; i < 100; i++){
+    // Break the sleep into 10 steps, allow pause interrupt
+    for (int i = 0; i < 10; i++){
         while (*m_paused){}; // Wait if paused
-        usleep(*m_sleepTime*10);
+        usleep(*m_sleepTime*100);
     }
 }
 
 void MouseInterface::turnRight(){
     m_mouse->turnRight();
-    // Break the sleep into 100 steps, allow pause interrupt
-    for (int i = 0; i < 100; i++){
+    // Break the sleep into 10 steps, allow pause interrupt
+    for (int i = 0; i < 10; i++){
         while (*m_paused){}; // Wait if paused
-        usleep(*m_sleepTime*10);
+        usleep(*m_sleepTime*100);
     }
 }
 
 void MouseInterface::turnLeft(){
     m_mouse->turnLeft();
-    // Break the sleep into 100 steps, allow pause interrupt
-    for (int i = 0; i < 100; i++){
+    // Break the sleep into 10 steps, allow pause interrupt
+    for (int i = 0; i < 10; i++){
         while (*m_paused){}; // Wait if paused
-        usleep(*m_sleepTime*10);
+        usleep(*m_sleepTime*100);
     }
 }
