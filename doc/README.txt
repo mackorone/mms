@@ -1,8 +1,13 @@
 This is a small application for simulating MicroMouse algorithms. Note that
-freeglut *must* be installed for this application to work. As it stands now,
-all solution code is to be placed in the "solve" method of the Solution class.
-The simulation can be run by executing the binary in the "bin" directory, as
-in:
+freeglut *must* be installed for this application to work. To install it on
+Ubuntu systems, simply enter the following into the terminal:
+
+    sudo apt-get install freeglut3-dev
+
+
+As it stands now, all solution code is to be placed in the "solve" method of
+the Solution class. The simulation can be run by executing the binary in the
+"bin" directory, as in:
     
         ./<path-to-bin>/MMSim
 

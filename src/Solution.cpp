@@ -25,7 +25,7 @@ void Solution::solve(){
 
 
 
-        rightWallFollow();
+        randomizedWallFollow();
 
 
 
@@ -34,32 +34,45 @@ void Solution::solve(){
     // ------------------------------------------------------------------------ //
 }
 
+void Solution::rightWallStep(){
+    if (!m_mouse->wallRight()){
+        m_mouse->turnRight();
+    }
+    while (m_mouse->wallFront()){
+        m_mouse->turnLeft();
+    }
+    m_mouse->moveForward();
+}
+
+void Solution::leftWallStep(){
+    if (!m_mouse->wallLeft()){
+        m_mouse->turnLeft();
+    }
+    while (m_mouse->wallFront()){
+        m_mouse->turnRight();
+    }
+    m_mouse->moveForward();
+}
+
 void Solution::rightWallFollow(){
     while (true){
-        if (!m_mouse->wallRight()){
-            m_mouse->turnRight();
-            m_mouse->moveForward();
-        }
-        else if (!m_mouse->wallFront()){
-            m_mouse->moveForward();
-        }
-        else{
-            m_mouse->turnLeft();
-        }
+        rightWallStep();
     }
 }
 
 void Solution::leftWallFollow(){
     while (true){
-        if (!m_mouse->wallLeft()){
-            m_mouse->turnLeft();
-            m_mouse->moveForward();
-        }
-        else if (!m_mouse->wallFront()){
-            m_mouse->moveForward();
+        leftWallStep();
+    }
+}
+
+void Solution::randomizedWallFollow(){
+    while (true){
+        if (rand() % 2 == 0){
+            rightWallStep();
         }
         else{
-            m_mouse->turnRight();
+            leftWallStep();
         }
     }
 }

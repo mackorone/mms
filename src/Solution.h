@@ -13,8 +13,12 @@ public:
 private:
     MouseInterface* m_mouse;
 
+    // Built-in algorithms
+    void rightWallStep();
+    void leftWallStep();
     void rightWallFollow();
     void leftWallFollow();
+    void randomizedWallFollow();
 };
 
 #endif // SOLUTION_H_
