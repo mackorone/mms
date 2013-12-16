@@ -9,7 +9,7 @@ As it stands now, all solution code is to be placed in the "solve" method of
 the Solution class. The simulation can be run by executing the binary in the
 "bin" directory, as in:
     
-        ./<path-to-bin>/MMSim
+    ./<path-to-bin>/MMSim
 
 
 For example, if you are in the "src" directory, enter the following to run the
@@ -21,9 +21,9 @@ simulation:
 During the simulation, the user may either pause/resume or speed-up/slow-down
 the mouse speed, as follows:
 
-    <space> -> pause/resume
-     <f/F>  -> faster
-     <s/S>  -> slower
+    <space>  ->   pause/resume
+     <f/F>   ->   faster
+     <s/S>   ->   slower
 
 
 Right now, there are two algorithms defined in the Solution class. The first is

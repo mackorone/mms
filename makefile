@@ -20,8 +20,8 @@ OBJ = ./obj/
 BIN = ./bin/
 
 # Source files
-PRELIMSOURCES = $(wildcard $(SRC)/**.cpp)
-SOURCES =$(PRELIMSOURCES:$(SRC)/%=%)
+PRELIMSOURCES=$(shell find $(SRC) -name '*.cpp')
+SOURCES=$(PRELIMSOURCES:$(SRC)%=%)
 
 # Object files
 OBJECTS=$(SOURCES:.cpp=.o)
@@ -48,4 +48,5 @@ $(OBJ)%.o: $(SRC)%.cpp
 
 # Make 'clean' instructions
 clean:
-	rm -f $(OBJ)*
+	rm -f $(OBJ)algo/*
+	rm -f $(OBJ)sim/*

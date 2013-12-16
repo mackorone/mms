@@ -11,7 +11,7 @@
 #include "MouseGraphic.h"
 #include "MouseInterface.h"
 #include "Parameters.h"
-#include "Solution.h"
+#include "Start.h"
 #include "Tile.h"
 
 // Function declarations
@@ -21,7 +21,7 @@ void keyInput(unsigned char key, int x, int y);
 std::string getMazeFilePath(std::string path, std::string mazeFile);
 
 // Global variable declarations
-Solution* g_solution;
+Start* g_solution;
 MazeGraphic* g_mazeGraphic;
 MouseGraphic* g_mouseGraphic;
 
@@ -41,12 +41,12 @@ int main(int argc, char* argv[]){
     Maze maze(MAZE_WIDTH, MAZE_HEIGHT, getMazeFilePath(argv[0], MAZE_FILE));
     Mouse mouse(&maze);
     MouseInterface mouseInterface(&mouse, &SLEEP_TIME, &PAUSED);
-    Solution solution(&mouseInterface);
+    Start start(&mouseInterface);
     MazeGraphic mazeGraphic(&maze);
     MouseGraphic mouseGraphic(&mouse);
 
     // Assign global variables
-    g_solution = &solution;
+    g_solution = &start;
     g_mazeGraphic = &mazeGraphic;
     g_mouseGraphic = &mouseGraphic;
 
@@ -119,7 +119,7 @@ std::string getMazeFilePath(std::string path, std::string mazeFile){
     }
 
     // Append data file path
-    path += "/src/mazeFiles/";
+    path += "/src/sim/mazeFiles/";
     path += mazeFile;
 
     // Sanity check

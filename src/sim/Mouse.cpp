@@ -71,6 +71,9 @@ void Mouse::moveForward(){
         m_maze->getTile(m_mousePosX, m_mousePosY)->incrementPasses();
     }
     else{
+        // Ideally we could communicate the fact that the mouse ran into a wall
+        // from within the simulation graphic itself; I will look into this at
+        // some point in the future // TODO
         std::cout << "*bump*" << std::endl;
     }
 }

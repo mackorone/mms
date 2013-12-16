@@ -2,6 +2,9 @@ High Priority
 =============
 - Maze files are not recognized when sim is run from the "bin" directory
 - Ensure that any file can be loaded regardless of maze size specification
+- Re-namespace all items in directories
+- Edit README to instruct on proper use of algorithm
+- Automatically create directories if not there in obj
 
 Medium Priority
 ===============
