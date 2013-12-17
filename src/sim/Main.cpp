@@ -11,8 +11,8 @@
 #include "MouseGraphic.h"
 #include "MouseInterface.h"
 #include "Parameters.h"
-#include "Start.h"
 #include "Tile.h"
+#include "../algo/Solver.h"
 
 // Function declarations
 void draw();
@@ -21,7 +21,7 @@ void keyInput(unsigned char key, int x, int y);
 std::string getMazeFilePath(std::string path, std::string mazeFile);
 
 // Global variable declarations
-Start* g_solution;
+Solver* g_solver;
 MazeGraphic* g_mazeGraphic;
 MouseGraphic* g_mouseGraphic;
 
@@ -33,7 +33,7 @@ int main(int argc, char* argv[]){
 
     // Ensure that the size parameters are valid
     if (MAZE_WIDTH < 1 || MAZE_HEIGHT < 1){
-        std::cout << "Impossible maze size - check \"Parameters.h\"" << std::endl;
+        std::cout << "Impossible maze size - check \"src/sim/Parameters.h\"" << std::endl;
         return 0;
     }
 
@@ -41,12 +41,12 @@ int main(int argc, char* argv[]){
     Maze maze(MAZE_WIDTH, MAZE_HEIGHT, getMazeFilePath(argv[0], MAZE_FILE));
     Mouse mouse(&maze);
     MouseInterface mouseInterface(&mouse, &SLEEP_TIME, &PAUSED);
-    Start start(&mouseInterface);
+    Solver solver(&mouseInterface);
     MazeGraphic mazeGraphic(&maze);
     MouseGraphic mouseGraphic(&mouse);
 
     // Assign global variables
-    g_solution = &start;
+    g_solver = &solver;
     g_mazeGraphic = &mazeGraphic;
     g_mouseGraphic = &mouseGraphic;
 
@@ -79,7 +79,7 @@ void draw(){
 
 void solve(){
     usleep(1000*500); // Wait for 0.5 seconds for GLUT to intialize
-    g_solution->solve();
+    g_solver->solve();
 }
 
 void keyInput(unsigned char key, int x, int y){
@@ -97,6 +97,9 @@ void keyInput(unsigned char key, int x, int y){
         if (SLEEP_TIME > SLEEP_TIME_MAX){
             SLEEP_TIME = SLEEP_TIME_MAX;
         }
+    }
+    else if (key == 'q' || key == 'Q'){ // Quit
+        exit(0);
     }
 }
 
@@ -119,7 +122,7 @@ std::string getMazeFilePath(std::string path, std::string mazeFile){
     }
 
     // Append data file path
-    path += "/src/sim/mazeFiles/";
+    path += "/src/mazeFiles/";
     path += mazeFile;
 
     // Sanity check

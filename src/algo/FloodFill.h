@@ -1,26 +1,14 @@
-#ifndef START_H_
-#define START_H_
+#ifndef FLOODFILL_H_
+#define FLOODFILL_H_
 
-#include "MouseInterface.h"
+#include "IAlgorithm.h"
 
-class Start{
+class FloodFill : public IAlgorithm{
 
 public:
-    Start(MouseInterface* mouse/*, Algorithm* algo*/);
-    ~Start();
-    void solve();
+    void solve(MouseInterface* mouse);
 
 private:
-    MouseInterface* m_mouse;
-    //Algorithm* m_algo;
-
-    // Built-in algorithms
-    void rightWallFollowStep();
-    void leftWallFollowStep();
-    void rightWallFollow();
-    void leftWallFollow();
-    void randomizedWallFollow();
-
     // Floodfill
     void floodSolve();
     void print();
@@ -36,6 +24,8 @@ private:
     void turnLeft();
     void turnRight();
     void turnAround();
+    
+    MouseInterface* m_mouse;
 };
 
-#endif // START_H_
+#endif // FLOODFILL_H_

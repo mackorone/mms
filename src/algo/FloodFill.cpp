@@ -1,6 +1,4 @@
-#include "Start.h"
-
-#include "MouseInterface.h"
+#include "FloodFill.h"
 
 #include <algorithm> // TODO
 #include <iostream> // TODO
@@ -9,80 +7,9 @@ using namespace std; // TODO
 // Does Joe's code check to see if it can move to another square if there are two squares
 // with the same rating but one is walled off?
 
-Start::Start(MouseInterface* mouse) : m_mouse(mouse)
-{ }
-
-Start::~Start()
-{ }
-
-void Start::solve(){
-
-    /* Valid function calls:
-     * 1) m_mouse->wallFront()
-     * 2) m_mouse->wallRight()
-     * 3) m_mouse->wallLeft()
-     * 4) m_mouse->moveForward()
-     * 5) m_mouse->turnRight()
-     * 6) m_mouse->turnLeft()
-     */
-
-    // ------------------------------------------------------------------------ //
-    // ------------------ Put maze solution below this line ------------------- //
-    // ------------------------------------------------------------------------ //
-
-
-
-        rightWallFollow();
-        //floodSolve();
-
-
-
-    // ------------------------------------------------------------------------ //
-    // ------------------ Put maze solution above this line ------------------- //
-    // ------------------------------------------------------------------------ //
-}
-
-void Start::rightWallFollowStep(){
-    if (!m_mouse->wallRight()){
-        m_mouse->turnRight();
-    }
-    while (m_mouse->wallFront()){
-        m_mouse->turnLeft();
-    }
-    m_mouse->moveForward();
-}
-
-void Start::leftWallFollowStep(){
-    if (!m_mouse->wallLeft()){
-        m_mouse->turnLeft();
-    }
-    while (m_mouse->wallFront()){
-        m_mouse->turnRight();
-    }
-    m_mouse->moveForward();
-}
-
-void Start::rightWallFollow(){
-    while (true){
-        rightWallFollowStep();
-    }
-}
-
-void Start::leftWallFollow(){
-    while (true){
-        leftWallFollowStep();
-    }
-}
-
-void Start::randomizedWallFollow(){
-    while (true){
-        if (rand() % 2 == 0){
-            rightWallFollowStep();
-        }
-        else{
-            leftWallFollowStep();
-        }
-    }
+void FloodFill::solve(MouseInterface* mouse){
+    m_mouse = mouse;
+    floodSolve();
 }
 
 // ------------------------------- Flood Fill ------------------------------- //
@@ -101,7 +28,7 @@ int xPos = 0; // x-coordinate of the bot
 int yPos = 0; // y-coordinate of the bot
 int relDir = 0; // Relative Direction of the bot
 
-void Start::floodSolve(){
+void FloodFill::floodSolve(){
     initializeGrid();
     print();
     while (true){
@@ -113,7 +40,7 @@ void Start::floodSolve(){
 
 
 // Prints the maze
-void Start::print(){
+void FloodFill::print(){
     std::cout << std::endl;
     for (int y = 15; y >= 0; y--){
         for (int x = 0; x < 16; x++){
@@ -126,7 +53,7 @@ void Start::print(){
     }
 }
 
-void Start::initializeGrid(){
+void FloodFill::initializeGrid(){
 
     // Initialize the distances
     int distance = 14;
@@ -161,13 +88,13 @@ void Start::initializeGrid(){
 }
 
 //updatedWall method
-void Start::updateWall(int x, int y){ // These methods check to see if there are walls to left, right, or front
+void FloodFill::updateWall(int x, int y){ // These methods check to see if there are walls to left, right, or front
     leftWall(x, y);
     rightWall(x, y);
     frontWall(x, y);
 }
 
-void Start::leftWall(int x, int y){
+void FloodFill::leftWall(int x, int y){
     if(m_mouse->wallLeft()){
         std::cout << "Wall left\n" << std::endl; // TODO
         switch(relDir){
@@ -199,7 +126,7 @@ void Start::leftWall(int x, int y){
     }
 }
 
-void Start::rightWall(int x, int y){
+void FloodFill::rightWall(int x, int y){
     if(m_mouse->wallRight()){
         std::cout << "Wall right\n" << std::endl; // TODO
         switch(relDir){
@@ -231,7 +158,7 @@ void Start::rightWall(int x, int y){
     }
 }
 
-void Start::frontWall(int x, int y){
+void FloodFill::frontWall(int x, int y){
     if(m_mouse->wallFront()){
         std::cout << "Wall front\n" << std::endl; // TODO
         switch (relDir){
@@ -263,7 +190,7 @@ void Start::frontWall(int x, int y){
     }
 }
 
-void Start::flood(int x, int y){
+void FloodFill::flood(int x, int y){
 
     print();
     //cout << "X: " << x << "  Y: " << y << " " << wallArray[x][y] << endl;
@@ -450,7 +377,7 @@ void Start::flood(int x, int y){
     }
 }
 
-void Start::decide(int x, int y){
+void FloodFill::decide(int x, int y){
     switch(wallArray[x][y]){
         case 0x0:
             findLowest(floodArray[x-1][y], floodArray[x][y+1], floodArray[x+1][y], floodArray[x][y-1]);
@@ -503,7 +430,7 @@ void Start::decide(int x, int y){
     }
 }
 
-void Start::findLowest(int left, int up, int right, int down){
+void FloodFill::findLowest(int left, int up, int right, int down){
     int lowest;
     int lowDir;
     switch(relDir){
@@ -600,7 +527,7 @@ void Start::findLowest(int left, int up, int right, int down){
     //std::cout << "Lowest direction is :" << lowDir << std::endl;
 }
 
-void Start::forward(){
+void FloodFill::forward(){
     switch(relDir){
         case 0:
             yPos++;
@@ -619,19 +546,19 @@ void Start::forward(){
     m_mouse->moveForward();
 }
 
-void Start::turnLeft(){
+void FloodFill::turnLeft(){
     relDir = (relDir + 3) % 4;
     m_mouse->turnLeft();
     forward();
 }
 
-void Start::turnRight(){
+void FloodFill::turnRight(){
     relDir = (relDir + 1) % 4;
     m_mouse->turnRight();
     forward();
 }
 
-void Start::turnAround(){
+void FloodFill::turnAround(){
     m_mouse->turnRight();
     m_mouse->turnRight();
     relDir = (relDir + 2) % 4;
