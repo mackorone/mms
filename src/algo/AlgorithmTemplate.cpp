@@ -2,8 +2,6 @@
 #include "AlgorithmTemplate.h"
 // ----- Remember to change the include directive above this line ----- //
 
-
-
 // ----- Remember to change the class name below this line ----- //
 void AlgorithmTemplate::solve(MouseInterface* mouse){
 // ----- Remember to change the class name above this line ----- //

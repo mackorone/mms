@@ -1,5 +1,4 @@
 mms
 ===
-A simple interface for MicroMouse simulation
-============================================
-See the "doc" directory for more information
+
+A simple interface for MicroMouse simulation. See the "doc" directory for more information.

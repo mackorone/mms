@@ -5,6 +5,7 @@ Ubuntu systems, simply enter the following into the terminal:
     sudo apt-get install freeglut3-dev
 
 
+// TODO
 As it stands now, all solution code is to be placed in the "solve" method of
 the Solution class. The simulation can be run by executing the binary in the
 "bin" directory, as in:
@@ -19,18 +20,21 @@ simulation:
 
 
 During the simulation, the user may either pause/resume or speed-up/slow-down
-the mouse speed, as follows:
+the mouse speed, as well as quit the application, as follows:
 
     <space>  ->   pause/resume
      <f/F>   ->   faster
      <s/S>   ->   slower
+     <q/Q>   ->   quit
 
 
+// TODO
 Right now, there are two algorithms defined in the Solution class. The first is
 a simple right-wall-following algorithm and the second, a simple left-wall
 -following algorithm. Neither of these solutions is satisfactory.
 
 
+// TODO
 For users writing their own algorithms, they should call any one of the
 following functions in their code to receive input and generate output:
 
