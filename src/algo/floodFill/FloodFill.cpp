@@ -11,6 +11,7 @@ void FloodFill::solve(MouseInterface* mouse){
     while (!inGoal()){
         walls();
         flood(m_x, m_y);
+        printDistances();
         move();
     }
 }
@@ -96,10 +97,10 @@ void FloodFill::walls(){
 void FloodFill::flood(int x, int y){
     
     // Initialize distance values for surrounding cells
-    int northDistance = MAZE_SIZE;
-    int eastDistance = MAZE_SIZE;
-    int southDistance = MAZE_SIZE;
-    int westDistance = MAZE_SIZE;
+    int northDistance = MAZE_SIZE*MAZE_SIZE; // Max distance
+    int eastDistance = MAZE_SIZE*MAZE_SIZE; // Max distance
+    int southDistance = MAZE_SIZE*MAZE_SIZE; // Max distance
+    int westDistance = MAZE_SIZE*MAZE_SIZE; // Max distance
 
     // Obtain actual values if possible
     if (!m_cells[x][y].isWall(NORTH)){
