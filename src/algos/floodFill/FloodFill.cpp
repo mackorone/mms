@@ -11,7 +11,7 @@ void FloodFill::solve(MouseInterface* mouse){
     while (!inGoal()){
         walls();
         flood(m_x, m_y);
-        printDistances();
+        //printDistances();
         move();
     }
     // Return to start, find shortest path

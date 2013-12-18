@@ -46,7 +46,7 @@ $(PREFIXED_PROGRAM): $(PREFIXED_OBJECTS)
 $(OBJ)%.o: $(SRC)%.cpp
 	$(CXX) -c $(CFlags) $< -o $@ -std=c++0x
 
-# Make 'clean' instructions
+# Make 'clean' instructions TODO
 clean:
 	rm -f $(OBJ)algo/*.*
 	rm -f $(OBJ)algo/floodFill/*

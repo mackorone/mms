@@ -12,7 +12,7 @@
 #include "MouseInterface.h"
 #include "Parameters.h"
 #include "Tile.h"
-#include "../algo/Solver.h"
+#include "../algos/Solver.h"
 
 // Function declarations
 void draw();
