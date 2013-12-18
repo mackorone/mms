@@ -16,7 +16,7 @@ private:
     // ----- Helper function declarations should go below this line ----- //
 
     /* ------ EXAMPLE ----------
-    void AlgorithmTemplate::helperFunction(MouseInterface* mouse);
+    void helperFunction(MouseInterface* mouse);
     ------- END EXAMPLE ----- */
 
     // ----- Helper function declarations should go above this line ----- //

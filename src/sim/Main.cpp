@@ -74,6 +74,7 @@ void draw(){
     g_mazeGraphic->draw();
     g_mouseGraphic->draw();
     glFlush();
+    usleep(1000*SLEEP_TIME_MIN);
     glutPostRedisplay();
 }
 

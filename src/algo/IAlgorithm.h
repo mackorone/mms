@@ -4,7 +4,7 @@
 #include "../sim/MouseInterface.h"
 
 /*
- * This class is an interface for every algorithm in the simulation
+ * This class is an interface for every algorithm
  */
 class IAlgorithm{
 

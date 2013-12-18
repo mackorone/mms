@@ -4,8 +4,6 @@
 #include <iostream> // TODO
 using namespace std; // TODO
 
-// Does Joe's code check to see if it can move to another square if there are two squares
-// with the same rating but one is walled off?
 
 void FloodFill::solve(MouseInterface* mouse){
     m_mouse = mouse;
@@ -92,11 +90,12 @@ void FloodFill::updateWall(int x, int y){ // These methods check to see if there
     leftWall(x, y);
     rightWall(x, y);
     frontWall(x, y);
+    print();
 }
 
 void FloodFill::leftWall(int x, int y){
     if(m_mouse->wallLeft()){
-        std::cout << "Wall left\n" << std::endl; // TODO
+        //std::cout << "Wall left\n" << std::endl; // TODO
         switch(relDir){
             case 0:
                 wallArray[xPos][yPos] |= 0x8;
@@ -128,7 +127,7 @@ void FloodFill::leftWall(int x, int y){
 
 void FloodFill::rightWall(int x, int y){
     if(m_mouse->wallRight()){
-        std::cout << "Wall right\n" << std::endl; // TODO
+        //std::cout << "Wall right\n" << std::endl; // TODO
         switch(relDir){
             case 0:
                 wallArray[xPos][yPos] |= 0x2;
@@ -160,7 +159,7 @@ void FloodFill::rightWall(int x, int y){
 
 void FloodFill::frontWall(int x, int y){
     if(m_mouse->wallFront()){
-        std::cout << "Wall front\n" << std::endl; // TODO
+        //std::cout << "Wall front\n" << std::endl; // TODO
         switch (relDir){
             case 0:
                 wallArray[xPos][yPos] |= 0x1;
@@ -192,7 +191,7 @@ void FloodFill::frontWall(int x, int y){
 
 void FloodFill::flood(int x, int y){
 
-    print();
+    //print();
     //cout << "X: " << x << "  Y: " << y << " " << wallArray[x][y] << endl;
 
     switch(wallArray[x][y]){
@@ -523,8 +522,8 @@ void FloodFill::findLowest(int left, int up, int right, int down){
             break;
     }
 
-    //std::cout << "Lowest is :" << lowest << std::endl;
-    //std::cout << "Lowest direction is :" << lowDir << std::endl;
+    std::cout << "Lowest was :" << lowest << std::endl;
+    std::cout << "Lowest direction was :" << lowDir << std::endl;
 }
 
 void FloodFill::forward(){
