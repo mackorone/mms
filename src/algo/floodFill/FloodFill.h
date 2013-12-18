@@ -42,6 +42,9 @@ private:
     bool spaceLeft(int x, int y, int d); // Returns true if there's a cell to the left
     bool spaceRight(int x, int y, int d); // Returns true if there's a cell to the right
     int min(int one, int two, int three, int four); // Returns the min of four ints
+
+    // Can be used to set the destination to any cell
+    void initializeDestinationTile(int x, int y);
 };
 
 #endif // FLOODFILL_H_

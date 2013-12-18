@@ -14,6 +14,15 @@ void FloodFill::solve(MouseInterface* mouse){
         printDistances();
         move();
     }
+    // Return to start, find shortest path
+    /*initializeDestinationTile(15, 9);
+    printDistances();
+    while (m_x != 15 || m_y != 9){
+        walls();
+        flood(m_x, m_y);
+        printDistances();
+        move();
+    }*/
 }
 
 void FloodFill::printDistances(){
@@ -71,6 +80,30 @@ void FloodFill::initialize(){
             m_cells[x][y].setWall(NORTH, y == MAZE_SIZE-1);
             m_cells[x][y].setWall(WEST, x == 0);
             m_cells[x][y].setWall(EAST, x == MAZE_SIZE-1);
+        }
+    }
+}
+
+void FloodFill::initializeDestinationTile(int x, int y){
+
+    // Set this tile as the destination
+    m_cells[x][y].setDistance(0);
+    
+    // Initialize the column
+    for (int i = 0; i < y; i++){
+        m_cells[x][i].setDistance(y-i);
+    }
+    for (int i = y+1; i < MAZE_SIZE; i++){
+        m_cells[x][i].setDistance(i-y);
+    }
+
+    // Initialize the rows
+    for (int i = 0; i < MAZE_SIZE; i++){
+        for (int j = 0; j < x; j++){
+            m_cells[j][i].setDistance(x - j + m_cells[x][i].distance());
+        }
+        for (int j = x+1; j < MAZE_SIZE; j++){
+            m_cells[j][i].setDistance(j - x + m_cells[x][i].distance());
         }
     }
 }
@@ -336,4 +369,3 @@ bool FloodFill::spaceRight(int x, int y, int d){
             return y+1 < MAZE_SIZE;
     }
 }
-
