@@ -5,6 +5,7 @@ High Priority
 - Re-namespace all items in directories
 - Edit README to instruct on proper use of algorithm
 - Automatically create directories if not there in obj
+- Flood fill doesn't work for the maze right now...
 
 Medium Priority
 ===============

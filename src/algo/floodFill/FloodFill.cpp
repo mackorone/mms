@@ -8,11 +8,9 @@ void FloodFill::solve(MouseInterface* mouse){
     m_d = 0; // Initialize the direction
     m_mouse = mouse; // Initialize the mouse pointer
     initialize(); // Initialize the cells
-    printDistances();
     while (!inGoal()){
         walls();
         flood(m_x, m_y);
-        printDistances();
         move();
     }
 }
@@ -83,10 +81,8 @@ void FloodFill::walls(){
     m_cells[m_x][m_y].setWall((m_d+1)%4, m_mouse->wallRight());
     m_cells[m_x][m_y].setWall((m_d+3)%4, m_mouse->wallLeft());
 
-
-    // TODO: not working...
     // Sets the walls for the surrounding cells
-    /*if (spaceFront(m_x, m_y, m_d)){
+    if (spaceFront(m_x, m_y, m_d)){
         getFrontCell(m_x, m_y, m_d)->setWall((m_d+2)%4, m_mouse->wallFront());
     }
     if (spaceLeft(m_x, m_y, m_d)){
@@ -94,63 +90,16 @@ void FloodFill::walls(){
     }
     if (spaceRight(m_x, m_y, m_d)){
         getRightCell(m_x, m_y, m_d)->setWall((m_d+3)%4, m_mouse->wallRight());
-    }*/
-
-    switch (m_d){
-        case NORTH:
-            if (m_y < MAZE_SIZE - 1){ // Front facing wall
-                m_cells[m_x][m_y+1].setWall(SOUTH, m_mouse->wallFront());
-            }
-            if (m_x > 0){ // Left facing wall
-                m_cells[m_x-1][m_y].setWall(EAST, m_mouse->wallLeft());
-            }
-            if (m_x < MAZE_SIZE - 1){ // Right facing wall
-                m_cells[m_x+1][m_y].setWall(WEST, m_mouse->wallRight());
-            }
-            break;
-        case EAST:
-            if (m_x < MAZE_SIZE - 1){ // Front facing wall
-                m_cells[m_x+1][m_y].setWall(WEST, m_mouse->wallFront());
-            }
-            if (m_y < MAZE_SIZE - 1){ // Left facing wall
-                m_cells[m_x][m_y+1].setWall(SOUTH, m_mouse->wallLeft());
-            }
-            if (m_y > 0){ // Right facing wall
-                m_cells[m_x][m_y-1].setWall(NORTH, m_mouse->wallRight());
-            }
-            break;
-        case SOUTH:
-            if (m_y > 0){ // Front facing wall
-                m_cells[m_x][m_y-1].setWall(NORTH, m_mouse->wallFront());
-            }
-            if (m_x < MAZE_SIZE - 1){ // Left facing wall
-                m_cells[m_x+1][m_y].setWall(WEST, m_mouse->wallLeft());
-            }
-            if (m_x > 0){ // Right facing wall
-                m_cells[m_x-1][m_y].setWall(EAST, m_mouse->wallRight());
-            }
-            break;
-        case WEST:
-            if (m_x > 0){ // Front facing wall
-                m_cells[m_x-1][m_y].setWall(EAST, m_mouse->wallFront());
-            }
-            if (m_y > 0){ // Left facing wall
-                m_cells[m_x][m_y-1].setWall(NORTH, m_mouse->wallLeft());
-            }
-            if (m_y < MAZE_SIZE - 1){ // Right facing wall
-                m_cells[m_x][m_y+1].setWall(SOUTH, m_mouse->wallRight());
-            }
-            break;
     }
 }
 
 void FloodFill::flood(int x, int y){
-
+    
     // Initialize distance values for surrounding cells
-    int northDistance = m_cells[x][y].distance();
-    int eastDistance = m_cells[x][y].distance();
-    int southDistance = m_cells[x][y].distance();
-    int westDistance = m_cells[x][y].distance();
+    int northDistance = MAZE_SIZE;
+    int eastDistance = MAZE_SIZE;
+    int southDistance = MAZE_SIZE;
+    int westDistance = MAZE_SIZE;
 
     // Obtain actual values if possible
     if (!m_cells[x][y].isWall(NORTH)){
@@ -168,6 +117,10 @@ void FloodFill::flood(int x, int y){
 
     // Check to see if the distance value is the min plus one
     if (m_cells[x][y].distance() != min(northDistance, eastDistance, southDistance, westDistance) + 1){
+
+        // Set the value to the min plus one
+        m_cells[x][y].setDistance(min(northDistance, eastDistance, southDistance, westDistance) + 1);
+
         if (!m_cells[x][y].isWall(NORTH)){
             flood(x, y + 1);
         }
@@ -186,47 +139,43 @@ void FloodFill::flood(int x, int y){
 
 void FloodFill::move(){
 
-    std::cout << "Here" << std::endl; // TODO
-
     int minDistance = m_cells[m_x][m_y].distance(); // Initialize distance
-    int relDirection = m_d; // Initialize direction
+    int relDirection = 0; // Initialize direction
 
     if (!m_cells[m_x][m_y].isWall((m_d+3)%4)){ 
         if (getLeftCell(m_x, m_y, m_d)->distance() <= minDistance){
             minDistance = getLeftCell(m_x, m_y, m_d)->distance();
-            relDirection = (m_d+3)%4;
+            relDirection = 3;
         }
     }
     if (!m_cells[m_x][m_y].isWall((m_d+2)%4)){ 
         if (getRearCell(m_x, m_y, m_d)->distance() <= minDistance){
             minDistance = getRearCell(m_x, m_y, m_d)->distance();
-            relDirection = (m_d+2)%4;
+            relDirection = 2;
         }
     }
     if (!m_cells[m_x][m_y].isWall((m_d+1)%4)){ 
         if (getRightCell(m_x, m_y, m_d)->distance() <= minDistance){
             minDistance = getRightCell(m_x, m_y, m_d)->distance();
-            relDirection = (m_d+1)%4;
+            relDirection = 1;
         }
     }
     if (!m_cells[m_x][m_y].isWall(m_d)){ 
         if (getFrontCell(m_x, m_y, m_d)->distance() <= minDistance){
             minDistance = getFrontCell(m_x, m_y, m_d)->distance();
-            relDirection = m_d;
+            relDirection = 0;
         }
     }
     
-    // Actually move here
-    int direction = (relDirection + 4 - m_d) % 4;
-    switch (direction){
-        case 1: // Go right
+    switch (relDirection){
+        case 1: // turn right
             turnRight();
             break;
-        case 2: // Go backwards
+        case 2: // turn around
             turnRight();
             turnRight();
             break;
-        case 3: // Go left
+        case 3: // turn left
             turnLeft();
             break;
     }
@@ -299,52 +248,52 @@ int FloodFill::min(int one, int two, int three, int four){
 Cell* FloodFill::getFrontCell(int x, int y, int d){
     switch (d){
         case NORTH:
-            return m_cells[x, y+1];
+            return &m_cells[x][y+1];
         case EAST:
-            return m_cells[x+1, y];
+            return &m_cells[x+1][y];
         case SOUTH:
-            return m_cells[x, y-1];
+            return &m_cells[x][y-1];
         case WEST:
-            return m_cells[x-1, y];
+            return &m_cells[x-1][y];
     }
 }
 
 Cell* FloodFill::getLeftCell(int x, int y, int d){
     switch (d){
         case NORTH:
-            return m_cells[x-1, y];
+            return &m_cells[x-1][y];
         case EAST:
-            return m_cells[x, y+1];
+            return &m_cells[x][y+1];
         case SOUTH:
-            return m_cells[x+1, y];
+            return &m_cells[x+1][y];
         case WEST:
-            return m_cells[x, y-1];
+            return &m_cells[x][y-1];
     }
 }
 
 Cell* FloodFill::getRightCell(int x, int y, int d){
     switch (d){
         case NORTH:
-            return m_cells[x+1, y];
+            return &m_cells[x+1][y];
         case EAST:
-            return m_cells[x, y-1];
+            return &m_cells[x][y-1];
         case SOUTH:
-            return m_cells[x-1, y];
+            return &m_cells[x-1][y];
         case WEST:
-            return m_cells[x, y+1];
+            return &m_cells[x][y+1];
     }
 }
 
 Cell* FloodFill::getRearCell(int x, int y, int d){
     switch (d){
         case NORTH:
-            return m_cells[x, y-1];
+            return &m_cells[x][y-1];
         case EAST:
-            return m_cells[x-1, y];
+            return &m_cells[x-1][y];
         case SOUTH:
-            return m_cells[x, y+1];
+            return &m_cells[x][y+1];
         case WEST:
-            return m_cells[x+1, y];
+            return &m_cells[x+1][y];
     }
 }
 

@@ -3,7 +3,11 @@
 
 #include "../IAlgorithm.h"
 #include "Cell.h"
-#include "FloodFillConstants.h"
+
+// Constants
+static const int MAZE_SIZE = 16;
+enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
+
 
 class FloodFill : public IAlgorithm{
 

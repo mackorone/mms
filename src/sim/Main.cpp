@@ -74,7 +74,7 @@ void draw(){
     g_mazeGraphic->draw();
     g_mouseGraphic->draw();
     glFlush();
-    usleep(1000*SLEEP_TIME_MIN);
+    usleep(1000*SLEEP_TIME_MIN); // Reduces CPU usage
     glutPostRedisplay();
 }
 

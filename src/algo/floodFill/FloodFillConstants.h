@@ -1,7 +1,0 @@
-#ifndef FLOODFILLCONSTANTS_H_
-#define FLOODFILLCONSTANTS_H_
-
-static const int MAZE_SIZE = 16;
-enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
-
-#endif // FLOODFILLCONSTANTS_H_

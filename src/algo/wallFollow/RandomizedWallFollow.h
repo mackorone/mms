@@ -1,7 +1,7 @@
 #ifndef RANDOMIZEDWALLFOLLOW_H_
 #define RANDOMIZEDWALLFOLLOW_H_
 
-#include "IAlgorithm.h"
+#include "../IAlgorithm.h"
 
 class RandomizedWallFollow : public IAlgorithm{
 

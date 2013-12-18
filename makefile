@@ -36,7 +36,7 @@ PREFIXED_OBJECTS=$(addprefix $(OBJ),$(OBJECTS))
 PREFIXED_PROGRAM=$(addprefix $(BIN),$(PROGRAM))
 
 # Make 'all' instructions
-all: $(PREFIXED_SOURCES) $(PREFIXED_PROGRAM)
+all: $(DIRS) $(PREFIXED_SOURCES) $(PREFIXED_PROGRAM)
 
 # Make '$(PROGRAM)' instructions
 $(PREFIXED_PROGRAM): $(PREFIXED_OBJECTS)
@@ -48,5 +48,6 @@ $(OBJ)%.o: $(SRC)%.cpp
 
 # Make 'clean' instructions
 clean:
-	rm -f $(OBJ)algo/*
+	rm -f $(OBJ)algo/*.*
+	rm -f $(OBJ)algo/floodFill/*
 	rm -f $(OBJ)sim/*

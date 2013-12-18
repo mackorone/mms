@@ -2,9 +2,9 @@
 
 // ------ Include all algorithm header files below this line ------- //
 
-#include "LeftWallFollow.h"
-#include "RightWallFollow.h"
-#include "RandomizedWallFollow.h"
+#include "wallFollow/LeftWallFollow.h"
+#include "wallFollow/RightWallFollow.h"
+#include "wallFollow/RandomizedWallFollow.h"
 #include "floodFill/FloodFill.h"
 
 // ------ Include all algorithm header files above this line ------- //
