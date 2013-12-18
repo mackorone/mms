@@ -1,3 +1,4 @@
+#if(0)
 #include "FloodFill.h"
 
 #include <algorithm> // TODO
@@ -10,7 +11,6 @@ void FloodFill::solve(MouseInterface* mouse){
     floodSolve();
 }
 
-// ------------------------------- Flood Fill ------------------------------- //
 
 /*
 Author: Joseph Materski
@@ -563,3 +563,4 @@ void FloodFill::turnAround(){
     relDir = (relDir + 2) % 4;
     forward();
 }
+#endif

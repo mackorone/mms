@@ -1,5 +1,6 @@
-#ifndef FLOODFILL_H_
-#define FLOODFILL_H_
+#if(0)
+//#ifndef FLOODFILL_H_
+//#define FLOODFILL_H_
 
 #include "IAlgorithm.h"
 
