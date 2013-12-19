@@ -1,5 +1,7 @@
-#ifndef TILE_H_
-#define TILE_H_
+#ifndef SIM_TILE_H_
+#define SIM_TILE_H_
+
+namespace sim{
 
 class Tile{
 
@@ -21,4 +23,6 @@ private:
     int m_passes;
 };
 
-#endif // TILE_H_
+} // namespace sim
+
+#endif // SIM_TILE_H_

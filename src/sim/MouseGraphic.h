@@ -1,8 +1,10 @@
-#ifndef MOUSEGRAPHIC_H_
-#define MOUSEGRAPHIC_H_
+#ifndef SIM_MOUSEGRAPHIC_H_
+#define SIM_MOUSEGRAPHIC_H_
 
 #include "Constants.h"
 #include "Mouse.h"
+
+namespace sim{
 
 class MouseGraphic{
 
@@ -17,4 +19,6 @@ private:
     GLfloat* m_color;
 };
 
-#endif // MOUSEGRAPHIC_H_
+} // namespace sim
+
+#endif // SIM_MOUSEGRAPHIC_H_

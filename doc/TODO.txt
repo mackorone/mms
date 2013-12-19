@@ -2,7 +2,6 @@ High Priority
 =============
 - Maze files are not recognized when sim is run from the "bin" directory
 - Ensure that any file can be loaded regardless of maze size specification
-- Re-namespace all items in directories
 - Edit README to instruct on proper use of algorithm
 
 Medium Priority
@@ -12,6 +11,7 @@ Medium Priority
 - Figure out how to optimize the floodfill to find the quickest path
 - Make terminal style output at bottom or right of window
 - Display another window of the robot's perception
+- Autogenerate makefile dependencies
 
 Low Priority
 ===============

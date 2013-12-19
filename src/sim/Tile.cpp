@@ -2,6 +2,8 @@
 
 #include "Constants.h"
 
+namespace sim{
+
 Tile::Tile() : m_x(0), m_y(0), m_passes(0){
     m_walls[0] = false;
     m_walls[1] = false;
@@ -40,3 +42,5 @@ int Tile::getPasses(){
 void Tile::incrementPasses(){
     m_passes++;
 }
+
+} // namespace sim

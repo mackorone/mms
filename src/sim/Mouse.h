@@ -1,7 +1,9 @@
-#ifndef MOUSE_H_
-#define MOUSE_H_
+#ifndef SIM_MOUSE_H_
+#define SIM_MOUSE_H_
 
 #include "Maze.h"
+
+namespace sim{
 
 class Mouse{
 
@@ -30,4 +32,6 @@ private:
     int m_mouseDirection; // NORTH, EAST, SOUTH, WEST
 };
 
-#endif // MOUSE_H_
+} // namespace sim
+
+#endif // SIM_MOUSE_H_

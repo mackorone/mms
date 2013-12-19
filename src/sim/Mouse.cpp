@@ -5,6 +5,8 @@
 #include "Maze.h"
 #include "Parameters.h"
 
+namespace sim{
+
 Mouse::Mouse(Maze* maze) : m_maze(maze), m_mousePosX(0), m_mousePosY(0),
                            m_mouseDirection(NORTH)
 { }
@@ -86,3 +88,5 @@ void Mouse::turnLeft(){
     // Modulo operations don't work with subtraction
     m_mouseDirection = (m_mouseDirection + 3) % 4;
 }
+
+} // namespace sim

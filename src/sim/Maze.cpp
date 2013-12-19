@@ -11,6 +11,8 @@
 #include "Parameters.h"
 #include "Tile.h"
 
+namespace sim{
+
 Maze::Maze(int width, int height, std::string mazeFile){
 
     // Initialize the tile positions
@@ -181,3 +183,5 @@ void Maze::loadMaze(std::string mazeFile){
         file.close();
     }
 }
+
+} // namespace sim

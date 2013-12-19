@@ -10,13 +10,13 @@ class AlgorithmTemplate : public IAlgorithm{
 // ----- Remember to rename the class above above this line----- //
 
 public:
-    void solve(MouseInterface* mouse);
+    void solve(sim::MouseInterface* mouse);
 
 private:
     // ----- Helper function declarations should go below this line ----- //
 
     /* ------ EXAMPLE ----------
-    void helperFunction(MouseInterface* mouse);
+    void helperFunction(sim::MouseInterface* mouse);
     ------- END EXAMPLE ----- */
 
     // ----- Helper function declarations should go above this line ----- //

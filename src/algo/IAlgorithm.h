@@ -9,7 +9,7 @@
 class IAlgorithm{
 
 public:
-    virtual void solve(MouseInterface* mouse) = 0;
+    virtual void solve(sim::MouseInterface* mouse) = 0;
 
 };
 

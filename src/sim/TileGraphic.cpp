@@ -4,6 +4,8 @@
 #include "GraphicsTools.h"
 #include "Parameters.h"
 
+namespace sim{
+
 TileGraphic::TileGraphic(Tile* tile) : m_tile(tile), m_color(BLACK)
 { }
 
@@ -85,3 +87,5 @@ void TileGraphic::drawWalls(float c1X, float c1Y, float c2X, float c2Y){
         drawRect(c1X, c1Y + PIXELS_PER_UNIT, c1X + PIXELS_PER_UNIT, c2Y - PIXELS_PER_UNIT, GRAY);
     }
 }
+
+} // namespace sim

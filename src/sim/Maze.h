@@ -1,9 +1,11 @@
-#ifndef MAZE_H_
-#define MAZE_H_
+#ifndef SIM_MAZE_H_
+#define SIM_MAZE_H_
 
 #include <string>
 #include <vector>
 #include "Tile.h"
+
+namespace sim{
 
 class Maze{
 
@@ -21,4 +23,6 @@ private:
     std::vector<std::vector<Tile>> m_maze;
 };
 
-#endif // MAZE_H_
+} // namespace sim
+
+#endif // SIM_MAZE_H_

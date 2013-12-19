@@ -9,7 +9,7 @@
 
 // ------ Include all algorithm header files above this line ------- //
 
-Solver::Solver(MouseInterface* mouse) : m_mouse(mouse)
+Solver::Solver(sim::MouseInterface* mouse) : m_mouse(mouse)
 { }
 
 Solver::~Solver()

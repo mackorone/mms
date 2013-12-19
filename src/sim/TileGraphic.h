@@ -1,9 +1,11 @@
-#ifndef TILEGRAPHIC_H_
-#define TILEGRAPHIC_H_
+#ifndef SIM_TILEGRAPHIC_H_
+#define SIM_TILEGRAPHIC_H_
 
 #include <GL/freeglut.h>
 #include "Parameters.h"
 #include "Tile.h"
+
+namespace sim{
 
 class TileGraphic{
 
@@ -20,4 +22,6 @@ private:
     void drawWalls(float c1X, float c1Y, float c2X, float c2Y);
 };
 
-#endif // TILEGRAPHIC_H_
+} // namespace sim
+
+#endif // SIM_TILEGRAPHIC_H_

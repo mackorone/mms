@@ -5,6 +5,8 @@
 #include "Mouse.h"
 #include "Parameters.h"
 
+namespace sim{
+
 MouseGraphic::MouseGraphic(Mouse* mouse) : m_mouse(mouse), m_color(BLUE)
 { }
 
@@ -105,3 +107,5 @@ void MouseGraphic::drawDirection(float c1X, float c1Y, float c2X, float c2Y){
         glVertex2f(p3X, p3Y);
     glEnd();
 }
+
+} // namespace sim

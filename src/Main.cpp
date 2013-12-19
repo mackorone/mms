@@ -4,15 +4,15 @@
 #include <thread>
 #include <unistd.h>
 
-#include "Constants.h"
-#include "Maze.h"
-#include "MazeGraphic.h"
-#include "Mouse.h"
-#include "MouseGraphic.h"
-#include "MouseInterface.h"
-#include "Parameters.h"
-#include "Tile.h"
-#include "../algo/Solver.h"
+#include "sim/Constants.h"
+#include "sim/Maze.h"
+#include "sim/MazeGraphic.h"
+#include "sim/Mouse.h"
+#include "sim/MouseGraphic.h"
+#include "sim/MouseInterface.h"
+#include "sim/Parameters.h"
+#include "sim/Tile.h"
+#include "algo/Solver.h"
 
 // Function declarations
 void draw();
@@ -22,8 +22,8 @@ std::string getMazeFilePath(std::string path, std::string mazeFile);
 
 // Global variable declarations
 Solver* g_solver;
-MazeGraphic* g_mazeGraphic;
-MouseGraphic* g_mouseGraphic;
+sim::MazeGraphic* g_mazeGraphic;
+sim::MouseGraphic* g_mouseGraphic;
 
 int main(int argc, char* argv[]){
     
@@ -32,18 +32,18 @@ int main(int argc, char* argv[]){
     // TODO: read input file, and check size, use this as value instead of parameter
 
     // Ensure that the size parameters are valid
-    if (MAZE_WIDTH < 1 || MAZE_HEIGHT < 1){
+    if (sim::MAZE_WIDTH < 1 || sim::MAZE_HEIGHT < 1){
         std::cout << "Impossible maze size - check \"src/sim/Parameters.h\"" << std::endl;
         return 0;
     }
 
     // Initialize local simulation objects
-    Maze maze(MAZE_WIDTH, MAZE_HEIGHT, getMazeFilePath(argv[0], MAZE_FILE));
-    Mouse mouse(&maze);
-    MouseInterface mouseInterface(&mouse, &SLEEP_TIME, &PAUSED);
+    sim::Maze maze(sim::MAZE_WIDTH, sim::MAZE_HEIGHT, getMazeFilePath(argv[0], sim::MAZE_FILE));
+    sim::Mouse mouse(&maze);
+    sim::MouseInterface mouseInterface(&mouse, &sim::SLEEP_TIME, &sim::PAUSED);
     Solver solver(&mouseInterface);
-    MazeGraphic mazeGraphic(&maze);
-    MouseGraphic mouseGraphic(&mouse);
+    sim::MazeGraphic mazeGraphic(&maze);
+    sim::MouseGraphic mouseGraphic(&mouse);
 
     // Assign global variables
     g_solver = &solver;
@@ -52,10 +52,10 @@ int main(int argc, char* argv[]){
 
     // Initialization GLUT
     glutInit(&argc, argv);
-    glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+    glutInitWindowSize(sim::WINDOW_WIDTH, sim::WINDOW_HEIGHT);
     glutInitDisplayMode(GLUT_RGBA);
     glutInitWindowPosition(0, 0);
-    glutCreateWindow(MAZE_FILE.c_str());
+    glutCreateWindow(sim::MAZE_FILE.c_str());
     glClearColor (0.0,0.0,0.0,1.0);
     glClear(GL_COLOR_BUFFER_BIT);
     glutDisplayFunc(draw);
@@ -74,7 +74,7 @@ void draw(){
     g_mazeGraphic->draw();
     g_mouseGraphic->draw();
     glFlush();
-    usleep(1000*SLEEP_TIME_MIN); // Reduces CPU usage
+    usleep(1000*sim::SLEEP_TIME_MIN); // Reduces CPU usage
     glutPostRedisplay();
 }
 
@@ -85,18 +85,18 @@ void solve(){
 
 void keyInput(unsigned char key, int x, int y){
     if (key == 32){ // Space bar
-        PAUSED = !PAUSED;
+        sim::PAUSED = !sim::PAUSED;
     }
     else if (key == 'f' || key == 'F'){ // Faster
-        SLEEP_TIME /= 1.15;
-        if (SLEEP_TIME < SLEEP_TIME_MIN){
-            SLEEP_TIME = SLEEP_TIME_MIN;
+        sim::SLEEP_TIME /= 1.15;
+        if (sim::SLEEP_TIME < sim::SLEEP_TIME_MIN){
+            sim::SLEEP_TIME = sim::SLEEP_TIME_MIN;
         }
     }
     else if (key == 's' || key == 'S'){ // Slower
-        SLEEP_TIME *= 1.2;
-        if (SLEEP_TIME > SLEEP_TIME_MAX){
-            SLEEP_TIME = SLEEP_TIME_MAX;
+        sim::SLEEP_TIME *= 1.2;
+        if (sim::SLEEP_TIME > sim::SLEEP_TIME_MAX){
+            sim::SLEEP_TIME = sim::SLEEP_TIME_MAX;
         }
     }
     else if (key == 'q' || key == 'Q'){ // Quit

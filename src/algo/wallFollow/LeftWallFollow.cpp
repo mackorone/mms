@@ -1,12 +1,12 @@
 #include "LeftWallFollow.h"
 
-void LeftWallFollow::solve(MouseInterface* mouse){
+void LeftWallFollow::solve(sim::MouseInterface* mouse){
     while (true){
         leftWallFollowStep(mouse);
     }
 }
 
-void LeftWallFollow::leftWallFollowStep(MouseInterface* mouse){
+void LeftWallFollow::leftWallFollowStep(sim::MouseInterface* mouse){
     if (!mouse->wallLeft()){
         mouse->turnLeft();
     }

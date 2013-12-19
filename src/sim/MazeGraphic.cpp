@@ -3,6 +3,8 @@
 #include "Parameters.h"
 #include "TileGraphic.h"
 
+namespace sim{
+
 MazeGraphic::MazeGraphic(Maze* maze) : m_maze(maze){
 
     // Create vectors of value objects that hold references to Tiles
@@ -25,3 +27,5 @@ void MazeGraphic::draw(){
         }
     }
 }
+
+} // namespace sim

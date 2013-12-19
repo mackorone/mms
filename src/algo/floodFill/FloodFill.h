@@ -8,14 +8,13 @@
 static const int MAZE_SIZE = 16;
 enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
 
-
 class FloodFill : public IAlgorithm{
 
 public:
-    void solve(MouseInterface* mouse);
+    void solve(sim::MouseInterface* mouse);
 
 private:
-    MouseInterface* m_mouse;
+    sim::MouseInterface* m_mouse;
     Cell m_cells[MAZE_SIZE][MAZE_SIZE];
     int m_x; // X position
     int m_y; // Y position

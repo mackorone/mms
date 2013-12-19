@@ -6,12 +6,12 @@
 class Solver{
     
 public:
-    Solver(MouseInterface* mouse);
+    Solver(sim::MouseInterface* mouse);
     ~Solver();
     void solve();
 
-protected:
-    MouseInterface* m_mouse;
+private:
+    sim::MouseInterface* m_mouse;
 
 };
 

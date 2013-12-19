@@ -1,7 +1,9 @@
-#ifndef CONSTANTS_H_
-#define CONSTANTS_H_
+#ifndef SIM_CONSTANTS_H_
+#define SIM_CONSTANTS_H_
 
 #include <GL/freeglut.h>
+
+namespace sim{
 
 // Simulation constants
 enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
@@ -13,4 +15,6 @@ static GLfloat BLUE[3] = {0,0,.7};
 static GLfloat GRAY[3] = {.4,.4,.4};
 static GLfloat BLACK[3] = {0,0,0};
 
-#endif // CONSTANTS_H_
+} // namespace sim
+
+#endif // SIM_CONSTANTS_H_

@@ -6,11 +6,11 @@
 class RandomizedWallFollow : public IAlgorithm{
 
 public:
-    void solve(MouseInterface* mouse);
+    void solve(sim::MouseInterface* mouse);
 
 private:
-    void leftWallFollowStep(MouseInterface* mouse);
-    void rightWallFollowStep(MouseInterface* mouse);
+    void leftWallFollowStep(sim::MouseInterface* mouse);
+    void rightWallFollowStep(sim::MouseInterface* mouse);
 
 };
 

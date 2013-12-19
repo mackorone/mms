@@ -6,10 +6,10 @@
 class RightWallFollow : public IAlgorithm{
 
 public:
-    void solve(MouseInterface* mouse);
+    void solve(sim::MouseInterface* mouse);
 
 private:
-    void rightWallFollowStep(MouseInterface* mouse);
+    void rightWallFollowStep(sim::MouseInterface* mouse);
 
 };
 

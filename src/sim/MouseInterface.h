@@ -1,7 +1,9 @@
-#ifndef MOUSEINTERFACE_H_
-#define MOUSEINTERFACE_H_
+#ifndef SIM_MOUSEINTERFACE_H_
+#define SIM_MOUSEINTERFACE_H_
 
 #include "Mouse.h"
+
+namespace sim{
 
 class MouseInterface{
 
@@ -21,4 +23,7 @@ private:
     int* m_sleepTime;
     bool* m_paused;
 };
-#endif // MOUSEINTERFACE_H_
+
+} // namespace sim
+
+#endif // SIM_MOUSEINTERFACE_H_

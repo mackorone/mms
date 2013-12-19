@@ -1,6 +1,6 @@
 #include "RandomizedWallFollow.h"
 
-void RandomizedWallFollow::solve(MouseInterface* mouse){
+void RandomizedWallFollow::solve(sim::MouseInterface* mouse){
     while (true){
         if (rand() % 2 == 0){
             rightWallFollowStep(mouse);
@@ -11,7 +11,7 @@ void RandomizedWallFollow::solve(MouseInterface* mouse){
     }
 }
 
-void RandomizedWallFollow::rightWallFollowStep(MouseInterface* mouse){
+void RandomizedWallFollow::rightWallFollowStep(sim::MouseInterface* mouse){
     if (!mouse->wallRight()){
         mouse->turnRight();
     }
@@ -21,7 +21,7 @@ void RandomizedWallFollow::rightWallFollowStep(MouseInterface* mouse){
     mouse->moveForward();
 }
 
-void RandomizedWallFollow::leftWallFollowStep(MouseInterface* mouse){
+void RandomizedWallFollow::leftWallFollowStep(sim::MouseInterface* mouse){
     if (!mouse->wallLeft()){
         mouse->turnLeft();
     }

@@ -1,7 +1,9 @@
-#ifndef GRAPHICSTOOLS_H_
-#define GRAPHICSTOOLS_H_
+#ifndef SIM_GRAPHICSTOOLS_H_
+#define SIM_GRAPHICSTOOLS_H_
 
 #include "Parameters.h"
+
+namespace sim{
 
 // Converts points from pixel coordinates to opengl specification
 inline float convertHorizontalPoint(float coordinate){
@@ -13,4 +15,6 @@ inline float convertVerticalPoint(float coordinate){
     return ((coordinate / WINDOW_HEIGHT) - 0.5f) * 2;
 }
 
-#endif // GRAPHICSTOOLS_H_
+} // namespace sim
+
+#endif // SIM_GRAPHICSTOOLS_H_

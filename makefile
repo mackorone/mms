@@ -46,7 +46,7 @@ $(PREFIXED_PROGRAM): $(PREFIXED_OBJECTS)
 # Make '$(OBJECTS)' instructions
 $(OBJ)%.o: $(SRC)%.cpp
 	@mkdir -p $(@D) # Makes the directories if they don't exist
-	$(CXX) -c $(CFlags) $< -o $@ -std=c++0x
+	$(CXX) -c $(CFLAGS) $< -o $@ -std=c++0x
 
 # Make 'clean' instructions
 # 'dir' gets the directories of the object files

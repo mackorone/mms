@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-void FloodFill::solve(MouseInterface* mouse){
+void FloodFill::solve(sim::MouseInterface* mouse){
     m_x = 0; // Initialize the x
     m_y = 0; // Initialize the y
     m_d = 0; // Initialize the direction

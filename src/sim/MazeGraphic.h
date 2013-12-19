@@ -1,9 +1,11 @@
-#ifndef MAZEGRAPHIC_H_
-#define MAZEGRAPHIC_H_
+#ifndef SIM_MAZEGRAPHIC_H_
+#define SIM_MAZEGRAPHIC_H_
 
 #include <vector>
 #include "Maze.h"
 #include "TileGraphic.h"
+
+namespace sim{
 
 class MazeGraphic{
 
@@ -17,4 +19,6 @@ private:
     std::vector<std::vector<TileGraphic>> m_tileGraphics;
 };
 
-#endif // MAZEGRAPHIC_H_
+} // namespace sim
+
+#endif // SIM_MAZEGRAPHIC_H_

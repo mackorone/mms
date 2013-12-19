@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include "Parameters.h"
 
+namespace sim{
+
 MouseInterface::MouseInterface(Mouse* mouse, int* sleepTime, bool* paused) : 
         m_mouse(mouse), m_sleepTime(sleepTime), m_paused(paused)
 { }
@@ -49,3 +51,5 @@ void MouseInterface::turnLeft(){
         usleep(*m_sleepTime*100);
     }
 }
+
+} // namespace sim
