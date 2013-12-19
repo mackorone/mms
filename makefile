@@ -23,7 +23,7 @@ BIN = ./bin/
 PRELIMSOURCES=$(shell find $(SRC) -name '*.cpp')
 SOURCES=$(PRELIMSOURCES:$(SRC)%=%)
 
-# Object files
+# Object files that mirror the source files
 OBJECTS=$(SOURCES:.cpp=.o)
 
 # Prefixed Source files
@@ -36,18 +36,21 @@ PREFIXED_OBJECTS=$(addprefix $(OBJ),$(OBJECTS))
 PREFIXED_PROGRAM=$(addprefix $(BIN),$(PROGRAM))
 
 # Make 'all' instructions
-all: $(DIRS) $(PREFIXED_SOURCES) $(PREFIXED_PROGRAM)
+all: $(PREFIXED_SOURCES) $(PREFIXED_PROGRAM)
 
 # Make '$(PROGRAM)' instructions
 $(PREFIXED_PROGRAM): $(PREFIXED_OBJECTS)
+	@mkdir -p $(@D) # Makes the 'bin' directory if it doesn't exist
 	$(CXX) $(PREFIXED_OBJECTS) -o $@ $(LIBS)
 
 # Make '$(OBJECTS)' instructions
 $(OBJ)%.o: $(SRC)%.cpp
+	@mkdir -p $(@D) # Makes the directories if they don't exist
 	$(CXX) -c $(CFlags) $< -o $@ -std=c++0x
 
-# Make 'clean' instructions TODO
+# Make 'clean' instructions
+# 'dir' gets the directories of the object files
+# 'sort' sorts the directories and removes duplicates
+# 'add*' is pretty self-explanatory 
 clean:
-	rm -f $(OBJ)algo/*.*
-	rm -f $(OBJ)algo/floodFill/*
-	rm -f $(OBJ)sim/*
+	rm -f $(addprefix $(OBJ), $(addsuffix *.o, $(sort $(dir $(OBJECTS)))))
