@@ -4,20 +4,19 @@ High Priority
 - Ensure that any file can be loaded regardless of maze size specification
 - Re-namespace all items in directories
 - Edit README to instruct on proper use of algorithm
-- Automatically create directories if not there in obj
-- Automatically clean out everything with make clean
 
 Medium Priority
 ===============
-- Make terminal style output at bottom or right of window
 - Remove as much dependency on the parameter file as possible, other than in "main.cpp"
 - Make Dijkstra's Algorithm to find shortest path and display it on the simulation
 - Figure out how to optimize the floodfill to find the quickest path
+- Make terminal style output at bottom or right of window
 - Display another window of the robot's perception
 
 Low Priority
 ===============
 - Make the mouse look prettier (draw black box around, or something)
+- Handle the case when target is unreachable - it just crashes right now
 
 Long Term
 =========
