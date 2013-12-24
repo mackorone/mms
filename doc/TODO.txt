@@ -7,11 +7,13 @@ High Priority
 Medium Priority
 ===============
 - Remove as much dependency on the parameter file as possible, other than in "main.cpp"
-- Make Dijkstra's Algorithm to find shortest path and display it on the simulation
 - Figure out how to optimize the floodfill to find the quickest path
 - Make terminal style output at bottom or right of window
 - Display another window of the robot's perception
 - Autogenerate makefile dependencies
+- Improve shortest path - make the Tile hold distance value and eliminate node (and graph?)
+- Make the shortest path look a little better
+- Ensure that randomly generated maze files have a solution
 
 Low Priority
 ===============

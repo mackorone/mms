@@ -12,6 +12,7 @@
 #include "sim/MouseInterface.h"
 #include "sim/Parameters.h"
 #include "sim/Tile.h"
+#include "sim/findPath/PathFinder.h"
 #include "algo/Solver.h"
 
 // Function declarations
@@ -42,6 +43,12 @@ int main(int argc, char* argv[]){
     sim::Mouse mouse(&maze);
     sim::MouseInterface mouseInterface(&mouse, &sim::SLEEP_TIME, &sim::PAUSED);
     Solver solver(&mouseInterface);
+
+    // Perform pathfinding
+    sim::PathFinder pathFinder(&maze);
+    pathFinder.solveShortestPath(); // TODO: Kind of ugly...
+
+    // Initialize the local graphics objects
     sim::MazeGraphic mazeGraphic(&maze);
     sim::MouseGraphic mouseGraphic(&mouse);
 
@@ -56,10 +63,14 @@ int main(int argc, char* argv[]){
     glutInitDisplayMode(GLUT_RGBA);
     glutInitWindowPosition(0, 0);
     glutCreateWindow(sim::MAZE_FILE.c_str());
-    glClearColor (0.0,0.0,0.0,1.0);
+    glClearColor (0.0,0.0,0.0,0.0); // TODO
     glClear(GL_COLOR_BUFFER_BIT);
     glutDisplayFunc(draw);
     glutKeyboardFunc(keyInput);
+
+    // TODO
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
 
     // Start the solving loop
     std::thread first(solve);

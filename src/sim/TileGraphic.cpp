@@ -35,6 +35,10 @@ void TileGraphic::draw(){
     }
 
     drawRect(c1X, c1Y, c2X, c2Y, m_color);
+    if (m_tile->getPosp()){ // Draw red rectangle if it's posp
+        int d = 4*PIXELS_PER_UNIT; // Distnace inward to draw rectangle
+        drawRect(c1X+d, c1Y+d, c2X-d, c2Y-d, RED);
+    }
     drawCorners(c1X, c1Y, c2X, c2Y);
     drawWalls(c1X, c1Y, c2X, c2Y);
 }

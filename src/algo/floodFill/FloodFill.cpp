@@ -7,7 +7,7 @@ void FloodFill::solve(sim::MouseInterface* mouse){
     m_y = 0; // Initialize the y
     m_d = 0; // Initialize the direction
     m_mouse = mouse; // Initialize the mouse pointer
-    initialize(); // Initialize the cells
+    initializeCenter(); // Initialize the cells
     while (!inGoal()){
         walls();
         flood(m_x, m_y);
@@ -15,7 +15,7 @@ void FloodFill::solve(sim::MouseInterface* mouse){
         move();
     }
     // Return to start, find shortest path
-    /*initializeDestinationTile(15, 9);
+    /*initializeDestinationTile(0, 0);
     printDistances();
     while (m_x != 15 || m_y != 9){
         walls();
@@ -56,7 +56,7 @@ void FloodFill::printWalls(){
     }
 }
 
-void FloodFill::initialize(){
+void FloodFill::initializeCenter(){
 
     // NOTE: Doesn't work for odd sized mazes
 

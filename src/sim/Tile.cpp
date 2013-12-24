@@ -4,7 +4,7 @@
 
 namespace sim{
 
-Tile::Tile() : m_x(0), m_y(0), m_passes(0){
+Tile::Tile() : m_x(0), m_y(0), m_passes(0), m_posp(false){
     m_walls[0] = false;
     m_walls[1] = false;
     m_walls[2] = false;
@@ -41,6 +41,14 @@ int Tile::getPasses(){
 
 void Tile::incrementPasses(){
     m_passes++;
+}
+
+bool Tile::getPosp(){
+    return m_posp;
+}
+
+void Tile::setPosp(bool posp){
+    m_posp = posp;
 }
 
 } // namespace sim

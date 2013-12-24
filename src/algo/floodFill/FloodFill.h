@@ -22,7 +22,7 @@ private:
 
     void printDistances();
     void printWalls();
-    void initialize();
+    void initializeCenter();
 
     void walls(); // Updates the walls surrounding the robot
     void flood(int x, int y); // Floods the maze corresponding to new walls
