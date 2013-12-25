@@ -173,6 +173,8 @@ void FloodFill::flood(int x, int y){
 
 void FloodFill::move(){
 
+    // Invariant: One of the adjacent cells is guarenteed to have a lower value, so
+    //            it's safe to initialize the minimum distance to current distance
     int minDistance = m_cells[m_x][m_y].distance(); // Initialize distance
     int relDirection = 0; // Initialize direction
 
