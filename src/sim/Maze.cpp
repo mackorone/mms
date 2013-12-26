@@ -38,7 +38,7 @@ Maze::Maze(int width, int height, std::string mazeFile){
             randomize();
         }
         // Optional - can be used to generate more maze files
-        //saveMaze("mazeFiles/auto_generated_maze.maz");
+        saveMaze("mazeFiles/auto_generated_maze.maz");
     }
     else{
 
@@ -258,9 +258,8 @@ bool Maze::solveShortestPath(){
     }
 
     // Returns whether or not the maze is solvable with the proper min steps
-    int minSteps = 40;
     return getClosestCenterTile()->getDistance() < MAX_DISTANCE  &&
-           getClosestCenterTile()->getDistance() > minSteps;
+           getClosestCenterTile()->getDistance() > MIN_MAZE_STEPS;
 }
 
 std::vector<Tile*> Maze::findPath(int x1, int y1, int x2, int y2){

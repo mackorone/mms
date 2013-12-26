@@ -11,14 +11,13 @@ Medium Priority
 - Make terminal style output at bottom or right of window
 - Display another window of the robot's perception
 - Autogenerate makefile dependencies
-- Improve shortest path - make the Tile hold distance value and eliminate node (and graph?)
 - Make the shortest path look a little better
-- Ensure that randomly generated maze files have a solution
 
 Low Priority
 ===============
 - Make the mouse look prettier (draw black box around, or something)
-- Handle the case when target is unreachable - it just crashes right now
+- Handle the case when target tile is unreachable - it just crashes right now
+- Ensure that all tiles are reachable in a randomly generated maze
 
 Long Term
 =========

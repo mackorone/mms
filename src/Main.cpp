@@ -19,6 +19,9 @@ void draw();
 void solve();
 void keyInput(unsigned char key, int x, int y);
 std::string getMazeFilePath(std::string path, std::string mazeFile);
+//int mazeFileWidth(std::string mazeFilePath); // TODO
+//int mazeFileHeight(std::string mazeFilePath); // TODO
+//bool checkValidMazeFile(std::string mazeFilePath); // TODO
 
 // Global variable declarations
 Solver* g_solver;
@@ -137,3 +140,64 @@ std::string getMazeFilePath(std::string path, std::string mazeFile){
 
     return path;
 }
+
+/*int mazeFileWidth(std::string mazeFilePath){
+
+}
+
+int mazeFileHeight(std::string mazeFilePath){
+
+}
+
+bool checkValidMazeFile(std::string mazeFilePath){
+
+    // TODO: Ensure that you have unique y values for all x values
+    // TODO: Ensure that the walls line up
+    // TODO: Make a mazeFileValidator - gets height, width, valid, etc
+
+    // This function validates following:
+    // 1.) There are an equal number of y values for each x value
+    // 2.) All the x and y values are unique
+    // 3.) The walls are valid
+
+    // Create the file object
+    std::ifstream file(mazeFilePath.c_str());
+
+    // Initialize a string variable
+    std::string line("");
+
+    if (file.is_open()){
+
+        // Vector that counts the number of y values colums for each x value
+        std::vector<int> counts;
+        counts.push_back(0);
+        int xValue = 0;
+
+        while (getline(file, line)){
+            std::istringstream iss(line);
+            std::vector<std::string> tokens;
+            copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(),
+                 std::back_inserter<std::vector<std::string> >(tokens));
+            if (tokens.at(0) == xValue){
+                counts.at(xValue) += 1;
+            }
+            else{
+                xValue = tokens.at(0);
+                counts.push_back(1); 
+            }
+        }
+    
+        file.close();
+
+        int numberOfYValues = counts.at(0);
+        for (int i = 1; i < counts.size(); i++){
+            if (counts.at(i) != numberOfYValues){
+                return 0;
+            }
+        }
+
+    }
+    
+    // Zero indicates invalid file
+    return 0;
+}*/

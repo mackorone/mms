@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include "Tile.h"
-#include "PathFinder.h"
 
 namespace sim{
 
