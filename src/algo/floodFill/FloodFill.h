@@ -42,13 +42,17 @@ private:
     bool spaceRight(); // Returns true if there's a cell to the right of the mouse
     int min(int one, int two, int three, int four); // Returns the min of four ints
 
-    // Explores the entire searchable maze and fills the walls and distances TODO: clean up
+    // Explores the entire searchable maze and fills the walls and distances,
+    // eventually returning the mouse back to the starting location
     void explore();
 
     // Is only valid if the target destination is one cell away // TODO: clean up
     void moveOneCell(int xDest, int yDest);
 
-    // Can be used to set the destination to any cell // TODO: Remove this?
+
+    // ---------------------- Unnecessary Utilities -------------------------- //
+
+    // Can be used to set the destination to any cell
     void initializeDestinationTile(int x, int y);
 };
 

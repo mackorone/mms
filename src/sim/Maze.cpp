@@ -57,8 +57,6 @@ Maze::Maze(int width, int height, std::string mazeFile){
     
     // Increment the passes for the starting position
     m_maze.at(0).at(0).incrementPasses();
-
-    printDistances(); // TODO
 }
 
 Maze::~Maze()

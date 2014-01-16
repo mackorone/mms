@@ -22,39 +22,27 @@ void FloodFill::solve(sim::MouseInterface* mouse){
     // Initialize the distances so that the center is the target
     initializeCenter();
     
-    // Explore the maze to its entirety
-    explore(); // Not working quite yet // TODO
-
-
-
-    // TODO Check all cells and assign a max distance value to any unexplored
-
-
+    // Explore the maze to its entirety, returning to the start
+    explore();
 
     // Loop forever, continue going to the beginning and solving
-    //while (true){
-    /*
-        // Return to start
-        initializeDestinationTile(0, 0);
-        while (m_x != 0 || m_y != 0){
-            walls();
-            flood(m_x, m_y);
+    while (true){
+
+        std::stack<Cell*> optimalPath;
+
+        // Solve the maze
+        while (!inGoal()){
+            optimalPath.push(&m_cells[m_x][m_y]);
             moveTowardsGoal();
         }
-    */
 
-    /*
-    while (!inGoal()){
-        //printDistances();
-        walls();
-        flood(m_x, m_y);
-        moveTowardsGoal();
+        // Return to start
+        while (m_x != 0 || m_y != 0){
+            Cell* prev = optimalPath.top();
+            optimalPath.pop();
+            moveOneCell(prev->getX(), prev->getY());
+        }
     }
-    */
-
-    //}
-
-
 }
 
 void FloodFill::printDistances(){
@@ -164,43 +152,48 @@ void FloodFill::walls(){
 
 void FloodFill::flood(int x, int y){
     
-    // Initialize distance values for surrounding cells
-    int northDistance = MAZE_SIZE*MAZE_SIZE; // Max distance
-    int eastDistance = MAZE_SIZE*MAZE_SIZE; // Max distance
-    int southDistance = MAZE_SIZE*MAZE_SIZE; // Max distance
-    int westDistance = MAZE_SIZE*MAZE_SIZE; // Max distance
+    // DO NOT flood the maze if the mouse is in the goal - there is no
+    // information that we can gain about the distance values in the goal
+    if (!inGoal()){
 
-    // Obtain actual values if possible
-    if (!m_cells[x][y].isWall(NORTH)){
-        northDistance = m_cells[x][y+1].getDistance();
-    }
-    if (!m_cells[x][y].isWall(EAST)){
-        eastDistance = m_cells[x+1][y].getDistance();
-    }
-    if (!m_cells[x][y].isWall(SOUTH)){
-        southDistance = m_cells[x][y-1].getDistance();
-    }
-    if (!m_cells[x][y].isWall(WEST)){
-        westDistance = m_cells[x-1][y].getDistance();
-    }
+        // Initialize distance values for surrounding cells
+        int northDistance = MAZE_SIZE*MAZE_SIZE; // Max distance
+        int eastDistance = MAZE_SIZE*MAZE_SIZE; // Max distance
+        int southDistance = MAZE_SIZE*MAZE_SIZE; // Max distance
+        int westDistance = MAZE_SIZE*MAZE_SIZE; // Max distance
 
-    // Check to see if the distance value is the min plus one
-    if (m_cells[x][y].getDistance() != min(northDistance, eastDistance, southDistance, westDistance) + 1){
-
-        // Set the value to the min plus one
-        m_cells[x][y].setDistance(min(northDistance, eastDistance, southDistance, westDistance) + 1);
-
+        // Obtain actual values if possible
         if (!m_cells[x][y].isWall(NORTH)){
-            flood(x, y + 1);
+            northDistance = m_cells[x][y+1].getDistance();
         }
         if (!m_cells[x][y].isWall(EAST)){
-            flood(x + 1, y);
+            eastDistance = m_cells[x+1][y].getDistance();
         }
         if (!m_cells[x][y].isWall(SOUTH)){
-            flood(x, y - 1);
+            southDistance = m_cells[x][y-1].getDistance();
         }
         if (!m_cells[x][y].isWall(WEST)){
-            flood(x - 1, y);
+            westDistance = m_cells[x-1][y].getDistance();
+        }
+
+        // Check to see if the distance value is the min plus one
+        if (m_cells[x][y].getDistance() != min(northDistance, eastDistance, southDistance, westDistance) + 1){
+
+            // Set the value to the min plus one
+            m_cells[x][y].setDistance(min(northDistance, eastDistance, southDistance, westDistance) + 1);
+
+            if (!m_cells[x][y].isWall(NORTH)){
+                flood(x, y + 1);
+            }
+            if (!m_cells[x][y].isWall(EAST)){
+                flood(x + 1, y);
+            }
+            if (!m_cells[x][y].isWall(SOUTH)){
+                flood(x, y - 1);
+            }
+            if (!m_cells[x][y].isWall(WEST)){
+                flood(x - 1, y);
+            }
         }
     }
 }
@@ -421,14 +414,10 @@ bool FloodFill::spaceRight(){
 
 void FloodFill::explore(){
 
-    // TODO:
     /*
-        The main idea is to do a DFS with the augmentation that rather than traversing
-        back to an ancestor node once a path has been completely scoured, we continually
-        update the unexplored neighbors of our nodes so that we can move most efficiently.
-        However, right now this is simply a DFS search (not efficient). That being said,
-        once the maze is fully explored, we're guarenteed to find the shortest path to
-        the center, and that's what's most important.
+        TODO:
+        Right now this is simply a DFS search, which isn't terribly efficient.
+        Ideally, we would augment the DFS so that it explores most efficiently.
     */
 
     // Push unexplored nodes onto a stack
@@ -443,19 +432,19 @@ void FloodFill::explore(){
         // First, pop the target cell off of the stack
         Cell* target = unexplored.top(); 
         unexplored.pop();
-
+    
         // Next, move to the target:
+        if (target->getPrev() != NULL){ // If prev == NULL, we're at the start
 
-        // a) While the mouse is not in the advancing position, trace back
-        if (target->getPrev() != NULL){
+            //a) While the mouse is not in the advancing position, trace back
             while (target->getPrev() != &m_cells[m_x][m_y]){
                 Cell* prev = m_cells[m_x][m_y].getPrev();
                 moveOneCell(prev->getX(), prev->getY());
             }
-        }
 
-        // b) Once the mouse is in proper advancing position, advance
-        moveOneCell(target->getX(), target->getY());
+            // b) Once the mouse is in proper advancing position, advance
+            moveOneCell(target->getX(), target->getY());
+        }
 
         // Once we're at the target, it is considered explored
         m_cells[m_x][m_y].setExplored(true);
@@ -463,7 +452,6 @@ void FloodFill::explore(){
         // Now we examine the contents of the target and update our walls and distances
         walls();
         flood(m_x, m_y);
-        printDistances(); // TODO
         
         // After, we find any unexplored neighbors
         if (!m_mouse->wallFront() && getFrontCell()->getPrev() == NULL){
@@ -480,7 +468,30 @@ void FloodFill::explore(){
         }
     }
 
-    // Once the stack is empty, return to the starting location // TODO
+    // Once the stack is empty (once we've explored every possible cell),
+    // we assign a maximum distance value to unexplored cells and then return
+    // to the starting location. Thus, at the end of this function, all distance
+    // values will be 100% complete and correct
+    
+    for (int x = 0; x < MAZE_SIZE; x++){
+        for (int y = 0; y < MAZE_SIZE; y++){
+            if (!m_cells[x][y].getExplored()){
+                // Any unreachable cells should have inf distance
+                // Conveniently, MAZE_SIZE*MAZE_SIZE is one more than the maximum distance
+                m_cells[x][y].setDistance(MAZE_SIZE*MAZE_SIZE);
+            }
+        }
+    }
+
+    // Lastly, return to the starting location and face forward
+    while (m_cells[m_x][m_y].getPrev() != NULL){
+        Cell* prev = m_cells[m_x][m_y].getPrev();
+        moveOneCell(prev->getX(), prev->getY());
+    }
+    while (m_d != 0){ 
+        turnRight(); // Turning right is optimal since we'd never 
+                     // approach the starting location from the left
+    }
 }
 
 void FloodFill::moveOneCell(int xDest, int yDest){

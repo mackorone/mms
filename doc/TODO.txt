@@ -1,11 +1,10 @@
 High Priority
 =============
-NONE
+- Improve the explore method of the floodfill algorithm
 
 Medium Priority
 ===============
 - Ensure that any file can be loaded regardless of maze size specification
-- Figure out how to optimize the floodfill to find the quickest path
 - Make terminal style output at bottom or right of window
 - Display another window of the robot's perception
 - Autogenerate makefile dependencies
