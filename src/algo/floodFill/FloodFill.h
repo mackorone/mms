@@ -46,8 +46,13 @@ private:
     // eventually returning the mouse back to the starting location
     void explore();
 
-    // Is only valid if the target destination is one cell away // TODO: clean up
-    void moveOneCell(int xDest, int yDest);
+    void exploreBeta(); // USED FOR TESTING PURPOSES ONLY // TODO
+
+    // Returns whether or not the location is one cell away
+    bool isOneCellAway(Cell* target);
+
+    // Moves the mouse to the target Cell but only if it's exactly one Cell away
+    void moveOneCell(Cell* target);
 
 
     // ---------------------- Unnecessary Utilities -------------------------- //

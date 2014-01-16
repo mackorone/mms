@@ -40,7 +40,7 @@ void FloodFill::solve(sim::MouseInterface* mouse){
         while (m_x != 0 || m_y != 0){
             Cell* prev = optimalPath.top();
             optimalPath.pop();
-            moveOneCell(prev->getX(), prev->getY());
+            moveOneCell(prev);
         }
     }
 }
@@ -416,14 +416,28 @@ bool FloodFill::spaceRight(){
 void FloodFill::explore(){
 
     /*
-        TODO:
-        Right now this is simply a DFS search, which isn't terribly efficient.
-        Ideally, we would augment the DFS so that it explores most efficiently.
+        The foundation of the explore method is a simple DFS search. However,
+        DFS is not terribly efficient in this context and can be improved upon
+        greatly. See below for improvements, failures and ideas. Any testing or
+        comparison can be done with the exploreBeta method. That is, DO NOT
+        edit this function directly. First, edit Beta. Once an improvement has
+        been tested, it can be copied into this function.
 
-        NOTE: I tried updating the prev values as cells were rediscovered, and this
-              performed worse...
+        IMPROVEMENTS:
+        1.) When tracing back to the next parent node with neighbors, check to
+            see if, at any point in the retracing, that you're next to the
+            target node. If so, there is no need to retrace all the way back to
+            the parent node. Rather, we can simply proceed to the target node
+            from where we currently are.
 
-        // Do we need to explore cells that are far away from the goal?
+        FAILURES:
+        1.) Updating the prev values as cells were rediscovered. This performed
+            worse in every test case
+
+        IDEAS:
+        1.) Do we need to explore cells that are far away from the goal?
+        2.) If at any point we already know the four wall values of a tile, we
+            shouldn't have to explore it
     */
 
     // Push unexplored nodes onto a stack
@@ -444,12 +458,19 @@ void FloodFill::explore(){
 
             //a) While the mouse is not in the advancing position, trace back
             while (target->getPrev() != &m_cells[m_x][m_y]){
+
+                // If at any point the target is one cell away, break to reduce retracing
+                if (isOneCellAway(target)){
+                    break;
+                }
+
                 Cell* prev = m_cells[m_x][m_y].getPrev();
-                moveOneCell(prev->getX(), prev->getY());
+                moveOneCell(prev);
+
             }
 
             // b) Once the mouse is in proper advancing position, advance
-            moveOneCell(target->getX(), target->getY());
+            moveOneCell(target);
         }
 
         // Now we examine the contents of the target and update our walls and distances
@@ -492,7 +513,7 @@ void FloodFill::explore(){
     // Lastly, return to the starting location and face forward
     while (m_cells[m_x][m_y].getPrev() != NULL){
         Cell* prev = m_cells[m_x][m_y].getPrev();
-        moveOneCell(prev->getX(), prev->getY());
+        moveOneCell(prev);
     }
     while (m_d != 0){ 
         turnRight(); // Turning right is optimal since we'd never 
@@ -500,38 +521,154 @@ void FloodFill::explore(){
     }
 }
 
-void FloodFill::moveOneCell(int xDest, int yDest){
+void FloodFill::exploreBeta(){
+    
+    /*
+        The purpose of this function is to test any ideas for improving the
+        explore method. Once improvements have been verified, they can be
+        copied over to the regular explore method.
+    */
 
-    // TODO
-    // If the cell isn't one away from the current cell
+    // Push unexplored nodes onto a stack
+    std::stack<Cell*> unexplored;
 
-    int absDir = 0; // Assume that the direction is upward
+    // The initial square is at (0, 0)
+    unexplored.push(&m_cells[0][0]);
 
-    if (xDest < m_x){
-        absDir = 3;        
-    }
-    else if (xDest > m_x){
-        absDir = 1;        
-    }
-    else if (yDest < m_y){
-        absDir = 2;        
+    // Loop until all cells have been explored
+    while (!unexplored.empty()){
+
+        // First, pop the target cell off of the stack
+        Cell* target = unexplored.top(); 
+        unexplored.pop();
+    
+        // Next, move to the target:
+        if (target->getPrev() != NULL){ // If prev == NULL we're at the start, so no need to move
+
+            //a) While the mouse is not in the advancing position, trace back
+            while (target->getPrev() != &m_cells[m_x][m_y]){
+
+                // If at any point the target is one cell away, break to reduce retracing
+                if (isOneCellAway(target)){
+                    break;
+                }
+
+                Cell* prev = m_cells[m_x][m_y].getPrev();
+                moveOneCell(prev);
+
+            }
+
+            // b) Once the mouse is in proper advancing position, advance
+            moveOneCell(target);
+        }
+
+        // Now we examine the contents of the target and update our walls and distances
+        walls();
+        flood(m_x, m_y);
+
+        // Once we've examined the contents at the target, it is considered explored
+        m_cells[m_x][m_y].setExplored(true);
+        
+        // After, we find any unexplored neighbors
+        if (!m_mouse->wallLeft() && getLeftCell()->getPrev() == NULL){
+            unexplored.push(getLeftCell());
+            getLeftCell()->setPrev(&m_cells[m_x][m_y]);
+        }
+        if (!m_mouse->wallFront() && getFrontCell()->getPrev() == NULL){
+            unexplored.push(getFrontCell());
+            getFrontCell()->setPrev(&m_cells[m_x][m_y]);
+        }
+        if (!m_mouse->wallRight() && getRightCell()->getPrev() == NULL){
+            unexplored.push(getRightCell());
+            getRightCell()->setPrev(&m_cells[m_x][m_y]);
+        }
     }
 
-    // Turn the right direction
-    if (absDir == m_d){
-        // Do nothing - we're already facing the right way
-    }
-    else if (absDir == (m_d + 1)%4){
-        turnRight();
-    }
-    else if (absDir == (m_d + 2)%4){
-        turnRight();
-        turnRight();
-    }
-    else if (absDir == (m_d + 3)%4){
-        turnLeft();
+    // Once the stack is empty (once we've explored every possible cell),
+    // we assign a maximum distance value to unexplored cells and then return
+    // to the starting location. Thus, at the end of this function, all distance
+    // values will be 100% complete and correct
+    
+    for (int x = 0; x < MAZE_SIZE; x++){
+        for (int y = 0; y < MAZE_SIZE; y++){
+            if (!m_cells[x][y].getExplored()){
+                // Any unreachable cells should have inf distance. Conveniently,
+                // MAZE_SIZE*MAZE_SIZE is slightly greater than the maximum distance
+                m_cells[x][y].setDistance(MAZE_SIZE*MAZE_SIZE);
+            }
+        }
     }
 
-    // Finally, move forward one space
-    moveForward();
+    // Lastly, return to the starting location and face forward
+    while (m_cells[m_x][m_y].getPrev() != NULL){
+        Cell* prev = m_cells[m_x][m_y].getPrev();
+        moveOneCell(prev);
+    }
+    while (m_d != 0){ 
+        turnRight(); // Turning right is optimal since we'd never 
+                     // approach the starting location from the left
+    }
+}
+
+void FloodFill::moveOneCell(Cell* target){
+
+    // Only move if the cell is actually one away
+    if (isOneCellAway(target)){
+
+        // Use local variables to reduce function calls
+        int x = target->getX();
+        int y = target->getY();
+        
+        // Directional logic
+        int absDir = 0; // Assume that the direction is upward
+        if (x < m_x){
+            absDir = 3;        
+        }
+        else if (x > m_x){
+            absDir = 1;        
+        }
+        else if (y < m_y){
+            absDir = 2;        
+        }
+
+        // Turn the right direction
+        if (absDir == m_d){
+            // Do nothing - we're already facing the right way
+        }
+        else if (absDir == (m_d + 1)%4){
+            turnRight();
+        }
+        else if (absDir == (m_d + 2)%4){
+            turnRight();
+            turnRight();
+        }
+        else if (absDir == (m_d + 3)%4){
+            turnLeft();
+        }
+
+        // Finally, move forward one space
+        moveForward();
+    }
+}
+
+bool FloodFill::isOneCellAway(Cell* target){
+
+    // Use local variables to reduce function calls
+    int x = target->getX();
+    int y = target->getY();
+    
+    if ((m_x == x) && (m_y + 1 == y) && !m_cells[m_x][m_y].isWall(NORTH)){
+        return true;
+    }
+    else if ((m_x == x) && (m_y - 1 == y) && !m_cells[m_x][m_y].isWall(SOUTH)){
+        return true;
+    }
+    else if ((m_x + 1 == x) && (m_y == y) && !m_cells[m_x][m_y].isWall(EAST)){
+        return true;
+    }
+    else if ((m_x - 1 == x) && (m_y == y) && !m_cells[m_x][m_y].isWall(WEST)){
+        return true;
+    }
+    
+    return false;
 }
