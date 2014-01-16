@@ -57,6 +57,8 @@ Maze::Maze(int width, int height, std::string mazeFile){
     
     // Increment the passes for the starting position
     m_maze.at(0).at(0).incrementPasses();
+
+    printDistances(); // TODO
 }
 
 Maze::~Maze()
@@ -213,7 +215,7 @@ void Maze::assignNeighbors(){
 
             Tile* tile = getTile(x, y);
 
-            // First we ensure that we have a fresh list
+            // First we ensure that we have a fresh (empty) list
             tile->resetNeighbors();
 
             // Then we assign new neighbors
@@ -251,7 +253,7 @@ void Maze::printDistances(){
 
 bool Maze::solveShortestPath(){
 
-    // Solves the maze
+    // Solves the maze, assigns tiles that are part of the shortest path
     std::vector<Tile*> sp = findPathToCenter();
     for (int i = 0; i < sp.size(); i++){
         getTile(sp.at(i)->getX(), sp.at(i)->getY())->setPosp(true);

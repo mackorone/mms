@@ -5,11 +5,7 @@
 
 namespace sim{
 
-// TODO: Figure out how to get rid of this file
-
 // Simulation Parameters
-static /*non-const*/ bool PAUSED = false; // Initially set to false
-static /*non-const*/ int SLEEP_TIME = 150; // ms between simulation steps
 static const int SLEEP_TIME_MIN = 5; // min ms between simulation steps
 static const int SLEEP_TIME_MAX = 1500; // max ms between simulation steps
 static /*non-const*/ int MAZE_WIDTH = 16; // Number or tiles wide

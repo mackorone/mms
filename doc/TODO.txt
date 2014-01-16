@@ -1,12 +1,10 @@
 High Priority
 =============
-- Maze files are not recognized when sim is run from the "bin" directory
-- Ensure that any file can be loaded regardless of maze size specification
-- Edit README to instruct on proper use of algorithm
+NONE
 
 Medium Priority
 ===============
-- Remove as much dependency on the parameter file as possible, other than in "main.cpp"
+- Ensure that any file can be loaded regardless of maze size specification
 - Figure out how to optimize the floodfill to find the quickest path
 - Make terminal style output at bottom or right of window
 - Display another window of the robot's perception
@@ -21,4 +19,4 @@ Low Priority
 
 Long Term
 =========
-- Make this a more realistic simulation by allowing angles, sensors, etc.
+- Make this a more realistic simulation by allowing angles, adding sensors, etc.

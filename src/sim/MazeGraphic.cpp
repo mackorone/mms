@@ -1,6 +1,5 @@
 #include "MazeGraphic.h"
 
-#include "Parameters.h"
 #include "TileGraphic.h"
 
 namespace sim{

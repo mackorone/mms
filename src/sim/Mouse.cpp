@@ -3,7 +3,6 @@
 #include <iostream>
 #include "Constants.h"
 #include "Maze.h"
-#include "Parameters.h"
 
 namespace sim{
 

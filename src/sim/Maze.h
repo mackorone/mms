@@ -42,7 +42,7 @@ private:
     // Callable function to assign posp values to all nodes
     bool solveShortestPath();
 
-    // Prints the distance values of all of the Tiles
+    // Prints the distance values (from (0, 0)) of all of the Tiles
     void printDistances();
 
     // Assigns distance values to all tiles corresponding to the distance
