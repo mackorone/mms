@@ -50,6 +50,8 @@ private:
     void setDistancesFrom(int x, int y);
 
     // Returns the center tile of the maze with the lowest distance value
+    // TODO: If two or more center tiles have equal distance values, it only
+    //       returns the first one ....
     Tile* getClosestCenterTile();
 
     // Generates a vector of tiles that are part of the shortest path (posp),

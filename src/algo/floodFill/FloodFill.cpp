@@ -21,7 +21,7 @@ void FloodFill::solve(sim::MouseInterface* mouse){
 
     // Initialize the distances so that the center is the target
     initializeCenter();
-    
+
     // Explore the maze to its entirety, returning to the start
     explore();
 
@@ -152,8 +152,9 @@ void FloodFill::walls(){
 
 void FloodFill::flood(int x, int y){
     
-    // DO NOT flood the maze if the mouse is in the goal - there is no
-    // information that we can gain about the distance values in the goal
+    // *DO NOT* flood the maze if the mouse is in the goal - there is no
+    // information that we can gain about the distance values in the goal,
+    // and we can only corrupt the current distance values anyways
     if (!inGoal()){
 
         // Initialize distance values for surrounding cells
@@ -418,6 +419,11 @@ void FloodFill::explore(){
         TODO:
         Right now this is simply a DFS search, which isn't terribly efficient.
         Ideally, we would augment the DFS so that it explores most efficiently.
+
+        NOTE: I tried updating the prev values as cells were rediscovered, and this
+              performed worse...
+
+        // Do we need to explore cells that are far away from the goal?
     */
 
     // Push unexplored nodes onto a stack
@@ -434,7 +440,7 @@ void FloodFill::explore(){
         unexplored.pop();
     
         // Next, move to the target:
-        if (target->getPrev() != NULL){ // If prev == NULL, we're at the start
+        if (target->getPrev() != NULL){ // If prev == NULL we're at the start, so no need to move
 
             //a) While the mouse is not in the advancing position, trace back
             while (target->getPrev() != &m_cells[m_x][m_y]){
@@ -446,21 +452,21 @@ void FloodFill::explore(){
             moveOneCell(target->getX(), target->getY());
         }
 
-        // Once we're at the target, it is considered explored
-        m_cells[m_x][m_y].setExplored(true);
-
         // Now we examine the contents of the target and update our walls and distances
         walls();
         flood(m_x, m_y);
+
+        // Once we've examined the contents at the target, it is considered explored
+        m_cells[m_x][m_y].setExplored(true);
         
         // After, we find any unexplored neighbors
-        if (!m_mouse->wallFront() && getFrontCell()->getPrev() == NULL){
-            unexplored.push(getFrontCell());
-            getFrontCell()->setPrev(&m_cells[m_x][m_y]);
-        }
         if (!m_mouse->wallLeft() && getLeftCell()->getPrev() == NULL){
             unexplored.push(getLeftCell());
             getLeftCell()->setPrev(&m_cells[m_x][m_y]);
+        }
+        if (!m_mouse->wallFront() && getFrontCell()->getPrev() == NULL){
+            unexplored.push(getFrontCell());
+            getFrontCell()->setPrev(&m_cells[m_x][m_y]);
         }
         if (!m_mouse->wallRight() && getRightCell()->getPrev() == NULL){
             unexplored.push(getRightCell());
@@ -476,8 +482,8 @@ void FloodFill::explore(){
     for (int x = 0; x < MAZE_SIZE; x++){
         for (int y = 0; y < MAZE_SIZE; y++){
             if (!m_cells[x][y].getExplored()){
-                // Any unreachable cells should have inf distance
-                // Conveniently, MAZE_SIZE*MAZE_SIZE is one more than the maximum distance
+                // Any unreachable cells should have inf distance. Conveniently,
+                // MAZE_SIZE*MAZE_SIZE is slightly greater than the maximum distance
                 m_cells[x][y].setDistance(MAZE_SIZE*MAZE_SIZE);
             }
         }
@@ -496,6 +502,9 @@ void FloodFill::explore(){
 
 void FloodFill::moveOneCell(int xDest, int yDest){
 
+    // TODO
+    // If the cell isn't one away from the current cell
+
     int absDir = 0; // Assume that the direction is upward
 
     if (xDest < m_x){
@@ -508,7 +517,9 @@ void FloodFill::moveOneCell(int xDest, int yDest){
         absDir = 2;        
     }
 
+    // Turn the right direction
     if (absDir == m_d){
+        // Do nothing - we're already facing the right way
     }
     else if (absDir == (m_d + 1)%4){
         turnRight();
@@ -521,5 +532,6 @@ void FloodFill::moveOneCell(int xDest, int yDest){
         turnLeft();
     }
 
+    // Finally, move forward one space
     moveForward();
 }
