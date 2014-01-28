@@ -39,7 +39,7 @@ int main(int argc, char* argv[]){
     }
 
     // Initialize local simulation objects
-    sim::Maze maze(sim::MAZE_WIDTH, sim::MAZE_HEIGHT, sim::getMazeFilePath(argv[0], sim::MAZE_FILE));
+    sim::Maze maze(sim::MAZE_WIDTH, sim::MAZE_HEIGHT, sim::getMazeFileDirPath(argv[0]), sim::MAZE_FILE);
     sim::Mouse mouse(&maze);
     sim::MouseInterface mouseInterface(&mouse, &SLEEP_TIME, &PAUSED);
     Solver solver(&mouseInterface);

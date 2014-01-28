@@ -1,13 +1,17 @@
 High Priority
 =============
 - Improve the explore method of the floodfill algorithm
+- Autogenerate makefile dependencies
+- When solving the maze, reduce the number of turns that the mouse makes
+    - This could be done by calculating both the distance to the center AND the
+      distance to that square from the starting square - no need to travel to 
+      far away squares
 
 Medium Priority
 ===============
-- Ensure that any file can be loaded regardless of maze size specification
+- Ensure that any file can be loaded regardless of maze size specification - output an error
 - Make terminal style output at bottom or right of window
 - Display another window of the robot's perception
-- Autogenerate makefile dependencies
 - Make the shortest path look a little better
 
 Low Priority

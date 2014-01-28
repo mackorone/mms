@@ -9,14 +9,8 @@
 namespace sim{
 
 // Initially, path is a path to the binary file that is executed
-std::string getMazeFilePath(std::string path, std::string mazeFile){
+std::string getMazeFileDirPath(std::string path){
     
-    // Don't attempt to find a file if no argument is supplied
-    if (mazeFile == ""){
-        std::cout << "No maze file provided. Generating random maze..." << std::endl;
-        return "";
-    }
-
     // Ensure that the path begins with a relative directory location
     if (path.at(0) != '.' && path.at(0) != '/'){
         path.insert(0, "./");
@@ -38,16 +32,8 @@ std::string getMazeFilePath(std::string path, std::string mazeFile){
         }
     }
 
-    // Append data file path
+    // Append mazeFile directory path from the root of the project
     path += "/src/mazeFiles/";
-    path += mazeFile;
-
-    // Sanity check
-    std::fstream file(path.c_str());
-    if (!file){
-        std::cout << "File \"" << path << "\" not found. Generating random maze..." << std::endl;
-        return "";
-    }
 
     return path;
 }

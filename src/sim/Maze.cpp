@@ -15,7 +15,7 @@
 
 namespace sim{
 
-Maze::Maze(int width, int height, std::string mazeFile){
+Maze::Maze(int width, int height, std::string mazeFileDirPath, std::string mazeFile){
 
     // Misc errand - seed the random number generator
     srand(time(NULL));
@@ -31,28 +31,50 @@ Maze::Maze(int width, int height, std::string mazeFile){
         m_maze.push_back(col);
     }
     
-    // Initialize the tile wall values and tile neighbors
+    // Initialize the tile wall values and tile neighbors by either loading
+    // an existing maze file or randomly generating a valid maze
     if (mazeFile == ""){
+
+        std::cout << "No maze file provided. Generating random maze..." << std::endl;
+
         randomize();
-        while (!solveShortestPath()){
+        while (!(solveShortestPath().at(0) && solveShortestPath().at(1))){
             randomize();
         }
+
         // Optional - can be used to generate more maze files
-        saveMaze("mazeFiles/auto_generated_maze.maz");
+        saveMaze(mazeFileDirPath += "/auto_generated_maze.maz");
     }
     else{
 
-        // Load the maze given by mazefile
-        loadMaze(mazeFile);
+        // Complete path to the given mazefile
+        std::string path = mazeFileDirPath += mazeFile;
 
-        // Ensures that the maze is solvable
-        if (!solveShortestPath()){
-            std::cout << "Unsolvable Maze detected. Generating solvable maze..." << std::endl;
+        // Check to see if the file exists
+        std::fstream file(path.c_str());
+
+        if (file){
+
+            // Load the maze given by mazefile
+            loadMaze(path);
+
+            // Ensures that the maze is solvable
+            if (!solveShortestPath().at(0)){
+                std::cout << "Unsolvable Maze detected. Generating solvable maze..." << std::endl;
+                while (!(solveShortestPath().at(0) && solveShortestPath().at(1))){
+                    randomize();
+                }
+            }
         }
-        while (!solveShortestPath()){
+        else{
+
+            // If the file doesn't exist, generate a random maze file
+            std::cout << "File \"" << path << "\" not found. Generating random maze..." << std::endl;
             randomize();
+            while (!(solveShortestPath().at(0) && solveShortestPath().at(1))){
+                randomize();
+            }
         }
-
     }
     
     // Increment the passes for the starting position
@@ -249,7 +271,7 @@ void Maze::printDistances(){
     }
 }
 
-bool Maze::solveShortestPath(){
+std::vector<bool> Maze::solveShortestPath(){
 
     // Solves the maze, assigns tiles that are part of the shortest path
     std::vector<Tile*> sp = findPathToCenter();
@@ -257,9 +279,12 @@ bool Maze::solveShortestPath(){
         getTile(sp.at(i)->getX(), sp.at(i)->getY())->setPosp(true);
     }
 
-    // Returns whether or not the maze is solvable with the proper min steps
-    return getClosestCenterTile()->getDistance() < MAX_DISTANCE  &&
-           getClosestCenterTile()->getDistance() > MIN_MAZE_STEPS;
+    // Returns whether or not the maze is solvable and whether or not
+    // it satisfies the minimum number of steps
+    std::vector<bool> conditions;
+    conditions.push_back(getClosestCenterTile()->getDistance() < MAX_DISTANCE);
+    conditions.push_back(getClosestCenterTile()->getDistance() > MIN_MAZE_STEPS);
+    return conditions;
 }
 
 std::vector<Tile*> Maze::findPath(int x1, int y1, int x2, int y2){

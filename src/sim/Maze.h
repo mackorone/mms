@@ -10,7 +10,7 @@ namespace sim{
 class Maze{
 
 public:
-    Maze(int width, int height, std::string mazeFile = "");
+    Maze(int width, int height, std::string mazeFileDirPath = "", std::string mazeFile = "");
     ~Maze();
 
     int getWidth();
@@ -39,8 +39,11 @@ private:
 
     // ---------------------- Path finding utilities ------------------------//
 
-    // Callable function to assign posp values to all nodes
-    bool solveShortestPath();
+    // Callable function to assign posp values to all nodes. It returns a vector
+    // of size two. The first value is whether or not the maze is solvable, and
+    // the second value is whether or not it meets the minimum distance
+    // requirements.
+    std::vector<bool> solveShortestPath();
 
     // Prints the distance values (from (0, 0)) of all of the Tiles
     void printDistances();

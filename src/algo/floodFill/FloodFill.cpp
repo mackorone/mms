@@ -22,8 +22,19 @@ void FloodFill::solve(sim::MouseInterface* mouse){
     // Initialize the distances so that the center is the target
     initializeCenter();
 
+    // Floodfill
+    /*
+    while (!inGoal()){
+        walls();
+        flood(m_x, m_y);
+        moveTowardsGoal();
+    }
+    */
+
+    // Augmented Floodfill
     // Explore the maze to its entirety, returning to the start
-    explore();
+    //explore();
+    exploreBeta();
 
     // Loop forever, continue going to the beginning and solving
     while (true){
@@ -493,6 +504,9 @@ void FloodFill::explore(){
             unexplored.push(getRightCell());
             getRightCell()->setPrev(&m_cells[m_x][m_y]);
         }
+
+        printDistances(); // TODO
+
     }
 
     // Once the stack is empty (once we've explored every possible cell),
@@ -511,7 +525,7 @@ void FloodFill::explore(){
     }
 
     // Lastly, return to the starting location and face forward
-    while (m_cells[m_x][m_y].getPrev() != NULL){
+    while (m_x != 0 || m_y != 0){
         Cell* prev = m_cells[m_x][m_y].getPrev();
         moveOneCell(prev);
     }
@@ -519,6 +533,8 @@ void FloodFill::explore(){
         turnRight(); // Turning right is optimal since we'd never 
                      // approach the starting location from the left
     }
+
+    printDistances(); // TODO
 }
 
 void FloodFill::exploreBeta(){
@@ -600,7 +616,7 @@ void FloodFill::exploreBeta(){
     }
 
     // Lastly, return to the starting location and face forward
-    while (m_cells[m_x][m_y].getPrev() != NULL){
+    while (m_x != 0 || m_y != 0){
         Cell* prev = m_cells[m_x][m_y].getPrev();
         moveOneCell(prev);
     }

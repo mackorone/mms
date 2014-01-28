@@ -12,7 +12,8 @@ LIBS = -lGL -lglut -lGLU
 ###############################################################################
 
 # Flags
-FLAGS = -g -Wall
+# -g -Wall
+FLAGS = -Os
 
 # Directories
 SRC = ./src/
@@ -35,7 +36,7 @@ PREFIXED_OBJECTS=$(addprefix $(OBJ),$(OBJECTS))
 # Prefixed Program name
 PREFIXED_PROGRAM=$(addprefix $(BIN),$(PROGRAM))
 
-# Make 'all' instructions
+# Make 'all' instructions - default target
 all: $(PREFIXED_SOURCES) $(PREFIXED_PROGRAM)
 
 # Make '$(PROGRAM)' instructions
@@ -46,11 +47,11 @@ $(PREFIXED_PROGRAM): $(PREFIXED_OBJECTS)
 # Make '$(OBJECTS)' instructions
 $(OBJ)%.o: $(SRC)%.cpp
 	@mkdir -p $(@D) # Makes the directories if they don't exist
-	$(CXX) -c $(CFLAGS) $< -o $@ -std=c++0x
+	$(CXX) -c $(FLAGS) $< -o $@ -std=c++0x
 
 # Make 'clean' instructions
 # 'dir' gets the directories of the object files
 # 'sort' sorts the directories and removes duplicates
-# 'add*' is pretty self-explanatory 
+# 'add' is pretty self-explanatory 
 clean:
 	rm -f $(addprefix $(OBJ), $(addsuffix *.o, $(sort $(dir $(OBJECTS)))))
