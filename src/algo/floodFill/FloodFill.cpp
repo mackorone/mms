@@ -9,6 +9,7 @@ void FloodFill::solve(sim::MouseInterface* mouse){
     m_x = 0; // Initialize the x position of the mouse
     m_y = 0; // Initialize the y position of the mouse
     m_d = 0; // Initialize the direction position of the mouse
+    m_steps = 0; // Initialize the mouse steps
     m_mouse = mouse; // Initialize the mouse pointer
 
     // Initialize the x and y positions of the cells
@@ -35,6 +36,8 @@ void FloodFill::solve(sim::MouseInterface* mouse){
     // Explore the maze to its entirety, returning to the start
     //explore();
     exploreBeta();
+
+    std::cout << m_steps << std::endl; // Print the total number of steps
 
     // Loop forever, continue going to the beginning and solving
     while (true){
@@ -212,7 +215,7 @@ void FloodFill::flood(int x, int y){
 
 
 void FloodFill::moveTowardsGoal(){
-
+    
     // Invariant: One of the adjacent cells is guarenteed to have a lower value, so
     //            it's safe to initialize the minimum distance to current distance
     int minDistance = m_cells[m_x][m_y].getDistance(); // Initialize distance
@@ -283,18 +286,23 @@ void FloodFill::moveForward(){
     // Then, set the new Cell's explored flag to true
     m_cells[m_x][m_y].setExplored(true);
 
-    // Last, actually move the mouse forward in the simulation
+    // Actually move the mouse forward in the simulation
     m_mouse->moveForward();
+
+    // Lastly, increment the number of steps
+    m_steps++;
 }
 
 void FloodFill::turnRight(){
     m_d = (m_d + 1) % 4; // Update internal representation
     m_mouse->turnRight(); // Move the mouse
+    m_steps++; // Lastly, increment the number of steps
 }
 
 void FloodFill::turnLeft(){
     m_d = (m_d + 3) % 4; // Update internal representation
     m_mouse->turnLeft(); // Move the mouse
+    m_steps++; // Lastly, increment the number of steps
 }
 
 bool FloodFill::inGoal(){
@@ -504,9 +512,6 @@ void FloodFill::explore(){
             unexplored.push(getRightCell());
             getRightCell()->setPrev(&m_cells[m_x][m_y]);
         }
-
-        printDistances(); // TODO
-
     }
 
     // Once the stack is empty (once we've explored every possible cell),
@@ -533,8 +538,6 @@ void FloodFill::explore(){
         turnRight(); // Turning right is optimal since we'd never 
                      // approach the starting location from the left
     }
-
-    printDistances(); // TODO
 }
 
 void FloodFill::exploreBeta(){
@@ -586,6 +589,8 @@ void FloodFill::exploreBeta(){
         m_cells[m_x][m_y].setExplored(true);
         
         // After, we find any unexplored neighbors
+
+        // TODO: Push the lowest distance value on first
         if (!m_mouse->wallLeft() && getLeftCell()->getPrev() == NULL){
             unexplored.push(getLeftCell());
             getLeftCell()->setPrev(&m_cells[m_x][m_y]);
@@ -614,6 +619,9 @@ void FloodFill::exploreBeta(){
             }
         }
     }
+
+        
+
 
     // Lastly, return to the starting location and face forward
     while (m_x != 0 || m_y != 0){

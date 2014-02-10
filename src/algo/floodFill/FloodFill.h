@@ -19,6 +19,7 @@ private:
     int m_x; // X position of the mouse
     int m_y; // Y position of the mouse
     int m_d; // Direction of the mouse
+    int m_steps; // Count of the steps of the mouse
 
     void printDistances(); // Prints the distance values of the cells in the maze
     void printWalls(); // Prints the wall values of the cells in the maze
