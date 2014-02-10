@@ -55,6 +55,12 @@ private:
     // Moves the mouse to the target Cell but only if it's exactly one Cell away
     void moveOneCell(Cell* target);
 
+    // Resets all cells in the maze, as well as the steps value - used to compare
+    // the different explore algorithm
+    void resetMaze();
+
+    // Basic Floodfiil Algorithm
+    void basicFloodFill();
 
     // ---------------------- Unnecessary Utilities -------------------------- //
 

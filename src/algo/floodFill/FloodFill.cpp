@@ -23,20 +23,13 @@ void FloodFill::solve(sim::MouseInterface* mouse){
     // Initialize the distances so that the center is the target
     initializeCenter();
 
-    // Floodfill
-    /*
-    while (!inGoal()){
-        walls();
-        flood(m_x, m_y);
-        moveTowardsGoal();
-    }
-    */
+    // Augmented Floodfill - Explore the maze to its entirety, returning to the start
+    explore();
+    std::cout << m_steps << std::endl; // Print the total number of steps
 
-    // Augmented Floodfill
-    // Explore the maze to its entirety, returning to the start
-    //explore();
+    // Compare the explore to the explore beta
+    resetMaze();
     exploreBeta();
-
     std::cout << m_steps << std::endl; // Print the total number of steps
 
     // Loop forever, continue going to the beginning and solving
@@ -695,4 +688,25 @@ bool FloodFill::isOneCellAway(Cell* target){
     }
     
     return false;
+}
+
+void FloodFill::resetMaze(){
+    m_steps = 0;
+    initializeCenter();
+    for (int x = 0; x < MAZE_SIZE; x++){
+        for (int y = 0; y < MAZE_SIZE; y++){
+            m_cells[x][y].setExplored(false);
+            m_cells[x][y].setPrev(NULL);
+        }
+    }
+}
+
+void FloodFill::basicFloodFill(){
+
+    // Regular Floodfill Algorithm
+    while (!inGoal()){
+        walls();
+        flood(m_x, m_y);
+        moveTowardsGoal();
+    }
 }
