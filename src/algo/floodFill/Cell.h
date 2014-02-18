@@ -19,6 +19,7 @@ public:
     int getDistance();
     bool getExplored();
     bool isWall(int direction);
+    bool getWallInspected(int direction);
     Cell* getPrev();
 
     void setX(int x);
@@ -26,14 +27,16 @@ public:
     void setDistance(int distance);
     void setExplored(bool explored);
     void setWall(int direction, bool isWall);
+    void setWallInspected(int direction, bool inspected);
     void setPrev(Cell* prev);
 
 private:
-    int m_x; // x-location of the cell
-    int m_y; // y-location of the cell
-    int m_distance; // Distance from the goal
+    int m_x; // x-location of the Cell
+    int m_y; // y-location of the Cell
+    int m_distance; // Distance of the Cell from the goal
     bool m_explored; // Whether or not the Cell was traversed by the mouse
-    bool m_walls[4]; // North, East, South, West
+    bool m_walls[4]; // Whether or not a wall exists on the North, East, South, and West walls
+    bool m_wallsInspected[4]; // Whether or not we've inspected the specific walls of a Cell
     Cell* m_prev; // The previous node in the path by which the Cell was discovered
 
 };
