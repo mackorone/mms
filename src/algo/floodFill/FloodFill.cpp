@@ -155,20 +155,28 @@ void FloodFill::initializeDestinationTile(int x, int y){
 
 void FloodFill::walls(){
 
-    // Sets the walls for the current cell
+    // Sets the wall values for the current cell
     m_cells[m_x][m_y].setWall(m_d, m_mouse->wallFront());
     m_cells[m_x][m_y].setWall((m_d+1)%4, m_mouse->wallRight());
     m_cells[m_x][m_y].setWall((m_d+3)%4, m_mouse->wallLeft());
 
-    // Sets the walls for the surrounding cells
+    // Sets the wallInspected values for the current cell
+    m_cells[m_x][m_y].setWallInspected(m_d, true);
+    m_cells[m_x][m_y].setWallInspected((m_d+1)%4, true);
+    m_cells[m_x][m_y].setWallInspected((m_d+3)%4, true);
+
+    // Sets the wall and wallInspected values for the surrounding cells
     if (spaceFront()){
         getFrontCell()->setWall((m_d+2)%4, m_mouse->wallFront());
+        getFrontCell()->setWallInspected((m_d+2)%4, true);
     }
     if (spaceLeft()){
         getLeftCell()->setWall((m_d+1)%4, m_mouse->wallLeft());
+        getLeftCell()->setWallInspected((m_d+1)%4, true);
     }
     if (spaceRight()){
         getRightCell()->setWall((m_d+3)%4, m_mouse->wallRight());
+        getRightCell()->setWallInspected((m_d+3)%4, true);
     }
 }
 
@@ -456,6 +464,11 @@ void FloodFill::explore(){
             target node. If so, there is no need to retrace all the way back to
             the parent node. Rather, we can simply proceed to the target node
             from where we currently are.
+        2.) Keep track of which walls have been inspected. If all walls of a Cell
+            have been inspected, there is no need to explicitly move the mouse
+            into that particular Cell. Thus, after popping a Cell off of the stack,
+            check to see if all of its walls have been explored. If so, pop the
+            next Cell off of the stack and proceed. 
 
         FAILURES:
         1.) Updating the prev values as cells were rediscovered. This performed
@@ -464,11 +477,11 @@ void FloodFill::explore(){
             opposed to a R-M-L priority (or L-M-R priority)
         3.) Choosing to explore the neighbor with the highest cell value, as
             opposed to a R-M-L priority (or L-M-R priority)
+        4.) Choosing to explore the neighbor with a different directional
+            priority, other than L-M-R or R-M-L
 
         IDEAS:
-        1.) Do we need to explore cells that are far away from the goal?
-        2.) If at any point we already know the four wall values of a tile, we
-            shouldn't have to explore it
+        1.) Do we need to explore cells that are far away from the goal? - Doing right now
     */
 
     // Push unexplored nodes onto a stack
@@ -480,31 +493,60 @@ void FloodFill::explore(){
     // Loop until all cells have been explored
     while (!unexplored.empty()){
 
-        // First, pop the target cell off of the stack
-        Cell* target = unexplored.top(); 
-        unexplored.pop();
+        // Begin by assuming that all walls of the Cell that we intend to explore
+        // have already been inspected. Thus, we assume that we have no need to
+        // actually explore that Cell. We check the wallInspected values of each
+        // of the walls of that Cell to confirm (or refute) our assumption. Once
+        // we find a Cell for which not all of the walls have been inspected, we
+        // proceed as normal.
+
+        bool allWallsInspected = true;
+        Cell* target = NULL; // Initialze the target cell
+
+        while (allWallsInspected && !unexplored.empty()){
+
+            // First, pop the target cell off of the stack
+            target = unexplored.top(); 
+            unexplored.pop();
     
-        // Next, move to the target:
+            // Next, check to see if all of the walls have been inspected.
+            // If so, no need to explore that cell - get a new target
+            for (int i = 0; i < 4; i++){
+                if (!target->getWallInspected(i)){
+                    allWallsInspected = false;
+                    break;
+                }
+            } 
+        }
+    
+        // Once we've found a valid target (i.e. one that has not had all of
+        // its walls already inspected), we move to the proper advancing
+        // position for that particular Cell. That is, we keep backtracking
+        // until we're one away from that Cell.
+
         if (target->getPrev() != NULL){ // If prev == NULL we're at the start, so no need to move
 
-            //a) While the mouse is not in the advancing position, trace back
+            // While the mouse is not in the advancing position, trace back
             while (target->getPrev() != &m_cells[m_x][m_y]){
 
-                // If at any point the target is one cell away, break to reduce retracing
+                // If at any point the target is one cell away, we've no need to
+                // actually retrace though all of the other prev Cells. Thus we
+                // can simply break to reduce the amount of retracing that we do
+
                 if (isOneCellAway(target)){
                     break;
                 }
 
                 Cell* prev = m_cells[m_x][m_y].getPrev();
                 moveOneCell(prev);
-
             }
 
-            // b) Once the mouse is in proper advancing position, advance
+            // Once the mouse is in proper advancing position, advance
             moveOneCell(target);
         }
 
-        // Now we examine the contents of the target and update our walls and distances
+        // Once we're in the correct Cells, we can now examine the contents of the
+        // target and update our walls and distances
         walls();
         flood(m_x, m_y);
 
@@ -569,17 +611,46 @@ void FloodFill::exploreBeta(){
     // Loop until all cells have been explored
     while (!unexplored.empty()){
 
-        // First, pop the target cell off of the stack
-        Cell* target = unexplored.top(); 
-        unexplored.pop();
+        // Begin by assuming that all walls of the Cell that we intend to explore
+        // have already been inspected. Thus, we assume that we have no need to
+        // actually explore that Cell. We check the wallInspected values of each
+        // of the walls of that Cell to confirm (or refute) our assumption. Once
+        // we find a Cell for which not all of the walls have been inspected, we
+        // proceed as normal.
+
+        bool allWallsInspected = true;
+        Cell* target = NULL; // Initialze the target cell
+
+        while (allWallsInspected && !unexplored.empty()){
+
+            // First, pop the target cell off of the stack
+            target = unexplored.top(); 
+            unexplored.pop();
     
-        // Next, move to the target:
+            // Next, check to see if all of the walls have been inspected.
+            // If so, no need to explore that cell - get a new target
+            for (int i = 0; i < 4; i++){
+                if (!target->getWallInspected(i)){
+                    allWallsInspected = false;
+                    break;
+                }
+            } 
+        }
+    
+        // Once we've found a valid target (i.e. one that has not had all of
+        // its walls already inspected), we move to the proper advancing
+        // position for that particular Cell. That is, we keep backtracking
+        // until we're one away from that Cell.
+
         if (target->getPrev() != NULL){ // If prev == NULL we're at the start, so no need to move
 
-            //a) While the mouse is not in the advancing position, trace back
+            // While the mouse is not in the advancing position, trace back
             while (target->getPrev() != &m_cells[m_x][m_y]){
 
-                // If at any point the target is one cell away, break to reduce retracing
+                // If at any point the target is one cell away, we've no need to
+                // actually retrace though all of the other prev Cells. Thus we
+                // can simply break to reduce the amount of retracing that we do
+
                 if (isOneCellAway(target)){
                     break;
                 }
@@ -588,11 +659,12 @@ void FloodFill::exploreBeta(){
                 moveOneCell(prev);
             }
 
-            // b) Once the mouse is in proper advancing position, advance
+            // Once the mouse is in proper advancing position, advance
             moveOneCell(target);
         }
 
-        // Now we examine the contents of the target and update our walls and distances
+        // Once we're in the correct Cells, we can now examine the contents of the
+        // target and update our walls and distances
         walls();
         flood(m_x, m_y);
 
