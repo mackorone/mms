@@ -482,6 +482,9 @@ void FloodFill::explore(){
 
         IDEAS:
         1.) Do we need to explore cells that are far away from the goal? - Doing right now
+        2.) If we decide that we don't need to explore a particular Cell, sometimes that cell
+            is actually within the shortest path to the Cell to which we wish to backtrace - 
+            remember the 6 cell example? How can we solve that...?
     */
 
     // Push unexplored nodes onto a stack
