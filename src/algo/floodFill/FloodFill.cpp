@@ -20,15 +20,15 @@ void FloodFill::solve(sim::MouseInterface* mouse){
         }
     }
 
-    // Initialize the distances so that the center is the target
-    initializeCenter();
+    // Initialize the Cells' walls and distances
+    initialize();
 
     // Augmented Floodfill - Explore the maze to its entirety, returning to the start
     exploreBeta();
     std::cout << m_steps << std::endl; // Print the total number of steps
 
     // Compare the explore to the explore beta
-    resetMaze();
+    initialize();
     explore();
     std::cout << m_steps << std::endl; // Print the total number of steps
 
@@ -86,11 +86,11 @@ void FloodFill::printWalls(){
     }
 }
 
-void FloodFill::initializeCenter(){
+void FloodFill::initialize(){
 
     // NOTE: Doesn't work for odd sized mazes
 
-    // Initialize the distances
+    // Initialize the distance values for the maze
     int distance = MAZE_SIZE - 2;
     for (int y = 0; y < MAZE_SIZE/2; y++){
         for(int x = 0; x < MAZE_SIZE/2; x++){
@@ -103,15 +103,30 @@ void FloodFill::initializeCenter(){
         distance += (MAZE_SIZE/2 - 1);
     }
 
-    // Initialize the walls
+    // Initialize other values for the Cells
     for (int y = 0; y < MAZE_SIZE; y++){
         for (int x = 0; x < MAZE_SIZE; x++){
+
+            // Set the walls values
             m_cells[x][y].setWall(SOUTH, y == 0);
             m_cells[x][y].setWall(NORTH, y == MAZE_SIZE-1);
             m_cells[x][y].setWall(WEST, x == 0);
             m_cells[x][y].setWall(EAST, x == MAZE_SIZE-1);
+
+            // Set the inspected values of the walls
+            m_cells[x][y].setWallInspected(SOUTH, y == 0);
+            m_cells[x][y].setWallInspected(NORTH, y == MAZE_SIZE-1);
+            m_cells[x][y].setWallInspected(WEST, x == 0);
+            m_cells[x][y].setWallInspected(EAST, x == MAZE_SIZE-1);
+
+            // Set the prev and explored values of the Cells
+            m_cells[x][y].setPrev(NULL);
+            m_cells[x][y].setExplored(false);
         }
     }
+
+    // Set steps of the mouse to zero
+    m_steps = 0;
 }
 
 void FloodFill::initializeDestinationTile(int x, int y){
@@ -686,17 +701,6 @@ bool FloodFill::isOneCellAway(Cell* target){
     }
     
     return false;
-}
-
-void FloodFill::resetMaze(){
-    m_steps = 0;
-    initializeCenter();
-    for (int x = 0; x < MAZE_SIZE; x++){
-        for (int y = 0; y < MAZE_SIZE; y++){
-            m_cells[x][y].setExplored(false);
-            m_cells[x][y].setPrev(NULL);
-        }
-    }
 }
 
 void FloodFill::basicFloodFill(){
