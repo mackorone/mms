@@ -59,7 +59,7 @@ private:
     // the different explore algorithm
     void resetMaze();
 
-    // Basic Floodfiil Algorithm
+    // Basic Floodfill Algorithm
     void basicFloodFill();
 
     // ---------------------- Unnecessary Utilities -------------------------- //
