@@ -24,12 +24,12 @@ void FloodFill::solve(sim::MouseInterface* mouse){
     initializeCenter();
 
     // Augmented Floodfill - Explore the maze to its entirety, returning to the start
-    exploreBeta();
+    explore();
     std::cout << m_steps << std::endl; // Print the total number of steps
 
     // Compare the explore to the explore beta
     resetMaze();
-    explore();
+    exploreBeta();
     std::cout << m_steps << std::endl; // Print the total number of steps
 
     // Loop forever, continue going to the beginning and solving
@@ -445,10 +445,6 @@ void FloodFill::explore(){
         FAILURES:
         1.) Updating the prev values as cells were rediscovered. This performed
             worse in every test case
-        2.) Choosing to explore the neighbor with the lowest cell value, as
-            opposed to a R-M-L priority (or L-M-R priority)
-        3.) Choosing to explore the neighbor with the highest cell value, as
-            opposed to a R-M-L priority (or L-M-R priority)
 
         IDEAS:
         1.) Do we need to explore cells that are far away from the goal?
@@ -571,6 +567,7 @@ void FloodFill::exploreBeta(){
 
                 Cell* prev = m_cells[m_x][m_y].getPrev();
                 moveOneCell(prev);
+
             }
 
             // b) Once the mouse is in proper advancing position, advance
@@ -585,6 +582,8 @@ void FloodFill::exploreBeta(){
         m_cells[m_x][m_y].setExplored(true);
         
         // After, we find any unexplored neighbors
+
+        // TODO: Push the lowest distance value on first
         if (!m_mouse->wallLeft() && getLeftCell()->getPrev() == NULL){
             unexplored.push(getLeftCell());
             getLeftCell()->setPrev(&m_cells[m_x][m_y]);
@@ -613,6 +612,9 @@ void FloodFill::exploreBeta(){
             }
         }
     }
+
+        
+
 
     // Lastly, return to the starting location and face forward
     while (m_x != 0 || m_y != 0){
