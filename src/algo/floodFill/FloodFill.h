@@ -23,7 +23,7 @@ private:
 
     void printDistances(); // Prints the distance values of the cells in the maze
     void printWalls(); // Prints the wall values of the cells in the maze
-    void initializeCenter(); // Initializes distance values from the center of the maze
+    void initialize(); // Initializes Cells' wall and distance values
 
     void walls(); // Updates the walls surrounding the robot
     void flood(int x, int y); // Floods the maze corresponding to new walls
@@ -47,17 +47,13 @@ private:
     // eventually returning the mouse back to the starting location
     void explore();
 
-    void exploreBeta(); // USED FOR TESTING PURPOSES ONLY // TODO
+    void exploreBeta(); // USED FOR TESTING PURPOSES ONLY //
 
     // Returns whether or not the location is one cell away
     bool isOneCellAway(Cell* target);
 
     // Moves the mouse to the target Cell but only if it's exactly one Cell away
     void moveOneCell(Cell* target);
-
-    // Resets all cells in the maze, as well as the steps value - used to compare
-    // the different explore algorithm
-    void resetMaze();
 
     // Basic Floodfill Algorithm
     void basicFloodFill();
