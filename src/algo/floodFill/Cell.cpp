@@ -5,6 +5,7 @@
 Cell::Cell() : m_x(0), m_y(0), m_distance(0), m_explored(false), m_prev(NULL){
     for (int i = 0; i < 4; i++){
         m_walls[i] = false;
+        m_wallsInspected[i] = false;
     }
 }
 
@@ -35,6 +36,10 @@ bool Cell::isWall(int direction){
     return m_walls[direction];
 }
 
+bool Cell::getWallInspected(int direction){
+    return m_wallsInspected[direction];
+}
+
 void Cell::setX(int x){
     m_x = x;
 }
@@ -53,6 +58,10 @@ void Cell::setExplored(bool explored){
 
 void Cell::setWall(int direction, bool isWall){
     m_walls[direction] = isWall;
+}
+
+void Cell::setWallInspected(int direction, bool inspected){
+    m_wallsInspected[direction] = inspected;
 }
 
 void Cell::setPrev(Cell* prev){
