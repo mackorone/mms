@@ -55,7 +55,7 @@ private:
     // Moves the mouse to the target Cell but only if it's exactly one Cell away
     void moveOneCell(Cell* target);
 
-    // Basic Floodfiil Algorithm
+    // Basic Floodfill Algorithm
     void basicFloodFill();
 
     // ---------------------- Unnecessary Utilities -------------------------- //

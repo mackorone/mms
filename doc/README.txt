@@ -57,7 +57,7 @@ that the algorithm is compatible with the simulation utilities already defined.
 Lastly, in order to actually execute a user-defined algorithm, the
 "src/algo/Solver.cpp" must be modified to include your code, and you must call
 the appropriate function (most likely the solve function of your own class)
-from within the Solver's solve method (just FYI, this is a techneque known as
+from within the Solver's solve method (just FYI, this is a technique known as
 delegation). You can look at the Solver class for some examples of how to do
 this.
 
