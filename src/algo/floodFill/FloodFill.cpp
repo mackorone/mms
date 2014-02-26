@@ -24,12 +24,12 @@ void FloodFill::solve(sim::MouseInterface* mouse){
     initialize();
 
     // Augmented Floodfill - Explore the maze to its entirety, returning to the start
-    exploreBeta();
+    explore();
     std::cout << m_steps << std::endl; // Print the total number of steps
 
     // Compare the explore to the explore beta
     initialize();
-    explore();
+    exploreBeta();
     std::cout << m_steps << std::endl; // Print the total number of steps
 
     // Loop forever, continue going to the beginning and solving
@@ -520,6 +520,22 @@ void FloodFill::explore(){
                     break;
                 }
             } 
+            
+            // Although we don't need to explicitly explore a Cell if we've
+            // already inspected all of its wall values, we still need to
+            // flood it (and its neighbors) with a proper distance value.
+            // In addition, we need to mark it as explored, acknowledging
+            // that once we've inspected all walls, we've essentially explored
+            // that Cell. If we don't mark the Cell as explored, then we may
+            // accidentally assign it a maximum distance value by accident,
+            // since we assign these values based on whether or not a Cell was
+            // explored or not. Note that there is no danger of setting an
+            // unreachable Cell as explored, since an unreachable cell will
+            // be pushed onto the stack in the first place
+            if (allWallsInspected){
+                target->setExplored(true);
+                flood(target->getX(), target->getY());
+            }
         }
     
         // Once we've found a valid target (i.e. one that has not had all of
@@ -638,6 +654,22 @@ void FloodFill::exploreBeta(){
                     break;
                 }
             } 
+            
+            // Although we don't need to explicitly explore a Cell if we've
+            // already inspected all of its wall values, we still need to
+            // flood it (and its neighbors) with a proper distance value.
+            // In addition, we need to mark it as explored, acknowledging
+            // that once we've inspected all walls, we've essentially explored
+            // that Cell. If we don't mark the Cell as explored, then we may
+            // accidentally assign it a maximum distance value, since we assign
+            // these values based on whether or not a Cell was explored or not.
+            // Note that there is no danger of setting an unreachable Cell as
+            // explored, since an unreachable cell will be pushed onto the stack
+            // in the first place
+            if (allWallsInspected){
+                target->setExplored(true);
+                flood(target->getX(), target->getY());
+            }
         }
     
         // Once we've found a valid target (i.e. one that has not had all of
