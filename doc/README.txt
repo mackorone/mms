@@ -78,7 +78,7 @@ object, and the the variable name for the pointer is "m_mouse"):
 
 Functions 1-3 return true or false values correpsonding to whether or not there
 is a wall to the front, right, or left of the robot. Functions 4-6 instruct the
-robot to move froward, turn left, or turn right. No other functions are
+robot to move forward, turn left, or turn right. No other functions are
 provided to the user and all other functionality must be supplied else-where, 
 as is the case with the actual MicroMouse robot.
 
