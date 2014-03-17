@@ -43,6 +43,12 @@ private:
     bool spaceRight(); // Returns true if there's a cell to the right of the mouse
     int min(int one, int two, int three, int four); // Returns the min of four ints
 
+    // Basic Floodfill Algorithm
+    void basicFloodFill();
+
+
+    // ------------------ Explore Algorithm Utilities ----------------------- //
+
     // Explores the entire searchable maze and fills the walls and distances,
     // eventually returning the mouse back to the starting location
     void explore();
@@ -55,8 +61,7 @@ private:
     // Moves the mouse to the target Cell but only if it's exactly one Cell away
     void moveOneCell(Cell* target);
 
-    // Basic Floodfill Algorithm
-    void basicFloodFill();
+    bool untraversedRetraceLeft();
 
     // ---------------------- Unnecessary Utilities -------------------------- //
 
