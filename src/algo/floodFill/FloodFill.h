@@ -61,12 +61,9 @@ private:
     // Moves the mouse to the target Cell but only if it's exactly one Cell away
     void moveOneCell(Cell* target);
 
-    bool untraversedRetraceLeft();
-
-    // ---------------------- Unnecessary Utilities -------------------------- //
-
-    // Can be used to set the destination to any cell
-    void initializeDestinationTile(int x, int y);
+    // Attempts to short-circuit the retracing by looking at neighbors of untraversed cells
+    // Returns true if successful, false if short-circuiting wasn't possible
+    bool tryUntraversed(Cell* target);
 };
 
 #endif // FLOODFILL_H_

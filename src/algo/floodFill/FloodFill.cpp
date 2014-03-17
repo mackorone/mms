@@ -21,15 +21,15 @@ void FloodFill::solve(sim::MouseInterface* mouse){
     }
 
     // Initialize the Cells' walls and distances
+    explore();
     initialize();
 
     // Augmented Floodfill - Explore the maze to its entirety, returning to the start
-    exploreBeta();
     std::cout << m_steps << std::endl; // Print the total number of steps
 
     // Compare the explore to the explore beta
     initialize();
-    explore(); // TODO: Switch these two
+    exploreBeta();
     std::cout << m_steps << std::endl; // Print the total number of steps
 
     // Loop forever, continue going to the beginning and solving
@@ -128,30 +128,6 @@ void FloodFill::initialize(){
 
     // Set steps of the mouse to zero
     m_steps = 0;
-}
-
-void FloodFill::initializeDestinationTile(int x, int y){
-
-    // Set this tile as the destination
-    m_cells[x][y].setDistance(0);
-    
-    // Initialize the column
-    for (int i = 0; i < y; i++){
-        m_cells[x][i].setDistance(y-i);
-    }
-    for (int i = y+1; i < MAZE_SIZE; i++){
-        m_cells[x][i].setDistance(i-y);
-    }
-
-    // Initialize the rows
-    for (int i = 0; i < MAZE_SIZE; i++){
-        for (int j = 0; j < x; j++){
-            m_cells[j][i].setDistance(x - j + m_cells[x][i].getDistance());
-        }
-        for (int j = x+1; j < MAZE_SIZE; j++){
-            m_cells[j][i].setDistance(j - x + m_cells[x][i].getDistance());
-        }
-    }
 }
 
 void FloodFill::walls(){
@@ -725,48 +701,16 @@ void FloodFill::exploreBeta(){
                 // default, even if it'd more efficient. Thus we check all untraversed cells
                 // for shorter paths
 
-                // For now, just check the right cell...
-                if (isOneCellAway(getFrontCell()) && !getFrontCell()->getTraversed()) {
-
-                    Cell* neighbor = getFrontCell();
-                    Cell* neighborPrev = neighbor->getPrev();
-
-                    if (neighborPrev != NULL) {
-
-                        Cell* runner = &m_cells[m_x][m_y];
-                        int counter = 0;
-                        bool onPath = false;
-
-                        std::cout << "Runner starts as: " << "(" << runner->getX() << ","
-                        << runner->getY() << ")" << std::endl;
-
-                        std::cout << "Runner dest is: " << "(" << neighborPrev->getX() << ","
-                        << neighborPrev->getY() << ")" << std::endl;
-
-                        while (runner != target->getPrev()){
-
-                            if (neighborPrev == runner) {
-
-                                std::cout << "Found runner dest " << counter << " cells away" << std::endl;
-                                onPath = true;
-                                break;
-                            }
-
-                            counter++;
-                            runner = runner->getPrev();
-                        }
-            
-                        if (runner != target->getPrev() && counter >= 2 && onPath) {
-                            std::cout << "Taking shortest path - 2 moves max" << std::endl;
-                            moveOneCell(neighbor);
-                            moveOneCell(neighborPrev);
-                            continue;
-                        }
-                    }
+                if (tryUntraversed(target)) {
+                    // We continue (as opposed to breaking) because we aren't sure if we're
+                    // at the staging cell yet - we simply know that we've taken the most
+                    // efficient shortcut through an untraversed Cell. Thus we must *still*
+                    // retrace to get to the staging cell.
+                    continue;
                 }
 
                 // At this point, we can't take any shortcuts in the retracing process.
-                // Thus we simply find the previous Cell of the current one and move to it.
+                // Thus we simply find the previous Cell and move to it.
                 Cell* prev = m_cells[m_x][m_y].getPrev();
                 moveOneCell(prev);
             }
@@ -808,7 +752,7 @@ void FloodFill::exploreBeta(){
         for (int y = 0; y < MAZE_SIZE; y++){
             if (!m_cells[x][y].getExplored()){
                 // Any unreachable cells should have inf distance. Conveniently,
-                // MAZE_SIZE*MAZE_SIZE is slightly greater than the maximum distance
+                // MAZE_SIZE*MAZE_SIZE is one greater than the maximum distance
                 m_cells[x][y].setDistance(MAZE_SIZE*MAZE_SIZE);
             }
         }
@@ -864,6 +808,10 @@ void FloodFill::moveOneCell(Cell* target){
         // Finally, move forward one space
         moveForward();
     }
+    else{
+        std::cout << "ERROR: Tried to move to cell using moveOneCell function,"
+        << " but the specificed cell is not one space away." << std::endl;
+    }
 }
 
 bool FloodFill::isOneCellAway(Cell* target){
@@ -885,6 +833,106 @@ bool FloodFill::isOneCellAway(Cell* target){
         return true;
     }
     
+    return false;
+}
+
+// Attempts to short-circuit the retracing by looking at neighbors of untraversed cells
+// Returns true if successful, false if short-circuiting wasn't possible
+bool FloodFill::tryUntraversed(Cell* target){
+
+    int dir = -1; // 0: front, 1: right, 3:left (rear cannot be untraversed)
+    int mostCount = -1; // Keeps track of highest number of short-circuited steps
+
+    // First, find the direction with the greatest number of short circuited steps
+
+    for (int i = 0; i < 3; i++) {
+
+        Cell* neighbor = NULL;
+        switch(i){
+            case 0:
+                neighbor = getFrontCell();
+                break;
+            case 1:
+                neighbor = getRightCell();
+                break;
+            case 2:
+                neighbor = getLeftCell();
+                break;
+        }
+
+        // Check to make sure that the cell is reachable (i.e., that there is not all
+        // wall in between) and that it is not traverse (since only untraversed cells
+        // are of interest to us.
+        if (isOneCellAway(neighbor) && !neighbor->getTraversed()) {
+
+            // Find the cell that discovered the untraversed cell. Then check to see if *that*
+            // cell is on the retracing path. If so, then we can short circuiting the retracing
+            Cell* neighborPrev = neighbor->getPrev();
+
+            // Sanity check
+            if (neighborPrev != NULL) {
+
+                // This pointer will trace back along the normal retracing path, checking to see
+                // if neighborPrev is on the path (and more than one step away)
+                Cell* runner = &m_cells[m_x][m_y];
+
+                int counter = 0; // Counts how many steps that the mouse would have to retract
+                                 // without short circuiting via the untraversed cell. If the
+                                 // value of count ends up being more than one, we know that
+                                 // it is *always* in our favor to retrace. Note that this also
+                                 // helps us to choose the most profitable direction to move in
+                                 // if multiple directions are untraversed.
+
+                // This loop guarentees that we check for short circuiting up until the
+                // prev Cell for the target. However, we need to check target->getPrev()
+                // explicitly afterwards
+                while (runner != target->getPrev()){
+
+                    if (neighborPrev == runner) {
+                        if (dir == -1 || counter < mostCount) {
+                            dir = i;
+                            mostCount = counter;
+                        }
+                        break; // Break out of the while-loop
+                    }
+
+                    counter++;
+                    runner = runner->getPrev();
+                }
+                
+                // At this point, we're guarenteed that runner == target->getPrev()
+                if (neighborPrev == runner) {
+                    if (dir == -1 || counter < mostCount) {
+                        dir = i;
+                        mostCount = counter;
+                    }
+                }
+            }
+        }
+
+        // Continue with the next iteration of the for-loop i.e., examine the next untraversed cell
+    }
+
+    // At this point, dir represents the direction with the greatest short circuiting
+    // or -1 if no directions are able to short circuit. Thus, we can either move to
+    // the short circuiting cell (and return true) or not (and return false).
+    if (dir >= 0 && mostCount > 1) {
+        Cell* untraversed = NULL; 
+        switch(dir){
+            case 0:
+                untraversed = getFrontCell();
+                break;
+            case 1:
+                untraversed = getRightCell();
+                break;
+            case 2:
+                untraversed = getLeftCell();
+                break;
+        }
+        moveOneCell(untraversed);
+        moveOneCell(untraversed->getPrev());
+        return true;
+    }
     return false;
 }
 
