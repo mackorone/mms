@@ -21,10 +21,10 @@ void FloodFill::solve(sim::MouseInterface* mouse){
     }
 
     // Initialize the Cells' walls and distances
+    explore();
     initialize();
 
     // Augmented Floodfill - Explore the maze to its entirety, returning to the start
-    explore();
     std::cout << m_steps << std::endl; // Print the total number of steps
 
     // Compare the explore to the explore beta
@@ -122,35 +122,12 @@ void FloodFill::initialize(){
             // Set the prev and explored values of the Cells
             m_cells[x][y].setPrev(NULL);
             m_cells[x][y].setExplored(false);
+            m_cells[x][y].setTraversed(false);
         }
     }
 
     // Set steps of the mouse to zero
     m_steps = 0;
-}
-
-void FloodFill::initializeDestinationTile(int x, int y){
-
-    // Set this tile as the destination
-    m_cells[x][y].setDistance(0);
-    
-    // Initialize the column
-    for (int i = 0; i < y; i++){
-        m_cells[x][i].setDistance(y-i);
-    }
-    for (int i = y+1; i < MAZE_SIZE; i++){
-        m_cells[x][i].setDistance(i-y);
-    }
-
-    // Initialize the rows
-    for (int i = 0; i < MAZE_SIZE; i++){
-        for (int j = 0; j < x; j++){
-            m_cells[j][i].setDistance(x - j + m_cells[x][i].getDistance());
-        }
-        for (int j = x+1; j < MAZE_SIZE; j++){
-            m_cells[j][i].setDistance(j - x + m_cells[x][i].getDistance());
-        }
-    }
 }
 
 void FloodFill::walls(){
@@ -298,9 +275,6 @@ void FloodFill::moveForward(){
             m_x -= 1;
             break;
     }
-
-    // Then, set the new Cell's explored flag to true
-    m_cells[m_x][m_y].setExplored(true);
 
     // Actually move the mouse forward in the simulation
     m_mouse->moveForward();
@@ -521,7 +495,7 @@ void FloodFill::explore(){
                 }
             } 
             
-            // Although we don't need to explicitly explore a Cell if we've
+            // Although we don't need to explicitly traverse a Cell if we've
             // already inspected all of its wall values, we still need to
             // flood it (and its neighbors) with a proper distance value.
             // In addition, we need to mark it as explored, acknowledging
@@ -530,7 +504,7 @@ void FloodFill::explore(){
             // accidentally assign it a maximum distance value by accident,
             // since we assign these values based on whether or not a Cell was
             // explored or not. Note that there is no danger of setting an
-            // unreachable Cell as explored, since an unreachable cell will
+            // unreachable Cell as explored, since an unreachable cell won't
             // be pushed onto the stack in the first place
             if (allWallsInspected){
                 target->setExplored(true);
@@ -640,6 +614,12 @@ void FloodFill::exploreBeta(){
         bool allWallsInspected = true;
         Cell* target = NULL; // Initialze the target cell
 
+        // The first condition for looping, namely that all not all walls be
+        // inspected, is vital to the functioning of the rest of the explore
+        // algorithm. Once this loop exits, we can be assured that either we've
+        // explored everything, or that the target has not yet been traversed
+        // (but will be traversed).
+
         while (allWallsInspected && !unexplored.empty()){
 
             // First, pop the target cell off of the stack
@@ -666,10 +646,22 @@ void FloodFill::exploreBeta(){
             // Note that there is no danger of setting an unreachable Cell as
             // explored, since an unreachable cell will be pushed onto the stack
             // in the first place
+
             if (allWallsInspected){
                 target->setExplored(true);
                 flood(target->getX(), target->getY());
             }
+        }
+
+        // If the last thing on our stack already had all of its walls explored, then
+        // we have nothing else to explore (since that cell is already considered
+        // explored). Thus we set our target to be the starting Cell and, in doing
+        // so, ensure that the next block of code (which attempts to move the mouse
+        // to an unexplored cell) doesn't execute. Instead, the mouse simply returns
+        // to the beinning of the maze to begin the solve portion of the algorithm.
+
+        if (allWallsInspected) {
+            target = &m_cells[0][0];
         }
     
         // Once we've found a valid target (i.e. one that has not had all of
@@ -690,6 +682,35 @@ void FloodFill::exploreBeta(){
                     break;
                 }
 
+                // Similarly, if the staging Cell (i.e., the Cell that the mouse has to
+                // travel to before it can move to the target Cell) is one Cell away, 
+                // we've no need to completely retrace though all of the other prev Cells.
+                // We can simply move to the staging cell and proceed.
+
+                if (isOneCellAway(target->getPrev())){
+                    moveOneCell(target->getPrev());
+                    break;
+                }
+
+                // At this point, we know that the mouse has to be *at least* two cells away
+                // from the staging Cell. Thus, at this point, we check to see if we can move
+                // to the staging Cell in a more efficient manner; in other words, we search
+                // for a more efficient traceback path. The only inefficiencies (at this point)
+                // could be due to a cell that has been fully explored but not yet traversed.
+                // In that case, the mouse will *never* trace back through that square by
+                // default, even if it'd more efficient. Thus we check all untraversed cells
+                // for shorter paths
+
+                if (tryUntraversed(target)) {
+                    // We continue (as opposed to breaking) because we aren't sure if we're
+                    // at the staging cell yet - we simply know that we've taken the most
+                    // efficient shortcut through an untraversed Cell. Thus we must *still*
+                    // retrace to get to the staging cell.
+                    continue;
+                }
+
+                // At this point, we can't take any shortcuts in the retracing process.
+                // Thus we simply find the previous Cell and move to it.
                 Cell* prev = m_cells[m_x][m_y].getPrev();
                 moveOneCell(prev);
             }
@@ -703,8 +724,9 @@ void FloodFill::exploreBeta(){
         walls();
         flood(m_x, m_y);
 
-        // Once we've examined the contents at the target, it is considered explored
+        // Once we've examined the contents at the target, it is considered explored and traversed
         m_cells[m_x][m_y].setExplored(true);
+        m_cells[m_x][m_y].setTraversed(true);
         
         // After, we find any unexplored neighbors
         if (!m_mouse->wallLeft() && getLeftCell()->getPrev() == NULL){
@@ -730,7 +752,7 @@ void FloodFill::exploreBeta(){
         for (int y = 0; y < MAZE_SIZE; y++){
             if (!m_cells[x][y].getExplored()){
                 // Any unreachable cells should have inf distance. Conveniently,
-                // MAZE_SIZE*MAZE_SIZE is slightly greater than the maximum distance
+                // MAZE_SIZE*MAZE_SIZE is one greater than the maximum distance
                 m_cells[x][y].setDistance(MAZE_SIZE*MAZE_SIZE);
             }
         }
@@ -786,6 +808,10 @@ void FloodFill::moveOneCell(Cell* target){
         // Finally, move forward one space
         moveForward();
     }
+    else{
+        std::cout << "ERROR: Tried to move to cell using moveOneCell function,"
+        << " but the specificed cell is not one space away." << std::endl;
+    }
 }
 
 bool FloodFill::isOneCellAway(Cell* target){
@@ -807,6 +833,106 @@ bool FloodFill::isOneCellAway(Cell* target){
         return true;
     }
     
+    return false;
+}
+
+// Attempts to short-circuit the retracing by looking at neighbors of untraversed cells
+// Returns true if successful, false if short-circuiting wasn't possible
+bool FloodFill::tryUntraversed(Cell* target){
+
+    int dir = -1; // 0: front, 1: right, 3:left (rear cannot be untraversed)
+    int mostCount = -1; // Keeps track of highest number of short-circuited steps
+
+    // First, find the direction with the greatest number of short circuited steps
+
+    for (int i = 0; i < 3; i++) {
+
+        Cell* neighbor = NULL;
+        switch(i){
+            case 0:
+                neighbor = getFrontCell();
+                break;
+            case 1:
+                neighbor = getRightCell();
+                break;
+            case 2:
+                neighbor = getLeftCell();
+                break;
+        }
+
+        // Check to make sure that the cell is reachable (i.e., that there is not all
+        // wall in between) and that it is not traverse (since only untraversed cells
+        // are of interest to us.
+        if (isOneCellAway(neighbor) && !neighbor->getTraversed()) {
+
+            // Find the cell that discovered the untraversed cell. Then check to see if *that*
+            // cell is on the retracing path. If so, then we can short circuiting the retracing
+            Cell* neighborPrev = neighbor->getPrev();
+
+            // Sanity check
+            if (neighborPrev != NULL) {
+
+                // This pointer will trace back along the normal retracing path, checking to see
+                // if neighborPrev is on the path (and more than one step away)
+                Cell* runner = &m_cells[m_x][m_y];
+
+                int counter = 0; // Counts how many steps that the mouse would have to retract
+                                 // without short circuiting via the untraversed cell. If the
+                                 // value of count ends up being more than one, we know that
+                                 // it is *always* in our favor to retrace. Note that this also
+                                 // helps us to choose the most profitable direction to move in
+                                 // if multiple directions are untraversed.
+
+                // This loop guarentees that we check for short circuiting up until the
+                // prev Cell for the target. However, we need to check target->getPrev()
+                // explicitly afterwards
+                while (runner != target->getPrev()){
+
+                    if (neighborPrev == runner) {
+                        if (dir == -1 || counter < mostCount) {
+                            dir = i;
+                            mostCount = counter;
+                        }
+                        break; // Break out of the while-loop
+                    }
+
+                    counter++;
+                    runner = runner->getPrev();
+                }
+                
+                // At this point, we're guarenteed that runner == target->getPrev()
+                if (neighborPrev == runner) {
+                    if (dir == -1 || counter < mostCount) {
+                        dir = i;
+                        mostCount = counter;
+                    }
+                }
+            }
+        }
+
+        // Continue with the next iteration of the for-loop i.e., examine the next untraversed cell
+    }
+
+    // At this point, dir represents the direction with the greatest short circuiting
+    // or -1 if no directions are able to short circuit. Thus, we can either move to
+    // the short circuiting cell (and return true) or not (and return false).
+    if (dir >= 0 && mostCount > 1) {
+        Cell* untraversed = NULL; 
+        switch(dir){
+            case 0:
+                untraversed = getFrontCell();
+                break;
+            case 1:
+                untraversed = getRightCell();
+                break;
+            case 2:
+                untraversed = getLeftCell();
+                break;
+        }
+        moveOneCell(untraversed);
+        moveOneCell(untraversed->getPrev());
+        return true;
+    }
     return false;
 }
 

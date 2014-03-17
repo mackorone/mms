@@ -2,7 +2,7 @@
 
 #define NULL 0
 
-Cell::Cell() : m_x(0), m_y(0), m_distance(0), m_explored(false), m_prev(NULL){
+Cell::Cell() : m_x(0), m_y(0), m_distance(0), m_explored(false), m_traversed(false), m_prev(NULL){
     for (int i = 0; i < 4; i++){
         m_walls[i] = false;
         m_wallsInspected[i] = false;
@@ -26,6 +26,10 @@ int Cell::getDistance(){
 
 bool Cell::getExplored(){
     return m_explored;
+}
+
+bool Cell::getTraversed(){
+    return m_traversed;
 }
 
 Cell* Cell::getPrev(){
@@ -54,6 +58,10 @@ void Cell::setDistance(int distance){
 
 void Cell::setExplored(bool explored){
     m_explored = explored;
+}
+
+void Cell::setTraversed(bool traversed){
+    m_traversed = traversed;
 }
 
 void Cell::setWall(int direction, bool isWall){
