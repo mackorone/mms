@@ -19,6 +19,7 @@ Low Priority
 - Make the mouse look prettier (draw black box around, or something)
 - Handle the case when target tile is unreachable - it just crashes right now
 - Ensure that all tiles are reachable in a randomly generated maze
+- Ensure that the maze conforms to the spec as outlined in the rules
 - The getClosestCenterTile() method in the Maze class only returns one center
   tile, even if two or more of them are equally close to the start - thus sometimes
   a valid shortest path is not indicated on the maze
