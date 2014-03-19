@@ -88,4 +88,14 @@ void Mouse::turnLeft(){
     m_mouseDirection = (m_mouseDirection + 3) % 4;
 }
 
+void Mouse::resetPosition(){
+    m_mousePosX = 0;
+    m_mousePosY = 0;
+    m_mouseDirection = NORTH;
+}
+
+void Mouse::resetColors(int curX, int curY){
+    m_maze->resetColors(curX, curY);
+}
+
 } // namespace sim

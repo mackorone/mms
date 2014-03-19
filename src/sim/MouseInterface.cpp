@@ -6,8 +6,10 @@
 
 namespace sim{
 
-MouseInterface::MouseInterface(Mouse* mouse, int* sleepTime, bool* paused) : 
-        m_mouse(mouse), m_sleepTime(sleepTime), m_paused(paused)
+MouseInterface::MouseInterface(Mouse* mouse, int* sleepTime, bool* paused, bool* undoRequested,
+                                                                           bool* resetRequested) : 
+        m_mouse(mouse), m_sleepTime(sleepTime), m_paused(paused),
+        m_undoRequested(undoRequested), m_resetRequested(resetRequested)
 { }
 
 MouseInterface::~MouseInterface()
@@ -50,6 +52,30 @@ void MouseInterface::turnLeft(){
         while (*m_paused){usleep(10*SLEEP_TIME_MIN);}; // Wait if paused
         usleep(*m_sleepTime*100);
     }
+}
+
+bool MouseInterface::undoRequested(){
+    return *m_undoRequested;
+}
+
+bool MouseInterface::resetRequested(){
+    return *m_resetRequested;
+}
+
+void MouseInterface::undoHonored(){
+    *m_undoRequested = false;
+}
+
+void MouseInterface::resetHonored(){
+    *m_resetRequested = false;
+}
+
+void MouseInterface::resetPosition() {
+    m_mouse->resetPosition();    
+}
+
+void MouseInterface::resetColors(int curX, int curY) {
+    m_mouse->resetColors(curX, curY);
 }
 
 } // namespace sim

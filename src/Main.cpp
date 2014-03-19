@@ -27,6 +27,8 @@ sim::MouseGraphic* g_mouseGraphic;
 // Global primitive variable declarations
 static /*non-const*/ bool PAUSED = false; // Initially set to false
 static /*non-const*/ int SLEEP_TIME = 150; // ms between simulation steps
+static /*non-const*/ bool UNDO_REQUESTED = false; // Whether or not an undo was requested
+static /*non-const*/ bool RESET_REQUESTED = false; // Whether or not an undo was requested
 
 int main(int argc, char* argv[]){
     
@@ -41,7 +43,7 @@ int main(int argc, char* argv[]){
     // Initialize local simulation objects
     sim::Maze maze(sim::MAZE_WIDTH, sim::MAZE_HEIGHT, sim::getMazeFileDirPath(argv[0]), sim::MAZE_FILE);
     sim::Mouse mouse(&maze);
-    sim::MouseInterface mouseInterface(&mouse, &SLEEP_TIME, &PAUSED);
+    sim::MouseInterface mouseInterface(&mouse, &SLEEP_TIME, &PAUSED, &UNDO_REQUESTED, &RESET_REQUESTED);
     Solver solver(&mouseInterface);
 
     // Initialize the local graphics objects
@@ -101,6 +103,14 @@ void keyInput(unsigned char key, int x, int y){
         if (SLEEP_TIME > sim::SLEEP_TIME_MAX){
             SLEEP_TIME = sim::SLEEP_TIME_MAX;
         }
+    }
+    else if (key == 'u' || key == 'I'){
+        // Undo request - reset the position mouse but retains memory
+        UNDO_REQUESTED = true;
+    }
+    else if (key == 'r' || key == 'R'){
+        // Reset requested - reset the position mouse and don't retains memory
+        RESET_REQUESTED = true;
     }
     else if (key == 'q' || key == 'Q'){ // Quit
         exit(0);

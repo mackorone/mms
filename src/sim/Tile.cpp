@@ -60,6 +60,10 @@ void Tile::incrementPasses(){
     m_passes++;
 }
 
+void Tile::resetPasses(){
+    m_passes = 0;
+}
+
 void Tile::setExplored(bool explored){
     m_explored = explored;
 }

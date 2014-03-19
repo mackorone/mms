@@ -24,6 +24,9 @@ public:
     void moveForward();
     void turnRight();
     void turnLeft();
+    void resetPosition(); // Sets the position of the mouse to (0,0)
+    void resetColors(int curX, int curY); // Resets the tile colors of the maze
+
 
 private:
     Maze* m_maze;

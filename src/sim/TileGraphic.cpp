@@ -28,11 +28,9 @@ void TileGraphic::draw(){
     float c2Y = tileLength * (tileY+1);
 
     // Update the color to reflect the number of passes
-    if (m_tile->getPasses() > 0){
-        GLfloat intensity = (float)(.1*m_tile->getPasses());
-        GLfloat COLOR[3] = {0, intensity, intensity};
-        m_color = COLOR;
-    }
+    GLfloat intensity = (float)(.1*m_tile->getPasses());
+    GLfloat COLOR[3] = {0, intensity, intensity};
+    m_color = COLOR;
 
     drawRect(c1X, c1Y, c2X, c2Y, m_color);
     if (m_tile->getPosp()){ // Draw red rectangle if it's posp

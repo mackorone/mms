@@ -16,11 +16,12 @@ public:
     int getWidth();
     int getHeight();
     Tile* getTile(int x, int y);
+    void resetColors(int curX, int curY); // Resets the colors of the maze
 
 private:
     // Vector to hold all of the tiles
     std::vector<std::vector<Tile>> m_maze;
-
+    
     // -------------------- Maze generation utilities -----------------------//
 
     // Generates a random maze based on the (hard-coded) probability that any

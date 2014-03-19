@@ -36,6 +36,7 @@ public:
     void setPos(int x, int y);
     void setDistance(int distance);
     void incrementPasses();
+    void resetPasses();
     void setExplored(bool explored);
     void setPosp(bool posp);
     void setWall(int wall, bool exists);

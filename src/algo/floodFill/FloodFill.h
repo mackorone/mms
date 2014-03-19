@@ -1,12 +1,17 @@
 #ifndef FLOODFILL_H_
 #define FLOODFILL_H_
 
+#include <list>
+
 #include "../IAlgorithm.h"
 #include "Cell.h"
+#include "History.h"
 
 // Constants
-static const int MAZE_SIZE = 16;
+static const int MAZE_SIZE = 16; // TODO: Be able to set maze width and height separately
+static const int SHORT_TERM_MEM = 5; // Steps that are forgetten by the mouse after an error
 enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
+
 
 class FloodFill : public IAlgorithm{
 
@@ -20,15 +25,24 @@ private:
     int m_y; // Y position of the mouse
     int m_d; // Direction of the mouse
     int m_steps; // Count of the steps of the mouse
+    bool m_explored; // Whether or not the explore method was has completed
+    History m_history; // History object used for undos
 
     void printDistances(); // Prints the distance values of the cells in the maze
     void printWalls(); // Prints the wall values of the cells in the maze
-    void initialize(); // Initializes Cells' wall and distance values
+    void resetColors(); // Resets the colors to the maze through the MouseInterface
+
+    void initialize(); // Initialize all mutable fields, including the Cells' walls
+                       // and distances, as well as the mouse-related fields. This 
+                       // should only be called when the mouse is actually in the
+                       // starting location.
+
+    void victory(); // Once the maze is fully explored, solve as quick as possible
 
     void walls(); // Updates the walls surrounding the robot
     void flood(int x, int y); // Floods the maze corresponding to new walls
     void moveTowardsGoal(); // Moves the mouse one step towards the goal (lower distance value)
-    bool inGoal(); // Returns true if the mouse is in the center
+    bool inGoal(int x, int y); // Returns true if the cell at (x, y) is in the center
 
     void moveForward(); // Updates x and y and moves mouse
     void turnRight(); // Updates direction and turns mouse
@@ -64,6 +78,15 @@ private:
     // Attempts to short-circuit the retracing by looking at neighbors of untraversed cells
     // Returns true if successful, false if short-circuiting wasn't possible
     bool tryUntraversed(Cell* target);
+
+
+    // ----------------------- Request Utilities --------------------------- //
+
+    void cellUpdate(); // Updates a current cell along the path to return to checkpoint after an undo request
+    void proceedToCheckpoint(std::stack<Cell*> path); // Returns to the checkpoint and updates cell values along the way
+
+    bool checkExploreRequest(); // Checks and handles requests for the explore method, returns true for reset, else false
+    bool checkVictoryRequest(); // Checks and handles requests for the victory method, returns true for reset, else false
 };
 
 #endif // FLOODFILL_H_

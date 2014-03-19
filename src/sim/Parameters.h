@@ -11,7 +11,7 @@ static const int SLEEP_TIME_MAX = 1500; // max ms between simulation steps
 static /*non-const*/ int MAZE_WIDTH = 16; // Number or tiles wide
 static /*non-const*/ int MAZE_HEIGHT = 16; // Number or tiles tall
 static const int MAX_DISTANCE = MAZE_WIDTH*MAZE_HEIGHT; // Max distance of tile
-static const std::string MAZE_FILE = ""; // Maze file to load ("maze5.maz")
+static const std::string MAZE_FILE = "tester.max"; // Maze file to load ("maze5.maz")
 static const int MIN_MAZE_STEPS = 40; // Minimum steps required to solve random maze
 
 // Graphics parameters
