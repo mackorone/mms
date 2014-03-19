@@ -21,8 +21,8 @@ void FloodFill::solve(sim::MouseInterface* mouse){
     }
 
     // Initialize the Cells' walls and distances
-    explore();
     initialize();
+    explore();
 
     // Augmented Floodfill - Explore the maze to its entirety, returning to the start
     std::cout << m_steps << std::endl; // Print the total number of steps
