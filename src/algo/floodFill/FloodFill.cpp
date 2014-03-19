@@ -95,7 +95,7 @@ void FloodFill::initialize(){
     for (int y = 0; y < MAZE_SIZE/2; y++){
         for(int x = 0; x < MAZE_SIZE/2; x++){
             m_cells[x][y].setDistance(distance); // Bottom-left
-            m_cells[y][MAZE_SIZE-1-x].setDistance(distance); // Upper-left // TODO: Is this correct?  Why is y in the x-coordinate?
+            m_cells[y][MAZE_SIZE-1-x].setDistance(distance); // Upper-left
             m_cells[MAZE_SIZE-1-x][MAZE_SIZE-1-y].setDistance(distance); // Upper-right
             m_cells[MAZE_SIZE-1-y][x].setDistance(distance); // Bottom right
             distance -= 1;
