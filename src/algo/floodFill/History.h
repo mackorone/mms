@@ -16,28 +16,42 @@ public:
     int size(); // Returns the number of steps taken by the mouse
 
     // NOTE: These accessors mutate the underlying objects - be careful to only call them once!
-    std::stack<Cell*> getRecoveryPath(); // Returns the path to the recovery cell
-    std::stack<Cell*> getRecoveryStack(); // Returns the stack that was present m_stm steps ago
+    std::stack<Cell*> getCheckpointPath(); // Returns the path to the checkpoint cell
+    std::stack<Cell*> getCheckpointStack(); // Returns the stack that was present at the most recent checkpoint
 
     void moved(Cell* movedTo);
     void stackUpdate(std::stack<Cell*> newStack);
     void modifiedCellsUpdate(std::list<std::pair<Cell*, int>> cells);
 
     void resetModifiedCells();
+    void setCheckpoint(std::stack<Cell*> checkpointPath, std::stack<Cell*> checkpointStack);
 
 private:
 
     // TODO: Checkpoint???
 
     int m_stm; // The short term memory of the robot
-    std::queue<Cell*> m_path; // List of the path of the mouse
-    std::queue<std::stack<Cell*>> m_stacks; // Queue of stacks for explore
-    std::list<int> m_stackReferenceCounts; // Queue of ints counting the references for each stack in m_stacks
-    std::queue<std::list<std::pair<Cell*, int>>> m_modifiedCells; // Queue of cells modified for each step
-    std::list<int> m_modifiedCellsReferenceCounts; // Queue of ints counting the references to each of the lists in m_modifiedCells
 
-    Cell* getRecoveryCell(); // Returns a pointer the recovery cell
+    // Checkpoint objects
+    std::stack<Cell*> m_checkpointPath; // TODO: Maybe just want to store the cell here? Much less space
+    std::stack<Cell*> m_checkpointStack;
 
+    // Queue of the path of the mouse
+    std::queue<Cell*> m_path;
+
+    // Queue of stacks for explore
+    std::queue<std::stack<Cell*>> m_stacks;
+
+    // Queue of ints counting the references for each stack in m_stacks
+    std::list<int> m_stackReferenceCounts;
+
+    // Queue of cells modified for each step
+    std::queue<std::list<std::pair<Cell*, int>>> m_modifiedCells;
+
+    // Queue of ints counting the references to each of the lists in m_modifiedCells
+    std::list<int> m_modifiedCellsReferenceCounts; 
+
+    Cell* getCheckpointCell(); // Returns a pointer the checkpoint cell
 
     // TODO
     void printS();

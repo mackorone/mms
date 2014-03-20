@@ -82,11 +82,18 @@ private:
 
     // ----------------------- Request Utilities --------------------------- //
 
-    void cellUpdate(); // Updates a current cell along the path to return to checkpoint after an undo request
-    void proceedToCheckpoint(std::stack<Cell*> path); // Returns to the checkpoint and updates cell values along the way
+    // Updates a current cell along the path to return to checkpoint after an undo request
+    void cellUpdate(); 
 
-    bool checkExploreRequest(); // Checks and handles requests for the explore method, returns true for reset, else false
-    bool checkVictoryRequest(); // Checks and handles requests for the victory method, returns true for reset, else false
+    // Moves to the checkpoint and updates cell values along the way. Returns true if either
+    // a reset or undo request was made during the movement, false otherwise
+    bool proceedToCheckpoint(std::stack<Cell*> path);
+
+    // Checks and handles requests for the explore method, returns true for reset, else false
+    bool checkExploreRequest();
+
+    // Checks and handles requests for the victory method, returns true for reset, else false
+    bool checkVictoryRequest();
 };
 
 #endif // FLOODFILL_H_

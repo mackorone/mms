@@ -519,8 +519,8 @@ void FloodFill::explore(){
                                  // memory - we simply attempt to get back to that cell again.
     
     // TODO: Additionally, we should have some sort of checkpoint cell - that is, it starts at zero
-    // and then changes to the recovery cell after each undo if requested. If an undo is requested
-    // immediatly after another undo completes, make sure to only go back as far as the recovery point
+    // and then changes to the checkpoint cell after each undo if requested. If an undo is requested
+    // immediatly after another undo completes, make sure to only go back as far as the checkpoint point
 
 // --------------------------------------------------------------------------------------------------------- //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -547,7 +547,7 @@ void FloodFill::explore(){
         if (m_mouse->undoRequested()) {
         
             // TODO: If another undo is requested while this undo is still being completed, then
-            // we should simply redo our attempts to get to the recovery cell - Go to checkpoint
+            // we should simply redo our attempts to get to the checkpoint cell - Go to checkpoint
     
             // We check to see if we've moved at least SHORT_TERM_MEM number of times. If so, then
             // we can go back that many steps to the state that existed right BEFORE those steps
@@ -558,27 +558,56 @@ void FloodFill::explore(){
                 m_d = 0;
                 m_mouse->resetPosition();
 
+                // We must call undoHonored() directly after we decide to honor the request
+                // so that we may detect more undo requests during our attempt to continue
+                // exploring the maze
+                m_mouse->undoHonored();
+
                 // Retrieve the old stack image
-                unexplored = m_history.getRecoveryStack();
+                unexplored = m_history.getCheckpointStack();
 
                 // Retrieve the path to get back to the current cell. Note that we *must*
                 // do this prior to clearing the cells since the prev values are being set
                 // to NULL (which sets modified cells to "undiscovered").
-                std::stack<Cell*> path = m_history.getRecoveryPath();
+                std::stack<Cell*> path = m_history.getCheckpointPath();
 
                 // Clear the modified cells.
                 m_history.resetModifiedCells();
 
-                // Moves to the checkpoint
-                proceedToCheckpoint(path);
+                // TODO: Set checkpoint HERE - along with this I should reset the modified cells and
+                // stacks... right??? - Should this be in the getCheckpoint Method???
+                m_history.setCheckpoint(path, unexplored);
 
-                m_mouse->undoHonored();
+                // Moves to the checkpoint and checks for requests along the way. This
+                // evaluates to true if there was another request. In that case, handle
+                // the request appropriately.
+                if (proceedToCheckpoint(path)) {
+                    if (m_mouse->resetRequested()) {
+                        m_mouse->resetPosition();
+                        m_mouse->resetColors(0, 0);
+                        m_mouse->undoHonored();
+                        return;
+                    }
+                    else {
+                        // TODO: HERERERE is where we have to return to the checkpoint
+                    }
+                }
+
+                // TODO: Print the stack here
+                std::stack<Cell*> tmp = unexplored;
+                while (!tmp.empty()) {
+                    Cell* x = tmp.top();
+                    tmp.pop();
+                    std::cout << "Stacko - (" << x->getX() << "," << x->getY() << ")" << std::endl;
+                }
+
                 continue;
             }
             else{ // Behaves the same as a reset
 
-                // TODO: If an undo is pressed right after anothe undo is completed, then that request should not
+                // TODO: If an undo is pressed right after another undo is completed, then that request should not
                 // cause all memory to be erased just becaue is hasn't gone far enough steps since the first undo
+                // TODO: HERERERE is where we have to return to the checkpoint
 
                 m_mouse->resetPosition();
                 m_mouse->resetColors(0, 0);
@@ -616,6 +645,7 @@ void FloodFill::explore(){
             // If so, no need to explore that cell - get a new target
             for (int i = 0; i < 4; i++){
                 allWallsInspected = allWallsInspected && target->getWallInspected(i);
+                std::cout << "Wall " << i << " of (" << target->getX() << "," << target->getY() << ") is inspected: " << (target->getWallInspected(i) ? "true" : "false") << std::endl;
             } 
             
             // Although we don't need to explicitly explore a Cell if we've
@@ -633,6 +663,7 @@ void FloodFill::explore(){
             if (allWallsInspected){
                 target->setExplored(true);
                 flood(target->getX(), target->getY());
+                std::cout << "Skipping (" << target->getX() << "," << target->getY() << ")" << std::endl;// TODO
             }
         }
 
@@ -643,6 +674,7 @@ void FloodFill::explore(){
 
         if (target->getPrev() != NULL && !allWallsInspected){ // If prev == NULL we're at the start, so no need to move
 
+            std::cout << "Target is (" << target->getX() << "," << target->getY() << ")" << std::endl;
             // While the mouse is not in the advancing position, trace back.
             while (target->getPrev() != &m_cells[m_x][m_y]) {
 
@@ -721,7 +753,17 @@ void FloodFill::explore(){
         m_history.stackUpdate(unexplored);
 
         std::list<std::pair<Cell*, int>> modifiedCells;
-        modifiedCells.push_back(std::pair<Cell*, int> (target, m_d));
+
+        // NOTE: We push 4 for the current cell so that we are sure to erase all walls
+        // of the current cell. This is justified and necessary because if the mouse
+        // traverses a cell then that cell wouldn't have been a candidate for skipping
+        // anyways. Furthermore, the fact that we're in the target cell suggests that
+        // this it's necessary to traverse this cell to fully explore the maze. Bottom
+        // line, we need to erase ALL wall values for the current cell, lest we read
+        // that all walls of a cell on the stack have been fully determined, when in
+        // reality they may have not been.
+        modifiedCells.push_back(std::pair<Cell*, int> (target, 4));
+
         if (spaceLeft()) {
             modifiedCells.push_back(std::pair<Cell*, int> (getLeftCell(), (m_d + 1) % 4));
         }
@@ -731,6 +773,7 @@ void FloodFill::explore(){
         if (spaceRight()) {
             modifiedCells.push_back(std::pair<Cell*, int> (getRightCell(), (m_d + 3) % 4));
         }
+
         m_history.modifiedCellsUpdate(modifiedCells);
     }
 
@@ -1133,27 +1176,43 @@ void FloodFill::basicFloodFill(){
     }
 }
 
-void FloodFill::proceedToCheckpoint(std::stack<Cell*> path) {
+bool FloodFill::proceedToCheckpoint(std::stack<Cell*> path) {
 
     while (!path.empty()) {
+
+        // On each iteration, first check for requests
+        if (m_mouse->resetRequested() || m_mouse->undoRequested()) {
+            return true;
+        }
+
         Cell* next = path.top();
-        std::cout << "Recover path (" << next->getX() << "," << next->getY() << ")" << std::endl;
+        //std::cout << "Recover path (" << next->getX() << "," << next->getY() << ")" << std::endl;
         path.pop();
         if (next->getPrev() != NULL) {
             moveOneCell(next);
         }
         cellUpdate();
     }
+    return false;
 }
 
 void FloodFill::cellUpdate() {
     if (!m_mouse->wallLeft() && getLeftCell()->getPrev() == NULL){
+        std::cout << "Setting prev of (" << getLeftCell()->getX() << ","
+        << getLeftCell()->getY() << ") to (" << m_cells[m_x][m_y].getX() << ","
+        << m_cells[m_x][m_y].getY() << ")" << std::endl;
         getLeftCell()->setPrev(&m_cells[m_x][m_y]);
     }
     if (!m_mouse->wallFront() && getFrontCell()->getPrev() == NULL){
+        std::cout << "Setting prev of (" << getFrontCell()->getX() << ","
+        << getFrontCell()->getY() << ") to (" << m_cells[m_x][m_y].getX() << ","
+        << m_cells[m_x][m_y].getY() << ")" << std::endl;
         getFrontCell()->setPrev(&m_cells[m_x][m_y]);
     }
     if (!m_mouse->wallRight() && getRightCell()->getPrev() == NULL){
+        std::cout << "Setting prev of (" << getRightCell()->getX() << ","
+        << getRightCell()->getY() << ") to (" << m_cells[m_x][m_y].getX() << ","
+        << m_cells[m_x][m_y].getY() << ")" << std::endl;
         getRightCell()->setPrev(&m_cells[m_x][m_y]);
     }
     walls();

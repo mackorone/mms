@@ -14,6 +14,15 @@ void History::initialize(int stm, Cell* origin) {
     while (!m_stacks.empty()) {
         m_stacks.pop();
     }
+    while (!m_stackReferenceCounts.empty()) {
+        m_stackReferenceCounts.pop_front();
+    }
+    while (!m_modifiedCells.empty()) {
+        m_modifiedCells.pop();
+    }
+    while (!m_modifiedCellsReferenceCounts.empty()) {
+        m_modifiedCellsReferenceCounts.pop_front();
+    }
 
     // Push the stack [(0,0)] since (0,0) or is *always* our first target
     std::stack<Cell*> temp;
@@ -36,22 +45,24 @@ int History::size() {
     return m_path.size() - 1;
 }
 
-Cell* History::getRecoveryCell() {
+Cell* History::getCheckpointCell() {
 
-    // TODO: Do we need to go back to the recovery cell? Or can we simply go to the
-    // prev cell for the first thing on the stack???
-    // TODO: Get the stack associated with the number of recovery cells previous
+    // TODO: Here we should check to see if the mem is at least the size of the short_term_mem
+    // If not, return checkpoint. Otherwise, do what we're doing here
+
+    // The checkpoint cell is the prev cell for the cell on top of the stack for the 
+    // furthest back stack that we are storing within m_stacks
     Cell* r = m_stacks.front().top();
     r = r->getPrev();
     return r;
 }
 
-std::stack<Cell*> History::getRecoveryPath() {
+std::stack<Cell*> History::getCheckpointPath() {
 
     std::stack<Cell*> path;
-    Cell* runner = getRecoveryCell();
+    Cell* runner = getCheckpointCell();
 
-    std::cout << "Recovery Cell (" << runner->getX() << "," << runner->getY() << ")" << std::endl;
+    std::cout << "Checkpoint Cell (" << runner->getX() << "," << runner->getY() << ")" << std::endl;
 
     while (runner != NULL) {
         path.push(runner);
@@ -72,7 +83,7 @@ std::stack<Cell*> History::getRecoveryPath() {
     return path;
 }
 
-std::stack<Cell*> History::getRecoveryStack() {
+std::stack<Cell*> History::getCheckpointStack() {
 
     // Print the stack
     std::stack<Cell*> temp = m_stacks.front(); // TODO
@@ -80,7 +91,7 @@ std::stack<Cell*> History::getRecoveryStack() {
     for (int i = 0; i < size; i++) {
         Cell* c = temp.top();
         temp.pop();
-        std::cout << "Recovery stack (" << c->getX() << "," << c->getY() << ")" << std::endl;
+        std::cout << "Checkpoint stack (" << c->getX() << "," << c->getY() << ")" << std::endl;
     }
 
     return m_stacks.front();
@@ -117,7 +128,7 @@ void History::moved(Cell* movedTo) {
     }
     if (m_modifiedCellsReferenceCounts.front() == 0) {
         m_modifiedCellsReferenceCounts.pop_front();
-        std::cout << "ModCells Size: " << m_modifiedCells.size() << std::endl;
+        //std::cout << "ModCells Size: " << m_modifiedCells.size() << std::endl;
         m_modifiedCells.pop();
     }
 }
@@ -148,7 +159,7 @@ void History::stackUpdate(std::stack<Cell*> newStack) {
     m_stackReferenceCounts.push_back(temp-1);
     m_stackReferenceCounts.push_back(1);
 
-    //printS();// TODO
+    printS();// TODO
 }
 
 void History::modifiedCellsUpdate(std::list<std::pair<Cell*, int>> cells) {
@@ -160,7 +171,7 @@ void History::modifiedCellsUpdate(std::list<std::pair<Cell*, int>> cells) {
     m_modifiedCellsReferenceCounts.push_back(temp-1);
     m_modifiedCellsReferenceCounts.push_back(1);
 
-    //printC();//TODO
+    printC();//TODO
 }
 
 void History::resetModifiedCells() {
@@ -170,11 +181,26 @@ void History::resetModifiedCells() {
         std::list<std::pair<Cell*, int>> cellList = temp.front();
         temp.pop();
         for (std::list<std::pair<Cell*, int>>::iterator it = cellList.begin(); it != cellList.end() ; ++it) {
-            std::cout << "Resetting (" << (std::get<0>(*it))->getX() << "," << (std::get<0>(*it))->getY() << ")" << std::endl;// TODO
+            //std::cout << "Resetting (" << (std::get<0>(*it))->getX() << "," << (std::get<0>(*it))->getY() << ")" << std::endl;// TODO
             (std::get<0>(*it))->setPrev(NULL);
-            (std::get<0>(*it))->setWallInspected(std::get<1>(*it), false);
+
+            // 4 indicates that we should reset all wall values
+            if ((std::get<1>(*it)) == 4) {
+                for (int i = 0; i < 4; i++){
+                    (std::get<0>(*it))->setWallInspected(i, false);
+                }
+            }
+            else{ // Otherwise we only need to reset the one wall that was seen
+                  // from the then current cell
+                (std::get<0>(*it))->setWallInspected(std::get<1>(*it), false);
+            }
         }
     }
+}
+
+void History::setCheckpoint(std::stack<Cell*> checkpointPath, std::stack<Cell*> checkpointStack) {
+    m_checkpointPath = checkpointPath;
+    m_checkpointStack = checkpointStack;
 }
 
 // Prints stacks and ref count
@@ -224,3 +250,4 @@ void History::printC() {
         ii.pop_front();
     }
 }
+
