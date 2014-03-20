@@ -530,6 +530,8 @@ void FloodFill::explore(){
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // --------------------------------------------------------------------------------------------------------- //
+        
+        
 
         // At the beginning of every iteration, check for reset request
         // TODO: This should happen more often than every iteration, but for now for
@@ -567,7 +569,9 @@ void FloodFill::explore(){
                 // Clear the modified cells.
                 m_history.resetModifiedCells();
 
+                // Moves to the checkpoint
                 proceedToCheckpoint(path);
+
                 m_mouse->undoHonored();
                 continue;
             }
@@ -715,6 +719,7 @@ void FloodFill::explore(){
 
         // Update the History target stack and modified cells
         m_history.stackUpdate(unexplored);
+
         std::list<std::pair<Cell*, int>> modifiedCells;
         modifiedCells.push_back(std::pair<Cell*, int> (target, m_d));
         if (spaceLeft()) {

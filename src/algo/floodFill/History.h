@@ -31,12 +31,17 @@ private:
 
     int m_stm; // The short term memory of the robot
     std::queue<Cell*> m_path; // List of the path of the mouse
-    std::queue<std::stack<Cell*>> m_stacks; // Queue of stacks for explore // TODO: It's a list now
+    std::queue<std::stack<Cell*>> m_stacks; // Queue of stacks for explore
     std::list<int> m_stackReferenceCounts; // Queue of ints counting the references for each stack in m_stacks
     std::queue<std::list<std::pair<Cell*, int>>> m_modifiedCells; // Queue of cells modified for each step
     std::list<int> m_modifiedCellsReferenceCounts; // Queue of ints counting the references to each of the lists in m_modifiedCells
 
     Cell* getRecoveryCell(); // Returns a pointer the recovery cell
+
+
+    // TODO
+    void printS();
+    void printC();
 };
 
 #endif // HISTORY_H_
