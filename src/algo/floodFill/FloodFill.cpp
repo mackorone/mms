@@ -1134,8 +1134,10 @@ void FloodFill::basicFloodFill(){
 }
 
 void FloodFill::proceedToCheckpoint(std::stack<Cell*> path) {
+
     while (!path.empty()) {
         Cell* next = path.top();
+        std::cout << "Recover path (" << next->getX() << "," << next->getY() << ")" << std::endl;
         path.pop();
         if (next->getPrev() != NULL) {
             moveOneCell(next);

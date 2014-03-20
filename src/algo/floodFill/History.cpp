@@ -43,10 +43,7 @@ Cell* History::getRecoveryCell() {
     // TODO: Get the stack associated with the number of recovery cells previous
     Cell* r = m_stacks.front().top();
     r = r->getPrev();
-    //if (r->getPrev() != NULL) { // If we're recovering to the origin
-    //}
     return r;
-    //return m_path.front();
 }
 
 std::stack<Cell*> History::getRecoveryPath() {
@@ -120,6 +117,7 @@ void History::moved(Cell* movedTo) {
     }
     if (m_modifiedCellsReferenceCounts.front() == 0) {
         m_modifiedCellsReferenceCounts.pop_front();
+        std::cout << "ModCells Size: " << m_modifiedCells.size() << std::endl;
         m_modifiedCells.pop();
     }
 }
@@ -166,9 +164,11 @@ void History::modifiedCellsUpdate(std::list<std::pair<Cell*, int>> cells) {
 }
 
 void History::resetModifiedCells() {
-    while (!m_modifiedCells.empty()) {
-        std::list<std::pair<Cell*, int>> cellList = m_modifiedCells.front();
-        m_modifiedCells.pop();
+    // TODO: I don't think I should delete everything in modified cells if I reset the cells
+    std::queue<std::list<std::pair<Cell*, int>>> temp = m_modifiedCells;
+    while (!temp.empty()) {
+        std::list<std::pair<Cell*, int>> cellList = temp.front();
+        temp.pop();
         for (std::list<std::pair<Cell*, int>>::iterator it = cellList.begin(); it != cellList.end() ; ++it) {
             std::cout << "Resetting (" << (std::get<0>(*it))->getX() << "," << (std::get<0>(*it))->getY() << ")" << std::endl;// TODO
             (std::get<0>(*it))->setPrev(NULL);
