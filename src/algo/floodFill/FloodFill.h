@@ -90,10 +90,10 @@ private:
     bool proceedToCheckpoint(std::stack<Cell*> path);
 
     // Checks and handles requests for the explore method, returns true for reset, else false
-    bool checkExploreRequest();
+    bool checkRequestExplore();
 
     // Checks and handles requests for the victory method, returns true for reset, else false
-    bool checkVictoryRequest();
+    bool checkRequestVictory();
 };
 
 #endif // FLOODFILL_H_

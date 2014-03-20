@@ -137,6 +137,7 @@ void FloodFill::initialize(){
 void FloodFill::victory(){
 
     // TODO: Set the speed greater with each iteration
+    std::cout << "VICTORY" << std::endl;
 
     // Loop forever, continue going to the beginning and solving
     while (true){
@@ -157,7 +158,7 @@ void FloodFill::victory(){
         }
 
         // If a reset request is made, return so we can re-init and re-explore
-        if (checkVictoryRequest()) {
+        if (checkRequestVictory()) {
             return;
         }
     }
@@ -544,14 +545,16 @@ void FloodFill::explore(){
             return;
         }
 
+        std::cout << "CHECK UNDO REQUEST" << std::endl;
         if (m_mouse->undoRequested()) {
         
+
             // TODO: If another undo is requested while this undo is still being completed, then
             // we should simply redo our attempts to get to the checkpoint cell - Go to checkpoint
     
             // We check to see if we've moved at least SHORT_TERM_MEM number of times. If so, then
             // we can go back that many steps to the state that existed right BEFORE those steps
-            if (m_history.size() >= SHORT_TERM_MEM) {
+            //if (m_history.size() >= SHORT_TERM_MEM) {
 
                 m_x = 0;
                 m_y = 0;
@@ -565,23 +568,31 @@ void FloodFill::explore(){
 
                 // Retrieve the old stack image
                 unexplored = m_history.getCheckpointStack();
+                /*
+                std::stack<Cell*> tr = unexplored;
+                while (!tr.empty()){
+                    Cell* cd = tr.top();
+                    tr.pop();
+                    std::cout << "The Stack after getCheckpointStack: (" << cd->getX() << "," << cd->getY() << ")" << std::endl;
+                }
+                */
 
                 // Retrieve the path to get back to the current cell. Note that we *must*
                 // do this prior to clearing the cells since the prev values are being set
                 // to NULL (which sets modified cells to "undiscovered").
                 std::stack<Cell*> path = m_history.getCheckpointPath();
 
-                // Clear the modified cells.
-                m_history.resetModifiedCells();
-
                 // TODO: Set checkpoint HERE - along with this I should reset the modified cells and
                 // stacks... right??? - Should this be in the getCheckpoint Method???
-                m_history.setCheckpoint(path, unexplored);
+
+                // Clear the modified cells.
+                m_history.resetModifiedCells(); // TODO: Call this something else
 
                 // Moves to the checkpoint and checks for requests along the way. This
                 // evaluates to true if there was another request. In that case, handle
                 // the request appropriately.
                 if (proceedToCheckpoint(path)) {
+                    std::cout << "request made" << std::endl;
                     if (m_mouse->resetRequested()) {
                         m_mouse->resetPosition();
                         m_mouse->resetColors(0, 0);
@@ -590,18 +601,22 @@ void FloodFill::explore(){
                     }
                     else {
                         // TODO: HERERERE is where we have to return to the checkpoint
+                        continue; // TODO: I think this should work
                     }
                 }
 
                 // TODO: Print the stack here
+                /*
                 std::stack<Cell*> tmp = unexplored;
                 while (!tmp.empty()) {
                     Cell* x = tmp.top();
                     tmp.pop();
                     std::cout << "Stacko - (" << x->getX() << "," << x->getY() << ")" << std::endl;
                 }
+                */
 
                 continue;
+/*
             }
             else{ // Behaves the same as a reset
 
@@ -614,6 +629,7 @@ void FloodFill::explore(){
                 m_mouse->undoHonored();
                 return;
             }
+*/
         }
 
 // --------------------------------------------------------------------------------------------------------- //
@@ -645,7 +661,9 @@ void FloodFill::explore(){
             // If so, no need to explore that cell - get a new target
             for (int i = 0; i < 4; i++){
                 allWallsInspected = allWallsInspected && target->getWallInspected(i);
-                std::cout << "Wall " << i << " of (" << target->getX() << "," << target->getY() << ") is inspected: " << (target->getWallInspected(i) ? "true" : "false") << std::endl;
+                //std::cout << "Wall " << i << " of (" << target->getX() << ","
+                //<< target->getY() << ") is inspected: " << (target->getWallInspected(i) ? "true" : "false")
+                //<< std::endl;
             } 
             
             // Although we don't need to explicitly explore a Cell if we've
@@ -663,7 +681,8 @@ void FloodFill::explore(){
             if (allWallsInspected){
                 target->setExplored(true);
                 flood(target->getX(), target->getY());
-                std::cout << "Skipping (" << target->getX() << "," << target->getY() << ")" << std::endl;// TODO
+                std::cout << "Skipping (" << target->getX() << "," << target->getY()
+                << ")" << std::endl;// TODO
             }
         }
 
@@ -740,6 +759,9 @@ void FloodFill::explore(){
         if (!m_mouse->wallFront() && getFrontCell()->getPrev() == NULL){
             unexplored.push(getFrontCell());
             getFrontCell()->setPrev(&m_cells[m_x][m_y]);
+        }
+        else {
+            std::cout << "Already has prev value" << std::endl;
         }
         if (!m_mouse->wallRight() && getRightCell()->getPrev() == NULL){
             unexplored.push(getRightCell());
@@ -1031,12 +1053,13 @@ void FloodFill::moveOneCell(Cell* target){
             turnLeft();
         }
 
+        std::cout << "MoveOneCellForward" << std::endl;
         // Finally, move forward one space
         moveForward();
     }
     else{
-        std::cout << "ERROR: Tried to move to cell using moveOneCell function,"
-        << " but the specificed cell is not one space away." << std::endl;
+        std::cout << "ERROR: Tried to move to cell (" << target->getX() << ","
+        << target->getY() << ") but it's not one space away." << std::endl;
     }
 }
 
@@ -1178,10 +1201,13 @@ void FloodFill::basicFloodFill(){
 
 bool FloodFill::proceedToCheckpoint(std::stack<Cell*> path) {
 
+    std::cout << "Proceeding to path" << std::endl;
     while (!path.empty()) {
+        //std::cout << "Path length: " << path.size() << std::endl;
 
         // On each iteration, first check for requests
         if (m_mouse->resetRequested() || m_mouse->undoRequested()) {
+            std::cout << "REQUEST MADE DURING PROCEEDING" << std::endl;
             return true;
         }
 
@@ -1191,28 +1217,32 @@ bool FloodFill::proceedToCheckpoint(std::stack<Cell*> path) {
         if (next->getPrev() != NULL) {
             moveOneCell(next);
         }
-        cellUpdate();
+        // We don't want to update the checkpoint cell // TODO: I don't understand why though
+        if (path.size() > 0) {
+            cellUpdate();
+        }
     }
+    std::cout << "Arrived at checkpoint" << std::endl;
     return false;
 }
 
 void FloodFill::cellUpdate() {
     if (!m_mouse->wallLeft() && getLeftCell()->getPrev() == NULL){
-        std::cout << "Setting prev of (" << getLeftCell()->getX() << ","
-        << getLeftCell()->getY() << ") to (" << m_cells[m_x][m_y].getX() << ","
-        << m_cells[m_x][m_y].getY() << ")" << std::endl;
+        //std::cout << "Setting prev of (" << getLeftCell()->getX() << ","
+        //<< getLeftCell()->getY() << ") to (" << m_cells[m_x][m_y].getX() << ","
+        //<< m_cells[m_x][m_y].getY() << ")" << std::endl;
         getLeftCell()->setPrev(&m_cells[m_x][m_y]);
     }
     if (!m_mouse->wallFront() && getFrontCell()->getPrev() == NULL){
-        std::cout << "Setting prev of (" << getFrontCell()->getX() << ","
-        << getFrontCell()->getY() << ") to (" << m_cells[m_x][m_y].getX() << ","
-        << m_cells[m_x][m_y].getY() << ")" << std::endl;
+        //std::cout << "Setting prev of (" << getFrontCell()->getX() << ","
+        //<< getFrontCell()->getY() << ") to (" << m_cells[m_x][m_y].getX() << ","
+        //<< m_cells[m_x][m_y].getY() << ")" << std::endl;
         getFrontCell()->setPrev(&m_cells[m_x][m_y]);
     }
     if (!m_mouse->wallRight() && getRightCell()->getPrev() == NULL){
-        std::cout << "Setting prev of (" << getRightCell()->getX() << ","
-        << getRightCell()->getY() << ") to (" << m_cells[m_x][m_y].getX() << ","
-        << m_cells[m_x][m_y].getY() << ")" << std::endl;
+        //std::cout << "Setting prev of (" << getRightCell()->getX() << ","
+        //<< getRightCell()->getY() << ") to (" << m_cells[m_x][m_y].getX() << ","
+        //<< m_cells[m_x][m_y].getY() << ")" << std::endl;
         getRightCell()->setPrev(&m_cells[m_x][m_y]);
     }
     walls();
@@ -1220,21 +1250,21 @@ void FloodFill::cellUpdate() {
     m_cells[m_x][m_y].setTraversed(true);
 }
 
-bool FloodFill::checkExploreRequest() {
+bool FloodFill::checkRequestExplore() {
 
 }
 
-bool FloodFill::checkVictoryRequest() {
+bool FloodFill::checkRequestVictory() {
 
     // If a request has been made, perform appropriately. Since the maze has already
     // been completely solved, on reset we start over and on undo we simply retry
     // solving the maze as quickly as possible (without changing wall information)
     if (m_mouse->undoRequested() || m_mouse->resetRequested()) {
         m_mouse->resetPosition();
-        m_mouse->resetColors(0, 0);
         if (m_mouse->resetRequested()) {
             // This return will cause victory() to exit, and thus
             // we reinitialize the maze and start our solve over
+            m_mouse->resetColors(0, 0);
             m_mouse->resetHonored();
             return true;
         }

@@ -24,7 +24,6 @@ public:
     void modifiedCellsUpdate(std::list<std::pair<Cell*, int>> cells);
 
     void resetModifiedCells();
-    void setCheckpoint(std::stack<Cell*> checkpointPath, std::stack<Cell*> checkpointStack);
 
 private:
 
@@ -33,7 +32,7 @@ private:
     int m_stm; // The short term memory of the robot
 
     // Checkpoint objects
-    std::stack<Cell*> m_checkpointPath; // TODO: Maybe just want to store the cell here? Much less space
+    Cell* m_checkpointCell; // TODO: Maybe just want to store the cell here? Much less space
     std::stack<Cell*> m_checkpointStack;
 
     // Queue of the path of the mouse
