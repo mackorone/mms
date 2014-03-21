@@ -25,8 +25,6 @@ private:
     int m_y; // Y position of the mouse
     int m_d; // Direction of the mouse
     int m_steps; // Count of the steps of the mouse
-    bool m_explored; // Whether or not the explore method was has completed
-    History m_history; // History object used for undos
 
     void printDistances(); // Prints the distance values of the cells in the maze
     void printWalls(); // Prints the wall values of the cells in the maze
@@ -81,6 +79,10 @@ private:
 
 
     // ----------------------- Request Utilities --------------------------- //
+
+    History m_history; // History object used for undos
+    bool m_explored; // Whether or not the explore method was has completed
+    bool m_checkpointReached; // Whether or not we've made it back to the checkpoint
 
     // Updates a current cell along the path to return to checkpoint after an undo request
     void cellUpdate(); 
