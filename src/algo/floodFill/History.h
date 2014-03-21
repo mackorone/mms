@@ -14,14 +14,12 @@ public:
 
     void initialize(int stm, Cell* origin); // Set the history object for the origin
 
-    // NOTE: These accessors mutate the underlying objects - be careful to only call them once!
-
     std::stack<Cell*> getCheckpointStack(); // Returns the stack that was present at the most recent checkpoint
     std::stack<Cell*> getCheckpointPath(); // Returns the path to the checkpoint cell
 
     void moved(Cell* movedTo);
     void stackUpdate(std::stack<Cell*> newStack);
-    void modifiedCellsUpdate(std::list<std::pair<Cell*, int>> cells);
+    void modifiedCellsUpdate(std::list<std::pair<Cell*, std::pair<Cell*, int>>> cells);
 
     void resetModifiedCells();
 
@@ -47,11 +45,10 @@ private:
     // Queue of ints counting the references for each stack in m_stacks
     std::list<int> m_stackReferenceCounts;
 
-    // List of List of cells modified for each step
-    std::list<std::list<std::pair<Cell*, int>>> m_modifiedCells;
-
-    // Queue of ints counting the references to each of the lists in m_modifiedCells
-    //std::list<int> m_modifiedCellsReferenceCounts; 
+    // List of List of cells modified for each step. The first cell indicates the cell
+    // that was modified, the second cell is the old prev value, and the int is the
+    // wall that was modified.
+    std::list<std::list<std::pair<Cell*, std::pair<Cell*, int>>>> m_modifiedCells;
 
     Cell* getCheckpointCell(); // Returns a pointer the checkpoint cell
 

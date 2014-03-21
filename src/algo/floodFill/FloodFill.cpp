@@ -1,5 +1,4 @@
 #include "FloodFill.h"
-
 #include <iostream>
 #include <stack>
 #include <queue>
@@ -580,11 +579,10 @@ void FloodFill::explore(){
             // evaluates to true if there was another request. In that case, handle
             // the request appropriately.
             if (proceedToCheckpoint(path)) {
-                //std::cout << "request made" << std::endl;
                 if (m_mouse->resetRequested()) {
                     m_mouse->resetPosition();
                     m_mouse->resetColors(0, 0);
-                    m_mouse->undoHonored();
+                    m_mouse->resetHonored();
                     return;
                 }
                 else {
@@ -603,6 +601,7 @@ void FloodFill::explore(){
             }
             */
 
+            std::cout << "Successfully made it to cell (" << m_x << "," << m_y << ")" << std::endl;
             m_checkpointReached = true;
             continue;
         }
@@ -656,8 +655,8 @@ void FloodFill::explore(){
             if (allWallsInspected){
                 target->setExplored(true);
                 flood(target->getX(), target->getY());
-                //std::cout << "Skipping (" << target->getX() << "," << target->getY()
-                //<< ")" << std::endl;// TODO
+                std::cout << "Skipping (" << target->getX() << "," << target->getY()
+                << ")" << std::endl;// TODO
             }
         }
 
@@ -666,6 +665,12 @@ void FloodFill::explore(){
         // updates or flooding - we simply want to return to the beginning for victory.
         if (allWallsInspected) {
             break;
+        }
+
+        std::cout << "TARGET (" << target->getX() << "," << target->getY() << ")" << std::endl;
+        if (target->getPrev() == NULL && target != &m_cells[0][0]) {
+            std::cout << "ERROR" << std::endl;
+            exit(0);
         }
 
         // If prev == NULL we're at the start, so no need to move
@@ -722,13 +727,6 @@ void FloodFill::explore(){
             // Once the mouse is in proper advancing position, advance
             moveOneCell(target);
         }
-        else {
-
-            // If the target is the origin, then we need to handle this as a special case.
-            // Namely, we need to still call moved() on the History object so as to update
-            // the path, stackReferences, and modifiedCellReferences
-            //moved(target); // TODO: Actually, we'll take care of this in History
-        }
 
         // Once we're in the correct Cells, we can now examine the contents of the
         // target and update our walls and distances
@@ -743,14 +741,20 @@ void FloodFill::explore(){
         if (!m_mouse->wallLeft() && getLeftCell()->getPrev() == NULL){
             unexplored.push(getLeftCell());
             getLeftCell()->setPrev(&m_cells[m_x][m_y]);
+            //std::cout << "The cell (" << getLeftCell()->getX() << "," << getLeftCell()->getY() << ")"
+            //<< " has a prev cell of (" << target->getX() << "," << target->getY() << ")" << std::endl;
         }
         if (!m_mouse->wallFront() && getFrontCell()->getPrev() == NULL){
             unexplored.push(getFrontCell());
             getFrontCell()->setPrev(&m_cells[m_x][m_y]);
+            //std::cout << "The cell (" << getFrontCell()->getX() << "," << getFrontCell()->getY() << ")"
+            //<< " has a prev cell of (" << target->getX() << "," << target->getY() << ")" << std::endl;
         }
         if (!m_mouse->wallRight() && getRightCell()->getPrev() == NULL){
             unexplored.push(getRightCell());
             getRightCell()->setPrev(&m_cells[m_x][m_y]);
+            //std::cout << "The cell (" << getRightCell()->getX() << "," << getRightCell()->getY() << ")"
+            //<< " has a prev cell of (" << target->getX() << "," << target->getY() << ")" << std::endl;
         }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1196,15 +1200,21 @@ bool FloodFill::proceedToCheckpoint(std::stack<Cell*> path) {
         Cell* next = path.top();
         path.pop();
 
+        // We need to update prev values here in case the prev values were erased
+        cellUpdate();
+
         // Since we popped the origin off of the path stack, we're guaranteed that we
         // won't try to moveOneCell() to the origin
         moveOneCell(next);
     }
+
+    // Perform a prev value update after getting to the checkpoint
+    cellUpdate();
+
     return false;
 }
 
 void FloodFill::cellUpdate() {
-    /*
     if (!m_mouse->wallLeft() && getLeftCell()->getPrev() == NULL){
         //std::cout << "Setting prev of (" << getLeftCell()->getX() << ","
         //<< getLeftCell()->getY() << ") to (" << m_cells[m_x][m_y].getX() << ","
@@ -1223,10 +1233,9 @@ void FloodFill::cellUpdate() {
         //<< m_cells[m_x][m_y].getY() << ")" << std::endl;
         getRightCell()->setPrev(&m_cells[m_x][m_y]);
     }
-    walls();
-    m_cells[m_x][m_y].setExplored(true);
-    m_cells[m_x][m_y].setTraversed(true);
-    */
+    //walls();
+    //m_cells[m_x][m_y].setExplored(true);
+    //m_cells[m_x][m_y].setTraversed(true);
 }
 
 bool FloodFill::checkRequestExplore() {

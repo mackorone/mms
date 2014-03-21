@@ -93,8 +93,12 @@ std::stack<Cell*> History::getCheckpointPath() {
     while (!temp.empty()) {
         Cell* r = temp.top();
         temp.pop();
-        std::cout << "Path step (" << r->getX() << "," << r->getY() << ")" << std::endl; // TODO
+        if (temp.size() > 0) {
+            std::cout << "Path step (" << r->getX() << "," << r->getY() << ")" << std::endl; // TODO
+        }
     }
+    std::cout << "Ending at checkpoint (" << getCheckpointCell()->getX() << ","
+    << getCheckpointCell()->getY() << ")" << std::endl;
 
     //std::cout << "Finished obtaining checkpoint path" << std::endl;
     return path;
@@ -105,12 +109,14 @@ std::stack<Cell*> History::getCheckpointStack() {
     //std::cout << "Getting checkpoint stack" << std::endl;
 
     // Print the stack
+    /*
     std::stack<Cell*> temp = m_checkpointStack;
     while (!temp.empty()) {
         Cell* c = temp.top();
         temp.pop();
         std::cout << "On cp stack (" << c->getX() << "," << c->getY() << ")" << std::endl;
     }
+    */
 
     return m_checkpointStack;
 }
@@ -218,22 +224,34 @@ void History::resetModifiedCells() {
 
     std::list<std::list<std::pair<Cell*, int>>> temp = m_modifiedCells;
 
+    // TODO: Go in reverse, set the prev values
     while (!temp.empty()) {
         std::list<std::pair<Cell*, int>> cellList = temp.front();
         temp.pop_front();
         for (std::list<std::pair<Cell*, int>>::iterator it = cellList.begin(); it != cellList.end() ; ++it) {
+
             //std::cout << "Resetting (" << (std::get<0>(*it))->getX() << ","
             //<< (std::get<0>(*it))->getY() << ")" << std::endl;// TODO
-            (std::get<0>(*it))->setPrev(NULL);
 
-            // 4 indicates that we should reset all wall values
+            // 4 indicates that the cell was actually traversed
             if ((std::get<1>(*it)) == 4) {
                 for (int i = 0; i < 4; i++){
+
+                    // Set the wall to false as well, because we don't check the wall inspected
+                    // values explicitely when we're considering adding something to the stack
+                    (std::get<0>(*it))->setWall(i, false);
                     (std::get<0>(*it))->setWallInspected(i, false);
                 }
+
+                // A value of 4 indicates that this cell was actually traversed (AKA a target). Since
+                // it was a target, it means it had to have been on the stack, and thus will be put
+                // back on the stack after it is rediscovered. 
+                (std::get<0>(*it))->setPrev(NULL);
+
             }
             else{ // Otherwise we only need to reset the one wall that was seen
                   // from the then current cell
+                (std::get<0>(*it))->setWall(std::get<1>(*it), false);
                 (std::get<0>(*it))->setWallInspected(std::get<1>(*it), false);
             }
         }
