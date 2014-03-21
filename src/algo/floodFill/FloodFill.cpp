@@ -202,10 +202,10 @@ void FloodFill::flood(int x, int y){
     if (!inGoal(x, y)){
 
         // Initialize distance values for surrounding cells
-        int northDistance = MAZE_SIZE*MAZE_SIZE; // Max distance
-        int eastDistance = MAZE_SIZE*MAZE_SIZE; // Max distance
-        int southDistance = MAZE_SIZE*MAZE_SIZE; // Max distance
-        int westDistance = MAZE_SIZE*MAZE_SIZE; // Max distance
+        int northDistance = MAZE_SIZE*MAZE_SIZE; // Max distance // TODO: - 1 for unsigned char!!!
+        int eastDistance = MAZE_SIZE*MAZE_SIZE; // Max distance // TODO: - 1 for unsigned char!!!
+        int southDistance = MAZE_SIZE*MAZE_SIZE; // Max distance // TODO: - 1 for unsigned char!!!
+        int westDistance = MAZE_SIZE*MAZE_SIZE; // Max distance // TODO: - 1 for unsigned char!!!
 
         // Obtain actual values if possible
         if (!m_cells[x][y].isWall(NORTH)){
@@ -737,24 +737,32 @@ void FloodFill::explore(){
         m_cells[m_x][m_y].setExplored(true);
         m_cells[m_x][m_y].setTraversed(true);
 
+        // Need a way to unroll the changes.... possibly a different data structure???
+
         // After, we find any unexplored neighbors.
         if (!m_mouse->wallLeft() && getLeftCell()->getPrev() == NULL){
             unexplored.push(getLeftCell());
-            getLeftCell()->setPrev(&m_cells[m_x][m_y]);
-            //std::cout << "The cell (" << getLeftCell()->getX() << "," << getLeftCell()->getY() << ")"
-            //<< " has a prev cell of (" << target->getX() << "," << target->getY() << ")" << std::endl;
+            if (!m_mouse->undoRequested()){ // TODO: Doesn't work
+                getLeftCell()->setPrev(&m_cells[m_x][m_y]);
+                std::cout << "The cell (" << getLeftCell()->getX() << "," << getLeftCell()->getY() << ")"
+                << " has a prev cell of (" << target->getX() << "," << target->getY() << ")" << std::endl;
+            }
         }
         if (!m_mouse->wallFront() && getFrontCell()->getPrev() == NULL){
             unexplored.push(getFrontCell());
-            getFrontCell()->setPrev(&m_cells[m_x][m_y]);
-            //std::cout << "The cell (" << getFrontCell()->getX() << "," << getFrontCell()->getY() << ")"
-            //<< " has a prev cell of (" << target->getX() << "," << target->getY() << ")" << std::endl;
+            if (!m_mouse->undoRequested()){ // TODO: Doesn't work
+                getFrontCell()->setPrev(&m_cells[m_x][m_y]);
+                std::cout << "The cell (" << getFrontCell()->getX() << "," << getFrontCell()->getY() << ")"
+                << " has a prev cell of (" << target->getX() << "," << target->getY() << ")" << std::endl;
+            }
         }
         if (!m_mouse->wallRight() && getRightCell()->getPrev() == NULL){
             unexplored.push(getRightCell());
-            getRightCell()->setPrev(&m_cells[m_x][m_y]);
-            //std::cout << "The cell (" << getRightCell()->getX() << "," << getRightCell()->getY() << ")"
-            //<< " has a prev cell of (" << target->getX() << "," << target->getY() << ")" << std::endl;
+            if (!m_mouse->undoRequested()) { // TODO: Doesn't work
+                getRightCell()->setPrev(&m_cells[m_x][m_y]);
+                std::cout << "The cell (" << getRightCell()->getX() << "," << getRightCell()->getY() << ")"
+                << " has a prev cell of (" << target->getX() << "," << target->getY() << ")" << std::endl;
+            }
         }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -762,6 +770,7 @@ void FloodFill::explore(){
 
         // Update the History target stack and modified cells
         m_history.stackUpdate(unexplored);
+
 
         std::list<std::pair<Cell*, int>> modifiedCells;
 
@@ -779,7 +788,7 @@ void FloodFill::explore(){
             modifiedCells.push_back(std::pair<Cell*, int> (getLeftCell(), (m_d + 1) % 4));
         }
         if (spaceFront()) {
-            modifiedCells.push_back(std::pair<Cell*, int> (getFrontCell(), m_d + 2));
+            modifiedCells.push_back(std::pair<Cell*, int> (getFrontCell(),  m_d + 2));
         }
         if (spaceRight()) {
             modifiedCells.push_back(std::pair<Cell*, int> (getRightCell(), (m_d + 3) % 4));
@@ -1215,6 +1224,9 @@ bool FloodFill::proceedToCheckpoint(std::stack<Cell*> path) {
 }
 
 void FloodFill::cellUpdate() {
+
+    // TODO: I think with the cell mods I shouldn't have to set the prev values
+
     if (!m_mouse->wallLeft() && getLeftCell()->getPrev() == NULL){
         //std::cout << "Setting prev of (" << getLeftCell()->getX() << ","
         //<< getLeftCell()->getY() << ") to (" << m_cells[m_x][m_y].getX() << ","

@@ -1,0 +1,10 @@
+- Change everything to more efficient data structures (as opposed to OO)
+    - wall values could be a single char instead of two bool arrays
+    - unsigned char instead of int
+    - trim unnecessary bools or couple them together
+    - reduce size of Cellmod
+    - etc.
+
+- Port to C
+
+- Being the explore algorithm outside of the Floodfill - call floodfill something else

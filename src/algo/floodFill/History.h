@@ -19,7 +19,7 @@ public:
 
     void moved(Cell* movedTo);
     void stackUpdate(std::stack<Cell*> newStack);
-    void modifiedCellsUpdate(std::list<std::pair<Cell*, std::pair<Cell*, int>>> cells);
+    void modifiedCellsUpdate(std::list<std::pair<Cell*, int>> cells);
 
     void resetModifiedCells();
 
@@ -48,7 +48,7 @@ private:
     // List of List of cells modified for each step. The first cell indicates the cell
     // that was modified, the second cell is the old prev value, and the int is the
     // wall that was modified.
-    std::list<std::list<std::pair<Cell*, std::pair<Cell*, int>>>> m_modifiedCells;
+    std::list<std::list<std::pair<Cell*, int>>> m_modifiedCells;
 
     Cell* getCheckpointCell(); // Returns a pointer the checkpoint cell
 

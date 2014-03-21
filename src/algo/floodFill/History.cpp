@@ -138,7 +138,7 @@ void History::moved(Cell* movedTo) {
 
     // Every move we push an empty list onto the list of lists of modified cells
     std::list<std::pair<Cell*, int>> empty;
-    m_modifiedCells.push_back(empty);
+    m_modifiedCells.push_front(empty);
 
     // If the size of the path is larger than our short term memory (which it needn't
     // be) then reduce the reference counts and pop the appropriate number of things
@@ -166,7 +166,7 @@ void History::moved(Cell* movedTo) {
 
     // Also make sure to only keep the correct number of modified cells
     if (m_modifiedCells.size() > m_stm) {
-        m_modifiedCells.pop_front();
+        m_modifiedCells.pop_back();
     }
 }
 
@@ -213,9 +213,9 @@ void History::modifiedCellsUpdate(std::list<std::pair<Cell*, int>> cells) {
     // stack will contain the origin, and thus won't move from the origin to get to
     // the target (the origin) but WILL perform the appropriate updates.
     if (m_modifiedCells.size() > 0) {
-        m_modifiedCells.pop_back();
+        m_modifiedCells.pop_front();
     }
-    m_modifiedCells.push_back(cells);
+    m_modifiedCells.push_front(cells);
 
     //printC();//TODO
 }
@@ -225,6 +225,7 @@ void History::resetModifiedCells() {
     std::list<std::list<std::pair<Cell*, int>>> temp = m_modifiedCells;
 
     // TODO: Go in reverse, set the prev values
+
     while (!temp.empty()) {
         std::list<std::pair<Cell*, int>> cellList = temp.front();
         temp.pop_front();
@@ -239,6 +240,7 @@ void History::resetModifiedCells() {
 
                     // Set the wall to false as well, because we don't check the wall inspected
                     // values explicitely when we're considering adding something to the stack
+                    // TODO: I'm not sure why this would matter....
                     (std::get<0>(*it))->setWall(i, false);
                     (std::get<0>(*it))->setWallInspected(i, false);
                 }
@@ -246,13 +248,19 @@ void History::resetModifiedCells() {
                 // A value of 4 indicates that this cell was actually traversed (AKA a target). Since
                 // it was a target, it means it had to have been on the stack, and thus will be put
                 // back on the stack after it is rediscovered. 
-                (std::get<0>(*it))->setPrev(NULL);
+                (std::get<0>(*it))->setPrev(NULL); // TODO: We could do this better
+                std::cout << "Just set prev of (" << (std::get<0>(*it))->getX() << "," << (std::get<0>(*it))->getY()
+                << ") to NULL" << std::endl;
 
             }
             else{ // Otherwise we only need to reset the one wall that was seen
                   // from the then current cell
+                // TODO: I'm not sure why this would matter.... Why set wall to false
                 (std::get<0>(*it))->setWall(std::get<1>(*it), false);
                 (std::get<0>(*it))->setWallInspected(std::get<1>(*it), false);
+
+                // TODO: We could do this better
+                //(std::get<0>(*it))->setPrev(std::get<1>(*it));
             }
         }
     }
