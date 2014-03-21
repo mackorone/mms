@@ -573,11 +573,7 @@ void FloodFill::explore(){
             // to NULL (which sets modified cells to "undiscovered").
             std::stack<Cell*> path = m_history.getCheckpointPath();
 
-            //std::cout << "DONE WITH UNDO REQUEST" << std::endl;
-            // TODO: Set checkpoint HERE - along with this I should reset the modified cells and
-            // stacks... right??? - Should this be in the getCheckpoint Method???
-
-            // Clear the modified cells.
+            // Clear the modified cells. // TODO: This also resets everything
             m_history.resetModifiedCells(); // TODO: Call this something else
 
             // Moves to the checkpoint and checks for requests along the way. This
@@ -592,8 +588,8 @@ void FloodFill::explore(){
                     return;
                 }
                 else {
-                    // TODO: HERERERE is where we have to return to the checkpoint
-                    continue; // TODO: I think this should work
+                    std::cout << "Trying to re-proceed to checkpoint" << std::endl;
+                    continue;
                 }
             }
 

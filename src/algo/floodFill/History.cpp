@@ -20,11 +20,6 @@ void History::initialize(int stm, Cell* origin) {
     while (!m_modifiedCells.empty()) {
         m_modifiedCells.pop_front();
     }
-    /*
-    while (!m_modifiedCellsReferenceCounts.empty()) {
-        m_modifiedCellsReferenceCounts.pop_front();
-    }
-    */
 
     // Push the stack [(0,0)] since (0,0) or is *always* our first target
     std::stack<Cell*> temp;
@@ -33,6 +28,7 @@ void History::initialize(int stm, Cell* origin) {
     m_stackReferenceCounts.push_back(1);
 
     // Set the checkpoint values
+    m_checkpointCell = origin;
     m_checkpointStack = temp;
 
     // The first thing that the floodfill algo will do after this initialization
@@ -66,11 +62,7 @@ Cell* History::getCheckpointCell() {
     // these two situations are differentiated from one another by m_checkpointStack
     // itself.
     
-    // If the checkpoint cell is the origin, its prev value is NULL
-    if (m_checkpointStack.top()->getPrev() != NULL) {
-        return m_checkpointStack.top()->getPrev();
-    }
-    return m_checkpointStack.top();
+    return m_checkpointCell;
 }
 
 std::stack<Cell*> History::getCheckpointPath() {
@@ -84,20 +76,25 @@ std::stack<Cell*> History::getCheckpointPath() {
 
     while (runner != NULL) {
         path.push(runner);
+        if (runner->getPrev() == NULL) {
+            std::cout << "RUNNER END Cell (" << runner->getX() << "," << runner->getY() << ")" << std::endl;
+        }
         runner = runner->getPrev(); 
     }
+    
+    
 
     // The path always includes the origin, and since we can't and don't want 
     // to try to move to the origin, we can *always* pop it off safely
     path.pop();
 
     // print the path
-    /*std::stack<Cell*> temp = path;
+    std::stack<Cell*> temp = path;
     while (!temp.empty()) {
         Cell* r = temp.top();
         temp.pop();
-        //std::cout << "Path step (" << r->getX() << "," << r->getY() << ")" << std::endl; // TODO
-    }*/
+        std::cout << "Path step (" << r->getX() << "," << r->getY() << ")" << std::endl; // TODO
+    }
 
     //std::cout << "Finished obtaining checkpoint path" << std::endl;
     return path;
@@ -107,16 +104,15 @@ std::stack<Cell*> History::getCheckpointStack() {
 
     //std::cout << "Getting checkpoint stack" << std::endl;
 
-    return m_checkpointStack;
-
     // Print the stack
-    /*std::stack<Cell*> temp = m_checkpointStack;
-    int si = temp.size();
-    for (int i = 0; i < si; i++) {
+    std::stack<Cell*> temp = m_checkpointStack;
+    while (!temp.empty()) {
         Cell* c = temp.top();
         temp.pop();
         std::cout << "On cp stack (" << c->getX() << "," << c->getY() << ")" << std::endl;
-    }*/
+    }
+
+    return m_checkpointStack;
 }
 
 void History::moved(Cell* movedTo) {
@@ -140,15 +136,10 @@ void History::moved(Cell* movedTo) {
 
     // If the size of the path is larger than our short term memory (which it needn't
     // be) then reduce the reference counts and pop the appropriate number of things
-    // off of the stacks. Note that if the size is one or greater, then there has
-    // to be at least one referenced stack and one references list of modified cells
-    // and thus we are safe to pop here.
-    // Note: We want to remember one stack for each cell in the path that we traversed. So
-    // a memory of 5 would warrent a remembered path of 6 and thus 6 stacks // TODO: Clean this up
+    // off of the stacks.
     if (size() > m_stm) {
 
         m_path.pop();
-        //m_stacks.pop(); 
 
         int srefCount2 = m_stackReferenceCounts.front();
         m_stackReferenceCounts.pop_front();
@@ -158,6 +149,13 @@ void History::moved(Cell* movedTo) {
         m_stackReferenceCounts.pop_front();
         m_stacks.pop();
         m_checkpointStack = m_stacks.front(); // TODO: Does this work?
+        if (m_stacks.front().top()->getPrev() != NULL) {
+            m_checkpointCell = m_stacks.front().top()->getPrev(); // TODO: Does this work?
+        }
+        else {
+            std::cout << "Error - checkpoint has not prev Cell" << std::endl;
+            exit(0);
+        }
     }
 
     // Also make sure to only keep the correct number of modified cells
@@ -254,11 +252,6 @@ void History::resetModifiedCells() {
     while (!m_modifiedCells.empty()) {
         m_modifiedCells.pop_front();
     }
-    /*
-    while (!m_modifiedCellsReferenceCounts.empty()) {
-        m_modifiedCellsReferenceCounts.pop_front();
-    }
-    */
 
     m_stacks.push(m_checkpointStack);
     m_stackReferenceCounts.push_back(1);

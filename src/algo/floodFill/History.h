@@ -31,6 +31,7 @@ private:
     int m_stm; 
 
     // Checkpoint objects
+    Cell* m_checkpointCell;
     std::stack<Cell*> m_checkpointStack;
 
     // Queue of the path of the mouse
