@@ -66,7 +66,7 @@ std::stack<Cell*> History::getCheckpointStack() {
     return m_checkpointStack;
 }
 
-void History::moved(Cell* movedTo) {
+void History::moved() {
 
     m_size++;
 

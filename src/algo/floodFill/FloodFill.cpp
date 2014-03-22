@@ -36,14 +36,6 @@ void FloodFill::solve(sim::MouseInterface* mouse){
             continue;
         }
 
-        // Compare the explore to the explore beta
-        /*std::cout << m_steps << std::endl; // Print the total number of steps
-        resetColors();
-        initialize();
-        exploreBeta();
-        std::cout << m_steps << std::endl; // Print the total number of steps
-        resetColors();*/
-
         // Once we know everything about the maze, solve the maze as quickly as possible,
         victory();
     }
@@ -203,10 +195,10 @@ void FloodFill::flood(int x, int y){
     if (!inGoal(x, y)){
 
         // Initialize distance values for surrounding cells
-        int northDistance = MAZE_SIZE*MAZE_SIZE; // Max distance // TODO: - 1 for unsigned char!!!
-        int eastDistance = MAZE_SIZE*MAZE_SIZE; // Max distance // TODO: - 1 for unsigned char!!!
-        int southDistance = MAZE_SIZE*MAZE_SIZE; // Max distance // TODO: - 1 for unsigned char!!!
-        int westDistance = MAZE_SIZE*MAZE_SIZE; // Max distance // TODO: - 1 for unsigned char!!!
+        int northDistance = MAZE_SIZE*MAZE_SIZE;
+        int eastDistance = MAZE_SIZE*MAZE_SIZE;
+        int southDistance = MAZE_SIZE*MAZE_SIZE;
+        int westDistance = MAZE_SIZE*MAZE_SIZE;
 
         // Obtain actual values if possible
         if (!m_cells[x][y].isWall(NORTH)){
@@ -326,7 +318,7 @@ void FloodFill::moveForward(){
     // that the checkpoint must be reached so that we're not appending to
     // the path unnecessarily.
     if (!m_explored && m_checkpointReached) {
-        m_history.moved(&m_cells[m_x][m_y]); // TODO: We shouldn't need this reference in the first place
+        m_history.moved();
     }
 }
 
@@ -998,8 +990,8 @@ void FloodFill::appendModifiedCell(std::list<Cellmod>* modList, Cell* modCell) {
     cm.cell = modCell;
     cm.oldDist = modCell->getDistance();
     cm.oldPrev = modCell->getPrev();
-    cm.oldExplored = modCell->getExplored();
-    cm.oldTraversed = modCell->getTraversed();
+    cm.oldExplored = modCell->getExplored(); // Note: I don't think this is necessary
+    cm.oldTraversed = modCell->getTraversed(); // Note: I don't think this is necessary
     for (int i = 0; i < 4; i++) {
         cm.oldWalls[i] = modCell->isWall(i);
         cm.oldWallsInspected[i] = modCell->getWallInspected(i);

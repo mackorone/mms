@@ -22,7 +22,7 @@ public:
     std::stack<Cell*> getCheckpointPath(); // Returns the path to the checkpoint cell
 
     // Called by Floodfill to update the history object
-    void moved(Cell* movedTo);
+    void moved();
     void stackUpdate(std::stack<Cell*> newStack);
     void modifiedCellsUpdate(std::list<Cellmod> cells);
 
