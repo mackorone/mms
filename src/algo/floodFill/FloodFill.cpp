@@ -14,12 +14,54 @@ void FloodFill::solve(sim::MouseInterface* mouse){
     m_mouse = mouse;
 
     // Initialize the x and y positions of the cells
-    for (int x = 0; x < MAZE_SIZE; x++){
-        for (int y = 0; y < MAZE_SIZE; y++){
+    for (int x = 0; x < MAZE_SIZE_X; x++){
+        for (int y = 0; y < MAZE_SIZE_Y; y++){
             m_cells[x][y].setX(x);
             m_cells[x][y].setY(y);
         }
     }
+
+    // Choose one of the following solve techniques:
+    simpleSolve();
+    extensiveSolve();
+
+    if (ALGO_COMPARE) {
+        exit(0);
+    }
+}
+
+void FloodFill::simpleSolve() {
+
+    while (true) {
+
+        // Initialize the cell fields
+        initialize();
+
+        // Do the basic floodfill and store the path
+        std::stack<Cell*> path;
+        basicFloodFill(&path);
+
+        // If the explore was not successful (i.e., reset request was made) then start over
+        if (!m_bffDone) {
+            continue;
+        }
+
+        int s_steps = m_steps;
+        if (ALGO_COMPARE) {
+            std::cout << "Simple explore in " << m_steps << " steps" << std::endl;
+        }
+
+        // Solve the maze as quickly as possible,
+        bffVictory(path);
+
+        if (ALGO_COMPARE) {
+            std::cout << "Simple solve in " << (m_steps - s_steps)/2 << " steps" << std::endl;
+            return;
+        }
+    }
+}
+
+void FloodFill::extensiveSolve() {
 
     // Loop to allow for reset requests to be honored
     while (true){
@@ -36,15 +78,25 @@ void FloodFill::solve(sim::MouseInterface* mouse){
             continue;
         }
 
+        int s_steps = m_steps;
+        if (ALGO_COMPARE) {
+            std::cout << "Extensive explore in " << m_steps << " steps" << std::endl;
+        }
+
         // Once we know everything about the maze, solve the maze as quickly as possible,
         victory();
+
+        if (ALGO_COMPARE) {
+            std::cout << "Extensive solve in " << (m_steps - s_steps)/2 << " steps" << std::endl;
+            return;
+        }
     }
 }
 
 void FloodFill::printDistances(){
     std::cout << std::endl;
-    for (int y = MAZE_SIZE-1; y >= 0; y--){
-        for (int x = 0; x < MAZE_SIZE; x++){
+    for (int y = MAZE_SIZE_Y-1; y >= 0; y--){
+        for (int x = 0; x < MAZE_SIZE_X; x++){
             if (m_cells[x][y].getDistance() < 100){
                 if (m_cells[x][y].getDistance() < 10){
                     std::cout << " ";
@@ -59,8 +111,8 @@ void FloodFill::printDistances(){
 
 void FloodFill::printWalls(){
     std::cout << std::endl;
-    for (int y = MAZE_SIZE-1; y >= 0; y--){
-        for (int x = 0; x < MAZE_SIZE; x++){
+    for (int y = MAZE_SIZE_Y-1; y >= 0; y--){
+        for (int x = 0; x < MAZE_SIZE_X; x++){
             int wallSum = 0;
             wallSum += 1*m_cells[x][y].isWall(NORTH);
             wallSum += 2*m_cells[x][y].isWall(EAST);
@@ -81,36 +133,35 @@ void FloodFill::resetColors(){
 
 void FloodFill::initialize(){
 
-    // TODO: Doesn't work for odd sized mazes
+    // Note: Doesn't work for odd sized mazes
 
     // Initialize the distance values for the maze
-    int distance = MAZE_SIZE - 2;
-    for (int y = 0; y < MAZE_SIZE/2; y++){
-        for(int x = 0; x < MAZE_SIZE/2; x++){
-            m_cells[x][y].setDistance(distance); // Bottom-left
-            m_cells[y][MAZE_SIZE-1-x].setDistance(distance); // Upper-left
-            m_cells[MAZE_SIZE-1-x][MAZE_SIZE-1-y].setDistance(distance); // Upper-right
-            m_cells[MAZE_SIZE-1-y][x].setDistance(distance); // Bottom right
+    for (int y = 0; y < MAZE_SIZE_Y/2; y++) {
+        int distance = MAZE_SIZE_X/2 + MAZE_SIZE_Y/2 - 2 - y;
+        for(int x = 0; x < MAZE_SIZE_X/2; x++) {
+            m_cells[x][y].setDistance(distance);
+            m_cells[x][MAZE_SIZE_Y-1-y].setDistance(distance);
+            m_cells[MAZE_SIZE_X-1-x][MAZE_SIZE_Y-1-y].setDistance(distance);
+            m_cells[MAZE_SIZE_X-1-x][y].setDistance(distance);
             distance -= 1;
         }
-        distance += (MAZE_SIZE/2 - 1);
     }
 
     // Initialize other values for the Cells
-    for (int y = 0; y < MAZE_SIZE; y++){
-        for (int x = 0; x < MAZE_SIZE; x++){
+    for (int y = 0; y < MAZE_SIZE_Y; y++){
+        for (int x = 0; x < MAZE_SIZE_X; x++){
 
             // Set the walls values
             m_cells[x][y].setWall(SOUTH, y == 0);
-            m_cells[x][y].setWall(NORTH, y == MAZE_SIZE-1);
+            m_cells[x][y].setWall(NORTH, y == MAZE_SIZE_Y-1);
             m_cells[x][y].setWall(WEST, x == 0);
-            m_cells[x][y].setWall(EAST, x == MAZE_SIZE-1);
+            m_cells[x][y].setWall(EAST, x == MAZE_SIZE_X-1);
 
             // Set the inspected values of the walls
             m_cells[x][y].setWallInspected(SOUTH, y == 0);
-            m_cells[x][y].setWallInspected(NORTH, y == MAZE_SIZE-1);
+            m_cells[x][y].setWallInspected(NORTH, y == MAZE_SIZE_Y-1);
             m_cells[x][y].setWallInspected(WEST, x == 0);
-            m_cells[x][y].setWallInspected(EAST, x == MAZE_SIZE-1);
+            m_cells[x][y].setWallInspected(EAST, x == MAZE_SIZE_X-1);
 
             // Set the prev and explored values of the Cells
             m_cells[x][y].setPrev(NULL);
@@ -124,15 +175,13 @@ void FloodFill::initialize(){
     m_y = 0; // Initialize the y position of the mouse
     m_d = 0; // Initialize the direction position of the mouse
     m_steps = 0; // Initialize the mouse steps
+    m_bffDone = false; // Initialize the completedness of the simple solve
     m_explored = false; // Initialize the exploredness of the maze
     m_checkpointReached = true; // We begin at the origin, the first checkpoint
     m_history.initialize(SHORT_TERM_MEM, &m_cells[0][0]); // Initialize the History object
 }
 
 void FloodFill::victory(){
-
-    // TODO: Set the speed greater with each iteration
-    // TODO: Give this to Tomasz in an array form
 
     // Loop forever, continue going to the beginning and solving
     while (true){
@@ -154,6 +203,10 @@ void FloodFill::victory(){
 
         // If a reset request is made, return so we can re-init and re-explore
         if (checkRequestVictory()) {
+            return;
+        }
+
+        if (ALGO_COMPARE) {
             return;
         }
     }
@@ -195,10 +248,10 @@ void FloodFill::flood(int x, int y){
     if (!inGoal(x, y)){
 
         // Initialize distance values for surrounding cells
-        int northDistance = MAZE_SIZE*MAZE_SIZE;
-        int eastDistance = MAZE_SIZE*MAZE_SIZE;
-        int southDistance = MAZE_SIZE*MAZE_SIZE;
-        int westDistance = MAZE_SIZE*MAZE_SIZE;
+        int northDistance = MAZE_SIZE_X*MAZE_SIZE_Y;
+        int eastDistance = MAZE_SIZE_X*MAZE_SIZE_Y;
+        int southDistance = MAZE_SIZE_X*MAZE_SIZE_Y;
+        int westDistance = MAZE_SIZE_X*MAZE_SIZE_Y;
 
         // Obtain actual values if possible
         if (!m_cells[x][y].isWall(NORTH)){
@@ -339,14 +392,14 @@ bool FloodFill::inGoal(int x, int y){
     // The goal is defined to be the center of the maze 
     // This means that it's 4 squares of length if even, 1 if odd
     
-    bool horizontal = (MAZE_SIZE - 1) / 2 == x;
-    if (MAZE_SIZE % 2 == 0){
-        horizontal = horizontal || (MAZE_SIZE) / 2 == x;
+    bool horizontal = (MAZE_SIZE_X - 1) / 2 == x;
+    if (MAZE_SIZE_X % 2 == 0){
+        horizontal = horizontal || (MAZE_SIZE_X) / 2 == x;
     }
 
-    bool vertical = (MAZE_SIZE - 1) / 2 == y;
-    if (MAZE_SIZE % 2 == 0){
-        vertical = vertical || (MAZE_SIZE) / 2 == y;
+    bool vertical = (MAZE_SIZE_Y - 1) / 2 == y;
+    if (MAZE_SIZE_Y % 2 == 0){
+        vertical = vertical || (MAZE_SIZE_Y) / 2 == y;
     }
 
     return horizontal && vertical;
@@ -424,9 +477,9 @@ Cell* FloodFill::getRearCell(){
 bool FloodFill::spaceFront(){
     switch (m_d){
         case NORTH:
-            return m_y+1 < MAZE_SIZE;
+            return m_y+1 < MAZE_SIZE_Y;
         case EAST:
-            return m_x+1 < MAZE_SIZE;
+            return m_x+1 < MAZE_SIZE_X;
         case SOUTH:
             return m_y > 0;
         case WEST:
@@ -439,9 +492,9 @@ bool FloodFill::spaceLeft(){
         case NORTH:
             return m_x > 0;
         case EAST:
-            return m_y+1 < MAZE_SIZE;
+            return m_y+1 < MAZE_SIZE_Y;
         case SOUTH:
-            return m_x+1 < MAZE_SIZE;
+            return m_x+1 < MAZE_SIZE_X;
         case WEST:
             return m_y > 0;
     }
@@ -450,13 +503,13 @@ bool FloodFill::spaceLeft(){
 bool FloodFill::spaceRight(){
     switch (m_d){
         case NORTH:
-            return m_x+1 < MAZE_SIZE;
+            return m_x+1 < MAZE_SIZE_X;
         case EAST:
             return m_y > 0;
         case SOUTH:
             return m_x > 0;
         case WEST:
-            return m_y+1 < MAZE_SIZE;
+            return m_y+1 < MAZE_SIZE_Y;
     }
 }
 
@@ -524,6 +577,10 @@ void FloodFill::explore(){
             return;
         }
 
+        // As it stands right now, if the mouse screws up going into the final few cells of
+        // the maze and we don't hit reset before it thinks it solved the maze, we don't really
+        // have a good way to undo the changes.
+    
         if (m_mouse->undoRequested()) {
 
             // We check to see if we've moved at least SHORT_TERM_MEM number of times. If so, then
@@ -707,12 +764,12 @@ void FloodFill::explore(){
     // to the starting location. Thus, at the end of this function, all distance
     // values will be 100% complete and correct
     
-    for (int x = 0; x < MAZE_SIZE; x++){
-        for (int y = 0; y < MAZE_SIZE; y++){
+    for (int x = 0; x < MAZE_SIZE_X; x++){
+        for (int y = 0; y < MAZE_SIZE_Y; y++){
             if (!m_cells[x][y].getExplored()){
                 // Any unreachable cells should have inf distance. Conveniently,
-                // MAZE_SIZE*MAZE_SIZE is one greater than the maximum distance
-                m_cells[x][y].setDistance(MAZE_SIZE*MAZE_SIZE);
+                // MAZE_SIZE_X*MAZE_SIZE_Y is one greater than the maximum distance
+                m_cells[x][y].setDistance(MAZE_SIZE_X*MAZE_SIZE_Y);
             }
         }
     }
@@ -956,11 +1013,170 @@ bool FloodFill::tryUntraversed(Cell* target){
     return false;
 }
 
-void FloodFill::basicFloodFill(){
-    while (!inGoal(m_x, m_y)){
-        walls();
-        flood(m_x, m_y);
-        moveTowardsGoal();
+void FloodFill::basicFloodFill(std::stack<Cell*>* path){
+
+    // The first checkpoint is at the origin
+    m_bffCp = &m_cells[0][0];
+
+    while (true) {
+
+        // The first thing we do is return to a checkpoint if need be
+        while (!m_checkpointReached) {
+
+            // Get the path to the checkpoint
+            Cell* cpPathRunner = m_bffCp;
+            std::stack<Cell*> cpPath;
+            while (cpPathRunner != NULL) {
+                cpPath.push(cpPathRunner);
+                cpPathRunner = cpPathRunner->getPrev();
+            }
+            cpPath.pop(); // Pop off (0,0)
+
+            // Return to the checkpoint
+            while (!cpPath.empty() && !(m_mouse->undoRequested() || m_mouse->resetRequested())) {
+                moveOneCell(cpPath.top());
+                cpPath.pop();
+            }
+
+            // Check for requests during our return to checkpoint
+            if (m_mouse->resetRequested()) {
+                m_mouse->resetPosition();
+                m_mouse->resetColors(0, 0);
+                m_mouse->resetHonored();
+                return;
+            }
+            if (m_mouse->undoRequested()) {
+                m_mouse->resetPosition();
+                m_mouse->resetColors(0, 0);
+                m_mouse->undoHonored();
+                continue;
+            }
+
+            // If no requests were made, we've reached the checkpoint
+            m_checkpointReached = true;
+        }
+
+        // Solve the maze using basic floodfill
+        while (!inGoal(m_x, m_y) && !(m_mouse->undoRequested() || m_mouse->resetRequested())){
+            dobffCellUpdates();
+            walls();
+            flood(m_x, m_y);
+            moveTowardsGoal();
+        }
+
+        // If there were requests during the solve, honor them now
+        if (m_mouse->resetRequested()) {
+            m_mouse->resetPosition();
+            m_mouse->resetColors(0, 0);
+            m_mouse->resetHonored();
+            return;
+        }
+
+        // As it turns out, the regular flood fill is very unpredictable and the
+        // undo doesn't really help much with the solve time ... TODO
+
+        if (m_mouse->undoRequested()) {
+            Cell* c = &m_cells[m_x][m_y];
+            for (int i = 0; i < SHORT_TERM_MEM; i++) {
+                if (c->getPrev() != NULL) {
+                    c = c->getPrev();
+                }
+                else {
+                    break;
+                }
+            }
+            m_bffCp = c;
+            m_checkpointReached = false;
+            m_x = 0; // Since we're repositioning the mouse but not re-intializing the
+            m_y = 0; // maze, we have to explicitely reset the x, y, and d values
+            m_d = 0;
+            m_mouse->resetPosition();
+            m_mouse->resetColors(0, 0);
+            m_mouse->undoHonored();
+            continue;
+        }
+
+        // As it stands right now, if the mouse screws up going into the final few cells of
+        // the maze and we don't hit reset before it thinks it solved the maze, we don't really
+        // have a good way to undo the changes.
+        
+        // Populate the path variable with the actual path of the robot to the center. We do
+        // this rather than simply returning a stack since the mouse may screw up on it's
+        // way back to the origin, but we still want to be able to retain the floodfill info.
+        // In retaining this info, we have to mark m_bffDone as true. But this can't be done
+        // until we have the best path. Hence the return parameter.
+        Cell* runner = &m_cells[m_x][m_y];
+        while (runner->getPrev() != NULL) {
+            path->push(runner);
+            runner = runner->getPrev();
+        }
+
+        // Indicate that the solve is done
+        m_bffDone = true;
+
+        // Return to start
+        while ((m_x != 0 || m_y != 0) && !(m_mouse->undoRequested() || m_mouse->resetRequested())){
+            moveOneCell(m_cells[m_x][m_y].getPrev());
+        }
+        while (m_d != 0 && !(m_mouse->undoRequested() || m_mouse->resetRequested())) {
+            turnRight();
+        }
+        return; // We're done
+    }
+}
+
+void FloodFill::dobffCellUpdates() {
+
+    if (!m_mouse->wallLeft() && getLeftCell()->getPrev() == NULL && getLeftCell() != &m_cells[0][0]){
+        getLeftCell()->setPrev(&m_cells[m_x][m_y]);
+    }
+    if (!m_mouse->wallFront() && getFrontCell()->getPrev() == NULL && getFrontCell() != &m_cells[0][0]){
+        getFrontCell()->setPrev(&m_cells[m_x][m_y]);
+    }
+    if (!m_mouse->wallRight() && getRightCell()->getPrev() == NULL && getRightCell() != &m_cells[0][0]){
+        getRightCell()->setPrev(&m_cells[m_x][m_y]);
+    }
+}
+
+void FloodFill::bffVictory(std::stack<Cell*> path) {
+
+    while (true){
+
+        std::stack<Cell*> copy = path;
+
+        // Move to the center of the maze along the path
+        while (!copy.empty() && !(m_mouse->undoRequested() || m_mouse->resetRequested())) {
+            moveOneCell(copy.top()); 
+            copy.pop();
+        }
+
+        // Return to start
+        while ((m_x != 0 || m_y != 0) && !(m_mouse->undoRequested() || m_mouse->resetRequested())){
+            moveOneCell(m_cells[m_x][m_y].getPrev());
+        }
+        while (m_d != 0 && !(m_mouse->undoRequested() || m_mouse->resetRequested())) {
+            turnRight();
+        }
+
+        if (m_mouse->resetRequested()) {
+            // This return will cause bffvictory() to exit, and thus
+            // we reinitialize the maze and start our solve over
+            m_mouse->resetPosition();
+            m_mouse->resetColors(0, 0);
+            m_mouse->resetHonored();
+            return;
+        }
+        if (m_mouse->undoRequested()){
+            m_x = 0; // Since we're repositioning the mouse but not re-intializing the
+            m_y = 0; // maze, we have to explicitely reset the x, y, and d values
+            m_d = 0;
+            m_mouse->resetPosition();
+            m_mouse->undoHonored();
+        }
+
+        if (ALGO_COMPARE) {
+            return;
+        }
     }
 }
 

@@ -8,23 +8,28 @@
 #include "History.h"
 
 // Constants
-static const int MAZE_SIZE = 16; // TODO: Be able to set maze width and height separately
+static const int MAZE_SIZE_X = 16; // Length of X axis of maze
+static const int MAZE_SIZE_Y = 16; // Length of Y axis of maze
 static const int SHORT_TERM_MEM = 12; // Steps that are forgetten by the mouse after an error
+static const bool ALGO_COMPARE = true; // Whether or not we're comparing all solving algorithms
 enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
 
 
-class FloodFill : public IAlgorithm{
+class FloodFill : public IAlgorithm {
 
 public:
     void solve(sim::MouseInterface* mouse); // IAlgorithm interface method
 
 private:
     sim::MouseInterface* m_mouse; // Mouse used to traverse and solve the maze
-    Cell m_cells[MAZE_SIZE][MAZE_SIZE]; // Grid a cells to store maze information
+    Cell m_cells[MAZE_SIZE_X][MAZE_SIZE_Y]; // Grid a cells to store maze information
     int m_x; // X position of the mouse
     int m_y; // Y position of the mouse
     int m_d; // Direction of the mouse
     int m_steps; // Count of the steps of the mouse
+
+    void simpleSolve(); // Solves using basic floodfill (not perfect)
+    void extensiveSolve(); // Solves using explore (guaranteed perfect)
 
     void printDistances(); // Prints the distance values of the cells in the maze
     void printWalls(); // Prints the wall values of the cells in the maze
@@ -55,8 +60,25 @@ private:
     bool spaceRight(); // Returns true if there's a cell to the right of the mouse
     int min(int one, int two, int three, int four); // Returns the min of four ints
 
-    // Basic Floodfill Algorithm
-    void basicFloodFill();
+    // Moves the mouse to the target Cell but only if it's exactly one Cell away
+    void moveOneCell(Cell* target);
+
+    // ------------------- Basic FloodFill Utilities ----------------------- //
+
+    // Whether or not the basic floodfill has reached the goal
+    bool m_bffDone;
+
+    // Checkpoint cell for the basic floodfill
+    Cell* m_bffCp;
+
+    // Basic Floodfill Algorithm. Populates path with that path to the center
+    void basicFloodFill(std::stack<Cell*>* path);
+
+    // Performs the updates for cells in the basic floodfill algo
+    void dobffCellUpdates();
+
+    // Repeatedly solves the maze using the path found by basicFloodFill
+    void bffVictory(std::stack<Cell*> path);
 
 
     // ------------------ Explore Algorithm Utilities ----------------------- //
@@ -71,9 +93,6 @@ private:
 
     // Returns whether or not the location is one cell away
     bool isOneCellAway(Cell* target);
-
-    // Moves the mouse to the target Cell but only if it's exactly one Cell away
-    void moveOneCell(Cell* target);
 
     // Attempts to short-circuit the retracing by looking at neighbors of untraversed
     // cells. Returns true if successful, false if short-circuiting wasn't possible.
