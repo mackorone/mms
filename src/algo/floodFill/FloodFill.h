@@ -5,13 +5,15 @@
 
 #include "../IAlgorithm.h"
 #include "Cell.h"
+#include "Cellmod.h"
 #include "History.h"
+#include "SimpleCellmod.h"
 
 // Constants
 static const int MAZE_SIZE_X = 16; // Length of X axis of maze
 static const int MAZE_SIZE_Y = 16; // Length of Y axis of maze
 static const int SHORT_TERM_MEM = 12; // Steps that are forgetten by the mouse after an error
-static const bool ALGO_COMPARE = true; // Whether or not we're comparing all solving algorithms
+static const bool ALGO_COMPARE = false; // Whether or not we're comparing all solving algorithms
 enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
 
 
@@ -74,8 +76,11 @@ private:
     // Basic Floodfill Algorithm. Populates path with that path to the center
     void basicFloodFill(std::stack<Cell*>* path);
 
-    // Performs the updates for cells in the basic floodfill algo
+    // Performs the updates for cells in the basic floodfill algo, adds modified cells to the list
     void dobffCellUpdates();
+
+    // Updates the walls surrounding the robot, adds modified cells to the list
+    void bffFlood(int x, int y, std::list<SimpleCellmod>* modsCellsList);
 
     // Repeatedly solves the maze using the path found by basicFloodFill
     void bffVictory(std::stack<Cell*> path);

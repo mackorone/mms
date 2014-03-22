@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "Cellmod.h"
+#include "SimpleCellmod.h"
 
 void FloodFill::solve(sim::MouseInterface* mouse){
 
@@ -241,7 +242,7 @@ void FloodFill::walls(){
 
 void FloodFill::flood(int x, int y){
     
-    // *DO NOT* flood the cells in the goal region of the maze- there is no
+    // *DO NOT* flood the cells in the goal region of the maze - there is no
     // information that we can gain about the distance values in the goal,
     // and we can only corrupt the current distance values anyways (they
     // can't and shouldn't change from 0)
@@ -699,7 +700,7 @@ void FloodFill::explore(){
             // request is made (at which point we immediately honor that request).
 
             while (target->getPrev() != &m_cells[m_x][m_y]
-                   && !(m_mouse->undoRequested() || m_mouse->resetRequested()) ) { // TODO
+                   && !(m_mouse->undoRequested() || m_mouse->resetRequested()) ) {
 
                 // If at any point the target is one cell away, we've no need to
                 // actually retrace though all of the other prev Cells. Thus we
@@ -833,7 +834,8 @@ void FloodFill::moveOneCell(Cell* target){
     }
     else{
         std::cout << "ERROR: Tried to move to cell (" << target->getX() << ","
-        << target->getY() << ") but it's not one space away." << std::endl;
+        << target->getY() << ") but it's not one space away from (" << m_x << ","
+        << m_y << ")" << std::endl;
     }
 }
 
@@ -1018,6 +1020,9 @@ void FloodFill::basicFloodFill(std::stack<Cell*>* path){
     // The first checkpoint is at the origin
     m_bffCp = &m_cells[0][0];
 
+    // A queue of lists of modified cells
+    std::queue<std::list<SimpleCellmod>> modCells;
+
     while (true) {
 
         // The first thing we do is return to a checkpoint if need be
@@ -1046,6 +1051,9 @@ void FloodFill::basicFloodFill(std::stack<Cell*>* path){
                 return;
             }
             if (m_mouse->undoRequested()) {
+                m_x = 0; // Since we're repositioning the mouse but not re-intializing the
+                m_y = 0; // maze, we have to explicitely reset the x, y, and d values
+                m_d = 0;
                 m_mouse->resetPosition();
                 m_mouse->resetColors(0, 0);
                 m_mouse->undoHonored();
@@ -1058,10 +1066,68 @@ void FloodFill::basicFloodFill(std::stack<Cell*>* path){
 
         // Solve the maze using basic floodfill
         while (!inGoal(m_x, m_y) && !(m_mouse->undoRequested() || m_mouse->resetRequested())){
+
+            // List of modified cells for this step
+            std::list<SimpleCellmod> modCellsList;
+
+            // Always add the current cell to modified cells
+            SimpleCellmod mod;
+            Cell* c = &m_cells[m_x][m_y];
+            mod.cell = c;
+            mod.prev = c->getPrev();
+            mod.dist = c->getDistance();
+            for (int i = 0; i < 4; i++) {
+                mod.walls[i] = c->isWall(i);
+            }
+            modCellsList.push_back(mod);
+
+            // Wall updates
+            if (spaceLeft()) {
+                c = getLeftCell();
+                mod.cell = c;
+                mod.prev = c->getPrev();
+                mod.dist = c->getDistance();
+                for (int i = 0; i < 4; i++) {
+                    mod.walls[i] = c->isWall(i);
+                }
+                modCellsList.push_back(mod);
+            }
+            if (spaceFront()) {
+                c = getFrontCell();
+                mod.cell = c;
+                mod.prev = c->getPrev();
+                mod.dist = c->getDistance();
+                for (int i = 0; i < 4; i++) {
+                    mod.walls[i] = c->isWall(i);
+                }
+                modCellsList.push_back(mod);
+            }
+            if (spaceRight()) {
+                c = getRightCell();
+                mod.cell = c;
+                mod.prev = c->getPrev();
+                mod.dist = c->getDistance();
+                for (int i = 0; i < 4; i++) {
+                    mod.walls[i] = c->isWall(i);
+                }
+                modCellsList.push_back(mod);
+            }
+
+            // Do updates
+            modCellsList.push_back(mod);
             dobffCellUpdates();
             walls();
-            flood(m_x, m_y);
+            bffFlood(m_x, m_y, &modCellsList);
             moveTowardsGoal();
+
+            modCells.push(modCellsList);
+
+            // Make sure we're only keeping short term history
+            if (modCells.size() > SHORT_TERM_MEM) {
+                modCells.pop();
+            }
+
+            // 
         }
 
         // If there were requests during the solve, honor them now
@@ -1072,24 +1138,49 @@ void FloodFill::basicFloodFill(std::stack<Cell*>* path){
             return;
         }
 
-        // As it turns out, the regular flood fill is very unpredictable and the
-        // undo doesn't really help much with the solve time ... TODO
 
+        // TODO: undo doesn't work really well yet...
         if (m_mouse->undoRequested()) {
-            Cell* c = &m_cells[m_x][m_y];
-            for (int i = 0; i < SHORT_TERM_MEM; i++) {
-                if (c->getPrev() != NULL) {
-                    c = c->getPrev();
+            
+            if (modCells.size() == SHORT_TERM_MEM) {
+
+                Cell* c = &m_cells[m_x][m_y];
+                for (int i = 0; i < SHORT_TERM_MEM; i++) {
+                    if (c->getPrev() != NULL) {
+                        c = c->getPrev();
+                    }
+                    else {
+                        break;
+                    }
                 }
-                else {
-                    break;
+                m_bffCp = c;
+                //m_checkpointReached = false;
+                //m_x = 0; // Since we're repositioning the mouse but not re-intializing the
+                //m_y = 0; // maze, we have to explicitely reset the x, y, and d values
+                //m_d = 0;
+
+                // TODO: reset cells
+                // Iterate through all modified cells, starting with most recent and going
+                // to least recent. During iterations, we simply restore the old values
+                while (!modCells.empty()) {
+
+                    std::list<SimpleCellmod> cellList = modCells.front();
+                    modCells.pop();
+
+                    for (std::list<SimpleCellmod>::iterator it = cellList.begin(); it != cellList.end() ; ++it) {
+                        (*it).cell->setPrev((*it).prev);
+                        (*it).cell->setDistance((*it).dist);
+                        for (int i = 0; i < 4; i++) {
+                            (*it).cell->setWall(i, (*it).walls[i]);
+                        }
+                    }
                 }
+                // TODO: End reset cells
             }
-            m_bffCp = c;
-            m_checkpointReached = false;
             m_x = 0; // Since we're repositioning the mouse but not re-intializing the
             m_y = 0; // maze, we have to explicitely reset the x, y, and d values
             m_d = 0;
+            m_checkpointReached = false;
             m_mouse->resetPosition();
             m_mouse->resetColors(0, 0);
             m_mouse->undoHonored();
@@ -1135,6 +1226,100 @@ void FloodFill::dobffCellUpdates() {
     }
     if (!m_mouse->wallRight() && getRightCell()->getPrev() == NULL && getRightCell() != &m_cells[0][0]){
         getRightCell()->setPrev(&m_cells[m_x][m_y]);
+    }
+}
+
+void FloodFill::bffFlood(int x, int y, std::list<SimpleCellmod>* modCellsList) {
+
+    // *DO NOT* flood the cells in the goal region of the maze - there is no
+    // information that we can gain about the distance values in the goal,
+    // and we can only corrupt the current distance values anyways (they
+    // can't and shouldn't change from 0)
+    if (!inGoal(x, y)){
+
+        // Initialize distance values for surrounding cells
+        int northDistance = MAZE_SIZE_X*MAZE_SIZE_Y;
+        int eastDistance = MAZE_SIZE_X*MAZE_SIZE_Y;
+        int southDistance = MAZE_SIZE_X*MAZE_SIZE_Y;
+        int westDistance = MAZE_SIZE_X*MAZE_SIZE_Y;
+
+        // Obtain actual values if possible
+        if (!m_cells[x][y].isWall(NORTH)){
+            northDistance = m_cells[x][y+1].getDistance();
+        }
+        if (!m_cells[x][y].isWall(EAST)){
+            eastDistance = m_cells[x+1][y].getDistance();
+        }
+        if (!m_cells[x][y].isWall(SOUTH)){
+            southDistance = m_cells[x][y-1].getDistance();
+        }
+        if (!m_cells[x][y].isWall(WEST)){
+            westDistance = m_cells[x-1][y].getDistance();
+        }
+
+        // Check to see if the distance value is the min plus one
+        if (m_cells[x][y].getDistance() != min(northDistance, eastDistance, southDistance, westDistance) + 1){
+
+            // Set the value to the min plus one
+            m_cells[x][y].setDistance(min(northDistance, eastDistance, southDistance, westDistance) + 1);
+
+            if (!m_cells[x][y].isWall(NORTH)){
+
+                Cell* c = &m_cells[x][y+1];
+                SimpleCellmod mod;
+                mod.cell = c;
+                mod.prev = c->getPrev();
+                mod.dist = c->getDistance();
+                for (int i = 0; i < 4; i++) {
+                    mod.walls[i] = c->isWall(i);
+                }
+                modCellsList->push_back(mod);
+
+                flood(x, y + 1);
+            }
+            if (!m_cells[x][y].isWall(EAST)){
+
+                Cell* c = &m_cells[x+1][y];
+                SimpleCellmod mod;
+                mod.cell = c;
+                mod.prev = c->getPrev();
+                mod.dist = c->getDistance();
+                for (int i = 0; i < 4; i++) {
+                    mod.walls[i] = c->isWall(i);
+                }
+                modCellsList->push_back(mod);
+
+                flood(x + 1, y);
+            }
+            if (!m_cells[x][y].isWall(SOUTH)){
+
+                Cell* c = &m_cells[x][y-1];
+                SimpleCellmod mod;
+                mod.cell = c;
+                mod.prev = c->getPrev();
+                mod.dist = c->getDistance();
+                for (int i = 0; i < 4; i++) {
+                    mod.walls[i] = c->isWall(i);
+                }
+                modCellsList->push_back(mod);
+
+                flood(x, y - 1);
+            }
+            if (!m_cells[x][y].isWall(WEST)){
+
+                Cell* c = &m_cells[x-1][y];
+                SimpleCellmod mod;
+                mod.cell = c;
+                mod.prev = c->getPrev();
+                mod.dist = c->getDistance();
+                for (int i = 0; i < 4; i++) {
+                    mod.walls[i] = c->isWall(i);
+                }
+                modCellsList->push_back(mod);
+
+                flood(x - 1, y);
+            }
+        }
     }
 }
 
