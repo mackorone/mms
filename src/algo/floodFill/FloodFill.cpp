@@ -142,8 +142,6 @@ void FloodFill::victory(){
     // TODO: Set the speed greater with each iteration
     // TODO: Give this to Tomasz in an array form
 
-    std::cout << "VICTORY" << std::endl;
-
     // Loop forever, continue going to the beginning and solving
     while (true){
 
@@ -473,38 +471,38 @@ bool FloodFill::spaceRight(){
 
 void FloodFill::explore(){
 
-    /*
-        The foundation of the explore method is a simple DFS search. However,
-        DFS is not terribly efficient in this context and can be improved upon
-        greatly. See below for improvements, failures and ideas. Any testing or
-        comparison can be done with the exploreBeta method.
-
-        IMPROVEMENTS:
-        1.) When tracing back to the next parent node with neighbors, check to
-            see if, at any point in the retracing, that you're next to the
-            target node. If so, there is no need to retrace all the way back to
-            the parent node. Rather, we can simply proceed to the target node
-            from where we currently are.
-        2.) Keep track of which walls have been inspected. If all walls of a Cell
-            have been inspected, there is no need to explicitly move the mouse
-            into that particular Cell. Thus, after popping a Cell off of the stack,
-            check to see if all of its walls have been explored. If so, pop the
-            next Cell off of the stack and proceed. 
-        3.) Check neighbors of untraversed but fully explored Cells for the
-            possibility of short-circuiting the retracing opertation.
-
-        FAILURES:
-        1.) Updating the prev values as cells were rediscovered. This performed
-            worse in every test case
-        2.) Choosing to explore the neighbor with the lowest cell value, as
-            opposed to a R-F-L priority (or L-F-R priority)
-        3.) Choosing to explore the neighbor with the highest cell value, as
-            opposed to a R-F-L priority (or L-F-R priority)
-        4.) Choosing to explore the neighbor with a different directional
-            priority, other than L-F-R or R-F-L
-
-        IDEAS:
-        1.) Do we need to explore cells that are far away from the goal?
+   /*
+    *  The foundation of the explore method is a simple DFS search. However,
+    *  DFS is not terribly efficient in this context and can be improved upon
+    *  greatly. See below for improvements, failures and ideas. Any testing or
+    *  comparison can be done with the exploreBeta method.
+    *
+    *  IMPROVEMENTS:
+    *  1.) When tracing back to the next parent node with neighbors, check to
+    *      see if, at any point in the retracing, that you're next to the
+    *      target node. If so, there is no need to retrace all the way back to
+    *      the parent node. Rather, we can simply proceed to the target node
+    *      from where we currently are.
+    *  2.) Keep track of which walls have been inspected. If all walls of a Cell
+    *      have been inspected, there is no need to explicitly move the mouse
+    *      into that particular Cell. Thus, after popping a Cell off of the stack,
+    *      check to see if all of its walls have been explored. If so, pop the
+    *      next Cell off of the stack and proceed. 
+    *  3.) Check neighbors of untraversed but fully explored Cells for the
+    *      possibility of short-circuiting the retracing opertation.
+    *
+    *  FAILURES:
+    *  1.) Updating the prev values as cells were rediscovered. This performed
+    *      worse in every test case
+    *  2.) Choosing to explore the neighbor with the lowest cell value, as
+    *      opposed to a R-F-L priority (or L-F-R priority)
+    *  3.) Choosing to explore the neighbor with the highest cell value, as
+    *      opposed to a R-F-L priority (or L-F-R priority)
+    *  4.) Choosing to explore the neighbor with a different directional
+    *      priority, other than L-F-R or R-F-L
+    *
+    *  IDEAS:
+    *  1.) Do we need to explore cells that are far away from the goal?
     */
 
     // Push unexplored nodes onto a stack
@@ -519,37 +517,19 @@ void FloodFill::explore(){
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // --------------------------------------------------------------------------------------------------------- //
 
-        // TODO: We need to pick *very* specific points in the code to check for requests
-        // For now, only query before the next move, AKA before we retrieve our next target
-        // After it's working, we can short circuit the tracing back for faster undos
-
-        //bool undoCompleted = true; // Whether or not we've got to the point where
-                                     // we messed up. If undo is pressed again
-                                     // before we've reached the point at which we 
-                                     // first screwed up, then we don't erase any more
-                                     // memory - we simply attempt to get back to that cell again.
-        
-        // TODO: Additionally, we should have some sort of checkpoint cell - that is, it starts at zero
-        // and then changes to the checkpoint cell after each undo if requested. If an undo is requested
-        // immediatly after another undo completes, make sure to only go back as far as the checkpoint point
+        // As it stands right now, we only query for undo and reset requests at the very
+        // every time we proceed to a new cell. Ideally, we would change this so that 
+        // we could also check for the requests is retracing // TODO
 
         if (m_mouse->resetRequested()) {
-            std::cout <<"----------------RESET-------------------" << std::endl;
             m_mouse->resetPosition();
             m_mouse->resetColors(0, 0);
             m_mouse->resetHonored();
             return;
         }
 
-       //std::cout << "CHECK UNDO REQUEST" << std::endl;
         if (m_mouse->undoRequested()) {
 
-            std::cout <<"----------------UNDO-------------------" << std::endl;
-        
-            //std::cout << "Undo requested" << std::endl;
-            // TODO: If another undo is requested while this undo is still being completed, then
-            // we should simply redo our attempts to get to the checkpoint cell - Go to checkpoint
-    
             // We check to see if we've moved at least SHORT_TERM_MEM number of times. If so, then
             // we can go back that many steps to the state that existed right BEFORE those steps
 
@@ -567,28 +547,23 @@ void FloodFill::explore(){
             // to the checkpoint the maze
             m_mouse->undoHonored();
 
-            // TODO
+            // If an undo is requested within the first few steps, we can simply
+            // re-explore the maze since we haven't made an real progress yet.
+            // Doing things this way ensures that some corner cases are handled.
             if (m_history.getCheckpointCell() == &m_cells[0][0]) {
                 return;
             }
 
-
-            // Retrieve the old stack image. Note that we do this PRIOR to getting the
-            // path since the path is dependent on the checkpoint stack that we retrieve.
-            // TODO: These are ugly, make a better interface
+            // Retrieve the old stack image.
             unexplored = m_history.getCheckpointStack();
 
-            // Retrieve the path to get back to the current cell. Note that we *must*
-            // do this prior to clearing the cells since the prev values are being set
-            // to NULL (which sets modified cells to "undiscovered").
+            // Retrieve the path to get back to the current cell.
             std::stack<Cell*> path = m_history.getCheckpointPath();
 
-            // Clear the modified cells. // TODO: This also resets everything
+            // Clear the modified cells.
             m_history.resetModifiedCells(); // TODO: Call this something else
 
-            // Moves to the checkpoint and checks for requests along the way. This
-            // evaluates to true if there was another request. In that case, handle
-            // the request appropriately.
+            // Moves to the checkpoint and checks for requests along the way.
             if (proceedToCheckpoint(path)) {
                 if (m_mouse->resetRequested()) {
                     m_mouse->resetPosition();
@@ -597,22 +572,13 @@ void FloodFill::explore(){
                     return;
                 }
                 else {
-                    std::cout << "Trying to re-proceed to checkpoint" << std::endl;
+                    // If another undo is requested while this undo is still being completed,
+                    // then we should simply redo our attempts to get to the checkpoint cell
                     continue;
                 }
             }
 
-            // TODO: Print the stack here
-            /*
-            std::stack<Cell*> tmp = unexplored;
-            while (!tmp.empty()) {
-                Cell* x = tmp.top();
-                tmp.pop();
-                std::cout << "Stacko - (" << x->getX() << "," << x->getY() << ")" << std::endl;
-            }
-            */
-
-            std::cout << "Successfully made it to cell (" << m_x << "," << m_y << ")" << std::endl;
+            // As this point, we've reached the checkpoint and can procees to the next target
             m_checkpointReached = true;
             continue;
         }
@@ -628,17 +594,13 @@ void FloodFill::explore(){
         // proceed as normal.
 
         bool allWallsInspected = true;
-        Cell* target = NULL; // Initialze the target cell
+        Cell* target = NULL;
 
         // The first condition for looping, namely that all not all walls be
         // inspected, is vital to the functioning of the rest of the explore
         // algorithm. Once this loop exits, we can be assured that either we've
         // explored everything, or that the target has not yet been traversed
         // (but will be traversed).
-
-        if (unexplored.empty()) {
-            std::cout << "UNEXPLORED EMPTY" << std::endl;
-        }
 
         while (allWallsInspected && !unexplored.empty()){
 
@@ -650,9 +612,6 @@ void FloodFill::explore(){
             // If so, no need to explore that cell - get a new target
             for (int i = 0; i < 4; i++){
                 allWallsInspected = allWallsInspected && target->getWallInspected(i);
-                //std::cout << "Wall " << i << " of (" << target->getX() << ","
-                //<< target->getY() << ") is inspected: " << (target->getWallInspected(i) ? "true" : "false")
-                //<< std::endl;
             } 
             
             // Although we don't need to explicitly explore a Cell if we've
@@ -670,8 +629,6 @@ void FloodFill::explore(){
             if (allWallsInspected){
                 target->setExplored(true);
                 flood(target->getX(), target->getY());
-                std::cout << "Skipping (" << target->getX() << "," << target->getY()
-                << ")" << std::endl;// TODO
             }
         }
 
@@ -680,12 +637,6 @@ void FloodFill::explore(){
         // updates or flooding - we simply want to return to the beginning for victory.
         if (allWallsInspected) {
             break;
-        }
-
-        std::cout << "TARGET (" << target->getX() << "," << target->getY() << ")" << std::endl;
-        if (target->getPrev() == NULL && target != &m_cells[0][0]) {
-            std::cout << "ERROR - target has NULL prev value" << std::endl;
-            exit(0);
         }
 
         // If prev == NULL we're at the start, so no need to move
@@ -743,107 +694,10 @@ void FloodFill::explore(){
             moveOneCell(target);
         }
 
-        // TODO: List of cellmod objects for all cell modifications performed at this step
-        std::list<Cellmod> modifiedCells;
-
-        Cellmod tar;
-        tar.cell = target;
-        tar.oldDist = target->getDistance();
-        tar.oldPrev = target->getPrev();
-        tar.oldExplored = target->getExplored();
-        tar.oldTraversed = target->getTraversed();
-        for (int i = 0; i < 4; i++) {
-            tar.oldWalls[i] = target->isWall(i);
-            tar.oldWallsInspected[i] = target->getWallInspected(i);
-        }
-        modifiedCells.push_back(tar);
-
-        // Once we're in the correct Cells, we can now examine the contents of the
-        // target and update our walls and distances
-        walls();
-        flood(m_x, m_y);
-
-        // Once we've examined the contents at the target, it is considered explored and traversed
-        m_cells[m_x][m_y].setExplored(true);
-        m_cells[m_x][m_y].setTraversed(true);
-
-        // Need a way to unroll the changes.... possibly a different data structure???
-
-        // After, we find any unexplored neighbors.
-        if (!m_mouse->wallLeft() && getLeftCell()->getPrev() == NULL){
-
-            Cell* lc = getLeftCell();
-
-            Cellmod asdf;
-            asdf.cell = lc;
-            asdf.oldDist = lc->getDistance();
-            asdf.oldPrev = lc->getPrev();
-            asdf.oldExplored = lc->getExplored();
-            asdf.oldTraversed = lc->getTraversed();
-            for (int i = 0; i < 4; i++) {
-                asdf.oldWalls[i] = lc->isWall(i);
-                asdf.oldWallsInspected[i] = lc->getWallInspected(i);
-            }
-            modifiedCells.push_back(asdf);
-
-            unexplored.push(getLeftCell());
-            getLeftCell()->setPrev(&m_cells[m_x][m_y]);
-            /*std::cout << "The cell (" << getLeftCell()->getX() << "," << getLeftCell()->getY() << ")"
-            << " has a prev cell of (" << target->getX() << "," << target->getY() << ")" << std::endl;*/
-        }
-        if (!m_mouse->wallFront() && getFrontCell()->getPrev() == NULL){
-
-            Cell* fc = getFrontCell();
-
-            Cellmod asdf;
-            asdf.cell = fc;
-            asdf.oldDist = fc->getDistance();
-            asdf.oldPrev = fc->getPrev();
-            asdf.oldExplored = fc->getExplored();
-            asdf.oldTraversed = fc->getTraversed();
-            for (int i = 0; i < 4; i++) {
-                asdf.oldWalls[i] = fc->isWall(i);
-                asdf.oldWallsInspected[i] = fc->getWallInspected(i);
-            }
-            modifiedCells.push_back(asdf);
-
-            unexplored.push(getFrontCell());
-            getFrontCell()->setPrev(&m_cells[m_x][m_y]);
-            /*std::cout << "The cell (" << getFrontCell()->getX() << "," << getFrontCell()->getY() << ")"
-            << " has a prev cell of (" << target->getX() << "," << target->getY() << ")" << std::endl;*/
-        }
-        if (!m_mouse->wallRight() && getRightCell()->getPrev() == NULL){
-
-            Cell* rc = getRightCell();
-
-            Cellmod asdf;
-            asdf.cell = rc;
-            asdf.oldDist = rc->getDistance();
-            asdf.oldPrev = rc->getPrev();
-            asdf.oldExplored = rc->getExplored();
-            asdf.oldTraversed = rc->getTraversed();
-            for (int i = 0; i < 4; i++) {
-                asdf.oldWalls[i] = rc->isWall(i);
-                asdf.oldWallsInspected[i] = rc->getWallInspected(i);
-            }
-            modifiedCells.push_back(asdf);
-
-            unexplored.push(getRightCell());
-            getRightCell()->setPrev(&m_cells[m_x][m_y]);
-            /*std::cout << "The cell (" << getRightCell()->getX() << "," << getRightCell()->getY() << ")"
-            << " has a prev cell of (" << target->getX() << "," << target->getY() << ")" << std::endl;*/
-        }
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// --------------------------------------------------------------------------------------------------------- //
-
-        // Update the History target stack and modified cells
-        m_history.stackUpdate(unexplored);
-        m_history.modifiedCellsUpdate(modifiedCells);
+        // Once we're at the cell, perform the appropriate updates for that cell,
+        // including modifying the explore stack.
+        doUpdatesForCurrentCell(&unexplored);
     }
-
-// --------------------------------------------------------------------------------------------------------- //
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Once the stack is empty (once we've explored every possible cell),
     // we assign a maximum distance value to unexplored cells and then return
@@ -1106,6 +960,54 @@ void FloodFill::moveOneCell(Cell* target){
     }
 }
 
+void FloodFill::doUpdatesForCurrentCell(std::stack<Cell*>* unexplored) {
+
+    // List of cellmod objects for all cell modifications performed at this step
+    std::list<Cellmod> modifiedCells;
+
+    // We need to keep track of the old values for the modified cell before we update it.
+    appendModifiedCell(&modifiedCells, &m_cells[m_x][m_y]);
+
+    // Once we're in the correct Cells, we can now examine the contents of the
+    // target and update our walls and distances
+    walls();
+    flood(m_x, m_y);
+
+    // Once we've examined the contents at the target, it is considered explored and traversed
+    m_cells[m_x][m_y].setExplored(true);
+    m_cells[m_x][m_y].setTraversed(true);
+
+    // After, we find any unexplored neighbors.
+    if (!m_mouse->wallLeft() && getLeftCell()->getPrev() == NULL){
+
+        // We need to keep track of the old values for the modified cell before we update it.
+        appendModifiedCell(&modifiedCells, getLeftCell());
+
+        unexplored->push(getLeftCell());
+        getLeftCell()->setPrev(&m_cells[m_x][m_y]);
+    }
+    if (!m_mouse->wallFront() && getFrontCell()->getPrev() == NULL){
+
+        // We need to keep track of the old values for the modified cell before we update it.
+        appendModifiedCell(&modifiedCells, getFrontCell());
+
+        unexplored->push(getFrontCell());
+        getFrontCell()->setPrev(&m_cells[m_x][m_y]);
+    }
+    if (!m_mouse->wallRight() && getRightCell()->getPrev() == NULL){
+
+        // We need to keep track of the old values for the modified cell before we update it.
+        appendModifiedCell(&modifiedCells, getRightCell());
+
+        unexplored->push(getRightCell());
+        getRightCell()->setPrev(&m_cells[m_x][m_y]);
+    }
+
+    // Update the History target stack and modified cells
+    m_history.stackUpdate(*unexplored);
+    m_history.modifiedCellsUpdate(modifiedCells);
+}
+
 bool FloodFill::isOneCellAway(Cell* target){
 
     // Use local variables to reduce function calls
@@ -1260,6 +1162,21 @@ bool FloodFill::proceedToCheckpoint(std::stack<Cell*> path) {
     }
 
     return false;
+}
+
+void FloodFill::appendModifiedCell(std::list<Cellmod>* modList, Cell* modCell) {
+
+    Cellmod cm;
+    cm.cell = modCell;
+    cm.oldDist = modCell->getDistance();
+    cm.oldPrev = modCell->getPrev();
+    cm.oldExplored = modCell->getExplored();
+    cm.oldTraversed = modCell->getTraversed();
+    for (int i = 0; i < 4; i++) {
+        cm.oldWalls[i] = modCell->isWall(i);
+        cm.oldWallsInspected[i] = modCell->getWallInspected(i);
+    }
+    modList->push_back(cm);
 }
 
 bool FloodFill::checkRequestExplore() {

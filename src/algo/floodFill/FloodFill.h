@@ -67,14 +67,21 @@ private:
 
     void exploreBeta(); // USED FOR TESTING PURPOSES ONLY //
 
+    // Retrieve a valid target Cell
+    void retrieveTarget();
+
+    // Updates all values for the Cell that the mouse is currently in. Additionally
+    // updates the history and the current stack of unexplored Cells
+    void doUpdatesForCurrentCell(std::stack<Cell*>* unexplored);
+
     // Returns whether or not the location is one cell away
     bool isOneCellAway(Cell* target);
 
     // Moves the mouse to the target Cell but only if it's exactly one Cell away
     void moveOneCell(Cell* target);
 
-    // Attempts to short-circuit the retracing by looking at neighbors of untraversed cells
-    // Returns true if successful, false if short-circuiting wasn't possible
+    // Attempts to short-circuit the retracing by looking at neighbors of untraversed
+    // cells. Returns true if successful, false if short-circuiting wasn't possible.
     bool tryUntraversed(Cell* target);
 
 
@@ -83,6 +90,9 @@ private:
     History m_history; // History object used for undos
     bool m_explored; // Whether or not the explore method was has completed
     bool m_checkpointReached; // Whether or not we've made it back to the checkpoint
+
+    // Appends a newly modified cell to the modified cells list for each step in the algo
+    void appendModifiedCell(std::list<Cellmod>* modList, Cell* cell);
 
     // Moves to the checkpoint and updates cell values along the way. Returns true if either
     // a reset or undo request was made during the movement, false otherwise
