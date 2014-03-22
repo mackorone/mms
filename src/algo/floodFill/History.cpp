@@ -109,14 +109,12 @@ std::stack<Cell*> History::getCheckpointStack() {
     //std::cout << "Getting checkpoint stack" << std::endl;
 
     // Print the stack
-    /*
     std::stack<Cell*> temp = m_checkpointStack;
     while (!temp.empty()) {
         Cell* c = temp.top();
         temp.pop();
         std::cout << "On cp stack (" << c->getX() << "," << c->getY() << ")" << std::endl;
     }
-    */
 
     return m_checkpointStack;
 }
@@ -137,7 +135,7 @@ void History::moved(Cell* movedTo) {
     m_stackReferenceCounts.push_back(srefCount+1);
 
     // Every move we push an empty list onto the list of lists of modified cells
-    std::list<std::pair<Cell*, int>> empty;
+    std::list<Cellmod> empty;
     m_modifiedCells.push_front(empty);
 
     // If the size of the path is larger than our short term memory (which it needn't
@@ -206,7 +204,7 @@ void History::stackUpdate(std::stack<Cell*> newStack) {
     //printS();// TODO
 }
 
-void History::modifiedCellsUpdate(std::list<std::pair<Cell*, int>> cells) {
+void History::modifiedCellsUpdate(std::list<Cellmod> cells) {
 
     // The only situation when this list will be empty is immediately after
     // returning to the origin after undo is called. This is because the checkpoint
@@ -222,45 +220,28 @@ void History::modifiedCellsUpdate(std::list<std::pair<Cell*, int>> cells) {
 
 void History::resetModifiedCells() {
 
-    std::list<std::list<std::pair<Cell*, int>>> temp = m_modifiedCells;
+    std::list<std::list<Cellmod>> temp = m_modifiedCells;
 
     // TODO: Go in reverse, set the prev values
 
     while (!temp.empty()) {
-        std::list<std::pair<Cell*, int>> cellList = temp.front();
+
+        std::list<Cellmod> cellList = temp.front();
         temp.pop_front();
-        for (std::list<std::pair<Cell*, int>>::iterator it = cellList.begin(); it != cellList.end() ; ++it) {
 
-            //std::cout << "Resetting (" << (std::get<0>(*it))->getX() << ","
-            //<< (std::get<0>(*it))->getY() << ")" << std::endl;// TODO
+        // TODO: Document the fact that we iterate from most recent to least recent
+        for (std::list<Cellmod>::iterator it = cellList.begin(); it != cellList.end() ; ++it) {
 
-            // 4 indicates that the cell was actually traversed
-            if ((std::get<1>(*it)) == 4) {
-                for (int i = 0; i < 4; i++){
+            std::cout << "Resetting (" << ((*it).cell)->getX() << ","
+            << ((*it).cell)->getY() << ")" << std::endl;// TODO
 
-                    // Set the wall to false as well, because we don't check the wall inspected
-                    // values explicitely when we're considering adding something to the stack
-                    // TODO: I'm not sure why this would matter....
-                    (std::get<0>(*it))->setWall(i, false);
-                    (std::get<0>(*it))->setWallInspected(i, false);
-                }
-
-                // A value of 4 indicates that this cell was actually traversed (AKA a target). Since
-                // it was a target, it means it had to have been on the stack, and thus will be put
-                // back on the stack after it is rediscovered. 
-                (std::get<0>(*it))->setPrev(NULL); // TODO: We could do this better
-                std::cout << "Just set prev of (" << (std::get<0>(*it))->getX() << "," << (std::get<0>(*it))->getY()
-                << ") to NULL" << std::endl;
-
-            }
-            else{ // Otherwise we only need to reset the one wall that was seen
-                  // from the then current cell
-                // TODO: I'm not sure why this would matter.... Why set wall to false
-                (std::get<0>(*it))->setWall(std::get<1>(*it), false);
-                (std::get<0>(*it))->setWallInspected(std::get<1>(*it), false);
-
-                // TODO: We could do this better
-                //(std::get<0>(*it))->setPrev(std::get<1>(*it));
+            (*it).cell->setPrev((*it).oldPrev);
+            (*it).cell->setDistance((*it).oldDist);
+            (*it).cell->setExplored((*it).oldExplored);
+            (*it).cell->setTraversed((*it).oldTraversed);
+            for (int i = 0; i < 4; i++) {
+                (*it).cell->setWall(i, (*it).oldWalls[i]);
+                (*it).cell->setWallInspected(i, (*it).oldWallsInspected[i]);
             }
         }
     }
@@ -313,6 +294,7 @@ void History::printS() {
 // Prints cells and ref count
 void History::printC() {
 
+    /*
     std::list<std::list<std::pair<Cell*, int>>> ss = m_modifiedCells;
 
     std::cout << "================== PRINTING MODIFIED CELLS =====================" << std::endl;
@@ -327,5 +309,6 @@ void History::printC() {
         std::cout << " }" << std::endl;
         ss.pop_front();
     }
+    */
 }
 

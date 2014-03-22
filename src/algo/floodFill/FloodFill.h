@@ -84,9 +84,6 @@ private:
     bool m_explored; // Whether or not the explore method was has completed
     bool m_checkpointReached; // Whether or not we've made it back to the checkpoint
 
-    // Updates a current cell along the path to return to checkpoint after an undo request
-    void cellUpdate(); 
-
     // Moves to the checkpoint and updates cell values along the way. Returns true if either
     // a reset or undo request was made during the movement, false otherwise
     bool proceedToCheckpoint(std::stack<Cell*> path);

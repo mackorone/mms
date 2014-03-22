@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "Cell.h"
+#include "Cellmod.h"
 
 class History {
 
@@ -19,9 +20,11 @@ public:
 
     void moved(Cell* movedTo);
     void stackUpdate(std::stack<Cell*> newStack);
-    void modifiedCellsUpdate(std::list<std::pair<Cell*, int>> cells);
+    void modifiedCellsUpdate(std::list<Cellmod> cells);
 
     void resetModifiedCells();
+
+    Cell* getCheckpointCell(); // Returns a pointer the checkpoint cell
 
 private:
 
@@ -45,12 +48,8 @@ private:
     // Queue of ints counting the references for each stack in m_stacks
     std::list<int> m_stackReferenceCounts;
 
-    // List of List of cells modified for each step. The first cell indicates the cell
-    // that was modified, the second cell is the old prev value, and the int is the
-    // wall that was modified.
-    std::list<std::list<std::pair<Cell*, int>>> m_modifiedCells;
-
-    Cell* getCheckpointCell(); // Returns a pointer the checkpoint cell
+    // List of List of cell modification objects for each step.
+    std::list<std::list<Cellmod>> m_modifiedCells;
 
     // TODO
     void printS();
