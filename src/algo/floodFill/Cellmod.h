@@ -14,11 +14,8 @@ struct Cellmod {
     // NOTE: All of these fields correspond to the state of the Cell prior to being modified
     Cell* oldPrev; // The old prev cell of the cell
     int oldDist; // The old distance of the cell
-
-    // TODO: 
     bool oldExplored; // The old exploredness of the cell (not sure if we need or if we can set to false by default)
     bool oldTraversed; // The old traversednedd of the cell (again, not sure if this is necessary)
-
     bool oldWalls[4]; // Whether or not a wall exists on the North, East, South, and West walls
     bool oldWallsInspected[4]; // Whether or not we've inspected the specific walls of a Cell
 };

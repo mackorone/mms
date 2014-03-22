@@ -9,7 +9,7 @@
 
 // Constants
 static const int MAZE_SIZE = 16; // TODO: Be able to set maze width and height separately
-static const int SHORT_TERM_MEM = 5; // Steps that are forgetten by the mouse after an error
+static const int SHORT_TERM_MEM = 12; // Steps that are forgetten by the mouse after an error
 enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
 
 
@@ -65,11 +65,6 @@ private:
     // eventually returning the mouse back to the starting location
     void explore();
 
-    void exploreBeta(); // USED FOR TESTING PURPOSES ONLY //
-
-    // Retrieve a valid target Cell
-    void retrieveTarget();
-
     // Updates all values for the Cell that the mouse is currently in. Additionally
     // updates the history and the current stack of unexplored Cells
     void doUpdatesForCurrentCell(std::stack<Cell*>* unexplored);
@@ -97,9 +92,6 @@ private:
     // Moves to the checkpoint and updates cell values along the way. Returns true if either
     // a reset or undo request was made during the movement, false otherwise
     bool proceedToCheckpoint(std::stack<Cell*> path);
-
-    // Checks and handles requests for the explore method, returns true for reset, else false
-    bool checkRequestExplore();
 
     // Checks and handles requests for the victory method, returns true for reset, else false
     bool checkRequestVictory();

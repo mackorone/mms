@@ -6,6 +6,9 @@ High Priority
     - This could be done by calculating both the distance to the center AND the
       distance to that square from the starting square - no need to travel to 
       far away squares
+- Pass things by reference when possible
+- Optimize the checkpoint system
+- Optimize the lists of modified cells
 
 Medium Priority
 ===============

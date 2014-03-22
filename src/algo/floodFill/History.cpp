@@ -8,9 +8,7 @@ void History::initialize(int stm, Cell* origin) {
     m_stm = stm;
 
     // Erase any left-over data
-    while (!m_path.empty()) {
-        m_path.pop();
-    }
+    m_size = 0;
     while (!m_stacks.empty()) {
         m_stacks.pop();
     }
@@ -30,30 +28,9 @@ void History::initialize(int stm, Cell* origin) {
     // Set the checkpoint values
     m_checkpointCell = origin;
     m_checkpointStack = temp;
-
-    // The first thing that the floodfill algo will do after this initialization
-    // is update the origins values, and then call stackUpdate() and
-    // modifiedCellsUpdate(). However, we need to "move to" the origin since
-    // the Floodfill code will not do this for us. Here, we manually perform
-    // the necessary operations of the moved() method since the initial conditions
-    // break some of the invariant properties of History, namely that the path size
-    // is never 0.
-    m_path.push(origin);
-    //m_steps = 0;
-
-    // Note however, that we don't automatically add anything to m_modifiedCells since
-    // the only thing that the origin won't do is append to the path. It will still
-    // append the new stack and modified cells.
 }
 
-int History::size() {
-    // The number of steps taken by the robot since reaching the checkpoint
-    return m_path.size() - 1;
-}
-// TODO: Consolidate checkpoint cell and stack into a single pair
 Cell* History::getCheckpointCell() {
-
-    //std::cout << "Getting checkpoint cell" << std::endl;
 
     // The checkpoint cell is the prev cell for the cell on top of the stack for the 
     // frontmost (oldest) stack that we are storing within the m_stacks queue.
@@ -72,64 +49,34 @@ std::stack<Cell*> History::getCheckpointPath() {
     std::stack<Cell*> path;
     Cell* runner = getCheckpointCell();
 
-    std::cout << "Checkpoint Cell (" << runner->getX() << "," << runner->getY() << ")" << std::endl;
-
     while (runner != NULL) {
         path.push(runner);
-        if (runner->getPrev() == NULL) {
-            std::cout << "RUNNER END Cell (" << runner->getX() << "," << runner->getY() << ")" << std::endl;
-        }
         runner = runner->getPrev(); 
     }
-    
-    
 
     // The path always includes the origin, and since we can't and don't want 
     // to try to move to the origin, we can *always* pop it off safely
     path.pop();
 
-    // print the path
-    std::stack<Cell*> temp = path;
-    while (!temp.empty()) {
-        Cell* r = temp.top();
-        temp.pop();
-        if (temp.size() > 0) {
-            std::cout << "Path step (" << r->getX() << "," << r->getY() << ")" << std::endl; // TODO
-        }
-    }
-    std::cout << "Ending at checkpoint (" << getCheckpointCell()->getX() << ","
-    << getCheckpointCell()->getY() << ")" << std::endl;
-
-    //std::cout << "Finished obtaining checkpoint path" << std::endl;
     return path;
 }
 
 std::stack<Cell*> History::getCheckpointStack() {
-
-    //std::cout << "Getting checkpoint stack" << std::endl;
-
-    // Print the stack
-    std::stack<Cell*> temp = m_checkpointStack;
-    while (!temp.empty()) {
-        Cell* c = temp.top();
-        temp.pop();
-        std::cout << "On cp stack (" << c->getX() << "," << c->getY() << ")" << std::endl;
-    }
 
     return m_checkpointStack;
 }
 
 void History::moved(Cell* movedTo) {
 
-    m_path.push(movedTo);
-    //std::cout << "Moved to cell (" << movedTo->getX() << "," << movedTo->getY() << ")" << std::endl;
-    //m_steps++;
+    m_size++;
 
     // Assertion - Neither m_stacks nor m_stackReferenceCounts should ever be empty
     if (m_stackReferenceCounts.empty() || m_stacks.empty()) {
         std::cout << "Error - History object has zero stack references" << std::endl;
         exit(0);
     }
+
+    // Increment our stack reference counts
     int srefCount = m_stackReferenceCounts.back();
     m_stackReferenceCounts.pop_back();
     m_stackReferenceCounts.push_back(srefCount+1);
@@ -141,9 +88,9 @@ void History::moved(Cell* movedTo) {
     // If the size of the path is larger than our short term memory (which it needn't
     // be) then reduce the reference counts and pop the appropriate number of things
     // off of the stacks.
-    if (size() > m_stm) {
+    if (m_size > m_stm) {
 
-        m_path.pop();
+        m_size--;
 
         int srefCount2 = m_stackReferenceCounts.front();
         m_stackReferenceCounts.pop_front();
@@ -152,12 +99,12 @@ void History::moved(Cell* movedTo) {
     if (m_stackReferenceCounts.front() == 0) {
         m_stackReferenceCounts.pop_front();
         m_stacks.pop();
-        m_checkpointStack = m_stacks.front(); // TODO: Does this work?
+        m_checkpointStack = m_stacks.front();
         if (m_stacks.front().top()->getPrev() != NULL) {
-            m_checkpointCell = m_stacks.front().top()->getPrev(); // TODO: Does this work?
+            m_checkpointCell = m_stacks.front().top()->getPrev();
         }
         else {
-            std::cout << "Error - checkpoint has not prev Cell" << std::endl;
+            std::cout << "Error - checkpoint has NULL prev Cell" << std::endl;
             exit(0);
         }
     }
@@ -169,8 +116,6 @@ void History::moved(Cell* movedTo) {
 }
 
 void History::stackUpdate(std::stack<Cell*> newStack) {
-
-    //std::cout << "Attempting stack update" << std::endl;
 
     // Assertion - Neither m_stacks nor m_stackReferenceCounts should ever be empty
     if (m_stackReferenceCounts.empty() || m_stacks.empty()) {
@@ -189,19 +134,6 @@ void History::stackUpdate(std::stack<Cell*> newStack) {
     m_stackReferenceCounts.pop_back();
     m_stackReferenceCounts.push_back(temp-1);
     m_stackReferenceCounts.push_back(1);
-
-    /*
-    std::stack<Cell*> te = newStack;// TODO
-    int size = te.size();
-    for (int i = 0; i < size; i++) {
-        Cell* c = te.top();
-        te.pop();
-        std::cout << "On stack (" << c->getX() << "," << c->getY() << ")" << std::endl;
-    }
-    std::cout << std::endl;
-    */
-
-    //printS();// TODO
 }
 
 void History::modifiedCellsUpdate(std::list<Cellmod> cells) {
@@ -214,27 +146,20 @@ void History::modifiedCellsUpdate(std::list<Cellmod> cells) {
         m_modifiedCells.pop_front();
     }
     m_modifiedCells.push_front(cells);
-
-    //printC();//TODO
 }
 
 void History::resetModifiedCells() {
 
     std::list<std::list<Cellmod>> temp = m_modifiedCells;
 
-    // TODO: Go in reverse, set the prev values
-
+    // Iterate through all modified cells, starting with most recent and going
+    // to least recent. During iterations, we simply restore the old values
     while (!temp.empty()) {
 
         std::list<Cellmod> cellList = temp.front();
         temp.pop_front();
 
-        // TODO: Document the fact that we iterate from most recent to least recent
         for (std::list<Cellmod>::iterator it = cellList.begin(); it != cellList.end() ; ++it) {
-
-            std::cout << "Resetting (" << ((*it).cell)->getX() << ","
-            << ((*it).cell)->getY() << ")" << std::endl;// TODO
-
             (*it).cell->setPrev((*it).oldPrev);
             (*it).cell->setDistance((*it).oldDist);
             (*it).cell->setExplored((*it).oldExplored);
@@ -246,10 +171,8 @@ void History::resetModifiedCells() {
         }
     }
 
-    // After we get a new checkpoint, we empty everything // TODO: Not sure about this yet
-    while (!m_path.empty()) {
-        m_path.pop();
-    }
+    // After we get a new checkpoint, we empty everything
+    m_size = 0;
     while (!m_stacks.empty()) {
         m_stacks.pop();
     }
@@ -262,53 +185,4 @@ void History::resetModifiedCells() {
 
     m_stacks.push(m_checkpointStack);
     m_stackReferenceCounts.push_back(1);
-    m_path.push(getCheckpointCell());
-    //m_steps = 0;
 }
-
-
-// Prints stacks and ref count
-void History::printS() {
-
-    int s = m_stacks.size(); // == m_stackReferenceCounts.size()
-
-    std::queue<std::stack<Cell*>> ss = m_stacks;
-    std::list<int> ii = m_stackReferenceCounts;
-
-    std::cout << "================== PRINTING STACKS =====================" << std::endl;
-
-    for (int i = 0; i < s; i++) {
-        std::cout << "<" << ii.front() << "> of {";
-        int z = ss.front().size();
-        for (int j = 0; j < z; j++) {
-            std::cout << " (" << ss.front().top()->getX() << ","
-            <<  ss.front().top()->getY() << ")";
-            ss.front().pop();
-        }
-        std::cout << " }" << std::endl;
-        ss.pop();
-        ii.pop_front();
-    }
-}
-
-// Prints cells and ref count
-void History::printC() {
-
-    /*
-    std::list<std::list<std::pair<Cell*, int>>> ss = m_modifiedCells;
-
-    std::cout << "================== PRINTING MODIFIED CELLS =====================" << std::endl;
-
-    while (!ss.empty()) {
-        std::cout << "{";
-        while (!ss.front().empty()) {
-            std::cout << " (" << (std::get<0>(ss.front().front()))->getX() << ","
-            <<  (std::get<0>(ss.front().front()))->getY() << ")";
-            ss.front().pop_front();
-        }
-        std::cout << " }" << std::endl;
-        ss.pop_front();
-    }
-    */
-}
-

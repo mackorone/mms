@@ -468,7 +468,6 @@ bool FloodFill::spaceRight(){
     }
 }
 
-
 void FloodFill::explore(){
 
    /*
@@ -503,6 +502,15 @@ void FloodFill::explore(){
     *
     *  IDEAS:
     *  1.) Do we need to explore cells that are far away from the goal?
+    *
+    *
+    *  The execution of the explore method works as follows:
+    *
+    *  while (not fully explored):
+    *      1) Check for undo and reset request
+    *      2) Find next valid target
+    *      3) Retrace to target
+    *      4) Perform updates
     */
 
     // Push unexplored nodes onto a stack
@@ -511,15 +519,11 @@ void FloodFill::explore(){
     // The initial square is at (0, 0)
     unexplored.push(&m_cells[0][0]);
 
-    // The explore method needs to explore all Cells, so we loop until unexplored is empty
-    while (!unexplored.empty()) {
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// --------------------------------------------------------------------------------------------------------- //
-
-        // As it stands right now, we only query for undo and reset requests at the very
-        // every time we proceed to a new cell. Ideally, we would change this so that 
-        // we could also check for the requests is retracing // TODO
+    // The explore method needs to explore all Cells, so we loop until unexplored is empty.
+    // The other condition ensures that any requests, regardless of whether or not the
+    // stack was empty at the time of the request (which could happen as we visit the
+    // the last target, or in other weird cases), are honored and handled appropriately.
+    while (!unexplored.empty() || (m_mouse->undoRequested() || m_mouse->resetRequested()) ) {
 
         if (m_mouse->resetRequested()) {
             m_mouse->resetPosition();
@@ -544,7 +548,7 @@ void FloodFill::explore(){
 
             // We must call undoHonored() directly after we decide to honor the request
             // so that we may detect more undo requests during our attempt to continue
-            // to the checkpoint the maze
+            // to the checkpoint the maze.
             m_mouse->undoHonored();
 
             // If an undo is requested within the first few steps, we can simply
@@ -561,7 +565,7 @@ void FloodFill::explore(){
             std::stack<Cell*> path = m_history.getCheckpointPath();
 
             // Clear the modified cells.
-            m_history.resetModifiedCells(); // TODO: Call this something else
+            m_history.resetModifiedCells();
 
             // Moves to the checkpoint and checks for requests along the way.
             if (proceedToCheckpoint(path)) {
@@ -582,9 +586,6 @@ void FloodFill::explore(){
             m_checkpointReached = true;
             continue;
         }
-
-// --------------------------------------------------------------------------------------------------------- //
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // Begin by assuming that all walls of the Cell that we intend to explore
         // have already been inspected. Thus, we assume that we have no need to
@@ -645,9 +646,11 @@ void FloodFill::explore(){
             // Once we've found a valid, non-origin target (i.e. one that has not
             // had all of its walls already inspected), we move to the proper
             // advancing position for that particular Cell. That is, we keep
-            // backtracking until we're one away from that Cell.
+            // backtracking until we're one away from that Cell, or until a 
+            // request is made (at which point we immediately honor that request).
 
-            while (target->getPrev() != &m_cells[m_x][m_y]) {
+            while (target->getPrev() != &m_cells[m_x][m_y]
+                   && !(m_mouse->undoRequested() || m_mouse->resetRequested()) ) { // TODO
 
                 // If at any point the target is one cell away, we've no need to
                 // actually retrace though all of the other prev Cells. Thus we
@@ -690,196 +693,21 @@ void FloodFill::explore(){
                 moveOneCell(prev);
             }
 
-            // Once the mouse is in proper advancing position, advance
-            moveOneCell(target);
+            // Once the mouse is in proper advancing position, advance. However, if
+            // a request was made, we broke out of the while-loop and thus cannot
+            // be guaranteed that we're one Cell away from the target. Thus we
+            // only move if no requests were made.
+            if (!(m_mouse->undoRequested() || m_mouse->resetRequested())) {
+                moveOneCell(target);
+            }
         }
 
         // Once we're at the cell, perform the appropriate updates for that cell,
-        // including modifying the explore stack.
+        // including modifying the explore stack. In the case that a request was
+        // made (and therefore cannot be guaranteed that we're at the target cell),
+        // updating does not have any effect since we're going to be undo that last
+        // update in our short term memory (so long as our short term memory > 0).
         doUpdatesForCurrentCell(&unexplored);
-    }
-
-    // Once the stack is empty (once we've explored every possible cell),
-    // we assign a maximum distance value to unexplored cells and then return
-    // to the starting location. Thus, at the end of this function, all distance
-    // values will be 100% complete and correct
-    
-    for (int x = 0; x < MAZE_SIZE; x++){
-        for (int y = 0; y < MAZE_SIZE; y++){
-            if (!m_cells[x][y].getExplored()){
-                // Any unreachable cells should have inf distance. Conveniently,
-                // MAZE_SIZE*MAZE_SIZE is one greater than the maximum distance
-                m_cells[x][y].setDistance(MAZE_SIZE*MAZE_SIZE);
-            }
-        }
-    }
-
-    // Mark the maze as fully explored. Note that we do this *prior* to attempting
-    // to return to the beginning of the maze. The reason for this is that if we
-    // make a mistake on our way back to the beginning, we can simply undo to
-    // start from victory.
-    m_explored = true;
-
-    // Lastly, return to the starting location and face forward
-    while (m_x != 0 || m_y != 0){
-        Cell* prev = m_cells[m_x][m_y].getPrev();
-        moveOneCell(prev);
-    }
-    while (m_d != 0){ 
-        turnRight(); // Turning right is optimal since we'd never 
-                     // approach the starting location from the left
-    }
-}
-
-void FloodFill::exploreBeta(){
-    
-    /*
-        The purpose of this function is to test any ideas for improving the
-        explore method. Once improvements have been verified, they can be
-        copied over to the regular explore method.
-    */
-
-    // Push unexplored nodes onto a stack
-    std::stack<Cell*> unexplored;
-
-    // The initial square is at (0, 0)
-    unexplored.push(&m_cells[0][0]);
-
-    // Loop until all cells have been explored
-    while (!unexplored.empty()){
-
-        // Begin by assuming that all walls of the Cell that we intend to explore
-        // have already been inspected. Thus, we assume that we have no need to
-        // actually explore that Cell. We check the wallInspected values of each
-        // of the walls of that Cell to confirm (or refute) our assumption. Once
-        // we find a Cell for which not all of the walls have been inspected, we
-        // proceed as normal.
-
-        bool allWallsInspected = true;
-        Cell* target = NULL; // Initialze the target cell
-
-        // The first condition for looping, namely that all not all walls be
-        // inspected, is vital to the functioning of the rest of the explore
-        // algorithm. Once this loop exits, we can be assured that either we've
-        // explored everything, or that the target has not yet been traversed
-        // (but will be traversed).
-
-        while (allWallsInspected && !unexplored.empty()){
-
-            // First, pop the target cell off of the stack
-            target = unexplored.top(); 
-            unexplored.pop();
-    
-            // Next, check to see if all of the walls have been inspected.
-            // If so, no need to explore that cell - get a new target
-            for (int i = 0; i < 4; i++){
-                if (!target->getWallInspected(i)){
-                    allWallsInspected = false;
-                    break;
-                }
-            } 
-            
-            // Although we don't need to explicitly explore a Cell if we've
-            // already inspected all of its wall values, we still need to
-            // flood it (and its neighbors) with a proper distance value.
-            // In addition, we need to mark it as explored, acknowledging
-            // that once we've inspected all walls, we've essentially explored
-            // that Cell. If we don't mark the Cell as explored, then we may
-            // accidentally assign it a maximum distance value, since we assign
-            // these values based on whether or not a Cell was explored or not.
-            // Note that there is no danger of setting an unreachable Cell as
-            // explored, since an unreachable cell will be pushed onto the stack
-            // in the first place
-
-            if (allWallsInspected){
-                target->setExplored(true);
-                flood(target->getX(), target->getY());
-            }
-        }
-
-        // If the last thing on our stack already had all of its walls explored, then
-        // we have nothing else to explore (since that cell is already considered
-        // explored). However, since the last thing on our stack, based on our order
-        // of exploration, is usually close to the start square, it is advantageous
-        // to still travel to that cell, and thus we keep it as a target.
-
-        // Once we've found a valid target (i.e. one that has not had all of
-        // its walls already inspected), we move to the proper advancing
-        // position for that particular Cell. That is, we keep backtracking
-        // until we're one away from that Cell.
-
-        if (target->getPrev() != NULL){ // If prev == NULL we're at the start, so no need to move
-
-            // While the mouse is not in the advancing position, trace back
-            while (target->getPrev() != &m_cells[m_x][m_y]){
-
-                // If at any point the target is one cell away, we've no need to
-                // actually retrace though all of the other prev Cells. Thus we
-                // can simply break to reduce the amount of retracing that we do
-
-                if (isOneCellAway(target)){
-                    break;
-                }
-
-                // Similarly, if the staging Cell (i.e., the Cell that the mouse has to
-                // travel to before it can move to the target Cell) is one Cell away, 
-                // we've no need to completely retrace though all of the other prev Cells.
-                // We can simply move to the staging cell and proceed.
-
-                if (isOneCellAway(target->getPrev())){
-                    moveOneCell(target->getPrev());
-                    break;
-                }
-
-                // At this point, we know that the mouse has to be *at least* two cells away
-                // from the staging Cell. Thus, at this point, we check to see if we can move
-                // to the staging Cell in a more efficient manner; in other words, we search
-                // for a more efficient traceback path. The only inefficiencies (at this point)
-                // could be due to a cell that has been fully explored but not yet traversed.
-                // In that case, the mouse will *never* trace back through that square by
-                // default, even if it'd more efficient. Thus we check all untraversed cells
-                // for shorter paths
-
-                if (tryUntraversed(target)) {
-                    // We continue (as opposed to breaking) because we aren't sure if we're
-                    // at the staging cell yet - we simply know that we've taken the most
-                    // efficient shortcut through an untraversed Cell. Thus we must *still*
-                    // retrace to get to the staging cell.
-                    continue;
-                }
-
-                // At this point, we can't take any shortcuts in the retracing process.
-                // Thus we simply find the previous Cell and move to it.
-                Cell* prev = m_cells[m_x][m_y].getPrev();
-                moveOneCell(prev);
-            }
-
-            // Once the mouse is in proper advancing position, advance
-            moveOneCell(target);
-        }
-
-        // Once we're in the correct Cells, we can now examine the contents of the
-        // target and update our walls and distances
-        walls();
-        flood(m_x, m_y);
-
-        // Once we've examined the contents at the target, it is considered explored and traversed
-        m_cells[m_x][m_y].setExplored(true);
-        m_cells[m_x][m_y].setTraversed(true);
-        
-        // After, we find any unexplored neighbors.
-        if (!m_mouse->wallLeft() && getLeftCell()->getPrev() == NULL){
-            unexplored.push(getLeftCell());
-            getLeftCell()->setPrev(&m_cells[m_x][m_y]);
-        }
-        if (!m_mouse->wallFront() && getFrontCell()->getPrev() == NULL){
-            unexplored.push(getFrontCell());
-            getFrontCell()->setPrev(&m_cells[m_x][m_y]);
-        }
-        if (!m_mouse->wallRight() && getRightCell()->getPrev() == NULL){
-            unexplored.push(getRightCell());
-            getRightCell()->setPrev(&m_cells[m_x][m_y]);
-        }
     }
 
     // Once the stack is empty (once we've explored every possible cell),
@@ -1177,10 +1005,6 @@ void FloodFill::appendModifiedCell(std::list<Cellmod>* modList, Cell* modCell) {
         cm.oldWallsInspected[i] = modCell->getWallInspected(i);
     }
     modList->push_back(cm);
-}
-
-bool FloodFill::checkRequestExplore() {
-
 }
 
 bool FloodFill::checkRequestVictory() {

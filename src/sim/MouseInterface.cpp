@@ -28,27 +28,51 @@ bool MouseInterface::wallLeft(){
 }
 
 void MouseInterface::moveForward(){
+
+    // Break the sleep into 2 parts of 5 steps, allow pause interrupt
+
+    for (int i = 0; i < 5; i++){
+        while (*m_paused){usleep(10*SLEEP_TIME_MIN);}; // Wait if paused
+        usleep(*m_sleepTime*100);
+    }
+
     m_mouse->moveForward();
-    // Break the sleep into 10 steps, allow pause interrupt
-    for (int i = 0; i < 10; i++){
+
+    for (int i = 0; i < 5; i++){
         while (*m_paused){usleep(10*SLEEP_TIME_MIN);}; // Wait if paused
         usleep(*m_sleepTime*100);
     }
 }
 
 void MouseInterface::turnRight(){
+
+    // Break the sleep into 2 parts of 5 steps, allow pause interrupt
+
+    for (int i = 0; i < 5; i++){
+        while (*m_paused){usleep(10*SLEEP_TIME_MIN);}; // Wait if paused
+        usleep(*m_sleepTime*100);
+    }
+
     m_mouse->turnRight();
-    // Break the sleep into 10 steps, allow pause interrupt
-    for (int i = 0; i < 10; i++){
+
+    for (int i = 0; i < 5; i++){
         while (*m_paused){usleep(10*SLEEP_TIME_MIN);}; // Wait if paused
         usleep(*m_sleepTime*100);
     }
 }
 
 void MouseInterface::turnLeft(){
+
+    // Break the sleep into 2 parts of 5 steps, allow pause interrupt
+
+    for (int i = 0; i < 5; i++){
+        while (*m_paused){usleep(10*SLEEP_TIME_MIN);}; // Wait if paused
+        usleep(*m_sleepTime*100);
+    }
+
     m_mouse->turnLeft();
-    // Break the sleep into 10 steps, allow pause interrupt
-    for (int i = 0; i < 10; i++){
+
+    for (int i = 0; i < 5; i++){
         while (*m_paused){usleep(10*SLEEP_TIME_MIN);}; // Wait if paused
         usleep(*m_sleepTime*100);
     }
@@ -71,6 +95,7 @@ void MouseInterface::resetHonored(){
 }
 
 void MouseInterface::resetPosition() {
+    // Put a delay in here so that we have to actually reset the robot
     m_mouse->resetPosition();    
 }
 
