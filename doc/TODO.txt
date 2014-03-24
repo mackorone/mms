@@ -1,13 +1,16 @@
+Highest Priority
+================
+- Simple explore => extensive explore => extensive solve
+
 High Priority
 =============
 - Improve the explore method of the floodfill algorithm
-- Autogenerate makefile dependencies
-- When solving the maze, reduce the number of turns that the mouse makes
     - This could be done by calculating both the distance to the center AND the
       distance to that square from the starting square - no need to travel to 
       far away squares
+- Autogenerate makefile dependencies
+- When solving the maze, reduce the number of turns that the mouse makes
 - Pass things by reference when possible
-- Optimize the checkpoint system
 - Optimize the lists of modified cells
 
 Medium Priority

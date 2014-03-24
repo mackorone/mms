@@ -24,6 +24,7 @@ void FloodFill::solve(sim::MouseInterface* mouse){
 
     // Choose one of the following solve techniques:
     simpleSolve();
+    resetColors();
     extensiveSolve();
 
     if (ALGO_COMPARE) {
@@ -56,7 +57,7 @@ void FloodFill::simpleSolve() {
         bffVictory(path);
 
         if (ALGO_COMPARE) {
-            std::cout << "Simple solve in " << (m_steps - s_steps)/2 << " steps" << std::endl;
+            std::cout << "Simple solve in " << (m_steps - s_steps)/2 + 1 << " steps" << std::endl;
             return;
         }
     }
