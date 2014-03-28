@@ -80,3 +80,25 @@ void push(struct CellStack *stack, struct Cell *item) {
 struct Cell * top(struct CellStack *stack) {
     return stack->top->data;
 }
+
+struct CellStack * copyOfStack(struct CellStack *original) {
+
+    // NOTE: Does not copy struct Cell pointers (data field of nodes).
+    // TODO: Is this a problem?
+
+    // Returns a null pointer if a null pointer is passed in.
+    if (original == NULL) return NULL;
+
+    struct CellStack *copy = malloc(sizeof(struct CellStack));
+    copy->top = NULL;
+    copy->bottom = NULL;
+
+    struct CellStackNode *curNode = original->bottom;
+    while (curNode != NULL) {
+        push(copy, curNode->data);
+        curNode = curNode->above;
+    }
+
+    return copy;
+
+}

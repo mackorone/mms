@@ -23,5 +23,6 @@ bool isEmpty(struct CellStack *);
 void pop(struct CellStack *);
 void push(struct CellStack *, struct Cell *);
 struct Cell * top(struct CellStack *);
+struct CellStack * copyOfStack(struct CellStack *); // returns a pointer to a new copy of the stack passed in
 
 #endif // CELLSTACK_H_

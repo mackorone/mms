@@ -102,7 +102,7 @@ private:
     // ----------------------- Request Utilities --------------------------- //
 
     History m_history; // History object used for undos
-    bool m_explored; // Whether or not the explore method was has completed
+    bool m_explored; // Whether or not the explore method has completed
     bool m_checkpointReached; // Whether or not we've made it back to the checkpoint
 
     // Appends a newly modified cell to the modified cells list for each step in the algo
