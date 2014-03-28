@@ -1,6 +1,8 @@
 #ifndef CELLMOD_H_
 #define CELLMOD_H_
 
+#include "Cell.h"
+
 #include <stdbool.h>
 
 /*

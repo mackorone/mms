@@ -3,6 +3,7 @@
 
 #include "Cell.h"
 #include "Cellmod.h"
+#include "CellStack.h"
 #include "History.h"
 #include "SimpleCellmod.h"
 

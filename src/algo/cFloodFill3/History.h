@@ -1,14 +1,11 @@
 #ifndef HISTORY_H_
 #define HISTORY_H_
 
-#include <list>
-#include <queue>
-#include <stack>
-#include <utility>
-
 #include "Cell.h"
 #include "Cellmod.h"
 #include "CellStack.h"
+
+#include <stdbool.h>
 
 struct History {
 
