@@ -63,17 +63,17 @@ struct CellStack * getCheckpointPath(struct History *hist) {
 
     // Returns a path from the origin to the checkpoint (exclusive) as a stack
 
-    std::stack<Cell*> path;
-    Cell* runner = getCheckpointCell();
+    struct CellStack *path = newStack();
+    struct Cell *runner = hist->m_checkpointCell;
 
     while (runner != NULL) {
-        path.push(runner);
-        runner = runner->getPrev(); 
+        push(path,runner);
+        runner = runner->m_prev; 
     }
 
     // The path always includes the origin, and since we can't and don't want 
     // to try to move to the origin, we can *always* pop it off safely
-    path.pop();
+    pop(path);
 
     return path;
 
@@ -156,7 +156,7 @@ void stackUpdate(struct History *hist, struct CellStack *newStack) { // JIMMY CH
     hist->m_stackReferenceCounts.push_back(1);
 }
 
-void modifiedCellsUpdate(struct History *hist, std::list<Cellmod> cells) {
+void modifiedCellsUpdate(struct History *hist, std::list<Cellmod> *cells) {
 
     // The only situation when this list will be empty is immediately after
     // returning to the origin after undo is called. This is because the checkpoint

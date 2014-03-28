@@ -8,8 +8,6 @@
 #include "FloodFill.h"
 #include "History.h"
 
-// TODO: Fix calls to history.
-
 int main() { solve(); }
 
 void solve() {
@@ -621,7 +619,7 @@ bool spaceRight() {
     }
 }
 
-void explore() { // TODO: Update this.
+void explore() {
 
    /*
     *  The foundation of the explore method is a simple DFS search. However,
@@ -670,13 +668,13 @@ void explore() { // TODO: Update this.
     struct CellStack *unexplored = createStack();
 
     // The initial square is at (0, 0)
-    unexplored.push(&m_cells[0][0]);
+    push(unexplored, &m_cells[0][0]);
 
     // The explore method needs to explore all Cells, so we loop until unexplored is empty.
     // The other condition ensures that any requests, regardless of whether or not the
     // stack was empty at the time of the request (which could happen as we visit the
     // the last target, or in other weird cases), are honored and handled appropriately.
-    while (!unexplored.empty() || (_undoRequested() || _resetRequested()) ) {
+    while (!isEmpty(unexplored) || (_undoRequested() || _resetRequested()) ) {
 
         if (_resetRequested()) {
             _resetHonored();
@@ -708,7 +706,7 @@ void explore() { // TODO: Update this.
             // If an undo is requested within the first few steps, we can simply
             // re-explore the maze since we haven't made an real progress yet.
             // Doing things this way ensures that some corner cases are handled.
-            if (m_history.getCheckpointCell() == &m_cells[0][0]) {
+            if (getCheckpointCell(&m_history) == &m_cells[0][0]) {
                 return;
             }
 
@@ -718,13 +716,14 @@ void explore() { // TODO: Update this.
             unexplored = getCheckpointStack(&m_history);
 
             // Retrieve the path to get back to the current cell.
-            std::stack<Cell*> path = m_history.getCheckpointPath();
+            struct CellStack *path = getCheckpointPath(&m_history);
 
             // Clear the modified cells.
-            m_history.resetModifiedCells();
+            resetModifiedCells(&m_history);
 
             // Moves to the checkpoint and checks for requests along the way.
             if (proceedToCheckpoint(path)) {
+                destroyStack(path);
                 if (_resetRequested()) {
                     _resetHonored();
                     return;
@@ -735,6 +734,8 @@ void explore() { // TODO: Update this.
                     continue;
                 }
             }
+            
+            destroyStack(path);
 
             // As this point, we've reached the checkpoint and can procees to the next target
             m_checkpointReached = true;
@@ -749,7 +750,7 @@ void explore() { // TODO: Update this.
         // proceed as normal.
 
         bool allWallsInspected = true;
-        Cell* target = NULL;
+        struct Cell *target = NULL;
 
         // The first condition for looping, namely that all not all walls be
         // inspected, is vital to the functioning of the rest of the explore
@@ -757,11 +758,11 @@ void explore() { // TODO: Update this.
         // explored everything, or that the target has not yet been traversed
         // (but will be traversed).
 
-        while (allWallsInspected && !unexplored.empty()) {
+        while (allWallsInspected && !isEmpty(unexplored)) {
 
             // First, pop the target cell off of the stack
-            target = unexplored.top(); 
-            unexplored.pop();
+            target = top(unexplored); 
+            pop(unexplored);
     
             // Next, check to see if all of the walls have been inspected.
             // If so, no need to explore that cell - get a new target
@@ -804,7 +805,7 @@ void explore() { // TODO: Update this.
             // request is made (at which point we immediately honor that request).
 
             while (target->m_prev != &m_cells[m_x][m_y]
-                   && !(_undoRequested() || _resetRequested()) ) { // TODO
+                   && !(_undoRequested() || _resetRequested()) ) {
 
                 // If at any point the target is one cell away, we've no need to
                 // actually retrace though all of the other prev Cells. Thus we
@@ -843,7 +844,7 @@ void explore() { // TODO: Update this.
 
                 // At this point, we can't take any shortcuts in the retracing process.
                 // Thus we simply find the previous Cell and move to it.
-                Cell* prev = m_cells[m_x][m_y].m_prev;
+                struct Cell *prev = m_cells[m_x][m_y].m_prev;
                 moveOneCell(prev);
             }
 
@@ -861,7 +862,16 @@ void explore() { // TODO: Update this.
         // made (and therefore cannot be guaranteed that we're at the target cell),
         // updating does not have any effect since we're going to be undo that last
         // update in our short term memory (so long as our short term memory > 0).
-        doUpdatesForCurrentCell(&unexplored);
+        doUpdatesForCurrentCell(unexplored);
+
+        // Check to see if we've reached the center
+        if (!m_centerReached && inGoal(m_x, m_y)) {
+            m_centerReached = true;
+            if (ALGO_COMPARE) {
+                printf("Extensive center in %d steps\n",m_steps);
+            }
+        }
+
     }
 
     // Once the stack is empty (once we've explored every possible cell),
@@ -885,14 +895,24 @@ void explore() { // TODO: Update this.
     // start from victory.
     m_explored = true;
 
-    // Lastly, return to the starting location and face forward
+    // Lastly, return to the starting location and face forward. Note that we can
+    // use the same short-circuiting procedures here as we do when we backtrace.
     while (m_x != 0 || m_y != 0) {
-        Cell* prev = m_cells[m_x][m_y].m_prev;
-        moveOneCell(prev);
+        if (isOneCellAway(&m_cells[0][0])) {
+            moveOneCell(&m_cells[0][0]);
+        }
+        else if (tryUntraversed(&m_cells[0][0])) {
+            continue;
+        }
+        else {
+            moveOneCell(m_cells[m_x][m_y].m_prev);
+        }
     }
-    while (m_d != 0) { 
-        turnRight(); // Turning right is optimal since we'd never 
-                     // approach the starting location from the left
+    if (m_d == 2) {
+        turnAround();
+    }
+    else { // m_d == 3
+        turnRight();
     }
 
 }
@@ -941,52 +961,109 @@ void moveOneCell(struct Cell *target) {
 
 }
 
-void doUpdatesForCurrentCell(struct CellStack *unexplored) {
+void doUpdatesForCurrentCell(struct CellStack *unexplored) { // TODO: Finish.
 
     // List of cellmod objects for all cell modifications performed at this step
-    std::list<Cellmod> modifiedCells;
+    std::list<Cellmod> *modifiedCells = newCellmodlist; // TODO: Fix syntax.
 
     // We need to keep track of the old values for the modified cell before we update it.
-    appendModifiedCell(&modifiedCells, &m_cells[m_x][m_y]);
+    appendModifiedCell(modifiedCells, &m_cells[m_x][m_y]);
 
     // Once we're in the correct Cells, we can now examine the contents of the
     // target and update our walls and distances
     walls();
     flood(m_x, m_y);
 
+    // First we get a list of unexplored neighbors. Then we push the elements of this list
+    // onto the unexplored stack in a particular order, depending on whether or not we made
+    // it to the center already.
+    std::list<Cell*> unexploredNeighbors;
+    
     // Once we've examined the contents at the target, it is considered explored and traversed
     m_cells[m_x][m_y].m_explored = true;
     m_cells[m_x][m_y].m_traversed = true;
 
-    // After, we find any unexplored neighbors.
-    if (!_wallLeft() && getLeftCell()->m_prev == NULL) {
+    // After, we find any unexplored neighbors. We use a front biased search since
+    // this seems to perform better with dead-end detection.
+
+    struct Cell *temp;
+
+    temp = getLeftCell();
+    if (!_wallLeft() && temp->m_prev == NULL) {
 
         // We need to keep track of the old values for the modified cell before we update it.
-        appendModifiedCell(&modifiedCells, getLeftCell());
+        appendModifiedCell(modifiedCells, temp);
 
-        unexplored->push(getLeftCell());
-        getLeftCell()->m_prev = &m_cells[m_x][m_y];
+        push(unexplored, temp);
+        temp->m_prev = &m_cells[m_x][m_y];
     }
-    if (!_wallFront() && getFrontCell()->m_prev == NULL) {
+    temp = getFrontCell();
+    if (!_wallFront() && temp->m_prev == NULL) {
 
         // We need to keep track of the old values for the modified cell before we update it.
-        appendModifiedCell(&modifiedCells, getFrontCell());
+        appendModifiedCell(modifiedCells, temp);
 
-        unexplored->push(getFrontCell());
-        getFrontCell()->m_prev = &m_cells[m_x][m_y];
+        push(unexplored, temp);
+        temp->m_prev = &m_cells[m_x][m_y];
     }
-    if (!_wallRight() && getRightCell()->m_prev == NULL) {
+    temp = getRightCell();
+    if (!_wallRight() && temp->m_prev == NULL) {
 
         // We need to keep track of the old values for the modified cell before we update it.
-        appendModifiedCell(&modifiedCells, getRightCell());
+        appendModifiedCell(modifiedCells, temp);
 
-        unexplored->push(getRightCell());
-        getRightCell()->m_prev = &m_cells[m_x][m_y];
+        push(unexplored, temp);
+        temp->m_prev = &m_cells[m_x][m_y];
+    }
+
+    // If we've reached the center already, simply use F-R-L priority
+    if (m_centerReached) {
+        while (!unexploredNeighbors.empty()) {
+            push(unexplored, unexploredNeighbors.front());
+            unexploredNeighbors.pop_front();
+        }
+    }
+
+    // If we haven't yet reached the center, push the cells onto the stack so that the
+    // center-most cell is at the top. In this way, the mouse will prioritize the
+    // center-most cells while it's still trying to find the center.
+
+    else {
+        while (!unexploredNeighbors.empty()) {
+
+            struct Cell *leastCentered = NULL;
+            int distFromCenter = -1;
+            int relativeCenteredness = -1;
+
+            // For each iteration of the loop, get the least center-most Cell and
+            // push it to the unexplored stack
+
+            for (std::list<struct Cell *>::iterator it = unexploredNeighbors.begin();
+                 it != unexploredNeighbors.end(); ++it) {
+                
+                int xDist = abs(MAZE_SIZE_X/2 - (*it)->m_x);
+                int yDist = abs(MAZE_SIZE_Y/2 - (*it)->m_y);
+
+                if ((xDist + yDist) > distFromCenter) {
+                    leastCentered = (*it);
+                    distFromCenter = (xDist + yDist);
+                    relativeCenteredness = abs(xDist - yDist);
+                }
+                else if ((xDist + yDist) == distFromCenter && abs(xDist - yDist) > relativeCenteredness) {
+                    leastCentered = (*it);
+                    distFromCenter = (xDist + yDist);
+                    relativeCenteredness = abs(xDist - yDist);
+                }
+            }
+
+            push(unexplored, leastCentered);
+            unexploredNeighbors.remove(leastCentered);
+        }
     }
 
     // Update the History target stack and modified cells
-    m_history.stackUpdate(*unexplored);
-    m_history.modifiedCellsUpdate(modifiedCells);
+    stackUpdate(&m_history,unexplored);
+    modifiedCellsUpdate(&m_history,modifiedCells);
 
 }
 
@@ -1023,7 +1100,7 @@ bool tryUntraversed(struct Cell *target) {
 
     for (int i = 0; i < 3; i++) {
 
-        Cell* neighbor = NULL;
+        struct Cell *neighbor = NULL;
         switch(i) {
             case 0:
                 neighbor = getFrontCell();
@@ -1043,14 +1120,14 @@ bool tryUntraversed(struct Cell *target) {
 
             // Find the cell that discovered the untraversed cell. Then check to see if *that*
             // cell is on the retracing path. If so, then we can short circuiting the retracing
-            Cell* neighborPrev = neighbor->m_prev;
+            struct Cell *neighborPrev = neighbor->m_prev;
 
             // Sanity check
             if (neighborPrev != NULL) {
 
                 // This pointer will trace back along the normal retracing path, checking to see
                 // if neighborPrev is on the path (and more than one step away)
-                Cell* runner = &m_cells[m_x][m_y];
+                struct Cell *runner = &m_cells[m_x][m_y];
 
                 int counter = 0; // Counts how many steps that the mouse would have to retract
                                  // without short circuiting via the untraversed cell. If the
@@ -1099,7 +1176,7 @@ bool tryUntraversed(struct Cell *target) {
     // opposed to simply observing cell wall values is worth the trade-off.
 
     if (dir >= 0 && mostCount > 1) {
-        Cell* untraversed = NULL; 
+        struct Cell *untraversed = NULL; 
         switch(dir) {
             case 0:
                 untraversed = getFrontCell();
@@ -1119,10 +1196,13 @@ bool tryUntraversed(struct Cell *target) {
 
 }
 
-void basicFloodFill(struct CellStack *path) {
+void bffExplore(struct CellStack *path) {
 
     // The first checkpoint is at the origin
-    m_bffCp = &m_cells[0][0];
+    struct Cell *cpCell = &m_cells[0][0];
+
+    // A queue of lists of modified cells
+    std::queue<std::list<SimpleCellmod>> modCells;
 
     while (true) {
 
@@ -1130,8 +1210,8 @@ void basicFloodFill(struct CellStack *path) {
         while (!m_checkpointReached) {
 
             // Get the path to the checkpoint
-            Cell* cpPathRunner = m_bffCp;
-            std::stack<Cell*> cpPath;
+            Cell* cpPathRunner = cpCell;
+            struct CellStack *cpPath = newStack();
             while (cpPathRunner != NULL) {
                 cpPath.push(cpPathRunner);
                 cpPathRunner = cpPathRunner->m_prev;
@@ -1143,13 +1223,17 @@ void basicFloodFill(struct CellStack *path) {
                 moveOneCell(cpPath.top());
                 cpPath.pop();
             }
-
+            destroyStack(cpPath);
+            
             // Check for requests during our return to checkpoint
             if (_resetRequested()) {
                 _resetHonored();
                 return;
             }
             if (_undoRequested()) {
+                m_x = 0;
+                m_y = 0;
+                m_d = 0;
                 _undoHonored();
                 continue;
             }
@@ -1160,11 +1244,41 @@ void basicFloodFill(struct CellStack *path) {
 
         // Solve the maze using basic floodfill
         while (!inGoal(m_x, m_y) && !(_undoRequested() || _resetRequested())) {
-            dobffCellUpdates();
+
+            // List of modified cells for this step
+            std::list<SimpleCellmod> *modCellsList = newSimpleCellmodlist(); // TODO: Fix syntax.
+
+            // Always add the current cell to modified cells
+            bffAppendModifiedCell(modCellsList, &m_cells[m_x][m_y]);
+
+            // Keep track of wall updates
+            if (spaceLeft()) {
+                bffAppendModifiedCell(modCellsList, getLeftCell());
+            }
+            if (spaceFront()) {
+                bffAppendModifiedCell(modCellsList, getFrontCell());
+            }
+            if (spaceRight()) {
+                bffAppendModifiedCell(modCellsList, getRightCell());
+            }
+
+            // Do all Cell updates
             walls();
             flood(m_x, m_y);
+            dobffCellUpdates();
             moveTowardsGoal();
+
+            // Push the old states of the updated cells to modCells
+            push(modCells,modCellsList);
+
+            // Make sure we're only keeping short term history
+            if (modCells.size() > SHORT_TERM_MEM) {
+                modCells.pop();
+            }
         }
+
+        walls();
+        flood(m_x,m_y);
 
         // If there were requests during the solve, honor them now
         if (_resetRequested()) {
@@ -1172,90 +1286,131 @@ void basicFloodFill(struct CellStack *path) {
             return;
         }
 
-        // As it turns out, the regular flood fill is very unpredictable and the
-        // undo doesn't really help much with the solve time ... TODO
-
         if (_undoRequested()) {
-            Cell* c = &m_cells[m_x][m_y];
-            for (int i = 0; i < SHORT_TERM_MEM; i++) {
-                if (c->m_prev != NULL) {
-                    c = c->m_prev;
-                }
-                else {
-                    break;
+
+            if (size(modCells) == SHORT_TERM_MEM) {
+                cpCell = front(front(modCells))->cell; // TODO: Access with arrow or .?
+
+                // Since we don't update after reaching the checkpoint, don't undo mods at checkpoint
+                pop(modCells);
+
+                // Iterate through all modified cells, starting with most recent and going
+                // to least recent. During iterations, we simply restore the old values
+                while (!isEmpty(modCells)) {
+
+                    std::list<SimpleCellmod> cellList = front(modCells);
+                    pop(modCells);
+
+                    for (std::list<SimpleCellmod>::iterator it = cellList.begin(); it != cellList.end() ; ++it) { // TODO: Port this....
+                        (*it).cell->setPrev((*it).prev);
+                        (*it).cell->setDistance((*it).dist);
+                        for (int i = 0; i < 4; i++) {
+                            (*it).cell->setWall(i, (*it).walls[i]);
+                        }
+                    }
                 }
             }
-            m_bffCp = c;
-            m_checkpointReached = false;
             m_x = 0; // Since we're repositioning the mouse but not re-intializing the
             m_y = 0; // maze, we have to explicitely reset the x, y, and d values
             m_d = 0;
+            m_checkpointReached = false;
             _undoHonored();
             continue;
         }
 
-        // As it stands right now, if the mouse screws up going into the final few cells of
+        // Note: As it stands right now, if the mouse screws up going into the final few cells of
         // the maze and we don't hit reset before it thinks it solved the maze, we don't really
         // have a good way to undo the changes.
-        
+
+        if (ALGO_COMPARE) {
+            printf("Simple center in %d steps\n",m_steps);
+        }
+
         // Populate the path variable with the actual path of the robot to the center. We do
         // this rather than simply returning a stack since the mouse may screw up on it's
         // way back to the origin, but we still want to be able to retain the floodfill info.
-        // In retaining this info, we have to mark m_bffDone as true. But this can't be done
+        // In retaining this info, we have to mark m_explored as true. But this can't be done
         // until we have the best path. Hence the return parameter.
-        Cell* runner = &m_cells[m_x][m_y];
+        struct Cell *runner = &m_cells[m_x][m_y];
         while (runner->m_prev != NULL) {
-            path->push(runner);
+            push(path, runner);
             runner = runner->m_prev;
         }
 
         // Indicate that the solve is done
-        m_bffDone = true;
+        m_explored = true;
 
         // Return to start
         while ((m_x != 0 || m_y != 0) && !(_undoRequested() || _resetRequested())) {
-            moveOneCell(m_cells[m_x][m_y].m_prev);
+            if (isOneCellAway(&m_cells[0][0])) {
+                moveOneCell(&m_cells[0][0]);
+            }
+            else if (tryUntraversed(&m_cells[0][0])) {
+                continue;
+            }
+            else {
+                moveOneCell(m_cells[m_x][m_y].m_prev);
+            }
         }
-        while (m_d != 0 && !(_undoRequested() || _resetRequested())) {
-            turnRight();
+        if (!(_undoRequested() || _resetRequested())) {
+            if (m_d == 2) {
+                turnAround();
+            }
+            else { // m_d == 3
+                turnRight();
+            }
         }
         return; // We're done
+        
     }
 
 }
 
 void dobffCellUpdates() {
 
-    if (!_wallLeft() && getLeftCell()->m_prev == NULL && getLeftCell() != &m_cells[0][0]) {
-        getLeftCell()->m_prev = &m_cells[m_x][m_y];
+    // Note: This could be improved so that prev values are updated when we find prev cells
+    // that are closer to the origin - without this, the algo will always (naively) take
+    // the same path, even if it's much less efficient to do so.
+
+    struct Cell *temp;
+
+    temp = getLeftCell();
+    if (!_wallLeft() && temp->m_prev == NULL && temp != &m_cells[0][0]) {
+        temp->m_prev = &m_cells[m_x][m_y];
     }
-    if (!_wallFront() && getFrontCell()->m_prev == NULL && getFrontCell() != &m_cells[0][0]) {
-        getFrontCell()->m_prev = &m_cells[m_x][m_y];
+    temp = getFrontCell();
+    if (!_wallFront() && temp->m_prev == NULL && temp != &m_cells[0][0]) {
+        temp->m_prev = &m_cells[m_x][m_y];
     }
-    if (!_wallRight() && getRightCell()->m_prev == NULL && getRightCell() != &m_cells[0][0]) {
-        getRightCell()->m_prev = &m_cells[m_x][m_y];
+    temp = getRightCell();
+    if (!_wallRight() && temp->m_prev == NULL && temp != &m_cells[0][0]) {
+        temp->m_prev = &m_cells[m_x][m_y];
     }
 
 }
 
-void bffVictory(struct CellStack path) { // TODO: Change parameter to pointer?
+void bffVictory(struct CellStack *path) {
 
     while (true) {
 
-        std::stack<Cell*> copy = path;
+        struct CellStack *copy = copyOfStack(path);
 
         // Move to the center of the maze along the path
-        while (!copy.empty() && !(_undoRequested() || _resetRequested())) {
-            moveOneCell(copy.top()); 
-            copy.pop();
+        while (!isEmpty(copy) && !(_undoRequested() || _resetRequested())) {
+            moveOneCell(top(copy)); 
+            pop(copy);
         }
 
         // Return to start
         while ((m_x != 0 || m_y != 0) && !(_undoRequested() || _resetRequested())) {
             moveOneCell(m_cells[m_x][m_y].m_prev);
         }
-        while (m_d != 0 && !(_undoRequested() || _resetRequested())) {
-            turnRight();
+        if (!(_undoRequested() || _resetRequested())) {
+            if (m_d == 2) {
+                turnAround();
+            } else { // m_d == 3
+                turnRight();
+            }
         }
 
         if (_resetRequested()) {
@@ -1278,17 +1433,17 @@ void bffVictory(struct CellStack path) { // TODO: Change parameter to pointer?
 
 }
 
-bool proceedToCheckpoint(struct CellStack path) { // TODO: Change parameter to pointer?
+bool proceedToCheckpoint(struct CellStack *path) {
 
-    while (!path.empty()) {
+    while (!isEmpty(path)) {
 
         // On each iteration, first check for requests
         if (_resetRequested() || _undoRequested()) {
             return true;
         }
 
-        Cell* next = path.top();
-        path.pop();
+        struct Cell *next = top(path);
+        pop(path);
 
         // Since we popped the origin off of the path stack, we're guaranteed that we
         // won't try to moveOneCell() to the origin
@@ -1297,6 +1452,17 @@ bool proceedToCheckpoint(struct CellStack path) { // TODO: Change parameter to p
 
     return false;
 
+}
+
+void bffAppendModifiedCell(std::list<SimpleCellmod> *modCellsList, struct Cell *cell) {
+    SimpleCellmod mod;
+    mod.cell = cell;
+    mod.prev = cell->m_prev;
+    mod.dist = cell->m_distance;
+    for (int i = 0; i < 4; i++) {
+        mod.walls[i] = cell->m_walls[i];
+    }
+    push_back(modCellsList,mod);
 }
 
 void appendModifiedCell(std::list<Cellmod> *modList, struct Cell *modCell) {

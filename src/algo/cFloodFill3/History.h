@@ -44,7 +44,7 @@ struct CellStack getCheckpointPath(struct History *); // Returns the path to the
 // Called by Floodfill to update the history object
 void moved(struct History *);
 void stackUpdate(struct History *, struct CellStack *newStack); // JIMMY CHANGED PARAMETER TO POINTER
-void modifiedCellsUpdate(struct History *, std::list<Cellmod>);
+void modifiedCellsUpdate(struct History *, std::list<Cellmod> *); // JIMMY CHANGED PARAMETER TO POINTER
 
 // Resets the modifications to each of the cells stored in short term mem
 void resetModifiedCells(struct History *);

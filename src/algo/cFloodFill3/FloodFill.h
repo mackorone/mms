@@ -2,6 +2,9 @@
 #define FLOODFILL_H_
 
 #include "Cell.h"
+#include "Cellmod.h"
+#include "History.h"
+#include "SimpleCellmod.h"
 
 #include <stdbool.h>
 
@@ -33,6 +36,8 @@ int m_y; // Y position of the mouse
 int m_d; // Direction of the mouse
 int m_steps; // Count of the steps of the mouse
 
+bool m_centerReached; // Whether or not the mouse has reached the center at least once
+
 struct History m_history; // struct History used for undos
 bool m_explored; // whether or not the explore method has completed
 bool m_checkpointReached; // whether or not we've made it back to the checkpoint
@@ -47,8 +52,11 @@ enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
 // Methods used in "FloodFill.c".
 void solve(void);
 
+void checkDeadEnd(struct Cell *); // deduces fourth wall value, if possible
+
 void simpleSolve(void); // not guaranteed perfect
 void extensiveSolve(void); // guaranteed perfect
+void justFloodFill(void); // Vanilla Floodfill algo
 
 void printDistances(void); // Prints the distance values of the cells in the maze
 void printWalls(void); // Prints the wall values of the cells in the maze
@@ -63,6 +71,7 @@ void victory(void); // Once the maze is fully explored, solve as quickly as poss
 void moveForward(void); // Updates x and y and moves mouse
 void turnRight(void); // Updates direction and turns mouse
 void turnLeft(void); // Updates direction and turns mouse
+void turnAround(void); // Updates direction and turns mouse
 
 bool inGoal(int x, int y); // Returns true if the cell at (x,y) is in the center
 
@@ -84,16 +93,19 @@ void moveOneCell(struct Cell *);
 bool isOneCellAway(struct Cell *);
 bool tryUntraversed(struct Cell *);
 
-void basicFloodFill(struct CellStack *);
+void bffExplore(struct CellStack *);
 void dobffCellUpdates(void);
-void bffVictory(struct CellStack); // TODO: Change this to a pointer?
+void bffVictory(struct CellStack *);
+
+// Appends a newly modified cell to the modified cells list for each step in the algo
+void bffAppendModifiedCell(std::list<SimpleCellmod> *, struct Cell *);
 
 // Appends a newly modified cell to the modified cells list for each step in the algo
 void appendModifiedCell(std::list<Cellmod> *, struct Cell *);
 
 // Moves to the checkpoint and updates cell values along the way. Returns true if either
 // a reset or undo request was made during the movement, false otherwise
-bool proceedToCheckpoint(struct CellStack); // TODO: Change parameter to pointer?
+bool proceedToCheckpoint(struct CellStack *);
 
 // Checks and handles requests for the victory method, returns true for reset, else false
 bool checkRequestVictory(void);

@@ -1,7 +1,3 @@
-#include "History.h"
-
-#include <iostream>
-
 void History::initialize(int stm, Cell* origin) {
 
     // Set the short term memory
