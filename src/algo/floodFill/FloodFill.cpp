@@ -1252,6 +1252,9 @@ void FloodFill::bffExplore(std::stack<Cell*>* path){
             }
         }
 
+        walls();
+        flood(m_x,m_y);
+
         // If there were requests during the solve, honor them now
         if (m_mouse->resetRequested()) {
             m_mouse->resetPosition();
