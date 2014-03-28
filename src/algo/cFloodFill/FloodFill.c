@@ -107,7 +107,7 @@ void initializeCells(void) {
             m_cells[x][y].m_distance = distance; // Bottom-left
             m_cells[x][Y_WIDTH-1-y].m_distance = distance; // Upper-left
             m_cells[X_WIDTH-1-x][Y_WIDTH-1-y].m_distance = distance; // Upper-right
-            m_cells[X_WIDTH-1-x][y].m_distance = distance; // Bottom right
+            m_cells[X_WIDTH-1-x][y].m_distance = distance; // Bottom-right
             distance -= 1;
         }
     }
