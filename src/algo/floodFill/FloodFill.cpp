@@ -3,10 +3,13 @@
 #include <iostream>
 #include <stack>
 #include <queue>
+#include <stdlib.h>
+#include <unistd.h>
 #include <utility>
 #include <vector>
 
 #include "Cellmod.h"
+#include "SimpleCellmod.h"
 
 void FloodFill::solve(sim::MouseInterface* mouse){
 
@@ -21,12 +24,28 @@ void FloodFill::solve(sim::MouseInterface* mouse){
         }
     }
 
-    // Choose one of the following solve techniques:
-    simpleSolve();
-    extensiveSolve();
-
+    // If we're comparing algos, run both of them
     if (ALGO_COMPARE) {
+        simpleSolve();
+        resetColors();
+        extensiveSolve();
         exit(0);
+    }
+
+    // Otherwise, pick one
+    //justFloodFill();
+    //simpleSolve();
+    extensiveSolve();
+}
+
+void FloodFill::justFloodFill() {
+
+    initialize();
+
+    while (!inGoal(m_x, m_y)) {
+        walls();
+        flood(m_x, m_y);
+        moveTowardsGoal();
     }
 }
 
@@ -39,10 +58,10 @@ void FloodFill::simpleSolve() {
 
         // Do the basic floodfill and store the path
         std::stack<Cell*> path;
-        basicFloodFill(&path);
+        bffExplore(&path);
 
         // If the explore was not successful (i.e., reset request was made) then start over
-        if (!m_bffDone) {
+        if (!m_explored) {
             continue;
         }
 
@@ -175,8 +194,8 @@ void FloodFill::initialize(){
     m_y = 0; // Initialize the y position of the mouse
     m_d = 0; // Initialize the direction position of the mouse
     m_steps = 0; // Initialize the mouse steps
-    m_bffDone = false; // Initialize the completedness of the simple solve
     m_explored = false; // Initialize the exploredness of the maze
+    m_centerReached = false; // At the start, we haven't yet made it to the center
     m_checkpointReached = true; // We begin at the origin, the first checkpoint
     m_history.initialize(SHORT_TERM_MEM, &m_cells[0][0]); // Initialize the History object
 }
@@ -199,6 +218,14 @@ void FloodFill::victory(){
             Cell* prev = optimalPath.top();
             optimalPath.pop();
             moveOneCell(prev);
+        }
+        if (!(m_mouse->undoRequested() || m_mouse->resetRequested())) {
+            if (m_d == 2) {
+                turnAround();
+            }
+            else { // m_d == 3
+                turnRight();
+            }
         }
 
         // If a reset request is made, return so we can re-init and re-explore
@@ -228,20 +255,82 @@ void FloodFill::walls(){
     if (spaceFront()){
         getFrontCell()->setWall((m_d+2)%4, m_mouse->wallFront());
         getFrontCell()->setWallInspected((m_d+2)%4, true);
+        checkDeadEnd(getFrontCell());
     }
     if (spaceLeft()){
         getLeftCell()->setWall((m_d+1)%4, m_mouse->wallLeft());
         getLeftCell()->setWallInspected((m_d+1)%4, true);
+        checkDeadEnd(getLeftCell());
     }
     if (spaceRight()){
         getRightCell()->setWall((m_d+3)%4, m_mouse->wallRight());
         getRightCell()->setWallInspected((m_d+3)%4, true);
+        checkDeadEnd(getRightCell());
+    }
+}
+
+void FloodFill::checkDeadEnd(Cell* cell) {
+
+    // First we check to see if we've discovered three walls for the particular
+    // Cell. We don't have to check the wallInspected values of each of the walls
+    // since walls themselves are not set to true until they are discovered - thus
+    // we can deduce that any walls we've found have also been inspected. The reason
+    // that we check for the presence of three walls is that only dead-end Cells have
+    // three walls. Thus, we can treat any Cells with threee walls as if it actually
+    // has four walls. In doing so, we cause a "chain reaction" of sorts, allowing
+    // neighboring Cells to be classified as dead-ends as well.
+
+    int walls = 0;
+    for (int i = 0; i < 4; i++) {
+        if (cell->isWall(i)) {
+            walls++;
+        }
+    }
+
+    if (walls == 3) {
+        for (int i = 0; i < 4; i++) {
+            if (!cell->getWallInspected(i)) {
+
+                // Again, if we know a Cell has three walls, it's a dead-end and can be
+                // treated as if it has four walls. Thus, although a Cell might not have
+                // a fourth wall, we allow neighboring Cells (or Cells on a path to the
+                // dead-end Cell) to be treated as dead-end Cells as well.
+
+                cell->setWall(i, true);
+                cell->setWallInspected(i, true);
+
+                // Update the neighboring cells
+                switch(i) {
+                    case 0:
+                        m_cells[cell->getX()][cell->getY() + 1].setWall(2, true);
+                        m_cells[cell->getX()][cell->getY() + 1].setWallInspected(2, true);
+                        checkDeadEnd(&m_cells[cell->getX()][cell->getY() + 1]);
+                        break;
+                    case 1:
+                        m_cells[cell->getX() + 1][cell->getY()].setWall(3, true);
+                        m_cells[cell->getX() + 1][cell->getY()].setWallInspected(3, true);
+                        checkDeadEnd(&m_cells[cell->getX() + 1][cell->getY()]);
+                        break;
+                    case 2:
+                        m_cells[cell->getX()][cell->getY() - 1].setWall(0, true);
+                        m_cells[cell->getX()][cell->getY() - 1].setWallInspected(0, true);
+                        checkDeadEnd(&m_cells[cell->getX()][cell->getY() - 1]);
+                        break;
+                    case 3:
+                        m_cells[cell->getX() - 1][cell->getY()].setWall(1, true);
+                        m_cells[cell->getX() - 1][cell->getY()].setWallInspected(1, true);
+                        checkDeadEnd(&m_cells[cell->getX() - 1][cell->getY()]);
+                        break;
+                }
+                break;
+            }
+        }
     }
 }
 
 void FloodFill::flood(int x, int y){
     
-    // *DO NOT* flood the cells in the goal region of the maze- there is no
+    // *DO NOT* flood the cells in the goal region of the maze - there is no
     // information that we can gain about the distance values in the goal,
     // and we can only corrupt the current distance values anyways (they
     // can't and shouldn't change from 0)
@@ -327,8 +416,7 @@ void FloodFill::moveTowardsGoal(){
             turnRight();
             break;
         case 2: // turn around
-            turnRight();
-            turnRight();
+            turnAround();
             break;
         case 3: // turn left
             turnLeft();
@@ -385,6 +473,12 @@ void FloodFill::turnLeft(){
     m_d = (m_d + 3) % 4; // Update internal representation
     m_mouse->turnLeft(); // Move the mouse
     m_steps++; // Lastly, increment the number of steps
+}
+
+void FloodFill::turnAround() {
+    m_d = (m_d + 2) % 4; // Update internal representation
+    m_mouse->turnAround(); // Move the mouse
+    m_steps += 2; // Lastly, increment the number of steps
 }
 
 bool FloodFill::inGoal(int x, int y){
@@ -518,8 +612,7 @@ void FloodFill::explore(){
    /*
     *  The foundation of the explore method is a simple DFS search. However,
     *  DFS is not terribly efficient in this context and can be improved upon
-    *  greatly. See below for improvements, failures and ideas. Any testing or
-    *  comparison can be done with the exploreBeta method.
+    *  greatly. See below for improvements, failures and ideas.
     *
     *  IMPROVEMENTS:
     *  1.) When tracing back to the next parent node with neighbors, check to
@@ -538,15 +631,8 @@ void FloodFill::explore(){
     *  FAILURES:
     *  1.) Updating the prev values as cells were rediscovered. This performed
     *      worse in every test case
-    *  2.) Choosing to explore the neighbor with the lowest cell value, as
-    *      opposed to a R-F-L priority (or L-F-R priority)
-    *  3.) Choosing to explore the neighbor with the highest cell value, as
-    *      opposed to a R-F-L priority (or L-F-R priority)
-    *  4.) Choosing to explore the neighbor with a different directional
-    *      priority, other than L-F-R or R-F-L
-    *
-    *  IDEAS:
-    *  1.) Do we need to explore cells that are far away from the goal?
+    *  2.) Choosing to explore the neighbor with the lowest cell value
+    *  3.) Choosing to explore the neighbor with the highest cell value
     *
     *
     *  The execution of the explore method works as follows:
@@ -699,7 +785,7 @@ void FloodFill::explore(){
             // request is made (at which point we immediately honor that request).
 
             while (target->getPrev() != &m_cells[m_x][m_y]
-                   && !(m_mouse->undoRequested() || m_mouse->resetRequested()) ) { // TODO
+                   && !(m_mouse->undoRequested() || m_mouse->resetRequested()) ) {
 
                 // If at any point the target is one cell away, we've no need to
                 // actually retrace though all of the other prev Cells. Thus we
@@ -756,7 +842,16 @@ void FloodFill::explore(){
         // made (and therefore cannot be guaranteed that we're at the target cell),
         // updating does not have any effect since we're going to be undo that last
         // update in our short term memory (so long as our short term memory > 0).
+
         doUpdatesForCurrentCell(&unexplored);
+
+        // Check to see if we've reached the center
+        if (!m_centerReached && inGoal(m_x, m_y)) {
+            m_centerReached = true;
+            if (ALGO_COMPARE) {
+                std::cout << "Extensive center in " << m_steps << " steps" << std::endl;
+            }
+        }
     }
 
     // Once the stack is empty (once we've explored every possible cell),
@@ -780,14 +875,24 @@ void FloodFill::explore(){
     // start from victory.
     m_explored = true;
 
-    // Lastly, return to the starting location and face forward
+    // Lastly, return to the starting location and face forward. Note that we can
+    // use the same short-circuiting procedures here as we do when we backtrace.
     while (m_x != 0 || m_y != 0){
-        Cell* prev = m_cells[m_x][m_y].getPrev();
-        moveOneCell(prev);
+        if (isOneCellAway(&m_cells[0][0])){
+            moveOneCell(&m_cells[0][0]);
+        }
+        else if (tryUntraversed(&m_cells[0][0])) {
+            continue;
+        }
+        else {
+            moveOneCell(m_cells[m_x][m_y].getPrev());
+        }
     }
-    while (m_d != 0){ 
-        turnRight(); // Turning right is optimal since we'd never 
-                     // approach the starting location from the left
+    if (m_d == 2) {
+        turnAround();
+    }
+    else { // m_d == 3
+        turnRight();
     }
 }
 
@@ -820,20 +925,19 @@ void FloodFill::moveOneCell(Cell* target){
             turnRight();
         }
         else if (absDir == (m_d + 2)%4){
-            turnRight();
-            turnRight();
+            turnAround();
         }
         else if (absDir == (m_d + 3)%4){
             turnLeft();
         }
 
-        //std::cout << "MoveOneCellForward" << std::endl;
         // Finally, move forward one space
         moveForward();
     }
     else{
         std::cout << "ERROR: Tried to move to cell (" << target->getX() << ","
-        << target->getY() << ") but it's not one space away." << std::endl;
+        << target->getY() << ") but it's not one space away from (" << m_x << ","
+        << m_y << ")" << std::endl;
     }
 }
 
@@ -850,36 +954,87 @@ void FloodFill::doUpdatesForCurrentCell(std::stack<Cell*>* unexplored) {
     walls();
     flood(m_x, m_y);
 
+    // First we get a list of unexplored neighbors. Then we push the elements of this list
+    // onto the unexplored stack in a particular order, depending on whether or not we made
+    // it to the center already.
+    std::list<Cell*> unexploredNeighbors;
+
     // Once we've examined the contents at the target, it is considered explored and traversed
     m_cells[m_x][m_y].setExplored(true);
     m_cells[m_x][m_y].setTraversed(true);
 
-    // After, we find any unexplored neighbors.
+    // After, we find any unexplored neighbors. We use a front biased search since
+    // this seems to perform better with dead-end detection.
     if (!m_mouse->wallLeft() && getLeftCell()->getPrev() == NULL){
 
         // We need to keep track of the old values for the modified cell before we update it.
         appendModifiedCell(&modifiedCells, getLeftCell());
 
-        unexplored->push(getLeftCell());
+        unexploredNeighbors.push_back(getLeftCell());
         getLeftCell()->setPrev(&m_cells[m_x][m_y]);
-    }
-    if (!m_mouse->wallFront() && getFrontCell()->getPrev() == NULL){
-
-        // We need to keep track of the old values for the modified cell before we update it.
-        appendModifiedCell(&modifiedCells, getFrontCell());
-
-        unexplored->push(getFrontCell());
-        getFrontCell()->setPrev(&m_cells[m_x][m_y]);
     }
     if (!m_mouse->wallRight() && getRightCell()->getPrev() == NULL){
 
         // We need to keep track of the old values for the modified cell before we update it.
         appendModifiedCell(&modifiedCells, getRightCell());
 
-        unexplored->push(getRightCell());
+        unexploredNeighbors.push_back(getRightCell());
         getRightCell()->setPrev(&m_cells[m_x][m_y]);
     }
+    if (!m_mouse->wallFront() && getFrontCell()->getPrev() == NULL){
 
+        // We need to keep track of the old values for the modified cell before we update it.
+        appendModifiedCell(&modifiedCells, getFrontCell());
+
+        unexploredNeighbors.push_back(getFrontCell());
+        getFrontCell()->setPrev(&m_cells[m_x][m_y]);
+    }
+
+    // If we've reached the center already, simply use F-R-L priority
+    if (m_centerReached) {
+        while (!unexploredNeighbors.empty()) {
+            unexplored->push(unexploredNeighbors.front());
+            unexploredNeighbors.pop_front();
+        }
+    }
+
+    // If we haven't yet reached the center, push the cells onto the stack so that the
+    // center-most cell is at the top. In this way, the mouse will prioritize the
+    // center-most cells while it's still trying to find the center.
+
+    else {
+        while (!unexploredNeighbors.empty()) {
+
+            Cell* leastCentered = NULL;
+            int distFromCenter = -1;
+            int relativeCenteredness = -1;
+
+            // For each iteration of the loop, get the least center-most Cell and
+            // push it to the unexplored stack
+
+            for (std::list<Cell*>::iterator it = unexploredNeighbors.begin();
+                 it != unexploredNeighbors.end(); ++it) {
+                
+                int xDist = abs(MAZE_SIZE_X/2 - (*it)->getX());
+                int yDist = abs(MAZE_SIZE_Y/2 - (*it)->getY());
+
+                if ((xDist + yDist) > distFromCenter) {
+                    leastCentered = (*it);
+                    distFromCenter = (xDist + yDist);
+                    relativeCenteredness = abs(xDist - yDist);
+                }
+                else if ((xDist + yDist) == distFromCenter && abs(xDist - yDist) > relativeCenteredness) {
+                    leastCentered = (*it);
+                    distFromCenter = (xDist + yDist);
+                    relativeCenteredness = abs(xDist - yDist);
+                }
+            }
+
+            unexplored->push(leastCentered);
+            unexploredNeighbors.remove(leastCentered);
+        }
+    }
+            
     // Update the History target stack and modified cells
     m_history.stackUpdate(*unexplored);
     m_history.modifiedCellsUpdate(modifiedCells);
@@ -1013,10 +1168,13 @@ bool FloodFill::tryUntraversed(Cell* target){
     return false;
 }
 
-void FloodFill::basicFloodFill(std::stack<Cell*>* path){
+void FloodFill::bffExplore(std::stack<Cell*>* path){
 
     // The first checkpoint is at the origin
-    m_bffCp = &m_cells[0][0];
+    Cell* cpCell = &m_cells[0][0];
+
+    // A queue of lists of modified cells
+    std::queue<std::list<SimpleCellmod>> modCells;
 
     while (true) {
 
@@ -1024,7 +1182,7 @@ void FloodFill::basicFloodFill(std::stack<Cell*>* path){
         while (!m_checkpointReached) {
 
             // Get the path to the checkpoint
-            Cell* cpPathRunner = m_bffCp;
+            Cell* cpPathRunner = cpCell;
             std::stack<Cell*> cpPath;
             while (cpPathRunner != NULL) {
                 cpPath.push(cpPathRunner);
@@ -1046,6 +1204,9 @@ void FloodFill::basicFloodFill(std::stack<Cell*>* path){
                 return;
             }
             if (m_mouse->undoRequested()) {
+                m_x = 0; // Since we're repositioning the mouse but not re-intializing the
+                m_y = 0; // maze, we have to explicitely reset the x, y, and d values
+                m_d = 0;
                 m_mouse->resetPosition();
                 m_mouse->resetColors(0, 0);
                 m_mouse->undoHonored();
@@ -1058,10 +1219,37 @@ void FloodFill::basicFloodFill(std::stack<Cell*>* path){
 
         // Solve the maze using basic floodfill
         while (!inGoal(m_x, m_y) && !(m_mouse->undoRequested() || m_mouse->resetRequested())){
-            dobffCellUpdates();
+
+            // List of modified cells for this step
+            std::list<SimpleCellmod> modCellsList;
+
+            // Always add the current cell to modified cells
+            bffAppendModifiedCell(&modCellsList, &m_cells[m_x][m_y]);
+
+            // Keep track of wall updates
+            if (spaceLeft()) {
+                bffAppendModifiedCell(&modCellsList, getLeftCell());
+            }
+            if (spaceFront()) {
+                bffAppendModifiedCell(&modCellsList, getFrontCell());
+            }
+            if (spaceRight()) {
+                bffAppendModifiedCell(&modCellsList, getRightCell());
+            }
+
+            // Do all Cell updates
             walls();
             flood(m_x, m_y);
+            dobffCellUpdates();
             moveTowardsGoal();
+
+            // Push the old states of the updated cells to modCells
+            modCells.push(modCellsList);
+
+            // Make sure we're only keeping short term history
+            if (modCells.size() > SHORT_TERM_MEM) {
+                modCells.pop();
+            }
         }
 
         // If there were requests during the solve, honor them now
@@ -1072,38 +1260,51 @@ void FloodFill::basicFloodFill(std::stack<Cell*>* path){
             return;
         }
 
-        // As it turns out, the regular flood fill is very unpredictable and the
-        // undo doesn't really help much with the solve time ... TODO
-
         if (m_mouse->undoRequested()) {
-            Cell* c = &m_cells[m_x][m_y];
-            for (int i = 0; i < SHORT_TERM_MEM; i++) {
-                if (c->getPrev() != NULL) {
-                    c = c->getPrev();
-                }
-                else {
-                    break;
+
+            if (modCells.size() == SHORT_TERM_MEM) {
+                cpCell = modCells.front().front().cell;
+
+                // Since we don't update after reaching the checkpoint, don't undo mods at checkpoint
+                modCells.pop();
+
+                // Iterate through all modified cells, starting with most recent and going
+                // to least recent. During iterations, we simply restore the old values
+                while (!modCells.empty()) {
+
+                    std::list<SimpleCellmod> cellList = modCells.front();
+                    modCells.pop();
+
+                    for (std::list<SimpleCellmod>::iterator it = cellList.begin(); it != cellList.end() ; ++it) {
+                        (*it).cell->setPrev((*it).prev);
+                        (*it).cell->setDistance((*it).dist);
+                        for (int i = 0; i < 4; i++) {
+                            (*it).cell->setWall(i, (*it).walls[i]);
+                        }
+                    }
                 }
             }
-            m_bffCp = c;
-            m_checkpointReached = false;
             m_x = 0; // Since we're repositioning the mouse but not re-intializing the
             m_y = 0; // maze, we have to explicitely reset the x, y, and d values
             m_d = 0;
+            m_checkpointReached = false;
             m_mouse->resetPosition();
-            m_mouse->resetColors(0, 0);
             m_mouse->undoHonored();
             continue;
         }
 
-        // As it stands right now, if the mouse screws up going into the final few cells of
+        // Note: As it stands right now, if the mouse screws up going into the final few cells of
         // the maze and we don't hit reset before it thinks it solved the maze, we don't really
         // have a good way to undo the changes.
-        
+
+        if (ALGO_COMPARE) {
+            std::cout << "Simple center in " << m_steps << " steps" << std::endl;
+        }
+
         // Populate the path variable with the actual path of the robot to the center. We do
         // this rather than simply returning a stack since the mouse may screw up on it's
         // way back to the origin, but we still want to be able to retain the floodfill info.
-        // In retaining this info, we have to mark m_bffDone as true. But this can't be done
+        // In retaining this info, we have to mark m_explored as true. But this can't be done
         // until we have the best path. Hence the return parameter.
         Cell* runner = &m_cells[m_x][m_y];
         while (runner->getPrev() != NULL) {
@@ -1112,20 +1313,37 @@ void FloodFill::basicFloodFill(std::stack<Cell*>* path){
         }
 
         // Indicate that the solve is done
-        m_bffDone = true;
+        m_explored = true;
 
         // Return to start
         while ((m_x != 0 || m_y != 0) && !(m_mouse->undoRequested() || m_mouse->resetRequested())){
-            moveOneCell(m_cells[m_x][m_y].getPrev());
+            if (isOneCellAway(&m_cells[0][0])){
+                moveOneCell(&m_cells[0][0]);
+            }
+            else if (tryUntraversed(&m_cells[0][0])) {
+                continue;
+            }
+            else {
+                moveOneCell(m_cells[m_x][m_y].getPrev());
+            }
         }
-        while (m_d != 0 && !(m_mouse->undoRequested() || m_mouse->resetRequested())) {
-            turnRight();
+        if (!(m_mouse->undoRequested() || m_mouse->resetRequested())) {
+            if (m_d == 2) {
+                turnAround();
+            }
+            else { // m_d == 3
+                turnRight();
+            }
         }
         return; // We're done
     }
 }
 
 void FloodFill::dobffCellUpdates() {
+
+    // Note: This could be improved so that prev values are updated when we find prev cells
+    // that are closer to the origin - without this, the algo will always (naively) take
+    // the same path, even if it's much less efficient to do so.
 
     if (!m_mouse->wallLeft() && getLeftCell()->getPrev() == NULL && getLeftCell() != &m_cells[0][0]){
         getLeftCell()->setPrev(&m_cells[m_x][m_y]);
@@ -1136,6 +1354,17 @@ void FloodFill::dobffCellUpdates() {
     if (!m_mouse->wallRight() && getRightCell()->getPrev() == NULL && getRightCell() != &m_cells[0][0]){
         getRightCell()->setPrev(&m_cells[m_x][m_y]);
     }
+}
+
+void FloodFill::bffAppendModifiedCell(std::list<SimpleCellmod>* modCellsList, Cell* cell) {
+    SimpleCellmod mod;
+    mod.cell = cell;
+    mod.prev = cell->getPrev();
+    mod.dist = cell->getDistance();
+    for (int i = 0; i < 4; i++) {
+        mod.walls[i] = cell->isWall(i);
+    }
+    modCellsList->push_back(mod);
 }
 
 void FloodFill::bffVictory(std::stack<Cell*> path) {
@@ -1154,8 +1383,13 @@ void FloodFill::bffVictory(std::stack<Cell*> path) {
         while ((m_x != 0 || m_y != 0) && !(m_mouse->undoRequested() || m_mouse->resetRequested())){
             moveOneCell(m_cells[m_x][m_y].getPrev());
         }
-        while (m_d != 0 && !(m_mouse->undoRequested() || m_mouse->resetRequested())) {
-            turnRight();
+        if (!(m_mouse->undoRequested() || m_mouse->resetRequested())) {
+            if (m_d == 2) {
+                turnAround();
+            }
+            else { // m_d == 3
+                turnRight();
+            }
         }
 
         if (m_mouse->resetRequested()) {
