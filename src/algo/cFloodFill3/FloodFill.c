@@ -1202,7 +1202,7 @@ void bffExplore(struct CellStack *path) {
     struct Cell *cpCell = &m_cells[0][0];
 
     // A queue of lists of modified cells
-    std::queue<std::list<SimpleCellmod>> modCells;
+    std::list<std::list<struct SimpleCellmod *>> modCells;
 
     while (true) {
 
@@ -1269,11 +1269,11 @@ void bffExplore(struct CellStack *path) {
             moveTowardsGoal();
 
             // Push the old states of the updated cells to modCells
-            push(modCells,modCellsList);
+            push_back(modCells,modCellsList);
 
             // Make sure we're only keeping short term history
             if (size(modCells) > SHORT_TERM_MEM) {
-                pop(modCells);
+                pop_front(modCells);
             }
         }
 
@@ -1289,17 +1289,17 @@ void bffExplore(struct CellStack *path) {
         if (_undoRequested()) {
 
             if (size(modCells) == SHORT_TERM_MEM) {
-                cpCell = front(front(modCells))->cell; // TODO: Access with arrow or .?
+                cpCell = front(front(modCells))->cell;
 
                 // Since we don't update after reaching the checkpoint, don't undo mods at checkpoint
-                pop(modCells);
+                pop_front(modCells);
 
                 // Iterate through all modified cells, starting with most recent and going
                 // to least recent. During iterations, we simply restore the old values
                 while (!isEmpty(modCells)) {
 
-                    std::list<SimpleCellmod> cellList = front(modCells);
-                    pop(modCells);
+                    std::list<struct SimpleCellmod *> cellList = front(modCells); // TODO: Make this a copy...but see the next line....
+                    pop_front(modCells);
 
                     for (std::list<SimpleCellmod>::iterator it = cellList.begin(); it != cellList.end() ; ++it) { // TODO: Port this....
                         (*it).cell->m_prev = (*it).prev;
