@@ -84,7 +84,6 @@ struct Cell * top(struct CellStack *stack) {
 struct CellStack * copyOfStack(struct CellStack *original) {
 
     // NOTE: Does not copy struct Cell pointers (data field of nodes).
-    // TODO: Is this a problem?
 
     // Returns a null pointer if a null pointer is passed in.
     if (original == NULL) return NULL;

@@ -22,11 +22,11 @@ void h_initialize(struct History *hist, int stm, struct Cell *origin, bool first
         while (!isEmpty(hist->m_stacks)) {
             pop(hist->m_stacks);
         }
-        while (!hist->m_stackReferenceCounts.empty()) {
-            hist->m_stackReferenceCounts.pop_front();
+        while (!isEmpty(hist->m_stackReferenceCounts)) {
+            pop_front(hist->m_stackReferenceCounts);
         }
-        while (!hist->m_modifiedCells.empty()) {
-            hist->m_modifiedCells.pop_front();
+        while (!isEmpty(hist->m_modifiedCells)) {
+            pop_front(hist->m_modifiedCells);
         }
         if (hist->m_checkpointStack != NULL) {
             destroyStack(hist->m_checkpointStack);
@@ -38,7 +38,7 @@ void h_initialize(struct History *hist, int stm, struct Cell *origin, bool first
     struct CellStack *temp = newStack();
     push(temp,origin);
     push(hist->m_stacks,temp);
-    hist->m_stackReferenceCounts.push_back(1);
+    push_back(hist->m_stackReferenceCounts,1);
 
     // Set the checkpoint values
     hist->m_checkpointCell = origin;
@@ -90,7 +90,7 @@ void moved(struct History *hist) {
     hist->m_size++;
 
     // Assertion - Neither hist->m_stacks nor hist->m_stackReferenceCounts should ever be empty
-    if (hist->m_stackReferenceCounts.empty() || isEmpty(hist->m_stacks)) {
+    if (isEmpty(hist->m_stackReferenceCounts) || isEmpty(hist->m_stacks)) {
         printf("Error - History object has zero stack references\n");
         exit(0);
     }

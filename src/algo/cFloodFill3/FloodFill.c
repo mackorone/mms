@@ -1018,9 +1018,9 @@ void doUpdatesForCurrentCell(struct CellStack *unexplored) { // TODO: Finish.
 
     // If we've reached the center already, simply use F-R-L priority
     if (m_centerReached) {
-        while (!unexploredNeighbors.empty()) {
-            push(unexplored, unexploredNeighbors.front());
-            unexploredNeighbors.pop_front();
+        while (!isEmpty(unexploredNeighbors)) {
+            push(unexplored, front(unexploredNeighbors));
+            pop_front(unexploredNeighbors);
         }
     }
 
@@ -1029,7 +1029,7 @@ void doUpdatesForCurrentCell(struct CellStack *unexplored) { // TODO: Finish.
     // center-most cells while it's still trying to find the center.
 
     else {
-        while (!unexploredNeighbors.empty()) {
+        while (!isEmpty(unexploredNeighbors)) {
 
             struct Cell *leastCentered = NULL;
             int distFromCenter = -1;
@@ -1057,7 +1057,7 @@ void doUpdatesForCurrentCell(struct CellStack *unexplored) { // TODO: Finish.
             }
 
             push(unexplored, leastCentered);
-            unexploredNeighbors.remove(leastCentered);
+            remove(unexploredNeighbors,leastCentered);
         }
     }
 
@@ -1210,18 +1210,18 @@ void bffExplore(struct CellStack *path) {
         while (!m_checkpointReached) {
 
             // Get the path to the checkpoint
-            Cell* cpPathRunner = cpCell;
+            struct Cell *cpPathRunner = cpCell;
             struct CellStack *cpPath = newStack();
             while (cpPathRunner != NULL) {
-                cpPath.push(cpPathRunner);
+                push(cpPath,cpPathRunner);
                 cpPathRunner = cpPathRunner->m_prev;
             }
-            cpPath.pop(); // Pop off (0,0)
+            pop(cpPath); // Pop off (0,0)
 
             // Return to the checkpoint
-            while (!cpPath.empty() && !(_undoRequested() || _resetRequested())) {
-                moveOneCell(cpPath.top());
-                cpPath.pop();
+            while (!isEmpty(cpPath) && !(_undoRequested() || _resetRequested())) {
+                moveOneCell(top(cpPath));
+                pop(cpPath);
             }
             destroyStack(cpPath);
             
@@ -1272,8 +1272,8 @@ void bffExplore(struct CellStack *path) {
             push(modCells,modCellsList);
 
             // Make sure we're only keeping short term history
-            if (modCells.size() > SHORT_TERM_MEM) {
-                modCells.pop();
+            if (size(modCells) > SHORT_TERM_MEM) {
+                pop(modCells);
             }
         }
 
