@@ -13,7 +13,7 @@
 static const int MAZE_SIZE_X = 16; // Length of X axis of maze
 static const int MAZE_SIZE_Y = 16; // Length of Y axis of maze
 static const int SHORT_TERM_MEM = 12; // Steps that are forgetten by the mouse after an error
-static const bool ALGO_COMPARE = true; // Whether or not we're comparing all solving algorithms
+static const bool ALGO_COMPARE = false; // Whether or not we're comparing the solving algorithms
 enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
 
 
@@ -23,13 +23,20 @@ public:
     void solve(sim::MouseInterface* mouse); // IAlgorithm interface method
 
 private:
+
     sim::MouseInterface* m_mouse; // Mouse used to traverse and solve the maze
     Cell m_cells[MAZE_SIZE_X][MAZE_SIZE_Y]; // Grid a cells to store maze information
     int m_x; // X position of the mouse
     int m_y; // Y position of the mouse
     int m_d; // Direction of the mouse
     int m_steps; // Count of the steps of the mouse
+    bool m_centerReached; // Whether or not the mouse has reached the center at least once
+    bool m_explored; // Whether or not the explore method was has completed
+    History m_history; // History object used for undos
+    bool m_checkpointReached; // Whether or not we've made it back to the checkpoint
 
+
+    void justFloodFill(); // Vanilla Floodfill algo
     void simpleSolve(); // Solves using basic floodfill (not perfect)
     void extensiveSolve(); // Solves using explore (guaranteed perfect)
 
@@ -45,6 +52,7 @@ private:
     void victory(); // Once the maze is fully explored, solve as quick as possible
 
     void walls(); // Updates the walls surrounding the robot
+    void checkDeadEnd(Cell* cell); // Deduces fourth wall value, if possible
     void flood(int x, int y); // Floods the maze corresponding to new walls
     void moveTowardsGoal(); // Moves the mouse one step towards the goal (lower distance value)
     bool inGoal(int x, int y); // Returns true if the cell at (x, y) is in the center
@@ -52,6 +60,7 @@ private:
     void moveForward(); // Updates x and y and moves mouse
     void turnRight(); // Updates direction and turns mouse
     void turnLeft(); // Updates direction and turns mouse
+    void turnAround(); // Updates direction and turns mouse
 
     Cell* getFrontCell(); // Returns the cell in front of the mouse
     Cell* getLeftCell(); // Returns the cell to the right of the mouse
@@ -62,27 +71,21 @@ private:
     bool spaceRight(); // Returns true if there's a cell to the right of the mouse
     int min(int one, int two, int three, int four); // Returns the min of four ints
 
-    // Moves the mouse to the target Cell but only if it's exactly one Cell away
+    // Moves the mouse to the target Cell, but only if it's exactly one Cell away
     void moveOneCell(Cell* target);
 
     // ------------------- Basic FloodFill Utilities ----------------------- //
 
-    // Whether or not the basic floodfill has reached the goal
-    bool m_bffDone;
+    // Basic Floodfill Algorithm
+    void bffExplore(std::stack<Cell*>* path);
 
-    // Checkpoint cell for the basic floodfill
-    Cell* m_bffCp;
-
-    // Basic Floodfill Algorithm. Populates path with that path to the center
-    void basicFloodFill(std::stack<Cell*>* path);
-
-    // Performs the updates for cells in the basic floodfill algo, adds modified cells to the list
+    // Performs the updates for cells in the basic floodfill algo
     void dobffCellUpdates();
 
-    // Updates the walls surrounding the robot, adds modified cells to the list
-    void bffFlood(int x, int y, std::list<SimpleCellmod>* modsCellsList);
+    // Appends a newly modified cell to the modified cells list for each step in the algo
+    void bffAppendModifiedCell(std::list<SimpleCellmod>* modCellsList, Cell* cell);
 
-    // Repeatedly solves the maze using the path found by basicFloodFill
+    // Repeatedly solves the maze using the path found by bffExplore
     void bffVictory(std::stack<Cell*> path);
 
 
@@ -104,11 +107,7 @@ private:
     bool tryUntraversed(Cell* target);
 
 
-    // ----------------------- Request Utilities --------------------------- //
-
-    History m_history; // History object used for undos
-    bool m_explored; // Whether or not the explore method was has completed
-    bool m_checkpointReached; // Whether or not we've made it back to the checkpoint
+    // -------------------- Explore Request Utilities ----------------------- //
 
     // Appends a newly modified cell to the modified cells list for each step in the algo
     void appendModifiedCell(std::list<Cellmod>* modList, Cell* cell);

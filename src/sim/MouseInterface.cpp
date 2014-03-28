@@ -78,6 +78,11 @@ void MouseInterface::turnLeft(){
     }
 }
 
+void MouseInterface::turnAround(){
+    turnRight();
+    turnRight();
+}
+
 bool MouseInterface::undoRequested(){
     return *m_undoRequested;
 }
