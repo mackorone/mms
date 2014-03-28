@@ -34,8 +34,8 @@ void FloodFill::solve(sim::MouseInterface* mouse){
 
     // Otherwise, pick one
     //justFloodFill();
-    simpleSolve();
-    //extensiveSolve();
+    //simpleSolve();
+    extensiveSolve();
 }
 
 void FloodFill::justFloodFill() {
@@ -1289,7 +1289,6 @@ void FloodFill::bffExplore(std::stack<Cell*>* path){
             m_d = 0;
             m_checkpointReached = false;
             m_mouse->resetPosition();
-            m_mouse->resetColors(0, 0);
             m_mouse->undoHonored();
             continue;
         }
@@ -1342,8 +1341,9 @@ void FloodFill::bffExplore(std::stack<Cell*>* path){
 
 void FloodFill::dobffCellUpdates() {
 
-    // Note: This could be improved so that prev values are updated when we find ones that
-    // are closer to the origin
+    // Note: This could be improved so that prev values are updated when we find prev cells
+    // that are closer to the origin - without this, the algo will always (naively) take
+    // the same path, even if it's much less efficient to do so.
 
     if (!m_mouse->wallLeft() && getLeftCell()->getPrev() == NULL && getLeftCell() != &m_cells[0][0]){
         getLeftCell()->setPrev(&m_cells[m_x][m_y]);
