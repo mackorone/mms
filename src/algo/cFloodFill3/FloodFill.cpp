@@ -1302,10 +1302,10 @@ void bffExplore(struct CellStack *path) {
                     pop(modCells);
 
                     for (std::list<SimpleCellmod>::iterator it = cellList.begin(); it != cellList.end() ; ++it) { // TODO: Port this....
-                        (*it).cell->setPrev((*it).prev);
-                        (*it).cell->setDistance((*it).dist);
+                        (*it).cell->m_prev = (*it).prev;
+                        (*it).cell->m_distance = (*it).dist;
                         for (int i = 0; i < 4; i++) {
-                            (*it).cell->setWall(i, (*it).walls[i]);
+                            (*it).cell->m_walls[i] = (*it).walls[i];
                         }
                     }
                 }
