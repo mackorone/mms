@@ -1,4 +1,6 @@
 #include "List.h"
+#include "Cellmod.h"
+#include "SimpleCellmod.h"
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -95,7 +97,7 @@ struct List * createList() {
     return ptr;
 }
 
-void destroyList(struct List *list) {
+void destroyList(struct List *list, bool destroyData) {
 
     // Note: Invariants aren't preserved here, but it doesn't matter since we're destroying the stack.
 
@@ -103,10 +105,14 @@ void destroyList(struct List *list) {
 
     while (front != NULL) {
         if (front->behind == NULL) {
+            if (destroyData)
+                free(front->data);
             free(front);
             front = NULL;
         } else {
             front = front->behind;
+            if (destroyData)
+                free(front->ahead->data);
             free(front->ahead);
         }
     }
@@ -130,7 +136,11 @@ size_t size(struct List *list) {
 
 }
 
-struct List * copyOfList(struct List *original) {
+struct List * copyOfList(struct List *original, int indicator) {
+
+    // 0 - normal
+    // 1 - Cellmod
+    // 2 - SimpleCellmod
 
     // Returns a null pointer if a null pointer is passed in.
     if (original == NULL) return NULL;
@@ -139,9 +149,18 @@ struct List * copyOfList(struct List *original) {
     copy->front = NULL;
     copy->back = NULL;
 
-    struct CellStackNode *curNode = original->back;
+    struct ListNode *curNode = original->back;
     while (curNode != NULL) {
-        push_front(copy, curNode->data);
+        void *temp = curNode->data;
+        if (indicator == 1) {
+            temp = copyOfCellmod((struct Cellmod *)temp);
+
+        }
+        if (indicator == 2) {
+            temp = copyOfSimpleCellmod((struct SimpleCellmod *)temp);
+        }
+
+        push_front(copy, temp);
         curNode = curNode->ahead;
     }
 

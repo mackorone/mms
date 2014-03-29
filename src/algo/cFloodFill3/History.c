@@ -166,18 +166,19 @@ void stackUpdate(struct History *hist, struct CellStack *newStack) { // JIMMY CH
 
 }
 
-void modifiedCellsUpdate(struct History *hist, struct List *cells) { // of Cellmod
+void modifiedCellsUpdate(struct History *hist, struct List *cells) { // of Cellmod*
 
     // The only situation when this list will be empty is immediately after
     // returning to the origin after undo is called. This is because the checkpoint
     // stack will contain the origin, and thus won't move from the origin to get to
     // the target (the origin) but WILL perform the appropriate updates.
     if (size(hist->m_modifiedCells) > 0) {
-        struct List * temp = hist->m_modifiedCells->front;
+        struct List * temp = hist->m_modifiedCells->front->data;
         pop_front(hist->m_modifiedCells);
-        destroyList(temp);
+        destroyList(temp,true);
     }
-    push_front(hist->m_modifiedCells, copyOfList(cells));
+    push_front(hist->m_modifiedCells, copyOfList(cells,1));
+
 }
 
 void resetModifiedCells(struct History *hist) {

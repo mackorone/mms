@@ -979,7 +979,7 @@ void moveOneCell(struct Cell *target) {
 void doUpdatesForCurrentCell(struct CellStack *unexplored) {
 
     // List of cellmod objects for all cell modifications performed at this step
-    struct List * modifiedCells = createList(); // List of cellmod
+    struct List * modifiedCells = createList(); // List of Cellmod*
 
     // We need to keep track of the old values for the modified cell before we update it.
     appendModifiedCell(modifiedCells, &m_cells[m_x][m_y]);
@@ -1085,7 +1085,7 @@ void doUpdatesForCurrentCell(struct CellStack *unexplored) {
     // Update the History target stack and modified cells
     stackUpdate(&m_history, unexplored);
     modifiedCellsUpdate(&m_history, modifiedCells);
-    destroyList(modifiedCells);
+    destroyList(modifiedCells,true);
 }
 
 bool isOneCellAway(struct Cell *target) {

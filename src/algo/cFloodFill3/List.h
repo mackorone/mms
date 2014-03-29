@@ -15,7 +15,7 @@ struct List {
 };
 
 struct List * createList(void);
-void destroyList(struct List *);
+void destroyList(struct List *, bool);
 bool isEmptyList(struct List *);
 void pop_front(struct List *);
 void pop_back(struct List *);
