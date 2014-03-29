@@ -4,6 +4,10 @@
 #include "CellStack.h"
 #include "History.h"
 
+void listCellmodDestroy(void *item) {
+    destroyList((struct List *)item);
+}
+
 void h_initialize(struct History *hist, int stm, struct Cell *origin, bool firstTime) {
 
     // Set the short term memory
@@ -15,6 +19,8 @@ void h_initialize(struct History *hist, int stm, struct Cell *origin, bool first
         hist->m_stacks.front = NULL;
         hist->m_stacks.back = NULL;
         hist->m_checkpointStack = NULL;
+        hist->m_stackReferenceCounts = newList();
+        hist->m_modifiedCells = newList();
         // TODO: Finish this for other data structures.
     } else {
 
@@ -23,7 +29,7 @@ void h_initialize(struct History *hist, int stm, struct Cell *origin, bool first
             pop(hist->m_stacks);
         }
         while (!isEmpty(hist->m_stackReferenceCounts)) {
-            pop_front(hist->m_stackReferenceCounts);
+            pop_front(hist->m_stackReferenceCounts,destroyDoNothing);
         }
         while (!isEmpty(hist->m_modifiedCells)) {
             pop_front(hist->m_modifiedCells);
@@ -38,7 +44,7 @@ void h_initialize(struct History *hist, int stm, struct Cell *origin, bool first
     struct CellStack *temp = newStack();
     push(temp,origin);
     push(hist->m_stacks,temp);
-    push_back(hist->m_stackReferenceCounts,1);
+    push_back(hist->m_stackReferenceCounts,1,copyDoNothing);
 
     // Set the checkpoint values
     hist->m_checkpointCell = origin;
@@ -97,8 +103,8 @@ void moved(struct History *hist) {
 
     // Increment our stack reference counts
     int srefCount = back(hist->m_stackReferenceCounts);
-    pop_back(hist->m_stackReferenceCounts);
-    push_back(hist->m_stackReferenceCounts,srefCount+1);
+    pop_back(hist->m_stackReferenceCounts,destroyDoNothing);
+    push_back(hist->m_stackReferenceCounts,srefCount+1,copyDoNothing);
 
     // Every move we push an empty list onto the list of lists of modified cells
     std::list<Cellmod> empty; // TODO: Initialize this properly.
@@ -112,13 +118,13 @@ void moved(struct History *hist) {
         hist->m_size--;
 
         int srefCount2 = front(hist->m_stackReferenceCounts);
-        pop_front(hist->m_stackReferenceCounts);
-        push_front(hist->m_stackReferenceCounts,srefCount2-1);
+        pop_front(hist->m_stackReferenceCounts,destroyDoNothing);
+        push_front(hist->m_stackReferenceCounts,srefCount2-1,copyDoNothing);
     }
 
     if (front(hist->m_stackReferenceCounts) == 0) {
 
-        pop_front(hist->m_stackReferenceCounts);
+        pop_front(hist->m_stackReferenceCounts,destroyDoNothing);
         pop(hist->m_stacks);
         destroyStack(hist->m_checkpointStack);
         hist->m_checkpointStack = front(hist->m_stacks);
@@ -154,9 +160,9 @@ void stackUpdate(struct History *hist, struct CellStack *newStack) { // JIMMY CH
     push(hist->m_stacks,newStack);
 
     int temp = back(hist->m_stackReferenceCounts);
-    pop_back(hist->m_stackReferenceCounts);
-    push_back(hist->m_stackReferenceCounts,temp-1);
-    push_back(hist->m_stackReferenceCounts,1);
+    pop_back(hist->m_stackReferenceCounts,destroyDoNothing);
+    push_back(hist->m_stackReferenceCounts,temp-1,copyDoNothing);
+    push_back(hist->m_stackReferenceCounts,1,copyDoNothing);
 
 }
 
@@ -201,13 +207,13 @@ void resetModifiedCells(struct History *hist) {
         pop(hist->m_stacks);
     }
     while (!isEmpty(hist->m_stackReferenceCounts)) {
-        pop_front(hist->m_stackReferenceCounts);
+        pop_front(hist->m_stackReferenceCounts,destroyStack);
     }
     while (!isEmpty(hist->m_modifiedCells)) {
         pop_front(hist->m_modifiedCells);
     }
 
     push(hist->m_stacks,hist->m_checkpointStack);
-    push_back(hist->m_stackReferenceCounts,1);
+    push_back(hist->m_stackReferenceCounts,1,copyDoNothing);
 
 }

@@ -4,21 +4,26 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+void destroyDoNothing(void *item) { }
+void * copyDoNothing(void *item) { return item; }
+
 bool isEmpty(struct List *list) {
     return list->back == NULL;
 }
 
-void pop_front(struct List *list) {
+void pop_front(struct List *list, void (*destroyFunc)(void *)) {
 
     // Does not do anything if the list is empty.
 
     if (list->back != NULL) {
         if (list->back == list->front) { // Only one element left in the list.
+            destroyFunc(list->back->data);
             free(list->back);
             list->back = NULL;
             list->front = NULL;
         } else {
             list->front = list->front->behind;
+            destroyFunc(list->front->ahead->data);
             free(list->front->ahead);
             list->front->ahead = NULL;
         }
@@ -26,17 +31,19 @@ void pop_front(struct List *list) {
 
 }
 
-void pop_back(struct List *list) {
+void pop_back(struct List *list, void (*destroyFunc)(void *)) {
 
     // Does not do anything if the list is empty.
 
     if (list->front != NULL) {
         if (list->front == list->back) { // Only one element left in the list.
+            destroyFunc(list->front->data);
             free(list->front);
             list->front = NULL;
             list->back = NULL;
         } else {
             list->back = list->back->ahead;
+            destroyFunc(list->back->behind->data);
             free(list->back->behind);
             list->back->behind = NULL;
         }
@@ -44,9 +51,10 @@ void pop_back(struct List *list) {
 
 }
 
-void push_back(struct List *list, void *item) {
+void push_back(struct List *list, void *item, void * (*copyFunc)(void *)) {
 
     struct ListNode *newNode = malloc(sizeof(struct ListNode));
+    item = copyFunc(item);
     newNode->data = item;
     newNode->behind = NULL;
 
@@ -62,9 +70,10 @@ void push_back(struct List *list, void *item) {
 
 }
 
-void push_front(struct List *list, void *item) {
+void push_front(struct List *list, void *item, void * (*copyFunc)(void *)) {
 
     struct ListNode *newNode = malloc(sizeof(struct ListNode));
+    item = copyFunc(item);
     newNode->data = item;
     newNode->ahead = NULL;
 

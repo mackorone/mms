@@ -23,7 +23,7 @@ struct History {
     struct MStacksQueue m_stacks;
 
     // Queue of ints counting the references for each stack in m_stacks
-    std::list<int> m_stackReferenceCounts;
+    struct List *m_stackReferenceCounts; // of ints
 
     // List of List of cell modification objects for each step.
     std::list<std::list<Cellmod>> m_modifiedCells;
