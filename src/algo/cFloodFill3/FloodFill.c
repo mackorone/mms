@@ -8,7 +8,7 @@
 #include "FloodFill.h"
 #include "History.h"
 
-int main() { solve(); }
+int main() { solve(); } // TODO: Get rid of this
 
 void solve() {
 
@@ -70,6 +70,8 @@ void simpleSolve() {
 
         // Solve the maze as quickly as possible.
         bffVictory(path);
+
+        destroyStack(path);
 
         if (ALGO_COMPARE) {
             printf("Simple solve in %d steps\n", (m_steps - s_steps)/2);
@@ -149,7 +151,7 @@ void printWalls() {
 
 void initialize() {
 
-    // NOTE: Doesn't work for odd sized mazes. // TODO: But this is OK, right, since odd sized mazes don't have a 2x2 center?
+    // NOTE: Doesn't work for odd sized mazes.
 
     // Initialize the distance values for the maze
     for (int y = 0; y < MAZE_SIZE_Y/2; y++) {
@@ -205,7 +207,7 @@ void victory() {
     // Loop forever, continue going to the beginning and solving
     while (true) {
 
-        struct CellStack *optimalPath = newStack();
+      struct CellStack *optimalPath = newStack();
 
         // Solve the maze (while request hasn't been made)
         while (!inGoal(m_x, m_y) && !(_undoRequested() || _resetRequested())) {
@@ -219,6 +221,8 @@ void victory() {
             pop(optimalPath);
             moveOneCell(prev);
         }
+
+        destroyStack(optimalPath);
 
         if (!(_undoRequested() || _resetRequested())) {
             if (m_d == 2) {
@@ -677,6 +681,8 @@ void explore() {
     while (!isEmpty(unexplored) || (_undoRequested() || _resetRequested()) ) {
 
         if (_resetRequested()) {
+            destroyStack(unexplored);
+            _resetPosition();
             _resetHonored();
             return;
         }
@@ -693,6 +699,7 @@ void explore() {
             m_x = 0;
             m_y = 0;
             m_d = 0;
+            _resetPosition();
 
             // We haven't yet gotten to the checkpoint. If another undo request is made,
             // don't reset the checkpoint. Simply try to get back to the same checkpoint.
@@ -706,11 +713,10 @@ void explore() {
             // If an undo is requested within the first few steps, we can simply
             // re-explore the maze since we haven't made an real progress yet.
             // Doing things this way ensures that some corner cases are handled.
+            destroyStack(unexplored);
             if (getCheckpointCell(&m_history) == &m_cells[0][0]) {
                 return;
             }
-
-            destroyStack(unexplored);
 
             // Retrieve the old stack image.
             unexplored = getCheckpointStack(&m_history);
@@ -725,6 +731,7 @@ void explore() {
             if (proceedToCheckpoint(path)) {
                 destroyStack(path);
                 if (_resetRequested()) {
+                    _resetPosition();
                     _resetHonored();
                     return;
                 }
@@ -792,6 +799,7 @@ void explore() {
         // all of its walls inspected. In that case, we don't want to do any more
         // updates or flooding - we simply want to return to the beginning for victory.
         if (allWallsInspected) {
+            destroyStack(unexplored);
             break;
         }
 
@@ -873,6 +881,8 @@ void explore() {
         }
 
     }
+
+    destroyStack(unexplored);
 
     // Once the stack is empty (once we've explored every possible cell),
     // we assign a maximum distance value to unexplored cells and then return
@@ -961,10 +971,10 @@ void moveOneCell(struct Cell *target) {
 
 }
 
-void doUpdatesForCurrentCell(struct CellStack *unexplored) { // TODO: Finish.
+void doUpdatesForCurrentCell(struct CellStack *unexplored) {
 
     // List of cellmod objects for all cell modifications performed at this step
-    std::list<Cellmod> *modifiedCells = newCellmodlist; // TODO: Fix syntax.
+    struct List_Cellmod *modifiedCells = createList_Cellmod(); // List of cellmod
 
     // We need to keep track of the old values for the modified cell before we update it.
     appendModifiedCell(modifiedCells, &m_cells[m_x][m_y]);
@@ -977,7 +987,7 @@ void doUpdatesForCurrentCell(struct CellStack *unexplored) { // TODO: Finish.
     // First we get a list of unexplored neighbors. Then we push the elements of this list
     // onto the unexplored stack in a particular order, depending on whether or not we made
     // it to the center already.
-    std::list<Cell*> unexploredNeighbors;
+    struct List_Cell* unexploredNeighbors = createList_Cell();
     
     // Once we've examined the contents at the target, it is considered explored and traversed
     m_cells[m_x][m_y].m_explored = true;
@@ -987,8 +997,8 @@ void doUpdatesForCurrentCell(struct CellStack *unexplored) { // TODO: Finish.
     // this seems to perform better with dead-end detection.
 
     struct Cell *temp;
-
     temp = getLeftCell();
+
     if (!_wallLeft() && temp->m_prev == NULL) {
 
         // We need to keep track of the old values for the modified cell before we update it.
@@ -1038,6 +1048,7 @@ void doUpdatesForCurrentCell(struct CellStack *unexplored) { // TODO: Finish.
             // For each iteration of the loop, get the least center-most Cell and
             // push it to the unexplored stack
 
+            // TODO 
             for (std::list<struct Cell *>::iterator it = unexploredNeighbors.begin();
                  it != unexploredNeighbors.end(); ++it) {
                 
@@ -1060,11 +1071,12 @@ void doUpdatesForCurrentCell(struct CellStack *unexplored) { // TODO: Finish.
             remove(unexploredNeighbors,leastCentered);
         }
     }
+    destroyList(unexploredNeighbors);
 
     // Update the History target stack and modified cells
-    stackUpdate(&m_history,unexplored);
-    modifiedCellsUpdate(&m_history,modifiedCells);
-
+    stackUpdate(&m_history, unexplored);
+    modifiedCellsUpdate(&m_history, modifiedCells);
+    destroyList(modifiedCells);
 }
 
 bool isOneCellAway(struct Cell *target) {
@@ -1202,7 +1214,8 @@ void bffExplore(struct CellStack *path) {
     struct Cell *cpCell = &m_cells[0][0];
 
     // A queue of lists of modified cells
-    std::list<std::list<struct SimpleCellmod *>> modCells;
+    //std::list<std::list<struct SimpleCellmod *>> modCells = createList_ListSimpleCellmod();
+    struct List_ListSimpleCellmod * modCells = createList_ListSimpleCellmod();
 
     while (true) {
 
@@ -1227,6 +1240,7 @@ void bffExplore(struct CellStack *path) {
             
             // Check for requests during our return to checkpoint
             if (_resetRequested()) {
+                _resetPosition();
                 _resetHonored();
                 return;
             }
@@ -1234,6 +1248,7 @@ void bffExplore(struct CellStack *path) {
                 m_x = 0;
                 m_y = 0;
                 m_d = 0;
+                _resetPosition();
                 _undoHonored();
                 continue;
             }
@@ -1246,7 +1261,7 @@ void bffExplore(struct CellStack *path) {
         while (!inGoal(m_x, m_y) && !(_undoRequested() || _resetRequested())) {
 
             // List of modified cells for this step
-            std::list<SimpleCellmod> *modCellsList = newSimpleCellmodlist(); // TODO: Fix syntax.
+            struct List_SimpleCellmod * modCellsList = createList_SimpleCellmod();
 
             // Always add the current cell to modified cells
             bffAppendModifiedCell(modCellsList, &m_cells[m_x][m_y]);
@@ -1275,13 +1290,17 @@ void bffExplore(struct CellStack *path) {
             if (size(modCells) > SHORT_TERM_MEM) {
                 pop_front(modCells);
             }
+
+            destroyList(modCellsList);
         }
 
+        // NICE!
         walls();
         flood(m_x,m_y);
 
         // If there were requests during the solve, honor them now
         if (_resetRequested()) {
+            _resetPosition();
             _resetHonored();
             return;
         }
@@ -1298,7 +1317,7 @@ void bffExplore(struct CellStack *path) {
                 // to least recent. During iterations, we simply restore the old values
                 while (!isEmpty(modCells)) {
 
-                    std::list<struct SimpleCellmod *> cellList = front(modCells); // TODO: Make this a copy...but see the next line....
+                    struct List_SimpleCellmod * cellList = front(modCells); // TODO: Make this a copy list
                     pop_front(modCells);
 
                     for (std::list<SimpleCellmod>::iterator it = cellList.begin(); it != cellList.end() ; ++it) { // TODO: Port this....
@@ -1314,9 +1333,13 @@ void bffExplore(struct CellStack *path) {
             m_y = 0; // maze, we have to explicitely reset the x, y, and d values
             m_d = 0;
             m_checkpointReached = false;
+            _resetPosition();
             _undoHonored();
             continue;
         }
+
+
+        destroyList(modCells);
 
         // Note: As it stands right now, if the mouse screws up going into the final few cells of
         // the maze and we don't hit reset before it thinks it solved the maze, we don't really
@@ -1413,9 +1436,12 @@ void bffVictory(struct CellStack *path) {
             }
         }
 
+        destroyStack(copy);
+
         if (_resetRequested()) {
             // This return will cause bffvictory() to exit, and thus
             // we reinitialize the maze and start our solve over
+            _resetPosition();
             _resetHonored();
             return;
         }
@@ -1423,6 +1449,7 @@ void bffVictory(struct CellStack *path) {
             m_x = 0; // Since we're repositioning the mouse but not re-intializing the
             m_y = 0; // maze, we have to explicitely reset the x, y, and d values
             m_d = 0;
+            _resetPosition();
             _undoHonored();
         }
 
@@ -1454,7 +1481,7 @@ bool proceedToCheckpoint(struct CellStack *path) {
 
 }
 
-void bffAppendModifiedCell(std::list<SimpleCellmod> *modCellsList, struct Cell *cell) {
+void bffAppendModifiedCell(struct List_SimpleCellmod * modCellsList, struct Cell *cell) {
     SimpleCellmod mod;
     mod.cell = cell;
     mod.prev = cell->m_prev;
@@ -1465,7 +1492,7 @@ void bffAppendModifiedCell(std::list<SimpleCellmod> *modCellsList, struct Cell *
     push_back(modCellsList,mod);
 }
 
-void appendModifiedCell(std::list<Cellmod> *modList, struct Cell *modCell) {
+void appendModifiedCell(struct List_Cellmod *modList, struct Cell *modCell) {
 
     Cellmod cm;
     cm.cell = modCell;
@@ -1478,7 +1505,6 @@ void appendModifiedCell(std::list<Cellmod> *modList, struct Cell *modCell) {
         cm.oldWallsInspected[i] = modCell->m_wallsInspected[i];
     }
     modList->push_back(cm);
-
 }
 
 bool checkRequestVictory() {
@@ -1487,6 +1513,7 @@ bool checkRequestVictory() {
     // been completely solved, on reset we start over and on undo we simply retry
     // solving the maze as quickly as possible (without changing wall information)
     if (_undoRequested() || _resetRequested()) {
+        _resetPosition();
         if (_resetRequested()) {
             // This return will cause victory() to exit, and thus
             // we reinitialize the maze and start our solve over
