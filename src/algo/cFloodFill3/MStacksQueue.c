@@ -5,11 +5,11 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-bool isEmpty(struct MStacksQueue queue) {
+bool isEmptyMSQ(struct MStacksQueue queue) {
     return queue.back == NULL;
 }
 
-void pop(struct MStacksQueue queue) {
+void popMSQ(struct MStacksQueue queue) {
 
     // Does not do anything if the queue is empty.
 
@@ -29,7 +29,7 @@ void pop(struct MStacksQueue queue) {
 
 }
 
-void push(struct MStacksQueue queue, struct CellStack *item) {
+void pushMSQ(struct MStacksQueue queue, struct CellStack *item) {
 
     struct MStacksQueueNode *newNode = malloc(sizeof(struct MStacksQueueNode));
     newNode->data = copyOfStack(item);
@@ -47,6 +47,6 @@ void push(struct MStacksQueue queue, struct CellStack *item) {
 
 }
 
-struct CellStack * front(struct MStacksQueue queue) {
+struct CellStack * frontMSQ(struct MStacksQueue queue) {
     return copyOfStack(queue.front->data); // Copy here is unavoidable.  Otherwise it gets messy when we pop.
 }

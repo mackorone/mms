@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-struct CellStack * newStack(void) {
+struct CellStack * createStack(void) {
     struct CellStack *ptr = malloc(sizeof(struct CellStack));
     ptr->top = NULL;
     ptr->bottom = NULL;

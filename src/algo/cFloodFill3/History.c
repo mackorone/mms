@@ -3,10 +3,7 @@
 #include "Cell.h"
 #include "CellStack.h"
 #include "History.h"
-
-void listCellmodDestroy(void *item) {
-    destroyList((struct List *)item);
-}
+#include "List.h"
 
 void h_initialize(struct History *hist, int stm, struct Cell *origin, bool firstTime) {
 
@@ -21,18 +18,19 @@ void h_initialize(struct History *hist, int stm, struct Cell *origin, bool first
         hist->m_checkpointStack = NULL;
         hist->m_stackReferenceCounts = newList();
         hist->m_modifiedCells = newList();
-        // TODO: Finish this for other data structures.
     } else {
 
         // Erase any left-over data
-        while (!isEmpty(hist->m_stacks)) {
-            pop(hist->m_stacks);
+        while (!isEmptyMSQ(hist->m_stacks)) {
+            popMSQ(hist->m_stacks);
         }
         while (!isEmpty(hist->m_stackReferenceCounts)) {
-            pop_front(hist->m_stackReferenceCounts,destroyDoNothing);
+            pop_front(hist->m_stackReferenceCounts);
         }
         while (!isEmpty(hist->m_modifiedCells)) {
+            struct List * temp = hist->m_modifiedCells->front;
             pop_front(hist->m_modifiedCells);
+            destroyList(temp);
         }
         if (hist->m_checkpointStack != NULL) {
             destroyStack(hist->m_checkpointStack);
@@ -42,9 +40,9 @@ void h_initialize(struct History *hist, int stm, struct Cell *origin, bool first
 
     // Push the stack [(0,0)] since (0,0) or is *always* our first target
     struct CellStack *temp = newStack();
-    push(temp,origin);
-    push(hist->m_stacks,temp);
-    push_back(hist->m_stackReferenceCounts,1,copyDoNothing);
+    push(temp, origin);
+    push(hist->m_stacks, temp);
+    push_back(hist->m_stackReferenceCounts, 1);
 
     // Set the checkpoint values
     hist->m_checkpointCell = origin;
@@ -96,19 +94,19 @@ void moved(struct History *hist) {
     hist->m_size++;
 
     // Assertion - Neither hist->m_stacks nor hist->m_stackReferenceCounts should ever be empty
-    if (isEmpty(hist->m_stackReferenceCounts) || isEmpty(hist->m_stacks)) {
+    if (isEmpty(hist->m_stackReferenceCounts) || isEmptyMSQ(hist->m_stacks)) {
         printf("Error - History object has zero stack references\n");
         exit(0);
     }
 
     // Increment our stack reference counts
     int srefCount = back(hist->m_stackReferenceCounts);
-    pop_back(hist->m_stackReferenceCounts,destroyDoNothing);
-    push_back(hist->m_stackReferenceCounts,srefCount+1,copyDoNothing);
+    pop_back(hist->m_stackReferenceCounts);
+    push_back(hist->m_stackReferenceCounts,srefCount+1);
 
     // Every move we push an empty list onto the list of lists of modified cells
-    std::list<Cellmod> empty; // TODO: Initialize this properly.
-    push_front(hist->m_modifiedCells,empty);
+    struct List * empty = newList(); // of Cellmod
+    push_front(hist->m_modifiedCells, copyOfList(empty));
 
     // If the size of the path is larger than our short term memory (which it needn't
     // be) then reduce the reference counts and pop the appropriate number of things
@@ -118,13 +116,13 @@ void moved(struct History *hist) {
         hist->m_size--;
 
         int srefCount2 = front(hist->m_stackReferenceCounts);
-        pop_front(hist->m_stackReferenceCounts,destroyDoNothing);
-        push_front(hist->m_stackReferenceCounts,srefCount2-1,copyDoNothing);
+        pop_front(hist->m_stackReferenceCounts);
+        push_front(hist->m_stackReferenceCounts,srefCount2-1);
     }
 
     if (front(hist->m_stackReferenceCounts) == 0) {
 
-        pop_front(hist->m_stackReferenceCounts,destroyDoNothing);
+        pop_front(hist->m_stackReferenceCounts);
         pop(hist->m_stacks);
         destroyStack(hist->m_checkpointStack);
         hist->m_checkpointStack = front(hist->m_stacks);
@@ -140,14 +138,16 @@ void moved(struct History *hist) {
 
     // Also make sure to only keep the correct number of modified cells
     if (size(hist->m_modifiedCells) > hist->m_stm) {
+        struct List * temp = hist->m_modifiedCells->back;
         pop_back(hist->m_modifiedCells);
+        destroyList(temp);
     }
 }
 
 void stackUpdate(struct History *hist, struct CellStack *newStack) { // JIMMY CHANGED PARAMETER TO POINTER
 
     // Assertion - Neither hist->m_stacks nor hist->m_stackReferenceCounts should ever be empty
-    if (isEmpty(hist->m_stackReferenceCounts) || isEmpty(hist->m_stacks)) {
+    if (isEmpty(hist->m_stackReferenceCounts) || isEmptyMSQ(hist->m_stacks)) {
         printf("Error - History object has zero stack references\n");
         exit(0);
     }
@@ -157,63 +157,75 @@ void stackUpdate(struct History *hist, struct CellStack *newStack) { // JIMMY CH
     // reference count for that particular stack. Thus we need to decrement it
     // and then push the proper stack on hist->m_stacks, as well as a reference count
     // of 1 for the new stack on the stack reference count queue
-    push(hist->m_stacks,newStack);
+    push(hist->m_stacks, copyOfStack(newStack));
 
     int temp = back(hist->m_stackReferenceCounts);
-    pop_back(hist->m_stackReferenceCounts,destroyDoNothing);
-    push_back(hist->m_stackReferenceCounts,temp-1,copyDoNothing);
-    push_back(hist->m_stackReferenceCounts,1,copyDoNothing);
+    pop_back(hist->m_stackReferenceCounts);
+    push_back(hist->m_stackReferenceCounts,temp-1);
+    push_back(hist->m_stackReferenceCounts,1);
 
 }
 
-void modifiedCellsUpdate(struct History *hist, std::list<Cellmod> *cells) {
+void modifiedCellsUpdate(struct History *hist, struct List *cells) { // of Cellmod
 
     // The only situation when this list will be empty is immediately after
     // returning to the origin after undo is called. This is because the checkpoint
     // stack will contain the origin, and thus won't move from the origin to get to
     // the target (the origin) but WILL perform the appropriate updates.
     if (size(hist->m_modifiedCells) > 0) {
+        struct List * temp = hist->m_modifiedCells->front;
         pop_front(hist->m_modifiedCells);
+        destroyList(temp);
     }
-    push_front(hist->m_modifiedCells,cells);
+    push_front(hist->m_modifiedCells, copyOfList(cells));
 }
 
 void resetModifiedCells(struct History *hist) {
 
-    std::list<std::list<Cellmod>> temp = hist->m_modifiedCells; // TODO: Make this a copy.
+    struct List * temp = copyOfList(hist->m_modifiedCells); // of list of list of cellmod
 
     // Iterate through all modified cells, starting with most recent and going
     // to least recent. During iterations, we simply restore the old values
     while (!isEmpty(temp)) {
 
-        std::list<Cellmod> cellList = front(temp); // TODO: Make this a copy.
+        struct List * cellList = copyOfList(front(temp)); // of Cellmod
+        struct List * temp2 = front(temp); // list of Cellmod
         pop_front(temp);
+        destroyList(temp2);
 
-        for (std::list<Cellmod>::iterator it = cellList.begin(); it != cellList.end() ; ++it) {
-            (*it).cell->m_prev = (*it).oldPrev;
-            (*it).cell->m_distance = (*it).oldDist;
-            (*it).cell->m_explored = (*it).oldExplored;
-            (*it).cell->m_traversed = (*it).oldTraversed;
+        struct ListNode * node = cellList->front;
+        while (true) {
+            node->data.cell->m_prev = node->data.oldPrev;
+            node->data.cell->m_distance = node->data.oldDist;
+            node->data.cell->m_explored = node->data.oldExplored;
+            node->data.cell->m_traversed = node->data.oldTraversed;
             for (int i = 0; i < 4; i++) {
-                (*it).cell->m_walls[i] = (*it).oldWalls[i];
-                (*it).cell->m_wallsInspected[i] = (*it).oldWallsInspected[i];
+                node->data.cell->m_walls[i] = node->data.oldWalls[i];
+                node->data.cell->m_wallsInspected[i] = node->data.oldWallsInspected[i];
             }
+            if (node == cellList->back) {
+                break;
+            }
+            node = node->behind;
         }
+
+        destroyList(cellList);
     }
 
     // After we get a new checkpoint, we empty everything
     hist->m_size = 0;
-    while (!isEmpty(hist->m_stacks)) {
+    while (!isEmptyMSQ(hist->m_stacks)) {
         pop(hist->m_stacks);
     }
     while (!isEmpty(hist->m_stackReferenceCounts)) {
-        pop_front(hist->m_stackReferenceCounts,destroyStack);
+        pop_front(hist->m_stackReferenceCounts);
     }
     while (!isEmpty(hist->m_modifiedCells)) {
+        struct List * temp = hist->m_modifiedCells->front;
         pop_front(hist->m_modifiedCells);
+        destroyList(temp);
     }
 
-    push(hist->m_stacks,hist->m_checkpointStack);
-    push_back(hist->m_stackReferenceCounts,1,copyDoNothing);
-
+    push(hist->m_stacks, hist->m_checkpointStack);
+    push_back(hist->m_stackReferenceCounts, 1);
 }

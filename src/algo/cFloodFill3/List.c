@@ -88,7 +88,7 @@ void * back(struct List *list) {
     return list->back->data;
 }
 
-struct List * newList() {
+struct List * createList() {
     struct List *ptr = malloc(sizeof(struct List));
     ptr->front = NULL;
     ptr->back = NULL;
@@ -127,5 +127,68 @@ size_t size(struct List *list) {
     }
 
     return count;
+
+}
+
+struct List * copyOfList(struct List *original) {
+
+    // Returns a null pointer if a null pointer is passed in.
+    if (original == NULL) return NULL;
+
+    struct List *copy = malloc(sizeof(struct List));
+    copy->front = NULL;
+    copy->back = NULL;
+
+    struct CellStackNode *curNode = original->back;
+    while (curNode != NULL) {
+        push_front(copy, curNode->data);
+        curNode = curNode->ahead;
+    }
+
+    return copy;
+
+}
+
+void removeItem(struct List * list, void * item) {
+
+    if (list == NULL) return;
+
+    struct ListNode * node = list->front;
+    if (node == NULL) return;    
+
+    while (true) {
+
+        if (node->data == item) {
+
+            if (list->back == list->front) { // Only one element left in the list.
+                free(list->back);
+                list->back = NULL;
+                list->front = NULL;
+            } else {
+
+                if (node->ahead == NULL) {
+                    list->front = node->behind;
+                    list->front->ahead = NULL;
+                else if (node->behind == NULL) {
+                    list->back = node->ahead;
+                    list->back->behind = NULL;
+                } else {
+                    node->behind->ahead = node->ahead;
+                    node->ahead->behind = node->behind;
+                }
+    
+                free(node);
+
+            }
+                        
+            break;
+
+        }
+
+        if (node == list->back) {
+            break;
+        }
+        node = node->behind;
+    }
 
 }

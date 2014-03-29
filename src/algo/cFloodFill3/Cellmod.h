@@ -26,4 +26,9 @@ struct Cellmod {
 
 };
 
+struct Cellmod * createCellmod(struct Cell *incell, struct Cell *inoldPrev, int inoldDist, bool inoldExplored, bool inoldTraversed,
+                               bool *inoldWalls, bool *inoldWallsInspected);
+struct Cellmod * copyOfCellmod(struct Cellmod *);
+void destroyCellmod (Cellmod *);
+
 #endif // CELLMOD_H_

@@ -16,9 +16,11 @@ struct MStacksQueue {
     struct MStacksQueueNode *back;
 };
 
-bool isEmpty(struct MStacksQueue);
-void pop(struct MStacksQueue);
-void push(struct MStacksQueue, struct CellStack *);
-struct CellStack * front(struct MStacksQueue);
+// TODO: Pass in a pointer rather than the value.
+
+bool isEmptyMSQ(struct MStacksQueue);
+void popMSQ(struct MStacksQueue);
+void pushMSQ(struct MStacksQueue, struct CellStack *);
+struct CellStack * frontMSQ(struct MStacksQueue);
 
 #endif // MSTACKSQUEUE_H_

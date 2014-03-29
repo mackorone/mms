@@ -88,7 +88,7 @@ void moveOneCell(struct Cell *);
 // bff functions
 void bffExplore(struct CellStack *);
 void dobffCellUpdates(void);
-void bffAppendModifiedCell(std::list<SimpleCellmod> *, struct Cell *);
+void bffAppendModifiedCell(struct List *, struct Cell *);
 void bffVictory(struct CellStack *);
 
 // Floodfill
@@ -98,7 +98,7 @@ bool isOneCellAway(struct Cell *);
 bool tryUntraversed(struct Cell *);
 
 // History
-void appendModifiedCell(std::list<Cellmod> *, struct Cell *);
+void appendModifiedCell(struct List *, struct Cell *);
 bool proceedToCheckpoint(struct CellStack *);
 bool checkRequestVictory(void);
 

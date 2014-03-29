@@ -1,12 +1,13 @@
 #include <stdio.h>
-#include <stack>
-#include <queue>
-#include <utility>
-#include <vector>
+#include <stdlib.h>
 
+#include "Cell.h"
 #include "Cellmod.h"
+#include "CellStack.h"
 #include "FloodFill.h"
 #include "History.h"
+#include "List.h"
+#include "SimpleCellmod.h"
 
 int main() { solve(); } // TODO: Get rid of this
 
@@ -55,7 +56,7 @@ void simpleSolve() {
         initialize();
 
         // Do the basic floodfill and store the path
-        struct CellStack *path = newStack();
+        struct CellStack *path = createStack();
         bffExplore(path);
 
         // If the explore was not successful (i.e., reset request was made) then start over
@@ -207,7 +208,7 @@ void victory() {
     // Loop forever, continue going to the beginning and solving
     while (true) {
 
-      struct CellStack *optimalPath = newStack();
+      struct CellStack *optimalPath = createStack();
 
         // Solve the maze (while request hasn't been made)
         while (!inGoal(m_x, m_y) && !(_undoRequested() || _resetRequested())) {
@@ -460,6 +461,10 @@ void moveForward() {
             m_x -= 1;
             break;
     }
+
+    _wallFront(); // Courtesy of Tomasz
+    _wallLeft();
+    _wallRight();
 
     // Actually move the mouse forward in the simulation
     _moveForward();
@@ -974,7 +979,7 @@ void moveOneCell(struct Cell *target) {
 void doUpdatesForCurrentCell(struct CellStack *unexplored) {
 
     // List of cellmod objects for all cell modifications performed at this step
-    struct List_Cellmod *modifiedCells = createList_Cellmod(); // List of cellmod
+    struct List * modifiedCells = createList(); // List of cellmod
 
     // We need to keep track of the old values for the modified cell before we update it.
     appendModifiedCell(modifiedCells, &m_cells[m_x][m_y]);
@@ -987,7 +992,7 @@ void doUpdatesForCurrentCell(struct CellStack *unexplored) {
     // First we get a list of unexplored neighbors. Then we push the elements of this list
     // onto the unexplored stack in a particular order, depending on whether or not we made
     // it to the center already.
-    struct List_Cell* unexploredNeighbors = createList_Cell();
+    struct List * unexploredNeighbors = createList(); // List of Cell*
     
     // Once we've examined the contents at the target, it is considered explored and traversed
     m_cells[m_x][m_y].m_explored = true;
@@ -1028,7 +1033,7 @@ void doUpdatesForCurrentCell(struct CellStack *unexplored) {
 
     // If we've reached the center already, simply use F-R-L priority
     if (m_centerReached) {
-        while (!isEmpty(unexploredNeighbors)) {
+        while (!isEmptyList(unexploredNeighbors)) {
             push(unexplored, front(unexploredNeighbors));
             pop_front(unexploredNeighbors);
         }
@@ -1039,7 +1044,7 @@ void doUpdatesForCurrentCell(struct CellStack *unexplored) {
     // center-most cells while it's still trying to find the center.
 
     else {
-        while (!isEmpty(unexploredNeighbors)) {
+        while (!isEmptyList(unexploredNeighbors)) {
 
             struct Cell *leastCentered = NULL;
             int distFromCenter = -1;
@@ -1048,27 +1053,31 @@ void doUpdatesForCurrentCell(struct CellStack *unexplored) {
             // For each iteration of the loop, get the least center-most Cell and
             // push it to the unexplored stack
 
-            // TODO 
-            for (std::list<struct Cell *>::iterator it = unexploredNeighbors.begin();
-                 it != unexploredNeighbors.end(); ++it) {
+            struct ListNode * node = unexploredNeighbors->front;
+            while (true) {
                 
-                int xDist = abs(MAZE_SIZE_X/2 - (*it)->m_x);
-                int yDist = abs(MAZE_SIZE_Y/2 - (*it)->m_y);
+                int xDist = abs(MAZE_SIZE_X/2 - ((struct Cell *)node->data)->m_x);
+                int yDist = abs(MAZE_SIZE_Y/2 - ((struct Cell *)node->data)->m_y);
 
                 if ((xDist + yDist) > distFromCenter) {
-                    leastCentered = (*it);
+                    leastCentered = node->data;
                     distFromCenter = (xDist + yDist);
                     relativeCenteredness = abs(xDist - yDist);
                 }
                 else if ((xDist + yDist) == distFromCenter && abs(xDist - yDist) > relativeCenteredness) {
-                    leastCentered = (*it);
+                    leastCentered = node->data;
                     distFromCenter = (xDist + yDist);
                     relativeCenteredness = abs(xDist - yDist);
                 }
+
+                if (node == unexploredNeighbors->back) {
+                    break;
+                }
+                node = node->behind;
             }
 
             push(unexplored, leastCentered);
-            remove(unexploredNeighbors,leastCentered);
+            removeItem(unexploredNeighbors, leastCentered);
         }
     }
     destroyList(unexploredNeighbors);
@@ -1214,8 +1223,7 @@ void bffExplore(struct CellStack *path) {
     struct Cell *cpCell = &m_cells[0][0];
 
     // A queue of lists of modified cells
-    //std::list<std::list<struct SimpleCellmod *>> modCells = createList_ListSimpleCellmod();
-    struct List_ListSimpleCellmod * modCells = createList_ListSimpleCellmod();
+    struct List * modCells = createList(); // queue of list of SimpleCellmod
 
     while (true) {
 
@@ -1224,9 +1232,9 @@ void bffExplore(struct CellStack *path) {
 
             // Get the path to the checkpoint
             struct Cell *cpPathRunner = cpCell;
-            struct CellStack *cpPath = newStack();
+            struct CellStack *cpPath = createStack();
             while (cpPathRunner != NULL) {
-                push(cpPath,cpPathRunner);
+                push(cpPath, cpPathRunner);
                 cpPathRunner = cpPathRunner->m_prev;
             }
             pop(cpPath); // Pop off (0,0)
@@ -1261,7 +1269,7 @@ void bffExplore(struct CellStack *path) {
         while (!inGoal(m_x, m_y) && !(_undoRequested() || _resetRequested())) {
 
             // List of modified cells for this step
-            struct List_SimpleCellmod * modCellsList = createList_SimpleCellmod();
+            struct List * modCellsList = createList();
 
             // Always add the current cell to modified cells
             bffAppendModifiedCell(modCellsList, &m_cells[m_x][m_y]);
@@ -1284,11 +1292,13 @@ void bffExplore(struct CellStack *path) {
             moveTowardsGoal();
 
             // Push the old states of the updated cells to modCells
-            push_back(modCells,modCellsList);
+            push_back(modCells, copyOfList(modCellsList));
 
             // Make sure we're only keeping short term history
             if (size(modCells) > SHORT_TERM_MEM) {
+                struct List * temp = modCells->front->data;
                 pop_front(modCells);
+                destroyList(temp);
             }
 
             destroyList(modCellsList);
@@ -1308,24 +1318,36 @@ void bffExplore(struct CellStack *path) {
         if (_undoRequested()) {
 
             if (size(modCells) == SHORT_TERM_MEM) {
-                cpCell = front(front(modCells))->cell;
+                cpCell = ((struct SimpleCellmod *)front(front(modCells)))->cell;
 
                 // Since we don't update after reaching the checkpoint, don't undo mods at checkpoint
+                struct List * temp22 = modCells->front->data; // TODO: Bad.
                 pop_front(modCells);
+                destroyList(temp22);
 
                 // Iterate through all modified cells, starting with most recent and going
                 // to least recent. During iterations, we simply restore the old values
-                while (!isEmpty(modCells)) {
+                while (!isEmptyList(modCells)) {
 
-                    struct List_SimpleCellmod * cellList = front(modCells); // TODO: Make this a copy list
+                    struct List * cellList = copyOfList(front(modCells)); // List of SimpleCellmod
+
+                    struct List * temp23 = modCells->front->data;
                     pop_front(modCells);
+                    destroyList(temp23);
 
-                    for (std::list<SimpleCellmod>::iterator it = cellList.begin(); it != cellList.end() ; ++it) { // TODO: Port this....
-                        (*it).cell->m_prev = (*it).prev;
-                        (*it).cell->m_distance = (*it).dist;
+                    struct ListNode * node = cellList->front;
+                    while (true) {
+                        //((struct SimpleCellmod *)(node->data))->cell->m_prev = ((struct SimpleCellmod)(node->data)).prev;
+                        //((struct SimpleCellmod *)(node->data))->cell->m_distance = node->data.dist;
+                        node->data.cell->m_prev = node->data.prev;
+                        node->data.cell->m_distance = node->data.dist;
                         for (int i = 0; i < 4; i++) {
-                            (*it).cell->m_walls[i] = (*it).walls[i];
+                            node->data.cell->m_walls[i] = node->data.walls[i];
                         }
+                        if (node == cellList->back) {
+                            break;
+                        }
+                        node = node->behind;
                     }
                 }
             }
@@ -1481,7 +1503,7 @@ bool proceedToCheckpoint(struct CellStack *path) {
 
 }
 
-void bffAppendModifiedCell(struct List_SimpleCellmod * modCellsList, struct Cell *cell) {
+void bffAppendModifiedCell(struct List * modCellsList, struct Cell *cell) { // List of simplecellmod
     SimpleCellmod mod;
     mod.cell = cell;
     mod.prev = cell->m_prev;
@@ -1489,10 +1511,10 @@ void bffAppendModifiedCell(struct List_SimpleCellmod * modCellsList, struct Cell
     for (int i = 0; i < 4; i++) {
         mod.walls[i] = cell->m_walls[i];
     }
-    push_back(modCellsList,mod);
+    push_back(modCellsList, mod);
 }
 
-void appendModifiedCell(struct List_Cellmod *modList, struct Cell *modCell) {
+void appendModifiedCell(struct List *modList, struct Cell *modCell) { // List of cellmod
 
     Cellmod cm;
     cm.cell = modCell;

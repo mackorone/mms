@@ -16,7 +16,7 @@ struct CellStack {
     struct CellStackNode *bottom;
 };
 
-struct CellStack * newStack(void);
+struct CellStack * createStack(void);
 void destroyStack(struct CellStack *);
 void emptyStack(struct CellStack *); // Pops the stack until it's empty, but doesn't destroy it.
 bool isEmpty(struct CellStack *);
