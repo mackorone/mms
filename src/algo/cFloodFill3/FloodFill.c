@@ -1504,29 +1504,14 @@ bool proceedToCheckpoint(struct CellStack *path) {
 }
 
 void bffAppendModifiedCell(struct List * modCellsList, struct Cell *cell) { // List of simplecellmod
-    SimpleCellmod mod;
-    mod.cell = cell;
-    mod.prev = cell->m_prev;
-    mod.dist = cell->m_distance;
-    for (int i = 0; i < 4; i++) {
-        mod.walls[i] = cell->m_walls[i];
-    }
-    push_back(modCellsList, mod);
+    push_back(modCellsList, createSimpleCellmod(cell,cell->m_prev,cell->m_distance,cell->m_walls));
 }
 
 void appendModifiedCell(struct List *modList, struct Cell *modCell) { // List of cellmod
 
-    Cellmod cm;
-    cm.cell = modCell;
-    cm.oldDist = modCell->m_distance;
-    cm.oldPrev = modCell->m_prev;
-    cm.oldExplored = modCell->m_explored; // Note: I don't think this is necessary
-    cm.oldTraversed = modCell->m_traversed; // Note: I don't think this is necessary
-    for (int i = 0; i < 4; i++) {
-        cm.oldWalls[i] = modCell->m_walls[i];
-        cm.oldWallsInspected[i] = modCell->m_wallsInspected[i];
-    }
-    modList->push_back(cm);
+    push_back(modList, createCellmod(modCell,modCell->m_prev,modCell->m_distance,modCell->m_explored,modCell->m_traversed,
+                                     modCell->m_walls,modCell->m_wallsInspected));
+
 }
 
 bool checkRequestVictory() {
