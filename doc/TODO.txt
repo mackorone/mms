@@ -1,7 +1,3 @@
-Highest Priority
-================
-- Simple explore => extensive explore => extensive solve
-
 High Priority
 =============
 - Improve the explore method of the floodfill algorithm
@@ -19,7 +15,6 @@ Medium Priority
 - Make terminal style output at bottom or right of window
 - Display another window of the robot's perception
 - Make the shortest path look a little better
-- Make sure that the mouse doesn't edit the wall values for the perimeter of the maze
 
 Low Priority
 ===============
@@ -34,3 +29,6 @@ Low Priority
 Long Term
 =========
 - Make this a more realistic simulation by allowing angles, adding sensors, etc.
+
+Mack_Ward 
+- Make sure that the mouse doesn't edit the wall values for the perimeter of the maze
