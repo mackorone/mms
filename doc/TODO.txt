@@ -19,6 +19,7 @@ Medium Priority
 - Make terminal style output at bottom or right of window
 - Display another window of the robot's perception
 - Make the shortest path look a little better
+- Make sure that the mouse doesn't edit the wall values for the perimeter of the maze
 
 Low Priority
 ===============

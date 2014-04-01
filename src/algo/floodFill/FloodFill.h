@@ -12,8 +12,8 @@
 // Constants
 static const int MAZE_SIZE_X = 16; // Length of X axis of maze
 static const int MAZE_SIZE_Y = 16; // Length of Y axis of maze
-static const int SHORT_TERM_MEM = 12; // Steps that are forgetten by the mouse after an error
-static const bool ALGO_COMPARE = true; // Whether or not we're comparing the solving algorithms
+static const int SHORT_TERM_MEM = 8; // Steps that are forgetten by the mouse after an error
+static const bool ALGO_COMPARE = false; // Whether or not we're comparing the solving algorithms
 enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
 
 

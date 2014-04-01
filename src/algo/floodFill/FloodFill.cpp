@@ -1218,8 +1218,7 @@ void FloodFill::bffExplore(std::stack<Cell*>* path){
         }
 
         // Solve the maze using basic floodfill
-        while (!inGoal(m_x, m_y) && !(m_mouse->undoRequested() || m_mouse->resetRequested())){
-
+        while (!inGoal(m_x, m_y) && !(m_mouse->undoRequested() || m_mouse->resetRequested())) {
             // List of modified cells for this step
             std::list<SimpleCellmod> modCellsList;
 
@@ -1251,6 +1250,10 @@ void FloodFill::bffExplore(std::stack<Cell*>* path){
                 modCells.pop();
             }
         }
+
+        // Update the goal cell once we've reached the goal
+        walls();
+        flood(m_x, m_y);
 
         // If there were requests during the solve, honor them now
         if (m_mouse->resetRequested()) {
