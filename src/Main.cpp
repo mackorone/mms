@@ -104,7 +104,7 @@ void keyInput(unsigned char key, int x, int y){
             SLEEP_TIME = sim::SLEEP_TIME_MAX;
         }
     }
-    else if (key == 'u' || key == 'I'){
+    else if (key == 'u' || key == 'U'){
         // Undo request - reset the position mouse but retains memory
         UNDO_REQUESTED = true;
     }
