@@ -43,18 +43,16 @@ bool isEmpty(struct CellStack *stack) {
 
 void pop(struct CellStack *stack) {
 
-    // Does not do anything if the stack is empty.
+    // Fails if the stack is empty.
 
-    if (stack->bottom != NULL) {
-        if (stack->bottom == stack->top) { // Only one element left in the stack.
-            free(stack->bottom);
-            stack->bottom = NULL;
-            stack->top = NULL;
-        } else {
-            stack->top = stack->top->below;
-            free(stack->top->above);
-            stack->top->above = NULL;
-        }
+    if (stack->bottom == stack->top) { // Only one element left in the stack.
+        free(stack->bottom);
+        stack->bottom = NULL;
+        stack->top = NULL;
+    } else {
+        stack->top = stack->top->below;
+        free(stack->top->above);
+        stack->top->above = NULL;
     }
 
 }
@@ -78,7 +76,11 @@ void push(struct CellStack *stack, struct Cell *item) {
 }
 
 struct Cell * top(struct CellStack *stack) {
+
+    // Fails if stack is empty.
+
     return stack->top->data;
+
 }
 
 struct CellStack * copyOfStack(struct CellStack *original) {
