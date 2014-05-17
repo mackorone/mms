@@ -12,9 +12,6 @@ bool isEmpty(struct List *list) {
 
 void pop_front(struct List *list) {
 
-    // Does not do anything if the list is empty.
-
-    if (list->back != NULL) {
         if (list->back == list->front) { // Only one element left in the list.
             free(list->back);
             list->back = NULL;
@@ -24,15 +21,11 @@ void pop_front(struct List *list) {
             free(list->front->ahead);
             list->front->ahead = NULL;
         }
-    }
 
 }
 
 void pop_back(struct List *list) {
 
-    // Does not do anything if the list is empty.
-
-    if (list->front != NULL) {
         if (list->front == list->back) { // Only one element left in the list.
             free(list->front);
             list->front = NULL;
@@ -42,7 +35,6 @@ void pop_back(struct List *list) {
             free(list->back->behind);
             list->back->behind = NULL;
         }
-    }
 
 }
 
@@ -99,7 +91,7 @@ struct List * createList() {
 
 void destroyList(struct List *list, bool destroyData) {
 
-    // Note: Invariants aren't preserved here, but it doesn't matter since we're destroying the stack.
+    // Note: Invariants aren't preserved here, but it doesn't matter since we're destroying the list.
 
     struct ListNode *front = list->front;
 
@@ -142,9 +134,6 @@ struct List * copyOfList(struct List *original, int indicator) {
     // 1 - Cellmod
     // 2 - SimpleCellmod
 
-    // Returns a null pointer if a null pointer is passed in.
-    if (original == NULL) return NULL;
-
     struct List *copy = malloc(sizeof(struct List));
     copy->front = NULL;
     copy->back = NULL;
@@ -169,8 +158,6 @@ struct List * copyOfList(struct List *original, int indicator) {
 }
 
 void removeItem(struct List * list, void * item) {
-
-    if (list == NULL) return;
 
     struct ListNode * node = list->front;
     if (node == NULL) return;    
