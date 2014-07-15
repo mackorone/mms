@@ -109,7 +109,7 @@ void keyInput(unsigned char key, int x, int y){
         UNDO_REQUESTED = true;
     }
     else if (key == 'r' || key == 'R'){
-        // Reset requested - reset the position mouse and don't retains memory
+        // Reset requested - reset the position mouse and don't retain memory
         RESET_REQUESTED = true;
     }
     else if (key == 'q' || key == 'Q'){ // Quit

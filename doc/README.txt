@@ -15,7 +15,7 @@ operations necessary for a smooth and useful simulation. The second component
 is the algo component, which is responsible for specifying the algorithm that
 the mouse should use to actually solve the maze. Thus, any algorithm code should
 be placed within the algo directory, preferably in its own directory (so that
-things stay organized). See "src/algo/floodFill" for an example of this. 
+things stay organized). See "src/algo/Mack_Ward/FloodFill" for an example of this. 
 
 
 Running the Simulation

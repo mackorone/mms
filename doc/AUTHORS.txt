@@ -1,0 +1,7 @@
+Author and Maintainer
+=====================
+Mack Ward - mward4@buffalo.edu
+
+Contributors
+============
+James Mazur - jamesmaz@buffalo.edu

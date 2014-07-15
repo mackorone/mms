@@ -51,6 +51,7 @@ void FloodFill::justFloodFill() {
 
 void FloodFill::simpleSolve() {
 
+    // Loop to allow for reset requests to be honored
     while (true) {
 
         // Initialize the cell fields

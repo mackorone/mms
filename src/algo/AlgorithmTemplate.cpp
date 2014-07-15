@@ -3,7 +3,7 @@
 // ----- Remember to change the include directive above this line ----- //
 
 // ----- Remember to change the class name below this line ----- //
-void AlgorithmTemplate::solve(sim::MouseInterface* mouse){
+void AlgorithmTemplate::solve(sim::MouseInterface* mouse) {
 // ----- Remember to change the class name above this line ----- //
 
     // ---- REMINDER ---- //
@@ -20,7 +20,7 @@ void AlgorithmTemplate::solve(sim::MouseInterface* mouse){
 // ----- Helper function definitions should go below this line ----- //
 
 /* ------ EXAMPLE ----------
-void AlgorithmTemplate::helperFunction(sim::MouseInterface* mouse){
+void AlgorithmTemplate::helperFunction(sim::MouseInterface* mouse) {
 
 }
 ------- END EXAMPLE ----- */

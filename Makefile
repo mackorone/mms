@@ -12,8 +12,8 @@ LIBS = -lGL -lglut -lGLU
 ###############################################################################
 
 # Flags
-# -g -Wall
-FLAGS = -Os
+FLAGS = -Os -g
+# -Wall
 
 # Directories
 SRC = ./src/

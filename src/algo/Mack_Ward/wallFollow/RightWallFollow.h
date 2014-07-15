@@ -1,7 +1,7 @@
 #ifndef RIGHTWALLFOLLOW_H_
 #define RIGHTWALLFOLLOW_H_
 
-#include "../IAlgorithm.h"
+#include "../../IAlgorithm.h"
 
 class RightWallFollow : public IAlgorithm{
 

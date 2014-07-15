@@ -6,7 +6,7 @@
 /*
  * This class is an interface for every algorithm
  */
-class IAlgorithm{
+class IAlgorithm {
 
 public:
     virtual void solve(sim::MouseInterface* mouse) = 0;

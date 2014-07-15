@@ -1,13 +1,9 @@
 High Priority
 =============
-- Improve the explore method of the floodfill algorithm
-    - This could be done by calculating both the distance to the center AND the
-      distance to that square from the starting square - no need to travel to 
-      far away squares
 - Autogenerate makefile dependencies
-- When solving the maze, reduce the number of turns that the mouse makes
 - Pass things by reference when possible
-- Optimize the lists of modified cells
+- Make a distinction between the mouse interfact and sim interface
+- Sim code should match the bot code *exactly*
 
 Medium Priority
 ===============
@@ -29,6 +25,3 @@ Low Priority
 Long Term
 =========
 - Make this a more realistic simulation by allowing angles, adding sensors, etc.
-
-Mack_Ward 
-- Make sure that the mouse doesn't edit the wall values for the perimeter of the maze

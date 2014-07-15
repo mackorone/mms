@@ -6,7 +6,7 @@
 #include "IAlgorithm.h"
 
 // ----- Remember to rename the class below below this line----- //
-class AlgorithmTemplate : public IAlgorithm{
+class AlgorithmTemplate : public IAlgorithm {
 // ----- Remember to rename the class above above this line----- //
 
 public:

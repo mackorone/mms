@@ -3,7 +3,7 @@
 
 #include "../sim/MouseInterface.h"
 
-class Solver{
+class Solver {
     
 public:
     Solver(sim::MouseInterface* mouse);
