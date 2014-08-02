@@ -12,8 +12,10 @@ LIBS = -lGL -lglut -lGLU
 ###############################################################################
 
 # Flags
-# -g -Wall
-FLAGS = -Os
+# -g: Add debugging symbols
+# -Os: Optimize code for size
+# -std=c++11: Use the C++11 standard.
+FLAGS = -Os -std=c++11
 
 # Directories
 SRC = ./src/
@@ -47,7 +49,7 @@ $(PREFIXED_PROGRAM): $(PREFIXED_OBJECTS)
 # Make '$(OBJECTS)' instructions
 $(OBJ)%.o: $(SRC)%.cpp
 	@mkdir -p $(@D) # Makes the directories if they don't exist
-	$(CXX) -c $(FLAGS) $< -o $@ -std=c++0x
+	$(CXX) -c $(FLAGS) $< -o $@
 
 # Make 'clean' instructions
 # 'dir' gets the directories of the object files
@@ -55,3 +57,4 @@ $(OBJ)%.o: $(SRC)%.cpp
 # 'add' is pretty self-explanatory 
 clean:
 	rm -f $(addprefix $(OBJ), $(addsuffix *.o, $(sort $(dir $(OBJECTS)))))
+	rm -f $(BIN)*
