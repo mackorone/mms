@@ -57,4 +57,3 @@ $(OBJ)%.o: $(SRC)%.cpp
 # 'add' is pretty self-explanatory 
 clean:
 	rm -f $(addprefix $(OBJ), $(addsuffix *.o, $(sort $(dir $(OBJECTS)))))
-	rm -f $(BIN)*
