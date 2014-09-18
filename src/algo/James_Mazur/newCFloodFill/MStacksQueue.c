@@ -11,9 +11,6 @@ bool isEmptyMSQ(struct MStacksQueue queue) {
 
 void popMSQ(struct MStacksQueue queue) {
 
-    // Does not do anything if the queue is empty.
-
-    if (queue.back != NULL) {
         if (queue.back == queue.front) { // Only one element left in the stack.
             destroyStack(queue.back->data);
             free(queue.back);
@@ -25,7 +22,6 @@ void popMSQ(struct MStacksQueue queue) {
             free(queue.front->ahead);
             queue.front->ahead = NULL;
         }
-    }
 
 }
 

@@ -87,9 +87,6 @@ struct CellStack * copyOfStack(struct CellStack *original) {
 
     // NOTE: Does not copy struct Cell pointers (data field of nodes).
 
-    // Returns a null pointer if a null pointer is passed in.
-    if (original == NULL) return NULL;
-
     struct CellStack *copy = malloc(sizeof(struct CellStack));
     copy->top = NULL;
     copy->bottom = NULL;
