@@ -21,20 +21,20 @@ OBJ = ./obj/
 BIN = ./bin/
 
 # Source files
-PRELIMSOURCES=$(shell find $(SRC) -name '*.cpp')
-SOURCES=$(PRELIMSOURCES:$(SRC)%=%)
+PRELIMSOURCES = $(shell find $(SRC) -name '*.cpp')
+SOURCES = $(PRELIMSOURCES:$(SRC)%=%) 
 
 # Object files that mirror the source files
-OBJECTS=$(SOURCES:.cpp=.o)
+OBJECTS = $(SOURCES:.cpp=.o)
 
 # Prefixed Source files
-PREFIXED_SOURCES=$(addprefix $(SRC),$(SOURCES))
+PREFIXED_SOURCES = $(addprefix $(SRC),$(SOURCES))
 
 # Prefixed Object files
-PREFIXED_OBJECTS=$(addprefix $(OBJ),$(OBJECTS))
+PREFIXED_OBJECTS = $(addprefix $(OBJ),$(OBJECTS))
 
 # Prefixed Program name
-PREFIXED_PROGRAM=$(addprefix $(BIN),$(PROGRAM))
+PREFIXED_PROGRAM = $(addprefix $(BIN),$(PROGRAM))
 
 # Make 'all' instructions - default target
 all: $(PREFIXED_SOURCES) $(PREFIXED_PROGRAM)
