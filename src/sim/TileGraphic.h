@@ -5,9 +5,9 @@
 #include "Parameters.h"
 #include "Tile.h"
 
-namespace sim{
+namespace sim {
 
-class TileGraphic{
+class TileGraphic {
 
 public:
     TileGraphic(Tile* tile);

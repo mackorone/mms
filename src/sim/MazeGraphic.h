@@ -5,9 +5,9 @@
 #include "Maze.h"
 #include "TileGraphic.h"
 
-namespace sim{
+namespace sim {
 
-class MazeGraphic{
+class MazeGraphic {
 
 public:
     MazeGraphic(Maze* maze);

@@ -22,6 +22,54 @@ Low Priority
   tile, even if two or more of them are equally close to the start - thus sometimes
   a valid shortest path is not indicated on the maze
 
-Long Term
-=========
+Version 2.0
+===========
 - Make this a more realistic simulation by allowing angles, adding sensors, etc.
+
+[Jon/Tomasz]
+- Maze Creation
+    - Randomly generated maze that follows contest rules
+    - Use heuristics or options to create realistic mazes
+    - Develop a file format for the maze (.maz)
+        - Write input/output functions for these files
+    - GUI for creating maze (use what's already available)
+
+[Mitchell]
+- Robot Creation
+    - Figure out what assumptions to make about Robots
+    - Motor file (.motor) (torque, relationship to wheel)
+    - Layer file (.layer)
+        - Wheel file (.wheel) -> Parameter in .rob
+        - Sensor file (.sensor) -> Parameter in .rob
+        - Roller file (.roller) -> Parameter in .rob
+    - Assembly file (.rob)
+        - Size/shape
+        - Center of mass
+        - Points of contact with the ground
+        - Torque
+        - Friction
+        - Others
+    - Verification of valid robot (assembly fits together)
+    - The parameters should be specific in 3-space, despite the 2D vizualization
+    - GUI for creating robots
+    - Algorithm/Arduino interface
+
+[Sam]
+- Graphics/Simulation work
+    - Develop a small library of graphics functions
+        - Shapes
+        - Colors
+    - Maximize efficiency of simulation
+        - Ensure graphic are 2D and not 3D
+    - Complex visual features
+        - Blurring
+    - Develop rudimentary physics environment
+        - Simulation Timer
+            - Framerate independence
+        - Collision Detection
+        - Interaction of forces
+            - Motors
+            - Friction
+            - Restitution
+        - Maintaining position of walls, robot
+    - Algorithm/Arduino interface (backend)

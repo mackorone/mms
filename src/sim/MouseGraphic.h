@@ -4,9 +4,9 @@
 #include "Constants.h"
 #include "Mouse.h"
 
-namespace sim{
+namespace sim {
 
-class MouseGraphic{
+class MouseGraphic {
 
 public:
     MouseGraphic(Mouse* mouse);

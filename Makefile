@@ -14,8 +14,9 @@ LIBS = -lGL -lglut -lGLU
 # Flags
 # -g: Add debugging symbols
 # -Os: Optimize code for size
-# -std=c++11: Use the C++11 standard.
-FLAGS = -Os -std=c++11
+# -std=c++11: Use the C++11 standard
+# -Wall: Show all warning messages
+FLAGS = -Os -std=c++0x -Wall
 
 # Directories
 SRC = ./src/

@@ -5,9 +5,9 @@
 #include <vector>
 #include "Tile.h"
 
-namespace sim{
+namespace sim {
 
-class Maze{
+class Maze {
 
 public:
     Maze(int width, int height, std::string mazeFileDirPath = "", std::string mazeFile = "");

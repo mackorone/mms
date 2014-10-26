@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace sim{
+namespace sim {
 
 // The function returns the directory of the maze file.
 // It takes in the name of the executed binary file for location reference.
@@ -16,4 +16,5 @@ int mazeFileHeight(std::string mazeFilePath);
 bool checkValidMazeFile(std::string mazeFilePath);
 
 } // namespace sim
-#endif
+
+#endif // SIM_MAZEFILEUTILITIES_H_

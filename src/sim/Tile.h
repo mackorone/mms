@@ -3,7 +3,7 @@
 
 #include <vector>
 
-namespace sim{
+namespace sim {
 
 /*
  *  A class that represents each individual tile in the maze.

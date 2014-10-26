@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace sim{
+namespace sim {
 
 // Simulation Parameters
 static const int SLEEP_TIME_MIN = 5; // min ms between simulation steps
