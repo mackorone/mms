@@ -2,10 +2,10 @@
 
 // ------ Include all algorithm header files below this line ------- //
 
-#include "Mack_Ward/wallFollow/LeftWallFollow.h"
-#include "Mack_Ward/wallFollow/RightWallFollow.h"
-#include "Mack_Ward/wallFollow/RandomizedWallFollow.h"
-#include "Mack_Ward/FloodFill/FloodFill.h"
+#include "wallFollow/LeftWallFollow.h"
+#include "wallFollow/RightWallFollow.h"
+#include "wallFollow/RandomizedWallFollow.h"
+#include "FloodFill/FloodFill.h"
 
 // ------ Include all algorithm header files above this line ------- //
 
