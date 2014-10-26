@@ -1,9 +1,9 @@
 #include "MouseInterface.h"
 
 #include <GL/freeglut.h>
-//#include <unistd.h>
-#include "Methods.h"
+
 #include "Parameters.h"
+#include "Sleep.h"
 
 namespace sim{
 

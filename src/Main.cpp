@@ -3,7 +3,6 @@
 #include <thread>
 //#include <unistd.h>
 
-#include "sim/Methods.h"
 #include "sim/Constants.h"
 #include "sim/Maze.h"
 #include "sim/MazeGraphic.h"
@@ -13,6 +12,7 @@
 #include "sim/MouseInterface.h"
 #include "sim/Parameters.h"
 #include "sim/Tile.h"
+#include "sim/Sleep.h"
 #include "algo/Solver.h"
 
 // Function declarations

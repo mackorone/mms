@@ -3,9 +3,9 @@
 
 #include "Mouse.h"
 
-namespace sim{
+namespace sim {
 
-class MouseInterface{
+class MouseInterface {
 
 public:
     MouseInterface(Mouse* mouse, int* sleepTime, bool* paused, bool* undoRequested, bool* resetRequested);
