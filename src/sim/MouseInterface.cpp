@@ -29,54 +29,36 @@ bool MouseInterface::wallLeft(){
 }
 
 void MouseInterface::moveForward(){
-
-    // Break the sleep into 2 parts of 5 steps, allow pause interrupt
-
-    for (int i = 0; i < 5; i++){
-        while (*m_paused){sim::sleep(SLEEP_TIME_MIN);}; // Wait if paused
-        sim::sleep(*m_sleepTime);
+    
+    for (int i = 0; i < *m_sleepTime; i += 1) {
+        while (*m_paused) {sim::sleep(1);} // Sleep while paused
+        sim::sleep(1); // Sleep for 1 ms of the total m_sleepTime
     }
 
+    // Move the mouse forward
     m_mouse->moveForward();
-
-    for (int i = 0; i < 5; i++){
-        while (*m_paused){sim::sleep(SLEEP_TIME_MIN);}; // Wait if paused
-        sim::sleep(*m_sleepTime);
-    }
 }
 
 void MouseInterface::turnRight(){
 
-    // Break the sleep into 2 parts of 5 steps, allow pause interrupt
-
-    for (int i = 0; i < 5; i++){
-        while (*m_paused){sim::sleep(SLEEP_TIME_MIN);}; // Wait if paused
-        sim::sleep(*m_sleepTime);
+    for (int i = 0; i < *m_sleepTime; i += 1) {
+        while (*m_paused) {sim::sleep(1);} // Sleep while paused
+        sim::sleep(1); // Sleep for 1 ms of the total m_sleepTime
     }
 
+    // Move the mouse forward
     m_mouse->turnRight();
-
-    for (int i = 0; i < 5; i++){
-        while (*m_paused){sim::sleep(SLEEP_TIME_MIN);}; // Wait if paused
-        sim::sleep(*m_sleepTime);
-    }
 }
 
 void MouseInterface::turnLeft(){
 
-    // Break the sleep into 2 parts of 5 steps, allow pause interrupt
-
-    for (int i = 0; i < 5; i++){
-        while (*m_paused){sim::sleep(SLEEP_TIME_MIN);}; // Wait if paused
-        sim:sleep(*m_sleepTime);
+    for (int i = 0; i < *m_sleepTime; i += 1) {
+        while (*m_paused) {sim::sleep(1);} // Sleep while paused
+        sim::sleep(1); // Sleep for 1 ms of the total m_sleepTime
     }
 
+    // Move the mouse forward
     m_mouse->turnLeft();
-
-    for (int i = 0; i < 5; i++){
-        while (*m_paused){sim::sleep(SLEEP_TIME_MIN);}; // Wait if paused
-        sim::sleep(*m_sleepTime);
-    }
 }
 
 void MouseInterface::turnAround(){
@@ -101,7 +83,6 @@ void MouseInterface::resetHonored(){
 }
 
 void MouseInterface::resetPosition() {
-    // Put a delay in here so that we have to actually reset the robot
     m_mouse->resetPosition();    
 }
 

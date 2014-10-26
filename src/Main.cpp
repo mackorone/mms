@@ -85,7 +85,7 @@ void draw(){
 }
 
 void solve(){
-    sim::sleep(500); // Wait for 0.5 seconds for GLUT to intialize
+    sim::sleep(250); // Wait for 0.25 seconds for GLUT to intialize
     g_solver->solve();
 }
 
