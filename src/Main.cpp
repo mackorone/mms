@@ -1,8 +1,9 @@
 #include <GL/freeglut.h>
 #include <iostream>
 #include <thread>
-#include <unistd.h>
+//#include <unistd.h>
 
+#include "sim/Methods.h"
 #include "sim/Constants.h"
 #include "sim/Maze.h"
 #include "sim/MazeGraphic.h"
@@ -79,12 +80,12 @@ void draw(){
     g_mazeGraphic->draw();
     g_mouseGraphic->draw();
     glFlush();
-    usleep(1000*sim::SLEEP_TIME_MIN); // Reduces CPU usage
+    sim::sleep(sim::SLEEP_TIME_MIN); // Reduces CPU usage
     glutPostRedisplay();
 }
 
 void solve(){
-    usleep(1000*500); // Wait for 0.5 seconds for GLUT to intialize
+    sim::sleep(500); // Wait for 0.5 seconds for GLUT to intialize
     g_solver->solve();
 }
 

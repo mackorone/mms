@@ -1,7 +1,8 @@
 #include "MouseInterface.h"
 
 #include <GL/freeglut.h>
-#include <unistd.h>
+//#include <unistd.h>
+#include "Methods.h"
 #include "Parameters.h"
 
 namespace sim{
@@ -32,15 +33,15 @@ void MouseInterface::moveForward(){
     // Break the sleep into 2 parts of 5 steps, allow pause interrupt
 
     for (int i = 0; i < 5; i++){
-        while (*m_paused){usleep(10*SLEEP_TIME_MIN);}; // Wait if paused
-        usleep(*m_sleepTime*100);
+        while (*m_paused){sim::sleep(SLEEP_TIME_MIN);}; // Wait if paused
+        sim::sleep(*m_sleepTime);
     }
 
     m_mouse->moveForward();
 
     for (int i = 0; i < 5; i++){
-        while (*m_paused){usleep(10*SLEEP_TIME_MIN);}; // Wait if paused
-        usleep(*m_sleepTime*100);
+        while (*m_paused){sim::sleep(SLEEP_TIME_MIN);}; // Wait if paused
+        sim::sleep(*m_sleepTime);
     }
 }
 
@@ -49,15 +50,15 @@ void MouseInterface::turnRight(){
     // Break the sleep into 2 parts of 5 steps, allow pause interrupt
 
     for (int i = 0; i < 5; i++){
-        while (*m_paused){usleep(10*SLEEP_TIME_MIN);}; // Wait if paused
-        usleep(*m_sleepTime*100);
+        while (*m_paused){sim::sleep(SLEEP_TIME_MIN);}; // Wait if paused
+        sim::sleep(*m_sleepTime);
     }
 
     m_mouse->turnRight();
 
     for (int i = 0; i < 5; i++){
-        while (*m_paused){usleep(10*SLEEP_TIME_MIN);}; // Wait if paused
-        usleep(*m_sleepTime*100);
+        while (*m_paused){sim::sleep(SLEEP_TIME_MIN);}; // Wait if paused
+        sim::sleep(*m_sleepTime);
     }
 }
 
@@ -66,15 +67,15 @@ void MouseInterface::turnLeft(){
     // Break the sleep into 2 parts of 5 steps, allow pause interrupt
 
     for (int i = 0; i < 5; i++){
-        while (*m_paused){usleep(10*SLEEP_TIME_MIN);}; // Wait if paused
-        usleep(*m_sleepTime*100);
+        while (*m_paused){sim::sleep(SLEEP_TIME_MIN);}; // Wait if paused
+        sim:sleep(*m_sleepTime);
     }
 
     m_mouse->turnLeft();
 
     for (int i = 0; i < 5; i++){
-        while (*m_paused){usleep(10*SLEEP_TIME_MIN);}; // Wait if paused
-        usleep(*m_sleepTime*100);
+        while (*m_paused){sim::sleep(SLEEP_TIME_MIN);}; // Wait if paused
+        sim::sleep(*m_sleepTime);
     }
 }
 
