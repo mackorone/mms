@@ -115,7 +115,7 @@ void Maze::randomize(){
     int height = getHeight();
 
     // Percentage chance any one wall will exist
-    float wallProb = 0.40;
+    float wallProb = 0.35;
 
     for (int x = 0; x < width; x++){
         for (int y = 0; y < height; y++){
