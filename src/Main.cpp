@@ -30,7 +30,7 @@ static /*non-const*/ bool PAUSED = false; // Initially set to false
 static /*non-const*/ int SLEEP_TIME = 150; // ms between simulation steps
 static /*non-const*/ bool UNDO_REQUESTED = false; // Whether or not an undo was requested
 static /*non-const*/ bool RESET_REQUESTED = false; // Whether or not a reset was requested
-//check
+
 int main(int argc, char* argv[]){
     
     // TODO: read input file, and check size, use this as value instead of parameter
