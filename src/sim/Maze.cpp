@@ -4,7 +4,6 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
-#include <cmath>
 #include <sstream>
 #include <time.h>
 #include <queue>
@@ -121,7 +120,7 @@ void Maze::randomize(){
     for (int x = 0; x < width; x++){
         for (int y = 0; y < height; y++){
             for (int k = 0; k < 4; k++){
-                bool wallExists = (rand() <= floor(RAND_MAX * wallProb));
+                bool wallExists = (rand() <= (RAND_MAX * wallProb));
                 switch (k){
                     case NORTH:
                         if (y + 1 < height){
