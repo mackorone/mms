@@ -186,3 +186,8 @@ UpgradeLog*.htm
 
 # Microsoft Fakes
 FakesAssemblies/
+
+# MORE
+*.sln
+*.vcxproj
+*.filters
