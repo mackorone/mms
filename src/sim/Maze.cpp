@@ -172,20 +172,20 @@ void Maze::randomize(){
 				!getTile(x + 1, y + 1)->isWall(SOUTH)){
 				switch (rand() / (RAND_MAX / 4 + 1)){
 					case NORTH:
-						getTile(x+1, y+1)->setWall(WEST, 1);
-						getTile(x, y + 1)->setWall(EAST, 1);
+						getTile(x + 1, y + 1)->setWall(WEST, true);
+						getTile(x, y + 1)->setWall(EAST, true);
 						break;
 					case EAST:
-						getTile(x + 1, y + 1)->setWall(SOUTH, 1);
-						getTile(x + 1, y)->setWall(NORTH, 1);
+						getTile(x + 1, y + 1)->setWall(SOUTH, true);
+						getTile(x + 1, y)->setWall(NORTH, true);
 						break;
 					case SOUTH:
-						getTile(x,y)->setWall(EAST, 1);
-						getTile(x+1,y)->setWall(WEST, 1);
+						getTile(x,y)->setWall(EAST, true);
+						getTile(x + 1,y)->setWall(WEST, true);
 						break;
 					case WEST:
-						getTile(x, y)->setWall(NORTH, 1);
-						getTile(x, y + 1)->setWall(SOUTH, 1);
+						getTile(x, y)->setWall(NORTH, true);
+						getTile(x, y + 1)->setWall(SOUTH, true);
 						break;
 				}
 			}
