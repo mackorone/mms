@@ -114,15 +114,14 @@ void Maze::randomize(){
     int height = getHeight();
 
     // The probability of any one wall appearing is 1/probDenom
-    int probDenom = 2;
+    //int probDenom = 2;
+	int threshold = (int)(RAND_MAX * WALL_PRESENCE);
 
     for (int x = 0; x < width; x++){
         for (int y = 0; y < height; y++){
             bool walls[4]; // Make a walls array for tile (x, y)
             for (int k = 0; k < 4; k++){
-				walls[k] = rand() / (RAND_MAX / 2 + 1);
-				//std::cout << randn << std::endl;
-                //walls[k] = rand() % probDenom == 0;
+				walls[k] = (rand() <= threshold);
                 switch (k){
                     case NORTH:
                         if (y + 1 < height){
