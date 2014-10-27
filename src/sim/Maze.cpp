@@ -8,7 +8,6 @@
 #include <time.h>
 #include <queue>
 #include <vector>
-
 #include "Constants.h"
 #include "Parameters.h"
 #include "Tile.h"
@@ -121,7 +120,9 @@ void Maze::randomize(){
         for (int y = 0; y < height; y++){
             bool walls[4]; // Make a walls array for tile (x, y)
             for (int k = 0; k < 4; k++){
-                walls[k] = rand() % probDenom == 0;
+				walls[k] = rand() / (RAND_MAX / 2 + 1);
+				//std::cout << randn << std::endl;
+                //walls[k] = rand() % probDenom == 0;
                 switch (k){
                     case NORTH:
                         if (y + 1 < height){
