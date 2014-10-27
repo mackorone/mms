@@ -163,6 +163,35 @@ void Maze::randomize(){
         }
     }
 
+	for (int x = 0; x < width-1; x++){ // Go Through all the pegs and make sure at least one wall
+									   // exists per peg.  Makes the maze more regulation compliant
+		for (int y = 0; y < height-1; y++){
+			if (!getTile(x, y)->isWall(NORTH) &&
+				!getTile(x, y)->isWall(EAST) &&			// If wall does not exist up, down, left, right
+				!getTile(x + 1, y + 1)->isWall(WEST) && // from peg, add a peg in a random direction
+				!getTile(x + 1, y + 1)->isWall(SOUTH)){
+				switch (rand() / (RAND_MAX / 4 + 1)){
+					case NORTH:
+						getTile(x+1, y+1)->setWall(WEST, 1);
+						getTile(x, y + 1)->setWall(EAST, 1);
+						break;
+					case EAST:
+						getTile(x + 1, y + 1)->setWall(SOUTH, 1);
+						getTile(x + 1, y)->setWall(NORTH, 1);
+						break;
+					case SOUTH:
+						getTile(x,y)->setWall(EAST, 1);
+						getTile(x+1,y)->setWall(WEST, 1);
+						break;
+					case WEST:
+						getTile(x, y)->setWall(NORTH, 1);
+						getTile(x, y + 1)->setWall(SOUTH, 1);
+						break;
+				}
+			}
+		}
+	}
+
     // Ensures that the middle is hallowed out
     if (width % 2 == 0){
         if (height % 2 == 0){
