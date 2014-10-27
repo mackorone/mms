@@ -13,7 +13,6 @@ static /*non-const*/ int MAZE_HEIGHT = 16; // Number or tiles tall
 static const int MAX_DISTANCE = MAZE_WIDTH*MAZE_HEIGHT; // Max distance of tile
 static const std::string MAZE_FILE = ""; // Maze file to load ("maze5.maz")
 static const int MIN_MAZE_STEPS = 40; // Minimum steps required to solve random maze
-static const float WALL_PRESENCE = 0.55; // Percentage Chance a wall will be deleted during maze generation
 
 // Graphics parameters
 static const int PIXELS_PER_UNIT = 4; // Choose the window size of the simulation (4 is a good size)

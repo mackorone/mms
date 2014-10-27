@@ -4,17 +4,19 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <cmath>
 #include <sstream>
 #include <time.h>
 #include <queue>
 #include <vector>
+
 #include "Constants.h"
 #include "Parameters.h"
 #include "Tile.h"
 
-namespace sim{
+namespace sim {
 
-Maze::Maze(int width, int height, std::string mazeFileDirPath, std::string mazeFile){
+Maze::Maze(int width, int height, std::string mazeFileDirPath, std::string mazeFile) {
 
     // Misc errand - seed the random number generator
     srand(time(NULL));
@@ -32,19 +34,19 @@ Maze::Maze(int width, int height, std::string mazeFileDirPath, std::string mazeF
     
     // Initialize the tile wall values and tile neighbors by either loading
     // an existing maze file or randomly generating a valid maze
-    if (mazeFile == ""){
+    if (mazeFile == "") {
 
         std::cout << "No maze file provided. Generating random maze..." << std::endl;
 
         randomize();
-        while (!(solveShortestPath().at(0) && solveShortestPath().at(1))){
+        while (!(solveShortestPath().at(0) && solveShortestPath().at(1))) {
             randomize();
         }
 
         // Optional - can be used to generate more maze files
         saveMaze(mazeFileDirPath += "/auto_generated_maze.maz");
     }
-    else{
+    else {
 
         // Complete path to the given mazefile
         std::string path = mazeFileDirPath += mazeFile;
@@ -60,7 +62,7 @@ Maze::Maze(int width, int height, std::string mazeFileDirPath, std::string mazeF
             // Ensures that the maze is solvable
             if (!solveShortestPath().at(0)){
                 std::cout << "Unsolvable Maze detected. Generating solvable maze..." << std::endl;
-                while (!(solveShortestPath().at(0) && solveShortestPath().at(1))){
+                while (!(solveShortestPath().at(0) && solveShortestPath().at(1))) {
                     randomize();
                 }
             }
@@ -113,20 +115,18 @@ void Maze::randomize(){
     int width = getWidth();
     int height = getHeight();
 
-    // The probability of any one wall appearing is 1/probDenom
-    //int probDenom = 2;
-	int threshold = (int)(RAND_MAX * WALL_PRESENCE);
+    // Percentage chance any one wall will exist
+    float wallProb = 0.40;
 
     for (int x = 0; x < width; x++){
         for (int y = 0; y < height; y++){
-            bool walls[4]; // Make a walls array for tile (x, y)
             for (int k = 0; k < 4; k++){
-				walls[k] = (rand() <= threshold);
+                bool wallExists = (rand() <= floor(RAND_MAX * wallProb));
                 switch (k){
                     case NORTH:
                         if (y + 1 < height){
-                            getTile(x, y+1)->setWall(SOUTH, walls[k]);
-                            getTile(x, y)->setWall(NORTH, walls[k]);
+                            getTile(x, y+1)->setWall(SOUTH, wallExists);
+                            getTile(x, y)->setWall(NORTH, wallExists);
                         }
                         else {
                             getTile(x, y)->setWall(NORTH, true);
@@ -134,8 +134,8 @@ void Maze::randomize(){
                         break;
                     case EAST:
                         if (x + 1 < width){
-                            getTile(x+1, y)->setWall(WEST, walls[k]);
-                            getTile(x, y)->setWall(EAST, walls[k]);
+                            getTile(x+1, y)->setWall(WEST, wallExists);
+                            getTile(x, y)->setWall(EAST, wallExists);
                         }
                         else {
                             getTile(x, y)->setWall(EAST, true);
@@ -143,8 +143,8 @@ void Maze::randomize(){
                         break;
                     case SOUTH:
                         if (y > 0){
-                            getTile(x, y-1)->setWall(NORTH, walls[k]);
-                            getTile(x, y)->setWall(SOUTH, walls[k]);
+                            getTile(x, y-1)->setWall(NORTH, wallExists);
+                            getTile(x, y)->setWall(SOUTH, wallExists);
                         }
                         else {
                             getTile(x, y)->setWall(SOUTH, true);
@@ -152,8 +152,8 @@ void Maze::randomize(){
                         break;
                     case WEST:
                         if (x > 0){
-                            getTile(x-1, y)->setWall(EAST, walls[k]);
-                            getTile(x, y)->setWall(WEST, walls[k]);
+                            getTile(x-1, y)->setWall(EAST, wallExists);
+                            getTile(x, y)->setWall(WEST, wallExists);
                         }
                         else {
                             getTile(x, y)->setWall(WEST, true);
