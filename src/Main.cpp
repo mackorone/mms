@@ -3,10 +3,11 @@
 #include <thread>
 //#include <unistd.h>
 
+#include "maze/Maze.h"
+#include "maze/MazeFileUtilities.h"
+
 #include "sim/Constants.h"
-#include "sim/Maze.h"
 #include "sim/MazeGraphic.h"
-#include "sim/MazeFileUtilities.h"
 #include "sim/Mouse.h"
 #include "sim/MouseGraphic.h"
 #include "sim/MouseInterface.h"

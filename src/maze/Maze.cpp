@@ -9,9 +9,9 @@
 #include <queue>
 #include <vector>
 
-#include "Constants.h"
-#include "Parameters.h"
-#include "Tile.h"
+#include "../sim/Constants.h"
+#include "../sim/Parameters.h"
+#include "../sim/Tile.h"
 
 namespace sim {
 

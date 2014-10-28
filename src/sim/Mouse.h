@@ -1,7 +1,7 @@
 #ifndef SIM_MOUSE_H_
 #define SIM_MOUSE_H_
 
-#include "Maze.h"
+#include "../maze/Maze.h"
 
 namespace sim{
 
