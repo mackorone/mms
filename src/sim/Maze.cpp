@@ -39,7 +39,7 @@ Maze::Maze(int width, int height, std::string mazeFileDirPath, std::string mazeF
         std::cout << "No maze file provided. Generating random maze..." << std::endl;
 
         randomizeTwo();
-        int i = 0;
+        int i = 1;
         while (!(solveShortestPath().at(0) && solveShortestPath().at(1))) {
             randomizeTwo();
             i++;

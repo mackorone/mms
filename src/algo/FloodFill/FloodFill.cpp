@@ -242,8 +242,7 @@ void FloodFill::victory(){
             return;
         }
 
-        // TODO: Added 
-        Open House
+        // TODO: Added for Open House
         break;
     }
 }
