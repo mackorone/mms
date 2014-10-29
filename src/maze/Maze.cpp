@@ -8,6 +8,7 @@
 #include <time.h>
 #include <queue>
 #include <vector>
+#include <stack>
 
 #include "../sim/Constants.h"
 #include "../sim/Parameters.h"
@@ -114,83 +115,152 @@ void Maze::randomize(){
     int width = getWidth();
     int height = getHeight();
 
-    // Percentage chance any one wall will exist
-    float wallProb = 0.35;
+    int x_pos = 0;
+    int y_pos = 0;
 
-    for (int x = 0; x < width; x++){
-        for (int y = 0; y < height; y++){
-            for (int k = 0; k < 4; k++){
-                bool wallExists = (rand() <= (RAND_MAX * wallProb));
-                switch (k){
-                    case NORTH:
-                        if (y + 1 < height){
-                            getTile(x, y+1)->setWall(SOUTH, wallExists);
-                            getTile(x, y)->setWall(NORTH, wallExists);
-                        }
-                        else {
-                            getTile(x, y)->setWall(NORTH, true);
-                        }
-                        break;
-                    case EAST:
-                        if (x + 1 < width){
-                            getTile(x+1, y)->setWall(WEST, wallExists);
-                            getTile(x, y)->setWall(EAST, wallExists);
-                        }
-                        else {
-                            getTile(x, y)->setWall(EAST, true);
-                        }
-                        break;
-                    case SOUTH:
-                        if (y > 0){
-                            getTile(x, y-1)->setWall(NORTH, wallExists);
-                            getTile(x, y)->setWall(SOUTH, wallExists);
-                        }
-                        else {
-                            getTile(x, y)->setWall(SOUTH, true);
-                        }
-                        break;
-                    case WEST:
-                        if (x > 0){
-                            getTile(x-1, y)->setWall(EAST, wallExists);
-                            getTile(x, y)->setWall(WEST, wallExists);
-                        }
-                        else {
-                            getTile(x, y)->setWall(WEST, true);
-                        }
-                        break;
-                }
-            }
+    int cells[MAZE_WIDTH][MAZE_HEIGHT][3]; // {x,y,explored}
+
+    for (int x = 0; x < MAZE_WIDTH; x++){   // Set the x and y position of each sublist to the correct spot
+        for (int y = 0; y < MAZE_HEIGHT; y++){
+            cells[x][y][0] = x;
+            cells[x][y][1] = y;
         }
     }
 
-	for (int x = 0; x < width-1; x++){ // Go Through all the pegs and make sure at least one wall
-									   // exists per peg.  Makes the maze more regulation compliant
-		for (int y = 0; y < height-1; y++){
-			if (!getTile(x, y)->isWall(NORTH) &&
-				!getTile(x, y)->isWall(EAST) &&			// If wall does not exist up, down, left, right
-				!getTile(x + 1, y + 1)->isWall(WEST) && // from peg, add a peg in a random direction
-				!getTile(x + 1, y + 1)->isWall(SOUTH)){
-				switch (rand() / (RAND_MAX / 4 + 1)){
-					case NORTH:
-						getTile(x + 1, y + 1)->setWall(WEST, true);
-						getTile(x, y + 1)->setWall(EAST, true);
-						break;
-					case EAST:
-						getTile(x + 1, y + 1)->setWall(SOUTH, true);
-						getTile(x + 1, y)->setWall(NORTH, true);
-						break;
-					case SOUTH:
-						getTile(x,y)->setWall(EAST, true);
-						getTile(x + 1,y)->setWall(WEST, true);
-						break;
-					case WEST:
-						getTile(x, y)->setWall(NORTH, true);
-						getTile(x, y + 1)->setWall(SOUTH, true);
-						break;
-				}
-			}
-		}
-	}
+    std::stack<int[3]> cell_stack;
+
+    cells[0][0][2] = 1; // Mark First cell as explored
+    cell_stack.push(cells[x_pos][y_pos]); // Push first cell unto stack
+    
+    while (!cell_stack.empty()){ //Keep going until the stack is empty
+        int choices[4] = { 0, 0, 0, 0 };     // To store next possible movements N, E, S, W
+
+        if ((x_pos - 1 >= 0) && (cells[x_pos - 1][y_pos][2] == 0)) //if cell to the West is valid and unexplored
+            choices[WEST] = 1;
+        if ((y_pos - 1 >= 0) && (cells[x_pos][y_pos - 1][2] == 0)) //if cell to the South is valid and unexplored
+            choices[SOUTH] = 1;
+        if ((x_pos + 1 < MAZE_WIDTH) && (cells[x_pos + 1][y_pos][2] == 0)) //if cell to the East is valid and unexplored
+            choices[EAST] = 1;
+        if ((x_pos + 1 < MAZE_WIDTH) && (cells[x_pos + 1][y_pos][2] == 0)) //if cell to the North is valid and unexplored
+            choices[NORTH] = 1;
+
+        if (choices[3] == 0
+            && choices[2] == 0
+            && choices[1] == 0
+            && choices[0] == 0){       // Go to previous cell if the current cell has no more paths forward
+            x_pos = cell_stack.top()[0];
+            y_pos = cell_stack.top()[1];
+            cell_stack.pop();
+        }
+
+        int rand_dir = rand() / (RAND_MAX / RAND_MAX + 1);
+
+        while (choices[rand_dir] == 0)                      // Keep generating random moves until next move is valid
+            rand_dir = rand() / (RAND_MAX / RAND_MAX + 1);
+
+        switch (rand_dir){
+        NORTH:
+            getTile(x_pos, y_pos)->setWall(NORTH, false);
+            getTile(x_pos, y_pos + 1)->setWall(SOUTH, false);
+            y_pos++;
+            break;
+        EAST:
+            getTile(x_pos, y_pos)->setWall(EAST, false);
+            getTile(x_pos + 1, y_pos)->setWall(WEST, false);
+            x_pos++;
+            break;
+        SOUTH:
+            getTile(x_pos, y_pos)->setWall(SOUTH, false);
+            getTile(x_pos, y_pos - 1)->setWall(NORTH, false);
+            y_pos--;
+            break;
+        WEST:
+            getTile(x_pos, y_pos)->setWall(WEST, false);
+            getTile(x_pos - 1, y_pos)->setWall(EAST, false);
+            x_pos--;
+            break;
+        }
+        cells[x_pos][y_pos][2] = 1;  // Set next cell as explored
+        cell_stack.push(cells[x_pos][y_pos]);
+    }
+
+    // Percentage chance any one wall will exist
+    //float wallProb = 0.35;
+
+ //   for (int x = 0; x < width; x++){
+ //       for (int y = 0; y < height; y++){
+ //           for (int k = 0; k < 4; k++){
+ //               bool wallExists = (rand() <= (RAND_MAX * wallProb));
+ //               switch (k){
+ //                   case NORTH:
+ //                       if (y + 1 < height){
+ //                           getTile(x, y+1)->setWall(SOUTH, wallExists);
+ //                           getTile(x, y)->setWall(NORTH, wallExists);
+ //                       }
+ //                       else {
+ //                           getTile(x, y)->setWall(NORTH, true);
+ //                       }
+ //                       break;
+ //                   case EAST:
+ //                       if (x + 1 < width){
+ //                           getTile(x+1, y)->setWall(WEST, wallExists);
+ //                           getTile(x, y)->setWall(EAST, wallExists);
+ //                       }
+ //                       else {
+ //                           getTile(x, y)->setWall(EAST, true);
+ //                       }
+ //                       break;
+ //                   case SOUTH:
+ //                       if (y > 0){
+ //                           getTile(x, y-1)->setWall(NORTH, wallExists);
+ //                           getTile(x, y)->setWall(SOUTH, wallExists);
+ //                       }
+ //                       else {
+ //                           getTile(x, y)->setWall(SOUTH, true);
+ //                       }
+ //                       break;
+ //                   case WEST:
+ //                       if (x > 0){
+ //                           getTile(x-1, y)->setWall(EAST, wallExists);
+ //                           getTile(x, y)->setWall(WEST, wallExists);
+ //                       }
+ //                       else {
+ //                           getTile(x, y)->setWall(WEST, true);
+ //                       }
+ //                       break;
+ //               }
+ //           }
+ //       }
+ //   }
+
+	//for (int x = 0; x < width-1; x++){ // Go Through all the pegs and make sure at least one wall
+	//								   // exists per peg.  Makes the maze more regulation compliant
+	//	for (int y = 0; y < height-1; y++){
+	//		if (!getTile(x, y)->isWall(NORTH) &&
+	//			!getTile(x, y)->isWall(EAST) &&			// If wall does not exist up, down, left, right
+	//			!getTile(x + 1, y + 1)->isWall(WEST) && // from peg, add a peg in a random direction
+	//			!getTile(x + 1, y + 1)->isWall(SOUTH)){
+	//			switch (rand() / (RAND_MAX / 4 + 1)){
+	//				case NORTH:
+	//					getTile(x + 1, y + 1)->setWall(WEST, true);
+	//					getTile(x, y + 1)->setWall(EAST, true);
+	//					break;
+	//				case EAST:
+	//					getTile(x + 1, y + 1)->setWall(SOUTH, true);
+	//					getTile(x + 1, y)->setWall(NORTH, true);
+	//					break;
+	//				case SOUTH:
+	//					getTile(x,y)->setWall(EAST, true);
+	//					getTile(x + 1,y)->setWall(WEST, true);
+	//					break;
+	//				case WEST:
+	//					getTile(x, y)->setWall(NORTH, true);
+	//					getTile(x, y + 1)->setWall(SOUTH, true);
+	//					break;
+	//			}
+	//		}
+	//	}
+	//}
 
     // Ensures that the middle is hallowed out
     if (width % 2 == 0){
