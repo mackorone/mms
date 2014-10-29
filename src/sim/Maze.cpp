@@ -228,12 +228,10 @@ void Maze::randomizeTwo() {
 
     for (int x = 0; x < width; x += 1) {
         for (int y = 0; y < height; y += 1) {
-            for (int i = 0; i < 4; i += 1){ // Set all walls to true as
-                                            // algo will break down walls
+            for (int i = 0; i < 4; i += 1){ 
+                // Set all walls to true as algo will break down walls
                 getTile(x, y)->setWall(i, true);
             }
-            getTile(x, y)->setExplored(false);  // Doesn't run loop otherwise
-                                                // TODO: Ask Mack if init prob
         }
     }
 
@@ -265,7 +263,6 @@ void Maze::randomizeTwo() {
     while (!toExplore.empty()){
         // Grab and unpack the top thing from the stack
         Tile* current = toExplore.top();
-        //toExplore.pop();                  // This cannot be up here. Talk to Tom
 
         int x_pos = current->getX();
         int y_pos = current->getY();
@@ -357,9 +354,8 @@ void Maze::randomizeTwo() {
         getTile(width/2, height/2)->setWall(SOUTH, false);
     }
 
-
-
-    if (width % 2 == 0 && height % 2 != 0){ //Break a random wall leading to center group
+    // Break a random wall leading to center group
+    if (width % 2 == 0 && height % 2 != 0){ 
         switch (rand() / (1 + RAND_MAX / 6)){
             case 0:
                 getTile(width / 2 - 1, height / 2)->setWall(WEST, false);
@@ -451,7 +447,6 @@ void Maze::randomizeTwo() {
             break;
         }
     }
-
 
     // Once the walls are assigned, we can assign neighbors
     assignNeighbors();

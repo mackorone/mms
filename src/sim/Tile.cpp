@@ -5,7 +5,8 @@
 
 namespace sim{
 
-Tile::Tile() : m_x(0), m_y(0), m_distance(MAX_DISTANCE), m_passes(0), m_posp(false), m_neighbors(){
+Tile::Tile() : m_x(0), m_y(0), m_distance(MAX_DISTANCE), m_explored(false),
+               m_passes(0), m_posp(false), m_neighbors() {
     m_walls[0] = false;
     m_walls[1] = false;
     m_walls[2] = false;
