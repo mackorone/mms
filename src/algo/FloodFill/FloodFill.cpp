@@ -17,8 +17,8 @@ void FloodFill::solve(sim::MouseInterface* mouse){
     m_mouse = mouse;
 
     // Initialize the x and y positions of the cells
-    for (int x = 0; x < MAZE_SIZE_X; x++){
-        for (int y = 0; y < MAZE_SIZE_Y; y++){
+    for (int x = 0; x < MAZE_SIZE_X; x += 1){
+        for (int y = 0; y < MAZE_SIZE_Y; y += 1){
             m_cells[x][y].setX(x);
             m_cells[x][y].setY(y);
         }
@@ -119,8 +119,8 @@ void FloodFill::extensiveSolve() {
 
 void FloodFill::printDistances(){
     std::cout << std::endl;
-    for (int y = MAZE_SIZE_Y-1; y >= 0; y--){
-        for (int x = 0; x < MAZE_SIZE_X; x++){
+    for (int y = MAZE_SIZE_Y-1; y >= 0; y -= 1){
+        for (int x = 0; x < MAZE_SIZE_X; x += 1){
             if (m_cells[x][y].getDistance() < 100){
                 if (m_cells[x][y].getDistance() < 10){
                     std::cout << " ";
@@ -135,8 +135,8 @@ void FloodFill::printDistances(){
 
 void FloodFill::printWalls(){
     std::cout << std::endl;
-    for (int y = MAZE_SIZE_Y-1; y >= 0; y--){
-        for (int x = 0; x < MAZE_SIZE_X; x++){
+    for (int y = MAZE_SIZE_Y-1; y >= 0; y -= 1){
+        for (int x = 0; x < MAZE_SIZE_X; x += 1){
             int wallSum = 0;
             wallSum += 1*m_cells[x][y].isWall(NORTH);
             wallSum += 2*m_cells[x][y].isWall(EAST);
@@ -160,9 +160,9 @@ void FloodFill::initialize(){
     // Note: Doesn't work for odd sized mazes
 
     // Initialize the distance values for the maze
-    for (int y = 0; y < MAZE_SIZE_Y/2; y++) {
+    for (int y = 0; y < MAZE_SIZE_Y/2; y += 1) {
         int distance = MAZE_SIZE_X/2 + MAZE_SIZE_Y/2 - 2 - y;
-        for(int x = 0; x < MAZE_SIZE_X/2; x++) {
+        for(int x = 0; x < MAZE_SIZE_X/2; x += 1) {
             m_cells[x][y].setDistance(distance);
             m_cells[x][MAZE_SIZE_Y-1-y].setDistance(distance);
             m_cells[MAZE_SIZE_X-1-x][MAZE_SIZE_Y-1-y].setDistance(distance);
@@ -172,8 +172,8 @@ void FloodFill::initialize(){
     }
 
     // Initialize other values for the Cells
-    for (int y = 0; y < MAZE_SIZE_Y; y++){
-        for (int x = 0; x < MAZE_SIZE_X; x++){
+    for (int y = 0; y < MAZE_SIZE_Y; y += 1){
+        for (int x = 0; x < MAZE_SIZE_X; x += 1){
 
             // Set the walls values
             m_cells[x][y].setWall(SOUTH, y == 0);
@@ -289,14 +289,14 @@ void FloodFill::checkDeadEnd(Cell* cell) {
     // neighboring Cells to be classified as dead-ends as well.
 
     int walls = 0;
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i += 1) {
         if (cell->isWall(i)) {
             walls++;
         }
     }
 
     if (walls == 3) {
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; i += 1) {
             if (!cell->getWallInspected(i)) {
 
                 // Again, if we know a Cell has three walls, it's a dead-end and can be
@@ -754,7 +754,7 @@ void FloodFill::explore(){
     
             // Next, check to see if all of the walls have been inspected.
             // If so, no need to explore that cell - get a new target
-            for (int i = 0; i < 4; i++){
+            for (int i = 0; i < 4; i += 1){
                 allWallsInspected = allWallsInspected && target->getWallInspected(i);
             } 
             
@@ -867,8 +867,8 @@ void FloodFill::explore(){
     // to the starting location. Thus, at the end of this function, all distance
     // values will be 100% complete and correct
     
-    for (int x = 0; x < MAZE_SIZE_X; x++){
-        for (int y = 0; y < MAZE_SIZE_Y; y++){
+    for (int x = 0; x < MAZE_SIZE_X; x += 1){
+        for (int y = 0; y < MAZE_SIZE_Y; y += 1){
             if (!m_cells[x][y].getExplored()){
                 // Any unreachable cells should have inf distance. Conveniently,
                 // MAZE_SIZE_X*MAZE_SIZE_Y is one greater than the maximum distance
@@ -1079,7 +1079,7 @@ bool FloodFill::tryUntraversed(Cell* target){
 
     // First, find the direction with the greatest number of short circuited steps
 
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i += 1) {
 
         Cell* neighbor = NULL;
         switch(i){
@@ -1289,7 +1289,7 @@ void FloodFill::bffExplore(std::stack<Cell*>* path){
                     for (std::list<SimpleCellmod>::iterator it = cellList.begin(); it != cellList.end() ; ++it) {
                         (*it).cell->setPrev((*it).prev);
                         (*it).cell->setDistance((*it).dist);
-                        for (int i = 0; i < 4; i++) {
+                        for (int i = 0; i < 4; i += 1) {
                             (*it).cell->setWall(i, (*it).walls[i]);
                         }
                     }
@@ -1372,7 +1372,7 @@ void FloodFill::bffAppendModifiedCell(std::list<SimpleCellmod>* modCellsList, Ce
     mod.cell = cell;
     mod.prev = cell->getPrev();
     mod.dist = cell->getDistance();
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i += 1) {
         mod.walls[i] = cell->isWall(i);
     }
     modCellsList->push_back(mod);
@@ -1453,7 +1453,7 @@ void FloodFill::appendModifiedCell(std::list<Cellmod>* modList, Cell* modCell) {
     cm.oldPrev = modCell->getPrev();
     cm.oldExplored = modCell->getExplored(); // Note: I don't think this is necessary
     cm.oldTraversed = modCell->getTraversed(); // Note: I don't think this is necessary
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i += 1) {
         cm.oldWalls[i] = modCell->isWall(i);
         cm.oldWallsInspected[i] = modCell->getWallInspected(i);
     }
