@@ -294,6 +294,15 @@ void Maze::randomizeTwo() {
             }
     }
 
+    // Set each tile as unexplored by the Mouse (note that we
+    // just "borrowed" this field for the maze genereration.
+    for (int x = 0; x < width; x += 1) {
+        for (int y = 0; y < height; y += 1) {
+            getTile(x, y)->setExplored(false);
+        }
+    }
+
+
     // Percentage chance any one wall will exist
     /*
     float wallProb = 0.35;
