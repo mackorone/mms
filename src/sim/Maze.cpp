@@ -230,7 +230,7 @@ void Maze::randomizeTwo() {
         for (int y = 0; y < height; y += 1) {
             for (int i = 0; i < 4; i += 1){ // Set all walls to true as
                                             // algo will break down walls
-                getTile(x, y)->setWall(i, TRUE);
+                getTile(x, y)->setWall(i, true);
             }
             getTile(x, y)->setExplored(false);  // Doesn't run loop otherwise
                                                 // TODO: Ask Mack if init prob
