@@ -164,7 +164,7 @@ void History::resetModifiedCells() {
             (*it).cell->setDistance((*it).oldDist);
             (*it).cell->setExplored((*it).oldExplored);
             (*it).cell->setTraversed((*it).oldTraversed);
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 4; i += 1) {
                 (*it).cell->setWall(i, (*it).oldWalls[i]);
                 (*it).cell->setWallInspected(i, (*it).oldWallsInspected[i]);
             }

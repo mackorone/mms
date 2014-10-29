@@ -3,7 +3,7 @@
 #define NULL 0
 
 Cell::Cell() : m_x(0), m_y(0), m_distance(0), m_explored(false), m_traversed(false), m_prev(NULL){
-    for (int i = 0; i < 4; i++){
+    for (int i = 0; i < 4; i += 1){
         m_walls[i] = false;
         m_wallsInspected[i] = false;
     }

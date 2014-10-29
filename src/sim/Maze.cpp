@@ -22,9 +22,9 @@ Maze::Maze(int width, int height, std::string mazeFileDirPath, std::string mazeF
     srand(time(NULL));
     
     // Initialize the tile positions
-    for (int x = 0; x < width; x++){
+    for (int x = 0; x < width; x += 1){
         std::vector<Tile> col;
-        for (int y = 0; y < height; y++){
+        for (int y = 0; y < height; y += 1){
             Tile tile;
             tile.setPos(x, y);
             col.push_back(tile);
@@ -104,8 +104,8 @@ Tile* Maze::getTile(int x, int y){
 }
 
 void Maze::resetColors(int curX, int curY){
-    for (int x = 0; x < getWidth(); x++){
-        for (int y = 0; y < getHeight(); y++){
+    for (int x = 0; x < getWidth(); x += 1){
+        for (int y = 0; y < getHeight(); y += 1){
             getTile(x, y)->resetPasses();
         }
     }
@@ -122,9 +122,9 @@ void Maze::randomize(){
     float wallProb = 0.35;
 
     // Randomly generate all of the walls
-    for (int x = 0; x < width; x++){
-        for (int y = 0; y < height; y++){
-            for (int k = 0; k < 4; k++){
+    for (int x = 0; x < width; x += 1){
+        for (int y = 0; y < height; y += 1){
+            for (int k = 0; k < 4; k += 1){
                 bool wallExists = (rand() <= (RAND_MAX * wallProb));
                 switch (k){
                     case NORTH:
@@ -169,8 +169,8 @@ void Maze::randomize(){
     }
 
     // Make sure every peg has at least one wall
-    for (int x = 0; x < width - 1; x++) {
-        for (int y = 0; y < height - 1; y++) {
+    for (int x = 0; x < width - 1; x += 1) {
+        for (int y = 0; y < height - 1; y += 1) {
             if (!getTile(x, y)->isWall(NORTH)
              && !getTile(x, y)->isWall(EAST)
              && !getTile(x + 1, y + 1)->isWall(WEST)
@@ -465,10 +465,10 @@ void Maze::saveMaze(std::string mazeFile){
     if (file.is_open()){
 
         // Very primitive, but will work
-        for (int x = 0; x <  getWidth(); x++){
-            for (int y = 0; y < getHeight(); y++){
+        for (int x = 0; x <  getWidth(); x += 1){
+            for (int y = 0; y < getHeight(); y += 1){
                 file << x << " " << y;
-                for (int k = 0; k < 4; k++){
+                for (int k = 0; k < 4; k += 1){
                     file << " " << (getTile(x, y)->isWall(k) ? 1 : 0);
                 }
                 file << std::endl;
@@ -495,7 +495,7 @@ void Maze::loadMaze(std::string mazeFile){
             std::vector<std::string> tokens;
             copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(),
                  std::back_inserter<std::vector<std::string> >(tokens));
-            for (int i = 0; i < 4; i++){ // Set the values of all of the walls
+            for (int i = 0; i < 4; i += 1){ // Set the values of all of the walls
                 getTile(atoi(tokens.at(0).c_str()), atoi(tokens.at(1).c_str()))
                       ->setWall(i, atoi(tokens.at(2+i).c_str()));
             }
@@ -509,8 +509,8 @@ void Maze::loadMaze(std::string mazeFile){
 }
 
 void Maze::assignNeighbors(){
-    for (int x = 0; x < getWidth(); x++){
-        for (int y = 0; y < getHeight(); y++){
+    for (int x = 0; x < getWidth(); x += 1){
+        for (int y = 0; y < getHeight(); y += 1){
 
             Tile* tile = getTile(x, y);
 
@@ -536,8 +536,8 @@ void Maze::assignNeighbors(){
 
 void Maze::printDistances(){
     std::cout << std::endl;
-    for (int y = getHeight()-1; y >= 0; y--){
-        for (int x = 0; x < getWidth(); x++){
+    for (int y = getHeight()-1; y >= 0; y -= 1){
+        for (int x = 0; x < getWidth(); x += 1){
             if (getTile(x, y)->getDistance() < 100){
                 std::cout << " ";
                 if (getTile(x, y)->getDistance() < 10){
@@ -554,7 +554,7 @@ std::vector<bool> Maze::solveShortestPath(){
 
     // Solves the maze, assigns tiles that are part of the shortest path
     std::vector<Tile*> sp = findPathToCenter();
-    for (int i = 0; i < sp.size(); i++){
+    for (int i = 0; i < sp.size(); i += 1){
         getTile(sp.at(i)->getX(), sp.at(i)->getY())->setPosp(true);
     }
 
@@ -590,7 +590,7 @@ std::vector<Tile*> Maze::backtrace(Tile* end){
         Tile* node = queue.front();
         queue.pop(); // Removes the element
         std::vector<Tile*> neighbors = node->getNeighbors();
-        for (int i = 0; i < neighbors.size(); i++){
+        for (int i = 0; i < neighbors.size(); i += 1){
             if (neighbors.at(i)->getDistance() == node->getDistance() - 1){
                 path.push_back(neighbors.at(i));
                 queue.push(neighbors.at(i));
@@ -604,8 +604,8 @@ std::vector<Tile*> Maze::backtrace(Tile* end){
 void Maze::setDistancesFrom(int x, int y){
     
     // Ensure that the nodes are fresh every time this function is called
-    for (int x = 0; x < getWidth(); x++){
-        for (int y = 0; y < getHeight(); y++){
+    for (int x = 0; x < getWidth(); x += 1){
+        for (int y = 0; y < getHeight(); y += 1){
             Tile* tile = getTile(x, y);
             tile->setDistance(MAX_DISTANCE);
             tile->setExplored(false);
@@ -623,7 +623,7 @@ void Maze::setDistancesFrom(int x, int y){
         Tile* node = queue.front();
         queue.pop(); // Removes the element
         std::vector<Tile*> neighbors = node->getNeighbors();
-        for (int i = 0; i < neighbors.size(); i++){
+        for (int i = 0; i < neighbors.size(); i += 1){
             if (!neighbors.at(i)->getExplored()){
                 neighbors.at(i)->setDistance(node->getDistance() + 1); 
                 queue.push(neighbors.at(i));

@@ -17,7 +17,7 @@ std::string getMazeFileDirPath(std::string path){
     }
     
     // Gets the path to the "mms" dir based on where the bin file was executed
-    for (int i = 0; i < 2; i++){
+    for (int i = 0; i < 2; i += 1){
 
         int index = path.find_last_of("/\\");
         path = path.substr(0, index);
@@ -90,7 +90,7 @@ bool checkValidMazeFile(std::string mazeFilePath){
         file.close();
 
         /*int numberOfYValues = counts.at(0);
-        for (int i = 1; i < counts.size(); i++){
+        for (int i = 1; i < counts.size(); i += 1){
             if (counts.at(i) != numberOfYValues){
                 return 0;
             }
