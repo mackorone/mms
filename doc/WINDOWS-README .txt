@@ -1,10 +1,61 @@
 Introduction and Requirements
 =============================
-This is a small application for simulating MicroMouse algorithms. Note that
-freeglut *must* be installed for this application to work. To install it on
-Ubuntu systems, simply enter the following into the terminal:
+This is a small application for simulating MicroMouse algorithms.
 
-    sudo apt-get install freeglut3-dev
+The only current way to compile the application on Windows is through
+Visual Studio.  You can get a 3 year license for professional (recommended)
+through the Microsoft Dreamspark program.
+
+MinGW will not work becuase currently it lacks support for Windows threading.
+This option is being explored and will be updated as options become available.
+
+Note that freeglut *must* be installed for this application to work. To install
+it on Windows systems, follow the instructions outlined in the document:
+
+    http://www.cs.uregina.ca/Links/class-info/390AN/WWW/Lab1/GLUT/windows.html
+
+    *Note: You do not need to install glew.  You only need to follow the first
+           section
+
+
+Setting up Visual Studio Project (VS)
+=====================================
+Once freeglut is installed as per the above instruction you will want to create
+a project in Visual Studio.  To do this automatically:
+
+These instructions will work on VS 2013 Profesional, and likely be simlar to other
+versions.
+
+1) Open VS and select: File -> New -> Project From Existing Code
+
+2) Select Visual C++ from the dropdown and hit Next
+
+3) Enter the following options on the subsequent screen
+
+   Project file location - The path to INSIDE the /src folder
+        (ex. D:\Users\Tomasz\Documents\GitHub\mms\src)
+
+   Project name - The name you wish the project to have (ex. MMS)
+
+   Add files to the project from these folder - Unimportant
+
+   File types to add to the project - Leave Default
+
+   Show all files in Solution Explorer - Checked
+
+4) In the subsequent screen make sure 'Use Visual Studio' is check
+   and under 'Project Type' it says 'Console Application Proejct'.
+   Nothing else should be checked
+
+5) Hit Finish and Visual Studio will assemble the project for you
+
+6) *Encouraged* - Check 'Show all Files' under the 'Project' menu
+   this will make the 'Solution Explorer' pane mirror the directory structure
+
+7) To build the project select Build -> Build Solution or just run it and you will
+   be prompted if you want to build the changed project
+
+8) To run the program select Debug -> Run Without Debugging
 
 
 Software Components
@@ -20,14 +71,12 @@ things stay organized). See "src/algo/Mack_Ward/FloodFill" for an example of thi
 
 Running the Simulation
 ======================
-The simulation can be run by executing the binary in the "bin" directory, as in:
     
-    ./<path-to-bin>/MMSim
+- To build the project select Build -> Build Solution or just run it and you will
+  be prompted if you want to build the changed project
 
-For example, if you are in the "src" directory, enter the following to run the
-simulation:
-
-    ../bin/MMSim
+- To run the program select Debug -> Run Without Debugging. Hit Yes if you want to
+  rebuild
 
 During the simulation, the user may either pause/resume or speed-up/slow-down
 the mouse speed, as well as quit the application, as follows:
@@ -85,22 +134,16 @@ as is the case with the actual MicroMouse robot.
 
 Building the Project
 ====================
-After any changes have been made to your code, you must remake the project from
-the root directory (the project folder that contains "src", "bin", etc.) as
-follows:
+    
+- To build the project select Build -> Build Solution or just run it and you will
+  be prompted if you want to build the changed project
 
-    make
+- To run the program select Debug -> Run Without Debugging. Hit Yes if you want to
+  rebuild
 
-If your code doesn't seem to be working properly, try entering the following,
-again from the root directory:
-
-    make clean
-    make
-
-The use of "make clean" simply requires the computer to recompile your files, 
-despite it potentially thinking that changes have not been made.
-
+If you need to clean for some reason you can go to Build -> Clean Solution
 
 Contact
 =======
-Any questions can be directed to mward4@buffalo.edu
+Any pertaining to the program or Linux can be directed to mward4@buffalo.edu
+Questions pertaining to Windows development can be directed to tomaszpi@buffalo.edu

@@ -1,8 +1,7 @@
-#include "Mouse.h"
-
 #include <iostream>
+
+#include "Mouse.h"
 #include "Constants.h"
-#include "Maze.h"
 
 namespace sim{
 

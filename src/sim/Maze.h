@@ -3,7 +3,8 @@
 
 #include <string>
 #include <vector>
-#include "Tile.h"
+
+#include "../sim/Tile.h"
 
 namespace sim {
 

@@ -1,12 +1,11 @@
 #include <GL/freeglut.h>
 #include <iostream>
 #include <thread>
-//#include <unistd.h>
 
 #include "sim/Constants.h"
 #include "sim/Maze.h"
-#include "sim/MazeGraphic.h"
 #include "sim/MazeFileUtilities.h"
+#include "sim/MazeGraphic.h"
 #include "sim/Mouse.h"
 #include "sim/MouseGraphic.h"
 #include "sim/MouseInterface.h"
@@ -26,7 +25,7 @@ sim::MazeGraphic* g_mazeGraphic;
 sim::MouseGraphic* g_mouseGraphic;
 
 // Global primitive variable declarations
-static /*non-const*/ bool PAUSED = false; // Initially set to false
+static /*non-const*/ bool PAUSED = false; // Initially set to false  
 static /*non-const*/ int SLEEP_TIME = 150; // ms between simulation steps
 static /*non-const*/ bool UNDO_REQUESTED = false; // Whether or not an undo was requested
 static /*non-const*/ bool RESET_REQUESTED = false; // Whether or not a reset was requested

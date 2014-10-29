@@ -8,10 +8,11 @@
 #include <time.h>
 #include <queue>
 #include <vector>
+#include <stack>
 
-#include "Constants.h"
-#include "Parameters.h"
-#include "Tile.h"
+#include "../sim/Constants.h"
+#include "../sim/Parameters.h"
+#include "../sim/Tile.h"
 
 namespace sim {
 
@@ -113,6 +114,77 @@ void Maze::randomize(){
     // Declare width and height locally to reduce function calls
     int width = getWidth();
     int height = getHeight();
+
+    /*
+    int x_pos = 0;
+    int y_pos = 0;
+
+    int cells[MAZE_WIDTH][MAZE_HEIGHT][3]; // {x,y,explored}
+
+    for (int x = 0; x < MAZE_WIDTH; x++){   // Set the x and y position of each sublist to the correct spot
+        for (int y = 0; y < MAZE_HEIGHT; y++){
+            cells[x][y][0] = x;
+            cells[x][y][1] = y;
+        }
+    }
+
+    std::stack<int[3]> cell_stack;
+
+    cells[0][0][2] = 1; // Mark First cell as explored
+    cell_stack.push(cells[x_pos][y_pos]); // Push first cell unto stack
+    
+    while (!cell_stack.empty()){ //Keep going until the stack is empty
+        int choices[4] = { 0, 0, 0, 0 };     // To store next possible movements N, E, S, W
+
+        if ((x_pos - 1 >= 0) && (cells[x_pos - 1][y_pos][2] == 0)) //if cell to the West is valid and unexplored
+            choices[WEST] = 1;
+        if ((y_pos - 1 >= 0) && (cells[x_pos][y_pos - 1][2] == 0)) //if cell to the South is valid and unexplored
+            choices[SOUTH] = 1;
+        if ((x_pos + 1 < MAZE_WIDTH) && (cells[x_pos + 1][y_pos][2] == 0)) //if cell to the East is valid and unexplored
+            choices[EAST] = 1;
+        if ((x_pos + 1 < MAZE_WIDTH) && (cells[x_pos + 1][y_pos][2] == 0)) //if cell to the North is valid and unexplored
+            choices[NORTH] = 1;
+
+        if (choices[3] == 0
+            && choices[2] == 0
+            && choices[1] == 0
+            && choices[0] == 0){       // Go to previous cell if the current cell has no more paths forward
+            x_pos = cell_stack.top()[0];
+            y_pos = cell_stack.top()[1];
+            cell_stack.pop();
+        }
+
+        int rand_dir = rand() / (RAND_MAX / RAND_MAX + 1);
+
+        while (choices[rand_dir] == 0)                      // Keep generating random moves until next move is valid
+            rand_dir = rand() / (RAND_MAX / RAND_MAX + 1);
+
+        switch (rand_dir){
+        NORTH:
+            getTile(x_pos, y_pos)->setWall(NORTH, false);
+            getTile(x_pos, y_pos + 1)->setWall(SOUTH, false);
+            y_pos++;
+            break;
+        EAST:
+            getTile(x_pos, y_pos)->setWall(EAST, false);
+            getTile(x_pos + 1, y_pos)->setWall(WEST, false);
+            x_pos++;
+            break;
+        SOUTH:
+            getTile(x_pos, y_pos)->setWall(SOUTH, false);
+            getTile(x_pos, y_pos - 1)->setWall(NORTH, false);
+            y_pos--;
+            break;
+        WEST:
+            getTile(x_pos, y_pos)->setWall(WEST, false);
+            getTile(x_pos - 1, y_pos)->setWall(EAST, false);
+            x_pos--;
+            break;
+        }
+        cells[x_pos][y_pos][2] = 1;  // Set next cell as explored
+        cell_stack.push(cells[x_pos][y_pos]);
+    }
+    */
 
     // Percentage chance any one wall will exist
     float wallProb = 0.35;

@@ -2,7 +2,9 @@
 #define SIM_MAZEGRAPHIC_H_
 
 #include <vector>
+
 #include "Maze.h"
+
 #include "TileGraphic.h"
 
 namespace sim {
