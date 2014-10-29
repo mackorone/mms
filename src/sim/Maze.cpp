@@ -115,78 +115,187 @@ void Maze::randomize(){
     int width = getWidth();
     int height = getHeight();
 
-    /*
-    int x_pos = 0;
-    int y_pos = 0;
+    // Percentage chance any one wall will exist
+    float wallProb = 0.35;
 
-    int cells[MAZE_WIDTH][MAZE_HEIGHT][3]; // {x,y,explored}
-
-    for (int x = 0; x < MAZE_WIDTH; x++){   // Set the x and y position of each sublist to the correct spot
-        for (int y = 0; y < MAZE_HEIGHT; y++){
-            cells[x][y][0] = x;
-            cells[x][y][1] = y;
+    // Randomly generate all of the walls
+    for (int x = 0; x < width; x++){
+        for (int y = 0; y < height; y++){
+            for (int k = 0; k < 4; k++){
+                bool wallExists = (rand() <= (RAND_MAX * wallProb));
+                switch (k){
+                    case NORTH:
+                        if (y + 1 < height){
+                            getTile(x, y+1)->setWall(SOUTH, wallExists);
+                            getTile(x, y)->setWall(NORTH, wallExists);
+                        }
+                        else {
+                            getTile(x, y)->setWall(NORTH, true);
+                        }
+                        break;
+                    case EAST:
+                        if (x + 1 < width){
+                            getTile(x+1, y)->setWall(WEST, wallExists);
+                            getTile(x, y)->setWall(EAST, wallExists);
+                        }
+                        else {
+                            getTile(x, y)->setWall(EAST, true);
+                        }
+                        break;
+                    case SOUTH:
+                        if (y > 0){
+                            getTile(x, y-1)->setWall(NORTH, wallExists);
+                            getTile(x, y)->setWall(SOUTH, wallExists);
+                        }
+                        else {
+                            getTile(x, y)->setWall(SOUTH, true);
+                        }
+                        break;
+                    case WEST:
+                        if (x > 0){
+                            getTile(x-1, y)->setWall(EAST, wallExists);
+                            getTile(x, y)->setWall(WEST, wallExists);
+                        }
+                        else {
+                            getTile(x, y)->setWall(WEST, true);
+                        }
+                        break;
+                }
+            }
         }
     }
 
-    std::stack<int[3]> cell_stack;
+    // Make sure every peg has at least one wall
+    for (int x = 0; x < width - 1; x++) {
+        for (int y = 0; y < height - 1; y++) {
+            if (!getTile(x, y)->isWall(NORTH)
+             && !getTile(x, y)->isWall(EAST)
+             && !getTile(x + 1, y + 1)->isWall(WEST)
+             && !getTile(x + 1, y + 1)->isWall(SOUTH)) {
+                switch (rand() / (1 + RAND_MAX/4)) {
+                    case NORTH:
+                        getTile(x + 1, y + 1)->setWall(WEST, true);
+                        getTile(x, y + 1)->setWall(EAST, true);
+                        break;
+                    case EAST:
+                        getTile(x + 1, y + 1)->setWall(SOUTH, true);
+                        getTile(x + 1, y)->setWall(NORTH, true);
+                        break;
+                    case SOUTH:
+                        getTile(x,y)->setWall(EAST, true);
+                        getTile(x + 1,y)->setWall(WEST, true);
+                        break;
+                    case WEST:
+                        getTile(x, y)->setWall(NORTH, true);
+                        getTile(x, y + 1)->setWall(SOUTH, true);
+                        break;
+                }
+            }
+        }
+    }
 
-    cells[0][0][2] = 1; // Mark First cell as explored
-    cell_stack.push(cells[x_pos][y_pos]); // Push first cell unto stack
+    // Ensures that the middle is hallowed out
+    if (width % 2 == 0){
+        if (height % 2 == 0){
+            getTile(width/2-1, height/2-1)->setWall(NORTH, false);
+            getTile(width/2-1, height/2)->setWall(SOUTH, false);
+            getTile(width/2, height/2-1)->setWall(NORTH, false);
+            getTile(width/2, height/2)->setWall(SOUTH, false);
+            getTile(width/2-1, height/2-1)->setWall(EAST, false);
+            getTile(width/2, height/2-1)->setWall(WEST, false);
+        }
+        getTile(width/2-1, height/2)->setWall(EAST, false);
+        getTile(width/2, height/2)->setWall(WEST, false);
+            
+    }
+    if (height % 2 == 0){
+        getTile(width/2, height/2-1)->setWall(NORTH, false);
+        getTile(width/2, height/2)->setWall(SOUTH, false);
+    }
+
+    // Once the walls are assigned, we can assign neighbors
+    assignNeighbors();
+}
+
+void Maze::randomizeTwo() {
     
-    while (!cell_stack.empty()){ //Keep going until the stack is empty
-        int choices[4] = { 0, 0, 0, 0 };     // To store next possible movements N, E, S, W
+    // Declare width and height locally to reduce function calls
+    int width = getWidth();
+    int height = getHeight();
 
-        if ((x_pos - 1 >= 0) && (cells[x_pos - 1][y_pos][2] == 0)) //if cell to the West is valid and unexplored
-            choices[WEST] = 1;
-        if ((y_pos - 1 >= 0) && (cells[x_pos][y_pos - 1][2] == 0)) //if cell to the South is valid and unexplored
-            choices[SOUTH] = 1;
-        if ((x_pos + 1 < MAZE_WIDTH) && (cells[x_pos + 1][y_pos][2] == 0)) //if cell to the East is valid and unexplored
-            choices[EAST] = 1;
-        if ((x_pos + 1 < MAZE_WIDTH) && (cells[x_pos + 1][y_pos][2] == 0)) //if cell to the North is valid and unexplored
-            choices[NORTH] = 1;
+    // We'll use a stack to do a DFS
+    std::stack<Tile*> toExplore;
+    Tile* t = getTile(0,0);
+    
+    // Continue to DFS until we've explored every Tile
+    while (!toExplore.empty()){
 
-        if (choices[3] == 0
-            && choices[2] == 0
-            && choices[1] == 0
-            && choices[0] == 0){       // Go to previous cell if the current cell has no more paths forward
-            x_pos = cell_stack.top()[0];
-            y_pos = cell_stack.top()[1];
-            cell_stack.pop();
+        // Grab and unpack the top thing from the stack
+        Tile* current = toExplore.top();
+        toExplore.pop();
+        int x_pos = current->getX();
+        int y_pos = current->getY();
+
+        // Keep track of the next possible movements N, E, S, W
+        bool choices[4] = {false};
+
+        // If cell to the West is valid and unexplored
+        if ((x_pos - 1 >= 0) && !getTile(x_pos - 1, y_pos)->getExplored()) {
+            choices[WEST] = true;
         }
 
-        int rand_dir = rand() / (RAND_MAX / RAND_MAX + 1);
+        // If cell to the South is valid and unexplored
+        if ((y_pos - 1 >= 0) && !getTile(x_pos, y_pos - 1)->getExplored()) {
+            choices[SOUTH] = true;
+        }
 
-        while (choices[rand_dir] == 0)                      // Keep generating random moves until next move is valid
-            rand_dir = rand() / (RAND_MAX / RAND_MAX + 1);
+        // If cell to the East is valid and unexplored
+        if ((x_pos + 1 < MAZE_WIDTH) && !getTile(x_pos + 1, y_pos)->getExplored()) {
+            choices[EAST] = true;
+        }
+
+        // If cell to the North is valid and unexplored
+        if ((x_pos + 1 < MAZE_WIDTH) && !getTile(x_pos + 1, y_pos)->getExplored()) {
+            choices[NORTH] = true;
+        }
+
+        // If the current cell has no more paths forward, we're done
+        if (!choices[3] && !choices[2] && !choices[1] && !choices[0]) {
+            continue;
+        }
+
+        // Keep generating random moves until next move is valid
+        int rand_dir = rand() / (1 + RAND_MAX/4.0);
+        while (choices[rand_dir] == 0) {
+            rand_dir = rand() / (1 + RAND_MAX/4.0);
+        }
 
         switch (rand_dir){
-        NORTH:
-            getTile(x_pos, y_pos)->setWall(NORTH, false);
-            getTile(x_pos, y_pos + 1)->setWall(SOUTH, false);
-            y_pos++;
-            break;
-        EAST:
-            getTile(x_pos, y_pos)->setWall(EAST, false);
-            getTile(x_pos + 1, y_pos)->setWall(WEST, false);
-            x_pos++;
-            break;
-        SOUTH:
-            getTile(x_pos, y_pos)->setWall(SOUTH, false);
-            getTile(x_pos, y_pos - 1)->setWall(NORTH, false);
-            y_pos--;
-            break;
-        WEST:
-            getTile(x_pos, y_pos)->setWall(WEST, false);
-            getTile(x_pos - 1, y_pos)->setWall(EAST, false);
-            x_pos--;
-            break;
-        }
-        cells[x_pos][y_pos][2] = 1;  // Set next cell as explored
-        cell_stack.push(cells[x_pos][y_pos]);
+            case NORTH:
+                getTile(x_pos, y_pos)->setWall(NORTH, false);
+                getTile(x_pos, y_pos + 1)->setWall(SOUTH, false);
+                toExplore.push(getTile(x_pos, y_pos + 1));
+                break;
+            case EAST:
+                getTile(x_pos, y_pos)->setWall(EAST, false);
+                getTile(x_pos + 1, y_pos)->setWall(WEST, false);
+                toExplore.push(getTile(x_pos + 1, y_pos));
+                break;
+            case SOUTH:
+                getTile(x_pos, y_pos)->setWall(SOUTH, false);
+                getTile(x_pos, y_pos - 1)->setWall(NORTH, false);
+                toExplore.push(getTile(x_pos, y_pos - 1));
+                break;
+            case WEST:
+                getTile(x_pos, y_pos)->setWall(WEST, false);
+                getTile(x_pos - 1, y_pos)->setWall(EAST, false);
+                toExplore.push(getTile(x_pos - 1, y_pos));
+                break;
+            }
     }
-    */
 
     // Percentage chance any one wall will exist
+    /*
     float wallProb = 0.35;
 
     for (int x = 0; x < width; x++){
@@ -263,6 +372,7 @@ void Maze::randomize(){
             }
         }
     }
+    */
 
     // Ensures that the middle is hallowed out
     if (width % 2 == 0){
