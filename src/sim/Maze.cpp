@@ -39,9 +39,12 @@ Maze::Maze(int width, int height, std::string mazeFileDirPath, std::string mazeF
         std::cout << "No maze file provided. Generating random maze..." << std::endl;
 
         randomizeTwo();
+        int i = 0;
         while (!(solveShortestPath().at(0) && solveShortestPath().at(1))) {
             randomizeTwo();
+            i++;
         }
+        std::cout << i << std::endl;
 
         // Optional - can be used to generate more maze files
         saveMaze(mazeFileDirPath += "/auto_generated_maze.maz");
@@ -234,12 +237,29 @@ void Maze::randomizeTwo() {
         }
     }
 
+    if (width % 2 == 0){   // mark middle as explored so dps avoids it
+        if (height % 2 == 0){
+            getTile(width / 2, height / 2)->setExplored(true);
+            getTile(width / 2 - 1, height / 2)->setExplored(true);
+            getTile(width / 2, height / 2 - 1)->setExplored(true);
+            getTile(width / 2 - 1, height / 2 - 1)->setExplored(true);
+        }
+        getTile(width / 2 - 1, height / 2)->setExplored(true);
+        getTile(width / 2, height / 2)->setExplored(true);
+
+    }
+    if (height % 2 == 0){
+        getTile(width / 2, height / 2 - 1)->setExplored(true);
+        getTile(width / 2, height / 2)->setExplored(true);
+    }
+
     // We'll use a stack to do a DFS
     std::stack<Tile*> toExplore;
 
     getTile(0, 0)->setExplored(true);
     Tile* t = getTile(0,0);
     toExplore.push(t);
+
     
     // Continue to DFS until we've explored every Tile
     while (!toExplore.empty()){
@@ -336,6 +356,102 @@ void Maze::randomizeTwo() {
         getTile(width/2, height/2-1)->setWall(NORTH, false);
         getTile(width/2, height/2)->setWall(SOUTH, false);
     }
+
+
+
+    if (width % 2 == 0 && height % 2 != 0){ //Break a random wall leading to center group
+        switch (rand() / (1 + RAND_MAX / 6)){
+            case 0:
+                getTile(width / 2 - 1, height / 2)->setWall(WEST, false);
+                getTile(width / 2 - 2, height / 2)->setWall(EAST, false);
+                break;
+            case 1:
+                getTile(width / 2 - 1, height / 2)->setWall(NORTH, false);
+                getTile(width / 2 - 1, height / 2 + 1)->setWall(SOUTH, false);
+                break;
+            case 2:
+                getTile(width / 2 - 1, height / 2)->setWall(SOUTH, false);
+                getTile(width / 2 - 1, height / 2 - 1)->setWall(NORTH, false);
+                break;
+            case 3:
+                getTile(width / 2, height / 2)->setWall(EAST, false);
+                getTile(width / 2 + 1, height / 2)->setWall(WEST, false);
+                break;
+            case 4:
+                getTile(width / 2, height / 2)->setWall(NORTH, false);
+                getTile(width / 2, height / 2 + 1)->setWall(SOUTH, false);
+                break;
+            case 5:
+                getTile(width / 2, height / 2)->setWall(SOUTH, false);
+                getTile(width / 2, height / 2 - 1)->setWall(SOUTH, false);
+                break;
+        }
+    }
+    if (height % 2 == 0 && width % 2 != 0){
+        switch (rand() / (1 + RAND_MAX / 6)){
+        case 0:
+            getTile(width / 2, height / 2 - 1)->setWall(SOUTH, false);
+            getTile(width / 2, height / 2 - 2)->setWall(NORTH, false);
+            break;
+        case 1:
+            getTile(width / 2, height / 2 - 1)->setWall(EAST, false);
+            getTile(width / 2 + 1, height / 2 - 1)->setWall(WEST, false);
+            break;
+        case 2:
+            getTile(width / 2, height / 2 - 1)->setWall(WEST, false);
+            getTile(width / 2 - 1, height / 2 - 1)->setWall(EAST, false);
+            break;
+        case 3:
+            getTile(width / 2, height / 2)->setWall(NORTH, false);
+            getTile(width / 2, height / 2 + 1)->setWall(SOUTH, false);
+            break;
+        case 4:
+            getTile(width / 2, height / 2)->setWall(EAST, false);
+            getTile(width / 2 + 1, height / 2)->setWall(WEST, false);
+            break;
+        case 5:
+            getTile(width / 2, height / 2)->setWall(WEST, false);
+            getTile(width / 2 - 1, height / 2)->setWall(EAST, false);
+            break;
+        }
+    }
+    if (height % 2 == 0 && width % 2 == 0){
+        switch (rand() / (1 + RAND_MAX / 8)){
+        case 0:
+            getTile(width / 2 - 1, height / 2 - 1)->setWall(WEST, false);
+            getTile(width / 2 - 2, height / 2 - 1)->setWall(EAST, false);
+            break;
+        case 1:
+            getTile(width / 2 - 1, height / 2 - 1)->setWall(SOUTH, false);
+            getTile(width / 2 - 1, height / 2 - 2)->setWall(NORTH, false);
+            break;
+        case 2:
+            getTile(width / 2 - 1, height / 2)->setWall(NORTH, false);
+            getTile(width / 2 - 1, height / 2 + 1)->setWall(SOUTH, false);
+            break;
+        case 3:
+            getTile(width / 2 - 1, height / 2)->setWall(WEST, false);
+            getTile(width / 2 - 2, height / 2)->setWall(EAST, false);
+            break;
+        case 4:
+            getTile(width / 2, height / 2 - 1)->setWall(EAST, false);
+            getTile(width / 2 + 1, height / 2 - 1)->setWall(WEST, false);
+            break;
+        case 5:
+            getTile(width / 2, height / 2 - 1)->setWall(SOUTH, false);
+            getTile(width / 2, height / 2 - 2)->setWall(NORTH, false);
+            break;
+        case 6:
+            getTile(width / 2, height / 2)->setWall(NORTH, false);
+            getTile(width / 2, height / 2 + 1)->setWall(SOUTH, false);
+            break;
+        case 7:
+            getTile(width / 2, height / 2)->setWall(EAST, false);
+            getTile(width / 2 + 1, height / 2)->setWall(WEST, false);
+            break;
+        }
+    }
+
 
     // Once the walls are assigned, we can assign neighbors
     assignNeighbors();
