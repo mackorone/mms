@@ -1,6 +1,7 @@
 #include "Maze.h"
 
 #include <cstdlib>
+#include <math.h>
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -10,6 +11,7 @@
 #include <vector>
 #include <stack>
 
+#include "Sleep.h"
 #include "../sim/Constants.h"
 #include "../sim/Parameters.h"
 #include "../sim/Tile.h"
@@ -236,28 +238,50 @@ void Maze::randomizeTwo() {
     }
 
     if (width % 2 == 0){   // mark middle as explored so dps avoids it
+                           // mark distance as 255 so we can exclude center
+                           // when looking for a wall to break down
         if (height % 2 == 0){
             getTile(width / 2, height / 2)->setExplored(true);
+            getTile(width / 2, height / 2)->setDistance(120);
+
             getTile(width / 2 - 1, height / 2)->setExplored(true);
+            getTile(width / 2 - 1, height / 2)->setDistance(120);
+
             getTile(width / 2, height / 2 - 1)->setExplored(true);
+            getTile(width / 2, height / 2 - 1)->setDistance(120);
+
             getTile(width / 2 - 1, height / 2 - 1)->setExplored(true);
+            getTile(width / 2 - 1, height / 2 - 1)->setDistance(120);
         }
         getTile(width / 2 - 1, height / 2)->setExplored(true);
+        getTile(width / 2 - 1, height / 2)->setDistance(120);
+
         getTile(width / 2, height / 2)->setExplored(true);
+        getTile(width / 2, height / 2)->setDistance(120);
 
     }
     if (height % 2 == 0){
         getTile(width / 2, height / 2 - 1)->setExplored(true);
+        getTile(width / 2, height / 2 - 1)->setDistance(120);
+
         getTile(width / 2, height / 2)->setExplored(true);
+        getTile(width / 2, height / 2)->setDistance(120);
     }
 
     // We'll use a stack to do a DFS
     std::stack<Tile*> toExplore;
 
-    getTile(0, 0)->setExplored(true);
+    getTile(0, 0)->setExplored(true); // Put the first cell on stack
+    getTile(0, 0)->setDistance(0);
     Tile* t = getTile(0,0);
     toExplore.push(t);
 
+    int exploreDIR = -1; //last direction the mouse moved. -1 if DNE
+
+    float moveConst = 0; // the chance the algorithm will continue same direction of tavel
+                         // if zero the maze will always turn. if 1 maze will be longest possible
+    int dirThreshold = RAND_MAX * moveConst; // the threshold which the random number will be 
+                                                      // compared too
     
     // Continue to DFS until we've explored every Tile
     while (!toExplore.empty()){
@@ -266,6 +290,15 @@ void Maze::randomizeTwo() {
 
         int x_pos = current->getX();
         int y_pos = current->getY();
+
+        float xDelta = (abs(x_pos - width / 2.0) * 2.0) / width; //ratios of how far you are from the center
+        float yDelta = (abs(y_pos - height / 2.0) * 2.0) / height;
+
+        float avgDelta = std::max(xDelta, yDelta);
+
+        moveConst = 1 * avgDelta; // the chance the algorithm will continue same direction of tavel
+
+        dirThreshold = RAND_MAX * moveConst;
 
         // Keep track of the next possible movements N = 0, E = 1, S = 2, W =3
         bool choices[4] = {0,0,0,0};
@@ -287,50 +320,161 @@ void Maze::randomizeTwo() {
             choices[WEST] = true;
         }
 
+
+        int possible = choices[0] + choices[1] + choices[2] + choices[3]; // Sum of possible moves
+
         // If the current cell has no more paths forward, we're done
-        if (!choices[3] && !choices[2] && !choices[1] && !choices[0]) {
+        if (possible == 0) {
             toExplore.pop();
+            exploreDIR = -1; // Once we start backtracing there is no last move
             continue;
         }
         
-        // Keep generating random moves until next move is valid
-        int rand_dir = rand() / (1 + RAND_MAX/4.0);
-        while (choices[rand_dir] == 0) {
-            rand_dir = rand() / (1 + RAND_MAX/4.0);
+        int direction;  // final direction holder
+        int rand_dir;   // random variable holder
+
+
+        //if previous move exists, and repeating it will yeild a valid move AND its not the only valid move
+
+        if (exploreDIR != -1 && choices[exploreDIR] != 0 && possible != 1)
+        {
+            if (rand() <= dirThreshold){  // if random variable is below threshold move in last direction
+                direction = exploreDIR;
+            }
+            else {
+                rand_dir = rand() / (1 + RAND_MAX / 4.0); // otherwise move in any viable direction
+                while (choices[rand_dir] == 0 || rand_dir == exploreDIR) { // but the last moved direction
+                    rand_dir = rand() / (1 + RAND_MAX / 4.0);
+                }
+                direction = rand_dir;
+            }
+        }
+        else { // otherwise just move in a random viable direction
+            rand_dir = rand() / (1 + RAND_MAX / 4.0);
+            while (choices[rand_dir] == 0) {
+                rand_dir = rand() / (1 + RAND_MAX / 4.0);
+            }
+            direction = rand_dir;
         }
 
-        switch (rand_dir){
+
+        // Set the tile in the direction we move to explored and attach the number
+        // Break down the wall between the current cell and that cell
+        // And push it unto the stack
+
+        switch (direction){
             case NORTH:
                 getTile(x_pos, y_pos)->setWall(NORTH, false);
                 getTile(x_pos, y_pos + 1)->setWall(SOUTH, false);
                 getTile(x_pos, y_pos + 1)->setExplored(true);
+                getTile(x_pos, y_pos + 1)->setDistance(toExplore.size());
                 toExplore.push(getTile(x_pos, y_pos + 1));
+                exploreDIR = NORTH;
                 break;
             case EAST:
                 getTile(x_pos, y_pos)->setWall(EAST, false);
                 getTile(x_pos + 1, y_pos)->setWall(WEST, false);
                 getTile(x_pos + 1, y_pos)->setExplored(true);
+                getTile(x_pos + 1, y_pos)->setDistance(toExplore.size());
                 toExplore.push(getTile(x_pos + 1, y_pos));
+                exploreDIR = EAST;
                 break;
             case SOUTH:
                 getTile(x_pos, y_pos)->setWall(SOUTH, false);
                 getTile(x_pos, y_pos - 1)->setWall(NORTH, false);
                 getTile(x_pos, y_pos - 1)->setExplored(true);
+                getTile(x_pos, y_pos - 1)->setDistance(toExplore.size());
                 toExplore.push(getTile(x_pos, y_pos - 1));
+                exploreDIR = SOUTH;
                 break;
             case WEST:
                 getTile(x_pos, y_pos)->setWall(WEST, false);
                 getTile(x_pos - 1, y_pos)->setWall(EAST, false);
                 getTile(x_pos - 1, y_pos)->setExplored(true);
+                getTile(x_pos - 1, y_pos)->setDistance(toExplore.size());
                 toExplore.push(getTile(x_pos - 1, y_pos));
+                exploreDIR = WEST;
                 break;
             }
+    }
+
+    int biggestDifference = 0;
+    int x_pos = 0; // x and y position at which the biggest diference occured
+    int y_pos = 0;
+
+    for (int x = 0; x < width; x += 1) {
+        for (int y = 0; y < height; y += 1) {
+
+            int currentCellDist = getTile(x, y)->getDistance();
+            int prospectiveDist = 0;
+
+            // If cell to the North is valid and unexplored
+            if ((y + 1 < MAZE_WIDTH)) {
+                prospectiveDist = getTile(x, y + 1)->getDistance();
+                if (abs(prospectiveDist - currentCellDist) > biggestDifference){
+                    biggestDifference = abs(prospectiveDist - currentCellDist);
+                    x_pos = x;
+                    y_pos = y;
+                }
+            }
+            // If cell to the East is valid and unexplored
+            if ((x + 1 < MAZE_WIDTH)) {
+                prospectiveDist = getTile(x + 1, y)->getDistance();
+                if (abs(prospectiveDist - currentCellDist) > biggestDifference){
+                    biggestDifference = abs(prospectiveDist - currentCellDist);
+                    x_pos = x;
+                    y_pos = y;
+                }
+            }
+            // If cell to the South is valid and unexplored
+            if ((y - 1 >= 0)) {
+                prospectiveDist = getTile(x, y - 1)->getDistance();
+                if (abs(prospectiveDist - currentCellDist) > biggestDifference){
+                    biggestDifference = abs(prospectiveDist - currentCellDist);
+                    x_pos = x;
+                    y_pos = y;
+                }
+            }
+            // If cell to the West is valid and unexplored
+            if ((x - 1 >= 0)) {
+                prospectiveDist = getTile(x - 1, y)->getDistance();
+                if (abs(prospectiveDist - currentCellDist) > biggestDifference){
+                    biggestDifference = abs(prospectiveDist - currentCellDist);
+                    x_pos = x;
+                    y_pos = y;
+                }
+            }
+        }
+    }
+    
+    int currentCellDist = getTile(x_pos, y_pos)->getDistance();
+    std::cout << biggestDifference << " " << x_pos << " " << y_pos << std::endl;
+
+    if ((y_pos + 1 < MAZE_WIDTH) && abs(getTile(x_pos, y_pos + 1)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference) {
+        getTile(x_pos, y_pos)->setWall(NORTH, false);
+        getTile(x_pos, y_pos + 1)->setWall(SOUTH, false);
+    }
+    // If cell to the East is valid and unexplored
+    if ((x_pos + 1 < MAZE_WIDTH) && abs(getTile(x_pos + 1, y_pos)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference) {
+        getTile(x_pos, y_pos)->setWall(EAST, false);
+        getTile(x_pos + 1, y_pos)->setWall(WEST, false);
+    }
+    // If cell to the South is valid and unexplored
+    if ((y_pos - 1 >= 0) && abs(getTile(x_pos, y_pos - 1)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference) {
+        getTile(x_pos, y_pos)->setWall(SOUTH, false);
+        getTile(x_pos, y_pos - 1)->setWall(NORTH, false);
+    }
+    // If cell to the West is valid and unexplored
+    if ((x_pos - 1 >= 0) && abs(getTile(x_pos - 1, y_pos)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference) {
+        getTile(x_pos, y_pos)->setWall(WEST, false);
+        getTile(x_pos - 1, y_pos)->setWall(EAST, false);
     }
 
     // Set each tile as unexplored by the Mouse (note that we
     // just "borrowed" this field for the maze genereration.
     for (int x = 0; x < width; x += 1) {
         for (int y = 0; y < height; y += 1) {
+            getTile(x, y)->setDistance(255);
             getTile(x, y)->setExplored(false);
         }
     }
@@ -383,6 +527,8 @@ void Maze::randomizeTwo() {
                 break;
         }
     }
+
+    // Break a random wall leading to center group
     if (height % 2 == 0 && width % 2 != 0){
         switch (rand() / (1 + RAND_MAX / 6)){
         case 0:
@@ -411,6 +557,8 @@ void Maze::randomizeTwo() {
             break;
         }
     }
+
+    // Break a random wall leading to center group
     if (height % 2 == 0 && width % 2 == 0){
         switch (rand() / (1 + RAND_MAX / 8)){
         case 0:
