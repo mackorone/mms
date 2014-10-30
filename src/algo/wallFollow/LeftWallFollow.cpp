@@ -1,7 +1,7 @@
 #include "LeftWallFollow.h"
 
 void LeftWallFollow::solve(sim::MouseInterface* mouse){
-    while (true){
+    while (true) {
         leftWallFollowStep(mouse);
     }
 }
@@ -15,3 +15,25 @@ void LeftWallFollow::leftWallFollowStep(sim::MouseInterface* mouse){
     }
     mouse->moveForward();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

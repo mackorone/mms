@@ -39,12 +39,12 @@ Maze::Maze(int width, int height, std::string mazeFileDirPath, std::string mazeF
         std::cout << "No maze file provided. Generating random maze..." << std::endl;
 
         randomizeTwo();
-        int i = 1;
+        int i = 1; // TODO
         while (!(solveShortestPath().at(0) && solveShortestPath().at(1))) {
             randomizeTwo();
-            i++;
+            i++; // TODO
         }
-        std::cout << i << std::endl;
+        std::cout << i << std::endl; // TODO
 
         // Optional - can be used to generate more maze files
         saveMaze(mazeFileDirPath += "/auto_generated_maze.maz");
