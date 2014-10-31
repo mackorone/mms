@@ -6,7 +6,7 @@
 
 namespace sim {
 
-class MouseParser{
+class MouseParser {
 
 pugi::xml_document doc;
 

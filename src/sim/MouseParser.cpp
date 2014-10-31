@@ -3,7 +3,7 @@
 namespace sim {
 
 MouseParser::MouseParser() {
-    pugi::xml_parse_result result=doc.load_file("C:/Users/Mitchell/Documents/GitHub/Micromouse/two/winport/sim/dataFiles/myRobot.xml");
+    pugi::xml_parse_result result=doc.load_file("./myRobot.xml");
     if(!result) {
 		std::cout << "Error" << std::endl;
 		std::cout << "Description: " << result.description() << std::endl;
