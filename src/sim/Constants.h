@@ -9,12 +9,12 @@ namespace sim {
 enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
 
 // Graphics constants
-static GLfloat GREEN     [3] = { 0,.9, 0};
-static GLfloat DARKGREEN [3] = { 0,.5, 0};
-static GLfloat BLUE      [3] = { 0, 0,.7};
-static GLfloat GRAY      [3] = {.4,.4,.4};
-static GLfloat BLACK     [3] = { 0, 0, 0};
-static GLfloat RED       [3] = {.6, 0, 0};
+static GLfloat GREEN     [3] = { 0.0f, 0.9f, 0.0f};
+static GLfloat DARKGREEN [3] = { 0.0f, 0.5f, 0.0f};
+static GLfloat BLUE      [3] = { 0.0f, 0.0f, 0.7f};
+static GLfloat GRAY      [3] = { 0.4f, 0.4f, 0.4f};
+static GLfloat BLACK     [3] = { 0.0f, 0.0f, 0.0f};
+static GLfloat RED       [3] = { 0.6f, 0.0f, 0.0f};
 
 } // namespace sim
 
