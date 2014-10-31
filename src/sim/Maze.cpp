@@ -238,7 +238,7 @@ void Maze::randomizeTwo() {
     }
 
     if (width % 2 == 0){   // mark middle as explored so dps avoids it
-                           // mark distance as 255 so we can exclude center
+                           // mark distance as 120 (~median) so we can exclude center
                            // when looking for a wall to break down
         if (height % 2 == 0){
             getTile(width / 2, height / 2)->setExplored(true);
@@ -272,7 +272,7 @@ void Maze::randomizeTwo() {
     std::stack<Tile*> toExplore;
 
     getTile(0, 0)->setExplored(true); // Put the first cell on stack
-    getTile(0, 0)->setDistance(0);
+    getTile(0, 0)->setDistance(0); // Cell 0
     Tile* t = getTile(0,0);
     toExplore.push(t);
 
@@ -280,6 +280,8 @@ void Maze::randomizeTwo() {
 
     float moveConst = 0; // the chance the algorithm will continue same direction of tavel
                          // if zero the maze will always turn. if 1 maze will be longest possible
+                        // Currently proprtional to distance from center <see below>
+
     int dirThreshold = RAND_MAX * moveConst; // the threshold which the random number will be 
                                                       // compared too
     
@@ -291,12 +293,13 @@ void Maze::randomizeTwo() {
         int x_pos = current->getX();
         int y_pos = current->getY();
 
-        float xDelta = (abs(x_pos - width / 2.0) * 2.0) / width; //ratios of how far you are from the center
-        float yDelta = (abs(y_pos - height / 2.0) * 2.0) / height;
+        float xDelta = (abs(x_pos - width / 2.0) * 2.0) / (width-1); //ratios of how far you are from the center
+        float yDelta = (abs(y_pos - height / 2.0) * 2.0) / (height-1);
 
-        float avgDelta = std::max(xDelta, yDelta);
+        float avgDelta = std::max(xDelta, yDelta) * 0.85; // * 0.85 gives good compromise betwwen straight and turned
 
-        moveConst = 1 * avgDelta; // the chance the algorithm will continue same direction of tavel
+        moveConst = 1 * avgDelta; // the chance the algorithm will continue same direction of tavel is proportional
+                                  // to the max distance of the mouse to the center on any axis.
 
         dirThreshold = RAND_MAX * moveConst;
 
@@ -325,7 +328,66 @@ void Maze::randomizeTwo() {
 
         // If the current cell has no more paths forward, we're done
         if (possible == 0) {
-            toExplore.pop();
+            toExplore.pop(); // Go Back
+            if (exploreDIR != -1){ // We just reached the end of a path. lets break a wall with probability P
+                if (rand() <= RAND_MAX * .75){ // HULK SMASH the wall that will connect two most disjoint
+                    
+                    int currentCellDist = getTile(x_pos, y_pos)->getDistance();
+                    int biggestDifference = 0;
+                    int cellToBreak = 0; // NORTH, SOUTH, EAST, WEST
+
+                    // If cell to the North is valid and explored
+                    if ((y_pos + 1 < MAZE_WIDTH) && getTile(x_pos, y_pos + 1)->getExplored()) {
+                        if (abs(getTile(x_pos, y_pos + 1)->getDistance() - currentCellDist) > biggestDifference){
+                            biggestDifference = abs(getTile(x_pos, y_pos + 1)->getDistance() - currentCellDist);
+                            cellToBreak = NORTH;
+                        }
+                    }
+                    // If cell to the East is valid and explored
+                    if ((x_pos + 1 < MAZE_WIDTH) && getTile(x_pos + 1, y_pos)->getExplored()) {
+                        if (abs(getTile(x_pos + 1, y_pos)->getDistance() - currentCellDist) > biggestDifference){
+                            biggestDifference = abs(getTile(x_pos + 1, y_pos)->getDistance());
+                            cellToBreak = EAST;
+                        }
+                    }
+                    // If cell to the South is valid and explored
+                    if ((y_pos - 1 >= 0) && getTile(x_pos, y_pos - 1)->getExplored()) {
+                        if (abs(getTile(x_pos, y_pos - 1)->getDistance() - currentCellDist) > biggestDifference){
+                            biggestDifference = abs(getTile(x_pos, y_pos - 1)->getDistance());
+                            cellToBreak = SOUTH;
+                        }
+                    }
+                    // If cell to the West is valid and explored
+                    if ((x_pos - 1 >= 0) && getTile(x_pos - 1, y_pos)->getExplored()) {
+                        if (abs(getTile(x_pos - 1, y_pos)->getDistance() - currentCellDist) > biggestDifference){
+                            biggestDifference = abs(getTile(x_pos - 1, y_pos)->getDistance());
+                            cellToBreak = WEST;
+                        }
+                    }
+
+                    if (biggestDifference > 0){ // TODO: figure out why '>5' still generates solo pegs
+                        switch (cellToBreak){ // Break wall across greates gradiant
+                        case NORTH:
+                            getTile(x_pos, y_pos)->setWall(NORTH, false);
+                            getTile(x_pos, y_pos + 1)->setWall(SOUTH, false);
+                            break;
+                        case SOUTH:
+                            getTile(x_pos, y_pos)->setWall(SOUTH, false);
+                            getTile(x_pos, y_pos - 1)->setWall(NORTH, false);
+                            break;
+                        case EAST:
+                            getTile(x_pos, y_pos)->setWall(EAST, false);
+                            getTile(x_pos + 1, y_pos)->setWall(WEST, false);
+                            break;
+                        case WEST:
+                            getTile(x_pos, y_pos)->setWall(WEST, false);
+                            getTile(x_pos - 1, y_pos)->setWall(EAST, false);
+                            break;
+                        }
+                    }
+                }
+
+            }
             exploreDIR = -1; // Once we start backtracing there is no last move
             continue;
         }
@@ -367,8 +429,8 @@ void Maze::randomizeTwo() {
                 getTile(x_pos, y_pos)->setWall(NORTH, false);
                 getTile(x_pos, y_pos + 1)->setWall(SOUTH, false);
                 getTile(x_pos, y_pos + 1)->setExplored(true);
-                getTile(x_pos, y_pos + 1)->setDistance(toExplore.size());
-                toExplore.push(getTile(x_pos, y_pos + 1));
+                getTile(x_pos, y_pos + 1)->setDistance(toExplore.size()); // Size of stack is distance from center
+                toExplore.push(getTile(x_pos, y_pos + 1)); // Push next cell unto stack
                 exploreDIR = NORTH;
                 break;
             case EAST:
@@ -398,6 +460,8 @@ void Maze::randomizeTwo() {
             }
     }
 
+    //Break one wall with the biggest gradiant across it down
+
     int biggestDifference = 0;
     int x_pos = 0; // x and y position at which the biggest diference occured
     int y_pos = 0;
@@ -408,16 +472,17 @@ void Maze::randomizeTwo() {
             int currentCellDist = getTile(x, y)->getDistance();
             int prospectiveDist = 0;
 
-            // If cell to the North is valid and unexplored
+            // If cell to the North is valid
             if ((y + 1 < MAZE_WIDTH)) {
                 prospectiveDist = getTile(x, y + 1)->getDistance();
+                //Check the gradient and see if it is the biggest one so far
                 if (abs(prospectiveDist - currentCellDist) > biggestDifference){
                     biggestDifference = abs(prospectiveDist - currentCellDist);
-                    x_pos = x;
+                    x_pos = x; //Record x,y position to return later
                     y_pos = y;
                 }
             }
-            // If cell to the East is valid and unexplored
+            // If cell to the East is valid
             if ((x + 1 < MAZE_WIDTH)) {
                 prospectiveDist = getTile(x + 1, y)->getDistance();
                 if (abs(prospectiveDist - currentCellDist) > biggestDifference){
@@ -426,7 +491,7 @@ void Maze::randomizeTwo() {
                     y_pos = y;
                 }
             }
-            // If cell to the South is valid and unexplored
+            // If cell to the South is valid
             if ((y - 1 >= 0)) {
                 prospectiveDist = getTile(x, y - 1)->getDistance();
                 if (abs(prospectiveDist - currentCellDist) > biggestDifference){
@@ -435,7 +500,7 @@ void Maze::randomizeTwo() {
                     y_pos = y;
                 }
             }
-            // If cell to the West is valid and unexplored
+            // If cell to the West is valid
             if ((x - 1 >= 0)) {
                 prospectiveDist = getTile(x - 1, y)->getDistance();
                 if (abs(prospectiveDist - currentCellDist) > biggestDifference){
@@ -448,34 +513,61 @@ void Maze::randomizeTwo() {
     }
     
     int currentCellDist = getTile(x_pos, y_pos)->getDistance();
-    std::cout << biggestDifference << " " << x_pos << " " << y_pos << std::endl;
+    
+    // Break down wall of cell which is between the gradient of size 'biggestDifference'
 
     if ((y_pos + 1 < MAZE_WIDTH) && abs(getTile(x_pos, y_pos + 1)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference) {
         getTile(x_pos, y_pos)->setWall(NORTH, false);
         getTile(x_pos, y_pos + 1)->setWall(SOUTH, false);
     }
-    // If cell to the East is valid and unexplored
     if ((x_pos + 1 < MAZE_WIDTH) && abs(getTile(x_pos + 1, y_pos)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference) {
         getTile(x_pos, y_pos)->setWall(EAST, false);
         getTile(x_pos + 1, y_pos)->setWall(WEST, false);
     }
-    // If cell to the South is valid and unexplored
     if ((y_pos - 1 >= 0) && abs(getTile(x_pos, y_pos - 1)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference) {
         getTile(x_pos, y_pos)->setWall(SOUTH, false);
         getTile(x_pos, y_pos - 1)->setWall(NORTH, false);
     }
-    // If cell to the West is valid and unexplored
     if ((x_pos - 1 >= 0) && abs(getTile(x_pos - 1, y_pos)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference) {
         getTile(x_pos, y_pos)->setWall(WEST, false);
         getTile(x_pos - 1, y_pos)->setWall(EAST, false);
     }
 
-    // Set each tile as unexplored by the Mouse (note that we
-    // just "borrowed" this field for the maze genereration.
+    // Set each tile as unexplored and distance 255 by, the Mouse 
+    // (note that we just "borrowed" these fields for the maze genereration.
     for (int x = 0; x < width; x += 1) {
         for (int y = 0; y < height; y += 1) {
             getTile(x, y)->setDistance(255);
             getTile(x, y)->setExplored(false);
+        }
+    }
+
+    // Make sure every peg has at least one wall
+    for (int x = 0; x < width - 1; x += 1) {
+        for (int y = 0; y < height - 1; y += 1) {
+            if (!getTile(x, y)->isWall(NORTH)
+                && !getTile(x, y)->isWall(EAST)
+                && !getTile(x + 1, y + 1)->isWall(WEST)
+                && !getTile(x + 1, y + 1)->isWall(SOUTH)) {
+                switch (rand() / (1 + RAND_MAX / 4)) {
+                case NORTH:
+                    getTile(x + 1, y + 1)->setWall(WEST, true);
+                    getTile(x, y + 1)->setWall(EAST, true);
+                    break;
+                case EAST:
+                    getTile(x + 1, y + 1)->setWall(SOUTH, true);
+                    getTile(x + 1, y)->setWall(NORTH, true);
+                    break;
+                case SOUTH:
+                    getTile(x, y)->setWall(EAST, true);
+                    getTile(x + 1, y)->setWall(WEST, true);
+                    break;
+                case WEST:
+                    getTile(x, y)->setWall(NORTH, true);
+                    getTile(x, y + 1)->setWall(SOUTH, true);
+                    break;
+                }
+            }
         }
     }
 
@@ -498,8 +590,27 @@ void Maze::randomizeTwo() {
         getTile(width/2, height/2)->setWall(SOUTH, false);
     }
 
-    // Break a random wall leading to center group
+    // Break a random wall leading to center group and make sure other walls are present
     if (width % 2 == 0 && height % 2 != 0){ 
+
+        getTile(width / 2 - 1, height / 2)->setWall(WEST, true);
+        getTile(width / 2 - 2, height / 2)->setWall(EAST, true);
+
+        getTile(width / 2 - 1, height / 2)->setWall(NORTH, true);
+        getTile(width / 2 - 1, height / 2 + 1)->setWall(SOUTH, true);
+
+        getTile(width / 2 - 1, height / 2)->setWall(SOUTH, true);
+        getTile(width / 2 - 1, height / 2 - 1)->setWall(NORTH, true);
+
+        getTile(width / 2, height / 2)->setWall(EAST, true);
+        getTile(width / 2 + 1, height / 2)->setWall(WEST, true);
+
+        getTile(width / 2, height / 2)->setWall(NORTH, true);
+        getTile(width / 2, height / 2 + 1)->setWall(SOUTH, true);
+
+        getTile(width / 2, height / 2)->setWall(SOUTH, true);
+        getTile(width / 2, height / 2 - 1)->setWall(SOUTH, true);
+
         switch (rand() / (1 + RAND_MAX / 6)){
             case 0:
                 getTile(width / 2 - 1, height / 2)->setWall(WEST, false);
@@ -530,6 +641,25 @@ void Maze::randomizeTwo() {
 
     // Break a random wall leading to center group
     if (height % 2 == 0 && width % 2 != 0){
+
+        getTile(width / 2, height / 2 - 1)->setWall(SOUTH, true);
+        getTile(width / 2, height / 2 - 2)->setWall(NORTH, true);
+
+        getTile(width / 2, height / 2 - 1)->setWall(EAST, true);
+        getTile(width / 2 + 1, height / 2 - 1)->setWall(WEST, true);
+
+        getTile(width / 2, height / 2 - 1)->setWall(WEST, true);
+        getTile(width / 2 - 1, height / 2 - 1)->setWall(EAST, true);
+
+        getTile(width / 2, height / 2)->setWall(NORTH, true);
+        getTile(width / 2, height / 2 + 1)->setWall(SOUTH, true);
+
+        getTile(width / 2, height / 2)->setWall(EAST, true);
+        getTile(width / 2 + 1, height / 2)->setWall(WEST, true);
+
+        getTile(width / 2, height / 2)->setWall(WEST, true);
+        getTile(width / 2 - 1, height / 2)->setWall(EAST, true);
+
         switch (rand() / (1 + RAND_MAX / 6)){
         case 0:
             getTile(width / 2, height / 2 - 1)->setWall(SOUTH, false);
@@ -560,6 +690,32 @@ void Maze::randomizeTwo() {
 
     // Break a random wall leading to center group
     if (height % 2 == 0 && width % 2 == 0){
+
+        getTile(width / 2 - 1, height / 2 - 1)->setWall(WEST, true);
+        getTile(width / 2 - 2, height / 2 - 1)->setWall(EAST, true);
+
+        getTile(width / 2 - 1, height / 2 - 1)->setWall(SOUTH, true);
+        getTile(width / 2 - 1, height / 2 - 2)->setWall(NORTH, true);
+
+        getTile(width / 2 - 1, height / 2)->setWall(NORTH, true);
+        getTile(width / 2 - 1, height / 2 + 1)->setWall(SOUTH, true);
+
+        getTile(width / 2 - 1, height / 2)->setWall(WEST, true);
+        getTile(width / 2 - 2, height / 2)->setWall(EAST, true);
+
+        getTile(width / 2, height / 2 - 1)->setWall(EAST, true);
+        getTile(width / 2 + 1, height / 2 - 1)->setWall(WEST, true);
+
+        getTile(width / 2, height / 2 - 1)->setWall(SOUTH, true);
+        getTile(width / 2, height / 2 - 2)->setWall(NORTH, true);
+
+        getTile(width / 2, height / 2)->setWall(NORTH, true);
+        getTile(width / 2, height / 2 + 1)->setWall(SOUTH, true);
+
+        getTile(width / 2, height / 2)->setWall(EAST, true);
+    getTile(width / 2 + 1, height / 2)->setWall(WEST, true);
+
+
         switch (rand() / (1 + RAND_MAX / 8)){
         case 0:
             getTile(width / 2 - 1, height / 2 - 1)->setWall(WEST, false);
