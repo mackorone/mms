@@ -40,13 +40,10 @@ Maze::Maze(int width, int height, std::string mazeFileDirPath, std::string mazeF
 
         std::cout << "No maze file provided. Generating random maze..." << std::endl;
 
-        randomizeTwo();
-        int i = 1; // TODO
+        tom_random();
         while (!(solveShortestPath().at(0) && solveShortestPath().at(1))) {
-            randomizeTwo();
-            i++; // TODO
+            tom_random();
         }
-        std::cout << i << std::endl; // TODO
 
         // Optional - can be used to generate more maze files
         saveMaze(mazeFileDirPath += "/auto_generated_maze.maz");
@@ -68,7 +65,7 @@ Maze::Maze(int width, int height, std::string mazeFileDirPath, std::string mazeF
             if (!solveShortestPath().at(0)){
                 std::cout << "Unsolvable Maze detected. Generating solvable maze..." << std::endl;
                 while (!(solveShortestPath().at(0) && solveShortestPath().at(1))) {
-                    randomize();
+                    tom_random();
                 }
             }
         }
@@ -76,9 +73,9 @@ Maze::Maze(int width, int height, std::string mazeFileDirPath, std::string mazeF
 
             // If the file doesn't exist, generate a random maze file
             std::cout << "File \"" << path << "\" not found. Generating random maze..." << std::endl;
-            randomize();
+            tom_random();
             while (!(solveShortestPath().at(0) && solveShortestPath().at(1))){
-                randomize();
+                tom_random();
             }
         }
     }
@@ -222,7 +219,7 @@ void Maze::randomize(){
     assignNeighbors();
 }
 
-void Maze::randomizeTwo() {
+void Maze::tom_random() {
     
     // Declare width and height locally to reduce function calls
     int width = getWidth();

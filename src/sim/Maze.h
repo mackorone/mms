@@ -25,14 +25,9 @@ private:
     
     // -------------------- Maze generation utilities -----------------------//
 
-    // Generates a random maze based on the (hard-coded) probability that any
-    // one wall will exist within the maze
-    // TODO: This should be decoupled from the actual maze class
+    // Randomly generate a maze
     void randomize();
-
-    // The experimental randomize - when improving the randomize function,
-    // edit this so that we can keep a clean, working copy
-    void randomizeTwo();
+    void tom_random();
 
     // Saves the mazefile into the file given by mazefile
     void saveMaze(std::string mazeFile);
