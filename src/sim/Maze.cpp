@@ -225,45 +225,7 @@ void Maze::tom_random() {
     int width = getWidth();
     int height = getHeight();
 
-    for (int x = 0; x < width; x += 1) {
-        for (int y = 0; y < height; y += 1) {
-            for (int i = 0; i < 4; i += 1){ 
-                // Set all walls to true as algo will break down walls
-                getTile(x, y)->setWall(i, true);
-            }
-        }
-    }
-
-    if (width % 2 == 0){   // mark middle as explored so dps avoids it
-                           // mark distance as 120 (~median) so we can exclude center
-                           // when looking for a wall to break down
-        if (height % 2 == 0){
-            getTile(width / 2, height / 2)->setExplored(true);
-            getTile(width / 2, height / 2)->setDistance(120);
-
-            getTile(width / 2 - 1, height / 2)->setExplored(true);
-            getTile(width / 2 - 1, height / 2)->setDistance(120);
-
-            getTile(width / 2, height / 2 - 1)->setExplored(true);
-            getTile(width / 2, height / 2 - 1)->setDistance(120);
-
-            getTile(width / 2 - 1, height / 2 - 1)->setExplored(true);
-            getTile(width / 2 - 1, height / 2 - 1)->setDistance(120);
-        }
-        getTile(width / 2 - 1, height / 2)->setExplored(true);
-        getTile(width / 2 - 1, height / 2)->setDistance(120);
-
-        getTile(width / 2, height / 2)->setExplored(true);
-        getTile(width / 2, height / 2)->setDistance(120);
-
-    }
-    if (height % 2 == 0){
-        getTile(width / 2, height / 2 - 1)->setExplored(true);
-        getTile(width / 2, height / 2 - 1)->setDistance(120);
-
-        getTile(width / 2, height / 2)->setExplored(true);
-        getTile(width / 2, height / 2)->setDistance(120);
-    }
+    initializeMaze(); // Initialize all walls to 1 and set middle as a distance of 120
 
     // We'll use a stack to do a DFS
     std::stack<Tile*> toExplore;
@@ -365,20 +327,16 @@ void Maze::tom_random() {
                     if (biggestDifference > 0){ // TODO: figure out why '>5' still generates solo pegs
                         switch (cellToBreak){ // Break wall across greates gradiant
                         case NORTH:
-                            getTile(x_pos, y_pos)->setWall(NORTH, false);
-                            getTile(x_pos, y_pos + 1)->setWall(SOUTH, false);
+                            setWall(x_pos, y_pos, NORTH, false);
                             break;
                         case SOUTH:
-                            getTile(x_pos, y_pos)->setWall(SOUTH, false);
-                            getTile(x_pos, y_pos - 1)->setWall(NORTH, false);
+                            setWall(x_pos, y_pos, SOUTH, false);
                             break;
                         case EAST:
-                            getTile(x_pos, y_pos)->setWall(EAST, false);
-                            getTile(x_pos + 1, y_pos)->setWall(WEST, false);
+                            setWall(x_pos, y_pos, EAST, false);
                             break;
                         case WEST:
-                            getTile(x_pos, y_pos)->setWall(WEST, false);
-                            getTile(x_pos - 1, y_pos)->setWall(EAST, false);
+                            setWall(x_pos, y_pos, WEST, false);
                             break;
                         }
                     }
@@ -422,33 +380,29 @@ void Maze::tom_random() {
         // And push it unto the stack
 
         switch (direction){
-            case NORTH:
-                getTile(x_pos, y_pos)->setWall(NORTH, false);
-                getTile(x_pos, y_pos + 1)->setWall(SOUTH, false);
+        case NORTH:
+                setWall(x_pos, y_pos, NORTH, false);
                 getTile(x_pos, y_pos + 1)->setExplored(true);
                 getTile(x_pos, y_pos + 1)->setDistance(toExplore.size()); // Size of stack is distance from center
                 toExplore.push(getTile(x_pos, y_pos + 1)); // Push next cell unto stack
                 exploreDIR = NORTH;
                 break;
             case EAST:
-                getTile(x_pos, y_pos)->setWall(EAST, false);
-                getTile(x_pos + 1, y_pos)->setWall(WEST, false);
+                setWall(x_pos, y_pos, EAST, false);
                 getTile(x_pos + 1, y_pos)->setExplored(true);
                 getTile(x_pos + 1, y_pos)->setDistance(toExplore.size());
                 toExplore.push(getTile(x_pos + 1, y_pos));
                 exploreDIR = EAST;
                 break;
             case SOUTH:
-                getTile(x_pos, y_pos)->setWall(SOUTH, false);
-                getTile(x_pos, y_pos - 1)->setWall(NORTH, false);
+                setWall(x_pos, y_pos, SOUTH, false);
                 getTile(x_pos, y_pos - 1)->setExplored(true);
                 getTile(x_pos, y_pos - 1)->setDistance(toExplore.size());
                 toExplore.push(getTile(x_pos, y_pos - 1));
                 exploreDIR = SOUTH;
                 break;
             case WEST:
-                getTile(x_pos, y_pos)->setWall(WEST, false);
-                getTile(x_pos - 1, y_pos)->setWall(EAST, false);
+                setWall(x_pos, y_pos, WEST, false);
                 getTile(x_pos - 1, y_pos)->setExplored(true);
                 getTile(x_pos - 1, y_pos)->setDistance(toExplore.size());
                 toExplore.push(getTile(x_pos - 1, y_pos));
@@ -457,7 +411,223 @@ void Maze::tom_random() {
             }
     }
 
+    breakGradientWall(); // Break one wall down with biggest gradient across it
+
+    // Set each tile as unexplored and distance 255 by, the Mouse 
+    // (note that we just "borrowed" these fields for the maze genereration.
+    for (int x = 0; x < width; x += 1) {
+        for (int y = 0; y < height; y += 1) {
+            getTile(x, y)->setDistance(255);
+            getTile(x, y)->setExplored(false);
+        }
+    }
+
+    addMinPeg(); // Make sure every peg has a wall around it *Compliance*
+
+    hollowCenter(); // Hollow out center
+    surroundCenter(); // Make sure the center is completely surrounded
+    pathIntoCenter(); // Now break down one of those wall at random
+
+    // Once the walls are assigned, we can assign neighbors
+    assignNeighbors();
+}
+
+void Maze::initializeMaze(){
+    int width = getWidth();
+    int height = getHeight();
+
+    for (int x = 0; x < width; x += 1) {
+        for (int y = 0; y < height; y += 1) {
+            for (int i = 0; i < 4; i += 1){
+                // Set all walls to true as algo will break down walls
+                getTile(x, y)->setWall(i, true);
+            }
+        }
+    }
+
+    if (width % 2 == 0){   // mark middle as explored so dps avoids it
+        // mark distance as 120 (~median) so we can exclude center
+        // when looking for a wall to break down
+        if (height % 2 == 0){
+            getTile(width / 2, height / 2)->setExplored(true);
+            getTile(width / 2, height / 2)->setDistance(120);
+
+            getTile(width / 2 - 1, height / 2)->setExplored(true);
+            getTile(width / 2 - 1, height / 2)->setDistance(120);
+
+            getTile(width / 2, height / 2 - 1)->setExplored(true);
+            getTile(width / 2, height / 2 - 1)->setDistance(120);
+
+            getTile(width / 2 - 1, height / 2 - 1)->setExplored(true);
+            getTile(width / 2 - 1, height / 2 - 1)->setDistance(120);
+        }
+        getTile(width / 2 - 1, height / 2)->setExplored(true);
+        getTile(width / 2 - 1, height / 2)->setDistance(120);
+
+        getTile(width / 2, height / 2)->setExplored(true);
+        getTile(width / 2, height / 2)->setDistance(120);
+
+    }
+    if (height % 2 == 0){
+        getTile(width / 2, height / 2 - 1)->setExplored(true);
+        getTile(width / 2, height / 2 - 1)->setDistance(120);
+
+        getTile(width / 2, height / 2)->setExplored(true);
+        getTile(width / 2, height / 2)->setDistance(120);
+    }
+}
+
+void Maze::hollowCenter(){
+    // Ensures that the middle is hallowed out
+    
+    int width = getWidth();
+    int height = getHeight();
+
+    if (width % 2 == 0){
+        if (height % 2 == 0){
+            setWall(width / 2 - 1, height / 2, SOUTH, false);
+            setWall(width / 2, height / 2, SOUTH, false);
+            setWall(width / 2, height / 2 - 1, WEST, false);
+        }
+        setWall(width / 2, height / 2, WEST, false);
+
+    }
+    if (height % 2 == 0){
+        setWall(width / 2, height / 2, SOUTH, false);
+    }
+}
+void Maze::pathIntoCenter(){
+
+    int width = getWidth();
+    int height = getHeight();
+
+    if (width % 2 == 0 && height % 2 != 0){
+        switch (rand() / (1 + RAND_MAX / 6)){
+        case 0:
+            setWall(width / 2 - 1, height / 2, WEST, false);
+            break;
+        case 1:
+            setWall(width / 2 - 1, height / 2, NORTH, false);
+            break;
+        case 2:
+            setWall(width / 2 - 1, height / 2, SOUTH, false);
+            break;
+        case 3:
+            setWall(width / 2, height / 2, EAST, false);
+            break;
+        case 4:
+            setWall(width / 2, height / 2, NORTH, false);
+            break;
+        case 5:
+            setWall(width / 2, height / 2, SOUTH, false);
+            break;
+        }
+    }
+
+    // Break a random wall leading to center group
+    if (height % 2 == 0 && width % 2 != 0){
+        switch (rand() / (1 + RAND_MAX / 6)){
+        case 0:
+            setWall(width / 2, height / 2 - 1, SOUTH, false);
+            break;
+        case 1:
+            setWall(width / 2, height / 2 - 1, EAST, false);
+            break;
+        case 2:
+            setWall(width / 2, height / 2 - 1, WEST, false);
+            break;
+        case 3:
+            setWall(width / 2, height / 2, NORTH, false);
+            break;
+        case 4:
+            setWall(width / 2, height / 2, EAST, false);
+            break;
+        case 5:
+            setWall(width / 2, height / 2, WEST, false);
+            break;
+        }
+    }
+
+    // Break a random wall leading to center group
+    if (height % 2 == 0 && width % 2 == 0){
+        switch (rand() / (1 + RAND_MAX / 8)){
+        case 0:
+            setWall(width / 2 - 1, height / 2 - 1, WEST, false);
+            break;
+        case 1:
+            setWall(width / 2 - 1, height / 2 - 1, SOUTH, false);
+            break;
+        case 2:
+            setWall(width / 2 - 1, height / 2, NORTH, false);
+            break;
+        case 3:
+            setWall(width / 2 - 1, height / 2, WEST, false);
+            break;
+        case 4:
+            setWall(width / 2, height / 2 - 1, EAST, false);
+            break;
+        case 5:
+            setWall(width / 2, height / 2 - 1, SOUTH, false);
+            break;
+        case 6:
+            setWall(width / 2, height / 2, NORTH, false);
+            break;
+        case 7:
+            setWall(width / 2, height / 2, EAST, false);
+            break;
+        }
+    }
+}
+
+void Maze::surroundCenter(){
+
+    int width = getWidth();
+    int height = getHeight();
+
+    if (width % 2 == 0 && height % 2 != 0){
+
+        setWall(width / 2 - 1, height / 2, WEST, true);
+        setWall(width / 2 - 1, height / 2, NORTH, true);
+        setWall(width / 2 - 1, height / 2, SOUTH, true);
+
+        setWall(width / 2, height / 2, EAST, true);
+        setWall(width / 2, height / 2, NORTH, true);
+        setWall(width / 2, height / 2, SOUTH, true);
+    }
+
+    // Break a random wall leading to center group
+    if (height % 2 == 0 && width % 2 != 0){
+
+        setWall(width / 2, height / 2 - 1, SOUTH, true);
+        setWall(width / 2, height / 2 - 1, EAST, true);
+        setWall(width / 2, height / 2 - 1, WEST, true);
+
+        setWall(width / 2, height / 2, NORTH, true);
+        setWall(width / 2, height / 2, EAST, true);
+        setWall(width / 2, height / 2, WEST, true);
+    }
+
+    // Break a random wall leading to center group
+    if (height % 2 == 0 && width % 2 == 0){
+
+        setWall(width / 2 - 1, height / 2 - 1, WEST, true);
+        setWall(width / 2 - 1, height / 2 - 1, SOUTH, true);
+
+        setWall(width / 2 - 1, height / 2, NORTH, true);
+        setWall(width / 2 - 1, height / 2, WEST, true);
+
+        setWall(width / 2, height / 2 - 1, EAST, true);
+        setWall(width / 2, height / 2 - 1, SOUTH, true);
+
+        setWall(width / 2, height / 2, NORTH, true);
+        setWall(width / 2, height / 2, EAST, true);
+    }
+}
+void Maze::breakGradientWall(){
     //Break one wall with the biggest gradiant across it down
+
+    int width = getWidth();
+    int height = getHeight();
 
     int biggestDifference = 0;
     int x_pos = 0; // x and y position at which the biggest diference occured
@@ -508,38 +678,30 @@ void Maze::tom_random() {
             }
         }
     }
-    
+
     int currentCellDist = getTile(x_pos, y_pos)->getDistance();
-    
+
     // Break down wall of cell which is between the gradient of size 'biggestDifference'
 
-    if ((y_pos + 1 < MAZE_WIDTH) && abs(getTile(x_pos, y_pos + 1)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference) {
-        getTile(x_pos, y_pos)->setWall(NORTH, false);
-        getTile(x_pos, y_pos + 1)->setWall(SOUTH, false);
-    }
-    if ((x_pos + 1 < MAZE_WIDTH) && abs(getTile(x_pos + 1, y_pos)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference) {
-        getTile(x_pos, y_pos)->setWall(EAST, false);
-        getTile(x_pos + 1, y_pos)->setWall(WEST, false);
-    }
-    if ((y_pos - 1 >= 0) && abs(getTile(x_pos, y_pos - 1)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference) {
-        getTile(x_pos, y_pos)->setWall(SOUTH, false);
-        getTile(x_pos, y_pos - 1)->setWall(NORTH, false);
-    }
-    if ((x_pos - 1 >= 0) && abs(getTile(x_pos - 1, y_pos)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference) {
-        getTile(x_pos, y_pos)->setWall(WEST, false);
-        getTile(x_pos - 1, y_pos)->setWall(EAST, false);
-    }
+    if ((y_pos + 1 < MAZE_WIDTH) && abs(getTile(x_pos, y_pos + 1)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference)
+        setWall(x_pos, y_pos, NORTH, false);
 
-    // Set each tile as unexplored and distance 255 by, the Mouse 
-    // (note that we just "borrowed" these fields for the maze genereration.
-    for (int x = 0; x < width; x += 1) {
-        for (int y = 0; y < height; y += 1) {
-            getTile(x, y)->setDistance(255);
-            getTile(x, y)->setExplored(false);
-        }
-    }
+    if ((x_pos + 1 < MAZE_WIDTH) && abs(getTile(x_pos + 1, y_pos)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference)
+        setWall(x_pos, y_pos, EAST, false);
 
+    if ((y_pos - 1 >= 0) && abs(getTile(x_pos, y_pos - 1)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference)
+        setWall(x_pos, y_pos, SOUTH, false);
+
+    if ((x_pos - 1 >= 0) && abs(getTile(x_pos - 1, y_pos)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference)
+        setWall(x_pos, y_pos, WEST, false);
+}
+
+void Maze::addMinPeg(){
     // Make sure every peg has at least one wall
+
+    int width = getWidth();
+    int height = getHeight();
+
     for (int x = 0; x < width - 1; x += 1) {
         for (int y = 0; y < height - 1; y += 1) {
             if (!getTile(x, y)->isWall(NORTH)
@@ -548,210 +710,51 @@ void Maze::tom_random() {
                 && !getTile(x + 1, y + 1)->isWall(SOUTH)) {
                 switch (rand() / (1 + RAND_MAX / 4)) {
                 case NORTH:
-                    getTile(x + 1, y + 1)->setWall(WEST, true);
-                    getTile(x, y + 1)->setWall(EAST, true);
+                    setWall(x + 1, y + 1, WEST, true);
                     break;
                 case EAST:
-                    getTile(x + 1, y + 1)->setWall(SOUTH, true);
-                    getTile(x + 1, y)->setWall(NORTH, true);
+                    setWall(x + 1, y + 1, SOUTH, true);
                     break;
                 case SOUTH:
-                    getTile(x, y)->setWall(EAST, true);
-                    getTile(x + 1, y)->setWall(WEST, true);
+                    setWall(x, y, EAST, true);
                     break;
                 case WEST:
-                    getTile(x, y)->setWall(NORTH, true);
-                    getTile(x, y + 1)->setWall(SOUTH, true);
+                    setWall(x, y, NORTH, true);
                     break;
                 }
             }
         }
     }
-
-    // Ensures that the middle is hallowed out
-    if (width % 2 == 0){
-        if (height % 2 == 0){
-            getTile(width/2-1, height/2-1)->setWall(NORTH, false);
-            getTile(width/2-1, height/2)->setWall(SOUTH, false);
-            getTile(width/2, height/2-1)->setWall(NORTH, false);
-            getTile(width/2, height/2)->setWall(SOUTH, false);
-            getTile(width/2-1, height/2-1)->setWall(EAST, false);
-            getTile(width/2, height/2-1)->setWall(WEST, false);
-        }
-        getTile(width/2-1, height/2)->setWall(EAST, false);
-        getTile(width/2, height/2)->setWall(WEST, false);
-            
-    }
-    if (height % 2 == 0){
-        getTile(width/2, height/2-1)->setWall(NORTH, false);
-        getTile(width/2, height/2)->setWall(SOUTH, false);
-    }
-
-    // Break a random wall leading to center group and make sure other walls are present
-    if (width % 2 == 0 && height % 2 != 0){ 
-
-        getTile(width / 2 - 1, height / 2)->setWall(WEST, true);
-        getTile(width / 2 - 2, height / 2)->setWall(EAST, true);
-
-        getTile(width / 2 - 1, height / 2)->setWall(NORTH, true);
-        getTile(width / 2 - 1, height / 2 + 1)->setWall(SOUTH, true);
-
-        getTile(width / 2 - 1, height / 2)->setWall(SOUTH, true);
-        getTile(width / 2 - 1, height / 2 - 1)->setWall(NORTH, true);
-
-        getTile(width / 2, height / 2)->setWall(EAST, true);
-        getTile(width / 2 + 1, height / 2)->setWall(WEST, true);
-
-        getTile(width / 2, height / 2)->setWall(NORTH, true);
-        getTile(width / 2, height / 2 + 1)->setWall(SOUTH, true);
-
-        getTile(width / 2, height / 2)->setWall(SOUTH, true);
-        getTile(width / 2, height / 2 - 1)->setWall(SOUTH, true);
-
-        switch (rand() / (1 + RAND_MAX / 6)){
-            case 0:
-                getTile(width / 2 - 1, height / 2)->setWall(WEST, false);
-                getTile(width / 2 - 2, height / 2)->setWall(EAST, false);
-                break;
-            case 1:
-                getTile(width / 2 - 1, height / 2)->setWall(NORTH, false);
-                getTile(width / 2 - 1, height / 2 + 1)->setWall(SOUTH, false);
-                break;
-            case 2:
-                getTile(width / 2 - 1, height / 2)->setWall(SOUTH, false);
-                getTile(width / 2 - 1, height / 2 - 1)->setWall(NORTH, false);
-                break;
-            case 3:
-                getTile(width / 2, height / 2)->setWall(EAST, false);
-                getTile(width / 2 + 1, height / 2)->setWall(WEST, false);
-                break;
-            case 4:
-                getTile(width / 2, height / 2)->setWall(NORTH, false);
-                getTile(width / 2, height / 2 + 1)->setWall(SOUTH, false);
-                break;
-            case 5:
-                getTile(width / 2, height / 2)->setWall(SOUTH, false);
-                getTile(width / 2, height / 2 - 1)->setWall(SOUTH, false);
-                break;
-        }
-    }
-
-    // Break a random wall leading to center group
-    if (height % 2 == 0 && width % 2 != 0){
-
-        getTile(width / 2, height / 2 - 1)->setWall(SOUTH, true);
-        getTile(width / 2, height / 2 - 2)->setWall(NORTH, true);
-
-        getTile(width / 2, height / 2 - 1)->setWall(EAST, true);
-        getTile(width / 2 + 1, height / 2 - 1)->setWall(WEST, true);
-
-        getTile(width / 2, height / 2 - 1)->setWall(WEST, true);
-        getTile(width / 2 - 1, height / 2 - 1)->setWall(EAST, true);
-
-        getTile(width / 2, height / 2)->setWall(NORTH, true);
-        getTile(width / 2, height / 2 + 1)->setWall(SOUTH, true);
-
-        getTile(width / 2, height / 2)->setWall(EAST, true);
-        getTile(width / 2 + 1, height / 2)->setWall(WEST, true);
-
-        getTile(width / 2, height / 2)->setWall(WEST, true);
-        getTile(width / 2 - 1, height / 2)->setWall(EAST, true);
-
-        switch (rand() / (1 + RAND_MAX / 6)){
-        case 0:
-            getTile(width / 2, height / 2 - 1)->setWall(SOUTH, false);
-            getTile(width / 2, height / 2 - 2)->setWall(NORTH, false);
-            break;
-        case 1:
-            getTile(width / 2, height / 2 - 1)->setWall(EAST, false);
-            getTile(width / 2 + 1, height / 2 - 1)->setWall(WEST, false);
-            break;
-        case 2:
-            getTile(width / 2, height / 2 - 1)->setWall(WEST, false);
-            getTile(width / 2 - 1, height / 2 - 1)->setWall(EAST, false);
-            break;
-        case 3:
-            getTile(width / 2, height / 2)->setWall(NORTH, false);
-            getTile(width / 2, height / 2 + 1)->setWall(SOUTH, false);
-            break;
-        case 4:
-            getTile(width / 2, height / 2)->setWall(EAST, false);
-            getTile(width / 2 + 1, height / 2)->setWall(WEST, false);
-            break;
-        case 5:
-            getTile(width / 2, height / 2)->setWall(WEST, false);
-            getTile(width / 2 - 1, height / 2)->setWall(EAST, false);
-            break;
-        }
-    }
-
-    // Break a random wall leading to center group
-    if (height % 2 == 0 && width % 2 == 0){
-
-        getTile(width / 2 - 1, height / 2 - 1)->setWall(WEST, true);
-        getTile(width / 2 - 2, height / 2 - 1)->setWall(EAST, true);
-
-        getTile(width / 2 - 1, height / 2 - 1)->setWall(SOUTH, true);
-        getTile(width / 2 - 1, height / 2 - 2)->setWall(NORTH, true);
-
-        getTile(width / 2 - 1, height / 2)->setWall(NORTH, true);
-        getTile(width / 2 - 1, height / 2 + 1)->setWall(SOUTH, true);
-
-        getTile(width / 2 - 1, height / 2)->setWall(WEST, true);
-        getTile(width / 2 - 2, height / 2)->setWall(EAST, true);
-
-        getTile(width / 2, height / 2 - 1)->setWall(EAST, true);
-        getTile(width / 2 + 1, height / 2 - 1)->setWall(WEST, true);
-
-        getTile(width / 2, height / 2 - 1)->setWall(SOUTH, true);
-        getTile(width / 2, height / 2 - 2)->setWall(NORTH, true);
-
-        getTile(width / 2, height / 2)->setWall(NORTH, true);
-        getTile(width / 2, height / 2 + 1)->setWall(SOUTH, true);
-
-        getTile(width / 2, height / 2)->setWall(EAST, true);
-    getTile(width / 2 + 1, height / 2)->setWall(WEST, true);
-
-
-        switch (rand() / (1 + RAND_MAX / 8)){
-        case 0:
-            getTile(width / 2 - 1, height / 2 - 1)->setWall(WEST, false);
-            getTile(width / 2 - 2, height / 2 - 1)->setWall(EAST, false);
-            break;
-        case 1:
-            getTile(width / 2 - 1, height / 2 - 1)->setWall(SOUTH, false);
-            getTile(width / 2 - 1, height / 2 - 2)->setWall(NORTH, false);
-            break;
-        case 2:
-            getTile(width / 2 - 1, height / 2)->setWall(NORTH, false);
-            getTile(width / 2 - 1, height / 2 + 1)->setWall(SOUTH, false);
-            break;
-        case 3:
-            getTile(width / 2 - 1, height / 2)->setWall(WEST, false);
-            getTile(width / 2 - 2, height / 2)->setWall(EAST, false);
-            break;
-        case 4:
-            getTile(width / 2, height / 2 - 1)->setWall(EAST, false);
-            getTile(width / 2 + 1, height / 2 - 1)->setWall(WEST, false);
-            break;
-        case 5:
-            getTile(width / 2, height / 2 - 1)->setWall(SOUTH, false);
-            getTile(width / 2, height / 2 - 2)->setWall(NORTH, false);
-            break;
-        case 6:
-            getTile(width / 2, height / 2)->setWall(NORTH, false);
-            getTile(width / 2, height / 2 + 1)->setWall(SOUTH, false);
-            break;
-        case 7:
-            getTile(width / 2, height / 2)->setWall(EAST, false);
-            getTile(width / 2 + 1, height / 2)->setWall(WEST, false);
-            break;
-        }
-    }
-
-    // Once the walls are assigned, we can assign neighbors
-    assignNeighbors();
 }
+
+void Maze::setWall(int x, int y, int direction, bool value){
+    int deltaX = 0;
+    int deltaY = 0;
+
+    int oppositeDir;
+
+    switch (direction){
+    case NORTH:
+        deltaY = 1;
+        oppositeDir = SOUTH;
+        break;
+    case SOUTH:
+        deltaY = -1;
+        oppositeDir = NORTH;
+        break;
+    case EAST:
+        deltaX = 1;
+        oppositeDir = WEST;
+        break;
+    case WEST:
+        deltaX = -1;
+        oppositeDir = EAST;
+        break;
+    }
+    getTile(x, y)->setWall(direction, value);
+    getTile(x + deltaX, y + deltaY)->setWall(oppositeDir, value);
+}
+
 
 void Maze::saveMaze(std::string mazeFile){
     
@@ -774,7 +777,6 @@ void Maze::saveMaze(std::string mazeFile){
         file.close();
     }
 }
-
 void Maze::loadMaze(std::string mazeFile){
 
     // Create the stream
