@@ -2,7 +2,8 @@
 #include <iostream>
 #include <stdlib.h>
 #include <vector>
-#include "./lib/pugixml.hpp"
+
+#include "../lib/pugixml.hpp"
 
 namespace sim {
 

@@ -23,23 +23,23 @@ SRC = ./src/
 OBJ = ./obj/
 BIN = ./bin/
 
-# Source files
+# Recursively find all source files
 PRELIMSOURCES = $(shell find $(SRC) -name '*.cpp')
 SOURCES = $(PRELIMSOURCES:$(SRC)%=%) 
 
-# Object files that mirror the source files
+# Specify the object files that should mirror the source files
 OBJECTS = $(SOURCES:.cpp=.o)
 
-# Prefixed Source files
+# Add prefixes to all of the source files
 PREFIXED_SOURCES = $(addprefix $(SRC),$(SOURCES))
 
-# Prefixed Object files
+# Add prefixes to all of the object files
 PREFIXED_OBJECTS = $(addprefix $(OBJ),$(OBJECTS))
 
-# Prefixed Program name
+# Add prefix to the program name
 PREFIXED_PROGRAM = $(addprefix $(BIN),$(PROGRAM))
 
-# Make 'all' instructions - default target
+# Make 'all' instructions - this serves as the default target
 all: $(PREFIXED_SOURCES) $(PREFIXED_PROGRAM)
 
 # Make '$(PROGRAM)' instructions
@@ -58,3 +58,4 @@ $(OBJ)%.o: $(SRC)%.cpp
 # 'add' is pretty self-explanatory 
 clean:
 	rm -f $(addprefix $(OBJ), $(addsuffix *.o, $(sort $(dir $(OBJECTS)))))
+	rm -f $(BIN)*

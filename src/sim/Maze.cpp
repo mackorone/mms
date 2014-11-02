@@ -43,6 +43,7 @@ Maze::Maze(int width, int height, std::string mazeFileDirPath, std::string mazeF
         tom_random();
         while (!(solveShortestPath().at(0) && solveShortestPath().at(1))) {
             tom_random();
+        }
         
 
         // Optional - can be used to generate more maze files

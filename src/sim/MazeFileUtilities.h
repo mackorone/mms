@@ -15,7 +15,7 @@ int mazeFileWidth(std::string mazeFilePath);
 
 int mazeFileHeight(std::string mazeFilePath);
 
-bool checkValidMazeFile(std::string mazeFilePath);
+bool checkValidMazeFile(std::string mazeFilePath); // TODO: Mack Ward
 
 } // namespace sim
 
