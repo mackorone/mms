@@ -1,8 +1,10 @@
 # Converts from the MAZ file format (compatible with maze generator) to the maz file
-# format (compatible with out simulator)
+# format (compatible with our simulator)
 
 import binascii
 import os
+
+# TODO: args should convert
 
 files = [f for f in os.listdir(".") if ".MAZ" in f]
 for name in files:

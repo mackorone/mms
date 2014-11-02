@@ -12,9 +12,11 @@ namespace sim{
 std::string getMazeFileDirPath(std::string path){
     
     // Ensure that the path begins with a relative directory location
-    if (path.at(0) != '.' && path.at(0) != '/'){
+    // TODO: Not sure that we need this code
+    /*if (path.at(0) != '.' && path.at(0) != '/'){
         path.insert(0, "./");
-    }
+        std::cout << "HERE" << std::endl;
+    }*/
     
     // Gets the path to the "mms" dir based on where the bin file was executed
     for (int i = 0; i < 2; i += 1){

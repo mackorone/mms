@@ -60,13 +60,17 @@ void Mouse::moveForward(){
     if (!wallFront()){
         switch(m_mouseDirection){
             case NORTH:
-                m_mousePosY += 1; break;
+                m_mousePosY += 1;
+                break;
             case EAST:
-                m_mousePosX += 1; break;
+                m_mousePosX += 1;
+                break;
             case SOUTH:
-                m_mousePosY -= 1; break;
+                m_mousePosY -= 1;
+                break;
             case WEST:
-                m_mousePosX -= 1; break;
+                m_mousePosX -= 1;
+                break;
         }
         m_maze->getTile(m_mousePosX, m_mousePosY)->incrementPasses();
     }

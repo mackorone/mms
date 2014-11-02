@@ -32,6 +32,8 @@ static /*non-const*/ bool RESET_REQUESTED = false; // Whether or not a reset was
 
 int main(int argc, char* argv[]){
     
+    // TODO: Read in the parameters from the parameters file
+
     // TODO: read input file, and check size, use this as value instead of parameter
 
     // Ensure that the size parameters are valid

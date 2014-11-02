@@ -43,7 +43,7 @@ Maze::Maze(int width, int height, std::string mazeFileDirPath, std::string mazeF
         tom_random();
         while (!(solveShortestPath().at(0) && solveShortestPath().at(1))) {
             tom_random();
-        }
+        
 
         // Optional - can be used to generate more maze files
         saveMaze(mazeFileDirPath += "/auto_generated_maze.maz");
@@ -298,7 +298,7 @@ void Maze::tom_random() {
         moveConst = 1 * avgDelta; // the chance the algorithm will continue same direction of tavel is proportional
                                   // to the max distance of the mouse to the center on any axis.
 
-        dirThreshold = RAND_MAX * moveConst;
+        dirThreshold = static_cast<float>(RAND_MAX) * moveConst;
 
         // Keep track of the next possible movements N = 0, E = 1, S = 2, W =3
         bool choices[4] = {0,0,0,0};
@@ -710,7 +710,7 @@ void Maze::tom_random() {
         getTile(width / 2, height / 2 + 1)->setWall(SOUTH, true);
 
         getTile(width / 2, height / 2)->setWall(EAST, true);
-    getTile(width / 2 + 1, height / 2)->setWall(WEST, true);
+        getTile(width / 2 + 1, height / 2)->setWall(WEST, true);
 
 
         switch (rand() / (1 + RAND_MAX / 8)){
