@@ -20,10 +20,10 @@
 #define LEFTBACKSENSOR 3
 #define RIGHTBACKSENSOR 4
 
-#define TURN_STEPS              600
-#define FORWARD_STEPS           379
+#define TURN_STEPS              604
+#define FORWARD_STEPS           377
 
-#define RESETSTEPAMOUNT            379
+#define RESETSTEPAMOUNT            377
 
 #define FRONTSENSORWALLSTOPSTART 320 // Front Sensor value at which to initate wall stop
 #define FRONTSTEPSWALLSTOP 125      // Number of steps to take after wall is detected
@@ -31,8 +31,8 @@
 
 #define SIDESTEPWALLSTOP  107
 
-#define TWISTMOVEMENTMULTIPLIER2WALLS  0.0575 // Value to multiply sensor difference by//used to be 0.0625
-#define TWISTMOVEMENTMULTIPLIER1WALL  0.0575 // Value to multiply sensor difference by//used to be 0.0525
+#define TWISTMOVEMENTMULTIPLIER2WALLS  0.0565 // Value to multiply sensor difference by//used to be 0.0625
+#define TWISTMOVEMENTMULTIPLIER1WALL  0.0565 // Value to multiply sensor difference by//used to be 0.0525
 
 #define MOVEMENT_MULTIPLY_CORRECTION 0.1725 // DONT TOUCH
 
@@ -42,16 +42,17 @@
 
 #define ALLOWEDRANGE 55      // how far sensor can be off by before its deemed unreliable
 
-volatile bool correct = 0;
-
-volatile bool resetRunRequested = 0;
 
 volatile bool stoppingFrontWall = 0; // Method mouse is using to stop in the middle of a cell
 volatile bool stoppingSideWall = 0;  // ^^
 
-volatile boolean stepper_enabled = false;
-
-volatile int moveBuffered = 0;
+volatile int wallLeftSteps = 0; // sensor read
+volatile int wallRightSteps = 0; // sensor read
+volatile long leftWallTime = 0;
+volatile long rightWallTime = 0;
+  
+volatile boolean stepper_enabled = false; //whether steppers are ready
+                                 //This is used as a movement flag for waiting
                                  
 volatile int right_stepper_target = 0; //How many steps you want to take
 volatile int left_stepper_target = 0;
@@ -64,27 +65,19 @@ volatile int right_correction = 0;
 volatile int right_speed=0; //used to access timer table
 volatile int left_speed=0;
 
-volatile int speed_max=175;  //147; //max table position
+volatile int speed_max=147; //max table position
 volatile int table_increment = 2; // value by which to increment table values by
 
-volatile int bufferedTurn = 0;
 
 const byte avgSamples = 2; // Number of samples to sum up
 volatile byte sensorIndex = 0;
 volatile int sensorAverage[5][avgSamples+2] = { 0 }; // [sensor][index] +1 - second to last is average. last in dependability for that move
 volatile long timestamp = 0;                         // Time Stamp for new data is available
 
-volatile int front_wall_min = 145;                   //sensor value will be less if there is not a wall a cell and a half ahead
-volatile int left_wall_min = ANGLELEFTVALUE - 55;    //will be less if there is not a wall
-volatile int right_wall_min = ANGLERIGHTVALUE - 55;    //will be less if there is not a wall
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void setupPins(){
-  
-  pinMode(5, INPUT_PULLUP);
-  
   pinMode(RIGHT_PULSE_PIN, OUTPUT);
   pinMode(RIGHT_DIR_PIN, OUTPUT);
   

@@ -11,7 +11,7 @@ TODO - Add a new entry in every second place in order to provide finer control
 
 PROGMEM  prog_uint16_t accel_table[] = 
 {
-4633    , // can't have zero as compare register
+4633  , // can't have zero as compare register
 7749	,
 3210	,
 2463	,

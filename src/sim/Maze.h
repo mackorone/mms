@@ -29,6 +29,19 @@ private:
     void randomize();
     void tom_random();
 
+    //Initialize starting Maze
+    void initializeMaze();
+
+    // Break down a wall
+    void setWall(int x, int y, int direction, bool value);
+
+    // 
+    void breakGradientWall();
+    void addMinPeg();
+    void surroundCenter();
+    void pathIntoCenter();
+    void hollowCenter();
+
     // Saves the mazefile into the file given by mazefile
     void saveMaze(std::string mazeFile);
 

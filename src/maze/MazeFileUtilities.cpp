@@ -6,36 +6,50 @@
 #include <sstream>
 #include <vector>
 
-namespace sim{
+#ifdef _WIN32
+    #include <windows.h>
+#elif __linux
+    #include <limits.h>
+    #include <unistd.h>
+#endif
 
-// Initially, path is a path to the binary file that is executed
-std::string getMazeFileDirPath(std::string path){
+namespace sim {
+
+std::string getProjectDirectory(){
+
+    // This approach is claimed to be more reliable than argv[0] on windows
+    // and linux.  On Windows GetModuleFileName is the directory to the executable
+    // which is located in /mms/src/Debug/.  On linux /proc/self/exe is a path to exe.
+    // This aproach does not work for all flavors to Linux, should on the common.
+    // executable on Linux is located at /mms/bin/
+
+    std::string path;
+
+#ifdef _WIN32
+    char result[MAX_PATH];
+    path = std::string(result, GetModuleFileName(NULL, result, MAX_PATH));
+    path = path.substr(0, path.find_last_of("\\/"));; // Remove the executable name as it is part of path
+    path += "\\..\\..\\"; // Point to /mms/
+    // Windows uses \ in directory
+#elif __linux
+    char result[PATH_MAX];
+    ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
+    path = std::string(result, (count > 0) ? count : 0);
+    path = path.substr(0, path.find_last_of("\\/"));; // Remove the executable name as it is part of path
+    path += "/../"; // Point to /mms/
+#endif
+
+    return path;
+}
+
+std::string getMazeFileDirPath(){
     
-    // Ensure that the path begins with a relative directory location
-    // TODO: Not sure that we need this code
-    /*if (path.at(0) != '.' && path.at(0) != '/'){
-        path.insert(0, "./");
-        std::cout << "HERE" << std::endl;
-    }*/
-    
-    // Gets the path to the "mms" dir based on where the bin file was executed
-    for (int i = 0; i < 2; i += 1){
+    std::string path;
 
-        int index = path.find_last_of("/\\");
-        path = path.substr(0, index);
-
-        // Ensures that the maze can be loaded from all directories (end cases)
-        if (i == 0 && (path == ".." || path == ".")){
-            // If the bin path is to the current or parent directory, then the
-            // mms path must be the parent directory of directory to which we
-            // already have a path
-            path += "/..";
-            break;
-        }
-    }
+    path = getProjectDirectory();
 
     // Append mazeFile directory path from the root of the project
-    path += "/src/mazeFiles/";
+    path += "src/mazeFiles/";
 
     return path;
 }
