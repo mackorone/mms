@@ -15,6 +15,7 @@
 #include "../sim/Constants.h"
 #include "../sim/Parameters.h"
 #include "../sim/Tile.h"
+#include "MazeFileUtilities.h"
 
 namespace sim {
 
@@ -59,12 +60,24 @@ Maze::Maze(int width, int height, std::string mazeFileDirPath, std::string mazeF
 
         if (file){
 
-            // Load the maze given by mazefile
-            loadMaze(path);
+            // Check Maze Validity
+            
+            if (checkValidMazeFileTom(path, width, height)){
+                // Load the maze given by mazefile
+                loadMaze(path);
 
-            // Ensures that the maze is solvable
-            if (!solveShortestPath().at(0)){
-                std::cout << "Unsolvable Maze detected. Generating solvable maze..." << std::endl;
+                // Ensures that the maze is solvable
+                if (!solveShortestPath().at(0)){
+                    std::cout << "Unsolvable Maze detected. Generating solvable maze..." << std::endl;
+                    while (!(solveShortestPath().at(0) && solveShortestPath().at(1))) {
+                        tom_random();
+                    }
+                }
+            }
+            else{
+                std::cout << "Invalid file provided. Generating random maze..." << std::endl;
+
+                tom_random();
                 while (!(solveShortestPath().at(0) && solveShortestPath().at(1))) {
                     tom_random();
                 }

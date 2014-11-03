@@ -49,7 +49,7 @@ std::string getMazeFileDirPath(){
     path = getProjectDirectory();
 
     // Append mazeFile directory path from the root of the project
-    path += "src/mazeFiles/";
+    path += "src/maze_files/";
 
     return path;
 }
@@ -116,6 +116,75 @@ bool checkValidMazeFile(std::string mazeFilePath){
     
     // false indicates invalid file
     return false;
+}
+
+bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width){
+
+    // Create the file object
+    std::ifstream file(mazeFilePath.c_str());
+
+    if (!file.is_open())
+        return false; // Error opening file
+
+    // Initialize a string variable
+    std::string line("");
+
+    int x_pos = 0;
+    int y_pos = 0;
+
+    int expected_x_pos = 0;
+    int expected_y_pos = 0;
+
+    int current_int = 0;
+
+    while (std::getline(file, line)){
+        for (int i = 0; i < 6; i += 1){
+
+            try { // When did this happen << ?
+                current_int = std::stoi(line, nullptr, 10);  //Attempt to get an integer which is followed by a space
+            }
+            catch (const std::invalid_argument& ia) {
+                return false; // If not then something in the maze file is not valid
+            }
+            if (i == 0){ // X Pos
+                if (current_int != expected_x_pos){
+                    return false;
+                }
+                x_pos = current_int;
+            }
+            if (i == 1){ // Y Pos
+                if (current_int != expected_y_pos){
+                    return false;
+                }
+                if (current_int == height - 1) { // Wrap Around
+                    expected_y_pos = 0;
+                    expected_x_pos += 1; // X-Pos will increase
+                } else{
+                    expected_y_pos += 1;
+                }
+                x_pos = current_int;
+            }
+            if (i > 1){ // Wall Values - check if 1 or 0
+                if (current_int != 0 && current_int != 1){
+                    return false;
+                }
+            } 
+            try { // When did this happen << ?
+                line = line.substr(line.find_first_of(" ") + 1, line.length()); //remove first int and a space (+1)
+            }
+            catch (const std::invalid_argument& ia) {
+                if (i == 5)
+                    continue; // This should error out on the last integer of the line with no more spaces
+                else
+                    return false; 
+            }
+        }
+        if (expected_x_pos == width)
+            break;
+    }
+
+    return true; //should be fine
+
 }
 
 } // namespace sim
