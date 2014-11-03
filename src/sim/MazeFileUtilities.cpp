@@ -151,6 +151,8 @@ bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width){
                     return false;
                 }
                 x_pos = current_int;
+                if (x_pos == width)
+                    return false; // Too many lines, RUN
             }
             if (i == 1){ // Y Pos
                 if (current_int != expected_y_pos){
@@ -182,6 +184,9 @@ bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width){
         if (expected_x_pos == width)
             break;
     }
+  
+    if (x_pos != width && y_pos != 0)
+        return false; //Not all lines present in the last group
 
     return true; //should be fine
 
