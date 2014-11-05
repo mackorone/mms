@@ -131,9 +131,6 @@ bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width){
     // Initialize a string variable
     std::string line("");
 
-    int x_pos = 0;
-    int y_pos = 0;
-
     int expected_x_pos = 0;
     int expected_y_pos = 0;
 
@@ -141,42 +138,38 @@ bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width){
 
     while (std::getline(file, line)) {
 
+        if (!hasOnlyDigits(line)){ // The line has some non digit characters
+            return false;
+        }
+
         for (int i = 0; i < 6; i += 1) {
 
-            try { // When did this happen << ?
-                current_int = std::stoi(line, nullptr, 10);  //Attempt to get an integer which is followed by a space
+            if (line.at(0) == ' '){ //Check that the first character is not a space
+                                    //This would only occur if two spaces apear in a row
+                return false;
             }
-            //catch (const std::invalid_argument& ia) { // TODO: Tomasz
-            catch (...) {
-                return false; // If not then something in the maze file is not valid
+
+            current_int = std::strtol(line.c_str(), nullptr, 10);  //Get the next int an integer which is followed by a space
+            
+            if (i == 0 && current_int != expected_x_pos){ // X Pos on line does not match the expected X Position
+                return false;
             }
-            if (i == 0){ // X Pos
-                if (current_int != expected_x_pos) {
+            if (i == 1){ // Y Pos Handliing
+                if (current_int != expected_y_pos){ // Y Pos on line does not match the expected Y Position
                     return false;
                 }
-                x_pos = current_int;
-                if (x_pos == width) {
-                    return false; // Too many lines, RUN
-                }
-            }
-            if (i == 1){ // Y Pos
-                if (current_int != expected_y_pos){
-                    return false;
-                }
-                if (current_int == height - 1) { // Wrap Around
+
+                expected_y_pos += 1; // Add one to the expected Y_position
+
+                if (expected_y_pos == height) { // Wrap Around
                     expected_y_pos = 0;
                     expected_x_pos += 1; // X-Pos will increase
                 }
-                else {
-                    expected_y_pos += 1;
-                }
-                x_pos = current_int;
             }
-            if (i > 1) { // Wall Values - check if 1 or 0
-                if (current_int != 0 && current_int != 1){
-                    return false;
-                }
+            if (i > 1 && !(current_int == 0 || current_int == 1)) { // Wall Values - check if 1 or 0
+                return false;
             } 
+
             std::size_t found = line.find_first_of(" ");
             if (found != std::string::npos) { // extra space exists in the string
                 line = line.substr(line.find_first_of(" ") + 1, line.length());
@@ -184,16 +177,14 @@ bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width){
                     return false; // return false if more spaces after last digit remain
                 }
             }
-            else{
-                if (i != 5) {
-                    return false; // If no more spaces before the last digit that means the line
+            else if (i != 5) {
+                return false; // If no more spaces before the last digit that means the line
                                   // does not have enough digits
-                }
             }
         }
     }
   
-    if (x_pos != width && y_pos != 0) {
+    if (expected_x_pos != width && expected_y_pos != 0) {
         return false; // Not all lines present in the last group
     }
 
@@ -203,6 +194,10 @@ bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width){
     // a wall to the right, the tile to its right should have a wall to the left, etc.)
 
     return true; //should be fine
+}
+
+bool hasOnlyDigits(const std::string &str) {
+    return str.find_first_not_of("0123456789 ") == std::string::npos;
 }
 
 } // namespace sim

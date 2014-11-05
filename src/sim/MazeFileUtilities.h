@@ -17,7 +17,9 @@ int mazeFileHeight(std::string mazeFilePath);
 
 bool checkValidMazeFile(std::string mazeFilePath); // TODO: Mack Ward
 
-bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width); // TODO: Mack Ward
+bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width);
+
+bool hasOnlyDigits(const std::string &str);
 
 } // namespace sim
 
