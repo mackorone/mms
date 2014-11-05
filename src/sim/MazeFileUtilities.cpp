@@ -143,7 +143,8 @@ bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width){
             try { // When did this happen << ?
                 current_int = std::stoi(line, nullptr, 10);  //Attempt to get an integer which is followed by a space
             }
-            catch (const std::invalid_argument& ia) {
+            //catch (const std::invalid_argument& ia) { // TODO: Tomasz
+            catch (...) {
                 return false; // If not then something in the maze file is not valid
             }
             if (i == 0){ // X Pos
