@@ -10,7 +10,7 @@ Braces
 
 // Opening braces should appear on the same line of a class/conditional/function header. Closing
 // braces should appear on their own line. There should a be a single space before every opening
-// brace.
+// brace. Never omit braces.
 
 void foo() {
 }

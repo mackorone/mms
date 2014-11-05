@@ -123,8 +123,10 @@ bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width){
     // Create the file object
     std::ifstream file(mazeFilePath.c_str());
 
-    if (!file.is_open())
-        return false; // Error opening file
+    // Error opening file
+    if (!file.is_open()) {
+        return false;
+    }
 
     // Initialize a string variable
     std::string line("");
@@ -137,8 +139,9 @@ bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width){
 
     int current_int = 0;
 
-    while (std::getline(file, line)){
-        for (int i = 0; i < 6; i += 1){
+    while (std::getline(file, line)) {
+
+        for (int i = 0; i < 6; i += 1) {
 
             try { // When did this happen << ?
                 current_int = std::stoi(line, nullptr, 10);  //Attempt to get an integer which is followed by a space
@@ -148,12 +151,13 @@ bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width){
                 return false; // If not then something in the maze file is not valid
             }
             if (i == 0){ // X Pos
-                if (current_int != expected_x_pos){
+                if (current_int != expected_x_pos) {
                     return false;
                 }
                 x_pos = current_int;
-                if (x_pos == width)
+                if (x_pos == width) {
                     return false; // Too many lines, RUN
+                }
             }
             if (i == 1){ // Y Pos
                 if (current_int != expected_y_pos){
@@ -162,12 +166,13 @@ bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width){
                 if (current_int == height - 1) { // Wrap Around
                     expected_y_pos = 0;
                     expected_x_pos += 1; // X-Pos will increase
-                } else{
+                }
+                else {
                     expected_y_pos += 1;
                 }
                 x_pos = current_int;
             }
-            if (i > 1){ // Wall Values - check if 1 or 0
+            if (i > 1) { // Wall Values - check if 1 or 0
                 if (current_int != 0 && current_int != 1){
                     return false;
                 }
@@ -175,25 +180,29 @@ bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width){
             std::size_t found = line.find_first_of(" ");
             if (found != std::string::npos) { // extra space exists in the string
                 line = line.substr(line.find_first_of(" ") + 1, line.length());
-                if (i == 5){
+                if (i == 5) {
                     return false; // return false if more spaces after last digit remain
                 }
             }
             else{
-                if (i != 5)
+                if (i != 5) {
                     return false; // If no more spaces before the last digit that means the line
                                   // does not have enough digits
+                }
             }
         }
-        if (expected_x_pos == width)
-            break;
     }
   
-    if (x_pos != width && y_pos != 0)
-        return false; //Not all lines present in the last group
+    if (x_pos != width && y_pos != 0) {
+        return false; // Not all lines present in the last group
+    }
+
+    // TODO: Maze validation - has a path to the center, no wall following robot, etc.
+
+    // TODO: Make sure the neighboring tiles have corresponding walls (if a tile has
+    // a wall to the right, the tile to its right should have a wall to the left, etc.)
 
     return true; //should be fine
-
 }
 
 } // namespace sim
