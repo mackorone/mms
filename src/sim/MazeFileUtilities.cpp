@@ -132,7 +132,7 @@ bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width){
     std::string line("");
 
     int expected_x_pos = 0;
-    int expected_y_pos = 0;
+    int expected_y_pos = -1;
 
     int current_int = 0;
 
@@ -140,6 +140,17 @@ bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width){
 
         if (!hasOnlyDigits(line)){ // The line has some non digit characters
             return false;
+        }
+        
+        expected_y_pos += 1; // Add one to the expected Y_position
+
+        if (expected_y_pos == height) { // Wrap Around
+            expected_y_pos = 0;
+            expected_x_pos += 1; // X-Pos will increase
+        }
+
+        if (expected_x_pos == width) {
+            return false; // Too many lines, RUN
         }
 
         for (int i = 0; i < 6; i += 1) {
@@ -158,14 +169,8 @@ bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width){
                 if (current_int != expected_y_pos){ // Y Pos on line does not match the expected Y Position
                     return false;
                 }
-
-                expected_y_pos += 1; // Add one to the expected Y_position
-
-                if (expected_y_pos == height) { // Wrap Around
-                    expected_y_pos = 0;
-                    expected_x_pos += 1; // X-Pos will increase
-                }
             }
+
             if (i > 1 && !(current_int == 0 || current_int == 1)) { // Wall Values - check if 1 or 0
                 return false;
             } 
@@ -184,7 +189,7 @@ bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width){
         }
     }
   
-    if (expected_x_pos != width && expected_y_pos != 0) {
+    if (expected_x_pos != width - 1 && expected_y_pos != 0) {
         return false; // Not all lines present in the last group
     }
 
