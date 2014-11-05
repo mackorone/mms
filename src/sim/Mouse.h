@@ -2,6 +2,7 @@
 #define SIM_MOUSE_H_
 
 #include "Maze.h"
+#include <vector>
 
 namespace sim{
 
@@ -16,6 +17,8 @@ public:
     int getY();
     int getDirection();
     bool inGoal();
+    float getRotation();
+    std::vector<std::pair<int,int>> getVertices();
 
     // Action methods
     bool wallFront();
@@ -33,6 +36,8 @@ private:
     int m_mousePosX;
     int m_mousePosY;
     int m_mouseDirection; // NORTH, EAST, SOUTH, WEST
+    float m_mouseRotation; // 0 to 360 degrees
+    std::vector<std::pair<int,int>> m_mouseVertices;
 };
 
 } // namespace sim

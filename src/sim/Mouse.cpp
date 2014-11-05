@@ -6,8 +6,12 @@
 namespace sim{
 
 Mouse::Mouse(Maze* maze) : m_maze(maze), m_mousePosX(0), m_mousePosY(0),
-                           m_mouseDirection(NORTH)
-{ }
+                           m_mouseDirection(NORTH), m_mouseRotation(0.0){
+
+    m_mouseVertices.push_back(std::make_pair(1,1));
+    m_mouseVertices.push_back(std::make_pair(3,1));
+    m_mouseVertices.push_back(std::make_pair(2,3));
+}
 
 Mouse::~Mouse()
 { }
@@ -23,6 +27,15 @@ int Mouse::getY(){
 int Mouse::getDirection(){
     return m_mouseDirection;
 }
+
+float Mouse::getRotation(){
+    return m_mouseRotation;
+}
+
+std::vector<std::pair<int,int>> Mouse::getVertices(){
+    return m_mouseVertices;
+}
+
 
 bool Mouse::inGoal(){
 
