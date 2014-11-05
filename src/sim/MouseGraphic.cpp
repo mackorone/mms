@@ -14,6 +14,7 @@ MouseGraphic::~MouseGraphic()
 { }
 
 void MouseGraphic::draw(){
+    // TODO: Make mouse have a float value for rotation, use that instead of cardinal directions
 
     int tileX = m_mouse->getX();
     int tileY = m_mouse->getY();
