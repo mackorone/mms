@@ -171,14 +171,17 @@ bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width){
                     return false;
                 }
             } 
-            try { // When did this happen << ?
-                line = line.substr(line.find_first_of(" ") + 1, line.length()); //remove first int and a space (+1)
+            std::size_t found = line.find_first_of(" ");
+            if (found != std::string::npos) { // extra space exists in the string
+                line = line.substr(line.find_first_of(" ") + 1, line.length());
+                if (i == 5){
+                    return false; // return false if more spaces after last digit remain
+                }
             }
-            catch (const std::invalid_argument& ia) {
-                if (i == 5)
-                    continue; // This should error out on the last integer of the line with no more spaces
-                else
-                    return false; 
+            else{
+                if (i != 5)
+                    return false; // If no more spaces before the last digit that means the line
+                                  // does not have enough digits
             }
         }
         if (expected_x_pos == width)
