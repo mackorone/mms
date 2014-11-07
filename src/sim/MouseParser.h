@@ -1,4 +1,5 @@
 #pragma once
+
 #include <iostream>
 #include <stdlib.h>
 #include <vector>
@@ -9,23 +10,18 @@ namespace sim {
 
 class MouseParser {
 
-pugi::xml_document doc;
-
 public:
+    MouseParser();
+    float getHeight();
+    float getTorque();
+    float getDiameter();
+    std::vector<std::vector<float>> getWheels();
+    std::vector<std::vector<float>> getSensors();
+    std::vector<std::pair<float, float>> getShape();
 
-MouseParser();
+private:
+    pugi::xml_document doc;
 
-std::vector<std::pair<float, float> > getShape();
-
-float getHeight();
-
-std::vector<std::vector<float> > getWheels();
-
-float getTorque();
-
-float getDiameter();
-
-std::vector<std::vector<float> > getSensors();
 };
 
-}
+} // namespace sim

@@ -15,7 +15,7 @@
 
 namespace sim {
 
-std::string getProjectDirectory(){
+std::string getProjectDirectory() {
 
     // This approach is claimed to be more reliable than argv[0] on windows
     // and linux.  On Windows GetModuleFileName is the directory to the executable
@@ -36,7 +36,7 @@ std::string getProjectDirectory(){
     ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
     path = std::string(result, (count > 0) ? count : 0);
     path = path.substr(0, path.find_last_of("\\/"));; // Remove the executable name as it is part of path
-    path += "/../"; // Point to /mms/
+    path += "/../";
 #endif
 
     return path;

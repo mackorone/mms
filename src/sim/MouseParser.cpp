@@ -3,16 +3,17 @@
 namespace sim {
 
 MouseParser::MouseParser() {
-    pugi::xml_parse_result result=doc.load_file("./myRobot.xml");
-    if(!result) {
+    pugi::xml_parse_result result = doc.load_file("./myRobot.xml");
+    if (!result) {
 		std::cout << "Error" << std::endl;
 		std::cout << "Description: " << result.description() << std::endl;
     }
 }
 
-std::vector<std::pair<float, float> > MouseParser::getShape() {
-    pugi::xml_node shape=doc.child("rob").child("shape").child("point");
-    std::vector<std::pair<float, float> > points;
+std::vector<std::pair<float, float>> MouseParser::getShape() {
+
+    pugi::xml_node shape = doc.child("rob").child("shape").child("point");
+    std::vector<std::pair<float, float>> points;
     std::pair<float, float> point;
     
     //Iterate though all members of shape
@@ -34,9 +35,9 @@ float MouseParser::getHeight() {
     return atof(doc.child("rob").child("height").child_value()); //Implicit conversion
 }
  
-std::vector<std::vector<float> > MouseParser::getWheels() {
+std::vector<std::vector<float>> MouseParser::getWheels() {
     pugi::xml_node wheels=doc.child("rob").child("wheels").child("pointanddirection");
-    std::vector<std::vector<float> > wheelSpecs;
+    std::vector<std::vector<float>> wheelSpecs;
     std::vector<float> specs;
 
     for(pugi::xml_node_iterator it=wheels.begin(); it!=wheels.end(); ++it) {
@@ -64,9 +65,9 @@ float MouseParser::getDiameter() {
     return atof(doc.child("rob").child("wheels").child("diameter").child_value());
 }
 
-std::vector<std::vector<float> > MouseParser::getSensors() {
+std::vector<std::vector<float>> MouseParser::getSensors() {
     pugi::xml_node sensors=doc.child("rob").child("sensors").child("pointanddirection");
-    std::vector<std::vector<float> > sensorSpecs;
+    std::vector<std::vector<float>> sensorSpecs;
     std::vector<float> specs;
 
     for(pugi::xml_node_iterator it=sensors.begin(); it!=sensors.end(); ++it) {
@@ -84,7 +85,6 @@ std::vector<std::vector<float> > MouseParser::getSensors() {
     }
 
     return sensorSpecs;
-
 }
 
-}
+} // namespace sim
