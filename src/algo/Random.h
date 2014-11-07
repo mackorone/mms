@@ -1,7 +1,4 @@
-
-#ifndef RANDOM_H_
-#define RANDOM_H_
-
+#pragma once
 
 #include "IAlgorithm.h"
 
@@ -12,12 +9,4 @@ public:
 
 private:
 
-
 };
-
-
-#endif // RANDOM_H_
-
-
-
-

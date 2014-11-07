@@ -1,5 +1,4 @@
-#ifndef LEFTWALLFOLLOW_H_
-#define LEFTWALLFOLLOW_H_
+#pragma once
 
 #include "../IAlgorithm.h"
 
@@ -11,5 +10,3 @@ public:
 private:
     void leftWallFollowStep(sim::MouseInterface* mouse);
 };
-
-#endif // LEFTWALLFOLLOW_H_

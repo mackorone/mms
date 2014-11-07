@@ -1,5 +1,4 @@
-#ifndef IALGORITHM_H_
-#define IALGORITHM_H_
+#pragma once
 
 #include "../sim/MouseInterface.h"
 
@@ -12,5 +11,3 @@ public:
     virtual void solve(sim::MouseInterface* mouse) = 0;
 
 };
-
-#endif // IALGORITHM_H_

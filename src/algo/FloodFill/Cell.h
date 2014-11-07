@@ -1,5 +1,4 @@
-#ifndef CELL_H_
-#define CELL_H_
+#pragma once
 
 /*
  * A class used in the FloodFill algorithm whose purpose is twofold. First, it
@@ -43,5 +42,3 @@ private:
     Cell* m_prev; // The previous node in the path by which the Cell was discovered
 
 };
-
-#endif // CELL_H_

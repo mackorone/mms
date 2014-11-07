@@ -1,5 +1,4 @@
-#ifndef CELLMOD_H_
-#define CELLMOD_H_
+#pragma once
 
 /*
  * This struct contains all of the information relevant to a cell modification.
@@ -20,5 +19,3 @@ struct Cellmod {
     bool oldWallsInspected[4]; // Whether or not we've inspected the specific walls of a Cell
 
 };
-
-#endif // CELLMOD_H_

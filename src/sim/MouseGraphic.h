@@ -1,5 +1,4 @@
-#ifndef SIM_MOUSEGRAPHIC_H_
-#define SIM_MOUSEGRAPHIC_H_
+#pragma once
 
 #include "Constants.h"
 #include "Mouse.h"
@@ -20,5 +19,3 @@ private:
 };
 
 } // namespace sim
-
-#endif // SIM_MOUSEGRAPHIC_H_

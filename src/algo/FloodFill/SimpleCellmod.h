@@ -1,5 +1,4 @@
-#ifndef SIMPLECELLMOD_H_
-#define SIMPLECELLMOD_H_
+#pragma once
 
 // Structure that contains modification information for the simple
 // floodfiil algorithm implementation
@@ -9,5 +8,3 @@ struct SimpleCellmod {
     int dist;
     bool walls[4];
 };
-
-#endif // SIMPLECELLMOD_H_

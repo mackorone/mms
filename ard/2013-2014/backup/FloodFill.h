@@ -1,5 +1,4 @@
-#ifndef FLOODFILL_H_
-#define FLOODFILL_H_
+#pragma once
 
 #include <list>
 
@@ -117,5 +116,3 @@ private:
     // Checks and handles requests for the victory method, returns true for reset, else false
     bool checkRequestVictory();
 };
-
-#endif // FLOODFILL_H_

@@ -1,5 +1,4 @@
-#ifndef SIM_CONSTANTS_H_
-#define SIM_CONSTANTS_H_
+#pragma once
 
 #include <GL/freeglut.h>
 
@@ -17,5 +16,3 @@ static GLfloat BLACK     [3] = { 0, 0, 0};
 static GLfloat RED       [3] = {.6, 0, 0};
 
 } // namespace sim
-
-#endif // SIM_CONSTANTS_H_

@@ -1,5 +1,4 @@
-#ifndef SIM_GRAPHICSTOOLS_H_
-#define SIM_GRAPHICSTOOLS_H_
+#pragma once
 
 #include "Parameters.h"
 
@@ -16,5 +15,3 @@ inline float convertVerticalPoint(float coordinate) {
 }
 
 } // namespace sim
-
-#endif // SIM_GRAPHICSTOOLS_H_

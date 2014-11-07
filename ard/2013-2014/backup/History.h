@@ -1,5 +1,4 @@
-#ifndef HISTORY_H_
-#define HISTORY_H_
+#pragma once
 
 #include <list>
 #include <queue>
@@ -50,5 +49,3 @@ private:
     // List of List of cell modification objects for each step.
     std::list<std::list<Cellmod> > m_modifiedCells;
 };
-
-#endif // HISTORY_H_

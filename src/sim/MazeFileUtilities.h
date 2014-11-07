@@ -1,5 +1,4 @@
-#ifndef SIM_MAZEFILEUTILITIES_H_
-#define SIM_MAZEFILEUTILITIES_H_
+#pragma once
 
 #include <string>
 
@@ -16,5 +15,3 @@ int mazeFileHeight(std::string mazeFilePath);
 bool checkValidMazeFile(std::string mazeFilePath);
 
 } // namespace sim
-
-#endif // SIM_MAZEFILEUTILITIES_H_

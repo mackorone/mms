@@ -1,5 +1,4 @@
-#ifndef SIM_TILEGRAPHIC_H_
-#define SIM_TILEGRAPHIC_H_
+#pragma once
 
 #include <GL/freeglut.h>
 #include "Parameters.h"
@@ -23,5 +22,3 @@ private:
 };
 
 } // namespace sim
-
-#endif // SIM_TILEGRAPHIC_H_
