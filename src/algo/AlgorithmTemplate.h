@@ -1,7 +1,4 @@
-// ----- Remember to change the define directive below this line ----- //
-#ifndef ALGORITHMTEMPLATE_H_
-#define ALGORITHMTEMPLATE_H_
-// ----- Remember to change the define directive below this line ----- //
+#pragma once
 
 #include "IAlgorithm.h"
 
@@ -21,10 +18,5 @@ private:
 
     // ----- Helper function declarations should go above this line ----- //
 };
-
-// ----- Remember to change the define directive below this line ----- //
-#endif // ALGORITHMTEMPLATE_H_
-// ----- Remember to change the define directive above this line ----- //
-
 
 // NOTE: You may delete the reminders after you've changed the required fields

@@ -2,7 +2,6 @@
 
 #include <list>
 
-#include "../IAlgorithm.h"
 #include "Cell.h"
 #include "Cellmod.h"
 #include "History.h"
@@ -16,14 +15,13 @@ static const bool ALGO_COMPARE = false; // Whether or not we're comparing the so
 enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
 
 
-class FloodFill : public IAlgorithm {
+class FloodFill {
 
 public:
-    void solve(sim::MouseInterface* mouse); // IAlgorithm interface method
+    void solve(); // IAlgorithm interface method
 
 private:
 
-    sim::MouseInterface* m_mouse; // Mouse used to traverse and solve the maze
     Cell m_cells[MAZE_SIZE_X][MAZE_SIZE_Y]; // Grid a cells to store maze information
     int m_x; // X position of the mouse
     int m_y; // Y position of the mouse
@@ -68,7 +66,7 @@ private:
     bool spaceFront(); // Returns true if there's a cell in front of the mouse
     bool spaceLeft(); // Returns true if there's a cell to the left of the mouse
     bool spaceRight(); // Returns true if there's a cell to the right of the mouse
-    int min(int one, int two, int three, int four); // Returns the min of four ints
+    int min4(int one, int two, int three, int four); // Returns the min of four ints
 
     // Moves the mouse to the target Cell, but only if it's exactly one Cell away
     void moveOneCell(Cell* target);

@@ -1,5 +1,4 @@
-#ifndef SIM_MAZE_H_
-#define SIM_MAZE_H_
+#pragma once
 
 #include <string>
 #include <vector>
@@ -86,5 +85,3 @@ private:
 };
 
 } // namespace sim
-
-#endif // SIM_MAZE_H_

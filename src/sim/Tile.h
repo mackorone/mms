@@ -1,5 +1,4 @@
-#ifndef SIM_TILE_H_
-#define SIM_TILE_H_
+#pragma once
 
 #include <vector>
 
@@ -55,5 +54,3 @@ private:
 };
 
 } // namespace sim
-
-#endif // SIM_TILE_H_

@@ -1,5 +1,4 @@
-#ifndef SOLVER_H_
-#define SOLVER_H_
+#pragma once
 
 #include "../sim/MouseInterface.h"
 
@@ -14,5 +13,3 @@ private:
     sim::MouseInterface* m_mouse;
 
 };
-
-#endif // SOLVER_H_

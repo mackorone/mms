@@ -1,5 +1,4 @@
-#ifndef SIM_MAZEGRAPHIC_H_
-#define SIM_MAZEGRAPHIC_H_
+#pragma once
 
 #include <vector>
 
@@ -22,5 +21,3 @@ private:
 };
 
 } // namespace sim
-
-#endif // SIM_MAZEGRAPHIC_H_

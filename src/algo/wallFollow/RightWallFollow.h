@@ -1,5 +1,4 @@
-#ifndef RIGHTWALLFOLLOW_H_
-#define RIGHTWALLFOLLOW_H_
+#pragma once
 
 #include "../IAlgorithm.h"
 
@@ -12,5 +11,3 @@ private:
     void rightWallFollowStep(sim::MouseInterface* mouse);
 
 };
-
-#endif // RIGHTWALLFOLLOW_H_

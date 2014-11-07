@@ -1,5 +1,4 @@
-#ifndef SIM_MOUSEINTERFACE_H_
-#define SIM_MOUSEINTERFACE_H_
+#pragma once
 
 #include "Mouse.h"
 
@@ -42,5 +41,3 @@ private:
 };
 
 } // namespace sim
-
-#endif // SIM_MOUSEINTERFACE_H_

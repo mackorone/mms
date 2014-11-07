@@ -41,11 +41,11 @@ private:
     std::stack<Cell*> m_checkpointStack;
 
     // Queue of stacks for explore
-    std::queue<std::stack<Cell*>> m_stacks;
+    std::queue<std::stack<Cell*> > m_stacks;
 
     // Queue of ints counting the references for each stack in m_stacks
     std::list<int> m_stackReferenceCounts;
 
     // List of List of cell modification objects for each step.
-    std::list<std::list<Cellmod>> m_modifiedCells;
+    std::list<std::list<Cellmod> > m_modifiedCells;
 };

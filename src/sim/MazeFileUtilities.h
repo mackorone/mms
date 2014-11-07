@@ -1,5 +1,4 @@
-#ifndef SIM_MAZEFILEUTILITIES_H_
-#define SIM_MAZEFILEUTILITIES_H_
+#pragma once
 
 #include <string>
 
@@ -22,5 +21,3 @@ bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width);
 bool hasOnlyDigits(const std::string &str);
 
 } // namespace sim
-
-#endif // SIM_MAZEFILEUTILITIES_H_

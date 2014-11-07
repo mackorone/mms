@@ -1,5 +1,4 @@
-#ifndef RANDOMIZEDWALLFOLLOW_H_
-#define RANDOMIZEDWALLFOLLOW_H_
+#pragma once
 
 #include "../IAlgorithm.h"
 
@@ -13,5 +12,3 @@ private:
     void rightWallFollowStep(sim::MouseInterface* mouse);
 
 };
-
-#endif // RANDOMIZEDWALLFOLLOW_H_

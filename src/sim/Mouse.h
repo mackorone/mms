@@ -1,5 +1,4 @@
-#ifndef SIM_MOUSE_H_
-#define SIM_MOUSE_H_
+#pragma once
 
 #include "Maze.h"
 #include <vector>
@@ -41,5 +40,3 @@ private:
 };
 
 } // namespace sim
-
-#endif // SIM_MOUSE_H_

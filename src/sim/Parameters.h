@@ -1,5 +1,4 @@
-#ifndef SIM_PARAMETERS_H_
-#define SIM_PARAMETERS_H_
+#pragma once
 
 #include <string>
 
@@ -21,5 +20,3 @@ static const int WINDOW_WIDTH = MAZE_WIDTH * UNITS_PER_TILE * PIXELS_PER_UNIT;
 static const int WINDOW_HEIGHT =  MAZE_HEIGHT * UNITS_PER_TILE * PIXELS_PER_UNIT;
 
 } // namespace sim
-
-#endif // SIM_PARAMETERS_H_
