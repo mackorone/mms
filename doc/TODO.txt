@@ -27,6 +27,7 @@ Low Priority
   a valid shortest path is not indicated on the maze
 - Validate the coding standards (especially "{" placement)
 - Rewrite "i++" as "++i" or "i += 1"
+- Clean up the README
 
 Version 2.0
 ===========

@@ -49,7 +49,7 @@ static /*non-const*/ int SLEEP_TIME = 150; // ms between simulation steps
 static /*non-const*/ bool UNDO_REQUESTED = false; // Whether or not an undo was requested
 static /*non-const*/ bool RESET_REQUESTED = false; // Whether or not a reset was requested
 
-int main(int argc, char* argv[]){
+int main(int argc, char* argv[]) {
     
     // TODO: Read in the parameters from the parameters file
 

@@ -160,4 +160,30 @@ Casting
 int bad = (int) getLong(); // Don't do this
 int good = static_cast<int>(getLong()); // Do this instead
 
-// TODO: Order of includes
+
+Includes
+--------
+
+// Includes in the headers files should be organized into two groups: <...> includes (libraries,
+// things we didn't write) and "..." includes (things we wrote). The first group should appear
+// before the second, with exactly one newline separating the groups. The groups should be
+// alphabetized.
+
+#include <iostream>
+#include <vector>
+
+#include "MyFileOne.h"
+#include "ZooFoo.h"
+
+// Includes in cpp files should be organized in the same two groups, with one exception: the
+// header file corresponding to a particular class should appear on its own line before any
+// other includes, as in:
+
+#include "MyClass.h"
+
+#include <iostream>
+#include <vector>
+
+#include "MyFileOne.h"
+#include "ZooFoo.h"
+
