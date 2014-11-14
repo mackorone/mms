@@ -11,11 +11,11 @@
 #include <vector>
 #include <stack>
 
-#include "Sleep.h"
-#include "../sim/Constants.h"
-#include "../sim/Parameters.h"
-#include "../sim/Tile.h"
+#include "Constants.h"
 #include "MazeFileUtilities.h"
+#include "Parameters.h"
+#include "Sleep.h"
+#include "Tile.h"
 
 namespace sim {
 

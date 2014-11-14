@@ -20,11 +20,11 @@ it on Windows systems, follow the instructions outlined in the document:
 
 Setting up Visual Studio Project (VS)
 =====================================
-Once freeglut is installed as per the above instruction you will want to create
-a project in Visual Studio.  To do this automatically:
+Once freeglut is installed as per the above instruction, create a project in
+Visual Studio:
 
-These instructions will work on VS 2013 Profesional, and likely be simlar to other
-versions.
+(Note: these instructions will work on VS 2013 Profesional, and likely be simlar to other
+versions)
 
 1) Open VS and select: File -> New -> Project From Existing Code
 

@@ -27,6 +27,10 @@ private:
     // Randomly generate a maze
     void randomize();
     void tom_random();
+    // TODO: These are new
+    //void randomize(int width, int height);
+    //void tom_random(int width, int height);
+         
 
     //Initialize starting Maze
     void initializeMaze();
