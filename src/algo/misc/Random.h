@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IAlgorithm.h"
+#include "../IAlgorithm.h"
 
 class Random : public IAlgorithm {
 
@@ -10,5 +10,3 @@ public:
 private:
 
 };
-
-#endif // RANDOM_H_
