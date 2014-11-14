@@ -15,6 +15,7 @@ public:
     float getHeight();
     float getTorque();
     float getDiameter();
+	float floatConvert(const char* numValue);
     std::vector<std::vector<float>> getWheels();
     std::vector<std::vector<float>> getSensors();
     std::vector<std::pair<float, float>> getShape();

@@ -10,6 +10,10 @@ MouseParser::MouseParser() {
     }
 }
 
+float MouseParser::floatConvert(const char* numValue){
+	return static_cast<float>(atof(numValue));
+}
+
 std::vector<std::pair<float, float>> MouseParser::getShape() {
 
     pugi::xml_node shape = doc.child("rob").child("shape").child("point");
@@ -19,10 +23,10 @@ std::vector<std::pair<float, float>> MouseParser::getShape() {
     //Iterate though all members of shape
     for(pugi::xml_node_iterator it=shape.begin(); it!=shape.end(); ++it) {
 		if(*(it->name())=='x') {
-            point.first=atof(it->child_value()); //Implicit conversion 
+            point.first=floatConvert(it->child_value()); //Implicit conversion 
         }
         else if(*(it->name())=='y') {
-            point.second=atof(it->child_value()); //Implicit conversion
+            point.second=floatConvert(it->child_value()); //Implicit conversion
             points.push_back(point); //Add point to end of vector
         }
     }
@@ -32,7 +36,7 @@ std::vector<std::pair<float, float>> MouseParser::getShape() {
 
 
 float MouseParser::getHeight() {
-    return atof(doc.child("rob").child("height").child_value()); //Implicit conversion
+    return floatConvert(doc.child("rob").child("height").child_value()); //Implicit conversion
 }
  
 std::vector<std::vector<float>> MouseParser::getWheels() {
@@ -42,13 +46,13 @@ std::vector<std::vector<float>> MouseParser::getWheels() {
 
     for(pugi::xml_node_iterator it=wheels.begin(); it!=wheels.end(); ++it) {
         if(*(it->name())=='x') {
-            specs.push_back(atof(it->child_value())); //Implicit conversion
+            specs.push_back(floatConvert(it->child_value())); //Implicit conversion
         }
         else if(*(it->name())=='y') {
-            specs.push_back(atof(it->child_value())); //Implicit conversion
+            specs.push_back(floatConvert(it->child_value())); //Implicit conversion
         }
         else if(*(it->name())=='d') {
-            specs.push_back(atof(it->child_value())); //Implicit conversion
+            specs.push_back(floatConvert(it->child_value())); //Implicit conversion
             wheelSpecs.push_back(specs);
             specs.clear();
         }    
@@ -58,11 +62,11 @@ std::vector<std::vector<float>> MouseParser::getWheels() {
 }
 
 float MouseParser::getTorque() {
-    return atof(doc.child("rob").child("wheels").child("torque").child_value());
+    return floatConvert(doc.child("rob").child("wheels").child("torque").child_value());
 }
 
 float MouseParser::getDiameter() {
-    return atof(doc.child("rob").child("wheels").child("diameter").child_value());
+    return floatConvert(doc.child("rob").child("wheels").child("diameter").child_value());
 }
 
 std::vector<std::vector<float>> MouseParser::getSensors() {
@@ -72,13 +76,13 @@ std::vector<std::vector<float>> MouseParser::getSensors() {
 
     for(pugi::xml_node_iterator it=sensors.begin(); it!=sensors.end(); ++it) {
         if(*(it->name())=='x') {
-            specs.push_back(atof(it->child_value())); //Implicit conversion
+            specs.push_back(floatConvert(it->child_value())); //Implicit conversion
         }
         else if(*(it->name())=='y') {
-            specs.push_back(atof(it->child_value())); //Implicit conversion
+            specs.push_back(floatConvert(it->child_value())); //Implicit conversion
         }
         else if(*(it->name())=='d') {
-            specs.push_back(atof(it->child_value())); //Implicit conversion
+            specs.push_back(floatConvert(it->child_value())); //Implicit conversion
             sensorSpecs.push_back(specs);
             specs.clear();
         }

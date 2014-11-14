@@ -1,22 +1,19 @@
-#ifndef PARAMETER_PARSER_H
-#define PARAMETER_PARSER_H
+#pragma once
 
 #include <string>
-#include "lib/pugixml.hpp"
+#include <iostream>
+#include "../lib/pugixml.hpp"
 
-namespace sim{
+namespace sim {
 
-class parameterParser{
-
-	pugi::xml_document doc;
+class parameterParser {
 
 	public:
-
 		parameterParser();
+		int getValue(char* name);
+		std::string getMazeFile();
 
-
-
+    private:
+		pugi::xml_document doc;
 };
 }
-
-#endif

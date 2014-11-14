@@ -12,10 +12,27 @@
 #include "sim/Parameters.h"
 #include "sim/Tile.h"
 #include "sim/Sleep.h"
+#include "sim/parameterParser.h"
 #include "algo/Solver.h"
 
 // Test Comment
+/*
+//Initialize simulation parameters
+sim::parameterParser parser;
+sim::SLEEP_TIME_MIN = parser.getValue("SLEEP_TIME_MIN");
+sim::SLEEP_TIME_MAX = parser.getValue("SLEEP_TIME_MAX");
+sim::MAZE_WIDTH = parser.getValue("MAZE_WIDTH");
+sim::MAZE_HEIGHT = parser.getValue("MAZE_HEIGHT");
+sim::MAX_DISTANCE = MAZE_WIDTH * MAZE_HEIGHT;
+sim::MAZE_FILE = parser.getMazeFile();
+sim::MIN_MAZE_STEPS = parser.getValue("MIN_MAZE_STEPS");
 
+//Initialize Graphics Parameters
+sim::PIXELS_PER_UNIT = parser.getValue("PIXELS_PER_UNIT");
+sim::UNITS_PER_TILE = parser.getValue("UNITS_PER_TILE");
+sim::WINDOW_WIDTH = MAZE_WIDTH * UNITS_PER_TILE * PIXELS_PER_UNIT;
+sim::WINDOW_HEIGHT = MAZE_HEIGHT * UNITS_PER_TILE * PIXELS_PER_UNIT;
+*/
 // Function declarations
 void draw();
 void solve();
