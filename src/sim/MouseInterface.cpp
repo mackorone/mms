@@ -2,15 +2,13 @@
 
 #include <GL/freeglut.h>
 
-#include "Parameters.h"
-#include "Sleep.h"
+#include "Param.h"
+#include "State.h"
+#include "Utilities.h"
 
-namespace sim{
+namespace sim {
 
-MouseInterface::MouseInterface(Mouse* mouse, int* sleepTime, bool* paused, bool* undoRequested,
-                                                                           bool* resetRequested) : 
-        m_mouse(mouse), m_sleepTime(sleepTime), m_paused(paused),
-        m_undoRequested(undoRequested), m_resetRequested(resetRequested)
+MouseInterface::MouseInterface(Mouse* mouse) : m_mouse(mouse)
 { }
 
 MouseInterface::~MouseInterface()
@@ -30,8 +28,8 @@ bool MouseInterface::wallLeft(){
 
 void MouseInterface::moveForward(){
     
-    for (int i = 0; i < *m_sleepTime; i += 1) {
-        while (*m_paused) {sim::sleep(1);} // Sleep while paused
+    for (int i = 0; i < S()->SLEEP_TIME(); i += 1) {
+        while (S()->PAUSED()) {sim::sleep(1);} // Sleep while paused
         sim::sleep(1); // Sleep for 1 ms of the total m_sleepTime
     }
 
@@ -41,8 +39,8 @@ void MouseInterface::moveForward(){
 
 void MouseInterface::turnRight(){
 
-    for (int i = 0; i < *m_sleepTime; i += 1) {
-        while (*m_paused) {sim::sleep(1);} // Sleep while paused
+    for (int i = 0; i < S()->SLEEP_TIME(); i += 1) {
+        while (S()->PAUSED()) {sim::sleep(1);} // Sleep while paused
         sim::sleep(1); // Sleep for 1 ms of the total m_sleepTime
     }
 
@@ -52,8 +50,8 @@ void MouseInterface::turnRight(){
 
 void MouseInterface::turnLeft(){
 
-    for (int i = 0; i < *m_sleepTime; i += 1) {
-        while (*m_paused) {sim::sleep(1);} // Sleep while paused
+    for (int i = 0; i < S()->SLEEP_TIME(); i += 1) {
+        while (S()->PAUSED()) {sim::sleep(1);} // Sleep while paused
         sim::sleep(1); // Sleep for 1 ms of the total m_sleepTime
     }
 
@@ -67,19 +65,19 @@ void MouseInterface::turnAround(){
 }
 
 bool MouseInterface::undoRequested(){
-    return *m_undoRequested;
+    return S()->UNDO_REQUESTED();
 }
 
 bool MouseInterface::resetRequested(){
-    return *m_resetRequested;
+    return S()->RESET_REQUESTED();
 }
 
 void MouseInterface::undoHonored(){
-    *m_undoRequested = false;
+    S()->SET_UNDO_REQUESTED(false);
 }
 
 void MouseInterface::resetHonored(){
-    *m_resetRequested = false;
+    S()->SET_RESET_REQUESTED(false);
 }
 
 void MouseInterface::resetPosition() {

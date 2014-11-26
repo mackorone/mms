@@ -1,9 +1,9 @@
 #include "MouseGraphic.h"
 
 #include "Constants.h"
-#include "GraphicsTools.h"
+#include "Param.h"
 #include "Mouse.h"
-#include "Parameters.h"
+#include "Utilities.h"
 
 namespace sim{
 
@@ -19,15 +19,15 @@ void MouseGraphic::draw(){
     int tileX = m_mouse->getX();
     int tileY = m_mouse->getY();
 
-    int tileLength = UNITS_PER_TILE * PIXELS_PER_UNIT;
+    int tileLength = P()->UNITS_PER_TILE() * P()->PIXELS_PER_UNIT();
 
     // Lower left corner
-    float c1X = (tileLength * tileX) + 2*PIXELS_PER_UNIT;
-    float c1Y = (tileLength * tileY) + 2*PIXELS_PER_UNIT;
+    float c1X = (tileLength * tileX) + 2*P()->PIXELS_PER_UNIT();
+    float c1Y = (tileLength * tileY) + 2*P()->PIXELS_PER_UNIT();
     
     // Upper right corner
-    float c2X = (tileLength * (tileX+1)) - 2*PIXELS_PER_UNIT;
-    float c2Y = (tileLength * (tileY+1)) - 2*PIXELS_PER_UNIT;
+    float c2X = (tileLength * (tileX+1)) - 2*P()->PIXELS_PER_UNIT();
+    float c2Y = (tileLength * (tileY+1)) - 2*P()->PIXELS_PER_UNIT();
     
     float dirC1X = c1X;
     float dirC1Y = c1Y;

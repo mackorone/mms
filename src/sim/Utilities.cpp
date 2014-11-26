@@ -1,10 +1,15 @@
-#include "MazeFileUtilities.h"
+#include "Utilities.h"
 
+#include <chrono>
+#include <thread>
+
+// TODO: Are all of these needed???
 #include <fstream>
 #include <iostream>
 #include <iterator>
 #include <sstream>
 #include <vector>
+
 
 #ifdef _WIN32
     #include <windows.h>
@@ -13,15 +18,22 @@
     #include <unistd.h>
 #endif
 
+#include "Param.h"
+
+
 namespace sim {
+
+void sleep(int ms) {
+	 std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+}
 
 std::string getProjectDirectory() {
 
     // This approach is claimed to be more reliable than argv[0] on windows
     // and linux.  On Windows GetModuleFileName is the directory to the executable
     // which is located in /mms/src/Debug/.  On linux /proc/self/exe is a path to exe.
-    // This aproach does not work for all flavors to Linux, should on the common.
-    // executable on Linux is located at /mms/bin/
+    // This approach does not work for all flavors to Linux, should on the common.
+    // The executable on Linux is located in "mms/bin".
 
     std::string path;
 
@@ -42,83 +54,13 @@ std::string getProjectDirectory() {
     return path;
 }
 
-std::string getMazeFileDirPath(){
-    
-    std::string path;
-
-    path = getProjectDirectory();
-
-    // Append mazeFile directory path from the root of the project
-    path += "src/maze_files/";
-
-    return path;
-}
-
-/*int mazeFileWidth(std::string mazeFilePath){
-
-}
-
-int mazeFileHeight(std::string mazeFilePath){
-
-}
-*/
-
-bool checkValidMazeFile(std::string mazeFilePath){
-
-    // TODO: Ensure that you have unique y values for all x values
-    // TODO: Ensure that the walls line up
-    // TODO: Make a mazeFileValidator - gets height, width, valid, etc
-
-    // This function validates following:
-    // 1.) There are an equal number of y values for each x value
-    // 2.) All the x and y values are unique
-    // 3.) The walls are valid
-
-    // Create the file object
-    std::ifstream file(mazeFilePath.c_str());
-
-    // Initialize a string variable
-    std::string line("");
-
-    if (file.is_open()){
-
-        // Vector that counts the number of y values colums for each x value // TODO
-        std::vector<int> counts;
-        counts.push_back(0);
-        int xValue = 0;
-
-        while (getline(file, line)){
-            std::istringstream iss(line);
-            std::vector<std::string> tokens;
-            copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(),
-                 std::back_inserter<std::vector<std::string> >(tokens));
-
-            // Counting logic // TODO
-            /*if (tokens.at(0) == xValue){
-                counts.at(xValue) += 1;
-            }
-            else{
-                xValue = tokens.at(0);
-                counts.push_back(1); 
-            }*/
-        }
-    
-        file.close();
-
-        /*int numberOfYValues = counts.at(0);
-        for (int i = 1; i < counts.size(); i += 1){
-            if (counts.at(i) != numberOfYValues){
-                return 0;
-            }
-        }*/
-
-    }
-    
-    // false indicates invalid file
-    return false;
-}
-
 bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width){
+
+    // TODO:
+    // The correct number of rows and columns
+    // The rows and columns labeled correctly
+    // Walls are all valid
+    // The maze is surrounded by walls
 
     // Create the file object
     std::ifstream file(mazeFilePath.c_str());
@@ -204,5 +146,18 @@ bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width){
 bool hasOnlyDigits(const std::string &str) {
     return str.find_first_not_of("0123456789 ") == std::string::npos;
 }
+
+// -------------------------- Graphics Utilities ------------------------------
+ 
+// TODO: Implementation independent of params WINDOW_WIDTH
+float convertHorizontalPoint(float coordinate) {
+    return ((coordinate / P()->WINDOW_WIDTH()) - 0.5f) * 2;
+}
+ 
+// TODO: Implementation independent of params WINDOW_HEIGHT
+float convertVerticalPoint(float coordinate) {
+    return ((coordinate / P()->WINDOW_HEIGHT()) - 0.5f) * 2;
+}
+
 
 } // namespace sim

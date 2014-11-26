@@ -8,6 +8,7 @@ namespace sim {
 enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
 
 // Graphics constants
+// TODO: Do these actually need to be GLfloat ???
 static GLfloat GREEN     [3] = { 0.0f, 0.9f, 0.0f};
 static GLfloat DARKGREEN [3] = { 0.0f, 0.5f, 0.0f};
 static GLfloat BLUE      [3] = { 0.0f, 0.0f, 0.7f};

@@ -11,11 +11,10 @@
 #include <vector>
 #include <stack>
 
-#include "Sleep.h"
-#include "../sim/Constants.h"
-#include "../sim/Parameters.h"
-#include "../sim/Tile.h"
-#include "MazeFileUtilities.h"
+#include "Constants.h"
+#include "Param.h"
+#include "Tile.h"
+#include "Utilities.h"
 
 namespace sim {
 
@@ -280,11 +279,11 @@ void Maze::tom_random() {
         bool choices[4] = {0,0,0,0};
 
         // If cell to the North is valid and unexplored
-        if ((y_pos + 1 < MAZE_WIDTH) && !getTile(x_pos, y_pos + 1)->getExplored()) {
+        if ((y_pos + 1 < P()->MAZE_WIDTH()) && !getTile(x_pos, y_pos + 1)->getExplored()) {
             choices[NORTH] = true;
         }
         // If cell to the East is valid and unexplored
-        if ((x_pos + 1 < MAZE_WIDTH) && !getTile(x_pos + 1, y_pos)->getExplored()) {
+        if ((x_pos + 1 < P()->MAZE_WIDTH()) && !getTile(x_pos + 1, y_pos)->getExplored()) {
             choices[EAST] = true;
         }
         // If cell to the South is valid and unexplored
@@ -310,14 +309,14 @@ void Maze::tom_random() {
                     int cellToBreak = 0; // NORTH, SOUTH, EAST, WEST
 
                     // If cell to the North is valid and explored
-                    if ((y_pos + 1 < MAZE_WIDTH) && getTile(x_pos, y_pos + 1)->getExplored()) {
+                    if ((y_pos + 1 < P()->MAZE_WIDTH()) && getTile(x_pos, y_pos + 1)->getExplored()) {
                         if (abs(getTile(x_pos, y_pos + 1)->getDistance() - currentCellDist) > biggestDifference){
                             biggestDifference = abs(getTile(x_pos, y_pos + 1)->getDistance() - currentCellDist);
                             cellToBreak = NORTH;
                         }
                     }
                     // If cell to the East is valid and explored
-                    if ((x_pos + 1 < MAZE_WIDTH) && getTile(x_pos + 1, y_pos)->getExplored()) {
+                    if ((x_pos + 1 < P()->MAZE_WIDTH()) && getTile(x_pos + 1, y_pos)->getExplored()) {
                         if (abs(getTile(x_pos + 1, y_pos)->getDistance() - currentCellDist) > biggestDifference){
                             biggestDifference = abs(getTile(x_pos + 1, y_pos)->getDistance());
                             cellToBreak = EAST;
@@ -654,7 +653,7 @@ void Maze::breakGradientWall(){
             int prospectiveDist = 0;
 
             // If cell to the North is valid
-            if ((y + 1 < MAZE_WIDTH)) {
+            if ((y + 1 < P()->MAZE_WIDTH())) {
                 prospectiveDist = getTile(x, y + 1)->getDistance();
                 //Check the gradient and see if it is the biggest one so far
                 if (abs(prospectiveDist - currentCellDist) > biggestDifference){
@@ -664,7 +663,7 @@ void Maze::breakGradientWall(){
                 }
             }
             // If cell to the East is valid
-            if ((x + 1 < MAZE_WIDTH)) {
+            if ((x + 1 < P()->MAZE_WIDTH())) {
                 prospectiveDist = getTile(x + 1, y)->getDistance();
                 if (abs(prospectiveDist - currentCellDist) > biggestDifference){
                     biggestDifference = abs(prospectiveDist - currentCellDist);
@@ -697,10 +696,10 @@ void Maze::breakGradientWall(){
 
     // Break down wall of cell which is between the gradient of size 'biggestDifference'
 
-    if ((y_pos + 1 < MAZE_WIDTH) && abs(getTile(x_pos, y_pos + 1)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference)
+    if ((y_pos + 1 < P()->MAZE_WIDTH()) && abs(getTile(x_pos, y_pos + 1)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference)
         setWall(x_pos, y_pos, NORTH, false);
 
-    if ((x_pos + 1 < MAZE_WIDTH) && abs(getTile(x_pos + 1, y_pos)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference)
+    if ((x_pos + 1 < P()->MAZE_WIDTH()) && abs(getTile(x_pos + 1, y_pos)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference)
         setWall(x_pos, y_pos, EAST, false);
 
     if ((y_pos - 1 >= 0) && abs(getTile(x_pos, y_pos - 1)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference)
@@ -873,8 +872,8 @@ std::vector<bool> Maze::solveShortestPath(){
     // Returns whether or not the maze is solvable and whether or not
     // it satisfies the minimum number of steps
     std::vector<bool> conditions;
-    conditions.push_back(getClosestCenterTile()->getDistance() < MAX_DISTANCE);
-    conditions.push_back(getClosestCenterTile()->getDistance() > MIN_MAZE_STEPS);
+    conditions.push_back(getClosestCenterTile()->getDistance() < P()->MAX_DISTANCE());
+    conditions.push_back(getClosestCenterTile()->getDistance() > P()->MIN_MAZE_STEPS());
     return conditions;
 }
 
@@ -919,7 +918,7 @@ void Maze::setDistancesFrom(int x, int y){
     for (int x = 0; x < getWidth(); x += 1){
         for (int y = 0; y < getHeight(); y += 1){
             Tile* tile = getTile(x, y);
-            tile->setDistance(MAX_DISTANCE);
+            tile->setDistance(P()->MAX_DISTANCE());
             tile->setExplored(false);
             tile->setPosp(false);
         }

@@ -2,19 +2,17 @@
 #include <iostream>
 #include <thread>
 
+#include "algo/Solver.h"
 #include "sim/Constants.h"
+#include "sim/Param.h"
 #include "sim/Maze.h"
-#include "sim/MazeFileUtilities.h"
 #include "sim/MazeGraphic.h"
 #include "sim/Mouse.h"
 #include "sim/MouseGraphic.h"
 #include "sim/MouseInterface.h"
-#include "sim/Parameters.h"
+#include "sim/State.h"
 #include "sim/Tile.h"
-#include "sim/Sleep.h"
-#include "algo/Solver.h"
-
-// Test Comment
+#include "sim/Utilities.h"
 
 // Function declarations
 void draw();
@@ -26,28 +24,23 @@ Solver* g_solver;
 sim::MazeGraphic* g_mazeGraphic;
 sim::MouseGraphic* g_mouseGraphic;
 
-// Global primitive variable declarations
-static /*non-const*/ bool PAUSED = false; // Initially set to false  
-static /*non-const*/ int SLEEP_TIME = 150; // ms between simulation steps
-static /*non-const*/ bool UNDO_REQUESTED = false; // Whether or not an undo was requested
-static /*non-const*/ bool RESET_REQUESTED = false; // Whether or not a reset was requested
-
 int main(int argc, char* argv[]){
     
-    // TODO: Read in the parameters from the parameters file
+    // TODO: Read in the parameters from the parameters file, rather than assign them
 
     // TODO: read input file, and check size, use this as value instead of parameter
 
     // Ensure that the size parameters are valid
-    if (sim::MAZE_WIDTH < 1 || sim::MAZE_HEIGHT < 1){
+    if (sim::P()->MAZE_WIDTH() < 1 || sim::P()->MAZE_HEIGHT() < 1){
         std::cout << "Impossible maze size - check \"src/sim/Parameters.h\"" << std::endl;
         return 0;
     }
 
     // Initialize local simulation objects
-    sim::Maze maze(sim::MAZE_WIDTH, sim::MAZE_HEIGHT, sim::getMazeFileDirPath(), sim::MAZE_FILE);
+    // TODO: Make the "maze_files" a parameter
+    sim::Maze maze(sim::P()->MAZE_WIDTH(), sim::P()->MAZE_HEIGHT(), sim::getProjectDirectory() + "src/maze_files/", sim::P()->MAZE_FILE());
     sim::Mouse mouse(&maze);
-    sim::MouseInterface mouseInterface(&mouse, &SLEEP_TIME, &PAUSED, &UNDO_REQUESTED, &RESET_REQUESTED);
+    sim::MouseInterface mouseInterface(&mouse);
     Solver solver(&mouseInterface);
 
     // Initialize the local graphics objects
@@ -61,10 +54,10 @@ int main(int argc, char* argv[]){
 
     // GLUT Initialization
     glutInit(&argc, argv);
-    glutInitWindowSize(sim::WINDOW_WIDTH, sim::WINDOW_HEIGHT);
+    glutInitWindowSize(sim::P()->WINDOW_WIDTH(), sim::P()->WINDOW_HEIGHT());
     glutInitDisplayMode(GLUT_RGBA);
     glutInitWindowPosition(0, 0);
-    glutCreateWindow(sim::MAZE_FILE.c_str());
+    glutCreateWindow(sim::P()->MAZE_FILE().c_str());
     glClearColor(0.0,0.0,0.0,1.0);
     glClear(GL_COLOR_BUFFER_BIT);
     glutDisplayFunc(draw);
@@ -82,8 +75,17 @@ void draw(){
     glClear(GL_COLOR_BUFFER_BIT);
     g_mazeGraphic->draw();
     g_mouseGraphic->draw();
+
+    // Flushes all draws/updates to the screen
     glFlush();
-    sim::sleep(sim::SLEEP_TIME_MIN); // Reduces CPU usage
+
+    // TODO: Sleep stuff
+    sim::sleep(sim::P()->SLEEP_TIME_MIN()); // Reduces CPU usage
+    // 1/framerate -> sec per frame
+    // 1000*1000 -> usec per sec
+    //usleep(1000*1000/FRAMERATE);
+
+    // Request to execute the draw function again
     glutPostRedisplay();
 }
 
@@ -94,27 +96,27 @@ void solve(){
 
 void keyInput(unsigned char key, int x, int y){
     if (key == 32){ // Space bar
-        PAUSED = !PAUSED;
+        sim::S()->SET_PAUSED(!sim::S()->PAUSED());
     }
     else if (key == 'f' || key == 'F'){ // Faster
-        SLEEP_TIME /= 1.15;
-        if (SLEEP_TIME < sim::SLEEP_TIME_MIN){
-            SLEEP_TIME = sim::SLEEP_TIME_MIN;
+        sim::S()->SET_SLEEP_TIME(sim::S()->SLEEP_TIME() / 1.15);
+        if (sim::S()->SLEEP_TIME() < sim::P()->SLEEP_TIME_MIN()){
+            sim::S()->SET_SLEEP_TIME(sim::P()->SLEEP_TIME_MIN());
         }
     }
     else if (key == 's' || key == 'S'){ // Slower
-        SLEEP_TIME *= 1.2;
-        if (SLEEP_TIME > sim::SLEEP_TIME_MAX){
-            SLEEP_TIME = sim::SLEEP_TIME_MAX;
+        sim::S()->SET_SLEEP_TIME(sim::S()->SLEEP_TIME() * 1.2);
+        if (sim::S()->SLEEP_TIME() > sim::P()->SLEEP_TIME_MAX()){
+            sim::S()->SET_SLEEP_TIME(sim::P()->SLEEP_TIME_MAX());
         }
     }
     else if (key == 'u' || key == 'U'){
         // Undo request - reset the position mouse but retains memory
-        UNDO_REQUESTED = true;
+        sim::S()->SET_UNDO_REQUESTED(true);
     }
     else if (key == 'r' || key == 'R'){
         // Reset requested - reset the position mouse and don't retain memory
-        RESET_REQUESTED = true;
+        sim::S()->SET_RESET_REQUESTED(true);
     }
     else if (key == 'q' || key == 'Q'){ // Quit
         exit(0);

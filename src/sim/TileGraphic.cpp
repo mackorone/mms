@@ -1,10 +1,10 @@
 #include "TileGraphic.h"
 
 #include "Constants.h"
-#include "GraphicsTools.h"
-#include "Parameters.h"
+#include "Param.h"
+#include "Utilities.h"
 
-namespace sim{
+namespace sim {
 
 TileGraphic::TileGraphic(Tile* tile) : m_tile(tile), m_color(BLACK)
 { }
@@ -17,7 +17,7 @@ void TileGraphic::draw(){
     int tileX = m_tile->getX();
     int tileY = m_tile->getY();
 
-    int tileLength = UNITS_PER_TILE * PIXELS_PER_UNIT;
+    int tileLength = P()->UNITS_PER_TILE() * P()->PIXELS_PER_UNIT();
 
     // Lower left corner
     float c1X = tileLength * tileX;
@@ -34,7 +34,7 @@ void TileGraphic::draw(){
 
     drawRect(c1X, c1Y, c2X, c2Y, m_color);
     if (m_tile->getPosp()){ // Draw red rectangle if it's posp
-        int d = 4*PIXELS_PER_UNIT; // Distnace inward to draw rectangle
+        int d = 4*P()->PIXELS_PER_UNIT(); // Distnace inward to draw rectangle
         drawRect(c1X+d, c1Y+d, c2X-d, c2Y-d, RED);
     }
     drawCorners(c1X, c1Y, c2X, c2Y);
@@ -62,13 +62,13 @@ void TileGraphic::drawCorners(float c1X, float c1Y, float c2X, float c2Y){
     // By definition, corners and walls are one unit of length
 
     // Bottem left corner
-    drawRect(c1X, c1Y, c1X + PIXELS_PER_UNIT, c1Y + PIXELS_PER_UNIT, GRAY);
+    drawRect(c1X, c1Y, c1X + P()->PIXELS_PER_UNIT(), c1Y + P()->PIXELS_PER_UNIT(), GRAY);
     // Bottem right corner
-    drawRect(c2X - PIXELS_PER_UNIT, c1Y, c2X, c1Y + PIXELS_PER_UNIT, GRAY);
+    drawRect(c2X - P()->PIXELS_PER_UNIT(), c1Y, c2X, c1Y + P()->PIXELS_PER_UNIT(), GRAY);
     // Upper left corner
-    drawRect(c1X, c2Y - PIXELS_PER_UNIT, c1X + PIXELS_PER_UNIT, c2Y, GRAY);
+    drawRect(c1X, c2Y - P()->PIXELS_PER_UNIT(), c1X + P()->PIXELS_PER_UNIT(), c2Y, GRAY);
     // Upper right corner
-    drawRect(c2X - PIXELS_PER_UNIT, c2Y - PIXELS_PER_UNIT, c2X, c2Y, GRAY);
+    drawRect(c2X - P()->PIXELS_PER_UNIT(), c2Y - P()->PIXELS_PER_UNIT(), c2X, c2Y, GRAY);
 
 }
 
@@ -77,16 +77,16 @@ void TileGraphic::drawWalls(float c1X, float c1Y, float c2X, float c2Y){
     // By definition, corners and walls are one unit of length
 
     if (m_tile->isWall(NORTH)){
-        drawRect(c1X + PIXELS_PER_UNIT, c2Y - PIXELS_PER_UNIT, c2X - PIXELS_PER_UNIT, c2Y, GRAY);
+        drawRect(c1X + P()->PIXELS_PER_UNIT(), c2Y - P()->PIXELS_PER_UNIT(), c2X - P()->PIXELS_PER_UNIT(), c2Y, GRAY);
     }
     if (m_tile->isWall(EAST)){
-        drawRect(c2X - PIXELS_PER_UNIT, c1Y + PIXELS_PER_UNIT, c2X, c2Y - PIXELS_PER_UNIT, GRAY);
+        drawRect(c2X - P()->PIXELS_PER_UNIT(), c1Y + P()->PIXELS_PER_UNIT(), c2X, c2Y - P()->PIXELS_PER_UNIT(), GRAY);
     }
     if (m_tile->isWall(SOUTH)){
-        drawRect(c1X + PIXELS_PER_UNIT, c1Y, c2X - PIXELS_PER_UNIT, c1Y + PIXELS_PER_UNIT, GRAY);
+        drawRect(c1X + P()->PIXELS_PER_UNIT(), c1Y, c2X - P()->PIXELS_PER_UNIT(), c1Y + P()->PIXELS_PER_UNIT(), GRAY);
     }
     if (m_tile->isWall(WEST)){
-        drawRect(c1X, c1Y + PIXELS_PER_UNIT, c1X + PIXELS_PER_UNIT, c2Y - PIXELS_PER_UNIT, GRAY);
+        drawRect(c1X, c1Y + P()->PIXELS_PER_UNIT(), c1X + P()->PIXELS_PER_UNIT(), c2Y - P()->PIXELS_PER_UNIT(), GRAY);
     }
 }
 

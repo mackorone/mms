@@ -1,7 +1,6 @@
 #pragma once
 
 #include <GL/freeglut.h>
-#include "Parameters.h"
 #include "Tile.h"
 
 namespace sim {

@@ -1,11 +1,11 @@
 #include "Tile.h"
 
 #include "Constants.h"
-#include "Parameters.h"
+#include "Param.h"
 
 namespace sim{
 
-Tile::Tile() : m_x(0), m_y(0), m_distance(MAX_DISTANCE), m_explored(false),
+Tile::Tile() : m_x(0), m_y(0), m_distance(P()->MAX_DISTANCE()), m_explored(false),
                m_passes(0), m_posp(false), m_neighbors() {
     m_walls[0] = false;
     m_walls[1] = false;
