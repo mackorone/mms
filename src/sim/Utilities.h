@@ -27,6 +27,7 @@ void sleep(int ms);
 // Returns the path the mms project directory
 std::string getProjectDirectory();
 
+// TODO: These can get refactored
 bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width);
 bool hasOnlyDigits(const std::string& str);
 
