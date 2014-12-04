@@ -5,7 +5,7 @@
 namespace sim {
 
 // Simulation constants
-// TODO: Gone...
+// TODO: This file should be gone, renamed to colors..
 enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
 
 // Graphics constants

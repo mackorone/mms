@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Graphical Parameters -->
+<pixels-per-unit>4</pixels-per-unit>
+<units-per-tile>9</units-per-tile> <!-- TODO: Ratio of walls to squares; this should be more precise -->
+
+<!-- Simulation Parameters -->
+<min-sim-speed>5</min-sim-speed>
+<max-sim-speed>1500</max-sim-speed>
+
+<!-- Maze Parameters -->
+<maze-file>blank.maz</maze-file>
+<random-maze-width>16</random-maze-width>
+<random-maze-height>16</random-maze-height>
+<min-solution-length>40</min-solution-length>
+
+<save-random-maze>true</save-random-maze> <!-- TODO -->
+<!-- TODO: just use full path to the maze file??? -->
+<mazes-directory>true</mazes-directory> <!-- TODO -->

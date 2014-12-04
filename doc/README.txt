@@ -1,30 +1,38 @@
-Introduction and Requirements
-=============================
-This is a small application for simulating MicroMouse algorithms.
+-------------------------------------------------------------------------------
 
-The only current way to compile the application on Windows is through
-Visual Studio.  You can get a 3 year license for professional (recommended)
-through the Microsoft Dreamspark program.
+Introduction
+============
 
-MinGW will not work becuase currently it lacks support for Windows threading.
-This option is being explored and will be updated as options become available.
+This is an application for simulating MicroMouse algorithms. For information on
+the MicroMouse competition, see http://en.wikipedia.org/wiki/Micromouse.
 
-Note that freeglut *must* be installed for this application to work. To install
-it on Windows systems, follow the instructions outlined in the document:
+-------------------------------------------------------------------------------
 
-    http://www.cs.uregina.ca/Links/class-info/390AN/WWW/Lab1/GLUT/windows.html
+Ubuntu Requirements
+===================
 
-    *Note: You do not need to install glew.  You only need to follow the first
-           section
+[freeglut] : sudo apt-get install freeglut3-dev
+[g++-4.9]  : sudo apt-get install g++-4.9
 
+NOTE: You will probably have to update your g++ version.
+see http://mortenvp.com/installing-a-newer-gccg-on-ubuntu-12-04-lts/
 
-Setting up Visual Studio Project (VS)
-=====================================
+-------------------------------------------------------------------------------
+
+Windows Requirements
+====================
+
+Install freeglut
+----------------
+See http://www.cs.uregina.ca/Links/class-info/390AN/WWW/Lab1/GLUT/windows.html
+NOTE: You do not need to install glew.  You only need to follow the first section
+
+Setting up Visual Studio Project
+--------------------------------
+NOTE: These instructions were written for VS 2013 Profesional.
+
 Once freeglut is installed as per the above instruction you will want to create
 a project in Visual Studio.  To do this automatically:
-
-These instructions will work on VS 2013 Profesional, and likely be simlar to other
-versions.
 
 1) Open VS and select: File -> New -> Project From Existing Code
 
@@ -57,9 +65,11 @@ versions.
 
 8) To run the program select Debug -> Run Without Debugging
 
+-------------------------------------------------------------------------------
 
 Software Components
 ===================
+
 As it stands now, the simulation consists of two components. The first is the
 sim component, which is responsible for carrying out all of the backend
 operations necessary for a smooth and useful simulation. The second component
@@ -68,15 +78,19 @@ the mouse should use to actually solve the maze. Thus, any algorithm code should
 be placed within the algo directory, preferably in its own directory (so that
 things stay organized). See "src/algo/Mack_Ward/FloodFill" for an example of this. 
 
+-------------------------------------------------------------------------------
 
 Running the Simulation
 ======================
-    
-- To build the project select Build -> Build Solution or just run it and you will
-  be prompted if you want to build the changed project
 
-- To run the program select Debug -> Run Without Debugging. Hit Yes if you want to
-  rebuild
+The simulation can be run by executing the binary in the "bin" directory, as in:
+    
+    ./<path-to-bin>/MMSim
+
+For example, if you are in the "src" directory, enter the following to run the
+simulation:
+
+    ../bin/MMSim
 
 During the simulation, the user may either pause/resume or speed-up/slow-down
 the mouse speed, as well as quit the application, as follows:
@@ -86,9 +100,11 @@ the mouse speed, as well as quit the application, as follows:
      <s/S>   ->   slower
      <q/Q>   ->   quit
 
+-------------------------------------------------------------------------------
 
 Writing Your Own Algorithms
 ===========================
+
 As mentioned before, all user-defined algorithms should be placed within the
 algo directory, preferably within their own directories. While it is possible
 to define a single function for the algorithm, a good strategy is to define a
@@ -110,9 +126,11 @@ from within the Solver's solve method (just FYI, this is a technique known as
 delegation). You can look at the Solver class for some examples of how to do
 this.
 
+-------------------------------------------------------------------------------
 
 Available Mouse Commands
 ========================
+
 For users writing their own algorithms, they should call any one of the
 following functions in their code to receive input and generate output (Note
 that the commands below assume that the user has a pointer to a MouseInterface
@@ -131,9 +149,30 @@ robot to move forward, turn left, or turn right. No other functions are
 provided to the user and all other functionality must be supplied else-where, 
 as is the case with the actual MicroMouse robot.
 
+-------------------------------------------------------------------------------
 
-Building the Project
-====================
+Building the Project on Ubuntu
+==============================
+
+After any changes have been made to your code, you must remake the project from
+the root directory (the project folder that contains "src", "bin", etc.) as
+follows:
+
+    make
+
+If your code doesn't seem to be working properly, try entering the following,
+again from the root directory:
+
+    make clean
+    make
+
+The use of "make clean" simply requires the computer to recompile your files, 
+despite it potentially thinking that changes have not been made.
+
+-------------------------------------------------------------------------------
+
+Building the Project on Windows
+===============================
     
 - To build the project select Build -> Build Solution or just run it and you will
   be prompted if you want to build the changed project
@@ -143,7 +182,12 @@ Building the Project
 
 If you need to clean for some reason you can go to Build -> Clean Solution
 
+-------------------------------------------------------------------------------
+
 Contact
 =======
-Any pertaining to the program or Linux can be directed to mward4@buffalo.edu
+
 Questions pertaining to Windows development can be directed to tomaszpi@buffalo.edu
+All other questions can be directed to mward4@buffalo.edu
+
+-------------------------------------------------------------------------------

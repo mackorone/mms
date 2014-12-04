@@ -31,7 +31,7 @@ int main(int argc, char* argv[]){
     // TODO: read input file, and check size, use this as value instead of parameter
 
     // Ensure that the size parameters are valid
-    if (sim::P()->MAZE_WIDTH() < 1 || sim::P()->MAZE_HEIGHT() < 1){
+    if (sim::P()->MAZE_WIDTH() < 1 || sim::P()->MAZE_HEIGHT() < 1) { // TODO: This should be gone...
         std::cout << "Impossible maze size - check \"src/sim/Parameters.h\"" << std::endl;
         return 0;
     }

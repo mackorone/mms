@@ -36,7 +36,7 @@ Maze::Maze(int width, int height, std::string mazeFileDirPath, std::string mazeF
     
     // Initialize the tile wall values and tile neighbors by either loading
     // an existing maze file or randomly generating a valid maze
-    if (mazeFile == "") {
+    if (mazeFile.empty()) {
 
         std::cout << "No maze file provided. Generating random maze..." << std::endl;
 
@@ -47,20 +47,19 @@ Maze::Maze(int width, int height, std::string mazeFileDirPath, std::string mazeF
         
 
         // Optional - can be used to generate more maze files
-        saveMaze(mazeFileDirPath += "/auto_generated_maze.maz");
+        saveMaze(mazeFileDirPath += "/auto_generated_maze.maz"); // TODO: We should also have this
     }
     else {
 
         // Complete path to the given mazefile
-        std::string path = mazeFileDirPath += mazeFile;
+        std::string path = mazeFileDirPath + mazeFile;
 
         // Check to see if the file exists
         std::fstream file(path.c_str());
 
-        if (file){
+        if (file) {
 
-            // Check Maze Validity
-            
+            // Check Maze Validity (TODO: we already check maze file existence in other function
             if (checkValidMazeFileTom(path, width, height)){
                 // Load the maze given by mazefile
                 loadMaze(path);
@@ -73,7 +72,7 @@ Maze::Maze(int width, int height, std::string mazeFileDirPath, std::string mazeF
                     }
                 }
             }
-            else{
+            else {
                 std::cout << "Invalid file provided. Generating random maze..." << std::endl;
 
                 tom_random();
@@ -82,7 +81,7 @@ Maze::Maze(int width, int height, std::string mazeFileDirPath, std::string mazeF
                 }
             }
         }
-        else{
+        else {
 
             // If the file doesn't exist, generate a random maze file
             std::cout << "File \"" << path << "\" not found. Generating random maze..." << std::endl;

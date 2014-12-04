@@ -27,6 +27,5 @@ for name in files:
         if (y == 16):
             y = 0
             x += 1
-    os.system("rm " + name)
 
 print 'DONE!'

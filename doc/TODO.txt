@@ -1,10 +1,9 @@
 High Priority
 =============
 - Autogenerate makefile dependencies
-- Parameters File (Mitch and Tomasz)
 - Maze Validation (Tomasz)
 - Pass things by reference when possible
-- Make a distinction between the mouse interfact and sim interface
+- Make a distinction between the mouse interface and sim interface
 - Sim code should match the bot code *exactly*
 - Dual screen! (mini-map and zoomed-in view)
 
