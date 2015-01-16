@@ -1,22 +1,15 @@
-###############################################################################
-#                              Program Specifics                              #
-###############################################################################
-
 # Program name
 PROGRAM = MMSim
 
 LIBS = -lGL -lglut -lGLU
 
-###############################################################################
-#                     Don't edit code any below this line                     #
-###############################################################################
-
 # Flags
+# -std=c++11: Use the C++11 standard
+# -MD: Automatically generate dependency files
 # -g: Add debugging symbols
 # -Os: Optimize code for size
-# -std=c++11: Use the C++11 standard
 # -Wall: Show all warning messages
-FLAGS = -std=c++11 #-Os TODO: We can optimize later... #-Wall TODO: Fix all errors
+FLAGS = -MMD -std=c++11 #-Os TODO: We can optimize later... #-Wall TODO: Fix all errors
 
 # Directories
 SRC = ./src/
@@ -58,4 +51,8 @@ $(OBJ)%.o: $(SRC)%.cpp
 # 'add' is pretty self-explanatory 
 clean:
 	rm -f $(addprefix $(OBJ), $(addsuffix *.o, $(sort $(dir $(OBJECTS)))))
+	rm -f $(addprefix $(OBJ), $(addsuffix *.d, $(sort $(dir $(OBJECTS)))))
 	rm -f $(BIN)*
+
+# Include all of our dependency files
+-include $(addprefix $(OBJ),$(SOURCES:.cpp=.d))
