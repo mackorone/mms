@@ -13,31 +13,39 @@ MouseGraphic::MouseGraphic(Mouse* mouse) : m_mouse(mouse), m_color(BLUE)
 MouseGraphic::~MouseGraphic()
 { }
 
-void MouseGraphic::draw(){
-    // TODO: Make mouse have a float value for rotation, use that instead of cardinal directions
+void MouseGraphic::draw() {
 
-    int tileX = m_mouse->getX();
-    int tileY = m_mouse->getY();
+    float tileX = m_mouse->getX();
+    float tileY = m_mouse->getY();
 
-    int tileLength = P()->UNITS_PER_TILE() * P()->PIXELS_PER_UNIT();
+    Point location(m_mouse->getX(), m_mouse->getY());
+    float tileLength = P()->wallLength() + P()->wallWidth();
+
+    Point lowerLeft(m_mouse->getX() + .05, m_mouse->getY()+.05);
+    Point upperRight(m_mouse->getX()+P()->wallLength()-.05, m_mouse->getY()+P()->wallLength()-.05);
 
     // Lower left corner
-    float c1X = (tileLength * tileX) + 2*P()->PIXELS_PER_UNIT();
-    float c1Y = (tileLength * tileY) + 2*P()->PIXELS_PER_UNIT();
+    //float c1X = (tileLength * tileX) + 2*P()->pixelsPerUnit();
+    //float c1Y = (tileLength * tileY) + 2*P()->pixelsPerUnit();
     
     // Upper right corner
-    float c2X = (tileLength * (tileX+1)) - 2*P()->PIXELS_PER_UNIT();
-    float c2Y = (tileLength * (tileY+1)) - 2*P()->PIXELS_PER_UNIT();
+    //float c2X = (tileLength * (tileX+1)) - 2*P()->pixelsPerUnit();
+    //float c2Y = (tileLength * (tileY+1)) - 2*P()->pixelsPerUnit();
     
-    float dirC1X = c1X;
-    float dirC1Y = c1Y;
-    float dirC2X = c2X;
-    float dirC2Y = c2Y;
+    //float dirC1X = c1X;
+    //float dirC1Y = c1Y;
+    //float dirC2X = c2X;
+    //float dirC2Y = c2Y;
 
-    c1X = convertHorizontalPoint(c1X);
-    c1Y = convertVerticalPoint(c1Y);
-    c2X = convertHorizontalPoint(c2X);
-    c2Y = convertVerticalPoint(c2Y);
+    //c1X = convertHorizontalPoint(c1X);
+    //c1Y = convertVerticalPoint(c1Y);
+    //c2X = convertHorizontalPoint(c2X);
+    //c2Y = convertVerticalPoint(c2Y);
+
+    float c1X = physicalToOpenGl(lowerLeft).getX();
+    float c1Y = physicalToOpenGl(lowerLeft).getY();
+    float c2X = physicalToOpenGl(upperRight).getX();
+    float c2Y = physicalToOpenGl(upperRight).getY();
 
     m_mouse->inGoal() ? glColor3fv(DARKGREEN) : glColor3fv(m_color);
     glBegin(GL_POLYGON);
@@ -47,11 +55,14 @@ void MouseGraphic::draw(){
         glVertex2f(c2X, c1Y);
     glEnd();
 
-    drawDirection(dirC1X, dirC1Y, dirC2X, dirC2Y);
+    //drawDirection(dirC1X, dirC1Y, dirC2X, dirC2Y);
 }
 
-void MouseGraphic::drawDirection(float c1X, float c1Y, float c2X, float c2Y){
+void MouseGraphic::drawDirection(float c1X, float c1Y, float c2X, float c2Y) {
 
+    // TODO
+
+    /*
     float p1X = 0;
     float p1Y = 0;
     float p2X = 0;
@@ -59,7 +70,7 @@ void MouseGraphic::drawDirection(float c1X, float c1Y, float c2X, float c2Y){
     float p3X = 0;
     float p3Y = 0;
 
-    switch(m_mouse->getDirection()){
+    switch(m_mouse->getDirection()) {
         case NORTH:
             p1X = (3*c1X + c2X)/4;
             p1Y = (c1Y + c2Y)/2;
@@ -107,6 +118,7 @@ void MouseGraphic::drawDirection(float c1X, float c1Y, float c2X, float c2Y){
         glVertex2f(p2X, p2Y);
         glVertex2f(p3X, p3Y);
     glEnd();
+    */
 }
 
 } // namespace sim

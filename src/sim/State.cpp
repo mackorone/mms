@@ -19,35 +19,35 @@ State* State::getInstance() {
 
 State::State() {
 
-    m_PAUSED = false;
-    m_SLEEP_TIME = 150;
-    m_UNDO_REQUESTED = false;
-    m_RESET_REQUESTED = false;
+    m_paused = false;
+    m_simSpeed = 50;
+    m_undoRequested = false;
+    m_resetRequested = false;
 }
 
-int State::SLEEP_TIME() {
-    return m_SLEEP_TIME;
+int State::simSpeed() {
+    return m_simSpeed;
 }
-bool State::PAUSED() {
-    return m_PAUSED;
+bool State::paused() {
+    return m_paused;
 }
-bool State::UNDO_REQUESTED() {
-    return m_UNDO_REQUESTED;
+bool State::undoRequested() {
+    return m_undoRequested;
 }
-bool State::RESET_REQUESTED() {
-    return m_RESET_REQUESTED;
+bool State::resetRequested() {
+    return m_resetRequested;
 }
-void State::SET_SLEEP_TIME(int sleep_time) {
-    m_SLEEP_TIME = sleep_time;
+void State::setSimSpeed(int simSpeed) {
+    m_simSpeed = simSpeed;
 }
-void State::SET_PAUSED(bool paused) {
-    m_PAUSED = paused;
+void State::setPaused(bool paused) {
+    m_paused = paused;
 }
-void State::SET_UNDO_REQUESTED(bool undo_requested) {
-    m_UNDO_REQUESTED = undo_requested;
+void State::setUndoRequested(bool undoRequested) {
+    m_undoRequested = undoRequested;
 }
-void State::SET_RESET_REQUESTED(bool reset_requested) {
-    m_RESET_REQUESTED = reset_requested;
+void State::setResetRequested(bool resetRequested) {
+    m_resetRequested = resetRequested;
 }
 
 } // namespace sim

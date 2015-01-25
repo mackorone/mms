@@ -2,6 +2,7 @@
 
 #include <GL/freeglut.h>
 #include "Tile.h"
+#include "Point.h"
 
 namespace sim {
 
@@ -9,15 +10,14 @@ class TileGraphic {
 
 public:
     TileGraphic(Tile* tile);
-    ~TileGraphic();
     void draw();
 
 private:
     Tile* m_tile;
     GLfloat* m_color;
-    void drawRect(float c1X, float c1Y, float c2X, float c2Y, GLfloat* color);
-    void drawCorners(float c1X, float c1Y, float c2X, float c2Y);
-    void drawWalls(float c1X, float c1Y, float c2X, float c2Y);
+    void drawRect(const Point& lowerLeft, const Point& upperRight, GLfloat* color);
+    void drawWalls(const Point& lowerLeft, const Point& upperRight);
+    void drawCorners(const Point& lowerLeft, const Point& upperRight);
 };
 
 } // namespace sim

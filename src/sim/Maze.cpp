@@ -18,15 +18,35 @@
 
 namespace sim {
 
-Maze::Maze(int width, int height, std::string mazeFileDirPath, std::string mazeFile) {
+Maze::Maze() {
 
     // Misc errand - seed the random number generator
-    srand(time(NULL));
+    srand(time(NULL)); // TODO: seed only when we need a random maze
+
+    int width = 16;
+    int height = 16;
+    std::string mazeFile = P()->mazeFile();
+    std::string mazeFileDirPath = getProjectDirectory() + P()->mazeDirectory();
+
+    // TODO: check valid
+    if (!mackValid(mazeFileDirPath + mazeFile)) {
+        std::cout << "INVALID" << std::endl;
+        exit(1); // TODO
+    }
     
+    // TODO: assign width and height
+    // width = getMazeWidthFromFile();
+    // height = getMazeHeightromFile();
+
+    // TODO: Sanity check on the autogen mazes
+
+    ASSERT(width > 0);
+    ASSERT(height > 0);
+
     // Initialize the tile positions
-    for (int x = 0; x < width; x += 1){
+    for (int x = 0; x < width; x += 1) {
         std::vector<Tile> col;
-        for (int y = 0; y < height; y += 1){
+        for (int y = 0; y < height; y += 1) {
             Tile tile;
             tile.setPos(x, y);
             col.push_back(tile);
@@ -60,12 +80,12 @@ Maze::Maze(int width, int height, std::string mazeFileDirPath, std::string mazeF
         if (file) {
 
             // Check Maze Validity (TODO: we already check maze file existence in other function
-            if (checkValidMazeFileTom(path, width, height)){
+            if (checkValidMazeFileTom(path, width, height)) {
                 // Load the maze given by mazefile
                 loadMaze(path);
 
                 // Ensures that the maze is solvable
-                if (!solveShortestPath().at(0)){
+                if (!solveShortestPath().at(0)) {
                     std::cout << "Unsolvable Maze detected. Generating solvable maze..." << std::endl;
                     while (!(solveShortestPath().at(0) && solveShortestPath().at(1))) {
                         tom_random();
@@ -86,44 +106,41 @@ Maze::Maze(int width, int height, std::string mazeFileDirPath, std::string mazeF
             // If the file doesn't exist, generate a random maze file
             std::cout << "File \"" << path << "\" not found. Generating random maze..." << std::endl;
             tom_random();
-            while (!(solveShortestPath().at(0) && solveShortestPath().at(1))){
+            while (!(solveShortestPath().at(0) && solveShortestPath().at(1))) {
                 tom_random();
             }
         }
     }
     
-    // Increment the passes for the starting position
-    m_maze.at(0).at(0).incrementPasses();
+    // Increment the passes for the starting position // TODO
+    //m_maze.at(0).at(0).incrementPasses();
 }
 
-Maze::~Maze()
-{ }
-
-int Maze::getWidth(){
+int Maze::getWidth() {
     return m_maze.size();
 }
 
-int Maze::getHeight(){
-    if (m_maze.size() > 0){
+int Maze::getHeight() {
+    if (m_maze.size() > 0) {
         return m_maze.at(0).size();
     }
     return 0;
 }
 
-Tile* Maze::getTile(int x, int y){
+Tile* Maze::getTile(int x, int y) {
     return &m_maze.at(x).at(y);
 }
 
-void Maze::resetColors(int curX, int curY){
-    for (int x = 0; x < getWidth(); x += 1){
-        for (int y = 0; y < getHeight(); y += 1){
+void Maze::resetColors(int curX, int curY) {
+    for (int x = 0; x < getWidth(); x += 1) {
+        for (int y = 0; y < getHeight(); y += 1) {
             getTile(x, y)->resetPasses();
         }
     }
     getTile(curX, curY)->incrementPasses();
 }
 
-void Maze::randomize(){
+void Maze::randomize() {
     
     // Declare width and height locally to reduce function calls
     int width = getWidth();
@@ -133,13 +150,13 @@ void Maze::randomize(){
     float wallProb = 0.35;
 
     // Randomly generate all of the walls
-    for (int x = 0; x < width; x += 1){
-        for (int y = 0; y < height; y += 1){
-            for (int k = 0; k < 4; k += 1){
+    for (int x = 0; x < width; x += 1) {
+        for (int y = 0; y < height; y += 1) {
+            for (int k = 0; k < 4; k += 1) {
                 bool wallExists = (rand() <= (RAND_MAX * wallProb));
-                switch (k){
+                switch (k) {
                     case NORTH:
-                        if (y + 1 < height){
+                        if (y + 1 < height) {
                             getTile(x, y+1)->setWall(SOUTH, wallExists);
                             getTile(x, y)->setWall(NORTH, wallExists);
                         }
@@ -148,7 +165,7 @@ void Maze::randomize(){
                         }
                         break;
                     case EAST:
-                        if (x + 1 < width){
+                        if (x + 1 < width) {
                             getTile(x+1, y)->setWall(WEST, wallExists);
                             getTile(x, y)->setWall(EAST, wallExists);
                         }
@@ -157,7 +174,7 @@ void Maze::randomize(){
                         }
                         break;
                     case SOUTH:
-                        if (y > 0){
+                        if (y > 0) {
                             getTile(x, y-1)->setWall(NORTH, wallExists);
                             getTile(x, y)->setWall(SOUTH, wallExists);
                         }
@@ -166,7 +183,7 @@ void Maze::randomize(){
                         }
                         break;
                     case WEST:
-                        if (x > 0){
+                        if (x > 0) {
                             getTile(x-1, y)->setWall(EAST, wallExists);
                             getTile(x, y)->setWall(WEST, wallExists);
                         }
@@ -209,8 +226,8 @@ void Maze::randomize(){
     }
 
     // Ensures that the middle is hallowed out
-    if (width % 2 == 0){
-        if (height % 2 == 0){
+    if (width % 2 == 0) {
+        if (height % 2 == 0) {
             getTile(width/2-1, height/2-1)->setWall(NORTH, false);
             getTile(width/2-1, height/2)->setWall(SOUTH, false);
             getTile(width/2, height/2-1)->setWall(NORTH, false);
@@ -222,7 +239,7 @@ void Maze::randomize(){
         getTile(width/2, height/2)->setWall(WEST, false);
             
     }
-    if (height % 2 == 0){
+    if (height % 2 == 0) {
         getTile(width/2, height/2-1)->setWall(NORTH, false);
         getTile(width/2, height/2)->setWall(SOUTH, false);
     }
@@ -257,7 +274,7 @@ void Maze::tom_random() {
                                                       // compared too
     
     // Continue to DFS until we've explored every Tile
-    while (!toExplore.empty()){
+    while (!toExplore.empty()) {
         // Grab and unpack the top thing from the stack
         Tile* current = toExplore.top();
 
@@ -278,11 +295,11 @@ void Maze::tom_random() {
         bool choices[4] = {0,0,0,0};
 
         // If cell to the North is valid and unexplored
-        if ((y_pos + 1 < P()->MAZE_WIDTH()) && !getTile(x_pos, y_pos + 1)->getExplored()) {
+        if ((y_pos + 1 < getHeight()) && !getTile(x_pos, y_pos + 1)->getExplored()) {
             choices[NORTH] = true;
         }
         // If cell to the East is valid and unexplored
-        if ((x_pos + 1 < P()->MAZE_WIDTH()) && !getTile(x_pos + 1, y_pos)->getExplored()) {
+        if ((x_pos + 1 < getWidth()) && !getTile(x_pos + 1, y_pos)->getExplored()) {
             choices[EAST] = true;
         }
         // If cell to the South is valid and unexplored
@@ -300,44 +317,44 @@ void Maze::tom_random() {
         // If the current cell has no more paths forward, we're done
         if (possible == 0) {
             toExplore.pop(); // Go Back
-            if (exploreDIR != -1){ // We just reached the end of a path. lets break a wall with probability P
-                if (rand() <= RAND_MAX * .75){ // HULK SMASH the wall that will connect two most disjoint
+            if (exploreDIR != -1) { // We just reached the end of a path. lets break a wall with probability P
+                if (rand() <= RAND_MAX * .75) { // HULK SMASH the wall that will connect two most disjoint
                     
                     int currentCellDist = getTile(x_pos, y_pos)->getDistance();
                     int biggestDifference = 0;
                     int cellToBreak = 0; // NORTH, SOUTH, EAST, WEST
 
                     // If cell to the North is valid and explored
-                    if ((y_pos + 1 < P()->MAZE_WIDTH()) && getTile(x_pos, y_pos + 1)->getExplored()) {
-                        if (abs(getTile(x_pos, y_pos + 1)->getDistance() - currentCellDist) > biggestDifference){
+                    if ((y_pos + 1 < getHeight()) && getTile(x_pos, y_pos + 1)->getExplored()) {
+                        if (abs(getTile(x_pos, y_pos + 1)->getDistance() - currentCellDist) > biggestDifference) {
                             biggestDifference = abs(getTile(x_pos, y_pos + 1)->getDistance() - currentCellDist);
                             cellToBreak = NORTH;
                         }
                     }
                     // If cell to the East is valid and explored
-                    if ((x_pos + 1 < P()->MAZE_WIDTH()) && getTile(x_pos + 1, y_pos)->getExplored()) {
-                        if (abs(getTile(x_pos + 1, y_pos)->getDistance() - currentCellDist) > biggestDifference){
+                    if ((x_pos + 1 < getWidth()) && getTile(x_pos + 1, y_pos)->getExplored()) {
+                        if (abs(getTile(x_pos + 1, y_pos)->getDistance() - currentCellDist) > biggestDifference) {
                             biggestDifference = abs(getTile(x_pos + 1, y_pos)->getDistance());
                             cellToBreak = EAST;
                         }
                     }
                     // If cell to the South is valid and explored
                     if ((y_pos - 1 >= 0) && getTile(x_pos, y_pos - 1)->getExplored()) {
-                        if (abs(getTile(x_pos, y_pos - 1)->getDistance() - currentCellDist) > biggestDifference){
+                        if (abs(getTile(x_pos, y_pos - 1)->getDistance() - currentCellDist) > biggestDifference) {
                             biggestDifference = abs(getTile(x_pos, y_pos - 1)->getDistance());
                             cellToBreak = SOUTH;
                         }
                     }
                     // If cell to the West is valid and explored
                     if ((x_pos - 1 >= 0) && getTile(x_pos - 1, y_pos)->getExplored()) {
-                        if (abs(getTile(x_pos - 1, y_pos)->getDistance() - currentCellDist) > biggestDifference){
+                        if (abs(getTile(x_pos - 1, y_pos)->getDistance() - currentCellDist) > biggestDifference) {
                             biggestDifference = abs(getTile(x_pos - 1, y_pos)->getDistance());
                             cellToBreak = WEST;
                         }
                     }
 
-                    if (biggestDifference > 0){ // TODO: figure out why '>5' still generates solo pegs
-                        switch (cellToBreak){ // Break wall across greates gradiant
+                    if (biggestDifference > 0) { // TODO: figure out why '>5' still generates solo pegs
+                        switch (cellToBreak) { // Break wall across greates gradiant
                         case NORTH:
                             setWall(x_pos, y_pos, NORTH, false);
                             break;
@@ -367,7 +384,7 @@ void Maze::tom_random() {
 
         if (exploreDIR != -1 && choices[exploreDIR] != 0 && possible != 1)
         {
-            if (rand() <= dirThreshold){  // if random variable is below threshold move in last direction
+            if (rand() <= dirThreshold) {  // if random variable is below threshold move in last direction
                 direction = exploreDIR;
             }
             else {
@@ -391,7 +408,7 @@ void Maze::tom_random() {
         // Break down the wall between the current cell and that cell
         // And push it unto the stack
 
-        switch (direction){
+        switch (direction) {
         case NORTH:
                 setWall(x_pos, y_pos, NORTH, false);
                 getTile(x_pos, y_pos + 1)->setExplored(true);
@@ -444,23 +461,23 @@ void Maze::tom_random() {
     assignNeighbors();
 }
 
-void Maze::initializeMaze(){
+void Maze::initializeMaze() {
     int width = getWidth();
     int height = getHeight();
 
     for (int x = 0; x < width; x += 1) {
         for (int y = 0; y < height; y += 1) {
-            for (int i = 0; i < 4; i += 1){
+            for (int i = 0; i < 4; i += 1) {
                 // Set all walls to true as algo will break down walls
                 getTile(x, y)->setWall(i, true);
             }
         }
     }
 
-    if (width % 2 == 0){   // mark middle as explored so dps avoids it
+    if (width % 2 == 0) {   // mark middle as explored so dps avoids it
         // mark distance as 120 (~median) so we can exclude center
         // when looking for a wall to break down
-        if (height % 2 == 0){
+        if (height % 2 == 0) {
             getTile(width / 2, height / 2)->setExplored(true);
             getTile(width / 2, height / 2)->setDistance(120);
 
@@ -480,7 +497,7 @@ void Maze::initializeMaze(){
         getTile(width / 2, height / 2)->setDistance(120);
 
     }
-    if (height % 2 == 0){
+    if (height % 2 == 0) {
         getTile(width / 2, height / 2 - 1)->setExplored(true);
         getTile(width / 2, height / 2 - 1)->setDistance(120);
 
@@ -489,14 +506,14 @@ void Maze::initializeMaze(){
     }
 }
 
-void Maze::hollowCenter(){
+void Maze::hollowCenter() {
     // Ensures that the middle is hallowed out
     
     int width = getWidth();
     int height = getHeight();
 
-    if (width % 2 == 0){
-        if (height % 2 == 0){
+    if (width % 2 == 0) {
+        if (height % 2 == 0) {
             setWall(width / 2 - 1, height / 2, SOUTH, false);
             setWall(width / 2, height / 2, SOUTH, false);
             setWall(width / 2, height / 2 - 1, WEST, false);
@@ -504,17 +521,17 @@ void Maze::hollowCenter(){
         setWall(width / 2, height / 2, WEST, false);
 
     }
-    if (height % 2 == 0){
+    if (height % 2 == 0) {
         setWall(width / 2, height / 2, SOUTH, false);
     }
 }
-void Maze::pathIntoCenter(){
+void Maze::pathIntoCenter() {
 
     int width = getWidth();
     int height = getHeight();
 
-    if (width % 2 == 0 && height % 2 != 0){
-        switch (rand() / (1 + RAND_MAX / 6)){
+    if (width % 2 == 0 && height % 2 != 0) {
+        switch (rand() / (1 + RAND_MAX / 6)) {
         case 0:
             setWall(width / 2 - 1, height / 2, WEST, false);
             break;
@@ -537,8 +554,8 @@ void Maze::pathIntoCenter(){
     }
 
     // Break a random wall leading to center group
-    if (height % 2 == 0 && width % 2 != 0){
-        switch (rand() / (1 + RAND_MAX / 6)){
+    if (height % 2 == 0 && width % 2 != 0) {
+        switch (rand() / (1 + RAND_MAX / 6)) {
         case 0:
             setWall(width / 2, height / 2 - 1, SOUTH, false);
             break;
@@ -561,8 +578,8 @@ void Maze::pathIntoCenter(){
     }
 
     // Break a random wall leading to center group
-    if (height % 2 == 0 && width % 2 == 0){
-        switch (rand() / (1 + RAND_MAX / 8)){
+    if (height % 2 == 0 && width % 2 == 0) {
+        switch (rand() / (1 + RAND_MAX / 8)) {
         case 0:
             setWall(width / 2 - 1, height / 2 - 1, WEST, false);
             break;
@@ -591,12 +608,12 @@ void Maze::pathIntoCenter(){
     }
 }
 
-void Maze::surroundCenter(){
+void Maze::surroundCenter() {
 
     int width = getWidth();
     int height = getHeight();
 
-    if (width % 2 == 0 && height % 2 != 0){
+    if (width % 2 == 0 && height % 2 != 0) {
 
         setWall(width / 2 - 1, height / 2, WEST, true);
         setWall(width / 2 - 1, height / 2, NORTH, true);
@@ -608,7 +625,7 @@ void Maze::surroundCenter(){
     }
 
     // Break a random wall leading to center group
-    if (height % 2 == 0 && width % 2 != 0){
+    if (height % 2 == 0 && width % 2 != 0) {
 
         setWall(width / 2, height / 2 - 1, SOUTH, true);
         setWall(width / 2, height / 2 - 1, EAST, true);
@@ -620,7 +637,7 @@ void Maze::surroundCenter(){
     }
 
     // Break a random wall leading to center group
-    if (height % 2 == 0 && width % 2 == 0){
+    if (height % 2 == 0 && width % 2 == 0) {
 
         setWall(width / 2 - 1, height / 2 - 1, WEST, true);
         setWall(width / 2 - 1, height / 2 - 1, SOUTH, true);
@@ -635,7 +652,7 @@ void Maze::surroundCenter(){
         setWall(width / 2, height / 2, EAST, true);
     }
 }
-void Maze::breakGradientWall(){
+void Maze::breakGradientWall() {
     //Break one wall with the biggest gradiant across it down
 
     int width = getWidth();
@@ -652,19 +669,19 @@ void Maze::breakGradientWall(){
             int prospectiveDist = 0;
 
             // If cell to the North is valid
-            if ((y + 1 < P()->MAZE_WIDTH())) {
+            if ((y + 1 < getHeight())) {
                 prospectiveDist = getTile(x, y + 1)->getDistance();
                 //Check the gradient and see if it is the biggest one so far
-                if (abs(prospectiveDist - currentCellDist) > biggestDifference){
+                if (abs(prospectiveDist - currentCellDist) > biggestDifference) {
                     biggestDifference = abs(prospectiveDist - currentCellDist);
                     x_pos = x; //Record x,y position to return later
                     y_pos = y;
                 }
             }
             // If cell to the East is valid
-            if ((x + 1 < P()->MAZE_WIDTH())) {
+            if ((x + 1 < getWidth())) {
                 prospectiveDist = getTile(x + 1, y)->getDistance();
-                if (abs(prospectiveDist - currentCellDist) > biggestDifference){
+                if (abs(prospectiveDist - currentCellDist) > biggestDifference) {
                     biggestDifference = abs(prospectiveDist - currentCellDist);
                     x_pos = x;
                     y_pos = y;
@@ -673,7 +690,7 @@ void Maze::breakGradientWall(){
             // If cell to the South is valid
             if ((y - 1 >= 0)) {
                 prospectiveDist = getTile(x, y - 1)->getDistance();
-                if (abs(prospectiveDist - currentCellDist) > biggestDifference){
+                if (abs(prospectiveDist - currentCellDist) > biggestDifference) {
                     biggestDifference = abs(prospectiveDist - currentCellDist);
                     x_pos = x;
                     y_pos = y;
@@ -682,7 +699,7 @@ void Maze::breakGradientWall(){
             // If cell to the West is valid
             if ((x - 1 >= 0)) {
                 prospectiveDist = getTile(x - 1, y)->getDistance();
-                if (abs(prospectiveDist - currentCellDist) > biggestDifference){
+                if (abs(prospectiveDist - currentCellDist) > biggestDifference) {
                     biggestDifference = abs(prospectiveDist - currentCellDist);
                     x_pos = x;
                     y_pos = y;
@@ -695,10 +712,10 @@ void Maze::breakGradientWall(){
 
     // Break down wall of cell which is between the gradient of size 'biggestDifference'
 
-    if ((y_pos + 1 < P()->MAZE_WIDTH()) && abs(getTile(x_pos, y_pos + 1)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference)
+    if ((y_pos + 1 < getHeight()) && abs(getTile(x_pos, y_pos + 1)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference)
         setWall(x_pos, y_pos, NORTH, false);
 
-    if ((x_pos + 1 < P()->MAZE_WIDTH()) && abs(getTile(x_pos + 1, y_pos)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference)
+    if ((x_pos + 1 < getWidth()) && abs(getTile(x_pos + 1, y_pos)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference)
         setWall(x_pos, y_pos, EAST, false);
 
     if ((y_pos - 1 >= 0) && abs(getTile(x_pos, y_pos - 1)->getDistance() - getTile(x_pos, y_pos)->getDistance()) == biggestDifference)
@@ -708,7 +725,7 @@ void Maze::breakGradientWall(){
         setWall(x_pos, y_pos, WEST, false);
 }
 
-void Maze::addMinPeg(){
+void Maze::addMinPeg() {
     // Make sure every peg has at least one wall
 
     int width = getWidth();
@@ -739,13 +756,13 @@ void Maze::addMinPeg(){
     }
 }
 
-void Maze::setWall(int x, int y, int direction, bool value){
+void Maze::setWall(int x, int y, int direction, bool value) {
     int deltaX = 0;
     int deltaY = 0;
 
     int oppositeDir;
 
-    switch (direction){
+    switch (direction) {
     case NORTH:
         deltaY = 1;
         oppositeDir = SOUTH;
@@ -768,18 +785,18 @@ void Maze::setWall(int x, int y, int direction, bool value){
 }
 
 
-void Maze::saveMaze(std::string mazeFile){
+void Maze::saveMaze(std::string mazeFile) {
     
     // Create the stream
     std::ofstream file(mazeFile.c_str());
 
-    if (file.is_open()){
+    if (file.is_open()) {
 
         // Very primitive, but will work
-        for (int x = 0; x <  getWidth(); x += 1){
-            for (int y = 0; y < getHeight(); y += 1){
+        for (int x = 0; x <  getWidth(); x += 1) {
+            for (int y = 0; y < getHeight(); y += 1) {
                 file << x << " " << y;
-                for (int k = 0; k < 4; k += 1){
+                for (int k = 0; k < 4; k += 1) {
                     file << " " << (getTile(x, y)->isWall(k) ? 1 : 0);
                 }
                 file << std::endl;
@@ -789,7 +806,7 @@ void Maze::saveMaze(std::string mazeFile){
         file.close();
     }
 }
-void Maze::loadMaze(std::string mazeFile){
+void Maze::loadMaze(std::string mazeFile) {
 
     // Create the stream
     std::ifstream file(mazeFile.c_str());
@@ -797,15 +814,15 @@ void Maze::loadMaze(std::string mazeFile){
     // Initialize a string variable
     std::string line("");
 
-    if (file.is_open()){
+    if (file.is_open()) {
 
         // Very primitive, but will work
-        while (getline(file, line)){
+        while (getline(file, line)) {
             std::istringstream iss(line);
             std::vector<std::string> tokens;
             copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(),
                  std::back_inserter<std::vector<std::string> >(tokens));
-            for (int i = 0; i < 4; i += 1){ // Set the values of all of the walls
+            for (int i = 0; i < 4; i += 1) { // Set the values of all of the walls
                 getTile(atoi(tokens.at(0).c_str()), atoi(tokens.at(1).c_str()))
                       ->setWall(i, atoi(tokens.at(2+i).c_str()));
             }
@@ -818,9 +835,9 @@ void Maze::loadMaze(std::string mazeFile){
     }
 }
 
-void Maze::assignNeighbors(){
-    for (int x = 0; x < getWidth(); x += 1){
-        for (int y = 0; y < getHeight(); y += 1){
+void Maze::assignNeighbors() {
+    for (int x = 0; x < getWidth(); x += 1) {
+        for (int y = 0; y < getHeight(); y += 1) {
 
             Tile* tile = getTile(x, y);
 
@@ -828,29 +845,29 @@ void Maze::assignNeighbors(){
             tile->resetNeighbors();
 
             // Then we assign new neighbors
-            if (!tile->isWall(NORTH)){
+            if (!tile->isWall(NORTH)) {
                 tile->addNeighbor(getTile(x, y+1));
             }
-            if (!tile->isWall(EAST)){
+            if (!tile->isWall(EAST)) {
                 tile->addNeighbor(getTile(x+1, y));
             }
-            if (!tile->isWall(SOUTH)){
+            if (!tile->isWall(SOUTH)) {
                 tile->addNeighbor(getTile(x, y-1));
             }
-            if (!tile->isWall(WEST)){
+            if (!tile->isWall(WEST)) {
                 tile->addNeighbor(getTile(x-1, y));
             }
         }        
     }        
 }
 
-void Maze::printDistances(){
+void Maze::printDistances() {
     std::cout << std::endl;
-    for (int y = getHeight()-1; y >= 0; y -= 1){
-        for (int x = 0; x < getWidth(); x += 1){
-            if (getTile(x, y)->getDistance() < 100){
+    for (int y = getHeight()-1; y >= 0; y -= 1) {
+        for (int x = 0; x < getWidth(); x += 1) {
+            if (getTile(x, y)->getDistance() < 100) {
                 std::cout << " ";
-                if (getTile(x, y)->getDistance() < 10){
+                if (getTile(x, y)->getDistance() < 10) {
                     std::cout << " ";
                 }
             }
@@ -860,33 +877,33 @@ void Maze::printDistances(){
     }
 }
 
-std::vector<bool> Maze::solveShortestPath(){
+std::vector<bool> Maze::solveShortestPath() {
 
     // Solves the maze, assigns tiles that are part of the shortest path
     std::vector<Tile*> sp = findPathToCenter();
-    for (int i = 0; i < sp.size(); i += 1){
+    for (int i = 0; i < sp.size(); i += 1) {
         getTile(sp.at(i)->getX(), sp.at(i)->getY())->setPosp(true);
     }
 
     // Returns whether or not the maze is solvable and whether or not
     // it satisfies the minimum number of steps
     std::vector<bool> conditions;
-    conditions.push_back(getClosestCenterTile()->getDistance() < P()->MAX_DISTANCE());
-    conditions.push_back(getClosestCenterTile()->getDistance() > P()->MIN_MAZE_STEPS());
+    conditions.push_back(getClosestCenterTile()->getDistance() < P()->mazeWidth() * P()->mazeHeight());
+    conditions.push_back(getClosestCenterTile()->getDistance() > P()->minSolutionLength());
     return conditions;
 }
 
-std::vector<Tile*> Maze::findPath(int x1, int y1, int x2, int y2){
+std::vector<Tile*> Maze::findPath(int x1, int y1, int x2, int y2) {
     setDistancesFrom(x1, x2);
     return backtrace(getTile(x2, y2));
 }
 
-std::vector<Tile*> Maze::findPathToCenter(){
+std::vector<Tile*> Maze::findPathToCenter() {
     setDistancesFrom(0, 0);
     return backtrace(getClosestCenterTile());
 }
 
-std::vector<Tile*> Maze::backtrace(Tile* end){
+std::vector<Tile*> Maze::backtrace(Tile* end) {
 
     // The vector to hold the solution nodes
     std::vector<Tile*> path;
@@ -896,12 +913,12 @@ std::vector<Tile*> Maze::backtrace(Tile* end){
     queue.push(end);
     path.push_back(end);
 
-    while (!queue.empty()){
+    while (!queue.empty()) {
         Tile* node = queue.front();
         queue.pop(); // Removes the element
         std::vector<Tile*> neighbors = node->getNeighbors();
-        for (int i = 0; i < neighbors.size(); i += 1){
-            if (neighbors.at(i)->getDistance() == node->getDistance() - 1){
+        for (int i = 0; i < neighbors.size(); i += 1) {
+            if (neighbors.at(i)->getDistance() == node->getDistance() - 1) {
                 path.push_back(neighbors.at(i));
                 queue.push(neighbors.at(i));
             }
@@ -911,13 +928,13 @@ std::vector<Tile*> Maze::backtrace(Tile* end){
     return path;
 }
 
-void Maze::setDistancesFrom(int x, int y){
+void Maze::setDistancesFrom(int x, int y) {
     
     // Ensure that the nodes are fresh every time this function is called
-    for (int x = 0; x < getWidth(); x += 1){
-        for (int y = 0; y < getHeight(); y += 1){
+    for (int x = 0; x < getWidth(); x += 1) {
+        for (int y = 0; y < getHeight(); y += 1) {
             Tile* tile = getTile(x, y);
-            tile->setDistance(P()->MAX_DISTANCE());
+            tile->setDistance(P()->mazeWidth() * P()->mazeHeight());
             tile->setExplored(false);
             tile->setPosp(false);
         }
@@ -929,12 +946,12 @@ void Maze::setDistancesFrom(int x, int y){
     getTile(x, y)->setDistance(0);
     getTile(x, y)->setExplored(true);
 
-    while (!queue.empty()){
+    while (!queue.empty()) {
         Tile* node = queue.front();
         queue.pop(); // Removes the element
         std::vector<Tile*> neighbors = node->getNeighbors();
-        for (int i = 0; i < neighbors.size(); i += 1){
-            if (!neighbors.at(i)->getExplored()){
+        for (int i = 0; i < neighbors.size(); i += 1) {
+            if (!neighbors.at(i)->getExplored()) {
                 neighbors.at(i)->setDistance(node->getDistance() + 1); 
                 queue.push(neighbors.at(i));
                 neighbors.at(i)->setExplored(true);
@@ -943,26 +960,26 @@ void Maze::setDistancesFrom(int x, int y){
     }
 }
 
-Tile* Maze::getClosestCenterTile(){
+Tile* Maze::getClosestCenterTile() {
 
-    if (getWidth() > 0 && getHeight() > 0){
+    if (getWidth() > 0 && getHeight() > 0) {
     
         int midWidth = getWidth()/2;
         int midHeight = getHeight()/2;
         Tile* closest = getTile(midWidth, midHeight);
 
-        if (getWidth() % 2 == 0){
-            if (getTile(midWidth-1, midHeight)->getDistance() < closest->getDistance()){
+        if (getWidth() % 2 == 0) {
+            if (getTile(midWidth-1, midHeight)->getDistance() < closest->getDistance()) {
                 closest = getTile(midWidth-1, midHeight);
             }
         }
-        if (getHeight() % 2 == 0){
-            if (getTile(midWidth, midHeight-1)->getDistance() < closest->getDistance()){
+        if (getHeight() % 2 == 0) {
+            if (getTile(midWidth, midHeight-1)->getDistance() < closest->getDistance()) {
                 closest = getTile(midWidth, midHeight-1);
             }
         }
-        if (getWidth() % 2 == 0 && getHeight() % 2 == 0){
-            if (getTile(midWidth-1, midHeight-1)->getDistance() < closest->getDistance()){
+        if (getWidth() % 2 == 0 && getHeight() % 2 == 0) {
+            if (getTile(midWidth-1, midHeight-1)->getDistance() < closest->getDistance()) {
                 closest = getTile(midWidth-1, midHeight-1);
             }
         }
@@ -973,5 +990,6 @@ Tile* Maze::getClosestCenterTile(){
     // If either the width or the height is zero return NULL
     return NULL;
 }
+
 
 } // namespace sim

@@ -8,7 +8,6 @@ namespace sim {
 class State;
 State* S();
 
-// A parameters class
 class State {
 
 public:
@@ -16,27 +15,28 @@ public:
     // Returns a pointer to the singeton state object
     static State* getInstance();
 
-    int  SLEEP_TIME();      // ms between simulation steps
-    bool PAUSED();          // Initially set to false  
-    bool UNDO_REQUESTED();  // Whether or not an undo was requested
-    bool RESET_REQUESTED(); // Whether or not a reset was requested
+    int  simSpeed();
+    bool paused();          // Initially set to false  
+    bool undoRequested();  // Whether or not an undo was requested
+    bool resetRequested(); // Whether or not a reset was requested
 
-    void SET_SLEEP_TIME(int sleep_time);
-    void SET_PAUSED(bool paused);
-    void SET_UNDO_REQUESTED(bool paused); // TODO: Fix these params
-    void SET_RESET_REQUESTED(bool paused); // TODO: Fix these params
+    void setSimSpeed(int simSpeed);
+    void setPaused(bool paused);
+    void setUndoRequested(bool undoRequested); // TODO: Fix these params
+    void setResetRequested(bool resetRequested); // TODO: Fix these params
 
 private:
 
-    // TODO: Document the singleton pattern
+    // A private constructor is used to ensure only one instance of this class exists
     State();
-    // A pointer to the actual instance of the parameter object
+
+    // A pointer to the actual instance of the class
     static State* INSTANCE;
 
-    bool m_PAUSED; // Initially set to false  
-    int m_SLEEP_TIME; // ms between simulation steps
-    bool m_UNDO_REQUESTED; // Whether or not an undo was requested
-    bool m_RESET_REQUESTED; // Whether or not a reset was requested
+    int m_simSpeed; // Percentage of real-time
+    bool m_paused; // Initially set to false  
+    bool m_undoRequested; // Whether or not an undo was requested
+    bool m_resetRequested; // Whether or not a reset was requested
 };
 
 } // namespace sim

@@ -3,8 +3,11 @@
 #include <cstdlib> 
 #include <iostream> 
 #include <string>
+#include <vector>
 
 #include "Param.h"
+#include "Point.h"
+#include "units/Time.h"
 
 namespace sim {
 
@@ -18,14 +21,27 @@ if ( !(condition) ) { \
               << "LINE: " << __LINE__   << std::endl \
               << "COND: " << #condition << std::endl \
               << "---------------------------------------" << std::endl; \
-    exit(1);\
+    exit(1); \
 }
 
 // Sleeps the current thread for ms milliseconds
-void sleep(int ms);
+void sleep(const Time& time);
 
 // Returns the path the mms project directory
 std::string getProjectDirectory();
+
+// Ensures that str contains characters corresponding to a particular primitive type
+bool isBool(std::string str);
+bool isInt(std::string str);
+bool isFloat(std::string str);
+
+// Convert between types
+bool strToBool(std::string str);
+int strToInt(std::string str);
+float strToFloat(std::string str);
+
+// Tokenizes a string on whitespace
+std::vector<std::string> tokenize(std::string str);
 
 // TODO: These can get refactored
 bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width);
@@ -34,10 +50,18 @@ bool hasOnlyDigits(const std::string& str);
 
 // -------------------------- Graphics Utilities ------------------------------
 
+// Converts points from physical coordinates to OpenGl coordinates (bottem-left is (0,0)) to the
+Point physicalToOpenGl(const Point& point);
+
 // Converts points from pixel coordinates (bottem-left is (0,0)) to the
 // OpenGL specification
-
+float convertHorizontalPoint(float coordinate); // TODO - Better interface...
 float convertHorizontalPoint(float coordinate); // TODO - Better interface...
 float convertVerticalPoint(float coordinate); // TODO - Better interface...
+float rtp(float coordinate); // Real coordinate to pixel coordinate
+
+// TODO
+bool mackValid(std::string mazeFilePath);
+std::pair<int, int> getMazeWidthAndHeight(std::string mazeFilePath);
 
 } // namespace sim

@@ -7,10 +7,10 @@ import binascii
 import os
 import sys
 
-# NOTE: Use this to automatically convert all files in the current directory
+# Note: Use this to automatically convert all files in the current directory
 #files = [f for f in os.listdir('.') if '.MAZ' in f]
 
-# NOTE: Use this to specify the files to convert as command line arguments
+# Note: Use this to specify the files to convert as command line arguments
 files = [f for f in sys.argv[1:] if '.MAZ' in f and os.path.isfile(f)]
 
 print 'Converting the following files:', files

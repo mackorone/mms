@@ -35,10 +35,6 @@ public:
 
 private:
     Mouse* m_mouse;
-    //int* m_sleepTime;
-    //bool* m_paused;
-    //bool* m_undoRequested;
-    //bool* m_resetRequested;
 };
 
 } // namespace sim

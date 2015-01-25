@@ -4,13 +4,10 @@
 
 namespace sim {
 
-// TODO: This uses the singleton pattern
-
 // Wrapper for the static call to Param::getInstance()
 class Param;
 Param* P();
 
-// A parameters class
 class Param {
 
 public:
@@ -18,41 +15,60 @@ public:
     // Returns a pointer to the singeton parameter object
     static Param* getInstance();
 
-    int SLEEP_TIME_MIN();   // min ms between simulation steps (TODO: Steps isn't really going to be a thing....)
-    int SLEEP_TIME_MAX();   // max ms between simulation steps
-    int MAZE_WIDTH();       // Number or tiles wide
-    int MAZE_HEIGHT();      // Number or tiles tall
-    int MAX_DISTANCE();     // Max distance of tile
-    int MIN_MAZE_STEPS();   // Minimum steps required to solve random maze
-    std::string MAZE_FILE();// Maze file to load ("maze5.maz")
-
     // Graphics parameters
-    int PIXELS_PER_UNIT();  // Choose the window size of the simulation (4 is a good size)
-    int UNITS_PER_TILE();   // Ensures that the ratio of wall width to length is reasonable
-    int WINDOW_WIDTH();
-    int WINDOW_HEIGHT();
+    int pixelsPerMeter();
+    int borderSize();
+    int frameRate();      // Frames per second
+    int windowWidth();    // Number of pixels
+    int windowHeight();   // Number of pixels
+
+    // Simulation parameters
+    int minSimSpeed(); // min ms between simulation steps (TODO: Steps isn't really going to be a thing....)
+    int maxSimSpeed(); // max ms between simulation steps (TODO: Change these descriptions ... )
+    // TODO: max sim speed = min sleep... we need to fix this bug
+
+    // Maze parameters
+    std::string mazeDirectory(); // Maze file to load ("maze5.maz") // TODO Description
+    std::string mazeFile();      // Maze file to load ("maze5.maz")
+    int mazeWidth();             // Number of tiles
+    int mazeHeight();            // Number of tiles
+    float wallWidth();
+    float wallLength();
+    float wallHeight();
+    float wallTolerance();
+    int minSolutionLength();     // Minimum steps required to solve random maze // TODO: This should be in the randomize code.... right?
+    bool saveRandomMaze();       // Whether or not we should same the random maze
 
 private:
 
-    // TODO: Document the singleton pattern
+    // A private constructor is used to ensure only one instance of this class exists
     Param();
-    // A pointer to the actual instance of the parameter object
+
+    // A pointer to the actual instance of the class
     static Param* INSTANCE;
 
-    // Constants
-    int m_SLEEP_TIME_MIN; // min ms between simulation steps (TODO: Steps isn't really going to be a thing....)
-    int m_SLEEP_TIME_MAX; // max ms between simulation steps
-    int m_MAZE_WIDTH; // Number or tiles wide
-    int m_MAZE_HEIGHT; // Number or tiles tall
-    int m_MAX_DISTANCE; // Max distance of tile
-    std::string m_MAZE_FILE; // Maze file to load ("maze5.maz")
-    int m_MIN_MAZE_STEPS; // Minimum steps required to solve random maze
-
     // Graphics parameters
-    int m_PIXELS_PER_UNIT; // Choose the window size of the simulation (4 is a good size)
-    int m_UNITS_PER_TILE; // Ensures that the ratio of wall width to length is reasonable
-    int m_WINDOW_WIDTH;
-    int m_WINDOW_HEIGHT;
+    int m_pixelsPerMeter;
+    int m_borderSize;
+    int m_frameRate;
+    int m_windowWidth;
+    int m_windowHeight;
+
+    // Simulation parameters
+    float m_minSimSpeed;
+    float m_maxSimSpeed;
+
+    // Maze parameters
+    std::string m_mazeDirectory;
+    std::string m_mazeFile;
+    int m_mazeWidth;
+    int m_mazeHeight;
+    float m_wallWidth;
+    float m_wallLength;
+    float m_wallHeight;
+    float m_wallTolerance;
+    int m_minSolutionLength;
+    bool m_saveRandomMaze;
 };
 
 } // namespace sim

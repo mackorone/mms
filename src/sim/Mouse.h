@@ -1,42 +1,46 @@
 #pragma once
 
 #include "Maze.h"
+#include "units/Cartesian.h"
+#include "units/Radians.h"
+
 #include <vector>
 
-namespace sim{
+namespace sim {
 
-class Mouse{
+class Mouse {
 
 public:
     Mouse(Maze* maze);
-    ~Mouse();
 
     // Accessor methods
-    int getX();
-    int getY();
-    int getDirection();
+    Cartesian getTranslation();
+    Radians getRotation();
     bool inGoal();
-    float getRotation();
-    std::vector<std::pair<int,int>> getVertices();
+    //std::vector<std::pair<int,int>> getVertices();
 
     // Action methods
+    // TODO: Discrete interface, being replaced
+    float getX() { return 0; }
+    float getY() { return 0; }
     bool wallFront();
     bool wallRight();
     bool wallLeft();
-    void moveForward();
+    void moveForward(float meters); // Causes the mouse to "teleport" forward
     void turnRight();
     void turnLeft();
     void resetPosition(); // Sets the position of the mouse to (0,0)
     void resetColors(int curX, int curY); // Resets the tile colors of the maze
 
-
 private:
     Maze* m_maze;
-    int m_mousePosX;
-    int m_mousePosY;
-    int m_mouseDirection; // NORTH, EAST, SOUTH, WEST
-    float m_mouseRotation; // 0 to 360 degrees
-    std::vector<std::pair<int,int>> m_mouseVertices;
+    Cartesian m_translation;
+    Radians m_rotation;
+
+    //std::vector<std::pair<int,int>> m_mouseVertices;
+    // Use only within the
+    //void moveTo(float xpos, float ypos);
+    //void setRotation(float radians);
 };
 
 } // namespace sim
