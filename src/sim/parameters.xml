@@ -2,22 +2,24 @@
 
 <!-- Graphical Parameters -->
 <pixels-per-meter>250</pixels-per-meter>
-<border-size>10</border-size> <!-- In pixels -->
 <frame-rate>60</frame-rate>
 
 <!-- Simulation Parameters -->
 <min-sim-speed>0.1</min-sim-speed> <!-- Fraction of real-time -->
 <max-sim-speed>10.0</max-sim-speed> <!-- Fraction of real-time -->
-<default-sim-speed>1.0</default-sim-speed> <!-- Fraction of real-time -->
+<default-sim-speed>1.0</default-sim-speed> <!-- Fraction of real-time --> <!-- TODO Add in -->
 
 <!-- Maze Parameters TODO: Separate file for all of these-->
 <maze-directory>src/maze_files/</maze-directory> <!-- realtive to project root -->
-<maze-file>ieee2011.maz</maze-file>              <!-- relative to maze-directory -->
-<wall-length>.156</wall-length> <!-- meters --> <!-- TODO: read these in  -->
-<wall-width>.012</wall-width> <!-- meters --> <!-- TODO: read these in  -->
-<wall-height>.05</wall-height> <!-- meters --> <!-- TODO: read these in  -->
-<!-- <wall-tolerance>.05</maze-tolerance>  5% tolerance on wall dimensions  TODO: read these in -->
+<maze-file>ieee2011.maz</maze-file> <!-- relative to maze-directory -->
+<wall-length>.156</wall-length> <!-- meters -->
+<wall-width>.012</wall-width> <!-- meters -->
+<wall-height>.05</wall-height> <!-- meters -->
+<wall-tolerance>.05</wall-tolerance>  <!-- 5% tolerance on wall dimensions  TODO: not used right now -->
 <random-maze-width>16</random-maze-width> <!-- number of tiles -->
 <random-maze-height>16</random-maze-height> <!-- number of tiles -->
-<min-solution-length>40</min-solution-length>
+<min-solution-length>40</min-solution-length> <!-- number of tiles -->
 <save-random-maze>true</save-random-maze> <!-- TODO -->
+
+<!-- TODO -->
+<mouse-file>mouse.mse</mouse-file> <!-- TODO -->

@@ -1,12 +1,14 @@
 #pragma once
 
 #include <cstdlib> 
+#include <GL/freeglut.h>
 #include <iostream> 
 #include <string>
 #include <vector>
 
 #include "Param.h"
-#include "Point.h"
+#include "Polygon.h"
+#include "units/Cartesian.h"
 #include "units/Time.h"
 
 namespace sim {
@@ -51,14 +53,18 @@ bool hasOnlyDigits(const std::string& str);
 // -------------------------- Graphics Utilities ------------------------------
 
 // Converts points from physical coordinates to OpenGl coordinates (bottem-left is (0,0)) to the
-Point physicalToOpenGl(const Point& point);
+// OpenGL specification
+Cartesian physicalToOpenGl(const Coordinate& point);
+Polygon physicalToOpenGl(const Polygon& polygon);
 
-// Converts points from pixel coordinates (bottem-left is (0,0)) to the
+// Helpers... TODO: refactor these...
 // OpenGL specification
 float convertHorizontalPoint(float coordinate); // TODO - Better interface...
 float convertHorizontalPoint(float coordinate); // TODO - Better interface...
 float convertVerticalPoint(float coordinate); // TODO - Better interface...
 float rtp(float coordinate); // Real coordinate to pixel coordinate
+
+void drawPolygon(const Polygon& polygon);
 
 // TODO
 bool mackValid(std::string mazeFilePath);

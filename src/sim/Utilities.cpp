@@ -15,7 +15,7 @@
 namespace sim {
 
 void sleep(const Time& time) {
-    ASSERT(time.getMilliseconds() > 0);
+    ASSERT(time.getMilliseconds() >= 0);
 	std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(time.getMilliseconds())));
 }
 
@@ -89,7 +89,7 @@ bool strToBool(std::string str) {
 
 int strToInt(std::string str) {
     ASSERT(isInt(str));
-    return atoi(str.c_str()); // TODO
+    return atoi(str.c_str());
 }
 
 float strToFloat(std::string str) {
@@ -207,10 +207,21 @@ bool hasOnlyDigits(const std::string &str) { // TODO: delete this
 }
 
 // -------------------------- Graphics Utilities ------------------------------
+
+Cartesian physicalToOpenGl(const Coordinate& point) {
+    return Cartesian(convertHorizontalPoint(rtp(point.getX())), convertVerticalPoint(rtp(point.getY())));
+}
  
 // Supposedly this should work...
-Point physicalToOpenGl(const Point& point) {
-    return Point(convertHorizontalPoint(rtp(point.getX())), convertVerticalPoint(rtp(point.getY())));
+Polygon physicalToOpenGl(const Polygon& polygon) {
+    std::vector<Cartesian> vertices;
+    for (Cartesian vertex : polygon.getVertices()) {
+        vertices.push_back(Cartesian(convertHorizontalPoint(rtp(vertex.getX())), convertVerticalPoint(rtp(vertex.getY()))));
+    }
+    // TODO: this could be cleaner, right???
+    Polygon p;
+    p.setVertices(vertices);
+    return p;
 }
  
 // TODO: Implementation independent of params WINDOW_WIDTH
@@ -225,6 +236,15 @@ float convertVerticalPoint(float coordinate) {
 
 float rtp(float meters) {
     return P()->pixelsPerMeter() * meters;
+}
+
+// TODO: Hmmmm
+void drawPolygon(const Polygon& polygon) {
+    glBegin(GL_POLYGON);
+    for (Cartesian vertex : polygon.getVertices()) {
+        glVertex2f(vertex.getX(), vertex.getY());
+    }
+    glEnd();
 }
 
 struct mazeTile {

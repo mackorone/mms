@@ -1,15 +1,17 @@
 # Program name
 PROGRAM = MMSim
 
+# Any external libraries
 LIBS = -lGL -lglut -lGLU
 
 # Flags
 # -std=c++11: Use the C++11 standard
-# -MD: Automatically generate dependency files
+# -MMD: Automatically generate dependency files
 # -g: Add debugging symbols
 # -Os: Optimize code for size
 # -Wall: Show all warning messages
-FLAGS = -MMD -std=c++11 #-Os TODO: We can optimize later... #-Wall TODO: Fix all errors
+# TODO: -pedantic-errors
+FLAGS = -MMD -std=c++11#-Os TODO: We can optimize later... #-Wall TODO: Fix all errors
 
 # Directories
 SRC = ./src/
@@ -46,13 +48,9 @@ $(OBJ)%.o: $(SRC)%.cpp
 	$(CXX) -c $(FLAGS) $< -o $@
 
 # Make 'clean' instructions
-# 'dir' gets the directories of the object files
-# 'sort' sorts the directories and removes duplicates
-# 'add' is pretty self-explanatory 
 clean:
-	rm -f $(addprefix $(OBJ), $(addsuffix *.o, $(sort $(dir $(OBJECTS)))))
-	rm -f $(addprefix $(OBJ), $(addsuffix *.d, $(sort $(dir $(OBJECTS)))))
-	rm -f $(BIN)*
+	rm -rf $(OBJ)
+	rm -rf $(BIN)
 
-# Include all of our dependency files
+# Include all of our dependency files, if they exist
 -include $(addprefix $(OBJ),$(SOURCES:.cpp=.d))

@@ -17,7 +17,6 @@ public:
 
     // Graphics parameters
     int pixelsPerMeter();
-    int borderSize();
     int frameRate();      // Frames per second
     int windowWidth();    // Number of pixels
     int windowHeight();   // Number of pixels
@@ -49,7 +48,6 @@ private:
 
     // Graphics parameters
     int m_pixelsPerMeter;
-    int m_borderSize;
     int m_frameRate;
     int m_windowWidth;
     int m_windowHeight;

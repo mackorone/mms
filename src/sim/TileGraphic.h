@@ -2,7 +2,7 @@
 
 #include <GL/freeglut.h>
 #include "Tile.h"
-#include "Point.h"
+#include "units/Cartesian.h"
 
 namespace sim {
 
@@ -15,9 +15,9 @@ public:
 private:
     Tile* m_tile;
     GLfloat* m_color;
-    void drawRect(const Point& lowerLeft, const Point& upperRight, GLfloat* color);
-    void drawWalls(const Point& lowerLeft, const Point& upperRight);
-    void drawCorners(const Point& lowerLeft, const Point& upperRight);
+    void drawRect(const Cartesian& lowerLeft, const Cartesian& upperRight, GLfloat* color);
+    void drawWalls(const Cartesian& lowerLeft, const Cartesian& upperRight);
+    void drawCorners(const Cartesian& lowerLeft, const Cartesian& upperRight);
 };
 
 } // namespace sim

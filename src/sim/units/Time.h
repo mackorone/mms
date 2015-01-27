@@ -5,12 +5,12 @@ namespace sim {
 class Time {
 
 public:
-    virtual ~Time();
+    virtual ~Time() = 0;
     float getSeconds() const;
     float getMilliseconds() const;
 
 protected:
-    Time(); // Abstract class
+    Time();
     float m_seconds;
 
 };

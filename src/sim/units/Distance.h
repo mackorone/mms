@@ -5,12 +5,12 @@ namespace sim {
 class Distance {
 
 public:
-    virtual ~Distance();
+    virtual ~Distance() = 0;
     float getMeters() const;
     float getCentimeters() const;
 
 protected:
-    Distance(); // Abstract class
+    Distance();
     float m_meters;
 
 };

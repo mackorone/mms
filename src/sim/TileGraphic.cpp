@@ -22,8 +22,8 @@ void TileGraphic::draw() {
     float tileLength = P()->wallLength() + P()->wallWidth();
 
     // Lower left corner
-    Point lowerLeft(tileX * tileLength, tileY * tileLength);
-    Point upperRight((tileX + 1) * tileLength, (tileY + 1) * tileLength);
+    Cartesian lowerLeft(tileX * tileLength, tileY * tileLength);
+    Cartesian upperRight((tileX + 1) * tileLength, (tileY + 1) * tileLength);
 
     // Update the color to reflect the number of passes
     GLfloat intensity = (float)(.1*m_tile->getPasses());
@@ -41,7 +41,7 @@ void TileGraphic::draw() {
     drawWalls(lowerLeft, upperRight);
 }
 
-void TileGraphic::drawRect(const Point& lowerLeft, const Point& upperRight, GLfloat* color) {
+void TileGraphic::drawRect(const Cartesian& lowerLeft, const Cartesian& upperRight, GLfloat* color) {
 
     float c1X = physicalToOpenGl(lowerLeft).getX();
     float c1Y = physicalToOpenGl(lowerLeft).getY();
@@ -57,42 +57,42 @@ void TileGraphic::drawRect(const Point& lowerLeft, const Point& upperRight, GLfl
     glEnd();
 }
 
-void TileGraphic::drawWalls(const Point& lowerLeft, const Point& upperRight) {
+void TileGraphic::drawWalls(const Cartesian& lowerLeft, const Cartesian& upperRight) {
 
     // By definition, corners and walls are one unit of length
 
-    Point lowerRight(upperRight.getX(), lowerLeft.getY());
-    Point upperLeft(lowerLeft.getX(), upperRight.getY());
+    Cartesian lowerRight(upperRight.getX(), lowerLeft.getY());
+    Cartesian upperLeft(lowerLeft.getX(), upperRight.getY());
     float translationAmount = P()->wallWidth() / 2.0;
 
     if (m_tile->isWall(NORTH)) {
-        drawRect(upperLeft.translate(translationAmount, -translationAmount), upperRight.translate(-translationAmount, 0), RED);
+        drawRect(upperLeft + Cartesian(translationAmount, -translationAmount), upperRight + Cartesian(-translationAmount, 0), RED);
     }
     if (m_tile->isWall(EAST)) {
-        drawRect(lowerRight.translate(-translationAmount, translationAmount), upperRight.translate(0, -translationAmount), RED);
+        drawRect(lowerRight + Cartesian(-translationAmount, translationAmount), upperRight + Cartesian(0, -translationAmount), RED);
     }
     if (m_tile->isWall(SOUTH)) {
-        drawRect(lowerLeft.translate(translationAmount, 0), lowerRight.translate(-translationAmount, translationAmount), RED);
+        drawRect(lowerLeft + Cartesian(translationAmount, 0), lowerRight + Cartesian(-translationAmount, translationAmount), RED);
     }
     if (m_tile->isWall(WEST)) {
-        drawRect(lowerLeft.translate(0, translationAmount), upperLeft.translate(translationAmount, -translationAmount), RED);
+        drawRect(lowerLeft + Cartesian(0, translationAmount), upperLeft + Cartesian(translationAmount, -translationAmount), RED);
     }
 }
 
-void TileGraphic::drawCorners(const Point& lowerLeft, const Point& upperRight) {
+void TileGraphic::drawCorners(const Cartesian& lowerLeft, const Cartesian& upperRight) {
 
-    Point lowerRight(upperRight.getX(), lowerLeft.getY());
-    Point upperLeft(lowerLeft.getX(), upperRight.getY());
+    Cartesian lowerRight(upperRight.getX(), lowerLeft.getY());
+    Cartesian upperLeft(lowerLeft.getX(), upperRight.getY());
     float translationAmount = P()->wallWidth() / 2.0;
 
     // Lower left corner
-    drawRect(lowerLeft, lowerLeft.translate(translationAmount, translationAmount), GRAY);
+    drawRect(lowerLeft, lowerLeft + Cartesian(translationAmount, translationAmount), LIGHTGRAY);
     // Lower right corner
-    drawRect(lowerRight.translate(-translationAmount, 0), lowerRight.translate(0, translationAmount), GRAY);
+    drawRect(lowerRight + Cartesian(-translationAmount, 0), lowerRight + Cartesian(0, translationAmount), LIGHTGRAY);
     // Upper left corner
-    drawRect(upperLeft.translate(0, -translationAmount), upperLeft.translate(translationAmount, 0), GRAY);
+    drawRect(upperLeft + Cartesian(0, -translationAmount), upperLeft + Cartesian(translationAmount, 0), LIGHTGRAY);
     // Upper right corner
-    drawRect(upperRight.translate(-translationAmount, -translationAmount), upperRight, GRAY);
+    drawRect(upperRight + Cartesian(-translationAmount, -translationAmount), upperRight, LIGHTGRAY);
 }
 
 } // namespace sim

@@ -5,11 +5,11 @@ namespace sim {
 class Speed {
 
 public:
-    virtual ~Speed();
+    virtual ~Speed() = 0;
     float getMetersPerSecond() const;
 
 protected:
-    Speed(); // Abstract class
+    Speed();
     float m_metersPerSecond;
 
 };

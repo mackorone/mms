@@ -5,12 +5,12 @@ namespace sim {
 class Angle {
 
 public:
-    virtual ~Angle();
+    virtual ~Angle() = 0;
     float getRadians() const;
     float getDegrees() const;
 
 protected:
-    Angle(); // Abstract class
+    Angle();
     float m_radians;
 
 };

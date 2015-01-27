@@ -3,6 +3,7 @@
 #include "Constants.h"
 #include "Param.h"
 #include "Mouse.h"
+#include "units/Cartesian.h"
 #include "Utilities.h"
 
 namespace sim{
@@ -15,14 +16,14 @@ MouseGraphic::~MouseGraphic()
 
 void MouseGraphic::draw() {
 
-    float tileX = m_mouse->getX();
-    float tileY = m_mouse->getY();
-
-    Point location(m_mouse->getX(), m_mouse->getY());
-    float tileLength = P()->wallLength() + P()->wallWidth();
-
-    Point lowerLeft(m_mouse->getX() + .05, m_mouse->getY()+.05);
-    Point upperRight(m_mouse->getX()+P()->wallLength()-.05, m_mouse->getY()+P()->wallLength()-.05);
+    std::vector<Coordinate*> vertices;
+    /*
+    for (Cartesian vertex : m_mouse->getVertices())
+    {
+        vertices.push_back(&vertex);
+    }
+    */
+    //Meters tileLength(P()->wallLength() + P()->wallWidth());
 
     // Lower left corner
     //float c1X = (tileLength * tileX) + 2*P()->pixelsPerUnit();
@@ -42,18 +43,24 @@ void MouseGraphic::draw() {
     //c2X = convertHorizontalPoint(c2X);
     //c2Y = convertVerticalPoint(c2Y);
 
+    /*
     float c1X = physicalToOpenGl(lowerLeft).getX();
     float c1Y = physicalToOpenGl(lowerLeft).getY();
     float c2X = physicalToOpenGl(upperRight).getX();
     float c2Y = physicalToOpenGl(upperRight).getY();
+    */
 
-    m_mouse->inGoal() ? glColor3fv(DARKGREEN) : glColor3fv(m_color);
-    glBegin(GL_POLYGON);
+    //m_mouse->inGoal() ? glColor3fv(DARKGREEN) : glColor3fv(m_color);
+    /*
         glVertex2f(c1X, c1Y);
         glVertex2f(c1X, c2Y);
         glVertex2f(c2X, c2Y);
         glVertex2f(c2X, c1Y);
     glEnd();
+    */
+    glColor3fv(BLUE);
+    // TODO: Physical to OpenGL
+    drawPolygon(physicalToOpenGl(m_mouse->getVertices()));
 
     //drawDirection(dirC1X, dirC1Y, dirC2X, dirC2Y);
 }

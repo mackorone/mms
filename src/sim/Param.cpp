@@ -1,9 +1,7 @@
 #include "Param.h"
 
-#include <iostream>
-
-#include "../lib/pugixml.hpp" // TODO: can we automaticlaly include lib directory in the build...
-#include "Utilities.h"
+#include "ParamParser.h"
+#include "Utilities.h" // TODO: Take this out once we take out the assert
 
 namespace sim {
 
@@ -22,73 +20,28 @@ Param* Param::getInstance() {
 
 Param::Param() {
 
-    // Initialization list??? // TODO
-    m_mazeWidth = 16;
-    m_mazeHeight = 16;
-
-    m_wallWidth = 0.012;
-    m_wallLength = 0.156;
-    m_wallHeight = 0.05;
-    m_wallTolerance = 0.05;
-
-    // Always give all of the parameters default values
-    m_pixelsPerMeter = 250;
-    m_borderSize = 10;
-    m_frameRate = 60;
-    m_minSimSpeed = 1; // Percent of real-time
-    m_maxSimSpeed = 10000; // Percent of real-time
-    m_mazeFile = "";
-    m_minSolutionLength = 40;
-    m_windowWidth = (m_mazeWidth * (m_wallLength + m_wallWidth) + m_wallWidth) * m_pixelsPerMeter;
-    m_windowHeight = (m_mazeHeight * (m_wallLength + m_wallWidth) + m_wallWidth) * m_pixelsPerMeter;
-
-    // Override with user-supplied values if possible
-    pugi::xml_document doc;
-    std::string parameterFile = getProjectDirectory() + "src/sim/parameters.xml";
-    pugi::xml_parse_result result = doc.load_file(parameterFile.c_str());
-    if (!result) {
-        std::cout << "Unable to read parameters from \"" << parameterFile << "\" : "
-                  << result.description() << std::endl;
-        return;
-    }
-
-    // TODO: Make library independent, type checked version of the XML parser
-
-    // TODO: Ensure "TYPE" of values is correct
-    // TODO: Should we check to see if it's empty??
+    // Create the parameter parser object
+    ParamParser parser(getProjectDirectory() + "src/sim/parameters.xml"); // TODO: Configure this???
 
     // Graphical Parameters
-    if (!std::string(doc.child("pixels-per-meter").child_value()).empty()) {
-        m_pixelsPerMeter = atof(doc.child("pixels-per-meter").child_value());
-    }
-    if (!std::string(doc.child("frame-rate").child_value()).empty()) {
-        m_frameRate = atof(doc.child("frame-rate").child_value());
-    }
+    m_pixelsPerMeter = parser.getIntIfHasInt("pixels-per-meter", 250);
+    m_frameRate = parser.getIntIfHasInt("frame-rate", 60);
 
     // Simulation Parameters
-    if (!std::string(doc.child("min-sim-speed").child_value()).empty()) {
-        m_minSimSpeed = atof(doc.child("min-sim-speed").child_value());
-    }
-    if (!std::string(doc.child("max-sim-speed").child_value()).empty()) {
-        m_maxSimSpeed = atof(doc.child("max-sim-speed").child_value());
-    }
+    m_minSimSpeed = parser.getFloatIfHasFloat("min-sim-speed", 0.1);
+    m_maxSimSpeed = parser.getFloatIfHasFloat("max-sim-speed", 10);
 
     // Maze Parameters
-    if (!std::string(doc.child("maze-directory").child_value()).empty()) {
-        m_mazeDirectory = doc.child("maze-directory").child_value();
-    }
-    if (!std::string(doc.child("maze-file").child_value()).empty()) {
-        m_mazeFile = doc.child("maze-file").child_value();
-    }
-    if (!std::string(doc.child("random-maze-width").child_value()).empty()) {
-        m_mazeWidth = atof(doc.child("random-maze-width").child_value()); // TODO read from file
-    }
-    if (!std::string(doc.child("random-maze-height").child_value()).empty()) {
-        m_mazeHeight = atof(doc.child("random-maze-height").child_value()); // TODO read from file
-    }
-    if (!std::string(doc.child("min-solution-length").child_value()).empty()) {
-        m_minSolutionLength = atof(doc.child("min-solution-length").child_value());
-    }
+    m_mazeDirectory = parser.getStringIfHasString("maze-directory", "src/maze_files/");
+    m_mazeFile = parser.getStringIfHasString("maze-file", "");
+    m_mazeWidth = parser.getIntIfHasInt("random-maze-width", 16);
+    m_mazeHeight = parser.getIntIfHasInt("random-maze-height", 16);
+    m_wallWidth = parser.getFloatIfHasFloat("wall-width", 0.012);
+    m_wallLength = parser.getFloatIfHasFloat("wall-length", 0.156);
+    m_wallHeight = parser.getFloatIfHasFloat("wall-height", 0.05);
+    m_wallTolerance = parser.getFloatIfHasFloat("wall-tolerance", 0.05);
+    m_minSolutionLength = parser.getIntIfHasInt("min-solution-length", 40);
+    m_saveRandomMaze = parser.getBoolIfHasBool("save-random-maze", true);
 
     // Update the non-configurable parameters
     m_windowWidth = (m_mazeWidth * (m_wallLength + m_wallWidth)) * m_pixelsPerMeter;
@@ -100,16 +53,28 @@ Param::Param() {
     ASSERT(m_mazeHeight > 0); // TODO
 }
 
+int Param::pixelsPerMeter() {
+    return m_pixelsPerMeter;
+}
+
+int Param::frameRate() {
+    return m_frameRate;
+}
+
+int Param::windowWidth() {
+    return m_windowWidth;
+}
+
+int Param::windowHeight() {
+    return m_windowHeight;
+}
+
 int Param::minSimSpeed() {
     return m_minSimSpeed;
 }
 
 int Param::maxSimSpeed() {
     return m_maxSimSpeed;
-}
-
-int Param::minSolutionLength() {
-    return m_minSolutionLength;
 }
 
 std::string Param::mazeDirectory() {
@@ -144,24 +109,12 @@ float Param::wallTolerance() {
     return m_wallTolerance;
 }
 
-int Param::pixelsPerMeter() {
-    return m_pixelsPerMeter;
+int Param::minSolutionLength() {
+    return m_minSolutionLength;
 }
 
-int Param::borderSize() {
-    return m_borderSize;
-}
-
-int Param::frameRate() {
-    return m_frameRate;
-}
-
-int Param::windowWidth() {
-    return m_windowWidth;
-}
-
-int Param::windowHeight() {
-    return m_windowHeight;
+bool Param::saveRandomMaze() {
+    return m_saveRandomMaze;
 }
 
 } // namespace sim

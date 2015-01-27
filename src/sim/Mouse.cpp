@@ -9,22 +9,27 @@
 namespace sim {
 
 Mouse::Mouse(Maze* maze) : m_maze(maze), m_translation(Cartesian(0, 0)), m_rotation(Radians(0)) {
+
+    // Create the vertices for the mouse
+    std::vector<Cartesian> vertices;
+    vertices.push_back(Cartesian(0.05, 0.05));
+    vertices.push_back(Cartesian(0.05, 0.1));
+    vertices.push_back(Cartesian(0.1, 0.1));
+    vertices.push_back(Cartesian(0.1, 0.05));
+    m_vertices.setVertices(vertices);
 }
 
-Cartesian Mouse::getTranslation() {
+Cartesian Mouse::getTranslation() const {
     return m_translation;
 }
 
-Radians Mouse::getRotation() {
+Radians Mouse::getRotation() const {
     return m_rotation;
 }
 
-/*
-std::vector<std::pair<int,int>> Mouse::getVertices() {
-    return m_mouseVertices;
+Polygon Mouse::getVertices() const {
+    return m_vertices;
 }
-*/
-
 
 bool Mouse::inGoal() {
 
