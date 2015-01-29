@@ -16,7 +16,7 @@ Mouse::Mouse(Maze* maze) : m_maze(maze), m_translation(Cartesian(0, 0)), m_rotat
     vertices.push_back(Cartesian(0.05, 0.1));
     vertices.push_back(Cartesian(0.1, 0.1));
     vertices.push_back(Cartesian(0.1, 0.05));
-    m_vertices.setVertices(vertices);
+    m_shape.setVertices(vertices);
 }
 
 Cartesian Mouse::getTranslation() const {
@@ -27,8 +27,8 @@ Radians Mouse::getRotation() const {
     return m_rotation;
 }
 
-Polygon Mouse::getVertices() const {
-    return m_vertices;
+Polygon Mouse::getShape() const {
+    return m_shape;
 }
 
 bool Mouse::inGoal() {
@@ -79,6 +79,8 @@ bool Mouse::wallLeft() {
 
 void Mouse::moveForward(float meters) {
 
+    m_translation = m_translation + Cartesian(0, meters);
+    // TODO:
     /*
     //if (!wallFront()) {
         switch(m_mouseDirection) {

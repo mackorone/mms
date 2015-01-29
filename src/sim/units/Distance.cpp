@@ -16,4 +16,8 @@ float Distance::getCentimeters() const {
     return getMeters() * 100;
 }
 
+Seconds Distance::operator/(const Speed& speed) const {
+    return Seconds(getMeters()/speed.getMetersPerSecond());
+}
+
 } // namespace sim

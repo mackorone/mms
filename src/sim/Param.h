@@ -17,26 +17,25 @@ public:
 
     // Graphics parameters
     int pixelsPerMeter();
-    int frameRate();      // Frames per second
-    int windowWidth();    // Number of pixels
-    int windowHeight();   // Number of pixels
+    int frameRate();
+    int windowWidth();
+    int windowHeight();
 
     // Simulation parameters
-    int minSimSpeed(); // min ms between simulation steps (TODO: Steps isn't really going to be a thing....)
-    int maxSimSpeed(); // max ms between simulation steps (TODO: Change these descriptions ... )
-    // TODO: max sim speed = min sleep... we need to fix this bug
+    int minSimSpeed();
+    int maxSimSpeed();
 
     // Maze parameters
-    std::string mazeDirectory(); // Maze file to load ("maze5.maz") // TODO Description
-    std::string mazeFile();      // Maze file to load ("maze5.maz")
-    int mazeWidth();             // Number of tiles
-    int mazeHeight();            // Number of tiles
+    std::string mazeDirectory();
+    std::string mazeFile();
+    int mazeWidth();
+    int mazeHeight();
     float wallWidth();
     float wallLength();
     float wallHeight();
     float wallTolerance();
-    int minSolutionLength();     // Minimum steps required to solve random maze // TODO: This should be in the randomize code.... right?
-    bool saveRandomMaze();       // Whether or not we should same the random maze
+    int minSolutionLength();
+    bool saveRandomMaze();
 
 private:
 

@@ -5,7 +5,6 @@
 namespace sim {
 
 ParamParser::ParamParser(std::string filePath) {
-
     // Open the document
     pugi::xml_parse_result result = m_doc.load_file(filePath.c_str());
     if (!result) {

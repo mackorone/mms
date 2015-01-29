@@ -16,40 +16,14 @@ MouseGraphic::~MouseGraphic()
 
 void MouseGraphic::draw() {
 
-    std::vector<Coordinate*> vertices;
     /*
-    for (Cartesian vertex : m_mouse->getVertices())
-    {
-        vertices.push_back(&vertex);
+    std::vector<Cartesian> vertices;
+    for (int i = 0; i < m_mouse->getVertices().getVertices().size(); i += 1) {
+        vertices.push_back(m_mouse->getTranslation() + m_mouse->getVertices().getVertices().at(i));
     }
+    Polygon p;
+    p.setVertices(vertices);
     */
-    //Meters tileLength(P()->wallLength() + P()->wallWidth());
-
-    // Lower left corner
-    //float c1X = (tileLength * tileX) + 2*P()->pixelsPerUnit();
-    //float c1Y = (tileLength * tileY) + 2*P()->pixelsPerUnit();
-    
-    // Upper right corner
-    //float c2X = (tileLength * (tileX+1)) - 2*P()->pixelsPerUnit();
-    //float c2Y = (tileLength * (tileY+1)) - 2*P()->pixelsPerUnit();
-    
-    //float dirC1X = c1X;
-    //float dirC1Y = c1Y;
-    //float dirC2X = c2X;
-    //float dirC2Y = c2Y;
-
-    //c1X = convertHorizontalPoint(c1X);
-    //c1Y = convertVerticalPoint(c1Y);
-    //c2X = convertHorizontalPoint(c2X);
-    //c2Y = convertVerticalPoint(c2Y);
-
-    /*
-    float c1X = physicalToOpenGl(lowerLeft).getX();
-    float c1Y = physicalToOpenGl(lowerLeft).getY();
-    float c2X = physicalToOpenGl(upperRight).getX();
-    float c2Y = physicalToOpenGl(upperRight).getY();
-    */
-
     //m_mouse->inGoal() ? glColor3fv(DARKGREEN) : glColor3fv(m_color);
     /*
         glVertex2f(c1X, c1Y);
@@ -59,8 +33,11 @@ void MouseGraphic::draw() {
     glEnd();
     */
     glColor3fv(BLUE);
-    // TODO: Physical to OpenGL
-    drawPolygon(physicalToOpenGl(m_mouse->getVertices()));
+    //drawPolygon(physicalToOpenGl(p));
+
+    // TODO...
+    drawPolygon(physicalToOpenGl(m_mouse->getShape()
+                                .translate(m_mouse->getTranslation())));
 
     //drawDirection(dirC1X, dirC1Y, dirC2X, dirC2Y);
 }

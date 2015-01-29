@@ -1,11 +1,11 @@
 High Priority
 =============
-- Build a generic XML parsing class with type safety
 - Maze Validation (Tomasz)
 - Pass things by reference when possible
 - Make a distinction between the mouse interface and sim interface
 - Sim code should match the bot code *exactly*
 - Dual screen! (mini-map and zoomed-in view)
+- Figure out how the discrete and continuous interfaces can coexist
 
 Medium Priority
 ===============

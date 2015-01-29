@@ -4,6 +4,10 @@
 
 #include "Param.h"
 #include "State.h"
+#include "units/Meters.h"
+#include "units/MetersPerSecond.h"
+#include "units/Milliseconds.h"
+#include "units/Seconds.h"
 #include "Utilities.h"
 
 namespace sim {
@@ -15,39 +19,38 @@ MouseInterface::~MouseInterface()
 { }
 
 bool MouseInterface::wallFront() {
-    return m_mouse->wallFront();
+    //return m_mouse->wallFront();
+    return false;
 }
 
 bool MouseInterface::wallRight() {
-    return m_mouse->wallRight();
+    //return m_mouse->wallRight();
+    return false;
 }
 
 bool MouseInterface::wallLeft() {
-    return m_mouse->wallLeft();
+    //return m_mouse->wallLeft();
+    return false;
 }
 
 void MouseInterface::moveForward() {
 
+    // TODO: Acceleration
+
     // Implement the sleeping here
-    /*
-    float distance = 1.0; // meters
-    float speed = 10.0; // meters per second
-    float duration = distance/speed;
+    Meters distance(P()->wallLength() + P()->wallWidth());
+    MetersPerSecond speed(1.0);
+    Seconds duration(distance/speed);
 
     int numSteps = 100; // TODO this is hard coded now
     
-    
     for (int i = 0; i < numSteps; i += 1) {
-        while (S()->paused()) {sim::sleep(std::Milliseconds(1));} // Sleep while paused
-        m_mouse->moveForward(distance/numSteps);
-        sim::sleep(duration/numSteps*1000);
+        while (S()->paused()) {
+            sim::sleep(Milliseconds(1)); // Sleep while paused
+        }
+        m_mouse->moveForward(distance.getMeters()/numSteps);
+        sim::sleep(Seconds(duration.getSeconds()/numSteps));
     }
-    */
-
-    /*
-    // Move the mouse forward
-    m_mouse->moveForward(0.16, 1.0);
-    */
 }
 
 void MouseInterface::turnRight() {

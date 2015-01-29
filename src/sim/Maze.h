@@ -12,8 +12,8 @@ class Maze {
 public:
     Maze();
 
-    int getWidth();
-    int getHeight();
+    int getWidth(); // TODO: Needed?
+    int getHeight(); // TODO: Needed?
     Tile* getTile(int x, int y);
     void resetColors(int curX, int curY); // Resets the colors of the maze
 

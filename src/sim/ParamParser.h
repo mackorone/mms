@@ -2,12 +2,10 @@
 
 #include <string>
 
-#include "../lib/pugixml.hpp"
-// TODO: Fix this include
+#include "../lib/pugixml.hpp" // TODO: Fix this include
 
 namespace sim {
 
-// Note: in this class we assume that the xml file is all one layer
 class ParamParser {
 
 public:

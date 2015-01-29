@@ -1,7 +1,7 @@
 #include "Param.h"
 
 #include "ParamParser.h"
-#include "Utilities.h" // TODO: Take this out once we take out the assert
+#include "Utilities.h" // TODO: Take this out once we take out the ASSERT
 
 namespace sim {
 
