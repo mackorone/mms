@@ -93,6 +93,7 @@ int Param::mazeHeight() {
     return m_mazeHeight;
 }
 
+// TODO: Change to distances
 float Param::wallWidth() {
     return m_wallWidth;
 }

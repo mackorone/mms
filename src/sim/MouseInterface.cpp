@@ -12,6 +12,7 @@
 
 namespace sim {
 
+// TODO: Should interface to sensor
 MouseInterface::MouseInterface(Mouse* mouse) : m_mouse(mouse)
 { }
 
@@ -38,11 +39,12 @@ void MouseInterface::moveForward() {
     // TODO: Acceleration
 
     // Implement the sleeping here
+    /*
     Meters distance(P()->wallLength() + P()->wallWidth());
     MetersPerSecond speed(1.0);
     Seconds duration(distance/speed);
 
-    int numSteps = 100; // TODO this is hard coded now
+    int numSteps = 10; // TODO this is hard coded now
     
     for (int i = 0; i < numSteps; i += 1) {
         while (S()->paused()) {
@@ -51,6 +53,7 @@ void MouseInterface::moveForward() {
         m_mouse->moveForward(distance.getMeters()/numSteps);
         sim::sleep(Seconds(duration.getSeconds()/numSteps));
     }
+    */
 }
 
 void MouseInterface::turnRight() {
@@ -101,11 +104,11 @@ void MouseInterface::resetHonored() {
 }
 
 void MouseInterface::resetPosition() {
-    m_mouse->resetPosition();    
+    //m_mouse->resetPosition();    
 }
 
 void MouseInterface::resetColors(int curX, int curY) {
-    m_mouse->resetColors(curX, curY);
+    //m_mouse->resetColors(curX, curY);
 }
 
 } // namespace sim

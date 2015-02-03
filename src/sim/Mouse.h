@@ -26,40 +26,25 @@ namespace sim {
      X_________|
  */
 
+// TODO: This class should encapsulate all things to do with mouse, including sensors
+// and motors
+
 class Mouse {
 
 public:
     // TODO: Read in a file here???
-    Mouse(Maze* maze);
+    Mouse();
 
-    // Accessor methods
     Cartesian getTranslation() const;
     Radians getRotation() const;
     Polygon getShape() const;
-
-    // Action methods
-    // TODO: Discrete interface, being replaced
-    bool inGoal();
-    float getX() { return 0; }
-    float getY() { return 0; }
-    bool wallFront();
-    bool wallRight();
-    bool wallLeft();
-    void moveForward(float meters); // Causes the mouse to "teleport" forward
-    void turnRight();
-    void turnLeft();
-    void resetPosition(); // Sets the position of the mouse to (0,0)
-    void resetColors(int curX, int curY); // Resets the tile colors of the maze
+    // TODO: Get other things - velocity, accel, etc.
 
 private:
-    Maze* m_maze;
     Cartesian m_translation;
     Radians m_rotation;
     Polygon m_shape;
 
-    // Use only within the
-    //void moveTo(float xpos, float ypos);
-    //void setRotation(float radians);
 };
 
 } // namespace sim

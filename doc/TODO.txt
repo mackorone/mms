@@ -1,5 +1,8 @@
 High Priority
 =============
+- Synchronization between the World, Graphics, and Mouse
+- Make Sensor and Motor abstract, support different types
+- Change float to units
 - Maze Validation (Tomasz)
 - Pass things by reference when possible
 - Make a distinction between the mouse interface and sim interface
