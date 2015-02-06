@@ -8,11 +8,8 @@
 
 namespace sim{
 
-MouseGraphic::MouseGraphic(Mouse* mouse) : m_mouse(mouse), m_color(BLUE)
-{ }
-
-MouseGraphic::~MouseGraphic()
-{ }
+MouseGraphic::MouseGraphic(Mouse* mouse) : m_mouse(mouse), m_color(BLUE) {
+}
 
 void MouseGraphic::draw() {
 
@@ -42,6 +39,7 @@ void MouseGraphic::draw() {
     //drawDirection(dirC1X, dirC1Y, dirC2X, dirC2Y);
 }
 
+#if(0)
 void MouseGraphic::drawDirection(float c1X, float c1Y, float c2X, float c2Y) {
 
     // TODO
@@ -104,5 +102,6 @@ void MouseGraphic::drawDirection(float c1X, float c1Y, float c2X, float c2Y) {
     glEnd();
     */
 }
+#endif
 
 } // namespace sim

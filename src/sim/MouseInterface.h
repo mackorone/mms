@@ -11,6 +11,10 @@ public:
     MouseInterface(Mouse* mouse);
     ~MouseInterface();
 
+    // TODO: List of sensor interfaces
+    // TODO: List of wheel interfaces
+
+
     // ---------------------- Mouse Interfact Methods ----------------------- //
 
     bool wallFront();

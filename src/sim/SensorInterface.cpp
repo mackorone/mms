@@ -2,7 +2,11 @@
 
 namespace sim {
 
-SensorInterface::SensorInterface() {
+SensorInterface::SensorInterface(Sensor* sensor) : m_sensor(sensor) {
+}
+
+float SensorInterface::read() {
+    return 0.0;
 }
 
 } // namespace sim

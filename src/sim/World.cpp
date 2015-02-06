@@ -1,5 +1,7 @@
 #include "World.h"
 
+#include "units/Centimeters.h"
+
 namespace sim {
 
 World::World(Maze* maze, Mouse* mouse) : m_maze(maze), m_mouse(mouse) {
@@ -7,7 +9,6 @@ World::World(Maze* maze, Mouse* mouse) : m_maze(maze), m_mouse(mouse) {
 
 void World::simulate() {
     while (true) {
-        // TODO
     }
 }
 

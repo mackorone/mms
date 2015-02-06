@@ -4,6 +4,7 @@
 #include "Polygon.h"
 #include "units/Cartesian.h"
 #include "units/Radians.h"
+#include "Wheel.h"
 
 #include <vector>
 
@@ -27,7 +28,7 @@ namespace sim {
  */
 
 // TODO: This class should encapsulate all things to do with mouse, including sensors
-// and motors
+// and wheels. Each of these should have a direction and position associated with them
 
 class Mouse {
 
@@ -38,13 +39,15 @@ public:
     Cartesian getTranslation() const;
     Radians getRotation() const;
     Polygon getShape() const;
-    // TODO: Get other things - velocity, accel, etc.
 
 private:
     Cartesian m_translation;
     Radians m_rotation;
     Polygon m_shape;
 
+    // TODO: For now, assume that we'll have two wheels
+    Wheel m_rightWheel;
+    Wheel m_leftWheel;
 };
 
 } // namespace sim

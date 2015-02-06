@@ -9,9 +9,7 @@ class MouseGraphic {
 
 public:
     MouseGraphic(Mouse* mouse);
-    ~MouseGraphic();
     void draw();
-    void drawDirection(float c1X, float c1Y, float c2X, float c2Y);
 
 private:
     Mouse* m_mouse;

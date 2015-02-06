@@ -8,14 +8,16 @@
 
 namespace sim {
 
-Mouse::Mouse() : m_translation(Cartesian(0, 0)), m_rotation(Radians(0)) {
+Mouse::Mouse() : m_translation(Cartesian(0, 0)), m_rotation(Radians(0)),
+        m_rightWheel(Meters(0.05), Meters(0.01), Cartesian(0.0, 0.0)),
+        m_leftWheel(Meters(0.05), Meters(0.01), Cartesian(0.0, 0.0)) {
 
     // Create the vertices for the mouse
     std::vector<Cartesian> vertices;
-    vertices.push_back(Cartesian(0.05, 0.05));
-    vertices.push_back(Cartesian(0.05, P()->wallLength() + P()->wallWidth() - 0.05));
-    vertices.push_back(Cartesian(P()->wallLength() + P()->wallWidth() - 0.05, P()->wallLength() + P()->wallWidth() - 0.05));
-    vertices.push_back(Cartesian(P()->wallLength() + P()->wallWidth() - 0.05, 0.05));
+    vertices.push_back(Cartesian(0.06, 0.06));
+    vertices.push_back(Cartesian(0.06, P()->wallLength() + P()->wallWidth() - 0.06));
+    vertices.push_back(Cartesian(P()->wallLength() + P()->wallWidth() - 0.06, P()->wallLength() + P()->wallWidth() - 0.06));
+    vertices.push_back(Cartesian(P()->wallLength() + P()->wallWidth() - 0.06, 0.06));
     m_shape.setVertices(vertices);
 }
 
