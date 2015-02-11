@@ -1,6 +1,11 @@
 #include "World.h"
 
 #include "units/Centimeters.h"
+#include "units/RadiansPerSecond.h"
+#include "units/Milliseconds.h"
+#include "Utilities.h"
+
+#include <iostream> // TODO
 
 namespace sim {
 
@@ -8,21 +13,17 @@ World::World(Maze* maze, Mouse* mouse) : m_maze(maze), m_mouse(mouse) {
 }
 
 void World::simulate() {
+
+    // TODO
+    m_mouse->getRightWheel()->setAngularVelocity(RadiansPerSecond(1.0));
+    m_mouse->getLeftWheel()->setAngularVelocity(RadiansPerSecond(1.0));
+
     while (true) {
+        // TODO: Explain why locks aren't completely necessary here...
+        m_mouse->update();
+        sleep(Milliseconds(.01));
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 #if(0) // TODO

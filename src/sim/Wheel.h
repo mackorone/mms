@@ -2,6 +2,7 @@
 
 #include "units/Cartesian.h"
 #include "units/Meters.h"
+#include "units/Radians.h"
 #include "units/RadiansPerSecond.h"
 
 namespace sim {
@@ -11,20 +12,32 @@ class Wheel {
 
 // TODO: Eventually, we could include weight and rotational intertia, friction, etc...
 
-// The position is the starting position of the wheel, from the center of the wheel, We assume that all wheels are vertical, for now
+// The position is the starting position of center of the wheel
+// For now, we assume that all wheels are vertical
 public:
     Wheel(const Distance& radius, const Distance& width, const Coordinate& position);
-    Meters getRadius();
-    Meters getWidth();
-    Cartesian getPosition();
-    RadiansPerSecond getAngularVelocity();
+    Meters getRadius() const;
+    Meters getWidth() const;
+    Cartesian getPosition() const; // TODO
+
+    // These are for DC Motors
+    RadiansPerSecond getAngularVelocity() const;
+    void setAngularVelocity(const AngularVelocity& angularVelocity);
+
+    // TODO
+    void step();
+    int getBufferedSteps();
+    // TODO: These will be unused for now
+    void rotate(const Angle& angle);
+    Radians popRotation(); // Retrieves and clears
 
 private:
     Meters m_radius;
     Meters m_width;
     Cartesian m_position;
-    RadiansPerSecond m_angularVelocity;
 
+    Radians m_rotation;
+    RadiansPerSecond m_angularVelocity;
 };
 
 } // namespace sim

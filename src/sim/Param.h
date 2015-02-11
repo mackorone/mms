@@ -22,6 +22,7 @@ public:
     int windowHeight();
 
     // Simulation parameters
+    int glutInitTime();
     int minSimSpeed();
     int maxSimSpeed();
 
@@ -52,6 +53,7 @@ private:
     int m_windowHeight;
 
     // Simulation parameters
+    float m_glutInitTime;
     float m_minSimSpeed;
     float m_maxSimSpeed;
 

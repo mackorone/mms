@@ -13,28 +13,19 @@ MouseGraphic::MouseGraphic(Mouse* mouse) : m_mouse(mouse), m_color(BLUE) {
 
 void MouseGraphic::draw() {
 
-    /*
-    std::vector<Cartesian> vertices;
-    for (int i = 0; i < m_mouse->getVertices().getVertices().size(); i += 1) {
-        vertices.push_back(m_mouse->getTranslation() + m_mouse->getVertices().getVertices().at(i));
-    }
-    Polygon p;
-    p.setVertices(vertices);
-    */
-    //m_mouse->inGoal() ? glColor3fv(DARKGREEN) : glColor3fv(m_color);
-    /*
-        glVertex2f(c1X, c1Y);
-        glVertex2f(c1X, c2Y);
-        glVertex2f(c2X, c2Y);
-        glVertex2f(c2X, c1Y);
-    glEnd();
-    */
-    glColor3fv(BLUE);
-    //drawPolygon(physicalToOpenGl(p));
+    glColor3fv(m_color);
 
-    // TODO...
-    drawPolygon(physicalToOpenGl(m_mouse->getShape()
-                                .translate(m_mouse->getTranslation())));
+    for (int i = m_mouse->getShapes().size() - 1; i >= 0 ; i -= 1) {
+        if (i > 0) {
+            glColor3fv(GREEN);
+        }
+        else {
+            glColor3fv(m_color);
+        }
+        Polygon p = m_mouse->getShapes().at(i);
+        drawPolygon(physicalToOpenGl(p.rotate(m_mouse->getRotation()).translate(m_mouse->getTranslation())));
+        // TODO: Do the rotation
+    }
 
     //drawDirection(dirC1X, dirC1Y, dirC2X, dirC2Y);
 }

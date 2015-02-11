@@ -18,6 +18,9 @@ Param* Param::getInstance() {
     return INSTANCE;
 }
 
+
+// TODO: Change all of the parameters to unit types, use the Param parser to confirm type...
+
 Param::Param() {
 
     // Create the parameter parser object
@@ -28,6 +31,7 @@ Param::Param() {
     m_frameRate = parser.getIntIfHasInt("frame-rate", 60);
 
     // Simulation Parameters
+    m_glutInitTime = parser.getFloatIfHasFloat("glut-init-time", 0.25);
     m_minSimSpeed = parser.getFloatIfHasFloat("min-sim-speed", 0.1);
     m_maxSimSpeed = parser.getFloatIfHasFloat("max-sim-speed", 10);
 
@@ -69,6 +73,10 @@ int Param::windowHeight() {
     return m_windowHeight;
 }
 
+int Param::glutInitTime() {
+    return m_glutInitTime;
+}
+
 int Param::minSimSpeed() {
     return m_minSimSpeed;
 }
@@ -93,7 +101,6 @@ int Param::mazeHeight() {
     return m_mazeHeight;
 }
 
-// TODO: Change to distances
 float Param::wallWidth() {
     return m_wallWidth;
 }

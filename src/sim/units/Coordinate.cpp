@@ -22,6 +22,7 @@ float Coordinate::getRho() const {
     return sqrt(m_x*m_x + m_y*m_y);
 }
 
+// TODO: Units
 float Coordinate::getTheta() const {
     return atan2(m_y, m_x);
 }

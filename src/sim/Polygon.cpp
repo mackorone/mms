@@ -1,5 +1,7 @@
 #include "Polygon.h"
 
+#include "units/Polar.h"
+
 namespace sim {
 
 Polygon::Polygon() {
@@ -29,10 +31,10 @@ Polygon Polygon::translate(const Coordinate& translation) {
 Polygon Polygon::rotate(const Angle& rotation) {
     std::vector<Cartesian> vertices;
     for (int i = 0; i < m_vertices.size(); i += 1) {
-        // TODO
-        //vertices.push_back(m_vertices.at(i) + translation);
+        Polar v(m_vertices.at(i));
+        // TODO: Fix this
+        vertices.push_back(Polar(v.getRho(), v.getTheta() + rotation.getRadians()));
     }
-    // TODO
     Polygon p;
     p.setVertices(vertices);
     return p;

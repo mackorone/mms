@@ -3,7 +3,7 @@
 #include "Maze.h"
 #include "Polygon.h"
 #include "units/Cartesian.h"
-#include "units/Radians.h"
+#include "units/RadiansPerSecond.h"
 #include "Wheel.h"
 
 #include <vector>
@@ -38,12 +38,22 @@ public:
 
     Cartesian getTranslation() const;
     Radians getRotation() const;
-    Polygon getShape() const;
+    std::vector<Polygon> getShapes() const; // The shape includes the body, wheels, and sensors
+
+    // Update the position of the mouse, to be called by the world
+    void update(); // TODO...
+
+    Wheel* getRightWheel();
+    Wheel* getLeftWheel();
+
+    // This is for stepper motors
+    void stepRight();
+    void stepLeft();
 
 private:
     Cartesian m_translation;
     Radians m_rotation;
-    Polygon m_shape;
+    Polygon m_body;
 
     // TODO: For now, assume that we'll have two wheels
     Wheel m_rightWheel;

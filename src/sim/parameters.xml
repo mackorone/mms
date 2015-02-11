@@ -5,11 +5,13 @@
 <frame-rate>60</frame-rate>
 
 <!-- Simulation Parameters -->
+<random-seed>12345</random-seed><!-- TODO : Add in ALSO option to use seed or random... -->
+<glut-init-time>0.25</glut-init-time> <!-- Seconds -->
 <min-sim-speed>0.1</min-sim-speed> <!-- Fraction of real-time -->
 <max-sim-speed>10.0</max-sim-speed> <!-- Fraction of real-time -->
 <default-sim-speed>1.0</default-sim-speed> <!-- Fraction of real-time --> <!-- TODO Add in -->
 
-<!-- Maze Parameters TODO: Separate file for all of these-->
+<!-- Maze Parameters -->
 <maze-directory>src/maze_files/</maze-directory> <!-- realtive to project root -->
 <maze-file>ieee2011.maz</maze-file> <!-- relative to maze-directory -->
 <wall-length>.156</wall-length> <!-- meters -->

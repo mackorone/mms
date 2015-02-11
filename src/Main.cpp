@@ -15,8 +15,6 @@
 #include "sim/Utilities.h"
 #include "sim/World.h"
 
-// TODO: Parameter??? Variable for GLUT Initialization
-
 // Function declarations
 void draw();
 void solve();
@@ -26,6 +24,7 @@ void keyInput(unsigned char key, int x, int y);
 // Global object variable declarations
 Solver* g_solver;
 sim::World* g_world;
+// TODO: Graphic object...
 sim::MazeGraphic* g_mazeGraphic;
 sim::MouseGraphic* g_mouseGraphic;
 
@@ -94,12 +93,12 @@ void draw() {
 }
 
 void solve() {
-    sim::sleep(sim::Seconds(.25)); // Wait for 0.25 seconds for GLUT to intialize
+    sim::sleep(sim::Seconds(sim::P()->glutInitTime()));
     g_solver->solve();
 }
 
 void simulate() {
-    sim::sleep(sim::Seconds(.25)); // Wait for 0.25 seconds for GLUT to intialize
+    sim::sleep(sim::Seconds(sim::P()->glutInitTime()));
     g_world->simulate();
 }
 

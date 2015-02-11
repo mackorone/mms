@@ -6,6 +6,8 @@
 
 namespace sim {
 
+// TODO: Add unit type attribute, and verify this
+
 class ParamParser {
 
 public:

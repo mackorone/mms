@@ -14,4 +14,16 @@ Meters Meters::operator+(const Distance& distance) const {
     return Meters(getMeters() + distance.getMeters());
 }
 
+Meters Meters::operator-(const Distance& distance) const {
+    return Meters(getMeters() - distance.getMeters());
+}
+
+Meters Meters::operator*(float factor) const {
+    return Meters(getMeters() * factor);
+}
+
+Meters Meters::operator/(float factor) const {
+    return Meters(getMeters() / factor);
+}
+
 } // namespace sim
