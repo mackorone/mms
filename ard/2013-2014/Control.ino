@@ -61,8 +61,10 @@ void _moveForward(int boxes){
     right2Sensor = sensorAverage[RIGHTFORWARDSENSOR][1];
     left2Sensor = sensorAverage[LEFTFORWARDSENSOR][1];
   
-  if ( ((left1Sensor <= ANGLELEFTVALUE - ALLOWEDRANGE) || (left1Sensor >= ANGLELEFTVALUE + ALLOWEDRANGE) || (left2Sensor <= ANGLELEFTVALUE - ALLOWEDRANGE) || (left2Sensor >= ANGLELEFTVALUE + ALLOWEDRANGE) || sensorAverage[2][avgSamples] >= 280) 
-         && (sensorAverage[LEFTFORWARDSENSOR][avgSamples + 1] == 0) ) // Check if sensor value is outside reliable range
+  if (   ((left1Sensor <= ANGLELEFTVALUE - ALLOWEDRANGE) || (left1Sensor >= ANGLELEFTVALUE + ALLOWEDRANGE)
+       || (left2Sensor <= ANGLELEFTVALUE - ALLOWEDRANGE) || (left2Sensor >= ANGLELEFTVALUE + ALLOWEDRANGE)
+     || sensorAverage[2][avgSamples] >= 280) 
+     && (sensorAverage[LEFTFORWARDSENSOR][avgSamples + 1] == 0) ) // Check if sensor value is outside reliable range
     {
       sensorAverage[LEFTFORWARDSENSOR][avgSamples + 1] = RESETSTEPAMOUNT; // UNRELIABLE SENSOR FOR REST OF MOVE STEP COUNT AT WHICH IS WAS DECLARED UNRELIABLE
       compensateLeft(0);

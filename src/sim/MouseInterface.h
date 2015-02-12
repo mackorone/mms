@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Param.h"
 #include "Mouse.h"
 
 namespace sim {
@@ -7,8 +8,12 @@ namespace sim {
 class MouseInterface {
 
 public:
-    MouseInterface(Mouse* mouse, int* sleepTime, bool* paused, bool* undoRequested, bool* resetRequested);
+    MouseInterface(Mouse* mouse);
     ~MouseInterface();
+
+    // TODO: List of sensor interfaces
+    // TODO: List of wheel interfaces
+
 
     // ---------------------- Mouse Interfact Methods ----------------------- //
 
@@ -34,10 +39,6 @@ public:
 
 private:
     Mouse* m_mouse;
-    int* m_sleepTime;
-    bool* m_paused;
-    bool* m_undoRequested;
-    bool* m_resetRequested;
 };
 
 } // namespace sim

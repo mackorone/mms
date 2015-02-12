@@ -12,13 +12,10 @@ class MouseParser {
 
 public:
     MouseParser();
-    float getHeight();
-    float getTorque();
-    float getDiameter();
-	float floatConvert(const char* numValue);
-    std::vector<std::vector<float>> getWheels();
-    std::vector<std::vector<float>> getSensors();
-    std::vector<std::pair<float, float>> getShape();
+    // TODO: SOM
+    // TODO: Get Left Wheel Width and Radius
+    // TODO: Get Right Wheel Width and Radius
+    // TODO: Get Body Polygon (encodes startin position info)
 
 private:
     pugi::xml_document doc;

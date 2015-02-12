@@ -2,6 +2,8 @@
 
 namespace sim {
 
+// TODO: SOM
+/*
 MouseParser::MouseParser() {
     pugi::xml_parse_result result = doc.load_file("./myRobot.xml");
     if (!result) {
@@ -90,5 +92,6 @@ std::vector<std::vector<float>> MouseParser::getSensors() {
 
     return sensorSpecs;
 }
+*/
 
 } // namespace sim

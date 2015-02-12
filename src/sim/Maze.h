@@ -10,15 +10,15 @@ namespace sim {
 class Maze {
 
 public:
-    Maze(int width, int height, std::string mazeFileDirPath = "", std::string mazeFile = "");
-    ~Maze();
+    Maze();
 
-    int getWidth();
-    int getHeight();
+    int getWidth(); // TODO: Needed?
+    int getHeight(); // TODO: Needed?
     Tile* getTile(int x, int y);
     void resetColors(int curX, int curY); // Resets the colors of the maze
 
 private:
+    // TODO: We shouldn't need this...
     // Vector to hold all of the tiles
     std::vector<std::vector<Tile>> m_maze;
     
@@ -38,7 +38,7 @@ private:
     // Break down a wall
     void setWall(int x, int y, int direction, bool value);
 
-    // 
+    // TODO: Refactor this...
     void breakGradientWall();
     void addMinPeg();
     void surroundCenter();

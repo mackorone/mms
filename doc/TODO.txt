@@ -1,23 +1,30 @@
 High Priority
 =============
-- Autogenerate makefile dependencies
-- Parameters File (Mitch and Tomasz)
+- Synchronization documentation between the World, Graphics, and Mouse 
+- Make Sensor and Motor abstract, support different types
+- Change float to units
+- Figure out how the discrete and continuous interfaces can coexist
 - Maze Validation (Tomasz)
 - Pass things by reference when possible
-- Make a distinction between the mouse interfact and sim interface
-- Sim code should match the bot code *exactly*
-- Dual screen! (mini-map and zoomed-in view)
+- Make a distinction between the mouse interface and sim interface
 
 Medium Priority
 ===============
+- New maze w/o restarting app
 - Ensure that any file can be loaded regardless of maze size specification - output an error
 - Make terminal style output at bottom or right of window
 - Display another window of the robot's perception
 - Make the shortest path look a little better
 - Rewrite the Makefile to use an "inc" directory
+- XML file for algorithm choice
+- Indicator of sim speed
+- Support more than two wheels
+- Sim code should match the bot code *exactly*
+- Dual screen! (mini-map and zoomed-in view - 1x1, 3x3, relative and absolute rotation)
 
 Low Priority
 ===============
+- Sprinkle Assertions everywhere
 - Make the mouse look prettier (draw black box around, or something)
 - Handle the case when target tile is unreachable - it just crashes right now
 - Ensure that all tiles are reachable in a randomly generated maze
@@ -32,51 +39,3 @@ Low Priority
 Version 2.0
 ===========
 - Make this a more realistic simulation by allowing angles, adding sensors, etc.
-
-[Jon/Tomasz]
-- Maze Creation
-    - Randomly generated maze that follows contest rules
-    - Use heuristics or options to create realistic mazes
-    - Develop a file format for the maze (.maz)
-        - Write input/output functions for these files
-    - GUI for creating maze (use what's already available)
-
-[Mitchell]
-- Robot Creation
-    - Figure out what assumptions to make about Robots
-    - Motor file (.motor) (torque, relationship to wheel)
-    - Layer file (.layer)
-        - Wheel file (.wheel) -> Parameter in .rob
-        - Sensor file (.sensor) -> Parameter in .rob
-        - Roller file (.roller) -> Parameter in .rob
-    - Assembly file (.rob)
-        - Size/shape
-        - Center of mass
-        - Points of contact with the ground
-        - Torque
-        - Friction
-        - Others
-    - Verification of valid robot (assembly fits together)
-    - The parameters should be specific in 3-space, despite the 2D vizualization
-    - GUI for creating robots
-    - Algorithm/Arduino interface
-
-[Sam]
-- Graphics/Simulation work
-    - Develop a small library of graphics functions
-        - Shapes
-        - Colors
-    - Maximize efficiency of simulation
-        - Ensure graphic are 2D and not 3D
-    - Complex visual features
-        - Blurring
-    - Develop rudimentary physics environment
-        - Simulation Timer
-            - Framerate independence
-        - Collision Detection
-        - Interaction of forces
-            - Motors
-            - Friction
-            - Restitution
-        - Maintaining position of walls, robot
-    - Algorithm/Arduino interface (backend)

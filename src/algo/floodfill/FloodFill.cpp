@@ -767,8 +767,8 @@ void FloodFill::explore(){
             // accidentally assign it a maximum distance value, since we assign
             // these values based on whether or not a Cell was explored or not.
             // Note that there is no danger of setting an unreachable Cell as
-            // explored, since an unreachable cell will be pushed onto the stack
-            // in the first place.
+            // explored, since an unreachable cell will never be pushed onto the
+            // stack in the first place.
 
             if (allWallsInspected){
                 target->setExplored(true);

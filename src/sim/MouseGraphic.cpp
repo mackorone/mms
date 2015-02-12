@@ -1,57 +1,41 @@
 #include "MouseGraphic.h"
 
 #include "Constants.h"
-#include "GraphicsTools.h"
+#include "Param.h"
 #include "Mouse.h"
-#include "Parameters.h"
+#include "units/Cartesian.h"
+#include "Utilities.h"
 
 namespace sim{
 
-MouseGraphic::MouseGraphic(Mouse* mouse) : m_mouse(mouse), m_color(BLUE)
-{ }
-
-MouseGraphic::~MouseGraphic()
-{ }
-
-void MouseGraphic::draw(){
-    // TODO: Make mouse have a float value for rotation, use that instead of cardinal directions
-
-    int tileX = m_mouse->getX();
-    int tileY = m_mouse->getY();
-
-    int tileLength = UNITS_PER_TILE * PIXELS_PER_UNIT;
-
-    // Lower left corner
-    float c1X = (tileLength * tileX) + 2*PIXELS_PER_UNIT;
-    float c1Y = (tileLength * tileY) + 2*PIXELS_PER_UNIT;
-    
-    // Upper right corner
-    float c2X = (tileLength * (tileX+1)) - 2*PIXELS_PER_UNIT;
-    float c2Y = (tileLength * (tileY+1)) - 2*PIXELS_PER_UNIT;
-    
-    float dirC1X = c1X;
-    float dirC1Y = c1Y;
-    float dirC2X = c2X;
-    float dirC2Y = c2Y;
-
-    c1X = convertHorizontalPoint(c1X);
-    c1Y = convertVerticalPoint(c1Y);
-    c2X = convertHorizontalPoint(c2X);
-    c2Y = convertVerticalPoint(c2Y);
-
-    m_mouse->inGoal() ? glColor3fv(DARKGREEN) : glColor3fv(m_color);
-    glBegin(GL_POLYGON);
-        glVertex2f(c1X, c1Y);
-        glVertex2f(c1X, c2Y);
-        glVertex2f(c2X, c2Y);
-        glVertex2f(c2X, c1Y);
-    glEnd();
-
-    drawDirection(dirC1X, dirC1Y, dirC2X, dirC2Y);
+MouseGraphic::MouseGraphic(Mouse* mouse) : m_mouse(mouse), m_color(BLUE) {
 }
 
-void MouseGraphic::drawDirection(float c1X, float c1Y, float c2X, float c2Y){
+void MouseGraphic::draw() {
 
+    glColor3fv(m_color);
+
+    // We draw in reverse order so that the body of the mouse appears over the
+    // wheels and not the other way around
+    for (int i = m_mouse->getShapes().size() - 1; i >= 0 ; i -= 1) {
+        if (i > 0) {
+            glColor3fv(GREEN);
+        }
+        else {
+            glColor3fv(m_color);
+        }
+        Polygon p = m_mouse->getShapes().at(i);
+        drawPolygon(physicalToOpenGl(p));
+    }
+    //drawDirection(dirC1X, dirC1Y, dirC2X, dirC2Y);
+}
+
+#if(0)
+void MouseGraphic::drawDirection(float c1X, float c1Y, float c2X, float c2Y) {
+
+    // TODO
+
+    /*
     float p1X = 0;
     float p1Y = 0;
     float p2X = 0;
@@ -59,7 +43,7 @@ void MouseGraphic::drawDirection(float c1X, float c1Y, float c2X, float c2Y){
     float p3X = 0;
     float p3Y = 0;
 
-    switch(m_mouse->getDirection()){
+    switch(m_mouse->getDirection()) {
         case NORTH:
             p1X = (3*c1X + c2X)/4;
             p1Y = (c1Y + c2Y)/2;
@@ -107,6 +91,8 @@ void MouseGraphic::drawDirection(float c1X, float c1Y, float c2X, float c2Y){
         glVertex2f(p2X, p2Y);
         glVertex2f(p3X, p3Y);
     glEnd();
+    */
 }
+#endif
 
 } // namespace sim

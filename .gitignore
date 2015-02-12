@@ -1,7 +1,6 @@
-# Ingore the build directories, as well as the "auto_generated_maze.maz" file
 bin/
 obj/
-src/maze_files/auto_generated_maze.maz
+*auto_generated_maze.maz
 *.swp
 
 ##################### Ignore Visual Studio temporary files, build results, and ################

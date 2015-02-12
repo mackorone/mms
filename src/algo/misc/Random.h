@@ -10,8 +10,3 @@ public:
 private:
 
 };
-<<<<<<< HEAD:src/algo/Random.h
-
-//#endif // RANDOM_H_
-=======
->>>>>>> origin/two:src/algo/misc/Random.h

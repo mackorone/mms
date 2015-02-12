@@ -1,117 +1,154 @@
+#include "Mouse.h"
+
+#include <cmath>
 #include <iostream>
 
-#include "Mouse.h"
 #include "Constants.h"
+#include "Utilities.h"
 
-namespace sim{
+#include "units/MetersPerSecond.h"
+#include "units/Polar.h"
 
-Mouse::Mouse(Maze* maze) : m_maze(maze), m_mousePosX(0), m_mousePosY(0),
-                           m_mouseDirection(NORTH), m_mouseRotation(0.0){
+namespace sim {
 
-    m_mouseVertices.push_back(std::make_pair(1,1));
-    m_mouseVertices.push_back(std::make_pair(3,1));
-    m_mouseVertices.push_back(std::make_pair(2,3));
+Mouse::Mouse() : m_translation(Cartesian(0, 0)), m_rotation(Radians(0)),
+        m_rightWheel(Meters(0.02), Meters(0.025), Cartesian(P()->wallLength() + P()->wallWidth() - 0.06, 0.085)),
+        m_leftWheel(Meters(0.02), Meters(0.025), Cartesian(0.06, 0.085)) {
+
+    // TODO: Read in a mouse file here
+    // TODO: Validate the contents of the mouse file (like valid mouse starting position)
+    // TODO: Right now, the size of the mouse is dependent on the size of the maze- we should fix this...
+    // TODO: SOM
+
+    // Create the vertices for the mouse
+    std::vector<Cartesian> vertices;
+    vertices.push_back(Cartesian(0.06, 0.06));
+    vertices.push_back(Cartesian(0.06, P()->wallLength() + P()->wallWidth() - 0.06));
+    vertices.push_back(Cartesian(P()->wallLength() + P()->wallWidth() - 0.06, P()->wallLength() + P()->wallWidth() - 0.06));
+    vertices.push_back(Cartesian(P()->wallLength() + P()->wallWidth() - 0.06, 0.06));
+    m_body.setVertices(vertices);
 }
 
-Mouse::~Mouse()
-{ }
+// TODO: Shouldn't need this method
+Cartesian Mouse::getTranslation() const {
 
-int Mouse::getX(){
-    return m_mousePosX;
+    Cartesian centerOfMass((m_rightWheel.getPosition().getX() + m_leftWheel.getPosition().getX())/2.0, m_rightWheel.getPosition().getY());
+    Polar vec(centerOfMass.getRho(), m_rotation.getRadians() + centerOfMass.getTheta()); // The current rotation vector
+    Cartesian disp(vec.getX() - centerOfMass.getX(), vec.getY() - centerOfMass.getY());
+
+    return Cartesian(m_translation.getX() - disp.getX(), m_translation.getY() - disp.getY());
 }
 
-int Mouse::getY(){
-    return m_mousePosY;
+// TODO: Better interface for polygons
+std::vector<Polygon> Mouse::getShapes() const {
+
+    // Create the shapes vector
+    std::vector<Polygon> shapes;
+
+    // The mouse body
+    shapes.push_back(m_body);
+
+    // TODO: We really only need to do this logic once
+    // TODO: This is *really* ugly... fix this...
+    // Right wheel
+    std::vector<Cartesian> rightWheelPolygon;
+
+    Meters rightWheelHalfWidth = m_rightWheel.getWidth() / 2.0;
+    Meters rightWheelRadius = m_rightWheel.getRadius();
+    Cartesian rightWheelPosition = m_rightWheel.getPosition();
+
+    rightWheelPolygon.push_back(rightWheelPosition + Cartesian(
+        (rightWheelHalfWidth * -1).getMeters(), (rightWheelRadius * -1).getMeters()));
+    rightWheelPolygon.push_back(rightWheelPosition + Cartesian(
+        (rightWheelHalfWidth * -1).getMeters(), (rightWheelRadius *  1).getMeters()));
+    rightWheelPolygon.push_back(rightWheelPosition + Cartesian(
+        (rightWheelHalfWidth *  1).getMeters(), (rightWheelRadius *  1).getMeters()));
+    rightWheelPolygon.push_back(rightWheelPosition + Cartesian(
+        (rightWheelHalfWidth *  1).getMeters(), (rightWheelRadius * -1).getMeters()));
+
+    Polygon rightPoly;
+    rightPoly.setVertices(rightWheelPolygon);
+    shapes.push_back(rightPoly);
+
+    // Left wheel
+    std::vector<Cartesian> leftWheelPolygon;
+
+    Meters leftWheelHalfWidth = m_leftWheel.getWidth() / 2.0;
+    Meters leftWheelRadius = m_leftWheel.getRadius();
+    Cartesian leftWheelPosition = m_leftWheel.getPosition();
+
+    leftWheelPolygon.push_back(leftWheelPosition + Cartesian(
+        (leftWheelHalfWidth * -1).getMeters(), (leftWheelRadius * -1).getMeters()));
+    leftWheelPolygon.push_back(leftWheelPosition + Cartesian(
+        (leftWheelHalfWidth * -1).getMeters(), (leftWheelRadius *  1).getMeters()));
+    leftWheelPolygon.push_back(leftWheelPosition + Cartesian(
+        (leftWheelHalfWidth *  1).getMeters(), (leftWheelRadius *  1).getMeters()));
+    leftWheelPolygon.push_back(leftWheelPosition + Cartesian(
+        (leftWheelHalfWidth *  1).getMeters(), (leftWheelRadius * -1).getMeters()));
+
+    Polygon leftPoly;
+    leftPoly.setVertices(leftWheelPolygon);
+    shapes.push_back(leftPoly);
+
+    // TODO : Clear this
+    std::vector<Polygon> adjustedShapes;
+    for (int i = 0; i < shapes.size(); i += 1) {
+        adjustedShapes.push_back(shapes.at(i).rotate(m_rotation).translate(getTranslation()));
+    }
+    return adjustedShapes;
 }
 
-int Mouse::getDirection(){
-    return m_mouseDirection;
-}
+void Mouse::update(const Time& elapsed) {
 
-float Mouse::getRotation(){
-    return m_mouseRotation;
-}
+    // The "elapsed" argument signifies how much time has passed since our last update. Thus
+    // we should adjust the mouses position so that it's where it would be after moving for
+    // the "elapsed" duration.
 
-std::vector<std::pair<int,int>> Mouse::getVertices(){
-    return m_mouseVertices;
-}
+    // TODO: Document this...
 
-
-bool Mouse::inGoal(){
-
-    // The goal is defined to be the center of the maze 
-    // This means that it's 4 squares of length if even, 1 if odd
+    // Left wheel
+    MetersPerSecond dtl(m_leftWheel.getAngularVelocity().getRadiansPerSecond() * m_leftWheel.getRadius().getMeters());
     
-    bool horizontal = (m_maze->getWidth() - 1) / 2 == getX();
-    if (m_maze->getWidth() % 2 == 0){
-        horizontal = horizontal || (m_maze->getWidth()) / 2 == getX();
-    }
+    // Right wheel
+    MetersPerSecond dtr(m_rightWheel.getAngularVelocity().getRadiansPerSecond() * m_rightWheel.getRadius().getMeters());
 
-    bool vertical = (m_maze->getHeight() - 1) / 2 == getY();
-    if (m_maze->getHeight() % 2 == 0){
-        vertical = vertical || (m_maze->getHeight()) / 2 == getY();
-    }
+    float BASELINE(m_rightWheel.getPosition().getX() - m_leftWheel.getPosition().getX());
+    Radians theta((dtr.getMetersPerSecond() - (-dtl.getMetersPerSecond())) / BASELINE * elapsed.getSeconds());
+    m_rotation = m_rotation + theta;
 
-    return horizontal && vertical;
+    /*
+    Cartesian WHEEL_CENTER(BASELINE, m_rightWheel.getPosition().getY());
+    Polar vec(WHEEL_CENTER.getRho(), m_rotation.getRadians() + WHEEL_CENTER.getTheta()); // The current displacement vector
+
+    Cartesian disp(vec.getX() - WHEEL_CENTER.getX(), vec.getY() - WHEEL_CENTER.getY());
+    */
+
+    // TODO: Direction...
+    Meters distance((-0.5 * dtl.getMetersPerSecond() + 0.5 * dtr.getMetersPerSecond()) * elapsed.getSeconds());
+    m_translation = m_translation + Polar(distance.getMeters(), M_PI / 2.0 + m_rotation.getRadians()); // TODO
+
+    //m_translation = Cartesian(m_translation.getX() + disp.getX(), m_translation.getY() + disp.getY());
+
 }
 
-
-bool Mouse::wallFront(){
-    return m_maze->getTile(m_mousePosX, m_mousePosY)->isWall(m_mouseDirection);
+// TODO... better interface
+Wheel* Mouse::getRightWheel() {
+    return &m_rightWheel;
 }
 
-bool Mouse::wallRight(){
-    return m_maze->getTile(m_mousePosX, m_mousePosY)->isWall((m_mouseDirection+1)%4);
+Wheel* Mouse::getLeftWheel() {
+    return &m_leftWheel;
 }
 
-bool Mouse::wallLeft(){
-    // Modulo operations don't work for negative numbers, so we add 3 instead
-    return m_maze->getTile(m_mousePosX, m_mousePosY)->isWall((m_mouseDirection+3)%4);
+/*
+void Mouse::stepBoth() {
+    m_leftWheel.rotate(Radians(M_PI/100.0));
+    m_rightWheel.rotate(Radians(M_PI/100.0));
 }
-
-void Mouse::moveForward(){
-    if (!wallFront()){
-        switch(m_mouseDirection){
-            case NORTH:
-                m_mousePosY += 1;
-                break;
-            case EAST:
-                m_mousePosX += 1;
-                break;
-            case SOUTH:
-                m_mousePosY -= 1;
-                break;
-            case WEST:
-                m_mousePosX -= 1;
-                break;
-        }
-        m_maze->getTile(m_mousePosX, m_mousePosY)->incrementPasses();
-    }
-    else{
-        // Ideally we could communicate the fact that the mouse ran into a wall
-        // from within the simulation graphic itself; I will look into this at
-        // some point in the future // TODO
-        std::cout << "*bump*" << std::endl;
-    }
+void Mouse::update() {
+    Radians leftRotation = m_leftWheel.popRotation();
+    Radians rightRotation = m_rightWheel.popRotation();
 }
-
-void Mouse::turnRight(){
-    m_mouseDirection = (m_mouseDirection + 1) % 4;
-}
-
-void Mouse::turnLeft(){
-    // Modulo operations don't work with subtraction
-    m_mouseDirection = (m_mouseDirection + 3) % 4;
-}
-
-void Mouse::resetPosition(){
-    m_mousePosX = 0;
-    m_mousePosY = 0;
-    m_mouseDirection = NORTH;
-}
-
-void Mouse::resetColors(int curX, int curY){
-    m_maze->resetColors(curX, curY);
-}
+*/
 
 } // namespace sim

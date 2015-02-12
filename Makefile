@@ -1,22 +1,17 @@
-###############################################################################
-#                              Program Specifics                              #
-###############################################################################
-
 # Program name
 PROGRAM = MMSim
 
+# Any external libraries
 LIBS = -lGL -lglut -lGLU
 
-###############################################################################
-#                     Don't edit code any below this line                     #
-###############################################################################
-
 # Flags
+# -std=c++11: Use the C++11 standard
+# -MMD: Automatically generate dependency files
 # -g: Add debugging symbols
 # -Os: Optimize code for size
-# -std=c++11: Use the C++11 standard
 # -Wall: Show all warning messages
-FLAGS = -Os -std=c++11 #-Wall TODO: Turn this back on and get rid of all warnings
+# TODO: -pedantic-errors
+FLAGS = -MMD -std=c++11#-Os TODO: We can optimize later... #-Wall TODO: Fix all errors
 
 # Directories
 SRC = ./src/
@@ -53,9 +48,9 @@ $(OBJ)%.o: $(SRC)%.cpp
 	$(CXX) -c $(FLAGS) $< -o $@
 
 # Make 'clean' instructions
-# 'dir' gets the directories of the object files
-# 'sort' sorts the directories and removes duplicates
-# 'add' is pretty self-explanatory 
 clean:
-	rm -f $(addprefix $(OBJ), $(addsuffix *.o, $(sort $(dir $(OBJECTS)))))
-	rm -f $(BIN)*
+	rm -rf $(OBJ)
+	rm -rf $(BIN)
+
+# Include all of our dependency files, if they exist
+-include $(addprefix $(OBJ),$(SOURCES:.cpp=.d))

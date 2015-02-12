@@ -1,70 +1,40 @@
+#include <algorithm>
 #include <GL/freeglut.h>
 #include <iostream>
 #include <thread>
 
-#include "sim/Constants.h"
+#include "algo/Solver.h"
+#include "sim/Param.h"
 #include "sim/Maze.h"
-#include "sim/MazeFileUtilities.h"
 #include "sim/MazeGraphic.h"
 #include "sim/Mouse.h"
 #include "sim/MouseGraphic.h"
 #include "sim/MouseInterface.h"
-#include "sim/Parameters.h"
-#include "sim/Tile.h"
-#include "sim/Sleep.h"
-#include "sim/ParameterParser.h"
-#include "algo/Solver.h"
+#include "sim/State.h"
+#include "sim/units/Seconds.h"
+#include "sim/Utilities.h"
+#include "sim/World.h"
 
-// Test Comment
-/*
-//Initialize simulation parameters
-sim::parameterParser parser;
-sim::SLEEP_TIME_MIN = parser.getValue("SLEEP_TIME_MIN");
-sim::SLEEP_TIME_MAX = parser.getValue("SLEEP_TIME_MAX");
-sim::MAZE_WIDTH = parser.getValue("MAZE_WIDTH");
-sim::MAZE_HEIGHT = parser.getValue("MAZE_HEIGHT");
-sim::MAX_DISTANCE = MAZE_WIDTH * MAZE_HEIGHT;
-sim::MAZE_FILE = parser.getMazeFile();
-sim::MIN_MAZE_STEPS = parser.getValue("MIN_MAZE_STEPS");
-
-//Initialize Graphics Parameters
-sim::PIXELS_PER_UNIT = parser.getValue("PIXELS_PER_UNIT");
-sim::UNITS_PER_TILE = parser.getValue("UNITS_PER_TILE");
-sim::WINDOW_WIDTH = MAZE_WIDTH * UNITS_PER_TILE * PIXELS_PER_UNIT;
-sim::WINDOW_HEIGHT = MAZE_HEIGHT * UNITS_PER_TILE * PIXELS_PER_UNIT;
-*/
 // Function declarations
 void draw();
 void solve();
+void simulate();
 void keyInput(unsigned char key, int x, int y);
 
 // Global object variable declarations
 Solver* g_solver;
+sim::World* g_world;
+// TODO: Graphic object...
 sim::MazeGraphic* g_mazeGraphic;
 sim::MouseGraphic* g_mouseGraphic;
 
-// Global primitive variable declarations
-static /*non-const*/ bool PAUSED = false; // Initially set to false  
-static /*non-const*/ int SLEEP_TIME = 150; // ms between simulation steps
-static /*non-const*/ bool UNDO_REQUESTED = false; // Whether or not an undo was requested
-static /*non-const*/ bool RESET_REQUESTED = false; // Whether or not a reset was requested
-
 int main(int argc, char* argv[]) {
-    
-    // TODO: Read in the parameters from the parameters file
-
-    // TODO: read input file, and check size, use this as value instead of parameter
-
-    // Ensure that the size parameters are valid
-    if (sim::MAZE_WIDTH < 1 || sim::MAZE_HEIGHT < 1){
-        std::cout << "Impossible maze size - check \"src/sim/Parameters.h\"" << std::endl;
-        return 0;
-    }
 
     // Initialize local simulation objects
-    sim::Maze maze(sim::MAZE_WIDTH, sim::MAZE_HEIGHT, sim::getMazeFileDirPath(), sim::MAZE_FILE);
-    sim::Mouse mouse(&maze);
-    sim::MouseInterface mouseInterface(&mouse, &SLEEP_TIME, &PAUSED, &UNDO_REQUESTED, &RESET_REQUESTED);
+    sim::Maze maze;
+    sim::Mouse mouse;
+    sim::World world(&maze, &mouse);
+    sim::MouseInterface mouseInterface(&mouse);
     Solver solver(&mouseInterface);
 
     // Initialize the local graphics objects
@@ -72,68 +42,91 @@ int main(int argc, char* argv[]) {
     sim::MouseGraphic mouseGraphic(&mouse);
 
     // Assign global variables
+    g_world = &world;
     g_solver = &solver;
     g_mazeGraphic = &mazeGraphic;
     g_mouseGraphic = &mouseGraphic;
 
     // GLUT Initialization
     glutInit(&argc, argv);
-    glutInitWindowSize(sim::WINDOW_WIDTH, sim::WINDOW_HEIGHT);
+    glutInitWindowSize(sim::P()->windowWidth(), sim::P()->windowHeight());
     glutInitDisplayMode(GLUT_RGBA);
     glutInitWindowPosition(0, 0);
-    glutCreateWindow(sim::MAZE_FILE.c_str());
-    glClearColor(0.0,0.0,0.0,1.0);
+    glutCreateWindow(sim::P()->mazeFile().c_str()); // TODO: mazeFile could be wrong/invalid???
+    glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
     glutDisplayFunc(draw);
     glutKeyboardFunc(keyInput);
 
-    // Start the solving loop (the name "first" is not important)
-    std::thread first(solve);
+    // Start the physics loop
+    std::thread physicsThread(simulate);
     
-    // Start the graphics loop (which never terminates)
+    // Start the solving loop
+    std::thread solvingThread(solve);
+    
+    // Start the graphics loop
     glutMainLoop();
 }
 
-// Draw method for the GLUT environment
-void draw(){
+void draw() {
+
+    // In order to ensure we're sleeping the correct amount of time, we time
+    // the drawing operation and take it into account when we sleep.
+    std::clock_t start = std::clock();
+
+    // Draw the maze and mouse
     glClear(GL_COLOR_BUFFER_BIT);
     g_mazeGraphic->draw();
     g_mouseGraphic->draw();
+
+    // Flushes all draws/updates to the screen
     glFlush();
-    sim::sleep(sim::SLEEP_TIME_MIN); // Reduces CPU usage
+
+    // The duration of the drawing operation, inseconds
+    float duration = (std::clock() - start) / static_cast<float>(CLOCKS_PER_SEC);
+
+    // Sleep the appropriate amout of time, base on the drawing duration
+    sim::sleep(sim::Seconds(std::max(0.0, 1.0/sim::P()->frameRate() - duration)));
+
+    // Request to execute the draw function again
     glutPostRedisplay();
 }
 
-void solve(){
-    sim::sleep(250); // Wait for 0.25 seconds for GLUT to intialize
+void solve() {
+    sim::sleep(sim::Seconds(sim::P()->glutInitTime()));
     g_solver->solve();
 }
 
-void keyInput(unsigned char key, int x, int y){
-    if (key == 32){ // Space bar
-        PAUSED = !PAUSED;
+void simulate() {
+    sim::sleep(sim::Seconds(sim::P()->glutInitTime()));
+    g_world->simulate();
+}
+
+void keyInput(unsigned char key, int x, int y) {
+    if (key == 32) { // Space bar
+        sim::S()->setPaused(!sim::S()->paused());
     }
-    else if (key == 'f' || key == 'F'){ // Faster
-        SLEEP_TIME /= 1.15;
-        if (SLEEP_TIME < sim::SLEEP_TIME_MIN){
-            SLEEP_TIME = sim::SLEEP_TIME_MIN;
+    else if (key == 'f' || key == 'F') { // Faster
+        sim::S()->setSimSpeed(sim::S()->simSpeed() / 1.5);
+        if (sim::S()->simSpeed() < sim::P()->minSimSpeed()) {
+            sim::S()->setSimSpeed(sim::P()->minSimSpeed());
         }
     }
-    else if (key == 's' || key == 'S'){ // Slower
-        SLEEP_TIME *= 1.2;
-        if (SLEEP_TIME > sim::SLEEP_TIME_MAX){
-            SLEEP_TIME = sim::SLEEP_TIME_MAX;
+    else if (key == 's' || key == 'S') { // Slower
+        sim::S()->setSimSpeed(sim::S()->simSpeed() * 1.5);
+        if (sim::S()->simSpeed() > sim::P()->maxSimSpeed()) {
+            sim::S()->setSimSpeed(sim::P()->maxSimSpeed());
         }
     }
-    else if (key == 'u' || key == 'U'){
+    else if (key == 'u' || key == 'U') {
         // Undo request - reset the position mouse but retains memory
-        UNDO_REQUESTED = true;
+        sim::S()->setUndoRequested(true);
     }
-    else if (key == 'r' || key == 'R'){
+    else if (key == 'r' || key == 'R') {
         // Reset requested - reset the position mouse and don't retain memory
-        RESET_REQUESTED = true;
+        sim::S()->setResetRequested(true);
     }
-    else if (key == 'q' || key == 'Q'){ // Quit
+    else if (key == 'q' || key == 'Q') { // Quit
         exit(0);
     }
 }

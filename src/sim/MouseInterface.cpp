@@ -2,92 +2,113 @@
 
 #include <GL/freeglut.h>
 
-#include "Parameters.h"
-#include "Sleep.h"
+#include "Param.h"
+#include "State.h"
+#include "units/Meters.h"
+#include "units/MetersPerSecond.h"
+#include "units/Milliseconds.h"
+#include "units/Seconds.h"
+#include "Utilities.h"
 
-namespace sim{
+namespace sim {
 
-MouseInterface::MouseInterface(Mouse* mouse, int* sleepTime, bool* paused, bool* undoRequested,
-                                                                           bool* resetRequested) : 
-        m_mouse(mouse), m_sleepTime(sleepTime), m_paused(paused),
-        m_undoRequested(undoRequested), m_resetRequested(resetRequested)
+// TODO: Should interface to sensor
+MouseInterface::MouseInterface(Mouse* mouse) : m_mouse(mouse)
 { }
 
 MouseInterface::~MouseInterface()
 { }
 
-bool MouseInterface::wallFront(){
-    return m_mouse->wallFront();
+bool MouseInterface::wallFront() {
+    //return m_mouse->wallFront();
+    return false;
 }
 
-bool MouseInterface::wallRight(){
-    return m_mouse->wallRight();
+bool MouseInterface::wallRight() {
+    //return m_mouse->wallRight();
+    return false;
 }
 
-bool MouseInterface::wallLeft(){
-    return m_mouse->wallLeft();
+bool MouseInterface::wallLeft() {
+    //return m_mouse->wallLeft();
+    return false;
 }
 
-void MouseInterface::moveForward(){
+void MouseInterface::moveForward() {
+
+    // TODO: Acceleration
+
+    // Implement the sleeping here
+    /*
+    Meters distance(P()->wallLength() + P()->wallWidth());
+    MetersPerSecond speed(1.0);
+    Seconds duration(distance/speed);
+
+    int numSteps = 10; // TODO this is hard coded now
     
-    for (int i = 0; i < *m_sleepTime; i += 1) {
-        while (*m_paused) {sim::sleep(1);} // Sleep while paused
-        sim::sleep(1); // Sleep for 1 ms of the total m_sleepTime
+    for (int i = 0; i < numSteps; i += 1) {
+        while (S()->paused()) {
+            sim::sleep(Milliseconds(1)); // Sleep while paused
+        }
+        m_mouse->moveForward(distance.getMeters()/numSteps);
+        sim::sleep(Seconds(duration.getSeconds()/numSteps));
     }
-
-    // Move the mouse forward
-    m_mouse->moveForward();
+    */
 }
 
-void MouseInterface::turnRight(){
+void MouseInterface::turnRight() {
 
-    for (int i = 0; i < *m_sleepTime; i += 1) {
-        while (*m_paused) {sim::sleep(1);} // Sleep while paused
+    /*
+    for (int i = 0; i < S()->simSpeed(); i += 1) {
+        while (S()->paused()) {sim::sleep(1);} // Sleep while paused
         sim::sleep(1); // Sleep for 1 ms of the total m_sleepTime
     }
 
     // Move the mouse forward
     m_mouse->turnRight();
+    */
 }
 
-void MouseInterface::turnLeft(){
+void MouseInterface::turnLeft() {
 
-    for (int i = 0; i < *m_sleepTime; i += 1) {
-        while (*m_paused) {sim::sleep(1);} // Sleep while paused
+    /*
+    for (int i = 0; i < S()->simSpeed(); i += 1) {
+        while (S()->paused()) {sim::sleep(1);} // Sleep while paused
         sim::sleep(1); // Sleep for 1 ms of the total m_sleepTime
     }
 
     // Move the mouse forward
     m_mouse->turnLeft();
+    */
 }
 
-void MouseInterface::turnAround(){
+void MouseInterface::turnAround() {
     turnRight();
     turnRight();
 }
 
-bool MouseInterface::undoRequested(){
-    return *m_undoRequested;
+bool MouseInterface::undoRequested() {
+    return S()->undoRequested();
 }
 
-bool MouseInterface::resetRequested(){
-    return *m_resetRequested;
+bool MouseInterface::resetRequested() {
+    return S()->resetRequested();
 }
 
-void MouseInterface::undoHonored(){
-    *m_undoRequested = false;
+void MouseInterface::undoHonored() {
+    S()->setUndoRequested(false);
 }
 
-void MouseInterface::resetHonored(){
-    *m_resetRequested = false;
+void MouseInterface::resetHonored() {
+    S()->setResetRequested(false);
 }
 
 void MouseInterface::resetPosition() {
-    m_mouse->resetPosition();    
+    //m_mouse->resetPosition();    
 }
 
 void MouseInterface::resetColors(int curX, int curY) {
-    m_mouse->resetColors(curX, curY);
+    //m_mouse->resetColors(curX, curY);
 }
 
 } // namespace sim
