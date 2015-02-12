@@ -128,7 +128,7 @@ this.
 
 -------------------------------------------------------------------------------
 
-Available Mouse Commands
+Available Mouse Commands (TODO)
 ========================
 
 For users writing their own algorithms, they should call any one of the

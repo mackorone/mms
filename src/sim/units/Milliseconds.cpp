@@ -3,7 +3,7 @@
 namespace sim {
 
 Milliseconds::Milliseconds(float milliseconds) {
-    m_seconds = milliseconds / 1000;
+    m_seconds = milliseconds / 1000.0;
 }
 
 Milliseconds::Milliseconds(const Time& time) {

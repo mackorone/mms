@@ -22,9 +22,11 @@ public:
     int windowHeight();
 
     // Simulation parameters
-    int glutInitTime();
-    int minSimSpeed();
-    int maxSimSpeed();
+    int randomSeed();
+    float glutInitTime();
+    float minSimSpeed();
+    float maxSimSpeed();
+    float defaultSimSpeed();
 
     // Maze parameters
     std::string mazeDirectory();
@@ -53,9 +55,11 @@ private:
     int m_windowHeight;
 
     // Simulation parameters
+    int m_randomSeed;
     float m_glutInitTime;
     float m_minSimSpeed;
     float m_maxSimSpeed;
+    float m_defaultSimSpeed;
 
     // Maze parameters
     std::string m_mazeDirectory;

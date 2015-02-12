@@ -20,8 +20,26 @@ void World::simulate() {
 
     while (true) {
         // TODO: Explain why locks aren't completely necessary here...
-        m_mouse->update();
+        m_mouse->update(Milliseconds(1));
         sleep(Milliseconds(.01));
+        checkCollision();
+    }
+}
+
+
+void World::checkCollision() {
+
+    // Use m_mouse, m_maze, getPolys(), etc. to determine collisition
+
+    bool collision(false);
+
+
+    // TODO: SOM
+
+
+
+    if (collision) {
+        std::cout << "COLLIDED" << std::endl;
     }
 }
 

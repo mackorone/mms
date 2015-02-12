@@ -11,20 +11,31 @@
 namespace sim {
 
 /*
-    The mouse will always start in the position drawn below. We define a
-    reference point for the mouse to be in the lower left corner of the box,
-    given by an "X" (this X is at the intersection of the middle of the
-    left and bottom walls). All of the mouse vertices are given in coordinates
-    relative to that reference point. Furthermore, the mouse translation is
-    simply the vector connecting the maze origin to the reference point.
-    Thus, by convention, at the beginning the simulation, the mouse has
-    zero translation and zero rotation.
-  
-     |         |
-     |   |^|   |
-     |  { ^ }  |
-     |   ---   |
-     X_________|
+ *                               |         |
+ *                               |    ^    |
+ *                               |  { 0 }  |
+ *                               |   ---   |
+ *                               X_________|
+ *
+ *  As per the MicroMouse rules, the robot will always start in the lower-left
+ *  corner of the maze with walls to its right, left, and rear. While, we can
+ *  safely assume that a valid mouse will fit within the confines of the box, we
+ *  can't assume anything else about the robot (including center of mass, wheel
+ *  position, location of the robot within the box, etc.). Most all other
+ *  information is left unspecified. Thus we find it convenient to choose a
+ *  reference point, labeled "X" in the above diagram, from which we can
+ *  determine the location of the mouse. Note that, initially, "X" is at the
+ *  intersection of the middle of the left and bottom walls. If we treat the
+ *  reference point "X" as if it were the mouse itself (the center of mass of
+ *  which if given by "0"), then, by keeping track of both the translation and
+ *  rotation of "X" (where the geometric relationship between "X" and the mouse,
+ *  given by "0", is constant throughout the duration of the simulation) we can
+ *  fully determine the position of the mouse. As a consequence of our choice of
+ *  "X", at the beginning of the simulation, the mouse has zero translation and
+ *  zero rotation - this seems to suggest that our choice of a reference point
+ *  is correct. Also note that this choice of "X" ensures consistency between
+ *  different mice - by pretending that "X" is the location of the mouse, all
+ *  mice start in the exact same location (zero translation, zero rotation).
  */
 
 // TODO: This class should encapsulate all things to do with mouse, including sensors
@@ -36,26 +47,24 @@ public:
     // TODO: Read in a file here???
     Mouse();
 
-    Cartesian getTranslation() const;
-    Radians getRotation() const;
-    std::vector<Polygon> getShapes() const; // The shape includes the body, wheels, and sensors
+    // Retrieve all shapes belonging to the mouse, including body, wheels, and sensors
+    std::vector<Polygon> getShapes() const;
 
-    // Update the position of the mouse, to be called by the world
-    void update(); // TODO...
+    // Instruct the mouse to update its own position based on how much simulation time has elapsed
+    void update(const Time& elapsed);
 
+    // TODO: Are these completely necessary???
     Wheel* getRightWheel();
     Wheel* getLeftWheel();
 
-    // This is for stepper motors
-    void stepRight();
-    void stepLeft();
-
 private:
-    Cartesian m_translation;
-    Radians m_rotation;
-    Polygon m_body;
+    Cartesian getTranslation() const; // TODO: Shouldn't need
 
-    // TODO: For now, assume that we'll have two wheels
+    Cartesian m_translation; // As described above, the translation of the reference point "X"
+    Radians m_rotation; // Also as described above, the rotation of the reference point "X"
+    Polygon m_body; // The vertices of the mouse, // TODO: Something about the initial position
+
+    // For now, assume that we'll have two wheels
     Wheel m_rightWheel;
     Wheel m_leftWheel;
 };

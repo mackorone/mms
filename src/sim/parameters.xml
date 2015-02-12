@@ -5,11 +5,11 @@
 <frame-rate>60</frame-rate>
 
 <!-- Simulation Parameters -->
-<random-seed>12345</random-seed><!-- TODO : Add in ALSO option to use seed or random... -->
+<random-seed>12345</random-seed> <!-- The seed value for rand() -->
 <glut-init-time>0.25</glut-init-time> <!-- Seconds -->
 <min-sim-speed>0.1</min-sim-speed> <!-- Fraction of real-time -->
 <max-sim-speed>10.0</max-sim-speed> <!-- Fraction of real-time -->
-<default-sim-speed>1.0</default-sim-speed> <!-- Fraction of real-time --> <!-- TODO Add in -->
+<default-sim-speed>1.0</default-sim-speed> <!-- Fraction of real-time -->
 
 <!-- Maze Parameters -->
 <maze-directory>src/maze_files/</maze-directory> <!-- realtive to project root -->
@@ -21,7 +21,7 @@
 <random-maze-width>16</random-maze-width> <!-- number of tiles -->
 <random-maze-height>16</random-maze-height> <!-- number of tiles -->
 <min-solution-length>40</min-solution-length> <!-- number of tiles -->
-<save-random-maze>true</save-random-maze> <!-- TODO -->
+<save-random-maze>true</save-random-maze> <!-- Whethor or not to save a random maze -->
 
-<!-- TODO -->
-<mouse-file>mouse.mse</mouse-file> <!-- TODO -->
+<!-- TODO: Add these in to Param class -->
+<mouse-file>mouse.mse</mouse-file>

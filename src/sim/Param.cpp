@@ -31,9 +31,11 @@ Param::Param() {
     m_frameRate = parser.getIntIfHasInt("frame-rate", 60);
 
     // Simulation Parameters
+    m_randomSeed = parser.getIntIfHasInt("random-seed", time(NULL));
     m_glutInitTime = parser.getFloatIfHasFloat("glut-init-time", 0.25);
     m_minSimSpeed = parser.getFloatIfHasFloat("min-sim-speed", 0.1);
     m_maxSimSpeed = parser.getFloatIfHasFloat("max-sim-speed", 10);
+    m_defaultSimSpeed = parser.getFloatIfHasFloat("default-sim-speed", 10);
 
     // Maze Parameters
     m_mazeDirectory = parser.getStringIfHasString("maze-directory", "src/maze_files/");
@@ -73,16 +75,24 @@ int Param::windowHeight() {
     return m_windowHeight;
 }
 
-int Param::glutInitTime() {
+int Param::randomSeed() {
+    return m_randomSeed;
+}
+
+float Param::glutInitTime() {
     return m_glutInitTime;
 }
 
-int Param::minSimSpeed() {
+float Param::minSimSpeed() {
     return m_minSimSpeed;
 }
 
-int Param::maxSimSpeed() {
+float Param::maxSimSpeed() {
     return m_maxSimSpeed;
+}
+
+float Param::defaultSimSpeed() {
+    return m_defaultSimSpeed;
 }
 
 std::string Param::mazeDirectory() {

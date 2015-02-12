@@ -15,6 +15,8 @@ void MouseGraphic::draw() {
 
     glColor3fv(m_color);
 
+    // We draw in reverse order so that the body of the mouse appears over the
+    // wheels and not the other way around
     for (int i = m_mouse->getShapes().size() - 1; i >= 0 ; i -= 1) {
         if (i > 0) {
             glColor3fv(GREEN);
@@ -23,10 +25,8 @@ void MouseGraphic::draw() {
             glColor3fv(m_color);
         }
         Polygon p = m_mouse->getShapes().at(i);
-        drawPolygon(physicalToOpenGl(p.rotate(m_mouse->getRotation()).translate(m_mouse->getTranslation())));
-        // TODO: Do the rotation
+        drawPolygon(physicalToOpenGl(p));
     }
-
     //drawDirection(dirC1X, dirC1Y, dirC2X, dirC2Y);
 }
 

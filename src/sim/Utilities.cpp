@@ -78,7 +78,8 @@ bool isInt(std::string str) {
 }
 
 bool isFloat(std::string str) {
-    // TODO
+    // TODO: The param parser won't work quite yet without this...
+    // TODO: SOM
     return false;
 }
 
@@ -94,7 +95,7 @@ int strToInt(std::string str) {
 
 float strToFloat(std::string str) {
     ASSERT(isFloat(str));
-    return stof(str); // TODO
+    return stof(str); // TODO: SOM - confirm that this is correct
 }
 
 
@@ -262,6 +263,7 @@ struct mazeTile {
 bool mackValid(std::string mazeFilePath) {
 
     // TODO: This should ensure a PHYSICALLY POSSIBLE MAZE
+    // TODO: SOM
     // Format requires that:
     // - File exists
     // - The correct number of rows and columns

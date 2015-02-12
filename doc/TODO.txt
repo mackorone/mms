@@ -1,14 +1,12 @@
 High Priority
 =============
-- Synchronization between the World, Graphics, and Mouse
+- Synchronization documentation between the World, Graphics, and Mouse 
 - Make Sensor and Motor abstract, support different types
 - Change float to units
+- Figure out how the discrete and continuous interfaces can coexist
 - Maze Validation (Tomasz)
 - Pass things by reference when possible
 - Make a distinction between the mouse interface and sim interface
-- Sim code should match the bot code *exactly*
-- Dual screen! (mini-map and zoomed-in view)
-- Figure out how the discrete and continuous interfaces can coexist
 
 Medium Priority
 ===============
@@ -20,6 +18,9 @@ Medium Priority
 - Rewrite the Makefile to use an "inc" directory
 - XML file for algorithm choice
 - Indicator of sim speed
+- Support more than two wheels
+- Sim code should match the bot code *exactly*
+- Dual screen! (mini-map and zoomed-in view - 1x1, 3x3, relative and absolute rotation)
 
 Low Priority
 ===============

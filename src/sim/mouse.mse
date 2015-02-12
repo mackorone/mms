@@ -1,4 +1,5 @@
-<vertices>
+// TODO: SOM
+<body>
     <vertex>
         <x>.05</x>
         <y>.05</y>
@@ -15,4 +16,4 @@
         <x>.1</x>
         <y>.05</y>
     </vertex>
-</vertices>
+</body>

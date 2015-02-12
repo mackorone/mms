@@ -14,6 +14,12 @@ namespace sim {
 Mouse::Mouse() : m_translation(Cartesian(0, 0)), m_rotation(Radians(0)),
         m_rightWheel(Meters(0.02), Meters(0.025), Cartesian(P()->wallLength() + P()->wallWidth() - 0.06, 0.085)),
         m_leftWheel(Meters(0.02), Meters(0.025), Cartesian(0.06, 0.085)) {
+
+    // TODO: Read in a mouse file here
+    // TODO: Validate the contents of the mouse file (like valid mouse starting position)
+    // TODO: Right now, the size of the mouse is dependent on the size of the maze- we should fix this...
+    // TODO: SOM
+
     // Create the vertices for the mouse
     std::vector<Cartesian> vertices;
     vertices.push_back(Cartesian(0.06, 0.06));
@@ -23,20 +29,14 @@ Mouse::Mouse() : m_translation(Cartesian(0, 0)), m_rotation(Radians(0)),
     m_body.setVertices(vertices);
 }
 
+// TODO: Shouldn't need this method
 Cartesian Mouse::getTranslation() const {
-    //return m_translation; // TODO: Left off here..., trying to get the in-place rotation to work
-    float BASELINE(m_rightWheel.getPosition().getX() - m_leftWheel.getPosition().getX());
-    Cartesian WHEEL_CENTER((m_rightWheel.getPosition().getX() + m_leftWheel.getPosition().getX())/2.0, m_rightWheel.getPosition().getY());
 
-    Polar vec(WHEEL_CENTER.getRho(), m_rotation.getRadians() + WHEEL_CENTER.getTheta()); // The current rotation vector
-    Cartesian disp(vec.getX() - WHEEL_CENTER.getX(), vec.getY() - WHEEL_CENTER.getY());
+    Cartesian centerOfMass((m_rightWheel.getPosition().getX() + m_leftWheel.getPosition().getX())/2.0, m_rightWheel.getPosition().getY());
+    Polar vec(centerOfMass.getRho(), m_rotation.getRadians() + centerOfMass.getTheta()); // The current rotation vector
+    Cartesian disp(vec.getX() - centerOfMass.getX(), vec.getY() - centerOfMass.getY());
 
-    //std::cout << m_rotation.getRadians() << std::endl;
     return Cartesian(m_translation.getX() - disp.getX(), m_translation.getY() - disp.getY());
-}
-
-Radians Mouse::getRotation() const {
-    return m_rotation;
 }
 
 // TODO: Better interface for polygons
@@ -90,16 +90,21 @@ std::vector<Polygon> Mouse::getShapes() const {
     leftPoly.setVertices(leftWheelPolygon);
     shapes.push_back(leftPoly);
 
-    return shapes;
+    // TODO : Clear this
+    std::vector<Polygon> adjustedShapes;
+    for (int i = 0; i < shapes.size(); i += 1) {
+        adjustedShapes.push_back(shapes.at(i).rotate(m_rotation).translate(getTranslation()));
+    }
+    return adjustedShapes;
 }
 
-void Mouse::update() {
-    // TODO: Note - we're going to have do some weird things with the translation here...
-    //m_translation = m_translation + Cartesian(0, 0.00001); // TODO: This is bad...
-    //m_rotation = m_rotation + Radians(0.0001);
+void Mouse::update(const Time& elapsed) {
 
-    // TODO: Time step
-    float TIMESTEP(.001);
+    // The "elapsed" argument signifies how much time has passed since our last update. Thus
+    // we should adjust the mouses position so that it's where it would be after moving for
+    // the "elapsed" duration.
+
+    // TODO: Document this...
 
     // Left wheel
     MetersPerSecond dtl(m_leftWheel.getAngularVelocity().getRadiansPerSecond() * m_leftWheel.getRadius().getMeters());
@@ -108,7 +113,7 @@ void Mouse::update() {
     MetersPerSecond dtr(m_rightWheel.getAngularVelocity().getRadiansPerSecond() * m_rightWheel.getRadius().getMeters());
 
     float BASELINE(m_rightWheel.getPosition().getX() - m_leftWheel.getPosition().getX());
-    Radians theta((dtr.getMetersPerSecond() - (-dtl.getMetersPerSecond())) / BASELINE * TIMESTEP);
+    Radians theta((dtr.getMetersPerSecond() - (-dtl.getMetersPerSecond())) / BASELINE * elapsed.getSeconds());
     m_rotation = m_rotation + theta;
 
     /*
@@ -119,12 +124,10 @@ void Mouse::update() {
     */
 
     // TODO: Direction...
-    Meters distance((-0.5 * dtl.getMetersPerSecond() + 0.5 * dtr.getMetersPerSecond()) * TIMESTEP);
+    Meters distance((-0.5 * dtl.getMetersPerSecond() + 0.5 * dtr.getMetersPerSecond()) * elapsed.getSeconds());
     m_translation = m_translation + Polar(distance.getMeters(), M_PI / 2.0 + m_rotation.getRadians()); // TODO
 
     //m_translation = Cartesian(m_translation.getX() + disp.getX(), m_translation.getY() + disp.getY());
-
-
 
 }
 

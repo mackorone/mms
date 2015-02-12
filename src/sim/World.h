@@ -26,6 +26,7 @@ public:
     */
 
 private:
+    void checkCollision(); // TODO make this prettier
     Maze* m_maze; // TODO: Need this be persistent???
     Mouse* m_mouse;
 

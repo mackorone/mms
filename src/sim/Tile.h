@@ -19,6 +19,8 @@ namespace sim {
  */
 class Tile{
 
+// TODO: Mack is going to modify this.... be careful what you change
+
 public:
     Tile();
     ~Tile();

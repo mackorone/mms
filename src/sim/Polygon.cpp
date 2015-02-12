@@ -17,7 +17,7 @@ void Polygon::setVertices(const std::vector<Cartesian>& vertices) {
     m_vertices = vertices;
 }
 
-Polygon Polygon::translate(const Coordinate& translation) {
+Polygon Polygon::translate(const Coordinate& translation) const {
     std::vector<Cartesian> vertices;
     for (int i = 0; i < m_vertices.size(); i += 1) {
         vertices.push_back(m_vertices.at(i) + translation);
@@ -28,7 +28,7 @@ Polygon Polygon::translate(const Coordinate& translation) {
     return p;
 }
 
-Polygon Polygon::rotate(const Angle& rotation) {
+Polygon Polygon::rotate(const Angle& rotation) const {
     std::vector<Cartesian> vertices;
     for (int i = 0; i < m_vertices.size(); i += 1) {
         Polar v(m_vertices.at(i));
