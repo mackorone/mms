@@ -12,7 +12,7 @@
 #include "sim/Parameters.h"
 #include "sim/Tile.h"
 #include "sim/Sleep.h"
-#include "sim/parameterParser.h"
+#include "sim/ParameterParser.h"
 #include "algo/Solver.h"
 
 // Test Comment

@@ -1,4 +1,4 @@
-#include "parameterParser.h"
+#include "ParameterParser.h"
 
 namespace sim {
 
