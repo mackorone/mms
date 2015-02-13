@@ -16,7 +16,7 @@ void World::simulate() {
 
     // TODO
     m_mouse->getRightWheel()->setAngularVelocity(RadiansPerSecond(1.0));
-    m_mouse->getLeftWheel()->setAngularVelocity(RadiansPerSecond(1.0));
+    m_mouse->getLeftWheel()->setAngularVelocity(RadiansPerSecond(-1.1));
 
     while (true) {
         // TODO: Explain why locks aren't completely necessary here...
