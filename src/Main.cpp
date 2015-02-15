@@ -28,6 +28,9 @@ sim::World* g_world;
 sim::MazeGraphic* g_mazeGraphic;
 sim::MouseGraphic* g_mouseGraphic;
 
+// TODO
+sim::Mouse* g_mouse;
+
 int main(int argc, char* argv[]) {
 
     // Initialize local simulation objects
@@ -46,6 +49,9 @@ int main(int argc, char* argv[]) {
     g_solver = &solver;
     g_mazeGraphic = &mazeGraphic;
     g_mouseGraphic = &mouseGraphic;
+
+    // TODO
+    g_mouse= &mouse;
 
     // GLUT Initialization
     glutInit(&argc, argv);
@@ -72,7 +78,7 @@ void draw() {
 
     // In order to ensure we're sleeping the correct amount of time, we time
     // the drawing operation and take it into account when we sleep.
-    std::clock_t start = std::clock();
+    double start(sim::getHighResTime());
 
     // Draw the maze and mouse
     glClear(GL_COLOR_BUFFER_BIT);
@@ -82,8 +88,11 @@ void draw() {
     // Flushes all draws/updates to the screen
     glFlush();
 
-    // The duration of the drawing operation, inseconds
-    float duration = (std::clock() - start) / static_cast<float>(CLOCKS_PER_SEC);
+    // Get the duration of the drawing operation, in seconds. Note that this duration
+    // is simply the total number of real seconds that have passed, which is exactly
+    // what we want (since the framerate is perceived in real-time and not CPU time).
+    double end(sim::getHighResTime());
+    double duration = end - start;
 
     // Sleep the appropriate amout of time, base on the drawing duration
     sim::sleep(sim::Seconds(std::max(0.0, 1.0/sim::P()->frameRate() - duration)));

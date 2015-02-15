@@ -36,6 +36,9 @@ namespace sim {
  *  is correct. Also note that this choice of "X" ensures consistency between
  *  different mice - by pretending that "X" is the location of the mouse, all
  *  mice start in the exact same location (zero translation, zero rotation).
+ *
+ *  TODO: This also has to do with the fact that a rotation requires a point to
+ *  TODO: rotate around. It's natural to choose the origin.
  */
 
 // TODO: This class should encapsulate all things to do with mouse, including sensors

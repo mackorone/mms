@@ -5,11 +5,12 @@
 #include <iostream>
 #include <thread>
 
-#ifdef _WIN32
-    #include <windows.h>
-#elif __linux
+#ifdef __linux
     #include <limits.h>
+    #include <sys/time.h>
     #include <unistd.h>
+#elif _WIN32
+    #include <windows.h>
 #endif
 
 namespace sim {
@@ -19,28 +20,39 @@ void sleep(const Time& time) {
 	std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(time.getMilliseconds())));
 }
 
+double getHighResTime() {
+#ifdef __linux
+    struct timeval t;  
+    gettimeofday(&t, NULL);  
+    return t.tv_sec + (t.tv_usec/1000000.0);  
+#elif _WIN32
+    // TODO: SOM, see QueryPerformanceCounter
+    return 0.0;
+#endif
+}
+
 std::string getProjectDirectory() {
 
     // This approach is claimed to be more reliable than argv[0] on windows
     // and linux.  On Windows GetModuleFileName is the directory to the executable
     // which is located in /mms/src/Debug/.  On linux /proc/self/exe is a path to exe.
-    // This approach does not work for all flavors to Linux, should on the common.
-    // The executable on Linux is located in "mms/bin".
+    // This approach does not work for all flavors to Linux, but should work on most
+    // common ones. The executable on Linux is located in "mms/bin".
 
     std::string path;
 
-#ifdef _WIN32
-    char result[MAX_PATH];
-    path = std::string(result, GetModuleFileName(NULL, result, MAX_PATH));
-    path = path.substr(0, path.find_last_of("\\/"));; // Remove the executable name as it is part of path
-    path += "\\..\\..\\"; // Point to /mms/
-    // Windows uses \ in directory
-#elif __linux
+#ifdef __linux
     char result[PATH_MAX];
     ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
     path = std::string(result, (count > 0) ? count : 0);
     path = path.substr(0, path.find_last_of("\\/"));; // Remove the executable name as it is part of path
     path += "/../";
+#elif _WIN32
+    char result[MAX_PATH];
+    path = std::string(result, GetModuleFileName(NULL, result, MAX_PATH));
+    path = path.substr(0, path.find_last_of("\\/"));; // Remove the executable name as it is part of path
+    path += "\\..\\..\\"; // Point to /mms/
+    // Windows uses \ in directory
 #endif
 
     return path;
@@ -235,6 +247,7 @@ float convertVerticalPoint(float coordinate) {
     return ((coordinate / P()->windowHeight()) - 0.5f) * 2;
 }
 
+// real to pixels
 float rtp(float meters) {
     return P()->pixelsPerMeter() * meters;
 }

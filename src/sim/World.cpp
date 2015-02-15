@@ -5,6 +5,7 @@
 #include "units/Milliseconds.h"
 #include "Utilities.h"
 
+#include <cmath> // TODO: Necessary???
 #include <iostream> // TODO
 
 namespace sim {
@@ -15,13 +16,12 @@ World::World(Maze* maze, Mouse* mouse) : m_maze(maze), m_mouse(mouse) {
 void World::simulate() {
 
     // TODO
-    m_mouse->getRightWheel()->setAngularVelocity(RadiansPerSecond(1.0));
-    m_mouse->getLeftWheel()->setAngularVelocity(RadiansPerSecond(-1.1));
-
+    //m_mouse->getRightWheel()->setAngularVelocity(RadiansPerSecond(2*M_PI));
+    //m_mouse->getLeftWheel()->setAngularVelocity(RadiansPerSecond(-2.2*M_PI));
     while (true) {
         // TODO: Explain why locks aren't completely necessary here...
         m_mouse->update(Milliseconds(1));
-        sleep(Milliseconds(.01));
+        sleep(Milliseconds(1)); // TODO.... DELTA...
         checkCollision();
     }
 }

@@ -29,6 +29,9 @@ if ( !(condition) ) { \
 // Sleeps the current thread for ms milliseconds
 void sleep(const Time& time);
 
+// Like time() in <ctime> but higher resolution
+double getHighResTime();
+
 // Returns the path the mms project directory
 std::string getProjectDirectory();
 

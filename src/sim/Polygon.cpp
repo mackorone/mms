@@ -13,7 +13,13 @@ std::vector<Cartesian> Polygon::getVertices() const {
 
 // TODO: Ugly
 void Polygon::setVertices(const std::vector<Cartesian>& vertices) {
-    // TODO: Sort the vertices so that they're in order???
+    // TODO: Note that we're unable to sort the vertices here because a sort order is
+    // abiguous, 
+    //    *      *
+    //    |\    /| 
+    //  *-* *  * *-*
+    //   \ /    \ /
+    //    *      *
     m_vertices = vertices;
 }
 

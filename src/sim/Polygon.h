@@ -7,6 +7,7 @@
 
 namespace sim {
 
+// A Polygon is a rigid body within the simulator
 class Polygon {
 
 // TODO: Mack will fix this mess

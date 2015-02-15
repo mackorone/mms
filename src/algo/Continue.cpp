@@ -1,14 +1,21 @@
 #include "Continue.h"
 
+#include <cmath> // TODO
+
 #include "../sim/Utilities.h"
-#include "../sim/units/Seconds.h"
+#include "../sim/units/Milliseconds.h"
 
 void Continue::solve(sim::MouseInterface* mouse) {
 
-    //mouse->getRightWheel()->setAngularVelocity(RadiansPerSecond(1.0));
-    //mouse->getLeftWheel()->setAngularVelocity(RadiansPerSecond(1.0));
     while (true) {
-        sim::sleep(sim::Seconds(0.1));
+        mouse->setRightWheelSpeed(2*M_PI);
+        mouse->setLeftWheelSpeed(-2.4*M_PI);
+        sim::sleep(sim::Milliseconds(1000));
+        /*
+        mouse->setRightWheelSpeed(2.7*M_PI);
+        mouse->setLeftWheelSpeed(-2*M_PI);
+        sim::sleep(sim::Milliseconds(1000));
+        */
     }
     // ---- REMINDER ---- //
     /* Valid function calls:
