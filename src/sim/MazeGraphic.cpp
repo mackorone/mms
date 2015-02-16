@@ -1,16 +1,14 @@
 #include "MazeGraphic.h"
 
-namespace sim{
+namespace sim {
 
 MazeGraphic::MazeGraphic(Maze* maze) {
-
-    // Create vectors of value objects that hold references to Tiles
     for (int i = 0; i < maze->getWidth(); i += 1) {
-        std::vector<TileGraphic> col;
+        std::vector<TileGraphic> column;
         for (int j = 0; j < maze->getHeight(); j += 1) {
-            col.push_back(TileGraphic(maze->getTile(i, j)));
+            column.push_back(TileGraphic(maze->getTile(i, j)));
         }
-        m_tileGraphics.push_back(col);
+        m_tileGraphics.push_back(column);
     }
 }
 

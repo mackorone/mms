@@ -13,8 +13,6 @@
 
 namespace sim {
 
-// -------------------------- Backend Utilities -------------------------------
-
 // Asserts that a condition is true, program terminates if not
 #define ASSERT(condition) \
 if ( !(condition) ) { \
@@ -48,12 +46,7 @@ float strToFloat(std::string str);
 // Tokenizes a string on whitespace
 std::vector<std::string> tokenize(std::string str);
 
-// TODO: These can get refactored
-bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width);
-bool hasOnlyDigits(const std::string& str);
-
-
-// -------------------------- Graphics Utilities ------------------------------
+// TODO: Put these somewhere else...
 
 // Draws a polygon
 void drawPolygon(const Polygon& polygon);
@@ -61,5 +54,9 @@ void drawPolygon(const Polygon& polygon);
 // TODO
 bool mackValid(std::string mazeFilePath);
 std::pair<int, int> getMazeWidthAndHeight(std::string mazeFilePath);
+
+// TODO: These can get refactored
+bool checkValidMazeFileTom(std::string mazeFilePath, int height, int width);
+bool hasOnlyDigits(const std::string& str);
 
 } // namespace sim

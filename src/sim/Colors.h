@@ -6,6 +6,8 @@ namespace sim {
 
 // Graphics constants
 // TODO: Do these actually need to be GLfloat ???
+// TODO: These should be consts...
+// TODO: Make a Color class
 static GLfloat GREEN     [3] = { 0.0f, 0.9f, 0.0f};
 static GLfloat DARKGREEN [3] = { 0.0f, 0.5f, 0.0f};
 static GLfloat BLUE      [3] = { 0.0f, 0.0f, 0.7f};
