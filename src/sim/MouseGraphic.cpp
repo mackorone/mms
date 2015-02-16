@@ -7,21 +7,19 @@
 
 namespace sim{
 
-MouseGraphic::MouseGraphic(Mouse* mouse) : m_mouse(mouse), m_color(BLUE) {
+MouseGraphic::MouseGraphic(Mouse* mouse) : m_mouse(mouse) {
 }
 
 void MouseGraphic::draw() {
-
-    glColor3fv(m_color);
 
     // We draw in reverse order so that the body of the mouse appears over the
     // wheels and not the other way around
     for (int i = m_mouse->getShapes().size() - 1; i >= 0 ; i -= 1) {
         if (i > 0) {
-            glColor3fv(GREEN);
+            glColor3fv(COLORS.at(P()->mouseWheelColor()));
         }
         else {
-            glColor3fv(m_color);
+            glColor3fv(COLORS.at(P()->mouseBodyColor()));
         }
         drawPolygon(m_mouse->getShapes().at(i));
     }

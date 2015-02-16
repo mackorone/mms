@@ -27,7 +27,7 @@ Medium Priority
 - Support more than two wheels
 - Sim code should match the bot code as closely as possible
 - Dual screen! (mini-map and zoomed-in view - 1x1, 3x3, relative and absolute rotation)
-- Reduce CPU usage
+- Reduce CPU usage - most is used by the drawing... cache some stuff??? Only redraw certain things???
 - Instead of speeding up and slowing down the simulator (which is difficult because
   the Arduino code is already executing as fast as possible) we could take snapshots
   of the simulation, and then run the simulator from that particular point. This would
@@ -35,6 +35,7 @@ Medium Priority
 - Move the unit classes to the src directory
 - Make a wrapper function for a functions that sleep amout-duration
 - Ensure that the mouse update is the continuous function
+- Make sure that the coordinate frame of the robot is what we expect
 
 Low Priority
 ===============

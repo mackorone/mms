@@ -33,6 +33,9 @@ sim::Mouse* g_mouse;
 
 int main(int argc, char* argv[]) {
 
+    // Seed the random number generator
+    srand(sim::P()->randomSeed());
+
     // Initialize local simulation objects
     sim::Maze maze;
     sim::Mouse mouse;
@@ -93,6 +96,11 @@ void draw() {
     // what we want (since the framerate is perceived in real-time and not CPU time).
     double end(sim::getHighResTime());
     double duration = end - start;
+
+    // TODO: Fix these late frames
+    if (duration > 1.0/sim::P()->frameRate()) {
+        std::cout << "A frame was late by " << duration - 1.0/sim::P()->frameRate() << " seconds" << std::endl;
+    }
 
     // Sleep the appropriate amout of time, base on the drawing duration
     sim::sleep(sim::Seconds(std::max(0.0, 1.0/sim::P()->frameRate() - duration)));

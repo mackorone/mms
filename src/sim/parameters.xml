@@ -3,11 +3,12 @@
 <!-- Graphical Parameters -->
 <pixels-per-meter>250</pixels-per-meter>
 <frame-rate>60</frame-rate>
-<tile-base-color>BLACK</tile-base-color> <!-- TODO: Add to param -->
-<tile-wall-color>RED</tile-wall-color> <!-- TODO: Add to param class -->
-<tile-corner-color>LIGHT_GRAY</tile-corner-color> <!-- TODO: Add to param class -->
-<mouse-body-color>BLUE</mouse-body-color> <!-- TODO: Add to the param class -->
-<mouse-wheel-color>GREEN</mouse-wheel-color> <!-- TODO: Add to the param class -->
+<tile-base-color>BLACK</tile-base-color>
+<tile-wall-color>RED</tile-wall-color>
+<tile-corner-color>GRAY</tile-corner-color>
+<mouse-body-color>BLUE</mouse-body-color>
+<mouse-wheel-color>GREEN</mouse-wheel-color>
+<mouse-sensor-color>WHITE</mouse-sensor-color>
 
 <!-- Simulation Parameters -->
 <random-seed>12345</random-seed> <!-- The seed value for rand() -->

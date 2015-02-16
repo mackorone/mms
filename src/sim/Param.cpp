@@ -1,7 +1,7 @@
 #include "Param.h"
 
 #include "ParamParser.h"
-#include "Utilities.h" // TODO: Take this out once we take out the ASSERT
+#include "Utilities.h"
 
 namespace sim {
 
@@ -18,17 +18,20 @@ Param* Param::getInstance() {
     return INSTANCE;
 }
 
-
-// TODO: Change all of the parameters to unit types, use the Param parser to confirm type...
-
 Param::Param() {
 
     // Create the parameter parser object
-    ParamParser parser(getProjectDirectory() + "src/sim/parameters.xml"); // TODO: Configure this???
+    ParamParser parser(getProjectDirectory() + "src/sim/parameters.xml");
 
     // Graphical Parameters
     m_pixelsPerMeter = parser.getIntIfHasInt("pixels-per-meter", 250);
     m_frameRate = parser.getIntIfHasInt("frame-rate", 60);
+    m_tileBaseColor = parser.getStringIfHasString("tile-base-color", "BLACK");
+    m_tileWallColor = parser.getStringIfHasString("tile-wall-color", "RED");
+    m_tileCornerColor = parser.getStringIfHasString("tile-corner-color", "GRAY");
+    m_mouseBodyColor = parser.getStringIfHasString("mouse-body-color", "BLUE");
+    m_mouseWheelColor = parser.getStringIfHasString("mouse-wheel-color", "GREEN");
+    m_mouseSensorColor = parser.getStringIfHasString("mouse-sensor-color", "WHITE");
 
     // Simulation Parameters
     m_randomSeed = parser.getIntIfHasInt("random-seed", time(NULL));
@@ -53,11 +56,6 @@ Param::Param() {
     // Update the non-configurable parameters
     m_windowWidth = (m_mazeWidth * (m_wallLength + m_wallWidth)) * m_pixelsPerMeter;
     m_windowHeight = (m_mazeHeight * (m_wallLength + m_wallWidth)) * m_pixelsPerMeter;
-
-    // TODO: This should be in the randomization code
-    // Ensure that the size parameters are valid
-    ASSERT(m_mazeWidth > 0); // TODO
-    ASSERT(m_mazeHeight > 0); // TODO
 }
 
 int Param::pixelsPerMeter() {
@@ -74,6 +72,30 @@ int Param::windowWidth() {
 
 int Param::windowHeight() {
     return m_windowHeight;
+}
+
+std::string Param::tileBaseColor() {
+    return m_tileBaseColor;
+}
+
+std::string Param::tileWallColor() {
+    return m_tileWallColor;
+}
+
+std::string Param::tileCornerColor() {
+    return m_tileCornerColor;
+}
+
+std::string Param::mouseBodyColor() {
+    return m_mouseBodyColor;
+}
+
+std::string Param::mouseWheelColor() {
+    return m_mouseWheelColor;
+}
+
+std::string Param::mouseSensorColor() {
+    return m_mouseSensorColor;
 }
 
 int Param::randomSeed() {

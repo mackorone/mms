@@ -17,7 +17,6 @@ public:
     Tile* getTile(int x, int y);
 
 private:
-    // TODO: We shouldn't need this...
     // Vector to hold all of the tiles
     std::vector<std::vector<Tile>> m_maze;
     
@@ -26,10 +25,6 @@ private:
     // Randomly generate a maze
     void randomize();
     void tom_random();
-    // TODO: These are new
-    //void randomize(int width, int height);
-    //void tom_random(int width, int height);
-         
 
     //Initialize starting Maze
     void initializeMaze();

@@ -13,7 +13,6 @@ public:
 
 private:
     Mouse* m_mouse;
-    GLfloat* m_color;
 };
 
 } // namespace sim

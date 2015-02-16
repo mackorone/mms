@@ -19,11 +19,9 @@ namespace sim {
 
 Maze::Maze() {
 
-    // Misc errand - seed the random number generator
-    srand(time(NULL)); // TODO: seed only when we need a random maze
-
     int width = 16;
     int height = 16;
+
     std::string mazeFile = P()->mazeFile();
     std::string mazeFileDirPath = getProjectDirectory() + P()->mazeDirectory();
 
@@ -127,10 +125,7 @@ int Maze::getWidth() {
 }
 
 int Maze::getHeight() {
-    if (m_maze.size() > 0) {
-        return m_maze.at(0).size();
-    }
-    return 0;
+    return (m_maze.size() > 0 ? m_maze.at(0).size() : 0);
 }
 
 Tile* Maze::getTile(int x, int y) {
