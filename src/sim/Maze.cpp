@@ -11,7 +11,6 @@
 #include <vector>
 #include <stack>
 
-#include "Constants.h"
 #include "Param.h"
 #include "Tile.h"
 #include "Utilities.h"
@@ -786,7 +785,7 @@ void Maze::setWall(int x, int y, int direction, bool value) {
 
 
 void Maze::saveMaze(std::string mazeFile) {
-    
+
     // Create the stream
     std::ofstream file(mazeFile.c_str());
 
@@ -796,8 +795,8 @@ void Maze::saveMaze(std::string mazeFile) {
         for (int x = 0; x <  getWidth(); x += 1) {
             for (int y = 0; y < getHeight(); y += 1) {
                 file << x << " " << y;
-                for (int k = 0; k < 4; k += 1) {
-                    file << " " << (getTile(x, y)->isWall(k) ? 1 : 0);
+                for (Direction direction : DIRECTIONS) {
+                    file << " " << (getTile(x, y)->isWall(direction) ? 1 : 0);
                 }
                 file << std::endl;
             }

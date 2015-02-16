@@ -33,6 +33,7 @@ Param::Param() {
     // Simulation Parameters
     m_randomSeed = parser.getIntIfHasInt("random-seed", time(NULL));
     m_glutInitTime = parser.getFloatIfHasFloat("glut-init-time", 0.25);
+    m_deltaTime = parser.getFloatIfHasFloat("delta-time", 0.005);
     m_minSimSpeed = parser.getFloatIfHasFloat("min-sim-speed", 0.1);
     m_maxSimSpeed = parser.getFloatIfHasFloat("max-sim-speed", 10);
     m_defaultSimSpeed = parser.getFloatIfHasFloat("default-sim-speed", 10);
@@ -81,6 +82,10 @@ int Param::randomSeed() {
 
 float Param::glutInitTime() {
     return m_glutInitTime;
+}
+
+float Param::deltaTime() {
+    return m_deltaTime;
 }
 
 float Param::minSimSpeed() {

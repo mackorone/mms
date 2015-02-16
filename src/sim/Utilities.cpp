@@ -17,10 +17,11 @@ namespace sim {
 
 void sleep(const Time& time) {
     ASSERT(time.getMilliseconds() >= 0);
-	std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(time.getMilliseconds())));
+	std::this_thread::sleep_for(std::chrono::microseconds(static_cast<int>(time.getMicroseconds())));
 }
 
 double getHighResTime() {
+    // TODO: I tried to reimplement w/ chrono but without much succes...
 #ifdef __linux
     struct timeval t;  
     gettimeofday(&t, NULL);  
@@ -221,42 +222,18 @@ bool hasOnlyDigits(const std::string &str) { // TODO: delete this
 
 // -------------------------- Graphics Utilities ------------------------------
 
-Cartesian physicalToOpenGl(const Coordinate& point) {
-    return Cartesian(convertHorizontalPoint(rtp(point.getX())), convertVerticalPoint(rtp(point.getY())));
-}
- 
-// Supposedly this should work...
-Polygon physicalToOpenGl(const Polygon& polygon) {
-    std::vector<Cartesian> vertices;
-    for (Cartesian vertex : polygon.getVertices()) {
-        vertices.push_back(Cartesian(convertHorizontalPoint(rtp(vertex.getX())), convertVerticalPoint(rtp(vertex.getY()))));
-    }
-    // TODO: this could be cleaner, right???
-    Polygon p;
-    p.setVertices(vertices);
-    return p;
-}
- 
-// TODO: Implementation independent of params WINDOW_WIDTH
-float convertHorizontalPoint(float coordinate) {
-    return ((coordinate / P()->windowWidth()) - 0.5f) * 2;
-}
- 
-// TODO: Implementation independent of params WINDOW_HEIGHT
-float convertVerticalPoint(float coordinate) {
-    return ((coordinate / P()->windowHeight()) - 0.5f) * 2;
-}
-
-// real to pixels
-float rtp(float meters) {
-    return P()->pixelsPerMeter() * meters;
-}
-
-// TODO: Hmmmm
+// TODO: Color parameter???
 void drawPolygon(const Polygon& polygon) {
+
+    // First we have to convert the physical coordinates to pixel coordinates.
+    // Then we have convert the pixel coordinates to OpenGL coordinates.
     glBegin(GL_POLYGON);
     for (Cartesian vertex : polygon.getVertices()) {
-        glVertex2f(vertex.getX(), vertex.getY());
+        float pixelCoodinateX = vertex.getX().getMeters() * P()->pixelsPerMeter();
+        float pixelCoodinateY = vertex.getY().getMeters() * P()->pixelsPerMeter();
+        float openGlCoordinateX = ((pixelCoodinateX / P()->windowWidth()) - 0.5) * 2;
+        float openGlCoordinateY = ((pixelCoodinateY / P()->windowHeight()) - 0.5) * 2;
+        glVertex2f(openGlCoordinateX, openGlCoordinateY);
     }
     glEnd();
 }

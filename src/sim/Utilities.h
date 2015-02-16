@@ -55,18 +55,7 @@ bool hasOnlyDigits(const std::string& str);
 
 // -------------------------- Graphics Utilities ------------------------------
 
-// Converts points from physical coordinates to OpenGl coordinates (bottem-left is (0,0)) to the
-// OpenGL specification
-Cartesian physicalToOpenGl(const Coordinate& point);
-Polygon physicalToOpenGl(const Polygon& polygon);
-
-// Helpers... TODO: refactor these...
-// OpenGL specification
-float convertHorizontalPoint(float coordinate); // TODO - Better interface...
-float convertHorizontalPoint(float coordinate); // TODO - Better interface...
-float convertVerticalPoint(float coordinate); // TODO - Better interface...
-float rtp(float coordinate); // Real coordinate to pixel coordinate
-
+// Draws a polygon
 void drawPolygon(const Polygon& polygon);
 
 // TODO

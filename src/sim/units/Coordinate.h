@@ -1,20 +1,23 @@
 #pragma once
 
+#include "Meters.h"
+#include "Radians.h"
+
 namespace sim {
 
-class Coordinate {
+class Coordinate { // Synonymous to vector
 
 public:
     virtual ~Coordinate() = 0;
-    float getX() const;
-    float getY() const;
-    float getRho() const;
-    float getTheta() const;
+    Meters getX() const;
+    Meters getY() const;
+    Meters getRho() const;
+    Radians getTheta() const;
 
 protected:
     Coordinate();
-    float m_x;
-    float m_y;
+    Meters m_x;
+    Meters m_y;
 
 };
 

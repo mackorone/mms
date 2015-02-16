@@ -26,4 +26,8 @@ Meters Meters::operator/(float factor) const {
     return Meters(getMeters() / factor);
 }
 
+void Meters::operator+=(const Distance& distance) {
+    m_meters += distance.getMeters();
+}
+
 } // namespace sim

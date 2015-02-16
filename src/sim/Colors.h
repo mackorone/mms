@@ -4,10 +4,6 @@
 
 namespace sim {
 
-// Simulation constants
-// TODO: This file should be gone, renamed to colors..
-enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
-
 // Graphics constants
 // TODO: Do these actually need to be GLfloat ???
 static GLfloat GREEN     [3] = { 0.0f, 0.9f, 0.0f};

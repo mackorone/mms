@@ -1,5 +1,6 @@
 #include "World.h"
 
+#include "Param.h"
 #include "units/Centimeters.h"
 #include "units/RadiansPerSecond.h"
 #include "units/Milliseconds.h"
@@ -15,14 +16,30 @@ World::World(Maze* maze, Mouse* mouse) : m_maze(maze), m_mouse(mouse) {
 
 void World::simulate() {
 
+    // TODO: Explain why locks aren't completely necessary here...
+
     // TODO
     //m_mouse->getRightWheel()->setAngularVelocity(RadiansPerSecond(2*M_PI));
     //m_mouse->getLeftWheel()->setAngularVelocity(RadiansPerSecond(-2.2*M_PI));
     while (true) {
-        // TODO: Explain why locks aren't completely necessary here...
-        m_mouse->update(Milliseconds(1));
-        sleep(Milliseconds(1)); // TODO.... DELTA...
+        // TODO: Make a wrapper function
+
+        // In order to ensure we're sleeping the correct amount of time, we time
+        // the drawing operation and take it into account when we sleep.
+        double start(sim::getHighResTime());
+
+        // Update the position of the mouse and check for collisions
+        m_mouse->update(Seconds(P()->deltaTime()));
         checkCollision();
+
+        // Get the duration of the drawing operation, in seconds. Note that this duration
+        // is simply the total number of real seconds that have passed, which is exactly
+        // what we want (since the framerate is perceived in real-time and not CPU time).
+        double end(sim::getHighResTime());
+        double duration = end - start;
+
+        // Sleep the appropriate amout of time, base on the drawing duration
+        sleep(Seconds(std::max(0.0, P()->deltaTime() - duration)));
     }
 }
 

@@ -38,7 +38,7 @@ namespace sim {
  *  mice start in the exact same location (zero translation, zero rotation).
  *
  *  TODO: This also has to do with the fact that a rotation requires a point to
- *  TODO: rotate around. It's natural to choose the origin.
+ *  TODO: rotate around. It's natural to choose the origin. // TODO: Polygon Rotate about any point
  */
 
 // TODO: This class should encapsulate all things to do with mouse, including sensors
@@ -67,7 +67,7 @@ private:
     Radians m_rotation; // Also as described above, the rotation of the reference point "X"
     Polygon m_body; // The vertices of the mouse, // TODO: Something about the initial position
 
-    // For now, assume that we'll have two wheels
+    // The mouse, by assumption, is differential drive
     Wheel m_rightWheel;
     Wheel m_leftWheel;
 };

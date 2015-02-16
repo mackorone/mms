@@ -24,6 +24,7 @@ public:
     // Simulation parameters
     int randomSeed();
     float glutInitTime();
+    float deltaTime();
     float minSimSpeed();
     float maxSimSpeed();
     float defaultSimSpeed();
@@ -57,6 +58,7 @@ private:
     // Simulation parameters
     int m_randomSeed;
     float m_glutInitTime;
+    float m_deltaTime;
     float m_minSimSpeed;
     float m_maxSimSpeed;
     float m_defaultSimSpeed;

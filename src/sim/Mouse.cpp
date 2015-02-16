@@ -3,7 +3,6 @@
 #include <cmath>
 #include <iostream>
 
-#include "Constants.h"
 #include "Utilities.h"
 
 #include "units/MetersPerSecond.h"
@@ -11,9 +10,9 @@
 
 namespace sim {
 
-Mouse::Mouse() : m_translation(Cartesian(0, 0)), m_rotation(Radians(0)),
-        m_rightWheel(Meters(0.02), Meters(0.025), Cartesian(P()->wallLength() + P()->wallWidth() - 0.06, 0.085)),
-        m_leftWheel(Meters(0.02), Meters(0.025), Cartesian(0.06, 0.085)) {
+Mouse::Mouse() : m_translation(Cartesian(Meters(0), Meters(0))), m_rotation(Radians(0)),
+        m_rightWheel(Meters(0.02), Meters(0.025), Cartesian(Meters(P()->wallLength() + P()->wallWidth() - 0.06), Meters(0.085))),
+        m_leftWheel(Meters(0.02), Meters(0.025), Cartesian(Meters(0.06), Meters(0.085))) {
 
     // TODO: Read in a mouse file here
     // TODO: Validate the contents of the mouse file (like valid mouse starting position)
@@ -22,18 +21,18 @@ Mouse::Mouse() : m_translation(Cartesian(0, 0)), m_rotation(Radians(0)),
 
     // Create the vertices for the mouse
     std::vector<Cartesian> vertices;
-    vertices.push_back(Cartesian(0.06, 0.06));
-    vertices.push_back(Cartesian(0.06, P()->wallLength() + P()->wallWidth() - 0.06));
-    vertices.push_back(Cartesian(P()->wallLength() + P()->wallWidth() - 0.06, P()->wallLength() + P()->wallWidth() - 0.06));
-    vertices.push_back(Cartesian(P()->wallLength() + P()->wallWidth() - 0.06, 0.06));
-    m_body.setVertices(vertices);
+    vertices.push_back(Cartesian(Meters(0.06), Meters(0.06)));
+    vertices.push_back(Cartesian(Meters(0.06), Meters(P()->wallLength() + P()->wallWidth() - 0.06)));
+    vertices.push_back(Cartesian(Meters(P()->wallLength() + P()->wallWidth() - 0.06), Meters(P()->wallLength() + P()->wallWidth() - 0.06)));
+    vertices.push_back(Cartesian(Meters(P()->wallLength() + P()->wallWidth() - 0.06), Meters(0.06)));
+    m_body = Polygon(vertices);
 }
 
 // TODO: Shouldn't need this method
 Cartesian Mouse::getTranslation() const {
 
     Cartesian centerOfMass((m_rightWheel.getPosition().getX() + m_leftWheel.getPosition().getX())/2.0, m_rightWheel.getPosition().getY());
-    Polar vec(centerOfMass.getRho(), m_rotation.getRadians() + centerOfMass.getTheta()); // The current rotation vector
+    Polar vec(centerOfMass.getRho(), m_rotation + centerOfMass.getTheta()); // The current rotation vector
     Cartesian disp(vec.getX() - centerOfMass.getX(), vec.getY() - centerOfMass.getY());
 
     return Cartesian(m_translation.getX() - disp.getX(), m_translation.getY() - disp.getY());
@@ -58,17 +57,15 @@ std::vector<Polygon> Mouse::getShapes() const {
     Cartesian rightWheelPosition = m_rightWheel.getPosition();
 
     rightWheelPolygon.push_back(rightWheelPosition + Cartesian(
-        (rightWheelHalfWidth * -1).getMeters(), (rightWheelRadius * -1).getMeters()));
+        Meters((rightWheelHalfWidth * -1).getMeters()), Meters((rightWheelRadius * -1).getMeters())));
     rightWheelPolygon.push_back(rightWheelPosition + Cartesian(
-        (rightWheelHalfWidth * -1).getMeters(), (rightWheelRadius *  1).getMeters()));
+        Meters((rightWheelHalfWidth * -1).getMeters()), Meters((rightWheelRadius *  1).getMeters())));
     rightWheelPolygon.push_back(rightWheelPosition + Cartesian(
-        (rightWheelHalfWidth *  1).getMeters(), (rightWheelRadius *  1).getMeters()));
+        Meters((rightWheelHalfWidth *  1).getMeters()), Meters((rightWheelRadius *  1).getMeters())));
     rightWheelPolygon.push_back(rightWheelPosition + Cartesian(
-        (rightWheelHalfWidth *  1).getMeters(), (rightWheelRadius * -1).getMeters()));
+        Meters((rightWheelHalfWidth *  1).getMeters()), Meters((rightWheelRadius * -1).getMeters())));
 
-    Polygon rightPoly;
-    rightPoly.setVertices(rightWheelPolygon);
-    shapes.push_back(rightPoly);
+    shapes.push_back(Polygon(rightWheelPolygon));
 
     // Left wheel
     std::vector<Cartesian> leftWheelPolygon;
@@ -78,89 +75,72 @@ std::vector<Polygon> Mouse::getShapes() const {
     Cartesian leftWheelPosition = m_leftWheel.getPosition();
 
     leftWheelPolygon.push_back(leftWheelPosition + Cartesian(
-        (leftWheelHalfWidth * -1).getMeters(), (leftWheelRadius * -1).getMeters()));
+        Meters((leftWheelHalfWidth * -1).getMeters()), Meters((leftWheelRadius * -1).getMeters())));
     leftWheelPolygon.push_back(leftWheelPosition + Cartesian(
-        (leftWheelHalfWidth * -1).getMeters(), (leftWheelRadius *  1).getMeters()));
+        Meters((leftWheelHalfWidth * -1).getMeters()), Meters((leftWheelRadius *  1).getMeters())));
     leftWheelPolygon.push_back(leftWheelPosition + Cartesian(
-        (leftWheelHalfWidth *  1).getMeters(), (leftWheelRadius *  1).getMeters()));
+        Meters((leftWheelHalfWidth *  1).getMeters()), Meters((leftWheelRadius *  1).getMeters())));
     leftWheelPolygon.push_back(leftWheelPosition + Cartesian(
-        (leftWheelHalfWidth *  1).getMeters(), (leftWheelRadius * -1).getMeters()));
+        Meters((leftWheelHalfWidth *  1).getMeters()), Meters((leftWheelRadius * -1).getMeters())));
 
-    Polygon leftPoly;
-    leftPoly.setVertices(leftWheelPolygon);
-    shapes.push_back(leftPoly);
+    shapes.push_back(Polygon(leftWheelPolygon));
 
     // TODO : Clear this
     std::vector<Polygon> adjustedShapes;
     for (int i = 0; i < shapes.size(); i += 1) {
-        adjustedShapes.push_back(shapes.at(i).rotate(m_rotation).translate(getTranslation()));
+        adjustedShapes.push_back(shapes.at(i).rotateAroundPoint(m_rotation, Cartesian(Meters(0.0), Meters(0.0))).translate(getTranslation()));
     }
     return adjustedShapes;
 }
 
 void Mouse::update(const Time& elapsed) {
 
-    // The "elapsed" argument signifies how much time has passed since our last update. Thus
-    // we should adjust the mouses position so that it's where it would be after moving for
-    // the "elapsed" duration.
+    /*
+     *  In a differential drive system (two-wheeled drive system), the angular velocities of
+     *  each of the two wheels completely determine the movement of the robot. The equations
+     *  for the instantaneous change in rotation and translation (with respect to the robot)
+     *  are as follows:
+     *
+     *      dx/dt = 0
+     *      dy/dt = (rightWheelSpeed - leftWheelSpeed) / 2
+     *      d0/dt = (rightWheelSpeed + leftWheelSpeed) / base
+     *
+     *  Note that dx/dy = 0 since it's impossible for the robot to move laterally. Also note
+     *  that since the left and right wheels are oriented oppositely, a positive wheel speed
+     *  of the right wheel means that the wheel moves in the positive y direction (with
+     *  respect to the robot) while a positive wheel speed of the left wheel means that the
+     *  wheel moves in the negative y directions (again, with respect to the robot). Given
+     *  these few equations, we can easily approximate the motion of the robot with respect
+     *  to the maze by multiplying the instantaneous rate of change in the translation and
+     *  rotation with the elapsed time. This is certainly an approximation because the rotation
+     *  of the robot is not constant throughout the duration of the motion. Thus, while the
+     *  rate of change of rotation is not a function of time, the rate of change of the
+     *  translation of robot (with respect the the maze) is a function of time. While there
+     *  is a closed form solution for the translation of the robot given a non-zero rate of
+     *  rotation of the robot, it's unnecessary to use it here. Our elapsed times should be
+     *  small and thus the change in rotation should be mostly negligible.
+     */
 
-    // TODO: Document this more...
+    // TODO: Fix the unit classes so I don't have to get the primitive values as often...
 
-    // Left wheel
-    MetersPerSecond dtl(m_leftWheel.getAngularVelocity().getRadiansPerSecond() * m_leftWheel.getRadius().getMeters());
-    
-    // Right wheel
-    MetersPerSecond dtr(m_rightWheel.getAngularVelocity().getRadiansPerSecond() * m_rightWheel.getRadius().getMeters());
+    // First get the speed of each wheel
+    MetersPerSecond rightWheelSpeed(
+        m_rightWheel.getAngularVelocity().getRadiansPerSecond() * m_rightWheel.getRadius().getMeters());
+    MetersPerSecond leftWheelSpeed(
+        m_leftWheel.getAngularVelocity().getRadiansPerSecond() * m_leftWheel.getRadius().getMeters());
 
-    // TODO: SOM
-    // TODO: There's a better closed form equation for x,y position. Right now, we're under the assumption that
-    // the elapsed time is small, so that the rotation doesn't change too much. But as we're moving, our rotation
-    // changes and thus our direction changes, so this will affect trajectory.
-    // See http://rossum.sourceforge.net/papers/DiffSteer/ for derivation of the kinematic equations and more
-    // information about the more accurate closed form solution
-    // Instantaneous change in x,y is only valid for one instant (not the whole duration) so we need a better formula
+    // Then get the distance between the two wheels
+    Meters base(m_rightWheel.getPosition().getX() - m_leftWheel.getPosition().getX());
 
-    float BASELINE(m_rightWheel.getPosition().getX() - m_leftWheel.getPosition().getX());
+    // Update the rotation
+    m_rotation += Radians((rightWheelSpeed + leftWheelSpeed).getMetersPerSecond() / base.getMeters() * elapsed.getSeconds());
 
-    if (fabs((dtr+dtl).getMetersPerSecond()) < 1) { // TODO
-        Meters distance((-0.5 * dtl.getMetersPerSecond() + 0.5 * dtr.getMetersPerSecond()) * elapsed.getSeconds());
-        m_translation = m_translation + Polar(distance.getMeters(), M_PI / 2.0 + m_rotation.getRadians()); // TODO
-        static int i = 0;
-        //std::cout << i++ << std::endl;
-    }
-    else {
-        dtl = MetersPerSecond(-1*dtl.getMetersPerSecond());
+    // Update the translation. Note that we have to add M_PI / 2.0 to the rotation since we measure rotation
+    // from the positive x-axis but, by default, the robot has 0 rotation and moves in the positive y direction.
+    Meters distance((rightWheelSpeed - leftWheelSpeed).getMetersPerSecond() / 2.0 * elapsed.getSeconds());
+    m_translation += Polar(distance, Radians(M_PI / 2.0) + m_rotation);
 
-        // TODO
-        float x_0 = m_translation.getY();
-        float y_0 = -1*m_translation.getX();
-
-        float x = x_0 + 
-
-                  (BASELINE*(dtr+dtl).getMetersPerSecond())
-                  /(2.0*(dtr-dtl).getMetersPerSecond())
-
-                  *(sin((dtr-dtl).getMetersPerSecond() * elapsed.getSeconds() / BASELINE + m_rotation.getRadians())
-                   -sin(m_rotation.getRadians()));
-
-        float y = y_0 - 
-
-                  (BASELINE*(dtr+dtl).getMetersPerSecond())
-                  /(2.0*(dtr-dtl).getMetersPerSecond())
-
-                  *(cos((dtr-dtl).getMetersPerSecond() * elapsed.getSeconds() / BASELINE + m_rotation.getRadians())
-                   -cos(m_rotation.getRadians()));
-
-        m_translation = Cartesian(-y, x);
-
-        dtl = MetersPerSecond(-1*dtl.getMetersPerSecond());
-    }
-
-    // TODO: This is correct
-    Radians theta((dtr.getMetersPerSecond() - (-dtl.getMetersPerSecond())) / BASELINE * elapsed.getSeconds());
-    m_rotation = m_rotation + theta;
-
-    
+    // TODO: When we add M_PI/2.0, we assume that all robots will be facing vertically to start
 }
 
 // TODO... better interface

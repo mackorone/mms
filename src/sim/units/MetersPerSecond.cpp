@@ -14,4 +14,8 @@ MetersPerSecond MetersPerSecond::operator+(const Speed& speed) const {
     return MetersPerSecond(getMetersPerSecond() + speed.getMetersPerSecond());
 }
 
+MetersPerSecond MetersPerSecond::operator-(const Speed& speed) const {
+    return MetersPerSecond(getMetersPerSecond() - speed.getMetersPerSecond());
+}
+
 } // namespace sim

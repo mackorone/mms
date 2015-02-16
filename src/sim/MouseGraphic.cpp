@@ -1,6 +1,5 @@
 #include "MouseGraphic.h"
 
-#include "Constants.h"
 #include "Param.h"
 #include "Mouse.h"
 #include "units/Cartesian.h"
@@ -24,8 +23,7 @@ void MouseGraphic::draw() {
         else {
             glColor3fv(m_color);
         }
-        Polygon p = m_mouse->getShapes().at(i);
-        drawPolygon(physicalToOpenGl(p));
+        drawPolygon(m_mouse->getShapes().at(i));
     }
     //drawDirection(dirC1X, dirC1Y, dirC2X, dirC2Y);
 }

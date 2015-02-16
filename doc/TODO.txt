@@ -9,7 +9,9 @@ High Priority
 
 Medium Priority
 ===============
+- Type safety (in terms of units) of the parameters
 - Convert floats to doubles where appropriate
+- Color class/object? Utility function for setting color? Drawer class?
 - Change the colors of the wheels based on the speed of the wheels
 - Show the direction that the robot is facing...
 - Run the program with maximum thread priority
@@ -31,9 +33,12 @@ Medium Priority
   of the simulation, and then run the simulator from that particular point. This would
   involve providing some sort of snapshot interface to the algorithm.
 - Move the unit classes to the src directory
+- Make a wrapper function for a functions that sleep amout-duration
+- Ensure that the mouse update is the continuous function
 
 Low Priority
 ===============
+- Use DIRECTIONS where possible
 - Pass things by reference when possible
 - Figure out how the discrete and continuous interfaces can coexist
 - Sprinkle Assertions everywhere

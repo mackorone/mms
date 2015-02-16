@@ -2,6 +2,9 @@
 
 #include <vector>
 
+#include "Polygon.h"
+#include "Directions.h"
+
 namespace sim {
 
 /*
@@ -31,7 +34,7 @@ public:
     int getPasses();
     bool getExplored(); 
     bool getPosp(); 
-    bool isWall(int direction);
+    bool isWall(Direction direction); // TODO: Enum type
     std::vector<Tile*> getNeighbors();
 
     void setPos(int x, int y);
@@ -44,6 +47,10 @@ public:
     void addNeighbor(Tile* neighbor);
     void resetNeighbors();
 
+    Polygon getBasePolygon();
+    std::vector<Polygon> getWallPolygons();
+    std::vector<Polygon> getCornerPolygons();
+
 private:
     int m_x;
     int m_y;
@@ -53,6 +60,16 @@ private:
     bool m_posp;
     bool m_walls[4];
     std::vector<Tile*> m_neighbors;
+
+    // The physical polygons corresponding to the tile
+    Polygon m_basePolygon;
+    std::vector<Polygon> m_wallPolygons;
+    std::vector<Polygon> m_cornerPolygons;
+    bool m_polygonsInitialized;
+    void initPolygons();
+    void initBasePolygon();
+    void initWallPolygons();
+    void initCornerPolygons();
 };
 
 } // namespace sim
