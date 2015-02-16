@@ -4,12 +4,10 @@
 
 namespace sim{
 
-Tile::Tile() : m_x(-1), m_y(-1), m_distance(P()->mazeWidth() * P()->mazeHeight()), m_explored(false),
-        m_passes(0), m_posp(false), m_neighbors(), m_polygonsInitialized(false) {
-    m_walls[0] = false;
-    m_walls[1] = false;
-    m_walls[2] = false;
-    m_walls[3] = false;
+Tile::Tile() : m_x(-1), m_y(-1), m_polygonsInitialized(false) {
+    for (Direction direction : DIRECTIONS) {
+        m_walls[direction] = false;
+    }
 }
 
 Tile::~Tile()
@@ -23,65 +21,17 @@ int Tile::getY() {
     return m_y;
 }
 
-int Tile::getDistance() {
-    return m_distance;
-}
-
-int Tile::getPasses() {
-    return m_passes;
-}
-
-bool Tile::getExplored() {
-    return m_explored;
-}
-
-bool Tile::getPosp() {
-    return m_posp;
+void Tile::setPos(int x, int y) {
+    m_x = x;
+    m_y = y;
 }
 
 bool Tile::isWall(Direction direction) {
     return m_walls[direction];
 }
 
-std::vector<Tile*> Tile::getNeighbors() {
-    return m_neighbors;
-}
-
-void Tile::setPos(int x, int y) {
-    m_x = x;
-    m_y = y;
-}
-
-void Tile::setDistance(int distance) {
-    m_distance = distance;
-}
-
-void Tile::incrementPasses() {
-    m_passes++;
-}
-
-void Tile::resetPasses() {
-    m_passes = 0;
-}
-
-void Tile::setExplored(bool explored) {
-    m_explored = explored;
-}
-
-void Tile::setPosp(bool posp) {
-    m_posp = posp;
-}
-
-void Tile::setWall(int wall, bool exists) {
-    m_walls[wall] = exists;
-}
-
-void Tile::addNeighbor(Tile* neighbor) {
-    m_neighbors.push_back(neighbor);
-}
-
-void Tile::resetNeighbors() {
-    m_neighbors.clear();
+void Tile::setWall(Direction direction, bool isWall) {
+    m_walls[direction] = isWall;
 }
 
 Polygon Tile::getBasePolygon() {
@@ -106,6 +56,33 @@ std::vector<Polygon> Tile::getCornerPolygons() {
 }
 
 void Tile::initPolygons() {
+
+    //  The polygons associated each tile are as follows:
+    //
+    //      base: 05af
+    //
+    //      northWall: 7698
+    //      eastWall: d8be
+    //      southWall: 32dc
+    //      westWall: 1472
+    //
+    //      lowerLeftCorner: 0123
+    //      upperLeftCorner: 4567
+    //      upperRightCorner: 89ab
+    //      lowerRightCorner: cdef
+    //
+    //      5--6-------------9--a
+    //      |  |             |  |
+    //      4--7-------------8--b
+    //      |  |             |  |
+    //      |  |             |  |
+    //      |  |             |  |
+    //      |  |             |  |
+    //      |  |             |  |
+    //      1--2-------------d--e
+    //      |  |             |  |
+    //      0--3-------------c--f
+
     // Order is important
     initBasePolygon();
     initWallPolygons();
@@ -125,7 +102,6 @@ void Tile::initBasePolygon() {
 
 void Tile::initWallPolygons() {
 
-    // TODO: Explain these polygons
     Cartesian lowerLeftPoint = m_basePolygon.getVertices().at(0);
     Cartesian upperLeftPoint = m_basePolygon.getVertices().at(1);
     Cartesian upperRightPoint = m_basePolygon.getVertices().at(2);
