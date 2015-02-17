@@ -4,7 +4,7 @@
 #include "units/Centimeters.h"
 #include "units/RadiansPerSecond.h"
 #include "units/Milliseconds.h"
-#include "Utilities.h"
+#include "SimUtilities.h"
 
 #include <cmath> // TODO: Necessary???
 #include <iostream> // TODO

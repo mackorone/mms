@@ -8,7 +8,7 @@
 #include "units/MetersPerSecond.h"
 #include "units/Milliseconds.h"
 #include "units/Seconds.h"
-#include "Utilities.h"
+#include "SimUtilities.h"
 
 namespace sim {
 

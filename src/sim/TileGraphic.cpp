@@ -2,7 +2,7 @@
 
 #include "Colors.h"
 #include "Param.h"
-#include "Utilities.h"
+#include "GraphicUtilities.h"
 
 namespace sim {
 

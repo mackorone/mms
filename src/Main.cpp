@@ -12,7 +12,7 @@
 #include "sim/MouseInterface.h"
 #include "sim/State.h"
 #include "sim/units/Seconds.h"
-#include "sim/Utilities.h"
+#include "sim/SimUtilities.h"
 #include "sim/World.h"
 
 // Function declarations

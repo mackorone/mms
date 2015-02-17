@@ -11,113 +11,17 @@
 #include <vector>
 #include <stack>
 
+#include "MazeFileUtilities.h"
 #include "Param.h"
 #include "Tile.h"
-#include "Utilities.h"
+#include "SimUtilities.h"
 
 namespace sim {
 
 Maze::Maze() {
-
-    int width = 16;
-    int height = 16;
-
-    std::string mazeFile = P()->mazeFile();
-    std::string mazeFileDirPath = getProjectDirectory() + P()->mazeDirectory();
-
-    // TODO: check valid
-    if (!mackValid(mazeFileDirPath + mazeFile)) {
-        std::cout << "INVALID" << std::endl;
-        exit(1); // TODO
+    if (!initializeViaMazeFile()) {
+        initializeViaMazeGenerator();
     }
-    
-    // TODO: assign width and height
-    // width = getMazeWidthFromFile();
-    // height = getMazeHeightromFile();
-
-    // TODO: Sanity check on the autogen mazes // TODO
-    ASSERT(width > 0);
-    ASSERT(height > 0);
-
-    // Initialize the tile positions
-    for (int x = 0; x < width; x += 1) {
-        std::vector<Tile> col;
-        for (int y = 0; y < height; y += 1) {
-            Tile tile;
-            tile.setPos(x, y);
-            col.push_back(tile);
-        }
-        m_maze.push_back(col);
-    }
-    
-    // Initialize the tile wall values and tile neighbors by either loading
-    // an existing maze file or randomly generating a valid maze
-    if (mazeFile.empty()) {
-
-        //std::cout << "No maze file provided. Generating random maze..." << std::endl;
-        std::cout << "No maze file provided. Simulation exit." << std::endl;
-        exit(0);
-
-        // Optional - can be used to generate more maze files
-        /*
-        if (P()->saveRandomMaze()) {
-            saveMaze(P()->mazeDirectory() + "auto_generated_maze.maz");
-        }
-        */
-    }
-    else {
-
-        // Complete path to the given mazefile
-        std::string path = mazeFileDirPath + mazeFile;
-
-        // Check to see if the file exists
-        std::fstream file(path.c_str());
-
-        if (file) {
-
-            // Check Maze Validity (TODO: we already check maze file existence in other function
-            if (checkValidMazeFileTom(path, width, height)) {
-
-                // Load the maze given by mazefile
-                loadMaze(path);
-
-                // Ensures that the maze is solvable
-                /*
-                if (!solveShortestPath().at(0)) {
-                    std::cout << "Unsolvable Maze detected. Generating solvable maze..." << std::endl;
-                    while (!(solveShortestPath().at(0) && solveShortestPath().at(1))) {
-                        tom_random();
-                    }
-                }
-                */
-            }
-            else {
-                std::cout << "Invalid file provided. Generating random maze..." << std::endl;
-                exit(1);
-                /*
-                tom_random();
-                while (!(solveShortestPath().at(0) && solveShortestPath().at(1))) {
-                    tom_random();
-                }
-                */
-            }
-        }
-        else {
-
-            // If the file doesn't exist, generate a random maze file
-            std::cout << "File \"" << path << "\" not found. Generating random maze..." << std::endl;
-            exit(1);
-            /*
-            tom_random();
-            while (!(solveShortestPath().at(0) && solveShortestPath().at(1))) {
-                tom_random();
-            }
-            */
-        }
-    }
-    
-    // Increment the passes for the starting position // TODO
-    //m_maze.at(0).at(0).incrementPasses();
 }
 
 int Maze::getWidth() {
@@ -132,6 +36,34 @@ Tile* Maze::getTile(int x, int y) {
     return &m_maze.at(x).at(y);
 }
 
+bool Maze::initializeViaMazeFile() {
+
+    // First, get the maze file path
+    std::string mazeFilePath = getProjectDirectory() + P()->mazeDirectory() + P()->mazeFile();
+
+    // Then, check to see if it's a valid
+    if (!validMaze(mazeFilePath)) {
+        std::cout << "INVALID MAZE PROVIDED" << std::endl;
+        exit(1);
+        return false;
+    }
+    
+    // Load the maze given by mazefile
+    loadMaze(mazeFilePath);
+
+    return true;
+}
+
+void Maze::initializeViaMazeGenerator() {
+    // Optional - can be used to generate more maze files
+    /*
+    if (P()->saveRandomMaze()) {
+        saveMaze(P()->mazeDirectory() + "auto_generated_maze.maz");
+    }
+    */
+}
+
+#if(0)
 void Maze::tom_random() {
     
     /*
@@ -347,6 +279,7 @@ void Maze::tom_random() {
     */
 }
 
+/*
 void Maze::initializeMaze() {
 
     int width = getWidth();
@@ -361,6 +294,7 @@ void Maze::initializeMaze() {
         }
     }
 }
+*/
 
 void Maze::hollowCenter() {
     // Ensures that the middle is hallowed out
@@ -642,8 +576,15 @@ void Maze::setWall(int x, int y, Direction direction, bool value) {
     getTile(x, y)->setWall(direction, value);
     getTile(x + deltaX, y + deltaY)->setWall(oppositeDir, value);
 }
+#endif
 
+// TODO: Should these be in the mazeFileUtils???
 void Maze::saveMaze(std::string mazeFile) {
+
+    // TODO: Use the mazeParser class to add a level of indirection here.
+    // In particular, the Maze object shouldn't do any I/O - it should
+    // only have to call utility functions that perform the I/O - most
+    // likely those utiliity functions will belong to the mazeParser.
 
     // Create the stream
     std::ofstream file(mazeFile.c_str());
@@ -665,30 +606,48 @@ void Maze::saveMaze(std::string mazeFile) {
     }
 }
 
-void Maze::loadMaze(std::string mazeFile) {
+void Maze::loadMaze(std::string mazeFilePath) {
 
-    // Create the stream
-    std::ifstream file(mazeFile.c_str());
+    // TODO: Use the mazeParser class to add a level of indirection here.
+    // In particular, the Maze object shouldn't do any I/O - it should
+    // only have to call utility functions that perform the I/O - most
+    // likely those utiliity functions will belong to the mazeParser.
 
-    // Initialize a string variable
-    std::string line("");
+    // First, determine the dimensions of the maze
+    std::pair<int, int> mazeSize = getMazeSize(mazeFilePath);
+    int width = mazeSize.first;
+    int height = mazeSize.second;
 
-    if (file.is_open()) {
-
-        // Very primitive, but will work
-        while (getline(file, line)) {
-            std::istringstream iss(line);
-            std::vector<std::string> tokens;
-            copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(),
-                 std::back_inserter<std::vector<std::string> >(tokens));
-            for (int i = 0; i < 4; i += 1) { // Set the values of all of the walls
-                getTile(atoi(tokens.at(0).c_str()), atoi(tokens.at(1).c_str()))
-                      ->setWall(DIRECTIONS.at(i), atoi(tokens.at(2+i).c_str()));
-            }
+    // Then, create the individual tile objects
+    for (int x = 0; x < width; x += 1) {
+        std::vector<Tile> col;
+        for (int y = 0; y < height; y += 1) {
+            Tile tile;
+            tile.setPos(x, y);
+            col.push_back(tile);
         }
-    
-        file.close();
+        m_maze.push_back(col);
     }
+
+    // Lastly, read the file and populate the wall values
+    std::ifstream file(mazeFilePath.c_str());
+    std::string line("");
+    while (getline(file, line)) {
+
+        // Put the tokens in a vector
+        std::istringstream iss(line);
+        std::vector<std::string> tokens;
+        copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(),
+             std::back_inserter<std::vector<std::string>>(tokens));
+
+        // Set the values of all of the walls
+        for (Direction direction : DIRECTIONS) {
+            getTile(strToInt(tokens.at(0).c_str()), strToInt(tokens.at(1).c_str()))
+                ->setWall(direction, strToInt(tokens.at(2+direction).c_str()));
+        }
+    }
+
+    file.close();
 }
 
 } // namespace sim

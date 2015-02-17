@@ -3,7 +3,7 @@
 #include "Param.h"
 #include "Mouse.h"
 #include "units/Cartesian.h"
-#include "Utilities.h"
+#include "GraphicUtilities.h"
 
 namespace sim{
 

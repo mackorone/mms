@@ -2,7 +2,7 @@
 
 #include <cmath> // TODO
 
-#include "../sim/Utilities.h"
+#include "../sim/SimUtilities.h"
 #include "../sim/units/Milliseconds.h"
 
 void Continue::solve(sim::MouseInterface* mouse) {

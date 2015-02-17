@@ -36,6 +36,8 @@ Medium Priority
 - Make a wrapper function for a functions that sleep amout-duration
 - Ensure that the mouse update is the continuous function
 - Make sure that the coordinate frame of the robot is what we expect
+- Handle bad values in the parameters, such as bad colors, negative values, etc.
+- atoi -> strToInt
 
 Low Priority
 ===============

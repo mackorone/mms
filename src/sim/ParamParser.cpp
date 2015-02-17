@@ -1,6 +1,9 @@
 #include "ParamParser.h"
 
-#include "Utilities.h"
+#include <iostream>
+
+#include "Assert.h"
+#include "SimUtilities.h"
 
 namespace sim {
 
