@@ -14,6 +14,7 @@ class Wheel {
 // For now, we assume that all wheels are vertical
 public:
     Wheel(const Distance& radius, const Distance& width, const Coordinate& position);
+    Wheel();
     Meters getRadius() const;
     Meters getWidth() const;
     Cartesian getPosition() const; // TODO

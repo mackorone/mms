@@ -10,22 +10,26 @@
 
 namespace sim {
 
-Mouse::Mouse() : m_translation(Cartesian(Meters(0), Meters(0))), m_rotation(Radians(0)),
-        m_rightWheel(Meters(0.02), Meters(0.025), Cartesian(Meters(P()->wallLength() + P()->wallWidth() - 0.06), Meters(0.085))),
-        m_leftWheel(Meters(0.02), Meters(0.025), Cartesian(Meters(0.06), Meters(0.085))) {
+Mouse::Mouse() : m_translation(Cartesian(0, 0)), m_rotation(Radians(0)), parser("src/sim/mouse.xml") {
 
-    // TODO: Read in a mouse file here
     // TODO: Validate the contents of the mouse file (like valid mouse starting position)
     // TODO: Right now, the size of the mouse is dependent on the size of the maze- we should fix this...
     // TODO: SOM
+    Meters radius = parser.getWheelMeas("LeftWheel", "radius");
+    Meters width = parser.getWheelMeas("LeftWheel", "width");
+    Cartesian pos = parser.getWheelPosition("LeftWheel");
+
+    m_leftWheel = Wheel(radius, width, pos);
+
+    radius = parser.getWheelMeas("RightWheel", "radius");
+    width = parser.getWheelMeas("RightWheel", "width");
+    pos = parser.getWheelPosition("RightWheel");
+
+    m_rightWheel = Wheel(radius, width, pos);
 
     // Create the vertices for the mouse
-    std::vector<Cartesian> vertices;
-    vertices.push_back(Cartesian(Meters(0.06), Meters(0.06)));
-    vertices.push_back(Cartesian(Meters(0.06), Meters(P()->wallLength() + P()->wallWidth() - 0.06)));
-    vertices.push_back(Cartesian(Meters(P()->wallLength() + P()->wallWidth() - 0.06), Meters(P()->wallLength() + P()->wallWidth() - 0.06)));
-    vertices.push_back(Cartesian(Meters(P()->wallLength() + P()->wallWidth() - 0.06), Meters(0.06)));
-    m_body = Polygon(vertices);
+    std::vector<Cartesian> vertices = parser.getBody();
+    m_body.setVertices(vertices);
 }
 
 // TODO: Shouldn't need this method
