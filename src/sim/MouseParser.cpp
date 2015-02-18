@@ -22,7 +22,7 @@ Cartesian MouseParser::getWheelPosition(const std::string& wheel) {
     pugi::xml_node posNode = doc.child(wheel.c_str()).child("position");
     float xValue = floatConvert(posNode.child("x").child_value());
     float yValue = floatConvert(posNode.child("y").child_value()); 
-    return Cartesian(xValue, yValue);
+    return Cartesian(Meters(xValue), Meters(yValue));
 }
 
 std::vector<Cartesian> MouseParser::getBody() {
@@ -36,7 +36,7 @@ std::vector<Cartesian> MouseParser::getBody() {
         else if(*(it->name()) == 'y') {
             y = floatConvert(it->child_value());
             std::cout << x << ' ' << y << std::endl;
-            points.push_back(Cartesian(x, y));
+            points.push_back(Cartesian(Meters(x), Meters(y)));
         }
     }
     return points;

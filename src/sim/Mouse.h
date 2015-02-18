@@ -62,7 +62,7 @@ public:
     Wheel* getLeftWheel();
 
 private:
-    MouseParser parser;
+    MouseParser parser; // TODO: Shouldn't need to be a member variable
 
     Cartesian getTranslation() const; // TODO: Shouldn't need
 

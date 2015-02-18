@@ -5,12 +5,16 @@
 
 #include "Param.h"
 #include "SimUtilities.h"
+#include "units/Meters.h"
 #include "units/MetersPerSecond.h"
 #include "units/Polar.h"
 
 namespace sim {
 
-Mouse::Mouse() : m_translation(Cartesian(0, 0)), m_rotation(Radians(0)), parser("src/sim/mouse.xml") {
+// TODO: parser needn't be a member variable
+Mouse::Mouse() : m_translation(Cartesian(Meters(0), Meters(0))), m_rotation(Radians(0)),
+    parser(getProjectDirectory() + "src/sim/mouse.xml") {
+    std::cout << getProjectDirectory() + "src/sim/mouse.xml" << std::endl;
 
     // TODO: Validate the contents of the mouse file (like valid mouse starting position)
     // TODO: Right now, the size of the mouse is dependent on the size of the maze- we should fix this...
@@ -29,7 +33,7 @@ Mouse::Mouse() : m_translation(Cartesian(0, 0)), m_rotation(Radians(0)), parser(
 
     // Create the vertices for the mouse
     std::vector<Cartesian> vertices = parser.getBody();
-    m_body.setVertices(vertices);
+    m_body = Polygon(vertices);
 }
 
 // TODO: Shouldn't need this method
