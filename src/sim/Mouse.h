@@ -5,6 +5,7 @@
 #include "units/Cartesian.h"
 #include "units/RadiansPerSecond.h"
 #include "Wheel.h"
+#include "MouseParser.h"
 
 #include <vector>
 
@@ -58,6 +59,8 @@ public:
     Wheel* getLeftWheel();
 
 private:
+    MouseParser parser;
+
     Cartesian getTranslation() const; // TODO: Shouldn't need
 
     Cartesian m_translation; // As described above, the translation of the reference point "X"
