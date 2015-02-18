@@ -28,9 +28,6 @@ sim::World* g_world;
 sim::MazeGraphic* g_mazeGraphic;
 sim::MouseGraphic* g_mouseGraphic;
 
-// TODO
-sim::Mouse* g_mouse;
-
 int main(int argc, char* argv[]) {
 
     // Seed the random number generator
@@ -52,9 +49,6 @@ int main(int argc, char* argv[]) {
     g_solver = &solver;
     g_mazeGraphic = &mazeGraphic;
     g_mouseGraphic = &mouseGraphic;
-
-    // TODO
-    g_mouse= &mouse;
 
     // GLUT Initialization
     glutInit(&argc, argv);

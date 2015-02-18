@@ -1,14 +1,9 @@
 #pragma once
 
-//#include <cstdlib> 
 #include <GL/freeglut.h>
-//#include <iostream> 
 #include <string>
 #include <vector>
 
-//#include "Param.h"
-//#include "Polygon.h"
-//#include "units/Cartesian.h"
 #include "units/Time.h"
 
 namespace sim {
