@@ -29,7 +29,7 @@ std::vector<Cartesian> MouseParser::getBody() {
     pugi::xml_node bodyNode = doc.child("MouseBody");
     std::vector<Cartesian> points;
     float x, y;
-    for(pugi::xml_node_iterator it = bodyNode.begin(); it != bodyNode.end(); ++it){
+    for(auto it = bodyNode.begin(); it != bodyNode.end(); ++it){
         if(*(it->name()) == 'x') {
             x = floatConvert(it->child_value());
         }

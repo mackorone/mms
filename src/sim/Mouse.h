@@ -62,8 +62,6 @@ public:
     Wheel* getLeftWheel();
 
 private:
-    MouseParser parser; // TODO: Shouldn't need to be a member variable
-
     Cartesian getTranslation() const; // TODO: Shouldn't need
 
     Cartesian m_translation; // As described above, the translation of the reference point "X"
