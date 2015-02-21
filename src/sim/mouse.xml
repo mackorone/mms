@@ -1,27 +1,27 @@
 // TODO: SOM
 <LeftWheel>
-	<radius>.02</radius>
-	<width>.025</width>
+	<radius>0.02</radius>
+	<width>0.025</width>
 	<position>
-		<x>.06</x>
-		<y>.075</y>
+		<x>0.06</x>
+		<y>0.075</y>
 	</position>
 </LeftWheel>
 <RightWheel>
-	<radius>.02</radius>
-	<width>.025</width>
+	<radius>0.02</radius>
+	<width>0.025</width>
 	<position>
-		<x>.1</x>
-		<y>.075</y>
+		<x>0.1</x>
+		<y>0.075</y>
 	</position>
 </RightWheel>
 <MouseBody>
-	<x>.06</x> 
-	<y>.05</y>
-	<x>.06</x>
-	<y>.1</y>
-	<x>.1</x>
-	<y>.1</y>
-	<x>.1</x>
-	<y>.05</y>
+	<x>0.06</x> 
+	<y>0.05</y>
+	<x>0.06</x>
+	<y>0.1</y>
+	<x>0.1</x>
+	<y>0.1</y>
+	<x>0.1</x>
+	<y>0.05</y>
 </MouseBody>

@@ -7,6 +7,7 @@
 #include "units/Cartesian.h"
 #include "units/Meters.h"
 #include "../lib/pugixml.hpp"
+#include "SimUtilities.h"
 
 namespace sim {
 
@@ -19,8 +20,7 @@ public:
     Cartesian getWheelPosition(const std::string& wheel);
 
     std::vector<Cartesian> getBody();    
-    float floatConvert(const char* numValue);
-    
+        
 private:
     pugi::xml_document doc;
 };
