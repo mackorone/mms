@@ -2,12 +2,13 @@
 
 #include <GL/freeglut.h>
 
+#include <Meters.h>
+#include <MetersPerSecond.h>
+#include <Milliseconds.h>
+#include <Seconds.h>
+
 #include "Param.h"
 #include "State.h"
-#include "units/Meters.h"
-#include "units/MetersPerSecond.h"
-#include "units/Milliseconds.h"
-#include "units/Seconds.h"
 #include "SimUtilities.h"
 
 namespace sim {

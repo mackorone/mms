@@ -3,6 +3,8 @@
 #include <iostream>
 #include <thread>
 
+#include <Seconds.h>
+
 #include "algo/Solver.h"
 #include "sim/Param.h"
 #include "sim/Maze.h"
@@ -11,7 +13,6 @@
 #include "sim/MouseGraphic.h"
 #include "sim/MouseInterface.h"
 #include "sim/State.h"
-#include "sim/units/Seconds.h"
 #include "sim/SimUtilities.h"
 #include "sim/World.h"
 
@@ -93,7 +94,7 @@ void draw() {
 
     // TODO: Fix these late frames
     if (duration > 1.0/sim::P()->frameRate()) {
-        std::cout << "A frame was late by " << duration - 1.0/sim::P()->frameRate() << " seconds" << std::endl;
+        // print("A frame was late by " + duration - 1.0/sim::P()->frameRate() + " seconds");
     }
 
     // Sleep the appropriate amout of time, base on the drawing duration

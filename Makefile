@@ -1,8 +1,16 @@
 # Program name
 PROGRAM = MMSim
 
+# Directories
+SRC = ./src/
+OBJ = ./obj/
+BIN = ./bin/
+
 # Any external libraries
 LIBS = -lGL -lglut -lGLU
+
+# Any extra include paths
+INC = -I$(SRC)units -I$(SRC)lib
 
 # Flags
 # -std=c++11: Use the C++11 standard
@@ -11,11 +19,6 @@ LIBS = -lGL -lglut -lGLU
 # -Wall: Show all warning messages
 # TODO: -pedantic-errors
 FLAGS = -MMD -std=c++11#TODO -Wall TODO: Fix all errors
-
-# Directories
-SRC = ./src/
-OBJ = ./obj/
-BIN = ./bin/
 
 # Recursively find all source files
 PRELIMSOURCES = $(shell find $(SRC) -name '*.cpp')
@@ -39,12 +42,12 @@ all: $(PREFIXED_SOURCES) $(PREFIXED_PROGRAM)
 # Make '$(PROGRAM)' instructions
 $(PREFIXED_PROGRAM): $(PREFIXED_OBJECTS)
 	@mkdir -p $(@D) # Makes the 'bin' directory if it doesn't exist
-	$(CXX) $(PREFIXED_OBJECTS) -o $@ $(LIBS)
+	$(CXX) $(PREFIXED_OBJECTS) -o $@ $(LIBS) $(INC)
 
 # Make '$(OBJECTS)' instructions
 $(OBJ)%.o: $(SRC)%.cpp
 	@mkdir -p $(@D) # Makes the directories if they don't exist
-	$(CXX) -c $(FLAGS) $< -o $@
+	$(CXX) -c $(FLAGS) $< -o $@ $(INC)
 
 # Make 'clean' instructions
 clean:

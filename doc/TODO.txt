@@ -1,15 +1,8 @@
-High Priority
-=============
 - Collision Detection
-- Parser classes for mouse and maze
-- Synchronization documentation between the World, Graphics, and Mouse 
 - Make Sensor and Motor abstract, support different types
 - Change float to units (including in the ParamParser and Param class)
-- Maze Validation (both physically valid mazes and competition valid mazes)
-
-Medium Priority
-===============
 - Type safety (in terms of units) of the parameters
+- Maze Validation (both physically valid mazes and competition valid mazes)
 - Convert floats to doubles where appropriate
 - Color class/object? Utility function for setting color? Drawer class?
 - Change the colors of the wheels based on the speed of the wheels
@@ -27,12 +20,11 @@ Medium Priority
 - Support more than two wheels
 - Sim code should match the bot code as closely as possible
 - Dual screen! (mini-map and zoomed-in view - 1x1, 3x3, relative and absolute rotation)
-- Reduce CPU usage - most is used by the drawing... cache some stuff??? Only redraw certain things???
+- Reduce CPU usage - most is used by the drawing... cache some stuff??? Only redraw certain things??? Look at OpenGL scissor
 - Instead of speeding up and slowing down the simulator (which is difficult because
   the Arduino code is already executing as fast as possible) we could take snapshots
   of the simulation, and then run the simulator from that particular point. This would
   involve providing some sort of snapshot interface to the algorithm.
-- Move the unit classes to the src directory
 - Make a wrapper function for a functions that sleep amout-duration
 - Ensure that the mouse update is the continuous function
 - Make sure that the coordinate frame of the robot is what we expect
@@ -41,6 +33,7 @@ Medium Priority
 
 Low Priority
 ===============
+- Remove as many c_str() as possible
 - Replace "cout" with "print"
 - Use DIRECTIONS where possible
 - Pass things by reference when possible

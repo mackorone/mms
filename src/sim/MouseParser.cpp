@@ -1,5 +1,7 @@
 #include "MouseParser.h"
 
+#include "SimUtilities.h"
+
 namespace sim {
 
 // TODO: SOM
@@ -13,16 +15,15 @@ MouseParser::MouseParser(const std::string& filePath) {
 }
 
 Meters MouseParser::getWheelMeas(const std::string& wheel, const std::string& meas) {
-    // TODO: Change to strToFloat
     pugi::xml_node widthNode = doc.child(wheel.c_str()).child(meas.c_str());
-    float width = floatConvert(widthNode.child_value());
+    float width = strToFloat(widthNode.child_value());
     return Meters(width); 
 } 
 
 Cartesian MouseParser::getWheelPosition(const std::string& wheel) {
     pugi::xml_node posNode = doc.child(wheel.c_str()).child("position");
-    float xValue = floatConvert(posNode.child("x").child_value());
-    float yValue = floatConvert(posNode.child("y").child_value()); 
+    float xValue = strToFloat(posNode.child("x").child_value());
+    float yValue = strToFloat(posNode.child("y").child_value()); 
     return Cartesian(Meters(xValue), Meters(yValue));
 }
 
@@ -32,18 +33,14 @@ std::vector<Cartesian> MouseParser::getBody() {
     float x, y;
     for(auto it = bodyNode.begin(); it != bodyNode.end(); ++it){
         if(*(it->name()) == 'x') {
-            x = floatConvert(it->child_value());
+            x = strToFloat(it->child_value());
         }
         else if(*(it->name()) == 'y') {
-            y = floatConvert(it->child_value());
-            std::cout << x << ' ' << y << std::endl;
+            y = strToFloat(it->child_value());
             points.push_back(Cartesian(Meters(x), Meters(y)));
         }
     }
     return points;
 }
 
-float MouseParser::floatConvert(const char* numValue){
-        return static_cast<float>(atof(numValue));
-}
 } // namespace sim

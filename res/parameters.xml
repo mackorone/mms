@@ -17,18 +17,20 @@
 <min-sim-speed>0.1</min-sim-speed> <!-- Fraction of real-time -->
 <max-sim-speed>10.0</max-sim-speed> <!-- Fraction of real-time -->
 <default-sim-speed>1.0</default-sim-speed> <!-- Fraction of real-time -->
+<enforce-official-maze-rules>false</enforce-official-maze-rules>
 
 <!-- Maze Parameters -->
-<maze-directory>src/maze_files/</maze-directory> <!-- realtive to project root -->
+<maze-directory>res/maze_files/</maze-directory> <!-- realtive to project root -->
 <maze-file>ieee2011.maz</maze-file> <!-- relative to maze-directory -->
-<wall-length>0.156</wall-length> <!-- meters -->
-<wall-width>0.012</wall-width> <!-- meters -->
-<wall-height>0.05</wall-height> <!-- meters -->
-<wall-tolerance>.05</wall-tolerance>  <!-- 5% tolerance on wall dimensions  TODO: not used right now -->
+<wall-length>.156</wall-length> <!-- meters -->
+<wall-width>.012</wall-width> <!-- meters -->
+<wall-height>.05</wall-height> <!-- meters -->
 <random-maze-width>16</random-maze-width> <!-- number of tiles -->
 <random-maze-height>16</random-maze-height> <!-- number of tiles -->
 <min-solution-length>40</min-solution-length> <!-- number of tiles -->
 <save-random-maze>true</save-random-maze> <!-- Whethor or not to save a random maze -->
+
+<!-- Algo parameters -->
 
 <!-- TODO: Add these in to Param class -->
 <mouse-file>mouse.mse</mouse-file>

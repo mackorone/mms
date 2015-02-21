@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "../lib/pugixml.hpp" // TODO: Fix this include
+#include <pugixml.hpp>
 
 namespace sim {
 

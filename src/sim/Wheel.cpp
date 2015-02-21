@@ -7,7 +7,7 @@ Wheel::Wheel(const Distance& radius, const Distance& width, const Coordinate& po
         m_angularVelocity(0.0) {
 }
 
-Wheel::Wheel() : m_radius(.02), m_width(.025), m_position(Meters(0.0), Meters(0.0)), m_rotation(0),
+Wheel::Wheel() : m_radius(0), m_width(0), m_position(Meters(0.0), Meters(0.0)), m_rotation(0),
         m_angularVelocity(0.0) {
 }
 
@@ -33,7 +33,7 @@ void Wheel::setAngularVelocity(const AngularVelocity& angularVelocity) {
 }
 
 void Wheel::rotate(const Angle& angle) {
-    m_rotation = m_rotation + angle; // TODO syntatic sugar
+    m_rotation += angle;
 }
 
 Radians Wheel::popRotation() {

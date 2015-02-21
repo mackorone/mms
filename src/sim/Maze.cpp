@@ -46,19 +46,58 @@ bool Maze::initializeViaMazeFile() {
         print("Error: \"" + mazeFilePath + "\" failed maze validation");
         return false;
     }
+
+    // Then, check and enforce official maze rules
+    if (P()->enforceOfficialMazeRules() && !officialMaze(mazeFilePath)) {
+        print("Error: \"" + mazeFilePath + "\" failed official maze validation");
+        return false;
+    }
     
-    // Load the maze given by mazefile
-    loadMaze(mazeFilePath);
+    // Load the maze given by mazeFilePath
+    initializeMaze(loadMaze(mazeFilePath));
+
     return true;
 }
 
 void Maze::initializeViaMazeGenerator() {
-    // Optional - can be used to generate more maze files
-    /*
+    
+    // Optionally save the maze
     if (P()->saveRandomMaze()) {
-        saveMaze(P()->mazeDirectory() + "auto_generated_maze.maz");
+        saveMaze(extractMaze(), getProjectDirectory() + P()->mazeDirectory() + "auto_generated_maze.maz");
     }
-    */
+}
+
+void Maze::initializeMaze(std::vector<std::vector<BasicTile>> maze) {
+    for (int x = 0; x < maze.size(); x += 1) {
+        std::vector<Tile> column;
+        for (int y = 0; y < maze.at(x).size(); y += 1) {
+            Tile tile;
+            tile.setPos(x, y);
+            for (Direction direction : DIRECTIONS) {
+                tile.setWall(direction, maze.at(x).at(y).walls[direction]);
+            }
+            column.push_back(tile);
+        }
+        m_maze.push_back(column);
+    }
+}
+
+std::vector<std::vector<BasicTile>> Maze::extractMaze() {
+    std::vector<std::vector<BasicTile>> maze;
+    for (int x = 0; x < m_maze.size(); x += 1) {
+        std::vector<BasicTile> column;
+        for (int y = 0; y < m_maze.at(x).size(); y += 1) {
+            BasicTile tile;
+            tile.x = x;
+            tile.y = y;
+            for (Direction direction : DIRECTIONS) {
+                tile.walls[direction] = getTile(x, y)->isWall(direction);
+            }
+            column.push_back(tile);
+        }
+        maze.push_back(column);
+    }
+    return maze;
 }
 
 #if(0)
@@ -575,77 +614,5 @@ void Maze::setWall(int x, int y, Direction direction, bool value) {
     getTile(x + deltaX, y + deltaY)->setWall(oppositeDir, value);
 }
 #endif
-
-// TODO: Should these be in the mazeFileUtils???
-void Maze::saveMaze(std::string mazeFile) {
-
-    // TODO: Use the mazeParser class to add a level of indirection here.
-    // In particular, the Maze object shouldn't do any I/O - it should
-    // only have to call utility functions that perform the I/O - most
-    // likely those utiliity functions will belong to the mazeParser.
-
-    // Create the stream
-    std::ofstream file(mazeFile.c_str());
-
-    if (file.is_open()) {
-
-        // Very primitive, but will work
-        for (int x = 0; x <  getWidth(); x += 1) {
-            for (int y = 0; y < getHeight(); y += 1) {
-                file << x << " " << y;
-                for (Direction direction : DIRECTIONS) {
-                    file << " " << (getTile(x, y)->isWall(direction) ? 1 : 0);
-                }
-                file << std::endl;
-            }
-        }
-
-        file.close();
-    }
-}
-
-void Maze::loadMaze(std::string mazeFilePath) {
-
-    // TODO: Use the mazeParser class to add a level of indirection here.
-    // In particular, the Maze object shouldn't do any I/O - it should
-    // only have to call utility functions that perform the I/O - most
-    // likely those utiliity functions will belong to the mazeParser.
-
-    // First, determine the dimensions of the maze
-    std::pair<int, int> mazeSize = getMazeSize(mazeFilePath);
-    int width = mazeSize.first;
-    int height = mazeSize.second;
-
-    // Then, create the individual tile objects
-    for (int x = 0; x < width; x += 1) {
-        std::vector<Tile> col;
-        for (int y = 0; y < height; y += 1) {
-            Tile tile;
-            tile.setPos(x, y);
-            col.push_back(tile);
-        }
-        m_maze.push_back(col);
-    }
-
-    // Lastly, read the file and populate the wall values
-    std::ifstream file(mazeFilePath.c_str());
-    std::string line("");
-    while (getline(file, line)) {
-
-        // Put the tokens in a vector
-        std::istringstream iss(line);
-        std::vector<std::string> tokens;
-        copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(),
-             std::back_inserter<std::vector<std::string>>(tokens));
-
-        // Set the values of all of the walls
-        for (Direction direction : DIRECTIONS) {
-            getTile(strToInt(tokens.at(0).c_str()), strToInt(tokens.at(1).c_str()))
-                ->setWall(direction, strToInt(tokens.at(2+direction).c_str()));
-        }
-    }
-
-    file.close();
-}
 
 } // namespace sim

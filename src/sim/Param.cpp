@@ -21,7 +21,7 @@ Param* Param::getInstance() {
 Param::Param() {
 
     // Create the parameter parser object
-    ParamParser parser(getProjectDirectory() + "src/sim/parameters.xml");
+    ParamParser parser(getProjectDirectory() + "res/parameters.xml");
 
     // Graphical Parameters
     m_pixelsPerMeter = parser.getIntIfHasInt("pixels-per-meter", 250);
@@ -40,6 +40,7 @@ Param::Param() {
     m_minSimSpeed = parser.getFloatIfHasFloat("min-sim-speed", 0.1);
     m_maxSimSpeed = parser.getFloatIfHasFloat("max-sim-speed", 10);
     m_defaultSimSpeed = parser.getFloatIfHasFloat("default-sim-speed", 10);
+    m_enforceOfficialMazeRules = parser.getBoolIfHasBool("enforce-official-maze-rules", true);
 
     // Maze Parameters
     m_mazeDirectory = parser.getStringIfHasString("maze-directory", "src/maze_files/");
@@ -49,7 +50,6 @@ Param::Param() {
     m_wallWidth = parser.getFloatIfHasFloat("wall-width", 0.012);
     m_wallLength = parser.getFloatIfHasFloat("wall-length", 0.156);
     m_wallHeight = parser.getFloatIfHasFloat("wall-height", 0.05);
-    m_wallTolerance = parser.getFloatIfHasFloat("wall-tolerance", 0.05);
     m_minSolutionLength = parser.getIntIfHasInt("min-solution-length", 40);
     m_saveRandomMaze = parser.getBoolIfHasBool("save-random-maze", true);
 
@@ -122,6 +122,10 @@ float Param::defaultSimSpeed() {
     return m_defaultSimSpeed;
 }
 
+bool Param::enforceOfficialMazeRules() {
+    return m_enforceOfficialMazeRules;
+}
+
 std::string Param::mazeDirectory() {
     return m_mazeDirectory;
 }
@@ -148,10 +152,6 @@ float Param::wallLength() {
 
 float Param::wallHeight() {
     return m_wallHeight;
-}
-
-float Param::wallTolerance() {
-    return m_wallTolerance;
 }
 
 int Param::minSolutionLength() {

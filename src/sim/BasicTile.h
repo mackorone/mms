@@ -1,14 +1,15 @@
 #pragma once
 
+#include <map>
+
+#include "Directions.h"
+
 namespace sim {
 
 struct BasicTile {
-    int xPosition; 
-    int yPosition; 
-    bool isWallNorth; 
-    bool isWallEast; 
-    bool isWallSouth; 
-    bool isWallWest; 
+    int x;
+    int y;
+    std::map<Direction, bool> walls;
 };
 
 } // namespace sim

@@ -3,19 +3,19 @@
 #include <cmath>
 #include <iostream>
 
+#include <Meters.h>
+#include <MetersPerSecond.h>
+#include <Polar.h>
+
 #include "Param.h"
 #include "SimUtilities.h"
-#include "units/Meters.h"
-#include "units/MetersPerSecond.h"
-#include "units/Polar.h"
 
 namespace sim {
 
 Mouse::Mouse() : m_translation(Cartesian(Meters(0), Meters(0))), m_rotation(Radians(0)) {
-    MouseParser parser(getProjectDirectory() + "src/sim/mouse.xml");
-    std::cout << getProjectDirectory() + "src/sim/mouse.xml" << std::endl;
 
     // TODO: Validate the contents of the mouse file (like valid mouse starting position)
+    MouseParser parser(getProjectDirectory() + "res/mouse.xml");
     Meters radius = parser.getWheelMeas("LeftWheel", "radius");
     Meters width = parser.getWheelMeas("LeftWheel", "width");
     Cartesian pos = parser.getWheelPosition("LeftWheel");

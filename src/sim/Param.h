@@ -34,6 +34,7 @@ public:
     float minSimSpeed();
     float maxSimSpeed();
     float defaultSimSpeed();
+    bool enforceOfficialMazeRules();
 
     // Maze parameters
     std::string mazeDirectory();
@@ -43,7 +44,6 @@ public:
     float wallWidth();
     float wallLength();
     float wallHeight();
-    float wallTolerance();
     int minSolutionLength();
     bool saveRandomMaze();
 
@@ -74,6 +74,7 @@ private:
     float m_minSimSpeed;
     float m_maxSimSpeed;
     float m_defaultSimSpeed;
+    bool m_enforceOfficialMazeRules;
 
     // Maze parameters
     std::string m_mazeDirectory;
@@ -83,7 +84,6 @@ private:
     float m_wallWidth;
     float m_wallLength;
     float m_wallHeight;
-    float m_wallTolerance;
     int m_minSolutionLength;
     bool m_saveRandomMaze;
 };

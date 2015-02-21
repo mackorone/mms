@@ -5,6 +5,7 @@
 #include <iterator>
 #include <sstream>
 
+#include "Directions.h"
 #include "SimUtilities.h"
 
 namespace sim {
@@ -92,12 +93,11 @@ bool validMaze(std::string mazeFilePath) {
         }
 
         BasicTile tile;
-        tile.xPosition = strToInt(tokens.at(0).c_str());
-        tile.yPosition = strToInt(tokens.at(1).c_str());
-        tile.isWallNorth = (1 == strToInt(tokens.at(2).c_str()));
-        tile.isWallEast = (1 == strToInt(tokens.at(3).c_str()));
-        tile.isWallSouth = (1 == strToInt(tokens.at(4).c_str()));
-        tile.isWallWest = (1 == strToInt(tokens.at(5).c_str()));
+        tile.x = strToInt(tokens.at(0));
+        tile.y = strToInt(tokens.at(1));
+        for (Direction direction : DIRECTIONS) {
+            tile.walls[direction] = strToInt(tokens.at(2+direction));
+        }
 
         // TODO: Much more validation here
     }
@@ -121,6 +121,76 @@ bool officialMaze(std::string mazeFilePath) {
     // bool unsolvableByWallFollower();
     // etc.
     return false;
+}
+
+void saveMaze(std::vector<std::vector<BasicTile>> maze, std::string mazeFilePath) {
+
+    // Create the stream
+    std::ofstream file(mazeFilePath.c_str());
+
+    // Make sure the file is open
+    if (!file.is_open()) {
+        print("Error: Unable to save maze to \"" + mazeFilePath + "\"");
+        return;
+    }
+
+    // Write to the file
+    for (int x = 0; x < maze.size(); x += 1) {
+        for (int y = 0; y < maze.at(x).size(); y += 1) {
+            file << x << " " << y;
+            for (Direction direction : DIRECTIONS) {
+                file << " " << (maze.at(x).at(y).walls[direction] ? 1 : 0);
+            }
+            file << std::endl;
+        }
+    }
+
+    file.close();
+}
+
+std::vector<std::vector<BasicTile>> loadMaze(std::string mazeFilePath) {
+
+    // The maze to be returned
+    std::vector<std::vector<BasicTile>> maze;
+
+    // First, determine the dimensions of the maze
+    std::pair<int, int> mazeSize = getMazeSize(mazeFilePath);
+    int width = mazeSize.first;
+    int height = mazeSize.second;
+
+    // Then, create the individual tile objects
+    for (int x = 0; x < width; x += 1) {
+        std::vector<BasicTile> col;
+        for (int y = 0; y < height; y += 1) {
+            BasicTile tile;
+            tile.x = x;
+            tile.y = y;
+            col.push_back(tile);
+        }
+        maze.push_back(col);
+    }
+
+    // Lastly, read the file and populate the wall values
+    std::ifstream file(mazeFilePath.c_str());
+    std::string line("");
+    while (getline(file, line)) {
+
+        // Put the tokens in a vector
+        std::istringstream iss(line);
+        std::vector<std::string> tokens;
+        copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(),
+             std::back_inserter<std::vector<std::string>>(tokens));
+
+        // Set the values of all of the walls
+        for (Direction direction : DIRECTIONS) {
+            BasicTile* tile = &maze.at(strToInt(tokens.at(0))).at(strToInt(tokens.at(1)));
+            tile->walls[direction] = (1 == strToInt(tokens.at(2+direction)));
+        }
+    }
+
+    file.close();
+
+    return maze;
 }
 
 } // namespace sim
