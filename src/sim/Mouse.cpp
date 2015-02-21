@@ -11,13 +11,11 @@
 
 namespace sim {
 
-// TODO: parser needn't be a member variable
 Mouse::Mouse() : m_translation(Cartesian(Meters(0), Meters(0))), m_rotation(Radians(0)) {
     MouseParser parser(getProjectDirectory() + "src/sim/mouse.xml");
     std::cout << getProjectDirectory() + "src/sim/mouse.xml" << std::endl;
 
     // TODO: Validate the contents of the mouse file (like valid mouse starting position)
-    // TODO: SOM
     Meters radius = parser.getWheelMeas("LeftWheel", "radius");
     Meters width = parser.getWheelMeas("LeftWheel", "width");
     Cartesian pos = parser.getWheelPosition("LeftWheel");
