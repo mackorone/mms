@@ -21,9 +21,9 @@
 <!-- Maze Parameters -->
 <maze-directory>src/maze_files/</maze-directory> <!-- realtive to project root -->
 <maze-file>ieee2011.maz</maze-file> <!-- relative to maze-directory -->
-<wall-length>.156</wall-length> <!-- meters -->
-<wall-width>.012</wall-width> <!-- meters -->
-<wall-height>.05</wall-height> <!-- meters -->
+<wall-length>0.156</wall-length> <!-- meters -->
+<wall-width>0.012</wall-width> <!-- meters -->
+<wall-height>0.05</wall-height> <!-- meters -->
 <wall-tolerance>.05</wall-tolerance>  <!-- 5% tolerance on wall dimensions  TODO: not used right now -->
 <random-maze-width>16</random-maze-width> <!-- number of tiles -->
 <random-maze-height>16</random-maze-height> <!-- number of tiles -->
