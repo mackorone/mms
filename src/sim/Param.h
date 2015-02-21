@@ -20,10 +20,17 @@ public:
     int frameRate();
     int windowWidth();
     int windowHeight();
+    std::string tileBaseColor();
+    std::string tileWallColor();
+    std::string tileCornerColor();
+    std::string mouseBodyColor();
+    std::string mouseWheelColor();
+    std::string mouseSensorColor();
 
     // Simulation parameters
     int randomSeed();
     float glutInitTime();
+    float deltaTime();
     float minSimSpeed();
     float maxSimSpeed();
     float defaultSimSpeed();
@@ -53,10 +60,17 @@ private:
     int m_frameRate;
     int m_windowWidth;
     int m_windowHeight;
+    std::string m_tileBaseColor;
+    std::string m_tileWallColor;
+    std::string m_tileCornerColor;
+    std::string m_mouseBodyColor;
+    std::string m_mouseWheelColor;
+    std::string m_mouseSensorColor;
 
     // Simulation parameters
     int m_randomSeed;
     float m_glutInitTime;
+    float m_deltaTime;
     float m_minSimSpeed;
     float m_maxSimSpeed;
     float m_defaultSimSpeed;

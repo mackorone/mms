@@ -14,6 +14,8 @@ public:
     // TODO: List of sensor interfaces
     // TODO: List of wheel interfaces
 
+    void setLeftWheelSpeed(float radiansPerSecond); 
+    void setRightWheelSpeed(float radiansPerSecond); 
 
     // ---------------------- Mouse Interfact Methods ----------------------- //
 

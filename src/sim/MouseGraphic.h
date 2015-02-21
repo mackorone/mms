@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Constants.h"
+#include "Colors.h"
 #include "Mouse.h"
 
 namespace sim {
@@ -13,7 +13,6 @@ public:
 
 private:
     Mouse* m_mouse;
-    GLfloat* m_color;
 };
 
 } // namespace sim

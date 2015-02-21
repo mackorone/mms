@@ -7,6 +7,11 @@ Wheel::Wheel(const Distance& radius, const Distance& width, const Coordinate& po
         m_angularVelocity(0.0) {
 }
 
+Wheel::Wheel() : m_radius(.02), m_width(.025), m_position(Meters(0.0), Meters(0.0)), m_rotation(0),
+        m_angularVelocity(0.0) {
+}
+
+
 Meters Wheel::getRadius() const {
     return m_radius;
 }

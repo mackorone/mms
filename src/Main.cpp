@@ -12,7 +12,7 @@
 #include "sim/MouseInterface.h"
 #include "sim/State.h"
 #include "sim/units/Seconds.h"
-#include "sim/Utilities.h"
+#include "sim/SimUtilities.h"
 #include "sim/World.h"
 
 // Function declarations
@@ -29,6 +29,9 @@ sim::MazeGraphic* g_mazeGraphic;
 sim::MouseGraphic* g_mouseGraphic;
 
 int main(int argc, char* argv[]) {
+
+    // Seed the random number generator
+    srand(sim::P()->randomSeed());
 
     // Initialize local simulation objects
     sim::Maze maze;
@@ -72,7 +75,7 @@ void draw() {
 
     // In order to ensure we're sleeping the correct amount of time, we time
     // the drawing operation and take it into account when we sleep.
-    std::clock_t start = std::clock();
+    double start(sim::getHighResTime());
 
     // Draw the maze and mouse
     glClear(GL_COLOR_BUFFER_BIT);
@@ -82,8 +85,16 @@ void draw() {
     // Flushes all draws/updates to the screen
     glFlush();
 
-    // The duration of the drawing operation, inseconds
-    float duration = (std::clock() - start) / static_cast<float>(CLOCKS_PER_SEC);
+    // Get the duration of the drawing operation, in seconds. Note that this duration
+    // is simply the total number of real seconds that have passed, which is exactly
+    // what we want (since the framerate is perceived in real-time and not CPU time).
+    double end(sim::getHighResTime());
+    double duration = end - start;
+
+    // TODO: Fix these late frames
+    if (duration > 1.0/sim::P()->frameRate()) {
+        std::cout << "A frame was late by " << duration - 1.0/sim::P()->frameRate() << " seconds" << std::endl;
+    }
 
     // Sleep the appropriate amout of time, base on the drawing duration
     sim::sleep(sim::Seconds(std::max(0.0, 1.0/sim::P()->frameRate() - duration)));

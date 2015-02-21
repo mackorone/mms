@@ -4,27 +4,26 @@
 
 namespace sim {
 
-Coordinate::Coordinate() : m_x(0), m_y(0) {
+Coordinate::Coordinate() : m_x(Meters(0.0)), m_y(Meters(0.0)) {
 }
 
 Coordinate::~Coordinate() {
 }
 
-float Coordinate::getX() const {
+Meters Coordinate::getX() const {
     return m_x;
 }
 
-float Coordinate::getY() const {
+Meters Coordinate::getY() const {
     return m_y;
 }
 
-float Coordinate::getRho() const {
-    return sqrt(m_x*m_x + m_y*m_y);
+Meters Coordinate::getRho() const {
+    return Meters(hypot(m_x.getMeters(), m_y.getMeters()));
 }
 
-// TODO: Units
-float Coordinate::getTheta() const {
-    return atan2(m_y, m_x);
+Radians Coordinate::getTheta() const {
+    return Radians(atan2(m_y.getMeters(), m_x.getMeters()));
 }
 
 } // namespace sim

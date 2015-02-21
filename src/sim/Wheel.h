@@ -10,12 +10,11 @@ namespace sim {
 // The wheel class is a combination of both the motors and wheels
 class Wheel {
 
-// TODO: Eventually, we could include weight and rotational intertia, friction, etc...
-
 // The position is the starting position of center of the wheel
 // For now, we assume that all wheels are vertical
 public:
     Wheel(const Distance& radius, const Distance& width, const Coordinate& position);
+    Wheel();
     Meters getRadius() const;
     Meters getWidth() const;
     Cartesian getPosition() const; // TODO

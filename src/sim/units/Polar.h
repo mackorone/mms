@@ -7,7 +7,7 @@ namespace sim {
 class Polar : public Coordinate {
 
 public:
-    Polar(float rho, float theta);
+    Polar(const Distance& rho, const Angle& theta);
     Polar(const Coordinate& coordinate);
     Polar operator+(const Coordinate& coordinate) const;
 

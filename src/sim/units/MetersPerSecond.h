@@ -11,6 +11,7 @@ public:
     MetersPerSecond(float metersPerSecond);
     MetersPerSecond(const Speed& speed);
     MetersPerSecond operator+(const Speed& speed) const;
+    MetersPerSecond operator-(const Speed& speed) const;
 
 };
 

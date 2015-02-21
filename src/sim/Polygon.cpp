@@ -7,37 +7,35 @@ namespace sim {
 Polygon::Polygon() {
 }
 
+Polygon::Polygon(const Polygon& polygon) {
+    m_vertices = polygon.getVertices();
+}
+
+Polygon::Polygon(const std::vector<Cartesian>& vertices) {
+    m_vertices = vertices;
+}
+
 std::vector<Cartesian> Polygon::getVertices() const {
     return m_vertices;
 }
 
-// TODO: Ugly
-void Polygon::setVertices(const std::vector<Cartesian>& vertices) {
-    // TODO: Sort the vertices so that they're in order???
-    m_vertices = vertices;
-}
-
 Polygon Polygon::translate(const Coordinate& translation) const {
     std::vector<Cartesian> vertices;
-    for (int i = 0; i < m_vertices.size(); i += 1) {
-        vertices.push_back(m_vertices.at(i) + translation);
+    for (Cartesian vertex : m_vertices) {
+        vertices.push_back(vertex + translation);
     }
-    // TODO
-    Polygon p;
-    p.setVertices(vertices);
-    return p;
+    return Polygon(vertices);
 }
 
-Polygon Polygon::rotate(const Angle& rotation) const {
+Polygon Polygon::rotateAroundPoint(const Angle& angle, const Coordinate& point) const {
     std::vector<Cartesian> vertices;
-    for (int i = 0; i < m_vertices.size(); i += 1) {
-        Polar v(m_vertices.at(i));
-        // TODO: Fix this
-        vertices.push_back(Polar(v.getRho(), v.getTheta() + rotation.getRadians()));
+    for (Cartesian vertex : m_vertices) {
+        Cartesian relative(vertex.getX() - point.getX(), vertex.getY() - point.getY());
+        Polar rotated(relative.getRho(), relative.getTheta() + angle);
+        Cartesian absolute(rotated.getX() + point.getX(), rotated.getY() + point.getY());
+        vertices.push_back(absolute);
     }
-    Polygon p;
-    p.setVertices(vertices);
-    return p;
+    return Polygon(vertices);
 }
 
 } // namespace sim

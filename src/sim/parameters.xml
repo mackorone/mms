@@ -3,10 +3,17 @@
 <!-- Graphical Parameters -->
 <pixels-per-meter>250</pixels-per-meter>
 <frame-rate>60</frame-rate>
+<tile-base-color>BLACK</tile-base-color>
+<tile-wall-color>RED</tile-wall-color>
+<tile-corner-color>GRAY</tile-corner-color>
+<mouse-body-color>BLUE</mouse-body-color>
+<mouse-wheel-color>GREEN</mouse-wheel-color>
+<mouse-sensor-color>WHITE</mouse-sensor-color>
 
 <!-- Simulation Parameters -->
 <random-seed>12345</random-seed> <!-- The seed value for rand() -->
 <glut-init-time>0.25</glut-init-time> <!-- Seconds -->
+<delta-time>0.005</delta-time> <!-- Seconds -->
 <min-sim-speed>0.1</min-sim-speed> <!-- Fraction of real-time -->
 <max-sim-speed>10.0</max-sim-speed> <!-- Fraction of real-time -->
 <default-sim-speed>1.0</default-sim-speed> <!-- Fraction of real-time -->

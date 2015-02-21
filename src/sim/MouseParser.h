@@ -1,9 +1,11 @@
 #pragma once
 
 #include <iostream>
+#include <string>
 #include <stdlib.h>
 #include <vector>
-
+#include "units/Cartesian.h"
+#include "units/Meters.h"
 #include "../lib/pugixml.hpp"
 
 namespace sim {
@@ -11,15 +13,15 @@ namespace sim {
 class MouseParser {
 
 public:
-    MouseParser();
-    // TODO: SOM
-    // TODO: Get Left Wheel Width and Radius
-    // TODO: Get Right Wheel Width and Radius
-    // TODO: Get Body Polygon (encodes startin position info)
+    MouseParser(const std::string& filePath);
+    Meters getWheelMeas(const std::string& wheel, const std::string& meas);
+    Cartesian getWheelPosition(const std::string& wheel);
 
+    std::vector<Cartesian> getBody();    
+    float floatConvert(const char* numValue);
+    
 private:
     pugi::xml_document doc;
-
 };
 
 } // namespace sim

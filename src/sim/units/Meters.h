@@ -13,6 +13,7 @@ public:
     Meters operator-(const Distance& distance) const;
     Meters operator*(float factor) const;
     Meters operator/(float factor) const;
+    void operator+=(const Distance& distance);
 
 };
 

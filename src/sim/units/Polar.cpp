@@ -4,9 +4,9 @@
 
 namespace sim {
 
-Polar::Polar(float rho, float theta) {
-    m_x = rho*cos(theta);
-    m_y = rho*sin(theta);
+Polar::Polar(const Distance& rho, const Angle& theta) {
+    m_x = Meters(rho.getMeters() * cos(theta.getRadians()));
+    m_y = Meters(rho.getMeters() * sin(theta.getRadians()));
 }
 
 Polar::Polar(const Coordinate& coordinate) {

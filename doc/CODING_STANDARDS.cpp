@@ -56,8 +56,7 @@ Namespaces
 Comments
 ----------
 
-// Comments should be used abundantly to describe the intention of the code. Single line comments
-// are preferred over multi-line comments.
+// Comments should be used abundantly to describe the intention of the code.
 
 // Descriptions of functions, variables, etc. should be placed in the ".h" files, over the thing
 // that they describe

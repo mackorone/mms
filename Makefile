@@ -8,10 +8,9 @@ LIBS = -lGL -lglut -lGLU
 # -std=c++11: Use the C++11 standard
 # -MMD: Automatically generate dependency files
 # -g: Add debugging symbols
-# -Os: Optimize code for size
 # -Wall: Show all warning messages
 # TODO: -pedantic-errors
-FLAGS = -MMD -std=c++11#-Os TODO: We can optimize later... #-Wall TODO: Fix all errors
+FLAGS = -MMD -std=c++11#TODO -Wall TODO: Fix all errors
 
 # Directories
 SRC = ./src/

@@ -3,95 +3,46 @@
 namespace sim {
 
 // TODO: SOM
-/*
-MouseParser::MouseParser() {
-    pugi::xml_parse_result result = doc.load_file("./myRobot.xml");
+
+MouseParser::MouseParser(const std::string& filePath) {
+    pugi::xml_parse_result result = doc.load_file(filePath.c_str());
     if (!result) {
 		std::cout << "Error" << std::endl;
-		std::cout << "Description: " << result.description() << std::endl;
+		std::cout << "description: " << result.description() << std::endl;
     }
 }
 
-float MouseParser::floatConvert(const char* numValue){
-	return static_cast<float>(atof(numValue));
+Meters MouseParser::getWheelMeas(const std::string& wheel, const std::string& meas) {
+    pugi::xml_node widthNode = doc.child(wheel.c_str()).child(meas.c_str());
+    float width = floatConvert(widthNode.child_value());
+    return Meters(width); 
+} 
+
+Cartesian MouseParser::getWheelPosition(const std::string& wheel) {
+    pugi::xml_node posNode = doc.child(wheel.c_str()).child("position");
+    float xValue = floatConvert(posNode.child("x").child_value());
+    float yValue = floatConvert(posNode.child("y").child_value()); 
+    return Cartesian(Meters(xValue), Meters(yValue));
 }
 
-std::vector<std::pair<float, float>> MouseParser::getShape() {
-
-    pugi::xml_node shape = doc.child("rob").child("shape").child("point");
-    std::vector<std::pair<float, float>> points;
-    std::pair<float, float> point;
-    
-    //Iterate though all members of shape
-    for(pugi::xml_node_iterator it=shape.begin(); it!=shape.end(); ++it) {
-		if(*(it->name())=='x') {
-            point.first=floatConvert(it->child_value()); //Implicit conversion 
+std::vector<Cartesian> MouseParser::getBody() {
+    pugi::xml_node bodyNode = doc.child("MouseBody");
+    std::vector<Cartesian> points;
+    float x, y;
+    for(pugi::xml_node_iterator it = bodyNode.begin(); it != bodyNode.end(); ++it){
+        if(*(it->name()) == 'x') {
+            x = floatConvert(it->child_value());
         }
-        else if(*(it->name())=='y') {
-            point.second=floatConvert(it->child_value()); //Implicit conversion
-            points.push_back(point); //Add point to end of vector
+        else if(*(it->name()) == 'y') {
+            y = floatConvert(it->child_value());
+            std::cout << x << ' ' << y << std::endl;
+            points.push_back(Cartesian(Meters(x), Meters(y)));
         }
     }
-
     return points;
 }
 
-
-float MouseParser::getHeight() {
-    return floatConvert(doc.child("rob").child("height").child_value()); //Implicit conversion
+float MouseParser::floatConvert(const char* numValue){
+        return static_cast<float>(atof(numValue));
 }
- 
-std::vector<std::vector<float>> MouseParser::getWheels() {
-    pugi::xml_node wheels=doc.child("rob").child("wheels").child("pointanddirection");
-    std::vector<std::vector<float>> wheelSpecs;
-    std::vector<float> specs;
-
-    for(pugi::xml_node_iterator it=wheels.begin(); it!=wheels.end(); ++it) {
-        if(*(it->name())=='x') {
-            specs.push_back(floatConvert(it->child_value())); //Implicit conversion
-        }
-        else if(*(it->name())=='y') {
-            specs.push_back(floatConvert(it->child_value())); //Implicit conversion
-        }
-        else if(*(it->name())=='d') {
-            specs.push_back(floatConvert(it->child_value())); //Implicit conversion
-            wheelSpecs.push_back(specs);
-            specs.clear();
-        }    
-    }
-    
-    return wheelSpecs;   
-}
-
-float MouseParser::getTorque() {
-    return floatConvert(doc.child("rob").child("wheels").child("torque").child_value());
-}
-
-float MouseParser::getDiameter() {
-    return floatConvert(doc.child("rob").child("wheels").child("diameter").child_value());
-}
-
-std::vector<std::vector<float>> MouseParser::getSensors() {
-    pugi::xml_node sensors=doc.child("rob").child("sensors").child("pointanddirection");
-    std::vector<std::vector<float>> sensorSpecs;
-    std::vector<float> specs;
-
-    for(pugi::xml_node_iterator it=sensors.begin(); it!=sensors.end(); ++it) {
-        if(*(it->name())=='x') {
-            specs.push_back(floatConvert(it->child_value())); //Implicit conversion
-        }
-        else if(*(it->name())=='y') {
-            specs.push_back(floatConvert(it->child_value())); //Implicit conversion
-        }
-        else if(*(it->name())=='d') {
-            specs.push_back(floatConvert(it->child_value())); //Implicit conversion
-            sensorSpecs.push_back(specs);
-            specs.clear();
-        }
-    }
-
-    return sensorSpecs;
-}
-*/
-
 } // namespace sim

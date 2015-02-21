@@ -8,6 +8,7 @@ public:
     virtual ~Time() = 0;
     float getSeconds() const;
     float getMilliseconds() const;
+    float getMicroseconds() const;
 
 protected:
     Time();

@@ -5,6 +5,7 @@
 #include "units/Cartesian.h"
 #include "units/RadiansPerSecond.h"
 #include "Wheel.h"
+#include "MouseParser.h"
 
 #include <vector>
 
@@ -36,6 +37,9 @@ namespace sim {
  *  is correct. Also note that this choice of "X" ensures consistency between
  *  different mice - by pretending that "X" is the location of the mouse, all
  *  mice start in the exact same location (zero translation, zero rotation).
+ *
+ *  TODO: This also has to do with the fact that a rotation requires a point to
+ *  TODO: rotate around. It's natural to choose the origin. // TODO: Polygon Rotate about any point
  */
 
 // TODO: This class should encapsulate all things to do with mouse, including sensors
@@ -58,13 +62,15 @@ public:
     Wheel* getLeftWheel();
 
 private:
+    MouseParser parser; // TODO: Shouldn't need to be a member variable
+
     Cartesian getTranslation() const; // TODO: Shouldn't need
 
     Cartesian m_translation; // As described above, the translation of the reference point "X"
     Radians m_rotation; // Also as described above, the rotation of the reference point "X"
     Polygon m_body; // The vertices of the mouse, // TODO: Something about the initial position
 
-    // For now, assume that we'll have two wheels
+    // The mouse, by assumption, is differential drive
     Wheel m_rightWheel;
     Wheel m_leftWheel;
 };

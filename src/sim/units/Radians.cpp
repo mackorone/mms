@@ -14,4 +14,8 @@ Radians Radians::operator+(const Angle& angle) const {
     return Radians(getRadians() + angle.getRadians());
 }
 
+void Radians::operator+=(const Angle& angle) {
+    m_radians += angle.getRadians();
+}
+
 } // namespace sim

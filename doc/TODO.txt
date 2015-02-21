@@ -1,41 +1,51 @@
 High Priority
 =============
+- Collision Detection
+- Parser classes for mouse and maze
 - Synchronization documentation between the World, Graphics, and Mouse 
 - Make Sensor and Motor abstract, support different types
-- Change float to units
-- Figure out how the discrete and continuous interfaces can coexist
-- Maze Validation (Tomasz)
-- Pass things by reference when possible
-- Make a distinction between the mouse interface and sim interface
+- Change float to units (including in the ParamParser and Param class)
+- Maze Validation (both physically valid mazes and competition valid mazes)
 
 Medium Priority
 ===============
+- Type safety (in terms of units) of the parameters
+- Convert floats to doubles where appropriate
+- Color class/object? Utility function for setting color? Drawer class?
+- Change the colors of the wheels based on the speed of the wheels
+- Show the direction that the robot is facing...
+- Run the program with maximum thread priority
 - New maze w/o restarting app
-- Ensure that any file can be loaded regardless of maze size specification - output an error
+- Make a distinction between the mouse interface and sim interface
+- Ensure that any file can be loaded regardless of maze size specification
 - Make terminal style output at bottom or right of window
 - Display another window of the robot's perception
-- Make the shortest path look a little better
+- Shortest path graphic
 - Rewrite the Makefile to use an "inc" directory
 - XML file for algorithm choice
 - Indicator of sim speed
 - Support more than two wheels
-- Sim code should match the bot code *exactly*
+- Sim code should match the bot code as closely as possible
 - Dual screen! (mini-map and zoomed-in view - 1x1, 3x3, relative and absolute rotation)
+- Reduce CPU usage - most is used by the drawing... cache some stuff??? Only redraw certain things???
+- Instead of speeding up and slowing down the simulator (which is difficult because
+  the Arduino code is already executing as fast as possible) we could take snapshots
+  of the simulation, and then run the simulator from that particular point. This would
+  involve providing some sort of snapshot interface to the algorithm.
+- Move the unit classes to the src directory
+- Make a wrapper function for a functions that sleep amout-duration
+- Ensure that the mouse update is the continuous function
+- Make sure that the coordinate frame of the robot is what we expect
+- Handle bad values in the parameters, such as bad colors, negative values, etc.
+- atoi -> strToInt
 
 Low Priority
 ===============
+- Use DIRECTIONS where possible
+- Pass things by reference when possible
+- Figure out how the discrete and continuous interfaces can coexist
 - Sprinkle Assertions everywhere
 - Make the mouse look prettier (draw black box around, or something)
 - Handle the case when target tile is unreachable - it just crashes right now
-- Ensure that all tiles are reachable in a randomly generated maze
-- Ensure that the maze conforms to the spec as outlined in the rules
-- The getClosestCenterTile() method in the Maze class only returns one center
-  tile, even if two or more of them are equally close to the start - thus sometimes
-  a valid shortest path is not indicated on the maze
 - Validate the coding standards (especially "{" placement)
 - Rewrite "i++" as "++i" or "i += 1"
-- Clean up the README
-
-Version 2.0
-===========
-- Make this a more realistic simulation by allowing angles, adding sensors, etc.

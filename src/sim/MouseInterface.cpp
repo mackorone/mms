@@ -8,7 +8,7 @@
 #include "units/MetersPerSecond.h"
 #include "units/Milliseconds.h"
 #include "units/Seconds.h"
-#include "Utilities.h"
+#include "SimUtilities.h"
 
 namespace sim {
 
@@ -18,6 +18,14 @@ MouseInterface::MouseInterface(Mouse* mouse) : m_mouse(mouse)
 
 MouseInterface::~MouseInterface()
 { }
+
+void MouseInterface::setLeftWheelSpeed(float radiansPerSecond) {
+    m_mouse->getLeftWheel()->setAngularVelocity(RadiansPerSecond(radiansPerSecond));
+}
+
+void MouseInterface::setRightWheelSpeed(float radiansPerSecond) {
+    m_mouse->getRightWheel()->setAngularVelocity(RadiansPerSecond(radiansPerSecond));
+}
 
 bool MouseInterface::wallFront() {
     //return m_mouse->wallFront();
