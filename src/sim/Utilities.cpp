@@ -80,7 +80,49 @@ bool isInt(std::string str) {
 bool isFloat(std::string str) {
     // TODO: The param parser won't work quite yet without this...
     // TODO: SOM
-    return false;
+
+    //ensure non-empty string
+    if(str.empty()) return false;
+
+    //ignore negative sign
+    //if entire string is negative sign then return false
+    if(str.at(0) == '-'){
+        if(str.size() <= 1) return false;
+        str = str.substr(1);
+    }
+    
+    bool hasDecimalPoint = false;
+
+    char cur;
+    
+    if(str.at(0) == '.'){
+        std::cout << "A FLOAT CANNOT LEAD WITH A DECIMAL POINT" << std::endl;
+        return false;
+    }
+
+    if(str.at(str.size() - 1) == '.') {
+        std::cout << "A FLOAT CANNOT END WITH A DECIMAL POINT" << std::endl;
+        return false;
+    }
+   
+    //ensure it only contains exactly one decimal point and digits 0-9
+    for(size_t i = 0; i < str.size(); i++){
+        cur = str.at(i);
+        if(cur == 46){
+            if(hasDecimalPoint){
+                std::cout << "PARAM PARSER: A FLOAT MUST CONTAIN EXACTLY "
+                          << "ONE DECIMAL POINT" << std::endl;
+                return false;
+            }
+            hasDecimalPoint = true;
+        } else if(cur < 48 || cur > 57){
+            std::cout << "PARAM PARSER: A FLOAT MUST CONTAIN DIGITS 0-9"
+                      << std::endl;
+            return false;
+        }
+    }
+    
+    return true;
 }
 
 bool strToBool(std::string str) {

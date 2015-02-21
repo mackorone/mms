@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdlib> 
-#include <GL/freeglut.h>
+#include <OpenGL/freeglut.h>
 #include <iostream> 
 #include <string>
 #include <vector>
