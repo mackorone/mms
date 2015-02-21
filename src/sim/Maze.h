@@ -49,6 +49,11 @@ private:
 
     // Loads the mazefile given by mazefile
     void loadMaze(std::string mazeFile);
+
+    /*
+    void saveMaze(std::string mazeFile, std::vector<std::vector<BasicTile>> maze);
+    std::vector<std::vector<BasicTile>> loadMaze(std::string mazeFile);
+    */
 };
 
 } // namespace sim

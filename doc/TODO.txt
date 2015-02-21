@@ -41,6 +41,7 @@ Medium Priority
 
 Low Priority
 ===============
+- Replace "cout" with "print"
 - Use DIRECTIONS where possible
 - Pass things by reference when possible
 - Figure out how the discrete and continuous interfaces can coexist

@@ -8,6 +8,9 @@
 
 namespace sim {
 
+// Prints a message to stdout
+void print(const std::string& msg);
+
 // Sleeps the current thread for ms milliseconds
 void sleep(const Time& time);
 

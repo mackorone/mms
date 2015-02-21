@@ -19,6 +19,10 @@
 
 namespace sim {
 
+void print(const std::string& msg) {
+    std::cout << msg << std::endl;
+}
+
 void sleep(const Time& time) {
     ASSERT(time.getMilliseconds() >= 0);
 	std::this_thread::sleep_for(std::chrono::microseconds(static_cast<int>(time.getMicroseconds())));

@@ -13,6 +13,7 @@ MouseParser::MouseParser(const std::string& filePath) {
 }
 
 Meters MouseParser::getWheelMeas(const std::string& wheel, const std::string& meas) {
+    // TODO: Change to strToFloat
     pugi::xml_node widthNode = doc.child(wheel.c_str()).child(meas.c_str());
     float width = floatConvert(widthNode.child_value());
     return Meters(width); 

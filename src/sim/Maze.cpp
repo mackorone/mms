@@ -43,14 +43,12 @@ bool Maze::initializeViaMazeFile() {
 
     // Then, check to see if it's a valid
     if (!validMaze(mazeFilePath)) {
-        std::cout << "INVALID MAZE PROVIDED" << std::endl;
-        exit(1);
+        print("Error: \"" + mazeFilePath + "\" failed maze validation");
         return false;
     }
     
     // Load the maze given by mazefile
     loadMaze(mazeFilePath);
-
     return true;
 }
 
