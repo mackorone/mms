@@ -6,6 +6,7 @@
 #include <iterator>
 #include <sstream>
 #include <string>
+#include <sys/stat.h>
 #include <thread>
 
 #ifdef __linux
@@ -130,6 +131,12 @@ std::vector<std::string> tokenize(std::string str) {
     }   
 
     return tokens;
+}
+
+bool isFile(std::string path) {
+    struct stat buf;
+    stat(path.c_str(), &buf);
+    return S_ISREG(buf.st_mode);
 }
 
 } // namespace sim

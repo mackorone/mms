@@ -33,4 +33,7 @@ float strToFloat(std::string str);
 // Tokenizes a string on whitespace
 std::vector<std::string> tokenize(std::string str);
 
+// True if path is a path to a file (or directory, respectively), false otherwise
+bool isFile(std::string path);
+
 } // namespace sim

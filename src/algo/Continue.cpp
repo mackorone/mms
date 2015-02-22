@@ -8,8 +8,8 @@
 void Continue::solve(sim::MouseInterface* mouse) {
 
     while (true) {
-        mouse->setRightWheelSpeed(10.0*M_PI);
-        mouse->setLeftWheelSpeed(-10.5*M_PI);
+        mouse->setRightWheelSpeed(2*M_PI);
+        mouse->setLeftWheelSpeed(-2.1*M_PI);
         sim::sleep(sim::Milliseconds(3000));
         /*
         mouse->setRightWheelSpeed(2.3*M_PI);

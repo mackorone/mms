@@ -40,17 +40,19 @@ Param::Param() {
     m_minSimSpeed = parser.getFloatIfHasFloat("min-sim-speed", 0.1);
     m_maxSimSpeed = parser.getFloatIfHasFloat("max-sim-speed", 10);
     m_defaultSimSpeed = parser.getFloatIfHasFloat("default-sim-speed", 10);
-    m_enforceOfficialMazeRules = parser.getBoolIfHasBool("enforce-official-maze-rules", true);
 
     // Maze Parameters
-    m_mazeDirectory = parser.getStringIfHasString("maze-directory", "src/maze_files/");
+    m_mazeDirectory = parser.getStringIfHasString("maze-directory", "src/mazes/");
     m_mazeFile = parser.getStringIfHasString("maze-file", "");
+    m_useMazeFile = parser.getBoolIfHasBool("use-maze-file", false);
     m_mazeWidth = parser.getIntIfHasInt("random-maze-width", 16);
     m_mazeHeight = parser.getIntIfHasInt("random-maze-height", 16);
     m_wallWidth = parser.getFloatIfHasFloat("wall-width", 0.012);
     m_wallLength = parser.getFloatIfHasFloat("wall-length", 0.156);
     m_wallHeight = parser.getFloatIfHasFloat("wall-height", 0.05);
     m_minSolutionLength = parser.getIntIfHasInt("min-solution-length", 40);
+    m_enforceOfficialMazeRules = parser.getBoolIfHasBool("enforce-official-maze-rules", true);
+    m_randomMazeAlgo = parser.getStringIfHasString("random-maze-algo", "TOMASZ");
     m_saveRandomMaze = parser.getBoolIfHasBool("save-random-maze", true);
 
     // Update the non-configurable parameters
@@ -122,16 +124,16 @@ float Param::defaultSimSpeed() {
     return m_defaultSimSpeed;
 }
 
-bool Param::enforceOfficialMazeRules() {
-    return m_enforceOfficialMazeRules;
-}
-
 std::string Param::mazeDirectory() {
     return m_mazeDirectory;
 }
 
 std::string Param::mazeFile() {
     return m_mazeFile;
+}
+
+bool Param::useMazeFile() {
+    return m_useMazeFile;
 }
 
 int Param::mazeWidth() {
@@ -156,6 +158,14 @@ float Param::wallHeight() {
 
 int Param::minSolutionLength() {
     return m_minSolutionLength;
+}
+
+bool Param::enforceOfficialMazeRules() {
+    return m_enforceOfficialMazeRules;
+}
+
+std::string Param::randomMazeAlgo() {
+    return m_randomMazeAlgo;
 }
 
 bool Param::saveRandomMaze() {

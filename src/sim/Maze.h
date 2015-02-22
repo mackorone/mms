@@ -31,22 +31,6 @@ private:
 
     // Extracts the maze information
     std::vector<std::vector<BasicTile>> extractMaze();
-
-    /*
-    // Randomly generate a maze
-    void randomize();
-    void tom_random();
-    //Initialize starting Maze
-    void initializeMaze();
-    // Break down a wall
-    void setWall(int x, int y, Direction direction, bool value);
-    // TODO: Refactor this...
-    void breakGradientWall();
-    void addMinPeg();
-    void surroundCenter();
-    void pathIntoCenter();
-    void hollowCenter();
-    */
 };
 
 } // namespace sim

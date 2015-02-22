@@ -30,6 +30,8 @@
 - Make sure that the coordinate frame of the robot is what we expect
 - Handle bad values in the parameters, such as bad colors, negative values, etc.
 - atoi -> strToInt
+- Put interface in root of src directory
+- write "isDirectory(std::string path)" and enforce this where necessary
 
 Low Priority
 ===============
