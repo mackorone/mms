@@ -34,7 +34,8 @@ Param::Param() {
     m_mouseSensorColor = parser.getStringIfHasString("mouse-sensor-color", "WHITE");
 
     // Simulation Parameters
-    m_randomSeed = parser.getIntIfHasInt("random-seed", time(NULL));
+    bool useRandomSeed = parser.getBoolIfHasBool("use-random-seed", false);
+    m_randomSeed = (useRandomSeed ? parser.getIntIfHasInt("random-seed", time(NULL)) : time(NULL));
     m_glutInitTime = parser.getFloatIfHasFloat("glut-init-time", 0.25);
     m_deltaTime = parser.getFloatIfHasFloat("delta-time", 0.005);
     m_minSimSpeed = parser.getFloatIfHasFloat("min-sim-speed", 0.1);
@@ -45,19 +46,18 @@ Param::Param() {
     m_mazeDirectory = parser.getStringIfHasString("maze-directory", "src/mazes/");
     m_mazeFile = parser.getStringIfHasString("maze-file", "");
     m_useMazeFile = parser.getBoolIfHasBool("use-maze-file", false);
-    m_mazeWidth = parser.getIntIfHasInt("random-maze-width", 16);
-    m_mazeHeight = parser.getIntIfHasInt("random-maze-height", 16);
+    m_randomMazeWidth = parser.getIntIfHasInt("random-maze-width", 16);
+    m_randomMazeHeight = parser.getIntIfHasInt("random-maze-height", 16);
     m_wallWidth = parser.getFloatIfHasFloat("wall-width", 0.012);
     m_wallLength = parser.getFloatIfHasFloat("wall-length", 0.156);
     m_wallHeight = parser.getFloatIfHasFloat("wall-height", 0.05);
-    m_minSolutionLength = parser.getIntIfHasInt("min-solution-length", 40);
     m_enforceOfficialMazeRules = parser.getBoolIfHasBool("enforce-official-maze-rules", true);
     m_randomMazeAlgo = parser.getStringIfHasString("random-maze-algo", "TOMASZ");
     m_saveRandomMaze = parser.getBoolIfHasBool("save-random-maze", true);
 
     // Update the non-configurable parameters
-    m_windowWidth = (m_mazeWidth * (m_wallLength + m_wallWidth)) * m_pixelsPerMeter;
-    m_windowHeight = (m_mazeHeight * (m_wallLength + m_wallWidth)) * m_pixelsPerMeter;
+    m_windowWidth = (m_randomMazeWidth * (m_wallLength + m_wallWidth)) * m_pixelsPerMeter;
+    m_windowHeight = (m_randomMazeHeight * (m_wallLength + m_wallWidth)) * m_pixelsPerMeter;
 }
 
 int Param::pixelsPerMeter() {
@@ -136,12 +136,12 @@ bool Param::useMazeFile() {
     return m_useMazeFile;
 }
 
-int Param::mazeWidth() {
-    return m_mazeWidth;
+int Param::randomMazeWidth() {
+    return m_randomMazeWidth;
 }
 
-int Param::mazeHeight() {
-    return m_mazeHeight;
+int Param::randomMazeHeight() {
+    return m_randomMazeHeight;
 }
 
 float Param::wallWidth() {
@@ -154,10 +154,6 @@ float Param::wallLength() {
 
 float Param::wallHeight() {
     return m_wallHeight;
-}
-
-int Param::minSolutionLength() {
-    return m_minSolutionLength;
 }
 
 bool Param::enforceOfficialMazeRules() {

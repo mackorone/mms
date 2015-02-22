@@ -1,21 +1,12 @@
 #include "Maze.h"
 
-#include <cstdlib>
-#include <math.h>
-#include <fstream>
-#include <iostream>
-#include <iterator>
-#include <sstream>
-#include <time.h>
-#include <queue>
 #include <vector>
-#include <stack>
 
 #include "MazeFileUtilities.h"
 #include "MazeGenerator.h"
 #include "Param.h"
-#include "Tile.h"
 #include "SimUtilities.h"
+#include "Tile.h"
 
 namespace sim {
 

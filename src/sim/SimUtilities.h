@@ -11,6 +11,9 @@ namespace sim {
 // Prints a message to stdout
 void print(const std::string& msg);
 
+// Returns a float in [0.0, 1.0]
+float getRandom();
+
 // Sleeps the current thread for ms milliseconds
 void sleep(const Time& time);
 

@@ -18,11 +18,21 @@
 #endif
 
 #include "Assert.h"
+#include "Param.h"
 
 namespace sim {
 
 void print(const std::string& msg) {
     std::cout << msg << std::endl;
+}
+
+float getRandom() {
+    // TODO: Should still work with a seed value
+    static int seed = P()->randomSeed();
+    // TODO: Tomasz said he'd to it
+    // TODO: Should return a random float from 0.0
+    // TODO: Modify the rest of the codebase to use this generator (delete the seed() calls elsewhere)
+    return 0.0;
 }
 
 void sleep(const Time& time) {
