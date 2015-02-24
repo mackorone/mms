@@ -11,9 +11,9 @@ ParamParser::ParamParser(std::string filePath) {
     // Open the document
     pugi::xml_parse_result result = m_doc.load_file(filePath.c_str());
     if (!result) {
-        std::cout << "Unable to read parameters from \"" << filePath << "\": "
-                  << result.description() << std::endl;
+        print("Unable to read parameters from \"" + filePath + "\": " + result.description());
     }
+    // TODO: How to handle the failing case???
     ASSERT(result);
 }
 

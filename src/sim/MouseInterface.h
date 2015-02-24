@@ -17,7 +17,7 @@ public:
     void setLeftWheelSpeed(float radiansPerSecond); 
     void setRightWheelSpeed(float radiansPerSecond); 
 
-    // ---------------------- Mouse Interfact Methods ----------------------- //
+    // ---------------------- Mouse Interface Methods ----------------------- //
 
     bool wallFront();
     bool wallRight();

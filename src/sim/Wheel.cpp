@@ -2,15 +2,13 @@
 
 namespace sim {
 
+Wheel::Wheel() : m_radius(Meters(0.0)), m_width(Meters(0.0)), m_position(Cartesian(Meters(0.0), Meters(0.0))),
+        m_angularVelocity(0.0) {
+}
+
 Wheel::Wheel(const Distance& radius, const Distance& width, const Coordinate& position) :
-        m_radius(radius), m_width(width), m_position(position), m_rotation(0),
-        m_angularVelocity(0.0) {
+        m_radius(radius), m_width(width), m_position(position), m_angularVelocity(0.0) {
 }
-
-Wheel::Wheel() : m_radius(0), m_width(0), m_position(Meters(0.0), Meters(0.0)), m_rotation(0),
-        m_angularVelocity(0.0) {
-}
-
 
 Meters Wheel::getRadius() const {
     return m_radius;
@@ -30,16 +28,6 @@ RadiansPerSecond Wheel::getAngularVelocity() const {
 
 void Wheel::setAngularVelocity(const AngularVelocity& angularVelocity) {
     m_angularVelocity = RadiansPerSecond(angularVelocity);
-}
-
-void Wheel::rotate(const Angle& angle) {
-    m_rotation += angle;
-}
-
-Radians Wheel::popRotation() {
-    Radians rotation = m_rotation;
-    m_rotation = Radians(0);
-    return rotation;
 }
 
 } // namespace sim

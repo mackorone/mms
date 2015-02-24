@@ -34,7 +34,7 @@ Param::Param() {
     m_mouseSensorColor = parser.getStringIfHasString("mouse-sensor-color", "WHITE");
 
     // Simulation Parameters
-    bool useRandomSeed = parser.getBoolIfHasBool("use-random-seed", false);
+    bool useRandomSeed = parser.getBoolIfHasBool("use-random-seed", false); // TODO: Is this correct behavior???
     m_randomSeed = (useRandomSeed ? parser.getIntIfHasInt("random-seed", time(NULL)) : time(NULL));
     m_glutInitTime = parser.getFloatIfHasFloat("glut-init-time", 0.25);
     m_deltaTime = parser.getFloatIfHasFloat("delta-time", 0.005);

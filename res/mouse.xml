@@ -1,27 +1,42 @@
-// TODO: SOM
-<LeftWheel>
-	<radius>.02</radius>
-	<width>.025</width>
-	<position>
-		<x>.06</x>
-		<y>.075</y>
-	</position>
-</LeftWheel>
-<RightWheel>
-	<radius>.02</radius>
-	<width>.025</width>
-	<position>
-		<x>.1</x>
-		<y>.075</y>
-	</position>
-</RightWheel>
-<MouseBody>
-	<x>.06</x> 
-	<y>.05</y>
-	<x>.06</x>
-	<y>.1</y>
-	<x>.1</x>
-	<y>.1</y>
-	<x>.1</x>
-	<y>.05</y>
-</MouseBody>
+<Body>
+    <Point>
+        <X>.06</X> 
+        <Y>.05</Y>
+    </Point>
+    <Point>
+        <X>.06</X>
+        <Y>.1</Y>
+    </Point>
+    <Point>
+        <X>.1</X>
+        <Y>.1</Y>
+    </Point>
+    <Point>
+        <X>.1</X>
+        <Y>.05</Y>
+    </Point>
+</Body>
+<Wheels>
+    <Left>
+        <Radius>.02</Radius>
+        <Width>.025</Width>
+        <Position>
+            <Point>
+                <X>.06</X>
+                <Y>.075</Y>
+            </Point>
+        </Position>
+    </Left>
+    <Right>
+        <Radius>.02</Radius>
+        <Width>.025</Width>
+        <Position>
+            <Point>
+                <X>.1</X>
+                <Y>.075</Y>
+            </Point>
+        </Position>
+    </Right>
+</Wheels>
+<Sensors>
+</Sensors>

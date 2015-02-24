@@ -54,7 +54,7 @@ void World::checkCollision() {
 
 
     if (collision) {
-        std::cout << "COLLIDED" << std::endl;
+        print("COLLIDED");
     }
 }
 

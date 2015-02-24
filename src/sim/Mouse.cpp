@@ -7,30 +7,31 @@
 #include <MetersPerSecond.h>
 #include <Polar.h>
 
+#include "MouseParser.h"
 #include "Param.h"
 #include "SimUtilities.h"
 
 namespace sim {
 
-Mouse::Mouse() : m_translation(Cartesian(Meters(0), Meters(0))), m_rotation(Radians(0)) {
+Mouse::Mouse() : m_rotation(Radians(0.0)), m_translation(Cartesian(Meters(0.0), Meters(0.0))) {
+
+    // Create the mouse parser object
+    MouseParser parser(getProjectDirectory() + "res/mouse.xml");
+
+    // Initialize the body
+    m_body = parser.getBody();
+
+    // Initialize the wheels
+    m_rightWheel = parser.getWheel(RIGHT);
+    m_leftWheel = parser.getWheel(LEFT);
+
+    // Initialize the sensors
+    m_sensors = parser.getSensors();
 
     // TODO: Validate the contents of the mouse file (like valid mouse starting position)
-    MouseParser parser(getProjectDirectory() + "res/mouse.xml");
-    Meters radius = parser.getWheelMeas("LeftWheel", "radius");
-    Meters width = parser.getWheelMeas("LeftWheel", "width");
-    Cartesian pos = parser.getWheelPosition("LeftWheel");
+    // TODO: The floating point position of the wheels must be the exact same, as in ==
 
-    m_leftWheel = Wheel(radius, width, pos);
-
-    radius = parser.getWheelMeas("RightWheel", "radius");
-    width = parser.getWheelMeas("RightWheel", "width");
-    pos = parser.getWheelPosition("RightWheel");
-
-    m_rightWheel = Wheel(radius, width, pos);
-
-    // Create the vertices for the mouse
-    std::vector<Cartesian> vertices = parser.getBody();
-    m_body = Polygon(vertices);
+    // TODO: Reassign the translation to be the center of the axis connecting the wheels
 }
 
 // TODO: Shouldn't need this method
@@ -106,9 +107,17 @@ void Mouse::update(const Time& elapsed) {
      *  for the instantaneous change in rotation and translation (with respect to the robot)
      *  are as follows:
      *
-     *      dx/dt = 0
-     *      dy/dt = (rightWheelSpeed - leftWheelSpeed) / 2
+     *      dx/dt = (rightWheelSpeed - leftWheelSpeed) / 2
+     *      dy/dt = 0
      *      d0/dt = (rightWheelSpeed + leftWheelSpeed) / base
+     *
+     *  where the coordinate axes with respect to the robot are as follows:
+     *
+     *               x
+     *               ^
+     *               |
+     *              /|\
+     *      y <----0---0
      *
      *  Note that dx/dy = 0 since it's impossible for the robot to move laterally. Also note
      *  that since the left and right wheels are oriented oppositely, a positive wheel speed
@@ -125,6 +134,7 @@ void Mouse::update(const Time& elapsed) {
      *  rotation of the robot, it's unnecessary to use it here. Our elapsed times should be
      *  small and thus the change in rotation should be mostly negligible.
      */
+    // TODO: Fix this to get rid of the reference point
 
     // TODO: Fix the unit classes so I don't have to get the primitive values as often...
 
@@ -148,24 +158,13 @@ void Mouse::update(const Time& elapsed) {
     // TODO: When we add M_PI/2.0, we assume that all robots will be facing vertically to start
 }
 
-// TODO... better interface
-Wheel* Mouse::getRightWheel() {
-    return &m_rightWheel;
+Wheel* Mouse::getWheel(WheelSide side) {
+    switch (side) {
+        case LEFT:
+            return &m_leftWheel;
+        case RIGHT:
+            return &m_rightWheel;
+    }
 }
-
-Wheel* Mouse::getLeftWheel() {
-    return &m_leftWheel;
-}
-
-/*
-void Mouse::stepBoth() {
-    m_leftWheel.rotate(Radians(M_PI/100.0));
-    m_rightWheel.rotate(Radians(M_PI/100.0));
-}
-void Mouse::update() {
-    Radians leftRotation = m_leftWheel.popRotation();
-    Radians rightRotation = m_rightWheel.popRotation();
-}
-*/
 
 } // namespace sim
