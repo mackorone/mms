@@ -19,22 +19,18 @@
 <Wheels>
     <Left>
         <Radius>.02</Radius>
-        <Width>.025</Width>
+        <Width>.01</Width>
         <Position>
-            <Point>
-                <X>.06</X>
-                <Y>.075</Y>
-            </Point>
+            <X>.055</X>
+            <Y>.075</Y>
         </Position>
     </Left>
     <Right>
         <Radius>.02</Radius>
-        <Width>.025</Width>
+        <Width>.01</Width>
         <Position>
-            <Point>
-                <X>.1</X>
-                <Y>.075</Y>
-            </Point>
+            <X>.105</X>
+            <Y>.075</Y>
         </Position>
     </Right>
 </Wheels>

@@ -16,6 +16,10 @@ float Distance::getCentimeters() const {
     return getMeters() * 100;
 }
 
+bool Distance::operator==(const Distance& distance) const {
+    return getMeters() == distance.getMeters();
+}
+
 Seconds Distance::operator/(const Speed& speed) const {
     return Seconds(getMeters()/speed.getMetersPerSecond());
 }

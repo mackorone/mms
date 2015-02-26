@@ -4,6 +4,8 @@
 #include <Meters.h>
 #include <RadiansPerSecond.h>
 
+#include "Polygon.h"
+
 namespace sim {
 
 enum WheelSide { LEFT = 0, RIGHT = 1};
@@ -16,20 +18,20 @@ public:
     Meters getRadius() const;
     Meters getWidth() const;
     Cartesian getPosition() const;
+    Polygon getPolygon() const;
 
     // DC motor methods
     RadiansPerSecond getAngularVelocity() const;
     void setAngularVelocity(const AngularVelocity& angularVelocity);
     
 private:
-    // Note that the angle of each wheel, with respect to the mouse, is always zero.
+    // Constants // TODO: Should they be though
     Meters m_radius;
     Meters m_width;
-
-    // The initial position of the wheel, relative to the origin
     Cartesian m_position;
+    Polygon m_polygon;
 
-    // The current angular velocity of the wheel
+    // Variables
     RadiansPerSecond m_angularVelocity;
 };
 

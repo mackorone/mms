@@ -7,13 +7,14 @@
 #include <MetersPerSecond.h>
 #include <Polar.h>
 
+#include "Assert.h"
 #include "MouseParser.h"
 #include "Param.h"
 #include "SimUtilities.h"
 
 namespace sim {
 
-Mouse::Mouse() : m_rotation(Radians(0.0)), m_translation(Cartesian(Meters(0.0), Meters(0.0))) {
+Mouse::Mouse() : m_rotation(Radians(0.0)) {
 
     // Create the mouse parser object
     MouseParser parser(getProjectDirectory() + "res/mouse.xml");
@@ -29,72 +30,27 @@ Mouse::Mouse() : m_rotation(Radians(0.0)), m_translation(Cartesian(Meters(0.0), 
     m_sensors = parser.getSensors();
 
     // TODO: Validate the contents of the mouse file (like valid mouse starting position)
-    // TODO: The floating point position of the wheels must be the exact same, as in ==
+    // Note: The position of the wheels must be the exact same at the start of execution
+    ASSERT(m_leftWheel.getPosition().getY() == m_rightWheel.getPosition().getY());
 
-    // TODO: Reassign the translation to be the center of the axis connecting the wheels
+    // Reassign the translation to be the midpoint of the axis connecting the two wheels
+    m_start = Cartesian(Meters((m_leftWheel.getPosition().getX() + m_rightWheel.getPosition().getX()) / 2.0),
+                        Meters(m_leftWheel.getPosition().getY()));
+    m_translation = m_start;
 }
 
-// TODO: Shouldn't need this method
-Cartesian Mouse::getTranslation() const {
-
-    Cartesian centerOfMass((m_rightWheel.getPosition().getX() + m_leftWheel.getPosition().getX())/2.0, m_rightWheel.getPosition().getY());
-    Polar vec(centerOfMass.getRho(), m_rotation + centerOfMass.getTheta()); // The current rotation vector
-    Cartesian disp(vec.getX() - centerOfMass.getX(), vec.getY() - centerOfMass.getY());
-
-    return Cartesian(m_translation.getX() - disp.getX(), m_translation.getY() - disp.getY());
-}
-
-// TODO: Better interface for polygons
 std::vector<Polygon> Mouse::getShapes() const {
 
     // Create the shapes vector
-    std::vector<Polygon> shapes;
+    std::vector<Polygon> polygons;
+    polygons.push_back(m_body);
+    polygons.push_back(m_rightWheel.getPolygon());
+    polygons.push_back(m_leftWheel.getPolygon());
 
-    // The mouse body
-    shapes.push_back(m_body);
-
-    // TODO: We really only need to do this logic once
-    // TODO: This is *really* ugly... fix this...
-    // Right wheel
-    std::vector<Cartesian> rightWheelPolygon;
-
-    Meters rightWheelHalfWidth = m_rightWheel.getWidth() / 2.0;
-    Meters rightWheelRadius = m_rightWheel.getRadius();
-    Cartesian rightWheelPosition = m_rightWheel.getPosition();
-
-    rightWheelPolygon.push_back(rightWheelPosition + Cartesian(
-        Meters((rightWheelHalfWidth * -1).getMeters()), Meters((rightWheelRadius * -1).getMeters())));
-    rightWheelPolygon.push_back(rightWheelPosition + Cartesian(
-        Meters((rightWheelHalfWidth * -1).getMeters()), Meters((rightWheelRadius *  1).getMeters())));
-    rightWheelPolygon.push_back(rightWheelPosition + Cartesian(
-        Meters((rightWheelHalfWidth *  1).getMeters()), Meters((rightWheelRadius *  1).getMeters())));
-    rightWheelPolygon.push_back(rightWheelPosition + Cartesian(
-        Meters((rightWheelHalfWidth *  1).getMeters()), Meters((rightWheelRadius * -1).getMeters())));
-
-    shapes.push_back(Polygon(rightWheelPolygon));
-
-    // Left wheel
-    std::vector<Cartesian> leftWheelPolygon;
-
-    Meters leftWheelHalfWidth = m_leftWheel.getWidth() / 2.0;
-    Meters leftWheelRadius = m_leftWheel.getRadius();
-    Cartesian leftWheelPosition = m_leftWheel.getPosition();
-
-    leftWheelPolygon.push_back(leftWheelPosition + Cartesian(
-        Meters((leftWheelHalfWidth * -1).getMeters()), Meters((leftWheelRadius * -1).getMeters())));
-    leftWheelPolygon.push_back(leftWheelPosition + Cartesian(
-        Meters((leftWheelHalfWidth * -1).getMeters()), Meters((leftWheelRadius *  1).getMeters())));
-    leftWheelPolygon.push_back(leftWheelPosition + Cartesian(
-        Meters((leftWheelHalfWidth *  1).getMeters()), Meters((leftWheelRadius *  1).getMeters())));
-    leftWheelPolygon.push_back(leftWheelPosition + Cartesian(
-        Meters((leftWheelHalfWidth *  1).getMeters()), Meters((leftWheelRadius * -1).getMeters())));
-
-    shapes.push_back(Polygon(leftWheelPolygon));
-
-    // TODO : Clear this
+    // Translate and rotate the Polygons appropriately
     std::vector<Polygon> adjustedShapes;
-    for (int i = 0; i < shapes.size(); i += 1) {
-        adjustedShapes.push_back(shapes.at(i).rotateAroundPoint(m_rotation, Cartesian(Meters(0.0), Meters(0.0))).translate(getTranslation()));
+    for (Polygon polygon : polygons) {
+        adjustedShapes.push_back(polygon.translate(m_translation - m_start).rotateAroundPoint(m_rotation, m_translation));
     }
     return adjustedShapes;
 }
@@ -116,7 +72,8 @@ void Mouse::update(const Time& elapsed) {
      *               x
      *               ^
      *               |
-     *              /|\
+     *               |
+     *              / \
      *      y <----0---0
      *
      *  Note that dx/dy = 0 since it's impossible for the robot to move laterally. Also note
@@ -134,9 +91,6 @@ void Mouse::update(const Time& elapsed) {
      *  rotation of the robot, it's unnecessary to use it here. Our elapsed times should be
      *  small and thus the change in rotation should be mostly negligible.
      */
-    // TODO: Fix this to get rid of the reference point
-
-    // TODO: Fix the unit classes so I don't have to get the primitive values as often...
 
     // First get the speed of each wheel
     MetersPerSecond rightWheelSpeed(
@@ -154,8 +108,6 @@ void Mouse::update(const Time& elapsed) {
     // from the positive x-axis but, by default, the robot has 0 rotation and moves in the positive y direction.
     Meters distance((rightWheelSpeed - leftWheelSpeed).getMetersPerSecond() / 2.0 * elapsed.getSeconds());
     m_translation += Polar(distance, Radians(M_PI / 2.0) + m_rotation);
-
-    // TODO: When we add M_PI/2.0, we assume that all robots will be facing vertically to start
 }
 
 Wheel* Mouse::getWheel(WheelSide side) {

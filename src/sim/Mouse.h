@@ -11,7 +11,6 @@
 
 namespace sim {
 
-// TODO
 class Mouse {
 
 public:
@@ -23,18 +22,19 @@ public:
     // Instruct the mouse to update its own position based on how much simulation time has elapsed
     void update(const Time& elapsed);
 
-    // TODO: Are these completely necessary - make a nicer interface for these
+    // Retrieve a reference to a wheel
     Wheel* getWheel(WheelSide side);
 
 private:
-    Cartesian getTranslation() const; // TODO: Shouldn't need when we replace the reference point thing
-
-    // The non-const rotation and translation of the mouse
+    // The rotation and translation of the mouse, which change throughout execution
     Radians m_rotation;
     Cartesian m_translation;
 
-    // The const body of the mouse, as it's positioned at the start of the maze
+    // The body of the mouse, as it's positioned at the start execution
     Polygon m_body;
+
+    // The translation of the mouse at the start of execution (depends on m_body)
+    Cartesian m_start;
 
     // By assumption, the mouse is differential drive.
     Wheel m_leftWheel;
