@@ -2,6 +2,8 @@
 
 #include "Maze.h"
 #include "Mouse.h"
+#include "Polygon.h"
+#include <vector>
 
 namespace sim {
 
@@ -27,6 +29,7 @@ public:
 
 private:
     void checkCollision(); // TODO make this prettier
+    bool checkTileCollision(Tile* tile, std::vector<Polygon> mouseShapes);
     Maze* m_maze; // TODO: Need this be persistent???
     Mouse* m_mouse;
 

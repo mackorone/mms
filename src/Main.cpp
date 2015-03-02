@@ -93,7 +93,7 @@ void draw() {
 
     // TODO: Fix these late frames
     if (duration > 1.0/sim::P()->frameRate()) {
-        std::cout << "A frame was late by " << duration - 1.0/sim::P()->frameRate() << " seconds" << std::endl;
+        //std::cout << "A frame was late by " << duration - 1.0/sim::P()->frameRate() << " seconds" << std::endl;
     }
 
     // Sleep the appropriate amout of time, base on the drawing duration

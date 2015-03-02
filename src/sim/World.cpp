@@ -8,6 +8,7 @@
 
 #include <cmath> // TODO: Necessary???
 #include <iostream> // TODO
+#include <math.h>
 
 namespace sim {
 
@@ -47,19 +48,131 @@ void World::simulate() {
 void World::checkCollision() {
 
     // Use m_mouse, m_maze, getPolys(), etc. to determine collisition
+    bool collision = false;
+    std::vector<Polygon> mouseShapes = m_mouse->getShapes();
+    Cartesian refPoint = mouseShapes.at(2).getVertices().at(0); //Bottom left coordinate of left wheel
+    int x = static_cast<int>(floor(refPoint.getX().getMeters()/.168));
+    int y = static_cast<int>(floor(refPoint.getY().getMeters()/.168));
+    
+    //Check center tile
+    Tile* checkTile = m_maze->getTile(x, y);
+    collision = checkTileCollision(checkTile, mouseShapes);
 
-    bool collision(false);
+    //Check bottom left tile
+    if(x != 0 && y != 0 && !collision) {
+        checkTile = m_maze->getTile(x-1, y-1);
+        collision = checkTileCollision(checkTile, mouseShapes);
+    }
 
+    //Check center left tile
+    if(x != 0  && !collision) {
+        checkTile = m_maze->getTile(x-1, y);
+        collision = checkTileCollision(checkTile, mouseShapes);
+    }
 
-    // TODO: SOM
+    //Check top left tile 
+    if(x != 0 && y != 15 && !collision) {
+        checkTile = m_maze->getTile(x-1, y+1);
+        collision = checkTileCollision(checkTile, mouseShapes);
+    }
 
+    //Check top center tile 
+    if(y != 15 && !collision) {
+        checkTile = m_maze->getTile(x, y+1);
+        collision = checkTileCollision(checkTile, mouseShapes);
+    }
 
+    //Check bottom center tile
+    if(y != 0 && !collision) {
+        checkTile = m_maze->getTile(x, y-1);
+        collision = checkTileCollision(checkTile, mouseShapes);
+    }
+
+    //Check top right tile
+    if(x != 15 && y != 15 && !collision) {
+        checkTile = m_maze->getTile(x+1, y+1);
+        collision = checkTileCollision(checkTile, mouseShapes);
+    }
+
+    //Check center right tile
+    if(x != 15 && !collision) {
+        checkTile = m_maze->getTile(x+1, y);
+        collision = checkTileCollision(checkTile, mouseShapes);
+    }
+
+    //Check bottom right tile
+    if(x != 15 && y != 0 && !collision) {
+        checkTile = m_maze->getTile(x+1, y-1);
+        collision = checkTileCollision(checkTile, mouseShapes);
+    }
 
     if (collision) {
         std::cout << "COLLIDED" << std::endl;
     }
+    else{
+        std::cout << "No Collision" << std::endl;
+    }
 }
 
+bool World::checkTileCollision(Tile* tile, std::vector<Polygon> mouseShapes) {
+    bool collision;
+    std::vector<Polygon> wallPolys = tile->getWallPolygons();
+    std::vector<Polygon> cornerPolys = tile->getCornerPolygons();
+    std::vector<Cartesian> partPoints, tilePoints;
+    float partStartX, partStartY, partStartTest, partEndX, partEndY, partEndTest, wallStartX, wallStartY, wallStartTest, wallEndX, wallEndY, wallEndTest;
+    //Iterate through each mouse part
+    for(int i=0; i<mouseShapes.size(); i++) {
+        partPoints = mouseShapes.at(i).getVertices();
+        //Iterate through each point(line) in specific part
+        for(int j=0; j<partPoints.size(); j++) {
+            partStartX = partPoints.at(j).getX().getMeters();
+            partStartY = partPoints.at(j).getY().getMeters();
+            partEndX = partPoints.at((j+1) % partPoints.size()).getX().getMeters();
+            partEndY = partPoints.at((j+1) % partPoints.size()).getY().getMeters();
+            //Check all wall polygons
+            for(int k=0; k<wallPolys.size(); k++) {
+                tilePoints = wallPolys.at(k).getVertices();
+                //Iterate through each line in the polygon
+                for(int l=0; l<tilePoints.size(); l++) { 
+                    wallStartX = tilePoints.at(l).getX().getMeters();
+                    wallStartY = tilePoints.at(l).getY().getMeters();
+                    wallEndX = tilePoints.at((l+1) % 4).getX().getMeters();
+                    wallEndY = tilePoints.at((l+1) % 4).getY().getMeters();
+                    /*Test if end points of part line are on opposite sides of 
+                      wall line and vice versa */
+                    partStartTest = (wallEndX-wallStartX)*(partStartY-wallEndY) - (wallEndY-wallStartY)*(partStartX-wallEndX);
+                    partEndTest = (wallEndX-wallStartX)*(partEndY-wallEndY) - (wallEndY-wallStartY)*(partEndX-wallEndX);
+                    wallStartTest = (partEndX-partStartX)*(wallStartY-partEndY) - (partEndY-partStartY)*(wallStartX-partEndX);
+                    wallEndTest = (partEndX-partStartX)*(wallEndY-partEndY) - (partEndY-partStartY)*(wallEndX-partEndX);
+                    if((partStartTest*partEndTest <= 0) && (wallStartTest*wallEndTest <=0)) {
+                        return true;
+                    }
+                } 
+            }
+            //Check all corner polygons
+            for(int k=0; k<cornerPolys.size(); k++) {
+                tilePoints = cornerPolys.at(k).getVertices();
+               //Iterate through each line in the polygon
+                for(int l=0; l<tilePoints.size(); l++) {
+                    wallStartX = tilePoints.at(l).getX().getMeters();
+                    wallStartY = tilePoints.at(l).getY().getMeters();
+                    wallEndX = tilePoints.at((l+1) % 4).getX().getMeters();
+                    wallEndY = tilePoints.at((l+1) % 4).getY().getMeters();
+                    /*Test if end points of part line are on opposite sides of 
+                      wall line and vice versa */
+                    partStartTest = (wallEndX-wallStartX)*(partStartY-wallEndY) - (wallEndY-wallStartY)*(partStartX-wallEndX);
+                    partEndTest = (wallEndX-wallStartX)*(partEndY-wallEndY) - (wallEndY-wallStartY)*(partEndX-wallEndX);
+                    wallStartTest = (partEndX-partStartX)*(wallStartY-partEndY) - (partEndY-partStartY)*(wallStartX-partEndX);
+                    wallEndTest = (partEndX-partStartX)*(wallEndY-partEndY) - (partEndY-partStartY)*(wallEndX-partEndX);
+                    if((partStartTest*partEndTest <= 0) && (wallStartTest*wallEndTest <=0)) {
+                        return true;
+                    }
+                }                
+            }
+        }
+    }
+    return false;
+}
 
 #if(0) // TODO
 bool Mouse::inGoal() {
