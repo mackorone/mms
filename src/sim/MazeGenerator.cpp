@@ -1,6 +1,7 @@
 #include "MazeGenerator.h"
 
 #include "Param.h"
+#include "SimUtilities.h"
 
 namespace sim {
 
@@ -40,7 +41,7 @@ std::vector<std::vector<BasicTile>> MazeGenerator::random() {
         std::vector<BasicTile> column;
         for (int y = 0; y < maze.at(x).size(); y += 1) {
             for (Direction direction : DIRECTIONS) {
-                bool wallExists = (rand() <= (RAND_MAX * wallProb));
+                bool wallExists = (getRandom() <= wallProb);
                 switch (direction) {
                     case NORTH:
                         if (y + 1 < P()->randomMazeHeight()) {

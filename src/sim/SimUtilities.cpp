@@ -27,12 +27,17 @@ void print(const std::string& msg) {
 }
 
 float getRandom() {
-    // TODO: Should still work with a seed value
-    static int seed = P()->randomSeed();
-    // TODO: Tomasz said he'd to it
-    // TODO: Should return a random float from 0.0
-    // TODO: Modify the rest of the codebase to use this generator (delete the seed() calls elsewhere)
+#ifdef __linux
+    static bool seeded = false;
+    if (!seeded) {
+        srand(sim::P()->randomSeed());
+        seeded = true;
+    }
+    return rand() / (float) RAND_MAX;
+#elif _WIN32
+    // TODO: Tomasz said he'd implement the Windows version
     return 0.0;
+#endif
 }
 
 void sleep(const Time& time) {

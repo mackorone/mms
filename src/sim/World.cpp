@@ -4,6 +4,7 @@
 #include <RadiansPerSecond.h>
 #include <Milliseconds.h>
 
+#include "GeometryUtilities.h"
 #include "Param.h"
 #include "SimUtilities.h"
 
@@ -16,9 +17,6 @@ void World::simulate() {
 
     // TODO: Explain why locks aren't completely necessary here...
 
-    // TODO
-    //m_mouse->getRightWheel()->setAngularVelocity(RadiansPerSecond(2*M_PI));
-    //m_mouse->getLeftWheel()->setAngularVelocity(RadiansPerSecond(-2.2*M_PI));
     while (true) {
         // TODO: Make a wrapper function
 
@@ -44,15 +42,59 @@ void World::simulate() {
 
 void World::checkCollision() {
 
-    // Use m_mouse, m_maze, getPolys(), etc. to determine collisition
+    // Use m_mouse and m_maze to determine collisition
+    bool collision = false;
 
-    bool collision(false);
+    /*
+    std::vector<Polygon> mousePolygons(m_mouse->getShapes());
+    std::vector<Polygon> mazePolygons;
+    // TODO: Get the 9 maze squares here...
 
+    for (int x = 0; x < m_maze->getWidth(); x += 1) {
+        for (int y = 0; y < m_maze->getHeight(); y += 1) {
+            for (Polygon polygon : m_maze->getTile(x, y)->getWallPolygons()) {
+                mazePolygons.push_back(polygon);
+            }
+        }
+    }
 
-    // TODO: SOM
+    for (Polygon p1 : mousePolygons) {
 
+        // Make the mouse segments
+        std::vector<std::pair<Cartesian, Cartesian>> mouseSegments;
+        Cartesian prev1(p1.getVertices().back());
+        for (Cartesian c1 : p1.getVertices()) {
+            mouseSegments.push_back(std::make_pair(prev1, c1));
+            prev1 = c1; 
+        }
 
+        for (Polygon p2 : mazePolygons) {
 
+            // Make the maze segments
+            std::vector<std::pair<Cartesian, Cartesian>> mazeSegments;
+            Cartesian prev2(p2.getVertices().back());
+            for (Cartesian c2 : p2.getVertices()) {
+                mazeSegments.push_back(std::make_pair(prev2, c2));
+                prev2 = c2; 
+            }
+
+            for (std::pair<Cartesian, Cartesian> mouseSegment : mouseSegments) {
+                for (std::pair<Cartesian, Cartesian> mazeSegment : mouseSegments) {
+                    if (linesIntersect(mouseSegment, mazeSegment)) {
+                        std::cout
+                        << mouseSegment.first.getX().getMeters() << ","
+                        << mouseSegment.first.getY().getMeters() << " "
+                        << mouseSegment.second.getX().getMeters() << ","
+                        << mouseSegment.second.getY().getMeters() << " "
+                        collision = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    */
+    
     if (collision) {
         print("COLLIDED");
     }

@@ -19,6 +19,7 @@
 - XML file for algorithm choice
 - Indicator of sim speed
 - Support more than two wheels
+- Change "bool foo(false)" to "bool foo = false" for primitive - they look like function calls
 - Sim code should match the bot code as closely as possible
 - Dual screen! (mini-map and zoomed-in view - 1x1, 3x3, relative and absolute rotation)
 - Reduce CPU usage - most is used by the drawing... cache some stuff??? Only redraw certain things??? Look at OpenGL scissor

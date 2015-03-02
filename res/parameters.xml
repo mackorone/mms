@@ -27,6 +27,7 @@
 <wall-length>.156</wall-length> <!-- meters -->
 <wall-width>.012</wall-width> <!-- meters -->
 <wall-height>.05</wall-height> <!-- meters -->
+<!-- TODO: Rename "random-maze-..." to "generated-maze..." -->
 <random-maze-width>16</random-maze-width> <!-- number of tiles -->
 <random-maze-height>16</random-maze-height> <!-- number of tiles -->
 <enforce-official-maze-rules>false</enforce-official-maze-rules>
