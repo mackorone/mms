@@ -1,13 +1,14 @@
 #pragma once
 
+#include <vector>
+
+#include <Cartesian.h>
+#include <RadiansPerSecond.h>
+
 #include "Maze.h"
 #include "Polygon.h"
-#include "units/Cartesian.h"
-#include "units/RadiansPerSecond.h"
 #include "Wheel.h"
 #include "MouseParser.h"
-
-#include <vector>
 
 namespace sim {
 

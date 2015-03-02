@@ -2,8 +2,8 @@
 
 #include <cmath> // TODO
 
-#include "../sim/SimUtilities.h"
-#include "../sim/units/Milliseconds.h"
+#include "../sim/SimUtilities.h" // TODO: Arduino utils
+#include <Milliseconds.h>
 
 void Continue::solve(sim::MouseInterface* mouse) {
 

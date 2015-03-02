@@ -1,15 +1,14 @@
 #include "World.h"
 
+#include <Centimeters.h>
+#include <RadiansPerSecond.h>
+#include <Milliseconds.h>
+
 #include "Param.h"
-#include "units/Centimeters.h"
-#include "units/RadiansPerSecond.h"
-#include "units/Milliseconds.h"
 #include "SimUtilities.h"
 
 #include <cmath> // TODO: Necessary???
 #include <iostream> // TODO
-#include <math.h>
-
 namespace sim {
 
 World::World(Maze* maze, Mouse* mouse) : m_maze(maze), m_mouse(mouse) {
@@ -105,7 +104,8 @@ void World::checkCollision() {
         checkTile = m_maze->getTile(x+1, y-1);
         collision = checkTileCollision(checkTile, mouseShapes);
     }
-
+    
+    //TODO:Handle collision
     if (collision) {
         std::cout << "COLLIDED" << std::endl;
     }

@@ -38,13 +38,14 @@ public:
     // Maze parameters
     std::string mazeDirectory();
     std::string mazeFile();
-    int mazeWidth();
-    int mazeHeight();
+    bool useMazeFile();
+    int randomMazeWidth();
+    int randomMazeHeight();
     float wallWidth();
     float wallLength();
     float wallHeight();
-    float wallTolerance();
-    int minSolutionLength();
+    bool enforceOfficialMazeRules();
+    std::string randomMazeAlgo();
     bool saveRandomMaze();
 
 private:
@@ -78,13 +79,14 @@ private:
     // Maze parameters
     std::string m_mazeDirectory;
     std::string m_mazeFile;
-    int m_mazeWidth;
-    int m_mazeHeight;
+    bool m_useMazeFile;
+    int m_randomMazeWidth;
+    int m_randomMazeHeight;
     float m_wallWidth;
     float m_wallLength;
     float m_wallHeight;
-    float m_wallTolerance;
-    int m_minSolutionLength;
+    bool m_enforceOfficialMazeRules;
+    std::string m_randomMazeAlgo;
     bool m_saveRandomMaze;
 };
 

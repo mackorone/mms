@@ -5,6 +5,8 @@
 #include <iostream>
 #include <iterator>
 #include <sstream>
+#include <string>
+#include <sys/stat.h>
 #include <thread>
 
 #ifdef __linux
@@ -16,11 +18,21 @@
 #endif
 
 #include "Assert.h"
+#include "Param.h"
 
 namespace sim {
 
 void print(const std::string& msg) {
     std::cout << msg << std::endl;
+}
+
+float getRandom() {
+    // TODO: Should still work with a seed value
+    static int seed = P()->randomSeed();
+    // TODO: Tomasz said he'd to it
+    // TODO: Should return a random float from 0.0
+    // TODO: Modify the rest of the codebase to use this generator (delete the seed() calls elsewhere)
+    return 0.0;
 }
 
 void sleep(const Time& time) {
@@ -72,74 +84,22 @@ bool isBool(std::string str) {
 }
 
 bool isInt(std::string str) {
-    
-    // If there's a negative sign, remove it
-    if (!str.empty() && '-' == str.at(0)) {
-        str = str.substr(1, str.size() - 1);
+    try {
+        std::stoi(str);
     }
-
-    // Ensure it's not an empty string
-    if (str.empty()) {
-        return false;
+    catch (...) {
+        return false; 
     }
-
-    // Ensure there are no leading zeros
-    if ('0' == str.at(0)) {
-        return 1 == str.size();
-    }
-
-    // Ensure that we have all digits
-    for (int i = 0; i < str.size(); i += 1) {
-        if (!('0' <= str.at(i) && str.at(i) <= '9')) {
-            return false;
-        }
-    }
-
     return true;
 }
 
 bool isFloat(std::string str) {
-    //ensure non-empty string
-    if(str.empty()) return false;
-
-    //ignore negative sign
-    //if entire string is negative sign then return false
-    if(str.at(0) == '-'){
-        if(str.size() <= 1) return false;
-        str = str.substr(1);
+    try {
+        std::stof(str);
     }
-    
-    bool hasDecimalPoint = false;
-
-    char cur;
-    
-    if(str.at(0) == '.'){
-        std::cout << "A FLOAT CANNOT LEAD WITH A DECIMAL POINT" << std::endl;
-        return false;
+    catch (...) {
+        return false; 
     }
-
-    if(str.at(str.size() - 1) == '.') {
-        std::cout << "A FLOAT CANNOT END WITH A DECIMAL POINT" << std::endl;
-        return false;
-    }
-   
-    //ensure it only contains exactly one decimal point and digits 0-9
-    for(size_t i = 0; i < str.size(); i++){
-        cur = str.at(i);
-        if(cur == 46){
-            if(hasDecimalPoint){
-                std::cout << "PARAM PARSER: A FLOAT MUST CONTAIN EXACTLY "
-                          << "ONE DECIMAL POINT" << std::endl;
-                return false;
-            }
-            hasDecimalPoint = true;
-        } else if(cur < 48 || cur > 57){
-            std::cout << "PARAM PARSER: A FLOAT MUST CONTAIN DIGITS 0-9"
-                      << std::endl;
-            return false;
-        }
-    }
-    
     return true;
 }
 
@@ -150,12 +110,12 @@ bool strToBool(std::string str) {
 
 int strToInt(std::string str) {
     ASSERT(isInt(str));
-    return atoi(str.c_str());
+    return std::stoi(str.c_str());
 }
 
 float strToFloat(std::string str) {
     ASSERT(isFloat(str));
-    return stof(str); // TODO: SOM - confirm that this is correct
+    return std::stof(str);
 }
 
 
@@ -181,6 +141,12 @@ std::vector<std::string> tokenize(std::string str) {
     }   
 
     return tokens;
+}
+
+bool isFile(std::string path) {
+    struct stat buf;
+    stat(path.c_str(), &buf);
+    return S_ISREG(buf.st_mode);
 }
 
 } // namespace sim
