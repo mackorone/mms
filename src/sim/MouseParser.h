@@ -19,7 +19,7 @@ public:
     Polygon getBody();    
     Wheel getWheel(WheelSide side);
     std::vector<Sensor> getSensors();
-    
+
 private:
     pugi::xml_document m_doc;
 };

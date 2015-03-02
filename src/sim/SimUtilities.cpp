@@ -33,7 +33,7 @@ float getRandom() {
         srand(sim::P()->randomSeed());
         seeded = true;
     }
-    return rand() / (float) RAND_MAX;
+    return rand() / static_cast<float>(RAND_MAX);
 #elif _WIN32
     // TODO: Tomasz said he'd implement the Windows version
     return 0.0;

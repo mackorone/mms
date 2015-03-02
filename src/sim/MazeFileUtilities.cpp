@@ -156,6 +156,9 @@ void saveMaze(std::vector<std::vector<BasicTile>> maze, std::string mazeFilePath
 
 std::vector<std::vector<BasicTile>> loadMaze(std::string mazeFilePath) {
 
+    // Note: This should only be called on mazes that have been validated.
+    // In particular, we assume that the file exists and has the proper format.
+
     // The maze to be returned
     std::vector<std::vector<BasicTile>> maze;
 
