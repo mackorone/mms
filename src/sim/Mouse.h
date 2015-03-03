@@ -1,8 +1,10 @@
 #pragma once
 
+#include <mutex>
 #include <vector>
 
 #include <Cartesian.h>
+#include <RadiansPerSecond.h>
 
 #include "Maze.h"
 #include "Polygon.h"
@@ -22,8 +24,8 @@ public:
     // Instruct the mouse to update its own position based on how much simulation time has elapsed
     void update(const Time& elapsed);
 
-    // Retrieve a reference to a wheel
-    Wheel* getWheel(WheelSide side);
+    // An atomic interface for setting the wheel speeds
+    void setWheelSpeeds(const AngularVelocity& rightWheelSpeed, const AngularVelocity& leftWheelSpeed);
 
 private:
     // The rotation and translation of the mouse, which change throughout execution
@@ -39,6 +41,7 @@ private:
     // By assumption, the mouse is differential drive.
     Wheel m_leftWheel;
     Wheel m_rightWheel;
+    std::mutex m_wheelMutex; // Ensures the wheel speeds are accessed atomically w.r.t. each other
 
     // The sensors on the mouse
     std::vector<Sensor> m_sensors;

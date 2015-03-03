@@ -92,11 +92,13 @@ void Mouse::update(const Time& elapsed) {
      *  small and thus the change in rotation should be mostly negligible.
      */
 
-    // First get the speed of each wheel
+    // First get the speed of each wheel (atomically)
+    m_wheelMutex.lock();
     MetersPerSecond rightWheelSpeed(
         m_rightWheel.getAngularVelocity().getRadiansPerSecond() * m_rightWheel.getRadius().getMeters());
     MetersPerSecond leftWheelSpeed(
         m_leftWheel.getAngularVelocity().getRadiansPerSecond() * m_leftWheel.getRadius().getMeters());
+    m_wheelMutex.unlock();
 
     // Then get the distance between the two wheels
     Meters base(m_rightWheel.getPosition().getX() - m_leftWheel.getPosition().getX());
@@ -110,13 +112,11 @@ void Mouse::update(const Time& elapsed) {
     m_translation += Polar(distance, Radians(M_PI / 2.0) + m_rotation);
 }
 
-Wheel* Mouse::getWheel(WheelSide side) {
-    switch (side) {
-        case LEFT:
-            return &m_leftWheel;
-        case RIGHT:
-            return &m_rightWheel;
-    }
+void Mouse::setWheelSpeeds(const AngularVelocity& rightWheelSpeed, const AngularVelocity& leftWheelSpeed) {
+    m_wheelMutex.lock();
+    m_rightWheel.setAngularVelocity(rightWheelSpeed);
+    m_leftWheel.setAngularVelocity(leftWheelSpeed);
+    m_wheelMutex.unlock();
 }
 
 } // namespace sim

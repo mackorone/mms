@@ -6,7 +6,8 @@
 
 namespace sim {
 
-bool linesIntersect(std::pair<const Cartesian&, const Cartesian&> A,
-                    std::pair<const Cartesian&, const Cartesian&> B);
+// Returns true if the line segments A and B intersect
+bool linesIntersect(const std::pair<const Cartesian&, const Cartesian&>& A, 
+                    const std::pair<const Cartesian&, const Cartesian&>& B);
 
 } // namespace sim

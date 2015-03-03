@@ -2,41 +2,28 @@
 
 namespace sim {
 
-// Stolen code
-bool linesIntersect(std::pair<const Cartesian&, const Cartesian&> A,
-                    std::pair<const Cartesian&, const Cartesian&> B) {
+bool linesIntersect(const std::pair<const Cartesian&, const Cartesian&>& A,
+                    const std::pair<const Cartesian&, const Cartesian&>& B) {
 
-    // Output
-    float i_x;
-    float i_y;
+    // Extract A's points
+    float a1x = A.first.getX().getMeters();
+    float a1y = A.first.getY().getMeters();
+    float a2x = A.second.getX().getMeters();
+    float a2y = A.second.getY().getMeters();
 
-    float p0_x = A.first.getX().getMeters();
-    float p0_y = A.first.getY().getMeters();
-    float p1_x = A.second.getX().getMeters();
-    float p1_y = A.second.getY().getMeters();
-    float p2_x = B.first.getX().getMeters();
-    float p2_y = B.first.getY().getMeters();
-    float p3_x = B.second.getX().getMeters();
-    float p3_y = B.second.getY().getMeters();
+    // Extract B's points
+    float b1x = B.first.getX().getMeters();
+    float b1y = B.first.getY().getMeters();
+    float b2x = B.second.getX().getMeters();
+    float b2y = B.second.getY().getMeters();
 
-    float s1_x = p1_x - p0_x;
-    float s1_y = p1_y - p0_y;
-    float s2_x = p3_x - p2_x;
-    float s2_y = p3_y - p2_y;
-    float s = (-s1_y * (p0_x - p2_x) + s1_x * (p0_y - p2_y)) / (-s2_x * s1_y + s1_x * s2_y);
-    float t = ( s2_x * (p0_y - p2_y) - s2_y * (p0_x - p2_x)) / (-s2_x * s1_y + s1_x * s2_y);
-    if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
-        /*
-        if (i_x != NULL) {
-            i_x = p0_x + (t * s1_x);
-        }
-        if (i_y != NULL) {
-            i_y = p0_y + (t * s1_y);
-        }
-        */
-        return true;
-    }
-    return false;
+    // Test to determine if the line segments cross eachother
+    float t1 = (b2x-b1x)*(a1y-b2y) - (b2y-b1y)*(a1x-b2x);
+    float t2 = (b2x-b1x)*(a2y-b2y) - (b2y-b1y)*(a2x-b2x);
+    float t3 = (a2x-a1x)*(b1y-a2y) - (a2y-a1y)*(b1x-a2x);
+    float t4 = (a2x-a1x)*(b2y-a2y) - (a2y-a1y)*(b2x-a2x);
+
+    return (t1*t2 <= 0 && t3*t4 <=0);
 }
 
 // TODO: area of intersection of two polygons

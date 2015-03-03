@@ -37,7 +37,7 @@ Param::Param() {
     bool useRandomSeed = parser.getBoolIfHasBool("use-random-seed", false); // TODO: Is this correct behavior???
     m_randomSeed = (useRandomSeed ? parser.getIntIfHasInt("random-seed", time(NULL)) : time(NULL));
     m_glutInitTime = parser.getFloatIfHasFloat("glut-init-time", 0.25);
-    m_deltaTime = parser.getFloatIfHasFloat("delta-time", 0.005);
+    m_deltaTime = parser.getFloatIfHasFloat("delta-time", 0.01);
     m_minSimSpeed = parser.getFloatIfHasFloat("min-sim-speed", 0.1);
     m_maxSimSpeed = parser.getFloatIfHasFloat("max-sim-speed", 10);
     m_defaultSimSpeed = parser.getFloatIfHasFloat("default-sim-speed", 10);
