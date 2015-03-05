@@ -31,9 +31,6 @@ sim::MouseGraphic* g_mouseGraphic;
 
 int main(int argc, char* argv[]) {
 
-    // Seed the random number generator
-    srand(sim::P()->randomSeed());
-
     // Initialize local simulation objects
     sim::Maze maze;
     sim::Mouse mouse;

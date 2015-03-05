@@ -2,40 +2,36 @@
 
 #include <Cartesian.h>
 #include <Meters.h>
-#include <Radians.h>
 #include <RadiansPerSecond.h>
+
+#include "Polygon.h"
 
 namespace sim {
 
-// The wheel class is a combination of both the motors and wheels
+enum WheelSide { LEFT = 0, RIGHT = 1};
+
 class Wheel {
 
-// The position is the starting position of center of the wheel
-// For now, we assume that all wheels are vertical
 public:
-    Wheel(); // TODO: Necessary because we delay creation of a wheel in the mouse class... hmmm
-             // TODO: Can we possible write a method in the mouse class that returns a wheel, and use a copy constructor?
+    Wheel(); // Necessary evil due to delayed wheel initialization in the mouse constructor
     Wheel(const Distance& radius, const Distance& width, const Coordinate& position);
     Meters getRadius() const;
     Meters getWidth() const;
     Cartesian getPosition() const;
+    Polygon getPolygon() const;
 
     // DC motor methods
     RadiansPerSecond getAngularVelocity() const;
     void setAngularVelocity(const AngularVelocity& angularVelocity);
-
-    // TODO: These will be for Stepper Motors
-    void rotate(const Angle& angle);
-    Radians popRotation(); // Retrieves and clears
-
+    
 private:
-    // Constants (wheel dimensions)
+    // Constants // TODO: Should they be though
     Meters m_radius;
     Meters m_width;
     Cartesian m_position;
+    Polygon m_polygon;
 
-    // Variables (rotation information)
-    Radians m_rotation;
+    // Variables
     RadiansPerSecond m_angularVelocity;
 };
 

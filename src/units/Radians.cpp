@@ -2,6 +2,10 @@
 
 namespace sim {
 
+Radians::Radians() {
+    m_radians = 0.0;
+}
+
 Radians::Radians(float radians) {
     m_radians = radians;
 }

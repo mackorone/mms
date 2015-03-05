@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 #define ASSERT(condition) \
 if ( !(condition) ) { \
     std::cout << "---------- Assertion failed! ----------" << std::endl \

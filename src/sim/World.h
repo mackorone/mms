@@ -18,20 +18,20 @@ public:
 
     /* // TODO
     bool inGoal();
-    float getX() { return 0; }
-    float getY() { return 0; }
-    bool wallFront();
-    bool wallRight();
-    bool wallLeft();
     void resetPosition(); // Sets the position of the mouse to (0,0)
     void resetColors(int curX, int curY); // Resets the tile colors of the maze
     */
 
 private:
-    void checkCollision(); // TODO make this prettier
-    bool checkTileCollision(Tile* tile, std::vector<Polygon> mouseShapes);
-    Maze* m_maze; // TODO: Need this be persistent???
+    Maze* m_maze;
     Mouse* m_mouse;
+
+    // Returns a vector of 9 or less tiles that could contain the mouse
+    std::vector<Tile*> getTilesContainingMouse();
+
+    // Whether or not the mouse has collided
+    bool m_collision;
+    void checkCollision();
 
 };
 

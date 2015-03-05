@@ -7,93 +7,50 @@
 #include <MetersPerSecond.h>
 #include <Polar.h>
 
+#include "Assert.h"
+#include "MouseParser.h"
 #include "Param.h"
 #include "SimUtilities.h"
 
 namespace sim {
 
-Mouse::Mouse() : m_translation(Cartesian(Meters(0), Meters(0))), m_rotation(Radians(0)) {
+Mouse::Mouse() : m_rotation(Radians(0.0)) {
+
+    // Create the mouse parser object
+    MouseParser parser(getProjectDirectory() + "res/mouse.xml");
+
+    // Initialize the body
+    m_body = parser.getBody();
+
+    // Initialize the wheels
+    m_rightWheel = parser.getWheel(RIGHT);
+    m_leftWheel = parser.getWheel(LEFT);
+
+    // Initialize the sensors
+    m_sensors = parser.getSensors();
 
     // TODO: Validate the contents of the mouse file (like valid mouse starting position)
-    MouseParser parser(getProjectDirectory() + "res/mouse.xml");
-    Meters radius = parser.getWheelMeas("LeftWheel", "radius");
-    Meters width = parser.getWheelMeas("LeftWheel", "width");
-    Cartesian pos = parser.getWheelPosition("LeftWheel");
+    // Note: The position of the wheels must be the exact same at the start of execution
+    ASSERT(m_leftWheel.getPosition().getY() == m_rightWheel.getPosition().getY());
 
-    m_leftWheel = Wheel(radius, width, pos);
-
-    radius = parser.getWheelMeas("RightWheel", "radius");
-    width = parser.getWheelMeas("RightWheel", "width");
-    pos = parser.getWheelPosition("RightWheel");
-
-    m_rightWheel = Wheel(radius, width, pos);
-
-    // Create the vertices for the mouse
-    std::vector<Cartesian> vertices = parser.getBody();
-    m_body = Polygon(vertices);
+    // Reassign the translation to be the midpoint of the axis connecting the two wheels
+    m_start = Cartesian(Meters((m_leftWheel.getPosition().getX() + m_rightWheel.getPosition().getX()) / 2.0),
+                        Meters(m_leftWheel.getPosition().getY()));
+    m_translation = m_start;
 }
 
-// TODO: Shouldn't need this method
-Cartesian Mouse::getTranslation() const {
-
-    Cartesian centerOfMass((m_rightWheel.getPosition().getX() + m_leftWheel.getPosition().getX())/2.0, m_rightWheel.getPosition().getY());
-    Polar vec(centerOfMass.getRho(), m_rotation + centerOfMass.getTheta()); // The current rotation vector
-    Cartesian disp(vec.getX() - centerOfMass.getX(), vec.getY() - centerOfMass.getY());
-
-    return Cartesian(m_translation.getX() - disp.getX(), m_translation.getY() - disp.getY());
-}
-
-// TODO: Better interface for polygons
 std::vector<Polygon> Mouse::getShapes() const {
 
     // Create the shapes vector
-    std::vector<Polygon> shapes;
+    std::vector<Polygon> polygons;
+    polygons.push_back(m_body);
+    polygons.push_back(m_rightWheel.getPolygon());
+    polygons.push_back(m_leftWheel.getPolygon());
 
-    // The mouse body
-    shapes.push_back(m_body);
-
-    // TODO: We really only need to do this logic once
-    // TODO: This is *really* ugly... fix this...
-    // Right wheel
-    std::vector<Cartesian> rightWheelPolygon;
-
-    Meters rightWheelHalfWidth = m_rightWheel.getWidth() / 2.0;
-    Meters rightWheelRadius = m_rightWheel.getRadius();
-    Cartesian rightWheelPosition = m_rightWheel.getPosition();
-
-    rightWheelPolygon.push_back(rightWheelPosition + Cartesian(
-        Meters((rightWheelHalfWidth * -1).getMeters()), Meters((rightWheelRadius * -1).getMeters())));
-    rightWheelPolygon.push_back(rightWheelPosition + Cartesian(
-        Meters((rightWheelHalfWidth * -1).getMeters()), Meters((rightWheelRadius *  1).getMeters())));
-    rightWheelPolygon.push_back(rightWheelPosition + Cartesian(
-        Meters((rightWheelHalfWidth *  1).getMeters()), Meters((rightWheelRadius *  1).getMeters())));
-    rightWheelPolygon.push_back(rightWheelPosition + Cartesian(
-        Meters((rightWheelHalfWidth *  1).getMeters()), Meters((rightWheelRadius * -1).getMeters())));
-
-    shapes.push_back(Polygon(rightWheelPolygon));
-
-    // Left wheel
-    std::vector<Cartesian> leftWheelPolygon;
-
-    Meters leftWheelHalfWidth = m_leftWheel.getWidth() / 2.0;
-    Meters leftWheelRadius = m_leftWheel.getRadius();
-    Cartesian leftWheelPosition = m_leftWheel.getPosition();
-
-    leftWheelPolygon.push_back(leftWheelPosition + Cartesian(
-        Meters((leftWheelHalfWidth * -1).getMeters()), Meters((leftWheelRadius * -1).getMeters())));
-    leftWheelPolygon.push_back(leftWheelPosition + Cartesian(
-        Meters((leftWheelHalfWidth * -1).getMeters()), Meters((leftWheelRadius *  1).getMeters())));
-    leftWheelPolygon.push_back(leftWheelPosition + Cartesian(
-        Meters((leftWheelHalfWidth *  1).getMeters()), Meters((leftWheelRadius *  1).getMeters())));
-    leftWheelPolygon.push_back(leftWheelPosition + Cartesian(
-        Meters((leftWheelHalfWidth *  1).getMeters()), Meters((leftWheelRadius * -1).getMeters())));
-
-    shapes.push_back(Polygon(leftWheelPolygon));
-
-    // TODO : Clear this
+    // Translate and rotate the Polygons appropriately
     std::vector<Polygon> adjustedShapes;
-    for (int i = 0; i < shapes.size(); i += 1) {
-        adjustedShapes.push_back(shapes.at(i).rotateAroundPoint(m_rotation, Cartesian(Meters(0.0), Meters(0.0))).translate(getTranslation()));
+    for (Polygon polygon : polygons) {
+        adjustedShapes.push_back(polygon.translate(m_translation - m_start).rotateAroundPoint(m_rotation, m_translation));
     }
     return adjustedShapes;
 }
@@ -106,9 +63,18 @@ void Mouse::update(const Time& elapsed) {
      *  for the instantaneous change in rotation and translation (with respect to the robot)
      *  are as follows:
      *
-     *      dx/dt = 0
-     *      dy/dt = (rightWheelSpeed - leftWheelSpeed) / 2
+     *      dx/dt = (rightWheelSpeed - leftWheelSpeed) / 2
+     *      dy/dt = 0
      *      d0/dt = (rightWheelSpeed + leftWheelSpeed) / base
+     *
+     *  where the coordinate axes with respect to the robot are as follows:
+     *
+     *               x
+     *               ^
+     *               |
+     *               |
+     *              / \
+     *      y <----0---0
      *
      *  Note that dx/dy = 0 since it's impossible for the robot to move laterally. Also note
      *  that since the left and right wheels are oriented oppositely, a positive wheel speed
@@ -126,13 +92,13 @@ void Mouse::update(const Time& elapsed) {
      *  small and thus the change in rotation should be mostly negligible.
      */
 
-    // TODO: Fix the unit classes so I don't have to get the primitive values as often...
-
-    // First get the speed of each wheel
+    // First get the speed of each wheel (atomically)
+    m_wheelMutex.lock();
     MetersPerSecond rightWheelSpeed(
         m_rightWheel.getAngularVelocity().getRadiansPerSecond() * m_rightWheel.getRadius().getMeters());
     MetersPerSecond leftWheelSpeed(
         m_leftWheel.getAngularVelocity().getRadiansPerSecond() * m_leftWheel.getRadius().getMeters());
+    m_wheelMutex.unlock();
 
     // Then get the distance between the two wheels
     Meters base(m_rightWheel.getPosition().getX() - m_leftWheel.getPosition().getX());
@@ -144,28 +110,13 @@ void Mouse::update(const Time& elapsed) {
     // from the positive x-axis but, by default, the robot has 0 rotation and moves in the positive y direction.
     Meters distance((rightWheelSpeed - leftWheelSpeed).getMetersPerSecond() / 2.0 * elapsed.getSeconds());
     m_translation += Polar(distance, Radians(M_PI / 2.0) + m_rotation);
-
-    // TODO: When we add M_PI/2.0, we assume that all robots will be facing vertically to start
 }
 
-// TODO... better interface
-Wheel* Mouse::getRightWheel() {
-    return &m_rightWheel;
+void Mouse::setWheelSpeeds(const AngularVelocity& rightWheelSpeed, const AngularVelocity& leftWheelSpeed) {
+    m_wheelMutex.lock();
+    m_rightWheel.setAngularVelocity(rightWheelSpeed);
+    m_leftWheel.setAngularVelocity(leftWheelSpeed);
+    m_wheelMutex.unlock();
 }
-
-Wheel* Mouse::getLeftWheel() {
-    return &m_leftWheel;
-}
-
-/*
-void Mouse::stepBoth() {
-    m_leftWheel.rotate(Radians(M_PI/100.0));
-    m_rightWheel.rotate(Radians(M_PI/100.0));
-}
-void Mouse::update() {
-    Radians leftRotation = m_leftWheel.popRotation();
-    Radians rightRotation = m_rightWheel.popRotation();
-}
-*/
 
 } // namespace sim

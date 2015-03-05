@@ -2,6 +2,11 @@
 
 namespace sim {
 
+Cartesian::Cartesian() {
+    m_x = 0.0;
+    m_y = 0.0;
+}
+
 Cartesian::Cartesian(const Distance& x, const Distance& y) {
     m_x = x;
     m_y = y;
@@ -14,6 +19,10 @@ Cartesian::Cartesian(const Coordinate& coordinate) {
 
 Cartesian Cartesian::operator+(const Coordinate& coordinate) const {
     return Cartesian(getX() + coordinate.getX(), getY() + coordinate.getY());
+}
+
+Cartesian Cartesian::operator-(const Coordinate& coordinate) const {
+    return Cartesian(getX() - coordinate.getX(), getY() - coordinate.getY());
 }
 
 void Cartesian::operator+=(const Coordinate& coordinate) {
