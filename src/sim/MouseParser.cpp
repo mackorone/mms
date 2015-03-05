@@ -4,8 +4,6 @@
 
 namespace sim {
 
-// TODO: SOM
-
 MouseParser::MouseParser(const std::string& filePath) {
     pugi::xml_parse_result result = doc.load_file(filePath.c_str());
     if (!result) {
