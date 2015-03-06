@@ -1,5 +1,7 @@
 #include "GeometryUtilities.h"
 
+#include <cmath>
+
 namespace sim {
 
 bool linesIntersect(const std::pair<const Cartesian&, const Cartesian&>& A,
@@ -24,6 +26,21 @@ bool linesIntersect(const std::pair<const Cartesian&, const Cartesian&>& A,
     float t4 = (a2x-a1x)*(b2y-a2y) - (a2y-a1y)*(b2x-a2x);
 
     return (t1*t2 <= 0 && t3*t4 <=0);
+}
+
+MetersSquared polygonArea(const Polygon& polygon) {
+
+    // Magic
+    float area = 0;
+    std::vector<Cartesian> vertices = polygon.getVertices();
+    for (int i = 0; i < vertices.size(); i += 1) {
+        int j = (i + 1) % vertices.size();
+        area += vertices.at(i).getX().getMeters() * vertices.at(j).getY().getMeters();
+        area -= vertices.at(i).getY().getMeters() * vertices.at(j).getX().getMeters();
+    }
+    area /= 2;
+
+    return MetersSquared(std::abs(area));
 }
 
 // TODO: area of intersection of two polygons

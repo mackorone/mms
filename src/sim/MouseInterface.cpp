@@ -20,8 +20,8 @@ MouseInterface::MouseInterface(Mouse* mouse) : m_mouse(mouse)
 MouseInterface::~MouseInterface()
 { }
 
-void MouseInterface::setWheelSpeeds(float rightWheelSpeed, float leftWheelSpeed) {
-    m_mouse->setWheelSpeeds(RadiansPerSecond(rightWheelSpeed), RadiansPerSecond(leftWheelSpeed));
+void MouseInterface::setWheelSpeeds(float leftWheelSpeed, float rightWheelSpeed) {
+    m_mouse->setWheelSpeeds(RadiansPerSecond(leftWheelSpeed), RadiansPerSecond(rightWheelSpeed));
 }
 
 bool MouseInterface::wallFront() {

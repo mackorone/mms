@@ -7,6 +7,7 @@ namespace sim {
 class Meters : public Distance {
 
 public:
+    Meters();
     Meters(float meters);
     Meters(const Distance& distance);
     Meters operator+(const Distance& distance) const;

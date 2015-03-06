@@ -14,15 +14,21 @@ MouseGraphic::MouseGraphic(Mouse* mouse) : m_mouse(mouse) {
 void MouseGraphic::draw() {
 
     // We draw in reverse order so that the body of the mouse appears over the
-    // wheels and not the other way around
-    for (int i = m_mouse->getShapes().size() - 1; i >= 0 ; i -= 1) {
+    // wheels and not the other way around // TODO: Fix this...
+    for (int i = m_mouse->getBodyPolygons().size() - 1; i >= 0 ; i -= 1) {
         if (i > 0) {
             glColor3fv(COLORS.at(P()->mouseWheelColor()));
         }
         else {
             glColor3fv(COLORS.at(P()->mouseBodyColor()));
         }
-        drawPolygon(m_mouse->getShapes().at(i));
+        drawPolygon(m_mouse->getBodyPolygons().at(i));
+    }
+
+    // Now draw the sensors
+    for (Polygon polygon : m_mouse->getSensorPolygons()) {
+        glColor3fv(WHITE);
+        drawPolygon(polygon);
     }
     //drawDirection(dirC1X, dirC1Y, dirC2X, dirC2Y);
 }

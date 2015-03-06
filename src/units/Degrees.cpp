@@ -4,6 +4,10 @@
 
 namespace sim {
 
+Degrees::Degrees() {
+    m_radians = 0.0;
+}
+
 Degrees::Degrees(float degrees) {
     m_radians = degrees * (2 * M_PI) / 360;
 }

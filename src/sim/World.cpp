@@ -44,7 +44,7 @@ void World::simulate() {
 std::vector<Tile*> World::getTilesContainingMouse() {
 
     // Select an arbitrary point belonging to the mouse
-    Cartesian point = m_mouse->getShapes().at(0).getVertices().at(0);
+    Cartesian point = m_mouse->getBodyPolygons().at(0).getVertices().at(0);
     int px = static_cast<int>(floor((point.getX() / (P()->wallLength() + P()->wallWidth())).getMeters()));
     int py = static_cast<int>(floor((point.getY() / (P()->wallLength() + P()->wallWidth())).getMeters()));
 
@@ -67,7 +67,7 @@ void World::checkCollision() {
     for (Tile* tile : getTilesContainingMouse()) {
 
         // ...iterate through all mouse polygons...
-        for (Polygon mousePolygon : m_mouse->getShapes()) {
+        for (Polygon mousePolygon : m_mouse->getBodyPolygons()) {
             std::vector<Cartesian> mousePoints(mousePolygon.getVertices());
             Cartesian previousMousePoint = mousePoints.back();
             for (Cartesian currentMousePoint : mousePoints) {
