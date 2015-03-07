@@ -41,7 +41,7 @@ void World::simulate() {
     }
 }
 
-std::vector<Tile*> World::getTilesContainingMouse() {
+std::vector<const Tile*> World::getTilesContainingMouse() {
 
     // Select an arbitrary point belonging to the mouse
     Cartesian point = m_mouse->getBodyPolygons().at(0).getVertices().at(0);
@@ -49,10 +49,10 @@ std::vector<Tile*> World::getTilesContainingMouse() {
     int py = static_cast<int>(floor((point.getY() / (P()->wallLength() + P()->wallWidth())).getMeters()));
 
     // Find all of the tiles that the mouse could be contained within
-    std::vector<Tile*> tilesContainingMouse;
+    std::vector<const Tile*> tilesContainingMouse;
     for (int x = -1; x <= 1; x += 1) {
         for (int y = -1; y <= 1; y += 1) {
-            if (0 <= px + x && px + x < m_maze->getWidth() && 0 <= y && y <= m_maze->getHeight()) {
+            if (0 <= px + x && px + x < m_maze->getWidth() && 0 <= py + y && py + y <= m_maze->getHeight()) {
                 tilesContainingMouse.push_back(m_maze->getTile(px + x, py + y));
             }
         }
@@ -64,31 +64,23 @@ std::vector<Tile*> World::getTilesContainingMouse() {
 void World::checkCollision() {
 
     // For each tile the mouse could be in...
-    for (Tile* tile : getTilesContainingMouse()) {
+    for (const Tile* tile : getTilesContainingMouse()) {
 
-        // ...iterate through all mouse polygons...
-        for (Polygon mousePolygon : m_mouse->getBodyPolygons()) {
-            std::vector<Cartesian> mousePoints(mousePolygon.getVertices());
-            Cartesian previousMousePoint = mousePoints.back();
-            for (Cartesian currentMousePoint : mousePoints) {
-                std::pair<Cartesian, Cartesian> A = std::make_pair(previousMousePoint, currentMousePoint);
+        // ...iterate through all of the tile's polygons...
+        for (std::vector<Polygon> group : {tile->getWallPolygons(), tile->getCornerPolygons()}) {
+            for (Polygon obstacle : group) {
+                for (std::pair<Cartesian, Cartesian> A : getLineSegments(obstacle)) {
 
-                // ... and check to see if one is colliding with an obstacle polygon
-                std::vector<std::vector<Polygon>> obstacleGroups = {tile->getWallPolygons(), tile->getCornerPolygons()};
-                for (std::vector<Polygon> group : obstacleGroups ) {
-                    for (Polygon obstacle : group) {
-                        Cartesian previousObstaclePoint = obstacle.getVertices().back();
-                        for (Cartesian currentObstaclePoint : obstacle.getVertices()) {
-                            std::pair<Cartesian, Cartesian> B = std::make_pair(previousObstaclePoint, currentObstaclePoint);
+                    // ... and check to see if one is colliding with a mouse polygon
+                    for (Polygon mousePolygon : m_mouse->getBodyPolygons()) {
+                        for (std::pair<Cartesian, Cartesian> B : getLineSegments(mousePolygon)) {
                             if (linesIntersect(A, B)) {
                                 m_collision = true;
                                 return;
                             }
-                            previousObstaclePoint = currentObstaclePoint;
                         } 
                     }
                 }
-                previousMousePoint = currentMousePoint;
             }
         }
     }

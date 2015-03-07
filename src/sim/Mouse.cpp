@@ -14,7 +14,7 @@
 
 namespace sim {
 
-Mouse::Mouse() : m_rotation(Radians(0.0)) {
+Mouse::Mouse(Maze* maze) : m_maze(maze), m_rotation(Radians(0.0)) {
 
     // Create the mouse parser object
     MouseParser parser(getProjectDirectory() + "res/mouse.xml");
@@ -59,21 +59,18 @@ std::vector<Polygon> Mouse::getBodyPolygons() const {
     return adjustedShapes;
 }
 
+// TODO: Rename to get sensor views
 std::vector<Polygon> Mouse::getSensorPolygons() const {
 
-    // Create the shapes vector
+    // Get the current view for the all of the sensors
     std::vector<Polygon> polygons;
     for (std::pair<std::string, Sensor> pair : m_sensors) {
-        polygons.push_back(pair.second.getInitialView());
-        // TODO: Find intersections, don't draw the shape beyond the intersection
+        Polygon adjusted = pair.second.getInitialView().translate(m_translation - m_initialTranslation)
+            .rotateAroundPoint(m_rotation, m_translation);
+        polygons.push_back(pair.second.getCurrentView(
+            adjusted.getVertices().at(0), m_rotation + pair.second.getInitialRotation(), *m_maze));
     }
-
-    // Translate and rotate the Polygons appropriately
-    std::vector<Polygon> adjustedShapes;
-    for (Polygon polygon : polygons) {
-        adjustedShapes.push_back(polygon.translate(m_translation - m_initialTranslation).rotateAroundPoint(m_rotation, m_translation));
-    }
-    return adjustedShapes;
+    return polygons;
 }
 
 void Mouse::update(const Time& elapsed) {
@@ -130,6 +127,8 @@ void Mouse::update(const Time& elapsed) {
     // Update the translation
     Meters distance((rightWheelSpeed - leftWheelSpeed).getMetersPerSecond() / 2.0 * elapsed.getSeconds());
     m_translation += Polar(distance, Wheel().getInitialRotation() + m_rotation); // This could be optimized
+
+    // TODO: Update the cached sensor values with each update
 }
 
 void Mouse::setWheelSpeeds(const AngularVelocity& leftWheelSpeed, const AngularVelocity& rightWheelSpeed) {
@@ -140,8 +139,11 @@ void Mouse::setWheelSpeeds(const AngularVelocity& leftWheelSpeed, const AngularV
 }
 
 float Mouse::read(std::string sensor) {
+    /*
     ASSERT(m_sensors.count(sensor) != 0);
     return m_sensors.at(sensor).read(m_maze); // TODO
+    */
+    return 0.0; // TODO
 }
 
 } // namespace sim

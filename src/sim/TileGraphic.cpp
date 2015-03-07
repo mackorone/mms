@@ -6,7 +6,7 @@
 
 namespace sim {
 
-TileGraphic::TileGraphic(Tile* tile) : m_tile(tile) {
+TileGraphic::TileGraphic(const Tile* tile) : m_tile(tile) {
 }
 
 void TileGraphic::draw() {

@@ -12,9 +12,10 @@ class Maze {
 
 public:
     Maze();
-    int getWidth();
-    int getHeight();
+    int getWidth() const;
+    int getHeight() const;
     Tile* getTile(int x, int y);
+    const Tile* getTile(int x, int y) const;
 
 private:
     // Vector to hold all of the tiles

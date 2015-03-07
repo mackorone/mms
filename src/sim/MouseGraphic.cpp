@@ -8,7 +8,7 @@
 
 namespace sim{
 
-MouseGraphic::MouseGraphic(Mouse* mouse) : m_mouse(mouse) {
+MouseGraphic::MouseGraphic(const Mouse* mouse) : m_mouse(mouse) {
 }
 
 void MouseGraphic::draw() {

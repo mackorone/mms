@@ -93,6 +93,8 @@ std::vector<std::vector<BasicTile>> MazeGenerator::tomasz() {
 
 #if(0)
 void Maze::tom_random() {
+
+    // TODO: USE CONST TILE WHERE POSSIBLE
     
     /*
     // Declare width and height locally to reduce function calls
@@ -106,7 +108,7 @@ void Maze::tom_random() {
 
     getTile(0, 0)->setExplored(true); // Put the first cell on stack
     getTile(0, 0)->setDistance(0); // Cell 0
-    Tile* t = getTile(0,0);
+    const? Tile* t = getTile(0,0);
     toExplore.push(t);
 
     int exploreDIR = -1; //last direction the mouse moved. -1 if DNE

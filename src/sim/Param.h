@@ -34,7 +34,8 @@ public:
     float minSimSpeed();
     float maxSimSpeed();
     float defaultSimSpeed();
-    int circleApproximationEdges();
+    int numberOfCircleApproximationPoints();
+    int numberOfSensorEdgePoints();
 
     // Maze parameters
     std::string mazeDirectory();
@@ -76,7 +77,8 @@ private:
     float m_minSimSpeed;
     float m_maxSimSpeed;
     float m_defaultSimSpeed;
-    float m_circleApproximationEdges;
+    float m_numberOfCircleApproximationPoints;
+    float m_numberOfSensorEdgePoints;
 
     // Maze parameters
     std::string m_mazeDirectory;

@@ -18,7 +18,8 @@
 <min-sim-speed>0.1</min-sim-speed> <!-- Fraction of real-time -->
 <max-sim-speed>10.0</max-sim-speed> <!-- Fraction of real-time -->
 <default-sim-speed>1.0</default-sim-speed> <!-- Fraction of real-time -->
-<circle-approximation-edges>8</circle-approximation-edges> <!-- The number of edges in a polygon for a circle -->
+<number-of-circle-approximation-points>8</number-of-circle-approximation-points> <!-- The number of edges in a polygon for a circle -->
+<number-of-sensor-edge-points>10</number-of-sensor-edge-points> <!-- The number of points of the edge of a sensor-->
 <!-- TODO: I don't think we're going to be able to have sim speed... -->
 
 <!-- Maze Parameters -->

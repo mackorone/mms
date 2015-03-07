@@ -1,3 +1,4 @@
+- Return const references instead of values
 - Collision Detection
 - Make Sensor and Motor abstract, support different types
 - Change float to units (including in the ParamParser and Param class)

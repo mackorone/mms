@@ -16,7 +16,7 @@ namespace sim {
 class Mouse {
 
 public:
-    Mouse();
+    Mouse(Maze* maze);
 
     // Retrieve all shapes belonging to the mouse, including body, wheels, and sensors
     std::vector<Polygon> getBodyPolygons() const;
@@ -34,6 +34,9 @@ public:
     float read(std::string sensor);
 
 private:
+    // Used for the sensor readings
+    Maze* m_maze;
+
     // The mouse, as it's positioned at the start execution
     Cartesian m_initialTranslation;
     Polygon m_initialPolygon;

@@ -17,15 +17,20 @@ Maze::Maze() {
     }
 }
 
-int Maze::getWidth() {
+int Maze::getWidth() const {
     return m_maze.size();
 }
 
-int Maze::getHeight() {
+int Maze::getHeight() const {
     return (m_maze.size() > 0 ? m_maze.at(0).size() : 0);
 }
 
+// TODO
 Tile* Maze::getTile(int x, int y) {
+    return &m_maze.at(x).at(y);
+}
+
+const Tile* Maze::getTile(int x, int y) const {
     return &m_maze.at(x).at(y);
 }
 
@@ -79,6 +84,7 @@ void Maze::initializeMaze(std::vector<std::vector<BasicTile>> maze) {
             for (Direction direction : DIRECTIONS) {
                 tile.setWall(direction, maze.at(x).at(y).walls[direction]);
             }
+            tile.initPolygons();
             column.push_back(tile);
         }
         m_maze.push_back(column);
