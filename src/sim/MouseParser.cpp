@@ -5,8 +5,6 @@
 
 namespace sim {
 
-// TODO: Make these strings variables...
-
 MouseParser::MouseParser(const std::string& filePath) {
     // Open the document
     pugi::xml_parse_result result = m_doc.load_file(filePath.c_str());
@@ -29,8 +27,17 @@ Polygon MouseParser::getBody() {
     return Polygon(points);
 }
 
-Wheel MouseParser::getWheel(WheelSide side) {
-    pugi::xml_node wheel = m_doc.child("Wheels").child((side == LEFT ? "Left" : "Right"));
+Wheel MouseParser::getLeftWheel() {
+    return getWheel(true);
+}
+
+Wheel MouseParser::getRightWheel() {
+    return getWheel(false);
+}
+
+Wheel MouseParser::getWheel(bool left) {
+    // TODO: Handle the failing case
+    pugi::xml_node wheel = m_doc.child((left ? "LeftWheel" : "RightWheel"));
     float radius = strToFloat(wheel.child("Radius").child_value());
     float width = strToFloat(wheel.child("Width").child_value());
     float x = strToFloat(wheel.child("Position").child("X").child_value());
@@ -38,9 +45,21 @@ Wheel MouseParser::getWheel(WheelSide side) {
     return Wheel(Meters(radius), Meters(width), Cartesian(Meters(x), Meters(y)));    
 }
 
-std::vector<Sensor> MouseParser::getSensors() {
-    std::vector<Sensor> sensors;
-    // TODO
+std::map<std::string, Sensor> MouseParser::getSensors() {
+    // TODO: Handle the failing case
+    std::map<std::string, Sensor> sensors;
+    for (pugi::xml_node sensor : m_doc.children("Sensor")) {
+        std::string name(sensor.child("Name").child_value());
+        // TODO: Check for duplicate name
+        float x = strToFloat(sensor.child("Position").child("X").child_value());
+        float y = strToFloat(sensor.child("Position").child("Y").child_value());
+        float radius = strToFloat(sensor.child("Radius").child_value());
+        float rotation = strToFloat(sensor.child("Rotation").child_value());
+        float range = strToFloat(sensor.child("Range").child_value());
+        float halfWidth = strToFloat(sensor.child("HalfWidth").child_value());
+        sensors.insert(std::make_pair(name,
+            Sensor(Cartesian(Meters(x), Meters(y)), Meters(radius), Radians(rotation), Meters(range), Degrees(halfWidth))));
+    }
     return sensors;
 }
 

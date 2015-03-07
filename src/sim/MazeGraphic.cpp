@@ -2,7 +2,7 @@
 
 namespace sim {
 
-MazeGraphic::MazeGraphic(Maze* maze) {
+MazeGraphic::MazeGraphic(const Maze* maze) {
     for (int i = 0; i < maze->getWidth(); i += 1) {
         std::vector<TileGraphic> column;
         for (int j = 0; j < maze->getHeight(); j += 1) {

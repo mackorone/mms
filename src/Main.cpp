@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
 
     // Initialize local simulation objects
     sim::Maze maze;
-    sim::Mouse mouse;
+    sim::Mouse mouse(&maze);
     sim::World world(&maze, &mouse);
     sim::MouseInterface mouseInterface(&mouse);
     Solver solver(&mouseInterface);

@@ -27,7 +27,7 @@ private:
     Mouse* m_mouse;
 
     // Returns a vector of 9 or less tiles that could contain the mouse
-    std::vector<Tile*> getTilesContainingMouse();
+    std::vector<const Tile*> getTilesContainingMouse();
 
     // Whether or not the mouse has collided
     bool m_collision;

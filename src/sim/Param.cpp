@@ -41,6 +41,8 @@ Param::Param() {
     m_minSimSpeed = parser.getFloatIfHasFloat("min-sim-speed", 0.1);
     m_maxSimSpeed = parser.getFloatIfHasFloat("max-sim-speed", 10);
     m_defaultSimSpeed = parser.getFloatIfHasFloat("default-sim-speed", 10);
+    m_numberOfCircleApproximationPoints = parser.getFloatIfHasFloat("number-of-circle-approximation-points", 8);
+    m_numberOfSensorEdgePoints = parser.getFloatIfHasFloat("number-of-sensor-edge-points", 10);
 
     // Maze Parameters
     m_mazeDirectory = parser.getStringIfHasString("maze-directory", "src/mazes/");
@@ -122,6 +124,14 @@ float Param::maxSimSpeed() {
 
 float Param::defaultSimSpeed() {
     return m_defaultSimSpeed;
+}
+
+int Param::numberOfCircleApproximationPoints() {
+    return m_numberOfCircleApproximationPoints;
+}
+
+int Param::numberOfSensorEdgePoints() {
+    return m_numberOfSensorEdgePoints;
 }
 
 std::string Param::mazeDirectory() {

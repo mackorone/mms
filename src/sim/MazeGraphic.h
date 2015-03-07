@@ -10,7 +10,7 @@ namespace sim {
 class MazeGraphic {
 
 public:
-    MazeGraphic(Maze* maze);
+    MazeGraphic(const Maze* maze);
     void draw();
 
 private:

@@ -2,6 +2,10 @@
 
 namespace sim {
 
+Meters::Meters() {
+    m_meters = 0.0;
+}
+
 Meters::Meters(float meters) {
     m_meters = meters;
 }

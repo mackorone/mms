@@ -4,7 +4,7 @@
 
 namespace sim{
 
-Tile::Tile() : m_x(-1), m_y(-1), m_polygonsInitialized(false) {
+Tile::Tile() : m_x(-1), m_y(-1) {
     for (Direction direction : DIRECTIONS) {
         m_walls[direction] = false;
     }
@@ -13,11 +13,11 @@ Tile::Tile() : m_x(-1), m_y(-1), m_polygonsInitialized(false) {
 Tile::~Tile()
 { }
 
-int Tile::getX() {
+int Tile::getX() const {
     return m_x;
 }
 
-int Tile::getY() {
+int Tile::getY() const {
     return m_y;
 }
 
@@ -34,24 +34,15 @@ void Tile::setWall(Direction direction, bool isWall) {
     m_walls[direction] = isWall;
 }
 
-Polygon Tile::getBasePolygon() {
-    if (!m_polygonsInitialized) {
-        initPolygons();
-    }
+Polygon Tile::getBasePolygon() const {
     return m_basePolygon;
 }
 
-std::vector<Polygon> Tile::getWallPolygons() {
-    if (!m_polygonsInitialized) {
-        initPolygons();
-    }
+std::vector<Polygon> Tile::getWallPolygons() const {
     return m_wallPolygons;
 }
 
-std::vector<Polygon> Tile::getCornerPolygons() {
-    if (!m_polygonsInitialized) {
-        initPolygons();
-    }
+std::vector<Polygon> Tile::getCornerPolygons() const {
     return m_cornerPolygons;
 }
 
@@ -87,7 +78,6 @@ void Tile::initPolygons() {
     initBasePolygon();
     initWallPolygons();
     initCornerPolygons();
-    m_polygonsInitialized = true;
 }
 
 void Tile::initBasePolygon() {

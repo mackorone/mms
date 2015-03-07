@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include <Cartesian.h>
+
 namespace sim {
 
 Polar::Polar(const Distance& rho, const Angle& theta) {
@@ -15,7 +17,7 @@ Polar::Polar(const Coordinate& coordinate) {
 }
 
 Polar Polar::operator+(const Coordinate& coordinate) const {
-    return Polar(getRho() + coordinate.getRho(), getTheta() + coordinate.getTheta());
+    return Polar(Cartesian(getX() + coordinate.getX(), getY() + coordinate.getY()));
 }
 
 } // namespace sim

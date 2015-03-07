@@ -2,7 +2,7 @@
 
 namespace sim {
 
-Distance::Distance() : m_meters(0) {
+Distance::Distance() : m_meters(0.0) {
 }
 
 Distance::~Distance() {
