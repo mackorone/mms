@@ -50,6 +50,8 @@ Polygon Sensor::getInitialView() const {
 
 Polygon Sensor::getCurrentView(const Cartesian& currentPosition, const Radians& currentRotation, const Maze& maze) const {
 
+    //return m_initialView;
+    
     // TODO: This is too slow...
     // TODO: Make sure this is called at the appropriate times... by the algo or the sim???
     

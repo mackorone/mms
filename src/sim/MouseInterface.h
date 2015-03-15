@@ -15,10 +15,11 @@ public:
     // TODO: List of wheel interfaces
 
     void setWheelSpeeds(float leftWheelSpeed, float rightWheelSpeed); 
-    float read(std::string sensor);
+    float read(std::string name);
 
     // ---------------------- Mouse Interface Methods ----------------------- //
 
+    // Discrete interface
     bool wallFront();
     bool wallRight();
     bool wallLeft();
@@ -33,7 +34,6 @@ public:
     void resetHonored();
 
     void resetPosition(); // Sets the position of the mouse to (0,0)
-
 
     // ------ Simulation utilities (not applicable to the real mouse) ------- //
 

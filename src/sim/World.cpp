@@ -10,6 +10,8 @@
 #include "Param.h"
 #include "SimUtilities.h"
 
+#include <iostream> // TODO
+
 
 namespace sim {
 
@@ -35,6 +37,12 @@ void World::simulate() {
         // what we want (since the framerate is perceived in real-time and not CPU time).
         double end(sim::getHighResTime());
         double duration = end - start;
+
+        // TODO - make these go away
+        if (duration > P()->deltaTime()) {
+            std::cout << "Delta frame is late by " << duration - P()->deltaTime() << " seconds, which is "
+                      << (duration - P()->deltaTime())/P()->deltaTime() * 100 << " percent late" << std::endl;
+        }
 
         // Sleep the appropriate amout of time, base on the drawing duration
         sleep(Seconds(std::max(0.0, P()->deltaTime() - duration)));

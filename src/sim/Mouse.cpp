@@ -8,6 +8,7 @@
 #include <Polar.h>
 
 #include "Assert.h"
+#include "GeometryUtilities.h"
 #include "MouseParser.h"
 #include "Param.h"
 #include "SimUtilities.h"
@@ -138,12 +139,15 @@ void Mouse::setWheelSpeeds(const AngularVelocity& leftWheelSpeed, const AngularV
     m_wheelMutex.unlock();
 }
 
-float Mouse::read(std::string sensor) {
-    /*
-    ASSERT(m_sensors.count(sensor) != 0);
-    return m_sensors.at(sensor).read(m_maze); // TODO
-    */
-    return 0.0; // TODO
+float Mouse::read(std::string name) {
+    // TODO: Ensure the mouse doesn't move while we're reading values??
+    ASSERT(m_sensors.count(name) != 0);
+    Sensor sensor = m_sensors.at(name);
+    Polygon fullView = sensor.getInitialView().translate(m_translation - m_initialTranslation)
+        .rotateAroundPoint(m_rotation, m_translation);
+    Polygon currentView = sensor.getCurrentView(
+        fullView.getVertices().at(0), m_rotation + sensor.getInitialRotation(), *m_maze);
+    return 1.0 - polygonArea(currentView).getMetersSquared() / polygonArea(fullView).getMetersSquared();
 }
 
 } // namespace sim

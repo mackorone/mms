@@ -6,13 +6,6 @@
 
 namespace sim {
 
-// TODO: delete this
-/*
-Meters euclideanDistance(const Cartesian& A, const Cartesian& B) {
-    return Meters(sqrt(pow((A.getX() - B.getX()).getMeters(), 2) + pow((A.getY() - B.getY()).getMeters(), 2)));
-}
-*/
-
 bool linesIntersect(const std::pair<const Cartesian&, const Cartesian&>& A,
                     const std::pair<const Cartesian&, const Cartesian&>& B) {
 
@@ -40,10 +33,10 @@ bool linesIntersect(const std::pair<const Cartesian&, const Cartesian&>& A,
 Cartesian getIntersectionPoint(const std::pair<const Cartesian&, const Cartesian&>& A, 
                                const std::pair<const Cartesian&, const Cartesian&>& B) {
 
-    // Taken from http://alienryderflex.com/intersect/
-
-    // Assert that the lines *do* intersect
+    // Assert that the lines do intersect
     ASSERT(linesIntersect(A, B));
+
+    // Taken from http://alienryderflex.com/intersect/
 
     // Extract A's points
     float a1x = A.first.getX().getMeters();
@@ -85,8 +78,6 @@ Cartesian getIntersectionPoint(const std::pair<const Cartesian&, const Cartesian
     return Cartesian(Meters(a1x+ABpos*theCos), Meters(a1y+ABpos*theSin));
 }
 
-// TODO: area of intersection of two polygons
-
 MetersSquared polygonArea(const Polygon& polygon) {
 
     // Magic
@@ -104,7 +95,6 @@ MetersSquared polygonArea(const Polygon& polygon) {
 
 std::vector<std::pair<Cartesian, Cartesian>> getLineSegments(const Polygon& polygon) {
 
-    // TODO: Optimize this - it's called quite a lot
     std::vector<std::pair<Cartesian, Cartesian>> segments;
 
     std::vector<Cartesian> vertices = polygon.getVertices();

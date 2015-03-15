@@ -31,6 +31,7 @@
         <X>.105</X>
         <Y>.075</Y>
     </Position>
+    <MaxSpeed></MaxSpeed> <!-- TODO: -->
 </RightWheel>
 <Sensor>
     <Name>A</Name>
@@ -61,29 +62,7 @@
         <Y>.105</Y>
     </Position>
     <Radius>.01</Radius> <!-- Size of the sensor body, in meters -->
-    <Rotation>2.0944</Rotation> <!-- Radians TODO: This should be a property--> 
-    <Range>.20</Range> <!-- Meters -->
-    <HalfWidth>5</HalfWidth> <!-- Degrees -->
-</Sensor>
-<Sensor>
-    <Name>D</Name>
-    <Position>
-        <X>.080</X>
-        <Y>.105</Y>
-    </Position>
-    <Radius>.01</Radius> <!-- Size of the sensor body, in meters -->
     <Rotation>0</Rotation> <!-- Radians TODO: This should be a property--> 
-    <Range>.20</Range> <!-- Meters -->
-    <HalfWidth>5</HalfWidth> <!-- Degrees -->
-</Sensor>
-<Sensor>
-    <Name>E</Name>
-    <Position>
-        <X>.080</X>
-        <Y>.105</Y>
-    </Position>
-    <Radius>.01</Radius> <!-- Size of the sensor body, in meters -->
-    <Rotation>3.14159</Rotation> <!-- Radians TODO: This should be a property--> 
     <Range>.20</Range> <!-- Meters -->
     <HalfWidth>5</HalfWidth> <!-- Degrees -->
 </Sensor>

@@ -25,7 +25,6 @@ int Maze::getHeight() const {
     return (m_maze.size() > 0 ? m_maze.at(0).size() : 0);
 }
 
-// TODO
 Tile* Maze::getTile(int x, int y) {
     return &m_maze.at(x).at(y);
 }

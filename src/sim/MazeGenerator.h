@@ -18,7 +18,7 @@ public:
 
 private:
 
-    // A private constructor to restrict creation of MazeGenerator objects
+    // A private constructor to restrict creation of any MazeGenerator objects
     MazeGenerator();
 
     // Random maze generation algo

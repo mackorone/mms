@@ -21,7 +21,7 @@ public:
     // Retrieve all shapes belonging to the mouse, including body, wheels, and sensors
     std::vector<Polygon> getBodyPolygons() const;
 
-    // Retrieve all shapes belonging to the mouse, including body, wheels, and sensors
+    // Retrieve all shapes belonging to the sensors
     std::vector<Polygon> getSensorPolygons() const;
 
     // Instruct the mouse to update its own position based on how much simulation time has elapsed
@@ -31,11 +31,11 @@ public:
     void setWheelSpeeds(const AngularVelocity& leftWheelSpeed, const AngularVelocity& rightWheelSpeed);
 
     // Read a sensor, and returns a value from 0.0 (completely free) to 1.0 (completely blocked)
-    float read(std::string sensor);
+    float read(std::string name);
 
 private:
     // Used for the sensor readings
-    Maze* m_maze;
+    const Maze* m_maze;
 
     // The mouse, as it's positioned at the start execution
     Cartesian m_initialTranslation;
