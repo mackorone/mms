@@ -26,6 +26,7 @@ Param::Param() {
     // Graphical Parameters
     m_pixelsPerMeter = parser.getIntIfHasInt("pixels-per-meter", 250);
     m_frameRate = parser.getIntIfHasInt("frame-rate", 60);
+    m_printLateFrames = parser.getBoolIfHasBool("print-late-frames", false);
     m_tileBaseColor = parser.getStringIfHasString("tile-base-color", "BLACK");
     m_tileWallColor = parser.getStringIfHasString("tile-wall-color", "RED");
     m_tileCornerColor = parser.getStringIfHasString("tile-corner-color", "GRAY");
@@ -34,10 +35,13 @@ Param::Param() {
     m_mouseSensorColor = parser.getStringIfHasString("mouse-sensor-color", "WHITE");
 
     // Simulation Parameters
-    bool useRandomSeed = parser.getBoolIfHasBool("use-random-seed", false); // TODO: Is this correct behavior???
+    bool useRandomSeed = parser.getBoolIfHasBool("use-random-seed", false); // TODO: Notify user that there is no seed
     m_randomSeed = (useRandomSeed ? parser.getIntIfHasInt("random-seed", time(NULL)) : time(NULL));
     m_glutInitTime = parser.getFloatIfHasFloat("glut-init-time", 0.25);
-    m_deltaTime = parser.getFloatIfHasFloat("delta-time", 0.01);
+    m_mousePositionUpdateRate = parser.getIntIfHasInt("mouse-position-update-rate", 20000);
+    m_printLateMousePostitionUpdates = parser.getBoolIfHasBool("print-late-mouse-position-updates", false);
+    m_collisionDetectionRate = parser.getIntIfHasInt("collision-detection-rate", 40);
+    m_printLateCollisionDetections = parser.getBoolIfHasBool("print-late-collision-detections", false);
     m_minSimSpeed = parser.getFloatIfHasFloat("min-sim-speed", 0.1);
     m_maxSimSpeed = parser.getFloatIfHasFloat("max-sim-speed", 10);
     m_defaultSimSpeed = parser.getFloatIfHasFloat("default-sim-speed", 10);
@@ -68,6 +72,10 @@ int Param::pixelsPerMeter() {
 
 int Param::frameRate() {
     return m_frameRate;
+}
+
+bool Param::printLateFrames() {
+    return m_printLateFrames;
 }
 
 int Param::windowWidth() {
@@ -110,8 +118,20 @@ float Param::glutInitTime() {
     return m_glutInitTime;
 }
 
-float Param::deltaTime() {
-    return m_deltaTime;
+int Param::mousePositionUpdateRate() {
+    return m_mousePositionUpdateRate;
+}
+
+bool Param::printLateMousePositionUpdates() {
+    return m_printLateMousePostitionUpdates;
+}
+
+int Param::collisionDetectionRate() {
+    return m_collisionDetectionRate;
+}
+
+bool Param::printLateCollisionDetections() {
+    return m_printLateCollisionDetections;
 }
 
 float Param::minSimSpeed() {

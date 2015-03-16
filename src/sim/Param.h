@@ -18,6 +18,7 @@ public:
     // Graphics parameters
     int pixelsPerMeter();
     int frameRate();
+    bool printLateFrames();
     int windowWidth();
     int windowHeight();
     std::string tileBaseColor();
@@ -30,7 +31,10 @@ public:
     // Simulation parameters
     int randomSeed();
     float glutInitTime();
-    float deltaTime();
+    int mousePositionUpdateRate();
+    bool printLateMousePositionUpdates();
+    int collisionDetectionRate();
+    bool printLateCollisionDetections();
     float minSimSpeed();
     float maxSimSpeed();
     float defaultSimSpeed();
@@ -61,6 +65,7 @@ private:
     // Graphics parameters
     int m_pixelsPerMeter;
     int m_frameRate;
+    bool m_printLateFrames;
     int m_windowWidth;
     int m_windowHeight;
     std::string m_tileBaseColor;
@@ -73,7 +78,10 @@ private:
     // Simulation parameters
     int m_randomSeed;
     float m_glutInitTime;
-    float m_deltaTime;
+    int m_mousePositionUpdateRate;
+    bool m_printLateMousePostitionUpdates;
+    int m_collisionDetectionRate;
+    bool m_printLateCollisionDetections;
     float m_minSimSpeed;
     float m_maxSimSpeed;
     float m_defaultSimSpeed;

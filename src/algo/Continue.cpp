@@ -7,6 +7,11 @@
 #include <Milliseconds.h>
 
 void Continue::solve(sim::MouseInterface* mouse) {
+            turnRight(mouse);
+            turnRight(mouse);
+            turnRight(mouse);
+            turnRight(mouse);
+            turnRight(mouse);
     while (true) {
         while (!wallRight(mouse)) {
             turnRight(mouse);

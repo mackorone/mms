@@ -89,14 +89,14 @@ void draw() {
     double end(sim::getHighResTime());
     double duration = end - start;
 
-    // TODO: Mack - Fix these late frames. This is due to the sensor view calculation
-    /*
-    if (duration > 1.0/sim::P()->frameRate()) {
-        sim::print("LATE"); 
-        //sim::print("A frame was late by " + duration - 1.0/sim::P()->frameRate() + " seconds");
-        std::cout << duration << std::endl;
+    // Notify the user of a late frame
+    if (sim::P()->printLateFrames() && duration > 1.0/sim::P()->frameRate()) {
+        sim::print(std::string("A frame was late by ")
+            + std::to_string(duration - 1.0/sim::P()->frameRate())
+            + std::string(" seconds, which is ")
+            + std::to_string((duration - 1.0/sim::P()->frameRate())/(1.0/sim::P()->frameRate()) * 100)
+            + std::string(" percent late."));
     }
-    */
 
     // Sleep the appropriate amout of time, base on the drawing duration
     sim::sleep(sim::Seconds(std::max(0.0, 1.0/sim::P()->frameRate() - duration)));
