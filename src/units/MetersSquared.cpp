@@ -22,4 +22,8 @@ MetersSquared MetersSquared::operator-(const Area& area) const {
     return MetersSquared(getMetersSquared() - area.getMetersSquared());
 }
 
+MetersSquared MetersSquared::operator*(float factor) const {
+    return MetersSquared(getMetersSquared() * factor);
+}
+
 } // namespace sim

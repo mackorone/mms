@@ -18,11 +18,23 @@ class Mouse {
 public:
     Mouse(Maze* maze);
 
-    // Retrieve all shapes belonging to the mouse, including body, wheels, and sensors
-    std::vector<Polygon> getBodyPolygons() const;
+    // Retrieves the polygon comprised of all parts of the mouse that could collide with walls
+    Polygon getCollisionPolygon() const;
 
-    // Retrieve all shapes belonging to the sensors
+    // Retrieves the centroid of the collision polygon
+    Cartesian getCollisionCentroid() const;
+
+    // Retrieves the polygon of just the body of the mouse
+    Polygon getBodyPolygon() const;
+
+    // Retrieves the polygons of the wheels of the robot
+    std::vector<Polygon> getWheelPolygons() const;
+
+    // Retrieves the polygons of the sensors of the robot
     std::vector<Polygon> getSensorPolygons() const;
+
+    // Retrieve the polygons corresponding to the views of the sensors
+    std::vector<Polygon> getViewPolygons() const;
 
     // Instruct the mouse to update its own position based on how much simulation time has elapsed
     void update(const Time& elapsed);
@@ -39,7 +51,9 @@ private:
 
     // The mouse, as it's positioned at the start execution
     Cartesian m_initialTranslation;
-    Polygon m_initialPolygon;
+    Polygon m_initialBodyPolygon; // The polygon of strictly the body of the mouse
+    Polygon m_initialCollisionPolygon; // The polygon containing all collidable parts of the mouse
+    Cartesian m_initialCollisionCentroid; // The centroid of the collision polygon
 
     // The rotation and translation of the mouse, which change throughout execution
     Radians m_rotation;

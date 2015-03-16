@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Distance.h"
+#include "MetersSquared.h"
 
 namespace sim {
 
@@ -14,6 +15,7 @@ public:
     Meters operator-(const Distance& distance) const;
     Meters operator*(float factor) const;
     Meters operator/(float factor) const;
+    MetersSquared operator*(const Distance& distance) const;
     void operator+=(const Distance& distance);
 
 };

@@ -12,6 +12,8 @@ public:
     float getMeters() const;
     float getCentimeters() const;
     bool operator==(const Distance& distance) const;
+    bool operator!=(const Distance& distance) const;
+    bool operator<(const Distance& distance) const;
     Seconds operator/(const Speed& speed) const;
 
 protected:

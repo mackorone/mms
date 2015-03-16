@@ -21,11 +21,10 @@ MouseInterface::~MouseInterface()
 
 void MouseInterface::setWheelSpeeds(float leftWheelSpeed, float rightWheelSpeed) {
     m_mouse->setWheelSpeeds(RadiansPerSecond(leftWheelSpeed), RadiansPerSecond(rightWheelSpeed));
-    //sleep(Milliseconds(50)); // TODO - does this help performance???
 }
 
 float MouseInterface::read(std::string name) {
-    //sleep(Milliseconds(50));
+    // TODO: Delay sensor-read-time here
     return m_mouse->read(name);
 }
 

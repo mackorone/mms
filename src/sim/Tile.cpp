@@ -34,12 +34,20 @@ void Tile::setWall(Direction direction, bool isWall) {
     m_walls[direction] = isWall;
 }
 
-Polygon Tile::getBasePolygon() const {
-    return m_basePolygon;
+Polygon Tile::getFullPolygon() const {
+    return m_fullPolygon;
 }
 
-std::vector<Polygon> Tile::getWallPolygons() const {
-    return m_wallPolygons;
+Polygon Tile::getInteriorPolygon() const {
+    return m_interiorPolygon;
+}
+
+std::vector<Polygon> Tile::getAllWallPolygons() const {
+    return m_allWallPolygons;
+}
+
+std::vector<Polygon> Tile::getActualWallPolygons() const {
+    return m_actualWallPolygons;
 }
 
 std::vector<Polygon> Tile::getCornerPolygons() const {
@@ -48,9 +56,11 @@ std::vector<Polygon> Tile::getCornerPolygons() const {
 
 void Tile::initPolygons() {
 
-    //  The polygons associated each tile are as follows:
+    //  The polygons associated with each tile are as follows:
     //
-    //      base: 05af
+    //      full: 05af
+    //
+    //      interior: 278d
     //
     //      northWall: 7698
     //      eastWall: d8be
@@ -75,70 +85,98 @@ void Tile::initPolygons() {
     //      0--3-------------c--f
 
     // Order is important
-    initBasePolygon();
+    initFullPolygon();
+    initInteriorPolygon();
     initWallPolygons();
     initCornerPolygons();
 }
 
-void Tile::initBasePolygon() {
+void Tile::initFullPolygon() {
     Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
     Cartesian lowerLeftPoint(tileLength * m_x, tileLength * m_y);
     Cartesian upperRightPoint(tileLength * (m_x + 1), tileLength * (m_y + 1));
     Cartesian lowerRightPoint(upperRightPoint.getX(), lowerLeftPoint.getY());
     Cartesian upperLeftPoint(lowerLeftPoint.getX(), upperRightPoint.getY());
-    std::vector<Cartesian> basePolygon {lowerLeftPoint, upperLeftPoint, upperRightPoint, lowerRightPoint};
-    m_basePolygon = Polygon(basePolygon);
+    std::vector<Cartesian> fullPolygon {lowerLeftPoint, upperLeftPoint, upperRightPoint, lowerRightPoint};
+    m_fullPolygon = Polygon(fullPolygon);
+}
+
+void Tile::initInteriorPolygon() {
+
+    Cartesian lowerLeftPoint = m_fullPolygon.getVertices().at(0);
+    Cartesian upperLeftPoint = m_fullPolygon.getVertices().at(1);
+    Cartesian upperRightPoint = m_fullPolygon.getVertices().at(2);
+    Cartesian lowerRightPoint = m_fullPolygon.getVertices().at(3);
+
+    Meters halfWallWidth = Meters(P()->wallWidth()) / 2.0;
+
+    std::vector<Cartesian> interiorPolygon {
+        lowerLeftPoint + Cartesian(halfWallWidth, halfWallWidth),
+        upperLeftPoint + Cartesian(halfWallWidth, halfWallWidth * -1),
+        upperRightPoint + Cartesian(halfWallWidth * -1, halfWallWidth * -1),
+        lowerRightPoint + Cartesian(halfWallWidth * -1, halfWallWidth)};
+
+    m_interiorPolygon = Polygon(interiorPolygon);
 }
 
 void Tile::initWallPolygons() {
 
-    Cartesian lowerLeftPoint = m_basePolygon.getVertices().at(0);
-    Cartesian upperLeftPoint = m_basePolygon.getVertices().at(1);
-    Cartesian upperRightPoint = m_basePolygon.getVertices().at(2);
-    Cartesian lowerRightPoint = m_basePolygon.getVertices().at(3);
+    Cartesian lowerLeftPoint = m_fullPolygon.getVertices().at(0);
+    Cartesian upperLeftPoint = m_fullPolygon.getVertices().at(1);
+    Cartesian upperRightPoint = m_fullPolygon.getVertices().at(2);
+    Cartesian lowerRightPoint = m_fullPolygon.getVertices().at(3);
 
     Meters halfWallWidth = Meters(P()->wallWidth()) / 2.0;
 
+    std::vector<Cartesian> northWall;
+    northWall.push_back(Cartesian(upperLeftPoint.getX() + halfWallWidth, upperLeftPoint.getY() - halfWallWidth));
+    northWall.push_back(Cartesian(upperLeftPoint.getX() + halfWallWidth, upperLeftPoint.getY()));
+    northWall.push_back(Cartesian(upperRightPoint.getX() - halfWallWidth, upperRightPoint.getY()));
+    northWall.push_back(Cartesian(upperRightPoint.getX() - halfWallWidth, upperRightPoint.getY() - halfWallWidth));
+    m_allWallPolygons.insert(m_allWallPolygons.begin() + NORTH, Polygon(northWall));
     if (isWall(NORTH)) {
-        std::vector<Cartesian> northWall;
-        northWall.push_back(Cartesian(upperLeftPoint.getX() + halfWallWidth, upperLeftPoint.getY() - halfWallWidth));
-        northWall.push_back(Cartesian(upperLeftPoint.getX() + halfWallWidth, upperLeftPoint.getY()));
-        northWall.push_back(Cartesian(upperRightPoint.getX() - halfWallWidth, upperRightPoint.getY()));
-        northWall.push_back(Cartesian(upperRightPoint.getX() - halfWallWidth, upperRightPoint.getY() - halfWallWidth));
-        m_wallPolygons.push_back(Polygon(northWall));
+        m_actualWallPolygons.push_back(northWall);
     }
+
+    std::vector<Cartesian> eastWall;
+    eastWall.push_back(Cartesian(lowerRightPoint.getX() - halfWallWidth, lowerRightPoint.getY() + halfWallWidth));
+    eastWall.push_back(Cartesian(upperRightPoint.getX() - halfWallWidth, upperRightPoint.getY() - halfWallWidth));
+    eastWall.push_back(Cartesian(upperRightPoint.getX(), upperRightPoint.getY() - halfWallWidth));
+    eastWall.push_back(Cartesian(lowerRightPoint.getX(), lowerRightPoint.getY() + halfWallWidth));
+    m_allWallPolygons.insert(m_allWallPolygons.begin() + EAST, Polygon(eastWall));
     if (isWall(EAST)) {
-        std::vector<Cartesian> eastWall;
-        eastWall.push_back(Cartesian(lowerRightPoint.getX() - halfWallWidth, lowerRightPoint.getY() + halfWallWidth));
-        eastWall.push_back(Cartesian(upperRightPoint.getX() - halfWallWidth, upperRightPoint.getY() - halfWallWidth));
-        eastWall.push_back(Cartesian(upperRightPoint.getX(), upperRightPoint.getY() - halfWallWidth));
-        eastWall.push_back(Cartesian(lowerRightPoint.getX(), lowerRightPoint.getY() + halfWallWidth));
-        m_wallPolygons.push_back(Polygon(eastWall));
+        m_actualWallPolygons.push_back(eastWall);
     }
+
+    std::vector<Cartesian> southWall;
+    southWall.push_back(Cartesian(lowerLeftPoint.getX() + halfWallWidth, lowerLeftPoint.getY()));
+    southWall.push_back(Cartesian(lowerLeftPoint.getX() + halfWallWidth, lowerLeftPoint.getY() + halfWallWidth));
+    southWall.push_back(Cartesian(lowerRightPoint.getX() - halfWallWidth, lowerRightPoint.getY() + halfWallWidth));
+    southWall.push_back(Cartesian(lowerRightPoint.getX() - halfWallWidth, lowerRightPoint.getY()));
+    m_allWallPolygons.insert(m_allWallPolygons.begin() + SOUTH, Polygon(southWall));
     if (isWall(SOUTH)) {
-        std::vector<Cartesian> southWall;
-        southWall.push_back(Cartesian(lowerLeftPoint.getX() + halfWallWidth, lowerLeftPoint.getY()));
-        southWall.push_back(Cartesian(lowerLeftPoint.getX() + halfWallWidth, lowerLeftPoint.getY() + halfWallWidth));
-        southWall.push_back(Cartesian(lowerRightPoint.getX() - halfWallWidth, lowerRightPoint.getY() + halfWallWidth));
-        southWall.push_back(Cartesian(lowerRightPoint.getX() - halfWallWidth, lowerRightPoint.getY()));
-        m_wallPolygons.push_back(Polygon(southWall));
+        m_actualWallPolygons.push_back(southWall);
     }
+
+
+    std::vector<Cartesian> westWall;
+    westWall.push_back(Cartesian(lowerLeftPoint.getX(), lowerLeftPoint.getY() + halfWallWidth));
+    westWall.push_back(Cartesian(upperLeftPoint.getX(), upperLeftPoint.getY() - halfWallWidth));
+    westWall.push_back(Cartesian(upperLeftPoint.getX() + halfWallWidth, upperLeftPoint.getY() - halfWallWidth));
+    westWall.push_back(Cartesian(lowerLeftPoint.getX() + halfWallWidth, lowerLeftPoint.getY() + halfWallWidth));
+    m_allWallPolygons.insert(m_allWallPolygons.begin() + WEST, Polygon(westWall));
     if (isWall(WEST)) {
-        std::vector<Cartesian> westWall;
-        westWall.push_back(Cartesian(lowerLeftPoint.getX(), lowerLeftPoint.getY() + halfWallWidth));
-        westWall.push_back(Cartesian(upperLeftPoint.getX(), upperLeftPoint.getY() - halfWallWidth));
-        westWall.push_back(Cartesian(upperLeftPoint.getX() + halfWallWidth, upperLeftPoint.getY() - halfWallWidth));
-        westWall.push_back(Cartesian(lowerLeftPoint.getX() + halfWallWidth, lowerLeftPoint.getY() + halfWallWidth));
-        m_wallPolygons.push_back(Polygon(westWall));
+        m_actualWallPolygons.push_back(westWall);
     }
+
 }
 
 void Tile::initCornerPolygons() {
 
-    Cartesian lowerLeftPoint = m_basePolygon.getVertices().at(0);
-    Cartesian upperLeftPoint = m_basePolygon.getVertices().at(1);
-    Cartesian upperRightPoint = m_basePolygon.getVertices().at(2);
-    Cartesian lowerRightPoint = m_basePolygon.getVertices().at(3);
+    Cartesian lowerLeftPoint = m_fullPolygon.getVertices().at(0);
+    Cartesian upperLeftPoint = m_fullPolygon.getVertices().at(1);
+    Cartesian upperRightPoint = m_fullPolygon.getVertices().at(2);
+    Cartesian lowerRightPoint = m_fullPolygon.getVertices().at(3);
 
     Meters halfWallWidth = Meters(P()->wallWidth()) / 2.0;
 

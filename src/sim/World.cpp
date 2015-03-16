@@ -11,7 +11,7 @@
 #include "SimUtilities.h"
 
 #include <iostream> // TODO
-
+#include <iomanip> // TODO
 
 namespace sim {
 
@@ -30,6 +30,7 @@ void World::simulate() {
             // Update the position of the mouse and check for collisions
             m_mouse->update(Seconds(P()->deltaTime()));
             checkCollision();
+            // TODO: This block of code needs to be sped up
         }
 
         // Get the duration of the drawing operation, in seconds. Note that this duration
@@ -38,11 +39,13 @@ void World::simulate() {
         double end(sim::getHighResTime());
         double duration = end - start;
 
-        // TODO - make these go away
+        /*
+        std::cout << "Duration: " << std::fixed << std::setprecision(6) << duration << std::endl;
         if (duration > P()->deltaTime()) {
             std::cout << "Delta frame is late by " << duration - P()->deltaTime() << " seconds, which is "
                       << (duration - P()->deltaTime())/P()->deltaTime() * 100 << " percent late" << std::endl;
         }
+        */
 
         // Sleep the appropriate amout of time, base on the drawing duration
         sleep(Seconds(std::max(0.0, P()->deltaTime() - duration)));
@@ -51,8 +54,10 @@ void World::simulate() {
 
 std::vector<const Tile*> World::getTilesContainingMouse() {
 
+    // TODO: Reduce this number
+
     // Select an arbitrary point belonging to the mouse
-    Cartesian point = m_mouse->getBodyPolygons().at(0).getVertices().at(0);
+    Cartesian point = m_mouse->getCollisionPolygon().getVertices().at(0);
     int px = static_cast<int>(floor((point.getX() / (P()->wallLength() + P()->wallWidth())).getMeters()));
     int py = static_cast<int>(floor((point.getY() / (P()->wallLength() + P()->wallWidth())).getMeters()));
 
@@ -71,27 +76,44 @@ std::vector<const Tile*> World::getTilesContainingMouse() {
 
 void World::checkCollision() {
 
+    // Next, find all of the points of the mouse to see if they lie outside of the square
+    // containing the mouse. If theres a wall, it's a collision
+    int i = 0; // TODO
+
+    /*
     // For each tile the mouse could be in...
     for (const Tile* tile : getTilesContainingMouse()) {
 
         // ...iterate through all of the tile's polygons...
-        for (std::vector<Polygon> group : {tile->getWallPolygons(), tile->getCornerPolygons()}) {
+        for (std::vector<Polygon> group : {tile->getActualWallPolygons(), tile->getCornerPolygons()}) {
             for (Polygon obstacle : group) {
                 for (std::pair<Cartesian, Cartesian> A : getLineSegments(obstacle)) {
 
                     // ... and check to see if one is colliding with a mouse polygon
-                    for (Polygon mousePolygon : m_mouse->getBodyPolygons()) {
-                        for (std::pair<Cartesian, Cartesian> B : getLineSegments(mousePolygon)) {
-                            if (linesIntersect(A, B)) {
-                                m_collision = true;
-                                return;
-                            }
-                        } 
-                    }
+                    for (std::pair<Cartesian, Cartesian> B : getLineSegments(m_mouse->getCollisionPolygon())) {
+                        i += 1; // TODO
+                        if (linesIntersect(A, B)) {
+                            std::cout << i << std::endl; // TODO
+                            m_collision = true;
+                            return;
+                        }
+                    } 
                 }
             }
         }
     }
+    */
+
+    // If any of the points in the collision polygon aren't in the interior
+    // of the same tile as the centroid, we could have a collision
+    Cartesian center = m_mouse->getCollisionCentroid();
+    // TODO: Get the interior polygon for the center
+    for (Cartesian point : m_mouse->getCollisionPolygon().getVertices()) {
+                
+    }
+
+    // TODO: Determining the polygon that contains the
+    //std::cout << i << std::endl; // TODO
 }
 
 #if(0) // TODO

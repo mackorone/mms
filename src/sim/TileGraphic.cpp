@@ -13,11 +13,11 @@ void TileGraphic::draw() {
 
     // Draw the base of the tile
     glColor3fv(COLORS.at(P()->tileBaseColor()));
-    drawPolygon(m_tile->getBasePolygon());
+    drawPolygon(m_tile->getFullPolygon());
 
     // Draw the walls of the tile
     glColor3fv(COLORS.at(P()->tileWallColor()));
-    for (Polygon polygon : m_tile->getWallPolygons()) {
+    for (Polygon polygon : m_tile->getActualWallPolygons()) {
         drawPolygon(polygon);
     }
 

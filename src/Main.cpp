@@ -59,10 +59,6 @@ int main(int argc, char* argv[]) {
     glutDisplayFunc(draw);
     glutKeyboardFunc(keyInput);
 
-    // TODO: Try slicing the screen...
-    //glScissor(0,0,100,100);
-    //glEnable(GL_SCISSOR_TEST);
-
     // Start the physics loop
     std::thread physicsThread(simulate);
     
@@ -93,16 +89,24 @@ void draw() {
     double end(sim::getHighResTime());
     double duration = end - start;
 
-    // TODO: Fix these late frames
+    // TODO: SOM
+    // Fix these late frames
+    // Perhaps Try slicing the screen??
+    // In main:
+    //  glScissor(0,0,50,50);
+    //  glEnable(GL_SCISSOR_TEST);
+    /*
     if (duration > 1.0/sim::P()->frameRate()) {
-        //sim::print("A frame was late by " + duration - 1.0/sim::P()->frameRate() + " seconds");
-        //sim::print("LATE"); 
+        sim::print("LATE"); 
+        sim::print("A frame was late by " + duration - 1.0/sim::P()->frameRate() + " seconds");
+        std::cout << duration << std::endl;
     }
+    */
 
     // Sleep the appropriate amout of time, base on the drawing duration
     sim::sleep(sim::Seconds(std::max(0.0, 1.0/sim::P()->frameRate() - duration)));
 
-    // Request to execute the draw function again // TODO: Is this correct here???
+    // Request to execute the draw function again
     glutPostRedisplay();
 }
 

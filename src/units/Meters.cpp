@@ -30,6 +30,10 @@ Meters Meters::operator/(float factor) const {
     return Meters(getMeters() / factor);
 }
 
+MetersSquared Meters::operator*(const Distance& distance) const {
+    return MetersSquared(getMeters() * distance.getMeters());
+}
+
 void Meters::operator+=(const Distance& distance) {
     m_meters += distance.getMeters();
 }

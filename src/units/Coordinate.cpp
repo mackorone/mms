@@ -30,4 +30,8 @@ bool Coordinate::operator==(const Coordinate& coordinate) {
     return (getX() == coordinate.getX() && getY() == coordinate.getY());
 }
 
+bool Coordinate::operator<(const Coordinate& coordinate) {
+    return (getX() != coordinate.getX() ? getX() < coordinate.getX() : getY() < coordinate.getY());
+}
+
 } // namespace sim

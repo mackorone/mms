@@ -28,23 +28,23 @@ bool Continue::wallFront(sim::MouseInterface* mouse) {
 
 void Continue::turnRight(sim::MouseInterface* mouse) {
     mouse->setWheelSpeeds(-5*M_PI, -5.0*M_PI);
-    sim::sleep(sim::Milliseconds(300));
+    sim::sleep(sim::Milliseconds(30)); // TODO: Make this part of the interface
 }
 
 void Continue::turnLeft(sim::MouseInterface* mouse) {
     mouse->setWheelSpeeds(5*M_PI, 5.0*M_PI);
-    sim::sleep(sim::Milliseconds(200));
+    sim::sleep(sim::Milliseconds(20));
 }
 
 void Continue::moveForward(sim::MouseInterface* mouse) {
     mouse->setWheelSpeeds(-10*M_PI, 10*M_PI);
-    sim::sleep(sim::Milliseconds(650));
+    sim::sleep(sim::Milliseconds(65));
     if (mouse->read("B") < 0.7) {
         mouse->setWheelSpeeds(-1*M_PI, -1.0*M_PI);
-        sim::sleep(sim::Milliseconds(60));
+        sim::sleep(sim::Milliseconds(6));
     }
     if (mouse->read("B") > 0.8) {
         mouse->setWheelSpeeds(1*M_PI, 1*M_PI);
-        sim::sleep(sim::Milliseconds(60));
+        sim::sleep(sim::Milliseconds(6));
     }
 }

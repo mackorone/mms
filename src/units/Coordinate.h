@@ -14,6 +14,7 @@ public:
     Meters getRho() const;
     Radians getTheta() const;
     bool operator==(const Coordinate& coordinate);
+    bool operator<(const Coordinate& coordinate);
 
 protected:
     Coordinate();

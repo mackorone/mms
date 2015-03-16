@@ -65,7 +65,7 @@ Polygon Sensor::getCurrentView(const Cartesian& currentPosition, const Radians& 
     for (const Tile* tile : getTilesInRange(currentPosition, currentRotation, maze)) {
         
         // ...iterate through all of the tile's polygons...
-        for (std::vector<Polygon> group : {tile->getWallPolygons(), tile->getCornerPolygons()}) {
+        for (std::vector<Polygon> group : {tile->getActualWallPolygons(), tile->getCornerPolygons()}) {
             for (Polygon obstacle : group) {
                 for (std::pair<Cartesian, Cartesian> A : getLineSegments(obstacle)) {
 
