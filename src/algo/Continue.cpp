@@ -8,7 +8,7 @@
 
 void Continue::solve(sim::MouseInterface* mouse) {
     while (true) {
-        if (!wallRight(mouse)) {
+        while (!wallRight(mouse)) {
             turnRight(mouse);
         }
         while (wallFront(mouse)) {
@@ -23,28 +23,20 @@ bool Continue::wallRight(sim::MouseInterface* mouse) {
 }
 
 bool Continue::wallFront(sim::MouseInterface* mouse) {
-    return (mouse->read("A") > 0.5);
+    return (mouse->read("A") > 0.8);
 }
 
 void Continue::turnRight(sim::MouseInterface* mouse) {
-    mouse->setWheelSpeeds(-5*M_PI, -5.0*M_PI);
-    sim::sleep(sim::Milliseconds(30)); // TODO: Make this part of the interface
+    mouse->setWheelSpeeds(-10*M_PI, 10);
+    sim::sleep(sim::Milliseconds(100)); // TODO: Make this part of the interface
 }
 
 void Continue::turnLeft(sim::MouseInterface* mouse) {
-    mouse->setWheelSpeeds(5*M_PI, 5.0*M_PI);
-    sim::sleep(sim::Milliseconds(20));
+    mouse->setWheelSpeeds(10, 10*M_PI);
+    sim::sleep(sim::Milliseconds(100));
 }
 
 void Continue::moveForward(sim::MouseInterface* mouse) {
     mouse->setWheelSpeeds(-10*M_PI, 10*M_PI);
-    sim::sleep(sim::Milliseconds(65));
-    if (mouse->read("B") < 0.7) {
-        mouse->setWheelSpeeds(-1*M_PI, -1.0*M_PI);
-        sim::sleep(sim::Milliseconds(6));
-    }
-    if (mouse->read("B") > 0.8) {
-        mouse->setWheelSpeeds(1*M_PI, 1*M_PI);
-        sim::sleep(sim::Milliseconds(6));
-    }
+    sim::sleep(sim::Milliseconds(100));
 }

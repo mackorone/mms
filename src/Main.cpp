@@ -89,16 +89,11 @@ void draw() {
     double end(sim::getHighResTime());
     double duration = end - start;
 
-    // TODO: SOM
-    // Fix these late frames
-    // Perhaps Try slicing the screen??
-    // In main:
-    //  glScissor(0,0,50,50);
-    //  glEnable(GL_SCISSOR_TEST);
+    // TODO: Mack - Fix these late frames. This is due to the sensor view calculation
     /*
     if (duration > 1.0/sim::P()->frameRate()) {
         sim::print("LATE"); 
-        sim::print("A frame was late by " + duration - 1.0/sim::P()->frameRate() + " seconds");
+        //sim::print("A frame was late by " + duration - 1.0/sim::P()->frameRate() + " seconds");
         std::cout << duration << std::endl;
     }
     */

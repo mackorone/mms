@@ -50,18 +50,10 @@ Mouse::Mouse(Maze* maze) : m_maze(maze), m_rotation(Radians(0.0)) {
     }
     // TODO: SOM: This should be changed to getUnion instead of convexHull, once it's ready
     m_initialCollisionPolygon = convexHull(polygons);
-
-    // Initialize the collision centroid
-    m_initialCollisionCentroid = centroid(m_initialCollisionPolygon);
 }
 
 Polygon Mouse::getCollisionPolygon() const {
     return m_initialCollisionPolygon.translate(m_translation - m_initialTranslation).rotateAroundPoint(m_rotation, m_translation);
-}
-
-Cartesian Mouse::getCollisionCentroid() const {
-    Polygon initial = Polygon({m_initialCollisionCentroid});
-    return (initial.translate(m_translation - m_initialTranslation).rotateAroundPoint(m_rotation, m_translation)).getVertices().at(0);
 }
 
 Polygon Mouse::getBodyPolygon() const {

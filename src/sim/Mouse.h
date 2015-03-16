@@ -21,9 +21,6 @@ public:
     // Retrieves the polygon comprised of all parts of the mouse that could collide with walls
     Polygon getCollisionPolygon() const;
 
-    // Retrieves the centroid of the collision polygon
-    Cartesian getCollisionCentroid() const;
-
     // Retrieves the polygon of just the body of the mouse
     Polygon getBodyPolygon() const;
 
@@ -53,7 +50,6 @@ private:
     Cartesian m_initialTranslation;
     Polygon m_initialBodyPolygon; // The polygon of strictly the body of the mouse
     Polygon m_initialCollisionPolygon; // The polygon containing all collidable parts of the mouse
-    Cartesian m_initialCollisionCentroid; // The centroid of the collision polygon
 
     // The rotation and translation of the mouse, which change throughout execution
     Radians m_rotation;
