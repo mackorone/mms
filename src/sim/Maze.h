@@ -20,7 +20,7 @@ public:
 private:
     // Vector to hold all of the tiles
     std::vector<std::vector<Tile>> m_maze;
-    
+
     // Initialize the object by reading a maze file; true if successful, false otherwise
     bool initializeViaMazeFile();
 

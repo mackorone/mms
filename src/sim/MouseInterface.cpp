@@ -54,7 +54,7 @@ void MouseInterface::moveForward() {
     Seconds duration(distance/speed);
 
     int numSteps = 10; // TODO this is hard coded now
-    
+
     for (int i = 0; i < numSteps; i += 1) {
         while (S()->paused()) {
             sim::sleep(Milliseconds(1)); // Sleep while paused
@@ -113,7 +113,7 @@ void MouseInterface::resetHonored() {
 }
 
 void MouseInterface::resetPosition() {
-    //m_mouse->resetPosition();    
+    //m_mouse->resetPosition();
 }
 
 void MouseInterface::resetColors(int curX, int curY) {

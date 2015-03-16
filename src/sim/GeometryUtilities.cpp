@@ -13,7 +13,7 @@ MetersSquared crossProduct(const Cartesian& Z, const Cartesian& A, const Cartesi
     //
     //                                |AX-ZX, AY-ZY|
     //                                |BX-ZX, BY-ZY|
-    // 
+    //
     // Where Z is simply the location of the origin for the vectors A and B
 
     return (A.getX() - Z.getX()) * (B.getY() - Z.getY()) - (A.getY() - Z.getY()) * (B.getX() - Z.getX());
@@ -66,14 +66,14 @@ bool linesIntersect(const std::pair<const Cartesian&, const Cartesian&>& A,
     // A2 to B2 (by the right-hand rule for cross products). Thus A1 and A2 are on opposite
     // sides of the line connecting B1 to B2. For example:
     //
-    //         B2 
-    //          |  
+    //         B2
+    //          |
     //      A1  |  (relative to B1, we travel clockwise to get from A1 to B2)
-    //        \ |  
+    //        \ |
     //         B1
     //
-    //         B2 
-    //          |  
+    //         B2
+    //          |
     //          |  A2  (relative to B1, we travel counter-clockwise to get from A2 to B2)
     //          | /
     //         B1
@@ -96,7 +96,7 @@ bool linesIntersect(const std::pair<const Cartesian&, const Cartesian&>& A,
     return (c1*c2 <= 0 && c3*c4 <= 0);
 }
 
-Cartesian getIntersectionPoint(const std::pair<const Cartesian&, const Cartesian&>& A, 
+Cartesian getIntersectionPoint(const std::pair<const Cartesian&, const Cartesian&>& A,
                                const std::pair<const Cartesian&, const Cartesian&>& B) {
 
     // Assert that the lines do intersect
@@ -191,10 +191,10 @@ Polygon convexHull(const std::vector<Polygon>& polygons) {
     int n = points.size();
     int k = 0;
     std::vector<Cartesian> hull(2*n);
- 
+
     // Sort points lexicographically
     std::sort(points.begin(), points.end());
- 
+
     // Build lower hull
     for (int i = 0; i < n; i += 1) {
         while (k >= 2 && crossProduct(hull[k-2], hull[k-1], points[i]).getMetersSquared() <= 0) {
@@ -202,7 +202,7 @@ Polygon convexHull(const std::vector<Polygon>& polygons) {
         }
         hull[k++] = points[i];
     }
- 
+
     // Build upper hull
     for (int i = n-2, t = k+1; i >= 0; i--) {
         while (k >= t && crossProduct(hull[k-2], hull[k-1], points[i]).getMetersSquared() <= 0) {
@@ -210,7 +210,7 @@ Polygon convexHull(const std::vector<Polygon>& polygons) {
         }
         hull[k++] = points[i];
     }
- 
+
     hull.resize(k);
 
     return Polygon(hull);

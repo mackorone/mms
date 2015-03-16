@@ -49,7 +49,7 @@ bool Maze::initializeViaMazeFile() {
         print("Error: \"" + mazeFilePath + "\" failed official maze validation");
         return false;
     }
-    
+
     // Load the maze given by mazeFilePath
     initializeMaze(loadMaze(mazeFilePath));
 
@@ -67,7 +67,7 @@ void Maze::initializeViaMazeGenerator() {
 
     // Load the maze given by the maze generation algorithm
     initializeMaze(MazeGenerator::generateMaze(MAZE_ALGOS.find(mazeAlgo)->second));
-    
+
     // Optionally save the maze
     if (P()->saveRandomMaze()) {
         saveMaze(extractMaze(), getProjectDirectory() + P()->mazeDirectory() + "auto_generated_maze.maz");

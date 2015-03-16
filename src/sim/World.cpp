@@ -85,7 +85,7 @@ void World::checkCollision() {
                                 m_collision = true;
                                 return;
                             }
-                        } 
+                        }
                     }
                 }
             }
@@ -114,9 +114,9 @@ void World::checkCollision() {
 #if(0) // TODO
 bool Mouse::inGoal() {
 
-    // The goal is defined to be the center of the maze 
+    // The goal is defined to be the center of the maze
     // This means that it's 2 squares of length if even, 1 if odd
-    
+
     /*
     bool horizontal = (m_maze->getWidth() - 1) / 2 == getX();
     if (m_maze->getWidth() % 2 == 0) {

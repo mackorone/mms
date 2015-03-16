@@ -51,19 +51,19 @@ Polygon Sensor::getInitialView() const {
 Polygon Sensor::getCurrentView(const Cartesian& currentPosition, const Radians& currentRotation, const Maze& maze) const {
 
     //return m_initialView;
-    
+
     // TODO: This is too slow...
     // TODO: Make sure this is called at the appropriate times... by the algo or the sim???
-    
+
     // First, get the edge of the view of the sensor
     std::vector<Cartesian> edge;
     for (float i = -1; i <= 1; i += 2.0/(P()->numberOfSensorEdgePoints() - 1)) {
-        edge.push_back(currentPosition + Polar(m_range, currentRotation + (m_halfWidth * i))); 
+        edge.push_back(currentPosition + Polar(m_range, currentRotation + (m_halfWidth * i)));
     }
 
     // For each tile the within the range of the sensor...
     for (const Tile* tile : getTilesInRange(currentPosition, currentRotation, maze)) {
-        
+
         // ...iterate through all of the tile's polygons...
         for (std::vector<Polygon> group : {tile->getActualWallPolygons(), tile->getCornerPolygons()}) {
             for (Polygon obstacle : group) {

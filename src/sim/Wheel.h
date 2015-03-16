@@ -21,7 +21,7 @@ public:
     // DC motor methods
     RadiansPerSecond getAngularVelocity() const;
     void setAngularVelocity(const AngularVelocity& angularVelocity);
-    
+
 private:
     Meters m_radius;
     Cartesian m_initialTranslation;

@@ -16,7 +16,7 @@ public:
     static State* getInstance();
 
     int  simSpeed();
-    bool paused();          // Initially set to false  
+    bool paused();          // Initially set to false
     bool undoRequested();  // Whether or not an undo was requested
     bool resetRequested(); // Whether or not a reset was requested
 
@@ -34,7 +34,7 @@ private:
     static State* INSTANCE;
 
     int m_simSpeed; // Percentage of real-time
-    bool m_paused; // Initially set to false  
+    bool m_paused; // Initially set to false
     bool m_undoRequested; // Whether or not an undo was requested
     bool m_resetRequested; // Whether or not a reset was requested
 };

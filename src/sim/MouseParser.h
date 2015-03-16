@@ -16,7 +16,7 @@ class MouseParser {
 
 public:
     MouseParser(const std::string& filePath);
-    Polygon getBody();    
+    Polygon getBody();
     Wheel getLeftWheel();
     Wheel getRightWheel();
     std::map<std::string, Sensor> getSensors();

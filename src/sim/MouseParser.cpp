@@ -42,7 +42,7 @@ Wheel MouseParser::getWheel(bool left) {
     float width = strToFloat(wheel.child("Width").child_value());
     float x = strToFloat(wheel.child("Position").child("X").child_value());
     float y = strToFloat(wheel.child("Position").child("Y").child_value());
-    return Wheel(Meters(radius), Meters(width), Cartesian(Meters(x), Meters(y)));    
+    return Wheel(Meters(radius), Meters(width), Cartesian(Meters(x), Meters(y)));
 }
 
 std::map<std::string, Sensor> MouseParser::getSensors() {

@@ -184,7 +184,7 @@ void Mouse::update(const Time& elapsed) {
         float x_0 = m_translation.getY().getMeters();
         float y_0 = -1*m_translation.getX().getMeters();
 
-        float x = x_0 + 
+        float x = x_0 +
 
                   (BASELINE*(rightWheelSpeed+leftWheelSpeed).getMetersPerSecond())
                   /(2.0*(rightWheelSpeed-leftWheelSpeed).getMetersPerSecond())
@@ -192,7 +192,7 @@ void Mouse::update(const Time& elapsed) {
                   *(sin((rightWheelSpeed-leftWheelSpeed).getMetersPerSecond() * elapsed.getSeconds() / BASELINE + m_rotation.getRadians())
                    -sin(m_rotation.getRadians()));
 
-        float y = y_0 - 
+        float y = y_0 -
 
                   (BASELINE*(rightWheelSpeed+leftWheelSpeed).getMetersPerSecond())
                   /(2.0*(rightWheelSpeed-leftWheelSpeed).getMetersPerSecond())

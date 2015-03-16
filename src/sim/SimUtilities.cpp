@@ -48,9 +48,9 @@ void sleep(const Time& time) {
 double getHighResTime() {
     // TODO: I tried to reimplement w/ chrono but without much succes...
 #ifdef __linux
-    struct timeval t;  
-    gettimeofday(&t, NULL);  
-    return t.tv_sec + (t.tv_usec/1000000.0);  
+    struct timeval t;
+    gettimeofday(&t, NULL);
+    return t.tv_sec + (t.tv_usec/1000000.0);
 #elif _WIN32
     // TODO: SOM, see QueryPerformanceCounter
     return 0.0;
@@ -93,7 +93,7 @@ bool isInt(std::string str) {
         std::stoi(str);
     }
     catch (...) {
-        return false; 
+        return false;
     }
     return true;
 }
@@ -103,7 +103,7 @@ bool isFloat(std::string str) {
         std::stof(str);
     }
     catch (...) {
-        return false; 
+        return false;
     }
     return true;
 }
@@ -127,23 +127,23 @@ float strToFloat(std::string str) {
 std::vector<std::string> tokenize(std::string str) {
 
     std::vector<std::string> tokens;
-    std::string word = ""; 
+    std::string word = "";
 
     for (int i = 0; i < str.size(); ++i) {
         if (str.at(i) == ' ') {
             if (!word.empty()) {
                 tokens.push_back(word);
-                word = ""; 
-            }   
-        }   
+                word = "";
+            }
+        }
         else {
             word += str.at(i);
-        }   
-    }   
+        }
+    }
     if (!word.empty()) {
         tokens.push_back(word);
-        word = ""; 
-    }   
+        word = "";
+    }
 
     return tokens;
 }
