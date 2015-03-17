@@ -1,5 +1,7 @@
 #pragma once
 
+#include <set>
+
 #include <Degrees.h>
 #include <Cartesian.h>
 #include <Meters.h>
@@ -12,12 +14,14 @@ namespace sim {
 class Sensor {
 
 public:
-    Sensor(const Coordinate& position, const Distance& radius, const Angle& rotation, const Distance& range, const Angle& halfWidth);
+    Sensor(const Coordinate& position, const Distance& radius, const Angle& rotation, const Distance& range,
+           const Angle& halfWidth, const Time& readTime);
     Cartesian getInitialTranslation() const;
     Radians getInitialRotation() const;
     Polygon getInitialPolygon() const;
     Polygon getInitialView() const;
     Polygon getCurrentView(const Cartesian& currentPosition, const Radians& currentRotation, const Maze& maze) const;
+    Seconds getReadTime() const;
 
 private:
     Cartesian m_initialTranslation;
@@ -26,10 +30,8 @@ private:
 
     Meters m_range;
     Degrees m_halfWidth;
+    Seconds m_readTime;
     Polygon m_initialView;
-
-    // Helper function for determining the tiles that are in the range of the sensor
-    std::vector<const Tile*> getTilesInRange(const Cartesian& currentPosition, const Radians& currentRotation, const Maze& maze) const;
 };
 
 } // namespace sim

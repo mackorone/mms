@@ -57,8 +57,10 @@ std::map<std::string, Sensor> MouseParser::getSensors() {
         float rotation = strToFloat(sensor.child("Rotation").child_value());
         float range = strToFloat(sensor.child("Range").child_value());
         float halfWidth = strToFloat(sensor.child("HalfWidth").child_value());
+        float readTime = strToFloat(sensor.child("ReadTime").child_value());
         sensors.insert(std::make_pair(name,
-            Sensor(Cartesian(Meters(x), Meters(y)), Meters(radius), Radians(rotation), Meters(range), Degrees(halfWidth))));
+            Sensor(Cartesian(Meters(x), Meters(y)), Meters(radius), Radians(rotation), Meters(range), Degrees(halfWidth),
+                   Seconds(readTime))));
     }
     return sensors;
 }

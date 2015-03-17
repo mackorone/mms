@@ -13,8 +13,8 @@ public:
     Meters getY() const;
     Meters getRho() const;
     Radians getTheta() const;
-    bool operator==(const Coordinate& coordinate);
-    bool operator<(const Coordinate& coordinate);
+    bool operator==(const Coordinate& coordinate) const;
+    bool operator<(const Coordinate& coordinate) const;
 
 protected:
     Coordinate();

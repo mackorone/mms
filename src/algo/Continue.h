@@ -8,11 +8,14 @@ public:
     void solve(sim::MouseInterface* mouse);
 
 private:
-    bool wallRight(sim::MouseInterface* mouse);
-    bool wallFront(sim::MouseInterface* mouse);
+    bool wallRight();
+    bool wallFront();
 
-    void turnRight(sim::MouseInterface* mouse);
-    void turnLeft(sim::MouseInterface* mouse);
-    void moveForward(sim::MouseInterface* mouse);
+    void turnRight();
+    void turnLeft();
+    void moveForward();
+    void correctErrors();
+
+    sim::MouseInterface* m_mouse;
 
 };

@@ -40,7 +40,10 @@ public:
     void setWheelSpeeds(const AngularVelocity& leftWheelSpeed, const AngularVelocity& rightWheelSpeed);
 
     // Read a sensor, and returns a value from 0.0 (completely free) to 1.0 (completely blocked)
-    float read(std::string name);
+    float read(std::string name) const;
+
+    // Get the read time of a particular sensor
+    Seconds getReadTime(std::string name) const;
 
 private:
     // Used for the sensor readings

@@ -5,9 +5,13 @@
 #include <Cartesian.h>
 #include <MetersSquared.h>
 
+#include "Maze.h"
 #include "Polygon.h"
 
 namespace sim {
+
+// Returns all of the tiles touched by the segment AB
+std::vector<const Tile*> lineSegmentTileCover(const Cartesian& A, const Cartesian& B, const Maze& maze);
 
 // Returns the cross product of the vectors ZA and ZB
 MetersSquared crossProduct(const Cartesian& Z, const Cartesian& A, const Cartesian& B);

@@ -35,6 +35,7 @@ public:
     bool printLateMousePositionUpdates();
     int collisionDetectionRate();
     bool printLateCollisionDetections();
+    bool printLateSensorReads();
     float minSimSpeed();
     float maxSimSpeed();
     float defaultSimSpeed();
@@ -82,6 +83,7 @@ private:
     bool m_printLateMousePostitionUpdates;
     int m_collisionDetectionRate;
     bool m_printLateCollisionDetections;
+    bool m_printLateSensorReads;
     float m_minSimSpeed;
     float m_maxSimSpeed;
     float m_defaultSimSpeed;

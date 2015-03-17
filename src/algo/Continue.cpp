@@ -1,47 +1,63 @@
 #include "Continue.h"
 
-#include <cmath> // TODO
+#include <cmath>
 
-#include "../sim/SimUtilities.h" // TODO: Arduino utils
 #include <iostream> // TODO
-#include <Milliseconds.h>
 
 void Continue::solve(sim::MouseInterface* mouse) {
-            turnRight(mouse);
-            turnRight(mouse);
-            turnRight(mouse);
-            turnRight(mouse);
-            turnRight(mouse);
+
+    // Initialize the member variable
+    m_mouse = mouse;
+
     while (true) {
-        while (!wallRight(mouse)) {
-            turnRight(mouse);
+        if (!wallRight()) {
+            turnRight();
         }
-        while (wallFront(mouse)) {
-            turnLeft(mouse);
+        while (wallFront()) {
+            turnLeft();
         }
-        moveForward(mouse);
+        moveForward();
+        correctErrors();
     }
 }
 
-bool Continue::wallRight(sim::MouseInterface* mouse) {
-    return (mouse->read("C") > 0.5);
+bool Continue::wallRight() {
+    return m_mouse->read("C") > 0.5;
 }
 
-bool Continue::wallFront(sim::MouseInterface* mouse) {
-    return (mouse->read("A") > 0.8);
+bool Continue::wallFront() {
+    return m_mouse->read("A") > 0.5;
 }
 
-void Continue::turnRight(sim::MouseInterface* mouse) {
-    mouse->setWheelSpeeds(-10*M_PI, 10);
-    sim::sleep(sim::Milliseconds(100)); // TODO: Make this part of the interface
+void Continue::turnRight() {
+    m_mouse->setWheelSpeeds(-5*M_PI, -5*M_PI);
+    m_mouse->delay(195);
+    m_mouse->setWheelSpeeds(0, 0);
 }
 
-void Continue::turnLeft(sim::MouseInterface* mouse) {
-    mouse->setWheelSpeeds(10, 10*M_PI);
-    sim::sleep(sim::Milliseconds(100));
+void Continue::turnLeft() {
+    m_mouse->setWheelSpeeds(5*M_PI, 5*M_PI);
+    m_mouse->delay(195);
+    m_mouse->setWheelSpeeds(0, 0);
 }
 
-void Continue::moveForward(sim::MouseInterface* mouse) {
-    mouse->setWheelSpeeds(-10*M_PI, 10*M_PI);
-    sim::sleep(sim::Milliseconds(100));
+void Continue::moveForward() {
+    m_mouse->setWheelSpeeds(-10*M_PI, 10*M_PI);
+    m_mouse->delay(420);
+    m_mouse->setWheelSpeeds(0, 0);
+}
+
+void Continue::correctErrors() {
+    if (wallFront()) {
+        while (m_mouse->read("A") < 0.7) {
+            m_mouse->setWheelSpeeds(-5, 5);
+            m_mouse->delay(10);
+            m_mouse->setWheelSpeeds(0, 0);
+        }
+        while (m_mouse->read("A") > 0.95) {
+            m_mouse->setWheelSpeeds(5, -5);
+            m_mouse->delay(10);
+            m_mouse->setWheelSpeeds(0, 0);
+        }
+    }
 }

@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "Assert.h"
 #include "MazeFileUtilities.h"
 #include "MazeGenerator.h"
 #include "Param.h"
@@ -26,10 +27,12 @@ int Maze::getHeight() const {
 }
 
 Tile* Maze::getTile(int x, int y) {
+    ASSERT(0 <= x && x < getWidth() && 0 <= y && y < getHeight());
     return &m_maze.at(x).at(y);
 }
 
 const Tile* Maze::getTile(int x, int y) const {
+    ASSERT(0 <= x && x < getWidth() && 0 <= y && y < getHeight());
     return &m_maze.at(x).at(y);
 }
 

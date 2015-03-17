@@ -42,6 +42,7 @@ Param::Param() {
     m_printLateMousePostitionUpdates = parser.getBoolIfHasBool("print-late-mouse-position-updates", false);
     m_collisionDetectionRate = parser.getIntIfHasInt("collision-detection-rate", 40);
     m_printLateCollisionDetections = parser.getBoolIfHasBool("print-late-collision-detections", false);
+    m_printLateSensorReads = parser.getBoolIfHasBool("print-late-sensor-reads", false);
     m_minSimSpeed = parser.getFloatIfHasFloat("min-sim-speed", 0.1);
     m_maxSimSpeed = parser.getFloatIfHasFloat("max-sim-speed", 10);
     m_defaultSimSpeed = parser.getFloatIfHasFloat("default-sim-speed", 10);
@@ -132,6 +133,10 @@ int Param::collisionDetectionRate() {
 
 bool Param::printLateCollisionDetections() {
     return m_printLateCollisionDetections;
+}
+
+bool Param::printLateSensorReads() {
+    return m_printLateSensorReads;
 }
 
 float Param::minSimSpeed() {

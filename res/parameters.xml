@@ -15,18 +15,17 @@
 <random-seed>12345</random-seed> <!-- The seed value for rand() -->
 <use-random-seed>false</use-random-seed> <!-- Whether or not to use the seed value -->
 <glut-init-time>0.25</glut-init-time> <!-- Seconds -->
-<mouse-position-update-rate>20000</mouse-position-update-rate> <!-- Updates per second -->
+<mouse-position-update-rate>10000</mouse-position-update-rate> <!-- Updates per second -->
 <print-late-mouse-position-updates>false</print-late-mouse-position-updates>
 <collision-detection-rate>40</collision-detection-rate> <!-- Checks per second -->
 <print-late-collision-detections>false</print-late-collision-detections>
+<print-late-sensor-reads>true</print-late-sensor-reads>
 <min-sim-speed>0.1</min-sim-speed> <!-- Fraction of real-time -->
 <max-sim-speed>10.0</max-sim-speed> <!-- Fraction of real-time -->
 <default-sim-speed>1.0</default-sim-speed> <!-- Fraction of real-time -->
 <number-of-circle-approximation-points>8</number-of-circle-approximation-points> <!-- The number of edges in a polygon for a circle -->
-<number-of-sensor-edge-points>10</number-of-sensor-edge-points> <!-- The number of points of the edge of a sensor-->
+<number-of-sensor-edge-points>3</number-of-sensor-edge-points> <!-- The number of points of the edge of a sensor-->
 <!-- TODO: I don't think we're going to be able to have sim speed... -->
-
-<sensor-read-time>.00025</sensor-read-time> <!-- Seconds TODO: this should go in the mouse file -->
 
 <!-- Maze Parameters -->
 <maze-directory>res/mazes/</maze-directory> <!-- realtive to project root -->
@@ -39,7 +38,7 @@
 <random-maze-width>16</random-maze-width> <!-- number of tiles -->
 <random-maze-height>16</random-maze-height> <!-- number of tiles -->
 <enforce-official-maze-rules>false</enforce-official-maze-rules>
-<random-maze-algo>TOMASZ</random-maze-algo>
+<random-maze-algo>RANDOM</random-maze-algo>
 <save-random-maze>true</save-random-maze> <!-- Whethor or not to save a random maze -->
 
 <!-- Mouse Parameters -->

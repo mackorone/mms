@@ -26,8 +26,6 @@ private:
     Maze* m_maze;
     Mouse* m_mouse;
 
-    const Tile* getTileContainingPoint(const Cartesian& point);
-
     // Whether or not the mouse has collided
     bool m_collision;
     void checkCollision();

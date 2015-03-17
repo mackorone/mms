@@ -14,8 +14,9 @@ public:
     // TODO: List of sensor interfaces
     // TODO: List of wheel interfaces
 
-    void setWheelSpeeds(float leftWheelSpeed, float rightWheelSpeed);
+    void setWheelSpeeds(float leftWheelRadiansPerSeconds, float rightWheelRadiansPerSecond);
     float read(std::string name);
+    void delay(int milliseconds);
 
     // ---------------------- Mouse Interface Methods ----------------------- //
 

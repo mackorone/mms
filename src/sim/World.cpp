@@ -53,12 +53,6 @@ void World::simulate() {
     }
 }
 
-const Tile* World::getTileContainingPoint(const Cartesian& point) {
-    int x = static_cast<int>(floor((point.getX() / (P()->wallLength() + P()->wallWidth())).getMeters()));
-    int y = static_cast<int>(floor((point.getY() / (P()->wallLength() + P()->wallWidth())).getMeters()));
-    return m_maze->getTile(x, y);
-}
-
 void World::checkCollision() {
 
     while (true) {
@@ -71,9 +65,7 @@ void World::checkCollision() {
         for (std::pair<Cartesian, Cartesian> B : getLineSegments(m_mouse->getCollisionPolygon())) {
 
             // ... and for each tile the segment could be intersecting with ...
-            const Tile* one = getTileContainingPoint(B.first);
-            const Tile* two = getTileContainingPoint(B.second);
-            for (const Tile* tile : {one, two}) {
+            for (const Tile* tile : lineSegmentTileCover(B.first, B.second, *m_maze)) {
 
                 // ... iterate through all of the tile's polygons ...
                 for (std::vector<Polygon> group : {tile->getActualWallPolygons(), tile->getCornerPolygons()}) {

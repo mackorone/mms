@@ -218,7 +218,7 @@ void Mouse::setWheelSpeeds(const AngularVelocity& leftWheelSpeed, const AngularV
     m_wheelMutex.unlock();
 }
 
-float Mouse::read(std::string name) {
+float Mouse::read(std::string name) const {
     // TODO: Ensure the mouse doesn't move while we're reading values??
     ASSERT(m_sensors.count(name) != 0);
     Sensor sensor = m_sensors.at(name);
@@ -227,6 +227,11 @@ float Mouse::read(std::string name) {
     Polygon currentView = sensor.getCurrentView(
         fullView.getVertices().at(0), m_rotation + sensor.getInitialRotation(), *m_maze);
     return 1.0 - polygonArea(currentView).getMetersSquared() / polygonArea(fullView).getMetersSquared();
+}
+
+Seconds Mouse::getReadTime(std::string name) const {
+    ASSERT(m_sensors.count(name) != 0);
+    return m_sensors.at(name).getReadTime();
 }
 
 } // namespace sim

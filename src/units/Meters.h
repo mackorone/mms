@@ -15,6 +15,7 @@ public:
     Meters operator-(const Distance& distance) const;
     Meters operator*(float factor) const;
     Meters operator/(float factor) const;
+    float operator/(const Distance& distance) const;
     MetersSquared operator*(const Distance& distance) const;
     void operator+=(const Distance& distance);
 
