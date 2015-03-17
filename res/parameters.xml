@@ -16,9 +16,9 @@
 <use-random-seed>false</use-random-seed> <!-- Whether or not to use the seed value -->
 <glut-init-time>0.25</glut-init-time> <!-- Seconds -->
 <mouse-position-update-rate>10000</mouse-position-update-rate> <!-- Updates per second -->
-<print-late-mouse-position-updates>false</print-late-mouse-position-updates>
+<print-late-mouse-position-updates>true</print-late-mouse-position-updates>
 <collision-detection-rate>40</collision-detection-rate> <!-- Checks per second -->
-<print-late-collision-detections>false</print-late-collision-detections>
+<print-late-collision-detections>true</print-late-collision-detections>
 <print-late-sensor-reads>true</print-late-sensor-reads>
 <min-sim-speed>0.1</min-sim-speed> <!-- Fraction of real-time -->
 <max-sim-speed>10.0</max-sim-speed> <!-- Fraction of real-time -->
@@ -29,7 +29,7 @@
 
 <!-- Maze Parameters -->
 <maze-directory>res/mazes/</maze-directory> <!-- realtive to project root -->
-<maze-file>ieee2011.maz</maze-file> <!-- relative to maze-directory -->
+<maze-file>longpath.maz</maze-file> <!-- relative to maze-directory -->
 <use-maze-file>true</use-maze-file> <!-- whether or not to use the maze file above -->
 <wall-length>.156</wall-length> <!-- meters -->
 <wall-width>.012</wall-width> <!-- meters -->

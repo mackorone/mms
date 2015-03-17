@@ -43,7 +43,7 @@
     <Rotation>1.5708</Rotation> <!-- Radians -->
     <Range>.20</Range> <!-- Meters -->
     <HalfWidth>5</HalfWidth> <!-- Degrees -->
-    <ReadTime>.001</ReadTime> <!-- Seconds -->
+    <ReadTime>.015</ReadTime> <!-- Seconds -->
 </Sensor>
 <Sensor>
     <Name>B</Name>
@@ -55,7 +55,7 @@
     <Rotation>1.047</Rotation> <!-- Radians -->
     <Range>.20</Range> <!-- Meters -->
     <HalfWidth>5</HalfWidth> <!-- Degrees -->
-    <ReadTime>.001</ReadTime> <!-- Seconds -->
+    <ReadTime>.015</ReadTime> <!-- Seconds -->
 </Sensor>
 <Sensor>
     <Name>C</Name>
@@ -67,5 +67,5 @@
     <Rotation>0</Rotation> <!-- Radians --> 
     <Range>.20</Range> <!-- Meters -->
     <HalfWidth>5</HalfWidth> <!-- Degrees -->
-    <ReadTime>.001</ReadTime> <!-- Seconds -->
+    <ReadTime>.015</ReadTime> <!-- Seconds -->
 </Sensor>
