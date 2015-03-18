@@ -13,16 +13,32 @@
 
 #include <iostream> // TODO
 
-
 // TODO: Diagonals, more discrete interface methods (look ahead), change color of tile, reset, etc, reduce CPU, etc.
-
 
 namespace sim {
 
-MouseInterface::MouseInterface(Mouse* mouse) : m_mouse(mouse) {
+MouseInterface::MouseInterface(const Maze* maze, Mouse* mouse) : m_maze(maze), m_mouse(mouse) {
 }
 
 MouseInterface::~MouseInterface() {
+}
+
+void MouseInterface::declareInterfaceType(InterfaceType interfaceType) {
+
+    if (interfaceType == UNDECLARED) {
+        print("Error - you may not declare the mouse interface type to be UNDECLARED.");
+        return;
+    }
+
+    if (S()->interfaceType() != UNDECLARED) {
+        print("Error - you may only declare the mouse interface type once.");
+        return;
+    }
+
+    S()->setInterfaceType(interfaceType);
+
+    // Wait for everything to stabilize
+    sim::sleep(Seconds(P()->glutInitTime()));
 }
 
 void MouseInterface::setWheelSpeeds(float leftWheelRadiansPerSecond, float rightWheelRadiansPerSecond) {

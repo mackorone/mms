@@ -33,6 +33,9 @@ Param::Param() {
     m_mouseBodyColor = parser.getStringIfHasString("mouse-body-color", "BLUE");
     m_mouseWheelColor = parser.getStringIfHasString("mouse-wheel-color", "GREEN");
     m_mouseSensorColor = parser.getStringIfHasString("mouse-sensor-color", "WHITE");
+    m_defaultMazeVisible = parser.getBoolIfHasBool("default-maze-visible", true);
+    m_defaultMouseVisible = parser.getBoolIfHasBool("default-mouse-visible", true);
+    m_defaultMousePathVisible = parser.getBoolIfHasBool("default-mouse-path-visible", true);
 
     // Simulation Parameters
     bool useRandomSeed = parser.getBoolIfHasBool("use-random-seed", false); // TODO: Notify user that there is no seed
@@ -109,6 +112,18 @@ std::string Param::mouseWheelColor() {
 
 std::string Param::mouseSensorColor() {
     return m_mouseSensorColor;
+}
+
+bool Param::defaultMazeVisible() {
+    return m_defaultMazeVisible;
+}
+
+bool Param::defaultMouseVisible() {
+    return m_defaultMouseVisible;
+}
+
+bool Param::defaultMousePathVisible() {
+    return m_defaultMousePathVisible;
 }
 
 int Param::randomSeed() {

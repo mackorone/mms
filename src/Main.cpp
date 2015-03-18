@@ -25,7 +25,6 @@ void keyInput(unsigned char key, int x, int y);
 // Global object variable declarations
 Solver* g_solver;
 sim::World* g_world;
-// TODO: Graphic object...
 sim::MazeGraphic* g_mazeGraphic;
 sim::MouseGraphic* g_mouseGraphic;
 
@@ -35,7 +34,7 @@ int main(int argc, char* argv[]) {
     sim::Maze maze;
     sim::Mouse mouse(&maze);
     sim::World world(&maze, &mouse);
-    sim::MouseInterface mouseInterface(&mouse);
+    sim::MouseInterface mouseInterface(&maze, &mouse);
     Solver solver(&mouseInterface);
 
     // Initialize the local graphics objects
@@ -106,37 +105,38 @@ void draw() {
 }
 
 void solve() {
-    sim::sleep(sim::Seconds(sim::P()->glutInitTime()));
     g_solver->solve();
 }
 
 void simulate() {
-    sim::sleep(sim::Seconds(sim::P()->glutInitTime()));
     g_world->simulate();
 }
 
 void keyInput(unsigned char key, int x, int y) {
     if (key == 32) { // Space bar
+        // TODO
         sim::S()->setPaused(!sim::S()->paused());
     }
-    else if (key == 'f' || key == 'F') { // Faster
-        sim::S()->setSimSpeed(sim::S()->simSpeed() / 1.5);
-        if (sim::S()->simSpeed() < sim::P()->minSimSpeed()) {
-            sim::S()->setSimSpeed(sim::P()->minSimSpeed());
-        }
+    else if (key == 'a' || key == 'A') {
+        // Toggle maze visibility
+        sim::S()->setMazeVisible(!sim::S()->mazeVisible());
     }
-    else if (key == 's' || key == 'S') { // Slower
-        sim::S()->setSimSpeed(sim::S()->simSpeed() * 1.5);
-        if (sim::S()->simSpeed() > sim::P()->maxSimSpeed()) {
-            sim::S()->setSimSpeed(sim::P()->maxSimSpeed());
-        }
+    else if (key == 'm' || key == 'M') {
+        // Toggle mouse visibility
+        sim::S()->setMouseVisible(!sim::S()->mouseVisible());
+    }
+    else if (key == 'p' || key == 'P') {
+        // Toggle mouse path visibility
+        sim::S()->setMousePathVisible(!sim::S()->mousePathVisible());
     }
     else if (key == 'u' || key == 'U') {
         // Undo request - reset the position mouse but retains memory
+        // TODO
         sim::S()->setUndoRequested(true);
     }
     else if (key == 'r' || key == 'R') {
         // Reset requested - reset the position mouse and don't retain memory
+        // TODO
         sim::S()->setResetRequested(true);
     }
     else if (key == 'q' || key == 'Q') { // Quit

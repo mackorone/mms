@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../sim/InterfaceType.h"
 #include "../sim/MouseInterface.h"
 
 /*

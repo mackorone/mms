@@ -1,15 +1,19 @@
 #pragma once
 
-#include "Param.h"
+#include "InterfaceType.h"
 #include "Mouse.h"
+#include "Param.h"
 
 namespace sim {
 
 class MouseInterface {
 
 public:
-    MouseInterface(Mouse* mouse);
+    MouseInterface(const Maze* maze, Mouse* mouse);
     ~MouseInterface();
+
+    // The interface type must be declared before calling any other interface methods
+    void declareInterfaceType(InterfaceType interfaceType);
 
     // TODO: List of sensor interfaces
     // TODO: List of wheel interfaces
@@ -29,6 +33,7 @@ public:
     void turnLeft();
     void turnAround();
 
+    // TODO
     bool undoRequested();
     bool resetRequested();
     void undoHonored();
@@ -41,6 +46,7 @@ public:
     void resetColors(int curX, int curY); // Resets the tile colors of the maze
 
 private:
+    const Maze* m_maze;
     Mouse* m_mouse;
 };
 

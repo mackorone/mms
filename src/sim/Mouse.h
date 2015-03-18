@@ -16,7 +16,7 @@ namespace sim {
 class Mouse {
 
 public:
-    Mouse(Maze* maze);
+    Mouse(const Maze* maze);
 
     // Retrieves the polygon comprised of all parts of the mouse that could collide with walls
     Polygon getCollisionPolygon() const;
@@ -45,8 +45,11 @@ public:
     // Get the read time of a particular sensor
     Seconds getReadTime(const std::string& name) const;
 
+    // TODO:
+    // Cartesian getCurrentTranslation();
+    // Radians getCurrentRotation();
     // Teleports the mouse to a specific translation and rotation, used only by the discrete interface methods
-    void teleport(const Cartesian& translation, const Angle& rotation);
+    void teleport(const Cartesian& translation, const Angle& rotation); // TODO: Interface that makes use of the update???
 
     // Returns the discretized x and y position of the robot
     std::pair<int, int> getDiscretizedTranslation();
@@ -54,6 +57,7 @@ public:
     // Returns the discretized rotation of the robot
     Direction getDiscretizedRotation();
 
+    // TODO : Get rid of this
     // Returns whether or not there is a wall in particular direction, based on the discretized translation and rotation
     bool discretizedIsWall(Direction direction);
 

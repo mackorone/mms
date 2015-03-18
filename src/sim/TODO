@@ -3,8 +3,5 @@ Discrete Simulation Support
 Performance on different systems???
 Interrupt interface
 
-Sensor View on/off
-Mouse view on/off
-Maze view on/off
 Speed of sim
 Update should do the discrete movement too

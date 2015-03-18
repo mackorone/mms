@@ -1,8 +1,8 @@
 #pragma once
 
-namespace sim {
+#include "InterfaceType.h"
 
-// TODO: This uses the singleton pattern
+namespace sim {
 
 // Wrapper for the static call to State::getInstance()
 class State;
@@ -15,15 +15,23 @@ public:
     // Returns a pointer to the singeton state object
     static State* getInstance();
 
-    int  simSpeed();
-    bool paused();          // Initially set to false
-    bool undoRequested();  // Whether or not an undo was requested
-    bool resetRequested(); // Whether or not a reset was requested
+    // Accessors
+    InterfaceType interfaceType();
+    bool mazeVisible();
+    bool mouseVisible();
+    bool mousePathVisible(); // TODO: Implement the mouse path
+    bool paused();
+    bool resetRequested();
+    bool undoRequested();
 
-    void setSimSpeed(int simSpeed);
+    // Mutators
+    void setInterfaceType(InterfaceType interfaceType);
+    void setMazeVisible(bool mazeVisible);
+    void setMouseVisible(bool mouseVisible);
+    void setMousePathVisible(bool mousePathVisible);
     void setPaused(bool paused);
-    void setUndoRequested(bool undoRequested); // TODO: Fix these params
-    void setResetRequested(bool resetRequested); // TODO: Fix these params
+    void setUndoRequested(bool undoRequested);
+    void setResetRequested(bool resetRequested);
 
 private:
 
@@ -33,10 +41,13 @@ private:
     // A pointer to the actual instance of the class
     static State* INSTANCE;
 
-    int m_simSpeed; // Percentage of real-time
-    bool m_paused; // Initially set to false
-    bool m_undoRequested; // Whether or not an undo was requested
-    bool m_resetRequested; // Whether or not a reset was requested
+    InterfaceType m_interfaceType;
+    bool m_mazeVisible;
+    bool m_mouseVisible;
+    bool m_mousePathVisible;
+    bool m_paused;
+    bool m_resetRequested;
+    bool m_undoRequested;
 };
 
 } // namespace sim

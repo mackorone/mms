@@ -27,6 +27,9 @@ public:
     std::string mouseBodyColor();
     std::string mouseWheelColor();
     std::string mouseSensorColor();
+    bool defaultMazeVisible();
+    bool defaultMouseVisible();
+    bool defaultMousePathVisible();
 
     // Simulation parameters
     int randomSeed();
@@ -75,6 +78,9 @@ private:
     std::string m_mouseBodyColor;
     std::string m_mouseWheelColor;
     std::string m_mouseSensorColor;
+    bool m_defaultMazeVisible;
+    bool m_defaultMouseVisible;
+    bool m_defaultMousePathVisible;
 
     // Simulation parameters
     int m_randomSeed;

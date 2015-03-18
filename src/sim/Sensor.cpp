@@ -70,6 +70,8 @@ Polygon Sensor::getCurrentView(const Cartesian& currentPosition, const Radians& 
                 for (Polygon obstacle : group) {
                     for (std::pair<Cartesian, Cartesian> A : getLineSegments(obstacle)) {
 
+                        // TODO: Is there a way to "join" some of the line segments, so that we can do less work?
+
                         // ... and check for intersections
                         std::pair<Cartesian, Cartesian> B = std::make_pair(currentPosition, edge.at(i));
                         if (linesIntersect(A, B)) {

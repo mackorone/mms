@@ -2,9 +2,10 @@
 
 #include <Cartesian.h>
 
-#include "Param.h"
-#include "Mouse.h"
 #include "GraphicUtilities.h"
+#include "Mouse.h"
+#include "Param.h"
+#include "State.h"
 
 namespace sim{
 
@@ -12,6 +13,11 @@ MouseGraphic::MouseGraphic(const Mouse* mouse) : m_mouse(mouse) {
 }
 
 void MouseGraphic::draw() {
+
+    // Only draw the mouse if it's visible and the interface type has been declared
+    if (!S()->mouseVisible() || S()->interfaceType() == UNDECLARED) {
+        return;
+    }
 
     // First, we draw the wheels
     glColor3fv(COLORS.at(P()->mouseWheelColor()));
@@ -23,20 +29,21 @@ void MouseGraphic::draw() {
     glColor3fv(COLORS.at(P()->mouseBodyColor()));
     drawPolygon(m_mouse->getBodyPolygon());
 
-    // Next, we draw the sensors
-    glColor3fv(COLORS.at(P()->mouseWheelColor()));
-    for (Polygon sensorPolygon : m_mouse->getSensorPolygons()) {
-        drawPolygon(sensorPolygon);
-    }
+    // Only draw the sensors if we're using a discrete interface
+    if (S()->interfaceType() == CONTINUOUS) {
 
-    // Lastly, we draw the sensor views
-    // TODO: Different ways of drawing the sensors, like a pulse
-    glColor3fv(WHITE);
-    /* // TODO: Only for continuous
-    for (Polygon polygon : m_mouse->getViewPolygons()) {
-        drawPolygon(polygon);
+        // Next, we draw the sensors
+        glColor3fv(COLORS.at(P()->mouseWheelColor()));
+        for (Polygon sensorPolygon : m_mouse->getSensorPolygons()) {
+            drawPolygon(sensorPolygon);
+        }
+
+        // Lastly, we draw the sensor views
+        glColor3fv(WHITE);
+        for (Polygon polygon : m_mouse->getViewPolygons()) {
+            drawPolygon(polygon);
+        }
     }
-    */
 }
 
 } // namespace sim

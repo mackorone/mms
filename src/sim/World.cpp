@@ -68,6 +68,8 @@ void World::checkCollision() {
                     for (Polygon obstacle : group) {
                         for (std::pair<Cartesian, Cartesian> A : getLineSegments(obstacle)) {
 
+                        // TODO Is there a way we can join the line segments so as to do less work
+
                             // ... and check for a collision
                             if (linesIntersect(A, B)) {
                                 m_collision = true;

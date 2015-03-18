@@ -46,13 +46,14 @@ void sleep(const Time& time) {
 }
 
 double getHighResTime() {
-    // TODO: I tried to reimplement w/ chrono but without much succes...
+    // TODO: SOM - I tried to reimplement w/ chrono but without much succes...
+    // TODO: That is the best option, if it works
 #ifdef __linux
     struct timeval t;
     gettimeofday(&t, NULL);
     return t.tv_sec + (t.tv_usec/1000000.0);
 #elif _WIN32
-    // TODO: SOM, see QueryPerformanceCounter
+    // TODO: SOM - See QueryPerformanceCounter
     return 0.0;
 #endif
 }

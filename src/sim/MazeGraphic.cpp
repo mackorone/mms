@@ -1,5 +1,7 @@
 #include "MazeGraphic.h"
 
+#include "State.h"
+
 namespace sim {
 
 MazeGraphic::MazeGraphic(const Maze* maze) {
@@ -13,7 +15,12 @@ MazeGraphic::MazeGraphic(const Maze* maze) {
 }
 
 void MazeGraphic::draw() {
-    // TODO: MACK Use slices to only draw around the mouse...
+
+    // Only draw the maze if it's visible
+    if (!S()->mazeVisible()) {
+        return;
+    }
+
     for (int i = 0; i < m_tileGraphics.size(); i += 1) {
         for (int j = 0; j < m_tileGraphics.at(i).size(); j += 1) {
             m_tileGraphics.at(i).at(j).draw();

@@ -10,16 +10,20 @@
 <mouse-body-color>BLUE</mouse-body-color>
 <mouse-wheel-color>GREEN</mouse-wheel-color>
 <mouse-sensor-color>WHITE</mouse-sensor-color>
+<default-maze-visible>true</default-maze-visible>
+<default-mouse-visible>true</default-mouse-visible>
+<default-mouse-path-visible>true</default-mouse-path-visible> <!-- TODO: implement this -->
+<!-- <shortest-path-visible>true</shortest-path-visible> TODO -->
 
 <!-- Simulation Parameters -->
 <random-seed>12345</random-seed> <!-- The seed value for rand() -->
 <use-random-seed>false</use-random-seed> <!-- Whether or not to use the seed value -->
 <glut-init-time>0.25</glut-init-time> <!-- Seconds -->
 <mouse-position-update-rate>1000</mouse-position-update-rate> <!-- Updates per second -->
-<print-late-mouse-position-updates>true</print-late-mouse-position-updates>
+<print-late-mouse-position-updates>true</print-late-mouse-position-updates> <!-- TODO: Make this default -->
 <collision-detection-rate>40</collision-detection-rate> <!-- Checks per second -->
-<print-late-collision-detections>true</print-late-collision-detections>
-<print-late-sensor-reads>true</print-late-sensor-reads>
+<print-late-collision-detections>true</print-late-collision-detections> <!-- TODO: Make this default -->
+<print-late-sensor-reads>true</print-late-sensor-reads> <!-- TODO: Make this default -->
 <min-sim-speed>0.1</min-sim-speed> <!-- Fraction of real-time -->
 <max-sim-speed>10.0</max-sim-speed> <!-- Fraction of real-time -->
 <default-sim-speed>1.0</default-sim-speed> <!-- Fraction of real-time -->

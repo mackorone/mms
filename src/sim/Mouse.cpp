@@ -15,7 +15,7 @@
 
 namespace sim {
 
-Mouse::Mouse(Maze* maze) : m_maze(maze), m_rotation(Radians(0.0)) {
+Mouse::Mouse(const Maze* maze) : m_maze(maze), m_rotation(Radians(0.0)) {
 
     // Create the mouse parser object
     MouseParser parser(getProjectDirectory() + "res/mouse.xml");
@@ -215,13 +215,20 @@ void Mouse::setWheelSpeeds(const AngularVelocity& leftWheelSpeed, const AngularV
 }
 
 float Mouse::read(const std::string& name) const {
-    // TODO: Ensure the mouse doesn't move while we're reading values??
+
+    // Validate the input
     ASSERT(m_sensors.count(name) != 0);
     Sensor sensor = m_sensors.at(name);
-    Polygon fullView = sensor.getInitialView().translate(m_translation - m_initialTranslation)
-        .rotateAroundPoint(m_rotation, m_translation);
+
+    // Retrieve the current translation and rotation
+    Cartesian currentTranslation = m_translation;
+    Radians currentRotation = m_rotation;
+
+    // Determine the reading
+    Polygon fullView = sensor.getInitialView().translate(currentTranslation - m_initialTranslation)
+        .rotateAroundPoint(currentRotation, currentTranslation);
     Polygon currentView = sensor.getCurrentView(
-        fullView.getVertices().at(0), m_rotation + sensor.getInitialRotation(), *m_maze);
+        fullView.getVertices().at(0), currentRotation + sensor.getInitialRotation(), *m_maze);
     return 1.0 - polygonArea(currentView).getMetersSquared() / polygonArea(fullView).getMetersSquared();
 }
 
@@ -257,7 +264,7 @@ Direction Mouse::getDiscretizedRotation() {
 
 bool Mouse::discretizedIsWall(Direction direction) {
     std::pair<int, int> position = getDiscretizedTranslation();
-    return m_maze->getTile(position.first, position.second)->isWall(direction);
+    return m_maze->getTile(position.first, position.second)->isWall(direction); // TODO: Get rif of this
 }
 
 } // namespace sim
