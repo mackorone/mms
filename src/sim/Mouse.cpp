@@ -163,24 +163,21 @@ void Mouse::update(const Time& elapsed) {
     Meters distance((rightWheelSpeed - leftWheelSpeed).getMetersPerSecond() / 2.0 * elapsed.getSeconds());
     m_translation += Polar(distance, Wheel().getInitialRotation() + m_rotation); // This could be optimized
 
-    // TODO: Update the cached sensor values with each update
-
     // -----------------------------------------------------------------------------------------------------
 
     // TODO: This is the technically corect implementation...
     /*
     float BASELINE(m_rightWheel.getInitialTranslation().getX().getMeters() - m_leftWheel.getInitialTranslation().getX().getMeters());
 
-    if (fabs(rightWheelSpeed.getMetersPerSecond() == -1*leftWheelSpeed.getMetersPerSecond())) { // TODO
+    if (fabs(rightWheelSpeed.getMetersPerSecond() == -1*leftWheelSpeed.getMetersPerSecond())) {
         Meters distance((-0.5 * leftWheelSpeed.getMetersPerSecond() + 0.5 * rightWheelSpeed.getMetersPerSecond()) * elapsed.getSeconds());
-        m_translation = m_translation + Polar(distance, Radians(M_PI / 2.0) + m_rotation); // TODO
+        m_translation = m_translation + Polar(distance, Radians(M_PI / 2.0) + m_rotation);
         static int i = 0;
         std::cout << i++ << std::endl;
     }
     else {
         leftWheelSpeed = MetersPerSecond(-1*leftWheelSpeed.getMetersPerSecond());
 
-        // TODO
         float x_0 = m_translation.getY().getMeters();
         float y_0 = -1*m_translation.getX().getMeters();
 
@@ -205,7 +202,6 @@ void Mouse::update(const Time& elapsed) {
         leftWheelSpeed = MetersPerSecond(-1*leftWheelSpeed.getMetersPerSecond());
     }
 
-    // TODO: This is correct
     Radians theta((rightWheelSpeed.getMetersPerSecond() - (-leftWheelSpeed.getMetersPerSecond())) / BASELINE * elapsed.getSeconds());
     m_rotation = m_rotation + theta;
     */
