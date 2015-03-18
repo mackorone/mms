@@ -140,6 +140,6 @@ void keyInput(unsigned char key, int x, int y) {
         sim::S()->setResetRequested(true);
     }
     else if (key == 'q' || key == 'Q') { // Quit
-        exit(0);
+        sim::quit();
     }
 }

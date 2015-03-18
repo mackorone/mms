@@ -8,6 +8,9 @@
 
 namespace sim {
 
+// Quits the simulation
+void quit();
+
 // Prints a message to stdout
 void print(const std::string& msg);
 

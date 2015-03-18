@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IAlgorithm.h"
+#include "../IAlgorithm.h"
 
 class Continue : public IAlgorithm {
 

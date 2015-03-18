@@ -2,7 +2,7 @@
 
 #include <list>
 
-#include "../IAlgorithm.h"
+#include "../../IAlgorithm.h"
 #include "Cell.h"
 #include "Cellmod.h"
 #include "History.h"

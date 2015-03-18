@@ -7,6 +7,7 @@
 #include <Milliseconds.h>
 #include <Seconds.h>
 
+#include "Assert.h"
 #include "Param.h"
 #include "State.h"
 #include "SimUtilities.h"
@@ -27,12 +28,12 @@ void MouseInterface::declareInterfaceType(InterfaceType interfaceType) {
 
     if (interfaceType == UNDECLARED) {
         print("Error - you may not declare the mouse interface type to be UNDECLARED.");
-        return;
+        quit();
     }
 
     if (S()->interfaceType() != UNDECLARED) {
         print("Error - you may only declare the mouse interface type once.");
-        return;
+        quit();
     }
 
     S()->setInterfaceType(interfaceType);
@@ -41,11 +42,17 @@ void MouseInterface::declareInterfaceType(InterfaceType interfaceType) {
     sim::sleep(Seconds(P()->glutInitTime()));
 }
 
+void MouseInterface::delay(int milliseconds) {
+    sim::sleep(Milliseconds(milliseconds));
+}
+
 void MouseInterface::setWheelSpeeds(float leftWheelRadiansPerSecond, float rightWheelRadiansPerSecond) {
+    ENSURE_CONTINUOUS
     m_mouse->setWheelSpeeds(RadiansPerSecond(leftWheelRadiansPerSecond), RadiansPerSecond(rightWheelRadiansPerSecond));
 }
 
 float MouseInterface::read(std::string name) {
+    ENSURE_CONTINUOUS
 
     // Start the timer
     double start(sim::getHighResTime());
@@ -73,15 +80,13 @@ float MouseInterface::read(std::string name) {
     return value;
 }
 
-void MouseInterface::delay(int milliseconds) {
-    sim::sleep(Milliseconds(milliseconds));
-}
-
 bool MouseInterface::wallFront() {
+    ENSURE_DISCRETE
     return m_mouse->discretizedIsWall(m_mouse->getDiscretizedRotation());
 }
 
 bool MouseInterface::wallRight() {
+    ENSURE_DISCRETE
     switch (m_mouse->getDiscretizedRotation()) {
         case NORTH:
             return m_mouse->discretizedIsWall(EAST);
@@ -96,6 +101,7 @@ bool MouseInterface::wallRight() {
 }
 
 bool MouseInterface::wallLeft() {
+    ENSURE_DISCRETE
     switch (m_mouse->getDiscretizedRotation()) {
         case NORTH:
             return m_mouse->discretizedIsWall(WEST);
@@ -110,6 +116,7 @@ bool MouseInterface::wallLeft() {
 }
 
 void MouseInterface::moveForward() {
+    ENSURE_DISCRETE
 
     // TODO: Check for collision
 
@@ -147,6 +154,7 @@ void MouseInterface::moveForward() {
 }
 
 void MouseInterface::turnRight() {
+    ENSURE_DISCRETE
 
     std::pair<int, int> currentPosition = m_mouse->getDiscretizedTranslation();
     Meters x = Meters(P()->wallLength() + P()->wallWidth()) * (currentPosition.first + 0.5);
@@ -181,6 +189,7 @@ void MouseInterface::turnRight() {
 }
 
 void MouseInterface::turnLeft() {
+    ENSURE_DISCRETE
 
     std::pair<int, int> currentPosition = m_mouse->getDiscretizedTranslation();
     Meters x = Meters(P()->wallLength() + P()->wallWidth()) * (currentPosition.first + 0.5);
@@ -215,6 +224,7 @@ void MouseInterface::turnLeft() {
 }
 
 void MouseInterface::turnAround() {
+    ENSURE_DISCRETE
     turnRight();
     turnRight();
 }
@@ -241,6 +251,22 @@ void MouseInterface::resetPosition() {
 
 void MouseInterface::resetColors(int curX, int curY) {
     //m_mouse->resetColors(curX, curY);
+}
+
+void MouseInterface::ensureDiscreteInterface(const std::string& callingFunction) {
+    if (S()->interfaceType() != DISCRETE) {
+        print(std::string("Error - you must declare the interface type to be sim::DISCRETE to use MouseInterface::")
+            + callingFunction + std::string("()."));
+        quit();
+    }
+}
+
+void MouseInterface::ensureContinuousInterface(const std::string& callingFunction) {
+    if (S()->interfaceType() != CONTINUOUS) {
+        print(std::string("Error - you must declare the interface type to be sim::CONTINUOUS to use MouseInterface::")
+            + callingFunction + std::string("()."));
+        quit();
+    }
 }
 
 } // namespace sim

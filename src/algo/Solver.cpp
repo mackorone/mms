@@ -2,12 +2,11 @@
 
 // ------ Include all algorithm header files below this line ------- //
 
-#include "Continue.h" // TODO
-#include "wallFollow/LeftWallFollow.h"
-#include "wallFollow/RightWallFollow.h"
-#include "wallFollow/RandomizedWallFollow.h"
-#include "floodfill/FloodFill.h"
-#include "misc/Random.h"
+#include "continuous/Continue.h"
+#include "discrete/wallFollow/LeftWallFollow.h"
+#include "discrete/wallFollow/RightWallFollow.h"
+#include "discrete/wallFollow/RandomizedWallFollow.h"
+#include "discrete/floodfill/FloodFill.h"
 
 // ------ Include all algorithm header files above this line ------- //
 
@@ -21,11 +20,10 @@ void Solver::solve() {
 
     // ------ Include all algorithm declarations below this line ------- //
 
-    // Random algo;
     //RightWallFollow algo;
     //RandomizedWallFollow algo;
-    //FloodFill algo;
-    Continue algo;
+    FloodFill algo;
+    //Continue algo;
 
     // ------ Include all algorithm declarations above this line ------- //
 

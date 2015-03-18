@@ -1,6 +1,7 @@
 #include "RightWallFollow.h"
 
 void RightWallFollow::solve(sim::MouseInterface* mouse){
+    mouse->declareInterfaceType(sim::DISCRETE);
     while (true){
         rightWallFollowStep(mouse);
     }

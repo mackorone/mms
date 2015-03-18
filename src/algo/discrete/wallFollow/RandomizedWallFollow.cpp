@@ -1,6 +1,7 @@
 #include "RandomizedWallFollow.h"
 
 void RandomizedWallFollow::solve(sim::MouseInterface* mouse){
+    mouse->declareInterfaceType(sim::DISCRETE);
     while (true){
         if (rand() % 2 == 0){
             rightWallFollowStep(mouse);

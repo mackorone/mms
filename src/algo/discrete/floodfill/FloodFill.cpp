@@ -4,7 +4,6 @@
 #include <stack>
 #include <queue>
 #include <stdlib.h>
-//#include <unistd.h>
 #include <utility>
 #include <vector>
 
@@ -12,6 +11,9 @@
 #include "SimpleCellmod.h"
 
 void FloodFill::solve(sim::MouseInterface* mouse){
+
+    // Declare the interface type
+    mouse->declareInterfaceType(sim::DISCRETE);
 
     // Initialize the mouse pointer
     m_mouse = mouse;

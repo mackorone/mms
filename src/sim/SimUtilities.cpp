@@ -22,6 +22,10 @@
 
 namespace sim {
 
+void quit() {
+    exit(0);
+}
+
 void print(const std::string& msg) {
     std::cout << msg << std::endl;
 }

@@ -4,6 +4,9 @@
 #include "Mouse.h"
 #include "Param.h"
 
+#define ENSURE_DISCRETE ensureDiscreteInterface(__func__);
+#define ENSURE_CONTINUOUS ensureContinuousInterface(__func__);
+
 namespace sim {
 
 class MouseInterface {
@@ -15,16 +18,14 @@ public:
     // The interface type must be declared before calling any other interface methods
     void declareInterfaceType(InterfaceType interfaceType);
 
-    // TODO: List of sensor interfaces
-    // TODO: List of wheel interfaces
-
-    void setWheelSpeeds(float leftWheelRadiansPerSeconds, float rightWheelRadiansPerSecond);
-    float read(std::string name);
+    // Any interface methods
     void delay(int milliseconds);
 
-    // ---------------------- Mouse Interface Methods ----------------------- //
+    // Continuous interface methods
+    void setWheelSpeeds(float leftWheelRadiansPerSeconds, float rightWheelRadiansPerSecond);
+    float read(std::string name);
 
-    // Discrete interface
+    // Discrete interface methods
     bool wallFront();
     bool wallRight();
     bool wallLeft();
@@ -33,12 +34,13 @@ public:
     void turnLeft();
     void turnAround();
 
-    // TODO
+    // ---------------------- Mouse Interface Methods ----------------------- //
+
+    // Discrete interface
     bool undoRequested();
     bool resetRequested();
     void undoHonored();
     void resetHonored();
-
     void resetPosition(); // Sets the position of the mouse to (0,0)
 
     // ------ Simulation utilities (not applicable to the real mouse) ------- //
@@ -48,6 +50,9 @@ public:
 private:
     const Maze* m_maze;
     Mouse* m_mouse;
+
+    void ensureDiscreteInterface(const std::string& callingFunction);
+    void ensureContinuousInterface(const std::string& callingFunction);
 };
 
 } // namespace sim
