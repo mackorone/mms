@@ -44,6 +44,9 @@ std::vector<const Tile*> lineSegmentTileCover(const Cartesian& A, const Cartesia
         }
     }
 
+    // TODO: SOM: Can this be elegantly combined into one for-loop for the x-intercept case???
+    // Check with Mack before you change this...
+
     // For all x-intercepts above the the starting point, if the slope is positive ...
     if (0 < dy.getMeters()) {
         for (int i = 1; tileLength * (y0 + i) < p1.getY(); i += 1) {
@@ -174,6 +177,8 @@ bool linesIntersect(const std::pair<const Cartesian&, const Cartesian&>& A,
 Cartesian getIntersectionPoint(const std::pair<const Cartesian&, const Cartesian&>& A,
                                const std::pair<const Cartesian&, const Cartesian&>& B) {
 
+    // TODO: SOM - Explain/Clean this functionality - right now, I don't know how it works
+
     // Assert that the lines do intersect
     ASSERT(linesIntersect(A, B));
 
@@ -291,12 +296,11 @@ Polygon convexHull(const std::vector<Polygon>& polygons) {
     return Polygon(hull);
 }
 
-// TODO: Rename this to the shrinkwrapping
 Polygon getUnion(const std::vector<Polygon>& polygons) {
     // TODO: SOM
     // This function should return the union of the polygons
     // Warning: This is a difficult problem!!!
-    // We assume that the polygons are connected
+    // Note: We assume that the polygons are connected, and that the output polygon has no holes in it
 }
 
 } // namespace sim

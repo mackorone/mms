@@ -7,20 +7,13 @@
 
 namespace sim {
 
-// The world is responsible for knowing the true position of the mouse and
-// the maze, as well as carrying forth the simulation (i.e., stepping forward
-// in time)
+// The world is responsible for knowing the true position of the mouse and the maze,
+// as well as carrying forth the simulation (i.e., stepping forward in time)
 class World {
 
 public:
     World(Maze* maze, Mouse* mouse);
-    void simulate(); // TODO
-
-    /* // TODO
-    bool inGoal();
-    void resetPosition(); // Sets the position of the mouse to (0,0)
-    void resetColors(int curX, int curY); // Resets the tile colors of the maze
-    */
+    void simulate();
 
 private:
     Maze* m_maze;

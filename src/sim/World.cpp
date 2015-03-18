@@ -3,10 +3,6 @@
 #include <cmath>
 #include <thread>
 
-#include <Centimeters.h>
-#include <RadiansPerSecond.h>
-#include <Milliseconds.h>
-
 #include "GeometryUtilities.h"
 #include "Param.h"
 #include "SimUtilities.h"
@@ -102,38 +98,5 @@ void World::checkCollision() {
         sim::sleep(sim::Seconds(std::max(0.0, 1.0/sim::P()->collisionDetectionRate() - duration)));
     }
 }
-
-#if(0) // TODO
-bool Mouse::inGoal() {
-
-    // The goal is defined to be the center of the maze
-    // This means that it's 2 squares of length if even, 1 if odd
-
-    /*
-    bool horizontal = (m_maze->getWidth() - 1) / 2 == getX();
-    if (m_maze->getWidth() % 2 == 0) {
-        horizontal = horizontal || (m_maze->getWidth()) / 2 == getX();
-    }
-
-    bool vertical = (m_maze->getHeight() - 1) / 2 == getY();
-    if (m_maze->getHeight() % 2 == 0) {
-        vertical = vertical || (m_maze->getHeight()) / 2 == getY();
-    }
-
-    return horizontal && vertical;
-    */
-    return false;
-}
-
-void Mouse::resetPosition() {
-    //m_xPos = 0;
-    //m_yPos = 0;
-    //m_mouseDirection = NORTH;
-}
-
-void Mouse::resetColors(int curX, int curY) {
-    //m_maze->resetColors(curX, curY);
-}
-#endif
 
 } // namespace sim
