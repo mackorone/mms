@@ -271,8 +271,7 @@ void saveMaze(const std::vector<std::vector<BasicTile>>& maze, const std::string
         for (int y = 0; y < maze.at(x).size(); y += 1) {
             file << x << " " << y;
             for (Direction direction : DIRECTIONS) {
-                // Note: We use to use this ugly syntax here since walls[direction] is non-const
-                file << " " << (maze.at(x).at(y).walls.find(direction)->second ? 1 : 0);
+                file << " " << (maze.at(x).at(y).walls.at(direction) ? 1 : 0);
             }
             file << std::endl;
         }

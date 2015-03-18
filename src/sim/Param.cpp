@@ -38,7 +38,7 @@ Param::Param() {
     bool useRandomSeed = parser.getBoolIfHasBool("use-random-seed", false); // TODO: Notify user that there is no seed
     m_randomSeed = (useRandomSeed ? parser.getIntIfHasInt("random-seed", time(NULL)) : time(NULL));
     m_glutInitTime = parser.getFloatIfHasFloat("glut-init-time", 0.25);
-    m_mousePositionUpdateRate = parser.getIntIfHasInt("mouse-position-update-rate", 20000);
+    m_mousePositionUpdateRate = parser.getIntIfHasInt("mouse-position-update-rate", 1000);
     m_printLateMousePostitionUpdates = parser.getBoolIfHasBool("print-late-mouse-position-updates", false);
     m_collisionDetectionRate = parser.getIntIfHasInt("collision-detection-rate", 40);
     m_printLateCollisionDetections = parser.getBoolIfHasBool("print-late-collision-detections", false);
@@ -47,7 +47,7 @@ Param::Param() {
     m_maxSimSpeed = parser.getFloatIfHasFloat("max-sim-speed", 10);
     m_defaultSimSpeed = parser.getFloatIfHasFloat("default-sim-speed", 10);
     m_numberOfCircleApproximationPoints = parser.getFloatIfHasFloat("number-of-circle-approximation-points", 8);
-    m_numberOfSensorEdgePoints = parser.getFloatIfHasFloat("number-of-sensor-edge-points", 10);
+    m_numberOfSensorEdgePoints = parser.getFloatIfHasFloat("number-of-sensor-edge-points", 3);
 
     // Maze Parameters
     m_mazeDirectory = parser.getStringIfHasString("maze-directory", "src/mazes/");
