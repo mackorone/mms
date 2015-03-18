@@ -93,7 +93,9 @@ std::vector<std::vector<BasicTile>> MazeGenerator::tomasz() {
 
 #if(0)
 void Maze::tom_random() {
-    
+
+    // TODO: USE CONST TILE WHERE POSSIBLE
+
     /*
     // Declare width and height locally to reduce function calls
     int width = getWidth();
@@ -106,7 +108,7 @@ void Maze::tom_random() {
 
     getTile(0, 0)->setExplored(true); // Put the first cell on stack
     getTile(0, 0)->setDistance(0); // Cell 0
-    Tile* t = getTile(0,0);
+    const? Tile* t = getTile(0,0);
     toExplore.push(t);
 
     int exploreDIR = -1; //last direction the mouse moved. -1 if DNE
@@ -115,9 +117,9 @@ void Maze::tom_random() {
                          // if zero the maze will always turn. if 1 maze will be longest possible
                         // Currently proprtional to distance from center <see below>
 
-    int dirThreshold = RAND_MAX * moveConst; // the threshold which the random number will be 
+    int dirThreshold = RAND_MAX * moveConst; // the threshold which the random number will be
                                                       // compared too
-    
+
     // Continue to DFS until we've explored every Tile
     while (!toExplore.empty()) {
         // Grab and unpack the top thing from the stack
@@ -164,7 +166,7 @@ void Maze::tom_random() {
             toExplore.pop(); // Go Back
             if (exploreDIR != -1) { // We just reached the end of a path. lets break a wall with probability P
                 if (rand() <= RAND_MAX * .75) { // HULK SMASH the wall that will connect two most disjoint
-                    
+
                     int currentCellDist = getTile(x_pos, y_pos)->getDistance();
                     int biggestDifference = 0;
                     int cellToBreak = 0; // NORTH, SOUTH, EAST, WEST
@@ -220,7 +222,7 @@ void Maze::tom_random() {
             exploreDIR = -1; // Once we start backtracing there is no last move
             continue;
         }
-        
+
         int direction;  // final direction holder
         int rand_dir;   // random variable holder
 
@@ -287,7 +289,7 @@ void Maze::tom_random() {
 
     breakGradientWall(); // Break one wall down with biggest gradient across it
 
-    // Set each tile as unexplored and distance 255 by, the Mouse 
+    // Set each tile as unexplored and distance 255 by, the Mouse
     // (note that we just "borrowed" these fields for the maze genereration.
     for (int x = 0; x < width; x += 1) {
         for (int y = 0; y < height; y += 1) {
@@ -326,7 +328,7 @@ void Maze::initializeMaze() {
 
 void Maze::hollowCenter() {
     // Ensures that the middle is hallowed out
-    
+
     int width = getWidth();
     int height = getHeight();
 

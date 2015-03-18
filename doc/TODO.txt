@@ -1,3 +1,4 @@
+- Return const references instead of values
 - Collision Detection
 - Make Sensor and Motor abstract, support different types
 - Change float to units (including in the ParamParser and Param class)
@@ -48,3 +49,4 @@ Low Priority
 - Handle the case when target tile is unreachable - it just crashes right now
 - Validate the coding standards (especially "{" placement)
 - Rewrite "i++" and "++i" as "i += 1"
+- Give better explanations for the GeometryUtilities

@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "Assert.h"
 #include "MazeFileUtilities.h"
 #include "MazeGenerator.h"
 #include "Param.h"
@@ -17,15 +18,21 @@ Maze::Maze() {
     }
 }
 
-int Maze::getWidth() {
+int Maze::getWidth() const {
     return m_maze.size();
 }
 
-int Maze::getHeight() {
+int Maze::getHeight() const {
     return (m_maze.size() > 0 ? m_maze.at(0).size() : 0);
 }
 
 Tile* Maze::getTile(int x, int y) {
+    ASSERT(0 <= x && x < getWidth() && 0 <= y && y < getHeight());
+    return &m_maze.at(x).at(y);
+}
+
+const Tile* Maze::getTile(int x, int y) const {
+    ASSERT(0 <= x && x < getWidth() && 0 <= y && y < getHeight());
     return &m_maze.at(x).at(y);
 }
 
@@ -45,7 +52,7 @@ bool Maze::initializeViaMazeFile() {
         print("Error: \"" + mazeFilePath + "\" failed official maze validation");
         return false;
     }
-    
+
     // Load the maze given by mazeFilePath
     initializeMaze(loadMaze(mazeFilePath));
 
@@ -63,7 +70,7 @@ void Maze::initializeViaMazeGenerator() {
 
     // Load the maze given by the maze generation algorithm
     initializeMaze(MazeGenerator::generateMaze(MAZE_ALGOS.find(mazeAlgo)->second));
-    
+
     // Optionally save the maze
     if (P()->saveRandomMaze()) {
         saveMaze(extractMaze(), getProjectDirectory() + P()->mazeDirectory() + "auto_generated_maze.maz");
@@ -79,6 +86,7 @@ void Maze::initializeMaze(std::vector<std::vector<BasicTile>> maze) {
             for (Direction direction : DIRECTIONS) {
                 tile.setWall(direction, maze.at(x).at(y).walls[direction]);
             }
+            tile.initPolygons();
             column.push_back(tile);
         }
         m_maze.push_back(column);

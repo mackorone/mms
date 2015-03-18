@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
 
     // Initialize local simulation objects
     sim::Maze maze;
-    sim::Mouse mouse;
+    sim::Mouse mouse(&maze);
     sim::World world(&maze, &mouse);
     sim::MouseInterface mouseInterface(&mouse);
     Solver solver(&mouseInterface);
@@ -89,9 +89,13 @@ void draw() {
     double end(sim::getHighResTime());
     double duration = end - start;
 
-    // TODO: Fix these late frames
-    if (duration > 1.0/sim::P()->frameRate()) {
-        // print("A frame was late by " + duration - 1.0/sim::P()->frameRate() + " seconds");
+    // Notify the user of a late frame
+    if (sim::P()->printLateFrames() && duration > 1.0/sim::P()->frameRate()) {
+        sim::print(std::string("A frame was late by ")
+            + std::to_string(duration - 1.0/sim::P()->frameRate())
+            + std::string(" seconds, which is ")
+            + std::to_string((duration - 1.0/sim::P()->frameRate())/(1.0/sim::P()->frameRate()) * 100)
+            + std::string(" percent late."));
     }
 
     // Sleep the appropriate amout of time, base on the drawing duration

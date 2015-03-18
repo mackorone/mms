@@ -1,5 +1,7 @@
 #pragma once
 
+#if (1) // 1 = on, 0 = off
+
 #include <iostream>
 
 #define ASSERT(condition) \
@@ -11,3 +13,9 @@ if ( !(condition) ) { \
               << "---------------------------------------" << std::endl; \
     exit(1); \
 }
+
+#else
+
+#define ASSERT(condition) ;
+
+#endif

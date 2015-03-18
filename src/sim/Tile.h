@@ -14,34 +14,33 @@ public:
     Tile();
     ~Tile();
 
-    int getX();
-    int getY();
+    int getX() const;
+    int getY() const;
     void setPos(int x, int y);
 
     bool isWall(Direction direction);
     void setWall(Direction direction, bool isWall);
 
-    Polygon getBasePolygon();
-    std::vector<Polygon> getWallPolygons();
-    std::vector<Polygon> getCornerPolygons();
+    Polygon getFullPolygon() const;
+    Polygon getInteriorPolygon() const;
+    std::vector<Polygon> getAllWallPolygons() const;
+    std::vector<Polygon> getActualWallPolygons() const;
+    std::vector<Polygon> getCornerPolygons() const;
+    void initPolygons();
 
 private:
     int m_x;
     int m_y;
     std::map<Direction, bool> m_walls;
 
-    // We use this "initialized" flag to lazily initialize a tile's polygons.
-    // The reason is that a tile won't know its x and y positions until after
-    // it's created. However, since it must know its x and y before any of the
-    // Polygon accessors will be called, we can confidently initialize when one
-    // such method is actually called.
-    bool m_polygonsInitialized;
-    Polygon m_basePolygon;
-    std::vector<Polygon> m_wallPolygons;
+    Polygon m_fullPolygon;
+    Polygon m_interiorPolygon;
+    std::vector<Polygon> m_allWallPolygons;
+    std::vector<Polygon> m_actualWallPolygons;
     std::vector<Polygon> m_cornerPolygons;
 
-    void initPolygons();
-    void initBasePolygon();
+    void initFullPolygon();
+    void initInteriorPolygon();
     void initWallPolygons();
     void initCornerPolygons();
 };

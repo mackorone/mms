@@ -8,51 +8,104 @@
 #include <Polar.h>
 
 #include "Assert.h"
+#include "GeometryUtilities.h"
 #include "MouseParser.h"
 #include "Param.h"
 #include "SimUtilities.h"
 
 namespace sim {
 
-Mouse::Mouse() : m_rotation(Radians(0.0)) {
+Mouse::Mouse(Maze* maze) : m_maze(maze), m_rotation(Radians(0.0)) {
 
     // Create the mouse parser object
     MouseParser parser(getProjectDirectory() + "res/mouse.xml");
 
-    // Initialize the body
-    m_body = parser.getBody();
+    // Initialize the body of the mouse
+    m_initialBodyPolygon = parser.getBody();
 
     // Initialize the wheels
-    m_rightWheel = parser.getWheel(RIGHT);
-    m_leftWheel = parser.getWheel(LEFT);
+    m_leftWheel = parser.getLeftWheel();
+    m_rightWheel = parser.getRightWheel();
+
+    // TODO: Validate the contents of the mouse file (like valid mouse starting position)
+    // Note: The position of the wheels must be the exact same at the start of execution
+    ASSERT(m_leftWheel.getInitialTranslation().getY() == m_rightWheel.getInitialTranslation().getY());
+
+    // Reassign the translation to be the midpoint of the axis connecting the two wheels
+    m_initialTranslation = Cartesian(
+        Meters((m_leftWheel.getInitialTranslation().getX() + m_rightWheel.getInitialTranslation().getX()) / 2.0),
+        Meters((m_leftWheel.getInitialTranslation().getY() + m_rightWheel.getInitialTranslation().getY()) / 2.0));
+    m_translation = m_initialTranslation;
 
     // Initialize the sensors
     m_sensors = parser.getSensors();
 
-    // TODO: Validate the contents of the mouse file (like valid mouse starting position)
-    // Note: The position of the wheels must be the exact same at the start of execution
-    ASSERT(m_leftWheel.getPosition().getY() == m_rightWheel.getPosition().getY());
-
-    // Reassign the translation to be the midpoint of the axis connecting the two wheels
-    m_start = Cartesian(Meters((m_leftWheel.getPosition().getX() + m_rightWheel.getPosition().getX()) / 2.0),
-                        Meters(m_leftWheel.getPosition().getY()));
-    m_translation = m_start;
+    // Initialize the collision polygon
+    std::vector<Polygon> polygons;
+    polygons.push_back(m_initialBodyPolygon);
+    polygons.push_back(m_rightWheel.getInitialPolygon());
+    polygons.push_back(m_leftWheel.getInitialPolygon());
+    for (std::pair<std::string, Sensor> pair : m_sensors) {
+        polygons.push_back(pair.second.getInitialPolygon());
+    }
+    // TODO: SOM: This should be changed to getUnion instead of convexHull, once it's ready
+    m_initialCollisionPolygon = convexHull(polygons);
 }
 
-std::vector<Polygon> Mouse::getShapes() const {
+Polygon Mouse::getCollisionPolygon() const {
+    return m_initialCollisionPolygon.translate(m_translation - m_initialTranslation).rotateAroundPoint(m_rotation, m_translation);
+}
 
-    // Create the shapes vector
-    std::vector<Polygon> polygons;
-    polygons.push_back(m_body);
-    polygons.push_back(m_rightWheel.getPolygon());
-    polygons.push_back(m_leftWheel.getPolygon());
+Polygon Mouse::getBodyPolygon() const {
+    return m_initialBodyPolygon.translate(m_translation - m_initialTranslation).rotateAroundPoint(m_rotation, m_translation);
+}
 
-    // Translate and rotate the Polygons appropriately
-    std::vector<Polygon> adjustedShapes;
-    for (Polygon polygon : polygons) {
-        adjustedShapes.push_back(polygon.translate(m_translation - m_start).rotateAroundPoint(m_rotation, m_translation));
+std::vector<Polygon> Mouse::getWheelPolygons() const {
+
+    // Get the initial wheel polygons
+    std::vector<Polygon> initialPolygons;
+    initialPolygons.push_back(m_rightWheel.getInitialPolygon());
+    initialPolygons.push_back(m_leftWheel.getInitialPolygon());
+
+    // Translate and rotate the polygons appropriately
+    std::vector<Polygon> adjustedPolygons;
+    for (Polygon polygon : initialPolygons) {
+        adjustedPolygons.push_back(
+            polygon.translate(m_translation - m_initialTranslation).rotateAroundPoint(m_rotation, m_translation));
     }
-    return adjustedShapes;
+
+    return adjustedPolygons;
+}
+
+std::vector<Polygon> Mouse::getSensorPolygons() const {
+
+    // Get the initial sensor polygons
+    std::vector<Polygon> initialPolygons;
+    for (std::pair<std::string, Sensor> pair : m_sensors) {
+        initialPolygons.push_back(pair.second.getInitialPolygon());
+    }
+
+    // Translate and rotate the polygons appropriately
+    std::vector<Polygon> adjustedPolygons;
+    for (Polygon polygon : initialPolygons) {
+        adjustedPolygons.push_back(
+            polygon.translate(m_translation - m_initialTranslation).rotateAroundPoint(m_rotation, m_translation));
+    }
+
+    return adjustedPolygons;
+}
+
+std::vector<Polygon> Mouse::getViewPolygons() const {
+
+    // Get the current view for the all of the sensors
+    std::vector<Polygon> polygons;
+    for (std::pair<std::string, Sensor> pair : m_sensors) {
+        Polygon adjusted = pair.second.getInitialView().translate(m_translation - m_initialTranslation)
+            .rotateAroundPoint(m_rotation, m_translation);
+        polygons.push_back(pair.second.getCurrentView(
+            adjusted.getVertices().at(0), m_rotation + pair.second.getInitialRotation(), *m_maze));
+    }
+    return polygons;
 }
 
 void Mouse::update(const Time& elapsed) {
@@ -101,22 +154,84 @@ void Mouse::update(const Time& elapsed) {
     m_wheelMutex.unlock();
 
     // Then get the distance between the two wheels
-    Meters base(m_rightWheel.getPosition().getX() - m_leftWheel.getPosition().getX());
+    Meters base(m_rightWheel.getInitialTranslation().getX() - m_leftWheel.getInitialTranslation().getX());
 
     // Update the rotation
     m_rotation += Radians((rightWheelSpeed + leftWheelSpeed).getMetersPerSecond() / base.getMeters() * elapsed.getSeconds());
 
-    // Update the translation. Note that we have to add M_PI / 2.0 to the rotation since we measure rotation
-    // from the positive x-axis but, by default, the robot has 0 rotation and moves in the positive y direction.
+    // Update the translation
     Meters distance((rightWheelSpeed - leftWheelSpeed).getMetersPerSecond() / 2.0 * elapsed.getSeconds());
-    m_translation += Polar(distance, Radians(M_PI / 2.0) + m_rotation);
+    m_translation += Polar(distance, Wheel().getInitialRotation() + m_rotation); // This could be optimized
+
+    // TODO: Update the cached sensor values with each update
+
+    // -----------------------------------------------------------------------------------------------------
+
+    // TODO: This is the technically corect implementation...
+    /*
+    float BASELINE(m_rightWheel.getInitialTranslation().getX().getMeters() - m_leftWheel.getInitialTranslation().getX().getMeters());
+
+    if (fabs(rightWheelSpeed.getMetersPerSecond() == -1*leftWheelSpeed.getMetersPerSecond())) { // TODO
+        Meters distance((-0.5 * leftWheelSpeed.getMetersPerSecond() + 0.5 * rightWheelSpeed.getMetersPerSecond()) * elapsed.getSeconds());
+        m_translation = m_translation + Polar(distance, Radians(M_PI / 2.0) + m_rotation); // TODO
+        static int i = 0;
+        std::cout << i++ << std::endl;
+    }
+    else {
+        leftWheelSpeed = MetersPerSecond(-1*leftWheelSpeed.getMetersPerSecond());
+
+        // TODO
+        float x_0 = m_translation.getY().getMeters();
+        float y_0 = -1*m_translation.getX().getMeters();
+
+        float x = x_0 +
+
+                  (BASELINE*(rightWheelSpeed+leftWheelSpeed).getMetersPerSecond())
+                  /(2.0*(rightWheelSpeed-leftWheelSpeed).getMetersPerSecond())
+
+                  *(sin((rightWheelSpeed-leftWheelSpeed).getMetersPerSecond() * elapsed.getSeconds() / BASELINE + m_rotation.getRadians())
+                   -sin(m_rotation.getRadians()));
+
+        float y = y_0 -
+
+                  (BASELINE*(rightWheelSpeed+leftWheelSpeed).getMetersPerSecond())
+                  /(2.0*(rightWheelSpeed-leftWheelSpeed).getMetersPerSecond())
+
+                  *(cos((rightWheelSpeed-leftWheelSpeed).getMetersPerSecond() * elapsed.getSeconds() / BASELINE + m_rotation.getRadians())
+                   -cos(m_rotation.getRadians()));
+
+        m_translation = Cartesian(Meters(-y), Meters(x));
+
+        leftWheelSpeed = MetersPerSecond(-1*leftWheelSpeed.getMetersPerSecond());
+    }
+
+    // TODO: This is correct
+    Radians theta((rightWheelSpeed.getMetersPerSecond() - (-leftWheelSpeed.getMetersPerSecond())) / BASELINE * elapsed.getSeconds());
+    m_rotation = m_rotation + theta;
+    */
 }
 
-void Mouse::setWheelSpeeds(const AngularVelocity& rightWheelSpeed, const AngularVelocity& leftWheelSpeed) {
+void Mouse::setWheelSpeeds(const AngularVelocity& leftWheelSpeed, const AngularVelocity& rightWheelSpeed) {
     m_wheelMutex.lock();
-    m_rightWheel.setAngularVelocity(rightWheelSpeed);
     m_leftWheel.setAngularVelocity(leftWheelSpeed);
+    m_rightWheel.setAngularVelocity(rightWheelSpeed);
     m_wheelMutex.unlock();
+}
+
+float Mouse::read(std::string name) const {
+    // TODO: Ensure the mouse doesn't move while we're reading values??
+    ASSERT(m_sensors.count(name) != 0);
+    Sensor sensor = m_sensors.at(name);
+    Polygon fullView = sensor.getInitialView().translate(m_translation - m_initialTranslation)
+        .rotateAroundPoint(m_rotation, m_translation);
+    Polygon currentView = sensor.getCurrentView(
+        fullView.getVertices().at(0), m_rotation + sensor.getInitialRotation(), *m_maze);
+    return 1.0 - polygonArea(currentView).getMetersSquared() / polygonArea(fullView).getMetersSquared();
+}
+
+Seconds Mouse::getReadTime(std::string name) const {
+    ASSERT(m_sensors.count(name) != 0);
+    return m_sensors.at(name).getReadTime();
 }
 
 } // namespace sim

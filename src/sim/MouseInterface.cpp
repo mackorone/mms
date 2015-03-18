@@ -13,15 +13,46 @@
 
 namespace sim {
 
-// TODO: Should interface to sensor
-MouseInterface::MouseInterface(Mouse* mouse) : m_mouse(mouse)
-{ }
+MouseInterface::MouseInterface(Mouse* mouse) : m_mouse(mouse) {
+}
 
-MouseInterface::~MouseInterface()
-{ }
+MouseInterface::~MouseInterface() {
+}
 
-void MouseInterface::setWheelSpeeds(float rightWheelSpeed, float leftWheelSpeed) {
-    m_mouse->setWheelSpeeds(RadiansPerSecond(rightWheelSpeed), RadiansPerSecond(leftWheelSpeed));
+void MouseInterface::setWheelSpeeds(float leftWheelRadiansPerSecond, float rightWheelRadiansPerSecond) {
+    m_mouse->setWheelSpeeds(RadiansPerSecond(leftWheelRadiansPerSecond), RadiansPerSecond(rightWheelRadiansPerSecond));
+}
+
+float MouseInterface::read(std::string name) {
+
+    // Start the timer
+    double start(sim::getHighResTime());
+
+    // Retrieve the value
+    float value = m_mouse->read(name);
+
+    // Stop the timer
+    double end(sim::getHighResTime());
+    double duration = end - start;
+
+    // Display to the user, if requested
+    if (sim::P()->printLateSensorReads() && duration > m_mouse->getReadTime(name).getSeconds()) {
+        sim::print(std::string("A sensor read was late by ")
+            + std::to_string(duration - m_mouse->getReadTime(name).getSeconds())
+            + std::string(" seconds, which is ")
+            + std::to_string((duration - m_mouse->getReadTime(name).getSeconds())/(m_mouse->getReadTime(name).getSeconds()) * 100)
+            + std::string(" percent late."));
+    }
+
+    // Sleep for the read time
+    sim::sleep(sim::Seconds(std::max(0.0, 1.0/sim::P()->frameRate() - duration)));
+
+    // Return the value
+    return value;
+}
+
+void MouseInterface::delay(int milliseconds) {
+    sim::sleep(Milliseconds(milliseconds));
 }
 
 bool MouseInterface::wallFront() {
@@ -50,7 +81,7 @@ void MouseInterface::moveForward() {
     Seconds duration(distance/speed);
 
     int numSteps = 10; // TODO this is hard coded now
-    
+
     for (int i = 0; i < numSteps; i += 1) {
         while (S()->paused()) {
             sim::sleep(Milliseconds(1)); // Sleep while paused
@@ -109,7 +140,7 @@ void MouseInterface::resetHonored() {
 }
 
 void MouseInterface::resetPosition() {
-    //m_mouse->resetPosition();    
+    //m_mouse->resetPosition();
 }
 
 void MouseInterface::resetColors(int curX, int curY) {

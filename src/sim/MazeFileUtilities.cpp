@@ -5,6 +5,7 @@
 #include <iterator>
 #include <sstream>
 
+#include "Assert.h"
 #include "Directions.h"
 #include "SimUtilities.h"
 
@@ -156,8 +157,9 @@ void saveMaze(std::vector<std::vector<BasicTile>> maze, std::string mazeFilePath
 
 std::vector<std::vector<BasicTile>> loadMaze(std::string mazeFilePath) {
 
-    // Note: This should only be called on mazes that have been validated.
-    // In particular, we assume that the file exists and has the proper format.
+    // This should only be called on mazes that have been validated. In particular,
+    // we assume that the file exists and has the proper format.
+    ASSERT(validMaze(mazeFilePath));
 
     // The maze to be returned
     std::vector<std::vector<BasicTile>> maze;
@@ -193,7 +195,7 @@ std::vector<std::vector<BasicTile>> loadMaze(std::string mazeFilePath) {
         // Set the values of all of the walls
         for (Direction direction : DIRECTIONS) {
             BasicTile* tile = &maze.at(strToInt(tokens.at(0))).at(strToInt(tokens.at(1)));
-            tile->walls[direction] = (1 == strToInt(tokens.at(2+direction)));
+            tile->walls[direction] = (1 == strToInt(tokens.at(2 + direction)));
         }
     }
 

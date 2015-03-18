@@ -8,11 +8,11 @@ namespace sim {
 class MouseGraphic {
 
 public:
-    MouseGraphic(Mouse* mouse);
+    MouseGraphic(const Mouse* mouse);
     void draw();
 
 private:
-    Mouse* m_mouse;
+    const Mouse* m_mouse;
 };
 
 } // namespace sim

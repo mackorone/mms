@@ -16,23 +16,56 @@
         <Y>.05</Y>
     </Point>
 </Body>
-<Wheels>
-    <Left>
-        <Radius>.02</Radius>
-        <Width>.01</Width>
-        <Position>
-            <X>.055</X>
-            <Y>.075</Y>
-        </Position>
-    </Left>
-    <Right>
-        <Radius>.02</Radius>
-        <Width>.01</Width>
-        <Position>
-            <X>.105</X>
-            <Y>.075</Y>
-        </Position>
-    </Right>
-</Wheels>
-<Sensors>
-</Sensors>
+<LeftWheel>
+    <Radius>.02</Radius>
+    <Width>.01</Width>
+    <Position>
+        <X>.055</X>
+        <Y>.075</Y>
+    </Position>
+</LeftWheel>
+<RightWheel>
+    <Radius>.02</Radius>
+    <Width>.01</Width>
+    <Position>
+        <X>.105</X>
+        <Y>.075</Y>
+    </Position>
+    <MaxSpeed></MaxSpeed> <!-- TODO: -->
+</RightWheel>
+<Sensor>
+    <Name>A</Name>
+    <Position>
+        <X>.080</X>
+        <Y>.105</Y>
+    </Position>
+    <Radius>.01</Radius> <!-- Size of the sensor body, Meters -->
+    <Rotation>1.5708</Rotation> <!-- Radians -->
+    <Range>.20</Range> <!-- Meters -->
+    <HalfWidth>5</HalfWidth> <!-- Degrees -->
+    <ReadTime>.015</ReadTime> <!-- Seconds -->
+</Sensor>
+<Sensor>
+    <Name>B</Name>
+    <Position>
+        <X>.080</X>
+        <Y>.105</Y>
+    </Position>
+    <Radius>.01</Radius> <!-- Size of the sensor body, Meters -->
+    <Rotation>1.047</Rotation> <!-- Radians -->
+    <Range>.20</Range> <!-- Meters -->
+    <HalfWidth>5</HalfWidth> <!-- Degrees -->
+    <ReadTime>.015</ReadTime> <!-- Seconds -->
+</Sensor>
+<Sensor>
+    <Name>C</Name>
+    <Position>
+        <X>.080</X>
+        <Y>.105</Y>
+    </Position>
+    <Radius>.01</Radius> <!-- Size of the sensor body, Meters -->
+    <Rotation>0</Rotation> <!-- Radians --> 
+    <Range>.20</Range> <!-- Meters -->
+    <HalfWidth>5</HalfWidth> <!-- Degrees -->
+    <ReadTime>.015</ReadTime> <!-- Seconds -->
+</Sensor>

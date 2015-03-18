@@ -12,14 +12,15 @@ class Maze {
 
 public:
     Maze();
-    int getWidth();
-    int getHeight();
+    int getWidth() const;
+    int getHeight() const;
     Tile* getTile(int x, int y);
+    const Tile* getTile(int x, int y) const;
 
 private:
     // Vector to hold all of the tiles
     std::vector<std::vector<Tile>> m_maze;
-    
+
     // Initialize the object by reading a maze file; true if successful, false otherwise
     bool initializeViaMazeFile();
 
