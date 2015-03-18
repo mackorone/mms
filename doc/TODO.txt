@@ -36,6 +36,7 @@
 - Put interface in root of src directory
 - write "isDirectory(std::string path)" and enforce this where necessary
 - write getRandom() and replace old calls to rand()
+- draw a path of where the robot has been
 
 Low Priority
 ===============
