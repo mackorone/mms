@@ -11,7 +11,7 @@
 
 namespace sim {
 
-std::pair<int, int> getMazeSize(std::string mazeFilePath) {
+std::pair<int, int> getMazeSize(const std::string& mazeFilePath) {
 
     // Note: This function should only be called on maze files that have been validated.
     // In particular, we assuming that the dimensions of the maze are given in the last,
@@ -40,7 +40,7 @@ std::pair<int, int> getMazeSize(std::string mazeFilePath) {
     return std::make_pair(width, height);
 }
 
-bool validMaze(std::string mazeFilePath) {
+bool validMaze(const std::string& mazeFilePath) {
 
     // TODO: This should ensure a PHYSICALLY POSSIBLE MAZE
     // TODO: SOM
@@ -116,7 +116,7 @@ bool validMaze(std::string mazeFilePath) {
 // necessary to be an official micromouse maze, false otherwise
 // NOTE: This function should only be called on valid mazes - that is,
 // we can assume mazes are valid if this function is called
-bool officialMaze(std::string mazeFilePath) {
+bool officialMaze(const std::string& mazeFilePath) {
     // TODO: SOM
     // Conditions:
     // 1.) Has a path to the center
@@ -158,7 +158,7 @@ bool officialMaze(std::string mazeFilePath) {
     return true;
 }
 
-bool hasPathToCenter(const std::vector<std::vector<BasicTile>> &maze, int x, int y) {
+bool hasPathToCenter(const std::vector<std::vector<BasicTile>>& maze, int x, int y) {
     static std::vector<bool> checkRow(16, false);
     static std::vector<std::vector<bool>> checkTiles(16, checkRow);
     checkTiles.at(x).at(y) = true;
@@ -187,10 +187,10 @@ bool hasPathToCenter(const std::vector<std::vector<BasicTile>> &maze, int x, int
         westCheck = hasPathToCenter(maze, x-1, y);
     }
 
-    return eastCheck||southCheck||westCheck||northCheck;
+    return eastCheck || southCheck || westCheck || northCheck;
 }
 
-bool hasOneEntrance(const std::vector<std::vector<BasicTile>> &maze) {
+bool hasOneEntrance(const std::vector<std::vector<BasicTile>>& maze) {
     int entranceCounter = 0;
     
     //Check lower left entrances
@@ -209,7 +209,7 @@ bool hasOneEntrance(const std::vector<std::vector<BasicTile>> &maze) {
     return entranceCounter == 1;
 }
 
-bool eachPostHasWall(const std::vector<std::vector<BasicTile>> &maze, int x, int y) {
+bool eachPostHasWall(const std::vector<std::vector<BasicTile>>& maze, int x, int y) {
     static std::vector<bool> checkRow(16, false);
     static std::vector<std::vector<bool>> checkTiles(16, checkRow);
     bool northCheck = true, eastCheck = true;    
@@ -246,18 +246,16 @@ bool eachPostHasWall(const std::vector<std::vector<BasicTile>> &maze, int x, int
     }
 }
 
-bool threeStartingWalls(const std::vector<std::vector<BasicTile>> &maze) {
+bool threeStartingWalls(const std::vector<std::vector<BasicTile>>& maze) {
     int wallCount = 0;
-
-    wallCount += maze.at(0).at(0).walls.at(NORTH);
-    wallCount += maze.at(0).at(0).walls.at(EAST);
-    wallCount += maze.at(0).at(0).walls.at(SOUTH);
-    wallCount += maze.at(0).at(0).walls.at(WEST);
-
+    wallCount += (maze.at(0).at(0).walls.at(NORTH) ? 1 : 0);
+    wallCount += (maze.at(0).at(0).walls.at(EAST)  ? 1 : 0);
+    wallCount += (maze.at(0).at(0).walls.at(SOUTH) ? 1 : 0);
+    wallCount += (maze.at(0).at(0).walls.at(WEST)  ? 1 : 0);
     return wallCount == 3;
 }
 
-void saveMaze(std::vector<std::vector<BasicTile>> maze, std::string mazeFilePath) {
+void saveMaze(const std::vector<std::vector<BasicTile>>& maze, const std::string& mazeFilePath) {
 
     // Create the stream
     std::ofstream file(mazeFilePath.c_str());
@@ -273,7 +271,8 @@ void saveMaze(std::vector<std::vector<BasicTile>> maze, std::string mazeFilePath
         for (int y = 0; y < maze.at(x).size(); y += 1) {
             file << x << " " << y;
             for (Direction direction : DIRECTIONS) {
-                file << " " << (maze.at(x).at(y).walls[direction] ? 1 : 0);
+                // Note: We use to use this ugly syntax here since walls[direction] is non-const
+                file << " " << (maze.at(x).at(y).walls.find(direction)->second ? 1 : 0);
             }
             file << std::endl;
         }
@@ -282,7 +281,7 @@ void saveMaze(std::vector<std::vector<BasicTile>> maze, std::string mazeFilePath
     file.close();
 }
 
-std::vector<std::vector<BasicTile>> loadMaze(std::string mazeFilePath) {
+std::vector<std::vector<BasicTile>> loadMaze(const std::string& mazeFilePath) {
 
     // This should only be called on mazes that have been validated. In particular,
     // we assume that the file exists and has the proper format.
@@ -329,4 +328,5 @@ std::vector<std::vector<BasicTile>> loadMaze(std::string mazeFilePath) {
   
     return maze;
 }
+
 } //namespace sim

@@ -52,9 +52,6 @@ bool Maze::initializeViaMazeFile() {
         print("Error: \"" + mazeFilePath + "\" failed official maze validation");
         return false;
     }
-    else {
-        print("Official maze\n");
-    }  
 
     // Load the maze given by mazeFilePath
     initializeMaze(loadMaze(mazeFilePath));
