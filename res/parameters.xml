@@ -24,7 +24,7 @@
 
 <!-- Maze Parameters -->
 <maze-directory>res/mazes/</maze-directory> <!-- realtive to project root -->
-<maze-file>ieee2011.maz</maze-file> <!-- relative to maze-directory -->
+<maze-file>test.maz</maze-file> <!-- relative to maze-directory -->
 <use-maze-file>true</use-maze-file> <!-- whether or not to use the maze file above -->
 <wall-length>.156</wall-length> <!-- meters -->
 <wall-width>.012</wall-width> <!-- meters -->
@@ -32,7 +32,7 @@
 <!-- TODO: Rename "random-maze-..." to "generated-maze..." -->
 <random-maze-width>16</random-maze-width> <!-- number of tiles -->
 <random-maze-height>16</random-maze-height> <!-- number of tiles -->
-<enforce-official-maze-rules>false</enforce-official-maze-rules>
+<enforce-official-maze-rules>true</enforce-official-maze-rules>
 <random-maze-algo>TOMASZ</random-maze-algo>
 <save-random-maze>true</save-random-maze> <!-- Whethor or not to save a random maze -->
 
