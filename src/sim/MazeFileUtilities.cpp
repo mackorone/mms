@@ -126,8 +126,135 @@ bool officialMaze(std::string mazeFilePath) {
     // NOTE: It's probably a *really* good idea to make a helper function for each requirement, as in:
     // bool hasPathToCenter();
     // bool unsolvableByWallFollower();
+    // bool hasOneEntrance(maze); 
+    // bool eachPostHasWall(maze)
+    // bool threeStartingWalls(maze); 
+    //
     // etc.
-    return false;
+   
+    std::vector<std::vector<BasicTile>> maze;
+    maze = loadMaze(mazeFilePath);
+
+    //Check for path to center
+    if(!hasPathToCenter(maze, 0, 0)) {
+        return false;
+    }
+
+    //Check for one entrance to center tiles
+    if(!hasOneEntrance(maze)) {
+        return false;
+    }
+
+    //Check that each post has walls
+    if(!eachPostHasWall(maze, 1, 1)) {
+        return false;
+    }
+    
+    //Check that the starting position has exactly three walls
+    if(!threeStartingWalls(maze)) {
+        return false;
+    }
+
+    return true;
+}
+
+bool hasPathToCenter(const std::vector<std::vector<BasicTile>> &maze, int x, int y) {
+    static std::vector<bool> checkRow(16, false);
+    static std::vector<std::vector<bool>> checkTiles(16, checkRow);
+    checkTiles.at(x).at(y) = true;
+    bool eastCheck = false, southCheck = false, westCheck = false, northCheck = false;
+    
+    //Check for center tile
+    if((x==7||x==8)&&(y==7||y==8)) {
+        return true;
+    }
+
+    //Check north tile
+    if(y != 15 && !maze.at(x).at(y).walls.at(NORTH) && !checkTiles.at(x).at(y+1)) {
+        northCheck = hasPathToCenter(maze, x, y+1);
+    }
+
+    //Check east tile
+    if(x != 15 && !maze.at(x).at(y).walls.at(EAST) && !checkTiles.at(x+1).at(y)) {
+        eastCheck = hasPathToCenter(maze, x+1, y);
+    }
+    //Check south tile
+    if(y != 0 && !maze.at(x).at(y).walls.at(SOUTH) && !checkTiles.at(x).at(y-1)) { 
+        southCheck = hasPathToCenter(maze, x, y-1);
+    }
+    //Check west tile
+    if(x != 0 && !maze.at(x).at(y).walls.at(WEST) && !checkTiles.at(x-1).at(y)) {
+        westCheck = hasPathToCenter(maze, x-1, y);
+    }
+
+    return eastCheck||southCheck||westCheck||northCheck;
+}
+
+bool hasOneEntrance(const std::vector<std::vector<BasicTile>> &maze) {
+    int entranceCounter = 0;
+    
+    //Check lower left entrances
+    entranceCounter += !maze.at(7).at(7).walls.at(SOUTH);
+    entranceCounter += !maze.at(7).at(7).walls.at(WEST);
+    //Check upper left entrances
+    entranceCounter += !maze.at(7).at(8).walls.at(NORTH);
+    entranceCounter += !maze.at(7).at(8).walls.at(WEST);
+    //Check lower right entrances
+    entranceCounter += !maze.at(8).at(7).walls.at(SOUTH);
+    entranceCounter += !maze.at(8).at(7).walls.at(EAST);
+    //Check upper right entrances
+    entranceCounter += !maze.at(8).at(8).walls.at(NORTH);
+    entranceCounter += !maze.at(8).at(8).walls.at(EAST);
+
+    return entranceCounter == 1;
+}
+
+bool eachPostHasWall(const std::vector<std::vector<BasicTile>> &maze, int x, int y) {
+    static std::vector<bool> checkRow(16, false);
+    static std::vector<std::vector<bool>> checkTiles(16, checkRow);
+    bool northCheck = true, eastCheck = true;    
+
+    checkTiles.at(x).at(y) = true;
+    
+    //Check if upper right tile
+    if(x == 15 && y == 15) {
+        return true;
+    }  
+
+    int wallCount = 0;
+    //Check bottom left post
+    wallCount += maze.at(x).at(y).walls.at(WEST);
+    wallCount += maze.at(x).at(y).walls.at(SOUTH);   
+    if(x != 0) {
+        wallCount += maze.at(x-1).at(y).walls.at(SOUTH);
+    }
+    if(y != 0) {
+        wallCount += maze.at(x).at(y-1).walls.at(WEST);
+    }
+
+    if(wallCount == 0 && (x != 8 || y != 8)) {
+        return false;
+    }
+    else {
+        if(y != 15 && checkTiles.at(x).at(y+1) == false) {
+            northCheck = eachPostHasWall(maze, x, y + 1);
+        }
+        if(x != 15 && checkTiles.at(x+1).at(y) == false) {
+            eastCheck = eachPostHasWall(maze, x + 1, y);
+        }
+        return northCheck && eastCheck;
+    }
+}
+
+bool threeStartingWalls(const std::vector<std::vector<BasicTile>> &maze) {
+    int wallCount = 0;
+
+    wallCount += maze.at(0).at(0).walls.at(NORTH);
+    wallCount += maze.at(0).at(0).walls.at(EAST);
+    wallCount += maze.at(0).at(0).walls.at(SOUTH);
+    wallCount += maze.at(0).at(0).walls.at(WEST);
+
+    return wallCount == 3;
 }
 
 void saveMaze(std::vector<std::vector<BasicTile>> maze, std::string mazeFilePath) {
@@ -198,10 +325,8 @@ std::vector<std::vector<BasicTile>> loadMaze(std::string mazeFilePath) {
             tile->walls[direction] = (1 == strToInt(tokens.at(2 + direction)));
         }
     }
-
     file.close();
-
+  
     return maze;
 }
-
-} // namespace sim
+} //namespace sim
