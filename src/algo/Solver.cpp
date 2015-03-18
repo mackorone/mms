@@ -24,8 +24,8 @@ void Solver::solve() {
     // Random algo;
     //RightWallFollow algo;
     //RandomizedWallFollow algo;
-    //FloodFill algo;
-    Continue algo;
+    FloodFill algo;
+    //Continue algo;
 
     // ------ Include all algorithm declarations above this line ------- //
 

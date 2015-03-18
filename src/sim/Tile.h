@@ -18,7 +18,7 @@ public:
     int getY() const;
     void setPos(int x, int y);
 
-    bool isWall(Direction direction);
+    bool isWall(Direction direction) const;
     void setWall(Direction direction, bool isWall);
 
     Polygon getFullPolygon() const;

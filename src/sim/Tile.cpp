@@ -26,8 +26,8 @@ void Tile::setPos(int x, int y) {
     m_y = y;
 }
 
-bool Tile::isWall(Direction direction) {
-    return m_walls[direction];
+bool Tile::isWall(Direction direction) const {
+    return m_walls.at(direction);
 }
 
 void Tile::setWall(Direction direction, bool isWall) {

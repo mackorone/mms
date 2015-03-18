@@ -7,6 +7,7 @@ void Continue::solve(sim::MouseInterface* mouse) {
     // Initialize the member variable
     m_mouse = mouse;
 
+    /*
     while (true) {
         if (!wallRight()) {
             turnRight();
@@ -16,6 +17,16 @@ void Continue::solve(sim::MouseInterface* mouse) {
         }
         moveForward();
         correctErrors();
+    }
+    */
+    while (true) {
+        if (!m_mouse->wallRight()) {
+            m_mouse->turnRight();
+        }
+        while (m_mouse->wallFront()) {
+            m_mouse->turnLeft();
+        }
+        m_mouse->moveForward();
     }
 }
 

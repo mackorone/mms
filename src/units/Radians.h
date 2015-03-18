@@ -12,6 +12,7 @@ public:
     Radians(const Angle& angle);
     Radians operator+(const Angle& angle) const;
     Radians operator*(float factor) const;
+    float operator/(const Angle& angle) const;
     void operator+=(const Angle& angle);
 
 };

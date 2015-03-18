@@ -32,9 +32,11 @@ void MouseGraphic::draw() {
     // Lastly, we draw the sensor views
     // TODO: Different ways of drawing the sensors, like a pulse
     glColor3fv(WHITE);
+    /* // TODO: Only for continuous
     for (Polygon polygon : m_mouse->getViewPolygons()) {
         drawPolygon(polygon);
     }
+    */
 }
 
 } // namespace sim

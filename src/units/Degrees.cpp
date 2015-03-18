@@ -20,6 +20,10 @@ Degrees Degrees::operator+(const Angle& angle) const {
     return Degrees(getDegrees() + angle.getDegrees());
 }
 
+Degrees Degrees::operator-(const Angle& angle) const {
+    return Degrees(getDegrees() - angle.getDegrees());
+}
+
 Degrees Degrees::operator*(float factor) const {
     return Degrees(getDegrees() * factor);
 }

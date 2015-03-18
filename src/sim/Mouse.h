@@ -40,10 +40,22 @@ public:
     void setWheelSpeeds(const AngularVelocity& leftWheelSpeed, const AngularVelocity& rightWheelSpeed);
 
     // Read a sensor, and returns a value from 0.0 (completely free) to 1.0 (completely blocked)
-    float read(std::string name) const;
+    float read(const std::string& name) const;
 
     // Get the read time of a particular sensor
-    Seconds getReadTime(std::string name) const;
+    Seconds getReadTime(const std::string& name) const;
+
+    // Teleports the mouse to a specific translation and rotation, used only by the discrete interface methods
+    void teleport(const Cartesian& translation, const Angle& rotation);
+
+    // Returns the discretized x and y position of the robot
+    std::pair<int, int> getDiscretizedTranslation();
+
+    // Returns the discretized rotation of the robot
+    Direction getDiscretizedRotation();
+
+    // Returns whether or not there is a wall in particular direction, based on the discretized translation and rotation
+    bool discretizedIsWall(Direction direction);
 
 private:
     // Used for the sensor readings

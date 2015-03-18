@@ -29,7 +29,7 @@
 
 <!-- Maze Parameters -->
 <maze-directory>res/mazes/</maze-directory> <!-- realtive to project root -->
-<maze-file>longpath.maz</maze-file> <!-- relative to maze-directory -->
+<maze-file>ieee2011.maz</maze-file> <!-- relative to maze-directory -->
 <use-maze-file>true</use-maze-file> <!-- whether or not to use the maze file above -->
 <wall-length>.156</wall-length> <!-- meters -->
 <wall-width>.012</wall-width> <!-- meters -->

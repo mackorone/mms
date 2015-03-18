@@ -214,7 +214,7 @@ void Mouse::setWheelSpeeds(const AngularVelocity& leftWheelSpeed, const AngularV
     m_wheelMutex.unlock();
 }
 
-float Mouse::read(std::string name) const {
+float Mouse::read(const std::string& name) const {
     // TODO: Ensure the mouse doesn't move while we're reading values??
     ASSERT(m_sensors.count(name) != 0);
     Sensor sensor = m_sensors.at(name);
@@ -225,9 +225,39 @@ float Mouse::read(std::string name) const {
     return 1.0 - polygonArea(currentView).getMetersSquared() / polygonArea(fullView).getMetersSquared();
 }
 
-Seconds Mouse::getReadTime(std::string name) const {
+Seconds Mouse::getReadTime(const std::string& name) const {
     ASSERT(m_sensors.count(name) != 0);
     return m_sensors.at(name).getReadTime();
+}
+
+void Mouse::teleport(const Cartesian& translation, const Angle& rotation) {
+    m_translation = translation;
+    m_rotation = rotation;
+}
+
+std::pair<int, int> Mouse::getDiscretizedTranslation() {
+    int x = static_cast<int>(floor((m_translation.getX() / Meters(P()->wallLength() + P()->wallWidth()))));
+    int y = static_cast<int>(floor((m_translation.getY() / Meters(P()->wallLength() + P()->wallWidth()))));
+    return std::make_pair(x, y);
+}
+
+Direction Mouse::getDiscretizedRotation() {
+    int dir = static_cast<int>(floor((m_rotation + Degrees(45)) / Degrees(90)));
+    switch (dir) {
+        case 0:
+            return NORTH;
+        case 1:
+            return WEST;
+        case 2:
+            return SOUTH;
+        case 3:
+            return EAST;
+    }
+}
+
+bool Mouse::discretizedIsWall(Direction direction) {
+    std::pair<int, int> position = getDiscretizedTranslation();
+    return m_maze->getTile(position.first, position.second)->isWall(direction);
 }
 
 } // namespace sim

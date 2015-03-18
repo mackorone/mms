@@ -11,6 +11,12 @@
 #include "State.h"
 #include "SimUtilities.h"
 
+#include <iostream> // TODO
+
+
+// TODO: Diagonals, more discrete interface methods (look ahead), change color of tile, reset, etc, reduce CPU, etc.
+
+
 namespace sim {
 
 MouseInterface::MouseInterface(Mouse* mouse) : m_mouse(mouse) {
@@ -56,66 +62,140 @@ void MouseInterface::delay(int milliseconds) {
 }
 
 bool MouseInterface::wallFront() {
-    //return m_mouse->wallFront();
-    return false;
+    return m_mouse->discretizedIsWall(m_mouse->getDiscretizedRotation());
 }
 
 bool MouseInterface::wallRight() {
-    //return m_mouse->wallRight();
+    switch (m_mouse->getDiscretizedRotation()) {
+        case NORTH:
+            return m_mouse->discretizedIsWall(EAST);
+        case EAST:
+            return m_mouse->discretizedIsWall(SOUTH);
+        case SOUTH:
+            return m_mouse->discretizedIsWall(WEST);
+        case WEST:
+            return m_mouse->discretizedIsWall(NORTH);
+    }
     return false;
 }
 
 bool MouseInterface::wallLeft() {
-    //return m_mouse->wallLeft();
+    switch (m_mouse->getDiscretizedRotation()) {
+        case NORTH:
+            return m_mouse->discretizedIsWall(WEST);
+        case EAST:
+            return m_mouse->discretizedIsWall(NORTH);
+        case SOUTH:
+            return m_mouse->discretizedIsWall(EAST);
+        case WEST:
+            return m_mouse->discretizedIsWall(SOUTH);
+    }
     return false;
 }
 
 void MouseInterface::moveForward() {
 
-    // TODO: Acceleration
+    // TODO: Check for collision
 
-    // Implement the sleeping here
-    /*
-    Meters distance(P()->wallLength() + P()->wallWidth());
-    MetersPerSecond speed(1.0);
-    Seconds duration(distance/speed);
+    std::pair<int, int> currentPosition = m_mouse->getDiscretizedTranslation();
+    Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
+    Meters x = tileLength * (currentPosition.first + 0.5);
+    Meters y = tileLength * (currentPosition.second + 0.5);
 
-    int numSteps = 10; // TODO this is hard coded now
-
-    for (int i = 0; i < numSteps; i += 1) {
-        while (S()->paused()) {
-            sim::sleep(Milliseconds(1)); // Sleep while paused
-        }
-        m_mouse->moveForward(distance.getMeters()/numSteps);
-        sim::sleep(Seconds(duration.getSeconds()/numSteps));
+    switch (m_mouse->getDiscretizedRotation()) {
+        case NORTH:
+            for (float i = 0; i < 1.0; i += .01) {
+                m_mouse->teleport(Cartesian(x, y + tileLength*i), Degrees(0));
+                sim::sleep(Milliseconds(1));
+            }
+            break;
+        case EAST:
+            for (float i = 0; i < 1.0; i += .01) {
+                m_mouse->teleport(Cartesian(x + tileLength*i, y), Degrees(270));
+                sim::sleep(Milliseconds(1));
+            }
+            break;
+        case SOUTH:
+            for (float i = 0; i < 1.0; i += .01) {
+                m_mouse->teleport(Cartesian(x, y - tileLength*i), Degrees(180));
+                sim::sleep(Milliseconds(1));
+            }
+            break;
+        case WEST:
+            for (float i = 0; i < 1.0; i += .01) {
+                m_mouse->teleport(Cartesian(x - tileLength*i, y), Degrees(90));
+                sim::sleep(Milliseconds(1));
+            }
+            break;
     }
-    */
 }
 
 void MouseInterface::turnRight() {
 
-    /*
-    for (int i = 0; i < S()->simSpeed(); i += 1) {
-        while (S()->paused()) {sim::sleep(1);} // Sleep while paused
-        sim::sleep(1); // Sleep for 1 ms of the total m_sleepTime
-    }
+    std::pair<int, int> currentPosition = m_mouse->getDiscretizedTranslation();
+    Meters x = Meters(P()->wallLength() + P()->wallWidth()) * (currentPosition.first + 0.5);
+    Meters y = Meters(P()->wallLength() + P()->wallWidth()) * (currentPosition.second + 0.5);
 
-    // Move the mouse forward
-    m_mouse->turnRight();
-    */
+    switch (m_mouse->getDiscretizedRotation()) {
+        case NORTH:
+            for (float i = 0; i < 1.0; i += .01) {
+                m_mouse->teleport(Cartesian(x, y), Degrees(360) - Degrees(90)*i);
+                sim::sleep(Milliseconds(1));
+            }
+            break;
+        case EAST:
+            for (float i = 0; i < 1.0; i += .01) {
+                m_mouse->teleport(Cartesian(x, y), Degrees(270) - Degrees(90)*i);
+                sim::sleep(Milliseconds(1));
+            }
+            break;
+        case SOUTH:
+            for (float i = 0; i < 1.0; i += .01) {
+                m_mouse->teleport(Cartesian(x, y), Degrees(180) - Degrees(90)*i);
+                sim::sleep(Milliseconds(1));
+            }
+            break;
+        case WEST:
+            for (float i = 0; i < 1.0; i += .01) {
+                m_mouse->teleport(Cartesian(x, y), Degrees(90) - Degrees(90)*i);
+                sim::sleep(Milliseconds(1));
+            }
+            break;
+    }
 }
 
 void MouseInterface::turnLeft() {
 
-    /*
-    for (int i = 0; i < S()->simSpeed(); i += 1) {
-        while (S()->paused()) {sim::sleep(1);} // Sleep while paused
-        sim::sleep(1); // Sleep for 1 ms of the total m_sleepTime
-    }
+    std::pair<int, int> currentPosition = m_mouse->getDiscretizedTranslation();
+    Meters x = Meters(P()->wallLength() + P()->wallWidth()) * (currentPosition.first + 0.5);
+    Meters y = Meters(P()->wallLength() + P()->wallWidth()) * (currentPosition.second + 0.5);
 
-    // Move the mouse forward
-    m_mouse->turnLeft();
-    */
+    switch (m_mouse->getDiscretizedRotation()) {
+        case NORTH:
+            for (float i = 0; i < 1.0; i += .01) {
+                m_mouse->teleport(Cartesian(x, y), Degrees(0) + Degrees(90)*i);
+                sim::sleep(Milliseconds(1));
+            }
+            break;
+        case EAST:
+            for (float i = 0; i < 1.0; i += .01) {
+                m_mouse->teleport(Cartesian(x, y), Degrees(270) + Degrees(90)*i);
+                sim::sleep(Milliseconds(1));
+            }
+            break;
+        case SOUTH:
+            for (float i = 0; i < 1.0; i += .01) {
+                m_mouse->teleport(Cartesian(x, y), Degrees(180) + Degrees(90)*i);
+                sim::sleep(Milliseconds(1));
+            }
+            break;
+        case WEST:
+            for (float i = 0; i < 1.0; i += .01) {
+                m_mouse->teleport(Cartesian(x, y), Degrees(90) + Degrees(90)*i);
+                sim::sleep(Milliseconds(1));
+            }
+            break;
+    }
 }
 
 void MouseInterface::turnAround() {

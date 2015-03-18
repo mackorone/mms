@@ -22,6 +22,10 @@ Radians Radians::operator*(float factor) const {
     return Radians(getRadians() * factor);
 }
 
+float Radians::operator/(const Angle& angle) const {
+    return getRadians() / angle.getRadians();
+}
+
 void Radians::operator+=(const Angle& angle) {
     m_radians += angle.getRadians();
 }
