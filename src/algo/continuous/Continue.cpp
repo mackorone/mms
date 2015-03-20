@@ -4,10 +4,11 @@
 
 void Continue::solve(sim::MouseInterface* mouse) {
 
+    mouse->declareInterfaceType(sim::CONTINUOUS);
+
     // Initialize the member variable
     m_mouse = mouse;
 
-    mouse->declareInterfaceType(sim::CONTINUOUS);
     while (true) {
         if (!wallRight()) {
             turnRight();

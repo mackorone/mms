@@ -21,6 +21,9 @@ public:
     // Retrieves the polygon comprised of all parts of the mouse that could collide with walls
     Polygon getCollisionPolygon() const;
 
+    // We have to know the interface type before we can initialize the collision polygon
+    void initializeCollisionPolygon();
+
     // Retrieves the polygon of just the body of the mouse
     Polygon getBodyPolygon() const;
 
@@ -45,21 +48,11 @@ public:
     // Get the read time of a particular sensor
     Seconds getReadTime(const std::string& name) const;
 
-    // TODO:
-    // Cartesian getCurrentTranslation();
-    // Radians getCurrentRotation();
-    // Teleports the mouse to a specific translation and rotation, used only by the discrete interface methods
-    void teleport(const Cartesian& translation, const Angle& rotation); // TODO: Interface that makes use of the update???
-
-    // Returns the discretized x and y position of the robot
-    std::pair<int, int> getDiscretizedTranslation();
-
-    // Returns the discretized rotation of the robot
-    Direction getDiscretizedRotation();
-
-    // TODO : Get rid of this
-    // Returns whether or not there is a wall in particular direction, based on the discretized translation and rotation
-    bool discretizedIsWall(Direction direction);
+    // For use with the discrete interface *only*
+    Cartesian getInitialTranslation() const;
+    Cartesian getCurrentTranslation() const;
+    Radians getCurrentRotation() const;
+    void teleport(const Cartesian& translation, const Angle& rotation);
 
 private:
     // Used for the sensor readings

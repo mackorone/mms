@@ -18,6 +18,10 @@ Radians Radians::operator+(const Angle& angle) const {
     return Radians(getRadians() + angle.getRadians());
 }
 
+Radians Radians::operator-(const Angle& angle) const {
+    return Radians(getRadians() - angle.getRadians());
+}
+
 Radians Radians::operator*(float factor) const {
     return Radians(getRadians() * factor);
 }

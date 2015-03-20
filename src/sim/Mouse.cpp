@@ -12,6 +12,7 @@
 #include "MouseParser.h"
 #include "Param.h"
 #include "SimUtilities.h"
+#include "State.h"
 
 namespace sim {
 
@@ -39,21 +40,28 @@ Mouse::Mouse(const Maze* maze) : m_maze(maze), m_rotation(Radians(0.0)) {
 
     // Initialize the sensors
     m_sensors = parser.getSensors();
-
-    // Initialize the collision polygon
-    std::vector<Polygon> polygons;
-    polygons.push_back(m_initialBodyPolygon);
-    polygons.push_back(m_rightWheel.getInitialPolygon());
-    polygons.push_back(m_leftWheel.getInitialPolygon());
-    for (std::pair<std::string, Sensor> pair : m_sensors) {
-        polygons.push_back(pair.second.getInitialPolygon());
-    }
-    // TODO: SOM: This should be changed to getUnion instead of convexHull, once it's ready
-    m_initialCollisionPolygon = convexHull(polygons);
 }
 
 Polygon Mouse::getCollisionPolygon() const {
     return m_initialCollisionPolygon.translate(m_translation - m_initialTranslation).rotateAroundPoint(m_rotation, m_translation);
+}
+
+void Mouse::initializeCollisionPolygon() {
+
+    std::vector<Polygon> polygons;
+
+    polygons.push_back(m_initialBodyPolygon);
+    polygons.push_back(m_rightWheel.getInitialPolygon());
+    polygons.push_back(m_leftWheel.getInitialPolygon());
+
+    if (S()->interfaceType() == CONTINUOUS) {
+        for (std::pair<std::string, Sensor> pair : m_sensors) {
+            polygons.push_back(pair.second.getInitialPolygon());
+        }
+    }
+
+    // TODO: SOM: This should be changed to getUnion instead of convexHull, once it's ready
+    m_initialCollisionPolygon = convexHull(polygons);
 }
 
 Polygon Mouse::getBodyPolygon() const {
@@ -237,34 +245,21 @@ Seconds Mouse::getReadTime(const std::string& name) const {
     return m_sensors.at(name).getReadTime();
 }
 
+Cartesian Mouse::getInitialTranslation() const {
+    return m_initialTranslation;
+}
+
+Cartesian Mouse::getCurrentTranslation() const {
+    return m_translation;
+}
+
+Radians Mouse::getCurrentRotation() const {
+    return m_rotation;
+}
+
 void Mouse::teleport(const Cartesian& translation, const Angle& rotation) {
     m_translation = translation;
     m_rotation = rotation;
-}
-
-std::pair<int, int> Mouse::getDiscretizedTranslation() {
-    int x = static_cast<int>(floor((m_translation.getX() / Meters(P()->wallLength() + P()->wallWidth()))));
-    int y = static_cast<int>(floor((m_translation.getY() / Meters(P()->wallLength() + P()->wallWidth()))));
-    return std::make_pair(x, y);
-}
-
-Direction Mouse::getDiscretizedRotation() {
-    int dir = static_cast<int>(floor((m_rotation + Degrees(45)) / Degrees(90)));
-    switch (dir) {
-        case 0:
-            return NORTH;
-        case 1:
-            return WEST;
-        case 2:
-            return SOUTH;
-        case 3:
-            return EAST;
-    }
-}
-
-bool Mouse::discretizedIsWall(Direction direction) {
-    std::pair<int, int> position = getDiscretizedTranslation();
-    return m_maze->getTile(position.first, position.second)->isWall(direction); // TODO: Get rif of this
 }
 
 } // namespace sim

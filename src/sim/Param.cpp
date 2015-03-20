@@ -40,15 +40,17 @@ Param::Param() {
     // Simulation Parameters
     bool useRandomSeed = parser.getBoolIfHasBool("use-random-seed", false); // TODO: Notify user that there is no seed
     m_randomSeed = (useRandomSeed ? parser.getIntIfHasInt("random-seed", time(NULL)) : time(NULL));
+    m_crashMessage = parser.getStringIfHasString("crash-message", "CRASH");
     m_glutInitTime = parser.getFloatIfHasFloat("glut-init-time", 0.25);
+    m_discreteInterfaceSleepTime = parser.getFloatIfHasFloat("discrete-interface-sleep-time", 10);
+    m_discreteInterfaceMinSpeed = parser.getFloatIfHasFloat("discrete-interface-min-speed", 1.0);
+    m_discreteInterfaceMaxSpeed = parser.getFloatIfHasFloat("discrete-interface-max-speed", 500.0);
+    m_discreteInterfaceDefaultSpeed = parser.getFloatIfHasFloat("discrete-interface-default-speed", 30.0);
     m_mousePositionUpdateRate = parser.getIntIfHasInt("mouse-position-update-rate", 1000);
     m_printLateMousePostitionUpdates = parser.getBoolIfHasBool("print-late-mouse-position-updates", false);
     m_collisionDetectionRate = parser.getIntIfHasInt("collision-detection-rate", 40);
     m_printLateCollisionDetections = parser.getBoolIfHasBool("print-late-collision-detections", false);
     m_printLateSensorReads = parser.getBoolIfHasBool("print-late-sensor-reads", false);
-    m_minSimSpeed = parser.getFloatIfHasFloat("min-sim-speed", 0.1);
-    m_maxSimSpeed = parser.getFloatIfHasFloat("max-sim-speed", 10);
-    m_defaultSimSpeed = parser.getFloatIfHasFloat("default-sim-speed", 10);
     m_numberOfCircleApproximationPoints = parser.getFloatIfHasFloat("number-of-circle-approximation-points", 8);
     m_numberOfSensorEdgePoints = parser.getFloatIfHasFloat("number-of-sensor-edge-points", 3);
 
@@ -130,8 +132,28 @@ int Param::randomSeed() {
     return m_randomSeed;
 }
 
+std::string Param::crashMessage() {
+    return m_crashMessage;
+}
+
 float Param::glutInitTime() {
     return m_glutInitTime;
+}
+
+float Param::discreteInterfaceSleepTime() {
+    return m_discreteInterfaceSleepTime;
+}
+
+float Param::discreteInterfaceMinSpeed() {
+    return m_discreteInterfaceMinSpeed;
+}
+
+float Param::discreteInterfaceMaxSpeed() {
+    return m_discreteInterfaceMaxSpeed;
+}
+
+float Param::discreteInterfaceDefaultSpeed() {
+    return m_discreteInterfaceDefaultSpeed;
 }
 
 int Param::mousePositionUpdateRate() {
@@ -152,18 +174,6 @@ bool Param::printLateCollisionDetections() {
 
 bool Param::printLateSensorReads() {
     return m_printLateSensorReads;
-}
-
-float Param::minSimSpeed() {
-    return m_minSimSpeed;
-}
-
-float Param::maxSimSpeed() {
-    return m_maxSimSpeed;
-}
-
-float Param::defaultSimSpeed() {
-    return m_defaultSimSpeed;
 }
 
 int Param::numberOfCircleApproximationPoints() {

@@ -6,6 +6,7 @@
 #include "GeometryUtilities.h"
 #include "Param.h"
 #include "SimUtilities.h"
+#include "State.h"
 
 namespace sim {
 
@@ -13,6 +14,11 @@ World::World(Maze* maze, Mouse* mouse) : m_maze(maze), m_mouse(mouse), m_collisi
 }
 
 void World::simulate() {
+
+    // Wait until the interface type is declared
+    while (S()->interfaceType() == UNDECLARED) {
+        sim::sleep(Seconds(P()->glutInitTime()));
+    }
 
     // Start a separate collision detection thread
     std::thread collisionDetector(&World::checkCollision, this);
@@ -24,10 +30,14 @@ void World::simulate() {
         // the mouse position update operation and take it into account when we sleep.
         double start(sim::getHighResTime());
 
-        // Update the position of the mouse if we haven't collided
-        if (!m_collision) {
-            m_mouse->update(Seconds(1.0/P()->mousePositionUpdateRate()));
+        // If we've crashed, let this thread exit
+        if (S()->crashed()) {
+            collisionDetector.join();
+            return;
         }
+
+        // Update the position of the mouse
+        m_mouse->update(Seconds(1.0/P()->mousePositionUpdateRate()));
 
         // Get the duration of the mouse position update, in seconds. Note that this duration
         // is simply the total number of real seconds that have passed, which is exactly
@@ -51,6 +61,11 @@ void World::simulate() {
 
 void World::checkCollision() {
 
+    // If the interface type is not continuous, let this thread exit
+    if (S()->interfaceType() != CONTINUOUS) {
+        return;
+    }
+
     while (true) {
 
         // In order to ensure we're sleeping the correct amount of time, we time
@@ -72,8 +87,8 @@ void World::checkCollision() {
 
                             // ... and check for a collision
                             if (linesIntersect(A, B)) {
-                                m_collision = true;
-                                return;
+                                S()->setCrashed();
+                                return; // If we've crashed, let this thread exit
                             }
                         }
                     }

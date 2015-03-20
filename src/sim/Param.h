@@ -34,14 +34,16 @@ public:
     // Simulation parameters
     int randomSeed();
     float glutInitTime();
+    std::string crashMessage();
+    float discreteInterfaceSleepTime();
+    float discreteInterfaceMinSpeed();
+    float discreteInterfaceMaxSpeed();
+    float discreteInterfaceDefaultSpeed();
     int mousePositionUpdateRate();
     bool printLateMousePositionUpdates();
     int collisionDetectionRate();
     bool printLateCollisionDetections();
     bool printLateSensorReads();
-    float minSimSpeed();
-    float maxSimSpeed();
-    float defaultSimSpeed();
     int numberOfCircleApproximationPoints();
     int numberOfSensorEdgePoints();
 
@@ -85,14 +87,16 @@ private:
     // Simulation parameters
     int m_randomSeed;
     float m_glutInitTime;
+    std::string m_crashMessage;
+    float m_discreteInterfaceSleepTime;
+    float m_discreteInterfaceMinSpeed;
+    float m_discreteInterfaceMaxSpeed;
+    float m_discreteInterfaceDefaultSpeed;
     int m_mousePositionUpdateRate;
     bool m_printLateMousePostitionUpdates;
     int m_collisionDetectionRate;
     bool m_printLateCollisionDetections;
     bool m_printLateSensorReads;
-    float m_minSimSpeed;
-    float m_maxSimSpeed;
-    float m_defaultSimSpeed;
     float m_numberOfCircleApproximationPoints;
     float m_numberOfSensorEdgePoints;
 

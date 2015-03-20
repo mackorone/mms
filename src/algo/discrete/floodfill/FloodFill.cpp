@@ -112,10 +112,6 @@ void FloodFill::extensiveSolve() {
             std::cout << "Extensive solve in " << (m_steps - s_steps)/2 << " steps" << std::endl;
             return;
         }
-
-        // TODO: Added for Open House
-        resetColors();
-        m_explored = false;
     }
 }
 
@@ -243,9 +239,6 @@ void FloodFill::victory(){
         if (ALGO_COMPARE) {
             return;
         }
-
-        // TODO: Added for Open House
-        break;
     }
 }
 

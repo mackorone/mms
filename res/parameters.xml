@@ -18,18 +18,19 @@
 <!-- Simulation Parameters -->
 <random-seed>12345</random-seed> <!-- The seed value for rand() -->
 <use-random-seed>false</use-random-seed> <!-- Whether or not to use the seed value -->
+<crash-message>Oh no! Your mouse crashed! It can't move anymore...</crash-message>
 <glut-init-time>0.25</glut-init-time> <!-- Seconds -->
+<discrete-interface-sleep-time>10</discrete-interface-sleep-time> <!-- Milliseconds -->
+<discrete-interface-min-speed>1</discrete-interface-min-speed> <!-- No units -->
+<discrete-interface-max-speed>500</discrete-interface-max-speed> <!-- No units -->
+<discrete-interface-default-speed>30</discrete-interface-default-speed> <!-- No units -->
 <mouse-position-update-rate>1000</mouse-position-update-rate> <!-- Updates per second -->
-<print-late-mouse-position-updates>true</print-late-mouse-position-updates> <!-- TODO: Make this default -->
+<print-late-mouse-position-updates>true</print-late-mouse-position-updates>
 <collision-detection-rate>40</collision-detection-rate> <!-- Checks per second -->
-<print-late-collision-detections>true</print-late-collision-detections> <!-- TODO: Make this default -->
-<print-late-sensor-reads>true</print-late-sensor-reads> <!-- TODO: Make this default -->
-<min-sim-speed>0.1</min-sim-speed> <!-- Fraction of real-time -->
-<max-sim-speed>10.0</max-sim-speed> <!-- Fraction of real-time -->
-<default-sim-speed>1.0</default-sim-speed> <!-- Fraction of real-time -->
+<print-late-collision-detections>true</print-late-collision-detections>
+<print-late-sensor-reads>true</print-late-sensor-reads>
 <number-of-circle-approximation-points>8</number-of-circle-approximation-points> <!-- The number of edges in a polygon for a circle -->
 <number-of-sensor-edge-points>3</number-of-sensor-edge-points> <!-- The number of points of the edge of a sensor-->
-<!-- TODO: I don't think we're going to be able to have sim speed... -->
 
 <!-- Maze Parameters -->
 <maze-directory>res/mazes/</maze-directory> <!-- realtive to project root -->

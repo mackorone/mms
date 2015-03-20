@@ -18,4 +18,8 @@ float Angle::getDegrees() const {
     return getRadians() * 360 / (2 * M_PI);
 }
 
+bool Angle::operator<(const Angle& angle) {
+    return getRadians() < angle.getRadians();
+}
+
 } // namespace sim

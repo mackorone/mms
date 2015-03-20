@@ -1,6 +1,8 @@
 #include "State.h"
 
+#include "Assert.h"
 #include "Param.h"
+#include "SimUtilities.h"
 
 namespace sim {
 
@@ -18,6 +20,7 @@ State* State::getInstance() {
 }
 
 State::State() {
+    m_crashed = false;
     m_interfaceType = UNDECLARED;
     m_mazeVisible = P()->defaultMazeVisible();
     m_mouseVisible = P()->defaultMouseVisible();
@@ -25,6 +28,11 @@ State::State() {
     m_paused = false;
     m_resetRequested = false;
     m_undoRequested = false;
+    m_simSpeed = P()->discreteInterfaceDefaultSpeed();
+}
+
+bool State::crashed() {
+    return m_crashed;
 }
 
 InterfaceType State::interfaceType() {
@@ -55,7 +63,17 @@ bool State::undoRequested() {
     return m_undoRequested;
 }
 
+float State::simSpeed() {
+    return m_simSpeed;
+}
+
+void State::setCrashed() {
+    m_crashed = true;
+    print(P()->crashMessage());
+}
+
 void State::setInterfaceType(InterfaceType interfaceType) {
+    ASSERT(m_interfaceType == UNDECLARED);
     m_interfaceType = interfaceType;
 }
 
@@ -81,6 +99,18 @@ void State::setResetRequested(bool resetRequested) {
 
 void State::setUndoRequested(bool undoRequested) {
     m_undoRequested = undoRequested;
+}
+
+void State::setSimSpeed(float simSpeed) {
+    if (simSpeed < P()->discreteInterfaceMinSpeed()) {
+        m_simSpeed = P()->discreteInterfaceMinSpeed();
+    }
+    else if (P()->discreteInterfaceMaxSpeed() < simSpeed) {
+        m_simSpeed = P()->discreteInterfaceMaxSpeed();
+    }
+    else {
+        m_simSpeed = simSpeed;
+    }
 }
 
 } // namespace sim

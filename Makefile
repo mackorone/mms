@@ -18,7 +18,7 @@ INC = -I$(SRC)units -I$(SRC)lib
 # -g: Add debugging symbols
 # -Wall: Show all warning messages
 # TODO: -pedantic-errors
-FLAGS = -MMD -std=c++11#TODO -Wall TODO: Fix all errors
+FLAGS = -MMD -std=c++11 -g -Wall
 
 # Recursively find all source files
 PRELIMSOURCES = $(shell find $(SRC) -name '*.cpp')

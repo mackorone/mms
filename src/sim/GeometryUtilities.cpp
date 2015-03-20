@@ -244,10 +244,12 @@ std::vector<std::pair<Cartesian, Cartesian>> getLineSegments(const Polygon& poly
     std::vector<std::pair<Cartesian, Cartesian>> segments;
 
     std::vector<Cartesian> vertices = polygon.getVertices();
-    Cartesian previousPoint = vertices.back();
-    for (Cartesian currentPoint : vertices) {
-        segments.push_back(std::make_pair(previousPoint, currentPoint));
-        previousPoint = currentPoint;
+    if (1 < vertices.size()) {
+        Cartesian previousPoint = vertices.back();
+        for (Cartesian currentPoint : vertices) {
+            segments.push_back(std::make_pair(previousPoint, currentPoint));
+            previousPoint = currentPoint;
+        }
     }
 
     return segments;

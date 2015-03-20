@@ -16,6 +16,7 @@ public:
     static State* getInstance();
 
     // Accessors
+    bool crashed();
     InterfaceType interfaceType();
     bool mazeVisible();
     bool mouseVisible();
@@ -23,8 +24,10 @@ public:
     bool paused();
     bool resetRequested();
     bool undoRequested();
+    float simSpeed();
 
     // Mutators
+    void setCrashed();
     void setInterfaceType(InterfaceType interfaceType);
     void setMazeVisible(bool mazeVisible);
     void setMouseVisible(bool mouseVisible);
@@ -32,6 +35,7 @@ public:
     void setPaused(bool paused);
     void setUndoRequested(bool undoRequested);
     void setResetRequested(bool resetRequested);
+    void setSimSpeed(float simSpeed);
 
 private:
 
@@ -41,6 +45,7 @@ private:
     // A pointer to the actual instance of the class
     static State* INSTANCE;
 
+    bool m_crashed;
     InterfaceType m_interfaceType;
     bool m_mazeVisible;
     bool m_mouseVisible;
@@ -48,6 +53,7 @@ private:
     bool m_paused;
     bool m_resetRequested;
     bool m_undoRequested;
+    float m_simSpeed;
 };
 
 } // namespace sim

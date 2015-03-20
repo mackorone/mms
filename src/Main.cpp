@@ -47,6 +47,10 @@ int main(int argc, char* argv[]) {
     g_mazeGraphic = &mazeGraphic;
     g_mouseGraphic = &mouseGraphic;
 
+    // Initialize the parameter and state objects
+    sim::P();
+    sim::S();
+
     // GLUT Initialization
     glutInit(&argc, argv);
     glutInitWindowSize(sim::P()->windowWidth(), sim::P()->windowHeight());
@@ -114,8 +118,16 @@ void simulate() {
 
 void keyInput(unsigned char key, int x, int y) {
     if (key == 32) { // Space bar
-        // TODO
+        // Pause the simulation (only in discrete mode)
         sim::S()->setPaused(!sim::S()->paused());
+    }
+    else if (key == 'f' || key == 'F') {
+        // Faster (only in discrete mode)
+        sim::S()->setSimSpeed(sim::S()->simSpeed() * 1.5);
+    }
+    else if (key == 's' || key == 'S') {
+        // Slower (only in discrete mode)
+        sim::S()->setSimSpeed(sim::S()->simSpeed() / 1.5);
     }
     else if (key == 'a' || key == 'A') {
         // Toggle maze visibility
@@ -129,17 +141,18 @@ void keyInput(unsigned char key, int x, int y) {
         // Toggle mouse path visibility
         sim::S()->setMousePathVisible(!sim::S()->mousePathVisible());
     }
+    else if (key == 'r' || key == 'R') {
+        // Reset requested - reset the position mouse and don't retain memory
+        // TODO
+        sim::S()->setResetRequested(true); // TODO: Make these arbitrary buttons...
+    }
     else if (key == 'u' || key == 'U') {
         // Undo request - reset the position mouse but retains memory
         // TODO
         sim::S()->setUndoRequested(true);
     }
-    else if (key == 'r' || key == 'R') {
-        // Reset requested - reset the position mouse and don't retain memory
-        // TODO
-        sim::S()->setResetRequested(true);
-    }
-    else if (key == 'q' || key == 'Q') { // Quit
+    else if (key == 'q' || key == 'Q') {
+        // Quit
         sim::quit();
     }
 }

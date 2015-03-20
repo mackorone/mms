@@ -4,6 +4,7 @@
 #include "Mouse.h"
 #include "Param.h"
 
+#define ENSURE_DECLARED ensureDeclaredInterface(__func__);
 #define ENSURE_DISCRETE ensureDiscreteInterface(__func__);
 #define ENSURE_CONTINUOUS ensureContinuousInterface(__func__);
 
@@ -33,26 +34,35 @@ public:
     void turnRight();
     void turnLeft();
     void turnAround();
+    // TODO: Other sensor readings and such
 
     // ---------------------- Mouse Interface Methods ----------------------- //
 
-    // Discrete interface
-    bool undoRequested();
+    // TODO
     bool resetRequested();
-    void undoHonored();
+    bool undoRequested();
     void resetHonored();
+    void undoHonored();
     void resetPosition(); // Sets the position of the mouse to (0,0)
 
     // ------ Simulation utilities (not applicable to the real mouse) ------- //
 
     void resetColors(int curX, int curY); // Resets the tile colors of the maze
+    void setTileColor(int x, int y); // 
 
 private:
     const Maze* m_maze;
     Mouse* m_mouse;
 
-    void ensureDiscreteInterface(const std::string& callingFunction);
-    void ensureContinuousInterface(const std::string& callingFunction);
+    void ensureDeclaredInterface(const std::string& callingFunction) const;
+    void ensureDiscreteInterface(const std::string& callingFunction) const;
+    void ensureContinuousInterface(const std::string& callingFunction) const;
+
+    std::pair<int, int> getDiscretizedTranslation() const;
+    Direction getDiscretizedRotation() const;
+
+    void checkPaused();
+    bool isWall(std::pair<int, int> position, Direction direction) const;
 };
 
 } // namespace sim
