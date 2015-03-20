@@ -8,6 +8,10 @@
         <Y>.1</Y>
     </Point>
     <Point>
+        <X>.08</X>
+        <Y>.12</Y> <!-- TODO: Get rid of this once I figure out the mouse interface error-->
+    </Point>
+    <Point>
         <X>.1</X>
         <Y>.1</Y>
     </Point>

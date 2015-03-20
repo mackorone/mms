@@ -1,5 +1,6 @@
 #include "MazeGraphic.h"
 
+#include "Assert.h"
 #include "State.h"
 
 namespace sim {
@@ -14,7 +15,7 @@ MazeGraphic::MazeGraphic(const Maze* maze) {
     }
 }
 
-void MazeGraphic::draw() {
+void MazeGraphic::draw() const {
 
     // Only draw the maze if it's visible
     if (!S()->mazeVisible()) {
@@ -26,6 +27,19 @@ void MazeGraphic::draw() {
             m_tileGraphics.at(i).at(j).draw();
         }
     }
+}
+
+int MazeGraphic::getWidth() const {
+    return m_tileGraphics.size();
+}
+
+int MazeGraphic::getHeight() const {
+    return (m_tileGraphics.size() > 0 ? m_tileGraphics.at(0).size() : 0);
+}
+
+void MazeGraphic::setColor(int x, int y, const GLfloat* color) {
+    ASSERT(0 <= x && x <= getWidth() && 0 <= y && y < getHeight());
+    m_tileGraphics.at(x).at(y).setColor(color);
 }
 
 } // namespace sim

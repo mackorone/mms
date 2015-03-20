@@ -1,6 +1,7 @@
 #pragma once
 
 #include "InterfaceType.h"
+#include "MazeGraphic.h"
 #include "Mouse.h"
 #include "Param.h"
 
@@ -13,7 +14,7 @@ namespace sim {
 class MouseInterface {
 
 public:
-    MouseInterface(const Maze* maze, Mouse* mouse);
+    MouseInterface(const Maze* maze, Mouse* mouse, MazeGraphic* mazeGraphic);
     ~MouseInterface();
 
     // The interface type must be declared before calling any other interface methods
@@ -21,6 +22,7 @@ public:
 
     // Any interface methods
     void delay(int milliseconds);
+    void colorTile(int x, int y, char color);
 
     // Continuous interface methods
     void setWheelSpeeds(float leftWheelRadiansPerSeconds, float rightWheelRadiansPerSecond);
@@ -48,11 +50,11 @@ public:
     // ------ Simulation utilities (not applicable to the real mouse) ------- //
 
     void resetColors(int curX, int curY); // Resets the tile colors of the maze
-    void setTileColor(int x, int y); // 
 
 private:
     const Maze* m_maze;
     Mouse* m_mouse;
+    MazeGraphic* m_mazeGraphic;
 
     void ensureDeclaredInterface(const std::string& callingFunction) const;
     void ensureDiscreteInterface(const std::string& callingFunction) const;

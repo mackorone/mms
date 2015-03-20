@@ -746,7 +746,7 @@ void FloodFill::explore(){
             // First, pop the target cell off of the stack
             target = unexplored.top(); 
             unexplored.pop();
-    
+
             // Next, check to see if all of the walls have been inspected.
             // If so, no need to explore that cell - get a new target
             for (int i = 0; i < 4; i += 1){

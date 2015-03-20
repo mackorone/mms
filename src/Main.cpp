@@ -30,22 +30,20 @@ sim::MouseGraphic* g_mouseGraphic;
 
 int main(int argc, char* argv[]) {
 
-    // Initialize local simulation objects
+    // Initialize local objects
     sim::Maze maze;
+    sim::MazeGraphic mazeGraphic(&maze);
     sim::Mouse mouse(&maze);
+    sim::MouseGraphic mouseGraphic(&mouse);
     sim::World world(&maze, &mouse);
-    sim::MouseInterface mouseInterface(&maze, &mouse);
+    sim::MouseInterface mouseInterface(&maze, &mouse, &mazeGraphic);
     Solver solver(&mouseInterface);
 
-    // Initialize the local graphics objects
-    sim::MazeGraphic mazeGraphic(&maze);
-    sim::MouseGraphic mouseGraphic(&mouse);
-
     // Assign global variables
-    g_world = &world;
-    g_solver = &solver;
     g_mazeGraphic = &mazeGraphic;
     g_mouseGraphic = &mouseGraphic;
+    g_world = &world;
+    g_solver = &solver;
 
     // Initialize the parameter and state objects
     sim::P();

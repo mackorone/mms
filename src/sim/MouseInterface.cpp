@@ -9,6 +9,7 @@
 #include <Seconds.h>
 
 #include "Assert.h"
+#include "Colors.h"
 #include "Param.h"
 #include "State.h"
 #include "SimUtilities.h"
@@ -20,8 +21,10 @@
 namespace sim {
 
 // TODO: For the mouse interface, we assume that the mouse can rotate freely in the square
+// TODO: Figure out why the mouse stops in the middle of a turn
 
-MouseInterface::MouseInterface(const Maze* maze, Mouse* mouse) : m_maze(maze), m_mouse(mouse) {
+MouseInterface::MouseInterface(const Maze* maze, Mouse* mouse, MazeGraphic* mazeGraphic) :
+        m_maze(maze), m_mouse(mouse), m_mazeGraphic(mazeGraphic) {
 }
 
 MouseInterface::~MouseInterface() {
@@ -54,6 +57,57 @@ void MouseInterface::delay(int milliseconds) {
     ENSURE_DECLARED
 
     sim::sleep(Milliseconds(milliseconds));
+}
+
+void MouseInterface::colorTile(int x, int y, char color) {
+
+    ENSURE_DECLARED
+
+    if (x < 0 || m_mazeGraphic->getWidth() < x || y < 0 || m_mazeGraphic->getHeight() <= y) {
+        print(std::string("Error - there is no tile at position (") + std::to_string(x) + std::string(", ")
+            + std::to_string(y) + std::string("), and thus you can't set its color."));
+        return;
+    }
+
+    switch (color) {
+        case 'a':
+            m_mazeGraphic->setColor(x, y, GRAY);
+            break;
+        case 'A':
+            m_mazeGraphic->setColor(x, y, DARK_GRAY);
+            break;
+        case 'b':
+            m_mazeGraphic->setColor(x, y, BLUE);
+            break;
+        case 'B':
+            m_mazeGraphic->setColor(x, y, DARK_BLUE);
+            break;
+        case 'g':
+            m_mazeGraphic->setColor(x, y, GREEN);
+            break;
+        case 'G':
+            m_mazeGraphic->setColor(x, y, DARK_GREEN);
+            break;
+        case 'k':
+            m_mazeGraphic->setColor(x, y, BLACK);
+            break;
+        case 'r':
+            m_mazeGraphic->setColor(x, y, RED);
+            break;
+        case 'R':
+            m_mazeGraphic->setColor(x, y, DARK_RED);
+            break;
+        case 'w':
+            m_mazeGraphic->setColor(x, y, WHITE);
+            break;
+        case 'y':
+            m_mazeGraphic->setColor(x, y, YELLOW);
+            break;
+        case 'Y':
+            m_mazeGraphic->setColor(x, y, DARK_YELLOW);
+            break;
+    }
+
 }
 
 void MouseInterface::setWheelSpeeds(float leftWheelRadiansPerSecond, float rightWheelRadiansPerSecond) {

@@ -2,6 +2,3 @@ Stepper motor / Encoders
 Discrete Simulation Support
 Performance on different systems???
 Interrupt interface
-
-Speed of sim
-Update should do the discrete movement too

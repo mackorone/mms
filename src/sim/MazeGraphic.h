@@ -11,7 +11,11 @@ class MazeGraphic {
 
 public:
     MazeGraphic(const Maze* maze);
-    void draw();
+    void draw() const;
+
+    int getWidth() const;
+    int getHeight() const;
+    void setColor(int x, int y, const GLfloat* color);
 
 private:
     std::vector<std::vector<TileGraphic>> m_tileGraphics;

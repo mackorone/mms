@@ -6,13 +6,13 @@
 
 namespace sim {
 
-TileGraphic::TileGraphic(const Tile* tile) : m_tile(tile) {
+TileGraphic::TileGraphic(const Tile* tile) : m_tile(tile), m_color(COLORS.at(P()->tileBaseColor())) {
 }
 
-void TileGraphic::draw() {
+void TileGraphic::draw() const {
 
     // Draw the base of the tile
-    glColor3fv(COLORS.at(P()->tileBaseColor()));
+    glColor3fv(m_color);
     drawPolygon(m_tile->getFullPolygon());
 
     // Draw the walls of the tile
@@ -26,6 +26,10 @@ void TileGraphic::draw() {
     for (Polygon polygon : m_tile->getCornerPolygons()) {
         drawPolygon(polygon);
     }
+}
+
+void TileGraphic::setColor(const GLfloat* color) {
+    m_color = color;
 }
 
 } // namespace sim
