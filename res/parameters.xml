@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!-- Graphical Parameters -->
-<pixels-per-meter>250</pixels-per-meter>
+<pixels-per-meter>246</pixels-per-meter>
 <frame-rate>60</frame-rate> <!-- Frames per second -->
 <print-late-frames>false</print-late-frames>
 <tile-base-color>BLACK</tile-base-color>
@@ -36,7 +36,7 @@
 <maze-directory>res/mazes/</maze-directory> <!-- realtive to project root -->
 <maze-file>ieee2011.maz</maze-file> <!-- relative to maze-directory -->
 <use-maze-file>true</use-maze-file> <!-- whether or not to use the maze file above -->
-<wall-length>.156</wall-length> <!-- meters -->
+<wall-length>.168</wall-length> <!-- meters -->
 <wall-width>.012</wall-width> <!-- meters -->
 <wall-height>.05</wall-height> <!-- meters -->
 <!-- TODO: Rename "random-maze-..." to "generated-maze..." -->

@@ -1,5 +1,7 @@
 #pragma once
 
+namespace floodfill {
+
 /*
  * This struct contains all of the information relevant to a cell modification.
  * We use this structure as opposed to another Cell object since we need less
@@ -19,3 +21,5 @@ struct Cellmod {
     bool oldWallsInspected[4]; // Whether or not we've inspected the specific walls of a Cell
 
 };
+
+} // namespace floodfill

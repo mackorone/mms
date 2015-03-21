@@ -2,6 +2,8 @@
 
 #define NULL 0
 
+namespace floodfill {
+
 Cell::Cell() : m_x(0), m_y(0), m_distance(0), m_explored(false), m_traversed(false), m_prev(NULL){
     for (int i = 0; i < 4; i += 1){
         m_walls[i] = false;
@@ -75,3 +77,5 @@ void Cell::setWallInspected(int direction, bool inspected){
 void Cell::setPrev(Cell* prev){
     m_prev = prev;
 }
+
+} // namespace floodfill

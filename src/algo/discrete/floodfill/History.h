@@ -8,6 +8,8 @@
 #include "Cell.h"
 #include "Cellmod.h"
 
+namespace floodfill {
+
 class History {
 
 public:
@@ -49,3 +51,5 @@ private:
     // List of List of cell modification objects for each step.
     std::list<std::list<Cellmod>> m_modifiedCells;
 };
+
+} // namespace floodfill

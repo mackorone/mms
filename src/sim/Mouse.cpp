@@ -19,7 +19,8 @@ namespace sim {
 Mouse::Mouse(const Maze* maze) : m_maze(maze), m_rotation(Radians(0.0)) {
 
     // Create the mouse parser object
-    MouseParser parser(getProjectDirectory() + "res/mouse.xml");
+    //MouseParser parser(getProjectDirectory() + "res/mouse.xml");
+    MouseParser parser(getProjectDirectory() + "res/megaMouse.xml");
 
     // Initialize the body of the mouse
     m_initialBodyPolygon = parser.getBody();

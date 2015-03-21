@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+namespace floodfill {
+
 void History::initialize(int stm, Cell* origin) {
 
     // Set the short term memory
@@ -186,3 +188,5 @@ void History::resetModifiedCells() {
     m_stacks.push(m_checkpointStack);
     m_stackReferenceCounts.push_back(1);
 }
+
+} // namespace floodfill

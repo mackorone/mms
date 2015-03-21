@@ -22,30 +22,30 @@ void Continue::solve(sim::MouseInterface* mouse) {
 }
 
 bool Continue::wallRight() {
-    return m_mouse->read("C") > 0.5;
+    return m_mouse->read("right") > 0.5;
 }
 
 bool Continue::wallFront() {
-    return m_mouse->read("A") > 0.75;
+    return m_mouse->read("rightFront") > 0.75;
 }
 
 void Continue::turnRight() {
     m_mouse->setWheelSpeeds(-5*M_PI, -5*M_PI);
-    m_mouse->delay(132);
+    m_mouse->delay(290);
     m_mouse->setWheelSpeeds(0, 0);
 }
 
 void Continue::turnLeft() {
     m_mouse->setWheelSpeeds(5*M_PI, 5*M_PI);
-    m_mouse->delay(132);
+    m_mouse->delay(290);
     m_mouse->setWheelSpeeds(0, 0);
 }
 
 void Continue::moveForward() {
     m_mouse->setWheelSpeeds(-10*M_PI, 10*M_PI);
-    m_mouse->delay(150);
+    m_mouse->delay(350);
     for (int i = 0; i < 5; i += 1) {
-        if (m_mouse->read("A") > 0.9) {
+        if (m_mouse->read("rightFront") > 0.9) {
             break;
         }
         m_mouse->delay(10);
@@ -55,12 +55,12 @@ void Continue::moveForward() {
 }
 
 void Continue::correctErrors() {
-    if (m_mouse->read("B") < 0.3) {
+    if (m_mouse->read("rightMiddle") < 0.3) {
         // Right
         m_mouse->setWheelSpeeds(-5, 0);
         m_mouse->delay(10);
     }
-    if (m_mouse->read("B") > 0.5) {
+    if (m_mouse->read("rightMiddle") > 0.5) {
         // Left
         m_mouse->setWheelSpeeds(0, 5);
         m_mouse->delay(10);

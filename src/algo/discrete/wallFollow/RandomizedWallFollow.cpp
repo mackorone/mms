@@ -1,5 +1,7 @@
 #include "RandomizedWallFollow.h"
 
+namespace wallFollow {
+
 void RandomizedWallFollow::solve(sim::MouseInterface* mouse){
     mouse->declareInterfaceType(sim::DISCRETE);
     while (true){
@@ -31,3 +33,5 @@ void RandomizedWallFollow::leftWallFollowStep(sim::MouseInterface* mouse){
     }
     mouse->moveForward();
 }
+
+} // namespace wallFollow

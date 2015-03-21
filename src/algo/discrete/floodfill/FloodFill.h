@@ -8,6 +8,8 @@
 #include "History.h"
 #include "SimpleCellmod.h"
 
+namespace floodfill {
+
 // Constants
 static const int MAZE_SIZE_X = 16; // Length of X axis of maze
 static const int MAZE_SIZE_Y = 16; // Length of Y axis of maze
@@ -118,3 +120,5 @@ private:
     // Checks and handles requests for the victory method, returns true for reset, else false
     bool checkRequestVictory();
 };
+
+} // namespace floodfill

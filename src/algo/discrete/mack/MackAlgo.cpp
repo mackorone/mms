@@ -1,5 +1,7 @@
 #include "MackAlgo.h"
 
+namespace mack {
+
 void MackAlgo::solve(sim::MouseInterface* mouse) {
 
     m_mouse = mouse;
@@ -14,3 +16,5 @@ void MackAlgo::solve(sim::MouseInterface* mouse) {
         m_mouse->moveForward();
     }
 }
+
+} // namespace mack

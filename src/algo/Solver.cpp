@@ -22,12 +22,12 @@ void Solver::solve() {
 
     // ------ Include all algorithm declarations below this line ------- //
 
-    //Continue algo;
-    //FloodFill algo;
-    MackAlgo algo;
-    //Forward algo;
-    //RightWallFollow algo;
-    //RandomizedWallFollow algo;
+    Continue algo;
+    //floodfill::FloodFill algo;
+    //mack::MackAlgo algo;
+    //misc::Forward algo;
+    //wallFollow::RightWallFollow algo;
+    //wallFollow::RandomizedWallFollow algo;
 
     // ------ Include all algorithm declarations above this line ------- //
 

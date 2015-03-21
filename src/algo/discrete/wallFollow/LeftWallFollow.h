@@ -2,6 +2,8 @@
 
 #include "../../IAlgorithm.h"
 
+namespace wallFollow {
+
 class LeftWallFollow : public IAlgorithm{
 
 public:
@@ -10,3 +12,5 @@ public:
 private:
     void leftWallFollowStep(sim::MouseInterface* mouse);
 };
+
+} // namespace wallFollow

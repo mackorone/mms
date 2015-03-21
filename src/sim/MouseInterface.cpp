@@ -119,6 +119,8 @@ void MouseInterface::setWheelSpeeds(float leftWheelRadiansPerSecond, float right
 
 float MouseInterface::read(std::string name) {
 
+    // TODO: Tell the user if it doesn't exist
+
     ENSURE_CONTINUOUS
 
     // Start the timer

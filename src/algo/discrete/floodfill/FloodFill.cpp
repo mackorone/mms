@@ -10,6 +10,8 @@
 #include "Cellmod.h"
 #include "SimpleCellmod.h"
 
+namespace floodfill {
+
 void FloodFill::solve(sim::MouseInterface* mouse){
 
     // Declare the interface type
@@ -1478,3 +1480,5 @@ bool FloodFill::checkRequestVictory() {
     }
     return false;
 }
+
+} // namespace floodfill

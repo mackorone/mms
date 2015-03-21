@@ -1,5 +1,7 @@
 #pragma once
 
+namespace floodfill {
+
 // Structure that contains modification information for the simple
 // floodfiil algorithm implementation
 struct SimpleCellmod {
@@ -8,3 +10,5 @@ struct SimpleCellmod {
     int dist;
     bool walls[4];
 };
+
+} // namespace floodfiil

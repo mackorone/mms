@@ -1,5 +1,7 @@
 #pragma once
 
+namespace floodfill {
+
 /*
  * A class used in the FloodFill algorithm whose purpose is twofold. First, it
  * is used by the explore function of the algorithm to traverse the entirety of
@@ -42,3 +44,5 @@ private:
     Cell* m_prev; // The previous node in the path by which the Cell was discovered
 
 };
+
+} // namespace floodfill
