@@ -10,14 +10,14 @@ void Continue::solve(sim::MouseInterface* mouse) {
     m_mouse = mouse;
 
     while (true) {
-        if (!wallRight()) {
+        //if (!wallRight()) {
             turnRight();
-        }
-        while (wallFront()) {
-            turnLeft();
-        }
-        moveForward();
-        correctErrors();
+        //}
+        //while (wallFront()) {
+            //turnLeft();
+        //}
+        //moveForward();
+        //correctErrors();
     }
 }
 
@@ -30,7 +30,7 @@ bool Continue::wallFront() {
 }
 
 void Continue::turnRight() {
-    m_mouse->setWheelSpeeds(-5*M_PI, -5*M_PI);
+    m_mouse->setWheelSpeeds(-.5*M_PI, -.5*M_PI);
     m_mouse->delay(290);
     m_mouse->setWheelSpeeds(0, 0);
 }
