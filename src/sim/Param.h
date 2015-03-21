@@ -30,6 +30,7 @@ public:
     bool defaultMazeVisible();
     bool defaultMouseVisible();
     bool defaultMousePathVisible();
+    bool defaultWallTruthVisible();
 
     // Simulation parameters
     int randomSeed();
@@ -60,6 +61,9 @@ public:
     std::string randomMazeAlgo();
     bool saveRandomMaze();
 
+    // Mouse parameters
+    std::string mouseFile();
+
 private:
 
     // A private constructor is used to ensure only one instance of this class exists
@@ -83,6 +87,7 @@ private:
     bool m_defaultMazeVisible;
     bool m_defaultMouseVisible;
     bool m_defaultMousePathVisible;
+    bool m_defaultWallTruthVisible;
 
     // Simulation parameters
     int m_randomSeed;
@@ -112,6 +117,9 @@ private:
     bool m_enforceOfficialMazeRules;
     std::string m_randomMazeAlgo;
     bool m_saveRandomMaze;
+
+    // Mouse parameters
+    std::string m_mouseFile;
 };
 
 } // namespace sim

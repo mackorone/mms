@@ -139,6 +139,11 @@ void keyInput(unsigned char key, int x, int y) {
         // Toggle mouse path visibility
         sim::S()->setMousePathVisible(!sim::S()->mousePathVisible());
     }
+    else if (key == 't' || key == 't') {
+        // Toggle wall truth visibility
+        sim::S()->setWallTruthVisible(!sim::S()->wallTruthVisible());
+    }
+    /*
     else if (key == 'r' || key == 'R') {
         // Reset requested - reset the position mouse and don't retain memory
         // TODO
@@ -149,6 +154,7 @@ void keyInput(unsigned char key, int x, int y) {
         // TODO
         sim::S()->setUndoRequested(true);
     }
+    */
     else if (key == 'q' || key == 'Q') {
         // Quit
         sim::quit();

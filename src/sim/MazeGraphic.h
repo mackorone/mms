@@ -16,6 +16,7 @@ public:
     int getWidth() const;
     int getHeight() const;
     void setColor(int x, int y, const GLfloat* color);
+    void setAlgoWall(int x, int y, Direction direction, bool isWall);
 
 private:
     std::vector<std::vector<TileGraphic>> m_tileGraphics;

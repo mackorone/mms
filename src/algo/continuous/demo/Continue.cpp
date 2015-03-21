@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+namespace demo {
+
 void Continue::solve(sim::MouseInterface* mouse) {
 
     mouse->declareInterfaceType(sim::CONTINUOUS);
@@ -10,14 +12,14 @@ void Continue::solve(sim::MouseInterface* mouse) {
     m_mouse = mouse;
 
     while (true) {
-        //if (!wallRight()) {
+        if (!wallRight()) {
             turnRight();
-        //}
-        //while (wallFront()) {
-            //turnLeft();
-        //}
-        //moveForward();
-        //correctErrors();
+        }
+        while (wallFront()) {
+            turnLeft();
+        }
+        moveForward();
+        correctErrors();
     }
 }
 
@@ -26,26 +28,26 @@ bool Continue::wallRight() {
 }
 
 bool Continue::wallFront() {
-    return m_mouse->read("rightFront") > 0.75;
+    return m_mouse->read("rightFront") > 0.8;
 }
 
 void Continue::turnRight() {
-    m_mouse->setWheelSpeeds(-.5*M_PI, -.5*M_PI);
-    m_mouse->delay(290);
+    m_mouse->setWheelSpeeds(-5*M_PI, -5*M_PI);
+    m_mouse->delay(275);
     m_mouse->setWheelSpeeds(0, 0);
 }
 
 void Continue::turnLeft() {
     m_mouse->setWheelSpeeds(5*M_PI, 5*M_PI);
-    m_mouse->delay(290);
+    m_mouse->delay(275);
     m_mouse->setWheelSpeeds(0, 0);
 }
 
 void Continue::moveForward() {
     m_mouse->setWheelSpeeds(-10*M_PI, 10*M_PI);
-    m_mouse->delay(350);
-    for (int i = 0; i < 5; i += 1) {
-        if (m_mouse->read("rightFront") > 0.9) {
+    m_mouse->delay(280);
+    for (int i = 0; i < 15; i += 1) {
+        if (m_mouse->read("rightFront") > 0.95) {
             break;
         }
         m_mouse->delay(10);
@@ -55,14 +57,16 @@ void Continue::moveForward() {
 }
 
 void Continue::correctErrors() {
-    if (m_mouse->read("rightMiddle") < 0.3) {
+    if (m_mouse->read("rightMiddle") < 0.65) {
         // Right
-        m_mouse->setWheelSpeeds(-5, 0);
+        m_mouse->setWheelSpeeds(-5, -5);
         m_mouse->delay(10);
     }
-    if (m_mouse->read("rightMiddle") > 0.5) {
+    if (m_mouse->read("rightMiddle") > 0.8) {
         // Left
-        m_mouse->setWheelSpeeds(0, 5);
+        m_mouse->setWheelSpeeds(5, 5);
         m_mouse->delay(10);
     }
 }
+
+} // namespace demo

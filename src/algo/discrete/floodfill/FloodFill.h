@@ -71,6 +71,7 @@ private:
     bool spaceLeft(); // Returns true if there's a cell to the left of the mouse
     bool spaceRight(); // Returns true if there's a cell to the right of the mouse
     int min(int one, int two, int three, int four); // Returns the min of four ints
+    char directionToChar(int direction); // Converts 0123 to nesw
 
     // Moves the mouse to the target Cell, but only if it's exactly one Cell away
     void moveOneCell(Cell* target);

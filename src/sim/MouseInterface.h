@@ -23,6 +23,7 @@ public:
     // Any interface methods
     void delay(int milliseconds);
     void colorTile(int x, int y, char color);
+    void declareWall(int x, int y, char direction, bool isWall);
 
     // Continuous interface methods
     void setWheelSpeeds(float leftWheelRadiansPerSeconds, float rightWheelRadiansPerSecond);

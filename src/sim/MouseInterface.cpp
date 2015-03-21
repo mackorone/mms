@@ -16,7 +16,7 @@
 
 #include <iostream> // TODO
 
-// TODO: Diagonals, more discrete interface methods (look ahead), change color of tile, reset, etc, reduce CPU, etc.
+// TODO: Diagonals, more discrete interface methods (look ahead), reset, etc, reduce CPU, etc.
 
 namespace sim {
 
@@ -106,8 +106,38 @@ void MouseInterface::colorTile(int x, int y, char color) {
         case 'Y':
             m_mazeGraphic->setColor(x, y, DARK_YELLOW);
             break;
+        default:
+            break; // TODO: Notify user
     }
 
+}
+
+void MouseInterface::declareWall(int x, int y, char direction, bool isWall) {
+
+    ENSURE_DECLARED
+
+    if (x < 0 || m_mazeGraphic->getWidth() < x || y < 0 || m_mazeGraphic->getHeight() <= y) {
+        print(std::string("Error - there is no tile at position (") + std::to_string(x) + std::string(", ")
+            + std::to_string(y) + std::string("), and thus you declare any of its walls."));
+        return;
+    }
+
+    switch (direction) {
+        case 'n':
+            m_mazeGraphic->setAlgoWall(x, y, NORTH, isWall); 
+            break;
+        case 'e':
+            m_mazeGraphic->setAlgoWall(x, y, EAST, isWall); 
+            break;
+        case 's':
+            m_mazeGraphic->setAlgoWall(x, y, SOUTH, isWall); 
+            break;
+        case 'w':
+            m_mazeGraphic->setAlgoWall(x, y, WEST, isWall); 
+            break;
+        default:
+            break; // TODO Notify user
+    }
 }
 
 void MouseInterface::setWheelSpeeds(float leftWheelRadiansPerSecond, float rightWheelRadiansPerSecond) {
@@ -199,7 +229,7 @@ void MouseInterface::moveForward() {
     if (wallFront()) {
         if (!S()->crashed()) {
             S()->setCrashed();
-            // TODO: Animation
+            // TODO: Animation // TODO: Should it be able to do anything after it crashes?
         }
         return;
     }

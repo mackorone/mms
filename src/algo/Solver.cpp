@@ -2,7 +2,7 @@
 
 // ------ Include all algorithm header files below this line ------- //
 
-#include "continuous/Continue.h"
+#include "continuous/demo/Continue.h"
 #include "discrete/floodfill/FloodFill.h"
 #include "discrete/mack/MackAlgo.h"
 #include "discrete/misc/Forward.h"
@@ -22,8 +22,8 @@ void Solver::solve() {
 
     // ------ Include all algorithm declarations below this line ------- //
 
-    Continue algo;
-    //floodfill::FloodFill algo;
+    //demo::Continue algo;
+    floodfill::FloodFill algo;
     //mack::MackAlgo algo;
     //misc::Forward algo;
     //wallFollow::RightWallFollow algo;

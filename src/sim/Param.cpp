@@ -36,6 +36,7 @@ Param::Param() {
     m_defaultMazeVisible = parser.getBoolIfHasBool("default-maze-visible", true);
     m_defaultMouseVisible = parser.getBoolIfHasBool("default-mouse-visible", true);
     m_defaultMousePathVisible = parser.getBoolIfHasBool("default-mouse-path-visible", true);
+    m_defaultWallTruthVisible = parser.getBoolIfHasBool("default-wall-truth-visible", true);
 
     // Simulation Parameters
     bool useRandomSeed = parser.getBoolIfHasBool("use-random-seed", false); // TODO: Notify user that there is no seed
@@ -55,7 +56,7 @@ Param::Param() {
     m_numberOfSensorEdgePoints = parser.getFloatIfHasFloat("number-of-sensor-edge-points", 3);
 
     // Maze Parameters
-    m_mazeDirectory = parser.getStringIfHasString("maze-directory", "src/mazes/");
+    m_mazeDirectory = parser.getStringIfHasString("maze-directory", "res/mazes/");
     m_mazeFile = parser.getStringIfHasString("maze-file", "");
     m_useMazeFile = parser.getBoolIfHasBool("use-maze-file", false);
     m_randomMazeWidth = parser.getIntIfHasInt("random-maze-width", 16);
@@ -66,6 +67,9 @@ Param::Param() {
     m_enforceOfficialMazeRules = parser.getBoolIfHasBool("enforce-official-maze-rules", true);
     m_randomMazeAlgo = parser.getStringIfHasString("random-maze-algo", "TOMASZ");
     m_saveRandomMaze = parser.getBoolIfHasBool("save-random-maze", true);
+
+    // Mouse parameters
+    m_mouseFile = parser.getStringIfHasString("mouse-file", "res/mouse.xml");
 
     // Update the non-configurable parameters
     m_windowWidth = (m_randomMazeWidth * (m_wallLength + m_wallWidth)) * m_pixelsPerMeter;
@@ -126,6 +130,10 @@ bool Param::defaultMouseVisible() {
 
 bool Param::defaultMousePathVisible() {
     return m_defaultMousePathVisible;
+}
+
+bool Param::defaultWallTruthVisible() {
+    return m_defaultWallTruthVisible;
 }
 
 int Param::randomSeed() {
@@ -226,6 +234,10 @@ std::string Param::randomMazeAlgo() {
 
 bool Param::saveRandomMaze() {
     return m_saveRandomMaze;
+}
+
+std::string Param::mouseFile() {
+    return m_mouseFile;
 }
 
 } // namespace sim

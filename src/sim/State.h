@@ -21,6 +21,7 @@ public:
     bool mazeVisible();
     bool mouseVisible();
     bool mousePathVisible(); // TODO: Implement the mouse path
+    bool wallTruthVisible();
     bool paused();
     bool resetRequested();
     bool undoRequested();
@@ -32,6 +33,7 @@ public:
     void setMazeVisible(bool mazeVisible);
     void setMouseVisible(bool mouseVisible);
     void setMousePathVisible(bool mousePathVisible);
+    void setWallTruthVisible(bool wallTruthVisible);
     void setPaused(bool paused);
     void setUndoRequested(bool undoRequested);
     void setResetRequested(bool resetRequested);
@@ -50,6 +52,7 @@ private:
     bool m_mazeVisible;
     bool m_mouseVisible;
     bool m_mousePathVisible;
+    bool m_wallTruthVisible;
     bool m_paused;
     bool m_resetRequested;
     bool m_undoRequested;

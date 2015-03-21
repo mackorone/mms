@@ -181,6 +181,12 @@ void FloodFill::initialize(){
             m_cells[x][y].setWall(WEST, x == 0);
             m_cells[x][y].setWall(EAST, x == MAZE_SIZE_X-1);
 
+            // Declare the walls
+            m_mouse->declareWall(x, y, directionToChar(SOUTH), y == 0);
+            m_mouse->declareWall(x, y, directionToChar(NORTH), y == MAZE_SIZE_Y-1);
+            m_mouse->declareWall(x, y, directionToChar(WEST), x == 0);
+            m_mouse->declareWall(x, y, directionToChar(EAST), x == MAZE_SIZE_X-1);
+
             // Set the inspected values of the walls
             m_cells[x][y].setWallInspected(SOUTH, y == 0);
             m_cells[x][y].setWallInspected(NORTH, y == MAZE_SIZE_Y-1);
@@ -251,6 +257,11 @@ void FloodFill::walls(){
     m_cells[m_x][m_y].setWall((m_d+1)%4, m_mouse->wallRight());
     m_cells[m_x][m_y].setWall((m_d+3)%4, m_mouse->wallLeft());
 
+    // Declare the walls
+    m_mouse->declareWall(m_x, m_y, directionToChar(m_d), m_mouse->wallFront());
+    m_mouse->declareWall(m_x, m_y, directionToChar((m_d+1)%4), m_mouse->wallRight());
+    m_mouse->declareWall(m_x, m_y, directionToChar((m_d+3)%4), m_mouse->wallLeft());
+
     // Sets the wallInspected values for the current cell
     m_cells[m_x][m_y].setWallInspected(m_d, true);
     m_cells[m_x][m_y].setWallInspected((m_d+1)%4, true);
@@ -259,16 +270,19 @@ void FloodFill::walls(){
     // Sets the wall and wallInspected values for the surrounding cells
     if (spaceFront()){
         getFrontCell()->setWall((m_d+2)%4, m_mouse->wallFront());
+        m_mouse->declareWall(getFrontCell()->getX(), getFrontCell()->getY(), directionToChar((m_d+2)%4), m_mouse->wallFront());
         getFrontCell()->setWallInspected((m_d+2)%4, true);
         checkDeadEnd(getFrontCell());
     }
     if (spaceLeft()){
         getLeftCell()->setWall((m_d+1)%4, m_mouse->wallLeft());
+        m_mouse->declareWall(getLeftCell()->getX(), getLeftCell()->getY(), directionToChar((m_d+1)%4), m_mouse->wallLeft());
         getLeftCell()->setWallInspected((m_d+1)%4, true);
         checkDeadEnd(getLeftCell());
     }
     if (spaceRight()){
         getRightCell()->setWall((m_d+3)%4, m_mouse->wallRight());
+        m_mouse->declareWall(getRightCell()->getX(), getRightCell()->getY(), directionToChar((m_d+3)%4), m_mouse->wallRight());
         getRightCell()->setWallInspected((m_d+3)%4, true);
         checkDeadEnd(getRightCell());
     }
@@ -519,6 +533,20 @@ int FloodFill::min(int one, int two, int three, int four){
     else{
         return secondMin;
     }
+}
+
+char FloodFill::directionToChar(int direction) {
+    switch (direction) {
+        case 0:
+            return 'n';
+        case 1:
+            return 'e';
+        case 2:
+            return 's';
+        case 3:
+            return 'w';
+    }
+    return 0;
 }
 
 Cell* FloodFill::getFrontCell(){

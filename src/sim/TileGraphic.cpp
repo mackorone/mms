@@ -1,12 +1,16 @@
 #include "TileGraphic.h"
 
 #include "Colors.h"
-#include "Param.h"
 #include "GraphicUtilities.h"
+#include "Param.h"
+#include "State.h"
 
 namespace sim {
 
 TileGraphic::TileGraphic(const Tile* tile) : m_tile(tile), m_color(COLORS.at(P()->tileBaseColor())) {
+    for (Direction direction : DIRECTIONS) {
+        m_algoWalls[direction] = false;
+    }
 }
 
 void TileGraphic::draw() const {
@@ -15,10 +19,19 @@ void TileGraphic::draw() const {
     glColor3fv(m_color);
     drawPolygon(m_tile->getFullPolygon());
 
-    // Draw the walls of the tile
+    // Either draw the true walls of the tile
     glColor3fv(COLORS.at(P()->tileWallColor()));
-    for (Polygon polygon : m_tile->getActualWallPolygons()) {
-        drawPolygon(polygon);
+    if (S()->wallTruthVisible()) {
+        for (Polygon polygon : m_tile->getActualWallPolygons()) {
+            drawPolygon(polygon);
+        }
+    }
+    else { // Or the algorithms declared walls
+        for (Direction direction : DIRECTIONS) {
+            if (m_algoWalls.at(direction)) {
+                drawPolygon(m_tile->getWallPolygon(direction));
+            }
+        }
     }
 
     // Draw the corners of the tile
@@ -30,6 +43,14 @@ void TileGraphic::draw() const {
 
 void TileGraphic::setColor(const GLfloat* color) {
     m_color = color;
+}
+
+bool TileGraphic::getAlgoWall(Direction direction) const {
+    return m_algoWalls.at(direction);
+}
+
+void TileGraphic::setAlgoWall(Direction direction, bool isWall) {
+    m_algoWalls[direction] = isWall;
 }
 
 } // namespace sim

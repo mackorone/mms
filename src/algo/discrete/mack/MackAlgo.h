@@ -2,7 +2,12 @@
 
 #include "../../IAlgorithm.h"
 
+#include "Cell.h"
+
 namespace mack {
+
+static const int MAZE_WIDTH = 16;
+static const int MAZE_HEIGHT = 16;
 
 class MackAlgo : IAlgorithm {
 
@@ -13,6 +18,19 @@ public:
 
 private:
     sim::MouseInterface* m_mouse;
+    Cell m_maze[MAZE_WIDTH][MAZE_HEIGHT];
+
+    void setColor(int x, int y, char color);
+    void resetColors();
+
+    // Floodfill explore
+    void walls();
+    void flood(int x, int y);
+    void moveTowardsGoal();
+    bool inGoal(int x, int y);
+
+    // BFS explore (try this against floodfill)
+
 
 };
 

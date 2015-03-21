@@ -42,8 +42,8 @@ Polygon Tile::getInteriorPolygon() const {
     return m_interiorPolygon;
 }
 
-std::vector<Polygon> Tile::getAllWallPolygons() const {
-    return m_allWallPolygons;
+Polygon Tile::getWallPolygon(Direction direction) const {
+    return m_allWallPolygons.at(direction);
 }
 
 std::vector<Polygon> Tile::getActualWallPolygons() const {
@@ -133,9 +133,9 @@ void Tile::initWallPolygons() {
     northWall.push_back(Cartesian(upperLeftPoint.getX() + halfWallWidth, upperLeftPoint.getY()));
     northWall.push_back(Cartesian(upperRightPoint.getX() - halfWallWidth, upperRightPoint.getY()));
     northWall.push_back(Cartesian(upperRightPoint.getX() - halfWallWidth, upperRightPoint.getY() - halfWallWidth));
-    m_allWallPolygons.insert(m_allWallPolygons.begin() + NORTH, Polygon(northWall));
+    m_allWallPolygons[NORTH] = Polygon(northWall);
     if (isWall(NORTH)) {
-        m_actualWallPolygons.push_back(northWall);
+        m_actualWallPolygons.push_back(Polygon(northWall));
     }
 
     std::vector<Cartesian> eastWall;
@@ -143,9 +143,9 @@ void Tile::initWallPolygons() {
     eastWall.push_back(Cartesian(upperRightPoint.getX() - halfWallWidth, upperRightPoint.getY() - halfWallWidth));
     eastWall.push_back(Cartesian(upperRightPoint.getX(), upperRightPoint.getY() - halfWallWidth));
     eastWall.push_back(Cartesian(lowerRightPoint.getX(), lowerRightPoint.getY() + halfWallWidth));
-    m_allWallPolygons.insert(m_allWallPolygons.begin() + EAST, Polygon(eastWall));
+    m_allWallPolygons[EAST] = Polygon(eastWall);
     if (isWall(EAST)) {
-        m_actualWallPolygons.push_back(eastWall);
+        m_actualWallPolygons.push_back(Polygon(eastWall));
     }
 
     std::vector<Cartesian> southWall;
@@ -153,9 +153,9 @@ void Tile::initWallPolygons() {
     southWall.push_back(Cartesian(lowerLeftPoint.getX() + halfWallWidth, lowerLeftPoint.getY() + halfWallWidth));
     southWall.push_back(Cartesian(lowerRightPoint.getX() - halfWallWidth, lowerRightPoint.getY() + halfWallWidth));
     southWall.push_back(Cartesian(lowerRightPoint.getX() - halfWallWidth, lowerRightPoint.getY()));
-    m_allWallPolygons.insert(m_allWallPolygons.begin() + SOUTH, Polygon(southWall));
+    m_allWallPolygons[SOUTH] = Polygon(southWall);
     if (isWall(SOUTH)) {
-        m_actualWallPolygons.push_back(southWall);
+        m_actualWallPolygons.push_back(Polygon(southWall));
     }
 
 
@@ -164,9 +164,9 @@ void Tile::initWallPolygons() {
     westWall.push_back(Cartesian(upperLeftPoint.getX(), upperLeftPoint.getY() - halfWallWidth));
     westWall.push_back(Cartesian(upperLeftPoint.getX() + halfWallWidth, upperLeftPoint.getY() - halfWallWidth));
     westWall.push_back(Cartesian(lowerLeftPoint.getX() + halfWallWidth, lowerLeftPoint.getY() + halfWallWidth));
-    m_allWallPolygons.insert(m_allWallPolygons.begin() + WEST, Polygon(westWall));
+    m_allWallPolygons[WEST] = Polygon(westWall);
     if (isWall(WEST)) {
-        m_actualWallPolygons.push_back(westWall);
+        m_actualWallPolygons.push_back(Polygon(westWall));
     }
 
 }

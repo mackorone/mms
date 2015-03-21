@@ -42,4 +42,9 @@ void MazeGraphic::setColor(int x, int y, const GLfloat* color) {
     m_tileGraphics.at(x).at(y).setColor(color);
 }
 
+void MazeGraphic::setAlgoWall(int x, int y, Direction direction, bool isWall) {
+    ASSERT(0 <= x && x <= getWidth() && 0 <= y && y < getHeight());
+    m_tileGraphics.at(x).at(y).setAlgoWall(direction, isWall);
+}
+
 } // namespace sim

@@ -1,6 +1,8 @@
 #pragma once
 
-#include "../IAlgorithm.h"
+#include "../../IAlgorithm.h"
+
+namespace demo {
 
 class Continue : public IAlgorithm {
 
@@ -19,3 +21,5 @@ private:
     sim::MouseInterface* m_mouse;
 
 };
+
+} // namespace demo

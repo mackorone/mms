@@ -23,9 +23,10 @@ public:
 
     Polygon getFullPolygon() const;
     Polygon getInteriorPolygon() const;
-    std::vector<Polygon> getAllWallPolygons() const;
+    Polygon getWallPolygon(Direction direction) const;
     std::vector<Polygon> getActualWallPolygons() const;
     std::vector<Polygon> getCornerPolygons() const;
+
     void initPolygons();
 
 private:
@@ -35,7 +36,7 @@ private:
 
     Polygon m_fullPolygon;
     Polygon m_interiorPolygon;
-    std::vector<Polygon> m_allWallPolygons;
+    std::map<Direction, Polygon> m_allWallPolygons;
     std::vector<Polygon> m_actualWallPolygons;
     std::vector<Polygon> m_cornerPolygons;
 

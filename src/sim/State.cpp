@@ -25,6 +25,7 @@ State::State() {
     m_mazeVisible = P()->defaultMazeVisible();
     m_mouseVisible = P()->defaultMouseVisible();
     m_mousePathVisible = P()->defaultMousePathVisible();
+    m_wallTruthVisible = P()->defaultWallTruthVisible();
     m_paused = false;
     m_resetRequested = false;
     m_undoRequested = false;
@@ -49,6 +50,10 @@ bool State::mouseVisible() {
 
 bool State::mousePathVisible() {
     return m_mousePathVisible;
+}
+
+bool State::wallTruthVisible() {
+    return m_wallTruthVisible;
 }
 
 bool State::paused() {
@@ -87,6 +92,10 @@ void State::setMouseVisible(bool mouseVisible) {
 
 void State::setMousePathVisible(bool mousePathVisible) {
     m_mousePathVisible = mousePathVisible;
+}
+
+void State::setWallTruthVisible(bool wallTruthVisible) {
+    m_wallTruthVisible = wallTruthVisible;
 }
 
 void State::setPaused(bool paused) {
