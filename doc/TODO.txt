@@ -32,11 +32,14 @@
 - Ensure that the mouse update is the continuous function
 - Make sure that the coordinate frame of the robot is what we expect
 - Handle bad values in the parameters, such as bad colors, negative values, etc.
-- atoi -> strToInt
 - Put interface in root of src directory
 - write "isDirectory(std::string path)" and enforce this where necessary
 - write getRandom() and replace old calls to rand()
 - draw a path of where the robot has been
+- Stepper motor / Encoders
+- Performance on different systems???
+- Interrupt interface
+- There was a weird bug where the mouse teleported and the program crashed
 
 Low Priority
 ===============

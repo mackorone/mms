@@ -13,7 +13,7 @@
 <default-maze-visible>true</default-maze-visible>
 <default-mouse-visible>true</default-mouse-visible>
 <default-mouse-path-visible>true</default-mouse-path-visible> <!-- TODO: implement this -->
-<default-wall-truth-visible>false</default-wall-truth-visible>
+<default-wall-truth-visible>true</default-wall-truth-visible>
 <!-- <shortest-path-visible>true</shortest-path-visible> TODO -->
 
 <!-- Simulation Parameters -->
