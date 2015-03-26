@@ -4,7 +4,7 @@
 
 #include "continuous/demo/Continue.h"
 #include "discrete/floodfill/FloodFill.h"
-#include "discrete/mack/MackAlgo.h"
+//#include "discrete/mack/MackAlgo.h"
 #include "discrete/misc/Forward.h"
 #include "discrete/wallFollow/LeftWallFollow.h"
 #include "discrete/wallFollow/RightWallFollow.h"
