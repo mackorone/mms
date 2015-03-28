@@ -27,6 +27,7 @@ void Solver::solve() {
     //mack::MackAlgo algo;
     //misc::Forward algo;
     //wallFollow::RightWallFollow algo;
+    //wallFollow::LeftWallFollow algo;
     //wallFollow::RandomizedWallFollow algo;
 
     // ------ Include all algorithm declarations above this line ------- //

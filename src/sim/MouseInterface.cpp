@@ -16,7 +16,7 @@
 
 #include <iostream> // TODO
 
-// TODO: Diagonals, more discrete interface methods (look ahead), reset, etc, reduce CPU, etc.
+// TODO: Diagonals, more discrete interface methods (look ahead), reset, etc., reduce CPU, etc.
 
 namespace sim {
 
@@ -65,7 +65,7 @@ void MouseInterface::colorTile(int x, int y, char color) {
 
     if (x < 0 || m_mazeGraphic->getWidth() < x || y < 0 || m_mazeGraphic->getHeight() <= y) {
         print(std::string("Error - there is no tile at position (") + std::to_string(x) + std::string(", ")
-            + std::to_string(y) + std::string("), and thus you can't set its color."));
+            + std::to_string(y) + std::string("), and thus you cannot set its color."));
         return;
     }
 
@@ -118,7 +118,7 @@ void MouseInterface::declareWall(int x, int y, char direction, bool isWall) {
 
     if (x < 0 || m_mazeGraphic->getWidth() < x || y < 0 || m_mazeGraphic->getHeight() <= y) {
         print(std::string("Error - there is no tile at position (") + std::to_string(x) + std::string(", ")
-            + std::to_string(y) + std::string("), and thus you declare any of its walls."));
+            + std::to_string(y) + std::string("), and thus you cannot declare any of its walls."));
         return;
     }
 
@@ -138,6 +138,39 @@ void MouseInterface::declareWall(int x, int y, char direction, bool isWall) {
         default:
             break; // TODO Notify user
     }
+}
+
+void MouseInterface::resetPosition() {
+
+    ENSURE_DECLARED
+
+    m_mouse->teleport(m_mouse->getInitialTranslation(), Radians(0.0));
+}
+
+bool MouseInterface::inputButtonPressed(int inputButton) {
+
+    ENSURE_DECLARED
+
+    if (inputButton < 0 || 9 < inputButton) {
+        print(std::string("Error - there is no input button with the number ") + std::to_string(inputButton)
+            + std::string(", and thus you cannot check to see if it has been pressed."));
+        return false;
+    }
+
+    return S()->inputButtonPressed(inputButton);
+}
+
+void MouseInterface::acknowledgeInputButtonPressed(int inputButton) {
+
+    ENSURE_DECLARED
+
+    if (inputButton < 0 || 9 < inputButton) {
+        print(std::string("Error - there is no input button with the number ") + std::to_string(inputButton)
+            + std::string(", and thus you cannot acknowledge that it has been pressed."));
+        return;
+    }
+
+    S()->setInputButtonPressed(inputButton, false);
 }
 
 void MouseInterface::setWheelSpeeds(float leftWheelRadiansPerSecond, float rightWheelRadiansPerSecond) {
@@ -373,30 +406,6 @@ void MouseInterface::turnAround() {
 
     turnRight();
     turnRight();
-}
-
-bool MouseInterface::resetRequested() {
-    return S()->resetRequested();
-}
-
-bool MouseInterface::undoRequested() {
-    return S()->undoRequested();
-}
-
-void MouseInterface::resetHonored() {
-    S()->setResetRequested(false);
-}
-
-void MouseInterface::undoHonored() {
-    S()->setUndoRequested(false);
-}
-
-void MouseInterface::resetPosition() {
-    //m_mouse->resetPosition();
-}
-
-void MouseInterface::resetColors(int curX, int curY) {
-    //m_mouse->resetColors(curX, curY);
 }
 
 void MouseInterface::ensureDeclaredInterface(const std::string& callingFunction) const {

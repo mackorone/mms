@@ -12,7 +12,7 @@ class Param {
 
 public:
 
-    // Returns a pointer to the singeton parameter object
+    // Returns a pointer to the singleton parameter object
     static Param* getInstance();
 
     // Graphics parameters

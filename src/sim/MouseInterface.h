@@ -24,6 +24,9 @@ public:
     void delay(int milliseconds);
     void colorTile(int x, int y, char color);
     void declareWall(int x, int y, char direction, bool isWall);
+    void resetPosition();
+    bool inputButtonPressed(int inputButton);
+    void acknowledgeInputButtonPressed(int inputButton);
 
     // Continuous interface methods
     void setWheelSpeeds(float leftWheelRadiansPerSeconds, float rightWheelRadiansPerSecond);
@@ -38,19 +41,6 @@ public:
     void turnLeft();
     void turnAround();
     // TODO: Other sensor readings and such
-
-    // ---------------------- Mouse Interface Methods ----------------------- //
-
-    // TODO
-    bool resetRequested();
-    bool undoRequested();
-    void resetHonored();
-    void undoHonored();
-    void resetPosition(); // Sets the position of the mouse to (0,0)
-
-    // ------ Simulation utilities (not applicable to the real mouse) ------- //
-
-    void resetColors(int curX, int curY); // Resets the tile colors of the maze
 
 private:
     const Maze* m_maze;

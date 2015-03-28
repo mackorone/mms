@@ -36,7 +36,6 @@ private:
     History m_history; // History object used for undos
     bool m_checkpointReached; // Whether or not we've made it back to the checkpoint
 
-
     void justFloodFill(); // Vanilla Floodfill algo
     void simpleSolve(); // Solves using basic floodfill (not perfect)
     void extensiveSolve(); // Solves using explore (guaranteed perfect)
@@ -72,6 +71,11 @@ private:
     bool spaceRight(); // Returns true if there's a cell to the right of the mouse
     int min(int one, int two, int three, int four); // Returns the min of four ints
     char directionToChar(int direction); // Converts 0123 to nesw
+
+    bool undoRequested();
+    bool resetRequested();
+    void undoHonored();
+    void resetHonored();
 
     // Moves the mouse to the target Cell, but only if it's exactly one Cell away
     void moveOneCell(Cell* target);

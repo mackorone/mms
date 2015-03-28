@@ -27,9 +27,10 @@ State::State() {
     m_mousePathVisible = P()->defaultMousePathVisible();
     m_wallTruthVisible = P()->defaultWallTruthVisible();
     m_paused = false;
-    m_resetRequested = false;
-    m_undoRequested = false;
     m_simSpeed = P()->discreteInterfaceDefaultSpeed();
+    for (int i = 0; i < 10; i += 1) {
+        m_inputButtons[i] = false;
+    }
 }
 
 bool State::crashed() {
@@ -60,16 +61,13 @@ bool State::paused() {
     return m_paused;
 }
 
-bool State::resetRequested() {
-    return m_resetRequested;
-}
-
-bool State::undoRequested() {
-    return m_undoRequested;
-}
-
 float State::simSpeed() {
     return m_simSpeed;
+}
+
+bool State::inputButtonPressed(int inputButton) {
+    ASSERT(0 <= inputButton && inputButton <= 9);
+    return m_inputButtons.at(inputButton);
 }
 
 void State::setCrashed() {
@@ -102,14 +100,6 @@ void State::setPaused(bool paused) {
     m_paused = paused;
 }
 
-void State::setResetRequested(bool resetRequested) {
-    m_resetRequested = resetRequested;
-}
-
-void State::setUndoRequested(bool undoRequested) {
-    m_undoRequested = undoRequested;
-}
-
 void State::setSimSpeed(float simSpeed) {
     if (simSpeed < P()->discreteInterfaceMinSpeed()) {
         m_simSpeed = P()->discreteInterfaceMinSpeed();
@@ -120,6 +110,11 @@ void State::setSimSpeed(float simSpeed) {
     else {
         m_simSpeed = simSpeed;
     }
+}
+
+void State::setInputButtonPressed(int inputButton, bool pressed) {
+    ASSERT(0 <= inputButton && inputButton <= 9);
+    m_inputButtons[inputButton] = pressed;
 }
 
 } // namespace sim
