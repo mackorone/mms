@@ -25,6 +25,8 @@
 <discrete-interface-min-speed>1</discrete-interface-min-speed> <!-- No units -->
 <discrete-interface-max-speed>500</discrete-interface-max-speed> <!-- No units -->
 <discrete-interface-default-speed>30</discrete-interface-default-speed> <!-- No units -->
+<discrete-interface-declare-wall-on-read>true</discrete-interface-declare-wall-on-read>
+<declare-both-wall-halves>true</declare-both-wall-halves>
 <mouse-position-update-rate>1000</mouse-position-update-rate> <!-- Updates per second -->
 <print-late-mouse-position-updates>true</print-late-mouse-position-updates>
 <collision-detection-rate>40</collision-detection-rate> <!-- Checks per second -->

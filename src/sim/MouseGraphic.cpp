@@ -20,11 +20,11 @@ void MouseGraphic::draw() {
     }
 
     // First, we draw the body
-    glColor3fv(COLORS.at(P()->mouseBodyColor()));
+    glColor3fv(COLOR_STRINGS.at(P()->mouseBodyColor()));
     drawPolygon(m_mouse->getBodyPolygon());
 
     // Next, we draw the wheels
-    glColor3fv(COLORS.at(P()->mouseWheelColor()));
+    glColor3fv(COLOR_STRINGS.at(P()->mouseWheelColor()));
     for (Polygon wheelPolygon : m_mouse->getWheelPolygons()) {
         drawPolygon(wheelPolygon);
     }
@@ -33,13 +33,13 @@ void MouseGraphic::draw() {
     if (S()->interfaceType() == CONTINUOUS) {
 
         // Next, we draw the sensors
-        glColor3fv(COLORS.at(P()->mouseWheelColor()));
+        glColor3fv(COLOR_STRINGS.at(P()->mouseWheelColor()));
         for (Polygon sensorPolygon : m_mouse->getSensorPolygons()) {
             drawPolygon(sensorPolygon);
         }
 
         // Lastly, we draw the sensor views
-        glColor3fv(WHITE);
+        glColor3fv(COLOR_STRINGS.at(P()->mouseSensorColor()));
         for (Polygon polygon : m_mouse->getViewPolygons()) {
             drawPolygon(polygon);
         }

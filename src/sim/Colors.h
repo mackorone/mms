@@ -18,7 +18,7 @@ static const GLfloat DARK_GREEN  [3] = { 0.0f, 0.2f, 0.0f};
 static const GLfloat DARK_RED    [3] = { 0.2f, 0.0f, 0.0f};
 static const GLfloat DARK_YELLOW [3] = { 0.2f, 0.2f, 0.0f};
 
-static const std::map<std::string, const GLfloat*> COLORS = {
+static const std::map<std::string, const GLfloat*> COLOR_STRINGS = {
     {"BLACK", BLACK},
     {"BLUE", BLUE},
     {"GRAY", GRAY},
@@ -31,6 +31,21 @@ static const std::map<std::string, const GLfloat*> COLORS = {
     {"DARK_GREEN", DARK_GREEN},
     {"DARK_RED", DARK_RED},
     {"DARK_YELLOW", DARK_YELLOW},
+};
+
+static const std::map<char, const GLfloat*> COLOR_CHARS = {
+    {'k', BLACK},
+    {'b', BLUE},
+    {'a', GRAY},
+    {'g', GREEN},
+    {'r', RED},
+    {'w', WHITE},
+    {'y', YELLOW},
+    {'B', DARK_BLUE},
+    {'A', DARK_GRAY},
+    {'G', DARK_GREEN},
+    {'R', DARK_RED},
+    {'Y', DARK_YELLOW},
 };
 
 } // namespace sim

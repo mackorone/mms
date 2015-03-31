@@ -23,7 +23,7 @@ public:
     // Any interface methods
     void delay(int milliseconds);
     void colorTile(int x, int y, char color);
-    void declareWall(int x, int y, char direction, bool isWall);
+    void declareWall(int x, int y, char direction, bool wallExists);
     void resetPosition();
     bool inputButtonPressed(int inputButton);
     void acknowledgeInputButtonPressed(int inputButton);
@@ -41,6 +41,7 @@ public:
     void turnLeft();
     void turnAround();
     // TODO: Other sensor readings and such
+    // TODO: Consts...
 
 private:
     const Maze* m_maze;
@@ -55,7 +56,7 @@ private:
     Direction getDiscretizedRotation() const;
 
     void checkPaused();
-    bool isWall(std::pair<int, int> position, Direction direction) const;
+    bool isWall(std::pair<int, int> position, Direction direction);
 };
 
 } // namespace sim

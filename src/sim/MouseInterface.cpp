@@ -14,8 +14,6 @@
 #include "State.h"
 #include "SimUtilities.h"
 
-#include <iostream> // TODO
-
 // TODO: Diagonals, more discrete interface methods (look ahead), reset, etc., reduce CPU, etc.
 
 namespace sim {
@@ -69,50 +67,15 @@ void MouseInterface::colorTile(int x, int y, char color) {
         return;
     }
 
-    switch (color) {
-        case 'a':
-            m_mazeGraphic->setColor(x, y, GRAY);
-            break;
-        case 'A':
-            m_mazeGraphic->setColor(x, y, DARK_GRAY);
-            break;
-        case 'b':
-            m_mazeGraphic->setColor(x, y, BLUE);
-            break;
-        case 'B':
-            m_mazeGraphic->setColor(x, y, DARK_BLUE);
-            break;
-        case 'g':
-            m_mazeGraphic->setColor(x, y, GREEN);
-            break;
-        case 'G':
-            m_mazeGraphic->setColor(x, y, DARK_GREEN);
-            break;
-        case 'k':
-            m_mazeGraphic->setColor(x, y, BLACK);
-            break;
-        case 'r':
-            m_mazeGraphic->setColor(x, y, RED);
-            break;
-        case 'R':
-            m_mazeGraphic->setColor(x, y, DARK_RED);
-            break;
-        case 'w':
-            m_mazeGraphic->setColor(x, y, WHITE);
-            break;
-        case 'y':
-            m_mazeGraphic->setColor(x, y, YELLOW);
-            break;
-        case 'Y':
-            m_mazeGraphic->setColor(x, y, DARK_YELLOW);
-            break;
-        default:
-            break; // TODO: Notify user
+    if (COLOR_CHARS.find(color) == COLOR_CHARS.end()) {
+        // TODO: SOM: Error message
+        return;
     }
 
+    m_mazeGraphic->setColor(x, y, COLOR_CHARS.at(color));
 }
 
-void MouseInterface::declareWall(int x, int y, char direction, bool isWall) {
+void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) {
 
     ENSURE_DECLARED
 
@@ -124,19 +87,45 @@ void MouseInterface::declareWall(int x, int y, char direction, bool isWall) {
 
     switch (direction) {
         case 'n':
-            m_mazeGraphic->setAlgoWall(x, y, NORTH, isWall); 
+            m_mazeGraphic->setAlgoWall(x, y, NORTH, wallExists); 
             break;
         case 'e':
-            m_mazeGraphic->setAlgoWall(x, y, EAST, isWall); 
+            m_mazeGraphic->setAlgoWall(x, y, EAST, wallExists); 
             break;
         case 's':
-            m_mazeGraphic->setAlgoWall(x, y, SOUTH, isWall); 
+            m_mazeGraphic->setAlgoWall(x, y, SOUTH, wallExists); 
             break;
         case 'w':
-            m_mazeGraphic->setAlgoWall(x, y, WEST, isWall); 
+            m_mazeGraphic->setAlgoWall(x, y, WEST, wallExists); 
             break;
         default:
-            break; // TODO Notify user
+            // TODO: SOM: Error message
+            return;
+    }
+
+    if (P()->declareBothWallHalves()) {
+        switch (direction) {
+            case 'n':
+                if (y < m_maze->getHeight() - 1) {
+                    m_mazeGraphic->setAlgoWall(x, y + 1, SOUTH, wallExists); 
+                }
+                break;
+            case 'e':
+                if (x < m_maze->getWidth() - 1) {
+                    m_mazeGraphic->setAlgoWall(x + 1, y, WEST, wallExists); 
+                }
+                break;
+            case 's':
+                if (y > 0) {
+                    m_mazeGraphic->setAlgoWall(x, y - 1, NORTH, wallExists); 
+                }
+                break;
+            case 'w':
+                if (x > 0) {
+                    m_mazeGraphic->setAlgoWall(x - 1, y, EAST, wallExists); 
+                }
+                break;
+        }
     }
 }
 
@@ -461,10 +450,31 @@ void MouseInterface::checkPaused() {
     }
 }
 
-bool MouseInterface::isWall(std::pair<int, int> position, Direction direction) const {
+bool MouseInterface::isWall(std::pair<int, int> position, Direction direction) {
+
     ASSERT(0 <= position.first && position.first < m_maze->getWidth()
         && 0 <= position.second && position.second < m_maze->getHeight());
-    return m_maze->getTile(position.first, position.second)->isWall(direction);
+
+    bool wallExists = m_maze->getTile(position.first, position.second)->isWall(direction);
+
+    if (P()->discreteInterfaceDeclareWallOnRead()) {
+        switch (direction) {
+            case NORTH:
+                declareWall(position.first, position.second, 'n', wallExists);
+                break;
+            case EAST:
+                declareWall(position.first, position.second, 'e', wallExists);
+                break;
+            case SOUTH:
+                declareWall(position.first, position.second, 's', wallExists);
+                break;
+            case WEST:
+                declareWall(position.first, position.second, 'w', wallExists);
+                break;
+        }
+    }
+
+    return wallExists;
 }
 
 } // namespace sim

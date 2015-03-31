@@ -33,20 +33,20 @@ bool Continue::wallFront() {
 
 void Continue::turnRight() {
     m_mouse->setWheelSpeeds(-5*M_PI, -5*M_PI);
-    m_mouse->delay(275);
+    m_mouse->delay(290);
     m_mouse->setWheelSpeeds(0, 0);
 }
 
 void Continue::turnLeft() {
     m_mouse->setWheelSpeeds(5*M_PI, 5*M_PI);
-    m_mouse->delay(275);
+    m_mouse->delay(290);
     m_mouse->setWheelSpeeds(0, 0);
 }
 
 void Continue::moveForward() {
     m_mouse->setWheelSpeeds(-10*M_PI, 10*M_PI);
     m_mouse->delay(280);
-    for (int i = 0; i < 15; i += 1) {
+    for (int i = 0; i < 10; i += 1) {
         if (m_mouse->read("rightFront") > 0.95) {
             break;
         }

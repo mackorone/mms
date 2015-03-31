@@ -660,7 +660,7 @@ bool FloodFill::spaceRight(){
     }
 }
 
-void FloodFill::explore(){
+void FloodFill::explore() {
 
    /*
     *  The foundation of the explore method is a simple DFS search. However,

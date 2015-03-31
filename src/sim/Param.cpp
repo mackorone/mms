@@ -47,6 +47,8 @@ Param::Param() {
     m_discreteInterfaceMinSpeed = parser.getFloatIfHasFloat("discrete-interface-min-speed", 1.0);
     m_discreteInterfaceMaxSpeed = parser.getFloatIfHasFloat("discrete-interface-max-speed", 500.0);
     m_discreteInterfaceDefaultSpeed = parser.getFloatIfHasFloat("discrete-interface-default-speed", 30.0);
+    m_discreteInterfaceDeclareWallOnRead = parser.getBoolIfHasBool("discrete-interface-declare-wall-on-read", true);
+    m_declareBothWallHalves = parser.getBoolIfHasBool("declare-both-wall-halves", true);
     m_mousePositionUpdateRate = parser.getIntIfHasInt("mouse-position-update-rate", 1000);
     m_printLateMousePostitionUpdates = parser.getBoolIfHasBool("print-late-mouse-position-updates", false);
     m_collisionDetectionRate = parser.getIntIfHasInt("collision-detection-rate", 40);
@@ -162,6 +164,14 @@ float Param::discreteInterfaceMaxSpeed() {
 
 float Param::discreteInterfaceDefaultSpeed() {
     return m_discreteInterfaceDefaultSpeed;
+}
+
+bool Param::discreteInterfaceDeclareWallOnRead() {
+    return m_discreteInterfaceDeclareWallOnRead;
+}
+
+bool Param::declareBothWallHalves() {
+    return m_declareBothWallHalves;
 }
 
 int Param::mousePositionUpdateRate() {
