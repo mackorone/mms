@@ -1,6 +1,5 @@
 bin/
 obj/
-src/algo/discrete/mack
 *auto_generated_maze.maz
 *.swp
 
