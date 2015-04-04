@@ -4,16 +4,14 @@
 
 namespace mack {
 
-CellList::CellList() {
-    CellList(DEFAULT_CAPACITY);
+CellList::CellList() : m_size(0), m_capacity(DEFAULT_CAPACITY), m_data(new Cell*[DEFAULT_CAPACITY]) {
 }
 
 CellList::CellList(int capacity) : m_size(0), m_capacity(capacity), m_data(new Cell*[capacity]) {
     ASSERT(0 < m_capacity);
 }
 
-CellList::CellList(const CellList& other) {
-    CellList();
+CellList::CellList(const CellList& other) : m_size(0), m_capacity(DEFAULT_CAPACITY), m_data(new Cell*[DEFAULT_CAPACITY]) {
     *this = other;
 }
 

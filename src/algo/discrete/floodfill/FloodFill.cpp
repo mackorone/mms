@@ -12,7 +12,7 @@
 
 namespace floodfill {
 
-void FloodFill::solve(sim::MouseInterface* mouse){
+void FloodFill::solve(sim::MouseInterface* mouse) {
 
     // Declare the interface type
     mouse->declareInterfaceType(sim::DISCRETE);
@@ -21,8 +21,8 @@ void FloodFill::solve(sim::MouseInterface* mouse){
     m_mouse = mouse;
 
     // Initialize the x and y positions of the cells
-    for (int x = 0; x < MAZE_SIZE_X; x += 1){
-        for (int y = 0; y < MAZE_SIZE_Y; y += 1){
+    for (int x = 0; x < MAZE_SIZE_X; x += 1) {
+        for (int y = 0; y < MAZE_SIZE_Y; y += 1) {
             m_cells[x][y].setX(x);
             m_cells[x][y].setY(y);
         }
@@ -88,7 +88,7 @@ void FloodFill::simpleSolve() {
 void FloodFill::extensiveSolve() {
 
     // Loop to allow for reset requests to be honored
-    while (true){
+    while (true) {
 
         // Initialize all mutable fields, including the Cells' walls
         // and distances as well as the mouse-related fields
@@ -117,12 +117,12 @@ void FloodFill::extensiveSolve() {
     }
 }
 
-void FloodFill::printDistances(){
+void FloodFill::printDistances() {
     std::cout << std::endl;
-    for (int y = MAZE_SIZE_Y-1; y >= 0; y -= 1){
-        for (int x = 0; x < MAZE_SIZE_X; x += 1){
-            if (m_cells[x][y].getDistance() < 100){
-                if (m_cells[x][y].getDistance() < 10){
+    for (int y = MAZE_SIZE_Y-1; y >= 0; y -= 1) {
+        for (int x = 0; x < MAZE_SIZE_X; x += 1) {
+            if (m_cells[x][y].getDistance() < 100) {
+                if (m_cells[x][y].getDistance() < 10) {
                     std::cout << " ";
                 }
                 std::cout << " ";
@@ -133,16 +133,16 @@ void FloodFill::printDistances(){
     }
 }
 
-void FloodFill::printWalls(){
+void FloodFill::printWalls() {
     std::cout << std::endl;
-    for (int y = MAZE_SIZE_Y-1; y >= 0; y -= 1){
-        for (int x = 0; x < MAZE_SIZE_X; x += 1){
+    for (int y = MAZE_SIZE_Y-1; y >= 0; y -= 1) {
+        for (int x = 0; x < MAZE_SIZE_X; x += 1) {
             int wallSum = 0;
             wallSum += 1*m_cells[x][y].isWall(NORTH);
             wallSum += 2*m_cells[x][y].isWall(EAST);
             wallSum += 4*m_cells[x][y].isWall(SOUTH);
             wallSum += 8*m_cells[x][y].isWall(WEST);
-            if (wallSum < 10){
+            if (wallSum < 10) {
                 std::cout << " ";
             }
             std::cout << wallSum << " ";
@@ -151,7 +151,7 @@ void FloodFill::printWalls(){
     }
 }
 
-void FloodFill::resetColors(){
+void FloodFill::resetColors() {
     for (int x = 0; x < MAZE_SIZE_X; x += 1) {
         for (int y = 0; y < MAZE_SIZE_Y; y += 1) {
             m_mouse->colorTile(x, y, 'k');
@@ -159,7 +159,7 @@ void FloodFill::resetColors(){
     }
 }
 
-void FloodFill::initialize(){
+void FloodFill::initialize() {
 
     // Note: Doesn't work for odd sized mazes
 
@@ -176,8 +176,8 @@ void FloodFill::initialize(){
     }
 
     // Initialize other values for the Cells
-    for (int y = 0; y < MAZE_SIZE_Y; y += 1){
-        for (int x = 0; x < MAZE_SIZE_X; x += 1){
+    for (int y = 0; y < MAZE_SIZE_Y; y += 1) {
+        for (int x = 0; x < MAZE_SIZE_X; x += 1) {
 
             // Set the walls values
             m_cells[x][y].setWall(SOUTH, y == 0);
@@ -215,21 +215,21 @@ void FloodFill::initialize(){
     m_history.initialize(SHORT_TERM_MEM, &m_cells[0][0]); // Initialize the History object
 }
 
-void FloodFill::victory(){
+void FloodFill::victory() {
 
     // Loop forever, continue going to the beginning and solving
-    while (true){
+    while (true) {
 
         std::stack<Cell*> optimalPath;
 
         // Solve the maze (while request hasn't been made)
-        while (!inGoal(m_x, m_y) && !(undoRequested() || resetRequested())){
+        while (!inGoal(m_x, m_y) && !(undoRequested() || resetRequested())) {
             optimalPath.push(&m_cells[m_x][m_y]);
             moveTowardsGoal();
         }
 
         // Return to start (while request hasn't been made)
-        while ((m_x != 0 || m_y != 0) && !(undoRequested() || resetRequested())){
+        while ((m_x != 0 || m_y != 0) && !(undoRequested() || resetRequested())) {
             Cell* prev = optimalPath.top();
             optimalPath.pop();
             moveOneCell(prev);
@@ -254,7 +254,7 @@ void FloodFill::victory(){
     }
 }
 
-void FloodFill::walls(){
+void FloodFill::walls() {
 
     // Sets the wall values for the current cell
     m_cells[m_x][m_y].setWall(m_d, m_mouse->wallFront());
@@ -272,19 +272,19 @@ void FloodFill::walls(){
     m_cells[m_x][m_y].setWallInspected((m_d+3)%4, true);
 
     // Sets the wall and wallInspected values for the surrounding cells
-    if (spaceFront()){
+    if (spaceFront()) {
         getFrontCell()->setWall((m_d+2)%4, m_mouse->wallFront());
         m_mouse->declareWall(getFrontCell()->getX(), getFrontCell()->getY(), directionToChar((m_d+2)%4), m_mouse->wallFront());
         getFrontCell()->setWallInspected((m_d+2)%4, true);
         checkDeadEnd(getFrontCell());
     }
-    if (spaceLeft()){
+    if (spaceLeft()) {
         getLeftCell()->setWall((m_d+1)%4, m_mouse->wallLeft());
         m_mouse->declareWall(getLeftCell()->getX(), getLeftCell()->getY(), directionToChar((m_d+1)%4), m_mouse->wallLeft());
         getLeftCell()->setWallInspected((m_d+1)%4, true);
         checkDeadEnd(getLeftCell());
     }
-    if (spaceRight()){
+    if (spaceRight()) {
         getRightCell()->setWall((m_d+3)%4, m_mouse->wallRight());
         m_mouse->declareWall(getRightCell()->getX(), getRightCell()->getY(), directionToChar((m_d+3)%4), m_mouse->wallRight());
         getRightCell()->setWallInspected((m_d+3)%4, true);
@@ -351,13 +351,13 @@ void FloodFill::checkDeadEnd(Cell* cell) {
     }
 }
 
-void FloodFill::flood(int x, int y){
+void FloodFill::flood(int x, int y) {
     
     // *DO NOT* flood the cells in the goal region of the maze - there is no
     // information that we can gain about the distance values in the goal,
     // and we can only corrupt the current distance values anyways (they
     // can't and shouldn't change from 0)
-    if (!inGoal(x, y)){
+    if (!inGoal(x, y)) {
 
         // Initialize distance values for surrounding cells
         int northDistance = MAZE_SIZE_X*MAZE_SIZE_Y;
@@ -366,35 +366,35 @@ void FloodFill::flood(int x, int y){
         int westDistance = MAZE_SIZE_X*MAZE_SIZE_Y;
 
         // Obtain actual values if possible
-        if (!m_cells[x][y].isWall(NORTH)){
+        if (!m_cells[x][y].isWall(NORTH)) {
             northDistance = m_cells[x][y+1].getDistance();
         }
-        if (!m_cells[x][y].isWall(EAST)){
+        if (!m_cells[x][y].isWall(EAST)) {
             eastDistance = m_cells[x+1][y].getDistance();
         }
-        if (!m_cells[x][y].isWall(SOUTH)){
+        if (!m_cells[x][y].isWall(SOUTH)) {
             southDistance = m_cells[x][y-1].getDistance();
         }
-        if (!m_cells[x][y].isWall(WEST)){
+        if (!m_cells[x][y].isWall(WEST)) {
             westDistance = m_cells[x-1][y].getDistance();
         }
 
         // Check to see if the distance value is the min plus one
-        if (m_cells[x][y].getDistance() != min(northDistance, eastDistance, southDistance, westDistance) + 1){
+        if (m_cells[x][y].getDistance() != min(northDistance, eastDistance, southDistance, westDistance) + 1) {
 
             // Set the value to the min plus one
             m_cells[x][y].setDistance(min(northDistance, eastDistance, southDistance, westDistance) + 1);
 
-            if (!m_cells[x][y].isWall(NORTH)){
+            if (!m_cells[x][y].isWall(NORTH)) {
                 flood(x, y + 1);
             }
-            if (!m_cells[x][y].isWall(EAST)){
+            if (!m_cells[x][y].isWall(EAST)) {
                 flood(x + 1, y);
             }
-            if (!m_cells[x][y].isWall(SOUTH)){
+            if (!m_cells[x][y].isWall(SOUTH)) {
                 flood(x, y - 1);
             }
-            if (!m_cells[x][y].isWall(WEST)){
+            if (!m_cells[x][y].isWall(WEST)) {
                 flood(x - 1, y);
             }
         }
@@ -402,39 +402,39 @@ void FloodFill::flood(int x, int y){
 }
 
 
-void FloodFill::moveTowardsGoal(){
+void FloodFill::moveTowardsGoal() {
     
     // Invariant: One of the adjacent cells is guarenteed to have a lower value, so
     //            it's safe to initialize the minimum distance to current distance
     int minDistance = m_cells[m_x][m_y].getDistance(); // Initialize distance
     int relDirection = 0; // Initialize direction
 
-    if (!m_cells[m_x][m_y].isWall((m_d+3)%4)){ // Check left
-        if (getLeftCell()->getDistance() <= minDistance){
+    if (!m_cells[m_x][m_y].isWall((m_d+3)%4)) { // Check left
+        if (getLeftCell()->getDistance() <= minDistance) {
             minDistance = getLeftCell()->getDistance();
             relDirection = 3;
         }
     }
-    if (!m_cells[m_x][m_y].isWall((m_d+2)%4)){ // Check behind
-        if (getRearCell()->getDistance() <= minDistance){
+    if (!m_cells[m_x][m_y].isWall((m_d+2)%4)) { // Check behind
+        if (getRearCell()->getDistance() <= minDistance) {
             minDistance = getRearCell()->getDistance();
             relDirection = 2;
         }
     }
-    if (!m_cells[m_x][m_y].isWall((m_d+1)%4)){ // Check right
-        if (getRightCell()->getDistance() <= minDistance){
+    if (!m_cells[m_x][m_y].isWall((m_d+1)%4)) { // Check right
+        if (getRightCell()->getDistance() <= minDistance) {
             minDistance = getRightCell()->getDistance();
             relDirection = 1;
         }
     }
-    if (!m_cells[m_x][m_y].isWall(m_d)){ // Check front
-        if (getFrontCell()->getDistance() <= minDistance){
+    if (!m_cells[m_x][m_y].isWall(m_d)) { // Check front
+        if (getFrontCell()->getDistance() <= minDistance) {
             minDistance = getFrontCell()->getDistance();
             relDirection = 0;
         }
     }
     
-    switch (relDirection){
+    switch (relDirection) {
         case 1: // turn right
             turnRight();
             break;
@@ -449,13 +449,13 @@ void FloodFill::moveTowardsGoal(){
     moveForward(); // Move the robot forward
 }
 
-void FloodFill::moveForward(){
+void FloodFill::moveForward() {
 
     // NOTE: There is no preliminary check for walls or for limits in this
     //       function - this is the responsibility of the caller
     
     // First, update our internal representation of location
-    switch (m_d){
+    switch (m_d) {
         case NORTH:
             m_y += 1;
             break;
@@ -486,13 +486,13 @@ void FloodFill::moveForward(){
     }
 }
 
-void FloodFill::turnRight(){
+void FloodFill::turnRight() {
     m_d = (m_d + 1) % 4; // Update internal representation
     m_mouse->turnRight(); // Move the mouse
     m_steps++; // Lastly, increment the number of steps
 }
 
-void FloodFill::turnLeft(){
+void FloodFill::turnLeft() {
     m_d = (m_d + 3) % 4; // Update internal representation
     m_mouse->turnLeft(); // Move the mouse
     m_steps++; // Lastly, increment the number of steps
@@ -504,34 +504,34 @@ void FloodFill::turnAround() {
     m_steps += 2; // Lastly, increment the number of steps
 }
 
-bool FloodFill::inGoal(int x, int y){
+bool FloodFill::inGoal(int x, int y) {
 
     // The goal is defined to be the center of the maze 
     // This means that it's 4 squares of length if even, 1 if odd
     
     bool horizontal = (MAZE_SIZE_X - 1) / 2 == x;
-    if (MAZE_SIZE_X % 2 == 0){
+    if (MAZE_SIZE_X % 2 == 0) {
         horizontal = horizontal || (MAZE_SIZE_X) / 2 == x;
     }
 
     bool vertical = (MAZE_SIZE_Y - 1) / 2 == y;
-    if (MAZE_SIZE_Y % 2 == 0){
+    if (MAZE_SIZE_Y % 2 == 0) {
         vertical = vertical || (MAZE_SIZE_Y) / 2 == y;
     }
 
     return horizontal && vertical;
 }
 
-int FloodFill::min(int one, int two, int three, int four){
+int FloodFill::min(int one, int two, int three, int four) {
     int firstMin = one;
     int secondMin = three;
-    if (two <= one){
+    if (two <= one) {
         firstMin = two;
     }
-    if (four <= three){
+    if (four <= three) {
         secondMin = four;
     }
-    if (firstMin <= secondMin){
+    if (firstMin <= secondMin) {
         return firstMin;
     }
     else{
@@ -569,8 +569,8 @@ void FloodFill::resetHonored() {
     return m_mouse->acknowledgeInputButtonPressed(1);
 }
 
-Cell* FloodFill::getFrontCell(){
-    switch (m_d){
+Cell* FloodFill::getFrontCell() {
+    switch (m_d) {
         case NORTH:
             return &m_cells[m_x][m_y+1];
         case EAST:
@@ -582,8 +582,8 @@ Cell* FloodFill::getFrontCell(){
     }
 }
 
-Cell* FloodFill::getLeftCell(){
-    switch (m_d){
+Cell* FloodFill::getLeftCell() {
+    switch (m_d) {
         case NORTH:
             return &m_cells[m_x-1][m_y];
         case EAST:
@@ -595,8 +595,8 @@ Cell* FloodFill::getLeftCell(){
     }
 }
 
-Cell* FloodFill::getRightCell(){
-    switch (m_d){
+Cell* FloodFill::getRightCell() {
+    switch (m_d) {
         case NORTH:
             return &m_cells[m_x+1][m_y];
         case EAST:
@@ -608,8 +608,8 @@ Cell* FloodFill::getRightCell(){
     }
 }
 
-Cell* FloodFill::getRearCell(){
-    switch (m_d){
+Cell* FloodFill::getRearCell() {
+    switch (m_d) {
         case NORTH:
             return &m_cells[m_x][m_y-1];
         case EAST:
@@ -621,8 +621,8 @@ Cell* FloodFill::getRearCell(){
     }
 }
 
-bool FloodFill::spaceFront(){
-    switch (m_d){
+bool FloodFill::spaceFront() {
+    switch (m_d) {
         case NORTH:
             return m_y+1 < MAZE_SIZE_Y;
         case EAST:
@@ -634,8 +634,8 @@ bool FloodFill::spaceFront(){
     }
 }
 
-bool FloodFill::spaceLeft(){
-    switch (m_d){
+bool FloodFill::spaceLeft() {
+    switch (m_d) {
         case NORTH:
             return m_x > 0;
         case EAST:
@@ -647,8 +647,8 @@ bool FloodFill::spaceLeft(){
     }
 }
 
-bool FloodFill::spaceRight(){
-    switch (m_d){
+bool FloodFill::spaceRight() {
+    switch (m_d) {
         case NORTH:
             return m_x+1 < MAZE_SIZE_X;
         case EAST:
@@ -791,7 +791,7 @@ void FloodFill::explore() {
         // explored everything, or that the target has not yet been traversed
         // (but will be traversed).
 
-        while (allWallsInspected && !unexplored.empty()){
+        while (allWallsInspected && !unexplored.empty()) {
 
             // First, pop the target cell off of the stack
             target = unexplored.top(); 
@@ -799,7 +799,7 @@ void FloodFill::explore() {
 
             // Next, check to see if all of the walls have been inspected.
             // If so, no need to explore that cell - get a new target
-            for (int i = 0; i < 4; i += 1){
+            for (int i = 0; i < 4; i += 1) {
                 allWallsInspected = allWallsInspected && target->getWallInspected(i);
             } 
             
@@ -815,7 +815,7 @@ void FloodFill::explore() {
             // explored, since an unreachable cell will never be pushed onto the
             // stack in the first place.
 
-            if (allWallsInspected){
+            if (allWallsInspected) {
                 target->setExplored(true);
                 flood(target->getX(), target->getY());
             }
@@ -829,7 +829,7 @@ void FloodFill::explore() {
         }
 
         // If prev == NULL we're at the start, so no need to move
-        if (target->getPrev() != NULL){
+        if (target->getPrev() != NULL) {
 
             // Once we've found a valid, non-origin target (i.e. one that has not
             // had all of its walls already inspected), we move to the proper
@@ -844,7 +844,7 @@ void FloodFill::explore() {
                 // actually retrace though all of the other prev Cells. Thus we
                 // can simply break to reduce the amount of retracing that we do
 
-                if (isOneCellAway(target)){
+                if (isOneCellAway(target)) {
                     break;
                 }
 
@@ -853,7 +853,7 @@ void FloodFill::explore() {
                 // we've no need to completely retrace though all of the other prev Cells.
                 // We can simply move to the staging cell and proceed.
 
-                if (isOneCellAway(target->getPrev())){
+                if (isOneCellAway(target->getPrev())) {
                     moveOneCell(target->getPrev());
                     break;
                 }
@@ -912,9 +912,9 @@ void FloodFill::explore() {
     // to the starting location. Thus, at the end of this function, all distance
     // values will be 100% complete and correct
     
-    for (int x = 0; x < MAZE_SIZE_X; x += 1){
-        for (int y = 0; y < MAZE_SIZE_Y; y += 1){
-            if (!m_cells[x][y].getExplored()){
+    for (int x = 0; x < MAZE_SIZE_X; x += 1) {
+        for (int y = 0; y < MAZE_SIZE_Y; y += 1) {
+            if (!m_cells[x][y].getExplored()) {
                 // Any unreachable cells should have inf distance. Conveniently,
                 // MAZE_SIZE_X*MAZE_SIZE_Y is one greater than the maximum distance
                 m_cells[x][y].setDistance(MAZE_SIZE_X*MAZE_SIZE_Y);
@@ -930,8 +930,8 @@ void FloodFill::explore() {
 
     // Lastly, return to the starting location and face forward. Note that we can
     // use the same short-circuiting procedures here as we do when we backtrace.
-    while (m_x != 0 || m_y != 0){
-        if (isOneCellAway(&m_cells[0][0])){
+    while (m_x != 0 || m_y != 0) {
+        if (isOneCellAway(&m_cells[0][0])) {
             moveOneCell(&m_cells[0][0]);
         }
         else if (tryUntraversed(&m_cells[0][0])) {
@@ -949,10 +949,10 @@ void FloodFill::explore() {
     }
 }
 
-void FloodFill::moveOneCell(Cell* target){
+void FloodFill::moveOneCell(Cell* target) {
 
     // Only move if the cell is actually one away
-    if (isOneCellAway(target)){
+    if (isOneCellAway(target)) {
 
         // Use local variables to reduce function calls
         int x = target->getX();
@@ -960,27 +960,27 @@ void FloodFill::moveOneCell(Cell* target){
         
         // Directional logic
         int absDir = 0; // Assume that the direction is upward
-        if (x < m_x){
+        if (x < m_x) {
             absDir = 3;        
         }
-        else if (x > m_x){
+        else if (x > m_x) {
             absDir = 1;        
         }
-        else if (y < m_y){
+        else if (y < m_y) {
             absDir = 2;        
         }
 
         // Turn the right direction
-        if (absDir == m_d){
+        if (absDir == m_d) {
             // Do nothing - we're already facing the right way
         }
-        else if (absDir == (m_d + 1)%4){
+        else if (absDir == (m_d + 1)%4) {
             turnRight();
         }
-        else if (absDir == (m_d + 2)%4){
+        else if (absDir == (m_d + 2)%4) {
             turnAround();
         }
-        else if (absDir == (m_d + 3)%4){
+        else if (absDir == (m_d + 3)%4) {
             turnLeft();
         }
 
@@ -1018,7 +1018,7 @@ void FloodFill::doUpdatesForCurrentCell(std::stack<Cell*>* unexplored) {
 
     // After, we find any unexplored neighbors. We use a front biased search since
     // this seems to perform better with dead-end detection.
-    if (!m_mouse->wallLeft() && getLeftCell()->getPrev() == NULL){
+    if (!m_mouse->wallLeft() && getLeftCell()->getPrev() == NULL) {
 
         // We need to keep track of the old values for the modified cell before we update it.
         appendModifiedCell(&modifiedCells, getLeftCell());
@@ -1026,7 +1026,7 @@ void FloodFill::doUpdatesForCurrentCell(std::stack<Cell*>* unexplored) {
         unexploredNeighbors.push_back(getLeftCell());
         getLeftCell()->setPrev(&m_cells[m_x][m_y]);
     }
-    if (!m_mouse->wallRight() && getRightCell()->getPrev() == NULL){
+    if (!m_mouse->wallRight() && getRightCell()->getPrev() == NULL) {
 
         // We need to keep track of the old values for the modified cell before we update it.
         appendModifiedCell(&modifiedCells, getRightCell());
@@ -1034,7 +1034,7 @@ void FloodFill::doUpdatesForCurrentCell(std::stack<Cell*>* unexplored) {
         unexploredNeighbors.push_back(getRightCell());
         getRightCell()->setPrev(&m_cells[m_x][m_y]);
     }
-    if (!m_mouse->wallFront() && getFrontCell()->getPrev() == NULL){
+    if (!m_mouse->wallFront() && getFrontCell()->getPrev() == NULL) {
 
         // We need to keep track of the old values for the modified cell before we update it.
         appendModifiedCell(&modifiedCells, getFrontCell());
@@ -1093,22 +1093,22 @@ void FloodFill::doUpdatesForCurrentCell(std::stack<Cell*>* unexplored) {
     m_history.modifiedCellsUpdate(modifiedCells);
 }
 
-bool FloodFill::isOneCellAway(Cell* target){
+bool FloodFill::isOneCellAway(Cell* target) {
 
     // Use local variables to reduce function calls
     int x = target->getX();
     int y = target->getY();
     
-    if ((m_x == x) && (m_y + 1 == y) && !m_cells[m_x][m_y].isWall(NORTH)){
+    if ((m_x == x) && (m_y + 1 == y) && !m_cells[m_x][m_y].isWall(NORTH)) {
         return true;
     }
-    else if ((m_x == x) && (m_y - 1 == y) && !m_cells[m_x][m_y].isWall(SOUTH)){
+    else if ((m_x == x) && (m_y - 1 == y) && !m_cells[m_x][m_y].isWall(SOUTH)) {
         return true;
     }
-    else if ((m_x + 1 == x) && (m_y == y) && !m_cells[m_x][m_y].isWall(EAST)){
+    else if ((m_x + 1 == x) && (m_y == y) && !m_cells[m_x][m_y].isWall(EAST)) {
         return true;
     }
-    else if ((m_x - 1 == x) && (m_y == y) && !m_cells[m_x][m_y].isWall(WEST)){
+    else if ((m_x - 1 == x) && (m_y == y) && !m_cells[m_x][m_y].isWall(WEST)) {
         return true;
     }
     
@@ -1117,7 +1117,7 @@ bool FloodFill::isOneCellAway(Cell* target){
 
 // Attempts to short-circuit the retracing by looking at neighbors of untraversed cells
 // Returns true if successful, false if short-circuiting wasn't possible
-bool FloodFill::tryUntraversed(Cell* target){
+bool FloodFill::tryUntraversed(Cell* target) {
 
     int dir = -1; // 0: front, 1: right, 3:left (rear cannot be untraversed)
     int mostCount = -1; // Keeps track of highest number of short-circuited steps
@@ -1127,7 +1127,7 @@ bool FloodFill::tryUntraversed(Cell* target){
     for (int i = 0; i < 3; i += 1) {
 
         Cell* neighbor = NULL;
-        switch(i){
+        switch(i) {
             case 0:
                 neighbor = getFrontCell();
                 break;
@@ -1165,7 +1165,7 @@ bool FloodFill::tryUntraversed(Cell* target){
                 // This loop guarentees that we check for short circuiting up until the
                 // prev Cell for the target. However, we need to check target->getPrev()
                 // explicitly afterwards
-                while (runner != target->getPrev()){
+                while (runner != target->getPrev()) {
 
                     if (neighborPrev == runner) {
                         if (dir == -1 || counter < mostCount) {
@@ -1203,7 +1203,7 @@ bool FloodFill::tryUntraversed(Cell* target){
 
     if (dir >= 0 && mostCount > 1) {
         Cell* untraversed = NULL; 
-        switch(dir){
+        switch(dir) {
             case 0:
                 untraversed = getFrontCell();
                 break;
@@ -1221,7 +1221,7 @@ bool FloodFill::tryUntraversed(Cell* target){
     return false;
 }
 
-void FloodFill::bffExplore(std::stack<Cell*>* path){
+void FloodFill::bffExplore(std::stack<Cell*>* path) {
 
     // The first checkpoint is at the origin
     Cell* cpCell = &m_cells[0][0];
@@ -1372,8 +1372,8 @@ void FloodFill::bffExplore(std::stack<Cell*>* path){
         m_explored = true;
 
         // Return to start
-        while ((m_x != 0 || m_y != 0) && !(undoRequested() || resetRequested())){
-            if (isOneCellAway(&m_cells[0][0])){
+        while ((m_x != 0 || m_y != 0) && !(undoRequested() || resetRequested())) {
+            if (isOneCellAway(&m_cells[0][0])) {
                 moveOneCell(&m_cells[0][0]);
             }
             else if (tryUntraversed(&m_cells[0][0])) {
@@ -1401,13 +1401,13 @@ void FloodFill::dobffCellUpdates() {
     // that are closer to the origin - without this, the algo will always (naively) take
     // the same path, even if it's much less efficient to do so.
 
-    if (!m_mouse->wallLeft() && getLeftCell()->getPrev() == NULL && getLeftCell() != &m_cells[0][0]){
+    if (!m_mouse->wallLeft() && getLeftCell()->getPrev() == NULL && getLeftCell() != &m_cells[0][0]) {
         getLeftCell()->setPrev(&m_cells[m_x][m_y]);
     }
-    if (!m_mouse->wallFront() && getFrontCell()->getPrev() == NULL && getFrontCell() != &m_cells[0][0]){
+    if (!m_mouse->wallFront() && getFrontCell()->getPrev() == NULL && getFrontCell() != &m_cells[0][0]) {
         getFrontCell()->setPrev(&m_cells[m_x][m_y]);
     }
-    if (!m_mouse->wallRight() && getRightCell()->getPrev() == NULL && getRightCell() != &m_cells[0][0]){
+    if (!m_mouse->wallRight() && getRightCell()->getPrev() == NULL && getRightCell() != &m_cells[0][0]) {
         getRightCell()->setPrev(&m_cells[m_x][m_y]);
     }
 }
@@ -1425,7 +1425,7 @@ void FloodFill::bffAppendModifiedCell(std::list<SimpleCellmod>* modCellsList, Ce
 
 void FloodFill::bffVictory(std::stack<Cell*> path) {
 
-    while (true){
+    while (true) {
 
         std::stack<Cell*> copy = path;
 
@@ -1436,7 +1436,7 @@ void FloodFill::bffVictory(std::stack<Cell*> path) {
         }
 
         // Return to start
-        while ((m_x != 0 || m_y != 0) && !(undoRequested() || resetRequested())){
+        while ((m_x != 0 || m_y != 0) && !(undoRequested() || resetRequested())) {
             moveOneCell(m_cells[m_x][m_y].getPrev());
         }
         if (!(undoRequested() || resetRequested())) {
@@ -1456,7 +1456,7 @@ void FloodFill::bffVictory(std::stack<Cell*> path) {
             resetHonored();
             return;
         }
-        if (undoRequested()){
+        if (undoRequested()) {
             m_x = 0; // Since we're repositioning the mouse but not re-intializing the
             m_y = 0; // maze, we have to explicitely reset the x, y, and d values
             m_d = 0;
