@@ -4,8 +4,12 @@
 
 namespace mack {
 
-CellList::CellList() : m_size(0), m_capacity(DEFAULT_CAPACITY) {
-    m_data = new Cell*[m_capacity];
+CellList::CellList() {
+    CellList(DEFAULT_CAPACITY);
+}
+
+CellList::CellList(int capacity) : m_size(0), m_capacity(capacity), m_data(new Cell*[capacity]) {
+    ASSERT(0 < m_capacity);
 }
 
 CellList::CellList(const CellList& other) {
@@ -14,13 +18,9 @@ CellList::CellList(const CellList& other) {
 }
 
 void CellList::operator=(const CellList& other) {
-
-    // Increase the capacity if necessary
     while (m_capacity < other.capacity()) {
         increaseCapacity();
     }
-
-    // Add the items and increase the size
     for (int i = 0; i < other.size(); i += 1) {
         m_data[i] = other.get(i);
     }

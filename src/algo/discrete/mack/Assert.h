@@ -1,8 +1,8 @@
 #pragma once
 
-// 0 = off
-// 1 = on
-#if (1)
+#include "Options.h"
+
+#if (SIMULATOR)
 
 #include <iostream>
 

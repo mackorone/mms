@@ -10,6 +10,7 @@ static const int DEFAULT_CAPACITY = 4;
 
 public:
     CellList();
+    CellList(int capacity);
     CellList(const CellList& other);
     void operator=(const CellList& other);
     ~CellList();
@@ -17,12 +18,13 @@ public:
     int size() const;
     int capacity() const;
 
+    Cell* get(int index) const;
+    void set(int index, Cell* cell);
+
     bool contains(Cell* cell) const;
     int indexOf(Cell* cell) const;
-    Cell* get(int index) const;
 
     void append(Cell* cell);
-    void set(int index, Cell* cell);
 
 private:
     int m_size;
