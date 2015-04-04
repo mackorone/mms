@@ -7,8 +7,7 @@ namespace mack {
 CellQueue::CellQueue() : m_head(0), m_tail(0), m_data(new Cell*[MAX_CAPACITY]) {
 }
 
-CellQueue::CellQueue(const CellQueue& other) {
-    CellQueue();
+CellQueue::CellQueue(const CellQueue& other) : m_head(0), m_tail(0), m_data(new Cell*[MAX_CAPACITY]) {
     *this = other;
 }
 
