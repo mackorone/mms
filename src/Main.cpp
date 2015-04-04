@@ -86,7 +86,7 @@ void draw() {
 
     // Get the duration of the drawing operation, in seconds. Note that this duration
     // is simply the total number of real seconds that have passed, which is exactly
-    // what we want (since the framerate is perceived in real-time and not CPU time).
+    // what we want (since the frame-rate is perceived in real-time and not CPU time).
     double end(sim::getHighResTime());
     double duration = end - start;
 
@@ -99,7 +99,7 @@ void draw() {
             + std::string(" percent late."));
     }
 
-    // Sleep the appropriate amout of time, base on the drawing duration
+    // Sleep the appropriate amount of time, base on the drawing duration
     sim::sleep(sim::Seconds(std::max(0.0, 1.0/sim::P()->frameRate() - duration)));
 
     // Request to execute the draw function again
@@ -143,18 +143,11 @@ void keyInput(unsigned char key, int x, int y) {
         // Toggle wall truth visibility
         sim::S()->setWallTruthVisible(!sim::S()->wallTruthVisible());
     }
-    /*
-    else if (key == 'r' || key == 'R') {
-        // Reset requested - reset the position mouse and don't retain memory
-        // TODO
-        sim::S()->setResetRequested(true); // TODO: Make these arbitrary buttons...
+    else if (std::string("0123456789").find(key) != std::string::npos) {
+        // Press an input button
+        int inputButton = std::string("0123456789").find(key);
+        sim::S()->setInputButtonPressed(inputButton, true);
     }
-    else if (key == 'u' || key == 'U') {
-        // Undo request - reset the position mouse but retains memory
-        // TODO
-        sim::S()->setUndoRequested(true);
-    }
-    */
     else if (key == 'q' || key == 'Q') {
         // Quit
         sim::quit();

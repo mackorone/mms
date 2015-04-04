@@ -32,7 +32,7 @@ std::vector<const Tile*> lineSegmentTileCover(const Cartesian& A, const Cartesia
     Meters dx = p1.getX() - p0.getX(); // Always non-negative
     Meters dy = p1.getY() - p0.getY(); // Could have any sign
 
-    // For all y-intercepts to the right of the the starting point
+    // For all y-intercepts to the right of the starting point
     for (int i = 1; tileLength * (x0 + i) < p1.getX(); i += 1) {
         Meters fx = tileLength * (x0 + i);
         Meters fy = p0.getY() + (fx - p0.getX()) * (dy / dx);
@@ -137,7 +137,7 @@ bool linesIntersect(const std::pair<const Cartesian&, const Cartesian&>& A,
     // line segments intersect.
     //
     // A relatively easy way to check to see that A1 and A2 are on opposite sides of the
-    // line connecting B1 and B2 is to compare the the cross product of A1 and B2 with
+    // line connecting B1 and B2 is to compare the cross product of A1 and B2 with
     // the cross product of A2 and B2 (both relative to B1). If the cross products have
     // opposite signs, this means that the we have to travel in a different direction
     // (clockwise or counter-clockwise) to connect A1 to B2 than we do to have to connect
@@ -168,7 +168,7 @@ bool linesIntersect(const std::pair<const Cartesian&, const Cartesian&>& A,
     float c4 = crossProduct(B.first, A.second, B.second).getMetersSquared();
 
     // Lastly, a cheap way to check to see that the cross products have opposite signs
-    // (or that one is zero) is to multiply them together and check to see the the product
+    // (or that one is zero) is to multiply them together and check to see the product
     // is less than or equal to zero.
 
     return (c1*c2 <= 0 && c3*c4 <= 0);

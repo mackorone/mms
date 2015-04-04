@@ -4,7 +4,6 @@
 
 namespace sim {
 
-// TODO: I shouldn't need this class
 class MetersPerSecond : public Speed {
 
 public:

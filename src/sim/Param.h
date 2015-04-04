@@ -12,7 +12,7 @@ class Param {
 
 public:
 
-    // Returns a pointer to the singeton parameter object
+    // Returns a pointer to the singleton parameter object
     static Param* getInstance();
 
     // Graphics parameters
@@ -40,6 +40,8 @@ public:
     float discreteInterfaceMinSpeed();
     float discreteInterfaceMaxSpeed();
     float discreteInterfaceDefaultSpeed();
+    bool discreteInterfaceDeclareWallOnRead();
+    bool declareBothWallHalves();
     int mousePositionUpdateRate();
     bool printLateMousePositionUpdates();
     int collisionDetectionRate();
@@ -97,6 +99,8 @@ private:
     float m_discreteInterfaceMinSpeed;
     float m_discreteInterfaceMaxSpeed;
     float m_discreteInterfaceDefaultSpeed;
+    bool m_discreteInterfaceDeclareWallOnRead;
+    bool m_declareBothWallHalves;
     int m_mousePositionUpdateRate;
     bool m_printLateMousePostitionUpdates;
     int m_collisionDetectionRate;

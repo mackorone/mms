@@ -7,7 +7,7 @@
 
 namespace sim {
 
-TileGraphic::TileGraphic(const Tile* tile) : m_tile(tile), m_color(COLORS.at(P()->tileBaseColor())) {
+TileGraphic::TileGraphic(const Tile* tile) : m_tile(tile), m_color(COLOR_STRINGS.at(P()->tileBaseColor())) {
     for (Direction direction : DIRECTIONS) {
         m_algoWalls[direction] = false;
     }
@@ -20,7 +20,7 @@ void TileGraphic::draw() const {
     drawPolygon(m_tile->getFullPolygon());
 
     // Either draw the true walls of the tile
-    glColor3fv(COLORS.at(P()->tileWallColor()));
+    glColor3fv(COLOR_STRINGS.at(P()->tileWallColor()));
     if (S()->wallTruthVisible()) {
         for (Polygon polygon : m_tile->getActualWallPolygons()) {
             drawPolygon(polygon);
@@ -35,7 +35,7 @@ void TileGraphic::draw() const {
     }
 
     // Draw the corners of the tile
-    glColor3fv(COLORS.at(P()->tileCornerColor()));
+    glColor3fv(COLOR_STRINGS.at(P()->tileCornerColor()));
     for (Polygon polygon : m_tile->getCornerPolygons()) {
         drawPolygon(polygon);
     }

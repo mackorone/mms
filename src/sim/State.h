@@ -1,5 +1,7 @@
 #pragma once
 
+#include <map>
+
 #include "InterfaceType.h"
 
 namespace sim {
@@ -12,7 +14,7 @@ class State {
 
 public:
 
-    // Returns a pointer to the singeton state object
+    // Returns a pointer to the singleton state object
     static State* getInstance();
 
     // Accessors
@@ -23,9 +25,8 @@ public:
     bool mousePathVisible(); // TODO: Implement the mouse path
     bool wallTruthVisible();
     bool paused();
-    bool resetRequested();
-    bool undoRequested();
     float simSpeed();
+    bool inputButtonPressed(int inputButton);
 
     // Mutators
     void setCrashed();
@@ -35,9 +36,8 @@ public:
     void setMousePathVisible(bool mousePathVisible);
     void setWallTruthVisible(bool wallTruthVisible);
     void setPaused(bool paused);
-    void setUndoRequested(bool undoRequested);
-    void setResetRequested(bool resetRequested);
     void setSimSpeed(float simSpeed);
+    void setInputButtonPressed(int inputButton, bool pressed);
 
 private:
 
@@ -54,9 +54,8 @@ private:
     bool m_mousePathVisible;
     bool m_wallTruthVisible;
     bool m_paused;
-    bool m_resetRequested;
-    bool m_undoRequested;
     float m_simSpeed;
+    std::map<int, bool> m_inputButtons;
 };
 
 } // namespace sim

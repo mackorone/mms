@@ -23,9 +23,6 @@ void sleep(const Time& time);
 // Like time() in <ctime> but higher resolution
 double getHighResTime();
 
-// TODO
-// void timeSomeOperation();
-
 // Returns the path the mms project directory
 std::string getProjectDirectory();
 
