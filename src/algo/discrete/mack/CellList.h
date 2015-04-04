@@ -19,7 +19,7 @@ public:
 
     bool contains(Cell* cell) const;
     int indexOf(Cell* cell) const;
-    Cell* at(int index) const;
+    Cell* get(int index) const;
 
     void append(Cell* cell);
     void set(int index, Cell* cell);

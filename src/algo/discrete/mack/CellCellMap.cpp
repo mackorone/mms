@@ -13,7 +13,7 @@ bool CellCellMap::hasKey(Cell* key) const {
 
 Cell* CellCellMap::get(Cell* key) const {
     ASSERT(hasKey(key));
-    return m_values.at(m_keys.indexOf(key));
+    return m_values.get(m_keys.indexOf(key));
 }
 
 void CellCellMap::put(Cell* key, Cell* value) {

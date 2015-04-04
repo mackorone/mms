@@ -22,7 +22,7 @@ void CellList::operator=(const CellList& other) {
 
     // Add the items and increase the size
     for (int i = 0; i < other.size(); i += 1) {
-        m_data[i] = other.at(i);
+        m_data[i] = other.get(i);
     }
     m_size = other.size();
 }
@@ -51,13 +51,13 @@ bool CellList::contains(Cell* cell) const {
 int CellList::indexOf(Cell* cell) const {
     ASSERT(contains(cell));
     int index = 0;
-    while (at(index) != cell) {
+    while (get(index) != cell) {
         index += 1;
     }
     return index;
 }
 
-Cell* CellList::at(int index) const {
+Cell* CellList::get(int index) const {
     ASSERT(0 <= index && index < size());
     return m_data[index];
 }
