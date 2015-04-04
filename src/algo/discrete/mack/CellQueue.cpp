@@ -37,7 +37,7 @@ void CellQueue::enqueue(Cell* cell) {
 Cell* CellQueue::dequeue() {
     ASSERT(!empty());
     Cell* data = m_data[m_head];
-    m_data += (1 + MAX_CAPACITY) % MAX_CAPACITY;
+    m_head += (1 + MAX_CAPACITY) % MAX_CAPACITY;
     return data;
 }
 
