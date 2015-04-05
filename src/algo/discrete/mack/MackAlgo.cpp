@@ -58,23 +58,23 @@ Cell* MackAlgo::getNextMove() {
 
     // Use Dijkstra's algo to determine the next best move
 
+    // Increment the sequence number so that we know that old cell data is stale
     static int sequenceNumber = 0;
     sequenceNumber += 1;
 
+    // Initialize the source cell
     Cell* source = &m_maze[m_x][m_y];
     source->setSequenceNumber(sequenceNumber);
-    source->setParent(NULL);
     source->setSourceDirection(m_d);
+    source->setParent(NULL);
     source->setDistance(0);
     initializeDestinationDistance();
 
     CellHeap heap;
     heap.push(source);
-    Cell* current = NULL;
-
     while (heap.size() > 0) {
 
-        current = heap.pop();
+        Cell* current = heap.pop();
         current->setExamined(true);
         int x = current->getX();
         int y = current->getY();
@@ -84,6 +84,8 @@ Cell* MackAlgo::getNextMove() {
             break;
         }
 
+        // Inspect neighbors if they're not yet examined
+        // NOTE: Inspecting and examining are not the same thing!
         for (int direction = 0; direction < 4; direction += 1) {
             if (!current->isWall(direction)) {
                 Cell* neighbor = NULL;
@@ -116,7 +118,7 @@ Cell* MackAlgo::getNextMove() {
 #endif
 
     Cell* prev = NULL;
-    current = getClosestDestinationCell();
+    Cell* current = getClosestDestinationCell();
     while (current->getParent() != NULL) {
 #if (SIMULATOR)
         setColor(current->getX(), current->getY(), m_onWayToCenter ? 'B' : 'R');

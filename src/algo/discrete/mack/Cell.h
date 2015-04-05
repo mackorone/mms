@@ -19,6 +19,8 @@ public:
     bool isWall(int direction) const;
     void setWall(int direction, bool isWall);
 
+    // ----- Used for Dijkstra's ----- //
+
     int getSequenceNumber() const;
     void setSequenceNumber(int sequenceNumber);
     
