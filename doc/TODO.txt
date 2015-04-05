@@ -1,56 +1,40 @@
-- Return const references instead of values
-- Collision Detection
-- Make Sensor and Motor abstract, support different types
-- Change float to units (including in the ParamParser and Param class)
-- Type safety (in terms of units) of the parameters
+Features:
 - Maze Validation (both physically valid mazes and competition valid mazes)
-- Convert floats to doubles where appropriate
-- Color class/object? Utility function for setting color? Drawer class?
-- Change the colors of the wheels based on the speed of the wheels
-- Show the direction that the robot is facing...
+- Data recording for pause, rewind, fast forward
+- Interrupt interface
 - Run the program with maximum thread priority
 - New maze w/o restarting app
-- Make a distinction between the mouse interface and sim interface
 - Ensure that any file can be loaded regardless of maze size specification
 - Make terminal style output at bottom or right of window
-- Display another window of the robot's perception
 - Shortest path graphic
+- XML file for algorithm choice
+- Indicator of sim speed (real time, 10x fast, etc.)
+- Support more than two wheels (let's hold off on this for now...)
+- More Arduino function support
+- Dual screen! (mini-map and zoomed-in view - 1x1, 3x3, relative and absolute rotation)
+- Draw a path of where the robot has been
+- Support stepper motor / encoders interface
+
+Clean-Up:
+- Convert floats to doubles where appropriate
+- Return const references instead of values
+- Change float to units (including in the ParamParser and Param class)
+- Type safety (in terms of units) of the parameters
 - Reduce includes as much as possible
 - Rewrite the Makefile to use an "inc" directory
-- XML file for algorithm choice
-- Indicator of sim speed
-- Support more than two wheels
 - Change "bool foo(false)" to "bool foo = false" for primitive - they look like function calls
-- Sim code should match the bot code as closely as possible
-- Dual screen! (mini-map and zoomed-in view - 1x1, 3x3, relative and absolute rotation)
-- Reduce CPU usage - most is used by the drawing... cache some stuff??? Only redraw certain things??? Look at OpenGL scissor
-- Instead of speeding up and slowing down the simulator (which is difficult because
-  the Arduino code is already executing as fast as possible) we could take snapshots
-  of the simulation, and then run the simulator from that particular point. This would
-  involve providing some sort of snapshot interface to the algorithm.
-- Make a wrapper function for a functions that sleep a specfic duration after executing some code
-- Ensure that the mouse update is the continuous function
-- Make sure that the coordinate frame of the robot is what we expect
 - Handle bad values in the parameters, such as bad colors, negative values, etc.
 - Put interface in root of src directory
 - write "isDirectory(std::string path)" and enforce this where necessary
 - write getRandom() and replace old calls to rand()
-- draw a path of where the robot has been
-- Stepper motor / Encoders
 - Performance on different systems???
-- Interrupt interface
 - There was a weird bug where the mouse teleported and the program crashed
-
-Low Priority
-===============
+- The mouse sometimes rotates weirdly (goes slowly, backwards for a second, and then forwards fast.
+  You can see what I mean by just increasing the view length of the sensors for a continuous algo)
 - Remove as many c_str() as possible
 - Replace "cout" with "print"
-- Use DIRECTIONS where possible
 - Pass things by reference when possible
-- Figure out how the discrete and continuous interfaces can coexist
 - Sprinkle assertions everywhere
-- Make the mouse look prettier (draw black box around, or something)
-- Handle the case when target tile is unreachable - it just crashes right now
 - Validate the coding standards (especially "{" placement)
 - Rewrite "i++" and "++i" as "i += 1"
 - Give better explanations for the GeometryUtilities
