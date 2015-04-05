@@ -135,7 +135,7 @@ float MackAlgo::getTurnCost() {
 }
 
 float MackAlgo::getStraightAwayCost(int length) {
-    return 1.0 / (length * length);
+    return 1.0 / length;
 }
 
 bool MackAlgo::inspectNeighbor(Cell* current, Cell* neighbor, int direction) {
@@ -465,5 +465,7 @@ void MackAlgo::colorCenter(char color) {
             setColor((MAZE_WIDTH - 1) / 2,  MAZE_HEIGHT      / 2, color);
     }
 }
+
+// TODO: Color buffer layer to get rid of the flickering
 
 } // namespace mack
