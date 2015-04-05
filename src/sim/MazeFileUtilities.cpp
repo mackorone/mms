@@ -154,9 +154,141 @@ bool officialMaze(const std::string& mazeFilePath) {
     if(!threeStartingWalls(maze)) {
         return false;
     }
+/*
+    //Check that the maze cannot be solved by a wall follower
+    if(!cannotWallFollow(maze)) {
+        return false;
+    }
+*/
 
     return true;
 }
+/*
+//Recursively check every combination and left and right wall follows
+//to ensure the maze cannot be solved by a random wall follower
+bool cannotWallFollow(const std::vector<std::vector<BasicTile>>& maze) {
+    std::vector<std::vector<int>> orientations;
+
+    //note: the 0,0,0 arguments assume the robot starts in coordinates
+    //x=0, y=0, and facing North where cardinal directions NESW = 0123
+    return !(recursiveLeftWallFollow(maze, 0, 0, 0, orientations) ||
+             recursiveRightWallFollow(maze, 0, 0, 0, orientations));
+}
+
+bool recursiveLeftWallFollow(const std::vector<std::vector<BasicTile>>& maze, int x, int y, int dir, std::vector<std::vector<int>> orientations) {
+    //check to see if center is found
+    if((x==7||x==8)&&(y==7||y==8)){
+        return true;
+    }
+
+    //Orientation contains information about prior positions of the solver
+    //Each element is a vector containing:
+    //[x coord, y coord, direction (NESW = 0123), and left (1) or right(2)]
+    //The idea is that if the algorithm finds itself in an orientation
+    //it's been in before without reaching the center, then it will
+    //never reach the center
+    std::vector<int> orientation;
+    orientation.push_back(x);
+    orientation.push_back(y);
+    orientation.push_back(dir);
+    orientation.push_back(1);
+    bool dejavu = false;
+    for(int i = 0; i < orientations.size(); i++) {
+        for(int j = 0; j < orientation.size(); j++) {
+            if(orientation.at(j) != orientations.at(i).at(j)) {
+                break;
+            }
+            if(j == (orientation.size() - 1)) {
+                dejavu = true;
+            }
+        }
+        if(dejavu) {
+            return false;
+        }
+    }
+    //save current orientation for future comparison
+    orientations.push_back(orientation);            
+    
+    //now move on like a normal left follower
+    int left = dir - 1;
+    if(left < 0) left = 3;
+
+    int right = dir + 1;
+    if(right > 3) right = 0;
+
+    if(!maze.at(x).at(y).walls.at(left)){
+        dir = left;
+    }
+    while(maze.at(x).at(y).walls.at(dir)){
+        dir = right;
+        right = dir + 1;
+        if(right > 3) right = 0;
+    }
+
+    if(dir == 0) y++;
+    else if(dir == 1) x++;
+    else if(dir == 2) y--;
+    else if(dir == 3) x--;
+
+    //now branch into right and left followers from new position
+    return recursiveLeftWallFollow(maze, x, y, dir, orientations) ||
+           recursiveRightWallFollow(maze, x, y, dir, orientations);
+}
+
+//refer to recursiveLeftWallFollow for comments
+bool recursiveRightWallFollow(const std::vector<std::vector<BasicTile>>& maze, int x, int y, int dir, std::vector<std::vector<int>> orientations) {
+    if((x==7||x==8)&&(y==7||y==8)){
+        return true;
+    }
+
+    std::vector<int> orientation;
+    orientation.push_back(x);
+    orientation.push_back(y);
+    orientation.push_back(dir);
+    orientation.push_back(2);
+    bool dejavu = false;
+    for(int i = 0; i < orientations.size(); i++) {
+        for(int j = 0; j < orientation.size(); j++) {
+            if(orientation.at(j) != orientations.at(i).at(j)) {
+                break;
+            }
+            if(j == (orientation.size() - 1)) {
+                dejavu = true;
+            }
+        }
+        if(dejavu) {
+            return false;
+        }
+    }
+    orientations.push_back(orientation);            
+    
+    //now move on like a normal right follower
+    int left = dir - 1;
+    if(left < 0) left = 3;
+
+    int right = dir + 1;
+    if(right > 3) right = 0;
+
+    if(!maze.at(x).at(y).walls.at(right)){
+        dir = right;
+    }
+    while(maze.at(x).at(y).walls.at(dir)){
+        dir = left;
+        left = dir - 1;
+        if(left < 0) left = 3;
+    }
+
+    if(dir == 0) y++;
+    else if(dir == 1) x++;
+    else if(dir == 2) y--;
+    else if(dir == 3) x--;
+
+    //now branch into right and left followers from new position
+    return recursiveLeftWallFollow(maze, x, y, dir, orientations) ||
+           recursiveRightWallFollow(maze, x, y, dir, orientations);
+ 
+}
+*/
 
 bool hasPathToCenter(const std::vector<std::vector<BasicTile>>& maze, int x, int y) {
     static std::vector<bool> checkRow(16, false);
