@@ -2,7 +2,7 @@
 
 #include "Options.h"
 
-#if(SIMULATOR)
+#if (SIMULATOR)
 
 #define byte char
 

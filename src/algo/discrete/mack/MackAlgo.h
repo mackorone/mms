@@ -26,6 +26,13 @@ private:
     bool m_onWayToCenter;
 
     Cell* getNextMove();
+    float getTurnCost();
+    float getStraightAwayCost(int length);
+    bool inspectNeighbor(Cell* current, Cell* neighbor, int direction);
+
+    void initializeDestinationDistance();
+    Cell* getClosestDestinationCell();
+    Cell* min(Cell* one, Cell* two);
 
     void readWalls();
     bool inGoal(int x, int y);

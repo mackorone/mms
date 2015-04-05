@@ -73,6 +73,14 @@ void MouseInterface::colorTile(int x, int y, char color) {
     }
 
     m_mazeGraphic->setColor(x, y, COLOR_CHARS.at(color));
+    m_coloredTiles.insert(std::make_pair(x, y));
+}
+
+void MouseInterface::resetColors() {
+    for (std::pair<int, int> position : m_coloredTiles) {
+        m_mazeGraphic->setColor(position.first, position.second, COLOR_STRINGS.at(P()->tileBaseColor()));
+    }
+    m_coloredTiles.clear();
 }
 
 void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) {

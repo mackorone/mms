@@ -26,6 +26,7 @@ private:
 
     // Tomasz's maze generation algo
     static std::vector<std::vector<BasicTile>> tomasz();
+
     /*
     // Randomly generate a maze
     void randomize();

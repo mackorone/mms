@@ -23,6 +23,7 @@ public:
     // Any interface methods
     void delay(int milliseconds);
     void colorTile(int x, int y, char color);
+    void resetColors();
     void declareWall(int x, int y, char direction, bool wallExists);
     void resetPosition();
     bool inputButtonPressed(int inputButton);
@@ -47,6 +48,7 @@ private:
     const Maze* m_maze;
     Mouse* m_mouse;
     MazeGraphic* m_mazeGraphic;
+    std::set<std::pair<int, int>> m_coloredTiles;
 
     void ensureDeclaredInterface(const std::string& callingFunction) const;
     void ensureDiscreteInterface(const std::string& callingFunction) const;

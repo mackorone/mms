@@ -1,9 +1,10 @@
 #include "MackAlgo.h"
 
 #include <iostream>
+#include <limits>
 
-#include "CellQueue.h"
-#include "CellCellMap.h"
+#include "CellHeap.h"
+#include "Options.h"
 
 namespace mack {
 
@@ -55,65 +56,168 @@ void MackAlgo::solve(sim::MouseInterface* mouse) {
 
 Cell* MackAlgo::getNextMove() {
 
-    // BFS to determine the best move to make next
+    // Use Dijkstra's algo to determine the next best move
 
-    CellList discovered;
-    CellQueue queue;
-    CellCellMap path;
+    static int sequenceNumber = 0;
+    sequenceNumber += 1;
 
-    queue.enqueue(&m_maze[m_x][m_y]);
-    discovered.append(&m_maze[m_x][m_y]);
+    Cell* source = &m_maze[m_x][m_y];
+    source->setSequenceNumber(sequenceNumber);
+    source->setParent(NULL);
+    source->setSourceDirection(m_d);
+    source->setDistance(0);
+    initializeDestinationDistance();
+
+    CellHeap heap;
+    heap.push(source);
     Cell* current = NULL;
 
-    // TODO: Straightaway heuristics
+    while (heap.size() > 0) {
 
-    while (!queue.empty()) {
-
-        // TODO: Performance of the lists isn't too good...
-
-        current = queue.dequeue();
-
+        current = heap.pop();
+        current->setExamined(true);
         int x = current->getX();
         int y = current->getY();
 
-        // TODO: Can we exit sooner ?? Or take the path with no turns???
-        if (m_onWayToCenter ? inGoal(x, y) : x == 0 && y == 0) {
+        // We needn't explore any further
+        if (current == getClosestDestinationCell()) {
             break;
         }
 
-        if (!current->isWall(NORTH) && !discovered.contains(&m_maze[x][y+1])) {
-            discovered.append(&m_maze[x][y+1]);
-            path.put(&m_maze[x][y+1], current);
-            queue.enqueue(&m_maze[x][y+1]);
-        }
-        if (!current->isWall(EAST) && !discovered.contains(&m_maze[x+1][y])) {
-            discovered.append(&m_maze[x+1][y]);
-            path.put(&m_maze[x+1][y], current);
-            queue.enqueue(&m_maze[x+1][y]);
-        }
-        if (!current->isWall(SOUTH) && !discovered.contains(&m_maze[x][y-1])) {
-            discovered.append(&m_maze[x][y-1]);
-            path.put(&m_maze[x][y-1], current);
-            queue.enqueue(&m_maze[x][y-1]);
-        }
-        if (!current->isWall(WEST) && !discovered.contains(&m_maze[x-1][y])) {
-            discovered.append(&m_maze[x-1][y]);
-            path.put(&m_maze[x-1][y], current);
-            queue.enqueue(&m_maze[x-1][y]);
+        for (int direction = 0; direction < 4; direction += 1) {
+            if (!current->isWall(direction)) {
+                Cell* neighbor = NULL;
+                switch (direction) {
+                    case NORTH:
+                        neighbor = &m_maze[x][y+1];
+                        break;
+                    case EAST:
+                        neighbor = &m_maze[x+1][y];
+                        break;
+                    case SOUTH:
+                        neighbor = &m_maze[x][y-1];
+                        break;
+                    case WEST:
+                        neighbor = &m_maze[x-1][y];
+                        break;
+                }
+                if (neighbor->getSequenceNumber() != current->getSequenceNumber() || !neighbor->getExamined()) {
+                    if (inspectNeighbor(current, neighbor, direction)) {
+                        heap.push(neighbor);
+                    }
+                }
+            }
         }
     }
 
-    resetColors(); // TODO: More efficient way to do this??
+#if (SIMULATOR)
+    resetColors();
     colorCenter('G');
-    Cell* prev = NULL;
+#endif
 
-    while (path.hasKey(current)) {
+    Cell* prev = NULL;
+    current = getClosestDestinationCell();
+    while (current->getParent() != NULL) {
+#if (SIMULATOR)
         setColor(current->getX(), current->getY(), m_onWayToCenter ? 'B' : 'R');
+#endif
         prev = current;
-        current = path.get(current);
+        current = current->getParent();
     }
     
     return prev;
+}
+
+float MackAlgo::getTurnCost() {
+    return 1.0;
+}
+
+float MackAlgo::getStraightAwayCost(int length) {
+    return 1.0 / (length * length);
+}
+
+bool MackAlgo::inspectNeighbor(Cell* current, Cell* neighbor, int direction) {
+
+    bool pushToHeap = false;
+    int x = current->getX();
+    int y = current->getY();
+
+    // Determine the cost if routed through the currect node
+    float costToNeighbor = current->getDistance();
+    if (current->getSourceDirection() == direction) {
+        costToNeighbor += getStraightAwayCost(current->getStraightAwayLength() + 1);
+    }
+    else {
+        costToNeighbor += getTurnCost();
+    }
+
+    // Make updates to the node
+    if (neighbor->getSequenceNumber() != current->getSequenceNumber() || costToNeighbor < neighbor->getDistance()) {
+        if (neighbor->getSequenceNumber() != current->getSequenceNumber()) {
+            neighbor->setSequenceNumber(current->getSequenceNumber());
+            pushToHeap = true;
+            neighbor->setExamined(false);
+        }
+        neighbor->setParent(current);
+        neighbor->setDistance(costToNeighbor);
+        neighbor->setSourceDirection(direction);
+        if (current->getSourceDirection() == direction) {
+            neighbor->setStraightAwayLength(current->getStraightAwayLength() + 1);
+        }
+        else {
+            neighbor->setStraightAwayLength(1);
+        }
+    }
+
+    return pushToHeap;
+}
+
+void MackAlgo::initializeDestinationDistance() {
+    float maxFloatValue = std::numeric_limits<float>::max();
+    if (m_onWayToCenter) {
+                m_maze[(MAZE_WIDTH - 1) / 2][(MAZE_HEIGHT - 1) / 2].setDistance(maxFloatValue);
+        if (MAZE_WIDTH % 2 == 0) {
+                m_maze[(MAZE_WIDTH    ) / 2][(MAZE_HEIGHT - 1) / 2].setDistance(maxFloatValue);
+            if (MAZE_HEIGHT % 2 == 0) {
+                m_maze[(MAZE_WIDTH - 1) / 2][ MAZE_HEIGHT      / 2].setDistance(maxFloatValue);
+                m_maze[ MAZE_WIDTH      / 2][ MAZE_HEIGHT      / 2].setDistance(maxFloatValue);
+            }
+        }
+        else if (MAZE_HEIGHT % 2 == 0) {
+                m_maze[(MAZE_WIDTH - 1) / 2][ MAZE_HEIGHT      / 2].setDistance(maxFloatValue);
+        }
+    }
+    else {
+        m_maze[0][0].setDistance(maxFloatValue);
+    }
+}
+
+Cell* MackAlgo::getClosestDestinationCell() {
+    Cell* closest = NULL;
+    if (m_onWayToCenter) {
+                closest = min(closest, &m_maze[(MAZE_WIDTH - 1) / 2][(MAZE_HEIGHT - 1) / 2]);
+        if (MAZE_WIDTH % 2 == 0) {
+                closest = min(closest, &m_maze[ MAZE_WIDTH      / 2][(MAZE_HEIGHT - 1) / 2]);
+            if (MAZE_HEIGHT % 2 == 0) {
+                closest = min(closest, &m_maze[(MAZE_WIDTH - 1) / 2][ MAZE_HEIGHT      / 2]);
+                closest = min(closest, &m_maze[ MAZE_WIDTH      / 2][ MAZE_HEIGHT      / 2]);
+            }
+        }
+        else if (MAZE_HEIGHT % 2 == 0) {
+                closest = min(closest, &m_maze[(MAZE_WIDTH - 1) / 2][ MAZE_HEIGHT      / 2]);
+        }
+    }
+    else {
+        closest = &m_maze[0][0];
+    }
+    return closest;
+}
+
+Cell* MackAlgo::min(Cell* one, Cell* two) {
+    if (one == NULL) {
+        return two;
+    }
+    return (one->getDistance() < two->getDistance() ? one : two);
 }
 
 void MackAlgo::readWalls() {
@@ -343,28 +447,20 @@ void MackAlgo::setColor(int x, int y, char color) {
 }
 
 void MackAlgo::resetColors() {
-    for (int x = 0; x < MAZE_WIDTH; x += 1) {
-        for (int y = 0; y < MAZE_HEIGHT; y += 1) {
-            setColor(x, y, 'k');
-        }
-    }
+    m_mouse->resetColors();
 }
 
 void MackAlgo::colorCenter(char color) {
-
+            setColor((MAZE_WIDTH - 1) / 2, (MAZE_HEIGHT - 1) / 2, color);
     if (MAZE_WIDTH % 2 == 0) {
-        setColor((MAZE_WIDTH - 1) / 2, (MAZE_HEIGHT - 1) / 2, color);
-        setColor((MAZE_WIDTH) / 2, (MAZE_HEIGHT - 1) / 2, color);
+            setColor( MAZE_WIDTH      / 2, (MAZE_HEIGHT - 1) / 2, color);
         if (MAZE_HEIGHT % 2 == 0) {
-            setColor((MAZE_WIDTH - 1) / 2, (MAZE_HEIGHT) / 2, color);
-            setColor((MAZE_WIDTH) / 2, (MAZE_HEIGHT) / 2, color);
+            setColor((MAZE_WIDTH - 1) / 2,  MAZE_HEIGHT      / 2, color);
+            setColor( MAZE_WIDTH      / 2,  MAZE_HEIGHT      / 2, color);
         }
     }
-    else {
-        setColor((MAZE_WIDTH - 1) / 2, (MAZE_HEIGHT - 1) / 2, color);
-        if (MAZE_HEIGHT % 2 == 0) {
-            setColor((MAZE_WIDTH - 1) / 2, (MAZE_HEIGHT) / 2, color);
-        }
+    else if (MAZE_HEIGHT % 2 == 0) {
+            setColor((MAZE_WIDTH - 1) / 2,  MAZE_HEIGHT      / 2, color);
     }
 }
 
