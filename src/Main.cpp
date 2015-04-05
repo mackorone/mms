@@ -143,6 +143,10 @@ void keyInput(unsigned char key, int x, int y) {
         // Toggle wall truth visibility
         sim::S()->setWallTruthVisible(!sim::S()->wallTruthVisible());
     }
+    else if (key == 'c' || key == 'C') {
+        // Toggle tile colors
+        sim::S()->setTileColorsVisible(!sim::S()->tileColorsVisible());
+    }
     else if (key == 'q' || key == 'Q') {
         // Quit
         sim::quit();

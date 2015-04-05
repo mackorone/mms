@@ -31,10 +31,12 @@ public:
     bool defaultMouseVisible();
     bool defaultMousePathVisible();
     bool defaultWallTruthVisible();
+    bool defaultTileColorsVisible();
 
     // Simulation parameters
     int randomSeed();
     float glutInitTime();
+    bool defaultPaused();
     std::string crashMessage();
     float discreteInterfaceSleepTime();
     float discreteInterfaceMinSpeed();
@@ -90,10 +92,12 @@ private:
     bool m_defaultMouseVisible;
     bool m_defaultMousePathVisible;
     bool m_defaultWallTruthVisible;
+    bool m_defaultTileColorsVisible;
 
     // Simulation parameters
     int m_randomSeed;
     float m_glutInitTime;
+    bool m_defaultPaused;
     std::string m_crashMessage;
     float m_discreteInterfaceSleepTime;
     float m_discreteInterfaceMinSpeed;

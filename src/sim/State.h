@@ -24,6 +24,7 @@ public:
     bool mouseVisible();
     bool mousePathVisible(); // TODO: Implement the mouse path
     bool wallTruthVisible();
+    bool tileColorsVisible();
     bool paused();
     float simSpeed();
     bool inputButtonPressed(int inputButton);
@@ -35,6 +36,7 @@ public:
     void setMouseVisible(bool mouseVisible);
     void setMousePathVisible(bool mousePathVisible);
     void setWallTruthVisible(bool wallTruthVisible);
+    void setTileColorsVisible(bool tileColorsVisible);
     void setPaused(bool paused);
     void setSimSpeed(float simSpeed);
     void setInputButtonPressed(int inputButton, bool pressed);
@@ -53,6 +55,7 @@ private:
     bool m_mouseVisible;
     bool m_mousePathVisible;
     bool m_wallTruthVisible;
+    bool m_tileColorsVisible;
     bool m_paused;
     float m_simSpeed;
     std::map<int, bool> m_inputButtons;

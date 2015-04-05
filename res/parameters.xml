@@ -14,6 +14,7 @@
 <default-mouse-visible>true</default-mouse-visible>
 <default-mouse-path-visible>true</default-mouse-path-visible> <!-- TODO: implement this -->
 <default-wall-truth-visible>true</default-wall-truth-visible>
+<default-tile-colors-visible>true</default-tile-colors-visible>
 <!-- <shortest-path-visible>true</shortest-path-visible> TODO -->
 
 <!-- Simulation Parameters -->
@@ -21,6 +22,7 @@
 <use-random-seed>false</use-random-seed> <!-- Whether or not to use the seed value -->
 <crash-message>Oh no! Your mouse crashed! It can't move anymore...</crash-message>
 <glut-init-time>0.25</glut-init-time> <!-- Seconds -->
+<default-paused>false</default-paused>
 <discrete-interface-sleep-time>10</discrete-interface-sleep-time> <!-- Milliseconds -->
 <discrete-interface-min-speed>1</discrete-interface-min-speed> <!-- No units -->
 <discrete-interface-max-speed>500</discrete-interface-max-speed> <!-- No units -->

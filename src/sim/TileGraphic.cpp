@@ -16,7 +16,7 @@ TileGraphic::TileGraphic(const Tile* tile) : m_tile(tile), m_color(COLOR_STRINGS
 void TileGraphic::draw() const {
 
     // Draw the base of the tile
-    glColor3fv(m_color);
+    glColor3fv(S()->tileColorsVisible() ? m_color : COLOR_STRINGS.at(P()->tileBaseColor()));
     drawPolygon(m_tile->getFullPolygon());
 
     // Either draw the true walls of the tile

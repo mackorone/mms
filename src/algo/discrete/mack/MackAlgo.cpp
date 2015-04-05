@@ -121,7 +121,7 @@ Cell* MackAlgo::getNextMove() {
     Cell* current = getClosestDestinationCell();
     while (current->getParent() != NULL) {
 #if (SIMULATOR)
-        setColor(current->getX(), current->getY(), m_onWayToCenter ? 'B' : 'R');
+        setColor(current->getX(), current->getY(), 'B');
 #endif
         prev = current;
         current = current->getParent();
