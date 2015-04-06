@@ -1,8 +1,14 @@
 #pragma once
 
-#include "../../IAlgorithm.h"
-
 #include "Cell.h"
+#include "Options.h"
+
+#if (SIMULATOR)
+#include "../../IAlgorithm.h"
+using sim::MouseInterface;
+#else
+#include "MouseInterface.h"
+#endif
 
 namespace mack {
 
@@ -10,13 +16,17 @@ static const int MAZE_WIDTH = 16;
 static const int MAZE_HEIGHT = 16;
 enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
 
+#if (SIMULATOR)
 class MackAlgo : IAlgorithm {
+#else
+class MackAlgo {
+#endif
 
 public:
-    void solve(sim::MouseInterface* mouse);
+    void solve(MouseInterface* mouse);
 
 private:
-    sim::MouseInterface* m_mouse;
+    MouseInterface* m_mouse;
     Cell m_maze[MAZE_WIDTH][MAZE_HEIGHT];
     int m_x;
     int m_y;

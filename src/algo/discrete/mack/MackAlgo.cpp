@@ -6,13 +6,19 @@
 #include "CellHeap.h"
 #include "Options.h"
 
+// TODO:
+// 1) Add a history/reset button
+// 2) Color buffer layer to get rid of the flickering
+
 namespace mack {
 
-void MackAlgo::solve(sim::MouseInterface* mouse) {
+void MackAlgo::solve(MouseInterface* mouse) {
 
     // Bookkeeping
     m_mouse = mouse;
+#if (SIMULATOR)
     m_mouse->declareInterfaceType(sim::DISCRETE);
+#endif
 
     // Initialize the mouse
     m_x = 0;
@@ -51,6 +57,12 @@ void MackAlgo::solve(sim::MouseInterface* mouse) {
         if (m_onWayToCenter ? inGoal(m_x, m_y) : m_x == 0 && m_y == 0) {
             m_onWayToCenter = !m_onWayToCenter;
         }
+
+#if (!SIMULATOR)
+        // TODO : Kyle, just change this variable name appropriately
+        while (NEEDS_MOVE) {
+        }
+#endif
     }
 }
 
@@ -445,11 +457,15 @@ void MackAlgo::moveOneCell(Cell* target) {
 }
 
 void MackAlgo::setColor(int x, int y, char color) {
+#if (SIMULATOR)
     m_mouse->colorTile(x, y, color);
+#endif
 }
 
 void MackAlgo::resetColors() {
+#if (SIMULATOR)
     m_mouse->resetColors();
+#endif
 }
 
 void MackAlgo::colorCenter(char color) {
@@ -465,7 +481,5 @@ void MackAlgo::colorCenter(char color) {
             setColor((MAZE_WIDTH - 1) / 2,  MAZE_HEIGHT      / 2, color);
     }
 }
-
-// TODO: Color buffer layer to get rid of the flickering
 
 } // namespace mack

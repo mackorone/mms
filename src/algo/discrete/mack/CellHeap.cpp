@@ -1,5 +1,7 @@
 #include "CellHeap.h"
 
+#include <cstdlib>
+
 #include "Assert.h"
 #include "Cell.h"
 
