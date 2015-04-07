@@ -16,6 +16,7 @@ Features:
 - Support stepper motor / encoders interface
 
 Clean-Up:
+- Rename TTime.h to Duration.h and change Time to Duration where appropriate
 - Convert floats to doubles where appropriate
 - Return const references instead of values
 - Change float to units (including in the ParamParser and Param class)

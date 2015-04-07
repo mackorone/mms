@@ -48,10 +48,15 @@ private:
     void readWalls();
     bool inGoal(int x, int y);
 
-    void moveForward();
+#if (SIMULATOR)
     void turnLeft();
     void turnRight();
     void turnAround();
+#endif
+    void moveForward();
+    void leftAndForward();
+    void rightAndForward();
+    void aroundAndForward();
 
     Cell* getFrontCell();
     Cell* getLeftCell();

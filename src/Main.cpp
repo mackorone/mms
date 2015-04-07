@@ -3,7 +3,7 @@
 #include <thread>
 
 #include <glut.h>
-#include <Seconds.h>
+#include "Seconds.h"
 
 #include "algo/Solver.h"
 #include "sim/Param.h"
