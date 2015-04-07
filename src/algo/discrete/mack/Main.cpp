@@ -1,5 +1,6 @@
 #include "Options.h"
 
+/*
 #include "MackAlgo.h"
 
 void setup() {
@@ -11,3 +12,4 @@ void loop() {
     // Note: solve blocks forever, so loop will only execute once
     algo.solve(mouse);
 }
+*/

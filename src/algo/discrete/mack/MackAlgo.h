@@ -5,9 +5,6 @@
 
 #if (SIMULATOR)
 #include "../../IAlgorithm.h"
-using sim::MouseInterface;
-#else
-#include "MouseInterface.h"
 #endif
 
 namespace mack {
@@ -23,10 +20,16 @@ class MackAlgo {
 #endif
 
 public:
-    void solve(MouseInterface* mouse);
+#if (SIMULATOR)
+    void solve(sim::MouseInterface* mouse);
+#else
+    void solve();
+#endif
 
 private:
-    MouseInterface* m_mouse;
+#if (SIMULATOR)
+    sim::MouseInterface* m_mouse;
+#endif
     Cell m_maze[MAZE_WIDTH][MAZE_HEIGHT];
     int m_x;
     int m_y;
@@ -61,9 +64,11 @@ private:
     bool isOneCellAway(Cell* target);
     void moveOneCell(Cell* target);
 
+#if (SIMULATOR)
     void setColor(int x, int y, char color);
     void resetColors();
     void colorCenter(char color);
+#endif
 
 };
 
