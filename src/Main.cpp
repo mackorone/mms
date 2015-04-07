@@ -1,8 +1,8 @@
 #include <algorithm>
-#include <GL/freeglut.h>
 #include <iostream>
 #include <thread>
 
+#include <glut.h>
 #include <Seconds.h>
 
 #include "algo/Solver.h"

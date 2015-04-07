@@ -1,7 +1,7 @@
 #include "MouseInterface.h"
 
 #include <cmath>
-#include <GL/freeglut.h>
+#include <glut.h>
 
 #include <Meters.h>
 #include <MetersPerSecond.h>

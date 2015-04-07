@@ -1,5 +1,7 @@
 #include "RandomizedWallFollow.h"
 
+#include <cstdlib>
+
 namespace wallFollow {
 
 void RandomizedWallFollow::solve(sim::MouseInterface* mouse){

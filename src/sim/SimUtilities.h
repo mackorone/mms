@@ -1,9 +1,9 @@
 #pragma once
 
-#include <GL/freeglut.h>
 #include <string>
 #include <vector>
 
+#include <glut.h>
 #include <Time.h>
 
 namespace sim {
