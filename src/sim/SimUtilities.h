@@ -4,7 +4,7 @@
 #include <vector>
 
 #include <glut.h>
-#include <Time.h>
+#include <TTime.h>
 
 namespace sim {
 
