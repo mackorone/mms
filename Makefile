@@ -12,7 +12,7 @@ LIBS = -lGL -lglut -lGLU -lpthread
 # Any extra include paths
 # Note: -idirafter is necessary for units because Time.h conflicts with the
 # system header on case insensitive systems
-INC = -I$(SRC)lib -idirafter $(SRC)units 
+INC = -I$(SRC)lib -I$(SRC)units 
 
 # Flags
 # -std=c++11: Use the C++11 standard
