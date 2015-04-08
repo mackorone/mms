@@ -1,6 +1,6 @@
 #include "GraphicUtilities.h"
 
-#include <GL/freeglut.h>
+#include <glut.h>
 
 #include "Param.h"
 

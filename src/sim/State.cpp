@@ -26,7 +26,8 @@ State::State() {
     m_mouseVisible = P()->defaultMouseVisible();
     m_mousePathVisible = P()->defaultMousePathVisible();
     m_wallTruthVisible = P()->defaultWallTruthVisible();
-    m_paused = false;
+    m_tileColorsVisible = P()->defaultTileColorsVisible();
+    m_paused = P()->defaultPaused();
     m_simSpeed = P()->discreteInterfaceDefaultSpeed();
     for (int i = 0; i < 10; i += 1) {
         m_inputButtons[i] = false;
@@ -55,6 +56,10 @@ bool State::mousePathVisible() {
 
 bool State::wallTruthVisible() {
     return m_wallTruthVisible;
+}
+
+bool State::tileColorsVisible() {
+    return m_tileColorsVisible;
 }
 
 bool State::paused() {
@@ -94,6 +99,10 @@ void State::setMousePathVisible(bool mousePathVisible) {
 
 void State::setWallTruthVisible(bool wallTruthVisible) {
     m_wallTruthVisible = wallTruthVisible;
+}
+
+void State::setTileColorsVisible(bool tileColorsVisible) {
+    m_tileColorsVisible = tileColorsVisible;
 }
 
 void State::setPaused(bool paused) {

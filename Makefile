@@ -10,7 +10,9 @@ BIN = ./bin/
 LIBS = -lGL -lglut -lGLU -lpthread
 
 # Any extra include paths
-INC = -I$(SRC)units -I$(SRC)lib
+# Note: -idirafter is necessary for units because Time.h conflicts with the
+# system header on case insensitive systems
+INC = -I$(SRC)lib -I$(SRC)units 
 
 # Flags
 # -std=c++11: Use the C++11 standard

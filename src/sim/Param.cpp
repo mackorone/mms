@@ -37,12 +37,14 @@ Param::Param() {
     m_defaultMouseVisible = parser.getBoolIfHasBool("default-mouse-visible", true);
     m_defaultMousePathVisible = parser.getBoolIfHasBool("default-mouse-path-visible", true);
     m_defaultWallTruthVisible = parser.getBoolIfHasBool("default-wall-truth-visible", true);
+    m_defaultTileColorsVisible = parser.getBoolIfHasBool("default-tile-colors-visible", true);
 
     // Simulation Parameters
     bool useRandomSeed = parser.getBoolIfHasBool("use-random-seed", false); // TODO: Notify user that there is no seed
     m_randomSeed = (useRandomSeed ? parser.getIntIfHasInt("random-seed", time(NULL)) : time(NULL));
     m_crashMessage = parser.getStringIfHasString("crash-message", "CRASH");
     m_glutInitTime = parser.getFloatIfHasFloat("glut-init-time", 0.25);
+    m_defaultPaused = parser.getBoolIfHasBool("default-paused", false);
     m_discreteInterfaceSleepTime = parser.getFloatIfHasFloat("discrete-interface-sleep-time", 10);
     m_discreteInterfaceMinSpeed = parser.getFloatIfHasFloat("discrete-interface-min-speed", 1.0);
     m_discreteInterfaceMaxSpeed = parser.getFloatIfHasFloat("discrete-interface-max-speed", 500.0);
@@ -138,6 +140,10 @@ bool Param::defaultWallTruthVisible() {
     return m_defaultWallTruthVisible;
 }
 
+bool Param::defaultTileColorsVisible() {
+    return m_defaultTileColorsVisible;
+}
+
 int Param::randomSeed() {
     return m_randomSeed;
 }
@@ -148,6 +154,10 @@ std::string Param::crashMessage() {
 
 float Param::glutInitTime() {
     return m_glutInitTime;
+}
+
+bool Param::defaultPaused() {
+    return m_defaultPaused;
 }
 
 float Param::discreteInterfaceSleepTime() {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GL/freeglut.h>
+#include <glut.h>
 #include <map>
 
 namespace sim {

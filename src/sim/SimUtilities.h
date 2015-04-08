@@ -1,10 +1,10 @@
 #pragma once
 
-#include <GL/freeglut.h>
 #include <string>
 #include <vector>
 
-#include <Time.h>
+#include <glut.h>
+#include <TTime.h>
 
 namespace sim {
 
