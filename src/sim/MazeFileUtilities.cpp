@@ -80,6 +80,7 @@ bool validMaze(const std::string& mazeFilePath) {
     // A vector to hold all tiles' values
     std::vector<std::vector<BasicTile>> maze;
     
+    //Values for row and column validation
     int rowMax = 0;
     int columnMax = 0;
     int columnCount = 0;
