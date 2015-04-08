@@ -32,7 +32,7 @@ std::vector<const Tile*> lineSegmentTileCover(const Cartesian& A, const Cartesia
     Meters dx = p1.getX() - p0.getX(); // Always non-negative
     Meters dy = p1.getY() - p0.getY(); // Could have any sign
 
-    // For all y-intercepts to the right of the starting point
+    // For all y-intercepts to the right of the the starting point
     for (int i = 1; tileLength * (x0 + i) < p1.getX(); i += 1) {
         Meters fx = tileLength * (x0 + i);
         Meters fy = p0.getY() + (fx - p0.getX()) * (dy / dx);
