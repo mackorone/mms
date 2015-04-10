@@ -14,6 +14,9 @@ Features:
 - Dual screen! (mini-map and zoomed-in view - 1x1, 3x3, relative and absolute rotation)
 - Draw a path of where the robot has been
 - Support stepper motor / encoders interface
+- Get Tomasz's random maze algorithm working
+- Normalize random number generation (Implement Windows random number generation)
+- Parameter for selecting a random maze file from the maze file directory
 
 Clean-Up:
 - Rename TTime.h to Duration.h and change Time to Duration where appropriate
