@@ -9,8 +9,8 @@
 
 namespace mack {
 
-static const int MAZE_WIDTH = 16;
-static const int MAZE_HEIGHT = 16;
+static const int MAZE_WIDTH = 16;  // XXX
+static const int MAZE_HEIGHT = 16; // XXX
 enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
 
 #if (SIMULATOR)
@@ -35,24 +35,31 @@ private:
     int m_y;
     int m_d;
     bool m_onWayToCenter;
+    int m_moveBufferIndex;
 
-    Cell* getNextMove();
+    void move();
     float getTurnCost();
     float getStraightAwayCost(int length);
     bool inspectNeighbor(Cell* current, Cell* neighbor, int direction);
 
     void initializeDestinationDistance();
     Cell* getClosestDestinationCell();
-    Cell* min(Cell* one, Cell* two);
+    Cell* cellMin(Cell* one, Cell* two);
 
     void readWalls();
     bool inGoal(int x, int y);
+
+    void turnLeftUpdateState();
+    void turnRightUpdateState();
+    void turnAroundUpdateState();
+    void moveForwardUpdateState();
 
 #if (SIMULATOR)
     void turnLeft();
     void turnRight();
     void turnAround();
 #endif
+
     void moveForward();
     void leftAndForward();
     void rightAndForward();

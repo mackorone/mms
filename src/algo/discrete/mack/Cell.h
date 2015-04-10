@@ -19,6 +19,9 @@ public:
     bool isWall(int direction) const;
     void setWall(int direction, bool isWall);
 
+    bool isKnown(int direction) const;
+    void setKnown(int direction, bool isKnown);
+
     // ----- Used for Dijkstra's ----- //
 
     int getSequenceNumber() const;
@@ -43,6 +46,7 @@ private:
     int m_x;
     int m_y;
     bool m_walls[4];
+    bool m_known[4];
 
     // Used for Dijkstra's
     int m_sequenceNumber;

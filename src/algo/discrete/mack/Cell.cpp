@@ -5,6 +5,7 @@ namespace mack {
 Cell::Cell() : m_x(-1), m_y(-1), m_sequenceNumber(0), m_parent(0), m_sourceDirection(0), m_distance(0), m_examined(false) {
     for (int i = 0; i < 4; i += 1) {
         m_walls[i] = false;
+        m_known[i] = false;
     }
 }
 
@@ -27,6 +28,14 @@ bool Cell::isWall(int direction) const {
 
 void Cell::setWall(int direction, bool isWall) {
     m_walls[direction] = isWall;
+}
+
+bool Cell::isKnown(int direction) const {
+    return m_known[direction];
+}
+
+void Cell::setKnown(int direction, bool isKnown) {
+    m_known[direction] = isKnown;
 }
 
 int Cell::getSequenceNumber() const {
