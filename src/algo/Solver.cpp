@@ -16,9 +16,9 @@ Solver::~Solver() {
 
 void Solver::solve() {
 
-    demo::Continue algo;
+    //demo::Continue algo;
     //floodfill::FloodFill algo;
-    //mack::MackAlgo algo;
+    mack::MackAlgo algo;
     //misc::Forward algo;
     //wallFollow::RightWallFollow algo;
     //wallFollow::LeftWallFollow algo;
