@@ -52,7 +52,7 @@
 <save-random-maze>true</save-random-maze> <!-- Whethor or not to save a random maze -->
 
 <!-- Mouse Parameters -->
-<mouse-file>res/mouse.xml</mouse-file> <!-- TODO -->
+<mouse-file>res/megaMouse.xml</mouse-file> <!-- TODO -->
 
 <!-- Algo parameters -->
 <!-- TODO -->
