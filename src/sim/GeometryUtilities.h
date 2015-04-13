@@ -38,6 +38,9 @@ std::vector<std::pair<Cartesian, Cartesian>> getLineSegments(const Polygon& poly
 Polygon convexHull(const std::vector<Polygon>& polygons);
 
 // Returns the polygon that is the union all of the polygons
-Polygon getUnion(const std::vector<Polygon>& polygons);
+Polygon getUnionMultiple(const std::vector<Polygon>& polygons);
+
+Polygon getUnionTwo(const Polygon& A, const Polygon& B); 
+
 
 } // namespace sim

@@ -32,7 +32,7 @@ std::vector<const Tile*> lineSegmentTileCover(const Cartesian& A, const Cartesia
     Meters dx = p1.getX() - p0.getX(); // Always non-negative
     Meters dy = p1.getY() - p0.getY(); // Could have any sign
 
-    // For all y-intercepts to the right of the starting point
+    // For all y-intercepts to the right of the the starting point
     for (int i = 1; tileLength * (x0 + i) < p1.getX(); i += 1) {
         Meters fx = tileLength * (x0 + i);
         Meters fy = p0.getY() + (fx - p0.getX()) * (dy / dx);
@@ -298,11 +298,39 @@ Polygon convexHull(const std::vector<Polygon>& polygons) {
     return Polygon(hull);
 }
 
-Polygon getUnion(const std::vector<Polygon>& polygons) {
+Polygon getUnionMultiple(const std::vector<Polygon>& polygons) {
     // TODO: SOM
     // This function should return the union of the polygons
     // Warning: This is a difficult problem!!!
     // Note: We assume that the polygons are connected, and that the output polygon has no holes in it
+}
+
+Polygon getUnionTwo(const Polygon& A, const Polygon& B) {
+    std::vector<Cartesian> APoints = A.getVertices();
+    std::vector<Cartesian> BPoints = B.getVertices();
+
+    auto APoint = APoints.begin();
+
+    std::vector<std::pair<Cartesian, Cartesian>> AEdges= getLineSegments(A);
+    std::vector<std::pair<Cartesian, Cartesian>> BEdges = getLineSegments(B);
+
+    //For each edge in polygon A
+    for(std::pair<Cartesian, Cartesian> edgeA : AEdges) {
+        auto BPoint = BPoints.begin();
+        //For each edge in Polygon B
+        for(std::pair<Cartesian, Cartesian> edgeB : BEdges) {
+            std::vector<Cartesian> intersects;
+            if(linesIntersect(edgeA, edgeB)) {
+                Cartesian intersect = getIntersectionPoint(edgeA, edgeB);
+                intersects.push_back(intersect);
+                //Insert intersect into BPoints
+            }
+        }
+        //Sort points in intersects by distance from start point
+        //Insert intersects into APoints 
+    }
+
+    return A;
 }
 
 } // namespace sim

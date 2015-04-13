@@ -15,6 +15,9 @@ Features:
 - Draw a path of where the robot has been
 - Support stepper motor / encoders interface
 - Other mouse movements - curve turns, j-turns, diagonals, etc.
+- Get Tomasz's random maze algorithm working
+- Normalize random number generation (Implement Windows random number generation)
+- Parameter for selecting a random maze file from the maze file directory
 
 Clean-Up:
 - Rename TTime.h to Duration.h and change Time to Duration where appropriate

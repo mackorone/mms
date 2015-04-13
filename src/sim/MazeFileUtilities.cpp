@@ -79,6 +79,12 @@ bool validMaze(const std::string& mazeFilePath) {
 
     // A vector to hold all tiles' values
     std::vector<std::vector<BasicTile>> maze;
+    
+    //Values for row and column validation
+    int rowMax = 0;
+    int columnMax = 0;
+    int columnCount = 0;
+    int prevRow = -1;
 
     while (std::getline(file, line)) {
 
@@ -105,10 +111,54 @@ bool validMaze(const std::string& mazeFilePath) {
         for (Direction direction : DIRECTIONS) {
             tile.walls[direction] = strToInt(tokens.at(2+direction));
         }
+     
+        //Order of columns validation
+        if(tile.x > columnMax) {
+            if(columnCount == 16 && (tile.x - columnMax) == 1) {
+               columnMax = tile.x;
+               columnCount = 0;
+            }
+            else {
+                print("Error: \"" + mazeFilePath + "\" has wrong number of columns");
+                return false;
+            }
+        }
+        else if(tile.x < columnMax) { 
+            print("Error: \"" + mazeFilePath + "\" has columns out of order");
+            return false;
+        }
+        
+        columnCount++;
+
+        //Order of rows validation
+        if(tile.y > rowMax) {
+            rowMax = tile.y;
+        }
+        if(tile.y != ++prevRow) {
+            //Way to get size without hard coding?
+            if(tile.y == 0 && prevRow == 16) {
+                prevRow = 0;
+            } 
+            else {
+	        std::cout << tile.x << " " << tile.y << " " << prevRow << "\n";
+                print("Error: \"" + mazeFilePath + "\" has rows out of order");
+                return false; 
+            }
+        }
 
         // TODO: Much more validation here
     }
 
+    if(columnMax != 15 || columnCount != 16) {
+        print("Error: \"" + mazeFilePath + "\" has wrong number of columns");
+        return false;
+    }
+    else if(rowMax != 15 || prevRow != 15) {
+        print("Error: \"" + mazeFilePath + "\" has wrong number of rows");
+        return false;
+    }
+
+    
     return true;
 }
 
