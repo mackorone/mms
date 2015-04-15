@@ -68,7 +68,7 @@ void MouseInterface::colorTile(int x, int y, char color) {
     }
 
     if (COLOR_CHARS.find(color) == COLOR_CHARS.end()) {
-        // TODO: SOM: Error message
+        print(std::string("Error - The character '") + std::to_string(color) + std::string("' is not mapped to a color."));
         return;
     }
 
@@ -107,7 +107,7 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
             m_mazeGraphic->setAlgoWall(x, y, WEST, wallExists); 
             break;
         default:
-            // TODO: SOM: Error message
+            print(std::string("The character '") + std::to_string(direction) + std::string("' is not mapped to a valid direction"));
             return;
     }
 

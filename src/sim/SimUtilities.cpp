@@ -57,7 +57,6 @@ double getHighResTime() {
     gettimeofday(&t, NULL);
     return t.tv_sec + (t.tv_usec/1000000.0);
 #elif _WIN32
-    // TODO: SOM - See QueryPerformanceCounter
     LARGE_INTEGER freq, counter;
     QueryPerformanceFrequency(&freq);
     QueryPerformanceCounter(&counter);
