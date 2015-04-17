@@ -179,6 +179,9 @@ void MackAlgo::move() {
     // the parent field of the cells, though its really a child pointer at this point
     while (next != NULL && current->isKnown(next->getSourceDirection())) {
         moveOneCell(next);
+#if (SIMULATOR)
+        setColor(next->getX(), next->getY(), 'k'); // TODO: Not perfect
+#endif
         current = next;
         next = next->getParent();
     }

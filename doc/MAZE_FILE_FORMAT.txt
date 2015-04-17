@@ -6,32 +6,39 @@ The format of the .maz files is as follows:
 4) The first 2 tokens represent the x and y position of the tile, respectively
 5) The last 4 tokens represent the existence of north, east, south, and west walls, respectively
 6) A "1" indicates the presence of wall, while a "0" indicates the absence of a wall
-7) The lines should be sorted in order of their y values, and then in order of their x values
+7) The lines should be sorted in order of their x values, and then subsorted in order of their y values
 
-Thus, a valid 2x2 maze file might look like:
+Thus, a valid 3x2 maze file might look like:
 
 0 0 0 1 1 1
 0 1 1 0 0 1
-1 0 0 1 1 1
-1 1 1 1 0 0
+1 0 0 0 1 1
+1 1 1 0 0 0
+2 0 1 1 1 0
+2 1 1 1 1 0
 
 And the maze corresponding to the file would look like:
 
-|-------------|
-|             |
-|             |
-|(0,1)  (1,1) |
-|      |      |
-|      |      |
-|(0,0) |(1,0) |
-|------|------|
+|---------------------------------------------|
+|                                             |
+|                                             |
+|                                             |
+|     (0,1)           (1,1)         (2,1)     |
+|                                             |
+|                                             |
+|                              ---------------|
+|               |                             |
+|               |                             |
+|               |                             |
+|     (0,0)     |     (1,0)         (2,0)     |
+|               |                             |
+|               |                             |
+|---------------|-----------------------------|
 
 A few notes:
 
-- The length of each row of the maze must be the same.
-
-- The presence/absence of walls must be consistent between rows. That is, if a wall is present
-  to the north of a particular tile, it should also be present to the south of the tile directly
-  above the first tile.
-
-- In order for a maze file to be valid, the maze must be bounded on all sides.
+1) The length of each row of the maze must be the same.
+2) The presence/absence of walls must be consistent between rows. That is, if a wall is present
+   to the north of a particular tile, it should also be present to the south of the tile directly
+   above the first tile.
+3) In order for a maze file to be valid, the maze must be bounded on all sides.

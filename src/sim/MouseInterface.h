@@ -25,6 +25,7 @@ public:
     void colorTile(int x, int y, char color);
     void resetColors();
     void declareWall(int x, int y, char direction, bool wallExists);
+    void resetWalls(); // TODO
     void resetPosition();
     bool inputButtonPressed(int inputButton);
     void acknowledgeInputButtonPressed(int inputButton);
