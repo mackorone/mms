@@ -11,10 +11,6 @@
 #include "CellHeap.h"
 #include "Options.h"
 
-// TODO:
-// 1) Add a history/reset button
-// 2) Color buffer layer to get rid of the flickering
-
 #if (!SIMULATOR)
 extern char movesBuffer[256];
 extern bool walls_global[3];
@@ -179,9 +175,6 @@ void MackAlgo::move() {
     // the parent field of the cells, though its really a child pointer at this point
     while (next != NULL && current->isKnown(next->getSourceDirection())) {
         moveOneCell(next);
-#if (SIMULATOR)
-        setColor(next->getX(), next->getY(), 'k'); // TODO: Not perfect
-#endif
         current = next;
         next = next->getParent();
     }

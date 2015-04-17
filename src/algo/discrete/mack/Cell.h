@@ -1,10 +1,5 @@
 #pragma once
 
-// TODO: Optimization
-// - 1 byte for the location
-// - 1 byte for the walls
-// Other optimizations as well
-
 namespace mack {
 
 class Cell {

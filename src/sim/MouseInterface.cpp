@@ -14,12 +14,7 @@
 #include "State.h"
 #include "SimUtilities.h"
 
-// TODO: Diagonals, more discrete interface methods (look ahead), reset, etc., reduce CPU, etc.
-
 namespace sim {
-
-// TODO: For the mouse interface, we assume that the mouse can rotate freely in the square
-// TODO: Figure out why the mouse stops in the middle of a turn
 
 MouseInterface::MouseInterface(const Maze* maze, Mouse* mouse, MazeGraphic* mazeGraphic) :
         m_maze(maze), m_mouse(mouse), m_mazeGraphic(mazeGraphic) {
@@ -68,7 +63,7 @@ void MouseInterface::colorTile(int x, int y, char color) {
     }
 
     if (COLOR_CHARS.find(color) == COLOR_CHARS.end()) {
-        print(std::string("Error - The character '") + std::to_string(color) + std::string("' is not mapped to a color."));
+        print(std::string("Error - the character '") + std::to_string(color) + std::string("' is not mapped to a color."));
         return;
     }
 
@@ -179,9 +174,13 @@ void MouseInterface::setWheelSpeeds(float leftWheelRadiansPerSecond, float right
 
 float MouseInterface::read(std::string name) {
 
-    // TODO: Tell the user if it doesn't exist
-
     ENSURE_CONTINUOUS
+
+    if (!m_mouse->hasSensor(name)) {
+        print(std::string("Error - there is no sensor called \"") + std::string(name)
+            + std::string("\" and thus you cannot read its value."));
+        return 0.0;
+    }
 
     // Start the timer
     double start(sim::getHighResTime());
@@ -259,7 +258,6 @@ void MouseInterface::moveForward() {
     if (wallFront()) {
         if (!S()->crashed()) {
             S()->setCrashed();
-            // TODO: Animation // TODO: Should it be able to do anything after it crashes?
         }
         return;
     }
@@ -267,8 +265,10 @@ void MouseInterface::moveForward() {
     Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
     Meters currentX = tileLength * (getDiscretizedTranslation().first) + m_mouse->getInitialTranslation().getX();
     Meters currentY = tileLength * (getDiscretizedTranslation().second) + m_mouse->getInitialTranslation().getY();
+
+    // We modify these values in the switch statement
     Cartesian destinationTranslation = Cartesian(currentX, currentY);
-    Degrees destinationRotation = m_mouse->getCurrentRotation();
+    Degrees destinationRotation(0.0);
 
     switch (getDiscretizedRotation()) {
         case NORTH: {
@@ -321,7 +321,6 @@ void MouseInterface::turnRight() {
 
     ENSURE_DISCRETE
 
-    Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
     Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
     Degrees destinationRotation = m_mouse->getCurrentRotation() - Degrees(90);
 
@@ -361,7 +360,6 @@ void MouseInterface::turnLeft() {
 
     ENSURE_DISCRETE
 
-    Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
     Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
     Degrees destinationRotation = m_mouse->getCurrentRotation() + Degrees(90);
 

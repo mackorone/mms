@@ -42,6 +42,9 @@ public:
     // An atomic interface for setting the wheel speeds
     void setWheelSpeeds(const AngularVelocity& leftWheelSpeed, const AngularVelocity& rightWheelSpeed);
 
+    // Returns whether or not the mouse has a sensor by a particular name
+    bool hasSensor(const std::string& name) const;
+
     // Read a sensor, and returns a value from 0.0 (completely free) to 1.0 (completely blocked)
     float read(const std::string& name) const;
 

@@ -6,3 +6,4 @@ Differential Drive
 - The motors are mounted opposite - that is, a counter-clockwise rotation of the
   left wheel will pull the robot forward, which a counter-clockwise rotation of the
   right wheel will pull the robot backwards.
+- For a discrete interface, we assume that the mouse can rotate freely in a square

@@ -223,6 +223,10 @@ void Mouse::setWheelSpeeds(const AngularVelocity& leftWheelSpeed, const AngularV
     m_wheelMutex.unlock();
 }
 
+bool Mouse::hasSensor(const std::string& name) const {
+    return m_sensors.count(name) != 0;
+}
+
 float Mouse::read(const std::string& name) const {
 
     // Validate the input

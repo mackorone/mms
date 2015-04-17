@@ -25,7 +25,6 @@ public:
     void colorTile(int x, int y, char color);
     void resetColors();
     void declareWall(int x, int y, char direction, bool wallExists);
-    void resetWalls(); // TODO
     void resetPosition();
     bool inputButtonPressed(int inputButton);
     void acknowledgeInputButtonPressed(int inputButton);
@@ -42,8 +41,6 @@ public:
     void turnRight();
     void turnLeft();
     void turnAround();
-    // TODO: Other sensor readings and such
-    // TODO: Consts...
 
 private:
     const Maze* m_maze;

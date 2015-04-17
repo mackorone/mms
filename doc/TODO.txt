@@ -15,9 +15,16 @@ Features:
 - Draw a path of where the robot has been
 - Support stepper motor / encoders interface
 - Other mouse movements - curve turns, j-turns, diagonals, etc.
+- Sensor readings for walls other than front, left right
 - Get Tomasz's random maze algorithm working
 - Normalize random number generation (Implement Windows random number generation)
 - Parameter for selecting a random maze file from the maze file directory
+- Include Arduino "types" with the MouseInterface
+- Add support for multiple mouse starting locations
+- Add support for maze rotation
+- Crash animation for both modes
+- Crash recovery semantics
+- Allow an algorithm to specify a mouse file?
 
 Clean-Up:
 - Rename TTime.h to Duration.h and change Time to Duration where appropriate
@@ -33,9 +40,8 @@ Clean-Up:
 - write "isDirectory(std::string path)" and enforce this where necessary
 - write getRandom() and replace old calls to rand()
 - Performance on different systems???
-- There was a weird bug where the mouse teleported and the program crashed
 - The mouse sometimes rotates weirdly (goes slowly, backwards for a second, and then forwards fast.
-  You can see what I mean by just increasing the view length of the sensors for a continuous algo)
+    You can see what I mean by just increasing the view length of the sensors for a continuous algo)
 - Remove as many c_str() as possible
 - Replace "cout" with "print"
 - Pass things by reference when possible
@@ -43,3 +49,6 @@ Clean-Up:
 - Validate the coding standards (especially "{" placement)
 - Rewrite "i++" and "++i" as "i += 1"
 - Give better explanations for the GeometryUtilities
+- Change "AlgoWalls" to "DeclaredWalls" where appropriate
+- Buffer the declared walls and include a quick "resetWalls()" method
+- Change the Mouse to use the technically correct position update implementation
