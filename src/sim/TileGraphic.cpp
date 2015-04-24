@@ -39,6 +39,9 @@ void TileGraphic::draw() const {
     for (Polygon polygon : m_tile->getCornerPolygons()) {
         drawPolygon(polygon);
     }
+
+    // TODO: Draw the shortest path graphic, which is usefule because this is
+    // the metric by which mice that don't reach the center are ranked
 }
 
 void TileGraphic::setColor(const GLfloat* color) {

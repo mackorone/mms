@@ -25,6 +25,8 @@ Features:
 - Crash animation for both modes
 - Crash recovery semantics
 - Allow an algorithm to specify a mouse file?
+- Randomly select a pre-defined maze
+- MazeChecker class that hides the validation functions
 
 Clean-Up:
 - Rename TTime.h to Duration.h and change Time to Duration where appropriate
