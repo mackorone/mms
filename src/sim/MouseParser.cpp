@@ -16,6 +16,7 @@ MouseParser::MouseParser(const std::string& filePath) {
 }
 
 Polygon MouseParser::getBody() {
+    // TODO: Handle the failing case
     std::vector<Cartesian> points;
     pugi::xml_node body = m_doc.child("Body");
     for (auto it = body.begin(); it != body.end(); ++it) {

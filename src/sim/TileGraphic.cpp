@@ -17,19 +17,19 @@ void TileGraphic::draw() const {
 
     // Draw the base of the tile
     glColor3fv(S()->tileColorsVisible() ? m_color : COLOR_STRINGS.at(P()->tileBaseColor()));
-    drawPolygon(m_tile->getFullPolygon());
+    GraphicUtilities::drawPolygon(m_tile->getFullPolygon());
 
     // Either draw the true walls of the tile
     glColor3fv(COLOR_STRINGS.at(P()->tileWallColor()));
     if (S()->wallTruthVisible()) {
         for (Polygon polygon : m_tile->getActualWallPolygons()) {
-            drawPolygon(polygon);
+            GraphicUtilities::drawPolygon(polygon);
         }
     }
     else { // Or the algorithms declared walls
         for (Direction direction : DIRECTIONS) {
             if (m_algoWalls.at(direction)) {
-                drawPolygon(m_tile->getWallPolygon(direction));
+                GraphicUtilities::drawPolygon(m_tile->getWallPolygon(direction));
             }
         }
     }
@@ -37,7 +37,7 @@ void TileGraphic::draw() const {
     // Draw the corners of the tile
     glColor3fv(COLOR_STRINGS.at(P()->tileCornerColor()));
     for (Polygon polygon : m_tile->getCornerPolygons()) {
-        drawPolygon(polygon);
+        GraphicUtilities::drawPolygon(polygon);
     }
 
     // TODO: Draw the shortest path graphic, which is usefule because this is

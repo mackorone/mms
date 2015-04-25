@@ -26,17 +26,17 @@ bool MazeChecker::validMaze(const std::vector<std::vector<BasicTile>>& maze) {
 }
 
 bool MazeChecker::isSquare(const std::vector<std::vector<BasicTile>>& maze) {
-    // TODO: SOM
+    // TODO: SOM - implement this method
     return true;
 }
 
 bool MazeChecker::isEnclosed(const std::vector<std::vector<BasicTile>>& maze) {
-    // TODO: SOM
+    // TODO: SOM - implement this method
     return true;
 }
 
 bool MazeChecker::hasConsistentWalls(const std::vector<std::vector<BasicTile>>& maze) {
-    // TODO: SOM
+    // TODO: SOM - implement this method
     return true;
 }
 
@@ -302,12 +302,12 @@ bool MazeChecker::threeStartingWalls(const std::vector<std::vector<BasicTile>>& 
 }
 
 bool MazeChecker::unsolvableByWallFollower(const std::vector<std::vector<BasicTile>>& maze) {
-    // TODO: SOM
+    // TODO: SOM - implement this method
     return false;
 }
 
 bool MazeChecker::noInaccesibleLocations(const std::vector<std::vector<BasicTile>>& maze) {
-    // TODO: SOM
+    // TODO: SOM - implement this method
     return false;
 }
 

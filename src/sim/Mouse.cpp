@@ -18,8 +18,9 @@ namespace sim {
 
 Mouse::Mouse(const Maze* maze) : m_maze(maze), m_rotation(Radians(0.0)) {
 
+    // TODO: What to do if this fails??? Make sure this file exists...
+
     // Create the mouse parser object
-    // TODO: Make sure this file exists...
     MouseParser parser(getProjectDirectory() + P()->mouseFile());
 
     // Initialize the body of the mouse
@@ -30,7 +31,7 @@ Mouse::Mouse(const Maze* maze) : m_maze(maze), m_rotation(Radians(0.0)) {
     m_rightWheel = parser.getRightWheel();
 
     // TODO: Validate the contents of the mouse file (like valid mouse starting position)
-    // Note: The position of the wheels must be the exact same at the start of execution
+    // Note: The y-position of the wheels must be the exact same at the start of execution
     ASSERT(m_leftWheel.getInitialTranslation().getY() == m_rightWheel.getInitialTranslation().getY());
 
     // Reassign the translation to be the midpoint of the axis connecting the two wheels
@@ -62,7 +63,7 @@ void Mouse::initializeCollisionPolygon() {
     }
 
     // TODO: SOM: This should be changed to getUnion instead of convexHull, once it's ready
-    m_initialCollisionPolygon = convexHull(polygons);
+    m_initialCollisionPolygon = GeometryUtilities::convexHull(polygons);
 }
 
 Polygon Mouse::getBodyPolygon() const {
@@ -242,7 +243,8 @@ float Mouse::read(const std::string& name) const {
         .rotateAroundPoint(currentRotation, currentTranslation);
     Polygon currentView = sensor.getCurrentView(
         fullView.getVertices().at(0), currentRotation + sensor.getInitialRotation(), *m_maze);
-    return 1.0 - polygonArea(currentView).getMetersSquared() / polygonArea(fullView).getMetersSquared();
+    return 1.0 - GeometryUtilities::polygonArea(currentView).getMetersSquared()
+               / GeometryUtilities::polygonArea(fullView).getMetersSquared();
 }
 
 Seconds Mouse::getReadTime(const std::string& name) const {

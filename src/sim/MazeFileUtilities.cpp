@@ -12,13 +12,18 @@ namespace sim {
 
 bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
 
-    // TODO: This should ensure the format is correct
-    // TODO: SOM
+    // TODO: SOM - Go through this function and make sure all requirements are satisfied
+    // Use private static helper functions if necessary
+    //
     // Format requires that:
-    // - File exists
-    // - The correct number of rows and columns
-    // - rows and cols are in expected order
-    // - The rows and columns labeled correctly
+    // 0) File exists
+    // 1) Each .maz file consists of MAZE_WIDTH * MAZE_HEIGHT newline-separated lines
+    // 2) Each line consists of 6 whitespace (preferably single-space) separated tokens
+    // 3) Each of the 6 tokens are integer values
+    // 4) The first 2 tokens represent the x and y position of the tile, respectively
+    // 5) The last 4 tokens represent the existence of north, east, south, and west walls, respectively
+    // 6) A "1" indicates the presence of wall, while a "0" indicates the absence of a wall
+    // 7) The lines should be sorted in order of their x values, and then subsorted in order of their y values
 
     // First, make sure we've been given a file
     if (!isFile(mazeFilePath)) {
@@ -45,7 +50,7 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
     // A vector to hold all tiles' values
     std::vector<std::vector<BasicTile>> maze;
     
-    //Values for row and column validation
+    // Values for row and column validation
     int rowMax = 0;
     int columnMax = 0;
     int columnCount = 0;
@@ -77,9 +82,9 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
             tile.walls[direction] = strToInt(tokens.at(2+direction));
         }
      
-        //Order of columns validation
-        if(tile.x > columnMax) {
-            if(columnCount == 16 && (tile.x - columnMax) == 1) {
+        // Order of columns validation
+        if (tile.x > columnMax) {
+            if (columnCount == 16 && (tile.x - columnMax) == 1) {
                columnMax = tile.x;
                columnCount = 0;
             }
@@ -88,20 +93,20 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
                 return false;
             }
         }
-        else if(tile.x < columnMax) { 
+        else if (tile.x < columnMax) { 
             print("Error: \"" + mazeFilePath + "\" has columns out of order.");
             return false;
         }
         
         columnCount++;
 
-        //Order of rows validation
-        if(tile.y > rowMax) {
+        // Order of rows validation
+        if (tile.y > rowMax) {
             rowMax = tile.y;
         }
-        if(tile.y != ++prevRow) {
-            //Way to get size without hard coding?
-            if(tile.y == 0 && prevRow == 16) {
+        if (tile.y != ++prevRow) {
+            // Way to get size without hard coding?
+            if (tile.y == 0 && prevRow == 16) {
                 prevRow = 0;
             } 
             else {
@@ -110,19 +115,16 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
                 return false; 
             }
         }
-
-        // TODO: Much more validation here
     }
 
-    if(columnMax != 15 || columnCount != 16) {
+    if (columnMax != 15 || columnCount != 16) {
         print("Error: \"" + mazeFilePath + "\" has wrong number of columns.");
         return false;
     }
-    else if(rowMax != 15 || prevRow != 15) {
+    else if (rowMax != 15 || prevRow != 15) {
         print("Error: \"" + mazeFilePath + "\" has wrong number of rows.");
         return false;
     }
-
     
     return true;
 }

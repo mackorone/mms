@@ -39,8 +39,6 @@ const Tile* Maze::getTile(int x, int y) const {
 
 bool Maze::initializeViaMazeFile() {
 
-    // TODO: Pick a random maze from the maze file directory 
-
     // First, get the maze file path
     std::string mazeFilePath = getProjectDirectory() + P()->mazeDirectory() + P()->mazeFile();
 

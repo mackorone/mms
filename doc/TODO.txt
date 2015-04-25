@@ -20,13 +20,14 @@ Features:
 - Normalize random number generation (Implement Windows random number generation)
 - Parameter for selecting a random maze file from the maze file directory
 - Include Arduino "types" with the MouseInterface
-- Add support for multiple mouse starting locations
+- Add support for multiple mouse starting locations (both left and right corner)
 - Add support for maze rotation
 - Crash animation for both modes
 - Crash recovery semantics
 - Allow an algorithm to specify a mouse file?
 - Randomly select a pre-defined maze
 - MazeChecker class that hides the validation functions
+- Reimplement drawPolygon to use a tesselator (so that it can draw non-convex polygons)
 
 Clean-Up:
 - Rename TTime.h to Duration.h and change Time to Duration where appropriate

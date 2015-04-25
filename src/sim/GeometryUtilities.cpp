@@ -6,10 +6,9 @@
 #include "Assert.h"
 #include "Param.h"
 
-// TODO: Put this in a class....
 namespace sim {
 
-std::vector<const Tile*> lineSegmentTileCover(const Cartesian& A, const Cartesian& B, const Maze& maze) {
+std::vector<const Tile*> GeometryUtilities::lineSegmentTileCover(const Cartesian& A, const Cartesian& B, const Maze& maze) {
 
     // The output vector
     std::vector<const Tile*> tilesInRange;
@@ -44,9 +43,6 @@ std::vector<const Tile*> lineSegmentTileCover(const Cartesian& A, const Cartesia
             tilesInRange.push_back(maze.getTile(x, y));
         }
     }
-
-    // TODO: SOM: Can this be elegantly combined into one for-loop for the x-intercept case???
-    // Check with Mack before you change this...
 
     // For all x-intercepts above the the starting point, if the slope is positive ...
     if (0 < dy.getMeters()) {
@@ -86,42 +82,7 @@ std::vector<const Tile*> lineSegmentTileCover(const Cartesian& A, const Cartesia
     return tilesInRange;
 }
 
-MetersSquared crossProduct(const Cartesian& Z, const Cartesian& A, const Cartesian& B) {
-
-    // The cross product of ZA and ZB is simply the determinant of the following matrix:
-    //
-    //                                |AX-ZX, AY-ZY|
-    //                                |BX-ZX, BY-ZY|
-    //
-    // Where Z is simply the location of the origin for the vectors A and B
-
-    return (A.getX() - Z.getX()) * (B.getY() - Z.getY()) - (A.getY() - Z.getY()) * (B.getX() - Z.getX());
-}
-
-Cartesian centroid(const Polygon& polygon) {
-
-    // See http://en.wikipedia.org/wiki/Centroid#Centroid_of_polygon
-    // TODO: We don't need this... take it out???
-
-    Meters cx(0.0);
-    Meters cy(0.0);
-
-    std::vector<Cartesian> vertices = polygon.getVertices();
-    for (int i = 0; i < vertices.size(); i += 1) {
-        int j = (i + 1) % vertices.size();
-        cx += (vertices.at(i).getX() + vertices.at(j).getX())
-            * (vertices.at(i).getX() * vertices.at(j).getY() - vertices.at(j).getX() * vertices.at(i).getY()).getMetersSquared();
-        cy += (vertices.at(i).getY() + vertices.at(j).getY())
-            * (vertices.at(i).getX() * vertices.at(j).getY() - vertices.at(j).getX() * vertices.at(i).getY()).getMetersSquared();
-    }
-
-    cx = Meters(std::abs(cx.getMeters()));
-    cy = Meters(std::abs(cy.getMeters()));
-    MetersSquared area = polygonArea(polygon);
-    return Cartesian(cx / (area * 6).getMetersSquared(), cy / (area * 6).getMetersSquared());
-}
-
-bool linesIntersect(const std::pair<const Cartesian&, const Cartesian&>& A,
+bool GeometryUtilities::linesIntersect(const std::pair<const Cartesian&, const Cartesian&>& A,
                     const std::pair<const Cartesian&, const Cartesian&>& B) {
 
     // Two line segments intersect if the points of the each of the segments are not
@@ -175,8 +136,8 @@ bool linesIntersect(const std::pair<const Cartesian&, const Cartesian&>& A,
     return (c1*c2 <= 0 && c3*c4 <= 0);
 }
 
-Cartesian getIntersectionPoint(const std::pair<const Cartesian&, const Cartesian&>& A,
-                               const std::pair<const Cartesian&, const Cartesian&>& B) {
+Cartesian GeometryUtilities::getIntersectionPoint(const std::pair<const Cartesian&, const Cartesian&>& A,
+                                                  const std::pair<const Cartesian&, const Cartesian&>& B) {
 
     // TODO: SOM - Explain/Clean this functionality - right now, I don't know how it works
 
@@ -225,7 +186,7 @@ Cartesian getIntersectionPoint(const std::pair<const Cartesian&, const Cartesian
     return Cartesian(Meters(a1x+ABpos*theCos), Meters(a1y+ABpos*theSin));
 }
 
-MetersSquared polygonArea(const Polygon& polygon) {
+MetersSquared GeometryUtilities::polygonArea(const Polygon& polygon) {
 
     // Magic (not really - see http://mathworld.wolfram.com/PolygonArea.html)
     float area = 0.0;
@@ -240,7 +201,7 @@ MetersSquared polygonArea(const Polygon& polygon) {
     return MetersSquared(std::abs(area));
 }
 
-std::vector<std::pair<Cartesian, Cartesian>> getLineSegments(const Polygon& polygon) {
+std::vector<std::pair<Cartesian, Cartesian>> GeometryUtilities::getLineSegments(const Polygon& polygon) {
 
     std::vector<std::pair<Cartesian, Cartesian>> segments;
 
@@ -256,7 +217,7 @@ std::vector<std::pair<Cartesian, Cartesian>> getLineSegments(const Polygon& poly
     return segments;
 }
 
-Polygon convexHull(const std::vector<Polygon>& polygons) {
+Polygon GeometryUtilities::convexHull(const std::vector<Polygon>& polygons) {
 
     // Implementation of Andrew's monotone chain 2D convex hull algorithm
     // Asymptotic complexity: O(n log n).
@@ -299,14 +260,15 @@ Polygon convexHull(const std::vector<Polygon>& polygons) {
     return Polygon(hull);
 }
 
-Polygon getUnionMultiple(const std::vector<Polygon>& polygons) {
-    // TODO: SOM
-    // This function should return the union of the polygons
-    // Warning: This is a difficult problem!!!
-    // Note: We assume that the polygons are connected, and that the output polygon has no holes in it
+Polygon GeometryUtilities::getUnionMultiple(const std::vector<Polygon>& polygons) {
+    // TODO: SOM - This function should return the union of the polygons
+    // Assumptions:
+    // - The polygons are connected
+    // - The output polygon has no holes in it
+    // - None of the polygons are self-intersecting
 }
 
-Polygon getUnionTwo(const Polygon& A, const Polygon& B) {
+Polygon GeometryUtilities::getUnionTwo(const Polygon& A, const Polygon& B) {
     std::vector<Cartesian> APoints = A.getVertices();
     std::vector<Cartesian> BPoints = B.getVertices();
 
@@ -332,6 +294,18 @@ Polygon getUnionTwo(const Polygon& A, const Polygon& B) {
     }
 
     return A;
+}
+
+MetersSquared GeometryUtilities::crossProduct(const Cartesian& Z, const Cartesian& A, const Cartesian& B) {
+
+    // The cross product of ZA and ZB is simply the determinant of the following matrix:
+    //
+    //                                |AX-ZX, AY-ZY|
+    //                                |BX-ZX, BY-ZY|
+    //
+    // Where Z is simply the location of the origin for the vectors A and B
+
+    return (A.getX() - Z.getX()) * (B.getY() - Z.getY()) - (A.getY() - Z.getY()) * (B.getX() - Z.getX());
 }
 
 } // namespace sim
