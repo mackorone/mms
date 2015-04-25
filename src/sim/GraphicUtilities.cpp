@@ -6,6 +6,7 @@
 
 namespace sim {
 
+// TODO: Put this in a class
 void drawPolygon(const Polygon& polygon) {
 
     // TODO: SOM

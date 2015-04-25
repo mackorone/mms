@@ -18,6 +18,8 @@ public:
 
 private:
 
+    // TODO: Move Tomasz's stuff into another files
+
     // A private constructor to restrict creation of any MazeGenerator objects
     MazeGenerator();
 

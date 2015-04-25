@@ -8,6 +8,9 @@
 
 namespace sim {
 
+// TODO: Put this is a class
+// TODO: Simplify a path from "asdf/asdf/../fdsa" to "asdf/fdsa"
+
 // Quits the simulation
 void quit();
 

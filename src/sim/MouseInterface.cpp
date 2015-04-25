@@ -26,12 +26,12 @@ MouseInterface::~MouseInterface() {
 void MouseInterface::declareInterfaceType(InterfaceType interfaceType) {
 
     if (interfaceType == UNDECLARED) {
-        print("Error - you may not declare the mouse interface type to be UNDECLARED.");
+        print("Error: You may not declare the mouse interface type to be UNDECLARED.");
         quit();
     }
 
     if (S()->interfaceType() != UNDECLARED) {
-        print("Error - you may only declare the mouse interface type once.");
+        print("Error: You may only declare the mouse interface type once.");
         quit();
     }
 
@@ -57,13 +57,13 @@ void MouseInterface::colorTile(int x, int y, char color) {
     ENSURE_DECLARED
 
     if (x < 0 || m_mazeGraphic->getWidth() < x || y < 0 || m_mazeGraphic->getHeight() <= y) {
-        print(std::string("Error - there is no tile at position (") + std::to_string(x) + std::string(", ")
+        print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
             + std::to_string(y) + std::string("), and thus you cannot set its color."));
         return;
     }
 
     if (COLOR_CHARS.find(color) == COLOR_CHARS.end()) {
-        print(std::string("Error - the character '") + std::to_string(color) + std::string("' is not mapped to a color."));
+        print(std::string("Error: The character '") + std::to_string(color) + std::string("' is not mapped to a color."));
         return;
     }
 
@@ -83,7 +83,7 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
     ENSURE_DECLARED
 
     if (x < 0 || m_mazeGraphic->getWidth() < x || y < 0 || m_mazeGraphic->getHeight() <= y) {
-        print(std::string("Error - there is no tile at position (") + std::to_string(x) + std::string(", ")
+        print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
             + std::to_string(y) + std::string("), and thus you cannot declare any of its walls."));
         return;
     }
@@ -144,7 +144,7 @@ bool MouseInterface::inputButtonPressed(int inputButton) {
     ENSURE_DECLARED
 
     if (inputButton < 0 || 9 < inputButton) {
-        print(std::string("Error - there is no input button with the number ") + std::to_string(inputButton)
+        print(std::string("Error: There is no input button with the number ") + std::to_string(inputButton)
             + std::string(", and thus you cannot check to see if it has been pressed."));
         return false;
     }
@@ -157,7 +157,7 @@ void MouseInterface::acknowledgeInputButtonPressed(int inputButton) {
     ENSURE_DECLARED
 
     if (inputButton < 0 || 9 < inputButton) {
-        print(std::string("Error - there is no input button with the number ") + std::to_string(inputButton)
+        print(std::string("Error: There is no input button with the number ") + std::to_string(inputButton)
             + std::string(", and thus you cannot acknowledge that it has been pressed."));
         return;
     }
@@ -177,7 +177,7 @@ float MouseInterface::read(std::string name) {
     ENSURE_CONTINUOUS
 
     if (!m_mouse->hasSensor(name)) {
-        print(std::string("Error - there is no sensor called \"") + std::string(name)
+        print(std::string("Error: There is no sensor called \"") + std::string(name)
             + std::string("\" and thus you cannot read its value."));
         return 0.0;
     }
@@ -405,7 +405,7 @@ void MouseInterface::turnAround() {
 
 void MouseInterface::ensureDeclaredInterface(const std::string& callingFunction) const {
     if (S()->interfaceType() == UNDECLARED) {
-        print(std::string("Error - you must declare the interface type before you can use MouseInterface::")
+        print(std::string("Error: You must declare the interface type before you can use MouseInterface::")
             + callingFunction + std::string("()."));
         quit();
     }
@@ -413,7 +413,7 @@ void MouseInterface::ensureDeclaredInterface(const std::string& callingFunction)
 
 void MouseInterface::ensureDiscreteInterface(const std::string& callingFunction) const {
     if (S()->interfaceType() != DISCRETE) {
-        print(std::string("Error - you must declare the interface type to be sim::DISCRETE to use MouseInterface::")
+        print(std::string("Error: You must declare the interface type to be sim::DISCRETE to use MouseInterface::")
             + callingFunction + std::string("()."));
         quit();
     }
@@ -421,7 +421,7 @@ void MouseInterface::ensureDiscreteInterface(const std::string& callingFunction)
 
 void MouseInterface::ensureContinuousInterface(const std::string& callingFunction) const {
     if (S()->interfaceType() != CONTINUOUS) {
-        print(std::string("Error - you must declare the interface type to be sim::CONTINUOUS to use MouseInterface::")
+        print(std::string("Error: You must declare the interface type to be sim::CONTINUOUS to use MouseInterface::")
             + callingFunction + std::string("()."));
         quit();
     }

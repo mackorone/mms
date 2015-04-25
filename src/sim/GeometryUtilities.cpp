@@ -6,6 +6,7 @@
 #include "Assert.h"
 #include "Param.h"
 
+// TODO: Put this in a class....
 namespace sim {
 
 std::vector<const Tile*> lineSegmentTileCover(const Cartesian& A, const Cartesian& B, const Maze& maze) {

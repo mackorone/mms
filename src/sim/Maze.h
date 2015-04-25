@@ -28,10 +28,10 @@ private:
     void initializeViaMazeGenerator();
 
     // Initializes all of the tiles of the maze
-    void initializeMaze(std::vector<std::vector<BasicTile>> maze);
+    void initializeMaze(const std::vector<std::vector<BasicTile>>& maze);
 
     // Extracts the maze information
-    std::vector<std::vector<BasicTile>> extractMaze();
+    std::vector<std::vector<BasicTile>> extractMaze() const;
 };
 
 } // namespace sim

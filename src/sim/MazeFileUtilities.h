@@ -1,30 +1,30 @@
 #pragma once
 
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "BasicTile.h"
 
 namespace sim {
 
-// Returns the maze width and height (in that order)
-std::pair<int, int> getMazeSize(const std::string& mazeFilePath);
+class MazeFileUtilities {
 
-// Returns true is a maze is valid (usable by the simulator), false otherwise
-bool validMaze(const std::string& mazeFilePath);
+public:
 
-// Returns true if a maze complies with the official rules, false otherwise
-bool officialMaze(const std::string& mazeFilePath);
+    // TODO: Rotate maze, put mouse in left OR right corner
 
-// officialMaze helper functions
-bool hasPathToCenter(const std::vector<std::vector<BasicTile>>& maze, int x, int y);
-bool hasOneEntrance(const std::vector<std::vector<BasicTile>>& maze);
-bool eachPostHasWall(const std::vector<std::vector<BasicTile>>& maze, int x, int y);
-bool threeStartingWalls(const std::vector<std::vector<BasicTile>>& maze);
+    // Returns whether or not the contents of the file have the proper format
+    static bool isMazeFile(const std::string& mazeFilePath); // TODO: make static methods to break this apart
 
-// Functions for saving and loading the maze
-void saveMaze(const std::vector<std::vector<BasicTile>>& maze, const std::string& mazeFilePath);
-std::vector<std::vector<BasicTile>> loadMaze(const std::string& mazeFilePath);
+    // Functions for saving and loading the maze
+    static void saveMaze(const std::vector<std::vector<BasicTile>>& maze, const std::string& mazeFilePath);
+    static std::vector<std::vector<BasicTile>> loadMaze(const std::string& mazeFilePath);
+
+private:
+
+    // Returns the maze width and height (in that order)
+    static std::pair<int, int> getMazeSize(const std::string& mazeFilePath);
+
+};
 
 } // namespace sim

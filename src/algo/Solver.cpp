@@ -16,6 +16,7 @@ Solver::~Solver() {
 
 void Solver::solve() {
 
+    // TODO: Put these into a map, let the algo be decided at runtime
     //demo::Continue algo;
     //floodfill::FloodFill algo;
     mack::MackAlgo algo;
