@@ -73,7 +73,7 @@ Param::Param() {
     m_saveRandomMaze = parser.getBoolIfHasBool("save-random-maze", true);
 
     // Mouse parameters
-    m_mouseFile = parser.getStringIfHasString("mouse-file", "res/mouse.xml");
+    m_mouseDirectory = parser.getStringIfHasString("mouse-directory", "res/mice/");
 
     // Update the non-configurable parameters
     m_windowWidth = (m_randomMazeWidth * (m_wallLength + m_wallWidth)) * m_pixelsPerMeter;
@@ -256,8 +256,8 @@ bool Param::saveRandomMaze() {
     return m_saveRandomMaze;
 }
 
-std::string Param::mouseFile() {
-    return m_mouseFile;
+std::string Param::mouseDirectory() {
+    return m_mouseDirectory;
 }
 
 } // namespace sim

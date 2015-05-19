@@ -14,7 +14,8 @@ namespace floodfill {
 
 void FloodFill::solve(sim::MouseInterface* mouse) {
 
-    // Declare the interface type
+    // Initialize the mouse and declare the interface type
+    mouse->initializeMouse("mouse.xml");
     mouse->declareInterfaceType(sim::DISCRETE);
 
     // Initialize the mouse pointer

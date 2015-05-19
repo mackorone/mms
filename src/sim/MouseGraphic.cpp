@@ -15,6 +15,7 @@ MouseGraphic::MouseGraphic(const Mouse* mouse) : m_mouse(mouse) {
 void MouseGraphic::draw() {
 
     // Only draw the mouse if it's visible and the interface type has been declared
+    // (which also means that the mouse has been initialized)
     if (!S()->mouseVisible() || S()->interfaceType() == UNDECLARED) {
         return;
     }

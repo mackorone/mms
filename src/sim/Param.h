@@ -66,7 +66,7 @@ public:
     bool saveRandomMaze();
 
     // Mouse parameters
-    std::string mouseFile();
+    std::string mouseDirectory();
 
 private:
 
@@ -127,7 +127,7 @@ private:
     bool m_saveRandomMaze;
 
     // Mouse parameters
-    std::string m_mouseFile;
+    std::string m_mouseDirectory;
 };
 
 } // namespace sim

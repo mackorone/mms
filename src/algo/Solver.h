@@ -6,7 +6,6 @@ class Solver {
     
 public:
     Solver(sim::MouseInterface* mouse);
-    ~Solver();
     void solve();
 
 private:

@@ -5,9 +5,10 @@
 #include "Mouse.h"
 #include "Param.h"
 
-#define ENSURE_DECLARED ensureDeclaredInterface(__func__);
-#define ENSURE_DISCRETE ensureDiscreteInterface(__func__);
-#define ENSURE_CONTINUOUS ensureContinuousInterface(__func__);
+#define ENSURE_INITIALIZED_MOUSE ensureInitializedMouse(__func__);
+#define ENSURE_DECLARED_INTERFACE ensureDeclaredInterface(__func__);
+#define ENSURE_DISCRETE_INTERFACE ensureDiscreteInterface(__func__);
+#define ENSURE_CONTINUOUS_INTERFACE ensureContinuousInterface(__func__);
 
 namespace sim {
 
@@ -17,7 +18,9 @@ public:
     MouseInterface(const Maze* maze, Mouse* mouse, MazeGraphic* mazeGraphic);
     ~MouseInterface();
 
-    // The interface type must be declared before calling any other interface methods
+    // The mouse must be initialized before first and foremost. Afterwards, the interface type
+    // must be declared. These must be done  before calling any other interface methods
+    void initializeMouse(const std::string& mouseFile);
     void declareInterfaceType(InterfaceType interfaceType);
 
     // Any interface methods
@@ -48,6 +51,7 @@ private:
     MazeGraphic* m_mazeGraphic;
     std::set<std::pair<int, int>> m_coloredTiles;
 
+    void ensureInitializedMouse(const std::string& callingFunction) const;
     void ensureDeclaredInterface(const std::string& callingFunction) const;
     void ensureDiscreteInterface(const std::string& callingFunction) const;
     void ensureContinuousInterface(const std::string& callingFunction) const;

@@ -23,6 +23,7 @@ namespace mack {
 #if (SIMULATOR)
 void MackAlgo::solve(sim::MouseInterface* mouse) {
     m_mouse = mouse;
+    mouse->initializeMouse("mouse.xml");
     m_mouse->declareInterfaceType(sim::DISCRETE);
 #else
 void MackAlgo::solve() {

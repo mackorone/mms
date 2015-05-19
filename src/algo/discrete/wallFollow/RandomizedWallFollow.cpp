@@ -5,6 +5,7 @@
 namespace wallFollow {
 
 void RandomizedWallFollow::solve(sim::MouseInterface* mouse){
+    mouse->initializeMouse("mouse.xml");
     mouse->declareInterfaceType(sim::DISCRETE);
     while (true){
         if (rand() % 2 == 0){

@@ -3,6 +3,7 @@
 namespace wallFollow {
 
 void LeftWallFollow::solve(sim::MouseInterface* mouse){
+    mouse->initializeMouse("mouse.xml");
     mouse->declareInterfaceType(sim::DISCRETE);
     while (true) {
         leftWallFollowStep(mouse);

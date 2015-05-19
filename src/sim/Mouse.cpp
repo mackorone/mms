@@ -16,12 +16,25 @@
 
 namespace sim {
 
-Mouse::Mouse(const Maze* maze) : m_maze(maze), m_rotation(Radians(0.0)) {
+Mouse::Mouse(const Maze* maze) : m_maze(maze), m_initialized(false), m_rotation(Radians(0.0)) {
+}
+
+bool Mouse::getInitialized() {
+    return m_initialized;
+}
+
+bool Mouse::initialize(const std::string& mouseFile) {
+
+    // A mouse may only be initiaized once
+    ASSERT(!m_initialized);
+
+    // TODO: This should fail at most once
 
     // TODO: What to do if this fails??? Make sure this file exists...
+    // TODO: Just return false - abort...
 
     // Create the mouse parser object
-    MouseParser parser(getProjectDirectory() + P()->mouseFile());
+    MouseParser parser(getProjectDirectory() + P()->mouseDirectory() + mouseFile);
 
     // Initialize the body of the mouse
     m_initialBodyPolygon = parser.getBody();
@@ -42,6 +55,12 @@ Mouse::Mouse(const Maze* maze) : m_maze(maze), m_rotation(Radians(0.0)) {
 
     // Initialize the sensors
     m_sensors = parser.getSensors();
+
+    // Indicate that we're done with the initiaization
+    m_initialized = true;
+
+    // Return success
+    return true;
 }
 
 Polygon Mouse::getCollisionPolygon() const {

@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
     sim::MouseGraphic mouseGraphic(&mouse);
     sim::World world(&maze, &mouse);
     sim::MouseInterface mouseInterface(&maze, &mouse, &mazeGraphic);
-    Solver solver(&mouseInterface);
+    Solver solver(&mouseInterface); // TODO: Choose the algorithm at runtime??
 
     // Assign global variables
     g_mazeGraphic = &mazeGraphic;

@@ -28,6 +28,9 @@ Features:
 - Randomly select a pre-defined maze
 - MazeChecker class that hides the validation functions
 - Reimplement drawPolygon to use a tesselator (so that it can draw non-convex polygons)
+- Buffer communication (like with the real robot)
+- Fix the default mouse (make sure it's centered)
+- Make a SimInterface and make sure it's easy to "extract" an algorithm for use on Arduino
 
 Clean-Up:
 - Rename TTime.h to Duration.h and change Time to Duration where appropriate
@@ -55,3 +58,4 @@ Clean-Up:
 - Change "AlgoWalls" to "DeclaredWalls" where appropriate
 - Buffer the declared walls and include a quick "resetWalls()" method
 - Change the Mouse to use the technically correct position update implementation
+- Clean up / improve the coding standards

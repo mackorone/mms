@@ -18,6 +18,12 @@ class Mouse {
 public:
     Mouse(const Maze* maze);
 
+    // Returns whether or not the mouse was previously initialized
+    bool getInitialized();
+
+    // Initializes the mouse (body, sensors, etc.). Returns true if successful, false if not.
+    bool initialize(const std::string& mouseFile);
+
     // Retrieves the polygon comprised of all parts of the mouse that could collide with walls
     Polygon getCollisionPolygon() const;
 
@@ -60,6 +66,9 @@ public:
 private:
     // Used for the sensor readings
     const Maze* m_maze;
+
+    // Whether or not the mouse (including body and sensors) was initialized (by the algorithm)
+    bool m_initialized;
 
     // The mouse, as it's positioned at the start execution
     Cartesian m_initialTranslation;

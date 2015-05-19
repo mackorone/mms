@@ -1,0 +1,2 @@
+- It also shouldn't appear until the mouse file is chosen
+- The mouse won't appear until the interface type is delcared
