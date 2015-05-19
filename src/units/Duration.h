@@ -2,16 +2,16 @@
 
 namespace sim {
 
-class Time {
+class Duration {
 
 public:
-    virtual ~Time() = 0;
+    virtual ~Duration() = 0;
     float getSeconds() const;
     float getMilliseconds() const;
     float getMicroseconds() const;
 
 protected:
-    Time();
+    Duration();
     float m_seconds;
 
 };

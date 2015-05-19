@@ -137,7 +137,7 @@ std::vector<Polygon> Mouse::getViewPolygons() const {
     return polygons;
 }
 
-void Mouse::update(const Time& elapsed) {
+void Mouse::update(const Duration& elapsed) {
 
     /*
      *  In a differential drive system (two-wheeled drive system), the angular velocities of
@@ -266,9 +266,9 @@ float Mouse::read(const std::string& name) const {
                / GeometryUtilities::polygonArea(fullView).getMetersSquared();
 }
 
-Seconds Mouse::getReadTime(const std::string& name) const {
+Seconds Mouse::getReadDuration(const std::string& name) const {
     ASSERT(m_sensors.count(name) != 0);
-    return m_sensors.at(name).getReadTime();
+    return m_sensors.at(name).getReadDuration();
 }
 
 Cartesian Mouse::getInitialTranslation() const {

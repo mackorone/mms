@@ -71,18 +71,18 @@ bool Maze::initializeViaMazeFile() {
 
 void Maze::initializeViaMazeGenerator() {
 
-    // Check the parameters file for random algo
-    std::string mazeAlgo(P()->randomMazeAlgo());
+    // Check the parameters file for maze generation algo
+    std::string mazeAlgo(P()->mazeGenerationAlgo());
     if (0 == MAZE_ALGOS.count(mazeAlgo)) {
-        print("Error: \"" + mazeAlgo + "\" is not a valid maze algorithm.");
-        mazeAlgo = DEFAULT_MAZE_ALGO;
+        print("Error: \"" + mazeAlgo + "\" is not a valid maze generation algorithm.");
+        quit();
     }
 
     // Load the maze given by the maze generation algorithm
     initializeMaze(MazeGenerator::generateMaze(MAZE_ALGOS.find(mazeAlgo)->second));
 
     // Optionally save the maze
-    if (P()->saveRandomMaze()) {
+    if (P()->saveGeneratedMaze()) {
         MazeFileUtilities::saveMaze(extractMaze(), getProjectDirectory() + P()->mazeDirectory() + "auto_generated_maze.maz");
     }
 }

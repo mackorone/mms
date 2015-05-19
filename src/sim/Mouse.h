@@ -43,7 +43,7 @@ public:
     std::vector<Polygon> getViewPolygons() const;
 
     // Instruct the mouse to update its own position based on how much simulation time has elapsed
-    void update(const Time& elapsed);
+    void update(const Duration& elapsed);
 
     // An atomic interface for setting the wheel speeds
     void setWheelSpeeds(const AngularVelocity& leftWheelSpeed, const AngularVelocity& rightWheelSpeed);
@@ -55,7 +55,7 @@ public:
     float read(const std::string& name) const;
 
     // Get the read time of a particular sensor
-    Seconds getReadTime(const std::string& name) const;
+    Seconds getReadDuration(const std::string& name) const;
 
     // For use with the discrete interface *only*
     Cartesian getInitialTranslation() const;

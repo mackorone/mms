@@ -6,12 +6,12 @@ Milliseconds::Milliseconds(float milliseconds) {
     m_seconds = milliseconds / 1000.0;
 }
 
-Milliseconds::Milliseconds(const Time& time) {
-    m_seconds = time.getSeconds();
+Milliseconds::Milliseconds(const Duration& duration) {
+    m_seconds = duration.getSeconds();
 }
 
-Milliseconds Milliseconds::operator+(const Time& time) const {
-    return Milliseconds(getMilliseconds() + time.getMilliseconds());
+Milliseconds Milliseconds::operator+(const Duration& duration) const {
+    return Milliseconds(getMilliseconds() + duration.getMilliseconds());
 }
 
 } // namespace sim

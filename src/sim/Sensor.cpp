@@ -11,9 +11,9 @@
 namespace sim {
 
 Sensor::Sensor(const Coordinate& position, const Distance& radius, const Angle& rotation, const Distance& range,
-        const Angle& halfWidth, const Time& readTime) :
+        const Angle& halfWidth, const Duration& readDuration) :
         m_initialTranslation(position), m_initialRotation(rotation), m_range(range), m_halfWidth(halfWidth),
-        m_readTime(readTime) {
+        m_readDuration(readDuration) {
 
     // Create the polygon for the body of the sensor
     std::vector<Cartesian> polygon;
@@ -88,8 +88,8 @@ Polygon Sensor::getCurrentView(const Cartesian& currentPosition, const Radians& 
     return Polygon(edge);
 }
 
-Seconds Sensor::getReadTime() const {
-    return m_readTime;
+Seconds Sensor::getReadDuration() const {
+    return m_readDuration;
 }
 
 } // namespace sim

@@ -24,9 +24,9 @@ std::vector<std::vector<BasicTile>> MazeGenerator::random() {
 
     // Create the maze that will be returned
     std::vector<std::vector<BasicTile>> maze;
-    for (int x = 0; x < P()->randomMazeWidth(); x += 1) {
+    for (int x = 0; x < P()->generatedMazeWidth(); x += 1) {
         std::vector<BasicTile> column;
-        for (int y = 0; y < P()->randomMazeHeight(); y += 1) {
+        for (int y = 0; y < P()->generatedMazeHeight(); y += 1) {
             BasicTile tile;
             tile.x = x;
             tile.y = y;
@@ -44,7 +44,7 @@ std::vector<std::vector<BasicTile>> MazeGenerator::random() {
                 bool wallExists = (getRandom() <= wallProb);
                 switch (direction) {
                     case NORTH:
-                        if (y + 1 < P()->randomMazeHeight()) {
+                        if (y + 1 < P()->generatedMazeHeight()) {
                             maze.at(x).at(y).walls[NORTH] = wallExists;
                             maze.at(x).at(y + 1).walls[SOUTH] = wallExists;
                         }
@@ -53,7 +53,7 @@ std::vector<std::vector<BasicTile>> MazeGenerator::random() {
                         }
                         break;
                     case EAST:
-                        if (x + 1 < P()->randomMazeWidth()) {
+                        if (x + 1 < P()->generatedMazeWidth()) {
                             maze.at(x).at(y).walls[EAST] = wallExists;
                             maze.at(x + 1).at(y).walls[WEST] = wallExists;
                         }

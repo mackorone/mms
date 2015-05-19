@@ -46,7 +46,6 @@ private:
     */
 };
 
-static const std::string DEFAULT_MAZE_ALGO = "TOMASZ";
 static const std::map<std::string, MazeGenerator::Algorithm> MAZE_ALGOS = {
     {"TOMASZ", MazeGenerator::TOMASZ},
     {"RANDOM", MazeGenerator::RANDOM},

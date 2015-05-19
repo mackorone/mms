@@ -1,15 +1,15 @@
 #pragma once
 
-#include "TTime.h"
+#include "Duration.h"
 
 namespace sim {
 
-class Seconds : public Time {
+class Seconds : public Duration {
 
 public:
     Seconds(float seconds);
-    Seconds(const Time& time);
-    Seconds operator+(const Time& time) const;
+    Seconds(const Duration& duration);
+    Seconds operator+(const Duration& duration) const;
 
 };
 

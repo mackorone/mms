@@ -58,7 +58,7 @@
     <Rotation>90</Rotation> <!-- Degrees -->
     <Range>.20</Range> <!-- Meters -->
     <HalfWidth>5</HalfWidth> <!-- Degrees -->
-    <ReadTime>.015</ReadTime> <!-- Seconds -->
+    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
 </Sensor>
 <Sensor>
     <Name>leftMiddle</Name>
@@ -70,7 +70,7 @@
     <Rotation>135</Rotation> <!-- Degrees -->
     <Range>.20</Range> <!-- Meters -->
     <HalfWidth>5</HalfWidth> <!-- Degrees -->
-    <ReadTime>.015</ReadTime> <!-- Seconds -->
+    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
 </Sensor>
 <Sensor>
     <Name>left</Name>
@@ -82,7 +82,7 @@
     <Rotation>180</Rotation> <!-- Degrees -->
     <Range>.20</Range> <!-- Meters -->
     <HalfWidth>5</HalfWidth> <!-- Degrees -->
-    <ReadTime>.015</ReadTime> <!-- Seconds -->
+    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
 </Sensor>
 <Sensor>
     <Name>rightFront</Name>
@@ -94,7 +94,7 @@
     <Rotation>90</Rotation> <!-- Degrees -->
     <Range>.20</Range> <!-- Meters -->
     <HalfWidth>5</HalfWidth> <!-- Degrees -->
-    <ReadTime>.015</ReadTime> <!-- Seconds -->
+    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
 </Sensor>
 <Sensor>
     <Name>rightMiddle</Name>
@@ -106,7 +106,7 @@
     <Rotation>45</Rotation> <!-- Degrees -->
     <Range>.20</Range> <!-- Meters -->
     <HalfWidth>5</HalfWidth> <!-- Degrees -->
-    <ReadTime>.015</ReadTime> <!-- Seconds -->
+    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
 </Sensor>
 <Sensor>
     <Name>right</Name>
@@ -118,5 +118,5 @@
     <Rotation>0</Rotation> <!-- Degrees -->
     <Range>.20</Range> <!-- Meters -->
     <HalfWidth>5</HalfWidth> <!-- Degrees -->
-    <ReadTime>.015</ReadTime> <!-- Seconds -->
+    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
 </Sensor>

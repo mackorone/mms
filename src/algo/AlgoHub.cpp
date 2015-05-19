@@ -13,7 +13,7 @@
 
 AlgoHub::AlgoHub() {
     m_algorithms.insert(std::pair<std::string, IAlgorithm*>("Continue", new demo::Continue()));
-    m_algorithms.insert(std::pair<std::string, IAlgorithm*>("Floodfill", new floodfill::FloodFill()));
+    m_algorithms.insert(std::pair<std::string, IAlgorithm*>("FloodFill", new floodfill::FloodFill()));
     m_algorithms.insert(std::pair<std::string, IAlgorithm*>("MackAlgo", new mack::MackAlgo()));
     m_algorithms.insert(std::pair<std::string, IAlgorithm*>("Forward", new misc::Forward()));
     m_algorithms.insert(std::pair<std::string, IAlgorithm*>("Wait", new misc::Wait()));

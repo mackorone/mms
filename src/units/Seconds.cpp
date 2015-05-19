@@ -6,12 +6,12 @@ Seconds::Seconds(float seconds) {
     m_seconds = seconds;
 }
 
-Seconds::Seconds(const Time& time) {
-    m_seconds = time.getSeconds();
+Seconds::Seconds(const Duration& duration) {
+    m_seconds = duration.getSeconds();
 }
 
-Seconds Seconds::operator+(const Time& time) const {
-    return Seconds(getSeconds() + time.getSeconds());
+Seconds Seconds::operator+(const Duration& duration) const {
+    return Seconds(getSeconds() + duration.getSeconds());
 }
 
 } // namespace sim

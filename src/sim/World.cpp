@@ -17,7 +17,7 @@ void World::simulate() {
 
     // Wait until the interface type is declared
     while (S()->interfaceType() == UNDECLARED) {
-        sim::sleep(Seconds(P()->glutInitTime()));
+        sim::sleep(Seconds(P()->glutInitDuration()));
     }
 
     // Start a separate collision detection thread

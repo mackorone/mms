@@ -44,9 +44,9 @@ float getRandom() {
 #endif
 }
 
-void sleep(const Time& time) {
-    ASSERT(time.getMilliseconds() >= 0);
-	std::this_thread::sleep_for(std::chrono::microseconds(static_cast<int>(time.getMicroseconds())));
+void sleep(const Duration& duration) {
+    ASSERT(duration.getMilliseconds() >= 0);
+	std::this_thread::sleep_for(std::chrono::microseconds(static_cast<int>(duration.getMicroseconds())));
 }
 
 double getHighResTime() {

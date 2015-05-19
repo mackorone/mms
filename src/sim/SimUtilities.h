@@ -4,7 +4,7 @@
 #include <vector>
 
 #include <glut.h>
-#include <TTime.h>
+#include <Duration.h>
 
 namespace sim {
 
@@ -21,7 +21,7 @@ void print(const std::string& msg);
 float getRandom();
 
 // Sleeps the current thread for ms milliseconds
-void sleep(const Time& time);
+void sleep(const Duration& duration);
 
 // Like time() in <ctime> but higher resolution
 double getHighResTime();
