@@ -5,7 +5,7 @@
 #include <glut.h>
 #include "Seconds.h"
 
-#include "algo/Solver.h"
+#include "algo/AlgoHub.h"
 #include "sim/Param.h"
 #include "sim/Maze.h"
 #include "sim/MazeGraphic.h"
@@ -23,10 +23,10 @@ void simulate();
 void keyInput(unsigned char key, int x, int y);
 
 // Global object variable declarations
-Solver* g_solver;
 sim::World* g_world;
 sim::MazeGraphic* g_mazeGraphic;
 sim::MouseGraphic* g_mouseGraphic;
+sim::MouseInterface* g_mouseInterface;
 
 int main(int argc, char* argv[]) {
 
@@ -37,13 +37,12 @@ int main(int argc, char* argv[]) {
     sim::MouseGraphic mouseGraphic(&mouse);
     sim::World world(&maze, &mouse);
     sim::MouseInterface mouseInterface(&maze, &mouse, &mazeGraphic);
-    Solver solver(&mouseInterface); // TODO: Choose the algorithm at runtime??
 
     // Assign global variables
+    g_world = &world;
     g_mazeGraphic = &mazeGraphic;
     g_mouseGraphic = &mouseGraphic;
-    g_world = &world;
-    g_solver = &solver;
+    g_mouseInterface = &mouseInterface;
 
     // Initialize the parameter and state objects
     sim::P();
@@ -107,7 +106,16 @@ void draw() {
 }
 
 void solve() {
-    g_solver->solve();
+
+    // First, check to ensure that the algorithm is valid
+    std::map<std::string, IAlgorithm*> algos = AlgoHub().getAlgorithms();
+    if (algos.find(sim::P()->algorithm()) == algos.end()) {
+        sim::print("Error: The algorithm \"" + sim::P()->algorithm() + "\" is not a valid algorithm.");
+        sim::quit();
+    }
+
+    // Then, execute the algorithm
+    algos.at(sim::P()->algorithm())->solve(g_mouseInterface);
 }
 
 void simulate() {

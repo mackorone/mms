@@ -68,6 +68,9 @@ public:
     // Mouse parameters
     std::string mouseDirectory();
 
+    // Algorithm parameters
+    std::string algorithm();
+
 private:
 
     // A private constructor is used to ensure only one instance of this class exists
@@ -128,6 +131,9 @@ private:
 
     // Mouse parameters
     std::string m_mouseDirectory;
+
+    // Algorithm parameters
+    std::string m_algorithm;
 };
 
 } // namespace sim

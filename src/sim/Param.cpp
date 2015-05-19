@@ -75,6 +75,9 @@ Param::Param() {
     // Mouse parameters
     m_mouseDirectory = parser.getStringIfHasString("mouse-directory", "res/mice/");
 
+    // Algorithm parameters
+    m_algorithm = parser.getStringIfHasString("algorithm", "MackAlgo");
+
     // Update the non-configurable parameters
     m_windowWidth = (m_randomMazeWidth * (m_wallLength + m_wallWidth)) * m_pixelsPerMeter;
     m_windowHeight = (m_randomMazeHeight * (m_wallLength + m_wallWidth)) * m_pixelsPerMeter;
@@ -258,6 +261,10 @@ bool Param::saveRandomMaze() {
 
 std::string Param::mouseDirectory() {
     return m_mouseDirectory;
+}
+
+std::string Param::algorithm() {
+    return m_algorithm;
 }
 
 } // namespace sim

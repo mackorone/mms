@@ -4,7 +4,7 @@
 <pixels-per-meter>246</pixels-per-meter>
 <frame-rate>60</frame-rate> <!-- Frames per second -->
 <print-late-frames>false</print-late-frames>
-<tile-base-color>BLACK</tile-base-color>
+<tile-base-color>BLACK</tile-base-color> <!-- TODO: Display a better error message for bad inputs -->
 <tile-wall-color>RED</tile-wall-color>
 <tile-corner-color>GRAY</tile-corner-color>
 <mouse-body-color>BLUE</mouse-body-color>
@@ -52,7 +52,7 @@
 <save-random-maze>true</save-random-maze> <!-- Whethor or not to save a random maze -->
 
 <!-- Mouse Parameters -->
-<mouse-directory>res/mice/</mouse-directory> <!-- realtive to project root -->
+<mouse-directory>res/mice/</mouse-directory> <!-- Relative to project root -->
 
-<!-- Algo parameters -->
-<!-- TODO -->
+<!-- Algo Parameters -->
+<algorithm>MackAlgo</algorithm> <!-- The name as specified in src/algo/Solver.cpp -->

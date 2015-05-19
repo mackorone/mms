@@ -14,7 +14,7 @@ static const int MAZE_HEIGHT = 16; // XXX
 enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
 
 #if (SIMULATOR)
-class MackAlgo : IAlgorithm {
+class MackAlgo : public IAlgorithm {
 #else
 class MackAlgo {
 #endif
