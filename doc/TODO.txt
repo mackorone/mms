@@ -4,7 +4,6 @@ Features:
 - Interrupt interface
 - Run the program with maximum thread priority
 - New maze w/o restarting app
-- Ensure that any file can be loaded regardless of maze size specification
 - Make terminal style output at bottom or right of window
 - Shortest path graphic
 - XML file for algorithm choice
@@ -24,7 +23,6 @@ Features:
 - Add support for maze rotation
 - Crash animation for both modes
 - Crash recovery semantics
-- Allow an algorithm to specify a mouse file?
 - Randomly select a pre-defined maze
 - MazeChecker class that hides the validation functions
 - Reimplement drawPolygon to use a tesselator (so that it can draw non-convex polygons)

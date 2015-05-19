@@ -77,11 +77,6 @@ Param::Param() {
 
     // Algorithm parameters
     m_algorithm = parser.getStringIfHasString("algorithm", "MackAlgo");
-
-    // Update the non-configurable parameters // TODO: These only work for the generated maze... what about maze files...
-    // TODO: Fix me pronto
-    m_windowWidth = (m_generatedMazeWidth * (m_wallLength + m_wallWidth)) * m_pixelsPerMeter;
-    m_windowHeight = (m_generatedMazeHeight * (m_wallLength + m_wallWidth)) * m_pixelsPerMeter;
 }
 
 int Param::pixelsPerMeter() {
@@ -94,14 +89,6 @@ int Param::frameRate() {
 
 bool Param::printLateFrames() {
     return m_printLateFrames;
-}
-
-int Param::windowWidth() {
-    return m_windowWidth;
-}
-
-int Param::windowHeight() {
-    return m_windowHeight;
 }
 
 std::string Param::tileBaseColor() {

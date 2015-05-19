@@ -83,8 +83,6 @@ private:
     int m_pixelsPerMeter;
     int m_frameRate;
     bool m_printLateFrames;
-    int m_windowWidth;
-    int m_windowHeight;
     std::string m_tileBaseColor;
     std::string m_tileWallColor;
     std::string m_tileCornerColor;

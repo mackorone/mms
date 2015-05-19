@@ -44,16 +44,16 @@ int main(int argc, char* argv[]) {
     g_mouseGraphic = &mouseGraphic;
     g_mouseInterface = &mouseInterface;
 
-    // Initialize the parameter and state objects
-    sim::P();
+    // Initialize the state object (to avoid a race condition)
     sim::S();
 
     // GLUT Initialization
     glutInit(&argc, argv);
-    glutInitWindowSize(sim::P()->windowWidth(), sim::P()->windowHeight());
+    int pixelsPerTile = (sim::P()->wallLength() + sim::P()->wallWidth()) * sim::P()->pixelsPerMeter();
+    glutInitWindowSize(maze.getWidth() * pixelsPerTile, maze.getHeight() * pixelsPerTile);
     glutInitDisplayMode(GLUT_RGBA);
     glutInitWindowPosition(0, 0);
-    glutCreateWindow(sim::P()->mazeFile().c_str()); // TODO: mazeFile could be wrong/invalid???
+    glutCreateWindow("Micromouse Simulator");
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
     glutDisplayFunc(draw);
