@@ -22,15 +22,15 @@
 
 namespace sim {
 
-void quit() {
+void SimUtilities::quit() {
     exit(0);
 }
 
-void print(const std::string& msg) {
+void SimUtilities::print(const std::string& msg) {
     std::cout << msg << std::endl;
 }
 
-float getRandom() {
+float SimUtilities::getRandom() {
 #ifdef __linux
     static bool seeded = false;
     if (!seeded) {
@@ -44,14 +44,12 @@ float getRandom() {
 #endif
 }
 
-void sleep(const Duration& duration) {
+void SimUtilities::sleep(const Duration& duration) {
     ASSERT(duration.getMilliseconds() >= 0);
 	std::this_thread::sleep_for(std::chrono::microseconds(static_cast<int>(duration.getMicroseconds())));
 }
 
-double getHighResTime() {
-    // TODO: SOM - I tried to reimplement w/ chrono but without much succes...
-    // TODO: That is the best option, if it works
+double SimUtilities::getHighResTime() {
 #ifdef __linux
     struct timeval t;
     gettimeofday(&t, NULL);
@@ -60,11 +58,11 @@ double getHighResTime() {
     LARGE_INTEGER freq, counter;
     QueryPerformanceFrequency(&freq);
     QueryPerformanceCounter(&counter);
-    return double(counter.QuadPart)/double(freq.QuadPart);
+    return double(counter.QuadPart) / double(freq.QuadPart);
 #endif
 }
 
-std::string getProjectDirectory() {
+std::string SimUtilities::getProjectDirectory() {
 
     // This approach is claimed to be more reliable than argv[0] on windows
     // and linux.  On Windows GetModuleFileName is the directory to the executable
@@ -91,11 +89,11 @@ std::string getProjectDirectory() {
     return path;
 }
 
-bool isBool(std::string str) {
+bool SimUtilities::isBool(std::string str) {
     return 0 == str.compare("true") || 0 == str.compare("false");
 }
 
-bool isInt(std::string str) {
+bool SimUtilities::isInt(std::string str) {
     try {
         std::stoi(str);
     }
@@ -105,7 +103,7 @@ bool isInt(std::string str) {
     return true;
 }
 
-bool isFloat(std::string str) {
+bool SimUtilities::isFloat(std::string str) {
     try {
         std::stof(str);
     }
@@ -115,23 +113,23 @@ bool isFloat(std::string str) {
     return true;
 }
 
-bool strToBool(std::string str) {
+bool SimUtilities::strToBool(std::string str) {
     ASSERT(isBool(str));
     return 0 == str.compare("true");
 }
 
-int strToInt(std::string str) {
+int SimUtilities::strToInt(std::string str) {
     ASSERT(isInt(str));
     return std::stoi(str.c_str());
 }
 
-float strToFloat(std::string str) {
+float SimUtilities::strToFloat(std::string str) {
     ASSERT(isFloat(str));
     return std::stof(str);
 }
 
 
-std::vector<std::string> tokenize(std::string str) {
+std::vector<std::string> SimUtilities::tokenize(std::string str) {
 
     std::vector<std::string> tokens;
     std::string word = "";
@@ -155,7 +153,7 @@ std::vector<std::string> tokenize(std::string str) {
     return tokens;
 }
 
-bool isFile(std::string path) {
+bool SimUtilities::isFile(std::string path) {
     struct stat buf;
     stat(path.c_str(), &buf);
     return S_ISREG(buf.st_mode);

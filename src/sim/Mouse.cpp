@@ -34,7 +34,7 @@ bool Mouse::initialize(const std::string& mouseFile) {
     // TODO: Just return false - abort...
 
     // Create the mouse parser object
-    MouseParser parser(getProjectDirectory() + P()->mouseDirectory() + mouseFile);
+    MouseParser parser(SimUtilities::getProjectDirectory() + P()->mouseDirectory() + mouseFile);
 
     // Initialize the body of the mouse
     m_initialBodyPolygon = parser.getBody();

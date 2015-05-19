@@ -26,13 +26,13 @@ MouseInterface::~MouseInterface() {
 void MouseInterface::initializeMouse(const std::string& mouseFile) {
 
     if (m_mouse->getInitialized()) {
-        print("Error: You may only initialize the mouse once.");
-        quit();
+        SimUtilities::print("Error: You may only initialize the mouse once.");
+        SimUtilities::quit();
     }
 
     if (!m_mouse->initialize(mouseFile)) {
-        print("Error: Unable to successfully initialize the mouse from \"" + mouseFile + "\".");
-        quit();
+        SimUtilities::print("Error: Unable to successfully initialize the mouse from \"" + mouseFile + "\".");
+        SimUtilities::quit();
     }
 }
 
@@ -41,13 +41,13 @@ void MouseInterface::declareInterfaceType(InterfaceType interfaceType) {
     ENSURE_INITIALIZED_MOUSE
 
     if (interfaceType == UNDECLARED) {
-        print("Error: You may not declare the mouse interface type to be UNDECLARED.");
-        quit();
+        SimUtilities::print("Error: You may not declare the mouse interface type to be UNDECLARED.");
+        SimUtilities::quit();
     }
 
     if (S()->interfaceType() != UNDECLARED) {
-        print("Error: You may only declare the mouse interface type once.");
-        quit();
+        SimUtilities::print("Error: You may only declare the mouse interface type once.");
+        SimUtilities::quit();
     }
 
     // Actually set the interface type
@@ -57,7 +57,7 @@ void MouseInterface::declareInterfaceType(InterfaceType interfaceType) {
     m_mouse->initializeCollisionPolygon();
 
     // Wait for everything to stabilize
-    sim::sleep(Seconds(P()->glutInitDuration()));
+    sim::SimUtilities::sleep(Seconds(P()->glutInitDuration()));
 }
 
 void MouseInterface::delay(int milliseconds) {
@@ -65,7 +65,7 @@ void MouseInterface::delay(int milliseconds) {
     ENSURE_INITIALIZED_MOUSE
     ENSURE_DECLARED_INTERFACE
 
-    sim::sleep(Milliseconds(milliseconds));
+    sim::SimUtilities::sleep(Milliseconds(milliseconds));
 }
 
 void MouseInterface::colorTile(int x, int y, char color) {
@@ -74,13 +74,13 @@ void MouseInterface::colorTile(int x, int y, char color) {
     ENSURE_DECLARED_INTERFACE
 
     if (x < 0 || m_mazeGraphic->getWidth() < x || y < 0 || m_mazeGraphic->getHeight() <= y) {
-        print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
+        SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
             + std::to_string(y) + std::string("), and thus you cannot set its color."));
         return;
     }
 
     if (COLOR_CHARS.find(color) == COLOR_CHARS.end()) {
-        print(std::string("Error: The character '") + std::to_string(color) + std::string("' is not mapped to a color."));
+        SimUtilities::print(std::string("Error: The character '") + std::to_string(color) + std::string("' is not mapped to a color."));
         return;
     }
 
@@ -105,7 +105,7 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
     ENSURE_DECLARED_INTERFACE
 
     if (x < 0 || m_mazeGraphic->getWidth() < x || y < 0 || m_mazeGraphic->getHeight() <= y) {
-        print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
+        SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
             + std::to_string(y) + std::string("), and thus you cannot declare any of its walls."));
         return;
     }
@@ -124,7 +124,7 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
             m_mazeGraphic->setAlgoWall(x, y, WEST, wallExists); 
             break;
         default:
-            print(std::string("The character '") + std::to_string(direction) + std::string("' is not mapped to a valid direction"));
+            SimUtilities::print(std::string("The character '") + std::to_string(direction) + std::string("' is not mapped to a valid direction"));
             return;
     }
 
@@ -168,7 +168,7 @@ bool MouseInterface::inputButtonPressed(int inputButton) {
     ENSURE_DECLARED_INTERFACE
 
     if (inputButton < 0 || 9 < inputButton) {
-        print(std::string("Error: There is no input button with the number ") + std::to_string(inputButton)
+        SimUtilities::print(std::string("Error: There is no input button with the number ") + std::to_string(inputButton)
             + std::string(", and thus you cannot check to see if it has been pressed."));
         return false;
     }
@@ -182,7 +182,7 @@ void MouseInterface::acknowledgeInputButtonPressed(int inputButton) {
     ENSURE_DECLARED_INTERFACE
 
     if (inputButton < 0 || 9 < inputButton) {
-        print(std::string("Error: There is no input button with the number ") + std::to_string(inputButton)
+        SimUtilities::print(std::string("Error: There is no input button with the number ") + std::to_string(inputButton)
             + std::string(", and thus you cannot acknowledge that it has been pressed."));
         return;
     }
@@ -204,24 +204,24 @@ float MouseInterface::read(std::string name) {
     ENSURE_CONTINUOUS_INTERFACE
 
     if (!m_mouse->hasSensor(name)) {
-        print(std::string("Error: There is no sensor called \"") + std::string(name)
+        SimUtilities::print(std::string("Error: There is no sensor called \"") + std::string(name)
             + std::string("\" and thus you cannot read its value."));
         return 0.0;
     }
 
     // Start the timer
-    double start(sim::getHighResTime());
+    double start(sim::SimUtilities::getHighResTime());
 
     // Retrieve the value
     float value = m_mouse->read(name);
 
     // Stop the timer
-    double end(sim::getHighResTime());
+    double end(sim::SimUtilities::getHighResTime());
     double duration = end - start;
 
     // Display to the user, if requested
     if (sim::P()->printLateSensorReads() && duration > m_mouse->getReadDuration(name).getSeconds()) {
-        sim::print(std::string("A sensor read was late by ")
+        sim::SimUtilities::print(std::string("A sensor read was late by ")
             + std::to_string(duration - m_mouse->getReadDuration(name).getSeconds())
             + std::string(" seconds, which is ")
             + std::to_string((duration - m_mouse->getReadDuration(name).getSeconds())/(m_mouse->getReadDuration(name).getSeconds()) * 100)
@@ -229,7 +229,7 @@ float MouseInterface::read(std::string name) {
     }
 
     // Sleep for the read time
-    sim::sleep(sim::Seconds(std::max(0.0, 1.0/sim::P()->frameRate() - duration)));
+    sim::SimUtilities::sleep(sim::Seconds(std::max(0.0, 1.0/sim::P()->frameRate() - duration)));
 
     // Return the value
     return value;
@@ -308,7 +308,7 @@ void MouseInterface::moveForward() {
             while (m_mouse->getCurrentTranslation().getY() < destinationTranslation.getY()) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(-S()->simSpeed()), RadiansPerSecond(S()->simSpeed()));
-                sim::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
+                sim::SimUtilities::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
             }
             break;
         }
@@ -318,7 +318,7 @@ void MouseInterface::moveForward() {
             while (m_mouse->getCurrentTranslation().getX() < destinationTranslation.getX()) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(-S()->simSpeed()), RadiansPerSecond(S()->simSpeed()));
-                sim::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
+                sim::SimUtilities::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
             }
             break;
         }
@@ -328,7 +328,7 @@ void MouseInterface::moveForward() {
             while (destinationTranslation.getY() < m_mouse->getCurrentTranslation().getY()) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(-S()->simSpeed()), RadiansPerSecond(S()->simSpeed()));
-                sim::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
+                sim::SimUtilities::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
             }
             break;
         }
@@ -338,7 +338,7 @@ void MouseInterface::moveForward() {
             while (destinationTranslation.getX() < m_mouse->getCurrentTranslation().getX()) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(-S()->simSpeed()), RadiansPerSecond(S()->simSpeed()));
-                sim::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
+                sim::SimUtilities::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
             }
             break;
         }
@@ -361,7 +361,7 @@ void MouseInterface::turnRight() {
             while (destinationRotation < m_mouse->getCurrentRotation() || m_mouse->getCurrentRotation() < Degrees(180)) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(-S()->simSpeed()/2.0), RadiansPerSecond(-S()->simSpeed()/2.0));
-                sim::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
+                sim::SimUtilities::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
             }
             break;
         }
@@ -370,7 +370,7 @@ void MouseInterface::turnRight() {
             while (destinationRotation < m_mouse->getCurrentRotation()) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(-S()->simSpeed()/2.0), RadiansPerSecond(-S()->simSpeed()/2.0));
-                sim::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
+                sim::SimUtilities::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
             }
             break;
         }
@@ -378,7 +378,7 @@ void MouseInterface::turnRight() {
             while (m_mouse->getCurrentRotation() < Degrees(180)) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(-S()->simSpeed()/2.0), RadiansPerSecond(-S()->simSpeed()/2.0));
-                sim::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
+                sim::SimUtilities::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
             }
             break;
         }
@@ -401,7 +401,7 @@ void MouseInterface::turnLeft() {
             while (m_mouse->getCurrentRotation() < destinationRotation ||  Degrees(180) < m_mouse->getCurrentRotation()) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(S()->simSpeed()/2.0), RadiansPerSecond(S()->simSpeed()/2.0));
-                sim::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
+                sim::SimUtilities::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
             }
             break;
         }
@@ -409,7 +409,7 @@ void MouseInterface::turnLeft() {
             while (Degrees(180) < m_mouse->getCurrentRotation()) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(S()->simSpeed()/2.0), RadiansPerSecond(S()->simSpeed()/2.0));
-                sim::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
+                sim::SimUtilities::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
             }
             break;
         }
@@ -418,7 +418,7 @@ void MouseInterface::turnLeft() {
             while (m_mouse->getCurrentRotation() < destinationRotation) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(S()->simSpeed()/2.0), RadiansPerSecond(S()->simSpeed()/2.0));
-                sim::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
+                sim::SimUtilities::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
             }
             break;
         }
@@ -439,33 +439,33 @@ void MouseInterface::turnAround() {
 
 void MouseInterface::ensureInitializedMouse(const std::string& callingFunction) const {
     if (!m_mouse->getInitialized()) {
-        print(std::string("Error: You must successfully initialize the mouse before you can use MouseInterface::")
+        SimUtilities::print(std::string("Error: You must successfully initialize the mouse before you can use MouseInterface::")
             + callingFunction + std::string("()."));
-        quit();
+        SimUtilities::quit();
     }
 }
 
 void MouseInterface::ensureDeclaredInterface(const std::string& callingFunction) const {
     if (S()->interfaceType() == UNDECLARED) {
-        print(std::string("Error: You must declare the interface type before you can use MouseInterface::")
+        SimUtilities::print(std::string("Error: You must declare the interface type before you can use MouseInterface::")
             + callingFunction + std::string("()."));
-        quit();
+        SimUtilities::quit();
     }
 }
 
 void MouseInterface::ensureDiscreteInterface(const std::string& callingFunction) const {
     if (S()->interfaceType() != DISCRETE) {
-        print(std::string("Error: You must declare the interface type to be sim::DISCRETE to use MouseInterface::")
+        SimUtilities::print(std::string("Error: You must declare the interface type to be sim::DISCRETE to use MouseInterface::")
             + callingFunction + std::string("()."));
-        quit();
+        SimUtilities::quit();
     }
 }
 
 void MouseInterface::ensureContinuousInterface(const std::string& callingFunction) const {
     if (S()->interfaceType() != CONTINUOUS) {
-        print(std::string("Error: You must declare the interface type to be sim::CONTINUOUS to use MouseInterface::")
+        SimUtilities::print(std::string("Error: You must declare the interface type to be sim::CONTINUOUS to use MouseInterface::")
             + callingFunction + std::string("()."));
-        quit();
+        SimUtilities::quit();
     }
 }
 
@@ -493,7 +493,7 @@ void MouseInterface::checkPaused() {
     if (S()->paused()) {
         m_mouse->setWheelSpeeds(RadiansPerSecond(0), RadiansPerSecond(0));
         while (S()->paused()) {
-            sim::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
+            sim::SimUtilities::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
         }
     }
 }

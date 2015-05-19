@@ -26,8 +26,8 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
     // 7) The lines should be sorted in order of their x values, and then subsorted in order of their y values
 
     // First, make sure we've been given a file
-    if (!isFile(mazeFilePath)) {
-        print("Error: \"" + mazeFilePath + "\" is not a file.");
+    if (!SimUtilities::isFile(mazeFilePath)) {
+        SimUtilities::print("Error: \"" + mazeFilePath + "\" is not a file.");
         return false;
     }
 
@@ -36,7 +36,7 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
 
     // Error opening file
     if (!file.is_open()) {
-        print("Error: Could not open \"" + mazeFilePath + "\" for maze validation.");
+        SimUtilities::print("Error: Could not open \"" + mazeFilePath + "\" for maze validation.");
         return false;
     }
 
@@ -59,27 +59,27 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
     while (std::getline(file, line)) {
 
         // Extract the whitespace separated tokens
-        std::vector<std::string> tokens = tokenize(line);
+        std::vector<std::string> tokens = SimUtilities::tokenize(line);
 
         // Check to see that there are exactly six entries...
         if (6 != tokens.size()) {
-            print("Error: \"" + mazeFilePath + "\" does not contain six entries on each line.");
+            SimUtilities::print("Error: \"" + mazeFilePath + "\" does not contain six entries on each line.");
             return false;
         }
 
         // ... all of which are numeric
         for (int i = 0; i < tokens.size(); i += 1) {
-            if (!isInt(tokens.at(i))) {
-                print("Error: \"" + mazeFilePath + "\" contains non-numeric entries.");
+            if (!SimUtilities::isInt(tokens.at(i))) {
+                SimUtilities::print("Error: \"" + mazeFilePath + "\" contains non-numeric entries.");
                 return false;
             }
         }
 
         BasicTile tile;
-        tile.x = strToInt(tokens.at(0));
-        tile.y = strToInt(tokens.at(1));
+        tile.x = SimUtilities::strToInt(tokens.at(0));
+        tile.y = SimUtilities::strToInt(tokens.at(1));
         for (Direction direction : DIRECTIONS) {
-            tile.walls[direction] = strToInt(tokens.at(2+direction));
+            tile.walls[direction] = SimUtilities::strToInt(tokens.at(2+direction));
         }
      
         // Order of columns validation
@@ -89,12 +89,12 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
                columnCount = 0;
             }
             else {
-                print("Error: \"" + mazeFilePath + "\" has wrong number of columns.");
+                SimUtilities::print("Error: \"" + mazeFilePath + "\" has wrong number of columns.");
                 return false;
             }
         }
         else if (tile.x < columnMax) { 
-            print("Error: \"" + mazeFilePath + "\" has columns out of order.");
+            SimUtilities::print("Error: \"" + mazeFilePath + "\" has columns out of order.");
             return false;
         }
         
@@ -111,18 +111,18 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
             } 
             else {
 	        std::cout << tile.x << " " << tile.y << " " << prevRow << "\n";
-                print("Error: \"" + mazeFilePath + "\" has rows out of order.");
+                SimUtilities::print("Error: \"" + mazeFilePath + "\" has rows out of order.");
                 return false; 
             }
         }
     }
 
     if (columnMax != 15 || columnCount != 16) {
-        print("Error: \"" + mazeFilePath + "\" has wrong number of columns.");
+        SimUtilities::print("Error: \"" + mazeFilePath + "\" has wrong number of columns.");
         return false;
     }
     else if (rowMax != 15 || prevRow != 15) {
-        print("Error: \"" + mazeFilePath + "\" has wrong number of rows.");
+        SimUtilities::print("Error: \"" + mazeFilePath + "\" has wrong number of rows.");
         return false;
     }
     
@@ -136,7 +136,7 @@ void MazeFileUtilities::saveMaze(const std::vector<std::vector<BasicTile>>& maze
 
     // Make sure the file is open
     if (!file.is_open()) {
-        print("Error: Unable to save maze to \"" + mazeFilePath + "\".");
+        SimUtilities::print("Error: Unable to save maze to \"" + mazeFilePath + "\".");
         return;
     }
 
@@ -192,8 +192,8 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMaze(const std::strin
 
         // Set the values of all of the walls
         for (Direction direction : DIRECTIONS) {
-            BasicTile* tile = &maze.at(strToInt(tokens.at(0))).at(strToInt(tokens.at(1)));
-            tile->walls[direction] = (1 == strToInt(tokens.at(2 + direction)));
+            BasicTile* tile = &maze.at(SimUtilities::strToInt(tokens.at(0))).at(SimUtilities::strToInt(tokens.at(1)));
+            tile->walls[direction] = (1 == SimUtilities::strToInt(tokens.at(2 + direction)));
         }
     }
     file.close();
@@ -226,8 +226,8 @@ std::pair<int, int> MazeFileUtilities::getMazeSize(const std::string& mazeFilePa
          std::back_inserter<std::vector<std::string>>(tokens));
 
     // Extract the width and height values, adding 1 because we started counting at 0
-    int width = strToInt(tokens.at(0)) + 1;
-    int height = strToInt(tokens.at(1)) + 1;
+    int width = SimUtilities::strToInt(tokens.at(0)) + 1;
+    int height = SimUtilities::strToInt(tokens.at(1)) + 1;
     return std::make_pair(width, height);
 }
 

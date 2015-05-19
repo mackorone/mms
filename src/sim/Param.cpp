@@ -21,7 +21,7 @@ Param* Param::getInstance() {
 Param::Param() {
 
     // Create the parameter parser object
-    ParamParser parser(getProjectDirectory() + "res/parameters.xml");
+    ParamParser parser(SimUtilities::getProjectDirectory() + "res/parameters.xml");
 
     // Graphical Parameters
     m_pixelsPerMeter = parser.getIntIfHasInt("pixels-per-meter", 250);

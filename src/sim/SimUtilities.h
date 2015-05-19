@@ -8,39 +8,46 @@
 
 namespace sim {
 
-// TODO: Put this is a class
-// TODO: Simplify a path from "asdf/asdf/../fdsa" to "asdf/fdsa"
+class SimUtilities {
 
-// Quits the simulation
-void quit();
+public:
 
-// Prints a message to stdout
-void print(const std::string& msg);
+    // Quits the simulation
+    static void quit();
 
-// Returns a float in [0.0, 1.0]
-float getRandom();
+    // Prints a message to stdout
+    static void print(const std::string& msg);
 
-// Sleeps the current thread for ms milliseconds
-void sleep(const Duration& duration);
+    // Returns a float in [0.0, 1.0]
+    static float getRandom();
 
-// Like time() in <ctime> but higher resolution
-double getHighResTime();
+    // Sleeps the current thread for ms milliseconds
+    static void sleep(const Duration& duration);
 
-// Returns the path the mms project directory
-std::string getProjectDirectory();
+    // Like time() in <ctime> but higher resolution
+    static double getHighResTime();
 
-// Convert between types
-bool isBool(std::string str);
-bool isInt(std::string str);
-bool isFloat(std::string str);
-bool strToBool(std::string str);
-int strToInt(std::string str);
-float strToFloat(std::string str);
+    // Returns the path the mms project directory
+    static std::string getProjectDirectory();
 
-// Tokenizes a string on whitespace
-std::vector<std::string> tokenize(std::string str);
+    // Convert between types
+    static bool isBool(std::string str);
+    static bool isInt(std::string str);
+    static bool isFloat(std::string str);
+    static bool strToBool(std::string str);
+    static int strToInt(std::string str);
+    static float strToFloat(std::string str);
 
-// True if path is a path to a file, false otherwise
-bool isFile(std::string path);
+    // Tokenizes a string on whitespace
+    static std::vector<std::string> tokenize(std::string str);
+
+    // True if path is a path to a file, false otherwise
+    static bool isFile(std::string path);
+
+private:
+    // A private constructor to restrict creation of any GeometryUtilities objects
+    SimUtilities();
+
+};
 
 } // namespace sim

@@ -11,22 +11,21 @@ ParamParser::ParamParser(std::string filePath) {
     // Open the document
     pugi::xml_parse_result result = m_doc.load_file(filePath.c_str());
     if (!result) {
-        print("Unable to read parameters from \"" + filePath + "\": " + result.description());
+        SimUtilities::print("Error: Unable to read parameters from \"" + filePath + "\": " + result.description());
+        SimUtilities::quit();
     }
-    // TODO: How to handle the failing case???
-    ASSERT(result);
 }
 
 bool ParamParser::hasBoolValue(std::string tag){
-    return isBool(m_doc.child(tag.c_str()).child_value());
+    return SimUtilities::isBool(m_doc.child(tag.c_str()).child_value());
 }
 
 bool ParamParser::hasFloatValue(std::string tag){
-    return isFloat(m_doc.child(tag.c_str()).child_value());
+    return SimUtilities::isFloat(m_doc.child(tag.c_str()).child_value());
 }
 
 bool ParamParser::hasIntValue(std::string tag){
-    return isInt(m_doc.child(tag.c_str()).child_value());
+    return SimUtilities::isInt(m_doc.child(tag.c_str()).child_value());
 }
 
 bool ParamParser::hasStringValue(std::string tag){
@@ -34,15 +33,15 @@ bool ParamParser::hasStringValue(std::string tag){
 }
 
 bool ParamParser::getBoolValue(std::string tag) {
-    return strToBool(m_doc.child(tag.c_str()).child_value());
+    return SimUtilities::strToBool(m_doc.child(tag.c_str()).child_value());
 }
 
 float ParamParser::getFloatValue(std::string tag) {
-    return strToFloat(m_doc.child(tag.c_str()).child_value());
+    return SimUtilities::strToFloat(m_doc.child(tag.c_str()).child_value());
 }
 
 int ParamParser::getIntValue(std::string tag) {
-    return strToInt(m_doc.child(tag.c_str()).child_value());
+    return SimUtilities::strToInt(m_doc.child(tag.c_str()).child_value());
 }
 
 std::string ParamParser::getStringValue(std::string tag) {

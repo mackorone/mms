@@ -8,17 +8,17 @@ namespace sim {
 bool MazeChecker::validMaze(const std::vector<std::vector<BasicTile>>& maze) {
 
     if (!isSquare(maze)) {
-        print("Error: The maze is not square.");
+        SimUtilities::print("Error: The maze is not square.");
         return false;
     }
 
     if (!isEnclosed(maze)) {
-        print("Error: The maze is not enclosed by walls.");
+        SimUtilities::print("Error: The maze is not enclosed by walls.");
         return false;
     }
 
     if (!hasConsistentWalls(maze)) {
-        print("Error: The maze does not have consistent walls.");
+        SimUtilities::print("Error: The maze does not have consistent walls.");
         return false;
     }
 
@@ -45,32 +45,32 @@ bool MazeChecker::officialMaze(const std::vector<std::vector<BasicTile>>& maze) 
     ASSERT(validMaze(maze));
 
     if (!hasPathToCenter(maze, 0, 0)) {
-        print("Error: The maze does not have a path to the center.");
+        SimUtilities::print("Error: The maze does not have a path to the center.");
         return false;
     }
 
     if (!hasOneEntrance(maze)) {
-        print("Error: The center of the maze has more than one entrance.");
+        SimUtilities::print("Error: The center of the maze has more than one entrance.");
         return false;
     }
 
     if (!eachPostHasWall(maze, 1, 1)) {
-        print("Error: There is at least one non-center post with no walls connected to it.");
+        SimUtilities::print("Error: There is at least one non-center post with no walls connected to it.");
         return false;
     }
     
     if (!threeStartingWalls(maze)) {
-        print("Error: There are not exactly three starting walls.");
+        SimUtilities::print("Error: There are not exactly three starting walls.");
         return false;
     }
 
     if (!unsolvableByWallFollower(maze)) {
-        print("Error: The maze is solvable by a maze-following robot.");
+        SimUtilities::print("Error: The maze is solvable by a maze-following robot.");
         return false;
     }
 
     if (!noInaccesibleLocations(maze)) {
-        print("Error: There are inaccessible locations in the maze.");
+        SimUtilities::print("Error: There are inaccessible locations in the maze.");
         return false;
     }
 

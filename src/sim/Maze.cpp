@@ -40,11 +40,11 @@ const Tile* Maze::getTile(int x, int y) const {
 bool Maze::initializeViaMazeFile() {
 
     // First, get the maze file path
-    std::string mazeFilePath = getProjectDirectory() + P()->mazeDirectory() + P()->mazeFile();
+    std::string mazeFilePath = SimUtilities::getProjectDirectory() + P()->mazeDirectory() + P()->mazeFile();
 
     // Then, check to see if the file is in the correct format
     if (!MazeFileUtilities::isMazeFile(mazeFilePath)) {
-        print("Error: \"" + mazeFilePath + "\" does not match the maze file format.");
+        SimUtilities::print("Error: \"" + mazeFilePath + "\" does not match the maze file format.");
         return false;
     }
 
@@ -53,13 +53,13 @@ bool Maze::initializeViaMazeFile() {
 
     // Then, check to see if it's a valid maze
     if (!MazeChecker::validMaze(maze)) {
-        print("Error: \"" + mazeFilePath + "\" failed maze validation.");
+        SimUtilities::print("Error: \"" + mazeFilePath + "\" failed maze validation.");
         return false;
     }
 
     // Then, check and enforce official maze rules
     if (P()->enforceOfficialMazeRules() && !MazeChecker::officialMaze(maze)) {
-        print("Error: \"" + mazeFilePath + "\" failed official maze validation.");
+        SimUtilities::print("Error: \"" + mazeFilePath + "\" failed official maze validation.");
         return false;
     }
 
@@ -74,8 +74,8 @@ void Maze::initializeViaMazeGenerator() {
     // Check the parameters file for maze generation algo
     std::string mazeAlgo(P()->mazeGenerationAlgo());
     if (0 == MAZE_ALGOS.count(mazeAlgo)) {
-        print("Error: \"" + mazeAlgo + "\" is not a valid maze generation algorithm.");
-        quit();
+        SimUtilities::print("Error: \"" + mazeAlgo + "\" is not a valid maze generation algorithm.");
+        SimUtilities::quit();
     }
 
     // Load the maze given by the maze generation algorithm
@@ -83,7 +83,7 @@ void Maze::initializeViaMazeGenerator() {
 
     // Optionally save the maze
     if (P()->saveGeneratedMaze()) {
-        MazeFileUtilities::saveMaze(extractMaze(), getProjectDirectory() + P()->mazeDirectory() + "auto_generated_maze.maz");
+        MazeFileUtilities::saveMaze(extractMaze(), SimUtilities::getProjectDirectory() + P()->mazeDirectory() + "auto_generated_maze.maz");
     }
 }
 

@@ -41,7 +41,7 @@ std::vector<std::vector<BasicTile>> MazeGenerator::random() {
         std::vector<BasicTile> column;
         for (int y = 0; y < maze.at(x).size(); y += 1) {
             for (Direction direction : DIRECTIONS) {
-                bool wallExists = (getRandom() <= wallProb);
+                bool wallExists = (SimUtilities::getRandom() <= wallProb);
                 switch (direction) {
                     case NORTH:
                         if (y + 1 < P()->generatedMazeHeight()) {

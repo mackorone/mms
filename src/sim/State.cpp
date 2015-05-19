@@ -77,7 +77,7 @@ bool State::inputButtonPressed(int inputButton) {
 
 void State::setCrashed() {
     m_crashed = true;
-    print(P()->crashMessage());
+    SimUtilities::print(P()->crashMessage());
 }
 
 void State::setInterfaceType(InterfaceType interfaceType) {
