@@ -7,13 +7,15 @@
 <tile-base-color>BLACK</tile-base-color> <!-- TODO: Display a better error message for bad inputs for the colors -->
 <tile-wall-color>RED</tile-wall-color>
 <tile-corner-color>GRAY</tile-corner-color>
+<tile-undeclared-wall-color>DARK_RED</tile-undeclared-wall-color>
+<tile-undeclared-no-wall-color>DARK_GRAY</tile-undeclared-no-wall-color>
 <mouse-body-color>BLUE</mouse-body-color>
 <mouse-wheel-color>GREEN</mouse-wheel-color>
 <mouse-sensor-color>WHITE</mouse-sensor-color>
 <default-maze-visible>true</default-maze-visible>
 <default-mouse-visible>true</default-mouse-visible>
 <default-mouse-path-visible>true</default-mouse-path-visible> <!-- TODO: implement this -->
-<default-wall-truth-visible>true</default-wall-truth-visible>
+<default-wall-truth-visible>false</default-wall-truth-visible>
 <default-tile-colors-visible>true</default-tile-colors-visible>
 <!-- <shortest-path-visible>true</shortest-path-visible> TODO -->
 
@@ -54,4 +56,4 @@
 <mouse-directory>res/mice/</mouse-directory> <!-- Relative to project root -->
 
 <!-- Algo Parameters -->
-<algorithm>MackAlgo</algorithm> <!-- The name as specified in src/algo/Solver.cpp -->
+<algorithm>MackAlgo</algorithm> <!-- The name as specified in src/algo/AlgoHub.cpp -->

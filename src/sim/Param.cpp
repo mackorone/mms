@@ -30,13 +30,15 @@ Param::Param() {
     m_tileBaseColor = parser.getStringIfHasString("tile-base-color", "BLACK");
     m_tileWallColor = parser.getStringIfHasString("tile-wall-color", "RED");
     m_tileCornerColor = parser.getStringIfHasString("tile-corner-color", "GRAY");
+    m_tileUndeclaredWallColor = parser.getStringIfHasString("tile-undeclared-wall-color", "DARK_RED");
+    m_tileUndeclaredNoWallColor = parser.getStringIfHasString("tile-undeclared-no-wall-color", "DARK_GRAY");
     m_mouseBodyColor = parser.getStringIfHasString("mouse-body-color", "BLUE");
     m_mouseWheelColor = parser.getStringIfHasString("mouse-wheel-color", "GREEN");
     m_mouseSensorColor = parser.getStringIfHasString("mouse-sensor-color", "WHITE");
     m_defaultMazeVisible = parser.getBoolIfHasBool("default-maze-visible", true);
     m_defaultMouseVisible = parser.getBoolIfHasBool("default-mouse-visible", true);
     m_defaultMousePathVisible = parser.getBoolIfHasBool("default-mouse-path-visible", true);
-    m_defaultWallTruthVisible = parser.getBoolIfHasBool("default-wall-truth-visible", true);
+    m_defaultWallTruthVisible = parser.getBoolIfHasBool("default-wall-truth-visible", false);
     m_defaultTileColorsVisible = parser.getBoolIfHasBool("default-tile-colors-visible", true);
 
     // Simulation Parameters
@@ -101,6 +103,14 @@ std::string Param::tileWallColor() {
 
 std::string Param::tileCornerColor() {
     return m_tileCornerColor;
+}
+
+std::string Param::tileUndeclaredWallColor() {
+    return m_tileUndeclaredWallColor;
+}
+
+std::string Param::tileUndeclaredNoWallColor() {
+    return m_tileUndeclaredNoWallColor;
 }
 
 std::string Param::mouseBodyColor() {

@@ -80,7 +80,7 @@ void MouseInterface::colorTile(int x, int y, char color) {
     }
 
     if (COLOR_CHARS.find(color) == COLOR_CHARS.end()) {
-        SimUtilities::print(std::string("Error: The character '") + std::to_string(color) + std::string("' is not mapped to a color."));
+        SimUtilities::print(std::string("Error: The character '") + color + std::string("' is not mapped to a color."));
         return;
     }
 
@@ -112,19 +112,19 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
 
     switch (direction) {
         case 'n':
-            m_mazeGraphic->setAlgoWall(x, y, NORTH, wallExists); 
+            m_mazeGraphic->declareWall(x, y, NORTH, wallExists); 
             break;
         case 'e':
-            m_mazeGraphic->setAlgoWall(x, y, EAST, wallExists); 
+            m_mazeGraphic->declareWall(x, y, EAST, wallExists); 
             break;
         case 's':
-            m_mazeGraphic->setAlgoWall(x, y, SOUTH, wallExists); 
+            m_mazeGraphic->declareWall(x, y, SOUTH, wallExists); 
             break;
         case 'w':
-            m_mazeGraphic->setAlgoWall(x, y, WEST, wallExists); 
+            m_mazeGraphic->declareWall(x, y, WEST, wallExists); 
             break;
         default:
-            SimUtilities::print(std::string("The character '") + std::to_string(direction) + std::string("' is not mapped to a valid direction"));
+            SimUtilities::print(std::string("The character '") + direction + std::string("' is not mapped to a valid direction"));
             return;
     }
 
@@ -132,22 +132,77 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
         switch (direction) {
             case 'n':
                 if (y < m_maze->getHeight() - 1) {
-                    m_mazeGraphic->setAlgoWall(x, y + 1, SOUTH, wallExists); 
+                    m_mazeGraphic->declareWall(x, y + 1, SOUTH, wallExists); 
                 }
                 break;
             case 'e':
                 if (x < m_maze->getWidth() - 1) {
-                    m_mazeGraphic->setAlgoWall(x + 1, y, WEST, wallExists); 
+                    m_mazeGraphic->declareWall(x + 1, y, WEST, wallExists); 
                 }
                 break;
             case 's':
                 if (y > 0) {
-                    m_mazeGraphic->setAlgoWall(x, y - 1, NORTH, wallExists); 
+                    m_mazeGraphic->declareWall(x, y - 1, NORTH, wallExists); 
                 }
                 break;
             case 'w':
                 if (x > 0) {
-                    m_mazeGraphic->setAlgoWall(x - 1, y, EAST, wallExists); 
+                    m_mazeGraphic->declareWall(x - 1, y, EAST, wallExists); 
+                }
+                break;
+        }
+    }
+}
+
+void MouseInterface::undeclareWall(int x, int y, char direction) {
+
+    ENSURE_INITIALIZED_MOUSE
+    ENSURE_DECLARED_INTERFACE
+
+    if (x < 0 || m_mazeGraphic->getWidth() < x || y < 0 || m_mazeGraphic->getHeight() <= y) {
+        SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
+            + std::to_string(y) + std::string("), and thus you cannot undeclare any of its walls."));
+        return;
+    }
+
+    switch (direction) {
+        case 'n':
+            m_mazeGraphic->undeclareWall(x, y, NORTH); 
+            break;
+        case 'e':
+            m_mazeGraphic->undeclareWall(x, y, EAST); 
+            break;
+        case 's':
+            m_mazeGraphic->undeclareWall(x, y, SOUTH); 
+            break;
+        case 'w':
+            m_mazeGraphic->undeclareWall(x, y, WEST); 
+            break;
+        default:
+            SimUtilities::print(std::string("The character '") + direction + std::string("' is not mapped to a valid direction"));
+            return;
+    }
+
+    if (P()->declareBothWallHalves()) {
+        switch (direction) {
+            case 'n':
+                if (y < m_maze->getHeight() - 1) {
+                    m_mazeGraphic->undeclareWall(x, y + 1, SOUTH); 
+                }
+                break;
+            case 'e':
+                if (x < m_maze->getWidth() - 1) {
+                    m_mazeGraphic->undeclareWall(x + 1, y, WEST); 
+                }
+                break;
+            case 's':
+                if (y > 0) {
+                    m_mazeGraphic->undeclareWall(x, y - 1, NORTH); 
+                }
+                break;
+            case 'w':
+                if (x > 0) {
+                    m_mazeGraphic->undeclareWall(x - 1, y, EAST); 
                 }
                 break;
         }

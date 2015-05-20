@@ -59,7 +59,10 @@ void MackAlgo::solve() {
         readWalls();
 
         // Move as far as possible
-        move();
+        if (!move()) {
+            // If we've detected an unsolvable maze, just die
+            return;
+        }
 
         // Change the destination
         if (m_onWayToCenter ? inGoal(m_x, m_y) : m_x == 0 && m_y == 0) {
@@ -68,7 +71,7 @@ void MackAlgo::solve() {
     }
 }
 
-void MackAlgo::move() {
+bool MackAlgo::move() {
 
     // Use Dijkstra's algo to determine the next best move
 
@@ -136,7 +139,7 @@ void MackAlgo::move() {
 #if (SIMULATOR)
         std::cout << "Unsolvable maze detected. I'm giving up..." << std::endl;
 #endif
-        return;
+        return false;
     }
 
     // WARNING: Ugly hack to reverse the "list" of parents to a "list" of children.
@@ -163,7 +166,7 @@ void MackAlgo::move() {
     Cell* colorCurrent = current;
     Cell* colorNext = next;
     while (colorNext != NULL && colorCurrent->isKnown(colorNext->getSourceDirection())) {
-        setColor(colorNext->getX(), colorNext->getY(), 'R');
+        setColor(colorNext->getX(), colorNext->getY(), 'Y');
         colorCurrent = colorNext;
         colorNext = colorNext->getParent();
     }
@@ -185,6 +188,9 @@ void MackAlgo::move() {
     movesBuffer[m_moveBufferIndex] = '\0';
     movesReady = true;
 #endif
+
+    // Successful move
+    return true;
 }
 
 float MackAlgo::getTurnCost() {

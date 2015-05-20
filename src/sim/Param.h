@@ -24,6 +24,8 @@ public:
     std::string tileBaseColor();
     std::string tileWallColor();
     std::string tileCornerColor();
+    std::string tileUndeclaredWallColor();
+    std::string tileUndeclaredNoWallColor();
     std::string mouseBodyColor();
     std::string mouseWheelColor();
     std::string mouseSensorColor();
@@ -86,6 +88,8 @@ private:
     std::string m_tileBaseColor;
     std::string m_tileWallColor;
     std::string m_tileCornerColor;
+    std::string m_tileUndeclaredWallColor;
+    std::string m_tileUndeclaredNoWallColor;
     std::string m_mouseBodyColor;
     std::string m_mouseWheelColor;
     std::string m_mouseSensorColor;

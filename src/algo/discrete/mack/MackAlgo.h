@@ -37,7 +37,7 @@ private:
     bool m_onWayToCenter;
     int m_moveBufferIndex;
 
-    void move();
+    bool move();
     float getTurnCost();
     float getStraightAwayCost(int length);
     bool inspectNeighbor(Cell* current, Cell* neighbor, int direction);

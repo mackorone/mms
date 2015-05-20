@@ -8,9 +8,6 @@
 namespace sim {
 
 TileGraphic::TileGraphic(const Tile* tile) : m_tile(tile), m_color(COLOR_STRINGS.at(P()->tileBaseColor())) {
-    for (Direction direction : DIRECTIONS) {
-        m_algoWalls[direction] = false;
-    }
 }
 
 void TileGraphic::draw() const {
@@ -20,17 +17,38 @@ void TileGraphic::draw() const {
     GraphicUtilities::drawPolygon(m_tile->getFullPolygon());
 
     // Either draw the true walls of the tile
-    glColor3fv(COLOR_STRINGS.at(P()->tileWallColor()));
     if (S()->wallTruthVisible()) {
+        glColor3fv(COLOR_STRINGS.at(P()->tileWallColor()));
         for (Polygon polygon : m_tile->getActualWallPolygons()) {
             GraphicUtilities::drawPolygon(polygon);
         }
     }
-    else { // Or the algorithms declared walls
+
+    // Or the algorithms declared walls
+    else {
         for (Direction direction : DIRECTIONS) {
-            if (m_algoWalls.at(direction)) {
-                GraphicUtilities::drawPolygon(m_tile->getWallPolygon(direction));
+
+            // If the wall was declared, use the wall color and tile base color
+            if (m_declaredWalls.find(direction) != m_declaredWalls.end()) {
+                if (m_declaredWalls.at(direction)) {
+                    glColor3fv(COLOR_STRINGS.at(P()->tileWallColor()));
+                }
+                else {
+                    glColor3fv(m_color);
+                }
             }
+
+            // Otherwise, use the undeclared walls colors
+            else {
+                if (m_tile->isWall(direction)) {
+                    glColor3fv(COLOR_STRINGS.at(P()->tileUndeclaredWallColor()));
+                }
+                else {
+                    glColor3fv(COLOR_STRINGS.at(P()->tileUndeclaredNoWallColor()));
+                }
+            }
+
+            GraphicUtilities::drawPolygon(m_tile->getWallPolygon(direction));
         }
     }
 
@@ -48,12 +66,12 @@ void TileGraphic::setColor(const GLfloat* color) {
     m_color = color;
 }
 
-bool TileGraphic::getAlgoWall(Direction direction) const {
-    return m_algoWalls.at(direction);
+void TileGraphic::declareWall(Direction direction, bool isWall) {
+    m_declaredWalls[direction] = isWall;
 }
 
-void TileGraphic::setAlgoWall(Direction direction, bool isWall) {
-    m_algoWalls[direction] = isWall;
+void TileGraphic::undeclareWall(Direction direction) {
+    m_declaredWalls.erase(direction);
 }
 
 } // namespace sim
