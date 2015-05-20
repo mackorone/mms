@@ -1,15 +1,15 @@
 Features:
 - Maze Validation (both physically valid mazes and competition valid mazes)
+- MazeChecker class that hides the validation functions
+- Randomly select a pre-defined maze
+- Buffer communication (like with the real robot)
 - Data recording for pause, rewind, fast forward
 - Interrupt interface
 - Run the program with maximum thread priority
 - New maze w/o restarting app
-- Make terminal style output at bottom or right of window
+- Make terminal style output at bottom or right of window (GUI)
 - Shortest path graphic
-- XML file for algorithm choice
 - Indicator of sim speed (real time, 10x fast, etc.)
-- Support more than two wheels (let's hold off on this for now...)
-- More Arduino function support
 - Dual screen! (mini-map and zoomed-in view - 1x1, 3x3, relative and absolute rotation)
 - Draw a path of where the robot has been
 - Support stepper motor / encoders interface
@@ -23,14 +23,13 @@ Features:
 - Add support for maze rotation
 - Crash animation for both modes
 - Crash recovery semantics
-- Randomly select a pre-defined maze
-- MazeChecker class that hides the validation functions
 - Reimplement drawPolygon to use a tesselator (so that it can draw non-convex polygons)
-- Buffer communication (like with the real robot)
 - Fix the default mouse (make sure it's centered)
 - Make a SimInterface and make sure it's easy to "extract" an algorithm for use on Arduino
 - Make a nice mechanism for writing our own maze generation algorithms
 - Bluetooth connection to the actual mouse
+- Support more than two wheels (let's hold off on this for now...)
+- More Arduino function support
 
 Clean-Up:
 - Convert floats to doubles where appropriate

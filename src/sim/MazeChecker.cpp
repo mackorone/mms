@@ -7,6 +7,8 @@ namespace sim {
 
 bool MazeChecker::validMaze(const std::vector<std::vector<BasicTile>>& maze) {
 
+    // TODO: Should it be "rectangular" instead of "square?"
+
     if (!isSquare(maze)) {
         SimUtilities::print("Error: The maze is not square.");
         return false;
@@ -43,6 +45,8 @@ bool MazeChecker::hasConsistentWalls(const std::vector<std::vector<BasicTile>>& 
 bool MazeChecker::officialMaze(const std::vector<std::vector<BasicTile>>& maze) {
 
     ASSERT(validMaze(maze));
+
+    // TODO: SOM - The center should have no walls in it
 
     if (!hasPathToCenter(maze, 0, 0)) {
         SimUtilities::print("Error: The maze does not have a path to the center.");
