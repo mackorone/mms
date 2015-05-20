@@ -12,6 +12,8 @@ TileGraphic::TileGraphic(const Tile* tile) : m_tile(tile), m_color(COLOR_STRINGS
 
 void TileGraphic::draw() const {
 
+    // TODO: Weirdness happens when I turn the tile colors on and off
+
     // Draw the base of the tile
     glColor3fv(S()->tileColorsVisible() ? m_color : COLOR_STRINGS.at(P()->tileBaseColor()));
     GraphicUtilities::drawPolygon(m_tile->getFullPolygon());
@@ -34,7 +36,7 @@ void TileGraphic::draw() const {
                     glColor3fv(COLOR_STRINGS.at(P()->tileWallColor()));
                 }
                 else {
-                    glColor3fv(m_color);
+                    glColor3fv(S()->tileColorsVisible() ? m_color : COLOR_STRINGS.at(P()->tileBaseColor()));
                 }
             }
 
