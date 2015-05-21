@@ -1,75 +1,38 @@
 <Body>
     <Point>
         <X>.06</X> 
-        <Y>.05</Y>
+        <Y>.06</Y>
     </Point>
     <Point>
         <X>.06</X>
-        <Y>.1</Y>
+        <Y>.12</Y>
     </Point>
     <Point>
-        <X>.08</X>
-        <Y>.12</Y> <!-- TODO: Get rid of this once I figure out the mouse interface error-->
+        <X>.09</X>
+        <Y>.15</Y>
     </Point>
     <Point>
-        <X>.1</X>
-        <Y>.1</Y>
+        <X>.12</X>
+        <Y>.12</Y>
     </Point>
     <Point>
-        <X>.1</X>
-        <Y>.05</Y>
+        <X>.12</X>
+        <Y>.06</Y>
     </Point>
 </Body>
 <LeftWheel>
     <Radius>.02</Radius>
     <Width>.01</Width>
     <Position>
-        <X>.055</X>
-        <Y>.075</Y>
+        <X>.06</X>
+        <Y>.09</Y>
     </Position>
 </LeftWheel>
 <RightWheel>
     <Radius>.02</Radius>
     <Width>.01</Width>
     <Position>
-        <X>.105</X>
-        <Y>.075</Y>
+        <X>.12</X>
+        <Y>.09</Y>
     </Position>
-    <MaxSpeed></MaxSpeed> <!-- TODO: -->
 </RightWheel>
-<Sensor>
-    <Name>A</Name>
-    <Position>
-        <X>.080</X>
-        <Y>.105</Y>
-    </Position>
-    <Radius>.01</Radius> <!-- Size of the sensor body, Meters -->
-    <Rotation>90</Rotation> <!-- Degrees -->
-    <Range>.20</Range> <!-- Meters -->
-    <HalfWidth>5</HalfWidth> <!-- Degrees -->
-    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
-</Sensor>
-<Sensor>
-    <Name>B</Name>
-    <Position>
-        <X>.080</X>
-        <Y>.105</Y>
-    </Position>
-    <Radius>.01</Radius> <!-- Size of the sensor body, Meters -->
-    <Rotation>60</Rotation> <!-- Degrees -->
-    <Range>.20</Range> <!-- Meters -->
-    <HalfWidth>5</HalfWidth> <!-- Degrees -->
-    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
-</Sensor>
-<Sensor>
-    <Name>C</Name>
-    <Position>
-        <X>.080</X>
-        <Y>.105</Y>
-    </Position>
-    <Radius>.01</Radius> <!-- Size of the sensor body, Meters -->
-    <Rotation>0</Rotation> <!-- Degrees --> 
-    <Range>.20</Range> <!-- Meters -->
-    <HalfWidth>5</HalfWidth> <!-- Degrees -->
-    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
-</Sensor>

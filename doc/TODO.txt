@@ -27,12 +27,12 @@ Features:
 - Crash animation for both modes
 - Crash recovery semantics
 - Reimplement drawPolygon to use a tesselator (so that it can draw non-convex polygons)
-- Fix the default mouse (make sure it's centered)
 - Make a SimInterface and make sure it's easy to "extract" an algorithm for use on Arduino
 - Make a nice mechanism for writing our own maze generation algorithms
 - Bluetooth connection to the actual mouse
 - Support more than two wheels (let's hold off on this for now...)
 - More Arduino function support
+- Add Wheel max speed (specificed in mouse parameter file)
 
 Clean-Up:
 - Convert floats to doubles where appropriate
