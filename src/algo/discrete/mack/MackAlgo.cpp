@@ -130,7 +130,7 @@ bool MackAlgo::move() {
     }
 
 #if (SIMULATOR)
-    resetColors();
+    m_mouse->clearAllTileColor();
     colorCenter('G');
 #endif
 
@@ -593,11 +593,11 @@ void MackAlgo::moveOneCell(Cell* target) {
 
 #if (SIMULATOR)
 void MackAlgo::setColor(int x, int y, char color) {
-    m_mouse->colorTile(x, y, color);
+    m_mouse->setTileColor(x, y, color);
 }
 
 void MackAlgo::resetColors() {
-    m_mouse->resetColors();
+    m_mouse->clearAllTileColor();
 }
 
 void MackAlgo::colorCenter(char color) {

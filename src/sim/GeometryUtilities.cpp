@@ -274,7 +274,7 @@ Polygon GeometryUtilities::getUnionTwo(const Polygon& A, const Polygon& B) {
 
     auto APoint = APoints.begin();
 
-    std::vector<std::pair<Cartesian, Cartesian>> AEdges= getLineSegments(A);
+    std::vector<std::pair<Cartesian, Cartesian>> AEdges = getLineSegments(A);
     std::vector<std::pair<Cartesian, Cartesian>> BEdges = getLineSegments(B);
 
     //For each edge in polygon A

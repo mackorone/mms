@@ -1,17 +1,22 @@
 Features:
+- Performance of tile text
+- Indicate incorrectly declared walls
+- Updates on the tile boundaries, not centers
+- Draw a path of where the robot has been (the history object could be used for recording as well)
+- Shortest path graphic (phantom bot that travels along other shortest paths)
 - Maze Validation (both physically valid mazes and competition valid mazes)
 - MazeChecker class that hides the validation functions
 - Randomly select a pre-defined maze
+- Add support for multiple mouse starting locations (both left and right corner)
+- Add support for maze rotation
 - Buffer communication (like with the real robot)
 - Data recording for pause, rewind, fast forward
 - Interrupt interface
 - Run the program with maximum thread priority
 - New maze w/o restarting app
 - Make terminal style output at bottom or right of window (GUI)
-- Shortest path graphic
 - Indicator of sim speed (real time, 10x fast, etc.)
 - Dual screen! (mini-map and zoomed-in view - 1x1, 3x3, relative and absolute rotation)
-- Draw a path of where the robot has been
 - Support stepper motor / encoders interface
 - Other mouse movements - curve turns, j-turns, diagonals, etc.
 - Sensor readings for walls other than front, left right
@@ -19,8 +24,6 @@ Features:
 - Normalize random number generation (Implement Windows random number generation)
 - Parameter for selecting a random maze file from the maze file directory
 - Include Arduino "types" with the MouseInterface
-- Add support for multiple mouse starting locations (both left and right corner)
-- Add support for maze rotation
 - Crash animation for both modes
 - Crash recovery semantics
 - Reimplement drawPolygon to use a tesselator (so that it can draw non-convex polygons)

@@ -25,10 +25,19 @@ public:
 
     // Any interface methods
     void delay(int milliseconds);
-    void colorTile(int x, int y, char color);
-    void resetColors();
+
+    void setTileColor(int x, int y, char color);
+    void clearTileColor(int x, int y);
+    void clearAllTileColor();
+
+    void setTileText(int x, int y, const std::string& text);
+    void clearTileText(int x, int y);
+    void clearAllTileText();
+
     void declareWall(int x, int y, char direction, bool wallExists);
     void undeclareWall(int x, int y, char direction);
+    void undeclareAllWalls();
+
     void resetPosition();
     bool inputButtonPressed(int inputButton);
     void acknowledgeInputButtonPressed(int inputButton);
@@ -50,7 +59,7 @@ private:
     const Maze* m_maze;
     Mouse* m_mouse;
     MazeGraphic* m_mazeGraphic;
-    std::set<std::pair<int, int>> m_coloredTiles;
+    std::set<std::pair<int, int>> m_tilesWithColor;
 
     void ensureInitializedMouse(const std::string& callingFunction) const;
     void ensureDeclaredInterface(const std::string& callingFunction) const;

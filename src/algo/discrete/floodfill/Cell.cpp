@@ -1,10 +1,8 @@
 #include "Cell.h"
 
-#define NULL 0
-
 namespace floodfill {
 
-Cell::Cell() : m_x(0), m_y(0), m_distance(0), m_explored(false), m_traversed(false), m_prev(NULL) {
+Cell::Cell() : m_x(0), m_y(0), m_distance(0), m_explored(false), m_traversed(false), m_prev(NULL), m_mouse(NULL) {
     for (int i = 0; i < 4; i += 1) {
         m_walls[i] = false;
         m_wallsInspected[i] = false;
@@ -56,6 +54,7 @@ void Cell::setY(int y) {
 
 void Cell::setDistance(int distance) {
     m_distance = distance;
+    m_mouse->setTileText(m_x, m_y, std::to_string(distance));
 }
 
 void Cell::setExplored(bool explored) {
@@ -76,6 +75,10 @@ void Cell::setWallInspected(int direction, bool inspected) {
 
 void Cell::setPrev(Cell* prev) {
     m_prev = prev;
+}
+
+void Cell::setMouseInterface(sim::MouseInterface* mouse) {
+    m_mouse = mouse;
 }
 
 } // namespace floodfill

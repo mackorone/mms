@@ -41,6 +41,9 @@ public:
     // Tokenizes a string on whitespace
     static std::vector<std::string> tokenize(std::string str);
 
+    // Returns the string str with the leading and trailing spaces removed
+    static std::string trim(const std::string& str);
+
     // True if path is a path to a file, false otherwise
     static bool isFile(std::string path);
 

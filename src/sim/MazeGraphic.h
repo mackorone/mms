@@ -15,7 +15,8 @@ public:
 
     int getWidth() const;
     int getHeight() const;
-    void setColor(int x, int y, const GLfloat* color);
+    void setTileColor(int x, int y, const GLfloat* color);
+    void setTileText(int x, int y, const std::string& text);
     void declareWall(int x, int y, Direction direction, bool isWall);
     void undeclareWall(int x, int y, Direction direction);
 

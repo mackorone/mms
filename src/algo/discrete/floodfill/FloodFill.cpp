@@ -26,6 +26,7 @@ void FloodFill::solve(sim::MouseInterface* mouse) {
         for (int y = 0; y < MAZE_SIZE_Y; y += 1) {
             m_cells[x][y].setX(x);
             m_cells[x][y].setY(y);
+            m_cells[x][y].setMouseInterface(mouse);
         }
     }
 
@@ -153,11 +154,7 @@ void FloodFill::printWalls() {
 }
 
 void FloodFill::resetColors() {
-    for (int x = 0; x < MAZE_SIZE_X; x += 1) {
-        for (int y = 0; y < MAZE_SIZE_Y; y += 1) {
-            m_mouse->colorTile(x, y, 'k');
-        }
-    }
+    m_mouse->clearAllTileColor();
 }
 
 void FloodFill::initialize() {
@@ -185,12 +182,6 @@ void FloodFill::initialize() {
             m_cells[x][y].setWall(NORTH, y == MAZE_SIZE_Y-1);
             m_cells[x][y].setWall(WEST, x == 0);
             m_cells[x][y].setWall(EAST, x == MAZE_SIZE_X-1);
-
-            // Declare the walls
-            m_mouse->declareWall(x, y, directionToChar(SOUTH), y == 0);
-            m_mouse->declareWall(x, y, directionToChar(NORTH), y == MAZE_SIZE_Y-1);
-            m_mouse->declareWall(x, y, directionToChar(WEST), x == 0);
-            m_mouse->declareWall(x, y, directionToChar(EAST), x == MAZE_SIZE_X-1);
 
             // Set the inspected values of the walls
             m_cells[x][y].setWallInspected(SOUTH, y == 0);

@@ -153,6 +153,15 @@ std::vector<std::string> SimUtilities::tokenize(std::string str) {
     return tokens;
 }
 
+std::string SimUtilities::trim(const std::string& str) {
+    std::size_t first = str.find_first_not_of(' ');
+    if (first == std::string::npos) {
+        return "";
+    }
+    std::size_t last  = str.find_last_not_of(' ');
+    return str.substr(first, last-first+1);
+}
+
 bool SimUtilities::isFile(std::string path) {
     struct stat buf;
     stat(path.c_str(), &buf);

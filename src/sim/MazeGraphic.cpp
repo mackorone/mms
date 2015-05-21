@@ -37,9 +37,14 @@ int MazeGraphic::getHeight() const {
     return (m_tileGraphics.size() > 0 ? m_tileGraphics.at(0).size() : 0);
 }
 
-void MazeGraphic::setColor(int x, int y, const GLfloat* color) {
+void MazeGraphic::setTileColor(int x, int y, const GLfloat* color) {
     ASSERT(0 <= x && x <= getWidth() && 0 <= y && y < getHeight());
     m_tileGraphics.at(x).at(y).setColor(color);
+}
+
+void MazeGraphic::setTileText(int x, int y, const std::string& text) {
+    ASSERT(0 <= x && x <= getWidth() && 0 <= y && y < getHeight());
+    m_tileGraphics.at(x).at(y).setText(text);
 }
 
 void MazeGraphic::declareWall(int x, int y, Direction direction, bool isWall) {

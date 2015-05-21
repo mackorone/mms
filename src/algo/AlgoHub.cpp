@@ -12,14 +12,14 @@
 #include "discrete/wallFollow/RandomizedWallFollow.h"
 
 AlgoHub::AlgoHub() {
-    m_algorithms.insert(std::pair<std::string, IAlgorithm*>("Continue", new demo::Continue()));
-    m_algorithms.insert(std::pair<std::string, IAlgorithm*>("FloodFill", new floodfill::FloodFill()));
-    m_algorithms.insert(std::pair<std::string, IAlgorithm*>("MackAlgo", new mack::MackAlgo()));
-    m_algorithms.insert(std::pair<std::string, IAlgorithm*>("Forward", new misc::Forward()));
-    m_algorithms.insert(std::pair<std::string, IAlgorithm*>("Wait", new misc::Wait()));
-    m_algorithms.insert(std::pair<std::string, IAlgorithm*>("RightWallFollow", new wallFollow::RightWallFollow()));
-    m_algorithms.insert(std::pair<std::string, IAlgorithm*>("LeftWallFollow", new wallFollow::LeftWallFollow()));
-    m_algorithms.insert(std::pair<std::string, IAlgorithm*>("RandomizedWallFollow", new wallFollow::RandomizedWallFollow()));
+    m_algorithms.insert(std::make_pair("Continue", new demo::Continue()));
+    m_algorithms.insert(std::make_pair("FloodFill", new floodfill::FloodFill()));
+    m_algorithms.insert(std::make_pair("MackAlgo", new mack::MackAlgo()));
+    m_algorithms.insert(std::make_pair("Forward", new misc::Forward()));
+    m_algorithms.insert(std::make_pair("Wait", new misc::Wait()));
+    m_algorithms.insert(std::make_pair("RightWallFollow", new wallFollow::RightWallFollow()));
+    m_algorithms.insert(std::make_pair("LeftWallFollow", new wallFollow::LeftWallFollow()));
+    m_algorithms.insert(std::make_pair("RandomizedWallFollow", new wallFollow::RandomizedWallFollow()));
 }
 
 const std::map<std::string, IAlgorithm*>& AlgoHub::getAlgorithms() const {

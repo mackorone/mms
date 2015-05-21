@@ -68,12 +68,12 @@ void MouseInterface::delay(int milliseconds) {
     sim::SimUtilities::sleep(Milliseconds(milliseconds));
 }
 
-void MouseInterface::colorTile(int x, int y, char color) {
+void MouseInterface::setTileColor(int x, int y, char color) {
 
     ENSURE_INITIALIZED_MOUSE
     ENSURE_DECLARED_INTERFACE
 
-    if (x < 0 || m_mazeGraphic->getWidth() < x || y < 0 || m_mazeGraphic->getHeight() <= y) {
+    if (x < 0 || m_mazeGraphic->getWidth() <= x || y < 0 || m_mazeGraphic->getHeight() <= y) {
         SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
             + std::to_string(y) + std::string("), and thus you cannot set its color."));
         return;
@@ -84,19 +84,74 @@ void MouseInterface::colorTile(int x, int y, char color) {
         return;
     }
 
-    m_mazeGraphic->setColor(x, y, COLOR_CHARS.at(color));
-    m_coloredTiles.insert(std::make_pair(x, y));
+    m_mazeGraphic->setTileColor(x, y, COLOR_CHARS.at(color));
+    m_tilesWithColor.insert(std::make_pair(x, y));
 }
 
-void MouseInterface::resetColors() {
+void MouseInterface::clearTileColor(int x, int y) {
 
     ENSURE_INITIALIZED_MOUSE
     ENSURE_DECLARED_INTERFACE
 
-    for (std::pair<int, int> position : m_coloredTiles) {
-        m_mazeGraphic->setColor(position.first, position.second, COLOR_STRINGS.at(P()->tileBaseColor()));
+    if (x < 0 || m_mazeGraphic->getWidth() <= x || y < 0 || m_mazeGraphic->getHeight() <= y) {
+        SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
+            + std::to_string(y) + std::string("), and thus you cannot clear its color."));
+        return;
     }
-    m_coloredTiles.clear();
+
+    m_mazeGraphic->setTileColor(x, y, COLOR_STRINGS.at(P()->tileBaseColor()));
+    m_tilesWithColor.erase(std::make_pair(x, y));
+}
+
+void MouseInterface::clearAllTileColor() {
+
+    ENSURE_INITIALIZED_MOUSE
+    ENSURE_DECLARED_INTERFACE
+
+    for (std::pair<int, int> position : m_tilesWithColor) {
+        m_mazeGraphic->setTileColor(position.first, position.second, COLOR_STRINGS.at(P()->tileBaseColor()));
+    }
+    m_tilesWithColor.clear();
+}
+
+void MouseInterface::setTileText(int x, int y, const std::string& text) {
+
+    ENSURE_INITIALIZED_MOUSE
+    ENSURE_DECLARED_INTERFACE
+
+    if (x < 0 || m_mazeGraphic->getWidth() <= x || y < 0 || m_mazeGraphic->getHeight() <= y) {
+        SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
+            + std::to_string(y) + std::string("), and thus you cannot set its text."));
+        return;
+    }
+
+    m_mazeGraphic->setTileText(x, y, text);
+}
+
+void MouseInterface::clearTileText(int x, int y) {
+
+    ENSURE_INITIALIZED_MOUSE
+    ENSURE_DECLARED_INTERFACE
+
+    if (x < 0 || m_mazeGraphic->getWidth() <= x || y < 0 || m_mazeGraphic->getHeight() <= y) {
+        SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
+            + std::to_string(y) + std::string("), and thus you cannot clear its text."));
+        return;
+    }
+
+    m_mazeGraphic->setTileText(x, y, "");
+}
+
+void MouseInterface::clearAllTileText() {
+
+    ENSURE_INITIALIZED_MOUSE
+    ENSURE_DECLARED_INTERFACE
+
+    for (int x = 0; x < m_mazeGraphic->getWidth(); x += 1) {
+        for (int y = 0; y < m_mazeGraphic->getHeight(); y += 1) {
+            m_mazeGraphic->setTileText(x, y, ""); 
+        }
+    }
 }
 
 void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) {
@@ -104,7 +159,7 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
     ENSURE_INITIALIZED_MOUSE
     ENSURE_DECLARED_INTERFACE
 
-    if (x < 0 || m_mazeGraphic->getWidth() < x || y < 0 || m_mazeGraphic->getHeight() <= y) {
+    if (x < 0 || m_mazeGraphic->getWidth() <= x || y < 0 || m_mazeGraphic->getHeight() <= y) {
         SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
             + std::to_string(y) + std::string("), and thus you cannot declare any of its walls."));
         return;
@@ -159,7 +214,7 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
     ENSURE_INITIALIZED_MOUSE
     ENSURE_DECLARED_INTERFACE
 
-    if (x < 0 || m_mazeGraphic->getWidth() < x || y < 0 || m_mazeGraphic->getHeight() <= y) {
+    if (x < 0 || m_mazeGraphic->getWidth() <= x || y < 0 || m_mazeGraphic->getHeight() <= y) {
         SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
             + std::to_string(y) + std::string("), and thus you cannot undeclare any of its walls."));
         return;
@@ -208,6 +263,21 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
         }
     }
 }
+
+void MouseInterface::undeclareAllWalls() {
+
+    ENSURE_INITIALIZED_MOUSE
+    ENSURE_DECLARED_INTERFACE
+
+    for (int x = 0; x < m_mazeGraphic->getWidth(); x += 1) {
+        for (int y = 0; y < m_mazeGraphic->getHeight(); y += 1) {
+            for (Direction direction : DIRECTIONS) {
+                m_mazeGraphic->undeclareWall(x, y, direction); 
+            }
+        }
+    }
+}
+
 
 void MouseInterface::resetPosition() {
 

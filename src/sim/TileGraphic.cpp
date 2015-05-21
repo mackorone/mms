@@ -7,12 +7,10 @@
 
 namespace sim {
 
-TileGraphic::TileGraphic(const Tile* tile) : m_tile(tile), m_color(COLOR_STRINGS.at(P()->tileBaseColor())) {
+TileGraphic::TileGraphic(const Tile* tile) : m_tile(tile), m_color(COLOR_STRINGS.at(P()->tileBaseColor())), m_text("") {
 }
 
 void TileGraphic::draw() const {
-
-    // TODO: Weirdness happens when I turn the tile colors on and off
 
     // Draw the base of the tile
     glColor3fv(S()->tileColorsVisible() ? m_color : COLOR_STRINGS.at(P()->tileBaseColor()));
@@ -60,12 +58,25 @@ void TileGraphic::draw() const {
         GraphicUtilities::drawPolygon(polygon);
     }
 
+    // Draw the tile text, always padded to at least 3 characters (for distances)
+    glColor3fv(COLOR_STRINGS.at(P()->tileTextColor()));
+    GraphicUtilities::drawText(
+        Cartesian(Meters(m_tile->getX() * (P()->wallWidth() + P()->wallLength()) + P()->wallWidth()),
+                  Meters(m_tile->getY() * (P()->wallWidth() + P()->wallLength()) + P()->wallWidth())),
+        Meters(P()->wallLength()), Meters(P()->wallLength() / 3.0),
+        std::string("   ").substr(0, (0 > 3 - (int) m_text.size() ? 0 : 3 - m_text.size())) + m_text);
+
     // TODO: Draw the shortest path graphic, which is usefule because this is
     // the metric by which mice that don't reach the center are ranked
+
 }
 
 void TileGraphic::setColor(const GLfloat* color) {
     m_color = color;
+}
+
+void TileGraphic::setText(const std::string& text) {
+    m_text = text;
 }
 
 void TileGraphic::declareWall(Direction direction, bool isWall) {

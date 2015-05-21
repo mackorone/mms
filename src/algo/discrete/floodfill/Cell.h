@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../../IAlgorithm.h"
+
 namespace floodfill {
 
 /*
@@ -33,6 +35,8 @@ public:
     void setWallInspected(int direction, bool inspected);
     void setPrev(Cell* prev);
 
+    void setMouseInterface(sim::MouseInterface* mouse);
+
 private:
     int m_x; // x-location of the Cell
     int m_y; // y-location of the Cell
@@ -42,6 +46,8 @@ private:
     bool m_walls[4]; // Whether or not a wall exists on the North, East, South, and West walls
     bool m_wallsInspected[4]; // Whether or not we've inspected the specific walls of a Cell
     Cell* m_prev; // The previous node in the path by which the Cell was discovered
+
+    sim::MouseInterface* m_mouse;
 
 };
 
