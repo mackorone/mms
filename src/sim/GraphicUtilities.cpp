@@ -9,6 +9,8 @@ namespace sim {
 
 void GraphicUtilities::drawPolygon(const Polygon& polygon) {
 
+    // TODO: Performance issues - avoid immediate mode
+
     // TODO: SOM - GL_POLYGON can only draw convex polygons
     // Reimplement this (with a tesselator) to draw concave ones
 
@@ -24,22 +26,20 @@ void GraphicUtilities::drawPolygon(const Polygon& polygon) {
 
 void GraphicUtilities::drawText(const Coordinate& location, const Distance& width, const Distance& height, const std::string& text) {
 
-    // TODO: Performance issues
-    // TODO: The text is static most of the time... I should be able to make savings on performance, I'm just not sure how yet...
-    // TODO: ideally I could get rid the following "optimization"
-
+    // TODO: Performance issues - avoid immediate mode
+    // TODO: Ideally, we should be able to *not* have this, provided we optimized correctly
     // If there is no text, we don't have to do anything
     if (SimUtilities::trim(text).empty()) {
         return;
     }
 
-    // As specified in the documentation for glutStrokeCharacter, the GLUT_STROKE_MONO_ROMAN
-    // has characters that are each exactly 104.76 units wide, hence the use of the literal value.
     // First, get the width of the text in pixels
     float pixelWidth = width.getMeters() * P()->pixelsPerMeter();
     float pixelHeight = height.getMeters() * P()->pixelsPerMeter();
 
-    // Next, determine the scale the text using the window dimensions
+    // Next, determine the scale the text using the window dimensions. As specified in the
+    // documentation for glutStrokeCharacter, the GLUT_STROKE_MONO_ROMAN has characters
+    // that are each exactly 104.76 units wide, hence the use of the literal value.
     std::pair<int, int> windowSize = getWindowSize();
     float scaleX = 1.0/104.76 * (pixelWidth / windowSize.first) / text.size() * 2;
     float scaleY = 1.0/104.76 * (pixelHeight / windowSize.second) * 2;

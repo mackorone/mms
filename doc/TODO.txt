@@ -1,4 +1,5 @@
 Features:
+- *** Change FreeGLUT to GLFW and use GLEW ***
 - Performance of tile text
 - Indicate incorrectly declared walls
 - Updates on the tile boundaries, not centers
@@ -36,6 +37,7 @@ Features:
 
 Clean-Up:
 - Convert floats to doubles where appropriate
+- Convert primitive types to GL types
 - Return const references instead of values (pointers???)
 - Change float to units (including in the ParamParser and Param class)
 - Type safety (in terms of units) of the parameters
