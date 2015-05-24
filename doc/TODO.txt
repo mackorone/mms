@@ -1,7 +1,6 @@
 Features:
 - *** Change FreeGLUT to GLFW and use GLEW ***
 - Performance of tile text
-- Indicate incorrectly declared walls
 - Updates on the tile boundaries, not centers
 - Draw a path of where the robot has been (the history object could be used for recording as well)
 - Shortest path graphic (phantom bot that travels along other shortest paths)
@@ -34,6 +33,7 @@ Features:
 - Support more than two wheels (let's hold off on this for now...)
 - More Arduino function support
 - Add Wheel max speed (specificed in mouse parameter file)
+- Change over the Makefile to use cmake
 
 Clean-Up:
 - Convert floats to doubles where appropriate

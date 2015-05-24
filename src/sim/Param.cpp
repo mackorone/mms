@@ -30,9 +30,11 @@ Param::Param() {
     m_tileBaseColor = parser.getStringIfHasString("tile-base-color", "BLACK");
     m_tileWallColor = parser.getStringIfHasString("tile-wall-color", "RED");
     m_tileCornerColor = parser.getStringIfHasString("tile-corner-color", "GRAY");
-    m_tileTextColor = parser.getStringIfHasString("tile-text-color", "GRAY");
+    m_tileTextColor = parser.getStringIfHasString("tile-text-color", "DARK_GREEN");
     m_tileUndeclaredWallColor = parser.getStringIfHasString("tile-undeclared-wall-color", "DARK_RED");
     m_tileUndeclaredNoWallColor = parser.getStringIfHasString("tile-undeclared-no-wall-color", "DARK_GRAY");
+    m_tileIncorrectlyDeclaredWallColor = parser.getStringIfHasString("tile-incorrectly-declared-wall-color", "ORANGE");
+    m_tileIncorrectlyDeclaredNoWallColor = parser.getStringIfHasString("tile-incorrectly-declared-no-wall-color", "DARK_CYAN");
     m_mouseBodyColor = parser.getStringIfHasString("mouse-body-color", "BLUE");
     m_mouseWheelColor = parser.getStringIfHasString("mouse-wheel-color", "GREEN");
     m_mouseSensorColor = parser.getStringIfHasString("mouse-sensor-color", "WHITE");
@@ -116,6 +118,14 @@ std::string Param::tileUndeclaredWallColor() {
 
 std::string Param::tileUndeclaredNoWallColor() {
     return m_tileUndeclaredNoWallColor;
+}
+
+std::string Param::tileIncorrectlyDeclaredWallColor() {
+    return m_tileIncorrectlyDeclaredWallColor;
+}
+
+std::string Param::tileIncorrectlyDeclaredNoWallColor() {
+    return m_tileIncorrectlyDeclaredNoWallColor;
 }
 
 std::string Param::mouseBodyColor() {

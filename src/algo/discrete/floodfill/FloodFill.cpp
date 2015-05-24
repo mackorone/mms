@@ -14,12 +14,12 @@ namespace floodfill {
 
 void FloodFill::solve(sim::MouseInterface* mouse) {
 
-    // Initialize the mouse and declare the interface type
-    mouse->initializeMouse("mouse.xml");
-    mouse->declareInterfaceType(sim::DISCRETE);
-
     // Initialize the mouse pointer
     m_mouse = mouse;
+
+    // Initialize the mouse and declare the interface type
+    m_mouse->initializeMouse("mouse.xml");
+    m_mouse->declareInterfaceType(sim::DISCRETE);
 
     // Initialize the x and y positions of the cells
     for (int x = 0; x < MAZE_SIZE_X; x += 1) {

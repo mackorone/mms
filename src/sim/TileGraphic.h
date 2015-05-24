@@ -4,8 +4,6 @@
 
 #include "Tile.h"
 
-// TODO: Incorrectly declared walls
-
 namespace sim {
 
 class TileGraphic {

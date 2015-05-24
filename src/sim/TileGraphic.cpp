@@ -31,10 +31,20 @@ void TileGraphic::draw() const {
             // If the wall was declared, use the wall color and tile base color
             if (m_declaredWalls.find(direction) != m_declaredWalls.end()) {
                 if (m_declaredWalls.at(direction)) {
-                    glColor3fv(COLOR_STRINGS.at(P()->tileWallColor()));
+                    if (m_tile->isWall(direction)) {
+                        glColor3fv(COLOR_STRINGS.at(P()->tileWallColor()));
+                    }
+                    else {
+                        glColor3fv(COLOR_STRINGS.at(P()->tileIncorrectlyDeclaredWallColor()));
+                    }
                 }
                 else {
-                    glColor3fv(S()->tileColorsVisible() ? m_color : COLOR_STRINGS.at(P()->tileBaseColor()));
+                    if (!m_tile->isWall(direction)) {
+                        glColor3fv(S()->tileColorsVisible() ? m_color : COLOR_STRINGS.at(P()->tileBaseColor()));
+                    }
+                    else {
+                        glColor3fv(COLOR_STRINGS.at(P()->tileIncorrectlyDeclaredNoWallColor()));
+                    }
                 }
             }
 

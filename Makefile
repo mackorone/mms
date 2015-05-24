@@ -7,11 +7,9 @@ OBJ = ./obj/
 BIN = ./bin/
 
 # Any external libraries
-LIBS = -lGL -lglut -lGLU -lpthread
+LIBS = -lGL -lglut -lGLU -lpthread # TODO: Change this
 
 # Any extra include paths
-# Note: -idirafter is necessary for units because Time.h conflicts with the
-# system header on case insensitive systems
 INC = -I$(SRC)lib -I$(SRC)units 
 
 # Flags

@@ -10,6 +10,8 @@
 <tile-text-color>DARK_GREEN</tile-text-color>
 <tile-undeclared-wall-color>DARK_RED</tile-undeclared-wall-color>
 <tile-undeclared-no-wall-color>DARK_GRAY</tile-undeclared-no-wall-color>
+<tile-incorrectly-declared-wall-color>ORANGE</tile-incorrectly-declared-wall-color>
+<tile-incorrectly-declared-no-wall-color>DARK_CYAN</tile-incorrectly-declared-no-wall-color>
 <mouse-body-color>BLUE</mouse-body-color>
 <mouse-wheel-color>GREEN</mouse-wheel-color>
 <mouse-sensor-color>WHITE</mouse-sensor-color>
