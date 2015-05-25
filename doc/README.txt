@@ -11,6 +11,8 @@ the MicroMouse competition, see http://en.wikipedia.org/wiki/Micromouse.
 Ubuntu Requirements
 ===================
 
+http://freeglut.sourceforge.net/
+
 [freeglut] : sudo apt-get install freeglut3-dev
 [g++-4.9]  : sudo apt-get install g++-4.9
 

@@ -1,7 +1,10 @@
 Features:
-- *** Change FreeGLUT to GLFW and use GLEW ***
-- Performance of tile text
+- Rewrite freeglut so that it's performant
+    - *** Change FreeGLUT to GLFW and use GLEW ***
+    - Performance of tile text
 - Updates on the tile boundaries, not centers
+- Inconsistent wall declaration colors (one side of wall but not the other)
+- Actual distance values on the tile
 - Draw a path of where the robot has been (the history object could be used for recording as well)
 - Shortest path graphic (phantom bot that travels along other shortest paths)
 - Maze Validation (both physically valid mazes and competition valid mazes)
