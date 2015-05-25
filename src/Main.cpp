@@ -28,7 +28,12 @@ sim::MazeGraphic* g_mazeGraphic;
 sim::MouseGraphic* g_mouseGraphic;
 sim::MouseInterface* g_mouseInterface;
 
-/*
+// TODO: Other globals here for interfacing with freeglut
+GLint g_mazeGraphicID;
+GLint g_mouseGraphicID;
+GLint attribute_coordinate;
+GLint attribute_color;
+
 int main(int argc, char* argv[]) {
 
     // Initialize local objects
@@ -60,6 +65,57 @@ int main(int argc, char* argv[]) {
     glutDisplayFunc(draw);
     glutKeyboardFunc(keyInput);
 
+// TODO
+
+    // GLEW Initialization
+    glewInit();
+
+    GLuint vs = glCreateShader(GL_VERTEX_SHADER);
+    std::string str = 
+        "#version 110\n"
+        "attribute vec2 coordinate;"
+        "attribute vec3 color;"
+        "void main(void) {"
+        "   gl_Position = vec4(coordinate, 0.0, 1.0);"
+        "   gl_FrontColor = vec4(color, 1.0);"
+        "}";
+
+    const char *vs_source = str.c_str();
+    glShaderSource(vs, 1, &vs_source, NULL);
+    glCompileShader(vs);
+    GLint compile_ok = GL_FALSE;
+    glGetShaderiv(vs, GL_COMPILE_STATUS, &compile_ok);
+    if (0 == compile_ok) {
+        fprintf(stderr, "Error in vertex shader\n");
+        return 0;
+    }
+
+    GLuint program = glCreateProgram();
+    glAttachShader(program, vs);
+    glLinkProgram(program);
+    GLint link_ok = GL_FALSE;
+    glGetProgramiv(program, GL_LINK_STATUS, &link_ok);
+    if (!link_ok) {
+        fprintf(stderr, "glLinkProgram:");
+        return 0;
+    }
+
+    attribute_coordinate = glGetAttribLocation(program, "coordinate");
+    if (attribute_coordinate == -1) {
+        fprintf(stderr, "Could not bind attribute %s\n", "coordinate");
+        return 0;
+    }
+
+    attribute_color = glGetAttribLocation(program, "color");
+    if (attribute_color == -1) {
+        fprintf(stderr, "Could not bind attribute %s\n", "color");
+        return 0;
+    }
+
+    glUseProgram(program);
+
+// TODO
+
     // Start the physics loop
     std::thread physicsThread(simulate);
     
@@ -69,57 +125,12 @@ int main(int argc, char* argv[]) {
     // Start the graphics loop
     glutMainLoop();
 }
-*/
 
-/* ADD GLOBAL VARIABLES HERE LATER */
-GLuint program;
-GLint attribute_coord2d;
- 
-int init_resources(void) {
-
-    GLint compile_ok = GL_FALSE;
-    GLint link_ok = GL_FALSE;
-    GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-    std::string str = 
-        "#version 120\n"
-        "attribute vec2 coord2d;                  "
-        "void main(void) {                        "
-        "  gl_Position = vec4(coord2d, 0.0, 1.0); " // TODO: Use a uniform to set the properties
-        "}";
-
-    const char *vs_source = str.c_str();
-    glShaderSource(vs, 1, &vs_source, NULL);
-    glCompileShader(vs);
-    glGetShaderiv(vs, GL_COMPILE_STATUS, &compile_ok);
-    if (0 == compile_ok) {
-        fprintf(stderr, "Error in vertex shader\n");
-        return 0;
-    }
-
-    program = glCreateProgram();
-    glAttachShader(program, vs);
-    glLinkProgram(program);
-    glGetProgramiv(program, GL_LINK_STATUS, &link_ok);
-    if (!link_ok) {
-        fprintf(stderr, "glLinkProgram:");
-        return 0;
-    }
-
-    const char* attribute_name = "coord2d";
-    attribute_coord2d = glGetAttribLocation(program, attribute_name);
-    if (attribute_coord2d == -1) {
-        fprintf(stderr, "Could not bind attribute %s\n", attribute_name);
-        return 0;
-    }
-
-    return 1;
-}
+//GLuint program;
  
 void onDisplay() {
 
-    glClear(GL_COLOR_BUFFER_BIT);
-    glUseProgram(program);
-    glEnableVertexAttribArray(attribute_coord2d);
+    glEnableVertexAttribArray(attribute_coordinate);
     GLfloat triangle_vertices[] = {
          0.0,  0.8,
         -0.8, -0.8,
@@ -129,7 +140,7 @@ void onDisplay() {
 
     /* Describe our vertices array to OpenGL (it can't guess its format automatically) */
     glVertexAttribPointer(
-        attribute_coord2d, // attribute
+        attribute_coordinate, // attribute
         2,                 // number of elements per vertex, here (x,y)
         GL_FLOAT,          // the type of each element
         GL_FALSE,          // take our values as-is
@@ -139,49 +150,13 @@ void onDisplay() {
 
     /* Push each element in buffer_vertices to the vertex shader */
     glDrawArrays(GL_POLYGON, 0, 4);
-    glDisableVertexAttribArray(attribute_coord2d);
+    glDisableVertexAttribArray(attribute_coordinate);
 
     /* Display the result */
     glutSwapBuffers();
 }
  
-void free_resources() {
-    glDeleteProgram(program);
-}
  
-int main(int argc, char* argv[]) {
-
-    /* Glut-related initialising functions */
-    glutInit(&argc, argv);
-    //glutInitContextVersion(2,0); // TODO: Causes issues
-    glutInitDisplayMode(GLUT_RGBA|GLUT_ALPHA|GLUT_DOUBLE|GLUT_DEPTH);
-    glutInitWindowSize(640, 480);
-    glutCreateWindow("My First Triangle");
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-    glutKeyboardFunc(keyInput);
-
-    /* Extension wrangler initialising */
-    GLenum glew_status = glewInit();
-    if (glew_status != GLEW_OK) {
-        fprintf(stderr, "Error: %s\n", glewGetErrorString(glew_status));
-        return EXIT_FAILURE;
-    }
-
-      if (!GLEW_VERSION_2_0) {
-        fprintf(stderr, "Error: your graphic card does not support OpenGL 2.0\n");
-        return 1;
-      }
-
-
-    if (init_resources()) {
-        glutDisplayFunc(onDisplay);
-        glutMainLoop();
-    }
-
-    free_resources();
-    return EXIT_SUCCESS;
-}
-
 // -------------------------------------------- TODO
 
 void draw() {
@@ -215,6 +190,8 @@ void draw() {
 
     // Sleep the appropriate amount of time, base on the drawing duration
     sim::SimUtilities::sleep(sim::Seconds(std::max(0.0, 1.0/sim::P()->frameRate() - duration)));
+
+    // TODO: Swap the buffers
 
     // Request to execute the draw function again
     glutPostRedisplay();
