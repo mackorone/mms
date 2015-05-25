@@ -7,7 +7,7 @@ OBJ = ./obj/
 BIN = ./bin/
 
 # Any external libraries
-LIBS = -lGL -lglut -lGLU -lpthread
+LIBS = -lGLEW -lGL -lglut -lGLU -lpthread
 
 # Any extra include paths
 INC = -I$(SRC)lib -I$(SRC)units 

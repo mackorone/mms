@@ -16,12 +16,14 @@ void GraphicUtilities::drawPolygon(const Polygon& polygon) {
 
     // First we have to convert the physical coordinates to pixel coordinates.
     // Then we have convert the pixel coordinates to OpenGL coordinates.
+    /*
     glBegin(GL_POLYGON);
     for (Cartesian vertex : polygon.getVertices()) {
         std::pair<float, float> coordinates = getOpenGlCoordinates(vertex);
         glVertex2f(coordinates.first, coordinates.second);
     }
     glEnd();
+    */
 }
 
 void GraphicUtilities::drawText(const Coordinate& location, const Distance& width, const Distance& height, const std::string& text) {
@@ -29,6 +31,7 @@ void GraphicUtilities::drawText(const Coordinate& location, const Distance& widt
     // TODO: Performance issues - avoid immediate mode
     // TODO: Ideally, we should be able to *not* have this, provided we optimized correctly
     // If there is no text, we don't have to do anything
+    /*
     if (SimUtilities::trim(text).empty()) {
         return;
     }
@@ -55,6 +58,7 @@ void GraphicUtilities::drawText(const Coordinate& location, const Distance& widt
         glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, text.at(i));
     }
     glPopMatrix();
+    */
 }
 
 std::pair<int, int> GraphicUtilities::getWindowSize() {

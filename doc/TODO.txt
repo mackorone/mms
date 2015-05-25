@@ -1,6 +1,7 @@
 Features:
 - Rewrite freeglut so that it's performant
-    - *** Change FreeGLUT to GLFW and use GLEW ***
+    http://en.wikibooks.org/wiki/OpenGL_Programming
+    - Then Change FreeGLUT to GLFW and use GLEW
     - Performance of tile text
 - Updates on the tile boundaries, not centers
 - Inconsistent wall declaration colors (one side of wall but not the other)
