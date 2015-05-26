@@ -62,3 +62,4 @@ Clean-Up:
 - Buffer the declared walls and include a quick "resetWalls()" method
 - Change the Mouse to use the technically correct position update implementation
 - Clean up / improve the coding standards
+- Upgrade convert_mazes.py to Python 3
