@@ -31,6 +31,7 @@ Param::Param() {
     m_tileWallColor = parser.getStringIfHasString("tile-wall-color", "RED");
     m_tileCornerColor = parser.getStringIfHasString("tile-corner-color", "GRAY");
     m_tileTextColor = parser.getStringIfHasString("tile-text-color", "DARK_GREEN");
+    m_tileFogColor = parser.getStringIfHasString("tile-fog-color", "GRAY");
     m_tileUndeclaredWallColor = parser.getStringIfHasString("tile-undeclared-wall-color", "DARK_RED");
     m_tileUndeclaredNoWallColor = parser.getStringIfHasString("tile-undeclared-no-wall-color", "DARK_GRAY");
     m_tileIncorrectlyDeclaredWallColor = parser.getStringIfHasString("tile-incorrectly-declared-wall-color", "ORANGE");
@@ -43,6 +44,9 @@ Param::Param() {
     m_defaultMousePathVisible = parser.getBoolIfHasBool("default-mouse-path-visible", true);
     m_defaultWallTruthVisible = parser.getBoolIfHasBool("default-wall-truth-visible", false);
     m_defaultTileColorsVisible = parser.getBoolIfHasBool("default-tile-colors-visible", true);
+    m_defaultTileTextVisible = parser.getBoolIfHasBool("default-tile-text-visible", true);
+    m_defaultTileFogVisible = parser.getBoolIfHasBool("default-tile-fog-visible", true);
+    m_tileFogAlpha = parser.getFloatIfHasFloat("tile-fog-alpha", 0.1); // TODO: Invalid alpha value
 
     // Simulation Parameters
     bool useRandomSeed = parser.getBoolIfHasBool("use-random-seed", false);
@@ -55,6 +59,7 @@ Param::Param() {
     m_discreteInterfaceMaxSpeed = parser.getFloatIfHasFloat("discrete-interface-max-speed", 500.0);
     m_discreteInterfaceDefaultSpeed = parser.getFloatIfHasFloat("discrete-interface-default-speed", 30.0);
     m_discreteInterfaceDeclareWallOnRead = parser.getBoolIfHasBool("discrete-interface-declare-wall-on-read", true);
+    m_discreteInterfaceUnfogTileOnEntry = parser.getBoolIfHasBool("discrete-interface-unfog-tile-on-entry", true);
     m_declareBothWallHalves = parser.getBoolIfHasBool("declare-both-wall-halves", true);
     m_mousePositionUpdateRate = parser.getIntIfHasInt("mouse-position-update-rate", 1000);
     m_printLateMousePostitionUpdates = parser.getBoolIfHasBool("print-late-mouse-position-updates", false);
@@ -112,6 +117,10 @@ std::string Param::tileTextColor() {
     return m_tileTextColor;
 }
 
+std::string Param::tileFogColor() {
+    return m_tileFogColor;
+}
+
 std::string Param::tileUndeclaredWallColor() {
     return m_tileUndeclaredWallColor;
 }
@@ -160,6 +169,18 @@ bool Param::defaultTileColorsVisible() {
     return m_defaultTileColorsVisible;
 }
 
+bool Param::defaultTileTextVisible() {
+    return m_defaultTileTextVisible;
+}
+
+bool Param::defaultTileFogVisible() {
+    return m_defaultTileFogVisible;
+}
+
+float Param::tileFogAlpha() {
+    return m_tileFogAlpha;
+}
+
 int Param::randomSeed() {
     return m_randomSeed;
 }
@@ -196,8 +217,20 @@ bool Param::discreteInterfaceDeclareWallOnRead() {
     return m_discreteInterfaceDeclareWallOnRead;
 }
 
+bool Param::discreteInterfaceUnfogTileOnEntry() {
+    return m_discreteInterfaceUnfogTileOnEntry;
+}
+
 bool Param::declareBothWallHalves() {
     return m_declareBothWallHalves;
+}
+
+bool Param::unfogTileOnAllWallsDeclared() {
+    return m_unfogTileOnAllWallsDeclared;
+}
+
+bool Param::fogTileOnOneWallUndeclared() {
+    return m_fogTileOnOneWallUndeclared;
 }
 
 int Param::mousePositionUpdateRate() {

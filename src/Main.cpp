@@ -33,6 +33,7 @@ GLint g_mazeGraphicID;
 GLint g_mouseGraphicID;
 GLint attribute_coordinate;
 GLint attribute_color;
+void onDisplay();
 
 int main(int argc, char* argv[]) {
 
@@ -60,11 +61,16 @@ int main(int argc, char* argv[]) {
     glutInitDisplayMode(GLUT_RGBA);
     glutInitWindowPosition(0, 0);
     glutCreateWindow("Micromouse Simulator");
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
-    glutDisplayFunc(draw);
+    //glutDisplayFunc(onDisplay); // TODO
+    glutDisplayFunc(draw); // TODO
+    glutIdleFunc(draw); // TODO
     glutKeyboardFunc(keyInput);
 
+/*
 // TODO
 
     // GLEW Initialization
@@ -77,7 +83,9 @@ int main(int argc, char* argv[]) {
         "attribute vec3 color;"
         "void main(void) {"
         "   gl_Position = vec4(coordinate, 0.0, 1.0);"
-        "   gl_FrontColor = vec4(color, 1.0);"
+        "   gl_FrontColor[0] = color[0];"
+        "   gl_FrontColor[1] = color[1];"
+        "   gl_FrontColor[2] = color[2];"
         "}";
 
     const char *vs_source = str.c_str();
@@ -115,6 +123,7 @@ int main(int argc, char* argv[]) {
     glUseProgram(program);
 
 // TODO
+*/
 
     // Start the physics loop
     std::thread physicsThread(simulate);
@@ -194,7 +203,8 @@ void draw() {
     // TODO: Swap the buffers
 
     // Request to execute the draw function again
-    glutPostRedisplay();
+    //glutPostRedisplay();
+    glutSwapBuffers();
 }
 
 void solve() {
@@ -246,6 +256,18 @@ void keyInput(unsigned char key, int x, int y) {
     else if (key == 'c' || key == 'C') {
         // Toggle tile colors
         sim::S()->setTileColorsVisible(!sim::S()->tileColorsVisible());
+    }
+    else if (key == 'x' || key == 'X') {
+        // Toggle tile text
+        sim::S()->setTileTextVisible(!sim::S()->tileTextVisible());
+    }
+    else if (key == 'o' || key == 'O') {
+        // Toggle tile fog
+        sim::S()->setTileFogVisible(!sim::S()->tileFogVisible());
+    }
+    else if (key == 'r' || key == 'R') {
+        // Restart
+        //sim::SimUtilities::restart(); // TODO
     }
     else if (key == 'q' || key == 'Q') {
         // Quit

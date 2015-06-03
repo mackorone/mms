@@ -8,6 +8,7 @@
 <tile-wall-color>RED</tile-wall-color>
 <tile-corner-color>GRAY</tile-corner-color>
 <tile-text-color>DARK_GREEN</tile-text-color>
+<tile-fog-color>GRAY</tile-fog-color>
 <tile-undeclared-wall-color>DARK_RED</tile-undeclared-wall-color>
 <tile-undeclared-no-wall-color>DARK_GRAY</tile-undeclared-no-wall-color>
 <tile-incorrectly-declared-wall-color>ORANGE</tile-incorrectly-declared-wall-color>
@@ -20,6 +21,9 @@
 <default-mouse-path-visible>true</default-mouse-path-visible> <!-- TODO: implement this -->
 <default-wall-truth-visible>false</default-wall-truth-visible>
 <default-tile-colors-visible>true</default-tile-colors-visible>
+<default-tile-text-visible>true</default-tile-text-visible>
+<default-tile-fog-visible>true</default-tile-fog-visible>
+<tile-fog-alpha>0.1</tile-fog-alpha> <!-- Must be in [0.0, 1.0] -->
 <!-- <shortest-path-visible>true</shortest-path-visible> TODO -->
 
 <!-- Simulation Parameters -->
@@ -33,7 +37,12 @@
 <discrete-interface-max-speed>500</discrete-interface-max-speed> <!-- No units -->
 <discrete-interface-default-speed>30</discrete-interface-default-speed> <!-- No units -->
 <discrete-interface-declare-wall-on-read>true</discrete-interface-declare-wall-on-read>
+<discrete-interface-unfog-tile-on-entry>true</discrete-interface-unfog-tile-on-entry>
 <declare-both-wall-halves>true</declare-both-wall-halves>
+
+<unfog-tile-on-all-walls-declared>false</unfog-tile-on-all-walls-declared>
+<fog-tile-on-one-wall-undeclared>false</fog-tile-on-one-wall-undeclared> <!-- TODO: Test these -->
+
 <mouse-position-update-rate>1000</mouse-position-update-rate> <!-- Updates per second -->
 <print-late-mouse-position-updates>true</print-late-mouse-position-updates>
 <collision-detection-rate>40</collision-detection-rate> <!-- Checks per second -->

@@ -25,6 +25,7 @@ public:
     std::string tileWallColor();
     std::string tileCornerColor();
     std::string tileTextColor();
+    std::string tileFogColor();
     std::string tileUndeclaredWallColor();
     std::string tileUndeclaredNoWallColor();
     std::string tileIncorrectlyDeclaredWallColor();
@@ -37,6 +38,9 @@ public:
     bool defaultMousePathVisible();
     bool defaultWallTruthVisible();
     bool defaultTileColorsVisible();
+    bool defaultTileTextVisible();
+    bool defaultTileFogVisible();
+    float tileFogAlpha();
 
     // Simulation parameters
     int randomSeed();
@@ -48,7 +52,10 @@ public:
     float discreteInterfaceMaxSpeed();
     float discreteInterfaceDefaultSpeed();
     bool discreteInterfaceDeclareWallOnRead();
+    bool discreteInterfaceUnfogTileOnEntry();
     bool declareBothWallHalves();
+    bool unfogTileOnAllWallsDeclared();
+    bool fogTileOnOneWallUndeclared();
     int mousePositionUpdateRate();
     bool printLateMousePositionUpdates();
     int collisionDetectionRate();
@@ -92,6 +99,7 @@ private:
     std::string m_tileWallColor;
     std::string m_tileCornerColor;
     std::string m_tileTextColor;
+    std::string m_tileFogColor;
     std::string m_tileUndeclaredWallColor;
     std::string m_tileUndeclaredNoWallColor;
     std::string m_tileIncorrectlyDeclaredWallColor;
@@ -104,6 +112,9 @@ private:
     bool m_defaultMousePathVisible;
     bool m_defaultWallTruthVisible;
     bool m_defaultTileColorsVisible;
+    bool m_defaultTileTextVisible;
+    bool m_defaultTileFogVisible;
+    float m_tileFogAlpha;
 
     // Simulation parameters
     int m_randomSeed;
@@ -115,7 +126,10 @@ private:
     float m_discreteInterfaceMaxSpeed;
     float m_discreteInterfaceDefaultSpeed;
     bool m_discreteInterfaceDeclareWallOnRead;
+    bool m_discreteInterfaceUnfogTileOnEntry;
     bool m_declareBothWallHalves;
+    bool m_unfogTileOnAllWallsDeclared;
+    bool m_fogTileOnOneWallUndeclared;
     int m_mousePositionUpdateRate;
     bool m_printLateMousePostitionUpdates;
     int m_collisionDetectionRate;

@@ -22,13 +22,12 @@ void MazeGraphic::draw() const {
         return;
     }
 
-    /* // TODO: MACK : THIS IS THE PROBLEM - FIGURE OUT HOW TO BUFFER THESE TILES AND DRAW ALL AT ONCE
+    // TODO: MACK : THIS IS THE PROBLEM - FIGURE OUT HOW TO BUFFER THESE TILES AND DRAW ALL AT ONCE
     for (int i = 0; i < m_tileGraphics.size(); i += 1) {
         for (int j = 0; j < m_tileGraphics.at(i).size(); j += 1) {
             m_tileGraphics.at(i).at(j).draw();
         }
     }
-    */
 }
 
 int MazeGraphic::getWidth() const {
@@ -49,6 +48,11 @@ void MazeGraphic::setTileText(int x, int y, const std::string& text) {
     m_tileGraphics.at(x).at(y).setText(text);
 }
 
+void MazeGraphic::setTileFogginess(int x, int y, bool foggy) {
+    ASSERT(0 <= x && x <= getWidth() && 0 <= y && y < getHeight());
+    m_tileGraphics.at(x).at(y).setFogginess(foggy);
+}
+
 void MazeGraphic::declareWall(int x, int y, Direction direction, bool isWall) {
     ASSERT(0 <= x && x <= getWidth() && 0 <= y && y < getHeight());
     m_tileGraphics.at(x).at(y).declareWall(direction, isWall);
@@ -57,6 +61,11 @@ void MazeGraphic::declareWall(int x, int y, Direction direction, bool isWall) {
 void MazeGraphic::undeclareWall(int x, int y, Direction direction) {
     ASSERT(0 <= x && x <= getWidth() && 0 <= y && y < getHeight());
     m_tileGraphics.at(x).at(y).undeclareWall(direction);
+}
+
+bool MazeGraphic::wallDeclared(int x, int y, Direction direction) const {
+    ASSERT(0 <= x && x <= getWidth() && 0 <= y && y < getHeight());
+    return m_tileGraphics.at(x).at(y).wallDeclared(direction);
 }
 
 } // namespace sim

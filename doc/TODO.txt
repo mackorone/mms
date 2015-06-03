@@ -2,10 +2,12 @@ Features:
 - Rewrite freeglut so that it's performant
     http://en.wikibooks.org/wiki/OpenGL_Programming
     - Then Change FreeGLUT to GLFW and use GLEW
-    - Performance of tile text
+    - Performance of tile text, fog, colors
+- If speed is up too high, sometimes the mouse skips from one place to another
 - Updates on the tile boundaries, not centers
 - Inconsistent wall declaration colors (one side of wall but not the other)
 - Actual distance values on the tile
+- Center the text on the tile
 - Draw a path of where the robot has been (the history object could be used for recording as well)
 - Shortest path graphic (phantom bot that travels along other shortest paths)
 - Maze Validation (both physically valid mazes and competition valid mazes)

@@ -27,6 +27,8 @@ State::State() {
     m_mousePathVisible = P()->defaultMousePathVisible();
     m_wallTruthVisible = P()->defaultWallTruthVisible();
     m_tileColorsVisible = P()->defaultTileColorsVisible();
+    m_tileTextVisible = P()->defaultTileTextVisible();
+    m_tileFogVisible = P()->defaultTileFogVisible();
     m_paused = P()->defaultPaused();
     m_simSpeed = P()->discreteInterfaceDefaultSpeed();
     for (int i = 0; i < 10; i += 1) {
@@ -60,6 +62,14 @@ bool State::wallTruthVisible() {
 
 bool State::tileColorsVisible() {
     return m_tileColorsVisible;
+}
+
+bool State::tileTextVisible() {
+    return m_tileTextVisible;
+}
+
+bool State::tileFogVisible() {
+    return m_tileFogVisible;
 }
 
 bool State::paused() {
@@ -103,6 +113,14 @@ void State::setWallTruthVisible(bool wallTruthVisible) {
 
 void State::setTileColorsVisible(bool tileColorsVisible) {
     m_tileColorsVisible = tileColorsVisible;
+}
+
+void State::setTileTextVisible(bool tileTextVisible) {
+    m_tileTextVisible = tileTextVisible;
+}
+
+void State::setTileFogVisible(bool tileFogVisible) {
+    m_tileFogVisible = tileFogVisible;
 }
 
 void State::setPaused(bool paused) {

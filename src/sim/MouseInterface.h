@@ -34,11 +34,13 @@ public:
     void clearTileText(int x, int y);
     void clearAllTileText();
 
+    void setTileFogginess(int x, int y, bool foggy);
+
     void declareWall(int x, int y, char direction, bool wallExists);
     void undeclareWall(int x, int y, char direction);
-    void undeclareAllWalls();
 
     void resetPosition();
+
     bool inputButtonPressed(int inputButton);
     void acknowledgeInputButtonPressed(int inputButton);
 
@@ -65,6 +67,9 @@ private:
     void ensureDeclaredInterface(const std::string& callingFunction) const;
     void ensureDiscreteInterface(const std::string& callingFunction) const;
     void ensureContinuousInterface(const std::string& callingFunction) const;
+
+    void unfogIfAllWallsDeclared(int x, int y);
+    void fogIfOneWallUndeclared(int x, int y);
 
     std::pair<int, int> getDiscretizedTranslation() const;
     Direction getDiscretizedRotation() const;
