@@ -54,8 +54,6 @@ public:
     bool discreteInterfaceDeclareWallOnRead();
     bool discreteInterfaceUnfogTileOnEntry();
     bool declareBothWallHalves();
-    bool unfogTileOnAllWallsDeclared();
-    bool fogTileOnOneWallUndeclared();
     int mousePositionUpdateRate();
     bool printLateMousePositionUpdates();
     int collisionDetectionRate();
@@ -128,8 +126,6 @@ private:
     bool m_discreteInterfaceDeclareWallOnRead;
     bool m_discreteInterfaceUnfogTileOnEntry;
     bool m_declareBothWallHalves;
-    bool m_unfogTileOnAllWallsDeclared;
-    bool m_fogTileOnOneWallUndeclared;
     int m_mousePositionUpdateRate;
     bool m_printLateMousePostitionUpdates;
     int m_collisionDetectionRate;

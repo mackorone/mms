@@ -68,9 +68,6 @@ private:
     void ensureDiscreteInterface(const std::string& callingFunction) const;
     void ensureContinuousInterface(const std::string& callingFunction) const;
 
-    void unfogIfAllWallsDeclared(int x, int y);
-    void fogIfOneWallUndeclared(int x, int y);
-
     std::pair<int, int> getDiscretizedTranslation() const;
     Direction getDiscretizedRotation() const;
 

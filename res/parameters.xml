@@ -39,10 +39,6 @@
 <discrete-interface-declare-wall-on-read>true</discrete-interface-declare-wall-on-read>
 <discrete-interface-unfog-tile-on-entry>true</discrete-interface-unfog-tile-on-entry>
 <declare-both-wall-halves>true</declare-both-wall-halves>
-
-<unfog-tile-on-all-walls-declared>false</unfog-tile-on-all-walls-declared>
-<fog-tile-on-one-wall-undeclared>false</fog-tile-on-one-wall-undeclared> <!-- TODO: Test these -->
-
 <mouse-position-update-rate>1000</mouse-position-update-rate> <!-- Updates per second -->
 <print-late-mouse-position-updates>true</print-late-mouse-position-updates>
 <collision-detection-rate>40</collision-detection-rate> <!-- Checks per second -->

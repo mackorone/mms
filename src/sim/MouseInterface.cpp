@@ -14,8 +14,6 @@
 #include "State.h"
 #include "SimUtilities.h"
 
-#include <iostream> // TODO
-
 namespace sim {
 
 MouseInterface::MouseInterface(const Maze* maze, Mouse* mouse, MazeGraphic* mazeGraphic) :
@@ -61,7 +59,7 @@ void MouseInterface::declareInterfaceType(InterfaceType interfaceType) {
     // Wait for everything to stabilize
     sim::SimUtilities::sleep(Seconds(P()->glutInitDuration()));
 
-    // Unfog if necessary
+    // Unfog the beginning tile if necessary
     if (S()->interfaceType() == DISCRETE && P()->discreteInterfaceUnfogTileOnEntry()) {
         m_mazeGraphic->setTileFogginess(0, 0, false);
     }
@@ -177,8 +175,6 @@ void MouseInterface::setTileFogginess(int x, int y, bool foggy) {
 
 void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) {
 
-    // TODO: Simplify this log (and the undecalre wall logic)
-
     ENSURE_INITIALIZED_MOUSE
     ENSURE_DECLARED_INTERFACE
 
@@ -226,33 +222,6 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
             case 'w':
                 if (x > 0) {
                     m_mazeGraphic->declareWall(x - 1, y, EAST, wallExists); 
-                }
-                break;
-        }
-    }
-
-    // Update the fogginess if necessary
-    if (P()->unfogTileOnAllWallsDeclared()) {
-        unfogIfAllWallsDeclared(x, y);
-        switch (direction) {
-            case 'n':
-                if (y < m_maze->getHeight() - 1) {
-                    unfogIfAllWallsDeclared(x, y + 1);
-                }
-                break;
-            case 'e':
-                if (x < m_maze->getWidth() - 1) {
-                    unfogIfAllWallsDeclared(x + 1, y);
-                }
-                break;
-            case 's':
-                if (y > 0) {
-                    unfogIfAllWallsDeclared(x, y - 1);
-                }
-                break;
-            case 'w':
-                if (x > 0) {
-                    unfogIfAllWallsDeclared(x - 1, y);
                 }
                 break;
         }
@@ -308,33 +277,6 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
             case 'w':
                 if (x > 0) {
                     m_mazeGraphic->undeclareWall(x - 1, y, EAST); 
-                }
-                break;
-        }
-    }
-
-    // Update the fogginess if necessary
-    if (P()->unfogTileOnAllWallsDeclared()) {
-        fogIfOneWallUndeclared(x, y);
-        switch (direction) {
-            case 'n':
-                if (y < m_maze->getHeight() - 1) {
-                    fogIfOneWallUndeclared(x, y + 1);
-                }
-                break;
-            case 'e':
-                if (x < m_maze->getWidth() - 1) {
-                    fogIfOneWallUndeclared(x + 1, y);
-                }
-                break;
-            case 's':
-                if (y > 0) {
-                    fogIfOneWallUndeclared(x, y - 1);
-                }
-                break;
-            case 'w':
-                if (x > 0) {
-                    fogIfOneWallUndeclared(x - 1, y);
                 }
                 break;
         }
@@ -657,24 +599,6 @@ void MouseInterface::ensureContinuousInterface(const std::string& callingFunctio
         SimUtilities::print(std::string("Error: You must declare the interface type to be sim::CONTINUOUS to use MouseInterface::")
             + callingFunction + std::string("()."));
         SimUtilities::quit();
-    }
-}
-
-void MouseInterface::unfogIfAllWallsDeclared(int x, int y) {
-    for (Direction direction : DIRECTIONS) {
-        if (!m_mazeGraphic->wallDeclared(x, y, direction)) {
-            return;
-        }
-    }
-    m_mazeGraphic->setTileFogginess(x, y, false);
-}
-
-void MouseInterface::fogIfOneWallUndeclared(int x, int y) {
-    for (Direction direction : DIRECTIONS) {
-        if (!m_mazeGraphic->wallDeclared(x, y, direction)) {
-            m_mazeGraphic->setTileFogginess(x, y, true);
-            return;
-        }
     }
 }
 

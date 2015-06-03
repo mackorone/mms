@@ -225,14 +225,6 @@ bool Param::declareBothWallHalves() {
     return m_declareBothWallHalves;
 }
 
-bool Param::unfogTileOnAllWallsDeclared() {
-    return m_unfogTileOnAllWallsDeclared;
-}
-
-bool Param::fogTileOnOneWallUndeclared() {
-    return m_fogTileOnOneWallUndeclared;
-}
-
 int Param::mousePositionUpdateRate() {
     return m_mousePositionUpdateRate;
 }
