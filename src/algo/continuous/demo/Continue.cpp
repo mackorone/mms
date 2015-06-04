@@ -7,7 +7,6 @@ namespace demo {
 void Continue::solve(sim::MouseInterface* mouse) {
 
     m_mouse = mouse;
-
     m_mouse->initializeMouse("megaMouse.xml");
     m_mouse->declareInterfaceType(sim::CONTINUOUS);
 

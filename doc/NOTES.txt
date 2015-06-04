@@ -1,5 +1,2 @@
 - It also shouldn't appear until the mouse file is chosen
 - The mouse won't appear until the interface type is delcared
-
-- Reccommend that the tile fog color and the undeclared no wall color are the same, since they're
-really conveying very similar information
