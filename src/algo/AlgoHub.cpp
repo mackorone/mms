@@ -11,7 +11,7 @@
 #include "discrete/wallFollow/RightWallFollow.h"
 #include "discrete/wallFollow/RandomizedWallFollow.h"
 
-AlgoHub::AlgoHub(sim::MouseInterface* mouse) {
+AlgoHub::AlgoHub(sim::MouseInterface** mouse) {
     m_algorithms.insert(std::make_pair("Continue", new demo::Continue(mouse)));
     m_algorithms.insert(std::make_pair("FloodFill", new floodfill::FloodFill(mouse)));
     m_algorithms.insert(std::make_pair("MackAlgo", new mack::MackAlgo(mouse)));

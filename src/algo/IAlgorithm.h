@@ -6,11 +6,11 @@
 class IAlgorithm {
 
 public:
-    IAlgorithm(sim::MouseInterface* mouse);
+    IAlgorithm(sim::MouseInterface** mouse);
     sim::MouseInterface* M();
     virtual void solve() = 0;
 
 private:
-    sim::MouseInterface* m_mouse;
+    sim::MouseInterface** m_mouse;
 
 };

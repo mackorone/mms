@@ -7,7 +7,7 @@ namespace misc {
 class Forward : public IAlgorithm {
 
 public:
-    Forward(sim::MouseInterface* mouse) : IAlgorithm(mouse) {}
+    Forward(sim::MouseInterface** mouse) : IAlgorithm(mouse) {}
     void solve();
 
 };

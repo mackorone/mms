@@ -7,7 +7,7 @@ namespace demo {
 class Continue : public IAlgorithm {
 
 public:
-    Continue(sim::MouseInterface* mouse) : IAlgorithm(mouse) {}
+    Continue(sim::MouseInterface** mouse) : IAlgorithm(mouse) {}
     void solve();
 
 private:

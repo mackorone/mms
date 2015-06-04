@@ -16,6 +16,8 @@
 #include "sim/SimUtilities.h"
 #include "sim/World.h"
 
+#include <iostream> // TODO
+
 // Function declarations
 void draw();
 void solve();
@@ -49,8 +51,8 @@ int main(int argc, char* argv[]) {
     sim::Mouse mouse(&maze);
     sim::MouseGraphic mouseGraphic(&mouse);
     sim::World world(&maze, &mouse);
-    g_mouseInterface = new sim::MouseInterface(&maze, &mouse, &mazeGraphic);
     //sim::MouseInterface mouseInterface(&maze, &mouse, &mazeGraphic);
+    g_mouseInterface = new sim::MouseInterface(&maze, &mouse, &mazeGraphic);
 
     // Assign global variables
     g_world = &world;
@@ -217,14 +219,21 @@ void draw() {
 void solve() {
 
     // First, check to ensure that the algorithm is valid
-    std::map<std::string, IAlgorithm*> algos = AlgoHub(g_mouseInterface).getAlgorithms();
+    std::map<std::string, IAlgorithm*> algos = AlgoHub(&g_mouseInterface).getAlgorithms();
     if (algos.find(sim::P()->algorithm()) == algos.end()) {
         sim::SimUtilities::print("Error: The algorithm \"" + sim::P()->algorithm() + "\" is not a valid algorithm.");
         sim::SimUtilities::quit();
     }
 
     // Then, execute the algorithm
-    algos.at(sim::P()->algorithm())->solve();
+    try {
+        algos.at(sim::P()->algorithm())->solve();
+    }
+    catch (...) {
+        delete g_mouseInterface;
+    }
+
+    // TODO
 }
 
 void simulate() {
@@ -276,7 +285,7 @@ void keyInput(unsigned char key, int x, int y) {
         // Restart - TODO
         //std::system(std::string("\"" + g_program + "\" &").c_str());
         //sim::SimUtilities::quit();
-        //g_mouseInterface->
+        g_mouseInterface = NULL;
     }
     else if (key == 'q' || key == 'Q') {
         // Quit

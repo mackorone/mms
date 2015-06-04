@@ -20,7 +20,7 @@ enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
 class FloodFill : public IAlgorithm {
 
 public:
-    FloodFill(sim::MouseInterface* mouse) : IAlgorithm(mouse) {}
+    FloodFill(sim::MouseInterface** mouse) : IAlgorithm(mouse) {}
     void solve(); // IAlgorithm interface method
 
 private:

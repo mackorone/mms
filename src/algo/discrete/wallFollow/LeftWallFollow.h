@@ -7,7 +7,7 @@ namespace wallFollow {
 class LeftWallFollow : public IAlgorithm {
 
 public:
-    LeftWallFollow(sim::MouseInterface* mouse) : IAlgorithm(mouse) {}
+    LeftWallFollow(sim::MouseInterface** mouse) : IAlgorithm(mouse) {}
     void solve();
 
 private:

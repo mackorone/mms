@@ -16,7 +16,7 @@ enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
 #if (SIMULATOR)
 class MackAlgo : public IAlgorithm {
 public:
-    MackAlgo(sim::MouseInterface* mouse) : IAlgorithm(mouse) {}
+    MackAlgo(sim::MouseInterface** mouse) : IAlgorithm(mouse) {}
 #else
 class MackAlgo {
 public:
