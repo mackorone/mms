@@ -20,11 +20,14 @@ extern volatile bool movesDoneAndWallsSet;
 
 namespace mack {
 
-void MackAlgo::solve() {
-
 #if (SIMULATOR)
-    M()->initializeMouse("mouse.xml");
-    M()->declareInterfaceType(sim::DISCRETE);
+void MackAlgo::solve(sim::MouseInterface* mouse) {
+    m_mouse = mouse;
+    m_mouse->initializeMouse("mouse.xml");
+    m_mouse->declareInterfaceType(sim::DISCRETE);
+
+#else
+void MackAlgo::solve() {
 #endif
 
     // Initialize the mouse
@@ -128,7 +131,7 @@ bool MackAlgo::move() {
     }
 
 #if (SIMULATOR)
-    M()->clearAllTileColor();
+    m_mouse->clearAllTileColor();
     colorCenter('G');
 #endif
 
@@ -286,9 +289,9 @@ Cell* MackAlgo::cellMin(Cell* one, Cell* two) {
 void MackAlgo::readWalls() {
 
 #if (SIMULATOR)
-    bool wallFront = M()->wallFront();
-    bool wallRight = M()->wallRight();
-    bool wallLeft = M()->wallLeft();
+    bool wallFront = m_mouse->wallFront();
+    bool wallRight = m_mouse->wallRight();
+    bool wallLeft = m_mouse->wallLeft();
 #else
     bool wallLeft = walls_global[0];
     bool wallFront = walls_global[1];
@@ -374,23 +377,23 @@ void MackAlgo::moveForwardUpdateState() {
 #if (SIMULATOR)
 void MackAlgo::turnLeft() {
     turnLeftUpdateState();
-    M()->turnLeft();
+    m_mouse->turnLeft();
 }
 
 void MackAlgo::turnRight() {
     turnRightUpdateState();
-    M()->turnRight();
+    m_mouse->turnRight();
 }
 
 void MackAlgo::turnAround() {
     turnAroundUpdateState();
-    M()->turnAround();
+    m_mouse->turnAround();
 }
 #endif
 
 void MackAlgo::moveForward() {
 #if (SIMULATOR)
-    M()->moveForward();
+    m_mouse->moveForward();
 #else
     movesBuffer[m_moveBufferIndex] = 'f';
     m_moveBufferIndex += 1;
@@ -591,11 +594,11 @@ void MackAlgo::moveOneCell(Cell* target) {
 
 #if (SIMULATOR)
 void MackAlgo::setColor(int x, int y, char color) {
-    M()->setTileColor(x, y, color);
+    m_mouse->setTileColor(x, y, color);
 }
 
 void MackAlgo::resetColors() {
-    M()->clearAllTileColor();
+    m_mouse->clearAllTileColor();
 }
 
 void MackAlgo::colorCenter(char color) {

@@ -4,37 +4,37 @@
 
 namespace wallFollow {
 
-void RandomizedWallFollow::solve(){
-    M()->initializeMouse("mouse.xml");
-    M()->declareInterfaceType(sim::DISCRETE);
+void RandomizedWallFollow::solve(sim::MouseInterface* mouse) {
+    mouse->initializeMouse("mouse.xml");
+    mouse->declareInterfaceType(sim::DISCRETE);
     while (true){
         if (rand() % 2 == 0){
-            rightWallFollowStep();
+            rightWallFollowStep(mouse);
         }
         else{
-            leftWallFollowStep();
+            leftWallFollowStep(mouse);
         }
     }
 }
 
-void RandomizedWallFollow::rightWallFollowStep(){
-    if (!M()->wallRight()){
-        M()->turnRight();
+void RandomizedWallFollow::rightWallFollowStep(sim::MouseInterface* mouse) {
+    if (!mouse->wallRight()){
+        mouse->turnRight();
     }
-    while (M()->wallFront()){
-        M()->turnLeft();
+    while (mouse->wallFront()){
+        mouse->turnLeft();
     }
-    M()->moveForward();
+    mouse->moveForward();
 }
 
-void RandomizedWallFollow::leftWallFollowStep(){
-    if (!M()->wallLeft()){
-        M()->turnLeft();
+void RandomizedWallFollow::leftWallFollowStep(sim::MouseInterface* mouse) {
+    if (!mouse->wallLeft()){
+        mouse->turnLeft();
     }
-    while (M()->wallFront()){
-        M()->turnRight();
+    while (mouse->wallFront()){
+        mouse->turnRight();
     }
-    M()->moveForward();
+    mouse->moveForward();
 }
 
 } // namespace wallFollow

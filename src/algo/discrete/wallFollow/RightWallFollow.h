@@ -4,14 +4,13 @@
 
 namespace wallFollow {
 
-class RightWallFollow : public IAlgorithm{
+class RightWallFollow : public IAlgorithm {
 
 public:
-    RightWallFollow(sim::MouseInterface** mouse) : IAlgorithm(mouse) {}
-    void solve();
+    void solve(sim::MouseInterface* mouse);
 
 private:
-    void rightWallFollowStep();
+    void rightWallFollowStep(sim::MouseInterface* mouse);
 
 };
 

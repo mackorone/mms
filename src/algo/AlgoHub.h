@@ -5,7 +5,7 @@
 class AlgoHub {
     
 public:
-    AlgoHub(sim::MouseInterface** mouse);
+    AlgoHub();
     const std::map<std::string, IAlgorithm*>& getAlgorithms() const;
 
 private:

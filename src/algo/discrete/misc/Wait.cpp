@@ -2,9 +2,9 @@
 
 namespace misc {
 
-void Wait::solve() {
-    M()->initializeMouse("mouse.xml");
-    M()->declareInterfaceType(sim::DISCRETE);
+void Wait::solve(sim::MouseInterface* mouse) {
+    mouse->initializeMouse("mouse.xml");
+    mouse->declareInterfaceType(sim::DISCRETE);
 }
 
 } // namespace misc

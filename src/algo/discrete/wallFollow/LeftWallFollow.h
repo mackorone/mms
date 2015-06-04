@@ -7,11 +7,10 @@ namespace wallFollow {
 class LeftWallFollow : public IAlgorithm {
 
 public:
-    LeftWallFollow(sim::MouseInterface** mouse) : IAlgorithm(mouse) {}
-    void solve();
+    void solve(sim::MouseInterface* mouse);
 
 private:
-    void leftWallFollowStep();
+    void leftWallFollowStep(sim::MouseInterface* mouse);
 };
 
 } // namespace wallFollow

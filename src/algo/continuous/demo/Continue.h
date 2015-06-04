@@ -7,8 +7,7 @@ namespace demo {
 class Continue : public IAlgorithm {
 
 public:
-    Continue(sim::MouseInterface** mouse) : IAlgorithm(mouse) {}
-    void solve();
+    void solve(sim::MouseInterface* mouse);
 
 private:
     bool wallRight();
@@ -18,6 +17,8 @@ private:
     void turnLeft();
     void moveForward();
     void correctErrors();
+
+    sim::MouseInterface* m_mouse;
 
 };
 

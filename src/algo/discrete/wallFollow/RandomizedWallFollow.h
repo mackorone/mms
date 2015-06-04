@@ -7,12 +7,11 @@ namespace wallFollow {
 class RandomizedWallFollow : public IAlgorithm{
 
 public:
-    RandomizedWallFollow(sim::MouseInterface** mouse) : IAlgorithm(mouse) {}
-    void solve();
+    void solve(sim::MouseInterface* mouse);
 
 private:
-    void leftWallFollowStep();
-    void rightWallFollowStep();
+    void leftWallFollowStep(sim::MouseInterface* mouse);
+    void rightWallFollowStep(sim::MouseInterface* mouse);
 
 };
 

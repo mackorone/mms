@@ -15,16 +15,20 @@ enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
 
 #if (SIMULATOR)
 class MackAlgo : public IAlgorithm {
-public:
-    MackAlgo(sim::MouseInterface** mouse) : IAlgorithm(mouse) {}
 #else
 class MackAlgo {
-public:
-    MackAlgo();
 #endif
+
+public:
+
+#if (SIMULATOR)
+    void solve(sim::MouseInterface* mouse);
+#else
     void solve();
+#endif
 
 private:
+    sim::MouseInterface* m_mouse;
     Cell m_maze[MAZE_WIDTH][MAZE_HEIGHT];
     int m_x;
     int m_y;

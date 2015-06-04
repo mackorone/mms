@@ -2,11 +2,11 @@
 
 namespace misc {
 
-void Forward::solve() {
-    M()->initializeMouse("mouse.xml");
-    M()->declareInterfaceType(sim::DISCRETE);
+void Forward::solve(sim::MouseInterface* mouse) {
+    mouse->initializeMouse("mouse.xml");
+    mouse->declareInterfaceType(sim::DISCRETE);
     while (true) {
-        M()->moveForward();
+        mouse->moveForward();
     }
 }
 

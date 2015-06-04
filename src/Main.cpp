@@ -16,8 +16,6 @@
 #include "sim/SimUtilities.h"
 #include "sim/World.h"
 
-#include <iostream> // TODO
-
 // Function declarations
 void draw();
 void solve();
@@ -51,14 +49,13 @@ int main(int argc, char* argv[]) {
     sim::Mouse mouse(&maze);
     sim::MouseGraphic mouseGraphic(&mouse);
     sim::World world(&maze, &mouse);
-    //sim::MouseInterface mouseInterface(&maze, &mouse, &mazeGraphic);
-    g_mouseInterface = new sim::MouseInterface(&maze, &mouse, &mazeGraphic);
+    sim::MouseInterface mouseInterface(&maze, &mouse, &mazeGraphic);
 
     // Assign global variables
     g_world = &world;
     g_mazeGraphic = &mazeGraphic;
     g_mouseGraphic = &mouseGraphic;
-    //g_mouseInterface = &mouseInterface;
+    g_mouseInterface = &mouseInterface;
 
     // Initialize the state object (to avoid a race condition)
     sim::S();
@@ -219,21 +216,14 @@ void draw() {
 void solve() {
 
     // First, check to ensure that the algorithm is valid
-    std::map<std::string, IAlgorithm*> algos = AlgoHub(&g_mouseInterface).getAlgorithms();
+    std::map<std::string, IAlgorithm*> algos = AlgoHub().getAlgorithms();
     if (algos.find(sim::P()->algorithm()) == algos.end()) {
         sim::SimUtilities::print("Error: The algorithm \"" + sim::P()->algorithm() + "\" is not a valid algorithm.");
         sim::SimUtilities::quit();
     }
 
     // Then, execute the algorithm
-    try {
-        algos.at(sim::P()->algorithm())->solve();
-    }
-    catch (...) {
-        delete g_mouseInterface;
-    }
-
-    // TODO
+    algos.at(sim::P()->algorithm())->solve(g_mouseInterface);
 }
 
 void simulate() {
@@ -282,10 +272,9 @@ void keyInput(unsigned char key, int x, int y) {
         sim::S()->setTileFogVisible(!sim::S()->tileFogVisible());
     }
     else if (key == 'r' || key == 'R') {
-        // Restart - TODO
-        //std::system(std::string("\"" + g_program + "\" &").c_str());
-        //sim::SimUtilities::quit();
-        g_mouseInterface = NULL;
+        // Restart
+        std::system(std::string("\"" + g_program + "\" &").c_str());
+        sim::SimUtilities::quit();
     }
     else if (key == 'q' || key == 'Q') {
         // Quit
