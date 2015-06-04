@@ -7,7 +7,8 @@ namespace misc {
 class Wait : public IAlgorithm {
 
 public:
-    void solve(sim::MouseInterface* mouse);
+    Wait(sim::MouseInterface* mouse) : IAlgorithm(mouse) {}
+    void solve();
 
 };
 

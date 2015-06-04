@@ -2,22 +2,22 @@
 
 namespace wallFollow {
 
-void RightWallFollow::solve(sim::MouseInterface* mouse){
-    mouse->initializeMouse("mouse.xml");
-    mouse->declareInterfaceType(sim::DISCRETE);
+void RightWallFollow::solve(){
+    M()->initializeMouse("mouse.xml");
+    M()->declareInterfaceType(sim::DISCRETE);
     while (true){
-        rightWallFollowStep(mouse);
+        rightWallFollowStep();
     }
 }
 
-void RightWallFollow::rightWallFollowStep(sim::MouseInterface* mouse){
-    if (!mouse->wallRight()){
-        mouse->turnRight();
+void RightWallFollow::rightWallFollowStep(){
+    if (!M()->wallRight()){
+        M()->turnRight();
     }
-    while (mouse->wallFront()){
-        mouse->turnLeft();
+    while (M()->wallFront()){
+        M()->turnLeft();
     }
-    mouse->moveForward();
+    M()->moveForward();
 }
 
 } // namespace wallFollow

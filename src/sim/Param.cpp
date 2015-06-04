@@ -1,5 +1,4 @@
 #include "Param.h"
-
 #include "ParamParser.h"
 #include "SimUtilities.h"
 
@@ -46,11 +45,21 @@ Param::Param() {
     m_defaultTileColorsVisible = parser.getBoolIfHasBool("default-tile-colors-visible", true);
     m_defaultTileTextVisible = parser.getBoolIfHasBool("default-tile-text-visible", true);
     m_defaultTileFogVisible = parser.getBoolIfHasBool("default-tile-fog-visible", true);
-    m_tileFogAlpha = parser.getFloatIfHasFloat("tile-fog-alpha", 0.1); // TODO: Invalid alpha value
+    m_tileFogAlpha = parser.getFloatIfHasFloat("tile-fog-alpha", 0.15);
+    if (m_tileFogAlpha < 0.0 || 1.0 < m_tileFogAlpha) {
+        SimUtilities::print("Error: The tile-fog-alpha value of " + std::to_string(m_tileFogAlpha)
+            + " is not in the valid range, [0.0, 1.0].");
+        SimUtilities::quit();
+    }
 
     // Simulation Parameters
     bool useRandomSeed = parser.getBoolIfHasBool("use-random-seed", false);
-    m_randomSeed = (useRandomSeed ? parser.getIntIfHasInt("random-seed", time(NULL)) : time(NULL));
+    if (useRandomSeed && !parser.hasIntValue("random-seed")) {
+        SimUtilities::print(std::string("Error: The value of use-random-seed is true but no")
+            + " valid random-seed value was provided.");
+        SimUtilities::quit();
+    }
+    m_randomSeed = (useRandomSeed ? parser.getIntValue("random-seed") : time(NULL));
     m_crashMessage = parser.getStringIfHasString("crash-message", "CRASH");
     m_glutInitDuration = parser.getFloatIfHasFloat("glut-init-duration", 0.25);
     m_defaultPaused = parser.getBoolIfHasBool("default-paused", false);

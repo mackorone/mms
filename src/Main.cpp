@@ -35,7 +35,13 @@ GLint attribute_coordinate;
 GLint attribute_color;
 void onDisplay();
 
+// The program name
+std::string g_program;
+
 int main(int argc, char* argv[]) {
+
+    // Save the program name for restarts
+    g_program = std::string(argv[0]);
 
     // Initialize local objects
     sim::Maze maze;
@@ -43,13 +49,14 @@ int main(int argc, char* argv[]) {
     sim::Mouse mouse(&maze);
     sim::MouseGraphic mouseGraphic(&mouse);
     sim::World world(&maze, &mouse);
-    sim::MouseInterface mouseInterface(&maze, &mouse, &mazeGraphic);
+    g_mouseInterface = new sim::MouseInterface(&maze, &mouse, &mazeGraphic);
+    //sim::MouseInterface mouseInterface(&maze, &mouse, &mazeGraphic);
 
     // Assign global variables
     g_world = &world;
     g_mazeGraphic = &mazeGraphic;
     g_mouseGraphic = &mouseGraphic;
-    g_mouseInterface = &mouseInterface;
+    //g_mouseInterface = &mouseInterface;
 
     // Initialize the state object (to avoid a race condition)
     sim::S();
@@ -200,24 +207,24 @@ void draw() {
     // Sleep the appropriate amount of time, base on the drawing duration
     sim::SimUtilities::sleep(sim::Seconds(std::max(0.0, 1.0/sim::P()->frameRate() - duration)));
 
-    // TODO: Swap the buffers
-
     // Request to execute the draw function again
     //glutPostRedisplay();
+
+    // TODO: Swap the buffers instead...
     glutSwapBuffers();
 }
 
 void solve() {
 
     // First, check to ensure that the algorithm is valid
-    std::map<std::string, IAlgorithm*> algos = AlgoHub().getAlgorithms();
+    std::map<std::string, IAlgorithm*> algos = AlgoHub(g_mouseInterface).getAlgorithms();
     if (algos.find(sim::P()->algorithm()) == algos.end()) {
         sim::SimUtilities::print("Error: The algorithm \"" + sim::P()->algorithm() + "\" is not a valid algorithm.");
         sim::SimUtilities::quit();
     }
 
     // Then, execute the algorithm
-    algos.at(sim::P()->algorithm())->solve(g_mouseInterface);
+    algos.at(sim::P()->algorithm())->solve();
 }
 
 void simulate() {
@@ -266,8 +273,10 @@ void keyInput(unsigned char key, int x, int y) {
         sim::S()->setTileFogVisible(!sim::S()->tileFogVisible());
     }
     else if (key == 'r' || key == 'R') {
-        // Restart
-        //sim::SimUtilities::restart(); // TODO
+        // Restart - TODO
+        //std::system(std::string("\"" + g_program + "\" &").c_str());
+        //sim::SimUtilities::quit();
+        //g_mouseInterface->
     }
     else if (key == 'q' || key == 'Q') {
         // Quit

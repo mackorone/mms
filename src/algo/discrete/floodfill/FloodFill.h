@@ -17,15 +17,14 @@ static const int SHORT_TERM_MEM = 8; // Steps that are forgetten by the mouse af
 static const bool ALGO_COMPARE = false; // Whether or not we're comparing the solving algorithms
 enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
 
-
 class FloodFill : public IAlgorithm {
 
 public:
-    void solve(sim::MouseInterface* mouse); // IAlgorithm interface method
+    FloodFill(sim::MouseInterface* mouse) : IAlgorithm(mouse) {}
+    void solve(); // IAlgorithm interface method
 
 private:
 
-    sim::MouseInterface* m_mouse; // Mouse used to traverse and solve the maze
     Cell m_cells[MAZE_SIZE_X][MAZE_SIZE_Y]; // Grid a cells to store maze information
     int m_x; // X position of the mouse
     int m_y; // Y position of the mouse

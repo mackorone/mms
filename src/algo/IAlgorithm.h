@@ -3,12 +3,14 @@
 #include "../sim/InterfaceType.h"
 #include "../sim/MouseInterface.h"
 
-/*
- * This class is an interface for every algorithm
- */
 class IAlgorithm {
 
 public:
-    virtual void solve(sim::MouseInterface* mouse) = 0;
+    IAlgorithm(sim::MouseInterface* mouse);
+    sim::MouseInterface* M();
+    virtual void solve() = 0;
+
+private:
+    sim::MouseInterface* m_mouse;
 
 };

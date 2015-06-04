@@ -12,21 +12,18 @@
 
 namespace floodfill {
 
-void FloodFill::solve(sim::MouseInterface* mouse) {
-
-    // Initialize the mouse pointer
-    m_mouse = mouse;
+void FloodFill::solve() {
 
     // Initialize the mouse and declare the interface type
-    m_mouse->initializeMouse("mouse.xml");
-    m_mouse->declareInterfaceType(sim::DISCRETE);
+    M()->initializeMouse("mouse.xml");
+    M()->declareInterfaceType(sim::DISCRETE);
 
     // Initialize the x and y positions of the cells
     for (int x = 0; x < MAZE_SIZE_X; x += 1) {
         for (int y = 0; y < MAZE_SIZE_Y; y += 1) {
             m_cells[x][y].setX(x);
             m_cells[x][y].setY(y);
-            m_cells[x][y].setMouseInterface(mouse);
+            m_cells[x][y].setAlgo(this);
         }
     }
 
@@ -39,9 +36,9 @@ void FloodFill::solve(sim::MouseInterface* mouse) {
     }
 
     // Otherwise, pick one
-    //justFloodFill();
+    justFloodFill();
     //simpleSolve();
-    extensiveSolve();
+    //extensiveSolve();
 }
 
 void FloodFill::justFloodFill() {
@@ -154,7 +151,7 @@ void FloodFill::printWalls() {
 }
 
 void FloodFill::resetColors() {
-    m_mouse->clearAllTileColor();
+    M()->clearAllTileColor();
 }
 
 void FloodFill::initialize() {
@@ -249,14 +246,14 @@ void FloodFill::victory() {
 void FloodFill::walls() {
 
     // Sets the wall values for the current cell
-    m_cells[m_x][m_y].setWall(m_d, m_mouse->wallFront());
-    m_cells[m_x][m_y].setWall((m_d+1)%4, m_mouse->wallRight());
-    m_cells[m_x][m_y].setWall((m_d+3)%4, m_mouse->wallLeft());
+    m_cells[m_x][m_y].setWall(m_d, M()->wallFront());
+    m_cells[m_x][m_y].setWall((m_d+1)%4, M()->wallRight());
+    m_cells[m_x][m_y].setWall((m_d+3)%4, M()->wallLeft());
 
     // Declare the walls
-    m_mouse->declareWall(m_x, m_y, directionToChar(m_d), m_mouse->wallFront());
-    m_mouse->declareWall(m_x, m_y, directionToChar((m_d+1)%4), m_mouse->wallRight());
-    m_mouse->declareWall(m_x, m_y, directionToChar((m_d+3)%4), m_mouse->wallLeft());
+    M()->declareWall(m_x, m_y, directionToChar(m_d), M()->wallFront());
+    M()->declareWall(m_x, m_y, directionToChar((m_d+1)%4), M()->wallRight());
+    M()->declareWall(m_x, m_y, directionToChar((m_d+3)%4), M()->wallLeft());
 
     // Sets the wallInspected values for the current cell
     m_cells[m_x][m_y].setWallInspected(m_d, true);
@@ -265,20 +262,20 @@ void FloodFill::walls() {
 
     // Sets the wall and wallInspected values for the surrounding cells
     if (spaceFront()) {
-        getFrontCell()->setWall((m_d+2)%4, m_mouse->wallFront());
-        m_mouse->declareWall(getFrontCell()->getX(), getFrontCell()->getY(), directionToChar((m_d+2)%4), m_mouse->wallFront());
+        getFrontCell()->setWall((m_d+2)%4, M()->wallFront());
+        M()->declareWall(getFrontCell()->getX(), getFrontCell()->getY(), directionToChar((m_d+2)%4), M()->wallFront());
         getFrontCell()->setWallInspected((m_d+2)%4, true);
         checkDeadEnd(getFrontCell());
     }
     if (spaceLeft()) {
-        getLeftCell()->setWall((m_d+1)%4, m_mouse->wallLeft());
-        m_mouse->declareWall(getLeftCell()->getX(), getLeftCell()->getY(), directionToChar((m_d+1)%4), m_mouse->wallLeft());
+        getLeftCell()->setWall((m_d+1)%4, M()->wallLeft());
+        M()->declareWall(getLeftCell()->getX(), getLeftCell()->getY(), directionToChar((m_d+1)%4), M()->wallLeft());
         getLeftCell()->setWallInspected((m_d+1)%4, true);
         checkDeadEnd(getLeftCell());
     }
     if (spaceRight()) {
-        getRightCell()->setWall((m_d+3)%4, m_mouse->wallRight());
-        m_mouse->declareWall(getRightCell()->getX(), getRightCell()->getY(), directionToChar((m_d+3)%4), m_mouse->wallRight());
+        getRightCell()->setWall((m_d+3)%4, M()->wallRight());
+        M()->declareWall(getRightCell()->getX(), getRightCell()->getY(), directionToChar((m_d+3)%4), M()->wallRight());
         getRightCell()->setWallInspected((m_d+3)%4, true);
         checkDeadEnd(getRightCell());
     }
@@ -463,7 +460,7 @@ void FloodFill::moveForward() {
     }
 
     // Actually move the mouse forward in the simulation
-    m_mouse->moveForward();
+    M()->moveForward();
 
     // Increment the number of steps
     m_steps++;
@@ -480,19 +477,19 @@ void FloodFill::moveForward() {
 
 void FloodFill::turnRight() {
     m_d = (m_d + 1) % 4; // Update internal representation
-    m_mouse->turnRight(); // Move the mouse
+    M()->turnRight(); // Move the mouse
     m_steps++; // Lastly, increment the number of steps
 }
 
 void FloodFill::turnLeft() {
     m_d = (m_d + 3) % 4; // Update internal representation
-    m_mouse->turnLeft(); // Move the mouse
+    M()->turnLeft(); // Move the mouse
     m_steps++; // Lastly, increment the number of steps
 }
 
 void FloodFill::turnAround() {
     m_d = (m_d + 2) % 4; // Update internal representation
-    m_mouse->turnAround(); // Move the mouse
+    M()->turnAround(); // Move the mouse
     m_steps += 2; // Lastly, increment the number of steps
 }
 
@@ -546,19 +543,19 @@ char FloodFill::directionToChar(int direction) {
 }
 
 bool FloodFill::undoRequested() {
-    return m_mouse->inputButtonPressed(0);
+    return M()->inputButtonPressed(0);
 }
 
 bool FloodFill::resetRequested() {
-    return m_mouse->inputButtonPressed(1);
+    return M()->inputButtonPressed(1);
 }
 
 void FloodFill::undoHonored() {
-    return m_mouse->acknowledgeInputButtonPressed(0);
+    return M()->acknowledgeInputButtonPressed(0);
 }
 
 void FloodFill::resetHonored() {
-    return m_mouse->acknowledgeInputButtonPressed(1);
+    return M()->acknowledgeInputButtonPressed(1);
 }
 
 Cell* FloodFill::getFrontCell() {
@@ -702,7 +699,7 @@ void FloodFill::explore() {
     while (!unexplored.empty() || (undoRequested() || resetRequested()) ) {
 
         if (resetRequested()) {
-            m_mouse->resetPosition();
+            M()->resetPosition();
             resetColors();
             resetHonored();
             return;
@@ -720,7 +717,7 @@ void FloodFill::explore() {
             m_x = 0;
             m_y = 0;
             m_d = 0;
-            m_mouse->resetPosition();
+            M()->resetPosition();
 
             // We haven't yet gotten to the checkpoint. If another undo request is made,
             // don't reset the checkpoint. Simply try to get back to the same checkpoint.
@@ -750,7 +747,7 @@ void FloodFill::explore() {
             // Moves to the checkpoint and checks for requests along the way.
             if (proceedToCheckpoint(path)) {
                 if (resetRequested()) {
-                    m_mouse->resetPosition();
+                    M()->resetPosition();
                     resetColors();
                     resetHonored();
                     return;
@@ -1010,7 +1007,7 @@ void FloodFill::doUpdatesForCurrentCell(std::stack<Cell*>* unexplored) {
 
     // After, we find any unexplored neighbors. We use a front biased search since
     // this seems to perform better with dead-end detection.
-    if (!m_mouse->wallLeft() && getLeftCell()->getPrev() == NULL) {
+    if (!M()->wallLeft() && getLeftCell()->getPrev() == NULL) {
 
         // We need to keep track of the old values for the modified cell before we update it.
         appendModifiedCell(&modifiedCells, getLeftCell());
@@ -1018,7 +1015,7 @@ void FloodFill::doUpdatesForCurrentCell(std::stack<Cell*>* unexplored) {
         unexploredNeighbors.push_back(getLeftCell());
         getLeftCell()->setPrev(&m_cells[m_x][m_y]);
     }
-    if (!m_mouse->wallRight() && getRightCell()->getPrev() == NULL) {
+    if (!M()->wallRight() && getRightCell()->getPrev() == NULL) {
 
         // We need to keep track of the old values for the modified cell before we update it.
         appendModifiedCell(&modifiedCells, getRightCell());
@@ -1026,7 +1023,7 @@ void FloodFill::doUpdatesForCurrentCell(std::stack<Cell*>* unexplored) {
         unexploredNeighbors.push_back(getRightCell());
         getRightCell()->setPrev(&m_cells[m_x][m_y]);
     }
-    if (!m_mouse->wallFront() && getFrontCell()->getPrev() == NULL) {
+    if (!M()->wallFront() && getFrontCell()->getPrev() == NULL) {
 
         // We need to keep track of the old values for the modified cell before we update it.
         appendModifiedCell(&modifiedCells, getFrontCell());
@@ -1243,7 +1240,7 @@ void FloodFill::bffExplore(std::stack<Cell*>* path) {
 
             // Check for requests during our return to checkpoint
             if (resetRequested()) {
-                m_mouse->resetPosition();
+                M()->resetPosition();
                 resetColors();
                 resetHonored();
                 return;
@@ -1252,7 +1249,7 @@ void FloodFill::bffExplore(std::stack<Cell*>* path) {
                 m_x = 0; // Since we're repositioning the mouse but not re-intializing the
                 m_y = 0; // maze, we have to explicitely reset the x, y, and d values
                 m_d = 0;
-                m_mouse->resetPosition();
+                M()->resetPosition();
                 resetColors();
                 undoHonored();
                 continue;
@@ -1302,7 +1299,7 @@ void FloodFill::bffExplore(std::stack<Cell*>* path) {
 
         // If there were requests during the solve, honor them now
         if (resetRequested()) {
-            m_mouse->resetPosition();
+            M()->resetPosition();
             resetColors();
             resetHonored();
             return;
@@ -1336,7 +1333,7 @@ void FloodFill::bffExplore(std::stack<Cell*>* path) {
             m_y = 0; // maze, we have to explicitely reset the x, y, and d values
             m_d = 0;
             m_checkpointReached = false;
-            m_mouse->resetPosition();
+            M()->resetPosition();
             undoHonored();
             continue;
         }
@@ -1393,13 +1390,13 @@ void FloodFill::dobffCellUpdates() {
     // that are closer to the origin - without this, the algo will always (naively) take
     // the same path, even if it's much less efficient to do so.
 
-    if (!m_mouse->wallLeft() && getLeftCell()->getPrev() == NULL && getLeftCell() != &m_cells[0][0]) {
+    if (!M()->wallLeft() && getLeftCell()->getPrev() == NULL && getLeftCell() != &m_cells[0][0]) {
         getLeftCell()->setPrev(&m_cells[m_x][m_y]);
     }
-    if (!m_mouse->wallFront() && getFrontCell()->getPrev() == NULL && getFrontCell() != &m_cells[0][0]) {
+    if (!M()->wallFront() && getFrontCell()->getPrev() == NULL && getFrontCell() != &m_cells[0][0]) {
         getFrontCell()->setPrev(&m_cells[m_x][m_y]);
     }
-    if (!m_mouse->wallRight() && getRightCell()->getPrev() == NULL && getRightCell() != &m_cells[0][0]) {
+    if (!M()->wallRight() && getRightCell()->getPrev() == NULL && getRightCell() != &m_cells[0][0]) {
         getRightCell()->setPrev(&m_cells[m_x][m_y]);
     }
 }
@@ -1443,7 +1440,7 @@ void FloodFill::bffVictory(std::stack<Cell*> path) {
         if (resetRequested()) {
             // This return will cause bffvictory() to exit, and thus
             // we reinitialize the maze and start our solve over
-            m_mouse->resetPosition();
+            M()->resetPosition();
             resetColors();
             resetHonored();
             return;
@@ -1452,7 +1449,7 @@ void FloodFill::bffVictory(std::stack<Cell*> path) {
             m_x = 0; // Since we're repositioning the mouse but not re-intializing the
             m_y = 0; // maze, we have to explicitely reset the x, y, and d values
             m_d = 0;
-            m_mouse->resetPosition();
+            M()->resetPosition();
             undoHonored();
         }
 
@@ -1503,7 +1500,7 @@ bool FloodFill::checkRequestVictory() {
     // been completely solved, on reset we start over and on undo we simply retry
     // solving the maze as quickly as possible (without changing wall information)
     if (undoRequested() || resetRequested()) {
-        m_mouse->resetPosition();
+        M()->resetPosition();
         if (resetRequested()) {
             // This return will cause victory() to exit, and thus
             // we reinitialize the maze and start our solve over

@@ -92,7 +92,7 @@ void History::moved() {
     // off of the stacks.
     if (m_size > m_stm) {
 
-        m_size--;
+        m_size -= 1;
 
         int srefCount2 = m_stackReferenceCounts.front();
         m_stackReferenceCounts.pop_front();

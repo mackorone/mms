@@ -20,13 +20,11 @@ extern volatile bool movesDoneAndWallsSet;
 
 namespace mack {
 
-#if (SIMULATOR)
-void MackAlgo::solve(sim::MouseInterface* mouse) {
-    m_mouse = mouse;
-    mouse->initializeMouse("mouse.xml");
-    m_mouse->declareInterfaceType(sim::DISCRETE);
-#else
 void MackAlgo::solve() {
+
+#if (SIMULATOR)
+    M()->initializeMouse("mouse.xml");
+    M()->declareInterfaceType(sim::DISCRETE);
 #endif
 
     // Initialize the mouse
@@ -130,7 +128,7 @@ bool MackAlgo::move() {
     }
 
 #if (SIMULATOR)
-    m_mouse->clearAllTileColor();
+    M()->clearAllTileColor();
     colorCenter('G');
 #endif
 
@@ -288,9 +286,9 @@ Cell* MackAlgo::cellMin(Cell* one, Cell* two) {
 void MackAlgo::readWalls() {
 
 #if (SIMULATOR)
-    bool wallFront = m_mouse->wallFront();
-    bool wallRight = m_mouse->wallRight();
-    bool wallLeft = m_mouse->wallLeft();
+    bool wallFront = M()->wallFront();
+    bool wallRight = M()->wallRight();
+    bool wallLeft = M()->wallLeft();
 #else
     bool wallLeft = walls_global[0];
     bool wallFront = walls_global[1];
@@ -376,23 +374,23 @@ void MackAlgo::moveForwardUpdateState() {
 #if (SIMULATOR)
 void MackAlgo::turnLeft() {
     turnLeftUpdateState();
-    m_mouse->turnLeft();
+    M()->turnLeft();
 }
 
 void MackAlgo::turnRight() {
     turnRightUpdateState();
-    m_mouse->turnRight();
+    M()->turnRight();
 }
 
 void MackAlgo::turnAround() {
     turnAroundUpdateState();
-    m_mouse->turnAround();
+    M()->turnAround();
 }
 #endif
 
 void MackAlgo::moveForward() {
 #if (SIMULATOR)
-    m_mouse->moveForward();
+    M()->moveForward();
 #else
     movesBuffer[m_moveBufferIndex] = 'f';
     m_moveBufferIndex += 1;
@@ -593,11 +591,11 @@ void MackAlgo::moveOneCell(Cell* target) {
 
 #if (SIMULATOR)
 void MackAlgo::setColor(int x, int y, char color) {
-    m_mouse->setTileColor(x, y, color);
+    M()->setTileColor(x, y, color);
 }
 
 void MackAlgo::resetColors() {
-    m_mouse->clearAllTileColor();
+    M()->clearAllTileColor();
 }
 
 void MackAlgo::colorCenter(char color) {

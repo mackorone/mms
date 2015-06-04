@@ -11,7 +11,7 @@ namespace floodfill {
  * from the center of the maze. From this, it is used to retrace through the maze
  * to find the shortest path.
  */
-class Cell{
+class Cell {
 
 public:
     Cell();
@@ -35,7 +35,7 @@ public:
     void setWallInspected(int direction, bool inspected);
     void setPrev(Cell* prev);
 
-    void setMouseInterface(sim::MouseInterface* mouse);
+    void setAlgo(IAlgorithm* algo);
 
 private:
     int m_x; // x-location of the Cell
@@ -47,7 +47,7 @@ private:
     bool m_wallsInspected[4]; // Whether or not we've inspected the specific walls of a Cell
     Cell* m_prev; // The previous node in the path by which the Cell was discovered
 
-    sim::MouseInterface* m_mouse;
+    IAlgorithm* m_algo;
 
 };
 

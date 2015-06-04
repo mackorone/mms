@@ -4,6 +4,7 @@ Features:
     - Then Change FreeGLUT to GLFW and use GLEW
     - Performance of tile text, fog, colors
 - If speed is up too high, sometimes the mouse skips from one place to another
+- Figure out how to get rid of ifdefs
 - Updates on the tile boundaries, not centers
 - Inconsistent wall declaration colors (one side of wall but not the other)
 - Actual distance values on the tile
@@ -40,6 +41,7 @@ Features:
 - More Arduino function support
 - Add Wheel max speed (specificed in mouse parameter file)
 - Change over the Makefile to use cmake
+- Add some nice LaTeX documentation
 
 Clean-Up:
 - Convert floats to doubles where appropriate
