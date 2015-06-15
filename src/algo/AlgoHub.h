@@ -6,6 +6,7 @@ class AlgoHub {
     
 public:
     AlgoHub();
+    ~AlgoHub();
     const std::map<std::string, IAlgorithm*>& getAlgorithms() const;
 
 private:

@@ -22,6 +22,12 @@ AlgoHub::AlgoHub() {
     m_algorithms.insert(std::make_pair("RandomizedWallFollow", new wallFollow::RandomizedWallFollow()));
 }
 
+AlgoHub::~AlgoHub() {
+    for (std::pair<std::string, IAlgorithm*> pair : m_algorithms) {
+        delete pair.second;
+    }
+}
+
 const std::map<std::string, IAlgorithm*>& AlgoHub::getAlgorithms() const {
     return m_algorithms;
 }

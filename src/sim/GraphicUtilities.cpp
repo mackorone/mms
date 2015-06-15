@@ -58,7 +58,9 @@ void GraphicUtilities::drawText(const Coordinate& location, const Distance& widt
 }
 
 std::pair<int, int> GraphicUtilities::getWindowSize() {
+    // TODO: MACK this shouldn't work... make the window size a state variable that updates when the size changes
     // "glutGet" is expensive so we only make the call once
+    // TODO: Is this initial window size????
     static const int width = glutGet(GLUT_WINDOW_WIDTH);
     static const int height = glutGet(GLUT_WINDOW_HEIGHT);
     return std::make_pair(width, height);

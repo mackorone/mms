@@ -16,10 +16,13 @@
 #include "sim/SimUtilities.h"
 #include "sim/World.h"
 
+#include <iostream> // TODO
+
 // Function declarations
 void draw();
 void solve();
 void simulate();
+void reshape(int w, int h);
 void keyInput(unsigned char key, int x, int y);
 
 // Global object variable declarations
@@ -29,26 +32,22 @@ sim::MouseGraphic* g_mouseGraphic;
 sim::MouseInterface* g_mouseInterface;
 
 // TODO: Other globals here for interfacing with freeglut
-GLint g_mazeGraphicID;
-GLint g_mouseGraphicID;
-GLint attribute_coordinate;
-GLint attribute_color;
+//GLuint g_mazeGraphicID;
+//GLuint g_mouseGraphicID;
+GLuint attribute_coordinate;
+GLuint attribute_color;
+GLuint vertex_buffer_object;
+GLuint vertex_array_object;
 void onDisplay();
-
-// The program name
-std::string g_program;
 
 int main(int argc, char* argv[]) {
 
-    // Save the program name for restarts
-    g_program = std::string(argv[0]);
-
     // Initialize local objects
     sim::Maze maze;
-    sim::MazeGraphic mazeGraphic(&maze);
     sim::Mouse mouse(&maze);
-    sim::MouseGraphic mouseGraphic(&mouse);
     sim::World world(&maze, &mouse);
+    sim::MazeGraphic mazeGraphic(&maze);
+    sim::MouseGraphic mouseGraphic(&mouse);
     sim::MouseInterface mouseInterface(&maze, &mouse, &mazeGraphic);
 
     // Assign global variables
@@ -62,38 +61,45 @@ int main(int argc, char* argv[]) {
 
     // GLUT Initialization
     glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA);
     int pixelsPerTile = (sim::P()->wallLength() + sim::P()->wallWidth()) * sim::P()->pixelsPerMeter();
     glutInitWindowSize(maze.getWidth() * pixelsPerTile, maze.getHeight() * pixelsPerTile);
-    glutInitDisplayMode(GLUT_RGBA);
     glutInitWindowPosition(0, 0);
     glutCreateWindow("Micromouse Simulator");
+    glClearColor(0.0, 0.0, 0.0, 1.0);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT);
-    //glutDisplayFunc(onDisplay); // TODO
-    glutDisplayFunc(draw); // TODO
-    glutIdleFunc(draw); // TODO
-    glutKeyboardFunc(keyInput);
+    //glShadeModel(GL_FLAT); // TODO: Good! None of OpenGL interpolates color of pixels between vertices automatically
+    //glProvokingVertex(GL_FIRST_VERTEX_CONVENTION); // Use the color of the first vertex for every polygon - 3.2 or higher
 
-/*
+    glutReshapeFunc(reshape);
+    glutKeyboardFunc(keyInput);
+    //glutDisplayFunc(draw); // TODO
+    //glutIdleFunc(draw); // TODO
+
+
+#if(1)
 // TODO
 
-    // GLEW Initialization
-    glewInit();
+    glutDisplayFunc(onDisplay); // TODO
 
+    // GLEW Initialization
+    GLenum err = glewInit();
+    if (GLEW_OK != err) {
+        sim::SimUtilities::print("Error: Unable to initialize GLEW.");
+        sim::SimUtilities::quit();
+    }
+
+    // Vertex shader
     GLuint vs = glCreateShader(GL_VERTEX_SHADER);
     std::string str = 
         "#version 110\n"
         "attribute vec2 coordinate;"
-        "attribute vec3 color;"
+        "attribute vec4 color;"
         "void main(void) {"
-        "   gl_Position = vec4(coordinate, 0.0, 1.0);"
-        "   gl_FrontColor[0] = color[0];"
-        "   gl_FrontColor[1] = color[1];"
-        "   gl_FrontColor[2] = color[2];"
+        "    gl_Position = vec4(coordinate, 0.0, 1.0);"
+        "    gl_FrontColor = color;"
         "}";
-
     const char *vs_source = str.c_str();
     glShaderSource(vs, 1, &vs_source, NULL);
     glCompileShader(vs);
@@ -104,8 +110,29 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
+    /*
+    GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
+    const char *fs_source =
+        "#version 110\n"
+        "void main(void) {"
+        "    gl_FragColor[0] = gl_FragCoord.x/640.0;"
+        "    gl_FragColor[1] = gl_FragCoord.y/480.0;"
+        "    gl_FragColor[2] = 0.5;"
+        "    gl_FragColor[3] = 1.0;"
+        "}";
+    glShaderSource(fs, 1, &fs_source, NULL);
+    glCompileShader(fs);
+    glGetShaderiv(fs, GL_COMPILE_STATUS, &compile_ok);
+    if (!compile_ok) {
+        fprintf(stderr, "Error in fragment shader\n");
+        return 0;
+    }
+    */
+
+    // Program
     GLuint program = glCreateProgram();
     glAttachShader(program, vs);
+    //glAttachShader(program, fs);
     glLinkProgram(program);
     GLint link_ok = GL_FALSE;
     glGetProgramiv(program, GL_LINK_STATUS, &link_ok);
@@ -114,22 +141,117 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
+    // Coordinate attribute
     attribute_coordinate = glGetAttribLocation(program, "coordinate");
     if (attribute_coordinate == -1) {
         fprintf(stderr, "Could not bind attribute %s\n", "coordinate");
         return 0;
     }
 
+    // Coordinate attribute
     attribute_color = glGetAttribLocation(program, "color");
-    if (attribute_color == -1) {
+    if (attribute_coordinate == -1) {
         fprintf(stderr, "Could not bind attribute %s\n", "color");
         return 0;
     }
 
+    // TODO: Look into wireframe: https://www.youtube.com/watch?v=lRUaQ_Hcno8
+
+    // TODO: Vertex array object (to remember some state)
+    //glGenVertexArrays(1, &vertex_array_object);
+    //glBindVertexArray(vertex_array_object);
+
+    // TODO :Make our data
+    struct Vertex {
+        float x;
+        float y;
+    };
+
+    struct Poly {
+        std::vector<Vertex> vertices;
+        std::vector<float> color;
+    };
+    
+    Poly one;
+    one.vertices.push_back({0.0, 0.0});
+    one.vertices.push_back({1.0, 0.0});
+    one.vertices.push_back({0.0, 1.0});
+    one.color.push_back(1.0);
+    one.color.push_back(1.0);
+    one.color.push_back(1.0);
+    one.color.push_back(1.0);
+    /*
+    one.color.push_back(0.0);
+    one.color.push_back(0.0);
+    one.color.push_back(1.0);
+    one.color.push_back(1.0);
+    one.color.push_back(0.0);
+    one.color.push_back(1.0);
+    one.color.push_back(0.0);
+    one.color.push_back(1.0);
+    */
+
+    Poly two;
+    two.vertices.push_back({0.0, 0.0});
+    two.vertices.push_back({-1.0, 0.0});
+    two.vertices.push_back({0.0, -1.0});
+    two.color.push_back(1.0);
+    two.color.push_back(1.0);
+    two.color.push_back(1.0);
+    two.color.push_back(1.0);
+    /*
+    two.color.push_back(1.0);
+    two.color.push_back(0.0);
+    two.color.push_back(0.0);
+    two.color.push_back(1.0);
+    two.color.push_back(1.0);
+    two.color.push_back(0.0);
+    two.color.push_back(0.0);
+    two.color.push_back(1.0);
+    */
+
+    std::vector<Poly> ps = {one, two};
+
+    glGenBuffers(1,  &vertex_buffer_object);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
+
+    // TODO: Do I need to edit the information in the buffer?
+    glBufferData(GL_ARRAY_BUFFER, 20 * sizeof(float), NULL, GL_STATIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER,  0 * sizeof(float), 6 * sizeof(float), &one.vertices.front());
+    glBufferSubData(GL_ARRAY_BUFFER,  6 * sizeof(float), 12 * sizeof(float), &two.vertices.front());
+    glBufferSubData(GL_ARRAY_BUFFER, 12 * sizeof(float), 4 * sizeof(float), &one.color.front());
+    glBufferSubData(GL_ARRAY_BUFFER, 16 * sizeof(float), 4 * sizeof(float), &two.color.front());
+
+    /* Describe our vertices array to OpenGL (it can't guess its format automatically) */
+    glVertexAttribPointer(
+        attribute_coordinate, // attribute
+        2,                    // number of elements per vertex, here (x,y)
+        GL_FLOAT,             // the type of each element
+        GL_FALSE,             // take our values as-is
+        0,                    // no extra data between each position
+        0                     // pointer to the C array (TODO: or the position in the buffer)
+    );
+
+    /* Describe our vertices array to OpenGL (it can't guess its format automatically) */
+    glVertexAttribPointer(
+        attribute_color, // attribute
+        1,               // number of elements per vertex, here (x,y)
+        GL_FLOAT,        // the type of each element
+        GL_FALSE,        // take our values as-is
+        0,  // no extra data between each position
+        //(char*) NULL + 24 * sizeof(float)         // pointer to the C array
+        (char*) NULL + 12 * sizeof(float)         // offset into the buffer
+    ); // TODO: Takes a CPU pointer if a VBO doesn't exist
+
+    //glVertexAttribDivisor(0, 1);
+    //glVertexAttribDivisor(attribute_color, 4); // TODO: Causes segfault
     glUseProgram(program);
 
+    glEnableVertexAttribArray(attribute_coordinate);
+    glEnableVertexAttribArray(attribute_color);
+
+#endif
 // TODO
-*/
 
     // Start the physics loop
     std::thread physicsThread(simulate);
@@ -141,31 +263,21 @@ int main(int argc, char* argv[]) {
     glutMainLoop();
 }
 
-//GLuint program;
- 
 void onDisplay() {
 
-    glEnableVertexAttribArray(attribute_coordinate);
-    GLfloat triangle_vertices[] = {
-         0.0,  0.8,
-        -0.8, -0.8,
-         0.8, -0.8,
-         0.6,  0.6,
-    };
-
-    /* Describe our vertices array to OpenGL (it can't guess its format automatically) */
-    glVertexAttribPointer(
-        attribute_coordinate, // attribute
-        2,                 // number of elements per vertex, here (x,y)
-        GL_FLOAT,          // the type of each element
-        GL_FALSE,          // take our values as-is
-        0,                 // no extra data between each position
-        triangle_vertices  // pointer to the C array
-    );
+    glClear(GL_COLOR_BUFFER_BIT);
 
     /* Push each element in buffer_vertices to the vertex shader */
-    glDrawArrays(GL_POLYGON, 0, 4);
-    glDisableVertexAttribArray(attribute_coordinate);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    /*
+    int foo[] = {0, 6};
+    int bar[] = {3, 3};
+    glMultiDrawArrays(GL_TRIANGLES, foo, bar, 2);
+    */
+
+    // TODO: We're always using these attributes so not necessary
+    //glDisableVertexAttribArray(attribute_coordinate);
+    //glDisableVertexAttribArray(attribute_color);
 
     /* Display the result */
     glutSwapBuffers();
@@ -207,16 +319,17 @@ void draw() {
     sim::SimUtilities::sleep(sim::Seconds(std::max(0.0, 1.0/sim::P()->frameRate() - duration)));
 
     // Request to execute the draw function again
-    //glutPostRedisplay();
+    glutPostRedisplay();
 
-    // TODO: Swap the buffers instead...
+    // TODO: Swap the buffers instead... // TODO: Or both...
     glutSwapBuffers();
 }
 
 void solve() {
 
     // First, check to ensure that the algorithm is valid
-    std::map<std::string, IAlgorithm*> algos = AlgoHub().getAlgorithms();
+    AlgoHub algoHub;
+    std::map<std::string, IAlgorithm*> algos = algoHub.getAlgorithms();
     if (algos.find(sim::P()->algorithm()) == algos.end()) {
         sim::SimUtilities::print("Error: The algorithm \"" + sim::P()->algorithm() + "\" is not a valid algorithm.");
         sim::SimUtilities::quit();
@@ -226,11 +339,28 @@ void solve() {
     algos.at(sim::P()->algorithm())->solve(g_mouseInterface);
 }
 
+/*
 void simulate() {
     g_world->simulate();
 }
+*/
+
+void simulate() {
+    while (true) {
+        sim::SimUtilities::sleep(sim::Seconds(1.0));
+     // TODO: Use this to test motion in buffer
+    }
+}
+
+void reshape(int w, int h) {
+    // TODO: Use this to update the window size state
+    glViewport(0, 0, w, h);
+}
 
 void keyInput(unsigned char key, int x, int y) {
+
+    // TODO: Is the uppercase necessary???
+
     if (key == 32) { // Space bar
         // Pause the simulation (only in discrete mode)
         sim::S()->setPaused(!sim::S()->paused());
@@ -244,11 +374,11 @@ void keyInput(unsigned char key, int x, int y) {
         sim::S()->setSimSpeed(sim::S()->simSpeed() / 1.5);
     }
     else if (key == 'a' || key == 'A') {
-        // Toggle maze visibility
+        // Toggle maze visibility // TODO: Necessary?
         sim::S()->setMazeVisible(!sim::S()->mazeVisible());
     }
     else if (key == 'm' || key == 'M') {
-        // Toggle mouse visibility
+        // Toggle mouse visibility // TODO: Necessary?
         sim::S()->setMouseVisible(!sim::S()->mouseVisible());
     }
     else if (key == 'p' || key == 'P') {
@@ -270,11 +400,6 @@ void keyInput(unsigned char key, int x, int y) {
     else if (key == 'o' || key == 'O') {
         // Toggle tile fog
         sim::S()->setTileFogVisible(!sim::S()->tileFogVisible());
-    }
-    else if (key == 'r' || key == 'R') {
-        // Restart
-        std::system(std::string("\"" + g_program + "\" &").c_str());
-        sim::SimUtilities::quit();
     }
     else if (key == 'q' || key == 'Q') {
         // Quit

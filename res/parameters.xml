@@ -30,7 +30,7 @@
 <random-seed>12345</random-seed> <!-- The seed value for rand() -->
 <use-random-seed>true</use-random-seed> <!-- Whether or not to use the seed value -->
 <crash-message>Oh no! Your mouse crashed! It can't move anymore...</crash-message>
-<glut-init-duration>0.25</glut-init-duration> <!-- Seconds -->
+<glut-init-duration>0.1</glut-init-duration> <!-- Seconds -->
 <default-paused>false</default-paused>
 <discrete-interface-sleep-duration>10</discrete-interface-sleep-duration> <!-- Milliseconds -->
 <discrete-interface-min-speed>1</discrete-interface-min-speed> <!-- No units -->
@@ -51,7 +51,7 @@
 <maze-directory>res/mazes/</maze-directory> <!-- realtive to project root -->
 <maze-file>mazeish.maz</maze-file> <!-- relative to maze-directory -->
 <use-maze-file>true</use-maze-file> <!-- whether or not to use the maze file above -->
-<wall-length>.168</wall-length> <!-- meters -->
+<wall-length>.168</wall-length> <!-- meters --> <!-- TODO: This crashes things if it's too small -->
 <wall-width>.012</wall-width> <!-- meters -->
 <wall-height>.05</wall-height> <!-- meters -->
 <generated-maze-width>16</generated-maze-width> <!-- number of tiles -->
