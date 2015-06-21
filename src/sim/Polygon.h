@@ -17,8 +17,11 @@ public:
     Polygon translate(const Coordinate& translation) const;
     Polygon rotateAroundPoint(const Angle& angle, const Coordinate& point) const;
 
+    // TODO: triangulate the polygon when created. adjust the polygon values as well
+
 private:
     std::vector<Cartesian> m_vertices;
+    std::vector<std::vector<Cartesian>> m_triangles; // TODO... hmmm
 };
 
 } // namespace sim

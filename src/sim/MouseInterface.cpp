@@ -53,7 +53,7 @@ void MouseInterface::declareInterfaceType(InterfaceType interfaceType) {
     // Actually set the interface type
     S()->setInterfaceType(interfaceType);
 
-    // TODO: Pull this out into an initialization method...
+    // TODO: Pull this stuff out into an initialization method...
 
     // Once the interface type is determined, we can initialize the collision polygon
     m_mouse->initializeCollisionPolygon();

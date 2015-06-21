@@ -7,6 +7,7 @@
 
 #include "Maze.h"
 #include "Polygon.h"
+#include "Triangle.h"
 
 namespace sim {
 
@@ -34,6 +35,9 @@ public:
 
     // Returns the convex hull of all of the points of all of the polygons
     static Polygon convexHull(const std::vector<Polygon>& polygons);
+
+    // Returns the triangulation of the given polygon
+    static std::vector<Triangle> triangulate(const Polygon& polygon);
 
 private:
 

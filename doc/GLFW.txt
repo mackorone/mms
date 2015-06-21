@@ -25,3 +25,8 @@ sudo make install
 =================
 
 update OpenGL drivers
+
+
+=================
+
+Everything in OpenGL is done with triangles. and vertexes have to have their own color. That's just the way it goes.

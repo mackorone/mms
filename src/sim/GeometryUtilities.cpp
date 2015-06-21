@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <cmath>
 
+#include <polypartition.h>
+
 #include "Assert.h"
 #include "Param.h"
 
@@ -306,6 +308,34 @@ MetersSquared GeometryUtilities::crossProduct(const Cartesian& Z, const Cartesia
     // Where Z is simply the location of the origin for the vectors A and B
 
     return (A.getX() - Z.getX()) * (B.getY() - Z.getY()) - (A.getY() - Z.getY()) * (B.getX() - Z.getX());
+}
+
+std::vector<Triangle> GeometryUtilities::triangulate(const Polygon& polygon) {
+
+    // Populate the TPPLPoly
+    std::vector<Cartesian> vertices = polygon.getVertices();
+    TPPLPoly tpplPoly;
+    tpplPoly.Init(vertices.size());
+    for (int i = 0; i < vertices.size(); i += 1) {
+        tpplPoly[i].x = vertices.at(i).getX().getMeters();
+        tpplPoly[i].y = vertices.at(i).getX().getMeters();
+    }
+
+    // Perform the triangulation
+    TPPLPartition triangulator;
+    std::list<TPPLPoly> result;
+    triangulator.Triangulate_OPT(&tpplPoly, &result);
+
+    // Populate the output vector
+    std::vector<Triangle> triangles;
+    for (auto it = result.begin(); it != result.end(); it++) {
+        Triangle triangle(Cartesian(Meters((*it)[0].x), Meters((*it)[0].y)),
+                          Cartesian(Meters((*it)[1].x), Meters((*it)[1].y)),
+                          Cartesian(Meters((*it)[2].x), Meters((*it)[2].y)));
+        triangles.push_back(triangle);
+    }
+
+    return triangles;
 }
 
 } // namespace sim

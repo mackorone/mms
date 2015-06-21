@@ -179,30 +179,12 @@ int main(int argc, char* argv[]) {
     glGenBuffers(1,  &vertex_buffer_object);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
     glBufferData(GL_ARRAY_BUFFER, ts.size() * 18 * sizeof(float), NULL, GL_DYNAMIC_DRAW);
-    for (int i = 0; i < ts.size(); i += 1) {
-        glBufferSubData(GL_ARRAY_BUFFER, i * 18 * sizeof(float), 18 * sizeof(float), &ts.at(i).front());
-    }
 
     /* Describe our vertices array to OpenGL (it can't guess its format automatically) */
-    glVertexAttribPointer(
-        attribute_coordinate, // attribute
-        2,                    // number of elements per vertex, here (x,y)
-        GL_FLOAT,             // the type of each element
-        GL_FALSE,             // take our values as-is
-        6 * sizeof(float),    // no extra data between each position
-        0                     // pointer to the C array (TODO: or the position in the buffer)
-    );
+    glVertexAttribPointer(attribute_coordinate, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
 
     /* Describe our vertices array to OpenGL (it can't guess its format automatically) */
-    glVertexAttribPointer(
-        attribute_color,    // attribute
-        4,                  // number of elements per vertex, here (x,y)
-        GL_FLOAT,           // the type of each element
-        GL_FALSE,           // take our values as-is
-        6 * sizeof(float),  // no extra data between each position
-        //(char*) NULL + 24 * sizeof(float)         // pointer to the C array
-        (char*) NULL + 2 * sizeof(float)         // offset into the buffer
-    ); // TODO: Takes a CPU pointer if a VBO doesn't exist
+    glVertexAttribPointer(attribute_color, 4, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (char*) NULL + 2 * sizeof(float));
 
     glEnableVertexAttribArray(attribute_coordinate);
     glEnableVertexAttribArray(attribute_color);
@@ -231,15 +213,13 @@ void draw() {
     // the drawing operation and take it into account when we sleep.
     double start(sim::SimUtilities::getHighResTime());
 
+    // Draw the maze and mouse
     // TODO: Delegate this down to the tiles??
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
-    for (int j = 0; j < 10000; j += 1) {
-        for (int i = 0; i < ts.size(); i += 1) {
-            glBufferSubData(GL_ARRAY_BUFFER, i * 18 * sizeof(float), 18 * sizeof(float), &ts.at(i).front());
-        }
+    for (int i = 0; i < ts.size(); i += 1) {
+        glBufferSubData(GL_ARRAY_BUFFER, i * 18 * sizeof(float), 18 * sizeof(float), &ts.at(i).front());
     }
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    // Draw the maze and mouse
     //g_mazeGraphic->draw();
     //g_mouseGraphic->draw();
 
