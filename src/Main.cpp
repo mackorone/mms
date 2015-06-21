@@ -32,13 +32,17 @@ sim::MouseGraphic* g_mouseGraphic;
 sim::MouseInterface* g_mouseInterface;
 
 // TODO: Other globals here for interfacing with freeglut
-//GLuint g_mazeGraphicID;
-//GLuint g_mouseGraphicID;
-GLuint attribute_coordinate;
-GLuint attribute_color;
 GLuint vertex_buffer_object;
-GLuint vertex_array_object;
-void onDisplay();
+GLuint vertex_array_object; // TODO: Necessary?
+struct Vertex {
+    float x;
+    float y;
+    float r;
+    float g;
+    float b;
+    float a;
+};
+std::vector<std::vector<Vertex>> ts;
 
 int main(int argc, char* argv[]) {
 
@@ -69,19 +73,15 @@ int main(int argc, char* argv[]) {
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
-    //glShadeModel(GL_FLAT); // TODO: Good! None of OpenGL interpolates color of pixels between vertices automatically
-    //glProvokingVertex(GL_FIRST_VERTEX_CONVENTION); // Use the color of the first vertex for every polygon - 3.2 or higher
+    glPolygonMode(GL_FRONT_AND_BACK, sim::S()->wireframeMode() ? GL_LINE : GL_FILL);
 
+    glutDisplayFunc(draw);
+    glutIdleFunc(draw);
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyInput);
-    //glutDisplayFunc(draw); // TODO
-    //glutIdleFunc(draw); // TODO
 
 
 #if(1)
-// TODO
-
-    glutDisplayFunc(onDisplay); // TODO
 
     // GLEW Initialization
     GLenum err = glewInit();
@@ -142,14 +142,14 @@ int main(int argc, char* argv[]) {
     }
 
     // Coordinate attribute
-    attribute_coordinate = glGetAttribLocation(program, "coordinate");
+    GLuint attribute_coordinate = glGetAttribLocation(program, "coordinate");
     if (attribute_coordinate == -1) {
         fprintf(stderr, "Could not bind attribute %s\n", "coordinate");
         return 0;
     }
 
     // Coordinate attribute
-    attribute_color = glGetAttribLocation(program, "color");
+    GLuint attribute_color = glGetAttribLocation(program, "color");
     if (attribute_coordinate == -1) {
         fprintf(stderr, "Could not bind attribute %s\n", "color");
         return 0;
@@ -162,65 +162,26 @@ int main(int argc, char* argv[]) {
     //glBindVertexArray(vertex_array_object);
 
     // TODO :Make our data
-    struct Vertex {
-        float x;
-        float y;
-    };
+    std::vector<Vertex> one;
+    one.push_back({0.0, 0.0, 1.0, 0.0, 0.0, 1.0});
+    one.push_back({1.0, 0.0, 0.0, 1.0, 0.0, 1.0});
+    one.push_back({0.0, 1.0, 0.0, 0.0, 1.0, 1.0});
 
-    struct Poly {
-        std::vector<Vertex> vertices;
-        std::vector<float> color;
-    };
-    
-    Poly one;
-    one.vertices.push_back({0.0, 0.0});
-    one.vertices.push_back({1.0, 0.0});
-    one.vertices.push_back({0.0, 1.0});
-    one.color.push_back(1.0);
-    one.color.push_back(1.0);
-    one.color.push_back(1.0);
-    one.color.push_back(1.0);
-    /*
-    one.color.push_back(0.0);
-    one.color.push_back(0.0);
-    one.color.push_back(1.0);
-    one.color.push_back(1.0);
-    one.color.push_back(0.0);
-    one.color.push_back(1.0);
-    one.color.push_back(0.0);
-    one.color.push_back(1.0);
-    */
+    std::vector<Vertex> two;
+    two.push_back({ 0.0, 0.0, 1.0, 0.0, 0.0, 1.0});
+    two.push_back({-1.0, 0.0, 0.0, 1.0, 0.0, 1.0});
+    two.push_back({0.0, -1.0, 0.0, 0.0, 1.0, 1.0});
 
-    Poly two;
-    two.vertices.push_back({0.0, 0.0});
-    two.vertices.push_back({-1.0, 0.0});
-    two.vertices.push_back({0.0, -1.0});
-    two.color.push_back(1.0);
-    two.color.push_back(1.0);
-    two.color.push_back(1.0);
-    two.color.push_back(1.0);
-    /*
-    two.color.push_back(1.0);
-    two.color.push_back(0.0);
-    two.color.push_back(0.0);
-    two.color.push_back(1.0);
-    two.color.push_back(1.0);
-    two.color.push_back(0.0);
-    two.color.push_back(0.0);
-    two.color.push_back(1.0);
-    */
 
-    std::vector<Poly> ps = {one, two};
+    ts = {one, two};
 
+    // Generate and fill the vertex buffer object
     glGenBuffers(1,  &vertex_buffer_object);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
-
-    // TODO: Do I need to edit the information in the buffer?
-    glBufferData(GL_ARRAY_BUFFER, 20 * sizeof(float), NULL, GL_STATIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER,  0 * sizeof(float), 6 * sizeof(float), &one.vertices.front());
-    glBufferSubData(GL_ARRAY_BUFFER,  6 * sizeof(float), 12 * sizeof(float), &two.vertices.front());
-    glBufferSubData(GL_ARRAY_BUFFER, 12 * sizeof(float), 4 * sizeof(float), &one.color.front());
-    glBufferSubData(GL_ARRAY_BUFFER, 16 * sizeof(float), 4 * sizeof(float), &two.color.front());
+    glBufferData(GL_ARRAY_BUFFER, ts.size() * 18 * sizeof(float), NULL, GL_DYNAMIC_DRAW);
+    for (int i = 0; i < ts.size(); i += 1) {
+        glBufferSubData(GL_ARRAY_BUFFER, i * 18 * sizeof(float), 18 * sizeof(float), &ts.at(i).front());
+    }
 
     /* Describe our vertices array to OpenGL (it can't guess its format automatically) */
     glVertexAttribPointer(
@@ -228,27 +189,26 @@ int main(int argc, char* argv[]) {
         2,                    // number of elements per vertex, here (x,y)
         GL_FLOAT,             // the type of each element
         GL_FALSE,             // take our values as-is
-        0,                    // no extra data between each position
+        6 * sizeof(float),    // no extra data between each position
         0                     // pointer to the C array (TODO: or the position in the buffer)
     );
 
     /* Describe our vertices array to OpenGL (it can't guess its format automatically) */
     glVertexAttribPointer(
-        attribute_color, // attribute
-        1,               // number of elements per vertex, here (x,y)
-        GL_FLOAT,        // the type of each element
-        GL_FALSE,        // take our values as-is
-        0,  // no extra data between each position
+        attribute_color,    // attribute
+        4,                  // number of elements per vertex, here (x,y)
+        GL_FLOAT,           // the type of each element
+        GL_FALSE,           // take our values as-is
+        6 * sizeof(float),  // no extra data between each position
         //(char*) NULL + 24 * sizeof(float)         // pointer to the C array
-        (char*) NULL + 12 * sizeof(float)         // offset into the buffer
+        (char*) NULL + 2 * sizeof(float)         // offset into the buffer
     ); // TODO: Takes a CPU pointer if a VBO doesn't exist
-
-    //glVertexAttribDivisor(0, 1);
-    //glVertexAttribDivisor(attribute_color, 4); // TODO: Causes segfault
-    glUseProgram(program);
 
     glEnableVertexAttribArray(attribute_coordinate);
     glEnableVertexAttribArray(attribute_color);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glUseProgram(program);
 
 #endif
 // TODO
@@ -263,27 +223,6 @@ int main(int argc, char* argv[]) {
     glutMainLoop();
 }
 
-void onDisplay() {
-
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    /* Push each element in buffer_vertices to the vertex shader */
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    /*
-    int foo[] = {0, 6};
-    int bar[] = {3, 3};
-    glMultiDrawArrays(GL_TRIANGLES, foo, bar, 2);
-    */
-
-    // TODO: We're always using these attributes so not necessary
-    //glDisableVertexAttribArray(attribute_coordinate);
-    //glDisableVertexAttribArray(attribute_color);
-
-    /* Display the result */
-    glutSwapBuffers();
-}
- 
- 
 // -------------------------------------------- TODO
 
 void draw() {
@@ -292,13 +231,26 @@ void draw() {
     // the drawing operation and take it into account when we sleep.
     double start(sim::SimUtilities::getHighResTime());
 
+    // TODO: Delegate this down to the tiles??
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
+    for (int j = 0; j < 10000; j += 1) {
+        for (int i = 0; i < ts.size(); i += 1) {
+            glBufferSubData(GL_ARRAY_BUFFER, i * 18 * sizeof(float), 18 * sizeof(float), &ts.at(i).front());
+        }
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     // Draw the maze and mouse
-    glClear(GL_COLOR_BUFFER_BIT);
-    g_mazeGraphic->draw();
-    g_mouseGraphic->draw();
+    //g_mazeGraphic->draw();
+    //g_mouseGraphic->draw();
 
-    // Flushes all draws/updates to the screen
-    glFlush();
+    // Clear the screen
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    // Push each element in buffer_vertices to the vertex shader
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    // Display the result
+    glutSwapBuffers();
 
     // Get the duration of the drawing operation, in seconds. Note that this duration
     // is simply the total number of real seconds that have passed, which is exactly
@@ -320,9 +272,6 @@ void draw() {
 
     // Request to execute the draw function again
     glutPostRedisplay();
-
-    // TODO: Swap the buffers instead... // TODO: Or both...
-    glutSwapBuffers();
 }
 
 void solve() {
@@ -339,21 +288,13 @@ void solve() {
     algos.at(sim::P()->algorithm())->solve(g_mouseInterface);
 }
 
-/*
 void simulate() {
     g_world->simulate();
-}
-*/
-
-void simulate() {
-    while (true) {
-        sim::SimUtilities::sleep(sim::Seconds(1.0));
-     // TODO: Use this to test motion in buffer
-    }
 }
 
 void reshape(int w, int h) {
     // TODO: Use this to update the window size state
+    // TODO: Is this necessary? It only does needs the window size once?
     glViewport(0, 0, w, h);
 }
 
@@ -400,6 +341,11 @@ void keyInput(unsigned char key, int x, int y) {
     else if (key == 'o' || key == 'O') {
         // Toggle tile fog
         sim::S()->setTileFogVisible(!sim::S()->tileFogVisible());
+    }
+    else if (key == 'w' || key == 'W') {
+        // Toggle wireframe mode
+        sim::S()->setWireframeMode(!sim::S()->wireframeMode());
+        glPolygonMode(GL_FRONT_AND_BACK, sim::S()->wireframeMode() ? GL_LINE : GL_FILL);
     }
     else if (key == 'q' || key == 'Q') {
         // Quit

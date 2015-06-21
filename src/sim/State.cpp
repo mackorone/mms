@@ -29,6 +29,7 @@ State::State() {
     m_tileColorsVisible = P()->defaultTileColorsVisible();
     m_tileTextVisible = P()->defaultTileTextVisible();
     m_tileFogVisible = P()->defaultTileFogVisible();
+    m_wireframeMode = P()->defaultWireframeMode();
     m_paused = P()->defaultPaused();
     m_simSpeed = P()->discreteInterfaceDefaultSpeed();
     for (int i = 0; i < 10; i += 1) {
@@ -70,6 +71,10 @@ bool State::tileTextVisible() {
 
 bool State::tileFogVisible() {
     return m_tileFogVisible;
+}
+
+bool State::wireframeMode() {
+    return m_wireframeMode;
 }
 
 bool State::paused() {
@@ -121,6 +126,10 @@ void State::setTileTextVisible(bool tileTextVisible) {
 
 void State::setTileFogVisible(bool tileFogVisible) {
     m_tileFogVisible = tileFogVisible;
+}
+
+void State::setWireframeMode(bool wireframeMode) {
+    m_wireframeMode = wireframeMode;
 }
 
 void State::setPaused(bool paused) {

@@ -41,6 +41,7 @@ public:
     bool defaultTileTextVisible();
     bool defaultTileFogVisible();
     float tileFogAlpha();
+    bool defaultWireframeMode();
 
     // Simulation parameters
     int randomSeed();
@@ -113,6 +114,7 @@ private:
     bool m_defaultTileTextVisible;
     bool m_defaultTileFogVisible;
     float m_tileFogAlpha;
+    bool m_defaultWireframeMode;
 
     // Simulation parameters
     int m_randomSeed;

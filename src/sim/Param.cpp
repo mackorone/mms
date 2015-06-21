@@ -51,6 +51,7 @@ Param::Param() {
             + " is not in the valid range, [0.0, 1.0].");
         SimUtilities::quit();
     }
+    m_defaultWireframeMode = parser.getBoolIfHasBool("default-wireframe-mode", false);
 
     // Simulation Parameters
     bool useRandomSeed = parser.getBoolIfHasBool("use-random-seed", false);
@@ -188,6 +189,10 @@ bool Param::defaultTileFogVisible() {
 
 float Param::tileFogAlpha() {
     return m_tileFogAlpha;
+}
+
+bool Param::defaultWireframeMode() {
+    return m_defaultWireframeMode;
 }
 
 int Param::randomSeed() {
