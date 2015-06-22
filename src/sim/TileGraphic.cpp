@@ -13,39 +13,48 @@ TileGraphic::TileGraphic(const Tile* tile) : m_tile(tile), m_color(COLOR_STRINGS
 
 void TileGraphic::draw() const {
 
+    // TODO: Make a note of the fact that we have to play some tricks. That is, we have to always draw every polygon
+    // that *could* be drawn, so that our vertex object buffer can stay the same size
+
     // Draw the base of the tile
     const GLfloat* baseColor = S()->tileColorsVisible() ? m_color : COLOR_STRINGS.at(P()->tileBaseColor());
-    glColor3fv(baseColor);
-    GraphicUtilities::drawPolygon(m_tile->getFullPolygon());
+    GraphicUtilities::drawPolygon(m_tile->getFullPolygon(), baseColor, 1.0);
 
-    // Either draw the true walls of the tile ...
-    if (S()->wallTruthVisible()) {
-        glColor3fv(COLOR_STRINGS.at(P()->tileWallColor()));
-        for (Polygon polygon : m_tile->getActualWallPolygons()) {
-            GraphicUtilities::drawPolygon(polygon);
+    // Draw each of the walls of the tile
+    for (Direction direction : DIRECTIONS) {
+
+        // Declare the wall color and alpha
+        const GLfloat* wallColor;
+        GLfloat wallAlpha;
+
+        // Either draw the true walls of the tile ...
+        if (S()->wallTruthVisible()) {
+            wallColor = COLOR_STRINGS.at(P()->tileWallColor());
+            wallAlpha = m_tile->isWall(direction) ? 1.0 : 0.0;
         }
-    }
 
-    // ... or the algorithm's declared walls
-    else {
-        for (Direction direction : DIRECTIONS) {
+        // ... or the algorithm's (un)declared walls
+        else {
+
+            // All (un)declared walls have an alpha value of 1.0
+            wallAlpha = 1.0;
 
             // If the wall was declared, use the wall color and tile base color ...
             if (m_declaredWalls.find(direction) != m_declaredWalls.end()) {
                 if (m_declaredWalls.at(direction)) {
                     if (m_tile->isWall(direction)) {
-                        glColor3fv(COLOR_STRINGS.at(P()->tileWallColor()));
+                        wallColor = COLOR_STRINGS.at(P()->tileWallColor());
                     }
                     else {
-                        glColor3fv(COLOR_STRINGS.at(P()->tileIncorrectlyDeclaredWallColor()));
+                        wallColor = COLOR_STRINGS.at(P()->tileIncorrectlyDeclaredWallColor());
                     }
                 }
                 else {
                     if (m_tile->isWall(direction)) {
-                        glColor3fv(COLOR_STRINGS.at(P()->tileIncorrectlyDeclaredNoWallColor()));
+                        wallColor = COLOR_STRINGS.at(P()->tileIncorrectlyDeclaredNoWallColor());
                     }
                     else {
-                        glColor3fv(baseColor);
+                        wallColor = baseColor;
                     }
                 }
             }
@@ -53,32 +62,30 @@ void TileGraphic::draw() const {
             // ... otherwise, use the undeclared walls colors
             else {
                 if (m_tile->isWall(direction)) {
-                    glColor3fv(COLOR_STRINGS.at(P()->tileUndeclaredWallColor()));
+                    wallColor = COLOR_STRINGS.at(P()->tileUndeclaredWallColor());
                 }
                 else {
-                    glColor3fv(COLOR_STRINGS.at(P()->tileUndeclaredNoWallColor()));
+                    wallColor = COLOR_STRINGS.at(P()->tileUndeclaredNoWallColor());
                 }
             }
-
-            GraphicUtilities::drawPolygon(m_tile->getWallPolygon(direction));
         }
+
+        // Draw the polygon
+        GraphicUtilities::drawPolygon(m_tile->getWallPolygon(direction), wallColor, wallAlpha);
     }
 
     // Draw the corners of the tile
-    glColor3fv(COLOR_STRINGS.at(P()->tileCornerColor()));
     for (Polygon polygon : m_tile->getCornerPolygons()) {
-        GraphicUtilities::drawPolygon(polygon);
+        GraphicUtilities::drawPolygon(polygon, COLOR_STRINGS.at(P()->tileCornerColor()), 1.0);
     }
 
     // Draw the fog
-    if (m_foggy && S()->tileFogVisible()) {
-        const GLfloat* fogColor = COLOR_STRINGS.at(P()->tileFogColor());
-        const GLfloat fogColorWithAlpha[] = {fogColor[0], fogColor[1], fogColor[2], P()->tileFogAlpha()};
-        glColor4fv(fogColorWithAlpha);
-        GraphicUtilities::drawPolygon(m_tile->getFullPolygon());
-    }
+    GraphicUtilities::drawPolygon(m_tile->getFullPolygon(), COLOR_STRINGS.at(P()->tileFogColor()),
+        m_foggy && S()->tileFogVisible() ? P()->tileFogAlpha() : 0.0);
 
+    // TODO TODO TODO TODO : fix this
     // Draw the tile text, always padded to at least 3 characters (for distances)
+    /*
     if (S()->tileTextVisible()) {
         glColor3fv(COLOR_STRINGS.at(P()->tileTextColor()));
         GraphicUtilities::drawText(
@@ -87,6 +94,7 @@ void TileGraphic::draw() const {
             Meters(P()->wallLength()), Meters(P()->wallLength() / 3.0),
             std::string("   ").substr(0, (0 > 3 - (int) m_text.size() ? 0 : 3 - m_text.size())) + m_text);
     }
+    */
 
     // TODO: Draw the shortest path graphic, which is usefule because this is
     // the metric by which mice that don't reach the center are ranked

@@ -14,8 +14,6 @@ MouseGraphic::MouseGraphic(const Mouse* mouse) : m_mouse(mouse) {
 
 void MouseGraphic::draw() {
 
-    // TODO: Can we buffer any of this at all???
-
     // Only draw the mouse if it's visible and the interface type has been declared
     // (which also means that the mouse has been initialized)
     if (!S()->mouseVisible() || S()->interfaceType() == UNDECLARED) {
@@ -23,28 +21,24 @@ void MouseGraphic::draw() {
     }
 
     // First, we draw the body
-    glColor3fv(COLOR_STRINGS.at(P()->mouseBodyColor()));
-    GraphicUtilities::drawPolygon(m_mouse->getBodyPolygon());
+    GraphicUtilities::drawPolygon(m_mouse->getBodyPolygon(), COLOR_STRINGS.at(P()->mouseBodyColor()), 1.0);
 
     // Next, we draw the wheels
-    glColor3fv(COLOR_STRINGS.at(P()->mouseWheelColor()));
     for (Polygon wheelPolygon : m_mouse->getWheelPolygons()) {
-        GraphicUtilities::drawPolygon(wheelPolygon);
+        GraphicUtilities::drawPolygon(wheelPolygon, COLOR_STRINGS.at(P()->mouseWheelColor()), 1.0);
     }
 
     // Only draw the sensors if we're using a discrete interface
     if (S()->interfaceType() == CONTINUOUS) {
 
         // Next, we draw the sensors
-        glColor3fv(COLOR_STRINGS.at(P()->mouseWheelColor()));
         for (Polygon sensorPolygon : m_mouse->getSensorPolygons()) {
-            GraphicUtilities::drawPolygon(sensorPolygon);
+            GraphicUtilities::drawPolygon(sensorPolygon, COLOR_STRINGS.at(P()->mouseWheelColor()), 1.0); // TODO: Color for this
         }
 
         // Lastly, we draw the sensor views
-        glColor3fv(COLOR_STRINGS.at(P()->mouseSensorColor()));
         for (Polygon polygon : m_mouse->getViewPolygons()) {
-            GraphicUtilities::drawPolygon(polygon);
+            GraphicUtilities::drawPolygon(polygon, COLOR_STRINGS.at(P()->mouseSensorColor()), 1.0); // TODO: rename to sensor view color
         }
     }
 }

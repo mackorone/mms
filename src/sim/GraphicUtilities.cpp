@@ -1,33 +1,42 @@
 #include "GraphicUtilities.h"
 
 #include <glut.h>
+
+#include "GeometryUtilities.h" // TODO
 #include "SimUtilities.h" // TODO
+#include "Triangle.h"
+
+#include <iostream> // TODO
 
 #include "Param.h"
 
+extern std::vector<sim::TriangleGraphic> triangleGraphics;
+
 namespace sim {
 
-void GraphicUtilities::drawPolygon(const Polygon& polygon) {
-
-    // TODO: Performance issues - avoid immediate mode
-
-    // TODO: SOM - GL_POLYGON can only draw convex polygons
-    // Reimplement this (with a tesselator) to draw concave ones
+void GraphicUtilities::drawPolygon(const Polygon& polygon, const GLfloat* color, GLfloat alpha) {
 
     // First we have to convert the physical coordinates to pixel coordinates.
     // Then we have convert the pixel coordinates to OpenGL coordinates.
+    /*
     glBegin(GL_POLYGON);
     for (Cartesian vertex : polygon.getVertices()) {
         std::pair<float, float> coordinates = getOpenGlCoordinates(vertex);
         glVertex2f(coordinates.first, coordinates.second);
     }
     glEnd();
+    */
+
+    // TODO: This is deprecated... everything should be converted to something else...
+    std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, alpha);
+    triangleGraphics.insert(triangleGraphics.end(), tgs.begin(), tgs.end());
 }
 
 void GraphicUtilities::drawText(const Coordinate& location, const Distance& width, const Distance& height, const std::string& text) {
 
     // TODO: Performance issues - avoid immediate mode
     // TODO: Ideally, we should be able to *not* have this, provided we optimized correctly
+
     // If there is no text, we don't have to do anything
     if (SimUtilities::trim(text).empty()) {
         return;
@@ -55,6 +64,20 @@ void GraphicUtilities::drawText(const Coordinate& location, const Distance& widt
         glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, text.at(i));
     }
     glPopMatrix();
+}
+
+std::vector<TriangleGraphic> GraphicUtilities::polygonToTriangleGraphics(const Polygon& polygon, const GLfloat* color, GLfloat alpha) {
+    std::vector<Triangle> triangles = GeometryUtilities::triangulate(polygon);
+    std::vector<TriangleGraphic> triangleGraphics;
+    for (Triangle triangle : triangles) {
+        std::pair<float, float> p1 = getOpenGlCoordinates(triangle.getP1());
+        std::pair<float, float> p2 = getOpenGlCoordinates(triangle.getP2());
+        std::pair<float, float> p3 = getOpenGlCoordinates(triangle.getP3());
+        triangleGraphics.push_back({{p1.first, p1.second, color[0], color[1], color[2], alpha},
+                                    {p2.first, p2.second, color[0], color[1], color[2], alpha},
+                                    {p3.first, p3.second, color[0], color[1], color[2], alpha}});
+    }
+    return triangleGraphics;
 }
 
 std::pair<int, int> GraphicUtilities::getWindowSize() {

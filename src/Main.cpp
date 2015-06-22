@@ -17,6 +17,9 @@
 #include "sim/World.h"
 
 #include <iostream> // TODO
+#include "sim/TriangleGraphic.h" // TODO
+#include <Cartesian.h> // TODO
+#include "sim/GraphicUtilities.h"
 
 // Function declarations
 void draw();
@@ -34,15 +37,7 @@ sim::MouseInterface* g_mouseInterface;
 // TODO: Other globals here for interfacing with freeglut
 GLuint vertex_buffer_object;
 GLuint vertex_array_object; // TODO: Necessary?
-struct Vertex {
-    float x;
-    float y;
-    float r;
-    float g;
-    float b;
-    float a;
-};
-std::vector<std::vector<Vertex>> ts;
+std::vector<sim::TriangleGraphic> triangleGraphics;
 
 int main(int argc, char* argv[]) {
 
@@ -74,7 +69,6 @@ int main(int argc, char* argv[]) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
     glPolygonMode(GL_FRONT_AND_BACK, sim::S()->wireframeMode() ? GL_LINE : GL_FILL);
-
     glutDisplayFunc(draw);
     glutIdleFunc(draw);
     glutReshapeFunc(reshape);
@@ -155,30 +149,32 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    // TODO: Look into wireframe: https://www.youtube.com/watch?v=lRUaQ_Hcno8
-
     // TODO: Vertex array object (to remember some state)
     //glGenVertexArrays(1, &vertex_array_object);
     //glBindVertexArray(vertex_array_object);
 
     // TODO :Make our data
-    std::vector<Vertex> one;
-    one.push_back({0.0, 0.0, 1.0, 0.0, 0.0, 1.0});
-    one.push_back({1.0, 0.0, 0.0, 1.0, 0.0, 1.0});
-    one.push_back({0.0, 1.0, 0.0, 0.0, 1.0, 1.0});
+    /*
+    std::vector<sim::Cartesian> poly;
+    poly.push_back(sim::Cartesian(sim::Meters(0.0), sim::Meters(0.0)));
+    poly.push_back(sim::Cartesian(sim::Meters(0.5), sim::Meters(0.2)));
+    poly.push_back(sim::Cartesian(sim::Meters(1.0), sim::Meters(0.0)));
+    poly.push_back(sim::Cartesian(sim::Meters(0.8), sim::Meters(0.5)));
+    poly.push_back(sim::Cartesian(sim::Meters(1.0), sim::Meters(1.0)));
+    poly.push_back(sim::Cartesian(sim::Meters(0.7), sim::Meters(1.5)));
+    poly.push_back(sim::Cartesian(sim::Meters(0.5), sim::Meters(0.5)));
+    poly.push_back(sim::Cartesian(sim::Meters(0.3), sim::Meters(1.5)));
+    poly.push_back(sim::Cartesian(sim::Meters(0.0), sim::Meters(1.0)));
+    poly.push_back(sim::Cartesian(sim::Meters(0.2), sim::Meters(0.5)));
+    std::vector<sim::TriangleGraphic> gs = sim::GraphicUtilities::polygonToTriangleGraphics(sim::Polygon(poly), sim::RED, 1.0);
+    triangleGraphics.insert(triangleGraphics.end(), gs.begin(), gs.end());
+    */
 
-    std::vector<Vertex> two;
-    two.push_back({ 0.0, 0.0, 1.0, 0.0, 0.0, 1.0});
-    two.push_back({-1.0, 0.0, 0.0, 1.0, 0.0, 1.0});
-    two.push_back({0.0, -1.0, 0.0, 0.0, 1.0, 1.0});
-
-
-    ts = {one, two};
 
     // Generate and fill the vertex buffer object
     glGenBuffers(1,  &vertex_buffer_object);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
-    glBufferData(GL_ARRAY_BUFFER, ts.size() * 18 * sizeof(float), NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, triangleGraphics.size() * sizeof(sim::TriangleGraphic), NULL, GL_DYNAMIC_DRAW);
 
     /* Describe our vertices array to OpenGL (it can't guess its format automatically) */
     glVertexAttribPointer(attribute_coordinate, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
@@ -216,18 +212,23 @@ void draw() {
     // Draw the maze and mouse
     // TODO: Delegate this down to the tiles??
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
-    for (int i = 0; i < ts.size(); i += 1) {
-        glBufferSubData(GL_ARRAY_BUFFER, i * 18 * sizeof(float), 18 * sizeof(float), &ts.at(i).front());
+    /*
+    for (int i = 0; i < triangleGraphics.size(); i += 1) {
+        glBufferSubData(GL_ARRAY_BUFFER, i * sizeof(sim::TriangleGraphic), sizeof(sim::TriangleGraphic), &triangleGraphics.at(i));
     }
+    */
+    triangleGraphics.clear();
+    g_mazeGraphic->draw(); // TODO: this should populate the buffer // TODO
+    g_mouseGraphic->draw(); // TODO: this should populate the buffer
+    glBufferData(GL_ARRAY_BUFFER, triangleGraphics.size() * sizeof(sim::TriangleGraphic), NULL, GL_DYNAMIC_DRAW); // TODO: clears the buffer
+    glBufferSubData(GL_ARRAY_BUFFER, 0, triangleGraphics.size() * sizeof(sim::TriangleGraphic), &triangleGraphics.front());
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    //g_mazeGraphic->draw();
-    //g_mouseGraphic->draw();
 
     // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Push each element in buffer_vertices to the vertex shader
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDrawArrays(GL_TRIANGLES, 0, 3 * triangleGraphics.size());
 
     // Display the result
     glutSwapBuffers();

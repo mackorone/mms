@@ -8,6 +8,8 @@
 #include "Assert.h"
 #include "Param.h"
 
+#include <iostream> // TODO
+
 namespace sim {
 
 std::vector<const Tile*> GeometryUtilities::lineSegmentTileCover(const Cartesian& A, const Cartesian& B, const Maze& maze) {
@@ -318,8 +320,9 @@ std::vector<Triangle> GeometryUtilities::triangulate(const Polygon& polygon) {
     tpplPoly.Init(vertices.size());
     for (int i = 0; i < vertices.size(); i += 1) {
         tpplPoly[i].x = vertices.at(i).getX().getMeters();
-        tpplPoly[i].y = vertices.at(i).getX().getMeters();
+        tpplPoly[i].y = vertices.at(i).getY().getMeters();
     }
+    tpplPoly.SetOrientation(TPPL_CCW);
 
     // Perform the triangulation
     TPPLPartition triangulator;
