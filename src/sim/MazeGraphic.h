@@ -10,6 +10,9 @@ namespace sim {
 class MazeGraphic {
 
 public:
+
+    // TODO: triangleGraphicCount
+
     MazeGraphic(const Maze* maze);
     void draw() const;
 

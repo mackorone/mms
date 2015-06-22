@@ -9,6 +9,9 @@ namespace sim {
 class TileGraphic {
 
 public:
+
+    // TODO: TriangleGraphicCount
+
     TileGraphic(const Tile* tile);
 
     void draw() const;

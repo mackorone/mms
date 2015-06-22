@@ -153,28 +153,10 @@ int main(int argc, char* argv[]) {
     //glGenVertexArrays(1, &vertex_array_object);
     //glBindVertexArray(vertex_array_object);
 
-    // TODO :Make our data
-    /*
-    std::vector<sim::Cartesian> poly;
-    poly.push_back(sim::Cartesian(sim::Meters(0.0), sim::Meters(0.0)));
-    poly.push_back(sim::Cartesian(sim::Meters(0.5), sim::Meters(0.2)));
-    poly.push_back(sim::Cartesian(sim::Meters(1.0), sim::Meters(0.0)));
-    poly.push_back(sim::Cartesian(sim::Meters(0.8), sim::Meters(0.5)));
-    poly.push_back(sim::Cartesian(sim::Meters(1.0), sim::Meters(1.0)));
-    poly.push_back(sim::Cartesian(sim::Meters(0.7), sim::Meters(1.5)));
-    poly.push_back(sim::Cartesian(sim::Meters(0.5), sim::Meters(0.5)));
-    poly.push_back(sim::Cartesian(sim::Meters(0.3), sim::Meters(1.5)));
-    poly.push_back(sim::Cartesian(sim::Meters(0.0), sim::Meters(1.0)));
-    poly.push_back(sim::Cartesian(sim::Meters(0.2), sim::Meters(0.5)));
-    std::vector<sim::TriangleGraphic> gs = sim::GraphicUtilities::polygonToTriangleGraphics(sim::Polygon(poly), sim::RED, 1.0);
-    triangleGraphics.insert(triangleGraphics.end(), gs.begin(), gs.end());
-    */
-
 
     // Generate and fill the vertex buffer object
     glGenBuffers(1,  &vertex_buffer_object);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
-    glBufferData(GL_ARRAY_BUFFER, triangleGraphics.size() * sizeof(sim::TriangleGraphic), NULL, GL_DYNAMIC_DRAW);
 
     /* Describe our vertices array to OpenGL (it can't guess its format automatically) */
     glVertexAttribPointer(attribute_coordinate, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
@@ -209,19 +191,28 @@ void draw() {
     // the drawing operation and take it into account when we sleep.
     double start(sim::SimUtilities::getHighResTime());
 
-    // Draw the maze and mouse
-    // TODO: Delegate this down to the tiles??
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
+
+    // TODO: Check to see if the mouse has been loaded yet... if not, load it (since it's guarenteed initialized now)
+    // TODO: Then allocate the buffer space (including the mouse)
+    if (true) {
+        g_mazeGraphic->draw();
+        g_mouseGraphic->draw();
+        glBufferData(GL_ARRAY_BUFFER, triangleGraphics.size() * sizeof(sim::TriangleGraphic), NULL, GL_DYNAMIC_DRAW);
+        std::cout << triangleGraphics.size() << std::endl;
+    }
+    // Draw the maze and mouse
     /*
     for (int i = 0; i < triangleGraphics.size(); i += 1) {
         glBufferSubData(GL_ARRAY_BUFFER, i * sizeof(sim::TriangleGraphic), sizeof(sim::TriangleGraphic), &triangleGraphics.at(i));
     }
     */
-    triangleGraphics.clear();
-    g_mazeGraphic->draw(); // TODO: this should populate the buffer // TODO
+
+    // Always draw the mouse graphic
     g_mouseGraphic->draw(); // TODO: this should populate the buffer
-    glBufferData(GL_ARRAY_BUFFER, triangleGraphics.size() * sizeof(sim::TriangleGraphic), NULL, GL_DYNAMIC_DRAW); // TODO: clears the buffer
-    glBufferSubData(GL_ARRAY_BUFFER, 0, triangleGraphics.size() * sizeof(sim::TriangleGraphic), &triangleGraphics.front());
+    //glBufferData(GL_ARRAY_BUFFER, 5120, triangleGraphics.size() * sizeof(sim::TriangleGraphic), NULL, GL_DYNAMIC_DRAW); // TODO: clears the buffer
+    //glBufferSubData(GL_ARRAY_BUFFER, 0, triangleGraphics.size() * sizeof(sim::TriangleGraphic), &triangleGraphics.front());
+    glBufferSubData(GL_ARRAY_BUFFER, 5120, 7, &triangleGraphics.at(5120));
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     // Clear the screen

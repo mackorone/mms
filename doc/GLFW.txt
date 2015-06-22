@@ -30,3 +30,13 @@ update OpenGL drivers
 =================
 
 Everything in OpenGL is done with triangles. and vertexes have to have their own color. That's just the way it goes.
+
+the tgb is layed out in a very particular way
+
+T(0,0)
+T(0,1)
+...
+T(15,15)
+mouse
+
+this is so that we can just assign values in the buffer
