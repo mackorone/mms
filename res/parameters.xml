@@ -19,10 +19,10 @@
 <default-maze-visible>true</default-maze-visible>
 <default-mouse-visible>true</default-mouse-visible>
 <default-mouse-path-visible>true</default-mouse-path-visible> <!-- TODO: implement this -->
-<default-wall-truth-visible>false</default-wall-truth-visible>
+<default-wall-truth-visible>true</default-wall-truth-visible>
 <default-tile-colors-visible>true</default-tile-colors-visible>
 <default-tile-text-visible>true</default-tile-text-visible>
-<default-tile-fog-visible>true</default-tile-fog-visible>
+<default-tile-fog-visible>false</default-tile-fog-visible>
 <tile-fog-alpha>0.15</tile-fog-alpha> <!-- Must be in [0.0, 1.0] -->
 <default-wireframe-mode>false</default-wireframe-mode>
 <!-- <shortest-path-visible>true</shortest-path-visible> TODO -->

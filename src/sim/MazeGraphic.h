@@ -12,6 +12,8 @@ class MazeGraphic {
 public:
 
     // TODO: triangleGraphicCount
+    // TODO: Shouldn't need this class anymore, draw method can go away (or should just populate some
+    // object that contains updates to the buffer)
 
     MazeGraphic(const Maze* maze);
     void draw() const;

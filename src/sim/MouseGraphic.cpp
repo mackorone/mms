@@ -15,7 +15,7 @@ MouseGraphic::MouseGraphic(const Mouse* mouse) : m_mouse(mouse) {
 void MouseGraphic::draw() {
 
     // Erase the contents of the TGB so that the mouse can append
-    TBG.erase(TGB.begin() + GraphicUtilities::getMouseStartingIndex(), TGB.end());
+    //TBG.erase(TGB.begin() + GraphicUtilities::getMouseStartingIndex(), TGB.end()); // TODO
 
     // Only draw the mouse if it's visible and the interface type has been declared
     // (which also means that the mouse has been initialized)

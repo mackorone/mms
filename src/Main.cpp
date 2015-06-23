@@ -167,7 +167,10 @@ int main(int argc, char* argv[]) {
     glEnableVertexAttribArray(attribute_coordinate);
     glEnableVertexAttribArray(attribute_color);
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // Initialize the buffer based on the layout of all of the polygons
+    // TODO: Make this not hard-coded
+    glBufferData(GL_ARRAY_BUFFER, 5127 * sizeof(sim::TriangleGraphic), NULL, GL_DYNAMIC_DRAW);
+
     glUseProgram(program);
 
 #endif
@@ -191,29 +194,20 @@ void draw() {
     // the drawing operation and take it into account when we sleep.
     double start(sim::SimUtilities::getHighResTime());
 
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
-
-    // TODO: Check to see if the mouse has been loaded yet... if not, load it (since it's guarenteed initialized now)
-    // TODO: Then allocate the buffer space (including the mouse)
-    if (true) {
+    // TODO - for now, only draw the maze once. Huge performance benefits.
+    static int x = 0;
+    if (x == 0) {
         g_mazeGraphic->draw();
-        g_mouseGraphic->draw();
-        glBufferData(GL_ARRAY_BUFFER, triangleGraphics.size() * sizeof(sim::TriangleGraphic), NULL, GL_DYNAMIC_DRAW);
-        std::cout << triangleGraphics.size() << std::endl;
+        glBufferSubData(GL_ARRAY_BUFFER, 0, 5120 * sizeof(sim::TriangleGraphic), &triangleGraphics.front());
+        x += 1;
     }
-    // Draw the maze and mouse
-    /*
-    for (int i = 0; i < triangleGraphics.size(); i += 1) {
-        glBufferSubData(GL_ARRAY_BUFFER, i * sizeof(sim::TriangleGraphic), sizeof(sim::TriangleGraphic), &triangleGraphics.at(i));
+    else {
+        triangleGraphics.erase(triangleGraphics.begin()+5120, triangleGraphics.end());
     }
-    */
-
-    // Always draw the mouse graphic
-    g_mouseGraphic->draw(); // TODO: this should populate the buffer
-    //glBufferData(GL_ARRAY_BUFFER, 5120, triangleGraphics.size() * sizeof(sim::TriangleGraphic), NULL, GL_DYNAMIC_DRAW); // TODO: clears the buffer
-    //glBufferSubData(GL_ARRAY_BUFFER, 0, triangleGraphics.size() * sizeof(sim::TriangleGraphic), &triangleGraphics.front());
-    glBufferSubData(GL_ARRAY_BUFFER, 5120, 7, &triangleGraphics.at(5120));
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    g_mouseGraphic->draw();
+    glBufferSubData(GL_ARRAY_BUFFER, 5120 * sizeof(sim::TriangleGraphic),
+        7 * sizeof(sim::TriangleGraphic), &triangleGraphics.front() + 5120);
+    //glBufferSubData(GL_ARRAY_BUFFER, 0, 5127 * sizeof(sim::TriangleGraphic), &triangleGraphics.front());
 
     // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT);

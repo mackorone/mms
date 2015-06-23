@@ -12,6 +12,7 @@ public:
     void draw();
 
     // TODO: get number of TriangleGraphic
+    // TODO: Keep a list of all of the polygons, write to the buffer, no draw method...
 
 private:
     const Mouse* m_mouse;

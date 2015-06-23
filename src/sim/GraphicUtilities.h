@@ -15,8 +15,8 @@ class GraphicUtilities {
 public:
     // TODO: This might not actually help things... it might be just as in efficient
     // The big, shared, triangle graphics buffer // TODO: Encapsulate this, perhaps...
-    static std::vector<TriangleGraphic> TGB;
-    static int getMouseStartingIndex() const;
+    //static std::vector<TriangleGraphic> TGB;
+    //static int getMouseStartingIndex();
 
     // TODO
     static void drawMousePolygon(const Polygon& polygon, const GLfloat* color, GLfloat alpha);
@@ -28,7 +28,7 @@ public:
 
 private:
     // TODO
-    static m_mouseStartingIndex;
+    //static m_mouseStartingIndex;
 
     // A private constructor to restrict creation of any GeometryUtilities objects
     GraphicUtilities();

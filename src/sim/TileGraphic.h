@@ -11,6 +11,7 @@ class TileGraphic {
 public:
 
     // TODO: TriangleGraphicCount
+    // TODO: An actual layout of each polygon seems necessary...
 
     TileGraphic(const Tile* tile);
 
