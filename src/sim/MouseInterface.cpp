@@ -424,6 +424,11 @@ void MouseInterface::moveForward() {
         return;
     }
 
+    // TODO: Check speed here, skip logic and just teleport if too fast (then sleep for the remaining)
+    // TODO: Do the same for other movement methods
+    // TODO: Try to increase max speed
+    //if (S()->simSpeed() < X) {
+
     Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
     Meters currentX = tileLength * (getDiscretizedTranslation().first) + m_mouse->getInitialTranslation().getX();
     Meters currentY = tileLength * (getDiscretizedTranslation().second) + m_mouse->getInitialTranslation().getY();

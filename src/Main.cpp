@@ -153,7 +153,6 @@ int main(int argc, char* argv[]) {
     //glGenVertexArrays(1, &vertex_array_object);
     //glBindVertexArray(vertex_array_object);
 
-
     // Generate and fill the vertex buffer object
     glGenBuffers(1,  &vertex_buffer_object);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
@@ -194,16 +193,17 @@ void draw() {
     // the drawing operation and take it into account when we sleep.
     double start(sim::SimUtilities::getHighResTime());
 
-    // TODO - for now, only draw the maze once. Huge performance benefits.
+    // TODO - for now, only draw the maze once every 10 cycles. Huge performance benefits.
     static int x = 0;
     if (x == 0) {
+        triangleGraphics.clear();
         g_mazeGraphic->draw();
         glBufferSubData(GL_ARRAY_BUFFER, 0, 5120 * sizeof(sim::TriangleGraphic), &triangleGraphics.front());
-        x += 1;
     }
     else {
         triangleGraphics.erase(triangleGraphics.begin()+5120, triangleGraphics.end());
     }
+    x = (x == 10 ? 0 : x + 1);
     g_mouseGraphic->draw();
     glBufferSubData(GL_ARRAY_BUFFER, 5120 * sizeof(sim::TriangleGraphic),
         7 * sizeof(sim::TriangleGraphic), &triangleGraphics.front() + 5120);

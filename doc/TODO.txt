@@ -41,6 +41,9 @@ Features:
 - Change over the Makefile to use cmake
 - Add some nice LaTeX documentation
 - Support more than two wheels (let's hold off on this for now...)
+- In discrete mode, the mouse can overturn or go too far if the sim speed is to high. We need
+to implement some logic that checks this ahead of time and then just teleports... sort of like
+bullets in other physics simulators
 
 Clean-Up:
 - Convert floats to doubles where appropriate
