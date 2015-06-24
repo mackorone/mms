@@ -14,12 +14,10 @@
 #include "sim/MouseInterface.h"
 #include "sim/State.h"
 #include "sim/SimUtilities.h"
+#include "sim/TriangleGraphic.h"
 #include "sim/World.h"
 
 #include <iostream> // TODO
-#include "sim/TriangleGraphic.h" // TODO
-#include <Cartesian.h> // TODO
-#include "sim/GraphicUtilities.h"
 
 // Function declarations
 void draw();
@@ -34,10 +32,8 @@ sim::MazeGraphic* g_mazeGraphic;
 sim::MouseGraphic* g_mouseGraphic;
 sim::MouseInterface* g_mouseInterface;
 
-// TODO: Other globals here for interfacing with freeglut
-GLuint vertex_buffer_object;
-GLuint vertex_array_object; // TODO: Necessary?
-std::vector<sim::TriangleGraphic> triangleGraphics;
+//GLuint vertex_array_object; // TODO: Necessary?
+std::vector<sim::TriangleGraphic> triangleGraphics; // TODO: Put this somewhere
 
 int main(int argc, char* argv[]) {
 
@@ -68,7 +64,6 @@ int main(int argc, char* argv[]) {
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
-    //glPolygonMode(GL_FRONT_AND_BACK, sim::S()->wireframeMode() ? GL_LINE : GL_FILL);
     glutDisplayFunc(draw);
     glutIdleFunc(draw);
     glutReshapeFunc(reshape);
@@ -83,6 +78,11 @@ int main(int argc, char* argv[]) {
         sim::SimUtilities::print("Error: Unable to initialize GLEW.");
         sim::SimUtilities::quit();
     }
+
+    // Generate vertex buffer object
+    GLuint vertex_buffer_object;
+    glGenBuffers(1,  &vertex_buffer_object);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
 
     // Vertex shader
     GLuint vs = glCreateShader(GL_VERTEX_SHADER);
@@ -136,15 +136,15 @@ int main(int argc, char* argv[]) {
     }
 
     // Coordinate attribute
-    GLuint attribute_coordinate = glGetAttribLocation(program, "coordinate");
-    if (attribute_coordinate == -1) {
+    GLuint coordinate = glGetAttribLocation(program, "coordinate");
+    if (coordinate == -1) {
         fprintf(stderr, "Could not bind attribute %s\n", "coordinate");
         return 0;
     }
 
     // Coordinate attribute
-    GLuint attribute_color = glGetAttribLocation(program, "color");
-    if (attribute_coordinate == -1) {
+    GLuint color = glGetAttribLocation(program, "color");
+    if (coordinate == -1) {
         fprintf(stderr, "Could not bind attribute %s\n", "color");
         return 0;
     }
@@ -153,29 +153,16 @@ int main(int argc, char* argv[]) {
     //glGenVertexArrays(1, &vertex_array_object);
     //glBindVertexArray(vertex_array_object);
 
-    // Generate and fill the vertex buffer object
-    glGenBuffers(1,  &vertex_buffer_object);
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
-
-    /* Describe our vertices array to OpenGL (it can't guess its format automatically) */
-    glVertexAttribPointer(attribute_coordinate, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
-
-    /* Describe our vertices array to OpenGL (it can't guess its format automatically) */
-    glVertexAttribPointer(attribute_color, 4, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (char*) NULL + 2 * sizeof(float));
-
-    glEnableVertexAttribArray(attribute_coordinate);
-    glEnableVertexAttribArray(attribute_color);
-
-    // Initialize the buffer based on the layout of all of the polygons
-    // TODO: Make this not hard-coded
-    glBufferData(GL_ARRAY_BUFFER, 5127 * sizeof(sim::TriangleGraphic), NULL, GL_DYNAMIC_DRAW); // TODO: This may need to go else where
-    g_mazeGraphic->draw(); // TODO: This goes here... we only draw the maze once
-    //std::cout << triangleGraphics.size() << std::endl;
-
+    glVertexAttribPointer(coordinate, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
+    glVertexAttribPointer(color, 4, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (char*) NULL + 2 * sizeof(float));
+    glEnableVertexAttribArray(coordinate);
+    glEnableVertexAttribArray(color);
     glUseProgram(program);
 
+    // Populate the vertex buffer object with tile information
+    g_mazeGraphic->draw();
+
 #endif
-// TODO
 
     // Start the physics loop
     std::thread physicsThread(simulate);
@@ -187,28 +174,30 @@ int main(int argc, char* argv[]) {
     glutMainLoop();
 }
 
-// -------------------------------------------- TODO
-
 void draw() {
 
     // In order to ensure we're sleeping the correct amount of time, we time
     // the drawing operation and take it into account when we sleep.
     double start(sim::SimUtilities::getHighResTime());
 
-    // TODO
-    // Make space for mouse updates and copy to the buffer
-    triangleGraphics.erase(triangleGraphics.begin()+5120, triangleGraphics.end());
+    // Determine the starting index of the mouse
+    static const int mouseTrianglesStartingIndex = triangleGraphics.size();
+
+    // Make space for mouse updates and copy to the CPU buffer
+    triangleGraphics.erase(triangleGraphics.begin() + mouseTrianglesStartingIndex, triangleGraphics.end());
+
+    // Fill the CPU buffer with new mouse triangles
     g_mouseGraphic->draw();
-    /*
-    glBufferSubData(GL_ARRAY_BUFFER, 5120 * sizeof(sim::TriangleGraphic),
-        7 * sizeof(sim::TriangleGraphic), &triangleGraphics.front() + 5120);
-    */
-    glBufferSubData(GL_ARRAY_BUFFER, 0, 5127 * sizeof(sim::TriangleGraphic), &triangleGraphics.front());
+
+    // Copy the CPU buffer to the vertex buffer object
+    // TODO: I may not have to zero out the vertex buffer every time...
+    glBufferData(GL_ARRAY_BUFFER, triangleGraphics.size() * sizeof(sim::TriangleGraphic), NULL, GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, triangleGraphics.size() * sizeof(sim::TriangleGraphic), &triangleGraphics.front());
 
     // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // Push each element in buffer_vertices to the vertex shader
+    // Push each element in the vertex buffer object to the vertex shader
     glDrawArrays(GL_TRIANGLES, 0, 3 * triangleGraphics.size());
 
     // Display the result

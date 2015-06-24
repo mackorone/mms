@@ -24,6 +24,8 @@ public:
     
     bool wallDeclared(Direction direction) const;
 
+    // TODO: make little helper methods that will call the individual GraphicUtilities methods
+
 private:
     const Tile* m_tile;
     const GLfloat* m_color;
