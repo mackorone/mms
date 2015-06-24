@@ -6,10 +6,10 @@
 namespace sim {
 
 MazeGraphic::MazeGraphic(const Maze* maze) {
-    for (int i = 0; i < maze->getWidth(); i += 1) {
+    for (int x = 0; x < maze->getWidth(); x += 1) {
         std::vector<TileGraphic> column;
-        for (int j = 0; j < maze->getHeight(); j += 1) {
-            column.push_back(TileGraphic(maze->getTile(i, j)));
+        for (int y = 0; y < maze->getHeight(); y += 1) {
+            column.push_back(TileGraphic(maze->getTile(x, y)));
         }
         m_tileGraphics.push_back(column);
     }
@@ -18,14 +18,17 @@ MazeGraphic::MazeGraphic(const Maze* maze) {
 void MazeGraphic::draw() const {
 
     // Only draw the maze if it's visible
+    // TODO: Delegate this to the individual tiles...
+    /*
     if (!S()->mazeVisible()) {
         return;
     }
+    */
 
     // TODO: MACK : THIS IS THE PROBLEM - FIGURE OUT HOW TO BUFFER THESE TILES AND DRAW ALL AT ONCE
-    for (int i = 0; i < m_tileGraphics.size(); i += 1) {
-        for (int j = 0; j < m_tileGraphics.at(i).size(); j += 1) {
-            m_tileGraphics.at(i).at(j).draw();
+    for (int x = 0; x < m_tileGraphics.size(); x += 1) {
+        for (int y = 0; y < m_tileGraphics.at(x).size(); y += 1) {
+            m_tileGraphics.at(x).at(y).draw();
         }
     }
 }
@@ -41,6 +44,8 @@ int MazeGraphic::getHeight() const {
 void MazeGraphic::setTileColor(int x, int y, const GLfloat* color) {
     ASSERT(0 <= x && x <= getWidth() && 0 <= y && y < getHeight());
     m_tileGraphics.at(x).at(y).setColor(color);
+    // TODO
+    m_tileGraphics.at(x).at(y).draw();
 }
 
 void MazeGraphic::setTileText(int x, int y, const std::string& text) {
@@ -51,16 +56,22 @@ void MazeGraphic::setTileText(int x, int y, const std::string& text) {
 void MazeGraphic::setTileFogginess(int x, int y, bool foggy) {
     ASSERT(0 <= x && x <= getWidth() && 0 <= y && y < getHeight());
     m_tileGraphics.at(x).at(y).setFogginess(foggy);
+    // TODO
+    m_tileGraphics.at(x).at(y).draw();
 }
 
 void MazeGraphic::declareWall(int x, int y, Direction direction, bool isWall) {
     ASSERT(0 <= x && x <= getWidth() && 0 <= y && y < getHeight());
     m_tileGraphics.at(x).at(y).declareWall(direction, isWall);
+    // TODO
+    m_tileGraphics.at(x).at(y).draw();
 }
 
 void MazeGraphic::undeclareWall(int x, int y, Direction direction) {
     ASSERT(0 <= x && x <= getWidth() && 0 <= y && y < getHeight());
     m_tileGraphics.at(x).at(y).undeclareWall(direction);
+    // TODO
+    m_tileGraphics.at(x).at(y).draw();
 }
 
 bool MazeGraphic::wallDeclared(int x, int y, Direction direction) const {

@@ -3,33 +3,44 @@
 #include <glut.h>
 #include <string>
 
+#include "Directions.h"
 #include "Polygon.h"
 #include "TriangleGraphic.h"
 
 namespace sim {
 
+// TODO: Put consts in this class?
+
 class GraphicUtilities {
 
-// TODO: consts in here???
+    // TODO: It might be more expensive to do multiple calls to glBufferData as opposed to one big call...
+    // with all of the data from one big CPU-side buffer. I'll have to look into this.
+
+    // TODO: Order in the vector buffer object is important...
+
+    // TODO: "draw" should be understood as "fillTheBufferWithUpdates"
+    struct TriangleGraphicUpdate {
+        int vboIndex;
+        TriangleGraphic triangleGraphic;
+    };
 
 public:
-    // TODO: This might not actually help things... it might be just as in efficient
-    // The big, shared, triangle graphics buffer // TODO: Encapsulate this, perhaps...
-    //static std::vector<TriangleGraphic> TGB;
-    //static int getMouseStartingIndex();
+    // TODO: Encapsulate this, perhaps...
+    static std::vector<TriangleGraphicUpdate> TGUs;
 
-    // TODO
+    // TODO: more for text, other tile properties
+    static void updateTileGraphicBase(int x, int y, const Polygon& polygon, const GLfloat* color, GLfloat alpha);
+    static void updateTileGraphicWall(int x, int y, Direction direction, const Polygon& polygon, const GLfloat* color, GLfloat alpha);
+    static void updateTileGraphicCorner(int x, int y, int cornerNumber, const Polygon& polygon, const GLfloat* color, GLfloat alpha);
+    static void updateTileGraphicFog(int x, int y, const Polygon& polygon, const GLfloat* color, GLfloat alpha);
+
+    // This is really appendMousePolygonToBuffer TODO
     static void drawMousePolygon(const Polygon& polygon, const GLfloat* color, GLfloat alpha);
-    static void drawTilePolygon(const Polygon& polygon, const GLfloat* color, GLfloat alpha); // TODO
 
     // TODO: Deprecate these
-    static void drawPolygon(const Polygon& polygon, const GLfloat* color, GLfloat alpha);
     static void drawText(const Coordinate& location, const Distance& width, const Distance& height, const std::string& text);
 
 private:
-    // TODO
-    //static m_mouseStartingIndex;
-
     // A private constructor to restrict creation of any GeometryUtilities objects
     GraphicUtilities();
 

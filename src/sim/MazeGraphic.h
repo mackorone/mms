@@ -15,8 +15,10 @@ public:
     // TODO: Shouldn't need this class anymore, draw method can go away (or should just populate some
     // object that contains updates to the buffer)
 
+    // TODO: This class can update the buffer as necessary
+
     MazeGraphic(const Maze* maze);
-    void draw() const;
+    void draw() const; // TODO: Call this something else. It puts everything in the buffer
 
     int getWidth() const;
     int getHeight() const;

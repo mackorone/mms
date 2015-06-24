@@ -168,7 +168,9 @@ int main(int argc, char* argv[]) {
 
     // Initialize the buffer based on the layout of all of the polygons
     // TODO: Make this not hard-coded
-    glBufferData(GL_ARRAY_BUFFER, 5127 * sizeof(sim::TriangleGraphic), NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 5127 * sizeof(sim::TriangleGraphic), NULL, GL_DYNAMIC_DRAW); // TODO: This may need to go else where
+    g_mazeGraphic->draw(); // TODO: This goes here... we only draw the maze once
+    //std::cout << triangleGraphics.size() << std::endl;
 
     glUseProgram(program);
 
@@ -194,20 +196,26 @@ void draw() {
     double start(sim::SimUtilities::getHighResTime());
 
     // TODO - for now, only draw the maze once every 10 cycles. Huge performance benefits.
+    /*
     static int x = 0;
     if (x == 0) {
-        triangleGraphics.clear();
-        g_mazeGraphic->draw();
         glBufferSubData(GL_ARRAY_BUFFER, 0, 5120 * sizeof(sim::TriangleGraphic), &triangleGraphics.front());
+        x += 1;
     }
     else {
         triangleGraphics.erase(triangleGraphics.begin()+5120, triangleGraphics.end());
     }
-    x = (x == 10 ? 0 : x + 1);
+    */
+    triangleGraphics.erase(triangleGraphics.begin()+5120, triangleGraphics.end());
     g_mouseGraphic->draw();
+    //std::cout << triangleGraphics.size() << std::endl;
+    //std::cout << std::endl;
+    /*
     glBufferSubData(GL_ARRAY_BUFFER, 5120 * sizeof(sim::TriangleGraphic),
         7 * sizeof(sim::TriangleGraphic), &triangleGraphics.front() + 5120);
-    //glBufferSubData(GL_ARRAY_BUFFER, 0, 5127 * sizeof(sim::TriangleGraphic), &triangleGraphics.front());
+    */
+    glBufferSubData(GL_ARRAY_BUFFER, 0, 5127 * sizeof(sim::TriangleGraphic), &triangleGraphics.front());
+    //std::cout << triangleGraphics.size() << std::endl;
 
     // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT);
@@ -295,10 +303,12 @@ void keyInput(unsigned char key, int x, int y) {
     else if (key == 't' || key == 'T') {
         // Toggle wall truth visibility
         sim::S()->setWallTruthVisible(!sim::S()->wallTruthVisible());
+        g_mazeGraphic->draw(); // TODO: not the right solution
     }
     else if (key == 'c' || key == 'C') {
         // Toggle tile colors
         sim::S()->setTileColorsVisible(!sim::S()->tileColorsVisible());
+        g_mazeGraphic->draw(); // TODO: not the right solution
     }
     else if (key == 'x' || key == 'X') {
         // Toggle tile text
@@ -307,6 +317,7 @@ void keyInput(unsigned char key, int x, int y) {
     else if (key == 'o' || key == 'O') {
         // Toggle tile fog
         sim::S()->setTileFogVisible(!sim::S()->tileFogVisible());
+        g_mazeGraphic->draw(); // TODO: not the right solution
     }
     else if (key == 'w' || key == 'W') {
         // Toggle wireframe mode

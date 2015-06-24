@@ -5,6 +5,9 @@
 #include "Param.h"
 #include "State.h"
 
+#include "TriangleGraphic.h"
+extern std::vector<sim::TriangleGraphic> triangleGraphics; // TODO
+
 namespace sim {
 
 TileGraphic::TileGraphic(const Tile* tile) : m_tile(tile), m_color(COLOR_STRINGS.at(P()->tileBaseColor())),
@@ -18,7 +21,7 @@ void TileGraphic::draw() const {
 
     // Draw the base of the tile
     const GLfloat* baseColor = S()->tileColorsVisible() ? m_color : COLOR_STRINGS.at(P()->tileBaseColor());
-    GraphicUtilities::drawPolygon(m_tile->getFullPolygon(), baseColor, 1.0);
+    GraphicUtilities::updateTileGraphicBase(m_tile->getX(), m_tile->getY(), m_tile->getFullPolygon(), baseColor, 1.0);
 
     // Draw each of the walls of the tile
     for (Direction direction : DIRECTIONS) {
@@ -71,17 +74,20 @@ void TileGraphic::draw() const {
         }
 
         // Draw the polygon
-        GraphicUtilities::drawPolygon(m_tile->getWallPolygon(direction), wallColor, wallAlpha);
+        GraphicUtilities::updateTileGraphicWall(m_tile->getX(), m_tile->getY(), direction,
+            m_tile->getWallPolygon(direction), wallColor, wallAlpha);
     }
 
     // Draw the corners of the tile
-    for (Polygon polygon : m_tile->getCornerPolygons()) {
-        GraphicUtilities::drawPolygon(polygon, COLOR_STRINGS.at(P()->tileCornerColor()), 1.0);
+    std::vector<Polygon> cornerPolygons = m_tile->getCornerPolygons();
+    for (int cornerNumber = 0; cornerNumber < cornerPolygons.size(); cornerNumber += 1) {
+        GraphicUtilities::updateTileGraphicCorner(m_tile->getX(), m_tile->getY(), cornerNumber,
+            cornerPolygons.at(cornerNumber), COLOR_STRINGS.at(P()->tileCornerColor()), 1.0);
     }
 
     // Draw the fog
-    GraphicUtilities::drawPolygon(m_tile->getFullPolygon(), COLOR_STRINGS.at(P()->tileFogColor()),
-        m_foggy && S()->tileFogVisible() ? P()->tileFogAlpha() : 0.0);
+    GraphicUtilities::updateTileGraphicFog(m_tile->getX(), m_tile->getY(), m_tile->getFullPolygon(),
+        COLOR_STRINGS.at(P()->tileFogColor()), m_foggy && S()->tileFogVisible() ? P()->tileFogAlpha() : 0.0);
 
     // TODO TODO TODO TODO : fix this
     // Draw the tile text, always padded to at least 3 characters (for distances)

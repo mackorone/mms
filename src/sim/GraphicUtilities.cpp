@@ -14,26 +14,67 @@ extern std::vector<sim::TriangleGraphic> triangleGraphics;
 
 namespace sim {
 
-void GraphicUtilities::drawMousePolygon(const Polygon& polygon, const GLfloat* color, GLfloat alpha) {
-    // TODO: clear 
+void GraphicUtilities::updateTileGraphicBase(int x, int y, const Polygon& polygon, const GLfloat* color, GLfloat alpha) {
     std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, alpha);
-    triangleGraphics.insert(triangleGraphics.end(), tgs.begin(), tgs.end());
+
+    // TODO
+    int index = 20 * (16 * x + y); // Number of triangle objects prior
+    for (int i = 0; i < tgs.size(); i += 1) {
+        if (index + i < triangleGraphics.size()) {
+            triangleGraphics.at(index + i) = tgs.at(i);
+        }
+        else {
+            triangleGraphics.push_back(tgs.at(i));
+        }
+    }
 }
 
-void GraphicUtilities::drawPolygon(const Polygon& polygon, const GLfloat* color, GLfloat alpha) {
-
-    // First we have to convert the physical coordinates to pixel coordinates.
-    // Then we have convert the pixel coordinates to OpenGL coordinates.
-    /*
-    glBegin(GL_POLYGON);
-    for (Cartesian vertex : polygon.getVertices()) {
-        std::pair<float, float> coordinates = getOpenGlCoordinates(vertex);
-        glVertex2f(coordinates.first, coordinates.second);
+void GraphicUtilities::updateTileGraphicWall(int x, int y, Direction direction, const Polygon& polygon,
+        const GLfloat* color, GLfloat alpha) {
+    std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, alpha);
+    // TODO
+    int index = 20 * (16 * x + y) + 2 + (2 * direction); // Number of triangle objects prior
+    for (int i = 0; i < tgs.size(); i += 1) {
+        if (index + i < triangleGraphics.size()) {
+            triangleGraphics.at(index + i) = tgs.at(i);
+        }
+        else {
+            triangleGraphics.push_back(tgs.at(i));
+        }
     }
-    glEnd();
-    */
+}
 
-    // TODO: This is deprecated... everything should be converted to something else...
+void GraphicUtilities::updateTileGraphicCorner(int x, int y, int cornerNumber, const Polygon& polygon,
+        const GLfloat* color, GLfloat alpha) {
+    std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, alpha);
+    // TODO
+
+    int index = 20 * (16 * x + y) + 10 + (2 * cornerNumber); // Number of triangle objects prior
+    for (int i = 0; i < tgs.size(); i += 1) {
+        if (index + i < triangleGraphics.size()) {
+            triangleGraphics.at(index + i) = tgs.at(i);
+        }
+        else {
+            triangleGraphics.push_back(tgs.at(i));
+        }
+    }
+}
+
+void GraphicUtilities::updateTileGraphicFog(int x, int y, const Polygon& polygon, const GLfloat* color, GLfloat alpha) {
+    std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, alpha);
+    // TODO
+    int index = 20 * (16 * x + y) + 18; // Number of triangle objects prior
+    for (int i = 0; i < tgs.size(); i += 1) {
+        if (index + i < triangleGraphics.size()) {
+            triangleGraphics.at(index + i) = tgs.at(i);
+        }
+        else {
+            triangleGraphics.push_back(tgs.at(i));
+        }
+    }
+}
+
+void GraphicUtilities::drawMousePolygon(const Polygon& polygon, const GLfloat* color, GLfloat alpha) {
     std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, alpha);
     triangleGraphics.insert(triangleGraphics.end(), tgs.begin(), tgs.end());
 }
@@ -91,6 +132,7 @@ std::pair<float, float> GraphicUtilities::getOpenGlCoordinates(const Coordinate&
 }
 
 std::vector<TriangleGraphic> GraphicUtilities::polygonToTriangleGraphics(const Polygon& polygon, const GLfloat* color, GLfloat alpha) {
+    // TODO: This method should only need to be called once per polygon...
     std::vector<Triangle> triangles = GeometryUtilities::triangulate(polygon);
     std::vector<TriangleGraphic> triangleGraphics;
     for (Triangle triangle : triangles) {
