@@ -14,10 +14,15 @@ MouseGraphic::MouseGraphic(const Mouse* mouse) : m_mouse(mouse) {
 
 void MouseGraphic::draw() {
 
-    // Only draw the mouse if it's visible and the interface type has been declared
+    // Only draw the mouse if its interface type has been declared
     // (which also means that the mouse has been initialized)
+    if (S()->interfaceType() == UNDECLARED) {
+        return;
+    }
+
+    // Only draw the mouse if it's visible
     // TODO: Does this need to be a feature???
-    float alpha = (!S()->mouseVisible() || S()->interfaceType() == UNDECLARED) ? 0 : 1;
+    float alpha = S()->mouseVisible() ? 1 : 0;
 
     // First, we draw the body
     GraphicUtilities::drawMousePolygon(m_mouse->getBodyPolygon(), COLOR_STRINGS.at(P()->mouseBodyColor()), alpha);

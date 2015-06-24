@@ -195,27 +195,15 @@ void draw() {
     // the drawing operation and take it into account when we sleep.
     double start(sim::SimUtilities::getHighResTime());
 
-    // TODO - for now, only draw the maze once every 10 cycles. Huge performance benefits.
-    /*
-    static int x = 0;
-    if (x == 0) {
-        glBufferSubData(GL_ARRAY_BUFFER, 0, 5120 * sizeof(sim::TriangleGraphic), &triangleGraphics.front());
-        x += 1;
-    }
-    else {
-        triangleGraphics.erase(triangleGraphics.begin()+5120, triangleGraphics.end());
-    }
-    */
+    // TODO
+    // Make space for mouse updates and copy to the buffer
     triangleGraphics.erase(triangleGraphics.begin()+5120, triangleGraphics.end());
     g_mouseGraphic->draw();
-    //std::cout << triangleGraphics.size() << std::endl;
-    //std::cout << std::endl;
     /*
     glBufferSubData(GL_ARRAY_BUFFER, 5120 * sizeof(sim::TriangleGraphic),
         7 * sizeof(sim::TriangleGraphic), &triangleGraphics.front() + 5120);
     */
     glBufferSubData(GL_ARRAY_BUFFER, 0, 5127 * sizeof(sim::TriangleGraphic), &triangleGraphics.front());
-    //std::cout << triangleGraphics.size() << std::endl;
 
     // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT);
