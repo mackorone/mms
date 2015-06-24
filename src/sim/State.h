@@ -20,14 +20,11 @@ public:
     // Accessors
     bool crashed();
     InterfaceType interfaceType();
-    bool mazeVisible();
-    bool mouseVisible();
     bool mousePathVisible(); // TODO: Implement the mouse path
     bool wallTruthVisible();
     bool tileColorsVisible();
     bool tileTextVisible();
     bool tileFogVisible();
-    bool wireframeMode();
     bool paused();
     float simSpeed();
     bool inputButtonPressed(int inputButton);
@@ -35,14 +32,11 @@ public:
     // Mutators
     void setCrashed();
     void setInterfaceType(InterfaceType interfaceType);
-    void setMazeVisible(bool mazeVisible);
-    void setMouseVisible(bool mouseVisible);
     void setMousePathVisible(bool mousePathVisible);
     void setWallTruthVisible(bool wallTruthVisible);
     void setTileColorsVisible(bool tileColorsVisible);
     void setTileTextVisible(bool tileTextVisible);
     void setTileFogVisible(bool tileFogVisible);
-    void setWireframeMode(bool wireframeMode);
     void setPaused(bool paused);
     void setSimSpeed(float simSpeed);
     void setInputButtonPressed(int inputButton, bool pressed);
@@ -57,14 +51,11 @@ private:
 
     bool m_crashed;
     InterfaceType m_interfaceType;
-    bool m_mazeVisible;
-    bool m_mouseVisible;
     bool m_mousePathVisible;
     bool m_wallTruthVisible;
     bool m_tileColorsVisible;
     bool m_tileTextVisible;
     bool m_tileFogVisible;
-    bool m_wireframeMode;
     bool m_paused;
     float m_simSpeed;
     std::map<int, bool> m_inputButtons;

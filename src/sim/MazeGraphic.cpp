@@ -16,16 +16,6 @@ MazeGraphic::MazeGraphic(const Maze* maze) {
 }
 
 void MazeGraphic::draw() const {
-
-    // Only draw the maze if it's visible
-    // TODO: Delegate this to the individual tiles...
-    /*
-    if (!S()->mazeVisible()) {
-        return;
-    }
-    */
-
-    // TODO: MACK : THIS IS THE PROBLEM - FIGURE OUT HOW TO BUFFER THESE TILES AND DRAW ALL AT ONCE
     for (int x = 0; x < m_tileGraphics.size(); x += 1) {
         for (int y = 0; y < m_tileGraphics.at(x).size(); y += 1) {
             m_tileGraphics.at(x).at(y).draw();

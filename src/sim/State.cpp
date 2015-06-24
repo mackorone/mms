@@ -22,14 +22,11 @@ State* State::getInstance() {
 State::State() {
     m_crashed = false;
     m_interfaceType = UNDECLARED;
-    m_mazeVisible = P()->defaultMazeVisible();
-    m_mouseVisible = P()->defaultMouseVisible();
     m_mousePathVisible = P()->defaultMousePathVisible();
     m_wallTruthVisible = P()->defaultWallTruthVisible();
     m_tileColorsVisible = P()->defaultTileColorsVisible();
     m_tileTextVisible = P()->defaultTileTextVisible();
     m_tileFogVisible = P()->defaultTileFogVisible();
-    m_wireframeMode = P()->defaultWireframeMode();
     m_paused = P()->defaultPaused();
     m_simSpeed = P()->discreteInterfaceDefaultSpeed();
     for (int i = 0; i < 10; i += 1) {
@@ -43,14 +40,6 @@ bool State::crashed() {
 
 InterfaceType State::interfaceType() {
     return m_interfaceType;
-}
-
-bool State::mazeVisible() {
-    return m_mazeVisible;
-}
-
-bool State::mouseVisible() {
-    return m_mouseVisible;
 }
 
 bool State::mousePathVisible() {
@@ -71,10 +60,6 @@ bool State::tileTextVisible() {
 
 bool State::tileFogVisible() {
     return m_tileFogVisible;
-}
-
-bool State::wireframeMode() {
-    return m_wireframeMode;
 }
 
 bool State::paused() {
@@ -100,14 +85,6 @@ void State::setInterfaceType(InterfaceType interfaceType) {
     m_interfaceType = interfaceType;
 }
 
-void State::setMazeVisible(bool mazeVisible) {
-    m_mazeVisible = mazeVisible;
-}
-
-void State::setMouseVisible(bool mouseVisible) {
-    m_mouseVisible = mouseVisible;
-}
-
 void State::setMousePathVisible(bool mousePathVisible) {
     m_mousePathVisible = mousePathVisible;
 }
@@ -126,10 +103,6 @@ void State::setTileTextVisible(bool tileTextVisible) {
 
 void State::setTileFogVisible(bool tileFogVisible) {
     m_tileFogVisible = tileFogVisible;
-}
-
-void State::setWireframeMode(bool wireframeMode) {
-    m_wireframeMode = wireframeMode;
 }
 
 void State::setPaused(bool paused) {

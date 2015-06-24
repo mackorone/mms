@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
-    glPolygonMode(GL_FRONT_AND_BACK, sim::S()->wireframeMode() ? GL_LINE : GL_FILL);
+    //glPolygonMode(GL_FRONT_AND_BACK, sim::S()->wireframeMode() ? GL_LINE : GL_FILL);
     glutDisplayFunc(draw);
     glutIdleFunc(draw);
     glutReshapeFunc(reshape);
@@ -262,57 +262,45 @@ void reshape(int w, int h) {
 
 void keyInput(unsigned char key, int x, int y) {
 
-    // TODO: Is the uppercase necessary???
-
     if (key == 32) { // Space bar
         // Pause the simulation (only in discrete mode)
         sim::S()->setPaused(!sim::S()->paused());
     }
-    else if (key == 'f' || key == 'F') {
+    else if (key == 'f') {
         // Faster (only in discrete mode)
         sim::S()->setSimSpeed(sim::S()->simSpeed() * 1.5);
     }
-    else if (key == 's' || key == 'S') {
+    else if (key == 's') {
         // Slower (only in discrete mode)
         sim::S()->setSimSpeed(sim::S()->simSpeed() / 1.5);
     }
-    else if (key == 'a' || key == 'A') {
-        // Toggle maze visibility // TODO: Necessary?
-        sim::S()->setMazeVisible(!sim::S()->mazeVisible());
-    }
-    else if (key == 'm' || key == 'M') {
-        // Toggle mouse visibility // TODO: Necessary?
-        sim::S()->setMouseVisible(!sim::S()->mouseVisible());
-    }
-    else if (key == 'p' || key == 'P') {
+    else if (key == 'p') {
         // Toggle mouse path visibility
         sim::S()->setMousePathVisible(!sim::S()->mousePathVisible());
     }
-    else if (key == 't' || key == 'T') {
+    else if (key == 't') {
         // Toggle wall truth visibility
         sim::S()->setWallTruthVisible(!sim::S()->wallTruthVisible());
         g_mazeGraphic->draw(); // TODO: not the right solution
+        // TODO: Ideally, this should cause little to no computation
     }
-    else if (key == 'c' || key == 'C') {
+    else if (key == 'c') {
         // Toggle tile colors
         sim::S()->setTileColorsVisible(!sim::S()->tileColorsVisible());
         g_mazeGraphic->draw(); // TODO: not the right solution
+        // TODO: Ideally, this should cause little to no computation
     }
-    else if (key == 'x' || key == 'X') {
+    else if (key == 'x') {
         // Toggle tile text
         sim::S()->setTileTextVisible(!sim::S()->tileTextVisible());
     }
-    else if (key == 'o' || key == 'O') {
+    else if (key == 'o') {
         // Toggle tile fog
         sim::S()->setTileFogVisible(!sim::S()->tileFogVisible());
         g_mazeGraphic->draw(); // TODO: not the right solution
+        // TODO: Ideally, this should cause little to no computation
     }
-    else if (key == 'w' || key == 'W') {
-        // Toggle wireframe mode
-        sim::S()->setWireframeMode(!sim::S()->wireframeMode());
-        glPolygonMode(GL_FRONT_AND_BACK, sim::S()->wireframeMode() ? GL_LINE : GL_FILL);
-    }
-    else if (key == 'q' || key == 'Q') {
+    else if (key == 'q') {
         // Quit
         sim::SimUtilities::quit();
     }

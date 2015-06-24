@@ -38,8 +38,6 @@ Param::Param() {
     m_mouseBodyColor = parser.getStringIfHasString("mouse-body-color", "BLUE");
     m_mouseWheelColor = parser.getStringIfHasString("mouse-wheel-color", "GREEN");
     m_mouseSensorColor = parser.getStringIfHasString("mouse-sensor-color", "WHITE");
-    m_defaultMazeVisible = parser.getBoolIfHasBool("default-maze-visible", true);
-    m_defaultMouseVisible = parser.getBoolIfHasBool("default-mouse-visible", true);
     m_defaultMousePathVisible = parser.getBoolIfHasBool("default-mouse-path-visible", true);
     m_defaultWallTruthVisible = parser.getBoolIfHasBool("default-wall-truth-visible", false);
     m_defaultTileColorsVisible = parser.getBoolIfHasBool("default-tile-colors-visible", true);
@@ -51,7 +49,6 @@ Param::Param() {
             + " is not in the valid range, [0.0, 1.0].");
         SimUtilities::quit();
     }
-    m_defaultWireframeMode = parser.getBoolIfHasBool("default-wireframe-mode", false);
 
     // Simulation Parameters
     bool useRandomSeed = parser.getBoolIfHasBool("use-random-seed", false);
@@ -159,14 +156,6 @@ std::string Param::mouseSensorColor() {
     return m_mouseSensorColor;
 }
 
-bool Param::defaultMazeVisible() {
-    return m_defaultMazeVisible;
-}
-
-bool Param::defaultMouseVisible() {
-    return m_defaultMouseVisible;
-}
-
 bool Param::defaultMousePathVisible() {
     return m_defaultMousePathVisible;
 }
@@ -189,10 +178,6 @@ bool Param::defaultTileFogVisible() {
 
 float Param::tileFogAlpha() {
     return m_tileFogAlpha;
-}
-
-bool Param::defaultWireframeMode() {
-    return m_defaultWireframeMode;
 }
 
 int Param::randomSeed() {

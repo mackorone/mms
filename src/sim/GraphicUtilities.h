@@ -18,6 +18,8 @@ class GraphicUtilities {
 
     // TODO: Order in the vector buffer object is important...
 
+    // TODO: Don't triangulate more than once...
+
     // TODO: "draw" should be understood as "fillTheBufferWithUpdates"
     struct TriangleGraphicUpdate {
         int vboIndex;
@@ -35,7 +37,7 @@ public:
     static void updateTileGraphicFog(int x, int y, const Polygon& polygon, const GLfloat* color, GLfloat alpha);
 
     // This is really appendMousePolygonToBuffer TODO
-    static void drawMousePolygon(const Polygon& polygon, const GLfloat* color, GLfloat alpha);
+    static void drawMousePolygon(const Polygon& polygon, const GLfloat* color);
 
     // TODO: Deprecate these
     static void drawText(const Coordinate& location, const Distance& width, const Distance& height, const std::string& text);

@@ -33,15 +33,12 @@ public:
     std::string mouseBodyColor();
     std::string mouseWheelColor();
     std::string mouseSensorColor();
-    bool defaultMazeVisible();
-    bool defaultMouseVisible();
     bool defaultMousePathVisible();
     bool defaultWallTruthVisible();
     bool defaultTileColorsVisible();
     bool defaultTileTextVisible();
     bool defaultTileFogVisible();
     float tileFogAlpha();
-    bool defaultWireframeMode();
 
     // Simulation parameters
     int randomSeed();
@@ -106,15 +103,12 @@ private:
     std::string m_mouseBodyColor;
     std::string m_mouseWheelColor;
     std::string m_mouseSensorColor;
-    bool m_defaultMazeVisible;
-    bool m_defaultMouseVisible;
     bool m_defaultMousePathVisible;
     bool m_defaultWallTruthVisible;
     bool m_defaultTileColorsVisible;
     bool m_defaultTileTextVisible;
     bool m_defaultTileFogVisible;
     float m_tileFogAlpha;
-    bool m_defaultWireframeMode;
 
     // Simulation parameters
     int m_randomSeed;

@@ -44,6 +44,8 @@ Features:
 - In discrete mode, the mouse can overturn or go too far if the sim speed is to high. We need
 to implement some logic that checks this ahead of time and then just teleports... sort of like
 bullets in other physics simulators
+- Add trajectory lines (see https://www.youtube.com/watch?v=kgJClVCPu3w)
+- Add gridlines (see https://www.youtube.com/watch?v=LGRutv9cGBA and https://www.youtube.com/watch?v=gtnTBf5ItEc)
 
 Clean-Up:
 - Convert floats to doubles where appropriate

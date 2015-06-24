@@ -74,8 +74,8 @@ void GraphicUtilities::updateTileGraphicFog(int x, int y, const Polygon& polygon
     }
 }
 
-void GraphicUtilities::drawMousePolygon(const Polygon& polygon, const GLfloat* color, GLfloat alpha) {
-    std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, alpha);
+void GraphicUtilities::drawMousePolygon(const Polygon& polygon, const GLfloat* color) {
+    std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, 1);
     triangleGraphics.insert(triangleGraphics.end(), tgs.begin(), tgs.end());
 }
 
