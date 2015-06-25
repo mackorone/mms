@@ -6,12 +6,13 @@
 #include "Seconds.h"
 
 #include "algo/AlgoHub.h"
-#include "sim/Param.h"
+#include "sim/GraphicUtilities.h"
 #include "sim/Maze.h"
 #include "sim/MazeGraphic.h"
 #include "sim/Mouse.h"
 #include "sim/MouseGraphic.h"
 #include "sim/MouseInterface.h"
+#include "sim/Param.h"
 #include "sim/State.h"
 #include "sim/SimUtilities.h"
 #include "sim/TriangleGraphic.h"
@@ -31,9 +32,6 @@ sim::World* g_world;
 sim::MazeGraphic* g_mazeGraphic;
 sim::MouseGraphic* g_mouseGraphic;
 sim::MouseInterface* g_mouseInterface;
-
-//GLuint vertex_array_object; // TODO: Necessary?
-std::vector<sim::TriangleGraphic> triangleGraphics; // TODO: Put this somewhere
 
 int main(int argc, char* argv[]) {
 
@@ -181,24 +179,24 @@ void draw() {
     double start(sim::SimUtilities::getHighResTime());
 
     // Determine the starting index of the mouse
-    static const int mouseTrianglesStartingIndex = triangleGraphics.size();
+    static const int mouseTrianglesStartingIndex = sim::GraphicUtilities::TGB.size();
 
     // Make space for mouse updates and copy to the CPU buffer
-    triangleGraphics.erase(triangleGraphics.begin() + mouseTrianglesStartingIndex, triangleGraphics.end());
+    sim::GraphicUtilities::TGB.erase(sim::GraphicUtilities::TGB.begin() + mouseTrianglesStartingIndex, sim::GraphicUtilities::TGB.end());
 
     // Fill the CPU buffer with new mouse triangles
     g_mouseGraphic->draw();
 
     // Copy the CPU buffer to the vertex buffer object
-    // TODO: I may not have to zero out the vertex buffer every time...
-    glBufferData(GL_ARRAY_BUFFER, triangleGraphics.size() * sizeof(sim::TriangleGraphic), NULL, GL_DYNAMIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, triangleGraphics.size() * sizeof(sim::TriangleGraphic), &triangleGraphics.front());
+    // TODO: I should only have to do this once... but only after we know the number of triangles from the mouse
+    glBufferData(GL_ARRAY_BUFFER, sim::GraphicUtilities::TGB.size() * sizeof(sim::TriangleGraphic), NULL, GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sim::GraphicUtilities::TGB.size() * sizeof(sim::TriangleGraphic), &sim::GraphicUtilities::TGB.front());
 
     // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Push each element in the vertex buffer object to the vertex shader
-    glDrawArrays(GL_TRIANGLES, 0, 3 * triangleGraphics.size());
+    glDrawArrays(GL_TRIANGLES, 0, 3 * sim::GraphicUtilities::TGB.size());
 
     // Display the result
     glutSwapBuffers();
@@ -270,14 +268,12 @@ void keyInput(unsigned char key, int x, int y) {
     else if (key == 't') {
         // Toggle wall truth visibility
         sim::S()->setWallTruthVisible(!sim::S()->wallTruthVisible());
-        g_mazeGraphic->draw(); // TODO: not the right solution
-        // TODO: Ideally, this should cause little to no computation
+        g_mazeGraphic->updateWalls();
     }
     else if (key == 'c') {
         // Toggle tile colors
         sim::S()->setTileColorsVisible(!sim::S()->tileColorsVisible());
-        g_mazeGraphic->draw(); // TODO: not the right solution
-        // TODO: Ideally, this should cause little to no computation
+        g_mazeGraphic->updateColor();
     }
     else if (key == 'x') {
         // Toggle tile text
@@ -286,8 +282,7 @@ void keyInput(unsigned char key, int x, int y) {
     else if (key == 'o') {
         // Toggle tile fog
         sim::S()->setTileFogVisible(!sim::S()->tileFogVisible());
-        g_mazeGraphic->draw(); // TODO: not the right solution
-        // TODO: Ideally, this should cause little to no computation
+        g_mazeGraphic->updateFog();
     }
     else if (key == 'q') {
         // Quit

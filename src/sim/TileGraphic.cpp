@@ -5,88 +5,66 @@
 #include "Param.h"
 #include "State.h"
 
-#include "TriangleGraphic.h"
-extern std::vector<sim::TriangleGraphic> triangleGraphics; // TODO
-
 namespace sim {
 
 TileGraphic::TileGraphic(const Tile* tile) : m_tile(tile), m_color(COLOR_STRINGS.at(P()->tileBaseColor())),
         m_text(""), m_foggy(true) {
 }
 
+bool TileGraphic::wallDeclared(Direction direction) const {
+    return m_declaredWalls.find(direction) != m_declaredWalls.end();
+}
+
+void TileGraphic::setColor(const GLfloat* color) {
+    m_color = color;
+    updateColor();
+}
+
+void TileGraphic::setText(const std::string& text) {
+    m_text = text;
+}
+
+void TileGraphic::setFogginess(bool foggy) {
+    m_foggy = foggy;
+    updateFog();
+}
+
+void TileGraphic::declareWall(Direction direction, bool isWall) {
+    m_declaredWalls[direction] = isWall;
+    updateWall(direction);
+}
+
+void TileGraphic::undeclareWall(Direction direction) {
+    m_declaredWalls.erase(direction);
+    updateWall(direction);
+}
+
 void TileGraphic::draw() const {
 
-    // TODO: Make a note of the fact that we have to play some tricks. That is, we have to always draw every polygon
-    // that *could* be drawn, so that our vertex object buffer can stay the same size
-
     // Draw the base of the tile
-    const GLfloat* baseColor = S()->tileColorsVisible() ? m_color : COLOR_STRINGS.at(P()->tileBaseColor());
-    GraphicUtilities::updateTileGraphicBase(m_tile->getX(), m_tile->getY(), m_tile->getFullPolygon(), baseColor, 1.0);
+    GraphicUtilities::drawTileGraphicBase(m_tile->getX(), m_tile->getY(), m_tile->getFullPolygon(),
+        S()->tileColorsVisible() ? m_color : COLOR_STRINGS.at(P()->tileBaseColor()));
 
     // Draw each of the walls of the tile
     for (Direction direction : DIRECTIONS) {
 
-        // Declare the wall color and alpha
-        const GLfloat* wallColor;
-        GLfloat wallAlpha;
-
-        // Either draw the true walls of the tile ...
-        if (S()->wallTruthVisible()) {
-            wallColor = COLOR_STRINGS.at(P()->tileWallColor());
-            wallAlpha = m_tile->isWall(direction) ? 1.0 : 0.0;
-        }
-
-        // ... or the algorithm's (un)declared walls
-        else {
-
-            // All (un)declared walls have an alpha value of 1.0
-            wallAlpha = 1.0;
-
-            // If the wall was declared, use the wall color and tile base color ...
-            if (m_declaredWalls.find(direction) != m_declaredWalls.end()) {
-                if (m_declaredWalls.at(direction)) {
-                    if (m_tile->isWall(direction)) {
-                        wallColor = COLOR_STRINGS.at(P()->tileWallColor());
-                    }
-                    else {
-                        wallColor = COLOR_STRINGS.at(P()->tileIncorrectlyDeclaredWallColor());
-                    }
-                }
-                else {
-                    if (m_tile->isWall(direction)) {
-                        wallColor = COLOR_STRINGS.at(P()->tileIncorrectlyDeclaredNoWallColor());
-                    }
-                    else {
-                        wallColor = baseColor;
-                    }
-                }
-            }
-
-            // ... otherwise, use the undeclared walls colors
-            else {
-                if (m_tile->isWall(direction)) {
-                    wallColor = COLOR_STRINGS.at(P()->tileUndeclaredWallColor());
-                }
-                else {
-                    wallColor = COLOR_STRINGS.at(P()->tileUndeclaredNoWallColor());
-                }
-            }
-        }
+        // Get the wall color and alpha
+        std::pair<const GLfloat*, GLfloat> colorAndAlpha = deduceWallColorAndAlpha(direction);
 
         // Draw the polygon
-        GraphicUtilities::updateTileGraphicWall(m_tile->getX(), m_tile->getY(), direction,
-            m_tile->getWallPolygon(direction), wallColor, wallAlpha);
+        GraphicUtilities::drawTileGraphicWall(m_tile->getX(), m_tile->getY(), direction,
+            m_tile->getWallPolygon(direction), colorAndAlpha.first, colorAndAlpha.second);
     }
 
     // Draw the corners of the tile
     std::vector<Polygon> cornerPolygons = m_tile->getCornerPolygons();
     for (int cornerNumber = 0; cornerNumber < cornerPolygons.size(); cornerNumber += 1) {
-        GraphicUtilities::updateTileGraphicCorner(m_tile->getX(), m_tile->getY(), cornerNumber,
-            cornerPolygons.at(cornerNumber), COLOR_STRINGS.at(P()->tileCornerColor()), 1.0);
+        GraphicUtilities::drawTileGraphicCorner(m_tile->getX(), m_tile->getY(), cornerNumber,
+            cornerPolygons.at(cornerNumber), COLOR_STRINGS.at(P()->tileCornerColor()));
     }
 
     // Draw the fog
-    GraphicUtilities::updateTileGraphicFog(m_tile->getX(), m_tile->getY(), m_tile->getFullPolygon(),
+    GraphicUtilities::drawTileGraphicFog(m_tile->getX(), m_tile->getY(), m_tile->getFullPolygon(),
         COLOR_STRINGS.at(P()->tileFogColor()), m_foggy && S()->tileFogVisible() ? P()->tileFogAlpha() : 0.0);
 
     // TODO TODO TODO TODO : fix this
@@ -107,28 +85,78 @@ void TileGraphic::draw() const {
 
 }
 
-void TileGraphic::setColor(const GLfloat* color) {
-    m_color = color;
+void TileGraphic::updateColor() const {
+    GraphicUtilities::updateTileGraphicBaseColor(m_tile->getX(), m_tile->getY(),
+        S()->tileColorsVisible() ? m_color : COLOR_STRINGS.at(P()->tileBaseColor()));
 }
 
-void TileGraphic::setText(const std::string& text) {
-    m_text = text;
+void TileGraphic::updateWalls() const {
+    for (Direction direction : DIRECTIONS) {
+        updateWall(direction);
+    }
 }
 
-void TileGraphic::setFogginess(bool foggy) {
-    m_foggy = foggy;
+void TileGraphic::updateFog() const {
+    GraphicUtilities::updateTileGraphicFog(m_tile->getX(), m_tile->getY(),
+        m_foggy && S()->tileFogVisible() ? P()->tileFogAlpha() : 0.0);
 }
 
-void TileGraphic::declareWall(Direction direction, bool isWall) {
-    m_declaredWalls[direction] = isWall;
+void TileGraphic::updateWall(Direction direction) const {
+    std::pair<const GLfloat*, GLfloat> colorAndAlpha = deduceWallColorAndAlpha(direction);
+    GraphicUtilities::updateTileGraphicWallColor(m_tile->getX(), m_tile->getY(), direction,
+        colorAndAlpha.first, colorAndAlpha.second);
 }
 
-void TileGraphic::undeclareWall(Direction direction) {
-    m_declaredWalls.erase(direction);
-}
+std::pair<const GLfloat*, GLfloat> TileGraphic::deduceWallColorAndAlpha(Direction direction) const {
 
-bool TileGraphic::wallDeclared(Direction direction) const {
-    return m_declaredWalls.find(direction) != m_declaredWalls.end();
+    // Declare the wall color and alpha
+    const GLfloat* wallColor;
+    GLfloat wallAlpha;
+
+    // Either draw the true walls of the tile ...
+    if (S()->wallTruthVisible()) {
+        wallColor = COLOR_STRINGS.at(P()->tileWallColor());
+        wallAlpha = m_tile->isWall(direction) ? 1.0 : 0.0;
+    }
+
+    // ... or the algorithm's (un)declared walls
+    else {
+
+        // (un)declared walls almost always have an alpha value of 1.0
+        wallAlpha = 1.0;
+
+        // If the wall was declared, use the wall color and tile base color ...
+        if (m_declaredWalls.find(direction) != m_declaredWalls.end()) {
+            if (m_declaredWalls.at(direction)) {
+                if (m_tile->isWall(direction)) {
+                    wallColor = COLOR_STRINGS.at(P()->tileWallColor());
+                }
+                else {
+                    wallColor = COLOR_STRINGS.at(P()->tileIncorrectlyDeclaredWallColor());
+                }
+            }
+            else {
+                if (m_tile->isWall(direction)) {
+                    wallColor = COLOR_STRINGS.at(P()->tileIncorrectlyDeclaredNoWallColor());
+                }
+                else {
+                    wallAlpha = 0.0;
+                }
+            }
+        }
+
+        // ... otherwise, use the undeclared walls colors
+        else {
+            if (m_tile->isWall(direction)) {
+                wallColor = COLOR_STRINGS.at(P()->tileUndeclaredWallColor());
+            }
+            else {
+                wallColor = COLOR_STRINGS.at(P()->tileUndeclaredNoWallColor());
+            }
+        }
+    }
+
+    return std::make_pair(wallColor, wallAlpha);
 }
 
 } // namespace sim

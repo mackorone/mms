@@ -9,37 +9,26 @@
 
 namespace sim {
 
-// TODO: Put consts in this class?
-
 class GraphicUtilities {
 
-    // TODO: It might be more expensive to do multiple calls to glBufferData as opposed to one big call...
-    // with all of the data from one big CPU-side buffer. I'll have to look into this.
-
-    // TODO: Order in the vector buffer object is important...
-
-    // TODO: Don't triangulate more than once...
-
-    // TODO: "draw" should be understood as "fillTheBufferWithUpdates"
-    struct TriangleGraphicUpdate {
-        int vboIndex;
-        TriangleGraphic triangleGraphic;
-    };
-
 public:
-    // TODO: Encapsulate this, perhaps...
-    static std::vector<TriangleGraphicUpdate> TGUs;
 
-    // TODO: more for text, other tile properties
-    static void updateTileGraphicBase(int x, int y, const Polygon& polygon, const GLfloat* color, GLfloat alpha);
-    static void updateTileGraphicWall(int x, int y, Direction direction, const Polygon& polygon, const GLfloat* color, GLfloat alpha);
-    static void updateTileGraphicCorner(int x, int y, int cornerNumber, const Polygon& polygon, const GLfloat* color, GLfloat alpha);
-    static void updateTileGraphicFog(int x, int y, const Polygon& polygon, const GLfloat* color, GLfloat alpha);
+    // The big, CPU-side triangle graphics buffer
+    static std::vector<TriangleGraphic> TGB;
 
-    // This is really appendMousePolygonToBuffer TODO
+    static void drawTileGraphicBase(int x, int y, const Polygon& polygon, const GLfloat* color);
+    static void drawTileGraphicWall(int x, int y, Direction direction, const Polygon& polygon, const GLfloat* color, const GLfloat alpha);
+    static void drawTileGraphicCorner(int x, int y, int cornerNumber, const Polygon& polygon, const GLfloat* color);
+    static void drawTileGraphicFog(int x, int y, const Polygon& polygon, const GLfloat* color, GLfloat alpha);
+    static void drawTileGraphicText(int x, int y, const std::string& text);
+
+    static void updateTileGraphicBaseColor(int x, int y, const GLfloat* color);
+    static void updateTileGraphicWallColor(int x, int y, Direction direction, const GLfloat* color, GLfloat alpha);
+    static void updateTileGraphicFog(int x, int y, GLfloat alpha);
+
     static void drawMousePolygon(const Polygon& polygon, const GLfloat* color);
 
-    // TODO: Deprecate these
+    // TODO: Deprecate this
     static void drawText(const Coordinate& location, const Distance& width, const Distance& height, const std::string& text);
 
 private:
