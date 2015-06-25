@@ -18,14 +18,13 @@
 #include "sim/TriangleGraphic.h"
 #include "sim/World.h"
 
-#include <iostream> // TODO
-
 // Function declarations
 void draw();
 void solve();
 void simulate();
 void reshape(int w, int h);
 void keyInput(unsigned char key, int x, int y);
+void initGraphics(int argc, char* argv[]);
 
 // Global object variable declarations
 sim::World* g_world;
@@ -52,115 +51,8 @@ int main(int argc, char* argv[]) {
     // Initialize the state object (to avoid a race condition)
     sim::S();
 
-    // GLUT Initialization
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA);
-    int pixelsPerTile = (sim::P()->wallLength() + sim::P()->wallWidth()) * sim::P()->pixelsPerMeter();
-    glutInitWindowSize(maze.getWidth() * pixelsPerTile, maze.getHeight() * pixelsPerTile);
-    glutInitWindowPosition(0, 0);
-    glutCreateWindow("Micromouse Simulator");
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-    glutDisplayFunc(draw);
-    glutIdleFunc(draw);
-    glutReshapeFunc(reshape);
-    glutKeyboardFunc(keyInput);
-
-
-#if(1)
-
-    // GLEW Initialization
-    GLenum err = glewInit();
-    if (GLEW_OK != err) {
-        sim::SimUtilities::print("Error: Unable to initialize GLEW.");
-        sim::SimUtilities::quit();
-    }
-
-    // Generate vertex buffer object
-    GLuint vertex_buffer_object;
-    glGenBuffers(1,  &vertex_buffer_object);
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
-
-    // Vertex shader
-    GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-    std::string str = 
-        "#version 110\n"
-        "attribute vec2 coordinate;"
-        "attribute vec4 color;"
-        "void main(void) {"
-        "    gl_Position = vec4(coordinate, 0.0, 1.0);"
-        "    gl_FrontColor = color;"
-        "}";
-    const char *vs_source = str.c_str();
-    glShaderSource(vs, 1, &vs_source, NULL);
-    glCompileShader(vs);
-    GLint compile_ok = GL_FALSE;
-    glGetShaderiv(vs, GL_COMPILE_STATUS, &compile_ok);
-    if (0 == compile_ok) {
-        fprintf(stderr, "Error in vertex shader\n");
-        return 0;
-    }
-
-    /*
-    GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
-    const char *fs_source =
-        "#version 110\n"
-        "void main(void) {"
-        "    gl_FragColor[0] = gl_FragCoord.x/640.0;"
-        "    gl_FragColor[1] = gl_FragCoord.y/480.0;"
-        "    gl_FragColor[2] = 0.5;"
-        "    gl_FragColor[3] = 1.0;"
-        "}";
-    glShaderSource(fs, 1, &fs_source, NULL);
-    glCompileShader(fs);
-    glGetShaderiv(fs, GL_COMPILE_STATUS, &compile_ok);
-    if (!compile_ok) {
-        fprintf(stderr, "Error in fragment shader\n");
-        return 0;
-    }
-    */
-
-    // Program
-    GLuint program = glCreateProgram();
-    glAttachShader(program, vs);
-    //glAttachShader(program, fs);
-    glLinkProgram(program);
-    GLint link_ok = GL_FALSE;
-    glGetProgramiv(program, GL_LINK_STATUS, &link_ok);
-    if (!link_ok) {
-        fprintf(stderr, "glLinkProgram:");
-        return 0;
-    }
-
-    // Coordinate attribute
-    GLuint coordinate = glGetAttribLocation(program, "coordinate");
-    if (coordinate == -1) {
-        fprintf(stderr, "Could not bind attribute %s\n", "coordinate");
-        return 0;
-    }
-
-    // Coordinate attribute
-    GLuint color = glGetAttribLocation(program, "color");
-    if (coordinate == -1) {
-        fprintf(stderr, "Could not bind attribute %s\n", "color");
-        return 0;
-    }
-
-    // TODO: Vertex array object (to remember some state)
-    //glGenVertexArrays(1, &vertex_array_object);
-    //glBindVertexArray(vertex_array_object);
-
-    glVertexAttribPointer(coordinate, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
-    glVertexAttribPointer(color, 4, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (char*) NULL + 2 * sizeof(float));
-    glEnableVertexAttribArray(coordinate);
-    glEnableVertexAttribArray(color);
-    glUseProgram(program);
-
-    // Populate the vertex buffer object with tile information
-    g_mazeGraphic->draw();
-
-#endif
+    // Initialize all of the graphics
+    initGraphics(argc, argv);
 
     // Start the physics loop
     std::thread physicsThread(simulate);
@@ -187,10 +79,10 @@ void draw() {
     // Fill the CPU buffer with new mouse triangles
     g_mouseGraphic->draw();
 
-    // Copy the CPU buffer to the vertex buffer object
-    // TODO: I should only have to do this once... but only after we know the number of triangles from the mouse
+    // Clear the vertex buffer object and copy over the CPU buffer
     glBufferData(GL_ARRAY_BUFFER, sim::GraphicUtilities::TGB.size() * sizeof(sim::TriangleGraphic), NULL, GL_DYNAMIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sim::GraphicUtilities::TGB.size() * sizeof(sim::TriangleGraphic), &sim::GraphicUtilities::TGB.front());
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sim::GraphicUtilities::TGB.size() * sizeof(sim::TriangleGraphic),
+        &sim::GraphicUtilities::TGB.front());
 
     // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT);
@@ -293,4 +185,67 @@ void keyInput(unsigned char key, int x, int y) {
         int inputButton = std::string("0123456789").find(key);
         sim::S()->setInputButtonPressed(inputButton, true);
     }
+}
+
+void initGraphics(int argc, char* argv[]) {
+
+    // GLUT Initialization
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA);
+    int pixelsPerTile = (sim::P()->wallLength() + sim::P()->wallWidth()) * sim::P()->pixelsPerMeter();
+    glutInitWindowSize(g_mazeGraphic->getWidth() * pixelsPerTile, g_mazeGraphic->getHeight() * pixelsPerTile);
+    glutInitWindowPosition(0, 0);
+    glutCreateWindow("Micromouse Simulator");
+    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glutDisplayFunc(draw);
+    glutIdleFunc(draw);
+    glutReshapeFunc(reshape);
+    glutKeyboardFunc(keyInput);
+
+    // GLEW Initialization
+    GLenum err = glewInit();
+    if (GLEW_OK != err) {
+        sim::SimUtilities::print("Error: Unable to initialize GLEW.");
+        sim::SimUtilities::quit();
+    }
+
+    // Generate vertex buffer object
+    GLuint vertex_buffer_object;
+    glGenBuffers(1,  &vertex_buffer_object);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
+
+    // Generate the vertex shader
+    GLuint vs = glCreateShader(GL_VERTEX_SHADER);
+    std::string str = 
+        "#version 110\n"
+        "attribute vec2 coordinate;"
+        "attribute vec4 color;"
+        "void main(void) {"
+        "    gl_Position = vec4(coordinate, 0.0, 1.0);"
+        "    gl_FrontColor = color;"
+        "}";
+    const char *vs_source = str.c_str();
+    glShaderSource(vs, 1, &vs_source, NULL);
+    glCompileShader(vs);
+
+    // Generate the rendering program
+    GLuint program = glCreateProgram();
+    glAttachShader(program, vs);
+    glLinkProgram(program);
+    glUseProgram(program);
+
+    // Retrieve the attribute IDs and enable our attributes
+    GLuint coordinate = glGetAttribLocation(program, "coordinate");
+    GLuint color = glGetAttribLocation(program, "color");
+    glEnableVertexAttribArray(coordinate);
+    glEnableVertexAttribArray(color);
+
+    // Specify the information within our buffer
+    glVertexAttribPointer(coordinate, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
+    glVertexAttribPointer(color, 4, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (char*) NULL + 2 * sizeof(float));
+
+    // Lastly, initially populate the vertex buffer object with tile information
+    g_mazeGraphic->draw();
 }
