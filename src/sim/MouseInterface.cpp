@@ -53,18 +53,8 @@ void MouseInterface::declareInterfaceType(InterfaceType interfaceType) {
     // Actually set the interface type
     S()->setInterfaceType(interfaceType);
 
-    // TODO: Pull this stuff out into an initialization method...
-
-    // Once the interface type is determined, we can initialize the collision polygon
-    m_mouse->initializeCollisionPolygon();
-
-    // Wait for everything to stabilize
-    sim::SimUtilities::sleep(Seconds(P()->glutInitDuration()));
-
-    // Unfog the beginning tile if necessary
-    if (S()->interfaceType() == DISCRETE && P()->discreteInterfaceUnfogTileOnEntry()) {
-        m_mazeGraphic->setTileFogginess(0, 0, false);
-    }
+    // Once we know the interface type, we can all other initialization
+    prepareForLaunch();
 }
 
 void MouseInterface::delay(int milliseconds) {
@@ -629,7 +619,21 @@ Direction MouseInterface::getDiscretizedRotation() const {
     }
 }
 
-void MouseInterface::checkPaused() {
+void MouseInterface::prepareForLaunch() {
+
+    // Once the interface type is determined, we can initialize the collision polygon
+    m_mouse->initializeCollisionPolygon();
+
+    // Wait for everything to stabilize
+    sim::SimUtilities::sleep(Seconds(P()->glutInitDuration()));
+
+    // Unfog the beginning tile if necessary
+    if (S()->interfaceType() == DISCRETE && P()->discreteInterfaceUnfogTileOnEntry()) {
+        m_mazeGraphic->setTileFogginess(0, 0, false);
+    }
+}
+
+void MouseInterface::checkPaused() const {
     if (S()->paused()) {
         m_mouse->setWheelSpeeds(RadiansPerSecond(0), RadiansPerSecond(0));
         while (S()->paused()) {

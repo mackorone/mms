@@ -1,26 +1,29 @@
 #include "GraphicUtilities.h"
 
+#include <algorithm>
 #include <glut.h>
 
-#include "GeometryUtilities.h" // TODO
-#include "SimUtilities.h" // TODO
-#include "Triangle.h"
-
-#include <iostream> // TODO
-
+#include "Assert.h"
+#include "GeometryUtilities.h"
 #include "Param.h"
+#include "SimUtilities.h"
+#include "Triangle.h"
 
 namespace sim {
 
 // Here we have to explicity create the TGB, since we only declared it in the header
 std::vector<TriangleGraphic> GraphicUtilities::TGB;
 
+// Same goes for the static maze height
+int GraphicUtilities::s_mazeHeight = 0;
+void GraphicUtilities::setMazeHeight(int height) {
+    ASSERT(s_mazeHeight == 0);
+    s_mazeHeight = height;
+}
+
 void GraphicUtilities::drawTileGraphicBase(int x, int y, const Polygon& polygon, const GLfloat* color) {
-
     std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, 1.0);
-
-    // TODO
-    int index = 20 * (16 * x + y); // Number of triangle objects prior
+    int index = getTileGraphicBaseStartingIndex(x, y);
     for (int i = 0; i < tgs.size(); i += 1) {
         if (index + i < TGB.size()) {
             TGB.at(index + i) = tgs.at(i);
@@ -33,10 +36,8 @@ void GraphicUtilities::drawTileGraphicBase(int x, int y, const Polygon& polygon,
 
 void GraphicUtilities::drawTileGraphicWall(int x, int y, Direction direction, const Polygon& polygon,
         const GLfloat* color, GLfloat alpha) {
-
     std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, alpha);
-    // TODO
-    int index = 20 * (16 * x + y) + 2 + (2 * direction); // Number of triangle objects prior
+    int index = getTileGraphicWallStartingIndex(x, y, direction);
     for (int i = 0; i < tgs.size(); i += 1) {
         if (index + i < TGB.size()) {
             TGB.at(index + i) = tgs.at(i);
@@ -49,11 +50,8 @@ void GraphicUtilities::drawTileGraphicWall(int x, int y, Direction direction, co
 
 void GraphicUtilities::drawTileGraphicCorner(int x, int y, int cornerNumber, const Polygon& polygon,
         const GLfloat* color) {
-
     std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, 1.0);
-    // TODO
-
-    int index = 20 * (16 * x + y) + 10 + (2 * cornerNumber); // Number of triangle objects prior
+    int index = getTileGraphicCornerStartingIndex(x, y, cornerNumber);
     for (int i = 0; i < tgs.size(); i += 1) {
         if (index + i < TGB.size()) {
             TGB.at(index + i) = tgs.at(i);
@@ -65,10 +63,8 @@ void GraphicUtilities::drawTileGraphicCorner(int x, int y, int cornerNumber, con
 }
 
 void GraphicUtilities::drawTileGraphicFog(int x, int y, const Polygon& polygon, const GLfloat* color, GLfloat alpha) {
-
     std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, alpha);
-    // TODO
-    int index = 20 * (16 * x + y) + 18; // Number of triangle objects prior
+    int index = getTileGraphicFogStartingIndex(x, y);
     for (int i = 0; i < tgs.size(); i += 1) {
         if (index + i < TGB.size()) {
             TGB.at(index + i) = tgs.at(i);
@@ -80,9 +76,7 @@ void GraphicUtilities::drawTileGraphicFog(int x, int y, const Polygon& polygon, 
 }
 
 void GraphicUtilities::updateTileGraphicBaseColor(int x, int y, const GLfloat* color) {
-
-    int index = 20 * (16 * x + y); // TODO: Abstract these out...
-
+    int index = getTileGraphicBaseStartingIndex(x, y);
     for (int i = 0; i < 2; i += 1) {
         TriangleGraphic* triangleGraphic = &TGB.at(index + i);
         triangleGraphic->p1.r = color[0];
@@ -98,7 +92,7 @@ void GraphicUtilities::updateTileGraphicBaseColor(int x, int y, const GLfloat* c
 }
 
 void GraphicUtilities::updateTileGraphicWallColor(int x, int y, Direction direction, const GLfloat* color, GLfloat alpha) {
-    int index = 20 * (16 * x + y) + 2 + (2 * direction); // TODO: Abstract these out...
+    int index = getTileGraphicWallStartingIndex(x, y, direction);
     for (int i = 0; i < 2; i += 1) {
         TriangleGraphic* triangleGraphic = &TGB.at(index + i);
         triangleGraphic->p1.r = color[0];
@@ -117,7 +111,7 @@ void GraphicUtilities::updateTileGraphicWallColor(int x, int y, Direction direct
 }
 
 void GraphicUtilities::updateTileGraphicFog(int x, int y, GLfloat alpha) {
-    int index = 20 * (16 * x + y) + 18; // TODO: Abstract these out...
+    int index = getTileGraphicFogStartingIndex(x, y);
     for (int i = 0; i < 2; i += 1) {
         TriangleGraphic* triangleGraphic = &TGB.at(index + i);
         triangleGraphic->p1.a = alpha;
@@ -184,18 +178,41 @@ std::pair<float, float> GraphicUtilities::getOpenGlCoordinates(const Coordinate&
 }
 
 std::vector<TriangleGraphic> GraphicUtilities::polygonToTriangleGraphics(const Polygon& polygon, const GLfloat* color, GLfloat alpha) {
-    // TODO: This method should only need to be called once per polygon...
     std::vector<Triangle> triangles = GeometryUtilities::triangulate(polygon);
-    std::vector<TriangleGraphic> TGB;
+    std::vector<TriangleGraphic> triangleGraphics;
     for (Triangle triangle : triangles) {
         std::pair<float, float> p1 = getOpenGlCoordinates(triangle.getP1());
         std::pair<float, float> p2 = getOpenGlCoordinates(triangle.getP2());
         std::pair<float, float> p3 = getOpenGlCoordinates(triangle.getP3());
-        TGB.push_back({{p1.first, p1.second, color[0], color[1], color[2], alpha},
+        triangleGraphics.push_back({{p1.first, p1.second, color[0], color[1], color[2], alpha},
                                     {p2.first, p2.second, color[0], color[1], color[2], alpha},
                                     {p3.first, p3.second, color[0], color[1], color[2], alpha}});
     }
-    return TGB;
+    return triangleGraphics;
+}
+
+int GraphicUtilities::trianglesPerTile() {
+    // TODO
+    return 20;
+}
+
+// TODO: These indices are dependent on the order in which they're initially drawn: Make a note of this somewhere
+
+int GraphicUtilities::getTileGraphicBaseStartingIndex(int x, int y) {
+    return  0 + trianglesPerTile() * (s_mazeHeight * x + y);
+}
+
+int GraphicUtilities::getTileGraphicWallStartingIndex(int x, int y, Direction direction) {
+    return  2 + trianglesPerTile() * (s_mazeHeight * x + y) + 2 * direction;
+    //2 * (std::find(DIRECTIONS.begin(), DIRECTIONS.end(), direction) - DIRECTIONS.begin()); // TODO: more flexible
+}
+
+int GraphicUtilities::getTileGraphicCornerStartingIndex(int x, int y, int cornerNumber) {
+    return 10 + trianglesPerTile() * (s_mazeHeight * x + y) + (2 * cornerNumber);
+}
+
+int GraphicUtilities::getTileGraphicFogStartingIndex(int x, int y) {
+    return 18 + trianglesPerTile() * (s_mazeHeight * x + y);
 }
 
 } // namespace sim

@@ -1,6 +1,7 @@
 #include "MazeGraphic.h"
 
 #include "Assert.h"
+#include "GraphicUtilities.h"
 #include "State.h"
 
 namespace sim {
@@ -54,6 +55,11 @@ void MazeGraphic::undeclareWall(int x, int y, Direction direction) {
 }
 
 void MazeGraphic::draw() const {
+
+    // We need the maze height to determine the layout of the TGB
+    GraphicUtilities::setMazeHeight(getHeight());
+
+    // Then we fill the TGB
     for (int x = 0; x < m_tileGraphics.size(); x += 1) {
         for (int y = 0; y < m_tileGraphics.at(x).size(); y += 1) {
             m_tileGraphics.at(x).at(y).draw();

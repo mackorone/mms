@@ -71,7 +71,8 @@ private:
     std::pair<int, int> getDiscretizedTranslation() const;
     Direction getDiscretizedRotation() const;
 
-    void checkPaused();
+    void prepareForLaunch();
+    void checkPaused() const;
     bool isWall(std::pair<int, int> position, Direction direction);
 };
 
