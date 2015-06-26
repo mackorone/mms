@@ -62,6 +62,8 @@ int main(int argc, char* argv[]) {
     
     // Start the graphics loop
     glutMainLoop();
+
+    // TODO: Potential restart here...
 }
 
 void draw() {

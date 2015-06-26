@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <fstream>
+#include <glut.h>
 #include <iostream>
 #include <iterator>
 #include <sstream>
@@ -23,7 +24,8 @@
 namespace sim {
 
 void SimUtilities::quit() {
-    exit(0);
+    glutLeaveMainLoop(); 
+    // TODO: Anything else here???
 }
 
 void SimUtilities::print(const std::string& msg) {
