@@ -6,6 +6,8 @@
 #include <glut.h>
 #include <Duration.h>
 
+#include "Directions.h"
+
 namespace sim {
 
 class SimUtilities {
@@ -46,6 +48,9 @@ public:
 
     // True if path is a path to a file, false otherwise
     static bool isFile(std::string path);
+
+    // Returns the index of the direction in DIRECTIONS
+    static int getDirectionIndex(Direction direction);
 
 private:
     // A private constructor to restrict creation of any GeometryUtilities objects

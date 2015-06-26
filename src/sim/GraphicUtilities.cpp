@@ -129,7 +129,6 @@ void GraphicUtilities::drawText(const Coordinate& location, const Distance& widt
 
     // TODO: Performance issues - avoid immediate mode
     // TODO: Ideally, we should be able to *not* have this, provided we optimized correctly
-
     // If there is no text, we don't have to do anything
     if (SimUtilities::trim(text).empty()) {
         return;
@@ -142,7 +141,7 @@ void GraphicUtilities::drawText(const Coordinate& location, const Distance& widt
     // Next, determine the scale the text using the window dimensions. As specified in the
     // documentation for glutStrokeCharacter, the GLUT_STROKE_MONO_ROMAN has characters
     // that are each exactly 104.76 units wide, hence the use of the literal value.
-    std::pair<int, int> windowSize = getWindowSize();
+    std::pair<int, int> windowSize = getInitialWindowSize();
     float scaleX = 1.0/104.76 * (pixelWidth / windowSize.first) / text.size() * 2;
     float scaleY = 1.0/104.76 * (pixelHeight / windowSize.second) * 2;
 
@@ -159,17 +158,14 @@ void GraphicUtilities::drawText(const Coordinate& location, const Distance& widt
     glPopMatrix();
 }
 
-std::pair<int, int> GraphicUtilities::getWindowSize() {
-    // TODO: MACK this shouldn't work... make the window size a state variable that updates when the size changes
-    // "glutGet" is expensive so we only make the call once
-    // TODO: Is this initial window size????
+std::pair<int, int> GraphicUtilities::getInitialWindowSize() {
     static const int width = glutGet(GLUT_WINDOW_WIDTH);
     static const int height = glutGet(GLUT_WINDOW_HEIGHT);
     return std::make_pair(width, height);
 }
 
 std::pair<float, float> GraphicUtilities::getOpenGlCoordinates(const Coordinate& coordinate) {
-    std::pair<int, int> windowSize = getWindowSize();
+    std::pair<int, int> windowSize = getInitialWindowSize();
     float pixelCoodinateX = coordinate.getX().getMeters() * P()->pixelsPerMeter();
     float pixelCoodinateY = coordinate.getY().getMeters() * P()->pixelsPerMeter();
     float openGlCoordinateX = ((pixelCoodinateX / windowSize.first) - 0.5) * 2;
@@ -192,19 +188,20 @@ std::vector<TriangleGraphic> GraphicUtilities::polygonToTriangleGraphics(const P
 }
 
 int GraphicUtilities::trianglesPerTile() {
-    // TODO
+    // This value must be predetermined, and was done so as follows:
+    // - Base polygon: 2 triangles
+    // - Wall polygon: 2 triangles each
+    // - Corner polygon: 2 triangles each
+    // - Fog polygon: 2 triangles 
     return 20;
 }
-
-// TODO: These indices are dependent on the order in which they're initially drawn: Make a note of this somewhere
 
 int GraphicUtilities::getTileGraphicBaseStartingIndex(int x, int y) {
     return  0 + trianglesPerTile() * (s_mazeHeight * x + y);
 }
 
 int GraphicUtilities::getTileGraphicWallStartingIndex(int x, int y, Direction direction) {
-    return  2 + trianglesPerTile() * (s_mazeHeight * x + y) + 2 * direction;
-    //2 * (std::find(DIRECTIONS.begin(), DIRECTIONS.end(), direction) - DIRECTIONS.begin()); // TODO: more flexible
+    return  2 + trianglesPerTile() * (s_mazeHeight * x + y) + (2 * SimUtilities::getDirectionIndex(direction));
 }
 
 int GraphicUtilities::getTileGraphicCornerStartingIndex(int x, int y, int cornerNumber) {

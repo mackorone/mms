@@ -42,8 +42,8 @@ private:
     // Maze dimensions
     static int s_mazeHeight;
 
-    // Returns the width and height (respectively) of the window in pixels
-    static std::pair<int, int> getWindowSize();
+    // Returns the initial width and height (respectively) of the window in pixels
+    static std::pair<int, int> getInitialWindowSize();
 
     // Returns the x and y values (respectively) for openGl coordinates
     static std::pair<float, float> getOpenGlCoordinates(const Coordinate& coordinate);

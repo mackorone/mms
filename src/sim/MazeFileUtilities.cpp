@@ -79,7 +79,7 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
         tile.x = SimUtilities::strToInt(tokens.at(0));
         tile.y = SimUtilities::strToInt(tokens.at(1));
         for (Direction direction : DIRECTIONS) {
-            tile.walls[direction] = SimUtilities::strToInt(tokens.at(2+direction));
+            tile.walls[direction] = SimUtilities::strToInt(tokens.at(2 + SimUtilities::getDirectionIndex(direction)));
         }
      
         // Order of columns validation
@@ -193,7 +193,7 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMaze(const std::strin
         // Set the values of all of the walls
         for (Direction direction : DIRECTIONS) {
             BasicTile* tile = &maze.at(SimUtilities::strToInt(tokens.at(0))).at(SimUtilities::strToInt(tokens.at(1)));
-            tile->walls[direction] = (1 == SimUtilities::strToInt(tokens.at(2 + direction)));
+            tile->walls[direction] = (1 == SimUtilities::strToInt(tokens.at(2 + SimUtilities::getDirectionIndex(direction))));
         }
     }
     file.close();

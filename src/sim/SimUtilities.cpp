@@ -1,5 +1,6 @@
 #include "SimUtilities.h"
 
+#include <algorithm>
 #include <chrono>
 #include <fstream>
 #include <glut.h>
@@ -25,7 +26,6 @@ namespace sim {
 
 void SimUtilities::quit() {
     glutLeaveMainLoop(); 
-    // TODO: Anything else here???
 }
 
 void SimUtilities::print(const std::string& msg) {
@@ -168,6 +168,10 @@ bool SimUtilities::isFile(std::string path) {
     struct stat buf;
     stat(path.c_str(), &buf);
     return S_ISREG(buf.st_mode);
+}
+
+int SimUtilities::getDirectionIndex(Direction direction) {
+    return std::find(DIRECTIONS.begin(), DIRECTIONS.end(), direction) - DIRECTIONS.begin();
 }
 
 } // namespace sim

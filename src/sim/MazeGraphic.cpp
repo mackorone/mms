@@ -78,7 +78,7 @@ void MazeGraphic::updateColor() const {
 void MazeGraphic::updateWalls() const {
     for (int x = 0; x < getWidth(); x += 1) {
         for (int y = 0; y < getHeight(); y += 1) {
-            m_tileGraphics.at(x).at(y).updateWalls();  
+            m_tileGraphics.at(x).at(y).updateWalls();
         }
     }
 }
@@ -86,7 +86,7 @@ void MazeGraphic::updateWalls() const {
 void MazeGraphic::updateFog() const {
     for (int x = 0; x < getWidth(); x += 1) {
         for (int y = 0; y < getHeight(); y += 1) {
-            m_tileGraphics.at(x).at(y).updateFog();  
+            m_tileGraphics.at(x).at(y).updateFog();
         }
     }
 }

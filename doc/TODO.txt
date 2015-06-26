@@ -46,6 +46,7 @@ to implement some logic that checks this ahead of time and then just teleports..
 bullets in other physics simulators
 - Add trajectory lines (see https://www.youtube.com/watch?v=kgJClVCPu3w)
 - Add gridlines (see https://www.youtube.com/watch?v=LGRutv9cGBA and https://www.youtube.com/watch?v=gtnTBf5ItEc)
+- Perhaps impose memory limits on the algorithm
 
 Clean-Up:
 - Convert floats to doubles where appropriate

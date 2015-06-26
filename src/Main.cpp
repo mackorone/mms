@@ -22,7 +22,6 @@
 void draw();
 void solve();
 void simulate();
-void reshape(int w, int h);
 void keyInput(unsigned char key, int x, int y);
 void initGraphics(int argc, char* argv[]);
 
@@ -62,8 +61,6 @@ int main(int argc, char* argv[]) {
     
     // Start the graphics loop
     glutMainLoop();
-
-    // TODO: Potential restart here...
 }
 
 void draw() {
@@ -135,12 +132,6 @@ void simulate() {
     g_world->simulate();
 }
 
-void reshape(int w, int h) {
-    // TODO: Use this to update the window size state
-    // TODO: Is this necessary? It only does needs the window size once?
-    glViewport(0, 0, w, h);
-}
-
 void keyInput(unsigned char key, int x, int y) {
 
     if (key == 32) { // Space bar
@@ -203,7 +194,6 @@ void initGraphics(int argc, char* argv[]) {
     glEnable(GL_BLEND);
     glutDisplayFunc(draw);
     glutIdleFunc(draw);
-    glutReshapeFunc(reshape);
     glutKeyboardFunc(keyInput);
 
     // GLEW Initialization
