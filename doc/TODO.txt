@@ -1,5 +1,6 @@
 Features:
 - Rewrite freeglut text so that it's performant
+- Make the maze adjustable within the glutWindow
 - Use vertex buffer object for the mouse (only triangulate the mouse once)
 - Build a camera model and allow the camera to be resized and translated
 - Add a way to set the text color of each tile individually
@@ -54,6 +55,8 @@ bullets in other physics simulators
     - ave steps
     - etc.
 - Add a way to change the mouse color
+- Display a clock
+- Add a race mode, where the human controls with arrow keys like asteroids, races to the center
 
 Low-pri:
 - Inconsistent wall declaration colors (declared wall on one side of wall, declared no wall on other side of wall)
@@ -86,3 +89,4 @@ Clean-Up:
 - Change the Mouse to use the technically correct position update implementation
 - Clean up / improve the coding standards
 - Put consts in GraphicUtilties (and other classes)
+- Replace braket notation with methods (walls[NORTH] = true -> walls.insert(std::make_pair(NORTH, true)));

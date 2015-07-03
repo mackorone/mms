@@ -11,6 +11,8 @@ class MazeGraphic {
 
 public:
 
+    // TODO: Add a border
+
     MazeGraphic(const Maze* maze);
 
     int getWidth() const;

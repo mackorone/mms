@@ -96,7 +96,7 @@ void Maze::initializeMaze(const std::vector<std::vector<BasicTile>>& maze) {
             for (Direction direction : DIRECTIONS) {
                 tile.setWall(direction, maze.at(x).at(y).walls.at(direction));
             }
-            tile.initPolygons();
+            tile.initPolygons(maze.size(), maze.at(x).size());
             column.push_back(tile);
         }
         m_maze.push_back(column);

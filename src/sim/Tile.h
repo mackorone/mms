@@ -12,7 +12,6 @@ class Tile{
 
 public:
     Tile();
-    ~Tile();
 
     int getX() const;
     int getY() const;
@@ -27,7 +26,7 @@ public:
     std::vector<Polygon> getActualWallPolygons() const;
     std::vector<Polygon> getCornerPolygons() const;
 
-    void initPolygons();
+    void initPolygons(int mazeWidth, int mazeHeight);
 
 private:
     int m_x;
@@ -40,10 +39,10 @@ private:
     std::vector<Polygon> m_actualWallPolygons;
     std::vector<Polygon> m_cornerPolygons;
 
-    void initFullPolygon();
-    void initInteriorPolygon();
-    void initWallPolygons();
-    void initCornerPolygons();
+    void initFullPolygon(int mazeWidth, int mazeHeight);
+    void initInteriorPolygon(int mazeWidth, int mazeHeight);
+    void initWallPolygons(int mazeWWidth, int mazeHeight);
+    void initCornerPolygons(int mazeWWidth, int mazeHeight);
 };
 
 } // namespace sim

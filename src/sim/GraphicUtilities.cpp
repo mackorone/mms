@@ -161,6 +161,7 @@ void GraphicUtilities::drawText(const Coordinate& location, const Distance& widt
 std::pair<int, int> GraphicUtilities::getInitialWindowSize() {
     static const int width = glutGet(GLUT_WINDOW_WIDTH);
     static const int height = glutGet(GLUT_WINDOW_HEIGHT);
+    //SimUtilities::print(std::string("Width: ") + std::to_string(width) + std::string(", Height: ") + std::to_string(width)); // TODO
     return std::make_pair(width, height);
 }
 

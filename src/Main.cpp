@@ -188,8 +188,12 @@ void initGraphics(int argc, char* argv[]) {
     // GLUT Initialization
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA);
+    // TODO: do something more complicated with window size
+    /*
     int pixelsPerTile = (sim::P()->wallLength() + sim::P()->wallWidth()) * sim::P()->pixelsPerMeter();
     glutInitWindowSize(g_mazeGraphic->getWidth() * pixelsPerTile, g_mazeGraphic->getHeight() * pixelsPerTile);
+    */
+    glutInitWindowSize(1000, 700);
     glutInitWindowPosition(0, 0);
     glutCreateWindow("Micromouse Simulator");
     glClearColor(0.0, 0.0, 0.0, 1.0);
