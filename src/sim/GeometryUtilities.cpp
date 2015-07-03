@@ -8,8 +8,6 @@
 #include "Assert.h"
 #include "Param.h"
 
-#include <iostream> // TODO
-
 namespace sim {
 
 std::vector<const Tile*> GeometryUtilities::lineSegmentTileCover(const Cartesian& A, const Cartesian& B, const Maze& maze) {

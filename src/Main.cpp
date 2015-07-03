@@ -79,6 +79,8 @@ void draw() {
     g_mouseGraphic->draw();
 
     // Clear the vertex buffer object and copy over the CPU buffer
+    // TODO: Engineer this so I only have to create space for the buffer (i.e., the line below)  once
+    // TODO: Also, engineer this so that I don't have to copy the *whole* buffer, just the parts that need copying
     glBufferData(GL_ARRAY_BUFFER, sim::GraphicUtilities::TGB.size() * sizeof(sim::TriangleGraphic), NULL, GL_DYNAMIC_DRAW);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sim::GraphicUtilities::TGB.size() * sizeof(sim::TriangleGraphic),
         &sim::GraphicUtilities::TGB.front());
@@ -195,6 +197,7 @@ void initGraphics(int argc, char* argv[]) {
     glutDisplayFunc(draw);
     glutIdleFunc(draw);
     glutKeyboardFunc(keyInput);
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // TODO: Wireframe mode
 
     // GLEW Initialization
     GLenum err = glewInit();

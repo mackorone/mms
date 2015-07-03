@@ -7,10 +7,8 @@ namespace sim {
 
 bool MazeChecker::validMaze(const std::vector<std::vector<BasicTile>>& maze) {
 
-    // TODO: Should it be "rectangular" instead of "square?"
-
-    if (!isSquare(maze)) {
-        SimUtilities::print("Error: The maze is not square.");
+    if (!isRectangular(maze)) {
+        SimUtilities::print("Error: The maze is not rectangular.");
         return false;
     }
 
@@ -27,7 +25,7 @@ bool MazeChecker::validMaze(const std::vector<std::vector<BasicTile>>& maze) {
     return true;
 }
 
-bool MazeChecker::isSquare(const std::vector<std::vector<BasicTile>>& maze) {
+bool MazeChecker::isRectangular(const std::vector<std::vector<BasicTile>>& maze) {
     // TODO: SOM - implement this method
     return true;
 }

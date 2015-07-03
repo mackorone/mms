@@ -1,9 +1,12 @@
 Features:
-- Rewrite freeglut so that it's performant
-    http://en.wikibooks.org/wiki/OpenGL_Programming
-    - Then Change FreeGLUT to GLFW and use GLEW
-    - Performance of tile text, fog, colors
-- Figure out how to get rid of ifdefs
+- Rewrite freeglut text so that it's performant
+- Use vertex buffer object for the mouse (only triangulate the mouse once)
+- Add a way to change the mouse color
+- Add wireframe option
+- Build a camera model and allow the camera to be resized and translated
+- Add a way to set the text color of each tile individually
+- Change FreeGLUT to GLFW
+- Figure out how to get rid of ifdefs in algorithm
 - Make a SimInterface and make sure it's easy to "extract" an algorithm for use on Arduino
 - Updates on the tile boundaries, not centers
 - Other mouse movements - curve turns, j-turns, diagonals, etc.
@@ -16,12 +19,13 @@ Features:
 - Randomly select a pre-defined maze
 - Add support for multiple mouse starting locations (both left and right corner)
 - Add support for maze rotation
+- Add support for mouse stating position rotation
 - Buffer communication (like with the real robot)
 - Data recording for pause, rewind, fast forward
 - Interrupt interface
 - Run the program with maximum thread priority
 - New maze w/o restarting app
-- Be able to restart in the middle of a run
+- Be able to restart in the middle of a run (this is tricky with the algo thread...)
 - Make terminal style output at bottom or right of window (GUI)
 - Indicator of sim speed (real time, 10x fast, etc.)
 - Dual screen! (mini-map and zoomed-in view - 1x1, 3x3, relative and absolute rotation)
@@ -29,14 +33,12 @@ Features:
 - Sensor readings for walls other than front, left right
 - Get Tomasz's random maze algorithm working
 - Normalize random number generation (Implement Windows random number generation)
-- Parameter for selecting a random maze file from the maze file directory
 - Include Arduino "types" with the MouseInterface
+- More Arduino function support
 - Crash animation for both modes
 - Crash recovery semantics
-- Reimplement drawPolygon to use a tesselator (so that it can draw non-convex polygons)
 - Make a nice mechanism for writing our own maze generation algorithms
 - Bluetooth connection to the actual mouse
-- More Arduino function support
 - Add Wheel max speed (specificed in mouse parameter file)
 - Change over the Makefile to use cmake
 - Add some nice LaTeX documentation
@@ -47,6 +49,12 @@ bullets in other physics simulators
 - Add trajectory lines (see https://www.youtube.com/watch?v=kgJClVCPu3w)
 - Add gridlines (see https://www.youtube.com/watch?v=LGRutv9cGBA and https://www.youtube.com/watch?v=gtnTBf5ItEc)
 - Perhaps impose memory limits on the algorithm
+- Make a system for nearly instantly checking stats on many mazes:
+    - like unit tests
+    - solved or not
+    - how many steps
+    - ave steps
+    - etc.
 
 Clean-Up:
 - Convert floats to doubles where appropriate
@@ -71,7 +79,6 @@ Clean-Up:
 - Validate the coding standards (especially "{" placement)
 - Rewrite "i++" and "++i" as "i += 1"
 - Give better explanations for the GeometryUtilities
-- Change "AlgoWalls" to "DeclaredWalls" where appropriate
 - Buffer the declared walls and include a quick "resetWalls()" method
 - Change the Mouse to use the technically correct position update implementation
 - Clean up / improve the coding standards

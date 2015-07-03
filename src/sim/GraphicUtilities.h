@@ -29,6 +29,7 @@ public:
     static void updateTileGraphicWallColor(int x, int y, Direction direction, const GLfloat* color, GLfloat alpha);
     static void updateTileGraphicFog(int x, int y, GLfloat alpha);
 
+    // TODO: Add an update method for the mouse so that we only triangulate once
     static void drawMousePolygon(const Polygon& polygon, const GLfloat* color);
 
     // TODO: Deprecate this

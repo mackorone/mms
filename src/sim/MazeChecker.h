@@ -22,7 +22,7 @@ private:
     MazeChecker();
 
     // validMaze helper functions
-    static bool isSquare(const std::vector<std::vector<BasicTile>>& maze);
+    static bool isRectangular(const std::vector<std::vector<BasicTile>>& maze);
     static bool isEnclosed(const std::vector<std::vector<BasicTile>>& maze);
     static bool hasConsistentWalls(const std::vector<std::vector<BasicTile>>& maze);
 

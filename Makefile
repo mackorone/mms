@@ -10,7 +10,7 @@ BIN = ./bin/
 LIBS = -lGLEW -lGL -lglut -lGLU -lpthread
 
 # Any extra include paths
-INC = -I$(SRC)lib -I$(SRC)lib/polypartition/src -I$(SRC)lib/pugixml-1.6/src -I$(SRC)units 
+INC = -I$(SRC)lib -I$(SRC)units -I$(SRC)lib/polypartition/src -I$(SRC)lib/pugixml-1.6/src
 
 # Flags
 # -std=c++11: Use the C++11 standard
