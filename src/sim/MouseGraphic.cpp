@@ -33,14 +33,12 @@ void MouseGraphic::draw() {
 
         // Next, we draw the sensors
         for (Polygon sensorPolygon : m_mouse->getSensorPolygons()) {
-            // TODO: Specific color for this
-            GraphicUtilities::drawMousePolygon(sensorPolygon, COLOR_STRINGS.at(P()->mouseWheelColor()));
+            GraphicUtilities::drawMousePolygon(sensorPolygon, COLOR_STRINGS.at(P()->mouseSensorColor()));
         }
 
         // Lastly, we draw the sensor views
         for (Polygon polygon : m_mouse->getViewPolygons()) {
-            // TODO: rename to sensor view color
-            GraphicUtilities::drawMousePolygon(polygon, COLOR_STRINGS.at(P()->mouseSensorColor()));
+            GraphicUtilities::drawMousePolygon(polygon, COLOR_STRINGS.at(P()->mouseViewColor()));
         }
     }
 }

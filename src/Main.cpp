@@ -3,7 +3,8 @@
 #include <thread>
 
 #include <glut.h>
-#include "Seconds.h"
+#include <Milliseconds.h>
+#include <Seconds.h>
 
 #include "algo/AlgoHub.h"
 #include "sim/GraphicUtilities.h"
@@ -65,6 +66,15 @@ int main(int argc, char* argv[]) {
 
 void draw() {
 
+    /*
+    static double sleepUntil = sim::SimUtilities::getHighResTime();
+    double sleepTimeRemaining = sleepUntil - sim::SimUtilities::getHighResTime();
+    if (sleepTimeRemaining > 0) {
+        sim::SimUtilities::sleep(sim::Milliseconds(std::min(sleepTimeRemaining, (double) sim::P()->minSleepDuration())));
+        return;
+    }
+    */
+
     // In order to ensure we're sleeping the correct amount of time, we time
     // the drawing operation and take it into account when we sleep.
     double start(sim::SimUtilities::getHighResTime());
@@ -79,8 +89,6 @@ void draw() {
     g_mouseGraphic->draw();
 
     // Clear the vertex buffer object and copy over the CPU buffer
-    // TODO: Engineer this so I only have to create space for the buffer (i.e., the line below)  once
-    // TODO: Also, engineer this so that I don't have to copy the *whole* buffer, just the parts that need copying
     glBufferData(GL_ARRAY_BUFFER, sim::GraphicUtilities::TGB.size() * sizeof(sim::TriangleGraphic), NULL, GL_DYNAMIC_DRAW);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sim::GraphicUtilities::TGB.size() * sizeof(sim::TriangleGraphic),
         &sim::GraphicUtilities::TGB.front());
@@ -111,9 +119,8 @@ void draw() {
 
     // Sleep the appropriate amount of time, base on the drawing duration
     sim::SimUtilities::sleep(sim::Seconds(std::max(0.0, 1.0/sim::P()->frameRate() - duration)));
-
-    // Request to execute the draw function again
-    glutPostRedisplay();
+    // TODO: Slow framerate makes it difficult to quit
+    //sleepUntil = sim::SimUtilities::getHighResTime() + std::max(0.0, 1.0/sim::P()->frameRate() - duration);
 }
 
 void solve() {
@@ -171,6 +178,11 @@ void keyInput(unsigned char key, int x, int y) {
         sim::S()->setTileFogVisible(!sim::S()->tileFogVisible());
         g_mazeGraphic->updateFog();
     }
+    else if (key == 'w') {
+        // Toggle wireframe mode
+        sim::S()->setWireframeMode(!sim::S()->wireframeMode());
+        glPolygonMode(GL_FRONT_AND_BACK, sim::S()->wireframeMode() ? GL_LINE : GL_FILL);
+    }
     else if (key == 'q') {
         // Quit
         sim::SimUtilities::quit();
@@ -197,7 +209,7 @@ void initGraphics(int argc, char* argv[]) {
     glutDisplayFunc(draw);
     glutIdleFunc(draw);
     glutKeyboardFunc(keyInput);
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // TODO: Wireframe mode
+    glPolygonMode(GL_FRONT_AND_BACK, sim::S()->wireframeMode() ? GL_LINE : GL_FILL);
 
     // GLEW Initialization
     GLenum err = glewInit();

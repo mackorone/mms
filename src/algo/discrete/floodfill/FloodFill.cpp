@@ -39,9 +39,9 @@ void FloodFill::solve(sim::MouseInterface* mouse) {
     }
 
     // Otherwise, pick one
-    justFloodFill();
+    //justFloodFill();
     //simpleSolve();
-    //extensiveSolve();
+    extensiveSolve();
 }
 
 void FloodFill::justFloodFill() {

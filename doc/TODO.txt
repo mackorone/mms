@@ -1,10 +1,9 @@
 Features:
 - Rewrite freeglut text so that it's performant
 - Use vertex buffer object for the mouse (only triangulate the mouse once)
-- Add a way to change the mouse color
-- Add wireframe option
 - Build a camera model and allow the camera to be resized and translated
 - Add a way to set the text color of each tile individually
+- Change namespace of units from "sim" to "units"
 - Change FreeGLUT to GLFW
 - Figure out how to get rid of ifdefs in algorithm
 - Make a SimInterface and make sure it's easy to "extract" an algorithm for use on Arduino
@@ -55,6 +54,7 @@ bullets in other physics simulators
     - how many steps
     - ave steps
     - etc.
+- Add a way to change the mouse color
 
 Clean-Up:
 - Convert floats to doubles where appropriate

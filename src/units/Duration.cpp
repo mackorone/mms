@@ -20,4 +20,8 @@ float Duration::getMicroseconds() const {
     return getSeconds() * 1000 * 1000;
 }
 
+bool Duration::operator<(const Duration& duration) const {
+    return getSeconds() < duration.getSeconds();
+}
+
 } // namespace sim

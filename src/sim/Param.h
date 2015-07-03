@@ -33,19 +33,21 @@ public:
     std::string mouseBodyColor();
     std::string mouseWheelColor();
     std::string mouseSensorColor();
+    std::string mouseViewColor();
     bool defaultMousePathVisible();
     bool defaultWallTruthVisible();
     bool defaultTileColorsVisible();
     bool defaultTileTextVisible();
     bool defaultTileFogVisible();
     float tileFogAlpha();
+    bool defaultWireframeMode();
 
     // Simulation parameters
     int randomSeed();
     float glutInitDuration();
     bool defaultPaused();
     std::string crashMessage();
-    float discreteInterfaceSleepDuration();
+    float minSleepDuration();
     float discreteInterfaceMinSpeed();
     float discreteInterfaceMaxSpeed();
     float discreteInterfaceDefaultSpeed();
@@ -103,19 +105,21 @@ private:
     std::string m_mouseBodyColor;
     std::string m_mouseWheelColor;
     std::string m_mouseSensorColor;
+    std::string m_mouseViewColor;
     bool m_defaultMousePathVisible;
     bool m_defaultWallTruthVisible;
     bool m_defaultTileColorsVisible;
     bool m_defaultTileTextVisible;
     bool m_defaultTileFogVisible;
     float m_tileFogAlpha;
+    bool m_defaultWireframeMode;
 
     // Simulation parameters
     int m_randomSeed;
     float m_glutInitDuration;
     bool m_defaultPaused;
     std::string m_crashMessage;
-    float m_discreteInterfaceSleepDuration;
+    float m_minSleepDuration;
     float m_discreteInterfaceMinSpeed;
     float m_discreteInterfaceMaxSpeed;
     float m_discreteInterfaceDefaultSpeed;

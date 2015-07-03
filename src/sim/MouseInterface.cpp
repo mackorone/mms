@@ -434,7 +434,7 @@ void MouseInterface::moveForward() {
             while (m_mouse->getCurrentTranslation().getY() < destinationTranslation.getY()) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(-S()->simSpeed()), RadiansPerSecond(S()->simSpeed()));
-                sim::SimUtilities::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
+                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
             break;
         }
@@ -444,7 +444,7 @@ void MouseInterface::moveForward() {
             while (m_mouse->getCurrentTranslation().getX() < destinationTranslation.getX()) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(-S()->simSpeed()), RadiansPerSecond(S()->simSpeed()));
-                sim::SimUtilities::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
+                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
             break;
         }
@@ -454,7 +454,7 @@ void MouseInterface::moveForward() {
             while (destinationTranslation.getY() < m_mouse->getCurrentTranslation().getY()) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(-S()->simSpeed()), RadiansPerSecond(S()->simSpeed()));
-                sim::SimUtilities::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
+                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
             break;
         }
@@ -464,7 +464,7 @@ void MouseInterface::moveForward() {
             while (destinationTranslation.getX() < m_mouse->getCurrentTranslation().getX()) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(-S()->simSpeed()), RadiansPerSecond(S()->simSpeed()));
-                sim::SimUtilities::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
+                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
             break;
         }
@@ -491,7 +491,7 @@ void MouseInterface::turnRight() {
             while (destinationRotation < m_mouse->getCurrentRotation() || m_mouse->getCurrentRotation() < Degrees(180)) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(-S()->simSpeed()/2.0), RadiansPerSecond(-S()->simSpeed()/2.0));
-                sim::SimUtilities::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
+                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
             break;
         }
@@ -500,7 +500,7 @@ void MouseInterface::turnRight() {
             while (destinationRotation < m_mouse->getCurrentRotation()) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(-S()->simSpeed()/2.0), RadiansPerSecond(-S()->simSpeed()/2.0));
-                sim::SimUtilities::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
+                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
             break;
         }
@@ -508,7 +508,7 @@ void MouseInterface::turnRight() {
             while (m_mouse->getCurrentRotation() < Degrees(180)) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(-S()->simSpeed()/2.0), RadiansPerSecond(-S()->simSpeed()/2.0));
-                sim::SimUtilities::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
+                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
             break;
         }
@@ -531,7 +531,7 @@ void MouseInterface::turnLeft() {
             while (m_mouse->getCurrentRotation() < destinationRotation ||  Degrees(180) < m_mouse->getCurrentRotation()) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(S()->simSpeed()/2.0), RadiansPerSecond(S()->simSpeed()/2.0));
-                sim::SimUtilities::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
+                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
             break;
         }
@@ -539,7 +539,7 @@ void MouseInterface::turnLeft() {
             while (Degrees(180) < m_mouse->getCurrentRotation()) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(S()->simSpeed()/2.0), RadiansPerSecond(S()->simSpeed()/2.0));
-                sim::SimUtilities::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
+                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
             break;
         }
@@ -548,7 +548,7 @@ void MouseInterface::turnLeft() {
             while (m_mouse->getCurrentRotation() < destinationRotation) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(S()->simSpeed()/2.0), RadiansPerSecond(S()->simSpeed()/2.0));
-                sim::SimUtilities::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
+                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
             break;
         }
@@ -637,7 +637,7 @@ void MouseInterface::checkPaused() const {
     if (S()->paused()) {
         m_mouse->setWheelSpeeds(RadiansPerSecond(0), RadiansPerSecond(0));
         while (S()->paused()) {
-            sim::SimUtilities::sleep(Milliseconds(P()->discreteInterfaceSleepDuration()));
+            sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
         }
     }
 }

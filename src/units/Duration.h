@@ -9,6 +9,7 @@ public:
     float getSeconds() const;
     float getMilliseconds() const;
     float getMicroseconds() const;
+    bool operator<(const Duration& duration) const;
 
 protected:
     Duration();

@@ -25,6 +25,7 @@ public:
     bool tileColorsVisible();
     bool tileTextVisible();
     bool tileFogVisible();
+    bool wireframeMode();
     bool paused();
     float simSpeed();
     bool inputButtonPressed(int inputButton);
@@ -37,6 +38,7 @@ public:
     void setTileColorsVisible(bool tileColorsVisible);
     void setTileTextVisible(bool tileTextVisible);
     void setTileFogVisible(bool tileFogVisible);
+    void setWireframeMode(bool wireframeMode);
     void setPaused(bool paused);
     void setSimSpeed(float simSpeed);
     void setInputButtonPressed(int inputButton, bool pressed);
@@ -56,6 +58,7 @@ private:
     bool m_tileColorsVisible;
     bool m_tileTextVisible;
     bool m_tileFogVisible;
+    bool m_wireframeMode;
     bool m_paused;
     float m_simSpeed;
     std::map<int, bool> m_inputButtons;

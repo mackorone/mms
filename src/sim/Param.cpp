@@ -37,7 +37,8 @@ Param::Param() {
     m_tileIncorrectlyDeclaredNoWallColor = parser.getStringIfHasString("tile-incorrectly-declared-no-wall-color", "DARK_CYAN");
     m_mouseBodyColor = parser.getStringIfHasString("mouse-body-color", "BLUE");
     m_mouseWheelColor = parser.getStringIfHasString("mouse-wheel-color", "GREEN");
-    m_mouseSensorColor = parser.getStringIfHasString("mouse-sensor-color", "WHITE");
+    m_mouseSensorColor = parser.getStringIfHasString("mouse-sensor-color", "GREEN");
+    m_mouseViewColor = parser.getStringIfHasString("mouse-view-color", "WHITE");
     m_defaultMousePathVisible = parser.getBoolIfHasBool("default-mouse-path-visible", true);
     m_defaultWallTruthVisible = parser.getBoolIfHasBool("default-wall-truth-visible", false);
     m_defaultTileColorsVisible = parser.getBoolIfHasBool("default-tile-colors-visible", true);
@@ -49,6 +50,7 @@ Param::Param() {
             + " is not in the valid range, [0.0, 1.0].");
         SimUtilities::quit();
     }
+    m_defaultWireframeMode = parser.getBoolIfHasBool("default-wireframe-mode", false);
 
     // Simulation Parameters
     bool useRandomSeed = parser.getBoolIfHasBool("use-random-seed", false);
@@ -61,7 +63,7 @@ Param::Param() {
     m_crashMessage = parser.getStringIfHasString("crash-message", "CRASH");
     m_glutInitDuration = parser.getFloatIfHasFloat("glut-init-duration", 0.25);
     m_defaultPaused = parser.getBoolIfHasBool("default-paused", false);
-    m_discreteInterfaceSleepDuration = parser.getFloatIfHasFloat("discrete-interface-sleep-duration", 10);
+    m_minSleepDuration = parser.getFloatIfHasFloat("min-sleep-duration", 3);
     m_discreteInterfaceMinSpeed = parser.getFloatIfHasFloat("discrete-interface-min-speed", 1.0);
     m_discreteInterfaceMaxSpeed = parser.getFloatIfHasFloat("discrete-interface-max-speed", 500.0);
     m_discreteInterfaceDefaultSpeed = parser.getFloatIfHasFloat("discrete-interface-default-speed", 30.0);
@@ -156,6 +158,10 @@ std::string Param::mouseSensorColor() {
     return m_mouseSensorColor;
 }
 
+std::string Param::mouseViewColor() {
+    return m_mouseViewColor;
+}
+
 bool Param::defaultMousePathVisible() {
     return m_defaultMousePathVisible;
 }
@@ -180,6 +186,10 @@ float Param::tileFogAlpha() {
     return m_tileFogAlpha;
 }
 
+bool Param::defaultWireframeMode() {
+    return m_defaultWireframeMode;
+}
+
 int Param::randomSeed() {
     return m_randomSeed;
 }
@@ -196,8 +206,8 @@ bool Param::defaultPaused() {
     return m_defaultPaused;
 }
 
-float Param::discreteInterfaceSleepDuration() {
-    return m_discreteInterfaceSleepDuration;
+float Param::minSleepDuration() {
+    return m_minSleepDuration;
 }
 
 float Param::discreteInterfaceMinSpeed() {
