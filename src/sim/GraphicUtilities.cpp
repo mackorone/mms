@@ -15,10 +15,13 @@ namespace sim {
 std::vector<TriangleGraphic> GraphicUtilities::TGB;
 
 // Same goes for the static maze height
+int GraphicUtilities::s_mazeWidth = 0;
 int GraphicUtilities::s_mazeHeight = 0;
-void GraphicUtilities::setMazeHeight(int height) {
-    ASSERT(s_mazeHeight == 0);
-    s_mazeHeight = height;
+void GraphicUtilities::setMazeSize(int mazeWidth, int mazeHeight) {
+    ASSERT(s_mazeWidth == 0 && s_mazeHeight == 0);
+    ASSERT(0 < mazeWidth && 0 < mazeHeight);
+    s_mazeWidth = mazeWidth;
+    s_mazeHeight = mazeHeight;
 }
 
 void GraphicUtilities::drawTileGraphicBase(int x, int y, const Polygon& polygon, const GLfloat* color) {
@@ -129,6 +132,8 @@ void GraphicUtilities::drawText(const Coordinate& location, const Distance& widt
 
     // TODO: Performance issues - avoid immediate mode
     // TODO: Ideally, we should be able to *not* have this, provided we optimized correctly
+
+    /*
     // If there is no text, we don't have to do anything
     if (SimUtilities::trim(text).empty()) {
         return;
@@ -156,31 +161,32 @@ void GraphicUtilities::drawText(const Coordinate& location, const Distance& widt
         glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, text.at(i));
     }
     glPopMatrix();
+    */
 }
 
-std::pair<int, int> GraphicUtilities::getInitialWindowSize() {
-    static const int width = glutGet(GLUT_WINDOW_WIDTH);
-    static const int height = glutGet(GLUT_WINDOW_HEIGHT);
-    //SimUtilities::print(std::string("Width: ") + std::to_string(width) + std::string(", Height: ") + std::to_string(width)); // TODO
-    return std::make_pair(width, height);
-}
-
-std::pair<float, float> GraphicUtilities::getOpenGlCoordinates(const Coordinate& coordinate) {
-    std::pair<int, int> windowSize = getInitialWindowSize();
-    float pixelCoodinateX = coordinate.getX().getMeters() * P()->pixelsPerMeter();
-    float pixelCoodinateY = coordinate.getY().getMeters() * P()->pixelsPerMeter();
-    float openGlCoordinateX = ((pixelCoodinateX / windowSize.first) - 0.5) * 2;
-    float openGlCoordinateY = ((pixelCoodinateY / windowSize.second) - 0.5) * 2;
+std::pair<float, float> GraphicUtilities::mapCoordinateToOpenGlCoordinates(const Coordinate& coordinate) {
+    float pixelCoodinateX = P()->mapPositionX() + P()->mapWidth() * getFractionOfDistance(
+        -0.5 * P()->wallWidth(), 0.5 * P()->wallWidth() + s_mazeWidth * (P()->wallWidth() + P()->wallLength()),
+        coordinate.getX().getMeters());
+    float pixelCoodinateY = P()->mapPositionY() + P()->mapHeight() * getFractionOfDistance(
+        -0.5 * P()->wallWidth(), 0.5 * P()->wallWidth() + s_mazeHeight * (P()->wallWidth() + P()->wallLength()),
+        coordinate.getY().getMeters());
+    float openGlCoordinateX = ((pixelCoodinateX / P()->windowWidth()) - 0.5) * 2;
+    float openGlCoordinateY = ((pixelCoodinateY / P()->windowHeight()) - 0.5) * 2;
     return std::make_pair(openGlCoordinateX, openGlCoordinateY);
+}
+
+float GraphicUtilities::getFractionOfDistance(float start, float end, float location) {
+    return (location - start) / (end - start);
 }
 
 std::vector<TriangleGraphic> GraphicUtilities::polygonToTriangleGraphics(const Polygon& polygon, const GLfloat* color, GLfloat alpha) {
     std::vector<Triangle> triangles = GeometryUtilities::triangulate(polygon);
     std::vector<TriangleGraphic> triangleGraphics;
     for (Triangle triangle : triangles) {
-        std::pair<float, float> p1 = getOpenGlCoordinates(triangle.getP1());
-        std::pair<float, float> p2 = getOpenGlCoordinates(triangle.getP2());
-        std::pair<float, float> p3 = getOpenGlCoordinates(triangle.getP3());
+        std::pair<float, float> p1 = mapCoordinateToOpenGlCoordinates(triangle.getP1());
+        std::pair<float, float> p2 = mapCoordinateToOpenGlCoordinates(triangle.getP2());
+        std::pair<float, float> p3 = mapCoordinateToOpenGlCoordinates(triangle.getP3());
         triangleGraphics.push_back({{p1.first, p1.second, color[0], color[1], color[2], alpha},
                                     {p2.first, p2.second, color[0], color[1], color[2], alpha},
                                     {p3.first, p3.second, color[0], color[1], color[2], alpha}});

@@ -23,7 +23,12 @@ Param::Param() {
     ParamParser parser(SimUtilities::getProjectDirectory() + "res/parameters.xml");
 
     // Graphical Parameters
-    m_pixelsPerMeter = parser.getIntIfHasInt("pixels-per-meter", 250);
+    m_windowWidth = parser.getIntIfHasInt("window-width", 800);
+    m_windowHeight = parser.getIntIfHasInt("window-height", 600);
+    m_mapPositionX = parser.getIntIfHasInt("map-position-x", 10);
+    m_mapPositionY = parser.getIntIfHasInt("map-position-y", 10);
+    m_mapWidth = parser.getIntIfHasInt("map-width", 580);
+    m_mapHeight = parser.getIntIfHasInt("map-height", 580);
     m_frameRate = parser.getIntIfHasInt("frame-rate", 60);
     m_printLateFrames = parser.getBoolIfHasBool("print-late-frames", false);
     m_tileBaseColor = parser.getStringIfHasString("tile-base-color", "BLACK");
@@ -98,8 +103,28 @@ Param::Param() {
     m_algorithm = parser.getStringIfHasString("algorithm", "MackAlgo");
 }
 
-int Param::pixelsPerMeter() {
-    return m_pixelsPerMeter;
+int Param::windowWidth() {
+    return m_windowWidth;
+}
+
+int Param::windowHeight() {
+    return m_windowHeight;
+}
+
+int Param::mapPositionX() {
+    return m_mapPositionX;
+}
+
+int Param::mapPositionY() {
+    return m_mapPositionY;
+}
+
+int Param::mapWidth() {
+    return m_mapWidth;
+}
+
+int Param::mapHeight() {
+    return m_mapHeight;
 }
 
 int Param::frameRate() {

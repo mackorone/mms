@@ -56,8 +56,8 @@ void MazeGraphic::undeclareWall(int x, int y, Direction direction) {
 
 void MazeGraphic::draw() const {
 
-    // We need the maze height to determine the layout of the TGB
-    GraphicUtilities::setMazeHeight(getHeight());
+    // We need the maze size to determine the layout of the TGB, among other things
+    GraphicUtilities::setMazeSize(getWidth(), getHeight());
 
     // Then we fill the TGB
     for (int x = 0; x < m_tileGraphics.size(); x += 1) {

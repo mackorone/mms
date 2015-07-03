@@ -17,7 +17,7 @@ public:
     static std::vector<TriangleGraphic> TGB;
 
     // We need to get this information from the maze graphic
-    static void setMazeHeight(int height);
+    static void setMazeSize(int mazeWidth, int mazeHeight);
 
     static void drawTileGraphicBase(int x, int y, const Polygon& polygon, const GLfloat* color);
     static void drawTileGraphicWall(int x, int y, Direction direction, const Polygon& polygon, const GLfloat* color, const GLfloat alpha);
@@ -41,13 +41,12 @@ private:
     GraphicUtilities();
 
     // Maze dimensions
+    static int s_mazeWidth;
     static int s_mazeHeight;
 
-    // Returns the initial width and height (respectively) of the window in pixels
-    static std::pair<int, int> getInitialWindowSize();
-
     // Returns the x and y values (respectively) for openGl coordinates
-    static std::pair<float, float> getOpenGlCoordinates(const Coordinate& coordinate);
+    static std::pair<float, float> mapCoordinateToOpenGlCoordinates(const Coordinate& coordinate);
+    static float getFractionOfDistance(float start, float end, float location);
 
     // Converts a polygon to a vector of triangle graphics
     static std::vector<TriangleGraphic> polygonToTriangleGraphics(const Polygon& polygon, const GLfloat* color, GLfloat alpha);

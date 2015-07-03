@@ -16,11 +16,14 @@ public:
     static Param* getInstance();
 
     // Graphics parameters
-    int pixelsPerMeter();
-    int frameRate();
-    bool printLateFrames();
     int windowWidth();
     int windowHeight();
+    int mapPositionX();
+    int mapPositionY();
+    int mapWidth();
+    int mapHeight();
+    int frameRate();
+    bool printLateFrames();
     std::string tileBaseColor();
     std::string tileWallColor();
     std::string tileCornerColor();
@@ -90,7 +93,12 @@ private:
     static Param* INSTANCE;
 
     // Graphics parameters
-    int m_pixelsPerMeter;
+    int m_windowWidth;
+    int m_windowHeight;
+    int m_mapPositionX;
+    int m_mapPositionY;
+    int m_mapWidth;
+    int m_mapHeight;
     int m_frameRate;
     bool m_printLateFrames;
     std::string m_tileBaseColor;

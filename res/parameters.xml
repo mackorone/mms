@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!-- Graphical Parameters -->
-<pixels-per-meter>246</pixels-per-meter>
+<window-width>800</window-width> <!-- Pixels -->
+<window-height>600</window-height> <!-- Pixels -->
+<map-position-x>10</map-position-x> <!-- Pixels -->
+<map-position-y>10</map-position-y> <!-- Pixels -->
+<map-width>580</map-width> <!-- Pixels -->
+<map-height>580</map-height> <!-- Pixels -->
 <frame-rate>60</frame-rate> <!-- Frames per second -->
 <print-late-frames>false</print-late-frames>
 <tile-base-color>BLACK</tile-base-color> <!-- TODO: Display a better error message for bad inputs for the colors -->
