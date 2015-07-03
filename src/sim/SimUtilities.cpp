@@ -19,13 +19,22 @@
     #include <windows.h>
 #endif
 
+#include <Seconds.h>
+
 #include "Assert.h"
 #include "Param.h"
+#include "State.h"
 
 namespace sim {
 
 void SimUtilities::quit() {
     glutLeaveMainLoop(); 
+    if (std::this_thread::get_id() != S()->mainThreadId()) {
+        // Sleep until the program terminates
+        while (true) {
+            sleep(Seconds(1)); 
+        }
+    }
 }
 
 void SimUtilities::print(const std::string& msg) {

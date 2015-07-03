@@ -34,6 +34,9 @@ sim::MouseInterface* g_mouseInterface;
 
 int main(int argc, char* argv[]) {
 
+    // First, we initialize the state object (to avoid a race condition)
+    sim::S();
+
     // Initialize local objects
     sim::Maze maze;
     sim::Mouse mouse(&maze);
@@ -47,9 +50,6 @@ int main(int argc, char* argv[]) {
     g_mazeGraphic = &mazeGraphic;
     g_mouseGraphic = &mouseGraphic;
     g_mouseInterface = &mouseInterface;
-
-    // Initialize the state object (to avoid a race condition)
-    sim::S();
 
     // Initialize all of the graphics
     initGraphics(argc, argv);
@@ -65,15 +65,6 @@ int main(int argc, char* argv[]) {
 }
 
 void draw() {
-
-    /*
-    static double sleepUntil = sim::SimUtilities::getHighResTime();
-    double sleepTimeRemaining = sleepUntil - sim::SimUtilities::getHighResTime();
-    if (sleepTimeRemaining > 0) {
-        sim::SimUtilities::sleep(sim::Milliseconds(std::min(sleepTimeRemaining, (double) sim::P()->minSleepDuration())));
-        return;
-    }
-    */
 
     // In order to ensure we're sleeping the correct amount of time, we time
     // the drawing operation and take it into account when we sleep.
@@ -119,8 +110,6 @@ void draw() {
 
     // Sleep the appropriate amount of time, base on the drawing duration
     sim::SimUtilities::sleep(sim::Seconds(std::max(0.0, 1.0/sim::P()->frameRate() - duration)));
-    // TODO: Slow framerate makes it difficult to quit
-    //sleepUntil = sim::SimUtilities::getHighResTime() + std::max(0.0, 1.0/sim::P()->frameRate() - duration);
 }
 
 void solve() {

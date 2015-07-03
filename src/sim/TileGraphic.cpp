@@ -122,7 +122,7 @@ std::pair<const GLfloat*, GLfloat> TileGraphic::deduceWallColorAndAlpha(Directio
     // ... or the algorithm's (un)declared walls
     else {
 
-        // (un)declared walls almost always have an alpha value of 1.0
+        // (un)declared walls have an alpha value of 1.0 (except for one case)
         wallAlpha = 1.0;
 
         // If the wall was declared, use the wall color and tile base color ...

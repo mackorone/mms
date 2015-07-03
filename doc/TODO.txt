@@ -9,7 +9,6 @@ Features:
 - Make a SimInterface and make sure it's easy to "extract" an algorithm for use on Arduino
 - Updates on the tile boundaries, not centers
 - Other mouse movements - curve turns, j-turns, diagonals, etc.
-- Inconsistent wall declaration colors (one side of wall but not the other)
 - Actual distance values on the tile
 - Draw a path of where the robot has been (the history object could be used for recording as well)
 - Shortest path graphic (phantom bot that travels along other shortest paths)
@@ -55,6 +54,10 @@ bullets in other physics simulators
     - ave steps
     - etc.
 - Add a way to change the mouse color
+
+Low-pri:
+- Inconsistent wall declaration colors (declared wall on one side of wall, declared no wall on other side of wall)
+- Inconsistent wall declaration colors (declared one side of wall but not the other)
 
 Clean-Up:
 - Convert floats to doubles where appropriate

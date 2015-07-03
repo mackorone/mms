@@ -20,6 +20,7 @@ State* State::getInstance() {
 }
 
 State::State() {
+    m_mainThreadId = std::this_thread::get_id();
     m_crashed = false;
     m_interfaceType = UNDECLARED;
     m_mousePathVisible = P()->defaultMousePathVisible();
@@ -33,6 +34,10 @@ State::State() {
     for (int i = 0; i < 10; i += 1) {
         m_inputButtons[i] = false;
     }
+}
+
+std::thread::id State::mainThreadId() {
+    return m_mainThreadId;
 }
 
 bool State::crashed() {

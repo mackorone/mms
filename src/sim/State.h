@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <thread>
 
 #include "InterfaceType.h"
 
@@ -18,6 +19,7 @@ public:
     static State* getInstance();
 
     // Accessors
+    std::thread::id mainThreadId();
     bool crashed();
     InterfaceType interfaceType();
     bool mousePathVisible(); // TODO: Implement the mouse path
@@ -51,6 +53,7 @@ private:
     // A pointer to the actual instance of the class
     static State* INSTANCE;
 
+    std::thread::id m_mainThreadId;
     bool m_crashed;
     InterfaceType m_interfaceType;
     bool m_mousePathVisible;
