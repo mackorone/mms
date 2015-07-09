@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!-- Graphical Parameters -->
-<window-width>800</window-width> <!-- Pixels -->
-<window-height>600</window-height> <!-- Pixels -->
-<map-position-x>10</map-position-x> <!-- Pixels -->
-<map-position-y>10</map-position-y> <!-- Pixels -->
-<map-width>580</map-width> <!-- Pixels -->
-<map-height>580</map-height> <!-- Pixels -->
+<window-width>930</window-width> <!-- Pixels -->
+<window-height>470</window-height> <!-- Pixels -->
+<full-map-position-x>10</full-map-position-x> <!-- Pixels -->
+<full-map-position-y>10</full-map-position-y> <!-- Pixels -->
+<full-map-width>450</full-map-width> <!-- Pixels -->
+<full-map-height>450</full-map-height> <!-- Pixels -->
+<zoomed-map-position-x>470</zoomed-map-position-x> <!-- Pixels -->
+<zoomed-map-position-y>10</zoomed-map-position-y> <!-- Pixels -->
+<zoomed-map-width>450</zoomed-map-width> <!-- Pixels -->
+<zoomed-map-height>450</zoomed-map-height> <!-- Pixels -->
 <frame-rate>60</frame-rate> <!-- Frames per second -->
 <print-late-frames>false</print-late-frames>
 <tile-base-color>BLACK</tile-base-color> <!-- TODO: Display a better error message for bad inputs for the colors -->
@@ -43,7 +47,7 @@
 <discrete-interface-default-speed>60</discrete-interface-default-speed> <!-- No units -->
 <discrete-interface-declare-wall-on-read>true</discrete-interface-declare-wall-on-read>
 <discrete-interface-unfog-tile-on-entry>true</discrete-interface-unfog-tile-on-entry>
-<declare-both-wall-halves>false</declare-both-wall-halves>
+<declare-both-wall-halves>true</declare-both-wall-halves>
 <mouse-position-update-rate>1000</mouse-position-update-rate> <!-- Updates per second -->
 <print-late-mouse-position-updates>true</print-late-mouse-position-updates>
 <collision-detection-rate>40</collision-detection-rate> <!-- Checks per second -->
@@ -69,4 +73,4 @@
 <mouse-directory>res/mice/</mouse-directory> <!-- Relative to project root -->
 
 <!-- Algo Parameters -->
-<algorithm>FloodFill</algorithm> <!-- The name as specified in src/algo/AlgoHub.cpp -->
+<algorithm>MackAlgo</algorithm> <!-- The name as specified in src/algo/AlgoHub.cpp -->

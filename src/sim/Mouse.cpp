@@ -56,6 +56,17 @@ bool Mouse::initialize(const std::string& mouseFile) {
     // Initialize the sensors
     m_sensors = parser.getSensors();
 
+    // Initialize the collision polygon
+    std::vector<Polygon> polygons;
+    polygons.push_back(m_initialBodyPolygon);
+    polygons.push_back(m_rightWheel.getInitialPolygon());
+    polygons.push_back(m_leftWheel.getInitialPolygon());
+    for (std::pair<std::string, Sensor> pair : m_sensors) {
+        polygons.push_back(pair.second.getInitialPolygon());
+    }
+    // TODO: SOM: This should be changed to getUnion instead of convexHull, once it's ready
+    m_initialCollisionPolygon = GeometryUtilities::convexHull(polygons);
+
     // Indicate that we're done with the initiaization
     m_initialized = true;
 
@@ -65,24 +76,6 @@ bool Mouse::initialize(const std::string& mouseFile) {
 
 Polygon Mouse::getCollisionPolygon() const {
     return m_initialCollisionPolygon.translate(m_translation - m_initialTranslation).rotateAroundPoint(m_rotation, m_translation);
-}
-
-void Mouse::initializeCollisionPolygon() {
-
-    std::vector<Polygon> polygons;
-
-    polygons.push_back(m_initialBodyPolygon);
-    polygons.push_back(m_rightWheel.getInitialPolygon());
-    polygons.push_back(m_leftWheel.getInitialPolygon());
-
-    if (S()->interfaceType() == CONTINUOUS) {
-        for (std::pair<std::string, Sensor> pair : m_sensors) {
-            polygons.push_back(pair.second.getInitialPolygon());
-        }
-    }
-
-    // TODO: SOM: This should be changed to getUnion instead of convexHull, once it's ready
-    m_initialCollisionPolygon = GeometryUtilities::convexHull(polygons);
 }
 
 Polygon Mouse::getBodyPolygon() const {

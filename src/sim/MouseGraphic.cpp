@@ -21,25 +21,24 @@ void MouseGraphic::draw() {
     }
 
     // First, we draw the body
-    GraphicUtilities::drawMousePolygon(m_mouse->getBodyPolygon(), COLOR_STRINGS.at(P()->mouseBodyColor()));
+    GraphicUtilities::drawMousePolygon(m_mouse->getBodyPolygon(), COLOR_STRINGS.at(P()->mouseBodyColor()), 1.0);
 
     // Next, we draw the wheels
     for (Polygon wheelPolygon : m_mouse->getWheelPolygons()) {
-        GraphicUtilities::drawMousePolygon(wheelPolygon, COLOR_STRINGS.at(P()->mouseWheelColor()));
+        GraphicUtilities::drawMousePolygon(wheelPolygon, COLOR_STRINGS.at(P()->mouseWheelColor()), 1.0);
     }
 
-    // Only draw the sensors if we're using a discrete interface
-    if (S()->interfaceType() == CONTINUOUS) {
+    // Only draw the sensors and views if we're using a continuous interface
+    float sensorAlpha = (S()->interfaceType() == CONTINUOUS ? 1.0 : 0.0);
 
-        // Next, we draw the sensors
-        for (Polygon sensorPolygon : m_mouse->getSensorPolygons()) {
-            GraphicUtilities::drawMousePolygon(sensorPolygon, COLOR_STRINGS.at(P()->mouseSensorColor()));
-        }
+    // Next, we draw the sensors
+    for (Polygon sensorPolygon : m_mouse->getSensorPolygons()) {
+        GraphicUtilities::drawMousePolygon(sensorPolygon, COLOR_STRINGS.at(P()->mouseSensorColor()), sensorAlpha);
+    }
 
-        // Lastly, we draw the sensor views
-        for (Polygon polygon : m_mouse->getViewPolygons()) {
-            GraphicUtilities::drawMousePolygon(polygon, COLOR_STRINGS.at(P()->mouseViewColor()));
-        }
+    // Lastly, we draw the sensor views
+    for (Polygon polygon : m_mouse->getViewPolygons()) {
+        GraphicUtilities::drawMousePolygon(polygon, COLOR_STRINGS.at(P()->mouseViewColor()), sensorAlpha);
     }
 }
 

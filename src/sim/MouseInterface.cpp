@@ -53,7 +53,7 @@ void MouseInterface::declareInterfaceType(InterfaceType interfaceType) {
     // Actually set the interface type
     S()->setInterfaceType(interfaceType);
 
-    // Once we know the interface type, we can all other initialization
+    // Once we know the interface type, we can do all other initialization
     prepareForLaunch();
 }
 
@@ -620,9 +620,6 @@ Direction MouseInterface::getDiscretizedRotation() const {
 }
 
 void MouseInterface::prepareForLaunch() {
-
-    // Once the interface type is determined, we can initialize the collision polygon
-    m_mouse->initializeCollisionPolygon();
 
     // Wait for everything to stabilize
     sim::SimUtilities::sleep(Seconds(P()->glutInitDuration()));

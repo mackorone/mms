@@ -28,9 +28,12 @@ void initGraphics(int argc, char* argv[]);
 
 // Global object variable declarations
 sim::World* g_world;
+sim::Mouse* g_mouse;
 sim::MazeGraphic* g_mazeGraphic;
 sim::MouseGraphic* g_mouseGraphic;
 sim::MouseInterface* g_mouseInterface;
+
+GLuint camera; // TODO
 
 int main(int argc, char* argv[]) {
 
@@ -47,6 +50,7 @@ int main(int argc, char* argv[]) {
 
     // Assign global variables
     g_world = &world;
+    g_mouse = &mouse;
     g_mazeGraphic = &mazeGraphic;
     g_mouseGraphic = &mouseGraphic;
     g_mouseInterface = &mouseInterface;
@@ -59,7 +63,7 @@ int main(int argc, char* argv[]) {
     
     // Start the solving loop
     std::thread solvingThread(solve);
-    
+
     // Start the graphics loop
     glutMainLoop();
 }
@@ -87,8 +91,20 @@ void draw() {
     // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // Push each element in the vertex buffer object to the vertex shader
+    // Render the full map
+    glEnable(GL_SCISSOR_TEST);
+    glScissor(sim::P()->fullMapPositionX(), sim::P()->fullMapPositionY(), sim::P()->fullMapWidth(), sim::P()->fullMapHeight());
+    glUniformMatrix4fv(camera, 1, GL_TRUE, &sim::GraphicUtilities::getFullMapCameraMatrix().front());
     glDrawArrays(GL_TRIANGLES, 0, 3 * sim::GraphicUtilities::TGB.size());
+    glDisable(GL_SCISSOR_TEST);
+
+    // Render the zoomed map
+    glEnable(GL_SCISSOR_TEST);
+    glScissor(sim::P()->zoomedMapPositionX(), sim::P()->zoomedMapPositionY(), sim::P()->zoomedMapWidth(), sim::P()->zoomedMapHeight());
+    glUniformMatrix4fv(camera, 1, GL_TRUE, &sim::GraphicUtilities::getZoomedMapCameraMatrix(
+        g_mouse->getCurrentTranslation(), g_mouse->getCurrentRotation()).front());
+    glDrawArrays(GL_TRIANGLES, 0, 3 * sim::GraphicUtilities::TGB.size());
+    glDisable(GL_SCISSOR_TEST);
 
     // Display the result
     glutSwapBuffers();
@@ -217,8 +233,9 @@ void initGraphics(int argc, char* argv[]) {
         "#version 110\n"
         "attribute vec2 coordinate;"
         "attribute vec4 color;"
+        "uniform mat4 camera;"
         "void main(void) {"
-        "    gl_Position = vec4(coordinate, 0.0, 1.0);"
+        "    gl_Position = camera * vec4(coordinate, 0.0, 1.0);"
         "    gl_FrontColor = color;"
         "}";
     const char *vs_source = str.c_str();
@@ -234,6 +251,7 @@ void initGraphics(int argc, char* argv[]) {
     // Retrieve the attribute IDs and enable our attributes
     GLuint coordinate = glGetAttribLocation(program, "coordinate");
     GLuint color = glGetAttribLocation(program, "color");
+    camera = glGetUniformLocation(program, "camera");
     glEnableVertexAttribArray(coordinate);
     glEnableVertexAttribArray(color);
 

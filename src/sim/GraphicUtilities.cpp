@@ -9,19 +9,66 @@
 #include "SimUtilities.h"
 #include "Triangle.h"
 
+#include <iostream>
+
 namespace sim {
 
 // Here we have to explicity create the TGB, since we only declared it in the header
 std::vector<TriangleGraphic> GraphicUtilities::TGB;
 
 // Same goes for the static maze height
-int GraphicUtilities::s_mazeWidth = 0;
-int GraphicUtilities::s_mazeHeight = 0;
+int GraphicUtilities::m_mazeWidth = 0;
+int GraphicUtilities::m_mazeHeight = 0;
 void GraphicUtilities::setMazeSize(int mazeWidth, int mazeHeight) {
-    ASSERT(s_mazeWidth == 0 && s_mazeHeight == 0);
+    ASSERT(m_mazeWidth == 0 && m_mazeHeight == 0);
     ASSERT(0 < mazeWidth && 0 < mazeHeight);
-    s_mazeWidth = mazeWidth;
-    s_mazeHeight = mazeHeight;
+    m_mazeWidth = mazeWidth;
+    m_mazeHeight = mazeHeight;
+}
+
+std::vector<float> GraphicUtilities::getFullMapCameraMatrix() {
+
+    // TODO: Put the common parts into a method???
+    float mazeWidth = P()->wallWidth() + m_mazeWidth * (P()->wallWidth() + P()->wallLength());
+    float mazeHeight = P()->wallWidth() + m_mazeHeight * (P()->wallWidth() + P()->wallLength());
+    float pixelsPerHorizontalUnit = P()->windowWidth() / 2.0;
+    float pixelsPerVerticalUnit = P()->windowHeight() / 2.0;
+    float totalHorizontalUnits = P()->fullMapWidth() / pixelsPerHorizontalUnit;
+    float totalVerticalUnits = P()->fullMapHeight() / pixelsPerVerticalUnit;
+
+    std::vector<float> fullMapCameraMatrix = {
+        totalHorizontalUnits / mazeWidth, 0.0, 0.0, P()->fullMapPositionX() / pixelsPerHorizontalUnit - 1,
+        0.0, totalVerticalUnits / mazeHeight, 0.0, P()->fullMapPositionY() / pixelsPerVerticalUnit - 1,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0,
+    };
+
+    ASSERT(fullMapCameraMatrix.size() == 16);
+    return fullMapCameraMatrix;
+}
+
+std::vector<float> GraphicUtilities::getZoomedMapCameraMatrix(const Coordinate& mouseTranslation, const Angle& mouseRotation) {
+
+    // TODO: implement rotation
+    // TODO: Put the common parts into a method???
+    // TODO: it looks like it's cutting off the boundaries
+    float mazeWidth = P()->wallWidth() + m_mazeWidth * (P()->wallWidth() + P()->wallLength());
+    float mazeHeight = P()->wallWidth() + m_mazeHeight * (P()->wallWidth() + P()->wallLength());
+    float pixelsPerHorizontalUnit = P()->windowWidth() / 2.0;
+    float pixelsPerVerticalUnit = P()->windowHeight() / 2.0;
+    float totalHorizontalUnits = P()->zoomedMapWidth() / pixelsPerHorizontalUnit * 3; // TODO: Zoom factor
+    float totalVerticalUnits = P()->zoomedMapHeight() / pixelsPerVerticalUnit * 3; // TODO: Zoom factor
+
+    std::vector<float> zoomedMapCameraMatrix = {
+        totalHorizontalUnits / mazeWidth, 0.0, 0.0, -.5 + P()->zoomedMapPositionX() / pixelsPerHorizontalUnit
+            - (mouseTranslation.getX().getMeters() / mazeWidth) * 3,
+        0.0, totalVerticalUnits / mazeHeight, 0.0, P()->zoomedMapPositionY() / pixelsPerVerticalUnit
+            - (mouseTranslation.getY().getMeters() / mazeHeight * (pixelsPerHorizontalUnit / pixelsPerVerticalUnit)) * 3,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0,
+    };
+    ASSERT(zoomedMapCameraMatrix.size() == 16);
+    return zoomedMapCameraMatrix;
 }
 
 void GraphicUtilities::drawTileGraphicBase(int x, int y, const Polygon& polygon, const GLfloat* color) {
@@ -123,8 +170,8 @@ void GraphicUtilities::updateTileGraphicFog(int x, int y, GLfloat alpha) {
     }
 }
 
-void GraphicUtilities::drawMousePolygon(const Polygon& polygon, const GLfloat* color) {
-    std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, 1);
+void GraphicUtilities::drawMousePolygon(const Polygon& polygon, const GLfloat* color, float sensorAlpha) {
+    std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, sensorAlpha);
     TGB.insert(TGB.end(), tgs.begin(), tgs.end());
 }
 
@@ -164,18 +211,22 @@ void GraphicUtilities::drawText(const Coordinate& location, const Distance& widt
     */
 }
 
+// TODO: delete this
 std::pair<float, float> GraphicUtilities::mapCoordinateToOpenGlCoordinates(const Coordinate& coordinate) {
+    /*
     float pixelCoodinateX = P()->mapPositionX() + P()->mapWidth() * getFractionOfDistance(
-        -0.5 * P()->wallWidth(), 0.5 * P()->wallWidth() + s_mazeWidth * (P()->wallWidth() + P()->wallLength()),
+        -0.5 * P()->wallWidth(), 0.5 * P()->wallWidth() + m_mazeWidth * (P()->wallWidth() + P()->wallLength()),
         coordinate.getX().getMeters());
     float pixelCoodinateY = P()->mapPositionY() + P()->mapHeight() * getFractionOfDistance(
-        -0.5 * P()->wallWidth(), 0.5 * P()->wallWidth() + s_mazeHeight * (P()->wallWidth() + P()->wallLength()),
+        -0.5 * P()->wallWidth(), 0.5 * P()->wallWidth() + m_mazeHeight * (P()->wallWidth() + P()->wallLength()),
         coordinate.getY().getMeters());
     float openGlCoordinateX = ((pixelCoodinateX / P()->windowWidth()) - 0.5) * 2;
     float openGlCoordinateY = ((pixelCoodinateY / P()->windowHeight()) - 0.5) * 2;
-    return std::make_pair(openGlCoordinateX, openGlCoordinateY);
+    */
+    return std::make_pair(coordinate.getX().getMeters(), coordinate.getY().getMeters());
 }
 
+// TODO: Do I need this???
 float GraphicUtilities::getFractionOfDistance(float start, float end, float location) {
     return (location - start) / (end - start);
 }
@@ -184,12 +235,10 @@ std::vector<TriangleGraphic> GraphicUtilities::polygonToTriangleGraphics(const P
     std::vector<Triangle> triangles = GeometryUtilities::triangulate(polygon);
     std::vector<TriangleGraphic> triangleGraphics;
     for (Triangle triangle : triangles) {
-        std::pair<float, float> p1 = mapCoordinateToOpenGlCoordinates(triangle.getP1());
-        std::pair<float, float> p2 = mapCoordinateToOpenGlCoordinates(triangle.getP2());
-        std::pair<float, float> p3 = mapCoordinateToOpenGlCoordinates(triangle.getP3());
-        triangleGraphics.push_back({{p1.first, p1.second, color[0], color[1], color[2], alpha},
-                                    {p2.first, p2.second, color[0], color[1], color[2], alpha},
-                                    {p3.first, p3.second, color[0], color[1], color[2], alpha}});
+        triangleGraphics.push_back({
+            {triangle.getP1().getX().getMeters(), triangle.getP1().getY().getMeters(), color[0], color[1], color[2], alpha},
+            {triangle.getP2().getX().getMeters(), triangle.getP2().getY().getMeters(), color[0], color[1], color[2], alpha},
+            {triangle.getP3().getX().getMeters(), triangle.getP3().getY().getMeters(), color[0], color[1], color[2], alpha}});
     }
     return triangleGraphics;
 }
@@ -204,19 +253,19 @@ int GraphicUtilities::trianglesPerTile() {
 }
 
 int GraphicUtilities::getTileGraphicBaseStartingIndex(int x, int y) {
-    return  0 + trianglesPerTile() * (s_mazeHeight * x + y);
+    return  0 + trianglesPerTile() * (m_mazeHeight * x + y);
 }
 
 int GraphicUtilities::getTileGraphicWallStartingIndex(int x, int y, Direction direction) {
-    return  2 + trianglesPerTile() * (s_mazeHeight * x + y) + (2 * SimUtilities::getDirectionIndex(direction));
+    return  2 + trianglesPerTile() * (m_mazeHeight * x + y) + (2 * SimUtilities::getDirectionIndex(direction));
 }
 
 int GraphicUtilities::getTileGraphicCornerStartingIndex(int x, int y, int cornerNumber) {
-    return 10 + trianglesPerTile() * (s_mazeHeight * x + y) + (2 * cornerNumber);
+    return 10 + trianglesPerTile() * (m_mazeHeight * x + y) + (2 * cornerNumber);
 }
 
 int GraphicUtilities::getTileGraphicFogStartingIndex(int x, int y) {
-    return 18 + trianglesPerTile() * (s_mazeHeight * x + y);
+    return 18 + trianglesPerTile() * (m_mazeHeight * x + y);
 }
 
 } // namespace sim

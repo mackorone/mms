@@ -18,10 +18,14 @@ public:
     // Graphics parameters
     int windowWidth();
     int windowHeight();
-    int mapPositionX();
-    int mapPositionY();
-    int mapWidth();
-    int mapHeight();
+    int fullMapPositionX();
+    int fullMapPositionY();
+    int fullMapWidth();
+    int fullMapHeight();
+    int zoomedMapPositionX();
+    int zoomedMapPositionY();
+    int zoomedMapWidth();
+    int zoomedMapHeight();
     int frameRate();
     bool printLateFrames();
     std::string tileBaseColor();
@@ -95,10 +99,14 @@ private:
     // Graphics parameters
     int m_windowWidth;
     int m_windowHeight;
-    int m_mapPositionX;
-    int m_mapPositionY;
-    int m_mapWidth;
-    int m_mapHeight;
+    int m_fullMapPositionX;
+    int m_fullMapPositionY;
+    int m_fullMapWidth;
+    int m_fullMapHeight;
+    int m_zoomedMapPositionX;
+    int m_zoomedMapPositionY;
+    int m_zoomedMapWidth;
+    int m_zoomedMapHeight;
     int m_frameRate;
     bool m_printLateFrames;
     std::string m_tileBaseColor;

@@ -23,12 +23,16 @@ Param::Param() {
     ParamParser parser(SimUtilities::getProjectDirectory() + "res/parameters.xml");
 
     // Graphical Parameters
-    m_windowWidth = parser.getIntIfHasInt("window-width", 800);
-    m_windowHeight = parser.getIntIfHasInt("window-height", 600);
-    m_mapPositionX = parser.getIntIfHasInt("map-position-x", 10);
-    m_mapPositionY = parser.getIntIfHasInt("map-position-y", 10);
-    m_mapWidth = parser.getIntIfHasInt("map-width", 580);
-    m_mapHeight = parser.getIntIfHasInt("map-height", 580);
+    m_windowWidth = parser.getIntIfHasInt("window-width", 930);
+    m_windowHeight = parser.getIntIfHasInt("window-height", 470);
+    m_fullMapPositionX = parser.getIntIfHasInt("full-map-position-x", 10);
+    m_fullMapPositionY = parser.getIntIfHasInt("full-map-position-y", 10);
+    m_fullMapWidth = parser.getIntIfHasInt("full-map-width", 450);
+    m_fullMapHeight = parser.getIntIfHasInt("full-map-height", 450);
+    m_zoomedMapPositionX = parser.getIntIfHasInt("zoomed-map-position-x", 470);
+    m_zoomedMapPositionY = parser.getIntIfHasInt("zoomed-map-position-y", 10);
+    m_zoomedMapWidth = parser.getIntIfHasInt("zoomed-map-width", 450);
+    m_zoomedMapHeight = parser.getIntIfHasInt("zoomed-map-height", 450);
     m_frameRate = parser.getIntIfHasInt("frame-rate", 60);
     m_printLateFrames = parser.getBoolIfHasBool("print-late-frames", false);
     m_tileBaseColor = parser.getStringIfHasString("tile-base-color", "BLACK");
@@ -111,20 +115,36 @@ int Param::windowHeight() {
     return m_windowHeight;
 }
 
-int Param::mapPositionX() {
-    return m_mapPositionX;
+int Param::fullMapPositionX() {
+    return m_fullMapPositionX;
 }
 
-int Param::mapPositionY() {
-    return m_mapPositionY;
+int Param::fullMapPositionY() {
+    return m_fullMapPositionY;
 }
 
-int Param::mapWidth() {
-    return m_mapWidth;
+int Param::fullMapWidth() {
+    return m_fullMapWidth;
 }
 
-int Param::mapHeight() {
-    return m_mapHeight;
+int Param::fullMapHeight() {
+    return m_fullMapHeight;
+}
+
+int Param::zoomedMapPositionX() {
+    return m_zoomedMapPositionX;
+}
+
+int Param::zoomedMapPositionY() {
+    return m_zoomedMapPositionY;
+}
+
+int Param::zoomedMapWidth() {
+    return m_zoomedMapWidth;
+}
+
+int Param::zoomedMapHeight() {
+    return m_zoomedMapHeight;
 }
 
 int Param::frameRate() {
