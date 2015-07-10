@@ -1,6 +1,7 @@
 #include "GraphicUtilities.h"
 
 #include <algorithm>
+#include <cmath>
 #include <glut.h>
 
 #include "Assert.h"
@@ -52,6 +53,7 @@ std::vector<float> GraphicUtilities::getFullMapCameraMatrix() {
     float horizontalTranslation = P()->fullMapPositionX() * horizontalUnitsPerPixel - 1;
     float verticalTranslation = P()->fullMapPositionY() * verticalUnitsPerPixel - 1;
 
+    // Lastly, we put it all in the transformation matrix
     std::vector<float> fullMapCameraMatrix = {
         horizontalUnitsPerMeter, 0.0, 0.0, horizontalTranslation,
         0.0, verticalUnitsPerMeter, 0.0, verticalTranslation,
@@ -65,6 +67,9 @@ std::vector<float> GraphicUtilities::getFullMapCameraMatrix() {
 
 std::vector<float> GraphicUtilities::getZoomedMapCameraMatrix(const Coordinate& initialMouseTranslation,
     const Coordinate& currentMouseTranslation, const Angle& currentMouseRotation) {
+
+    // TODO: Rotation
+    float theta = currentMouseRotation.getRadians();
 
     // First, we calculate the stretch factor in both the horizontal in vertical directions.
     // That is, we need to find the ratio of units per meter so that way we can transform
@@ -113,14 +118,74 @@ std::vector<float> GraphicUtilities::getZoomedMapCameraMatrix(const Coordinate& 
     float horizontalTranslation = staticHorizontalTranslation + dynamicHorizontalTranslation;
     float verticalTranslation = staticVerticalTranslation + dynamicVerticalTranslation;
 
-    // TODO: Rotation
-
+    // Lastly, we put it all in the transformation matrix
+    /*
     std::vector<float> zoomedMapCameraMatrix = {
         horizontalUnitsPerMeter, 0.0, 0.0, horizontalTranslation,
         0.0, verticalUnitsPerMeter, 0.0, verticalTranslation,
         0.0, 0.0, 1.0, 0.0,
         0.0, 0.0, 0.0, 1.0,
     };
+    */
+
+    // TODO: Change the descriptions to say Scaling
+    std::vector<float> scalingMatrix = {
+        horizontalUnitsPerMeter, 0.0, 0.0, 0.0,
+        0.0, verticalUnitsPerMeter, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0,
+    };
+
+    std::vector<float> is = {
+        1.0/horizontalUnitsPerMeter, 0.0, 0.0, 0.0,
+        0.0, 1.0/verticalUnitsPerMeter, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0,
+    };
+
+    std::vector<float> translationMatrix = {
+        1.0, 0.0, 0.0, horizontalTranslation,
+        0.0, 1.0, 0.0, verticalTranslation,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0,
+    };
+
+    std::vector<float> tt = {
+        1.0, 0.0, 0.0, -horizontalTranslation,
+        0.0, 1.0, 0.0, -verticalTranslation,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0,
+    };
+
+    std::vector<float> rotMatrix = {
+        cos(theta), sin(theta), 0.0, 0.0,
+        -sin(theta), cos(theta), 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0,
+    };
+
+    std::vector<float> T= {
+        1.0, 0.0, 0.0, endHorizontalMapCenter,
+        0.0, 1.0, 0.0, endVerticalMapCenter,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0,
+    };
+
+    std::vector<float> invT= {
+        1.0, 0.0, 0.0, -endHorizontalMapCenter,
+        0.0, 1.0, 0.0, -endVerticalMapCenter,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0,
+    };
+
+    std::vector<float> zoomedMapCameraMatrix =
+        matrixMultiply(T,
+        matrixMultiply(scalingMatrix,
+        matrixMultiply(rotMatrix,
+        matrixMultiply(is,
+        matrixMultiply(invT,
+        matrixMultiply(translationMatrix, scalingMatrix))))));
+
     ASSERT(zoomedMapCameraMatrix.size() == 16);
     return zoomedMapCameraMatrix;
 }
@@ -263,6 +328,20 @@ void GraphicUtilities::drawText(const Coordinate& location, const Distance& widt
     }
     glPopMatrix();
     */
+}
+
+std::vector<float> GraphicUtilities::matrixMultiply(std::vector<float> A, std::vector<float> B) {
+    std::vector<float> C;
+    for (int x = 0; x < 4; x++) { // row number of output
+        for (int y = 0; y < 4; y++) { // column number of output
+            C.push_back(0);
+            for (int z = 0; z < 4; z++) { // four elements are added for this output
+                C.at(4*x+y) += A.at(4*x+z) * B.at(4*z+y);
+            }
+        }
+    }
+    ASSERT (C.size() == 16); // TODO
+    return C;
 }
 
 // TODO: delete this

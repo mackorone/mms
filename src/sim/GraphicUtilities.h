@@ -45,6 +45,9 @@ public:
 
 private:
 
+    // TODO
+    static std::vector<float> matrixMultiply(std::vector<float> A, std::vector<float> B);
+
     // A private constructor to restrict creation of any GeometryUtilities objects
     GraphicUtilities();
 
