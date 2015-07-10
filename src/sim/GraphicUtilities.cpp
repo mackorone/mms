@@ -28,17 +28,33 @@ void GraphicUtilities::setMazeSize(int mazeWidth, int mazeHeight) {
 
 std::vector<float> GraphicUtilities::getFullMapCameraMatrix() {
 
-    // TODO: Put the common parts into a method???
+    // First, we calculate the stretch factor in both the horizontal in vertical directions.
+    // That is, we need to find the ratio of units per meter so that way we can transform
+    // physical dimensions into OpenGL dimensions.
+
+    // Horizontal and vertical (respectively) OpenGL units per pixel
+    float horizontalUnitsPerPixel = 2.0 / P()->windowWidth();
+    float verticalUnitsPerPixel = 2.0 / P()->windowHeight();
+
+    // Maze width and height (respectively) in OpenGL units
+    float mazeWidthUnits = P()->fullMapWidth() * horizontalUnitsPerPixel;
+    float mazeHeightUnits = P()->fullMapHeight() * verticalUnitsPerPixel;
+
+    // The maze width and height in meters
     float mazeWidth = P()->wallWidth() + m_mazeWidth * (P()->wallWidth() + P()->wallLength());
     float mazeHeight = P()->wallWidth() + m_mazeHeight * (P()->wallWidth() + P()->wallLength());
-    float pixelsPerHorizontalUnit = P()->windowWidth() / 2.0;
-    float pixelsPerVerticalUnit = P()->windowHeight() / 2.0;
-    float totalHorizontalUnits = P()->fullMapWidth() / pixelsPerHorizontalUnit;
-    float totalVerticalUnits = P()->fullMapHeight() / pixelsPerVerticalUnit;
+
+    // Horizontal and vertical (respectively) OpenGL units per meter
+    float horizontalUnitsPerMeter = mazeWidthUnits / mazeWidth;
+    float verticalUnitsPerMeter = mazeHeightUnits / mazeHeight;
+
+    // Next, we calculate the translation
+    float horizontalTranslation = P()->fullMapPositionX() * horizontalUnitsPerPixel - 1;
+    float verticalTranslation = P()->fullMapPositionY() * verticalUnitsPerPixel - 1;
 
     std::vector<float> fullMapCameraMatrix = {
-        totalHorizontalUnits / mazeWidth, 0.0, 0.0, P()->fullMapPositionX() / pixelsPerHorizontalUnit - 1,
-        0.0, totalVerticalUnits / mazeHeight, 0.0, P()->fullMapPositionY() / pixelsPerVerticalUnit - 1,
+        horizontalUnitsPerMeter, 0.0, 0.0, horizontalTranslation,
+        0.0, verticalUnitsPerMeter, 0.0, verticalTranslation,
         0.0, 0.0, 1.0, 0.0,
         0.0, 0.0, 0.0, 1.0,
     };
@@ -47,23 +63,61 @@ std::vector<float> GraphicUtilities::getFullMapCameraMatrix() {
     return fullMapCameraMatrix;
 }
 
-std::vector<float> GraphicUtilities::getZoomedMapCameraMatrix(const Coordinate& mouseTranslation, const Angle& mouseRotation) {
+std::vector<float> GraphicUtilities::getZoomedMapCameraMatrix(const Coordinate& initialMouseTranslation,
+    const Coordinate& currentMouseTranslation, const Angle& currentMouseRotation) {
 
-    // TODO: implement rotation
-    // TODO: Put the common parts into a method???
-    // TODO: it looks like it's cutting off the boundaries
+    // First, we calculate the stretch factor in both the horizontal in vertical directions.
+    // That is, we need to find the ratio of units per meter so that way we can transform
+    // physical dimensions into OpenGL dimensions.
+
+    // Horizontal and vertical (respectively) OpenGL units per pixel
+    float horizonalUnitsPerPixel = 2.0 / P()->windowWidth();
+    float verticalUnitsPerPixel = 2.0 / P()->windowHeight();
+
+    // Maze width and height (respectively) in OpenGL units
+    float mazeWidthUnits = P()->zoomedMapWidth() * horizonalUnitsPerPixel * P()->zoomFactor();
+    float mazeHeightUnits = P()->zoomedMapHeight() * verticalUnitsPerPixel * P()->zoomFactor();
+
+    // The maze width and height in meters
     float mazeWidth = P()->wallWidth() + m_mazeWidth * (P()->wallWidth() + P()->wallLength());
     float mazeHeight = P()->wallWidth() + m_mazeHeight * (P()->wallWidth() + P()->wallLength());
-    float pixelsPerHorizontalUnit = P()->windowWidth() / 2.0;
-    float pixelsPerVerticalUnit = P()->windowHeight() / 2.0;
-    float totalHorizontalUnits = P()->zoomedMapWidth() / pixelsPerHorizontalUnit * 3; // TODO: Zoom factor
-    float totalVerticalUnits = P()->zoomedMapHeight() / pixelsPerVerticalUnit * 3; // TODO: Zoom factor
+
+    // Horizontal and vertical (respectively) OpenGL units per meter
+    float horizontalUnitsPerMeter = mazeWidthUnits / mazeWidth;
+    float verticalUnitsPerMeter = mazeHeightUnits / mazeHeight;
+
+    // Next, we need to calculate the translation. This is done as a two-fold process. First, we find
+    // the translation that we need to perform to put the center of the first square in the center of
+    // the zoomed map. This is called the static translation. Then we find the translation of the mouse,
+    // which is called the dynamic translation. When we add those two translations together, we ensure
+    // that the mouse starts (static) and stays (dynamic) at the center of the screen.
+
+    // Middle of the map in the horizontal and vertical directions (respectively) in pixels
+    float horizontalMapCenterPixels = P()->zoomedMapPositionX() + 0.5 * P()->zoomedMapWidth();
+    float verticalMapCenterPixels = P()->zoomedMapPositionY() + 0.5 * P()->zoomedMapHeight();
+
+    // Find the static translation (all in OpenGL units)
+    float startHorizontalMapCenter = mazeWidthUnits * ((2 * P()->wallWidth() + P()->wallLength()) / 2.0) / mazeWidth;
+    float startVerticalMapCenter = mazeHeightUnits * ((2 * P()->wallWidth() + P()->wallLength()) / 2.0) / mazeHeight;
+    float endHorizontalMapCenter = horizontalMapCenterPixels * horizonalUnitsPerPixel - 1;
+    float endVerticalMapCenter = verticalMapCenterPixels * verticalUnitsPerPixel - 1;
+    float staticHorizontalTranslation = endHorizontalMapCenter - startHorizontalMapCenter;
+    float staticVerticalTranslation = endVerticalMapCenter - startVerticalMapCenter;
+
+    // Find the dynamic translation (first in physical units, then in OpenGL units)
+    Cartesian mouseTranslationDelta = Cartesian(initialMouseTranslation) - currentMouseTranslation;
+    float dynamicHorizontalTranslation = (mouseTranslationDelta.getX().getMeters() / mazeWidth) * mazeWidthUnits;
+    float dynamicVerticalTranslation = (mouseTranslationDelta.getY().getMeters() / mazeHeight) * mazeHeightUnits;
+
+    // Get the total translation (in OpenGL units)
+    float horizontalTranslation = staticHorizontalTranslation + dynamicHorizontalTranslation;
+    float verticalTranslation = staticVerticalTranslation + dynamicVerticalTranslation;
+
+    // TODO: Rotation
 
     std::vector<float> zoomedMapCameraMatrix = {
-        totalHorizontalUnits / mazeWidth, 0.0, 0.0, -.5 + P()->zoomedMapPositionX() / pixelsPerHorizontalUnit
-            - (mouseTranslation.getX().getMeters() / mazeWidth) * 3,
-        0.0, totalVerticalUnits / mazeHeight, 0.0, P()->zoomedMapPositionY() / pixelsPerVerticalUnit
-            - (mouseTranslation.getY().getMeters() / mazeHeight * (pixelsPerHorizontalUnit / pixelsPerVerticalUnit)) * 3,
+        horizontalUnitsPerMeter, 0.0, 0.0, horizontalTranslation,
+        0.0, verticalUnitsPerMeter, 0.0, verticalTranslation,
         0.0, 0.0, 1.0, 0.0,
         0.0, 0.0, 0.0, 1.0,
     };

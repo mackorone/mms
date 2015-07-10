@@ -96,13 +96,11 @@ void draw() {
     glScissor(sim::P()->fullMapPositionX(), sim::P()->fullMapPositionY(), sim::P()->fullMapWidth(), sim::P()->fullMapHeight());
     glUniformMatrix4fv(camera, 1, GL_TRUE, &sim::GraphicUtilities::getFullMapCameraMatrix().front());
     glDrawArrays(GL_TRIANGLES, 0, 3 * sim::GraphicUtilities::TGB.size());
-    glDisable(GL_SCISSOR_TEST);
 
     // Render the zoomed map
-    glEnable(GL_SCISSOR_TEST);
     glScissor(sim::P()->zoomedMapPositionX(), sim::P()->zoomedMapPositionY(), sim::P()->zoomedMapWidth(), sim::P()->zoomedMapHeight());
     glUniformMatrix4fv(camera, 1, GL_TRUE, &sim::GraphicUtilities::getZoomedMapCameraMatrix(
-        g_mouse->getCurrentTranslation(), g_mouse->getCurrentRotation()).front());
+        g_mouse->getInitialTranslation(), g_mouse->getCurrentTranslation(), g_mouse->getCurrentRotation()).front());
     glDrawArrays(GL_TRIANGLES, 0, 3 * sim::GraphicUtilities::TGB.size());
     glDisable(GL_SCISSOR_TEST);
 

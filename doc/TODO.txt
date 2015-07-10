@@ -4,6 +4,8 @@ High Pri:
     - Make sure everything works correctly
     - Why does it cut off the boundaries???
     - Deal with screen resizes
+    - Ability to turn off colors and effects for zoomed window only
+    - Is triangle graphics a bad name? THey have physical coordinates...
 - Rewrite freeglut text so that it's performant
 - Use vertex buffer object for the mouse body (only triangulate the mouse once)
 - Figure out how to get rid of ifdefs in algorithm

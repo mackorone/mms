@@ -26,6 +26,7 @@ public:
     int zoomedMapPositionY();
     int zoomedMapWidth();
     int zoomedMapHeight();
+    float zoomFactor();
     int frameRate();
     bool printLateFrames();
     std::string tileBaseColor();
@@ -107,6 +108,7 @@ private:
     int m_zoomedMapPositionY;
     int m_zoomedMapWidth;
     int m_zoomedMapHeight;
+    float m_zoomFactor;
     int m_frameRate;
     bool m_printLateFrames;
     std::string m_tileBaseColor;

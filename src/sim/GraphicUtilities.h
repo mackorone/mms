@@ -21,7 +21,8 @@ public:
 
     // Retrieve the 4x4 camera matrices for each map
     static std::vector<float> getFullMapCameraMatrix();
-    static std::vector<float> getZoomedMapCameraMatrix(const Coordinate& mouseTranslation, const Angle& mouseRotation);
+    static std::vector<float> getZoomedMapCameraMatrix(const Coordinate& initialMouseTranslation,
+        const Coordinate& currentMouseTranslation, const Angle& currentMouseRotation);
 
     // The draw methods here should only be called once - they actually populate the buffer
     static void drawTileGraphicBase(int x, int y, const Polygon& polygon, const GLfloat* color);

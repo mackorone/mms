@@ -33,6 +33,7 @@ Param::Param() {
     m_zoomedMapPositionY = parser.getIntIfHasInt("zoomed-map-position-y", 10);
     m_zoomedMapWidth = parser.getIntIfHasInt("zoomed-map-width", 450);
     m_zoomedMapHeight = parser.getIntIfHasInt("zoomed-map-height", 450);
+    m_zoomFactor = parser.getFloatIfHasFloat("zoom-factor", 4.0);
     m_frameRate = parser.getIntIfHasInt("frame-rate", 60);
     m_printLateFrames = parser.getBoolIfHasBool("print-late-frames", false);
     m_tileBaseColor = parser.getStringIfHasString("tile-base-color", "BLACK");
@@ -145,6 +146,10 @@ int Param::zoomedMapWidth() {
 
 int Param::zoomedMapHeight() {
     return m_zoomedMapHeight;
+}
+
+float Param::zoomFactor() {
+    return m_zoomFactor;
 }
 
 int Param::frameRate() {
