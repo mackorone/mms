@@ -294,7 +294,7 @@ bool MouseInterface::inputButtonPressed(int inputButton) {
         return false;
     }
 
-    return S()->inputButtonPressed(inputButton);
+    return S()->inputButtonWasPressed(inputButton);
 }
 
 void MouseInterface::acknowledgeInputButtonPressed(int inputButton) {
@@ -308,7 +308,7 @@ void MouseInterface::acknowledgeInputButtonPressed(int inputButton) {
         return;
     }
 
-    S()->setInputButtonPressed(inputButton, false);
+    S()->setInputButtonWasPressed(inputButton, false);
 }
 
 void MouseInterface::setWheelSpeeds(double leftWheelRadiansPerSecond, double rightWheelRadiansPerSecond) {

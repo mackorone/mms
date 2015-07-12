@@ -6,6 +6,7 @@
 
 #include "algo/AlgoHub.h"
 #include "sim/GraphicUtilities.h"
+#include "sim/Keys.h"
 #include "sim/Maze.h"
 #include "sim/MazeGraphic.h"
 #include "sim/Mouse.h"
@@ -21,7 +22,9 @@
 void draw();
 void solve();
 void simulate();
-void keyInput(unsigned char key, int x, int y);
+void keyPress(unsigned char key, int x, int y);
+void specialKeyPress(int key, int x, int y);
+void specialKeyRelease(int key, int x, int y);
 void initGraphics(int argc, char* argv[]);
 
 // Global variable declarations
@@ -148,9 +151,9 @@ void simulate() {
     g_world->simulate();
 }
 
-void keyInput(unsigned char key, int x, int y) {
+void keyPress(unsigned char key, int x, int y) {
 
-    if (key == 32) { // Space bar
+    if (key == sim::SPACE) {
         // Pause the simulation (only in discrete mode)
         sim::S()->setPaused(!sim::S()->paused());
     }
@@ -209,7 +212,19 @@ void keyInput(unsigned char key, int x, int y) {
     else if (std::string("0123456789").find(key) != std::string::npos) {
         // Press an input button
         int inputButton = std::string("0123456789").find(key);
-        sim::S()->setInputButtonPressed(inputButton, true);
+        sim::S()->setInputButtonWasPressed(inputButton, true);
+    }
+}
+
+void specialKeyPress(int key, int x, int y) {
+    if (std::find(sim::ARROW_KEYS.begin(), sim::ARROW_KEYS.end(), key) != sim::ARROW_KEYS.end()) {
+        sim::S()->setArrowKeyIsPressed(key, true);
+    }
+}
+
+void specialKeyRelease(int key, int x, int y) {
+    if (std::find(sim::ARROW_KEYS.begin(), sim::ARROW_KEYS.end(), key) != sim::ARROW_KEYS.end()) {
+        sim::S()->setArrowKeyIsPressed(key, false);
     }
 }
 
@@ -226,7 +241,9 @@ void initGraphics(int argc, char* argv[]) {
     glEnable(GL_BLEND);
     glutDisplayFunc(draw);
     glutIdleFunc(draw);
-    glutKeyboardFunc(keyInput);
+    glutKeyboardFunc(keyPress);
+    glutSpecialFunc(specialKeyPress);
+    glutSpecialUpFunc(specialKeyRelease);
     glPolygonMode(GL_FRONT_AND_BACK, sim::S()->wireframeMode() ? GL_LINE : GL_FILL);
 
     // Ensures that the aspect ration stays the same when the window is resized

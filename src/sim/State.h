@@ -32,7 +32,8 @@ public:
     bool wireframeMode();
     bool paused();
     double simSpeed();
-    bool inputButtonPressed(int inputButton);
+    bool inputButtonWasPressed(int inputButton);
+    bool arrowKeyIsPressed(int key);
 
     // Mutators
     void setCrashed();
@@ -47,7 +48,8 @@ public:
     void setWireframeMode(bool wireframeMode);
     void setPaused(bool paused);
     void setSimSpeed(double simSpeed);
-    void setInputButtonPressed(int inputButton, bool pressed);
+    void setInputButtonWasPressed(int inputButton, bool pressed);
+    void setArrowKeyIsPressed(int key, bool pressed);
 
 private:
 
@@ -71,6 +73,7 @@ private:
     bool m_paused;
     double m_simSpeed;
     std::map<int, bool> m_inputButtons;
+    std::map<int, bool> m_arrowKeys;
 };
 
 } // namespace sim

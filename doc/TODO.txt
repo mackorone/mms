@@ -1,10 +1,10 @@
 High Pri:
 - Add a race mode, where the human controls with arrow keys like asteroids, races to the center
+- Rewrite freeglut text so that it's performant
 - Display a clock
 - Sim speed increase, decrease rate as parameter
 - Maze Validation (both physically valid mazes and competition valid mazes)
 - MazeChecker class that hides the validation functions
-- Rewrite freeglut text so that it's performant
 - Figure out how to get rid of ifdefs in algorithm
 - Make a SimInterface and make sure it's easy to "extract" an algorithm for use on Arduino
 - Updates on the tile boundaries, not centers
@@ -26,6 +26,7 @@ High Pri:
     - ave steps
     - etc.
 - Add gridlines (see https://www.youtube.com/watch?v=LGRutv9cGBA and https://www.youtube.com/watch?v=gtnTBf5ItEc)
+- Draw a path of where the robot has been (the history object could be used for recording as well)
 
 Med Pri:
 - Crash animation for both modes
@@ -35,7 +36,6 @@ Med Pri:
     - Make the sensor polygon model better
 - Add a way to set the text color of each tile individually
 - Zoomed map mouse is a bit jumpy when going at high speeds
-- Draw a path of where the robot has been (the history object could be used for recording as well)
 - Shortest path graphic (phantom bot that travels along other shortest paths)
 - Randomly select a pre-defined maze
 - Buffer communication (like with the real robot)

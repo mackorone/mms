@@ -1,6 +1,7 @@
 #include "State.h"
 
 #include "Assert.h"
+#include "Keys.h"
 #include "Param.h"
 #include "SimUtilities.h"
 
@@ -34,7 +35,10 @@ State::State() {
     m_paused = P()->defaultPaused();
     m_simSpeed = P()->discreteInterfaceDefaultSpeed();
     for (int i = 0; i < 10; i += 1) {
-        m_inputButtons[i] = false;
+        m_inputButtons.insert(std::make_pair(i, false));
+    }
+    for (int key : ARROW_KEYS) {
+        m_arrowKeys.insert(std::make_pair(key, false));
     }
 }
 
@@ -90,9 +94,15 @@ double State::simSpeed() {
     return m_simSpeed;
 }
 
-bool State::inputButtonPressed(int inputButton) {
+bool State::inputButtonWasPressed(int inputButton) {
     ASSERT(0 <= inputButton && inputButton <= 9);
+    ASSERT(1 == m_inputButtons.count(inputButton));
     return m_inputButtons.at(inputButton);
+}
+
+bool State::arrowKeyIsPressed(int key) {
+    ASSERT(1 == m_arrowKeys.count(key));
+    return m_arrowKeys.at(key);
 }
 
 void State::setCrashed() {
@@ -161,9 +171,15 @@ void State::setSimSpeed(double simSpeed) {
     }
 }
 
-void State::setInputButtonPressed(int inputButton, bool pressed) {
+void State::setInputButtonWasPressed(int inputButton, bool pressed) {
     ASSERT(0 <= inputButton && inputButton <= 9);
-    m_inputButtons[inputButton] = pressed;
+    ASSERT(1 == m_inputButtons.count(inputButton));
+    m_inputButtons.at(inputButton) = pressed;
+}
+
+void State::setArrowKeyIsPressed(int key, bool pressed) {
+    ASSERT(1 == m_arrowKeys.count(key));
+    m_arrowKeys.at(key) = pressed;
 }
 
 } // namespace sim
