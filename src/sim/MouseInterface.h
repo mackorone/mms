@@ -10,6 +10,10 @@
 #define ENSURE_DISCRETE_INTERFACE ensureDiscreteInterface(__func__);
 #define ENSURE_CONTINUOUS_INTERFACE ensureContinuousInterface(__func__);
 
+namespace manual {
+    class Manual;
+}
+
 namespace sim {
 
 class MouseInterface {
@@ -74,6 +78,8 @@ private:
     void prepareForLaunch();
     void checkPaused() const;
     bool isWall(std::pair<int, int> position, Direction direction);
+
+    friend class manual::Manual;
 };
 
 } // namespace sim

@@ -10,6 +10,7 @@
 #include "discrete/wallFollow/LeftWallFollow.h"
 #include "discrete/wallFollow/RightWallFollow.h"
 #include "discrete/wallFollow/RandomizedWallFollow.h"
+#include "manual/Manual.h"
 
 AlgoHub::AlgoHub() {
     m_algorithms.insert(std::make_pair("Continue", new demo::Continue()));
@@ -20,6 +21,7 @@ AlgoHub::AlgoHub() {
     m_algorithms.insert(std::make_pair("RightWallFollow", new wallFollow::RightWallFollow()));
     m_algorithms.insert(std::make_pair("LeftWallFollow", new wallFollow::LeftWallFollow()));
     m_algorithms.insert(std::make_pair("RandomizedWallFollow", new wallFollow::RandomizedWallFollow()));
+    m_algorithms.insert(std::make_pair("Manual", new manual::Manual()));
 }
 
 AlgoHub::~AlgoHub() {

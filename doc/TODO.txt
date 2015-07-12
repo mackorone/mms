@@ -1,5 +1,6 @@
 High Pri:
 - Add a race mode, where the human controls with arrow keys like asteroids, races to the center
+    - Automatically declare walls and fog and stuff
 - Rewrite freeglut text so that it's performant
 - Display a clock
 - Sim speed increase, decrease rate as parameter
