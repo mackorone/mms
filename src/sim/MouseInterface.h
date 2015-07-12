@@ -45,8 +45,8 @@ public:
     void acknowledgeInputButtonPressed(int inputButton);
 
     // Continuous interface methods
-    void setWheelSpeeds(float leftWheelRadiansPerSeconds, float rightWheelRadiansPerSecond);
-    float read(std::string name);
+    void setWheelSpeeds(double leftWheelRadiansPerSeconds, double rightWheelRadiansPerSecond);
+    double read(std::string name);
 
     // Discrete interface methods
     bool wallFront();

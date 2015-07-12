@@ -2,7 +2,7 @@
 
 namespace sim {
 
-MetersPerSecond::MetersPerSecond(float metersPerSecond) {
+MetersPerSecond::MetersPerSecond(double metersPerSecond) {
     m_metersPerSecond = metersPerSecond;
 }
 

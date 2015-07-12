@@ -189,7 +189,7 @@ void Mouse::update(const Duration& elapsed) {
 
     // TODO: This is the technically corect implementation...
     /*
-    float BASELINE(m_rightWheel.getInitialTranslation().getX().getMeters() - m_leftWheel.getInitialTranslation().getX().getMeters());
+    double BASELINE(m_rightWheel.getInitialTranslation().getX().getMeters() - m_leftWheel.getInitialTranslation().getX().getMeters());
 
     if (fabs(rightWheelSpeed.getMetersPerSecond() == -1*leftWheelSpeed.getMetersPerSecond())) {
         Meters distance((-0.5 * leftWheelSpeed.getMetersPerSecond() + 0.5 * rightWheelSpeed.getMetersPerSecond()) * elapsed.getSeconds());
@@ -200,10 +200,10 @@ void Mouse::update(const Duration& elapsed) {
     else {
         leftWheelSpeed = MetersPerSecond(-1*leftWheelSpeed.getMetersPerSecond());
 
-        float x_0 = m_translation.getY().getMeters();
-        float y_0 = -1*m_translation.getX().getMeters();
+        double x_0 = m_translation.getY().getMeters();
+        double y_0 = -1*m_translation.getX().getMeters();
 
-        float x = x_0 +
+        double x = x_0 +
 
                   (BASELINE*(rightWheelSpeed+leftWheelSpeed).getMetersPerSecond())
                   /(2.0*(rightWheelSpeed-leftWheelSpeed).getMetersPerSecond())
@@ -211,7 +211,7 @@ void Mouse::update(const Duration& elapsed) {
                   *(sin((rightWheelSpeed-leftWheelSpeed).getMetersPerSecond() * elapsed.getSeconds() / BASELINE + m_rotation.getRadians())
                    -sin(m_rotation.getRadians()));
 
-        float y = y_0 -
+        double y = y_0 -
 
                   (BASELINE*(rightWheelSpeed+leftWheelSpeed).getMetersPerSecond())
                   /(2.0*(rightWheelSpeed-leftWheelSpeed).getMetersPerSecond())
@@ -240,7 +240,7 @@ bool Mouse::hasSensor(const std::string& name) const {
     return m_sensors.count(name) != 0;
 }
 
-float Mouse::read(const std::string& name) const {
+double Mouse::read(const std::string& name) const {
 
     // Validate the input
     ASSERT(m_sensors.count(name) != 0);
@@ -255,8 +255,7 @@ float Mouse::read(const std::string& name) const {
         .rotateAroundPoint(currentRotation, currentTranslation);
     Polygon currentView = sensor.getCurrentView(
         fullView.getVertices().at(0), currentRotation + sensor.getInitialRotation(), *m_maze);
-    return 1.0 - GeometryUtilities::polygonArea(currentView).getMetersSquared()
-               / GeometryUtilities::polygonArea(fullView).getMetersSquared();
+    return 1.0 - currentView.area().getMetersSquared() / fullView.area().getMetersSquared();
 }
 
 Seconds Mouse::getReadDuration(const std::string& name) const {

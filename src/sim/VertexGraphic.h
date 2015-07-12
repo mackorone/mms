@@ -3,12 +3,12 @@
 namespace sim {
 
 struct VertexGraphic {
-    float x; // x position
-    float y; // y position
-    float r; // red value
-    float g; // green value
-    float b; // blue value
-    float a; // alpha value
+    double x; // x position
+    double y; // y position
+    double r; // red value
+    double g; // green value
+    double b; // blue value
+    double a; // alpha value
 };
 
 } // namespace sim

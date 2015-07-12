@@ -311,7 +311,7 @@ void MouseInterface::acknowledgeInputButtonPressed(int inputButton) {
     S()->setInputButtonPressed(inputButton, false);
 }
 
-void MouseInterface::setWheelSpeeds(float leftWheelRadiansPerSecond, float rightWheelRadiansPerSecond) {
+void MouseInterface::setWheelSpeeds(double leftWheelRadiansPerSecond, double rightWheelRadiansPerSecond) {
 
     ENSURE_INITIALIZED_MOUSE
     ENSURE_CONTINUOUS_INTERFACE
@@ -319,7 +319,7 @@ void MouseInterface::setWheelSpeeds(float leftWheelRadiansPerSecond, float right
     m_mouse->setWheelSpeeds(RadiansPerSecond(leftWheelRadiansPerSecond), RadiansPerSecond(rightWheelRadiansPerSecond));
 }
 
-float MouseInterface::read(std::string name) {
+double MouseInterface::read(std::string name) {
 
     ENSURE_INITIALIZED_MOUSE
     ENSURE_CONTINUOUS_INTERFACE
@@ -334,7 +334,7 @@ float MouseInterface::read(std::string name) {
     double start(sim::SimUtilities::getHighResTime());
 
     // Retrieve the value
-    float value = m_mouse->read(name);
+    double value = m_mouse->read(name);
 
     // Stop the timer
     double end(sim::SimUtilities::getHighResTime());

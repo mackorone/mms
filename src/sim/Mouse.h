@@ -52,7 +52,7 @@ public:
     bool hasSensor(const std::string& name) const;
 
     // Read a sensor, and returns a value from 0.0 (completely free) to 1.0 (completely blocked)
-    float read(const std::string& name) const;
+    double read(const std::string& name) const;
 
     // Get the read time of a particular sensor
     Seconds getReadDuration(const std::string& name) const;
@@ -82,7 +82,7 @@ private:
     // By assumption, the mouse is differential drive.
     Wheel m_leftWheel;
     Wheel m_rightWheel;
-    std::mutex m_wheelMutex; // Ensures the wheel speeds are accessed atomically w.r.t. each other
+    std::mutex m_wheelMutex; // Ensures the wheel speeds are accessed together atomically
 
     // The sensors on the mouse
     std::map<std::string, Sensor> m_sensors;

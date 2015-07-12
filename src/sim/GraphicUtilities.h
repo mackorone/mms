@@ -16,12 +16,12 @@ public:
     // The big, CPU-side triangle graphics buffer
     static std::vector<TriangleGraphic> TGB;
 
-    // We need to get this information from the maze graphic
+    // Sets the maze size and width, in tiles
     static void setMazeSize(int mazeWidth, int mazeHeight);
 
-    // Retrieve the 4x4 camera matrices for each map
-    static std::vector<float> getFullMapCameraMatrix();
-    static std::vector<float> getZoomedMapCameraMatrix(const Coordinate& initialMouseTranslation,
+    // Retrieve the 4x4 transformation matrices for each map
+    static std::vector<float> getFullMapTransformationMatrix();
+    static std::vector<float> getZoomedMapTransformationMatrix(const Coordinate& initialMouseTranslation,
         const Coordinate& currentMouseTranslation, const Angle& currentMouseRotation);
 
     // The draw methods here should only be called once - they actually populate the buffer
@@ -45,20 +45,25 @@ public:
 
 private:
 
-    // TODO
-    static std::vector<float> matrixMultiply(std::vector<float> A, std::vector<float> B);
-
     // A private constructor to restrict creation of any GeometryUtilities objects
     GraphicUtilities();
 
-    // Maze dimensions
+    // Maze dimensions in tiles
     static int m_mazeWidth;
     static int m_mazeHeight;
 
-    // Returns the x and y values (respectively) for openGl coordinates
-    // TODO: Deprecated
-    static std::pair<float, float> mapCoordinateToOpenGlCoordinates(const Coordinate& coordinate);
-    static float getFractionOfDistance(float start, float end, float location);
+    // Returns the number of pixels per meter of the screen
+    static double getScreenPixelsPerMeter();
+
+    // Returns the physical maze size
+    static std::pair<double, double> getPhysicalMazeSize();
+
+    // Multiplies two 4x4 matrices together
+    static std::vector<float> multiply4x4Matrices(std::vector<float> left, std::vector<float> right);
+
+    // Maps a pixel coordinate ((0,0) in the bottom left, (width, height) in the upper right)
+    // to the OpenGL coordinate system ((-1,-1) in the bottom left, (1,1) in the upper right)
+    static std::pair<double, double> mapPixelCoordinateToOpenGlCoordinate(double x, double y);
 
     // Converts a polygon to a vector of triangle graphics
     static std::vector<TriangleGraphic> polygonToTriangleGraphics(const Polygon& polygon, const GLfloat* color, GLfloat alpha);

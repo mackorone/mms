@@ -6,7 +6,7 @@ MetersSquared::MetersSquared() {
     m_metersSquared = 0.0;
 }
 
-MetersSquared::MetersSquared(float meters) {
+MetersSquared::MetersSquared(double meters) {
     m_metersSquared = meters;
 }
 
@@ -22,7 +22,7 @@ MetersSquared MetersSquared::operator-(const Area& area) const {
     return MetersSquared(getMetersSquared() - area.getMetersSquared());
 }
 
-MetersSquared MetersSquared::operator*(float factor) const {
+MetersSquared MetersSquared::operator*(double factor) const {
     return MetersSquared(getMetersSquared() * factor);
 }
 

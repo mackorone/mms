@@ -11,7 +11,9 @@
 <zoomed-map-position-y>10</zoomed-map-position-y> <!-- Pixels -->
 <zoomed-map-width>450</zoomed-map-width> <!-- Pixels -->
 <zoomed-map-height>450</zoomed-map-height> <!-- Pixels -->
-<zoom-factor>2.0</zoom-factor> <!-- Pixels -->
+<default-zoomed-map-scale>.1</default-zoomed-map-scale>
+<!-- TODO: Max min zoom factor -->
+<default-rotate-zoomed-map>false</default-rotate-zoomed-map>
 <frame-rate>60</frame-rate> <!-- Frames per second -->
 <print-late-frames>false</print-late-frames>
 <tile-base-color>BLACK</tile-base-color> <!-- TODO: Display a better error message for bad inputs for the colors -->
@@ -74,4 +76,4 @@
 <mouse-directory>res/mice/</mouse-directory> <!-- Relative to project root -->
 
 <!-- Algo Parameters -->
-<algorithm>Continue</algorithm> <!-- The name as specified in src/algo/AlgoHub.cpp -->
+<algorithm>MackAlgo</algorithm> <!-- The name as specified in src/algo/AlgoHub.cpp -->

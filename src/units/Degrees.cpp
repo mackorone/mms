@@ -8,7 +8,7 @@ Degrees::Degrees() {
     m_radians = 0.0;
 }
 
-Degrees::Degrees(float degrees) {
+Degrees::Degrees(double degrees) {
     m_radians = degrees * (2 * M_PI) / 360;
 }
 
@@ -24,7 +24,7 @@ Degrees Degrees::operator-(const Angle& angle) const {
     return Degrees(getDegrees() - angle.getDegrees());
 }
 
-Degrees Degrees::operator*(float factor) const {
+Degrees Degrees::operator*(double factor) const {
     return Degrees(getDegrees() * factor);
 }
 

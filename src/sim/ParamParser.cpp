@@ -20,8 +20,8 @@ bool ParamParser::hasBoolValue(std::string tag){
     return SimUtilities::isBool(m_doc.child(tag.c_str()).child_value());
 }
 
-bool ParamParser::hasFloatValue(std::string tag){
-    return SimUtilities::isFloat(m_doc.child(tag.c_str()).child_value());
+bool ParamParser::hasDoubleValue(std::string tag){
+    return SimUtilities::isDouble(m_doc.child(tag.c_str()).child_value());
 }
 
 bool ParamParser::hasIntValue(std::string tag){
@@ -36,8 +36,8 @@ bool ParamParser::getBoolValue(std::string tag) {
     return SimUtilities::strToBool(m_doc.child(tag.c_str()).child_value());
 }
 
-float ParamParser::getFloatValue(std::string tag) {
-    return SimUtilities::strToFloat(m_doc.child(tag.c_str()).child_value());
+double ParamParser::getDoubleValue(std::string tag) {
+    return SimUtilities::strToDouble(m_doc.child(tag.c_str()).child_value());
 }
 
 int ParamParser::getIntValue(std::string tag) {
@@ -52,8 +52,8 @@ bool ParamParser::getBoolIfHasBool(std::string tag, bool defaultValue) {
     return (hasBoolValue(tag) ? getBoolValue(tag) : defaultValue);
 }
 
-float ParamParser::getFloatIfHasFloat(std::string tag, float defaultValue) {
-    return (hasFloatValue(tag) ? getFloatValue(tag) : defaultValue);
+double ParamParser::getDoubleIfHasDouble(std::string tag, double defaultValue) {
+    return (hasDoubleValue(tag) ? getDoubleValue(tag) : defaultValue);
 }
 
 int ParamParser::getIntIfHasInt(std::string tag, int defaultValue) {

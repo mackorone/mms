@@ -8,12 +8,12 @@ class Radians : public Angle {
 
 public:
     Radians();
-    Radians(float radians);
+    Radians(double radians);
     Radians(const Angle& angle);
     Radians operator+(const Angle& angle) const;
     Radians operator-(const Angle& angle) const;
-    Radians operator*(float factor) const;
-    float operator/(const Angle& angle) const;
+    Radians operator*(double factor) const;
+    double operator/(const Angle& angle) const;
     void operator+=(const Angle& angle);
 
 };

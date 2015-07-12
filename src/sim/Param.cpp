@@ -33,7 +33,8 @@ Param::Param() {
     m_zoomedMapPositionY = parser.getIntIfHasInt("zoomed-map-position-y", 10);
     m_zoomedMapWidth = parser.getIntIfHasInt("zoomed-map-width", 450);
     m_zoomedMapHeight = parser.getIntIfHasInt("zoomed-map-height", 450);
-    m_zoomFactor = parser.getFloatIfHasFloat("zoom-factor", 4.0);
+    m_defaultZoomedMapScale = parser.getDoubleIfHasDouble("default-zoomed-map-scale", 0.1);
+    m_defaultRotateZoomedMap = parser.getBoolIfHasBool("default-rotate-zoomed-map", false);
     m_frameRate = parser.getIntIfHasInt("frame-rate", 60);
     m_printLateFrames = parser.getBoolIfHasBool("print-late-frames", false);
     m_tileBaseColor = parser.getStringIfHasString("tile-base-color", "BLACK");
@@ -54,7 +55,7 @@ Param::Param() {
     m_defaultTileColorsVisible = parser.getBoolIfHasBool("default-tile-colors-visible", true);
     m_defaultTileTextVisible = parser.getBoolIfHasBool("default-tile-text-visible", true);
     m_defaultTileFogVisible = parser.getBoolIfHasBool("default-tile-fog-visible", true);
-    m_tileFogAlpha = parser.getFloatIfHasFloat("tile-fog-alpha", 0.15);
+    m_tileFogAlpha = parser.getDoubleIfHasDouble("tile-fog-alpha", 0.15);
     if (m_tileFogAlpha < 0.0 || 1.0 < m_tileFogAlpha) {
         SimUtilities::print("Error: The tile-fog-alpha value of " + std::to_string(m_tileFogAlpha)
             + " is not in the valid range, [0.0, 1.0].");
@@ -71,12 +72,12 @@ Param::Param() {
     }
     m_randomSeed = (useRandomSeed ? parser.getIntValue("random-seed") : time(NULL));
     m_crashMessage = parser.getStringIfHasString("crash-message", "CRASH");
-    m_glutInitDuration = parser.getFloatIfHasFloat("glut-init-duration", 0.25);
+    m_glutInitDuration = parser.getDoubleIfHasDouble("glut-init-duration", 0.25);
     m_defaultPaused = parser.getBoolIfHasBool("default-paused", false);
-    m_minSleepDuration = parser.getFloatIfHasFloat("min-sleep-duration", 5);
-    m_discreteInterfaceMinSpeed = parser.getFloatIfHasFloat("discrete-interface-min-speed", 1.0);
-    m_discreteInterfaceMaxSpeed = parser.getFloatIfHasFloat("discrete-interface-max-speed", 500.0);
-    m_discreteInterfaceDefaultSpeed = parser.getFloatIfHasFloat("discrete-interface-default-speed", 30.0);
+    m_minSleepDuration = parser.getDoubleIfHasDouble("min-sleep-duration", 5);
+    m_discreteInterfaceMinSpeed = parser.getDoubleIfHasDouble("discrete-interface-min-speed", 1.0);
+    m_discreteInterfaceMaxSpeed = parser.getDoubleIfHasDouble("discrete-interface-max-speed", 500.0);
+    m_discreteInterfaceDefaultSpeed = parser.getDoubleIfHasDouble("discrete-interface-default-speed", 30.0);
     m_discreteInterfaceDeclareWallOnRead = parser.getBoolIfHasBool("discrete-interface-declare-wall-on-read", true);
     m_discreteInterfaceUnfogTileOnEntry = parser.getBoolIfHasBool("discrete-interface-unfog-tile-on-entry", true);
     m_declareBothWallHalves = parser.getBoolIfHasBool("declare-both-wall-halves", true);
@@ -85,16 +86,16 @@ Param::Param() {
     m_collisionDetectionRate = parser.getIntIfHasInt("collision-detection-rate", 40);
     m_printLateCollisionDetections = parser.getBoolIfHasBool("print-late-collision-detections", false);
     m_printLateSensorReads = parser.getBoolIfHasBool("print-late-sensor-reads", false);
-    m_numberOfCircleApproximationPoints = parser.getFloatIfHasFloat("number-of-circle-approximation-points", 8);
-    m_numberOfSensorEdgePoints = parser.getFloatIfHasFloat("number-of-sensor-edge-points", 3);
+    m_numberOfCircleApproximationPoints = parser.getDoubleIfHasDouble("number-of-circle-approximation-points", 8);
+    m_numberOfSensorEdgePoints = parser.getDoubleIfHasDouble("number-of-sensor-edge-points", 3);
 
     // Maze Parameters
     m_mazeDirectory = parser.getStringIfHasString("maze-directory", "res/mazes/");
     m_mazeFile = parser.getStringIfHasString("maze-file", "");
     m_useMazeFile = parser.getBoolIfHasBool("use-maze-file", false);
-    m_wallWidth = parser.getFloatIfHasFloat("wall-width", 0.012);
-    m_wallLength = parser.getFloatIfHasFloat("wall-length", 0.156);
-    m_wallHeight = parser.getFloatIfHasFloat("wall-height", 0.05);
+    m_wallWidth = parser.getDoubleIfHasDouble("wall-width", 0.012);
+    m_wallLength = parser.getDoubleIfHasDouble("wall-length", 0.156);
+    m_wallHeight = parser.getDoubleIfHasDouble("wall-height", 0.05);
     m_generatedMazeWidth = parser.getIntIfHasInt("generated-maze-width", 16);
     m_generatedMazeHeight = parser.getIntIfHasInt("generated-maze-height", 16);
     m_enforceOfficialMazeRules = parser.getBoolIfHasBool("enforce-official-maze-rules", true);
@@ -148,10 +149,13 @@ int Param::zoomedMapHeight() {
     return m_zoomedMapHeight;
 }
 
-float Param::zoomFactor() {
-    return m_zoomFactor;
+double Param::defaultZoomedMapScale() {
+    return m_defaultZoomedMapScale;
 }
 
+bool Param::defaultRotateZoomedMap() {
+    return m_defaultRotateZoomedMap;
+}
 int Param::frameRate() {
     return m_frameRate;
 }
@@ -232,7 +236,7 @@ bool Param::defaultTileFogVisible() {
     return m_defaultTileFogVisible;
 }
 
-float Param::tileFogAlpha() {
+double Param::tileFogAlpha() {
     return m_tileFogAlpha;
 }
 
@@ -248,7 +252,7 @@ std::string Param::crashMessage() {
     return m_crashMessage;
 }
 
-float Param::glutInitDuration() {
+double Param::glutInitDuration() {
     return m_glutInitDuration;
 }
 
@@ -256,19 +260,19 @@ bool Param::defaultPaused() {
     return m_defaultPaused;
 }
 
-float Param::minSleepDuration() {
+double Param::minSleepDuration() {
     return m_minSleepDuration;
 }
 
-float Param::discreteInterfaceMinSpeed() {
+double Param::discreteInterfaceMinSpeed() {
     return m_discreteInterfaceMinSpeed;
 }
 
-float Param::discreteInterfaceMaxSpeed() {
+double Param::discreteInterfaceMaxSpeed() {
     return m_discreteInterfaceMaxSpeed;
 }
 
-float Param::discreteInterfaceDefaultSpeed() {
+double Param::discreteInterfaceDefaultSpeed() {
     return m_discreteInterfaceDefaultSpeed;
 }
 
@@ -324,15 +328,15 @@ bool Param::useMazeFile() {
     return m_useMazeFile;
 }
 
-float Param::wallWidth() {
+double Param::wallWidth() {
     return m_wallWidth;
 }
 
-float Param::wallLength() {
+double Param::wallLength() {
     return m_wallLength;
 }
 
-float Param::wallHeight() {
+double Param::wallHeight() {
     return m_wallHeight;
 }
 

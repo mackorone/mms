@@ -7,7 +7,7 @@ namespace sim {
 class Milliseconds : public Duration {
 
 public:
-    Milliseconds(float milliseconds);
+    Milliseconds(double milliseconds);
     Milliseconds(const Duration& duration);
     Milliseconds operator+(const Duration& duration) const;
 

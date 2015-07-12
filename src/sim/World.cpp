@@ -73,7 +73,7 @@ void World::checkCollision() {
         double start(sim::SimUtilities::getHighResTime());
 
         // For each line segment in the mouse polygon ...
-        for (std::pair<Cartesian, Cartesian> B : GeometryUtilities::getLineSegments(m_mouse->getCollisionPolygon())) {
+        for (std::pair<Cartesian, Cartesian> B : m_mouse->getCollisionPolygon().getLineSegments()) {
 
             // ... and for each tile the segment could be intersecting with ...
             for (const Tile* tile : GeometryUtilities::lineSegmentTileCover(B.first, B.second, *m_maze)) {
@@ -81,7 +81,7 @@ void World::checkCollision() {
                 // ... iterate through all of the tile's polygons ...
                 for (std::vector<Polygon> group : {tile->getActualWallPolygons(), tile->getCornerPolygons()}) {
                     for (Polygon obstacle : group) {
-                        for (std::pair<Cartesian, Cartesian> A : GeometryUtilities::getLineSegments(obstacle)) {
+                        for (std::pair<Cartesian, Cartesian> A : obstacle.getLineSegments()) {
 
                         // TODO Is there a way we can join the line segments so as to do less work
 

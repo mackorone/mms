@@ -6,13 +6,13 @@ class Angle {
 
 public:
     virtual ~Angle() = 0;
-    float getRadians() const;
-    float getDegrees() const;
+    double getRadians() const;
+    double getDegrees() const;
     bool operator<(const Angle& angle);
 
 protected:
     Angle();
-    float m_radians;
+    double m_radians;
 
 };
 

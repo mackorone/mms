@@ -6,14 +6,14 @@ class Duration {
 
 public:
     virtual ~Duration() = 0;
-    float getSeconds() const;
-    float getMilliseconds() const;
-    float getMicroseconds() const;
+    double getSeconds() const;
+    double getMilliseconds() const;
+    double getMicroseconds() const;
     bool operator<(const Duration& duration) const;
 
 protected:
     Duration();
-    float m_seconds;
+    double m_seconds;
 
 };
 

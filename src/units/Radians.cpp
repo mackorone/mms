@@ -6,7 +6,7 @@ Radians::Radians() {
     m_radians = 0.0;
 }
 
-Radians::Radians(float radians) {
+Radians::Radians(double radians) {
     m_radians = radians;
 }
 
@@ -22,11 +22,11 @@ Radians Radians::operator-(const Angle& angle) const {
     return Radians(getRadians() - angle.getRadians());
 }
 
-Radians Radians::operator*(float factor) const {
+Radians Radians::operator*(double factor) const {
     return Radians(getRadians() * factor);
 }
 
-float Radians::operator/(const Angle& angle) const {
+double Radians::operator/(const Angle& angle) const {
     return getRadians() / angle.getRadians();
 }
 

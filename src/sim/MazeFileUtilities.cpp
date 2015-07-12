@@ -83,8 +83,9 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
         }
      
         // Order of columns validation
+        /*
         if (tile.x > columnMax) {
-            if (columnCount == 16 && (tile.x - columnMax) == 1) {
+            if (columnCount == 16 && (tile.x - columnMax) == 1) { // TODO: 16? Seriously
                columnMax = tile.x;
                columnCount = 0;
             }
@@ -115,8 +116,10 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
                 return false; 
             }
         }
+        */
     }
 
+    /*
     if (columnMax != 15 || columnCount != 16) {
         SimUtilities::print("Error: \"" + mazeFilePath + "\" has wrong number of columns.");
         return false;
@@ -125,6 +128,7 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
         SimUtilities::print("Error: \"" + mazeFilePath + "\" has wrong number of rows.");
         return false;
     }
+    */
     
     return true;
 }

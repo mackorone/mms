@@ -8,7 +8,7 @@ Area::Area() : m_metersSquared(0.0) {
 Area::~Area() {
 }
 
-float Area::getMetersSquared() const {
+double Area::getMetersSquared() const {
     return m_metersSquared;
 }
 

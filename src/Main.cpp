@@ -1,9 +1,7 @@
 #include <algorithm>
-#include <iostream>
 #include <thread>
 
 #include <glut.h>
-#include <Milliseconds.h>
 #include <Seconds.h>
 
 #include "algo/AlgoHub.h"
@@ -26,14 +24,16 @@ void simulate();
 void keyInput(unsigned char key, int x, int y);
 void initGraphics(int argc, char* argv[]);
 
-// Global object variable declarations
+// Global variable declarations
 sim::World* g_world;
 sim::Mouse* g_mouse;
 sim::MazeGraphic* g_mazeGraphic;
 sim::MouseGraphic* g_mouseGraphic;
 sim::MouseInterface* g_mouseInterface;
 
-GLuint camera; // TODO
+// The ID of the transformation matrix, which takes triangle graphic objects in
+// the physical coordinate system and transforms them into the OpenGL system.
+GLuint g_transformationMatixId;
 
 int main(int argc, char* argv[]) {
 
@@ -91,17 +91,21 @@ void draw() {
     // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // Render the full map
+    // Enable scissoring so that the maps are only draw in specified locations
     glEnable(GL_SCISSOR_TEST);
+
+    // Render the full map
     glScissor(sim::P()->fullMapPositionX(), sim::P()->fullMapPositionY(), sim::P()->fullMapWidth(), sim::P()->fullMapHeight());
-    glUniformMatrix4fv(camera, 1, GL_TRUE, &sim::GraphicUtilities::getFullMapCameraMatrix().front());
+    glUniformMatrix4fv(g_transformationMatixId, 1, GL_TRUE, &sim::GraphicUtilities::getFullMapTransformationMatrix().front());
     glDrawArrays(GL_TRIANGLES, 0, 3 * sim::GraphicUtilities::TGB.size());
 
     // Render the zoomed map
     glScissor(sim::P()->zoomedMapPositionX(), sim::P()->zoomedMapPositionY(), sim::P()->zoomedMapWidth(), sim::P()->zoomedMapHeight());
-    glUniformMatrix4fv(camera, 1, GL_TRUE, &sim::GraphicUtilities::getZoomedMapCameraMatrix(
+    glUniformMatrix4fv(g_transformationMatixId, 1, GL_TRUE, &sim::GraphicUtilities::getZoomedMapTransformationMatrix(
         g_mouse->getInitialTranslation(), g_mouse->getCurrentTranslation(), g_mouse->getCurrentRotation()).front());
     glDrawArrays(GL_TRIANGLES, 0, 3 * sim::GraphicUtilities::TGB.size());
+
+    // We disable scissoring so that the glClear can take effect
     glDisable(GL_SCISSOR_TEST);
 
     // Display the result
@@ -158,6 +162,18 @@ void keyInput(unsigned char key, int x, int y) {
         // Slower (only in discrete mode)
         sim::S()->setSimSpeed(sim::S()->simSpeed() / 1.5);
     }
+    else if (key == 'r') {
+        // Toggle rotate zoomed map
+        sim::S()->setRotateZoomedMap(!sim::S()->rotateZoomedMap());
+    }
+    else if (key == 'i') {
+        // Zoom in
+        sim::S()->setZoomedMapScale(sim::S()->zoomedMapScale() * 1.5);
+    }
+    else if (key == 'o') {
+        // Zoom out
+        sim::S()->setZoomedMapScale(sim::S()->zoomedMapScale() / 1.5);
+    }
     else if (key == 'p') {
         // Toggle mouse path visibility
         sim::S()->setMousePathVisible(!sim::S()->mousePathVisible());
@@ -176,7 +192,7 @@ void keyInput(unsigned char key, int x, int y) {
         // Toggle tile text
         sim::S()->setTileTextVisible(!sim::S()->tileTextVisible());
     }
-    else if (key == 'o') {
+    else if (key == 'g') {
         // Toggle tile fog
         sim::S()->setTileFogVisible(!sim::S()->tileFogVisible());
         g_mazeGraphic->updateFog();
@@ -231,9 +247,9 @@ void initGraphics(int argc, char* argv[]) {
         "#version 110\n"
         "attribute vec2 coordinate;"
         "attribute vec4 color;"
-        "uniform mat4 camera;"
+        "uniform mat4 transformationMatrix;"
         "void main(void) {"
-        "    gl_Position = camera * vec4(coordinate, 0.0, 1.0);"
+        "    gl_Position = transformationMatrix * vec4(coordinate, 0.0, 1.0);"
         "    gl_FrontColor = color;"
         "}";
     const char *vs_source = str.c_str();
@@ -249,13 +265,13 @@ void initGraphics(int argc, char* argv[]) {
     // Retrieve the attribute IDs and enable our attributes
     GLuint coordinate = glGetAttribLocation(program, "coordinate");
     GLuint color = glGetAttribLocation(program, "color");
-    camera = glGetUniformLocation(program, "camera");
+    g_transformationMatixId = glGetUniformLocation(program, "transformationMatrix");
     glEnableVertexAttribArray(coordinate);
     glEnableVertexAttribArray(color);
 
     // Specify the information within our buffer
-    glVertexAttribPointer(coordinate, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
-    glVertexAttribPointer(color, 4, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (char*) NULL + 2 * sizeof(float));
+    glVertexAttribPointer(coordinate, 2, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), 0);
+    glVertexAttribPointer(color, 4, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), (char*) NULL + 2 * sizeof(double));
 
     // Lastly, initially populate the vertex buffer object with tile information
     g_mazeGraphic->draw();

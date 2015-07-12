@@ -6,11 +6,11 @@ class AngularVelocity {
 
 public:
     virtual ~AngularVelocity() = 0;
-    float getRadiansPerSecond() const;
+    double getRadiansPerSecond() const;
 
 protected:
     AngularVelocity();
-    float m_radiansPerSecond;
+    double m_radiansPerSecond;
 
 };
 

@@ -6,11 +6,11 @@ class Speed {
 
 public:
     virtual ~Speed() = 0;
-    float getMetersPerSecond() const;
+    double getMetersPerSecond() const;
 
 protected:
     Speed();
-    float m_metersPerSecond;
+    double m_metersPerSecond;
 
 };
 

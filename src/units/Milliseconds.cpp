@@ -2,7 +2,7 @@
 
 namespace sim {
 
-Milliseconds::Milliseconds(float milliseconds) {
+Milliseconds::Milliseconds(double milliseconds) {
     m_seconds = milliseconds / 1000.0;
 }
 

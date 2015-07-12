@@ -41,14 +41,14 @@ void SimUtilities::print(const std::string& msg) {
     std::cout << msg << std::endl;
 }
 
-float SimUtilities::getRandom() {
+double SimUtilities::getRandom() {
 #ifdef __linux
     static bool seeded = false;
     if (!seeded) {
         srand(sim::P()->randomSeed());
         seeded = true;
     }
-    return rand() / static_cast<float>(RAND_MAX);
+    return rand() / static_cast<double>(RAND_MAX);
 #elif _WIN32
     // TODO: Tomasz said he'd implement the Windows version
     return 0.0;
@@ -114,9 +114,9 @@ bool SimUtilities::isInt(std::string str) {
     return true;
 }
 
-bool SimUtilities::isFloat(std::string str) {
+bool SimUtilities::isDouble(std::string str) {
     try {
-        std::stof(str);
+        std::stod(str);
     }
     catch (...) {
         return false;
@@ -134,8 +134,8 @@ int SimUtilities::strToInt(std::string str) {
     return std::stoi(str.c_str());
 }
 
-float SimUtilities::strToFloat(std::string str) {
-    ASSERT(isFloat(str));
+double SimUtilities::strToDouble(std::string str) {
+    ASSERT(isDouble(str));
     return std::stof(str);
 }
 

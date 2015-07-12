@@ -6,11 +6,11 @@ class Area {
 
 public:
     virtual ~Area() = 0;
-    float getMetersSquared() const;
+    double getMetersSquared() const;
 
 protected:
     Area();
-    float m_metersSquared;
+    double m_metersSquared;
 
 };
 

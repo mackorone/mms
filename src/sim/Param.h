@@ -26,7 +26,8 @@ public:
     int zoomedMapPositionY();
     int zoomedMapWidth();
     int zoomedMapHeight();
-    float zoomFactor();
+    double defaultZoomedMapScale();
+    bool defaultRotateZoomedMap();
     int frameRate();
     bool printLateFrames();
     std::string tileBaseColor();
@@ -47,18 +48,18 @@ public:
     bool defaultTileColorsVisible();
     bool defaultTileTextVisible();
     bool defaultTileFogVisible();
-    float tileFogAlpha();
+    double tileFogAlpha();
     bool defaultWireframeMode();
 
     // Simulation parameters
     int randomSeed();
-    float glutInitDuration();
+    double glutInitDuration();
     bool defaultPaused();
     std::string crashMessage();
-    float minSleepDuration();
-    float discreteInterfaceMinSpeed();
-    float discreteInterfaceMaxSpeed();
-    float discreteInterfaceDefaultSpeed();
+    double minSleepDuration();
+    double discreteInterfaceMinSpeed();
+    double discreteInterfaceMaxSpeed();
+    double discreteInterfaceDefaultSpeed();
     bool discreteInterfaceDeclareWallOnRead();
     bool discreteInterfaceUnfogTileOnEntry();
     bool declareBothWallHalves();
@@ -74,9 +75,9 @@ public:
     std::string mazeDirectory();
     std::string mazeFile();
     bool useMazeFile();
-    float wallWidth();
-    float wallLength();
-    float wallHeight();
+    double wallWidth();
+    double wallLength();
+    double wallHeight();
     int generatedMazeWidth();
     int generatedMazeHeight();
     bool enforceOfficialMazeRules();
@@ -108,7 +109,8 @@ private:
     int m_zoomedMapPositionY;
     int m_zoomedMapWidth;
     int m_zoomedMapHeight;
-    float m_zoomFactor;
+    double m_defaultZoomedMapScale;
+    bool m_defaultRotateZoomedMap;
     int m_frameRate;
     bool m_printLateFrames;
     std::string m_tileBaseColor;
@@ -129,18 +131,18 @@ private:
     bool m_defaultTileColorsVisible;
     bool m_defaultTileTextVisible;
     bool m_defaultTileFogVisible;
-    float m_tileFogAlpha;
+    double m_tileFogAlpha;
     bool m_defaultWireframeMode;
 
     // Simulation parameters
     int m_randomSeed;
-    float m_glutInitDuration;
+    double m_glutInitDuration;
     bool m_defaultPaused;
     std::string m_crashMessage;
-    float m_minSleepDuration;
-    float m_discreteInterfaceMinSpeed;
-    float m_discreteInterfaceMaxSpeed;
-    float m_discreteInterfaceDefaultSpeed;
+    double m_minSleepDuration;
+    double m_discreteInterfaceMinSpeed;
+    double m_discreteInterfaceMaxSpeed;
+    double m_discreteInterfaceDefaultSpeed;
     bool m_discreteInterfaceDeclareWallOnRead;
     bool m_discreteInterfaceUnfogTileOnEntry;
     bool m_declareBothWallHalves;
@@ -149,16 +151,16 @@ private:
     int m_collisionDetectionRate;
     bool m_printLateCollisionDetections;
     bool m_printLateSensorReads;
-    float m_numberOfCircleApproximationPoints;
-    float m_numberOfSensorEdgePoints;
+    double m_numberOfCircleApproximationPoints;
+    double m_numberOfSensorEdgePoints;
 
     // Maze parameters
     std::string m_mazeDirectory;
     std::string m_mazeFile;
     bool m_useMazeFile;
-    float m_wallWidth;
-    float m_wallLength;
-    float m_wallHeight;
+    double m_wallWidth;
+    double m_wallLength;
+    double m_wallHeight;
     int m_generatedMazeWidth;
     int m_generatedMazeHeight;
     bool m_enforceOfficialMazeRules;

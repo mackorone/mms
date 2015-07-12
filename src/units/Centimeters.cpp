@@ -2,7 +2,7 @@
 
 namespace sim {
 
-Centimeters::Centimeters(float centimeters) {
+Centimeters::Centimeters(double centimeters) {
     m_meters = centimeters / 100;
 }
 

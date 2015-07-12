@@ -2,7 +2,7 @@
 
 namespace sim {
 
-Seconds::Seconds(float seconds) {
+Seconds::Seconds(double seconds) {
     m_seconds = seconds;
 }
 

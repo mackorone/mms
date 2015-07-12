@@ -9,8 +9,8 @@ class Distance {
 
 public:
     virtual ~Distance() = 0;
-    float getMeters() const;
-    float getCentimeters() const;
+    double getMeters() const;
+    double getCentimeters() const;
     bool operator==(const Distance& distance) const;
     bool operator!=(const Distance& distance) const;
     bool operator<(const Distance& distance) const;
@@ -18,7 +18,7 @@ public:
 
 protected:
     Distance();
-    float m_meters;
+    double m_meters;
 
 };
 

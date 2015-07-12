@@ -23,6 +23,8 @@ State::State() {
     m_mainThreadId = std::this_thread::get_id();
     m_crashed = false;
     m_interfaceType = UNDECLARED;
+    m_rotateZoomedMap = P()->defaultRotateZoomedMap();
+    m_zoomedMapScale = P()->defaultZoomedMapScale();
     m_mousePathVisible = P()->defaultMousePathVisible();
     m_wallTruthVisible = P()->defaultWallTruthVisible();
     m_tileColorsVisible = P()->defaultTileColorsVisible();
@@ -46,6 +48,14 @@ bool State::crashed() {
 
 InterfaceType State::interfaceType() {
     return m_interfaceType;
+}
+
+bool State::rotateZoomedMap() {
+    return m_rotateZoomedMap;
+}
+
+double State::zoomedMapScale() {
+    return m_zoomedMapScale;
 }
 
 bool State::mousePathVisible() {
@@ -76,7 +86,7 @@ bool State::paused() {
     return m_paused;
 }
 
-float State::simSpeed() {
+double State::simSpeed() {
     return m_simSpeed;
 }
 
@@ -93,6 +103,14 @@ void State::setCrashed() {
 void State::setInterfaceType(InterfaceType interfaceType) {
     ASSERT(m_interfaceType == UNDECLARED);
     m_interfaceType = interfaceType;
+}
+
+void State::setRotateZoomedMap(bool rotateZoomedMap) {
+    m_rotateZoomedMap = rotateZoomedMap;
+}
+
+void State::setZoomedMapScale(double zoomedMapScale) {
+    m_zoomedMapScale = zoomedMapScale;
 }
 
 void State::setMousePathVisible(bool mousePathVisible) {
@@ -123,7 +141,7 @@ void State::setPaused(bool paused) {
     m_paused = paused;
 }
 
-void State::setSimSpeed(float simSpeed) {
+void State::setSimSpeed(double simSpeed) {
     if (simSpeed < P()->discreteInterfaceMinSpeed()) {
         m_simSpeed = P()->discreteInterfaceMinSpeed();
     }

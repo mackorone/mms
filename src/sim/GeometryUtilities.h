@@ -1,13 +1,10 @@
 #pragma once
 
-#include <utility>
-
 #include <Cartesian.h>
 #include <MetersSquared.h>
 
 #include "Maze.h"
 #include "Polygon.h"
-#include "Triangle.h"
 
 namespace sim {
 
@@ -27,17 +24,8 @@ public:
     static Cartesian getIntersectionPoint(const std::pair<const Cartesian&, const Cartesian&>& A,
                                           const std::pair<const Cartesian&, const Cartesian&>& B);
 
-    // Returns the area of a polygon
-    static MetersSquared polygonArea(const Polygon& polygon);
-
-    // Retrieves every pair of neighboring line segments in a polygon
-    static std::vector<std::pair<Cartesian, Cartesian>> getLineSegments(const Polygon& polygon);
-
     // Returns the convex hull of all of the points of all of the polygons
     static Polygon convexHull(const std::vector<Polygon>& polygons);
-
-    // Returns the triangulation of the given polygon
-    static std::vector<Triangle> triangulate(const Polygon& polygon);
 
 private:
 

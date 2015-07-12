@@ -8,11 +8,11 @@ Distance::Distance() : m_meters(0.0) {
 Distance::~Distance() {
 }
 
-float Distance::getMeters() const {
+double Distance::getMeters() const {
     return m_meters;
 }
 
-float Distance::getCentimeters() const {
+double Distance::getCentimeters() const {
     return getMeters() * 100;
 }
 

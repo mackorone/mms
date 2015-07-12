@@ -22,6 +22,8 @@ public:
     std::thread::id mainThreadId();
     bool crashed();
     InterfaceType interfaceType();
+    bool rotateZoomedMap();
+    double zoomedMapScale();
     bool mousePathVisible(); // TODO: Implement the mouse path
     bool wallTruthVisible();
     bool tileColorsVisible();
@@ -29,12 +31,14 @@ public:
     bool tileFogVisible();
     bool wireframeMode();
     bool paused();
-    float simSpeed();
+    double simSpeed();
     bool inputButtonPressed(int inputButton);
 
     // Mutators
     void setCrashed();
     void setInterfaceType(InterfaceType interfaceType);
+    void setRotateZoomedMap(bool rotateZoomedMap);
+    void setZoomedMapScale(double zoomedMapScale);
     void setMousePathVisible(bool mousePathVisible);
     void setWallTruthVisible(bool wallTruthVisible);
     void setTileColorsVisible(bool tileColorsVisible);
@@ -42,7 +46,7 @@ public:
     void setTileFogVisible(bool tileFogVisible);
     void setWireframeMode(bool wireframeMode);
     void setPaused(bool paused);
-    void setSimSpeed(float simSpeed);
+    void setSimSpeed(double simSpeed);
     void setInputButtonPressed(int inputButton, bool pressed);
 
 private:
@@ -56,6 +60,8 @@ private:
     std::thread::id m_mainThreadId;
     bool m_crashed;
     InterfaceType m_interfaceType;
+    bool m_rotateZoomedMap;
+    double m_zoomedMapScale;
     bool m_mousePathVisible;
     bool m_wallTruthVisible;
     bool m_tileColorsVisible;
@@ -63,7 +69,7 @@ private:
     bool m_tileFogVisible;
     bool m_wireframeMode;
     bool m_paused;
-    float m_simSpeed;
+    double m_simSpeed;
     std::map<int, bool> m_inputButtons;
 };
 

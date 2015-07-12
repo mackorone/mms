@@ -20,8 +20,8 @@ public:
     // Prints a message to stdout
     static void print(const std::string& msg);
 
-    // Returns a float in [0.0, 1.0]
-    static float getRandom();
+    // Returns a double in [0.0, 1.0]
+    static double getRandom();
 
     // Sleeps the current thread for ms milliseconds
     static void sleep(const Duration& duration);
@@ -35,10 +35,10 @@ public:
     // Convert between types
     static bool isBool(std::string str);
     static bool isInt(std::string str);
-    static bool isFloat(std::string str);
+    static bool isDouble(std::string str);
     static bool strToBool(std::string str);
     static int strToInt(std::string str);
-    static float strToFloat(std::string str);
+    static double strToDouble(std::string str);
 
     // Tokenizes a string on whitespace
     static std::vector<std::string> tokenize(std::string str);

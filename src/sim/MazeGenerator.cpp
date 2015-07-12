@@ -36,7 +36,7 @@ std::vector<std::vector<BasicTile>> MazeGenerator::random() {
     }
 
     // Percentage chance any one wall will exist
-    float wallProb = 0.40;
+    double wallProb = 0.40;
     for (int x = 0; x < maze.size(); x += 1) {
         std::vector<BasicTile> column;
         for (int y = 0; y < maze.at(x).size(); y += 1) {
@@ -113,7 +113,7 @@ void Maze::tom_random() {
 
     int exploreDIR = -1; //last direction the mouse moved. -1 if DNE
 
-    float moveConst = 0; // the chance the algorithm will continue same direction of tavel
+    double moveConst = 0; // the chance the algorithm will continue same direction of tavel
                          // if zero the maze will always turn. if 1 maze will be longest possible
                         // Currently proprtional to distance from center <see below>
 
@@ -128,15 +128,15 @@ void Maze::tom_random() {
         int x_pos = current->getX();
         int y_pos = current->getY();
 
-        float xDelta = (abs(x_pos - width / 2.0) * 2.0) / (width-1); //ratios of how far you are from the center
-        float yDelta = (abs(y_pos - height / 2.0) * 2.0) / (height-1);
+        double xDelta = (abs(x_pos - width / 2.0) * 2.0) / (width-1); //ratios of how far you are from the center
+        double yDelta = (abs(y_pos - height / 2.0) * 2.0) / (height-1);
 
-        float avgDelta = std::max(xDelta, yDelta) * 0.85; // * 0.85 gives good compromise betwwen straight and turned
+        double avgDelta = std::max(xDelta, yDelta) * 0.85; // * 0.85 gives good compromise betwwen straight and turned
 
         moveConst = 1 * avgDelta; // the chance the algorithm will continue same direction of tavel is proportional
                                   // to the max distance of the mouse to the center on any axis.
 
-        dirThreshold = static_cast<float>(RAND_MAX) * moveConst;
+        dirThreshold = static_cast<double>(RAND_MAX) * moveConst;
 
         // Keep track of the next possible movements N = 0, E = 1, S = 2, W =3
         bool choices[4] = {0,0,0,0};

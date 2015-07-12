@@ -18,7 +18,7 @@ Sensor::Sensor(const Coordinate& position, const Distance& radius, const Angle& 
     // Create the polygon for the body of the sensor
     std::vector<Cartesian> polygon;
     for (int i = 1; i <= P()->numberOfCircleApproximationPoints(); i += 1) {
-        float radians = i*2*M_PI/P()->numberOfCircleApproximationPoints();
+        double radians = i*2*M_PI/P()->numberOfCircleApproximationPoints();
         polygon.push_back(Polar(radius, Radians(radians)) + position);
     }
     m_initialPolygon = Polygon(polygon);
@@ -27,7 +27,7 @@ Sensor::Sensor(const Coordinate& position, const Distance& radius, const Angle& 
     std::vector<Cartesian> view;
     view.push_back(position); // This needs to be first - the Mouse.cpp relies on this
     for (int i = -1*(P()->numberOfCircleApproximationPoints()/2); i <= P()->numberOfCircleApproximationPoints()/2; i += 1) {
-        float radians = i*2*halfWidth.getRadians()/P()->numberOfCircleApproximationPoints();
+        double radians = i*2*halfWidth.getRadians()/P()->numberOfCircleApproximationPoints();
         view.push_back(Polar(range, Radians(radians) + rotation) + position);
     }
     m_initialView = Polygon(view);
@@ -55,7 +55,7 @@ Polygon Sensor::getCurrentView(const Cartesian& currentPosition, const Radians& 
 
     // First, get the edge of the view of the sensor
     std::vector<Cartesian> edge;
-    for (float i = -1; i <= 1; i += 2.0/(P()->numberOfSensorEdgePoints() - 1)) {
+    for (double i = -1; i <= 1; i += 2.0/(P()->numberOfSensorEdgePoints() - 1)) {
         edge.push_back(currentPosition + Polar(m_range, currentRotation + (m_halfWidth * i)));
     }
 
@@ -68,7 +68,7 @@ Polygon Sensor::getCurrentView(const Cartesian& currentPosition, const Radians& 
             // ... iterate through all of the tile's polygons ...
             for (std::vector<Polygon> group : {tile->getActualWallPolygons(), tile->getCornerPolygons()}) {
                 for (Polygon obstacle : group) {
-                    for (std::pair<Cartesian, Cartesian> A : GeometryUtilities::getLineSegments(obstacle)) {
+                    for (std::pair<Cartesian, Cartesian> A : obstacle.getLineSegments()) {
 
                         // TODO: Is there a way to "join" some of the line segments, so that we can do less work?
 

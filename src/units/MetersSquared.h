@@ -8,11 +8,11 @@ class MetersSquared : public Area {
 
 public:
     MetersSquared();
-    MetersSquared(float meters);
+    MetersSquared(double meters);
     MetersSquared(const Area& area);
     MetersSquared operator+(const Area& area) const;
     MetersSquared operator-(const Area& area) const;
-    MetersSquared operator*(float factor) const;
+    MetersSquared operator*(double factor) const;
 
 };
 

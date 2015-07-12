@@ -2,10 +2,19 @@ High Pri:
 - Clean up the dual screen implementation
     - Add ability to rotate
     - Make sure everything works correctly
-    - Why does it cut off the boundaries???
     - Deal with screen resizes
     - Ability to turn off colors and effects for zoomed window only
-    - Is triangle graphics a bad name? THey have physical coordinates...
+    - Is triangle graphics a bad name? They have physical coordinates...
+    - Mouse control on the maps (see clipboard)
+    - Map borders
+    - Max-min zoom factor
+    - Zoom increase, decrease rate as parameter
+    - Mouse is a bit jumpy when going at high speeds... why
+- Add a race mode, where the human controls with arrow keys like asteroids, races to the center
+- Triangulate polygons upon creation?
+- Sim speed increase, decrease rate as parameter
+- Maze Validation (both physically valid mazes and competition valid mazes)
+- MazeChecker class that hides the validation functions
 - Rewrite freeglut text so that it's performant
 - Use vertex buffer object for the mouse body (only triangulate the mouse once)
 - Figure out how to get rid of ifdefs in algorithm
@@ -16,8 +25,6 @@ High Pri:
 - Add support for maze rotation
 - Add support for mouse stating position rotation
 - Actual distance values on the tile
-- Maze Validation (both physically valid mazes and competition valid mazes)
-- MazeChecker class that hides the validation functions
 - Support stepper motor / encoders interface
 - Sensor readings for walls other than front, left right
 - Get Tomasz's random maze algorithm working
@@ -63,7 +70,6 @@ Low-pri:
 - Crash animation for both modes
 - Inconsistent wall declaration colors (declared wall on one side of wall, declared no wall on other side of wall)
 - Inconsistent wall declaration colors (declared one side of wall but not the other)
-- Add a race mode, where the human controls with arrow keys like asteroids, races to the center
 - Perhaps impose memory limits on the algorithm
 - Add a way to change the mouse color
 - Support more than two wheels (let's hold off on this for now...)
@@ -73,7 +79,6 @@ Low-pri:
 - Change FreeGLUT to GLFW
 
 Clean-Up:
-- Convert floats to doubles where appropriate
 - Convert primitive types to GL types
 - Return const references instead of values (pointers???)
 - Change float to units (including in the ParamParser and Param class)
@@ -100,3 +105,4 @@ Clean-Up:
 - Clean up / improve the coding standards
 - Put consts in GraphicUtilties (and other classes)
 - Replace braket notation with methods (walls[NORTH] = true -> walls.insert(std::make_pair(NORTH, true)));
+- Document the confusing coordinate systems

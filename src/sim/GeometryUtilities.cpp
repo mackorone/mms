@@ -3,8 +3,6 @@
 #include <algorithm>
 #include <cmath>
 
-#include <polypartition.h>
-
 #include "Assert.h"
 #include "Param.h"
 
@@ -124,12 +122,12 @@ bool GeometryUtilities::linesIntersect(const std::pair<const Cartesian&, const C
     // connecting A1 and A2.
 
     // Check to see that the points of B are on opposite sides of A
-    float c1 = crossProduct(A.first, B.first,  A.second).getMetersSquared();
-    float c2 = crossProduct(A.first, B.second, A.second).getMetersSquared();
+    double c1 = crossProduct(A.first, B.first,  A.second).getMetersSquared();
+    double c2 = crossProduct(A.first, B.second, A.second).getMetersSquared();
 
     // Check to see that the points of A are on opposite sides of B
-    float c3 = crossProduct(B.first, A.first,  B.second).getMetersSquared();
-    float c4 = crossProduct(B.first, A.second, B.second).getMetersSquared();
+    double c3 = crossProduct(B.first, A.first,  B.second).getMetersSquared();
+    double c4 = crossProduct(B.first, A.second, B.second).getMetersSquared();
 
     // Lastly, a cheap way to check to see that the cross products have opposite signs
     // (or that one is zero) is to multiply them together and check to see the product
@@ -149,16 +147,16 @@ Cartesian GeometryUtilities::getIntersectionPoint(const std::pair<const Cartesia
     // Taken from http://alienryderflex.com/intersect/
 
     // Extract A's points
-    float a1x = A.first.getX().getMeters();
-    float a1y = A.first.getY().getMeters();
-    float a2x = A.second.getX().getMeters();
-    float a2y = A.second.getY().getMeters();
+    double a1x = A.first.getX().getMeters();
+    double a1y = A.first.getY().getMeters();
+    double a2x = A.second.getX().getMeters();
+    double a2y = A.second.getY().getMeters();
 
     // Extract B's points
-    float b1x = B.first.getX().getMeters();
-    float b1y = B.first.getY().getMeters();
-    float b2x = B.second.getX().getMeters();
-    float b2y = B.second.getY().getMeters();
+    double b1x = B.first.getX().getMeters();
+    double b1y = B.first.getY().getMeters();
+    double b2x = B.second.getX().getMeters();
+    double b2y = B.second.getY().getMeters();
 
     // Translate the system so that point A is on the origin.
     a2x -= a1x;
@@ -169,12 +167,12 @@ Cartesian GeometryUtilities::getIntersectionPoint(const std::pair<const Cartesia
     b2y -= a1y;
 
     // Discover the length of segment A-B.
-    float distAB = sqrt(a2x*a2x+a2y*a2y);
+    double distAB = sqrt(a2x*a2x+a2y*a2y);
 
     // Rotate the system so that point B is on the positive X axis.
-    float theCos = a2x / distAB;
-    float theSin = a2y / distAB;
-    float newX = b1x * theCos + b1y * theSin;
+    double theCos = a2x / distAB;
+    double theSin = a2y / distAB;
+    double newX = b1x * theCos + b1y * theSin;
     b1y = b1y * theCos - b1x * theSin;
     b1x = newX;
     newX = b2x * theCos + b2y * theSin;
@@ -182,41 +180,10 @@ Cartesian GeometryUtilities::getIntersectionPoint(const std::pair<const Cartesia
     b2x = newX;
 
     // Discover the position of the intersection point along line A-B.
-    float ABpos = b2x + (b1x - b2x) * b2y / (b2y - b1y);
+    double ABpos = b2x + (b1x - b2x) * b2y / (b2y - b1y);
 
     // Apply the discovered position to line A-B in the original coordinate system.
     return Cartesian(Meters(a1x+ABpos*theCos), Meters(a1y+ABpos*theSin));
-}
-
-MetersSquared GeometryUtilities::polygonArea(const Polygon& polygon) {
-
-    // Magic (not really - see http://mathworld.wolfram.com/PolygonArea.html)
-    float area = 0.0;
-    std::vector<Cartesian> vertices = polygon.getVertices();
-    for (int i = 0; i < vertices.size(); i += 1) {
-        int j = (i + 1) % vertices.size();
-        area += vertices.at(i).getX().getMeters() * vertices.at(j).getY().getMeters();
-        area -= vertices.at(i).getY().getMeters() * vertices.at(j).getX().getMeters();
-    }
-    area /= 2.0;
-
-    return MetersSquared(std::abs(area));
-}
-
-std::vector<std::pair<Cartesian, Cartesian>> GeometryUtilities::getLineSegments(const Polygon& polygon) {
-
-    std::vector<std::pair<Cartesian, Cartesian>> segments;
-
-    std::vector<Cartesian> vertices = polygon.getVertices();
-    if (1 < vertices.size()) {
-        Cartesian previousPoint = vertices.back();
-        for (Cartesian currentPoint : vertices) {
-            segments.push_back(std::make_pair(previousPoint, currentPoint));
-            previousPoint = currentPoint;
-        }
-    }
-
-    return segments;
 }
 
 Polygon GeometryUtilities::convexHull(const std::vector<Polygon>& polygons) {
@@ -276,8 +243,8 @@ Polygon GeometryUtilities::getUnionTwo(const Polygon& A, const Polygon& B) {
 
     auto APoint = APoints.begin();
 
-    std::vector<std::pair<Cartesian, Cartesian>> AEdges = getLineSegments(A);
-    std::vector<std::pair<Cartesian, Cartesian>> BEdges = getLineSegments(B);
+    std::vector<std::pair<Cartesian, Cartesian>> AEdges = A.getLineSegments();
+    std::vector<std::pair<Cartesian, Cartesian>> BEdges = B.getLineSegments();
 
     //For each edge in polygon A
     for(std::pair<Cartesian, Cartesian> edgeA : AEdges) {
@@ -308,35 +275,6 @@ MetersSquared GeometryUtilities::crossProduct(const Cartesian& Z, const Cartesia
     // Where Z is simply the location of the origin for the vectors A and B
 
     return (A.getX() - Z.getX()) * (B.getY() - Z.getY()) - (A.getY() - Z.getY()) * (B.getX() - Z.getX());
-}
-
-std::vector<Triangle> GeometryUtilities::triangulate(const Polygon& polygon) {
-
-    // Populate the TPPLPoly
-    std::vector<Cartesian> vertices = polygon.getVertices();
-    TPPLPoly tpplPoly;
-    tpplPoly.Init(vertices.size());
-    for (int i = 0; i < vertices.size(); i += 1) {
-        tpplPoly[i].x = vertices.at(i).getX().getMeters();
-        tpplPoly[i].y = vertices.at(i).getY().getMeters();
-    }
-    tpplPoly.SetOrientation(TPPL_CCW);
-
-    // Perform the triangulation
-    TPPLPartition triangulator;
-    std::list<TPPLPoly> result;
-    triangulator.Triangulate_OPT(&tpplPoly, &result);
-
-    // Populate the output vector
-    std::vector<Triangle> triangles;
-    for (auto it = result.begin(); it != result.end(); it++) {
-        Triangle triangle(Cartesian(Meters((*it)[0].x), Meters((*it)[0].y)),
-                          Cartesian(Meters((*it)[1].x), Meters((*it)[1].y)),
-                          Cartesian(Meters((*it)[2].x), Meters((*it)[2].y)));
-        triangles.push_back(triangle);
-    }
-
-    return triangles;
 }
 
 } // namespace sim
