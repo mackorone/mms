@@ -1,6 +1,6 @@
 High Pri:
-- Add a race mode, where the human controls with arrow keys like asteroids, races to the center
-    - Automatically declare walls and fog and stuff
+- Add a manual mode high scores
+- Crash recovery semantics
 - Rewrite freeglut text so that it's performant
 - Display a clock
 - Sim speed increase, decrease rate as parameter
@@ -30,7 +30,6 @@ High Pri:
 - Draw a path of where the robot has been (the history object could be used for recording as well)
 
 Med Pri:
-- Crash animation for both modes
 - Check megaMouse performance
     - Better implementation of sensor view collision detection
     - Figure out how to make sensors more efficient
@@ -47,7 +46,6 @@ Med Pri:
 - Be able to restart in the middle of a run (this is tricky with the algo thread...)
 - Make terminal style output at bottom or right of window (GUI)
 - Normalize random number generation (Implement Windows random number generation)
-- Crash recovery semantics
 - Make a nice mechanism for writing our own maze generation algorithms
 - Add Wheel max speed (specificed in mouse parameter file)
 - Change over the Makefile to use cmake
@@ -70,6 +68,7 @@ Low-pri:
 - Change namespace of units from "sim" to "units"
 - Change FreeGLUT to GLFW
 - 3D
+- Crash animation for both modes
 
 Clean-Up:
 - Convert primitive types to GL types

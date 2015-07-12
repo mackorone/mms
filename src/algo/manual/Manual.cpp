@@ -47,10 +47,12 @@ void Manual::solve(sim::MouseInterface* mouse) {
             rightWheelSpeed -= accelerateAmount;
         }
         if (sim::S()->arrowKeyIsPressed(sim::RIGHT)) {
-            leftWheelSpeed -= accelerateAmount / 2.0;
+            leftWheelSpeed -= accelerateAmount / 4.0;
+            rightWheelSpeed -= accelerateAmount / 4.0;
         }
         if (sim::S()->arrowKeyIsPressed(sim::LEFT)) {
-            rightWheelSpeed += accelerateAmount / 2.0;
+            leftWheelSpeed += accelerateAmount / 4.0;
+            rightWheelSpeed += accelerateAmount / 4.0;
         }
 
         mouse->setWheelSpeeds(leftWheelSpeed, rightWheelSpeed);
