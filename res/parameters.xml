@@ -11,8 +11,9 @@
 <zoomed-map-position-y>10</zoomed-map-position-y> <!-- Pixels -->
 <zoomed-map-width>450</zoomed-map-width> <!-- Pixels -->
 <zoomed-map-height>450</zoomed-map-height> <!-- Pixels -->
+<min-zoomed-map-scale>0.02</min-zoomed-map-scale>
+<max-zoomed-map-scale>1.0</max-zoomed-map-scale>
 <default-zoomed-map-scale>.1</default-zoomed-map-scale>
-<!-- TODO: Max min zoom factor -->
 <default-rotate-zoomed-map>false</default-rotate-zoomed-map>
 <frame-rate>60</frame-rate> <!-- Frames per second -->
 <print-late-frames>false</print-late-frames>

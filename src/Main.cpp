@@ -229,6 +229,9 @@ void initGraphics(int argc, char* argv[]) {
     glutKeyboardFunc(keyInput);
     glPolygonMode(GL_FRONT_AND_BACK, sim::S()->wireframeMode() ? GL_LINE : GL_FILL);
 
+    // Ensures that the aspect ration stays the same when the window is resized
+    glutReshapeFunc([](int width, int height){}); 
+
     // GLEW Initialization
     GLenum err = glewInit();
     if (GLEW_OK != err) {

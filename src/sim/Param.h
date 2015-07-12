@@ -26,6 +26,8 @@ public:
     int zoomedMapPositionY();
     int zoomedMapWidth();
     int zoomedMapHeight();
+    double minZoomedMapScale();
+    double maxZoomedMapScale();
     double defaultZoomedMapScale();
     bool defaultRotateZoomedMap();
     int frameRate();
@@ -109,6 +111,8 @@ private:
     int m_zoomedMapPositionY;
     int m_zoomedMapWidth;
     int m_zoomedMapHeight;
+    double m_minZoomedMapScale;
+    double m_maxZoomedMapScale;
     double m_defaultZoomedMapScale;
     bool m_defaultRotateZoomedMap;
     int m_frameRate;

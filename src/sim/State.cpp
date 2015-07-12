@@ -110,7 +110,15 @@ void State::setRotateZoomedMap(bool rotateZoomedMap) {
 }
 
 void State::setZoomedMapScale(double zoomedMapScale) {
-    m_zoomedMapScale = zoomedMapScale;
+    if (zoomedMapScale < P()->minZoomedMapScale()) {
+        m_zoomedMapScale = P()->minZoomedMapScale();
+    }
+    else if (P()->maxZoomedMapScale() < zoomedMapScale) {
+        m_zoomedMapScale = P()->maxZoomedMapScale();
+    }
+    else {
+        m_zoomedMapScale = zoomedMapScale;
+    }
 }
 
 void State::setMousePathVisible(bool mousePathVisible) {

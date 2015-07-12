@@ -33,6 +33,8 @@ Param::Param() {
     m_zoomedMapPositionY = parser.getIntIfHasInt("zoomed-map-position-y", 10);
     m_zoomedMapWidth = parser.getIntIfHasInt("zoomed-map-width", 450);
     m_zoomedMapHeight = parser.getIntIfHasInt("zoomed-map-height", 450);
+    m_minZoomedMapScale = parser.getDoubleIfHasDouble("min-zoomed-map-scale", 0.01);
+    m_maxZoomedMapScale = parser.getDoubleIfHasDouble("max-zoomed-map-scale", 1.0);
     m_defaultZoomedMapScale = parser.getDoubleIfHasDouble("default-zoomed-map-scale", 0.1);
     m_defaultRotateZoomedMap = parser.getBoolIfHasBool("default-rotate-zoomed-map", false);
     m_frameRate = parser.getIntIfHasInt("frame-rate", 60);
@@ -149,6 +151,14 @@ int Param::zoomedMapHeight() {
     return m_zoomedMapHeight;
 }
 
+double Param::minZoomedMapScale() {
+    return m_minZoomedMapScale;
+}
+
+double Param::maxZoomedMapScale() {
+    return m_maxZoomedMapScale;
+}
+
 double Param::defaultZoomedMapScale() {
     return m_defaultZoomedMapScale;
 }
@@ -156,6 +166,7 @@ double Param::defaultZoomedMapScale() {
 bool Param::defaultRotateZoomedMap() {
     return m_defaultRotateZoomedMap;
 }
+
 int Param::frameRate() {
     return m_frameRate;
 }
