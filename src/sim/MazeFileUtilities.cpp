@@ -65,7 +65,7 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
         lineNum += 1;
 
         // Extract the whitespace separated tokens
-        std::vector<std::string> tokens = SimUtilities::tokenize(line);
+        std::vector<std::string> tokens = SimUtilities::tokenize(line, false);
 
         // Check to see that there are exactly six entries...
         if (6 != tokens.size()) {

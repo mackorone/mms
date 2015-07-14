@@ -1,7 +1,5 @@
 #include "ParamParser.h"
 
-#include <iostream>
-
 #include "Assert.h"
 #include "SimUtilities.h"
 
@@ -11,8 +9,10 @@ ParamParser::ParamParser(std::string filePath) {
     // Open the document
     pugi::xml_parse_result result = m_doc.load_file(filePath.c_str());
     if (!result) {
-        SimUtilities::print("Error: Unable to read parameters from \"" + filePath + "\": " + result.description());
-        SimUtilities::quit();
+        // This is a special case where we have to use dump(). We can't use print()
+        // because print() uses some parameters that we haven't yet initialized.
+        SimUtilities::dump("Error: Unable to read parameters from \"" + filePath + "\": "
+            + result.description() + ".\nUsing default values for all parameters instead.");
     }
 }
 

@@ -70,6 +70,7 @@ int main(int argc, char* argv[]) {
     std::thread solvingThread(solve);
 
     // Start the graphics loop
+    sim::S()->enterMainLoop();
     glutMainLoop();
 }
 

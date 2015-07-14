@@ -2,6 +2,8 @@
 #include "ParamParser.h"
 #include "SimUtilities.h"
 
+#include <iostream>
+
 namespace sim {
 
 Param* P() {
@@ -21,6 +23,10 @@ Param::Param() {
 
     // Create the parameter parser object
     ParamParser parser(SimUtilities::getProjectDirectory() + "res/parameters.xml");
+
+    // High priority parameters - these must be initialized before print() will work properly
+    m_printWidth = parser.getIntIfHasInt("print-width", 100);
+    m_printIdentString = parser.getStringIfHasString("print-indent-string", "    ");
 
     // Graphical Parameters
     m_windowWidth = parser.getIntIfHasInt("window-width", 930);
@@ -78,7 +84,7 @@ Param::Param() {
     m_defaultPaused = parser.getBoolIfHasBool("default-paused", false);
     m_minSleepDuration = parser.getDoubleIfHasDouble("min-sleep-duration", 5);
     m_discreteInterfaceMinSpeed = parser.getDoubleIfHasDouble("discrete-interface-min-speed", 1.0);
-    m_discreteInterfaceMaxSpeed = parser.getDoubleIfHasDouble("discrete-interface-max-speed", 500.0);
+    m_discreteInterfaceMaxSpeed = parser.getDoubleIfHasDouble("discrete-interface-max-speed", 300.0);
     m_discreteInterfaceDefaultSpeed = parser.getDoubleIfHasDouble("discrete-interface-default-speed", 30.0);
     m_discreteInterfaceDeclareWallOnRead = parser.getBoolIfHasBool("discrete-interface-declare-wall-on-read", true);
     m_discreteInterfaceUnfogTileOnEntry = parser.getBoolIfHasBool("discrete-interface-unfog-tile-on-entry", true);
@@ -101,7 +107,7 @@ Param::Param() {
     m_generatedMazeWidth = parser.getIntIfHasInt("generated-maze-width", 16);
     m_generatedMazeHeight = parser.getIntIfHasInt("generated-maze-height", 16);
     m_enforceOfficialMazeRules = parser.getBoolIfHasBool("enforce-official-maze-rules", true);
-    m_mazeGenerationAlgo = parser.getStringIfHasString("maze-generation-algo", "TOMASZ");
+    m_mazeGenerationAlgo = parser.getStringIfHasString("maze-generation-algo", "RANDOM");
     m_saveGeneratedMaze = parser.getBoolIfHasBool("save-generated-maze", true);
 
     // Mouse parameters
@@ -257,6 +263,14 @@ bool Param::defaultWireframeMode() {
 
 int Param::randomSeed() {
     return m_randomSeed;
+}
+
+int Param::printWidth() {
+    return m_printWidth;
+}
+
+std::string Param::printIndentString() {
+    return m_printIdentString;
 }
 
 std::string Param::crashMessage() {

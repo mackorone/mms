@@ -64,7 +64,7 @@ bool Mouse::initialize(const std::string& mouseFile) {
     for (std::pair<std::string, Sensor> pair : m_sensors) {
         polygons.push_back(pair.second.getInitialPolygon());
     }
-    // TODO: SOM: This should be changed to getUnion instead of convexHull, once it's ready
+    // TODO: UP-FOR-GRABS: This should be changed to getUnion instead of convexHull, once it's ready
     m_initialCollisionPolygon = GeometryUtilities::convexHull(polygons);
 
     // Indicate that we're done with the initiaization

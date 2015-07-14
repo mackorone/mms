@@ -139,7 +139,7 @@ bool GeometryUtilities::linesIntersect(const std::pair<const Cartesian&, const C
 Cartesian GeometryUtilities::getIntersectionPoint(const std::pair<const Cartesian&, const Cartesian&>& A,
                                                   const std::pair<const Cartesian&, const Cartesian&>& B) {
 
-    // TODO: SOM - Explain/Clean this functionality - right now, I don't know how it works
+    // TODO: UP-FOR-GRABS - Explain/Clean this functionality - right now, I don't know how it works
 
     // Assert that the lines do intersect
     ASSERT(linesIntersect(A, B));
@@ -230,7 +230,7 @@ Polygon GeometryUtilities::convexHull(const std::vector<Polygon>& polygons) {
 }
 
 Polygon GeometryUtilities::getUnionMultiple(const std::vector<Polygon>& polygons) {
-    // TODO: SOM - This function should return the union of the polygons
+    // TODO: UP-FOR-GRABS - This function should return the union of the polygons
     // Assumptions:
     // - The polygons are connected
     // - The output polygon has no holes in it

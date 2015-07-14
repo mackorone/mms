@@ -57,6 +57,8 @@ public:
     int randomSeed();
     double glutInitDuration();
     bool defaultPaused();
+    int printWidth();
+    std::string printIndentString();
     std::string crashMessage();
     double minSleepDuration();
     double discreteInterfaceMinSpeed();
@@ -142,6 +144,8 @@ private:
     int m_randomSeed;
     double m_glutInitDuration;
     bool m_defaultPaused;
+    int m_printWidth;
+    std::string m_printIdentString;
     std::string m_crashMessage;
     double m_minSleepDuration;
     double m_discreteInterfaceMinSpeed;

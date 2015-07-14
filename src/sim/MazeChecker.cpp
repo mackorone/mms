@@ -35,12 +35,12 @@ bool MazeChecker::isRectangular(const std::vector<std::vector<BasicTile>>& maze)
 }
 
 bool MazeChecker::isEnclosed(const std::vector<std::vector<BasicTile>>& maze) {
-    // TODO: SOM - implement this method
+    // TODO: UP-FOR-GRABS - implement this method
     return true;
 }
 
 bool MazeChecker::hasConsistentWalls(const std::vector<std::vector<BasicTile>>& maze) {
-    // TODO: SOM - implement this method
+    // TODO: UP-FOR-GRABS - implement this method
     return true;
 }
 
@@ -48,7 +48,7 @@ bool MazeChecker::officialMaze(const std::vector<std::vector<BasicTile>>& maze) 
 
     ASSERT(validMaze(maze));
 
-    // TODO: SOM - The center should have no walls in it
+    // TODO: UP-FOR-GRABS - The center should have no walls in it
     // TODO: What about size requirements?
 
     if (!isSquare(maze)) {
@@ -90,7 +90,7 @@ bool MazeChecker::officialMaze(const std::vector<std::vector<BasicTile>>& maze) 
 }
 
 bool MazeChecker::isSquare(const std::vector<std::vector<BasicTile>>& maze) {
-    // TODO: SOM - implement this method
+    // TODO: UP-FOR-GRABS - implement this method
     return true;
 }
 
@@ -320,12 +320,12 @@ bool MazeChecker::threeStartingWalls(const std::vector<std::vector<BasicTile>>& 
 }
 
 bool MazeChecker::unsolvableByWallFollower(const std::vector<std::vector<BasicTile>>& maze) {
-    // TODO: SOM - implement this method
+    // TODO: UP-FOR-GRABS - implement this method
     return false;
 }
 
 bool MazeChecker::noInaccesibleLocations(const std::vector<std::vector<BasicTile>>& maze) {
-    // TODO: SOM - implement this method
+    // TODO: UP-FOR-GRABS - implement this method
     return false;
 }
 

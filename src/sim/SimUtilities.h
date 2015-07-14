@@ -17,8 +17,11 @@ public:
     // Quits the simulation
     static void quit();
 
-    // Prints a message to stdout
+    // Prints a message to stdout, with fancy indentation
     static void print(const std::string& msg);
+
+    // Bare bones print
+    static void dump(const std::string& msg);
 
     // Returns a double in [0.0, 1.0]
     static double getRandom();
@@ -33,21 +36,21 @@ public:
     static std::string getProjectDirectory();
 
     // Convert between types
-    static bool isBool(std::string str);
-    static bool isInt(std::string str);
-    static bool isDouble(std::string str);
-    static bool strToBool(std::string str);
-    static int strToInt(std::string str);
-    static double strToDouble(std::string str);
+    static bool isBool(const std::string& str);
+    static bool isInt(const std::string& str);
+    static bool isDouble(const std::string& str);
+    static bool strToBool(const std::string& str);
+    static int strToInt(const std::string& str);
+    static double strToDouble(const std::string& str);
 
     // Tokenizes a string on whitespace
-    static std::vector<std::string> tokenize(std::string str);
+    static std::vector<std::string> tokenize(const std::string& str, bool respectQuotes);
 
     // Returns the string str with the leading and trailing spaces removed
     static std::string trim(const std::string& str);
 
     // True if path is a path to a file, false otherwise
-    static bool isFile(std::string path);
+    static bool isFile(const std::string& path);
 
     // Returns the index of the direction in DIRECTIONS
     static int getDirectionIndex(Direction direction);

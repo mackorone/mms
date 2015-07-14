@@ -28,15 +28,16 @@
 namespace sim {
 
 void SimUtilities::quit() {
+
     // The reason we don't just call exit() is because sometimes the window
     // wasn't reclaimed properly. So we use glutLeaveMainLoop, but only after
     // we've actually entered the main loop.
-    if (S()->mainLoopEntered()) {
-        glutLeaveMainLoop(); 
-    }
-    else {
+
+    if (!S()->mainLoopEntered()) {
         exit(0);
     }
+
+    glutLeaveMainLoop(); 
     if (std::this_thread::get_id() != S()->mainThreadId()) {
         // If we're not the main thread, just sleep until the program terminates
         while (true) {
@@ -46,7 +47,23 @@ void SimUtilities::quit() {
 }
 
 void SimUtilities::print(const std::string& msg) {
-    // TODO: Do some formatting here...
+    std::vector<std::string> tokens = tokenize(msg, true);
+    int lineLength = 0;
+    for (std::string token : tokens) {
+        if (lineLength == 0 || lineLength + token.size() <= 100) {
+            std::cout << token << " ";
+            lineLength += token.size() + 1;
+        }
+        else {
+            std::cout << std::endl << "    " << token << " ";
+            lineLength = P()->printIndentString().size() + token.size() + 1;
+        }
+    }
+    std::cout << std::endl;
+}
+
+void SimUtilities::dump(const std::string& msg) {
+    // Note: We can't use P() in here - doing so would cause a circular dependency
     std::cout << msg << std::endl;
 }
 
@@ -84,8 +101,6 @@ double SimUtilities::getHighResTime() {
 
 std::string SimUtilities::getProjectDirectory() {
 
-    // TODO: Get rid of "bin/../"
-
     // This approach is claimed to be more reliable than argv[0] on windows
     // and linux.  On Windows GetModuleFileName is the directory to the executable
     // which is located in /mms/src/Debug/.  On linux /proc/self/exe is a path to exe.
@@ -98,8 +113,8 @@ std::string SimUtilities::getProjectDirectory() {
     char result[PATH_MAX];
     ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
     path = std::string(result, (count > 0) ? count : 0);
-    path = path.substr(0, path.find_last_of("\\/"));; // Remove the executable name as it is part of path
-    path += "/../";
+    path = path.substr(0, path.find_last_of("\\/")); // Remove the executable name as it is part of path
+    path = path.substr(0, path.find_last_of("\\/")) + "/"; // Remove the "bin" from the path
 #elif _WIN32
     char result[MAX_PATH];
     path = std::string(result, GetModuleFileName(NULL, result, MAX_PATH));
@@ -111,11 +126,11 @@ std::string SimUtilities::getProjectDirectory() {
     return path;
 }
 
-bool SimUtilities::isBool(std::string str) {
+bool SimUtilities::isBool(const std::string& str) {
     return 0 == str.compare("true") || 0 == str.compare("false");
 }
 
-bool SimUtilities::isInt(std::string str) {
+bool SimUtilities::isInt(const std::string& str) {
     try {
         std::stoi(str);
     }
@@ -125,7 +140,7 @@ bool SimUtilities::isInt(std::string str) {
     return true;
 }
 
-bool SimUtilities::isDouble(std::string str) {
+bool SimUtilities::isDouble(const std::string& str) {
     try {
         std::stod(str);
     }
@@ -135,28 +150,34 @@ bool SimUtilities::isDouble(std::string str) {
     return true;
 }
 
-bool SimUtilities::strToBool(std::string str) {
+bool SimUtilities::strToBool(const std::string& str) {
     ASSERT(isBool(str));
     return 0 == str.compare("true");
 }
 
-int SimUtilities::strToInt(std::string str) {
+int SimUtilities::strToInt(const std::string& str) {
     ASSERT(isInt(str));
     return std::stoi(str.c_str());
 }
 
-double SimUtilities::strToDouble(std::string str) {
+double SimUtilities::strToDouble(const std::string& str) {
     ASSERT(isDouble(str));
     return std::stof(str);
 }
 
 
-std::vector<std::string> SimUtilities::tokenize(std::string str) {
+std::vector<std::string> SimUtilities::tokenize(const std::string& str, bool respectQuotes) {
 
     std::vector<std::string> tokens;
     std::string word = "";
 
     for (int i = 0; i < str.size(); ++i) {
+        if (respectQuotes && str.at(i) == '\"') {
+            do {
+                word += str.at(i);
+                i += 1;
+            } while (i < str.size() && str.at(i) != '\"');
+        }
         if (str.at(i) == ' ') {
             if (!word.empty()) {
                 tokens.push_back(word);
@@ -184,7 +205,7 @@ std::string SimUtilities::trim(const std::string& str) {
     return str.substr(first, last-first+1);
 }
 
-bool SimUtilities::isFile(std::string path) {
+bool SimUtilities::isFile(const std::string& path) {
     struct stat buf;
     stat(path.c_str(), &buf);
     return S_ISREG(buf.st_mode);

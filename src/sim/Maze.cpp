@@ -10,6 +10,8 @@
 #include "SimUtilities.h"
 #include "Tile.h"
 
+#include <iostream>
+
 namespace sim {
 
 Maze::Maze() {
