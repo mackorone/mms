@@ -39,7 +39,7 @@ Param::Param() {
     m_zoomedMapPositionY = parser.getIntIfHasInt("zoomed-map-position-y", 10);
     m_zoomedMapWidth = parser.getIntIfHasInt("zoomed-map-width", 450);
     m_zoomedMapHeight = parser.getIntIfHasInt("zoomed-map-height", 450);
-    m_minZoomedMapScale = parser.getDoubleIfHasDouble("min-zoomed-map-scale", 0.01);
+    m_minZoomedMapScale = parser.getDoubleIfHasDouble("min-zoomed-map-scale", 0.02);
     m_maxZoomedMapScale = parser.getDoubleIfHasDouble("max-zoomed-map-scale", 1.0);
     m_defaultZoomedMapScale = parser.getDoubleIfHasDouble("default-zoomed-map-scale", 0.1);
     m_defaultRotateZoomedMap = parser.getBoolIfHasBool("default-rotate-zoomed-map", false);
@@ -80,7 +80,7 @@ Param::Param() {
     }
     m_randomSeed = (useRandomSeed ? parser.getIntValue("random-seed") : time(NULL));
     m_crashMessage = parser.getStringIfHasString("crash-message", "CRASH");
-    m_glutInitDuration = parser.getDoubleIfHasDouble("glut-init-duration", 0.25);
+    m_glutInitDuration = parser.getDoubleIfHasDouble("glut-init-duration", 0.1);
     m_defaultPaused = parser.getBoolIfHasBool("default-paused", false);
     m_minSleepDuration = parser.getDoubleIfHasDouble("min-sleep-duration", 5);
     m_discreteInterfaceMinSpeed = parser.getDoubleIfHasDouble("discrete-interface-min-speed", 1.0);
@@ -102,11 +102,11 @@ Param::Param() {
     m_mazeFile = parser.getStringIfHasString("maze-file", "");
     m_useMazeFile = parser.getBoolIfHasBool("use-maze-file", false);
     m_wallWidth = parser.getDoubleIfHasDouble("wall-width", 0.012);
-    m_wallLength = parser.getDoubleIfHasDouble("wall-length", 0.156);
+    m_wallLength = parser.getDoubleIfHasDouble("wall-length", 0.168);
     m_wallHeight = parser.getDoubleIfHasDouble("wall-height", 0.05);
     m_generatedMazeWidth = parser.getIntIfHasInt("generated-maze-width", 16);
     m_generatedMazeHeight = parser.getIntIfHasInt("generated-maze-height", 16);
-    m_enforceOfficialMazeRules = parser.getBoolIfHasBool("enforce-official-maze-rules", true);
+    m_enforceOfficialMazeRules = parser.getBoolIfHasBool("enforce-official-maze-rules", false);
     m_mazeGenerationAlgo = parser.getStringIfHasString("maze-generation-algo", "RANDOM");
     m_saveGeneratedMaze = parser.getBoolIfHasBool("save-generated-maze", true);
 
@@ -114,7 +114,7 @@ Param::Param() {
     m_mouseDirectory = parser.getStringIfHasString("mouse-directory", "res/mice/");
 
     // Algorithm parameters
-    m_algorithm = parser.getStringIfHasString("algorithm", "MackAlgo");
+    m_algorithm = parser.getStringIfHasString("algorithm", "RightWallFollow");
 }
 
 int Param::windowWidth() {

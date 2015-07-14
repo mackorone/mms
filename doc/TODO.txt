@@ -2,7 +2,6 @@ High Pri:
 - Make some utility that keeps track of elapse time
     - Make the sim speed non-arbitrary
 - Crash recovery semantics
-- Write a script that compares parameters.xml to defauls in Param.cpp
 - Rewrite freeglut text so that it's performant
 - Display a clock
 - Maze Validation (both physically valid mazes and competition valid mazes)
