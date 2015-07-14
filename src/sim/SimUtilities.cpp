@@ -8,6 +8,7 @@
 #include <string>
 #include <sys/stat.h>
 #include <thread>
+#include <random>
 
 #ifdef __linux
     #include <limits.h>
@@ -31,17 +32,8 @@ void SimUtilities::print(const std::string& msg) {
 }
 
 float SimUtilities::getRandom() {
-#ifdef __linux
-    static bool seeded = false;
-    if (!seeded) {
-        srand(sim::P()->randomSeed());
-        seeded = true;
-    }
-    return rand() / static_cast<float>(RAND_MAX);
-#elif _WIN32
-    // TODO: Tomasz said he'd implement the Windows version
-    return 0.0;
-#endif
+    static std::mt19937 generator (sim::P()->randomSeed());
+    return generator()/static_cast<float>(generator.max());
 }
 
 void SimUtilities::sleep(const Duration& duration) {

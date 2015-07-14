@@ -1,5 +1,8 @@
 #include "Param.h"
 
+#include <iostream>
+#include <random>
+
 #include "ParamParser.h"
 #include "SimUtilities.h"
 
@@ -44,7 +47,11 @@ Param::Param() {
 
     // Simulation Parameters
     bool useRandomSeed = parser.getBoolIfHasBool("use-random-seed", false);
-    m_randomSeed = (useRandomSeed ? parser.getIntIfHasInt("random-seed", time(NULL)) : time(NULL));
+    
+    std::random_device rd2; // Used to get a random seed
+
+    m_randomSeed = (useRandomSeed ? parser.getIntIfHasInt("random-seed", rd2()) : rd(2));
+    
     m_crashMessage = parser.getStringIfHasString("crash-message", "CRASH");
     m_glutInitDuration = parser.getFloatIfHasFloat("glut-init-duration", 0.25);
     m_defaultPaused = parser.getBoolIfHasBool("default-paused", false);
