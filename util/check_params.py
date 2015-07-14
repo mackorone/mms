@@ -4,8 +4,11 @@ sure that they match. It prints out any inconsistencies between the two.
 '''
 
 import re
+import inspect, os
 
-with open('../res/parameters.xml', 'r') as xml, open('../src/sim/Param.cpp') as cpp:
+utilPath = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+
+with open(utilPath + '/../res/parameters.xml', 'r') as xml, open(utilPath + '/../src/sim/Param.cpp') as cpp:
 
     xml_regex = re.compile('<\S+>.+</\S+>')
     xml_tags = xml_regex.findall(xml.read())

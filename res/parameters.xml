@@ -79,4 +79,4 @@
 <mouse-directory>res/mice/</mouse-directory> <!-- Relative to project root -->
 
 <!-- Algo Parameters -->
-<algorithm>RightWallFollow</algorithm> <!-- The name as specified in src/algo/AlgoHub.cpp -->
+<algorithm>MackAlgo</algorithm> <!-- The name as specified in src/algo/AlgoHub.cpp -->
