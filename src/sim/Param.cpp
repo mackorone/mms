@@ -50,7 +50,7 @@ Param::Param() {
     
     std::random_device rd2; // Used to get a random seed
 
-    m_randomSeed = (useRandomSeed ? parser.getIntIfHasInt("random-seed", rd2()) : rd(2));
+    m_randomSeed = (useRandomSeed ? parser.getIntIfHasInt("random-seed", rd2()) : rd2());
     
     m_crashMessage = parser.getStringIfHasString("crash-message", "CRASH");
     m_glutInitDuration = parser.getFloatIfHasFloat("glut-init-duration", 0.25);
