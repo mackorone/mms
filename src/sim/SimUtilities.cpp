@@ -28,9 +28,17 @@
 namespace sim {
 
 void SimUtilities::quit() {
-    glutLeaveMainLoop(); 
+    // The reason we don't just call exit() is because sometimes the window
+    // wasn't reclaimed properly. So we use glutLeaveMainLoop, but only after
+    // we've actually entered the main loop.
+    if (S()->mainLoopEntered()) {
+        glutLeaveMainLoop(); 
+    }
+    else {
+        exit(0);
+    }
     if (std::this_thread::get_id() != S()->mainThreadId()) {
-        // Sleep until the program terminates
+        // If we're not the main thread, just sleep until the program terminates
         while (true) {
             sleep(Seconds(1)); 
         }
@@ -38,6 +46,7 @@ void SimUtilities::quit() {
 }
 
 void SimUtilities::print(const std::string& msg) {
+    // TODO: Do some formatting here...
     std::cout << msg << std::endl;
 }
 
@@ -74,6 +83,8 @@ double SimUtilities::getHighResTime() {
 }
 
 std::string SimUtilities::getProjectDirectory() {
+
+    // TODO: Get rid of "bin/../"
 
     // This approach is claimed to be more reliable than argv[0] on windows
     // and linux.  On Windows GetModuleFileName is the directory to the executable

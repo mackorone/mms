@@ -22,7 +22,7 @@ private:
     std::vector<std::vector<Tile>> m_maze;
 
     // Initialize the object by reading a maze file; true if successful, false otherwise
-    bool initializeViaMazeFile();
+    bool initializeViaMazeFile(const std::string& mazeFilePath);
 
     // Initialize the Maze object by randomly generating a maze
     void initializeViaMazeGenerator();

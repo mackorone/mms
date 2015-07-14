@@ -22,6 +22,7 @@ State* State::getInstance() {
 
 State::State() {
     m_mainThreadId = std::this_thread::get_id();
+    m_mainLoopEntered = false;
     m_crashed = false;
     m_interfaceType = UNDECLARED;
     m_rotateZoomedMap = P()->defaultRotateZoomedMap();
@@ -44,6 +45,10 @@ State::State() {
 
 std::thread::id State::mainThreadId() {
     return m_mainThreadId;
+}
+
+bool State::mainLoopEntered() {
+    return m_mainLoopEntered;
 }
 
 bool State::crashed() {
@@ -103,6 +108,10 @@ bool State::inputButtonWasPressed(int inputButton) {
 bool State::arrowKeyIsPressed(int key) {
     ASSERT(1 == m_arrowKeys.count(key));
     return m_arrowKeys.at(key);
+}
+
+void State::enterMainLoop() {
+    m_mainLoopEntered = true;
 }
 
 void State::setCrashed() {

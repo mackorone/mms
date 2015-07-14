@@ -27,6 +27,7 @@ private:
     static bool hasConsistentWalls(const std::vector<std::vector<BasicTile>>& maze);
 
     // officialMaze helper functions
+    static bool isSquare(const std::vector<std::vector<BasicTile>>& maze);
     static bool hasPathToCenter(const std::vector<std::vector<BasicTile>>& maze, int x, int y);
     static bool hasOneEntrance(const std::vector<std::vector<BasicTile>>& maze);
     static bool eachPostHasWall(const std::vector<std::vector<BasicTile>>& maze, int x, int y);

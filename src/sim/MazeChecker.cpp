@@ -26,7 +26,11 @@ bool MazeChecker::validMaze(const std::vector<std::vector<BasicTile>>& maze) {
 }
 
 bool MazeChecker::isRectangular(const std::vector<std::vector<BasicTile>>& maze) {
-    // TODO: SOM - implement this method
+    for (int i = 0; i < maze.size() - 1; i += 1) {
+        if (maze.at(i).size() != maze.at(i + 1).size()) {
+            return false;
+        }
+    }
     return true;
 }
 
@@ -45,6 +49,12 @@ bool MazeChecker::officialMaze(const std::vector<std::vector<BasicTile>>& maze) 
     ASSERT(validMaze(maze));
 
     // TODO: SOM - The center should have no walls in it
+    // TODO: What about size requirements?
+
+    if (!isSquare(maze)) {
+        SimUtilities::print("Error: The maze is not square.");
+        return false;
+    }
 
     if (!hasPathToCenter(maze, 0, 0)) {
         SimUtilities::print("Error: The maze does not have a path to the center.");
@@ -78,6 +88,12 @@ bool MazeChecker::officialMaze(const std::vector<std::vector<BasicTile>>& maze) 
 
     return true;
 }
+
+bool MazeChecker::isSquare(const std::vector<std::vector<BasicTile>>& maze) {
+    // TODO: SOM - implement this method
+    return true;
+}
+
 
 /*
 //Recursively check every combination and left and right wall follows

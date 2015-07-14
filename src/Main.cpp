@@ -40,7 +40,9 @@ GLuint g_transformationMatixId;
 
 int main(int argc, char* argv[]) {
 
-    // First, we initialize the state object (to avoid a race condition)
+    // First, we initialize the state object to:
+    // 1) Avoid a race condition
+    // 2) Register this thread as the main thread
     sim::S();
 
     // Initialize local objects

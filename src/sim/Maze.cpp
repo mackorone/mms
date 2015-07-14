@@ -13,8 +13,14 @@
 namespace sim {
 
 Maze::Maze() {
-    // We're relying on short-circuit evaluating here
-    if (!P()->useMazeFile() || !initializeViaMazeFile()) {
+    if (P()->useMazeFile()) {
+        std::string mazeFilePath = SimUtilities::getProjectDirectory() + P()->mazeDirectory() + P()->mazeFile();
+        if (!initializeViaMazeFile(mazeFilePath)) {
+            SimUtilities::print("Error: Unable to initialize maze from file \"" + mazeFilePath + "\".");
+            SimUtilities::quit();
+        }
+    }
+    else {
         initializeViaMazeGenerator();
     }
 }
@@ -37,10 +43,7 @@ const Tile* Maze::getTile(int x, int y) const {
     return &m_maze.at(x).at(y);
 }
 
-bool Maze::initializeViaMazeFile() {
-
-    // First, get the maze file path
-    std::string mazeFilePath = SimUtilities::getProjectDirectory() + P()->mazeDirectory() + P()->mazeFile();
+bool Maze::initializeViaMazeFile(const std::string& mazeFilePath) {
 
     // Then, check to see if the file is in the correct format
     if (!MazeFileUtilities::isMazeFile(mazeFilePath)) {
@@ -83,7 +86,8 @@ void Maze::initializeViaMazeGenerator() {
 
     // Optionally save the maze
     if (P()->saveGeneratedMaze()) {
-        MazeFileUtilities::saveMaze(extractMaze(), SimUtilities::getProjectDirectory() + P()->mazeDirectory() + "auto_generated_maze.maz");
+        MazeFileUtilities::saveMaze(extractMaze(),
+            SimUtilities::getProjectDirectory() + P()->mazeDirectory() + "auto_generated_maze.maz");
     }
 }
 

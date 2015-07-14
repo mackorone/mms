@@ -22,10 +22,6 @@ private:
 
     // A private constructor to restrict creation of any MazeFileUtilities objects
     MazeFileUtilities();
-
-    // Returns the maze width and height (in that order)
-    static std::pair<int, int> getMazeSize(const std::string& mazeFilePath);
-
 };
 
 } // namespace sim

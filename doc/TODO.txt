@@ -1,9 +1,8 @@
 High Pri:
-- Add a manual mode high scores
+- Make some utility that keeps track of elapse time
 - Crash recovery semantics
 - Rewrite freeglut text so that it's performant
 - Display a clock
-- Sim speed increase, decrease rate as parameter
 - Maze Validation (both physically valid mazes and competition valid mazes)
 - MazeChecker class that hides the validation functions
 - Figure out how to get rid of ifdefs in algorithm
@@ -34,6 +33,7 @@ Med Pri:
     - Better implementation of sensor view collision detection
     - Figure out how to make sensors more efficient
     - Make the sensor polygon model better
+- Add a manual mode high scores
 - Add a way to set the text color of each tile individually
 - Zoomed map mouse is a bit jumpy when going at high speeds
 - Shortest path graphic (phantom bot that travels along other shortest paths)
@@ -55,6 +55,7 @@ bullets in other physics simulators
 - Add trajectory lines (see https://www.youtube.com/watch?v=kgJClVCPu3w)
 
 Low-pri:
+- Parameter for auto-generated maze name
 - Triangulate polygons upon creation?
 - Use vertex buffer object for the mouse body (only triangulate the mouse once)
 - Map borders

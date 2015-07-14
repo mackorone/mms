@@ -45,7 +45,7 @@
 <crash-message>Oh no! Your mouse crashed! It can't move anymore...</crash-message>
 <glut-init-duration>0.1</glut-init-duration> <!-- Seconds -->
 <default-paused>false</default-paused>
-<min-sleep-duration>5</min-sleep-duration> <!-- Milliseconds --> <!-- TODO: Change the name of this -->
+<min-sleep-duration>5</min-sleep-duration> <!-- Milliseconds -->
 <discrete-interface-min-speed>1</discrete-interface-min-speed> <!-- No units -->
 <discrete-interface-max-speed>300</discrete-interface-max-speed> <!-- No units -->
 <discrete-interface-default-speed>60</discrete-interface-default-speed> <!-- No units -->
@@ -62,9 +62,9 @@
 
 <!-- Maze Parameters -->
 <maze-directory>res/mazes/</maze-directory> <!-- realtive to project root -->
-<maze-file>mazeish.maz</maze-file> <!-- relative to maze-directory -->
+<maze-file>twoByThree.maz</maze-file> <!-- relative to maze-directory -->
 <use-maze-file>true</use-maze-file> <!-- whether or not to use the maze file above -->
-<wall-length>.168</wall-length> <!-- meters --> <!-- TODO: This crashes things if it's too small -->
+<wall-length>.168</wall-length> <!-- meters -->
 <wall-width>.012</wall-width> <!-- meters -->
 <wall-height>.05</wall-height> <!-- meters -->
 <generated-maze-width>16</generated-maze-width> <!-- number of tiles -->
@@ -77,4 +77,4 @@
 <mouse-directory>res/mice/</mouse-directory> <!-- Relative to project root -->
 
 <!-- Algo Parameters -->
-<algorithm>Manual</algorithm> <!-- The name as specified in src/algo/AlgoHub.cpp -->
+<algorithm>RightWallFollow</algorithm> <!-- The name as specified in src/algo/AlgoHub.cpp -->

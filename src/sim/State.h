@@ -20,6 +20,7 @@ public:
 
     // Accessors
     std::thread::id mainThreadId();
+    bool mainLoopEntered();
     bool crashed();
     InterfaceType interfaceType();
     bool rotateZoomedMap();
@@ -36,6 +37,7 @@ public:
     bool arrowKeyIsPressed(int key);
 
     // Mutators
+    void enterMainLoop();
     void setCrashed();
     void setInterfaceType(InterfaceType interfaceType);
     void setRotateZoomedMap(bool rotateZoomedMap);
@@ -60,6 +62,7 @@ private:
     static State* INSTANCE;
 
     std::thread::id m_mainThreadId;
+    bool m_mainLoopEntered;
     bool m_crashed;
     InterfaceType m_interfaceType;
     bool m_rotateZoomedMap;

@@ -1,7 +1,6 @@
 #include "MazeFileUtilities.h"
 
 #include <fstream>
-#include <iostream>
 #include <iterator>
 #include <sstream>
 
@@ -12,18 +11,27 @@ namespace sim {
 
 bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
 
-    // TODO: SOM - Go through this function and make sure all requirements are satisfied
-    // Use private static helper functions if necessary
+    // Definitions:
+    //  X-value - The first integer value in a particular line
+    //  Y-value - The second integer value in a particular line
+    //  Column - A group of one or more lines that share the same X-value value
     //
     // Format requires that:
-    // 0) File exists
-    // 1) Each .maz file consists of MAZE_WIDTH * MAZE_HEIGHT newline-separated lines
-    // 2) Each line consists of 6 whitespace (preferably single-space) separated tokens
-    // 3) Each of the 6 tokens are integer values
-    // 4) The first 2 tokens represent the x and y position of the tile, respectively
-    // 5) The last 4 tokens represent the existence of north, east, south, and west walls, respectively
-    // 6) A "1" indicates the presence of wall, while a "0" indicates the absence of a wall
-    // 7) The lines should be sorted in order of their x values, and then subsorted in order of their y values
+    //  - The file must exist
+    //  - The file must not be empty
+    //  - Each line consists of six whitespace separated tokens
+    //  - Each of the six tokens are integer values
+    //  - The last four tokens must be either 0 or 1
+    //  - The lines should be sorted by X-value, and then by Y-value
+    //  - The X-value of the first line should be 0
+    //  - X-values should never decrease between any two subsequent lines
+    //  - X-values should increase by at most 1 between any two subsequent lines
+    //  - The Y-value of the first line of each column should be 0
+    //  - Y-values should never decrease between any two subsequent lines within a column
+    //  - Y-values should increase by at most 1 between any two subsequent lines
+    //  - (X-value, Y-value) tuples must be unique
+    //
+    // Note that the maze does not have to be rectangular to be considered a maze file.
 
     // First, make sure we've been given a file
     if (!SimUtilities::isFile(mazeFilePath)) {
@@ -40,96 +48,75 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
         return false;
     }
 
-    // Initialize a string variable
+    // Empty file
+    if (file.peek() == std::ifstream::traits_type::eof()) {
+        SimUtilities::print("Error: \"" + mazeFilePath + "\" is empty.");
+        return false;
+    }
+
     std::string line("");
-
-    // Current x and y position
-    int x = 0;
-    int y = 0;
-
-    // A vector to hold all tiles' values
-    std::vector<std::vector<BasicTile>> maze;
-    
-    // Values for row and column validation
-    int rowMax = 0;
-    int columnMax = 0;
-    int columnCount = 0;
-    int prevRow = -1;
+    int lineNum = 0;
+    int expectedX = 0;
+    int expectedY = 0;
 
     while (std::getline(file, line)) {
+
+        // Increment the line number
+        lineNum += 1;
 
         // Extract the whitespace separated tokens
         std::vector<std::string> tokens = SimUtilities::tokenize(line);
 
         // Check to see that there are exactly six entries...
         if (6 != tokens.size()) {
-            SimUtilities::print("Error: \"" + mazeFilePath + "\" does not contain six entries on each line.");
+            SimUtilities::print("Error: \"" + mazeFilePath + "\" does not contain six entries on each line: line "
+                + std::to_string(lineNum) + " contains " + std::to_string(tokens.size()) + " entries.");
             return false;
         }
 
         // ... all of which are numeric
+        std::vector<int> values;
         for (int i = 0; i < tokens.size(); i += 1) {
             if (!SimUtilities::isInt(tokens.at(i))) {
-                SimUtilities::print("Error: \"" + mazeFilePath + "\" contains non-numeric entries.");
+                SimUtilities::print("Error: \"" + mazeFilePath + "\" contains non-numeric entries: the entry \"" + tokens.at(i)
+                    + "\" on line " + std::to_string(lineNum) + " in position " + std::to_string(i + 1) + " is not numeric.");
                 return false;
+            }
+            else {
+                values.push_back(SimUtilities::strToInt(tokens.at(i)));
             }
         }
 
-        BasicTile tile;
-        tile.x = SimUtilities::strToInt(tokens.at(0));
-        tile.y = SimUtilities::strToInt(tokens.at(1));
-        for (Direction direction : DIRECTIONS) {
-            tile.walls[direction] = SimUtilities::strToInt(tokens.at(2 + SimUtilities::getDirectionIndex(direction)));
-        }
-     
-        // Order of columns validation
-        /*
-        if (tile.x > columnMax) {
-            if (columnCount == 16 && (tile.x - columnMax) == 1) { // TODO: 16? Seriously
-               columnMax = tile.x;
-               columnCount = 0;
-            }
-            else {
-                SimUtilities::print("Error: \"" + mazeFilePath + "\" has wrong number of columns.");
-                return false;
-            }
-        }
-        else if (tile.x < columnMax) { 
-            SimUtilities::print("Error: \"" + mazeFilePath + "\" has columns out of order.");
+        // Check the expected X and expected Y. Note that the only time expect a Y-value of zero is the
+        // very first line. The "&& expectedY != 0" ensures that the first line must be (0,0).
+        bool caseOne = values.at(0) == expectedX     && values.at(1) == expectedY;
+        bool caseTwo = values.at(0) == expectedX + 1 && values.at(1) == 0 && expectedY != 0;
+        if (!(caseOne || caseTwo)) {
+            SimUtilities::print("Error: \"" + mazeFilePath + "\" contains unexpected x and y values of "
+                + std::to_string(values.at(0)) + " and " + std::to_string(values.at(1))
+                + " on line " + std::to_string(lineNum) + ".");
             return false;
         }
-        
-        columnCount++;
-
-        // Order of rows validation
-        if (tile.y > rowMax) {
-            rowMax = tile.y;
+        if (caseOne) {
+            expectedY += 1;
         }
-        if (tile.y != ++prevRow) {
-            // Way to get size without hard coding?
-            if (tile.y == 0 && prevRow == 16) {
-                prevRow = 0;
-            } 
-            else {
-	        std::cout << tile.x << " " << tile.y << " " << prevRow << "\n";
-                SimUtilities::print("Error: \"" + mazeFilePath + "\" has rows out of order.");
-                return false; 
+        else { // caseTwo
+            expectedX += 1;
+            expectedY = 1;
+        }
+
+        // Check the wall values to ensure that they're either 0 or 1
+        for (int i = 0; i < 4; i += 1) {
+            int value = values.at(2 + i);
+            if (!(value == 0 || value == 1)) {
+                SimUtilities::print("Error: \"" + mazeFilePath + "\" contains an invalid value of "
+                    + std::to_string(value) + " in position " + std::to_string(2 + i + 1) + " on line "
+                    + std::to_string(lineNum) + ". All wall values must be either \"0\" or \"1\".");
+                return false;
             }
         }
-        */
     }
 
-    /*
-    if (columnMax != 15 || columnCount != 16) {
-        SimUtilities::print("Error: \"" + mazeFilePath + "\" has wrong number of columns.");
-        return false;
-    }
-    else if (rowMax != 15 || prevRow != 15) {
-        SimUtilities::print("Error: \"" + mazeFilePath + "\" has wrong number of rows.");
-        return false;
-    }
-    */
-    
     return true;
 }
 
@@ -166,22 +153,8 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMaze(const std::strin
     // The maze to be returned
     std::vector<std::vector<BasicTile>> maze;
 
-    // First, determine the dimensions of the maze
-    std::pair<int, int> mazeSize = getMazeSize(mazeFilePath);
-    int width = mazeSize.first;
-    int height = mazeSize.second;
-
-    // Then, create the individual tile objects
-    for (int x = 0; x < width; x += 1) {
-        std::vector<BasicTile> col;
-        for (int y = 0; y < height; y += 1) {
-            BasicTile tile;
-            tile.x = x;
-            tile.y = y;
-            col.push_back(tile);
-        }
-        maze.push_back(col);
-    }
+    // The column to be appended
+    std::vector<BasicTile> column;
 
     // Lastly, read the file and populate the wall values
     std::ifstream file(mazeFilePath.c_str());
@@ -194,45 +167,32 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMaze(const std::strin
         copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(),
              std::back_inserter<std::vector<std::string>>(tokens));
 
-        // Set the values of all of the walls
+        // Fill the BasicTile object with the values
+        BasicTile tile;
+        tile.x = SimUtilities::strToInt(tokens.at(0));
+        tile.y = SimUtilities::strToInt(tokens.at(1));
         for (Direction direction : DIRECTIONS) {
-            BasicTile* tile = &maze.at(SimUtilities::strToInt(tokens.at(0))).at(SimUtilities::strToInt(tokens.at(1)));
-            tile->walls[direction] = (1 == SimUtilities::strToInt(tokens.at(2 + SimUtilities::getDirectionIndex(direction))));
+            tile.walls.insert(std::make_pair(direction,
+                (1 == SimUtilities::strToInt(tokens.at(2 + SimUtilities::getDirectionIndex(direction))))));
         }
+
+        // If the tile belongs to a new column, append the current column and then empty it
+        if (maze.size() < tile.x) {
+            maze.push_back(column);
+            column.clear();
+        }
+
+        // Always append the current tile to the current column
+        column.push_back(tile);
     }
+
+    // Make sure to append the last column
+    maze.push_back(column);
+
+    // Remember to close the file
     file.close();
   
     return maze;
-}
-
-std::pair<int, int> MazeFileUtilities::getMazeSize(const std::string& mazeFilePath) {
-
-    // Note: This function should only be called on maze files that have been validated.
-    // In particular, we assuming that the dimensions of the maze are given in the last,
-    // line of the file, which might not be the case if the lines are properly sorted.
-    ASSERT(MazeFileUtilities::isMazeFile(mazeFilePath));
-
-    // Read the last, non-empty line of the file
-    std::ifstream file(mazeFilePath.c_str());
-    std::string line("");
-    std::string prevLine("");
-    while (getline(file, line)) {
-        if (!line.empty()) {
-            prevLine = line;
-        }
-    }
-    file.close();
-
-    // Put the tokens in a vector
-    std::istringstream iss(prevLine);
-    std::vector<std::string> tokens;
-    copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(),
-         std::back_inserter<std::vector<std::string>>(tokens));
-
-    // Extract the width and height values, adding 1 because we started counting at 0
-    int width = SimUtilities::strToInt(tokens.at(0)) + 1;
-    int height = SimUtilities::strToInt(tokens.at(1)) + 1;
-    return std::make_pair(width, height);
 }
 
 } //namespace sim
