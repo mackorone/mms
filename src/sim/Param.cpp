@@ -1,6 +1,5 @@
 #include "Param.h"
 
-#include <iostream>
 #include <random>
 
 #include "ParamParser.h"
@@ -46,12 +45,9 @@ Param::Param() {
     m_defaultTileColorsVisible = parser.getBoolIfHasBool("default-tile-colors-visible", true);
 
     // Simulation Parameters
-    bool useRandomSeed = parser.getBoolIfHasBool("use-random-seed", false);
-    
+    bool useRandomSeed = parser.getBoolIfHasBool("use-random-seed", false);    
     std::random_device rd2; // Used to get a random seed
-
     m_randomSeed = (useRandomSeed ? parser.getIntIfHasInt("random-seed", rd2()) : rd2());
-    
     m_crashMessage = parser.getStringIfHasString("crash-message", "CRASH");
     m_glutInitDuration = parser.getFloatIfHasFloat("glut-init-duration", 0.25);
     m_defaultPaused = parser.getBoolIfHasBool("default-paused", false);
