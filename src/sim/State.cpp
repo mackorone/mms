@@ -111,6 +111,8 @@ bool State::arrowKeyIsPressed(int key) {
 }
 
 void State::enterMainLoop() {
+    ASSERT(std::this_thread::get_id() == m_mainThreadId);
+    ASSERT(!m_mainLoopEntered);
     m_mainLoopEntered = true;
 }
 
