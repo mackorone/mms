@@ -18,6 +18,9 @@
 #include "sim/TriangleGraphic.h"
 #include "sim/World.h"
 
+#include <fontstash.h> // TODO
+#include <iostream>
+
 // Function declarations
 void draw();
 void solve();
@@ -37,6 +40,11 @@ sim::MouseInterface* g_mouseInterface;
 // The ID of the transformation matrix, which takes triangle graphic objects in
 // the physical coordinate system and transforms them into the OpenGL system.
 GLuint g_transformationMatixId;
+
+struct sth_stash* stash; // TODO
+int droid; // TODO
+GLuint vertex_buffer_object;
+GLuint program;
 
 int main(int argc, char* argv[]) {
 
@@ -62,6 +70,13 @@ int main(int argc, char* argv[]) {
 
     // Initialize all of the graphics
     initGraphics(argc, argv);
+
+// TODO
+    /* create a font stash with a maximum texture size of 512 x 512 */
+    stash = sth_create(512, 512);
+    /* load truetype font */
+    droid = sth_add_font(stash, (sim::SimUtilities::getProjectDirectory() + "res/fonts/DroidSerif-Regular.ttf").c_str());
+// TODO
 
     // Start the physics loop
     std::thread physicsThread(simulate);
@@ -103,7 +118,28 @@ void draw() {
     // Render the full map
     glScissor(sim::P()->fullMapPositionX(), sim::P()->fullMapPositionY(), sim::P()->fullMapWidth(), sim::P()->fullMapHeight());
     glUniformMatrix4fv(g_transformationMatixId, 1, GL_TRUE, &sim::GraphicUtilities::getFullMapTransformationMatrix().front());
-    glDrawArrays(GL_TRIANGLES, 0, 3 * sim::GraphicUtilities::TGB.size());
+    //glDrawArrays(GL_TRIANGLES, 0, 3 * sim::GraphicUtilities::TGB.size());
+    glDrawArrays(GL_TRIANGLES, 0, 3 * mouseTrianglesStartingIndex);
+
+    // TODO
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glUseProgram(0);
+
+    glViewport(0, 0, sim::P()->windowWidth(), sim::P()->windowHeight());// For draw text location....
+    glColor4ub(255,255,255,255); // TODO: Sets color to white
+    glLoadIdentity();
+    glOrtho(0,sim::P()->windowWidth(),0,sim::P()->windowHeight(),-1,1);
+
+    sth_begin_draw(stash);
+    for (int i = 0; i < 256; i += 1) {
+        sth_draw_text(stash, droid, 16.0f, 10 + (i / 16) * 30 , 10 + (i % 16) * 30 , "256", NULL);
+    }
+    sth_end_draw(stash);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
+    glUseProgram(program);
+    // TODO
+    glDrawArrays(GL_TRIANGLES, 3 * mouseTrianglesStartingIndex, 3 * sim::GraphicUtilities::TGB.size());
 
     // Render the zoomed map
     glScissor(sim::P()->zoomedMapPositionX(), sim::P()->zoomedMapPositionY(), sim::P()->zoomedMapWidth(), sim::P()->zoomedMapHeight());
@@ -260,7 +296,7 @@ void initGraphics(int argc, char* argv[]) {
     }
 
     // Generate vertex buffer object
-    GLuint vertex_buffer_object;
+    //GLuint vertex_buffer_object;
     glGenBuffers(1,  &vertex_buffer_object);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
 
@@ -280,7 +316,8 @@ void initGraphics(int argc, char* argv[]) {
     glCompileShader(vs);
 
     // Generate the rendering program
-    GLuint program = glCreateProgram();
+    //GLuint program = glCreateProgram();
+    program = glCreateProgram();
     glAttachShader(program, vs);
     glLinkProgram(program);
     glUseProgram(program);
