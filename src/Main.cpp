@@ -126,13 +126,37 @@ void draw() {
     glUseProgram(0);
 
     glViewport(0, 0, sim::P()->windowWidth(), sim::P()->windowHeight());// For draw text location....
-    glColor4ub(255,255,255,255); // TODO: Sets color to white
+    glColor4ub(0,127,0,255); // TODO: Sets color to white
     glLoadIdentity();
     glOrtho(0,sim::P()->windowWidth(),0,sim::P()->windowHeight(),-1,1);
+    //glOrtho(0,100,0,sim::P()->windowHeight(),-1,1);
 
+/*
+glMatrixMode(GL_PROJECTION);
+glLoadIdentity();
+glOrtho(0, 640, 480, 0, 1, -1);
+glMatrixMode(GL_MODELVIEW);
+*/
+    /*
+    std::vector<float> mat = {
+        100,0,0,0,
+        0,100,0,0,
+        0,0,1,0,
+        0,0,0,1,
+    };
+    */
+    //glLoadMatrixf(&mat.front());
+    /*
+    glLoadMatrixf(&sim::GraphicUtilities::getZoomedMapTransformationMatrix(
+        g_mouse->getInitialTranslation(), g_mouse->getCurrentTranslation(), g_mouse->getCurrentRotation()).front());
+    */
+
+    // TODO: Should be fine... I just have to figure out a mechanism for drawing it.
     sth_begin_draw(stash);
     for (int i = 0; i < 256; i += 1) {
-        sth_draw_text(stash, droid, 16.0f, 10 + (i / 16) * 30 , 10 + (i % 16) * 30 , "256", NULL);
+        for (int j = 0; j < 2; j += 1) {
+            sth_draw_text(stash, droid, 12.0f, 16 + (i / 16) * 28 , 20 + (i % 16) * 28 , std::to_string(j + 100).c_str(), NULL);
+        }
     }
     sth_end_draw(stash);
 
