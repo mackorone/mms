@@ -2,8 +2,6 @@
 #include "ParamParser.h"
 #include "SimUtilities.h"
 
-#include <iostream>
-
 namespace sim {
 
 Param* P() {

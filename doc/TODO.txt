@@ -100,3 +100,4 @@ Clean-Up:
 - Put consts in GraphicUtilties (and other classes)
 - Replace braket notation with methods (walls[NORTH] = true -> walls.insert(std::make_pair(NORTH, true)));
 - Document the confusing coordinate systems
+- for each loop iterations should use const references

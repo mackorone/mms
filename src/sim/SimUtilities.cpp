@@ -55,7 +55,7 @@ void SimUtilities::print(const std::string& msg) {
             lineLength += token.size() + 1;
         }
         else {
-            std::cout << std::endl << "    " << token << " ";
+            std::cout << std::endl << P()->printIndentString() << token << " ";
             lineLength = P()->printIndentString().size() + token.size() + 1;
         }
     }

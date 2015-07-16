@@ -54,7 +54,7 @@ void Cell::setY(int y) {
 
 void Cell::setDistance(int distance) {
     m_distance = distance;
-    m_mouse->setTileText(m_x, m_y, std::to_string(distance));
+    m_mouse->setTileDistance(m_x, m_y, distance);
 }
 
 void Cell::setExplored(bool explored) {

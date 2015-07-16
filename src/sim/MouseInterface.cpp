@@ -111,42 +111,49 @@ void MouseInterface::clearAllTileColor() {
     m_tilesWithColor.clear();
 }
 
-void MouseInterface::setTileText(int x, int y, const std::string& text) {
+void MouseInterface::setTileDistance(int x, int y, int distance) {
 
     ENSURE_INITIALIZED_MOUSE
     ENSURE_DECLARED_INTERFACE
 
     if (x < 0 || m_mazeGraphic->getWidth() <= x || y < 0 || m_mazeGraphic->getHeight() <= y) {
         SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
-            + std::to_string(y) + std::string("), and thus you cannot set its text."));
+            + std::to_string(y) + std::string("), and thus you cannot set its distance."));
         return;
     }
 
-    m_mazeGraphic->setTileText(x, y, text);
+    if (distance < 0 || 255 < distance) {
+        SimUtilities::print(std::string("Error: You cannot set the distance of the tile at position ("
+            + std::to_string(x) + std::string(", ") + std::to_string(y) + std::string(") to " + std::to_string(distance)
+            + " since that falls outside of [0,255], the range of valid tile distances.")));
+        return;
+    }
+
+    m_mazeGraphic->setTileDistance(x, y, distance);
 }
 
-void MouseInterface::clearTileText(int x, int y) {
+void MouseInterface::clearTileDistance(int x, int y) {
 
     ENSURE_INITIALIZED_MOUSE
     ENSURE_DECLARED_INTERFACE
 
     if (x < 0 || m_mazeGraphic->getWidth() <= x || y < 0 || m_mazeGraphic->getHeight() <= y) {
         SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
-            + std::to_string(y) + std::string("), and thus you cannot clear its text."));
+            + std::to_string(y) + std::string("), and thus you cannot clear its distance."));
         return;
     }
 
-    m_mazeGraphic->setTileText(x, y, "");
+    m_mazeGraphic->setTileDistance(x, y, -1);
 }
 
-void MouseInterface::clearAllTileText() {
+void MouseInterface::clearAllTileDistance() {
 
     ENSURE_INITIALIZED_MOUSE
     ENSURE_DECLARED_INTERFACE
 
     for (int x = 0; x < m_mazeGraphic->getWidth(); x += 1) {
         for (int y = 0; y < m_mazeGraphic->getHeight(); y += 1) {
-            m_mazeGraphic->setTileText(x, y, ""); 
+            m_mazeGraphic->setTileDistance(x, y, -1); 
         }
     }
 }

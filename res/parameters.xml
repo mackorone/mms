@@ -79,4 +79,4 @@
 <mouse-directory>res/mice/</mouse-directory> <!-- Relative to project root -->
 
 <!-- Algo Parameters -->
-<algorithm>MackAlgo</algorithm> <!-- The name as specified in src/algo/AlgoHub.cpp -->
+<algorithm>FloodFill</algorithm> <!-- The name as specified in src/algo/AlgoHub.cpp -->

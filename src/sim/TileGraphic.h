@@ -15,20 +15,21 @@ public:
     bool wallDeclared(Direction direction) const;
 
     void setColor(const GLfloat* color);
-    void setText(const std::string& text);
+    void setDistance(int distance);
     void setFogginess(bool foggy);
     void declareWall(Direction direction, bool isWall);
     void undeclareWall(Direction direction);
 
     void draw() const;
     void updateColor() const;
-    void updateWalls() const;
+    void updateDistance() const;
     void updateFog() const;
+    void updateWalls() const;
     
 private:
     const Tile* m_tile;
     const GLfloat* m_color;
-    std::string m_text;
+    int m_distance;
     bool m_foggy;
     std::map<Direction, bool> m_declaredWalls;
 

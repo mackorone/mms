@@ -18,7 +18,7 @@ public:
     bool wallDeclared(int x, int y, Direction direction) const;
 
     void setTileColor(int x, int y, const GLfloat* color);
-    void setTileText(int x, int y, const std::string& text);
+    void setTileDistance(int x, int y, int distance);
     void setTileFogginess(int x, int y, bool foggy);
     void declareWall(int x, int y, Direction direction, bool isWall);
     void undeclareWall(int x, int y, Direction direction);

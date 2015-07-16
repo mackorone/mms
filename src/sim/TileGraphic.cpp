@@ -8,7 +8,7 @@
 namespace sim {
 
 TileGraphic::TileGraphic(const Tile* tile) : m_tile(tile), m_color(COLOR_STRINGS.at(P()->tileBaseColor())),
-        m_text(""), m_foggy(true) {
+        m_distance(0), m_foggy(true) {
 }
 
 bool TileGraphic::wallDeclared(Direction direction) const {
@@ -20,8 +20,9 @@ void TileGraphic::setColor(const GLfloat* color) {
     updateColor();
 }
 
-void TileGraphic::setText(const std::string& text) {
-    m_text = text;
+void TileGraphic::setDistance(int distance) {
+    m_distance = distance;
+    updateDistance();
 }
 
 void TileGraphic::setFogginess(bool foggy) {
@@ -67,8 +68,8 @@ void TileGraphic::draw() const {
     GraphicUtilities::drawTileGraphicFog(m_tile->getX(), m_tile->getY(), m_tile->getFullPolygon(),
         COLOR_STRINGS.at(P()->tileFogColor()), m_foggy && S()->tileFogVisible() ? P()->tileFogAlpha() : 0.0);
 
-    // TODO TODO TODO TODO : fix this
-    // Draw the tile text, always padded to at least 3 characters (for distances)
+    // TODO: MACK - these should just be polygons
+    // Draw the tile distance..., always padded to at least 3 characters (for distances)
     /*
     if (S()->tileTextVisible()) {
         glColor3fv(COLOR_STRINGS.at(P()->tileTextColor()));
@@ -90,15 +91,24 @@ void TileGraphic::updateColor() const {
         S()->tileColorsVisible() ? m_color : COLOR_STRINGS.at(P()->tileBaseColor()));
 }
 
-void TileGraphic::updateWalls() const {
-    for (Direction direction : DIRECTIONS) {
-        updateWall(direction);
-    }
+void TileGraphic::updateDistance() const {
+    // TODO: MACK
+    // If -1, no text. Else, should be the distance....
+    /*
+    GraphicUtilities::updateTileGraphicBaseColor(m_tile->getX(), m_tile->getY(),
+        S()->tileColorsVisible() ? m_color : COLOR_STRINGS.at(P()->tileBaseColor()));
+    */
 }
 
 void TileGraphic::updateFog() const {
     GraphicUtilities::updateTileGraphicFog(m_tile->getX(), m_tile->getY(),
         m_foggy && S()->tileFogVisible() ? P()->tileFogAlpha() : 0.0);
+}
+
+void TileGraphic::updateWalls() const {
+    for (Direction direction : DIRECTIONS) {
+        updateWall(direction);
+    }
 }
 
 void TileGraphic::updateWall(Direction direction) const {

@@ -34,9 +34,9 @@ public:
     void clearTileColor(int x, int y);
     void clearAllTileColor();
 
-    void setTileText(int x, int y, const std::string& text);
-    void clearTileText(int x, int y);
-    void clearAllTileText();
+    void setTileDistance(int x, int y, int distance);
+    void clearTileDistance(int x, int y);
+    void clearAllTileDistance();
 
     void setTileFogginess(int x, int y, bool foggy);
 

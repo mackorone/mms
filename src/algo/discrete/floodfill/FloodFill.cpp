@@ -908,8 +908,8 @@ void FloodFill::explore() {
         for (int y = 0; y < MAZE_SIZE_Y; y += 1) {
             if (!m_cells[x][y].getExplored()) {
                 // Any unreachable cells should have inf distance. Conveniently,
-                // MAZE_SIZE_X*MAZE_SIZE_Y is one greater than the maximum distance
-                m_cells[x][y].setDistance(MAZE_SIZE_X*MAZE_SIZE_Y);
+                // MAZE_SIZE_X*MAZE_SIZE_Y-1 is the maximum distance
+                m_cells[x][y].setDistance(MAZE_SIZE_X*MAZE_SIZE_Y-1);
             }
         }
     }

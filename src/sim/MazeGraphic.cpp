@@ -34,9 +34,10 @@ void MazeGraphic::setTileColor(int x, int y, const GLfloat* color) {
     m_tileGraphics.at(x).at(y).setColor(color);
 }
 
-void MazeGraphic::setTileText(int x, int y, const std::string& text) {
+void MazeGraphic::setTileDistance(int x, int y, int distance) {
     ASSERT(0 <= x && x <= getWidth() && 0 <= y && y < getHeight());
-    m_tileGraphics.at(x).at(y).setText(text);
+    ASSERT(-1 <= distance && distance <= 255);
+    m_tileGraphics.at(x).at(y).setDistance(distance);
 }
 
 void MazeGraphic::setTileFogginess(int x, int y, bool foggy) {
