@@ -18,6 +18,7 @@ public:
     // Graphics parameters
     int initialWindowWidth();
     int initialWindowHeight();
+    int windowBorderWidth();
     double minZoomedMapScale();
     double maxZoomedMapScale();
     double defaultZoomedMapScale();
@@ -97,6 +98,7 @@ private:
     // Graphics parameters
     int m_initialWindowWidth;
     int m_initialWindowHeight;
+    int m_windowBorderWidth;
     double m_minZoomedMapScale;
     double m_maxZoomedMapScale;
     double m_defaultZoomedMapScale;

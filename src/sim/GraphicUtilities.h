@@ -56,9 +56,6 @@ private:
     // A private constructor to restrict creation of any GeometryUtilities objects
     GraphicUtilities();
 
-    // TODO: MACK - make this a parameter
-    static int m_borderWidth;
-
     // Window dimensions in pixels
     static int m_windowWidth;
     static int m_windowHeight;

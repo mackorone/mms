@@ -13,9 +13,6 @@
 
 namespace sim {
 
-// TODO: MACK - make this a parameter or something
-int GraphicUtilities::m_borderWidth = 10; // pixels
-
 // Here we have to explicity create the TGB, since we only declared it in the header
 std::vector<TriangleGraphic> GraphicUtilities::TGB;
 
@@ -36,18 +33,20 @@ void GraphicUtilities::setMazeSize(int mazeWidth, int mazeHeight) {
     m_mazeHeight = mazeHeight;
 }
 
-// TODO: MACK: clean these up
 std::pair<int, int> GraphicUtilities::getFullMapPosition() {
-    return std::make_pair(m_borderWidth, m_borderWidth);
+    return std::make_pair(P()->windowBorderWidth(), P()->windowBorderWidth());
 }
+
 std::pair<int, int> GraphicUtilities::getZoomedMapPosition() {
-    return std::make_pair(((m_windowWidth - 3 * m_borderWidth) / 2) + 2 * m_borderWidth, m_borderWidth);
+    return std::make_pair((m_windowWidth + P()->windowBorderWidth()) / 2, P()->windowBorderWidth());
 }
+
 std::pair<int, int> GraphicUtilities::getFullMapSize() {
-    return std::make_pair((m_windowWidth - 3 * m_borderWidth) / 2, m_windowHeight - 2 * m_borderWidth);
+    return std::make_pair((m_windowWidth - 3 * P()->windowBorderWidth()) / 2, m_windowHeight - 2 * P()->windowBorderWidth());
 }
+
 std::pair<int, int> GraphicUtilities::getZoomedMapSize() {
-    return std::make_pair((m_windowWidth - 3 * m_borderWidth) / 2, m_windowHeight - 2 * m_borderWidth);
+    return std::make_pair((m_windowWidth - 3 * P()->windowBorderWidth()) / 2, m_windowHeight - 2 * P()->windowBorderWidth());
 }
 
 std::vector<float> GraphicUtilities::getFullMapTransformationMatrix() {

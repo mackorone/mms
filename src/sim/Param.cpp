@@ -29,6 +29,7 @@ Param::Param() {
     // Graphical Parameters
     m_initialWindowWidth = parser.getIntIfHasInt("initial-window-width", 930);
     m_initialWindowHeight = parser.getIntIfHasInt("initial-window-height", 470);
+    m_windowBorderWidth = parser.getIntIfHasInt("window-border-width", 10);
     m_minZoomedMapScale = parser.getDoubleIfHasDouble("min-zoomed-map-scale", 0.02);
     m_maxZoomedMapScale = parser.getDoubleIfHasDouble("max-zoomed-map-scale", 1.0);
     m_defaultZoomedMapScale = parser.getDoubleIfHasDouble("default-zoomed-map-scale", 0.1);
@@ -113,6 +114,10 @@ int Param::initialWindowWidth() {
 
 int Param::initialWindowHeight() {
     return m_initialWindowHeight;
+}
+
+int Param::windowBorderWidth() {
+    return m_windowBorderWidth;
 }
 
 double Param::minZoomedMapScale() {
