@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!-- Graphical Parameters -->
-<window-width>930</window-width> <!-- Pixels -->
-<window-height>470</window-height> <!-- Pixels -->
-<full-map-position-x>10</full-map-position-x> <!-- Pixels -->
-<full-map-position-y>10</full-map-position-y> <!-- Pixels -->
-<full-map-width>450</full-map-width> <!-- Pixels -->
-<full-map-height>450</full-map-height> <!-- Pixels -->
-<zoomed-map-position-x>470</zoomed-map-position-x> <!-- Pixels -->
-<zoomed-map-position-y>10</zoomed-map-position-y> <!-- Pixels -->
-<zoomed-map-width>450</zoomed-map-width> <!-- Pixels -->
-<zoomed-map-height>450</zoomed-map-height> <!-- Pixels -->
+<initial-window-width>930</initial-window-width> <!-- Pixels -->
+<initial-window-height>470</initial-window-height> <!-- Pixels -->
 <min-zoomed-map-scale>0.02</min-zoomed-map-scale>
 <max-zoomed-map-scale>1.0</max-zoomed-map-scale>
 <default-zoomed-map-scale>0.1</default-zoomed-map-scale>

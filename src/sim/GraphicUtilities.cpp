@@ -13,10 +13,20 @@
 
 namespace sim {
 
+// TODO: MACK - make this a parameter or something
+int GraphicUtilities::m_borderWidth = 10; // pixels
+
 // Here we have to explicity create the TGB, since we only declared it in the header
 std::vector<TriangleGraphic> GraphicUtilities::TGB;
 
-// Same goes for the static maze height
+int GraphicUtilities::m_windowWidth = 0;
+int GraphicUtilities::m_windowHeight = 0;
+void GraphicUtilities::setWindowSize(int windowWidth, int windowHeight) {
+    ASSERT(0 < windowWidth && 0 < windowHeight);
+    m_windowWidth = windowWidth;
+    m_windowHeight = windowHeight;
+}
+
 int GraphicUtilities::m_mazeWidth = 0;
 int GraphicUtilities::m_mazeHeight = 0;
 void GraphicUtilities::setMazeSize(int mazeWidth, int mazeHeight) {
@@ -24,6 +34,20 @@ void GraphicUtilities::setMazeSize(int mazeWidth, int mazeHeight) {
     ASSERT(0 < mazeWidth && 0 < mazeHeight);
     m_mazeWidth = mazeWidth;
     m_mazeHeight = mazeHeight;
+}
+
+// TODO: MACK: clean these up
+std::pair<int, int> GraphicUtilities::getFullMapPosition() {
+    return std::make_pair(m_borderWidth, m_borderWidth);
+}
+std::pair<int, int> GraphicUtilities::getZoomedMapPosition() {
+    return std::make_pair(((m_windowWidth - 3 * m_borderWidth) / 2) + 2 * m_borderWidth, m_borderWidth);
+}
+std::pair<int, int> GraphicUtilities::getFullMapSize() {
+    return std::make_pair((m_windowWidth - 3 * m_borderWidth) / 2, m_windowHeight - 2 * m_borderWidth);
+}
+std::pair<int, int> GraphicUtilities::getZoomedMapSize() {
+    return std::make_pair((m_windowWidth - 3 * m_borderWidth) / 2, m_windowHeight - 2 * m_borderWidth);
 }
 
 std::vector<float> GraphicUtilities::getFullMapTransformationMatrix() {
@@ -68,7 +92,8 @@ std::vector<float> GraphicUtilities::getFullMapTransformationMatrix() {
 
     // Note that this is not literally the number of pixels per meter of the
     // screen. Rather, it's our desired number of pixels per simulation meter.
-    double pixelsPerMeter = std::min(P()->fullMapWidth() / physicalWidth, P()->fullMapHeight() / physicalHeight);
+    std::pair<int, int> fullMapSize = getFullMapSize();
+    double pixelsPerMeter = std::min(fullMapSize.first / physicalWidth, fullMapSize.second / physicalHeight);
     double pixelWidth = pixelsPerMeter * physicalWidth;
     double pixelHeight = pixelsPerMeter * physicalHeight;
 
@@ -89,8 +114,9 @@ std::vector<float> GraphicUtilities::getFullMapTransformationMatrix() {
     
     // Step 3: Construct the translation matrix. Note that here we ensure that
     // the maze is centered within the map boundaries.
-    double pixelLowerLeftCornerX = P()->fullMapPositionX() + 0.5 * (P()->fullMapWidth() - pixelWidth);
-    double pixelLowerLeftCornerY = P()->fullMapPositionY() + 0.5 * (P()->fullMapHeight() - pixelHeight);
+    std::pair<int, int> fullMapPosition = getFullMapPosition();
+    double pixelLowerLeftCornerX = fullMapPosition.first + 0.5 * (fullMapSize.first - pixelWidth);
+    double pixelLowerLeftCornerY = fullMapPosition.second + 0.5 * (fullMapSize.second - pixelHeight);
     std::pair<double, double> openGlLowerLeftCorner = mapPixelCoordinateToOpenGlCoordinate(
         pixelLowerLeftCornerX, pixelLowerLeftCornerY);
     std::vector<float> translationMatrix = {
@@ -149,12 +175,14 @@ std::vector<float> GraphicUtilities::getZoomedMapTransformationMatrix(const Coor
     // Part A: Find the static translation, i.e., the translation that puts the
     // center of the mouse (i.e., the midpoint of the line connecting its
     // wheels) in the center of the zoomed map. 
-    double centroidXPixels = initialMouseTranslation.getX().getMeters() * pixelsPerMeter;
-    double centroidYPixels = initialMouseTranslation.getY().getMeters() * pixelsPerMeter;
-    double zoomedMapCenterXPixels = P()->zoomedMapPositionX() + 0.5 * P()->zoomedMapWidth();
-    double zoomedMapCenterYPixels = P()->zoomedMapPositionY() + 0.5 * P()->zoomedMapHeight();
-    double staticTranslationXPixels = zoomedMapCenterXPixels - centroidXPixels;
-    double staticTranslationYPixels = zoomedMapCenterYPixels - centroidYPixels;
+    std::pair<int, int> zoomedMapSize = getZoomedMapSize();
+    std::pair<int, int> zoomedMapPosition = getZoomedMapPosition();
+    double centerXPixels = initialMouseTranslation.getX().getMeters() * pixelsPerMeter;
+    double centerYPixels = initialMouseTranslation.getY().getMeters() * pixelsPerMeter;
+    double zoomedMapCenterXPixels = zoomedMapPosition.first + 0.5 * zoomedMapSize.first;
+    double zoomedMapCenterYPixels = zoomedMapPosition.second + 0.5 * zoomedMapSize.second;
+    double staticTranslationXPixels = zoomedMapCenterXPixels - centerXPixels;
+    double staticTranslationYPixels = zoomedMapCenterYPixels - centerYPixels;
     std::pair<double, double> staticTranslation
         = mapPixelCoordinateToOpenGlCoordinate(staticTranslationXPixels, staticTranslationYPixels);
 
@@ -228,55 +256,41 @@ std::vector<float> GraphicUtilities::getZoomedMapTransformationMatrix(const Coor
 
 void GraphicUtilities::drawTileGraphicBase(int x, int y, const Polygon& polygon, const GLfloat* color) {
     std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, 1.0);
-    int index = getTileGraphicBaseStartingIndex(x, y);
     for (int i = 0; i < tgs.size(); i += 1) {
-        if (index + i < TGB.size()) {
-            TGB.at(index + i) = tgs.at(i);
-        }
-        else {
-            TGB.push_back(tgs.at(i));
-        }
+        TGB.push_back(tgs.at(i));
     }
 }
 
 void GraphicUtilities::drawTileGraphicWall(int x, int y, Direction direction, const Polygon& polygon,
         const GLfloat* color, GLfloat alpha) {
     std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, alpha);
-    int index = getTileGraphicWallStartingIndex(x, y, direction);
     for (int i = 0; i < tgs.size(); i += 1) {
-        if (index + i < TGB.size()) {
-            TGB.at(index + i) = tgs.at(i);
-        }
-        else {
-            TGB.push_back(tgs.at(i));
-        }
+        TGB.push_back(tgs.at(i));
     }
 }
 
 void GraphicUtilities::drawTileGraphicCorner(int x, int y, int cornerNumber, const Polygon& polygon,
         const GLfloat* color) {
     std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, 1.0);
-    int index = getTileGraphicCornerStartingIndex(x, y, cornerNumber);
     for (int i = 0; i < tgs.size(); i += 1) {
-        if (index + i < TGB.size()) {
-            TGB.at(index + i) = tgs.at(i);
-        }
-        else {
-            TGB.push_back(tgs.at(i));
-        }
+        TGB.push_back(tgs.at(i));
+    }
+}
+
+void GraphicUtilities::drawTileGraphicDistanceCharacter(int x, int y, int row, int col, const Polygon& polygon, char c) {
+    // TODO: MACK: This will be difference since we have textures...
+    GLfloat c1[] = {0.0, 0.2, 0.0};
+    GLfloat c2[] = {0.0, 0.0, 0.2};
+    std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, c == 'a' ? c1 : c2, 0.5);
+    for (int i = 0; i < tgs.size(); i += 1) {
+        TGB.push_back(tgs.at(i));
     }
 }
 
 void GraphicUtilities::drawTileGraphicFog(int x, int y, const Polygon& polygon, const GLfloat* color, GLfloat alpha) {
     std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, alpha);
-    int index = getTileGraphicFogStartingIndex(x, y);
     for (int i = 0; i < tgs.size(); i += 1) {
-        if (index + i < TGB.size()) {
-            TGB.at(index + i) = tgs.at(i);
-        }
-        else {
-            TGB.push_back(tgs.at(i));
-        }
+        TGB.push_back(tgs.at(i));
     }
 }
 
@@ -330,42 +344,6 @@ void GraphicUtilities::drawMousePolygon(const Polygon& polygon, const GLfloat* c
     TGB.insert(TGB.end(), tgs.begin(), tgs.end());
 }
 
-void GraphicUtilities::drawText(const Coordinate& location, const Distance& width, const Distance& height, const std::string& text) {
-
-    // TODO: Performance issues - avoid immediate mode
-    // TODO: Ideally, we should be able to *not* have this, provided we optimized correctly
-
-    /*
-    // If there is no text, we don't have to do anything
-    if (SimUtilities::trim(text).empty()) {
-        return;
-    }
-
-    // First, get the width of the text in pixels
-    double pixelWidth = width.getMeters() * P()->pixelsPerMeter();
-    double pixelHeight = height.getMeters() * P()->pixelsPerMeter();
-
-    // Next, determine the scale the text using the window dimensions. As specified in the
-    // documentation for glutStrokeCharacter, the GLUT_STROKE_MONO_ROMAN has characters
-    // that are each exactly 104.76 units wide, hence the use of the literal value.
-    std::pair<int, int> windowSize = getInitialWindowSize();
-    double scaleX = 1.0/104.76 * (pixelWidth / windowSize.first) / text.size() * 2;
-    double scaleY = 1.0/104.76 * (pixelHeight / windowSize.second) * 2;
-
-    // After, get the OpenGL location of the text
-    std::pair<double, double> coordinates = getOpenGlCoordinates(location);
-
-    // Finally, draw the text
-    glPushMatrix();
-    glScalef(scaleX, scaleY, 0);
-    glTranslatef(coordinates.first * 1.0/scaleX, coordinates.second * 1.0/scaleY, 0);
-    for (int i = 0; i < text.size(); i += 1) {
-        glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, text.at(i));
-    }
-    glPopMatrix();
-    */
-}
-
 double GraphicUtilities::getScreenPixelsPerMeter() {
     // Assumptions:
     // 1) These values will not change during an execution of the program
@@ -401,7 +379,7 @@ std::vector<float> GraphicUtilities::multiply4x4Matrices(std::vector<float> left
 }
 
 std::pair<double, double> GraphicUtilities::mapPixelCoordinateToOpenGlCoordinate(double x, double y) {
-    return std::make_pair(2 * x / P()->windowWidth() - 1, 2 * y / P()->windowHeight() - 1);
+    return std::make_pair(2 * x / m_windowWidth - 1, 2 * y / m_windowHeight - 1);
 }
 
 std::vector<TriangleGraphic> GraphicUtilities::polygonToTriangleGraphics(const Polygon& polygon, const GLfloat* color, GLfloat alpha) {
@@ -418,14 +396,17 @@ std::vector<TriangleGraphic> GraphicUtilities::polygonToTriangleGraphics(const P
 
 int GraphicUtilities::trianglesPerTile() {
     // This value must be predetermined, and was done so as follows:
-    // - Base polygon: 2 triangles
-    // - Wall polygon: 2 triangles each
-    // - Corner polygon: 2 triangles each
-    // - Fog polygon: 2 triangles 
-    return 20;
+    // - 1 x Base polygon: 2 triangles
+    // - 4 x Wall polygon: 2 triangles each
+    // - 4 x Corner polygon: 2 triangles each
+    // - 8 x Distance character polygon: 2 triangles each
+    // - 1 x Fog polygon: 2 triangles 
+    // TODO: MACK - this doesn't need to be hardcoded
+    return 36;
 }
 
 int GraphicUtilities::getTileGraphicBaseStartingIndex(int x, int y) {
+    // TODO: MACK - do these indices need to be hardcoded?
     return  0 + trianglesPerTile() * (m_mazeHeight * x + y);
 }
 
@@ -437,8 +418,12 @@ int GraphicUtilities::getTileGraphicCornerStartingIndex(int x, int y, int corner
     return 10 + trianglesPerTile() * (m_mazeHeight * x + y) + (2 * cornerNumber);
 }
 
+int GraphicUtilities::getTileGraphicDistanceCharacterStartingIndex(int x, int y, int row, int col) {
+    return 18 + trianglesPerTile() * (m_mazeHeight * x + y) + (2 * (3 * row + col));
+}
+
 int GraphicUtilities::getTileGraphicFogStartingIndex(int x, int y) {
-    return 18 + trianglesPerTile() * (m_mazeHeight * x + y);
+    return 34 + trianglesPerTile() * (m_mazeHeight * x + y);
 }
 
 } // namespace sim

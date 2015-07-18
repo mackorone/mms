@@ -21,7 +21,6 @@
 // Function declarations
 void draw();
 void solve();
-void simulate();
 void keyPress(unsigned char key, int x, int y);
 void specialKeyPress(int key, int x, int y);
 void specialKeyRelease(int key, int x, int y);
@@ -64,7 +63,9 @@ int main(int argc, char* argv[]) {
     initGraphics(argc, argv);
 
     // Start the physics loop
-    std::thread physicsThread(simulate);
+    std::thread physicsThread([](){
+        g_world->simulate();
+    });
     
     // Start the solving loop
     std::thread solvingThread(solve);
@@ -101,12 +102,16 @@ void draw() {
     glEnable(GL_SCISSOR_TEST);
 
     // Render the full map
-    glScissor(sim::P()->fullMapPositionX(), sim::P()->fullMapPositionY(), sim::P()->fullMapWidth(), sim::P()->fullMapHeight());
+    std::pair<int, int> fullMapPosition = sim::GraphicUtilities::getFullMapPosition();
+    std::pair<int, int> fullMapSize = sim::GraphicUtilities::getFullMapSize();
+    glScissor(fullMapPosition.first, fullMapPosition.second, fullMapSize.first, fullMapSize.second);
     glUniformMatrix4fv(g_transformationMatixId, 1, GL_TRUE, &sim::GraphicUtilities::getFullMapTransformationMatrix().front());
     glDrawArrays(GL_TRIANGLES, 0, 3 * sim::GraphicUtilities::TGB.size());
 
     // Render the zoomed map
-    glScissor(sim::P()->zoomedMapPositionX(), sim::P()->zoomedMapPositionY(), sim::P()->zoomedMapWidth(), sim::P()->zoomedMapHeight());
+    std::pair<int, int> zoomedMapPosition = sim::GraphicUtilities::getZoomedMapPosition();
+    std::pair<int, int> zoomedMapSize = sim::GraphicUtilities::getZoomedMapSize();
+    glScissor(zoomedMapPosition.first, zoomedMapPosition.second, zoomedMapSize.first, zoomedMapSize.second);
     glUniformMatrix4fv(g_transformationMatixId, 1, GL_TRUE, &sim::GraphicUtilities::getZoomedMapTransformationMatrix(
         g_mouse->getInitialTranslation(), g_mouse->getCurrentTranslation(), g_mouse->getCurrentRotation()).front());
     glDrawArrays(GL_TRIANGLES, 0, 3 * sim::GraphicUtilities::TGB.size());
@@ -148,10 +153,6 @@ void solve() {
 
     // Then, execute the algorithm
     algos.at(sim::P()->algorithm())->solve(g_mouseInterface);
-}
-
-void simulate() {
-    g_world->simulate();
 }
 
 void keyPress(unsigned char key, int x, int y) {
@@ -236,7 +237,7 @@ void initGraphics(int argc, char* argv[]) {
     // GLUT Initialization
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA);
-    glutInitWindowSize(sim::P()->windowWidth(), sim::P()->windowHeight());
+    glutInitWindowSize(sim::P()->initialWindowWidth(), sim::P()->initialWindowHeight());
     glutInitWindowPosition(0, 0);
     glutCreateWindow("Micromouse Simulator");
     glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -249,8 +250,11 @@ void initGraphics(int argc, char* argv[]) {
     glutSpecialUpFunc(specialKeyRelease);
     glPolygonMode(GL_FRONT_AND_BACK, sim::S()->wireframeMode() ? GL_LINE : GL_FILL);
 
-    // Ensures that the aspect ration stays the same when the window is resized
-    glutReshapeFunc([](int width, int height){}); 
+    // When the window changes size, notify the graphic utilities
+    glutReshapeFunc([](int width, int height){
+        glViewport(0,0, width, height);
+        sim::GraphicUtilities::setWindowSize(width, height);
+    }); 
 
     // GLEW Initialization
     GLenum err = glewInit();

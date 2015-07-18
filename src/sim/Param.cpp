@@ -27,16 +27,8 @@ Param::Param() {
     m_printIdentString = parser.getStringIfHasString("print-indent-string", "    ");
 
     // Graphical Parameters
-    m_windowWidth = parser.getIntIfHasInt("window-width", 930);
-    m_windowHeight = parser.getIntIfHasInt("window-height", 470);
-    m_fullMapPositionX = parser.getIntIfHasInt("full-map-position-x", 10);
-    m_fullMapPositionY = parser.getIntIfHasInt("full-map-position-y", 10);
-    m_fullMapWidth = parser.getIntIfHasInt("full-map-width", 450);
-    m_fullMapHeight = parser.getIntIfHasInt("full-map-height", 450);
-    m_zoomedMapPositionX = parser.getIntIfHasInt("zoomed-map-position-x", 470);
-    m_zoomedMapPositionY = parser.getIntIfHasInt("zoomed-map-position-y", 10);
-    m_zoomedMapWidth = parser.getIntIfHasInt("zoomed-map-width", 450);
-    m_zoomedMapHeight = parser.getIntIfHasInt("zoomed-map-height", 450);
+    m_initialWindowWidth = parser.getIntIfHasInt("initial-window-width", 930);
+    m_initialWindowHeight = parser.getIntIfHasInt("initial-window-height", 470);
     m_minZoomedMapScale = parser.getDoubleIfHasDouble("min-zoomed-map-scale", 0.02);
     m_maxZoomedMapScale = parser.getDoubleIfHasDouble("max-zoomed-map-scale", 1.0);
     m_defaultZoomedMapScale = parser.getDoubleIfHasDouble("default-zoomed-map-scale", 0.1);
@@ -115,44 +107,12 @@ Param::Param() {
     m_algorithm = parser.getStringIfHasString("algorithm", "RightWallFollow");
 }
 
-int Param::windowWidth() {
-    return m_windowWidth;
+int Param::initialWindowWidth() {
+    return m_initialWindowWidth;
 }
 
-int Param::windowHeight() {
-    return m_windowHeight;
-}
-
-int Param::fullMapPositionX() {
-    return m_fullMapPositionX;
-}
-
-int Param::fullMapPositionY() {
-    return m_fullMapPositionY;
-}
-
-int Param::fullMapWidth() {
-    return m_fullMapWidth;
-}
-
-int Param::fullMapHeight() {
-    return m_fullMapHeight;
-}
-
-int Param::zoomedMapPositionX() {
-    return m_zoomedMapPositionX;
-}
-
-int Param::zoomedMapPositionY() {
-    return m_zoomedMapPositionY;
-}
-
-int Param::zoomedMapWidth() {
-    return m_zoomedMapWidth;
-}
-
-int Param::zoomedMapHeight() {
-    return m_zoomedMapHeight;
+int Param::initialWindowHeight() {
+    return m_initialWindowHeight;
 }
 
 double Param::minZoomedMapScale() {

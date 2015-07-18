@@ -64,22 +64,18 @@ void TileGraphic::draw() const {
             cornerPolygons.at(cornerNumber), COLOR_STRINGS.at(P()->tileCornerColor()));
     }
 
+    // Draw the distance character textures
+    for (int row = 0; row < 2; row += 1) {
+        for (int col = 0; col < 4; col += 1) {
+            // TODO: MACK - pass in the correct characters here
+            GraphicUtilities::drawTileGraphicDistanceCharacter(m_tile->getX(), m_tile->getY(), row, col,
+                getDistanceCharacterPolygon(row, col), ((col + row) % 2 == 0 ? 'a' : 'b'));
+        }
+    }
+
     // Draw the fog
     GraphicUtilities::drawTileGraphicFog(m_tile->getX(), m_tile->getY(), m_tile->getFullPolygon(),
         COLOR_STRINGS.at(P()->tileFogColor()), m_foggy && S()->tileFogVisible() ? P()->tileFogAlpha() : 0.0);
-
-    // TODO: MACK - these should just be polygons
-    // Draw the tile distance..., always padded to at least 3 characters (for distances)
-    /*
-    if (S()->tileTextVisible()) {
-        glColor3fv(COLOR_STRINGS.at(P()->tileTextColor()));
-        GraphicUtilities::drawText(
-            Cartesian(Meters(m_tile->getX() * (P()->wallWidth() + P()->wallLength()) + P()->wallWidth()),
-                      Meters(m_tile->getY() * (P()->wallWidth() + P()->wallLength()) + P()->wallWidth())),
-            Meters(P()->wallLength()), Meters(P()->wallLength() / 3.0),
-            std::string("   ").substr(0, (0 > 3 - (int) m_text.size() ? 0 : 3 - m_text.size())) + m_text);
-    }
-    */
 
     // TODO: Draw the shortest path graphic, which is usefule because this is
     // the metric by which mice that don't reach the center are ranked
@@ -92,12 +88,17 @@ void TileGraphic::updateColor() const {
 }
 
 void TileGraphic::updateDistance() const {
-    // TODO: MACK
-    // If -1, no text. Else, should be the distance....
-    /*
-    GraphicUtilities::updateTileGraphicBaseColor(m_tile->getX(), m_tile->getY(),
-        S()->tileColorsVisible() ? m_color : COLOR_STRINGS.at(P()->tileBaseColor()));
-    */
+    // TODO: MACK - change State tile text to tile color, 
+    // TODO: MACK - add a param for actual distance values displayed
+    // TODO: MACK - text color???
+    for (int row = 0; row < 2; row += 1) {
+        for (int col = 0; col < 3; col += 1) {
+            /*
+            GraphicUtilities::updateTileGraphicDistanceCharacter(m_tile->getX(), m_tile->getY(),
+                row, col, S()->tileTextVisible() ? m_color : COLOR_STRINGS.at(P()->tileBaseColor()));
+            */
+        }
+    }
 }
 
 void TileGraphic::updateFog() const {
@@ -167,6 +168,33 @@ std::pair<const GLfloat*, GLfloat> TileGraphic::deduceWallColorAndAlpha(Directio
     }
 
     return std::make_pair(wallColor, wallAlpha);
+}
+
+Polygon TileGraphic::getDistanceCharacterPolygon(int row, int col) const {
+
+    //                     *--*--------------*--*
+    //                     |  |              |  |
+    //                     *--*--------------Y--*
+    //                     |  |    |    |    |  |
+    //                     |  | 00 | 01 | 02 |  |
+    //                     |  |____|____|____|  |
+    //                     |  |    |    |    |  |
+    //                     |  | 10 | 11 | 12 |  |
+    //                     |  |    |    |    |  |
+    //                     *--X--------------*--*
+    //                     |  |              |  |
+    //                     *--*--------------*--*
+
+    Cartesian X = m_tile->getInteriorPolygon().getVertices().at(0);
+    Cartesian Y = m_tile->getInteriorPolygon().getVertices().at(2);
+    Cartesian diagonal = Y - X;
+    Meters characterWidth = diagonal.getX() / 4.0;
+    Meters characterHeight = diagonal.getY() / 2.0;
+    return Polygon({
+        X + Cartesian(characterWidth *  col     , characterHeight *  row     ),
+        X + Cartesian(characterWidth *  col     , characterHeight * (row + 1)),
+        X + Cartesian(characterWidth * (col + 1), characterHeight * (row + 1)),
+        X + Cartesian(characterWidth * (col + 1), characterHeight *  row     )});
 }
 
 } // namespace sim

@@ -16,8 +16,19 @@ public:
     // The big, CPU-side triangle graphics buffer
     static std::vector<TriangleGraphic> TGB;
 
-    // Sets the maze size and width, in tiles
+    // Sets the window size, in pixels
+    static void setWindowSize(int windowWidth, int windowHeight);
+
+    // Sets the maze size, in tiles
     static void setMazeSize(int mazeWidth, int mazeHeight);
+
+    // Return the positions of the full map and zoomed map, in pixels
+    static std::pair<int, int> getFullMapPosition();
+    static std::pair<int, int> getZoomedMapPosition();
+
+    // Return the width and height of the full map and zoomed map, in pixels
+    static std::pair<int, int> getFullMapSize();
+    static std::pair<int, int> getZoomedMapSize();
 
     // Retrieve the 4x4 transformation matrices for each map
     static std::vector<float> getFullMapTransformationMatrix();
@@ -28,25 +39,29 @@ public:
     static void drawTileGraphicBase(int x, int y, const Polygon& polygon, const GLfloat* color);
     static void drawTileGraphicWall(int x, int y, Direction direction, const Polygon& polygon, const GLfloat* color, const GLfloat alpha);
     static void drawTileGraphicCorner(int x, int y, int cornerNumber, const Polygon& polygon, const GLfloat* color);
+    static void drawTileGraphicDistanceCharacter(int x, int y, int row, int col, const Polygon& polygon, char c); // TODO: MACK
     static void drawTileGraphicFog(int x, int y, const Polygon& polygon, const GLfloat* color, GLfloat alpha);
-    static void drawTileGraphicText(int x, int y, const std::string& text);
 
     // These methods are inexpensive, and may be called many times
     static void updateTileGraphicBaseColor(int x, int y, const GLfloat* color);
     static void updateTileGraphicWallColor(int x, int y, Direction direction, const GLfloat* color, GLfloat alpha);
+    static void updateTileGraphicDistanceCharacter(int x, int y, int row, int col, char c);
     static void updateTileGraphicFog(int x, int y, GLfloat alpha);
 
-    // TODO: Add an update method for the mouse so that we only triangulate once
+    // TODO: MACK - Add an update method for the mouse so that we only triangulate once
     static void drawMousePolygon(const Polygon& polygon, const GLfloat* color, float sensorAlpha);
-
-    // TODO: Deprecate this
-    static void drawText(const Coordinate& location, const Distance& width, const Distance& height, const std::string& text);
-
 
 private:
 
     // A private constructor to restrict creation of any GeometryUtilities objects
     GraphicUtilities();
+
+    // TODO: MACK - make this a parameter
+    static int m_borderWidth;
+
+    // Window dimensions in pixels
+    static int m_windowWidth;
+    static int m_windowHeight;
 
     // Maze dimensions in tiles
     static int m_mazeWidth;
@@ -73,6 +88,7 @@ private:
     static int getTileGraphicBaseStartingIndex(int x, int y);
     static int getTileGraphicWallStartingIndex(int x, int y, Direction direction);
     static int getTileGraphicCornerStartingIndex(int x, int y, int cornerNumber);
+    static int getTileGraphicDistanceCharacterStartingIndex(int x, int y, int row, int col);
     static int getTileGraphicFogStartingIndex(int x, int y);
 };
 

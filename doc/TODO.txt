@@ -1,8 +1,14 @@
 High Pri:
+- Tile distances
+    - Depending on the maze size, the valid distances will be different - make this the case for the text
+    - Pass the maze size to the algorithm so it can be flexible
+- Rewrite freeglut text so that it's performant
+- Look at Tomasz' maze website
 - Make some utility that keeps track of elapse time
     - Make the sim speed non-arbitrary
 - Crash recovery semantics
-- Rewrite freeglut text so that it's performant
+- Put a toolbar at the top or bottom with info
+    - mouse speed, elapsed time, etc.
 - Display a clock
 - Maze Validation (both physically valid mazes and competition valid mazes)
     - Official maze size parameters

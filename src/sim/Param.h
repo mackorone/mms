@@ -16,16 +16,8 @@ public:
     static Param* getInstance();
 
     // Graphics parameters
-    int windowWidth();
-    int windowHeight();
-    int fullMapPositionX();
-    int fullMapPositionY();
-    int fullMapWidth();
-    int fullMapHeight();
-    int zoomedMapPositionX();
-    int zoomedMapPositionY();
-    int zoomedMapWidth();
-    int zoomedMapHeight();
+    int initialWindowWidth();
+    int initialWindowHeight();
     double minZoomedMapScale();
     double maxZoomedMapScale();
     double defaultZoomedMapScale();
@@ -103,16 +95,8 @@ private:
     static Param* INSTANCE;
 
     // Graphics parameters
-    int m_windowWidth;
-    int m_windowHeight;
-    int m_fullMapPositionX;
-    int m_fullMapPositionY;
-    int m_fullMapWidth;
-    int m_fullMapHeight;
-    int m_zoomedMapPositionX;
-    int m_zoomedMapPositionY;
-    int m_zoomedMapWidth;
-    int m_zoomedMapHeight;
+    int m_initialWindowWidth;
+    int m_initialWindowHeight;
     double m_minZoomedMapScale;
     double m_maxZoomedMapScale;
     double m_defaultZoomedMapScale;
