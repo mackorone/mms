@@ -58,8 +58,9 @@ private:
     Direction moveTowardDirection(int xPos, int yPos, Direction direction);
     
     // Run a breadth first search through the maze and update the distance
-    // from start values of tiles
-    void updateDistanceFromStart();
+    // from start values of tiles.
+    // If an x and y position are supplied, distances from that cell are computed
+    void updateDistanceFromStart(int xPos = 0, int yPos = 0);
     
     // Determines which way the algorithm should procede.  This takes into account the
     // configuration values and determine whether or not the algorithm should turn or not

@@ -83,6 +83,12 @@ Param::Param() {
 
     // Algorithm parameters
     m_algorithm = parser.getStringIfHasString("algorithm", "MackAlgo");
+    
+    // Tomasz Maze Generation Parameters
+    m_tom_straight_const = parser.getFloatIfHasFloat("tom-straight-factor", 0.85);
+    m_tom_dead_end_break_chance = parser.getFloatIfHasFloat("tom-dead-end-break-chance", 0.75);
+    m_tom_dead_end_break_threshold = parser.getFloatIfHasFloat("tom-dead-end-break-threshold", 8);
+    m_tom_gradient_wall_breaks = parser.getFloatIfHasFloat("tom-gradient-wall-breaks", 2);
 }
 
 int Param::pixelsPerMeter() {
@@ -271,6 +277,22 @@ std::string Param::mouseDirectory() {
 
 std::string Param::algorithm() {
     return m_algorithm;
+}
+
+float Param::tomStraightConst() {
+    return m_tom_straight_const;
+}
+
+float Param::tomDeadEndBreakChance(){
+    return m_tom_dead_end_break_chance;
+}
+
+int Param::tomDeadEndBreakThreshold(){
+    return  m_tom_dead_end_break_threshold;
+}
+
+int Param::tomGradientWallBreaks(){
+    return m_tom_gradient_wall_breaks;
 }
 
 } // namespace sim

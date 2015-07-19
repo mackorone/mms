@@ -18,7 +18,7 @@ public:
     // Prints a message to stdout
     static void print(const std::string& msg);
 
-    // Returns a double in [0.0, 1.0]
+    // Returns a double in [0.0, 1.0)
     static double getRandom();
 
     // Sleeps the current thread for ms milliseconds

@@ -73,6 +73,12 @@ public:
 
     // Algorithm parameters
     std::string algorithm();
+    
+    // Tomasz maze generator
+    float tomStraightConst();
+    float tomDeadEndBreakChance();
+    int tomDeadEndBreakThreshold();
+    int tomGradientWallBreaks();
 
 private:
 
@@ -138,6 +144,12 @@ private:
 
     // Algorithm parameters
     std::string m_algorithm;
+    
+    // Tomasz maze generator
+    float m_tom_straight_const;
+    float m_tom_dead_end_break_chance;
+    int  m_tom_dead_end_break_threshold;
+    int m_tom_gradient_wall_breaks;
 };
 
 } // namespace sim

@@ -2,7 +2,6 @@
 
 #include <stack>
 #include <cmath>
-#include <iostream>
 #include <queue>
 
 #include "Param.h"
@@ -74,6 +73,8 @@ void TomaszMazeGenerator::generateMaze() {
                                       
             if (m_direction != UNDEFINED) { // We just reached the end of a path. lets break a wall with probability P
                 if (SimUtilities::getRandom() <= deadEndBreak) { // break the wall to the most disjoint
+                    
+                    updateDistanceFromStart(xPos, yPos);
                     breakGradientWall(xPos, yPos); // break the wall towards greatest gradient,
                                                           // this will result in more open mazes
                 }
@@ -97,9 +98,6 @@ void TomaszMazeGenerator::generateMaze() {
             
             m_direction = moveTowardDirection(xPos, yPos, directionToMove);
         }
-        
-        updateDistanceFromStart(); // Updates the distance from start variables by preforming a
-                                   // breadth first traversal of the maze built up to this point
     }
 
     breakGradientWalls(); // Break one wall down with biggest gradient across it
@@ -178,7 +176,6 @@ void TomaszMazeGenerator::breakGradientWalls() {
     Direction directions[4] = {NORTH, EAST, SOUTH, WEST};
     
     for(int i = 0; i < P()->tomGradientWallBreaks(); i++) {
-        updateDistanceFromStart();
         
         int greatestGradient = 0;
         int xPosOfGreatest = 0;
@@ -186,6 +183,7 @@ void TomaszMazeGenerator::breakGradientWalls() {
         
         for(int x = 0; x < m_width; x++) {
             for(int y = 0; y < m_height; y++) {
+                updateDistanceFromStart(x, y); // compute distances not from start, but from cell x,y
                 for(int z = 0; z < 4; z++) {
                     if(getTile(x, y)->isCenter == true) { continue; }
                     if(getTile(x,y)->row == 0 && getTile(x,y)->column == 0) { continue; }
@@ -205,6 +203,7 @@ void TomaszMazeGenerator::breakGradientWalls() {
             }
         }
         
+        updateDistanceFromStart(xPosOfGreatest, yPosOfGreatest);
         // This will figure out the direction of the greatest gradient by itself
         breakGradientWall(xPosOfGreatest, yPosOfGreatest);
     }
@@ -247,7 +246,7 @@ Direction TomaszMazeGenerator::moveTowardDirection(int xPos, int yPos, Direction
     return exploreDIR;
 }
 
-void TomaszMazeGenerator::updateDistanceFromStart(){
+void TomaszMazeGenerator::updateDistanceFromStart(int xPos, int yPos){
 
     // Note: In a normal recursive backtracer maze generation algorithm, the distance
     // from the start cell is just the size of the stack.  Since I added wall breaking
@@ -267,42 +266,63 @@ void TomaszMazeGenerator::updateDistanceFromStart(){
     
     std::queue<TomMazeGenTile*> pathQueue;
     
-    TomMazeGenTile* t = getTile(0,0);
-    t->distanceFromStart = 0; // tile 0, 0 is start
+    std::map<Direction, bool> visited = {
+        {NORTH, false},
+        {EAST,  false},
+        {SOUTH, false},
+        {WEST,  false}
+    };
+    
+    TomMazeGenTile* t = getTile(xPos, yPos);
+    t->distanceFromStart = 0; // tile xPos, yPos is start
     pathQueue.push(t);
     
     while(pathQueue.empty() == false){
         TomMazeGenTile* tile = pathQueue.front();
         pathQueue.pop();
         
-        int xpos = tile->column;
-        int ypos = tile->row;
+        int xCurrentPos = tile->column;
+        int yCurrentPos = tile->row;
         
         int newDistanceFromStart = tile->distanceFromStart + 1;
         
-        if(tile->walls[NORTH] == false && getTile(xpos, ypos, NORTH)->distanceFromStart == -1) {
-            TomMazeGenTile* tileToAdd = getTile(xpos, ypos, NORTH);
+        if(tile->walls[NORTH] == false && getTile(xCurrentPos, yCurrentPos, NORTH)->distanceFromStart == -1) {
+            TomMazeGenTile* tileToAdd = getTile(xCurrentPos, yCurrentPos, NORTH);
             tileToAdd->distanceFromStart = newDistanceFromStart;
             pathQueue.push(tileToAdd);   
              
         }
         
-        if(tile->walls[EAST] == false && getTile(xpos, ypos, EAST)->distanceFromStart == -1) {
-            TomMazeGenTile* tileToAdd = getTile(xpos, ypos, EAST);
+        if(tile->walls[EAST] == false && getTile(xCurrentPos, yCurrentPos, EAST)->distanceFromStart == -1) {
+            TomMazeGenTile* tileToAdd = getTile(xCurrentPos, yCurrentPos, EAST);
             tileToAdd->distanceFromStart = newDistanceFromStart;
             pathQueue.push(tileToAdd);    
         }
         
-        if(tile->walls[SOUTH] == false && getTile(xpos, ypos, SOUTH)->distanceFromStart == -1) {
-            TomMazeGenTile* tileToAdd = getTile(xpos, ypos, SOUTH);
+        if(tile->walls[SOUTH] == false && getTile(xCurrentPos, yCurrentPos, SOUTH)->distanceFromStart == -1) {
+            TomMazeGenTile* tileToAdd = getTile(xCurrentPos, yCurrentPos, SOUTH);
             tileToAdd->distanceFromStart = newDistanceFromStart;
             pathQueue.push(tileToAdd);    
         }
         
-        if(tile->walls[WEST] == false && getTile(xpos, ypos, WEST)->distanceFromStart == -1) {
-            TomMazeGenTile* tileToAdd = getTile(xpos, ypos, WEST);
+        if(tile->walls[WEST] == false && getTile(xCurrentPos, yCurrentPos, WEST)->distanceFromStart == -1) {
+            TomMazeGenTile* tileToAdd = getTile(xCurrentPos, yCurrentPos, WEST);
             tileToAdd->distanceFromStart = newDistanceFromStart;
             pathQueue.push(tileToAdd);    
+        }
+        
+        if((xCurrentPos == xPos)     && (yCurrentPos + 1 == yPos)) { visited[NORTH] = true; }
+        if((xCurrentPos + 1 == xPos) && (yCurrentPos == yPos))     { visited[EAST]  = true; }
+        if((xCurrentPos == xPos)     && (yCurrentPos - 1 == yPos)) { visited[SOUTH] = true; }
+        if((xCurrentPos - 1 == xPos) && (yCurrentPos == yPos))     { visited[WEST]  = true; }
+        
+        if((visited[NORTH] == true) &&
+           (visited[EAST]  == true) &&
+           (visited[SOUTH] == true) &&
+           (visited[WEST]  == true) &&
+           ((xPos != 0) || (yPos != 0)) ){
+           break; // If we are doing breadth search from a cell, we only really NEED the distance
+                  // values of all cells adjacent to that cell.  No sense in wasting time
         }
     }
     
@@ -387,7 +407,7 @@ void TomaszMazeGenerator::breakGradientWall(int xPos, int yPos) {
         }
     }
     //biggestDifference = 0;
-    if (biggestDifference > 5) {
+    if (biggestDifference > breakThreshold) {
         switch (cellToBreak) { // Break wall across greates gradiant
         case NORTH:
             setWall(xPos, yPos, NORTH, false);
