@@ -1,10 +1,10 @@
 #pragma once
 
+#include <algorithm>
 #include <vector>
 #include <stack>
 
 #include "MazeGenerator.h" // Basic Tile
-#include "Directions.h"
 
 namespace sim {
 
@@ -23,6 +23,8 @@ public:
     std::vector<std::vector<BasicTile>> convertToBasicMaze();
     
 private:
+
+    enum Direction { NORTH, EAST, SOUTH, WEST , UNDEFINED};
 
     // Struct which is used internally to keep a representation of the maze    
     struct TomMazeGenTile {

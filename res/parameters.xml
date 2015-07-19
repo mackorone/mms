@@ -25,7 +25,7 @@
 <!-- <shortest-path-visible>true</shortest-path-visible> TODO -->
 
 <!-- Simulation Parameters -->
-<random-seed>12345</random-seed> <!-- The seed value for rand() -->
+<random-seed>12345</random-seed> <!-- The seed value for rand() --> <!-- TODO: we don't use rand() anymore -->
 <use-random-seed>true</use-random-seed> <!-- Whether or not to use the seed value -->
 <crash-message>Oh no! Your mouse crashed! It can't move anymore...</crash-message>
 <glut-init-duration>0.1</glut-init-duration> <!-- Seconds -->
@@ -58,11 +58,11 @@
 <maze-generation-algo>TOMASZ</maze-generation-algo>
 <save-generated-maze>true</save-generated-maze> <!-- Whethor or not to save a random maze -->
 
-<!-- Tomasz Maze Generator Parameters -->
+<!-- Tomasz Maze Generator Parameters --> <!-- TODO: Move to a different file -->
 <tom-straight-factor>0.85</tom-straight-factor> <!-- number between 0-1 which determines how straight the maze becomes closer to edges -->
 <tom-dead-end-break-chance>0.75</tom-dead-end-break-chance> <!-- number between 0-1 which determines if the algorithm will break down a wall at a dead end -->
 <tom-dead-end-break-threshold>8</tom-dead-end-break-threshold> <!-- the minimum distance between cells to break down a dead end wall. > 5 -->
-<tom-gradient-wall-breaks>3</tom-gradient-wall-breaks> <!-- number of walls to break down in finalized maze
+<tom-gradient-wall-breaks>3</tom-gradient-wall-breaks> <!-- number of walls to break down in finalized maze -->
 
 <!-- Mouse Parameters -->
 <mouse-directory>res/mice/</mouse-directory> <!-- Relative to project root -->

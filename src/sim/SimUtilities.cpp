@@ -40,11 +40,11 @@ double SimUtilities::getRandom() {
     // The '- 1' ensures that the random number is never 1.
     // This matches the python implementation where random is [0,1).
     // This is particularly useful if you want to index into array like so
-    // array[std::floor( random * <number of elements>)] without having to check
+    // array[std::floor(random * <number of elements>)] without having to check
     // the condition if this function returns 1.
     
     static std::mt19937 generator(sim::P()->randomSeed());
-    return ( std::abs(static_cast<double>(generator()) - 1) / static_cast<double>(generator.max()) );
+    return std::abs(static_cast<double>(generator()) - 1) / static_cast<double>(generator.max());
 }
 
 void SimUtilities::sleep(const Duration& duration) {

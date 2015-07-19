@@ -18,7 +18,7 @@ INC = -I$(SRC)lib -I$(SRC)lib/polypartition/src -I$(SRC)lib/pugixml-1.6/src -I$(
 # -g: Add debugging symbols
 # -Wall: Show all warning messages
 # TODO: -pedantic-errors
-FLAGS = -MMD -std=c++11 #-g -Wall TODO: Fix all errors
+FLAGS = -MMD -std=c++11 -O#-g -Wall TODO: Fix all errors
 
 # Recursively find all source files
 PRELIMSOURCES = $(shell find $(SRC) -name '*.cpp')

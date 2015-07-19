@@ -6,7 +6,6 @@
 
 #include "Param.h"
 #include "SimUtilities.h"
-#include "Directions.h"
 #include "Assert.h"
 
 namespace sim {

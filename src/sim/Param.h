@@ -79,7 +79,7 @@ public:
     // Algorithm parameters
     std::string algorithm();
     
-    // Tomasz maze generator
+    // Tomasz maze generator -- TODO: MACK Put these elsewhere
     float tomStraightConst();
     float tomDeadEndBreakChance();
     int tomDeadEndBreakThreshold();
