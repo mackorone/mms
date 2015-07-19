@@ -8,7 +8,7 @@
 
 namespace manual {
 
-void Manual::solve(sim::MouseInterface* mouse) {
+void Manual::solve(int mazeWidth, int mazeHeight, sim::MouseInterface* mouse) {
 
     mouse->initializeMouse("mouse.xml");
     mouse->declareInterfaceType(sim::CONTINUOUS);

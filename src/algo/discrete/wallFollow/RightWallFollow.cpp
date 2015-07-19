@@ -2,7 +2,7 @@
 
 namespace wallFollow {
 
-void RightWallFollow::solve(sim::MouseInterface* mouse) {
+void RightWallFollow::solve(int mazeWidth, int mazeHeight, sim::MouseInterface* mouse) {
     mouse->initializeMouse("mouse.xml");
     mouse->declareInterfaceType(sim::DISCRETE);
     while (true){

@@ -6,6 +6,6 @@
 class IAlgorithm {
 
 public:
-    virtual void solve(sim::MouseInterface* mouse) = 0;
+    virtual void solve(int mazeWidth, int mazeHeight, sim::MouseInterface* mouse) = 0;
 
 };

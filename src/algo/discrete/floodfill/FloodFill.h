@@ -20,7 +20,7 @@ enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
 class FloodFill : public IAlgorithm {
 
 public:
-    void solve(sim::MouseInterface* mouse); // IAlgorithm interface method
+    void solve(int mazeWidth, int mazeHeight, sim::MouseInterface* mouse); // IAlgorithm interface method
 
 private:
     sim::MouseInterface* m_mouse; // A pointer to the mouse interface

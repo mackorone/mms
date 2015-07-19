@@ -7,7 +7,7 @@ namespace wallFollow {
 class RightWallFollow : public IAlgorithm {
 
 public:
-    void solve(sim::MouseInterface* mouse);
+    void solve(int mazeWidth, int mazeHeight, sim::MouseInterface* mouse);
 
 private:
     void rightWallFollowStep(sim::MouseInterface* mouse);

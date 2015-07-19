@@ -16,8 +16,8 @@ namespace sim {
 // Here we have to explicity create the TGB, since we only declared it in the header
 std::vector<TriangleGraphic> GraphicUtilities::TGB;
 
-int GraphicUtilities::m_windowWidth = 0;
-int GraphicUtilities::m_windowHeight = 0;
+int GraphicUtilities::m_windowWidth = P()->initialWindowWidth();
+int GraphicUtilities::m_windowHeight = P()->initialWindowHeight();
 void GraphicUtilities::setWindowSize(int windowWidth, int windowHeight) {
     ASSERT(0 < windowWidth && 0 < windowHeight);
     m_windowWidth = windowWidth;
@@ -42,11 +42,17 @@ std::pair<int, int> GraphicUtilities::getZoomedMapPosition() {
 }
 
 std::pair<int, int> GraphicUtilities::getFullMapSize() {
-    return std::make_pair((m_windowWidth - 3 * P()->windowBorderWidth()) / 2, m_windowHeight - 2 * P()->windowBorderWidth());
+    int width = (m_windowWidth - 3 * P()->windowBorderWidth()) / 2;
+    int height = m_windowHeight - 2 * P()->windowBorderWidth();
+    ASSERT(0 < width && 0 < height);
+    return std::make_pair(width, height);
 }
 
 std::pair<int, int> GraphicUtilities::getZoomedMapSize() {
-    return std::make_pair((m_windowWidth - 3 * P()->windowBorderWidth()) / 2, m_windowHeight - 2 * P()->windowBorderWidth());
+    int width = (m_windowWidth - 3 * P()->windowBorderWidth()) / 2;
+    int height = m_windowHeight - 2 * P()->windowBorderWidth();
+    ASSERT(0 < width && 0 < height);
+    return std::make_pair(width, height);
 }
 
 std::vector<float> GraphicUtilities::getFullMapTransformationMatrix() {
@@ -398,10 +404,10 @@ int GraphicUtilities::trianglesPerTile() {
     // - 1 x Base polygon: 2 triangles
     // - 4 x Wall polygon: 2 triangles each
     // - 4 x Corner polygon: 2 triangles each
-    // - 8 x Distance character polygon: 2 triangles each
+    // - 15 x Distance character polygon: 2 triangles each
     // - 1 x Fog polygon: 2 triangles 
     // TODO: MACK - this doesn't need to be hardcoded
-    return 36;
+    return 50;
 }
 
 int GraphicUtilities::getTileGraphicBaseStartingIndex(int x, int y) {
@@ -422,7 +428,7 @@ int GraphicUtilities::getTileGraphicDistanceCharacterStartingIndex(int x, int y,
 }
 
 int GraphicUtilities::getTileGraphicFogStartingIndex(int x, int y) {
-    return 34 + trianglesPerTile() * (m_mazeHeight * x + y);
+    return 48 + trianglesPerTile() * (m_mazeHeight * x + y);
 }
 
 } // namespace sim

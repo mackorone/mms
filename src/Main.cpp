@@ -152,7 +152,7 @@ void solve() {
     }
 
     // Then, execute the algorithm
-    algos.at(sim::P()->algorithm())->solve(g_mouseInterface);
+    algos.at(sim::P()->algorithm())->solve(g_mazeGraphic->getWidth(), g_mazeGraphic->getHeight(), g_mouseInterface);
 }
 
 void keyPress(unsigned char key, int x, int y) {

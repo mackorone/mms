@@ -12,7 +12,7 @@
 
 namespace floodfill {
 
-void FloodFill::solve(sim::MouseInterface* mouse) {
+void FloodFill::solve(int mazeWidth, int mazeHeight, sim::MouseInterface* mouse) {
 
     // Store a reference to the interface
     m_mouse = mouse;
@@ -20,6 +20,14 @@ void FloodFill::solve(sim::MouseInterface* mouse) {
     // Initialize the mouse and declare the interface type
     m_mouse->initializeMouse("mouse.xml");
     m_mouse->declareInterfaceType(sim::DISCRETE);
+
+    // Check that our assumed maze dimensions match the actual maze dimensions
+    if (MAZE_SIZE_X != mazeWidth || MAZE_SIZE_Y != mazeHeight) {
+        std::cout << "I am programmed to think the maze is " << MAZE_SIZE_X << " x " << MAZE_SIZE_Y
+            << " but I'm being told that the maze is actually " << mazeWidth << " x " << mazeHeight
+            << ". I'm giving up..." << std::endl;
+        return;
+    }
 
     // Initialize the x and y positions of the cells
     for (int x = 0; x < MAZE_SIZE_X; x += 1) {

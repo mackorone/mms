@@ -4,7 +4,7 @@
 
 namespace demo {
 
-void Continue::solve(sim::MouseInterface* mouse) {
+void Continue::solve(int mazeWidth, int mazeHeight, sim::MouseInterface* mouse) {
 
     m_mouse = mouse;
     m_mouse->initializeMouse("megaMouse.xml");

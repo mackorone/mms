@@ -65,8 +65,8 @@ void TileGraphic::draw() const {
     }
 
     // Draw the distance character textures
-    for (int row = 0; row < 2; row += 1) {
-        for (int col = 0; col < 4; col += 1) {
+    for (int row = 0; row < 3; row += 1) {
+        for (int col = 0; col < 5; col += 1) {
             // TODO: MACK - pass in the correct characters here
             GraphicUtilities::drawTileGraphicDistanceCharacter(m_tile->getX(), m_tile->getY(), row, col,
                 getDistanceCharacterPolygon(row, col), ((col + row) % 2 == 0 ? 'a' : 'b'));
@@ -88,11 +88,11 @@ void TileGraphic::updateColor() const {
 }
 
 void TileGraphic::updateDistance() const {
-    // TODO: MACK - change State tile text to tile color, 
-    // TODO: MACK - add a param for actual distance values displayed
+    // TODO: MACK - change tile text to tile color, 
+    // TODO: MACK - add a param for whether or not the actual distance values displayed
     // TODO: MACK - text color???
-    for (int row = 0; row < 2; row += 1) {
-        for (int col = 0; col < 3; col += 1) {
+    for (int row = 0; row < 3; row += 1) {
+        for (int col = 0; col < 5; col += 1) {
             /*
             GraphicUtilities::updateTileGraphicDistanceCharacter(m_tile->getX(), m_tile->getY(),
                 row, col, S()->tileTextVisible() ? m_color : COLOR_STRINGS.at(P()->tileBaseColor()));
@@ -184,12 +184,13 @@ Polygon TileGraphic::getDistanceCharacterPolygon(int row, int col) const {
     //                     *--X--------------*--*
     //                     |  |              |  |
     //                     *--*--------------*--*
+    // TODO: MACK
 
     Cartesian X = m_tile->getInteriorPolygon().getVertices().at(0);
     Cartesian Y = m_tile->getInteriorPolygon().getVertices().at(2);
     Cartesian diagonal = Y - X;
-    Meters characterWidth = diagonal.getX() / 4.0;
-    Meters characterHeight = diagonal.getY() / 2.0;
+    Meters characterWidth = diagonal.getX() / 5.0;
+    Meters characterHeight = diagonal.getY() / 3.0;
     return Polygon({
         X + Cartesian(characterWidth *  col     , characterHeight *  row     ),
         X + Cartesian(characterWidth *  col     , characterHeight * (row + 1)),

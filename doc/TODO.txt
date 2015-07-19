@@ -1,4 +1,5 @@
 High Pri:
+- Put the vertex shader in its own source file
 - Tile distances
     - Depending on the maze size, the valid distances will be different - make this the case for the text
     - Pass the maze size to the algorithm so it can be flexible
@@ -14,12 +15,15 @@ High Pri:
     - Official maze size parameters
 - Figure out how to get rid of ifdefs in algorithm
 - Make a SimInterface and make sure it's easy to "extract" an algorithm for use on Arduino
+- Add a linter to the code
 - Updates on the tile boundaries, not centers
+- Figure out a nice way to use a vector for the simulation, but an array for real life
 - Other mouse movements - curve turns, j-turns, diagonals, etc.
 - Add support for multiple mouse starting locations (both left and right corner)
-- Add support for maze rotation
-- Add support for mouse stating position rotation
+- Add support for maze rotation (so the mouse can start at any corner)
+- Add support for mouse stating position rotation (so the mouse can start facing any direction)
 - Actual distance values on the tile
+    - State variable and key to control whether these are visible or not
 - Support stepper motor / encoders interface
 - Sensor readings for walls other than front, left right
 - Get Tomasz's random maze algorithm working
@@ -40,11 +44,12 @@ Med Pri:
     - Better implementation of sensor view collision detection
     - Figure out how to make sensors more efficient
     - Make the sensor polygon model better
-- Add a manual mode high scores
+- Add manual mode high scores
 - Add a way to set the text color of each tile individually
 - Zoomed map mouse is a bit jumpy when going at high speeds
 - Shortest path graphic (phantom bot that travels along other shortest paths)
 - Randomly select a pre-defined maze
+- Write a good continuous algorithm
 - Buffer communication (like with the real robot)
 - Data recording for pause, rewind, fast forward
 - Interrupt interface
