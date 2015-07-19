@@ -5,7 +5,7 @@
 namespace sim {
 
 // Create the Direction type
-enum Direction { NORTH, EAST, SOUTH, WEST };
+enum Direction { NORTH, EAST, SOUTH, WEST , UNDEFINED}; // TODO: MACK - Undefined
 
 // This vector serves two functions:
 // 1) Serves as a convenient way to enumerate through all of the directions

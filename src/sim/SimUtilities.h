@@ -20,8 +20,8 @@ public:
     // Prints a message to stdout
     static void print(const std::string& msg);
 
-    // Returns a float in [0.0, 1.0]
-    static float getRandom();
+    // Returns a double in [0.0, 1.0)
+    static double getRandom();
 
     // Sleeps the current thread for ms milliseconds
     static void sleep(const Duration& duration);

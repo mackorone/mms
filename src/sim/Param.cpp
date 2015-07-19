@@ -1,4 +1,7 @@
 #include "Param.h"
+
+#include <random>
+
 #include "ParamParser.h"
 #include "SimUtilities.h"
 
@@ -57,7 +60,7 @@ Param::Param() {
             + " valid random-seed value was provided.");
         SimUtilities::quit();
     }
-    m_randomSeed = (useRandomSeed ? parser.getIntValue("random-seed") : time(NULL));
+    m_randomSeed = (useRandomSeed ? parser.getIntValue("random-seed") : std::random_device()()); // TODO: MACK
     m_crashMessage = parser.getStringIfHasString("crash-message", "CRASH");
     m_glutInitDuration = parser.getFloatIfHasFloat("glut-init-duration", 0.25);
     m_defaultPaused = parser.getBoolIfHasBool("default-paused", false);
@@ -94,6 +97,12 @@ Param::Param() {
 
     // Algorithm parameters
     m_algorithm = parser.getStringIfHasString("algorithm", "MackAlgo");
+    
+    // Tomasz Maze Generation Parameters
+    m_tom_straight_const = parser.getFloatIfHasFloat("tom-straight-factor", 0.85);
+    m_tom_dead_end_break_chance = parser.getFloatIfHasFloat("tom-dead-end-break-chance", 0.75);
+    m_tom_dead_end_break_threshold = parser.getFloatIfHasFloat("tom-dead-end-break-threshold", 8);
+    m_tom_gradient_wall_breaks = parser.getFloatIfHasFloat("tom-gradient-wall-breaks", 2);
 }
 
 int Param::pixelsPerMeter() {
@@ -302,6 +311,22 @@ std::string Param::mouseDirectory() {
 
 std::string Param::algorithm() {
     return m_algorithm;
+}
+
+float Param::tomStraightConst() {
+    return m_tom_straight_const;
+}
+
+float Param::tomDeadEndBreakChance(){
+    return m_tom_dead_end_break_chance;
+}
+
+int Param::tomDeadEndBreakThreshold(){
+    return  m_tom_dead_end_break_threshold;
+}
+
+int Param::tomGradientWallBreaks(){
+    return m_tom_gradient_wall_breaks;
 }
 
 } // namespace sim

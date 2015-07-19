@@ -76,3 +76,4 @@ Clean-Up:
 - Change the Mouse to use the technically correct position update implementation
 - Clean up / improve the coding standards
 - Put consts in GraphicUtilties (and other classes)
+- Upgrade convert_mazes.py to Python 3

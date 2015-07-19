@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <chrono>
+#include <ctime>
+#include <ratio>
 #include <fstream>
 #include <glut.h>
 #include <iostream>
@@ -10,6 +12,7 @@
 #include <string>
 #include <sys/stat.h>
 #include <thread>
+#include <random>
 
 #ifdef __linux
     #include <limits.h>
@@ -32,18 +35,16 @@ void SimUtilities::print(const std::string& msg) {
     std::cout << msg << std::endl;
 }
 
-float SimUtilities::getRandom() {
-#ifdef __linux
-    static bool seeded = false;
-    if (!seeded) {
-        srand(sim::P()->randomSeed());
-        seeded = true;
-    }
-    return rand() / static_cast<float>(RAND_MAX);
-#elif _WIN32
-    // TODO: Tomasz said he'd implement the Windows version
-    return 0.0;
-#endif
+double SimUtilities::getRandom() {
+    
+    // The '- 1' ensures that the random number is never 1.
+    // This matches the python implementation where random is [0,1).
+    // This is particularly useful if you want to index into array like so
+    // array[std::floor( random * <number of elements>)] without having to check
+    // the condition if this function returns 1.
+    
+    static std::mt19937 generator(sim::P()->randomSeed());
+    return ( std::abs(static_cast<double>(generator()) - 1) / static_cast<double>(generator.max()) );
 }
 
 void SimUtilities::sleep(const Duration& duration) {
@@ -53,14 +54,16 @@ void SimUtilities::sleep(const Duration& duration) {
 
 double SimUtilities::getHighResTime() {
 #ifdef __linux
-    struct timeval t;
-    gettimeofday(&t, NULL);
-    return t.tv_sec + (t.tv_usec/1000000.0);
+    // chrono::high_resoltion_clock as defined by c++ 11 should use the highest resolution time source available
+    // on the system.  See below for windows note.
+    std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+    // By default a cast to duration is a cast to seconds since the default ratio is 1
+    return std::chrono::duration_cast<std::chrono::duration<double>>(t1.time_since_epoch()).count();
 #elif _WIN32
-    LARGE_INTEGER freq, counter;
-    QueryPerformanceFrequency(&freq);
-    QueryPerformanceCounter(&counter);
-    return double(counter.QuadPart) / double(freq.QuadPart);
+    LARGE_INTEGER freq, counter;         // Keep windows queryperformance for the time being until tests can
+    QueryPerformanceFrequency(&freq);    // be done. Supposedly up until Visual Studio 2013, microsoft uses
+    QueryPerformanceCounter(&counter);   // the normal system clock for chrono high_resolution_clock which only
+    return double(counter.QuadPart) / double(freq.QuadPart); // has 1 ms accuracy.
 #endif
 }
 

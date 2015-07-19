@@ -48,15 +48,21 @@
 <!-- Maze Parameters -->
 <maze-directory>res/mazes/</maze-directory> <!-- realtive to project root -->
 <maze-file>mazeish.maz</maze-file> <!-- relative to maze-directory -->
-<use-maze-file>true</use-maze-file> <!-- whether or not to use the maze file above -->
+<use-maze-file>false</use-maze-file> <!-- whether or not to use the maze file above -->
 <wall-length>.168</wall-length> <!-- meters --> <!-- TODO: This crashes things if it's too small -->
 <wall-width>.012</wall-width> <!-- meters -->
 <wall-height>.05</wall-height> <!-- meters -->
 <generated-maze-width>16</generated-maze-width> <!-- number of tiles -->
 <generated-maze-height>16</generated-maze-height> <!-- number of tiles -->
 <enforce-official-maze-rules>false</enforce-official-maze-rules>
-<maze-generation-algo>RANDOM</maze-generation-algo>
+<maze-generation-algo>TOMASZ</maze-generation-algo>
 <save-generated-maze>true</save-generated-maze> <!-- Whethor or not to save a random maze -->
+
+<!-- Tomasz Maze Generator Parameters -->
+<tom-straight-factor>0.85</tom-straight-factor> <!-- number between 0-1 which determines how straight the maze becomes closer to edges -->
+<tom-dead-end-break-chance>0.75</tom-dead-end-break-chance> <!-- number between 0-1 which determines if the algorithm will break down a wall at a dead end -->
+<tom-dead-end-break-threshold>8</tom-dead-end-break-threshold> <!-- the minimum distance between cells to break down a dead end wall. > 5 -->
+<tom-gradient-wall-breaks>3</tom-gradient-wall-breaks> <!-- number of walls to break down in finalized maze
 
 <!-- Mouse Parameters -->
 <mouse-directory>res/mice/</mouse-directory> <!-- Relative to project root -->

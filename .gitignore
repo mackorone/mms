@@ -25,6 +25,15 @@ bld/
 [Bb]in/
 [Oo]bj/
 
+#c-scope database
+*.files
+*.out
+*in.out
+*po.out
+
+#xterm
+xterm
+
 # Roslyn cache directories
 *.ide/
 
