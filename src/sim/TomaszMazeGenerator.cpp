@@ -5,6 +5,7 @@
 #include <queue>
 
 #include "Param.h"
+#include "Directions.h"
 #include "SimUtilities.h"
 #include "Assert.h"
 
@@ -59,16 +60,15 @@ void TomaszMazeGenerator::generateMaze() {
 
         int possible = 0;
         
-        for(auto &choice : choices) {
-            if(choice.second == true){
-                possible++; // Count how many cells can be moved to
-            }
+        for (auto &choice : choices) {
+            possible += (choice.second ? 1 : 0); // Count how many cells can be moved to
         }
-        
+
         // If the current cell has no more paths forward, we're done
         if (possible == 0) {
             m_stack.pop(); // Pop the tile of the stack, this will prompt the algorith to go back
                            // until a cell has possible moves
+            //std::cout << "HERE2" << std::endl;
                                       
             if (m_direction != UNDEFINED) { // We just reached the end of a path. lets break a wall with probability P
                 if (SimUtilities::getRandom() <= deadEndBreak) { // break the wall to the most disjoint
@@ -99,12 +99,14 @@ void TomaszMazeGenerator::generateMaze() {
         }
     }
 
+/*
     breakGradientWalls(); // Break one wall down with biggest gradient across it
     
     updateDistanceFromStart();
     
     pathIntoCenter(); // Now break down one of those wall at random
     
+*/
 }
 
 void TomaszMazeGenerator::pathIntoCenter() {
