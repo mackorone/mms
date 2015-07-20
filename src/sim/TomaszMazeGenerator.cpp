@@ -56,8 +56,22 @@ void TomaszMazeGenerator::generateMaze() {
         const int yPos = current->row; 
         
         // Keep track of the next possible movements
-        std::map<const Direction, const bool> choices = getValidMoves(xPos, yPos);
 
+        /*std::map<Direction, bool> choices = { // This fails with -O1 optimization flag on G++ 4.9.2
+            {NORTH, isValidUnexploredMove(xPos, yPos, NORTH)},
+            {EAST,  isValidUnexploredMove(xPos, yPos, EAST) },
+            {SOUTH, isValidUnexploredMove(xPos, yPos, SOUTH)},
+            {WEST,  isValidUnexploredMove(xPos, yPos, WEST) }
+        };*/
+        
+        std::map<Direction, bool> choices;
+        
+        
+        choices[NORTH] = isValidUnexploredMove(xPos, yPos, NORTH); // This approach works with -O1 flag
+        choices[EAST] = isValidUnexploredMove(xPos, yPos, EAST);
+        choices[SOUTH] = isValidUnexploredMove(xPos, yPos, SOUTH);
+        choices[WEST] = isValidUnexploredMove(xPos, yPos, WEST);
+        
         int possible = 0;
         
         for(auto &choice : choices) {
@@ -214,7 +228,7 @@ Direction TomaszMazeGenerator::moveTowardDirection(int xPos, int yPos, Direction
     // Break down the wall between the current cell and that cell
     // And push it unto the stack
     
-    Direction exploreDIR;
+    Direction exploreDIR = UNDEFINED; // make sure we do not return garbage data
     
     switch (directionToMove) {
         case NORTH:
@@ -240,6 +254,9 @@ Direction TomaszMazeGenerator::moveTowardDirection(int xPos, int yPos, Direction
             getTile(xPos, yPos, WEST)->explored = true;
             m_stack.push(getTile(xPos, yPos, WEST));
             exploreDIR = WEST;
+            break;
+        case UNDEFINED:
+            std::cout << "This should never happen in " << __FILE__ << ", line: " << __LINE__ << std::endl;
             break;
     }
     
@@ -328,7 +345,7 @@ void TomaszMazeGenerator::updateDistanceFromStart(int xPos, int yPos){
     
 }
 
-Direction TomaszMazeGenerator::getDirectionToMove(float moveConst, std::map<const Direction, const bool> choices){
+Direction TomaszMazeGenerator::getDirectionToMove(float moveConst, std::map<Direction, bool> choices){
 
     //if previous move exists, and repeating it will yeild a valid move AND its not the only valid move
 
@@ -421,21 +438,31 @@ void TomaszMazeGenerator::breakGradientWall(int xPos, int yPos) {
         case WEST:
             setWall(xPos, yPos, WEST, false);
             break;
+        case UNDEFINED:
+            std::cout << "This should never happen in " << __FILE__ << ", line: " << __LINE__ << std::endl;
+            break;
         }
     }
 }
 
-std::map<const Direction, const bool> TomaszMazeGenerator::getValidMoves(int xPos, int yPos) {
+/*std::map<Direction, bool> TomaszMazeGenerator::getValidMoves(int xPos, int yPos) {
     
-    std::map<const Direction, const bool> choices = {
+    std::map<Direction, bool> choices = {
         {NORTH, isValidUnexploredMove(xPos, yPos, NORTH)},
         {EAST,  isValidUnexploredMove(xPos, yPos, EAST) },
         {SOUTH, isValidUnexploredMove(xPos, yPos, SOUTH)},
         {WEST,  isValidUnexploredMove(xPos, yPos, WEST) }
     };
     
+    std::map<Direction, bool> choices;
+        
+    choices[NORTH] = isValidUnexploredMove(xPos, yPos, NORTH);
+    choices[EAST] = isValidUnexploredMove(xPos, yPos, EAST);
+    choices[SOUTH] = isValidUnexploredMove(xPos, yPos, SOUTH);
+    choices[WEST] = isValidUnexploredMove(xPos, yPos, WEST);
+    
     return choices;
-}
+}*/
 
 bool TomaszMazeGenerator::isValidUnexploredMove(int x, int y, Direction direction) {
     if (direction == NORTH) { y++; }
@@ -546,22 +573,19 @@ void TomaszMazeGenerator::setWall(int x, int y, Direction direction, bool value)
             getTile(x, y)->walls[WEST] = value;
             getTile(x, y, WEST)->walls[EAST] = value;
             break;
+        case UNDEFINED:
+            std::cout << "This should never happen in " << __FILE__ << ", line: " << __LINE__ << std::endl;
+            break;
     }
 }
 
 TomaszMazeGenerator::TomMazeGenTile* TomaszMazeGenerator::getTile(int x, int y, Direction direction){
-    switch (direction) {
-        case NORTH:
-            return &m_maze.at(x).at(y + 1);
-        case SOUTH:
-            return &m_maze.at(x).at(y - 1);
-        case EAST:
-            return &m_maze.at(x + 1).at(y);
-        case WEST:
-            return &m_maze.at(x - 1).at(y);
-        case UNDEFINED:
-            return &m_maze.at(x).at(y);
-    }
+    if (direction == NORTH) { y++; }
+    if (direction == EAST)  { x++; }
+    if (direction == SOUTH) { y--; }
+    if (direction == WEST)  { x--; }
+    
+    return &m_maze.at(x).at(y);
 }
 
 } // namespace sim

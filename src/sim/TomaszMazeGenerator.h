@@ -64,7 +64,7 @@ private:
     
     // Determines which way the algorithm should procede.  This takes into account the
     // configuration values and determine whether or not the algorithm should turn or not
-    Direction getDirectionToMove(float moveConst, std::map<const Direction, const bool> choices);
+    Direction getDirectionToMove(float moveConst, std::map<Direction, bool> choices);
     
     //Initialize a maze with walls in every location.  Mark center as exlpored
     // and set the special center flag so the maze generation algorithm will not
@@ -95,9 +95,6 @@ private:
     // A gradient is defined as the difference in distance_from_start
     // in two side by side cells
     void breakGradientWalls();
-    
-    // returns the valid moves from a cell. A valid move
-    std::map<const Direction, const bool> getValidMoves(int xPos, int yPos);
        
     // Helper to the formCenter above.  Hollows out the center, and sets the tiles as center
     void makeCenter();
