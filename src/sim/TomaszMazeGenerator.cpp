@@ -75,7 +75,9 @@ void TomaszMazeGenerator::generateMaze() {
         int possible = 0;
         
         for (auto &choice : choices) {
-            possible += (choice.second ? 1 : 0); // Count how many cells can be moved to
+            if (choice.second) {
+                possible += 1; // Count how many cells can be moved to
+            }
         }
 
         // If the current cell has no more paths forward, we're done
@@ -113,14 +115,11 @@ void TomaszMazeGenerator::generateMaze() {
         }
     }
 
-/*
     breakGradientWalls(); // Break one wall down with biggest gradient across it
     
     updateDistanceFromStart();
     
     pathIntoCenter(); // Now break down one of those wall at random
-    
-*/
 }
 
 void TomaszMazeGenerator::pathIntoCenter() {
