@@ -4,6 +4,7 @@ High Pri:
     - Depending on the maze size, the valid distances will be different - make this the case for the text
     - Pass the maze size to the algorithm so it can be flexible
 - Rewrite freeglut text so that it's performant
+- Look at the BasicTile - should we require "Direction" here???
 - Look at Tomasz' maze website
 - Make some utility that keeps track of elapse time
     - Make the sim speed non-arbitrary
@@ -55,6 +56,7 @@ Med Pri:
 - Interrupt interface
 - Run the program with maximum thread priority
 - New maze w/o restarting app
+- Fix the makefile so that if header files disappear we don't need to make clean
 - Be able to restart in the middle of a run (this is tricky with the algo thread...)
 - Make terminal style output at bottom or right of window (GUI)
 - Normalize random number generation (Implement Windows random number generation) // TODO: Should be fixed...
