@@ -11,8 +11,10 @@ MouseParser::MouseParser(const std::string& filePath) {
     // TODO: Check the directories, etc. Give better error message to users
     if (!result) {
         SimUtilities::print("Unable to read mouse parameters in \"" + filePath + "\": " + result.description());
-        SimUtilities::quit();
+        SimUtilities::quit(); // TODO: MACK - shouldn't quit here... allow other messages to print out
     }
+    
+    // TODO: MACK - use an explicit intialization step here so we can return false and then print out a more meaningful error message
 }
 
 Polygon MouseParser::getBody() {

@@ -24,14 +24,20 @@ private:
     // Initialize the object by reading a maze file; true if successful, false otherwise
     bool initializeViaMazeFile(const std::string& mazeFilePath);
 
-    // Initialize the Maze object by randomly generating a maze
-    void initializeViaMazeGenerator();
+    // Initialize the object via a maze generation algorithm; true if successful, false otherwise
+    bool initializeViaMazeAlgorithm();
 
-    // Initializes all of the tiles of the maze
-    void initializeMaze(const std::vector<std::vector<BasicTile>>& maze);
+    // Perform validation on the given basic maze
+    bool validateBasicMaze(const std::vector<std::vector<BasicTile>>& basicMaze);
 
-    // Extracts the maze information
-    std::vector<std::vector<BasicTile>> extractMaze() const;
+    // Initializes all of the tiles of the basic maze
+    void initializeFromBasicMaze(const std::vector<std::vector<BasicTile>>& basicMaze);
+
+    // Extracts all basic maze information
+    std::vector<std::vector<BasicTile>> extractBasicMaze() const;
+
+    // Returns a basic maze of a particular width and height
+    std::vector<std::vector<BasicTile>> getBlankBasicMaze(int mazeWidth, int mazeHeight) const;
 };
 
 } // namespace sim

@@ -20,9 +20,6 @@ MouseInterface::MouseInterface(const Maze* maze, Mouse* mouse, MazeGraphic* maze
         m_maze(maze), m_mouse(mouse), m_mazeGraphic(mazeGraphic) {
 }
 
-MouseInterface::~MouseInterface() {
-}
-
 void MouseInterface::delay(int milliseconds) {
     sim::SimUtilities::sleep(Milliseconds(milliseconds));
 }

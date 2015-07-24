@@ -69,22 +69,20 @@ public:
     int numberOfSensorEdgePoints();
 
     // Maze parameters
-    std::string mazeDirectory();
-    std::string mazeFile();
-    bool useMazeFile();
     double wallWidth();
     double wallLength();
     double wallHeight();
+    bool enforceOfficialMazeRules();
+    std::string mazeDirectory();
+    std::string mazeFile();
+    bool useMazeFile();
     int generatedMazeWidth();
     int generatedMazeHeight();
-    bool enforceOfficialMazeRules();
-    std::string mazeGenerationAlgo();
+    std::string mazeAlgorithm();
     bool saveGeneratedMaze();
 
     // Mouse parameters
     std::string mouseDirectory();
-
-    // Algorithm parameters
     std::string mouseAlgorithm();
 
 private:
@@ -149,22 +147,20 @@ private:
     double m_numberOfSensorEdgePoints;
 
     // Maze parameters
-    std::string m_mazeDirectory;
-    std::string m_mazeFile;
-    bool m_useMazeFile;
     double m_wallWidth;
     double m_wallLength;
     double m_wallHeight;
+    bool m_enforceOfficialMazeRules;
+    std::string m_mazeDirectory;
+    std::string m_mazeFile;
+    bool m_useMazeFile;
     int m_generatedMazeWidth;
     int m_generatedMazeHeight;
-    bool m_enforceOfficialMazeRules;
-    std::string m_mazeGenerationAlgo;
+    std::string m_mazeAlgorithm;
     bool m_saveGeneratedMaze;
 
     // Mouse parameters
     std::string m_mouseDirectory;
-
-    // Algorithm parameters
     std::string m_mouseAlgorithm;
 };
 

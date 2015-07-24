@@ -147,25 +147,24 @@ void solve() {
     MouseAlgorithms mouseAlgorithms;
     std::map<std::string, IMouseAlgorithm*> algorithms = mouseAlgorithms.getAlgorithms();
     if (algorithms.find(sim::P()->mouseAlgorithm()) == algorithms.end()) {
-        sim::SimUtilities::print("Error: The \"" + sim::P()->mouseAlgorithm() + "\" is not a valid mouse algorithm.");
+        sim::SimUtilities::print("Error: \"" + sim::P()->mouseAlgorithm() + "\" is not a valid mouse algorithm.");
         sim::SimUtilities::quit();
     }
     IMouseAlgorithm* algorithm = algorithms.at(sim::P()->mouseAlgorithm());
 
-    // TODO: MACK - get rid of the initialized field from the mouse
-
     // Initialize the mouse with the file provided
     std::string mouseFile = algorithm->mouseFile();
-    if (!g_mouse->initialize(mouseFile)) {
-        sim::SimUtilities::print("Error: Unable to successfully initialize the mouse from \""
-            + algorithm->mouseFile() + "\".");
+    bool success = g_mouse->initialize(mouseFile);
+    // TODO: MACK - print out the algorithm here too, 
+    if (!success) {
+        sim::SimUtilities::print("Error: Unable to successfully initialize the mouse from \"" + mouseFile + "\".");
         sim::SimUtilities::quit();
     }
 
-    // Set the interface type
+    // Initialize the interface type
     sim::S()->setInterfaceType(algorithm->interfaceType());
 
-    // Wait for everything to stabilize
+    // Wait for the window to appear
     sim::SimUtilities::sleep(sim::Seconds(sim::P()->glutInitDuration()));
 
     // Unfog the beginning tile if necessary

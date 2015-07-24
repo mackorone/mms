@@ -89,16 +89,16 @@ Param::Param() {
     m_numberOfSensorEdgePoints = parser.getDoubleIfHasDouble("number-of-sensor-edge-points", 3);
 
     // Maze Parameters
-    m_mazeDirectory = parser.getStringIfHasString("maze-directory", "res/mazes/");
-    m_mazeFile = parser.getStringIfHasString("maze-file", "");
-    m_useMazeFile = parser.getBoolIfHasBool("use-maze-file", false);
     m_wallWidth = parser.getDoubleIfHasDouble("wall-width", 0.012);
     m_wallLength = parser.getDoubleIfHasDouble("wall-length", 0.168);
     m_wallHeight = parser.getDoubleIfHasDouble("wall-height", 0.05);
+    m_enforceOfficialMazeRules = parser.getBoolIfHasBool("enforce-official-maze-rules", false);
+    m_mazeDirectory = parser.getStringIfHasString("maze-directory", "res/mazes/");
+    m_mazeFile = parser.getStringIfHasString("maze-file", "");
+    m_useMazeFile = parser.getBoolIfHasBool("use-maze-file", false);
     m_generatedMazeWidth = parser.getIntIfHasInt("generated-maze-width", 16);
     m_generatedMazeHeight = parser.getIntIfHasInt("generated-maze-height", 16);
-    m_enforceOfficialMazeRules = parser.getBoolIfHasBool("enforce-official-maze-rules", false);
-    m_mazeGenerationAlgo = parser.getStringIfHasString("maze-generation-algo", "RANDOM");
+    m_mazeAlgorithm = parser.getStringIfHasString("maze-algorithm", "Randomize"); // TODO: MACK - test this
     m_saveGeneratedMaze = parser.getBoolIfHasBool("save-generated-maze", true);
 
     // Mouse parameters
@@ -340,8 +340,8 @@ bool Param::enforceOfficialMazeRules() {
     return m_enforceOfficialMazeRules;
 }
 
-std::string Param::mazeGenerationAlgo() {
-    return m_mazeGenerationAlgo;
+std::string Param::mazeAlgorithm() {
+    return m_mazeAlgorithm;
 }
 
 bool Param::saveGeneratedMaze() {

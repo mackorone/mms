@@ -1,15 +1,10 @@
 #pragma once
 
-/*
-#include "../sim/InterfaceType.h"
-#include "../sim/MouseInterface.h"
-*/
+#include "../sim/MazeInterface.h"
 
 class IMazeAlgorithm {
 
 public:
-    /*
-    virtual void solve(int mazeWidth, int mazeHeight, sim::MouseInterface* mouse) = 0;
-    */
+    virtual void generate(int mazeWidth, int mazeHeight, sim::MazeInterface* maze) = 0;
 
 };

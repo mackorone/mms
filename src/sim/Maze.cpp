@@ -2,15 +2,15 @@
 
 #include <vector>
 
+#include "../maze/IMazeAlgorithm.h"
+#include "../maze/MazeAlgorithms.h"
 #include "Assert.h"
 #include "MazeChecker.h"
 #include "MazeFileUtilities.h"
-#include "MazeGenerator.h"
+#include "MazeInterface.h"
 #include "Param.h"
 #include "SimUtilities.h"
 #include "Tile.h"
-
-#include <iostream>
 
 namespace sim {
 
@@ -23,7 +23,11 @@ Maze::Maze() {
         }
     }
     else {
-        initializeViaMazeGenerator();
+        if (!initializeViaMazeAlgorithm()) {
+            SimUtilities::print("Error: Unable to initialize maze via maze generation algorithm \""
+                + P()->mazeAlgorithm() + "\".");
+            SimUtilities::quit();
+        }
     }
 }
 
@@ -49,68 +53,92 @@ bool Maze::initializeViaMazeFile(const std::string& mazeFilePath) {
 
     // Then, check to see if the file is in the correct format
     if (!MazeFileUtilities::isMazeFile(mazeFilePath)) {
-        SimUtilities::print("Error: \"" + mazeFilePath + "\" does not match the maze file format.");
         return false;
     }
 
     // If so, load the data into a maze
-    std::vector<std::vector<BasicTile>> maze = MazeFileUtilities::loadMaze(mazeFilePath);
+    std::vector<std::vector<BasicTile>> basicMaze = MazeFileUtilities::loadMaze(mazeFilePath);
 
-    // Then, check to see if it's a valid maze
-    if (!MazeChecker::validMaze(maze)) {
-        SimUtilities::print("Error: \"" + mazeFilePath + "\" failed maze validation.");
-        return false;
-    }
-
-    // Then, check and enforce official maze rules
-    if (P()->enforceOfficialMazeRules() && !MazeChecker::officialMaze(maze)) {
-        SimUtilities::print("Error: \"" + mazeFilePath + "\" failed official maze validation.");
+    // Validate the maze. If we fail, bail.
+    if (!validateBasicMaze(basicMaze)) {
         return false;
     }
 
     // Load the maze given by mazeFilePath
-    initializeMaze(maze);
+    initializeFromBasicMaze(basicMaze);
 
     return true;
 }
 
-void Maze::initializeViaMazeGenerator() {
+bool Maze::initializeViaMazeAlgorithm() {
 
     // Check the parameters file for maze generation algo
-    std::string mazeAlgo(P()->mazeGenerationAlgo());
-    if (0 == MAZE_ALGOS.count(mazeAlgo)) {
-        SimUtilities::print("Error: \"" + mazeAlgo + "\" is not a valid maze generation algorithm.");
-        SimUtilities::quit();
+    MazeAlgorithms mazeAlgorithms;
+    std::map<std::string, IMazeAlgorithm*> algorithms = mazeAlgorithms.getAlgorithms();
+    if (algorithms.find(sim::P()->mazeAlgorithm()) == algorithms.end()) {
+        sim::SimUtilities::print("Error: \"" + sim::P()->mazeAlgorithm() + "\" is not a valid maze algorithm.");
+        return false;
+    }
+
+    // Call on the maze generation algorithm to generate the maze
+    std::vector<std::vector<BasicTile>> basicMaze = getBlankBasicMaze(P()->generatedMazeWidth(), P()->generatedMazeHeight());
+    MazeInterface mazeInterface(&basicMaze);
+    algorithms.at(sim::P()->mazeAlgorithm())->generate(
+        P()->generatedMazeWidth(), P()->generatedMazeHeight(), &mazeInterface);
+
+    // Validate the maze. If we fail, bail.
+    if (!validateBasicMaze(basicMaze)) {
+        return false;
     }
 
     // Load the maze given by the maze generation algorithm
-    initializeMaze(MazeGenerator::generateMaze(MAZE_ALGOS.find(mazeAlgo)->second));
+    initializeFromBasicMaze(basicMaze);
 
+    // TODO: MACK - can this fail???
     // Optionally save the maze
     if (P()->saveGeneratedMaze()) {
-        MazeFileUtilities::saveMaze(extractMaze(),
+        MazeFileUtilities::saveMaze(extractBasicMaze(),
             SimUtilities::getProjectDirectory() + P()->mazeDirectory() + "auto_generated_maze.maz");
     }
+
+    return true;
 }
 
-void Maze::initializeMaze(const std::vector<std::vector<BasicTile>>& maze) {
-    for (int x = 0; x < maze.size(); x += 1) {
+bool Maze::validateBasicMaze(const std::vector<std::vector<BasicTile>>& basicMaze) {
+
+    // Check to see if it's a valid maze
+    if (!MazeChecker::validMaze(basicMaze)) {
+        SimUtilities::print("Error: Failed maze validation.");
+        return false;
+    }
+
+    // Then, check and enforce official maze rules
+    if (P()->enforceOfficialMazeRules() && !MazeChecker::officialMaze(basicMaze)) {
+        SimUtilities::print("Error: Failed official maze validation.");
+        return false;
+    }
+
+    return true;
+}
+
+void Maze::initializeFromBasicMaze(const std::vector<std::vector<BasicTile>>& basicMaze) {
+    for (int x = 0; x < basicMaze.size(); x += 1) {
         std::vector<Tile> column;
-        for (int y = 0; y < maze.at(x).size(); y += 1) {
+        for (int y = 0; y < basicMaze.at(x).size(); y += 1) {
             Tile tile;
             tile.setPos(x, y);
             for (Direction direction : DIRECTIONS) {
-                tile.setWall(direction, maze.at(x).at(y).walls.at(direction));
+                tile.setWall(direction, basicMaze.at(x).at(y).walls.at(direction));
             }
-            tile.initPolygons(maze.size(), maze.at(x).size());
+            tile.initPolygons(basicMaze.size(), basicMaze.at(x).size());
             column.push_back(tile);
         }
         m_maze.push_back(column);
     }
 }
 
-std::vector<std::vector<BasicTile>> Maze::extractMaze() const {
-    std::vector<std::vector<BasicTile>> maze;
+std::vector<std::vector<BasicTile>> Maze::extractBasicMaze() const {
+    std::vector<std::vector<BasicTile>> basicMaze;
     for (int x = 0; x < m_maze.size(); x += 1) {
         std::vector<BasicTile> column;
         for (int y = 0; y < m_maze.at(x).size(); y += 1) {
@@ -118,13 +146,31 @@ std::vector<std::vector<BasicTile>> Maze::extractMaze() const {
             tile.x = x;
             tile.y = y;
             for (Direction direction : DIRECTIONS) {
-                tile.walls[direction] = getTile(x, y)->isWall(direction);
+                tile.walls.insert(std::make_pair(direction, getTile(x, y)->isWall(direction)));
             }
             column.push_back(tile);
         }
-        maze.push_back(column);
+        basicMaze.push_back(column);
     }
-    return maze;
+    return basicMaze;
+}
+
+std::vector<std::vector<BasicTile>> Maze::getBlankBasicMaze(int mazeWidth, int mazeHeight) const {
+    std::vector<std::vector<BasicTile>> blankMaze;
+    for (int x = 0; x < mazeWidth; x += 1) {
+        std::vector<BasicTile> column;
+        for (int y = 0; y < mazeHeight; y += 1) {
+            BasicTile tile;
+            tile.x = x;
+            tile.y = y;
+            for (Direction direction : DIRECTIONS) {
+                tile.walls.insert(std::make_pair(direction, false));
+            }
+            column.push_back(tile);
+        }
+        blankMaze.push_back(column);
+    }
+    return blankMaze;
 }
 
 } // namespace sim

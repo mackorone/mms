@@ -18,7 +18,6 @@ class MouseInterface {
 
 public:
     MouseInterface(const Maze* maze, Mouse* mouse, MazeGraphic* mazeGraphic);
-    ~MouseInterface();
 
     // Any interface methods
     void delay(int milliseconds);

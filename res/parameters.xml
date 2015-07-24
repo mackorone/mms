@@ -56,16 +56,16 @@
 <number-of-sensor-edge-points>3</number-of-sensor-edge-points> <!-- The number of points of the edge of a sensor-->
 
 <!-- Maze Parameters -->
-<maze-directory>res/maze/</maze-directory> <!-- realtive to project root -->
-<maze-file>mazeish.maz</maze-file> <!-- relative to maze-directory -->
-<use-maze-file>true</use-maze-file> <!-- whether or not to use the maze file above -->
 <wall-length>0.168</wall-length> <!-- meters -->
 <wall-width>0.012</wall-width> <!-- meters -->
 <wall-height>0.05</wall-height> <!-- meters -->
+<enforce-official-maze-rules>false</enforce-official-maze-rules>
+<maze-directory>res/maze/</maze-directory> <!-- realtive to project root -->
+<maze-file>mazeish.maz</maze-file> <!-- relative to maze-directory -->
+<use-maze-file>false</use-maze-file> <!-- whether or not to use the maze file above -->
 <generated-maze-width>16</generated-maze-width> <!-- number of tiles -->
 <generated-maze-height>16</generated-maze-height> <!-- number of tiles -->
-<enforce-official-maze-rules>false</enforce-official-maze-rules>
-<maze-generation-algo>RANDOM</maze-generation-algo>
+<maze-algorithm>Randomize</maze-algorithm>
 <save-generated-maze>true</save-generated-maze> <!-- Whethor or not to save a random maze -->
 
 <!-- Mouse Parameters -->
