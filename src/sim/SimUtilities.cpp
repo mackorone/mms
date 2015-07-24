@@ -19,7 +19,7 @@
     #include <windows.h>
 #endif
 
-#include <Seconds.h>
+#include "units/Seconds.h"
 
 #include "Assert.h"
 #include "Param.h"

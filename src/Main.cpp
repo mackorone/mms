@@ -2,7 +2,6 @@
 #include <thread>
 
 #include <glut.h>
-#include <Seconds.h>
 
 #include "mouse/MouseAlgorithms.h"
 #include "sim/GraphicUtilities.h"
@@ -16,6 +15,7 @@
 #include "sim/State.h"
 #include "sim/SimUtilities.h"
 #include "sim/TriangleGraphic.h"
+#include "sim/units/Seconds.h"
 #include "sim/World.h"
 
 // Function declarations
@@ -155,9 +155,9 @@ void solve() {
     // Initialize the mouse with the file provided
     std::string mouseFile = algorithm->mouseFile();
     bool success = g_mouse->initialize(mouseFile);
-    // TODO: MACK - print out the algorithm here too, 
     if (!success) {
-        sim::SimUtilities::print("Error: Unable to successfully initialize the mouse from \"" + mouseFile + "\".");
+        sim::SimUtilities::print("Error: Unable to successfully initialize the mouse in the algorithm \""
+            + sim::P()->mouseAlgorithm() + "\" from \"" + mouseFile + "\".");
         sim::SimUtilities::quit();
     }
 

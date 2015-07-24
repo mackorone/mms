@@ -1,6 +1,6 @@
 #include "MouseGraphic.h"
 
-#include <Cartesian.h>
+#include "units/Cartesian.h"
 
 #include "GraphicUtilities.h"
 #include "Mouse.h"
@@ -15,7 +15,7 @@ MouseGraphic::MouseGraphic(const Mouse* mouse) : m_mouse(mouse) {
 void MouseGraphic::draw() {
 
     // Only draw the mouse if it has been initialized
-    // TODO: MACK - we should get rid of this once we draw the mouse all at the beginning, after its been initialized
+    // TODO: MACK - get rid of this once we factor out getInitialized
     if (!m_mouse->getInitialized()) {
         return;
     }

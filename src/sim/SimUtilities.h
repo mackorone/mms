@@ -4,7 +4,7 @@
 #include <vector>
 
 #include <glut.h>
-#include <Duration.h>
+#include "units/Duration.h"
 
 #include "Directions.h"
 

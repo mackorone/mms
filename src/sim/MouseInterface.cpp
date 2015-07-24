@@ -3,10 +3,10 @@
 #include <cmath>
 #include <glut.h>
 
-#include <Meters.h>
-#include <MetersPerSecond.h>
-#include <Milliseconds.h>
-#include <Seconds.h>
+#include "units/Meters.h"
+#include "units/MetersPerSecond.h"
+#include "units/Milliseconds.h"
+#include "units/Seconds.h"
 
 #include "Assert.h"
 #include "Colors.h"

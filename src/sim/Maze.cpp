@@ -94,7 +94,6 @@ bool Maze::initializeViaMazeAlgorithm() {
     // Load the maze given by the maze generation algorithm
     initializeFromBasicMaze(basicMaze);
 
-    // TODO: MACK - can this fail???
     // Optionally save the maze
     if (P()->saveGeneratedMaze()) {
         MazeFileUtilities::saveMaze(extractBasicMaze(),

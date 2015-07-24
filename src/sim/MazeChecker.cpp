@@ -35,7 +35,22 @@ bool MazeChecker::isRectangular(const std::vector<std::vector<BasicTile>>& maze)
 }
 
 bool MazeChecker::isEnclosed(const std::vector<std::vector<BasicTile>>& maze) {
-    // TODO: UP-FOR-GRABS - implement this method
+    for (int x = 0; x < maze.size(); x += 1) {
+        for (int y = 0; y < maze.at(x).size(); y += 1) {
+            if (x == 0 && !maze.at(x).at(y).walls.at(WEST)) {
+                return false; 
+            }
+            if (y == 0 && !maze.at(x).at(y).walls.at(SOUTH)) {
+                return false; 
+            }
+            if (x == maze.size() - 1 && !maze.at(x).at(y).walls.at(EAST)) {
+                return false; 
+            }
+            if (y == maze.at(x).size() - 1 && !maze.at(x).at(y).walls.at(NORTH)) {
+                return false; 
+            }
+        }
+    }
     return true;
 }
 

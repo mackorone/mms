@@ -98,13 +98,11 @@ Param::Param() {
     m_useMazeFile = parser.getBoolIfHasBool("use-maze-file", false);
     m_generatedMazeWidth = parser.getIntIfHasInt("generated-maze-width", 16);
     m_generatedMazeHeight = parser.getIntIfHasInt("generated-maze-height", 16);
-    m_mazeAlgorithm = parser.getStringIfHasString("maze-algorithm", "Randomize"); // TODO: MACK - test this
+    m_mazeAlgorithm = parser.getStringIfHasString("maze-algorithm", "Randomize");
     m_saveGeneratedMaze = parser.getBoolIfHasBool("save-generated-maze", true);
 
     // Mouse parameters
     m_mouseDirectory = parser.getStringIfHasString("mouse-directory", "res/mice/");
-
-    // Algorithm parameters
     m_mouseAlgorithm = parser.getStringIfHasString("mouse-algorithm", "RightWallFollow");
 }
 

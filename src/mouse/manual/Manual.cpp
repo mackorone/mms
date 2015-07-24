@@ -18,9 +18,7 @@ sim::InterfaceType Manual::interfaceType() const {
 
 void Manual::solve(int mazeWidth, int mazeHeight, sim::MouseInterface* mouse) {
 
-    // TODO: MACK - take this out of here
     sim::S()->setRotateZoomedMap(true);
-    sim::S()->setZoomedMapScale(0.2);
 
     double accelerateAmount = 5.0;
     double decelerateAmount = 1.2;

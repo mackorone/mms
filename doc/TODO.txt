@@ -10,8 +10,8 @@ High Pri:
 - Make some utility that keeps track of elapse time
     - Make the sim speed non-arbitrary
 - Look at the BasicTile - should we require "Direction" here. No is the answer...???
-- Rename algo to mice and make a mazes directory
 - Get Tomasz's random maze algorithm working
+    - generated maze size errors - the simulator should check for at least 1...
 - Look at Tomasz' maze website
 - Crash recovery semantics
     - mouse speed, elapsed time, etc.
@@ -86,7 +86,6 @@ Low-pri:
 - Support more than two wheels (let's hold off on this for now...)
 - Bluetooth connection to the actual mouse
 - Indicator of sim speed (real time, 10x fast, etc.)
-- Change namespace of units from "sim" to "units"
 - Change FreeGLUT to GLFW
 - 3D
 - Crash animation for both modes
