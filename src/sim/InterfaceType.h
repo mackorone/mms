@@ -2,6 +2,6 @@
 
 namespace sim {
 
-enum InterfaceType { UNDECLARED, DISCRETE, CONTINUOUS, MANUAL };
+enum InterfaceType { DISCRETE, CONTINUOUS };
 
 } // namespace sim

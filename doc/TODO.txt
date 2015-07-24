@@ -1,5 +1,5 @@
 High Pri:
-- Rewrite freeglut text so that it's performant
+- Rewrite text so that it's performant
 - Put the vertex shader in its own source file
 - Put a toolbar at the top or bottom with info
 - Tile distances
@@ -18,7 +18,8 @@ High Pri:
 - Maze Validation (both physically valid mazes and competition valid mazes)
     - Official maze size parameters
 - Figure out how to get rid of ifdefs in algorithm
-- Get rid of ENSURE in MouseInterface, make sure we're calling things to get the information we need
+- With a high glut-init time, manual mode snaps to zoom really wierdly... fix this.
+    - Maybe put of that logic in the the solve method in main? Allow the user to specify zoom, rotation, etc.
 - Add IMouseAlgorithm to the build path so we can just do #include <IMouseAlgorithm.h>
 - Make a SimInterface and make sure it's easy to "extract" an algorithm for use on Arduino
 - Add a linter to the code
@@ -45,6 +46,8 @@ High Pri:
 - Draw a path of where the robot has been (the history object could be used for recording as well)
 
 Med Pri:
+- Use vertex buffer object for the mouse body (only triangulate the mouse once)
+    - Get rid of getInitialized method in mouse once we implement mouse drawing only once
 - Check megaMouse performance
     - Better implementation of sensor view collision detection
     - Figure out how to make sensors more efficient
@@ -75,7 +78,6 @@ bullets in other physics simulators
 Low-pri:
 - Parameter for auto-generated maze name
 - Triangulate polygons upon creation?
-- Use vertex buffer object for the mouse body (only triangulate the mouse once)
 - Map borders
 - Inconsistent wall declaration colors (declared wall on one side of wall, declared no wall on other side of wall)
 - Inconsistent wall declaration colors (declared one side of wall but not the other)

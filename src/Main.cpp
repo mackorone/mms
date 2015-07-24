@@ -163,12 +163,6 @@ void solve() {
     }
 
     // Set the interface type
-    sim::InterfaceType interfaceType = algorithm->interfaceType();
-    // TODO: MACK - refactor this out
-    if (interfaceType == sim::UNDECLARED) {
-        sim::SimUtilities::print("Error: You may not declare the mouse interface type to be UNDECLARED.");
-        sim::SimUtilities::quit();
-    }
     sim::S()->setInterfaceType(algorithm->interfaceType());
 
     // Wait for everything to stabilize

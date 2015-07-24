@@ -16,7 +16,8 @@ World::World(Maze* maze, Mouse* mouse) : m_maze(maze), m_mouse(mouse), m_collisi
 void World::simulate() {
 
     // Wait until the interface type is declared
-    while (S()->interfaceType() == UNDECLARED) {
+    // TODO: MACK - factor this out once we get rid of getInitialized
+    while (!m_mouse->getInitialized()) {
         sim::SimUtilities::sleep(Seconds(P()->glutInitDuration()));
     }
 
