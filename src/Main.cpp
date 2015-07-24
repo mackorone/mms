@@ -4,7 +4,7 @@
 #include <glut.h>
 #include <Seconds.h>
 
-#include "algo/AlgoHub.h"
+#include "mouse/MouseAlgorithms.h"
 #include "sim/GraphicUtilities.h"
 #include "sim/Keys.h"
 #include "sim/Maze.h"
@@ -143,16 +143,44 @@ void draw() {
 
 void solve() {
 
-    // First, check to ensure that the algorithm is valid
-    AlgoHub algoHub;
-    std::map<std::string, IAlgorithm*> algos = algoHub.getAlgorithms();
-    if (algos.find(sim::P()->algorithm()) == algos.end()) {
-        sim::SimUtilities::print("Error: The algorithm \"" + sim::P()->algorithm() + "\" is not a valid algorithm.");
+    // First, check to ensure that the mouse algorithm is valid
+    MouseAlgorithms mouseAlgorithms;
+    std::map<std::string, IMouseAlgorithm*> algorithms = mouseAlgorithms.getAlgorithms();
+    if (algorithms.find(sim::P()->mouseAlgorithm()) == algorithms.end()) {
+        sim::SimUtilities::print("Error: The \"" + sim::P()->mouseAlgorithm() + "\" is not a valid mouse algorithm.");
+        sim::SimUtilities::quit();
+    }
+    IMouseAlgorithm* algorithm = algorithms.at(sim::P()->mouseAlgorithm());
+
+    // TODO: MACK - get rid of the initialized field from the mouse
+
+    // Initialize the mouse with the file provided
+    std::string mouseFile = algorithm->mouseFile();
+    if (!g_mouse->initialize(mouseFile)) {
+        sim::SimUtilities::print("Error: Unable to successfully initialize the mouse from \""
+            + algorithm->mouseFile() + "\".");
         sim::SimUtilities::quit();
     }
 
-    // Then, execute the algorithm
-    algos.at(sim::P()->algorithm())->solve(g_mazeGraphic->getWidth(), g_mazeGraphic->getHeight(), g_mouseInterface);
+    // Set the interface type
+    sim::InterfaceType interfaceType = algorithm->interfaceType();
+    // TODO: MACK - refactor this out
+    if (interfaceType == sim::UNDECLARED) {
+        sim::SimUtilities::print("Error: You may not declare the mouse interface type to be UNDECLARED.");
+        sim::SimUtilities::quit();
+    }
+    sim::S()->setInterfaceType(algorithm->interfaceType());
+
+    // Wait for everything to stabilize
+    sim::SimUtilities::sleep(sim::Seconds(sim::P()->glutInitDuration()));
+
+    // Unfog the beginning tile if necessary
+    if (sim::S()->interfaceType() == sim::DISCRETE && sim::P()->discreteInterfaceUnfogTileOnEntry()) {
+        g_mazeGraphic->setTileFogginess(0, 0, false);
+    }
+
+    // Finally, begin execution of the mouse algorithm
+    algorithm->solve(g_mazeGraphic->getWidth(), g_mazeGraphic->getHeight(), g_mouseInterface);
 }
 
 void keyPress(unsigned char key, int x, int y) {

@@ -1,33 +1,37 @@
 High Pri:
+- Rewrite freeglut text so that it's performant
 - Put the vertex shader in its own source file
+- Put a toolbar at the top or bottom with info
 - Tile distances
     - Depending on the maze size, the valid distances will be different - make this the case for the text
-    - Pass the maze size to the algorithm so it can be flexible
-- Rewrite freeglut text so that it's performant
-- Look at the BasicTile - should we require "Direction" here???
-- Look at Tomasz' maze website
+- Actual distance values on the tile
+    - State variable and key to control whether these are visible or not
+- Display a clock
 - Make some utility that keeps track of elapse time
     - Make the sim speed non-arbitrary
+- Look at the BasicTile - should we require "Direction" here. No is the answer...???
+- Rename algo to mice and make a mazes directory
+- Get Tomasz's random maze algorithm working
+- Look at Tomasz' maze website
 - Crash recovery semantics
-- Put a toolbar at the top or bottom with info
     - mouse speed, elapsed time, etc.
-- Display a clock
 - Maze Validation (both physically valid mazes and competition valid mazes)
     - Official maze size parameters
 - Figure out how to get rid of ifdefs in algorithm
+- Get rid of ENSURE in MouseInterface, make sure we're calling things to get the information we need
+- Add IMouseAlgorithm to the build path so we can just do #include <IMouseAlgorithm.h>
 - Make a SimInterface and make sure it's easy to "extract" an algorithm for use on Arduino
 - Add a linter to the code
 - Updates on the tile boundaries, not centers
 - Figure out a nice way to use a vector for the simulation, but an array for real life
+- If you shrink the window too skinny, an assertion fails (line 47 of GraphicUtilties.cpp)
 - Other mouse movements - curve turns, j-turns, diagonals, etc.
 - Add support for multiple mouse starting locations (both left and right corner)
 - Add support for maze rotation (so the mouse can start at any corner)
 - Add support for mouse stating position rotation (so the mouse can start facing any direction)
-- Actual distance values on the tile
-    - State variable and key to control whether these are visible or not
+- Detect STL use, let algos know
 - Support stepper motor / encoders interface
 - Sensor readings for walls other than front, left right
-- Get Tomasz's random maze algorithm working
 - Include Arduino "types" with the MouseInterface
 - More Arduino function support
 - Add some nice LaTeX documentation

@@ -105,7 +105,7 @@ Param::Param() {
     m_mouseDirectory = parser.getStringIfHasString("mouse-directory", "res/mice/");
 
     // Algorithm parameters
-    m_algorithm = parser.getStringIfHasString("algorithm", "RightWallFollow");
+    m_mouseAlgorithm = parser.getStringIfHasString("mouse-algorithm", "RightWallFollow");
 }
 
 int Param::initialWindowWidth() {
@@ -352,8 +352,8 @@ std::string Param::mouseDirectory() {
     return m_mouseDirectory;
 }
 
-std::string Param::algorithm() {
-    return m_algorithm;
+std::string Param::mouseAlgorithm() {
+    return m_mouseAlgorithm;
 }
 
 } // namespace sim

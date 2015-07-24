@@ -19,7 +19,7 @@ namespace sim {
 Mouse::Mouse(const Maze* maze) : m_maze(maze), m_initialized(false), m_rotation(Radians(0.0)) {
 }
 
-bool Mouse::getInitialized() {
+bool Mouse::getInitialized() const {
     return m_initialized;
 }
 

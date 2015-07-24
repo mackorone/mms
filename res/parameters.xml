@@ -56,7 +56,7 @@
 <number-of-sensor-edge-points>3</number-of-sensor-edge-points> <!-- The number of points of the edge of a sensor-->
 
 <!-- Maze Parameters -->
-<maze-directory>res/mazes/</maze-directory> <!-- realtive to project root -->
+<maze-directory>res/maze/</maze-directory> <!-- realtive to project root -->
 <maze-file>mazeish.maz</maze-file> <!-- relative to maze-directory -->
 <use-maze-file>true</use-maze-file> <!-- whether or not to use the maze file above -->
 <wall-length>0.168</wall-length> <!-- meters -->
@@ -69,7 +69,5 @@
 <save-generated-maze>true</save-generated-maze> <!-- Whethor or not to save a random maze -->
 
 <!-- Mouse Parameters -->
-<mouse-directory>res/mice/</mouse-directory> <!-- Relative to project root -->
-
-<!-- Algo Parameters -->
-<algorithm>FloodFill</algorithm> <!-- The name as specified in src/algo/AlgoHub.cpp -->
+<mouse-directory>res/mouse/</mouse-directory> <!-- Relative to project root -->
+<mouse-algorithm>FloodFill</mouse-algorithm> <!-- The name as specified in src/algo/MouseAlgorithms.cpp -->

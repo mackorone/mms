@@ -14,9 +14,9 @@ MouseGraphic::MouseGraphic(const Mouse* mouse) : m_mouse(mouse) {
 
 void MouseGraphic::draw() {
 
-    // Only draw the mouse if its interface type has been declared
-    // (which also means that the mouse has been initialized)
-    if (S()->interfaceType() == UNDECLARED) {
+    // Only draw the mouse if it has been initialized
+    // TODO: MACK - we should get rid of this once we draw the mouse all at the beginning, after its been initialized
+    if (!m_mouse->getInitialized()) {
         return;
     }
 

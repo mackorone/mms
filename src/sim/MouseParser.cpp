@@ -8,11 +8,11 @@ namespace sim {
 MouseParser::MouseParser(const std::string& filePath) {
     // Open the document
     pugi::xml_parse_result result = m_doc.load_file(filePath.c_str());
+    // TODO: Check the directories, etc. Give better error message to users
     if (!result) {
         SimUtilities::print("Unable to read mouse parameters in \"" + filePath + "\": " + result.description());
+        SimUtilities::quit();
     }
-    // TODO: How to handle the failing case???
-    ASSERT(result);
 }
 
 Polygon MouseParser::getBody() {

@@ -19,7 +19,7 @@ public:
     Mouse(const Maze* maze);
 
     // Returns whether or not the mouse was previously initialized
-    bool getInitialized();
+    bool getInitialized() const;
 
     // Initializes the mouse (body, sensors, etc.). Returns true if successful, false if not.
     bool initialize(const std::string& mouseFile);

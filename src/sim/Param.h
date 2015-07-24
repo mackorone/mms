@@ -85,7 +85,7 @@ public:
     std::string mouseDirectory();
 
     // Algorithm parameters
-    std::string algorithm();
+    std::string mouseAlgorithm();
 
 private:
 
@@ -165,7 +165,7 @@ private:
     std::string m_mouseDirectory;
 
     // Algorithm parameters
-    std::string m_algorithm;
+    std::string m_mouseAlgorithm;
 };
 
 } // namespace sim

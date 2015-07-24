@@ -23,52 +23,11 @@ MouseInterface::MouseInterface(const Maze* maze, Mouse* mouse, MazeGraphic* maze
 MouseInterface::~MouseInterface() {
 }
 
-void MouseInterface::initializeMouse(const std::string& mouseFile) {
-
-    if (m_mouse->getInitialized()) {
-        SimUtilities::print("Error: You may only initialize the mouse once.");
-        SimUtilities::quit();
-    }
-
-    if (!m_mouse->initialize(mouseFile)) {
-        SimUtilities::print("Error: Unable to successfully initialize the mouse from \"" + mouseFile + "\".");
-        SimUtilities::quit();
-    }
-}
-
-void MouseInterface::declareInterfaceType(InterfaceType interfaceType) {
-
-    ENSURE_INITIALIZED_MOUSE
-
-    if (interfaceType == UNDECLARED) {
-        SimUtilities::print("Error: You may not declare the mouse interface type to be UNDECLARED.");
-        SimUtilities::quit();
-    }
-
-    if (S()->interfaceType() != UNDECLARED) {
-        SimUtilities::print("Error: You may only declare the mouse interface type once.");
-        SimUtilities::quit();
-    }
-
-    // Actually set the interface type
-    S()->setInterfaceType(interfaceType);
-
-    // Once we know the interface type, we can do all other initialization
-    prepareForLaunch();
-}
-
 void MouseInterface::delay(int milliseconds) {
-
-    ENSURE_INITIALIZED_MOUSE
-    ENSURE_DECLARED_INTERFACE
-
     sim::SimUtilities::sleep(Milliseconds(milliseconds));
 }
 
 void MouseInterface::setTileColor(int x, int y, char color) {
-
-    ENSURE_INITIALIZED_MOUSE
-    ENSURE_DECLARED_INTERFACE
 
     if (x < 0 || m_mazeGraphic->getWidth() <= x || y < 0 || m_mazeGraphic->getHeight() <= y) {
         SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
@@ -87,9 +46,6 @@ void MouseInterface::setTileColor(int x, int y, char color) {
 
 void MouseInterface::clearTileColor(int x, int y) {
 
-    ENSURE_INITIALIZED_MOUSE
-    ENSURE_DECLARED_INTERFACE
-
     if (x < 0 || m_mazeGraphic->getWidth() <= x || y < 0 || m_mazeGraphic->getHeight() <= y) {
         SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
             + std::to_string(y) + std::string("), and thus you cannot clear its color."));
@@ -102,9 +58,6 @@ void MouseInterface::clearTileColor(int x, int y) {
 
 void MouseInterface::clearAllTileColor() {
 
-    ENSURE_INITIALIZED_MOUSE
-    ENSURE_DECLARED_INTERFACE
-
     for (std::pair<int, int> position : m_tilesWithColor) {
         m_mazeGraphic->setTileColor(position.first, position.second, COLOR_STRINGS.at(P()->tileBaseColor()));
     }
@@ -112,9 +65,6 @@ void MouseInterface::clearAllTileColor() {
 }
 
 void MouseInterface::setTileDistance(int x, int y, int distance) {
-
-    ENSURE_INITIALIZED_MOUSE
-    ENSURE_DECLARED_INTERFACE
 
     if (x < 0 || m_mazeGraphic->getWidth() <= x || y < 0 || m_mazeGraphic->getHeight() <= y) {
         SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
@@ -134,9 +84,6 @@ void MouseInterface::setTileDistance(int x, int y, int distance) {
 
 void MouseInterface::clearTileDistance(int x, int y) {
 
-    ENSURE_INITIALIZED_MOUSE
-    ENSURE_DECLARED_INTERFACE
-
     if (x < 0 || m_mazeGraphic->getWidth() <= x || y < 0 || m_mazeGraphic->getHeight() <= y) {
         SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
             + std::to_string(y) + std::string("), and thus you cannot clear its distance."));
@@ -148,9 +95,6 @@ void MouseInterface::clearTileDistance(int x, int y) {
 
 void MouseInterface::clearAllTileDistance() {
 
-    ENSURE_INITIALIZED_MOUSE
-    ENSURE_DECLARED_INTERFACE
-
     for (int x = 0; x < m_mazeGraphic->getWidth(); x += 1) {
         for (int y = 0; y < m_mazeGraphic->getHeight(); y += 1) {
             m_mazeGraphic->setTileDistance(x, y, -1); 
@@ -159,9 +103,6 @@ void MouseInterface::clearAllTileDistance() {
 }
 
 void MouseInterface::setTileFogginess(int x, int y, bool foggy) {
-
-    ENSURE_INITIALIZED_MOUSE
-    ENSURE_DECLARED_INTERFACE
 
     if (x < 0 || m_mazeGraphic->getWidth() <= x || y < 0 || m_mazeGraphic->getHeight() <= y) {
         SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
@@ -173,9 +114,6 @@ void MouseInterface::setTileFogginess(int x, int y, bool foggy) {
 }
 
 void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) {
-
-    ENSURE_INITIALIZED_MOUSE
-    ENSURE_DECLARED_INTERFACE
 
     if (x < 0 || m_mazeGraphic->getWidth() <= x || y < 0 || m_mazeGraphic->getHeight() <= y) {
         SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
@@ -229,9 +167,6 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
 
 void MouseInterface::undeclareWall(int x, int y, char direction) {
 
-    ENSURE_INITIALIZED_MOUSE
-    ENSURE_DECLARED_INTERFACE
-
     if (x < 0 || m_mazeGraphic->getWidth() <= x || y < 0 || m_mazeGraphic->getHeight() <= y) {
         SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
             + std::to_string(y) + std::string("), and thus you cannot undeclare any of its walls."));
@@ -283,17 +218,10 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
 }
 
 void MouseInterface::resetPosition() {
-
-    ENSURE_INITIALIZED_MOUSE
-    ENSURE_DECLARED_INTERFACE
-
     m_mouse->teleport(m_mouse->getInitialTranslation(), Radians(0.0));
 }
 
 bool MouseInterface::inputButtonPressed(int inputButton) {
-
-    ENSURE_INITIALIZED_MOUSE
-    ENSURE_DECLARED_INTERFACE
 
     if (inputButton < 0 || 9 < inputButton) {
         SimUtilities::print(std::string("Error: There is no input button with the number ") + std::to_string(inputButton)
@@ -306,9 +234,6 @@ bool MouseInterface::inputButtonPressed(int inputButton) {
 
 void MouseInterface::acknowledgeInputButtonPressed(int inputButton) {
 
-    ENSURE_INITIALIZED_MOUSE
-    ENSURE_DECLARED_INTERFACE
-
     if (inputButton < 0 || 9 < inputButton) {
         SimUtilities::print(std::string("Error: There is no input button with the number ") + std::to_string(inputButton)
             + std::string(", and thus you cannot acknowledge that it has been pressed."));
@@ -320,7 +245,6 @@ void MouseInterface::acknowledgeInputButtonPressed(int inputButton) {
 
 void MouseInterface::setWheelSpeeds(double leftWheelRadiansPerSecond, double rightWheelRadiansPerSecond) {
 
-    ENSURE_INITIALIZED_MOUSE
     ENSURE_CONTINUOUS_INTERFACE
 
     m_mouse->setWheelSpeeds(RadiansPerSecond(leftWheelRadiansPerSecond), RadiansPerSecond(rightWheelRadiansPerSecond));
@@ -328,7 +252,6 @@ void MouseInterface::setWheelSpeeds(double leftWheelRadiansPerSecond, double rig
 
 double MouseInterface::read(std::string name) {
 
-    ENSURE_INITIALIZED_MOUSE
     ENSURE_CONTINUOUS_INTERFACE
 
     if (!m_mouse->hasSensor(name)) {
@@ -365,7 +288,6 @@ double MouseInterface::read(std::string name) {
 
 bool MouseInterface::wallFront() {
 
-    ENSURE_INITIALIZED_MOUSE
     ENSURE_DISCRETE_INTERFACE
 
     return isWall(getDiscretizedTranslation(), getDiscretizedRotation());
@@ -373,7 +295,6 @@ bool MouseInterface::wallFront() {
 
 bool MouseInterface::wallRight() {
 
-    ENSURE_INITIALIZED_MOUSE
     ENSURE_DISCRETE_INTERFACE
 
     std::pair<int, int> position = getDiscretizedTranslation();
@@ -392,7 +313,6 @@ bool MouseInterface::wallRight() {
 
 bool MouseInterface::wallLeft() {
 
-    ENSURE_INITIALIZED_MOUSE
     ENSURE_DISCRETE_INTERFACE
 
     std::pair<int, int> position = getDiscretizedTranslation();
@@ -411,7 +331,6 @@ bool MouseInterface::wallLeft() {
 
 void MouseInterface::moveForward() {
 
-    ENSURE_INITIALIZED_MOUSE
     ENSURE_DISCRETE_INTERFACE
 
     if (wallFront()) {
@@ -487,7 +406,6 @@ void MouseInterface::moveForward() {
 
 void MouseInterface::turnRight() {
 
-    ENSURE_INITIALIZED_MOUSE
     ENSURE_DISCRETE_INTERFACE
 
     Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
@@ -527,7 +445,6 @@ void MouseInterface::turnRight() {
 
 void MouseInterface::turnLeft() {
 
-    ENSURE_INITIALIZED_MOUSE
     ENSURE_DISCRETE_INTERFACE
 
     Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
@@ -567,27 +484,10 @@ void MouseInterface::turnLeft() {
 
 void MouseInterface::turnAround() {
 
-    ENSURE_INITIALIZED_MOUSE
     ENSURE_DISCRETE_INTERFACE
 
     turnRight();
     turnRight();
-}
-
-void MouseInterface::ensureInitializedMouse(const std::string& callingFunction) const {
-    if (!m_mouse->getInitialized()) {
-        SimUtilities::print(std::string("Error: You must successfully initialize the mouse before you can use MouseInterface::")
-            + callingFunction + std::string("()."));
-        SimUtilities::quit();
-    }
-}
-
-void MouseInterface::ensureDeclaredInterface(const std::string& callingFunction) const {
-    if (S()->interfaceType() == UNDECLARED) {
-        SimUtilities::print(std::string("Error: You must declare the interface type before you can use MouseInterface::")
-            + callingFunction + std::string("()."));
-        SimUtilities::quit();
-    }
 }
 
 void MouseInterface::ensureDiscreteInterface(const std::string& callingFunction) const {
