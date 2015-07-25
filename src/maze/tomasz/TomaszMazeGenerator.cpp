@@ -7,31 +7,28 @@
 
 namespace tomasz {
 
-TomaszMazeGenerator::TomaszMazeGenerator() {
-    srand(time(NULL));
-}
-
-void TomaszMazeGenerator::generate(int mazeWidth, int mazeHeight, sim::MazeInterface* maze) {
+void TomaszMazeGenerator::generate(int mazeWidth, int mazeHeight, sim::MazeInterface* mazeInterface) {
+    m_mazeInterface = mazeInterface;
     generateMaze(mazeWidth, mazeHeight);
-    convertToBasicMaze(maze);
+    convertToBasicMaze(mazeInterface);
 }
 
-void TomaszMazeGenerator::convertToBasicMaze(sim::MazeInterface* maze) {
+void TomaszMazeGenerator::convertToBasicMaze(sim::MazeInterface* mazeInterface) {
     for (int x = 0; x < m_width; x += 1) {
         for (int y = 0; y < m_height; y += 1) {
             for (char c : {'n', 'e', 's', 'w'}) {
                 switch (c) {
                     case 'n':
-                        maze->setWall(x, y, 'n', getTile(x, y)->walls.at(NORTH));
+                        mazeInterface->setWall(x, y, 'n', getTile(x, y)->walls.at(NORTH));
                         break;
                     case 'e':
-                        maze->setWall(x, y, 'e', getTile(x, y)->walls.at(EAST));
+                        mazeInterface->setWall(x, y, 'e', getTile(x, y)->walls.at(EAST));
                         break;
                     case 's':
-                        maze->setWall(x, y, 's', getTile(x, y)->walls.at(SOUTH));
+                        mazeInterface->setWall(x, y, 's', getTile(x, y)->walls.at(SOUTH));
                         break;
                     case 'w':
-                        maze->setWall(x, y, 'w', getTile(x, y)->walls.at(WEST));
+                        mazeInterface->setWall(x, y, 'w', getTile(x, y)->walls.at(WEST));
                         break;
                         
                 }
@@ -96,7 +93,7 @@ void TomaszMazeGenerator::generateMaze(int mazeWidth, int mazeHeight) {
             //std::cout << "HERE2" << std::endl;
                                       
             if (m_direction != UNDEFINED) { // We just reached the end of a path. lets break a wall with probability P
-                if (getRandom() <= deadEndBreak) { // break the wall to the most disjoint
+                if (m_mazeInterface->getRandom() <= deadEndBreak) { // break the wall to the most disjoint
                     
                     updateDistanceFromStart(xPos, yPos);
                     breakGradientWall(xPos, yPos); // break the wall towards greatest gradient,
@@ -369,28 +366,28 @@ Direction TomaszMazeGenerator::getDirectionToMove(float moveConst, std::map<Dire
     Direction directionToMove;
     
     if (m_direction != UNDEFINED && choices[m_direction] != false && possible != 1) {
-        if (getRandom() <= moveConst) {  // if random variable is below threshold move in last direction
+        if (m_mazeInterface->getRandom() <= moveConst) {  // if random variable is below threshold move in last direction
             directionToMove = m_direction;
         } else {
             auto item = choices.begin();
-            std::advance( item, std::floor(getRandom() * 4 ));
+            std::advance( item, std::floor(m_mazeInterface->getRandom() * 4 ));
             directionToMove =  item->first;
 
             while (choices[directionToMove] == false || directionToMove == m_direction) { // but the last moved direction
                 item = choices.begin();
-                std::advance( item, std::floor(getRandom() * 4 ));
+                std::advance( item, std::floor(m_mazeInterface->getRandom() * 4 ));
                 directionToMove = item->first;         
             }
         }
     }
     else { // otherwise just move in a random viable direction
         auto item = choices.begin();
-        std::advance( item, std::floor(getRandom() * 4 ));
+        std::advance( item, std::floor(m_mazeInterface->getRandom() * 4 ));
         directionToMove = item->first;   
 
         while (choices[directionToMove] == false) { // but the last moved direction
             item = choices.begin();
-            std::advance( item, std::floor(getRandom() * 4 ));
+            std::advance( item, std::floor(m_mazeInterface->getRandom() * 4 ));
             directionToMove = item->first;
         }
     }
@@ -596,11 +593,6 @@ TomaszMazeGenerator::TomMazeGenTile* TomaszMazeGenerator::getTile(int x, int y, 
     if (direction == WEST)  { x--; }
     
     return &m_maze.at(x).at(y);
-}
-
-// TODO: Reimplement this so that it's better
-double TomaszMazeGenerator::getRandom() {
-    return (double) rand() / (double) RAND_MAX;
 }
 
 } // namespace tomasz

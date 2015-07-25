@@ -1,29 +1,29 @@
 High Pri:
+
 - Rewrite text so that it's performant
 - Put the vertex shader in its own source file
-- Run-time parameters for the algos
-- Central Utilities (like random) for the algos
-- Put a toolbar at the top or bottom with info
 - Tile distances
     - Depending on the maze size, the valid distances will be different - make this the case for the text
 - Actual distance values on the tile
     - State variable and key to control whether these are visible or not
+
+- Put a toolbar at the top or bottom with info
 - Display a clock
 - Make some utility that keeps track of elapse time
     - Make the sim speed non-arbitrary
-- Look at the BasicTile - should we require "Direction" here. No is the answer...???
-- Get Tomasz's random maze algorithm working
-    - generated maze size errors - the simulator should check for at least 1...
+
+- Run-time parameters for the algos
+
+- Get rid of basic maze altogether... just let the MazeInterface interface with the Maze itself
+
 - Look at Tomasz' maze website
 - Crash recovery semantics
     - mouse speed, elapsed time, etc.
 - Maze Validation (both physically valid mazes and competition valid mazes)
     - Official maze size parameters
 - Figure out how to get rid of ifdefs in algorithm
-- With a high glut-init time, manual mode snaps to zoom really wierdly... fix this.
-    - Maybe put of that logic in the the solve method in main? Allow the user to specify zoom, rotation, etc.
-- Add IMouseAlgorithm to the build path so we can just do #include <IMouseAlgorithm.h>
 - Make a SimInterface and make sure it's easy to "extract" an algorithm for use on Arduino
+- VSync so the graphics don't tear
 - Add a linter to the code
 - Updates on the tile boundaries, not centers
 - Figure out a nice way to use a vector for the simulation, but an array for real life
@@ -94,6 +94,9 @@ Low-pri:
 - Crash animation for both modes
 
 Clean-Up:
+- Add more context to the error messages.(Like Sim:, Mouse:, Maze:, etc.)
+    - Logging, perhaps???
+- Add IMouseAlgorithm (and maze) to the build path so we can just do #include <IMouseAlgorithm.h>
 - Run the parameter consistency script, make sure values align
 - Convert primitive types to GL types
 - Return const references instead of values (pointers???)

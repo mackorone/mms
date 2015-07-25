@@ -132,7 +132,7 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
             m_mazeGraphic->declareWall(x, y, WEST, wallExists); 
             break;
         default:
-            SimUtilities::print(std::string("The character '") + direction + std::string("' is not mapped to a valid direction"));
+            SimUtilities::print(std::string("The character '") + direction + std::string("' is not mapped to a valid direction."));
             return;
     }
 
@@ -184,7 +184,7 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
             m_mazeGraphic->undeclareWall(x, y, WEST); 
             break;
         default:
-            SimUtilities::print(std::string("The character '") + direction + std::string("' is not mapped to a valid direction"));
+            SimUtilities::print(std::string("Error: The character '") + direction + std::string("' is not mapped to a valid direction"));
             return;
     }
 

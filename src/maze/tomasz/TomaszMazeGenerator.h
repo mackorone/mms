@@ -14,12 +14,6 @@ class TomaszMazeGenerator : public IMazeAlgorithm {
 
 public:
 
-    // A private constructor to restrict creation of any MazeGenerator objects
-    TomaszMazeGenerator();
-    
-    // call the generate maze method and convert from our struct to the 
-    // BasicTile vector of vectors
-    //static std::vector<std::vector<BasicTile>> tomasz();
     void generate(int mazeWidth, int mazeHeight, sim::MazeInterface* maze);
 
     // TODO: probably rename this...
@@ -138,8 +132,9 @@ private:
     // The current direction of the path being generated
     Direction m_direction;
 
-    double getRandom();
-    
+    // Interface for the maze algorithm
+    sim::MazeInterface* m_mazeInterface;
+
 };
 
 } // namespace tomasz

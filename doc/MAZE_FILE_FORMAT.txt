@@ -35,7 +35,7 @@ And the maze corresponding to the file would look like:
 |               |                             |
 |---------------|-----------------------------|
 
-A few notes:
+A few notes about valid mazes:
 
 1) The length of each row of the maze must be the same.
 2) The presence/absence of walls must be consistent between rows. That is, if a wall is present
