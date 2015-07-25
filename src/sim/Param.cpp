@@ -1,4 +1,7 @@
 #include "Param.h"
+
+#include <random>
+
 #include "ParamParser.h"
 #include "SimUtilities.h"
 
@@ -69,7 +72,7 @@ Param::Param() {
             + " valid random-seed value was provided.");
         SimUtilities::quit();
     }
-    m_randomSeed = (useRandomSeed ? parser.getIntValue("random-seed") : time(NULL));
+    m_randomSeed = (useRandomSeed ? parser.getIntValue("random-seed") : std::random_device()());
     m_crashMessage = parser.getStringIfHasString("crash-message", "CRASH");
     m_glutInitDuration = parser.getDoubleIfHasDouble("glut-init-duration", 0.1);
     m_defaultPaused = parser.getBoolIfHasBool("default-paused", false);

@@ -65,9 +65,9 @@
 <use-maze-file>false</use-maze-file> <!-- whether or not to use the maze file above -->
 <generated-maze-width>16</generated-maze-width> <!-- number of tiles -->
 <generated-maze-height>16</generated-maze-height> <!-- number of tiles -->
-<maze-algorithm>Randomize</maze-algorithm>
+<maze-algorithm>Tomasz</maze-algorithm> <!-- TODO: MACK - test out Tomasz algo -->
 <save-generated-maze>true</save-generated-maze> <!-- Whethor or not to save a random maze -->
 
 <!-- Mouse Parameters -->
 <mouse-directory>res/mouse/</mouse-directory> <!-- Relative to project root -->
-<mouse-algorithm>FloodFill</mouse-algorithm> <!-- The name as specified in src/algo/MouseAlgorithms.cpp -->
+<mouse-algorithm>MackAlgo</mouse-algorithm> <!-- The name as specified in src/algo/MouseAlgorithms.cpp -->

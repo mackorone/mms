@@ -1,6 +1,8 @@
 High Pri:
 - Rewrite text so that it's performant
 - Put the vertex shader in its own source file
+- Run-time parameters for the algos
+- Central Utilities (like random) for the algos
 - Put a toolbar at the top or bottom with info
 - Tile distances
     - Depending on the maze size, the valid distances will be different - make this the case for the text
@@ -54,6 +56,7 @@ Med Pri:
     - Make the sensor polygon model better
 - Add manual mode high scores
 - Add a way to set the text color of each tile individually
+- Make some functions available to the algo writers
 - Zoomed map mouse is a bit jumpy when going at high speeds
 - Shortest path graphic (phantom bot that travels along other shortest paths)
 - Randomly select a pre-defined maze
@@ -121,3 +124,4 @@ Clean-Up:
 - Replace braket notation with methods (walls[NORTH] = true -> walls.insert(std::make_pair(NORTH, true)));
 - Document the confusing coordinate systems
 - for each loop iterations should use const references
+- Upgrade convert_mazes.py to Python 3

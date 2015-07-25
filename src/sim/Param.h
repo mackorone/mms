@@ -84,6 +84,12 @@ public:
     // Mouse parameters
     std::string mouseDirectory();
     std::string mouseAlgorithm();
+    
+    // Tomasz maze generator -- TODO: MACK Put these elsewhere
+    float tomStraightConst();
+    float tomDeadEndBreakChance();
+    int tomDeadEndBreakThreshold();
+    int tomGradientWallBreaks();
 
 private:
 

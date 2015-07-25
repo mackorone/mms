@@ -3,9 +3,11 @@
 #include <map>
 
 #include "randomize/Randomize.h"
+#include "tomasz/TomaszMazeGenerator.h"
 
 MazeAlgorithms::MazeAlgorithms() {
     m_algorithms.insert(std::make_pair("Randomize", new randomize::Randomize()));
+    m_algorithms.insert(std::make_pair("Tomasz", new tomasz::TomaszMazeGenerator()));
 }
 
 MazeAlgorithms::~MazeAlgorithms() {
