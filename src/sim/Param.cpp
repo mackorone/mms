@@ -103,6 +103,8 @@ Param::Param() {
     m_generatedMazeHeight = parser.getIntIfHasInt("generated-maze-height", 16);
     m_mazeAlgorithm = parser.getStringIfHasString("maze-algorithm", "Randomize");
     m_saveGeneratedMaze = parser.getBoolIfHasBool("save-generated-maze", true);
+    m_mazeMirrored = parser.getBoolIfHasBool("maze-mirrored", false);
+    m_mazeRotations = parser.getIntIfHasInt("maze-rotations", 0);
 
     // Mouse parameters
     m_mouseDirectory = parser.getStringIfHasString("mouse-directory", "res/mice/");
@@ -347,6 +349,14 @@ std::string Param::mazeAlgorithm() {
 
 bool Param::saveGeneratedMaze() {
     return m_saveGeneratedMaze;
+}
+
+bool Param::mazeMirrored() {
+    return m_mazeMirrored;
+}
+
+int Param::mazeRotations() {
+    return m_mazeRotations;
 }
 
 std::string Param::mouseDirectory() {

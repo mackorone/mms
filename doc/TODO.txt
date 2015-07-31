@@ -5,6 +5,7 @@ High Pri:
 - Tile distances
     - Depending on the maze size, the valid distances will be different - make this the case for the text
 - Actual distance values on the tile
+    - MazeUtilities class that can get the distances???
     - State variable and key to control whether these are visible or not
 
 - Put a toolbar at the top or bottom with info
@@ -15,6 +16,9 @@ High Pri:
 - Run-time parameters for the algos
 
 - Get rid of basic maze altogether... just let the MazeInterface interface with the Maze itself
+
+- Add more context to the error messages.(Like Sim:, Mouse:, Maze:, etc.)
+- Printing -> Logging
 
 - Look at Tomasz' maze website
 - Crash recovery semantics
@@ -48,6 +52,8 @@ High Pri:
 - Draw a path of where the robot has been (the history object could be used for recording as well)
 
 Med Pri:
+- Still view a maze if it passes validation, but don't let the sim continue...
+- Numeric parameter min/max values
 - Use vertex buffer object for the mouse body (only triangulate the mouse once)
     - Get rid of getInitialized method in mouse once we implement mouse drawing only once
 - Check megaMouse performance
@@ -92,10 +98,9 @@ Low-pri:
 - Change FreeGLUT to GLFW
 - 3D
 - Crash animation for both modes
+- Unit tests
 
 Clean-Up:
-- Add more context to the error messages.(Like Sim:, Mouse:, Maze:, etc.)
-    - Logging, perhaps???
 - Add IMouseAlgorithm (and maze) to the build path so we can just do #include <IMouseAlgorithm.h>
 - Run the parameter consistency script, make sure values align
 - Convert primitive types to GL types
@@ -127,4 +132,5 @@ Clean-Up:
 - Replace braket notation with methods (walls[NORTH] = true -> walls.insert(std::make_pair(NORTH, true)));
 - Document the confusing coordinate systems
 - for each loop iterations should use const references
+- The interfaces don't need to be passed as pointers, right? Try passing as values...
 - Upgrade convert_mazes.py to Python 3

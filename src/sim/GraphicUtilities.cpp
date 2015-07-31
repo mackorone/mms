@@ -283,9 +283,9 @@ void GraphicUtilities::drawTileGraphicCorner(int x, int y, int cornerNumber, con
 }
 
 void GraphicUtilities::drawTileGraphicDistanceCharacter(int x, int y, int row, int col, const Polygon& polygon, char c) {
-    // TODO: MACK: This will be difference since we have textures...
-    GLfloat c1[] = {0.0, 0.2, 0.0};
-    GLfloat c2[] = {0.0, 0.0, 0.2};
+    // TODO: MACK: This will be different since we have textures...
+    GLfloat c1[] = {0.0, 0.0, 0.0};
+    GLfloat c2[] = {0.0, 0.0, 0.0};
     std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, c == 'a' ? c1 : c2, 0.5);
     for (int i = 0; i < tgs.size(); i += 1) {
         TGB.push_back(tgs.at(i));

@@ -15,19 +15,61 @@
 namespace sim {
 
 Maze::Maze() {
+    
+    std::vector<std::vector<BasicTile>> basicMaze;
+
     if (P()->useMazeFile()) {
+
         std::string mazeFilePath = SimUtilities::getProjectDirectory() + P()->mazeDirectory() + P()->mazeFile();
-        if (!initializeViaMazeFile(mazeFilePath)) {
+        if (!MazeFileUtilities::isMazeFile(mazeFilePath)) {
             SimUtilities::print("Error: Unable to initialize maze from file \"" + mazeFilePath + "\".");
             SimUtilities::quit();
         }
+
+        basicMaze = MazeFileUtilities::loadMaze(mazeFilePath);
     }
     else {
-        if (!initializeViaMazeAlgorithm()) {
-            SimUtilities::print("Error: Unable to initialize maze via maze generation algorithm \""
-                + P()->mazeAlgorithm() + "\".");
+
+        MazeAlgorithms mazeAlgorithms;
+        std::map<std::string, IMazeAlgorithm*> algorithms = mazeAlgorithms.getAlgorithms();
+        if (algorithms.find(sim::P()->mazeAlgorithm()) == algorithms.end()) {
+            SimUtilities::print("Error: \"" + sim::P()->mazeAlgorithm() + "\" is not a valid maze algorithm.");
             SimUtilities::quit();
         }
+
+        basicMaze = getBlankBasicMaze(P()->generatedMazeWidth(), P()->generatedMazeHeight());
+        MazeInterface mazeInterface(&basicMaze);
+        algorithms.at(sim::P()->mazeAlgorithm())->generate(
+            P()->generatedMazeWidth(), P()->generatedMazeHeight(), &mazeInterface);
+    }
+
+    // Check to see if it's a valid maze
+    if (!MazeChecker::validMaze(basicMaze)) {
+        SimUtilities::print("Error: Failed maze validation.");
+        SimUtilities::quit();
+    }
+
+    // Mirror and rotate the maze
+    if (P()->mazeMirrored()) {
+        basicMaze = mirrorAcrossVertical(basicMaze);
+    }
+    for (int i = 0; i < P()->mazeRotations() % 4; i += 1) {
+        basicMaze = rotate90DegreesClockwise(basicMaze);
+    }
+
+    // Then, check and enforce official maze rules
+    if (P()->enforceOfficialMazeRules() && !MazeChecker::officialMaze(basicMaze)) {
+        SimUtilities::print("Error: Failed official maze validation.");
+        SimUtilities::quit();
+    }
+
+    // Load the maze given by the maze generation algorithm
+    initializeFromBasicMaze(basicMaze);
+
+    // Optionally save the maze
+    if (P()->useMazeFile() && P()->saveGeneratedMaze()) {
+        MazeFileUtilities::saveMaze(extractBasicMaze(),
+            SimUtilities::getProjectDirectory() + P()->mazeDirectory() + "auto_generated_maze.maz");
     }
 }
 
@@ -47,77 +89,6 @@ Tile* Maze::getTile(int x, int y) {
 const Tile* Maze::getTile(int x, int y) const {
     ASSERT(0 <= x && x < getWidth() && 0 <= y && y < getHeight());
     return &m_maze.at(x).at(y);
-}
-
-bool Maze::initializeViaMazeFile(const std::string& mazeFilePath) {
-
-    // Then, check to see if the file is in the correct format
-    if (!MazeFileUtilities::isMazeFile(mazeFilePath)) {
-        return false;
-    }
-
-    // If so, load the data into a maze
-    std::vector<std::vector<BasicTile>> basicMaze = MazeFileUtilities::loadMaze(mazeFilePath);
-
-    // Validate the maze. If we fail, bail.
-    if (!validateBasicMaze(basicMaze)) {
-        return false;
-    }
-
-    // Load the maze given by mazeFilePath
-    initializeFromBasicMaze(basicMaze);
-
-    return true;
-}
-
-bool Maze::initializeViaMazeAlgorithm() {
-
-    // Check the parameters file for maze generation algo
-    MazeAlgorithms mazeAlgorithms;
-    std::map<std::string, IMazeAlgorithm*> algorithms = mazeAlgorithms.getAlgorithms();
-    if (algorithms.find(sim::P()->mazeAlgorithm()) == algorithms.end()) {
-        sim::SimUtilities::print("Error: \"" + sim::P()->mazeAlgorithm() + "\" is not a valid maze algorithm.");
-        return false;
-    }
-
-    // Call on the maze generation algorithm to generate the maze
-    std::vector<std::vector<BasicTile>> basicMaze = getBlankBasicMaze(P()->generatedMazeWidth(), P()->generatedMazeHeight());
-    MazeInterface mazeInterface(&basicMaze);
-    algorithms.at(sim::P()->mazeAlgorithm())->generate(
-        P()->generatedMazeWidth(), P()->generatedMazeHeight(), &mazeInterface);
-
-    // Validate the maze. If we fail, bail.
-    if (!validateBasicMaze(basicMaze)) {
-        return false;
-    }
-
-    // Load the maze given by the maze generation algorithm
-    initializeFromBasicMaze(basicMaze);
-
-    // Optionally save the maze
-    if (P()->saveGeneratedMaze()) {
-        MazeFileUtilities::saveMaze(extractBasicMaze(),
-            SimUtilities::getProjectDirectory() + P()->mazeDirectory() + "auto_generated_maze.maz");
-    }
-
-    return true;
-}
-
-bool Maze::validateBasicMaze(const std::vector<std::vector<BasicTile>>& basicMaze) {
-
-    // Check to see if it's a valid maze
-    if (!MazeChecker::validMaze(basicMaze)) {
-        SimUtilities::print("Error: Failed maze validation.");
-        return false;
-    }
-
-    // Then, check and enforce official maze rules
-    if (P()->enforceOfficialMazeRules() && !MazeChecker::officialMaze(basicMaze)) {
-        SimUtilities::print("Error: Failed official maze validation.");
-        return false;
-    }
-
-    return true;
 }
 
 void Maze::initializeFromBasicMaze(const std::vector<std::vector<BasicTile>>& basicMaze) {
@@ -170,6 +141,52 @@ std::vector<std::vector<BasicTile>> Maze::getBlankBasicMaze(int mazeWidth, int m
         blankMaze.push_back(column);
     }
     return blankMaze;
+}
+
+std::vector<std::vector<BasicTile>> Maze::mirrorAcrossVertical(const std::vector<std::vector<BasicTile>>& basicMaze) {
+    std::vector<std::vector<BasicTile>> mirrored;
+    for (int x = 0; x < basicMaze.size(); x += 1) {
+        std::vector<BasicTile> column;
+        for (int y = 0; y < basicMaze.at(x).size(); y += 1) {
+            BasicTile tile;
+            tile.x = x;
+            tile.y = y;
+            tile.walls.insert(std::make_pair(NORTH, basicMaze.at(basicMaze.size() - 1 - x).at(y).walls.at(NORTH)));
+            tile.walls.insert(std::make_pair(EAST, basicMaze.at(basicMaze.size() - 1 - x).at(y).walls.at(WEST)));
+            tile.walls.insert(std::make_pair(SOUTH, basicMaze.at(basicMaze.size() - 1 - x).at(y).walls.at(SOUTH)));
+            tile.walls.insert(std::make_pair(WEST, basicMaze.at(basicMaze.size() - 1 - x).at(y).walls.at(EAST)));
+            column.push_back(tile);
+        }
+        mirrored.push_back(column);
+    }
+    return mirrored; 
+}
+
+std::vector<std::vector<BasicTile>> Maze::rotate90DegreesClockwise(const std::vector<std::vector<BasicTile>>& basicMaze) {
+
+    // We can't rotate a non-rectangular maze
+    ASSERT(MazeChecker::isRectangular(basicMaze));
+
+    std::vector<std::vector<BasicTile>> rotated;
+    for (int x = basicMaze.size() - 1; x >= 0; x -= 1) {
+        std::vector<BasicTile> row;
+        for (int y = 0; y < basicMaze.at(x).size(); y += 1) {
+            BasicTile tile;
+            tile.x = y;
+            tile.y = basicMaze.size() - 1 - x;
+            tile.walls.insert(std::make_pair(NORTH, basicMaze.at(x).at(y).walls.at(WEST)));
+            tile.walls.insert(std::make_pair(EAST, basicMaze.at(x).at(y).walls.at(NORTH)));
+            tile.walls.insert(std::make_pair(SOUTH, basicMaze.at(x).at(y).walls.at(EAST)));
+            tile.walls.insert(std::make_pair(WEST, basicMaze.at(x).at(y).walls.at(SOUTH)));
+            if (rotated.size() <= y) {
+                rotated.push_back({tile});
+            }
+            else {
+                rotated.at(y).push_back(tile);
+            }
+        }
+    }
+    return rotated;
 }
 
 } // namespace sim

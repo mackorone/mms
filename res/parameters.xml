@@ -62,12 +62,15 @@
 <enforce-official-maze-rules>false</enforce-official-maze-rules>
 <maze-directory>res/maze/</maze-directory> <!-- realtive to project root -->
 <maze-file>mazeish.maz</maze-file> <!-- relative to maze-directory -->
-<use-maze-file>false</use-maze-file> <!-- whether or not to use the maze file above -->
+<use-maze-file>true</use-maze-file> <!-- whether or not to use the maze file above -->
 <generated-maze-width>16</generated-maze-width> <!-- number of tiles -->
 <generated-maze-height>16</generated-maze-height> <!-- number of tiles -->
 <maze-algorithm>Tomasz</maze-algorithm> <!-- The name as specified in src/maze/MazeAlgorithms.cpp -->
 <save-generated-maze>true</save-generated-maze> <!-- Whether or not to save a random maze -->
+<maze-mirrored>false</maze-mirrored> <!-- Mirrored across the vertical, before the rotation -->
+<maze-rotations>0</maze-rotations> <!-- 0-3 clockwise rotations -->
 
 <!-- Mouse Parameters -->
 <mouse-directory>res/mouse/</mouse-directory> <!-- Relative to project root -->
 <mouse-algorithm>FloodFill</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
+<!-- TODO: Starting location and direction -->

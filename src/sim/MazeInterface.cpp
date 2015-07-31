@@ -32,7 +32,8 @@ void MazeInterface::setWall(int x, int y, char direction, bool wallExists) {
             d = WEST;
             break;
         default:
-            SimUtilities::print(std::string("The character '") + direction + std::string("' is not mapped to a valid direction."));
+            SimUtilities::print(std::string("Error: The character '") + direction
+                + std::string("' is not mapped to a valid direction."));
             return;
     }
 

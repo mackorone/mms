@@ -6,15 +6,12 @@ namespace randomize {
 
 void Randomize::generate(int mazeWidth, int mazeHeight, sim::MazeInterface* maze) {
 
-    // Seed the random number generator
-    srand(time(NULL));
-
     // Percentage chance any one wall will exist
     double wallProb = 0.40;
     for (int x = 0; x < mazeWidth; x += 1) {
         for (int y = 0; y < mazeHeight; y += 1) {
             for (char c : {'n', 'e', 's', 'w'}) {
-                bool wallExists = (double) rand() / (double) RAND_MAX <= wallProb;
+                bool wallExists = maze->getRandom() <= wallProb;
                 switch (c) {
                     case 'n':
                         if (y + 1 < mazeHeight) {

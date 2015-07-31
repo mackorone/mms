@@ -76,27 +76,27 @@ bool MazeChecker::officialMaze(const std::vector<std::vector<BasicTile>>& maze) 
         return false;
     }
 
-    if (!hasOneEntrance(maze)) {
+    if (!hasOneEntranceToCenter(maze)) {
         SimUtilities::print("Error: The center of the maze has more than one entrance.");
         return false;
     }
 
-    if (!eachPostHasWall(maze, 1, 1)) {
+    if (!hasWallAttachedToEachPost(maze, 1, 1)) {
         SimUtilities::print("Error: There is at least one non-center post with no walls connected to it.");
         return false;
     }
     
-    if (!threeStartingWalls(maze)) {
+    if (!hasThreeStartingWalls(maze)) {
         SimUtilities::print("Error: There are not exactly three starting walls.");
         return false;
     }
 
-    if (!unsolvableByWallFollower(maze)) {
+    if (!isUnsolvableByWallFollower(maze)) {
         SimUtilities::print("Error: The maze is solvable by a maze-following robot.");
         return false;
     }
 
-    if (!noInaccesibleLocations(maze)) {
+    if (!hasNoInaccesibleLocations(maze)) {
         SimUtilities::print("Error: There are inaccessible locations in the maze.");
         return false;
     }
@@ -269,7 +269,7 @@ bool MazeChecker::hasPathToCenter(const std::vector<std::vector<BasicTile>>& maz
     return eastCheck || southCheck || westCheck || northCheck;
 }
 
-bool MazeChecker::hasOneEntrance(const std::vector<std::vector<BasicTile>>& maze) {
+bool MazeChecker::hasOneEntranceToCenter(const std::vector<std::vector<BasicTile>>& maze) {
     int entranceCounter = 0;
     
     //Check lower left entrances
@@ -288,7 +288,7 @@ bool MazeChecker::hasOneEntrance(const std::vector<std::vector<BasicTile>>& maze
     return entranceCounter == 1;
 }
 
-bool MazeChecker::eachPostHasWall(const std::vector<std::vector<BasicTile>>& maze, int x, int y) {
+bool MazeChecker::hasWallAttachedToEachPost(const std::vector<std::vector<BasicTile>>& maze, int x, int y) {
     static std::vector<bool> checkRow(16, false);
     static std::vector<std::vector<bool>> checkTiles(16, checkRow);
     bool northCheck = true, eastCheck = true;    
@@ -316,16 +316,16 @@ bool MazeChecker::eachPostHasWall(const std::vector<std::vector<BasicTile>>& maz
     }
     else {
         if(y != 15 && checkTiles.at(x).at(y+1) == false) {
-            northCheck = eachPostHasWall(maze, x, y + 1);
+            northCheck = hasWallAttachedToEachPost(maze, x, y + 1);
         }
         if(x != 15 && checkTiles.at(x+1).at(y) == false) {
-            eastCheck = eachPostHasWall(maze, x + 1, y);
+            eastCheck = hasWallAttachedToEachPost(maze, x + 1, y);
         }
         return northCheck && eastCheck;
     }
 }
 
-bool MazeChecker::threeStartingWalls(const std::vector<std::vector<BasicTile>>& maze) {
+bool MazeChecker::hasThreeStartingWalls(const std::vector<std::vector<BasicTile>>& maze) {
     int wallCount = 0;
     wallCount += (maze.at(0).at(0).walls.at(NORTH) ? 1 : 0);
     wallCount += (maze.at(0).at(0).walls.at(EAST)  ? 1 : 0);
@@ -334,12 +334,12 @@ bool MazeChecker::threeStartingWalls(const std::vector<std::vector<BasicTile>>& 
     return wallCount == 3;
 }
 
-bool MazeChecker::unsolvableByWallFollower(const std::vector<std::vector<BasicTile>>& maze) {
+bool MazeChecker::isUnsolvableByWallFollower(const std::vector<std::vector<BasicTile>>& maze) {
     // TODO: UP-FOR-GRABS - implement this method
     return false;
 }
 
-bool MazeChecker::noInaccesibleLocations(const std::vector<std::vector<BasicTile>>& maze) {
+bool MazeChecker::hasNoInaccesibleLocations(const std::vector<std::vector<BasicTile>>& maze) {
     // TODO: UP-FOR-GRABS - implement this method
     return false;
 }

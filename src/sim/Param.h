@@ -80,16 +80,12 @@ public:
     int generatedMazeHeight();
     std::string mazeAlgorithm();
     bool saveGeneratedMaze();
+    bool mazeMirrored();
+    int mazeRotations();
 
     // Mouse parameters
     std::string mouseDirectory();
     std::string mouseAlgorithm();
-    
-    // Tomasz maze generator -- TODO: MACK Put these elsewhere
-    float tomStraightConst();
-    float tomDeadEndBreakChance();
-    int tomDeadEndBreakThreshold();
-    int tomGradientWallBreaks();
 
 private:
 
@@ -164,6 +160,8 @@ private:
     int m_generatedMazeHeight;
     std::string m_mazeAlgorithm;
     bool m_saveGeneratedMaze;
+    bool m_mazeMirrored;
+    int m_mazeRotations;
 
     // Mouse parameters
     std::string m_mouseDirectory;

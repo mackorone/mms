@@ -21,15 +21,6 @@ private:
     // Vector to hold all of the tiles
     std::vector<std::vector<Tile>> m_maze;
 
-    // Initialize the object by reading a maze file; true if successful, false otherwise
-    bool initializeViaMazeFile(const std::string& mazeFilePath);
-
-    // Initialize the object via a maze generation algorithm; true if successful, false otherwise
-    bool initializeViaMazeAlgorithm();
-
-    // Perform validation on the given basic maze
-    bool validateBasicMaze(const std::vector<std::vector<BasicTile>>& basicMaze);
-
     // Initializes all of the tiles of the basic maze
     void initializeFromBasicMaze(const std::vector<std::vector<BasicTile>>& basicMaze);
 
@@ -38,6 +29,10 @@ private:
 
     // Returns a basic maze of a particular width and height
     std::vector<std::vector<BasicTile>> getBlankBasicMaze(int mazeWidth, int mazeHeight) const;
+
+    // Basic maze geometric transformations
+    std::vector<std::vector<BasicTile>> mirrorAcrossVertical(const std::vector<std::vector<BasicTile>>& basicMaze);
+    std::vector<std::vector<BasicTile>> rotate90DegreesClockwise(const std::vector<std::vector<BasicTile>>& basicMaze);
 };
 
 } // namespace sim
