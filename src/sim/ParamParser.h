@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <string>
 
 #include <pugixml.hpp>
@@ -28,6 +29,14 @@ public:
     double getDoubleIfHasDouble(std::string tag, double defaultValue);
     int getIntIfHasInt(std::string tag, int defaultValue);
     std::string getStringIfHasString(std::string tag, std::string defaultValue);
+
+    // If we can get a value and it's in the valid range then return it, else return default
+    double getDoubleIfHasDoubleAndInRange(std::string tag, double defaultValue, double min, double max);
+    int getIntIfHasIntAndInRange(std::string tag, int defaultValue, int min, int max);
+
+    // If we can get a value and it's in a key in the map then return it, else return default
+    template<class T>
+    std::string getStringIfHasStringAndIsKey(std::string tag, std::string defaultValue, std::map<std::string, T> map);
 
 private:
     pugi::xml_document m_doc;

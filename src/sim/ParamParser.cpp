@@ -3,16 +3,16 @@
 #include "Assert.h"
 #include "SimUtilities.h"
 
+// TODO: MACK - do some logging here...
+
 namespace sim {
 
 ParamParser::ParamParser(std::string filePath) {
     // Open the document
     pugi::xml_parse_result result = m_doc.load_file(filePath.c_str());
     if (!result) {
-        // This is a special case where we have to use dump(). We can't use print()
-        // because print() uses some parameters that we haven't yet initialized.
-        SimUtilities::dump("Error: Unable to read parameters from \"" + filePath + "\": "
-            + result.description() + ".\nUsing default values for all parameters instead.");
+        SimUtilities::print("Error: Unable to read parameters from \"" + filePath + "\": "
+            + result.description() + ". Using default values for all parameters instead.");
     }
 }
 
@@ -62,6 +62,46 @@ int ParamParser::getIntIfHasInt(std::string tag, int defaultValue) {
 
 std::string ParamParser::getStringIfHasString(std::string tag, std::string defaultValue) {
     return (hasStringValue(tag) ? getStringValue(tag) : defaultValue);
+}
+
+double ParamParser::getDoubleIfHasDoubleAndInRange(std::string tag, double defaultValue, double min, double max) {
+    if (!hasDoubleValue(tag)) {
+        // TODO: MACK - warn
+        return defaultValue;
+    }
+    double value = getDoubleValue(tag);
+    if (value < min || max < value) {
+        // TODO: MACK - warn
+        return defaultValue;
+    }
+    return value;
+}
+
+int ParamParser::getIntIfHasIntAndInRange(std::string tag, int defaultValue, int min, int max) {
+    if (!hasIntValue(tag)) {
+        // TODO: MACK - warn
+        return defaultValue;
+    }
+    int value = getIntValue(tag);
+    if (value < min || max < value) {
+        // TODO: MACK - warn
+        return defaultValue;
+    }
+    return value;
+}
+
+template<class T>
+std::string ParamParser::getStringIfHasStringAndIsKey(std::string tag, std::string defaultValue, std::map<std::string, T> map) {
+    if (!hasStringValue(tag)) {
+        // TODO: MACK - warn
+        return defaultValue;
+    }
+    std::string value = getStringValue(tag);
+    if (map.find(value) == map.end()) {
+        // TODO: MACK - warn
+        return defaultValue;
+    }
+    return value;
 }
 
 }; // namespace sim

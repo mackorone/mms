@@ -17,11 +17,8 @@ public:
     // Quits the simulation
     static void quit();
 
-    // Prints a message to stdout, with fancy indentation
+    // Prints a message to stdout
     static void print(const std::string& msg);
-
-    // Bare bones print
-    static void dump(const std::string& msg);
 
     // Returns a double in [0.0, 1.0]
     static double getRandom();

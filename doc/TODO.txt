@@ -1,5 +1,8 @@
 High Pri:
 
+- Don't use P() or S() in a static context... it breaks things really badly...
+- Make a note of contributing projects in the documentation
+
 - Rewrite text so that it's performant
 - Put the vertex shader in its own source file
 - Tile distances
@@ -61,6 +64,7 @@ Med Pri:
     - Make the sensor polygon model better
 - Add manual mode high scores
 - Add a way to set the text color of each tile individually
+- Enum parameters?
 - Make some functions available to the algo writers
 - Zoomed map mouse is a bit jumpy when going at high speeds
 - Shortest path graphic (phantom bot that travels along other shortest paths)
@@ -82,6 +86,7 @@ Med Pri:
 to implement some logic that checks this ahead of time and then just teleports... sort of like
 bullets in other physics simulators
 - Add trajectory lines (see https://www.youtube.com/watch?v=kgJClVCPu3w)
+- Error checking for param string type (startingDirection, color, etc.)
 
 Low-pri:
 - Parameter for auto-generated maze name
@@ -99,8 +104,10 @@ Low-pri:
 - Crash animation for both modes
 - Unit tests
 - Try to break the simulator from within the algos
+- Should the mouse starting corner parameter be a string ("LOWER_LEFT, UPPER_RIGHT", etc.)?
 
 Clean-Up:
+- Change map.count(item) != 0 to map.find(item) != map.end()
 - Add IMouseAlgorithm (and maze) to the build path so we can just do #include <IMouseAlgorithm.h>
 - Run the parameter consistency script, make sure values align
 - Convert primitive types to GL types
@@ -118,7 +125,7 @@ Clean-Up:
 - The mouse sometimes rotates weirdly (goes slowly, backwards for a second, and then forwards fast.
     You can see what I mean by just increasing the view length of the sensors for a continuous algo)
 - Remove as many c_str() as possible
-- Replace "cout" with "print"
+- Replace "cout" with "LOG"
 - Pass things by reference when possible
 - Sprinkle assertions everywhere
 - Validate the coding standards (especially "{" placement)

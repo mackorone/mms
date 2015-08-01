@@ -219,7 +219,7 @@ Polygon GeometryUtilities::convexHull(const std::vector<Polygon>& polygons) {
     // Build upper hull
     for (int i = n-2, t = k+1; i >= 0; i--) {
         while (k >= t && crossProduct(hull[k-2], hull[k-1], points[i]).getMetersSquared() <= 0) {
-        k--;
+            k--;
         }
         hull[k++] = points[i];
     }
@@ -269,8 +269,8 @@ MetersSquared GeometryUtilities::crossProduct(const Cartesian& Z, const Cartesia
 
     // The cross product of ZA and ZB is simply the determinant of the following matrix:
     //
-    //                                |AX-ZX, AY-ZY|
-    //                                |BX-ZX, BY-ZY|
+    //                                |A_x-Z_x, A_y-Z_y|
+    //                                |B_x-Z_x, B_y-Z_y|
     //
     // Where Z is simply the location of the origin for the vectors A and B
 

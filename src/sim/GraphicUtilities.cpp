@@ -16,8 +16,8 @@ namespace sim {
 // Here we have to explicity create the TGB, since we only declared it in the header
 std::vector<TriangleGraphic> GraphicUtilities::TGB;
 
-int GraphicUtilities::m_windowWidth = P()->initialWindowWidth();
-int GraphicUtilities::m_windowHeight = P()->initialWindowHeight();
+int GraphicUtilities::m_windowWidth = 0;
+int GraphicUtilities::m_windowHeight = 0;
 void GraphicUtilities::setWindowSize(int windowWidth, int windowHeight) {
     ASSERT(0 < windowWidth && 0 < windowHeight);
     m_windowWidth = windowWidth;

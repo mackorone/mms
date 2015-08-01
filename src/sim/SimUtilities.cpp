@@ -50,23 +50,6 @@ void SimUtilities::quit() {
 }
 
 void SimUtilities::print(const std::string& msg) {
-    // TODO: MACK - line length paramter == 0 should indicate arbitarily long, negatives should fail asserts...
-    std::vector<std::string> tokens = tokenize(msg, true);
-    int lineLength = 0;
-    for (std::string token : tokens) {
-        if (lineLength == 0 || lineLength + token.size() <= P()->printWidth()) {
-            std::cout << token << " ";
-            lineLength += token.size() + 1;
-        }
-        else {
-            std::cout << std::endl << P()->printIndentString() << token << " ";
-            lineLength = P()->printIndentString().size() + token.size() + 1;
-        }
-    }
-    std::cout << std::endl;
-}
-
-void SimUtilities::dump(const std::string& msg) {
     // Note: We can't use P() in here - doing so would cause a circular dependency
     std::cout << msg << std::endl;
 }

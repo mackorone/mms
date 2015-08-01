@@ -50,8 +50,6 @@ public:
     int randomSeed();
     double glutInitDuration();
     bool defaultPaused();
-    int printWidth();
-    std::string printIndentString();
     std::string crashMessage();
     double minSleepDuration();
     double discreteInterfaceMinSpeed();
@@ -86,6 +84,8 @@ public:
     // Mouse parameters
     std::string mouseDirectory();
     std::string mouseAlgorithm();
+    int mouseStartingCorner();
+    std::string mouseStartingDirection();
 
 private:
 
@@ -130,8 +130,6 @@ private:
     int m_randomSeed;
     double m_glutInitDuration;
     bool m_defaultPaused;
-    int m_printWidth;
-    std::string m_printIdentString;
     std::string m_crashMessage;
     double m_minSleepDuration;
     double m_discreteInterfaceMinSpeed;
@@ -166,6 +164,8 @@ private:
     // Mouse parameters
     std::string m_mouseDirectory;
     std::string m_mouseAlgorithm;
+    int m_mouseStartingCorner;
+    std::string m_mouseStartingDirection;
 };
 
 } // namespace sim

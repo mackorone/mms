@@ -24,10 +24,7 @@ Param::Param() {
 
     // Create the parameter parser object
     ParamParser parser(SimUtilities::getProjectDirectory() + "res/parameters.xml");
-
-    // High priority parameters - these must be initialized before print() will work properly
-    m_printWidth = parser.getIntIfHasInt("print-width", 100);
-    m_printIdentString = parser.getStringIfHasString("print-indent-string", "    ");
+    // TODO: MACK - are we sure the default values are being used if this fails???
 
     // Graphical Parameters
     m_initialWindowWidth = parser.getIntIfHasInt("initial-window-width", 930);
@@ -104,11 +101,32 @@ Param::Param() {
     m_mazeAlgorithm = parser.getStringIfHasString("maze-algorithm", "Tomasz");
     m_saveGeneratedMaze = parser.getBoolIfHasBool("save-generated-maze", true);
     m_mazeMirrored = parser.getBoolIfHasBool("maze-mirrored", false);
-    m_mazeRotations = parser.getIntIfHasInt("maze-rotations", 0); // TODO: Check to ensure 0-3
+    m_mazeRotations = parser.getIntIfHasInt("maze-rotations", 0);
+    if (m_mazeRotations < 0 || 3 < m_mazeRotations) {
+        SimUtilities::print("Error: The maze-rotations value of " + std::to_string(m_mazeRotations)
+            + " is not in the valid range, [0, 3].");
+        SimUtilities::quit();
+    }
 
     // Mouse parameters
     m_mouseDirectory = parser.getStringIfHasString("mouse-directory", "res/mouse/");
     m_mouseAlgorithm = parser.getStringIfHasString("mouse-algorithm", "RightWallFollow");
+    m_mouseStartingCorner = parser.getIntIfHasInt("mouse-starting-corner", 0);
+    if (m_mazeRotations < 0 || 3 < m_mazeRotations) {
+        SimUtilities::print("Error: The mouse-starting-corner value of " + std::to_string(m_mouseStartingCorner)
+            + " is not in the valid range, [0, 3].");
+        SimUtilities::quit();
+        // TODO MACK: LOG(WARN) in ParamParser and return default
+    }
+    m_mouseStartingDirection = parser.getStringIfHasString("mouse-starting-direction", "NORTH");
+    if (DIRECTION_STRINGS.find(m_mouseStartingDirection) == DIRECTION_STRINGS.end()) {
+        SimUtilities::print("Error: The mouse-starting-direction of " + m_mouseStartingDirection
+            + " is not a valid mouse starting direction.");
+        SimUtilities::quit();
+    }
+
+    // TODO: MACK - we either can't use quit in this constructor or we can't use P() and S() in the quit method
+    // TODO: We're probably better off just not using quit in here...
 }
 
 int Param::initialWindowWidth() {
@@ -229,14 +247,6 @@ bool Param::defaultWireframeMode() {
 
 int Param::randomSeed() {
     return m_randomSeed;
-}
-
-int Param::printWidth() {
-    return m_printWidth;
-}
-
-std::string Param::printIndentString() {
-    return m_printIdentString;
 }
 
 std::string Param::crashMessage() {
@@ -365,6 +375,14 @@ std::string Param::mouseDirectory() {
 
 std::string Param::mouseAlgorithm() {
     return m_mouseAlgorithm;
+}
+
+int Param::mouseStartingCorner() {
+    return m_mouseStartingCorner;
+}
+
+std::string Param::mouseStartingDirection() {
+    return m_mouseStartingDirection;
 }
 
 } // namespace sim

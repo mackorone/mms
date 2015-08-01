@@ -35,8 +35,6 @@
 <!-- Simulation Parameters -->
 <random-seed>12345</random-seed> <!-- The seed value for rand() -->
 <use-random-seed>false</use-random-seed> <!-- Whether or not to use the seed value -->
-<print-width>100</print-width>
-<print-indent-string>    </print-indent-string>
 <crash-message>Oh no! Your mouse crashed! It can't move anymore...</crash-message>
 <glut-init-duration>0.1</glut-init-duration> <!-- Seconds -->
 <default-paused>false</default-paused>
@@ -60,7 +58,7 @@
 <wall-width>0.012</wall-width> <!-- meters -->
 <wall-height>0.05</wall-height> <!-- meters -->
 <enforce-official-maze-rules>false</enforce-official-maze-rules>
-<maze-directory>res/maze/</maze-directory> <!-- realtive to project root -->
+<maze-directory>res/maze/</maze-directory> <!-- relative to project root -->
 <maze-file>mazeish.maz</maze-file> <!-- relative to maze-directory -->
 <use-maze-file>true</use-maze-file> <!-- whether or not to use the maze file above -->
 <generated-maze-width>16</generated-maze-width> <!-- number of tiles -->
@@ -68,9 +66,10 @@
 <maze-algorithm>Tomasz</maze-algorithm> <!-- The name as specified in src/maze/MazeAlgorithms.cpp -->
 <save-generated-maze>true</save-generated-maze> <!-- Whether or not to save a random maze -->
 <maze-mirrored>false</maze-mirrored> <!-- Mirrored across the vertical, before the rotation -->
-<maze-rotations>0</maze-rotations> <!-- 0-3 clockwise rotations -->
+<maze-rotations>0</maze-rotations> <!-- 0-3 counterclockwise rotations -->
 
 <!-- Mouse Parameters -->
 <mouse-directory>res/mouse/</mouse-directory> <!-- Relative to project root -->
-<mouse-algorithm>FloodFill</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
-<!-- TODO: Starting location and direction -->
+<mouse-algorithm>RightWallFollow</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
+<mouse-starting-corner>0</mouse-starting-corner> <!-- 0-3 starting in the lower left and going clockwise -->
+<mouse-starting-direction>NORTH</mouse-starting-direction> <!-- NORTH, EAST, SOUTH, or WEST -->

@@ -18,12 +18,18 @@
 #include "sim/units/Seconds.h"
 #include "sim/World.h"
 
+// Include and initialize the logging system
+#define ELPP_NO_DEFAULT_LOG_FILE
+#include <easylogging++.h>
+INITIALIZE_EASYLOGGINGPP
+
 // Function declarations
 void draw();
 void solve();
 void keyPress(unsigned char key, int x, int y);
 void specialKeyPress(int key, int x, int y);
 void specialKeyRelease(int key, int x, int y);
+void initLogger(int argc, char* argv[]);
 void initGraphics(int argc, char* argv[]);
 
 // Global variable declarations
@@ -38,6 +44,9 @@ sim::MouseInterface* g_mouseInterface;
 GLuint g_transformationMatixId;
 
 int main(int argc, char* argv[]) {
+
+    // Initialize the logger configuration
+    initLogger(argc, argv);
 
     // First, we initialize the state object to:
     // 1) Avoid a race condition
@@ -253,12 +262,23 @@ void specialKeyRelease(int key, int x, int y) {
     }
 }
 
+void initLogger(int argc, char* argv[]) {
+    START_EASYLOGGINGPP(argc, argv);
+    // TODO: MACK - FIX THIS
+    // Load configuration from file
+    el::Configurations config;
+    config.setGlobally(el::ConfigurationType::Filename, sim::SimUtilities::getProjectDirectory() + "log/logs.txt");
+    el::Loggers::reconfigureLogger("default", config);
+    LOG(INFO) << "Mack Test";
+}
+
 void initGraphics(int argc, char* argv[]) {
 
     // GLUT Initialization
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA);
     glutInitWindowSize(sim::P()->initialWindowWidth(), sim::P()->initialWindowHeight());
+    sim::GraphicUtilities::setWindowSize(sim::P()->initialWindowWidth(), sim::P()->initialWindowHeight());
     glutInitWindowPosition(0, 0);
     glutCreateWindow("Micromouse Simulator");
     glClearColor(0.0, 0.0, 0.0, 1.0);
