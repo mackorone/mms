@@ -96,18 +96,18 @@ Param::Param() {
     m_wallLength = parser.getDoubleIfHasDouble("wall-length", 0.168);
     m_wallHeight = parser.getDoubleIfHasDouble("wall-height", 0.05);
     m_enforceOfficialMazeRules = parser.getBoolIfHasBool("enforce-official-maze-rules", false);
-    m_mazeDirectory = parser.getStringIfHasString("maze-directory", "res/mazes/");
+    m_mazeDirectory = parser.getStringIfHasString("maze-directory", "res/maze/");
     m_mazeFile = parser.getStringIfHasString("maze-file", "");
     m_useMazeFile = parser.getBoolIfHasBool("use-maze-file", false);
     m_generatedMazeWidth = parser.getIntIfHasInt("generated-maze-width", 16);
     m_generatedMazeHeight = parser.getIntIfHasInt("generated-maze-height", 16);
-    m_mazeAlgorithm = parser.getStringIfHasString("maze-algorithm", "Randomize");
+    m_mazeAlgorithm = parser.getStringIfHasString("maze-algorithm", "Tomasz");
     m_saveGeneratedMaze = parser.getBoolIfHasBool("save-generated-maze", true);
     m_mazeMirrored = parser.getBoolIfHasBool("maze-mirrored", false);
-    m_mazeRotations = parser.getIntIfHasInt("maze-rotations", 0);
+    m_mazeRotations = parser.getIntIfHasInt("maze-rotations", 0); // TODO: Check to ensure 0-3
 
     // Mouse parameters
-    m_mouseDirectory = parser.getStringIfHasString("mouse-directory", "res/mice/");
+    m_mouseDirectory = parser.getStringIfHasString("mouse-directory", "res/mouse/");
     m_mouseAlgorithm = parser.getStringIfHasString("mouse-algorithm", "RightWallFollow");
 }
 

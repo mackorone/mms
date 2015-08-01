@@ -15,10 +15,10 @@ High Pri:
 
 - Run-time parameters for the algos
 
-- Get rid of basic maze altogether... just let the MazeInterface interface with the Maze itself
-
 - Add more context to the error messages.(Like Sim:, Mouse:, Maze:, etc.)
 - Printing -> Logging
+- Get rid of print width and indent (who's idea was that anyway)
+- Log during parameter reads (let us know about failed reads and such)
 
 - Look at Tomasz' maze website
 - Crash recovery semantics
@@ -34,8 +34,7 @@ High Pri:
 - If you shrink the window too skinny, an assertion fails (line 47 of GraphicUtilties.cpp)
 - Other mouse movements - curve turns, j-turns, diagonals, etc.
 - Add support for multiple mouse starting locations (both left and right corner)
-- Add support for maze rotation (so the mouse can start at any corner)
-- Add support for mouse stating position rotation (so the mouse can start facing any direction)
+- Add support for mouse stating position rotation and corner selection (need to tell the algo about this)
 - Detect STL use, let algos know
 - Support stepper motor / encoders interface
 - Sensor readings for walls other than front, left right
@@ -99,6 +98,7 @@ Low-pri:
 - 3D
 - Crash animation for both modes
 - Unit tests
+- Try to break the simulator from within the algos
 
 Clean-Up:
 - Add IMouseAlgorithm (and maze) to the build path so we can just do #include <IMouseAlgorithm.h>

@@ -67,6 +67,9 @@ bool Mouse::initialize(const std::string& mouseFile) {
     // TODO: UP-FOR-GRABS: This should be changed to getUnion instead of convexHull, once it's ready
     m_initialCollisionPolygon = GeometryUtilities::convexHull(polygons);
 
+    // TODO: Rotate and translate the mouse (to a different corner) here
+    m_rotation = Degrees(0);
+
     // Indicate that we're done with the initiaization
     m_initialized = true;
 

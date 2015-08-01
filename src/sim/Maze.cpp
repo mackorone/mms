@@ -54,7 +54,7 @@ Maze::Maze() {
         basicMaze = mirrorAcrossVertical(basicMaze);
     }
     for (int i = 0; i < P()->mazeRotations() % 4; i += 1) {
-        basicMaze = rotate90DegreesClockwise(basicMaze);
+        basicMaze = rotateCounterClockwise(basicMaze);
     }
 
     // Then, check and enforce official maze rules
@@ -162,30 +162,31 @@ std::vector<std::vector<BasicTile>> Maze::mirrorAcrossVertical(const std::vector
     return mirrored; 
 }
 
-std::vector<std::vector<BasicTile>> Maze::rotate90DegreesClockwise(const std::vector<std::vector<BasicTile>>& basicMaze) {
+std::vector<std::vector<BasicTile>> Maze::rotateCounterClockwise(const std::vector<std::vector<BasicTile>>& basicMaze) {
 
     // We can't rotate a non-rectangular maze
     ASSERT(MazeChecker::isRectangular(basicMaze));
 
     std::vector<std::vector<BasicTile>> rotated;
-    for (int x = basicMaze.size() - 1; x >= 0; x -= 1) {
+    for (int x = 0; x < basicMaze.size(); x += 1) {
         std::vector<BasicTile> row;
-        for (int y = 0; y < basicMaze.at(x).size(); y += 1) {
+        for (int y = basicMaze.at(x).size() - 1; y >= 0; y -= 1) {
             BasicTile tile;
-            tile.x = y;
-            tile.y = basicMaze.size() - 1 - x;
-            tile.walls.insert(std::make_pair(NORTH, basicMaze.at(x).at(y).walls.at(WEST)));
-            tile.walls.insert(std::make_pair(EAST, basicMaze.at(x).at(y).walls.at(NORTH)));
-            tile.walls.insert(std::make_pair(SOUTH, basicMaze.at(x).at(y).walls.at(EAST)));
-            tile.walls.insert(std::make_pair(WEST, basicMaze.at(x).at(y).walls.at(SOUTH)));
-            if (rotated.size() <= y) {
+            tile.x = basicMaze.at(x).size() - 1 - y;
+            tile.y = x;
+            tile.walls.insert(std::make_pair(NORTH, basicMaze.at(x).at(y).walls.at(EAST)));
+            tile.walls.insert(std::make_pair(EAST, basicMaze.at(x).at(y).walls.at(SOUTH)));
+            tile.walls.insert(std::make_pair(SOUTH, basicMaze.at(x).at(y).walls.at(WEST)));
+            tile.walls.insert(std::make_pair(WEST, basicMaze.at(x).at(y).walls.at(NORTH)));
+            if (rotated.size() <= tile.x) {
                 rotated.push_back({tile});
             }
             else {
-                rotated.at(y).push_back(tile);
+                rotated.at(tile.x).push_back(tile);
             }
         }
     }
+
     return rotated;
 }
 

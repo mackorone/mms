@@ -32,7 +32,7 @@ private:
 
     // Basic maze geometric transformations
     std::vector<std::vector<BasicTile>> mirrorAcrossVertical(const std::vector<std::vector<BasicTile>>& basicMaze);
-    std::vector<std::vector<BasicTile>> rotate90DegreesClockwise(const std::vector<std::vector<BasicTile>>& basicMaze);
+    std::vector<std::vector<BasicTile>> rotateCounterClockwise(const std::vector<std::vector<BasicTile>>& basicMaze);
 };
 
 } // namespace sim
