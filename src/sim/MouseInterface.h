@@ -20,7 +20,8 @@ public:
     MouseInterface(const Maze* maze, Mouse* mouse, MazeGraphic* mazeGraphic);
 
     // Any interface methods
-    // TODO: random
+    // TODO: random???
+    // TODO: logging???
     void delay(int milliseconds);
 
     void setTileColor(int x, int y, char color);

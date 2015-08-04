@@ -14,6 +14,8 @@ public:
     void setWall(int x, int y, char direction, bool wallExists);
     double getRandom();
 
+    // TODO: Logging...?
+
 private:
     std::vector<std::vector<BasicTile>>* m_basicMaze;
     int getWidth();

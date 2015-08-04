@@ -1,7 +1,27 @@
 High Pri:
 
+- Replace print with logging everywhere in the code...
+- Log during parameter reads (let us know about failed reads and such)
+- Figure out how logging configuration should work
+    - We can't allow runtime file specification, b/c we can't use param to init the logger, b/c param could fail
+    - Do we use configuration files??? How would we get the project directory?
+    - Should we use configuration files???
+    - Does printLateFrames (and others) make sense any more???
+- Figure out how algo logging should work
+- Use printf like logging, it's much cleaner
+- Use class name in the logger...
+- Redefine assert to use logging???
+- Configuration files, for the logger, fonts, parameters should all be *must have*
+
 - Don't use P() or S() in a static context... it breaks things really badly...
 - Make a note of contributing projects in the documentation
+- Linting...
+
+- Add support for multiple mouse starting locations (both left and right corner)
+- Add support for mouse stating position rotation and corner selection (need to tell the algo about this)
+
+- Params with default values... is that even a good idea???
+- Param special methods (getIfHasKey, getIfInRange, etc)
 
 - Rewrite text so that it's performant
 - Put the vertex shader in its own source file
@@ -19,10 +39,6 @@ High Pri:
 - Run-time parameters for the algos
 
 - Add more context to the error messages.(Like Sim:, Mouse:, Maze:, etc.)
-- Printing -> Logging
-- Get rid of print width and indent (who's idea was that anyway)
-- Log during parameter reads (let us know about failed reads and such)
-
 - Look at Tomasz' maze website
 - Crash recovery semantics
     - mouse speed, elapsed time, etc.
@@ -36,8 +52,6 @@ High Pri:
 - Figure out a nice way to use a vector for the simulation, but an array for real life
 - If you shrink the window too skinny, an assertion fails (line 47 of GraphicUtilties.cpp)
 - Other mouse movements - curve turns, j-turns, diagonals, etc.
-- Add support for multiple mouse starting locations (both left and right corner)
-- Add support for mouse stating position rotation and corner selection (need to tell the algo about this)
 - Detect STL use, let algos know
 - Support stepper motor / encoders interface
 - Sensor readings for walls other than front, left right
@@ -141,3 +155,6 @@ Clean-Up:
 - for each loop iterations should use const references
 - The interfaces don't need to be passed as pointers, right? Try passing as values...
 - Upgrade convert_mazes.py to Python 3
+- Move as much OpenGL code to a single file (Main.cpp) as possible
+- P() be const? L()?
+- init vs initialize

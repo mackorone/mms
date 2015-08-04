@@ -9,7 +9,7 @@
 <default-zoomed-map-scale>0.1</default-zoomed-map-scale>
 <default-rotate-zoomed-map>false</default-rotate-zoomed-map>
 <frame-rate>60</frame-rate> <!-- Frames per second -->
-<print-late-frames>false</print-late-frames>
+<print-late-frames>true</print-late-frames>
 <tile-base-color>BLACK</tile-base-color> <!-- TODO: Display a better error message for bad inputs for the colors -->
 <tile-wall-color>RED</tile-wall-color>
 <tile-corner-color>GRAY</tile-corner-color>

@@ -6,6 +6,7 @@
 #include "mouse/MouseAlgorithms.h"
 #include "sim/GraphicUtilities.h"
 #include "sim/Keys.h"
+#include "sim/Logging.h"
 #include "sim/Maze.h"
 #include "sim/MazeGraphic.h"
 #include "sim/Mouse.h"
@@ -18,18 +19,12 @@
 #include "sim/units/Seconds.h"
 #include "sim/World.h"
 
-// Include and initialize the logging system
-#define ELPP_NO_DEFAULT_LOG_FILE
-#include <easylogging++.h>
-INITIALIZE_EASYLOGGINGPP
-
 // Function declarations
 void draw();
 void solve();
 void keyPress(unsigned char key, int x, int y);
 void specialKeyPress(int key, int x, int y);
 void specialKeyRelease(int key, int x, int y);
-void initLogger(int argc, char* argv[]);
 void initGraphics(int argc, char* argv[]);
 
 // Global variable declarations
@@ -45,10 +40,10 @@ GLuint g_transformationMatixId;
 
 int main(int argc, char* argv[]) {
 
-    // Initialize the logger configuration
-    initLogger(argc, argv);
+    // First, initiliaze Logging
+    sim::Logging::initialize();
 
-    // First, we initialize the state object to:
+    // We initialize the state object to:
     // 1) Avoid a race condition
     // 2) Register this thread as the main thread
     sim::S();
@@ -139,11 +134,10 @@ void draw() {
 
     // Notify the user of a late frame
     if (sim::P()->printLateFrames() && duration > 1.0/sim::P()->frameRate()) {
-        sim::SimUtilities::print(std::string("A frame was late by ")
-            + std::to_string(duration - 1.0/sim::P()->frameRate())
-            + std::string(" seconds, which is ")
-            + std::to_string((duration - 1.0/sim::P()->frameRate())/(1.0/sim::P()->frameRate()) * 100)
-            + std::string(" percent late."));
+        LOG_SIM(WARNING) << "A frame was late by " << duration - 1.0/sim::P()->frameRate()
+            << std::string(" seconds, which is ")
+            << std::to_string((duration - 1.0/sim::P()->frameRate())/(1.0/sim::P()->frameRate()) * 100)
+            << std::string(" percent late.");
     }
 
     // Sleep the appropriate amount of time, base on the drawing duration
@@ -260,16 +254,6 @@ void specialKeyRelease(int key, int x, int y) {
     if (std::find(sim::ARROW_KEYS.begin(), sim::ARROW_KEYS.end(), key) != sim::ARROW_KEYS.end()) {
         sim::S()->setArrowKeyIsPressed(key, false);
     }
-}
-
-void initLogger(int argc, char* argv[]) {
-    START_EASYLOGGINGPP(argc, argv);
-    // TODO: MACK - FIX THIS
-    // Load configuration from file
-    el::Configurations config;
-    config.setGlobally(el::ConfigurationType::Filename, sim::SimUtilities::getProjectDirectory() + "log/logs.txt");
-    el::Loggers::reconfigureLogger("default", config);
-    LOG(INFO) << "Mack Test";
 }
 
 void initGraphics(int argc, char* argv[]) {

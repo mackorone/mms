@@ -5,7 +5,6 @@
 #include <ctime>
 #include <ratio>
 #include <fstream>
-#include <glut.h>
 #include <iostream>
 #include <iterator>
 #include <sstream>
@@ -84,6 +83,16 @@ double SimUtilities::getHighResTime() {
     QueryPerformanceCounter(&counter);   // the normal system clock for chrono high_resolution_clock which only
     return double(counter.QuadPart) / double(freq.QuadPart); // has 1 ms accuracy.
 #endif
+}
+
+std::string SimUtilities::getDateTime() {
+    // Taken from http://stackoverflow.com/a/10467633
+    time_t     now = time(0);
+    struct tm  tstruct;
+    char       buf[80];
+    tstruct = *gmtime(&now);
+    strftime(buf, sizeof(buf), "%Y-%m-%d_%X", &tstruct);
+    return buf;
 }
 
 std::string SimUtilities::getProjectDirectory() {

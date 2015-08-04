@@ -29,6 +29,9 @@ public:
     // Like time() in <ctime> but higher resolution
     static double getHighResTime();
 
+    // Returns the UTC date and time formatted as YY-MM-DD_HH:MM:SS
+    static std::string getDateTime();
+
     // Returns the path the mms project directory
     static std::string getProjectDirectory();
 
@@ -53,9 +56,9 @@ public:
     static int getDirectionIndex(Direction direction);
 
 private:
+
     // A private constructor to restrict creation of any GeometryUtilities objects
     SimUtilities();
-
 };
 
 } // namespace sim
