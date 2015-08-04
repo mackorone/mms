@@ -19,6 +19,7 @@ public:
     static State* getInstance();
 
     // Accessors
+    std::string runId();
     std::thread::id mainThreadId();
     bool mainLoopEntered();
     bool crashed();
@@ -37,6 +38,7 @@ public:
     bool arrowKeyIsPressed(int key);
 
     // Mutators
+    void setRunId(const std::string& runId);
     void enterMainLoop();
     void setCrashed();
     void setInterfaceType(InterfaceType interfaceType);
@@ -61,6 +63,7 @@ private:
     // A pointer to the actual instance of the class
     static State* INSTANCE;
 
+    std::string m_runId;
     std::thread::id m_mainThreadId;
     bool m_mainLoopEntered;
     bool m_crashed;

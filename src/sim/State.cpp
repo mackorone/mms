@@ -21,6 +21,7 @@ State* State::getInstance() {
 }
 
 State::State() {
+    m_runId = "";
     m_mainThreadId = std::this_thread::get_id();
     m_mainLoopEntered = false;
     m_crashed = false;
@@ -41,6 +42,10 @@ State::State() {
     for (int key : ARROW_KEYS) {
         m_arrowKeys.insert(std::make_pair(key, false));
     }
+}
+
+std::string State::runId() {
+    return m_runId;
 }
 
 std::thread::id State::mainThreadId() {
@@ -108,6 +113,11 @@ bool State::inputButtonWasPressed(int inputButton) {
 bool State::arrowKeyIsPressed(int key) {
     ASSERT(1 == m_arrowKeys.count(key));
     return m_arrowKeys.at(key);
+}
+
+void State::setRunId(const std::string& runId) {
+    ASSERT_EQUAL(m_runId, "");
+    m_runId = runId;
 }
 
 void State::enterMainLoop() {

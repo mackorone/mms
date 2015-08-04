@@ -29,7 +29,7 @@ public:
     // Like time() in <ctime> but higher resolution
     static double getHighResTime();
 
-    // Returns the UTC date and time formatted as YY-MM-DD_HH:MM:SS
+    // Returns the UTC datetime formatted as YY-MM-DD_HH:MM:SS
     static std::string getDateTime();
 
     // Returns the path the mms project directory

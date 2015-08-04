@@ -1,34 +1,51 @@
 #include "Logging.h"
 
+#include <cstdio>
+
+#include "Assert.h"
 #include "SimUtilities.h"
 
 INITIALIZE_EASYLOGGINGPP
 
 namespace sim {
 
-void Logging::initialize() {
+// Create and initialize the static variables
+std::string Logging::m_runId = "";
+int Logging::m_numLogFiles = 0;
 
-    // TODO: MACK - Define ideal logging behavior, then let someone else implement it
-    // TODO: Make sure we only initialize here once...
-    // TODO: Only keep the N most recent files...
-    // TODO: Set truncation size..
-    // TODO: New folder for each invokation of the program...
-    // TODO: Keep in mind that we might want lots of runs in a unit-test like situation
-    // TODO: I mean, we'll probably have run numbers...
+void Logging::initialize(const std::string& runId) {
 
-    // Note: We assume that this will never fail. If the file doesn't exist
-    // already, we'll create it. If it does exists, we'll append to it.
+    // Ensure we only initialize the loggers once
+    static bool initialized = false;
+    ASSERT(!initialized);
+    initialized = true;
+
+    // Set the runId
+    m_runId = runId;
 
     // Register and configure each of the loggers
     for (const std::string& str : {MAZE_STRING, MOUSE_STRING, SIM_STRING}) {
         el::Loggers::getLogger(str);
         el::Configurations config;
+        el::Loggers::addFlag(el::LoggingFlag::StrictLogFileSizeCheck);
         config.setGlobally(el::ConfigurationType::Filename,
-            SimUtilities::getProjectDirectory() + "log/" + SimUtilities::getDateTime() + "/logs.txt");
+            SimUtilities::getProjectDirectory() + "run/" + m_runId + "/logs/last.txt");
+        config.setGlobally(el::ConfigurationType::MaxLogFileSize,
+            std::to_string(10 * 1024 * 1024)); // 10 MB, ~10,000 lines
         el::Loggers::reconfigureLogger(str, config);
+        el::Helpers::installPreRollOutCallback(rolloutHandler);
     }
+}
 
-    LOG_SIM(INFO) << "Mack Test";
+std::string Logging::getNextLogFileName() {
+    m_numLogFiles += 1;
+    return SimUtilities::getProjectDirectory() + "run/" + m_runId
+        + "/logs/" + std::to_string(m_numLogFiles) + ".txt";
+}
+
+void Logging::rolloutHandler(const char* filename, std::size_t size) {
+    int value = std::rename(filename, getNextLogFileName().c_str());
+    ASSERT_EQUAL(value, 0);
 }
 
 } // namespace sim

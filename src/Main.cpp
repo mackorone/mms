@@ -40,13 +40,18 @@ GLuint g_transformationMatixId;
 
 int main(int argc, char* argv[]) {
 
-    // First, initiliaze Logging
-    sim::Logging::initialize();
+    // First, we have to determine the runId
+    std::string runId = sim::SimUtilities::getDateTime();
 
-    // We initialize the state object to:
+    // Then we can initiliaze Logging
+    sim::Logging::initialize(runId);
+
+    // Initialize the State object in order to:
+    // 0) Set the runId
     // 1) Avoid a race condition
     // 2) Register this thread as the main thread
-    sim::S();
+    // 3) Initialize the Param object
+    sim::S()->setRunId(runId);
 
     // Initialize local objects
     sim::Maze maze;

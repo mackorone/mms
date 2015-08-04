@@ -50,6 +50,7 @@ void SimUtilities::quit() {
 
 void SimUtilities::print(const std::string& msg) {
     // Note: We can't use P() in here - doing so would cause a circular dependency
+    // TODO: MACK - revisit this
     std::cout << msg << std::endl;
 }
 
@@ -87,9 +88,9 @@ double SimUtilities::getHighResTime() {
 
 std::string SimUtilities::getDateTime() {
     // Taken from http://stackoverflow.com/a/10467633
-    time_t     now = time(0);
-    struct tm  tstruct;
-    char       buf[80];
+    time_t now = time(0);
+    struct tm tstruct;
+    char buf[80];
     tstruct = *gmtime(&now);
     strftime(buf, sizeof(buf), "%Y-%m-%d_%X", &tstruct);
     return buf;

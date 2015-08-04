@@ -10,8 +10,14 @@ High Pri:
 - Figure out how algo logging should work
 - Use printf like logging, it's much cleaner
 - Use class name in the logger...
-- Redefine assert to use logging???
+
 - Configuration files, for the logger, fonts, parameters should all be *must have*
+    - Params with default values... is that even a good idea??? - NO
+    - Param special methods (getIfHasKey, getIfInRange, etc)
+
+- Delete oldest run directory if we exceed the maximum number of runs to keep
+
+- File paths on other platforms might be broken...
 
 - Don't use P() or S() in a static context... it breaks things really badly...
 - Make a note of contributing projects in the documentation
@@ -19,9 +25,6 @@ High Pri:
 
 - Add support for multiple mouse starting locations (both left and right corner)
 - Add support for mouse stating position rotation and corner selection (need to tell the algo about this)
-
-- Params with default values... is that even a good idea???
-- Param special methods (getIfHasKey, getIfInRange, etc)
 
 - Rewrite text so that it's performant
 - Put the vertex shader in its own source file
@@ -158,3 +161,5 @@ Clean-Up:
 - Move as much OpenGL code to a single file (Main.cpp) as possible
 - P() be const? L()?
 - init vs initialize
+- Write a script to ensure that ASSERTS don't hold any state
+- Ensure boolean operators aren't used in asserts... should be using a different assert
