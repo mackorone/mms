@@ -21,7 +21,7 @@ public:
 
     // Any interface methods
     // TODO: random???
-    // TODO: logging???
+    // TODO: logging??? NOPE print instead
     void delay(int milliseconds);
 
     void setTileColor(int x, int y, char color);

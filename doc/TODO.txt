@@ -1,30 +1,19 @@
 High Pri:
 
-- Replace print with logging everywhere in the code...
-- Log during parameter reads (let us know about failed reads and such)
-- Figure out how logging configuration should work
-    - We can't allow runtime file specification, b/c we can't use param to init the logger, b/c param could fail
-    - Do we use configuration files??? How would we get the project directory?
-    - Should we use configuration files???
+- Numeric parameter min/max values
+
+- Parameters...
     - Does printLateFrames (and others) make sense any more???
-- Figure out how algo logging should work
-- Use printf like logging, it's much cleaner
-- Use class name in the logger...
 
-- Configuration files, for the logger, fonts, parameters should all be *must have*
-    - Params with default values... is that even a good idea??? - NO
-    - Param special methods (getIfHasKey, getIfInRange, etc)
+- Better run number system
 
-- Delete oldest run directory if we exceed the maximum number of runs to keep
+- Maze size requirements and validity
 
-- File paths on other platforms might be broken...
-
-- Don't use P() or S() in a static context... it breaks things really badly...
+- Don't use P() or S() in a static context... it breaks things really badly... put this in coding standards
 - Make a note of contributing projects in the documentation
 - Linting...
 
-- Add support for multiple mouse starting locations (both left and right corner)
-- Add support for mouse stating position rotation and corner selection (need to tell the algo about this)
+- Document that the mouse always starts in the lower left, but can be rotated to simulate other orientatiosn
 
 - Rewrite text so that it's performant
 - Put the vertex shader in its own source file
@@ -41,7 +30,8 @@ High Pri:
 
 - Run-time parameters for the algos
 
-- Add more context to the error messages.(Like Sim:, Mouse:, Maze:, etc.)
+- -Wall flag...
+
 - Look at Tomasz' maze website
 - Crash recovery semantics
     - mouse speed, elapsed time, etc.
@@ -55,7 +45,6 @@ High Pri:
 - Figure out a nice way to use a vector for the simulation, but an array for real life
 - If you shrink the window too skinny, an assertion fails (line 47 of GraphicUtilties.cpp)
 - Other mouse movements - curve turns, j-turns, diagonals, etc.
-- Detect STL use, let algos know
 - Support stepper motor / encoders interface
 - Sensor readings for walls other than front, left right
 - Include Arduino "types" with the MouseInterface
@@ -72,7 +61,7 @@ High Pri:
 
 Med Pri:
 - Still view a maze if it passes validation, but don't let the sim continue...
-- Numeric parameter min/max values
+- File paths on other platforms might be broken...
 - Use vertex buffer object for the mouse body (only triangulate the mouse once)
     - Get rid of getInitialized method in mouse once we implement mouse drawing only once
 - Check megaMouse performance
@@ -106,7 +95,10 @@ bullets in other physics simulators
 - Error checking for param string type (startingDirection, color, etc.)
 
 Low-pri:
+- Update the check_params.py script to make sure that the return type of the
+  Param methods is the same as the type of the member variable
 - Parameter for auto-generated maze name
+- Detect STL use in maze and mouse algos, send a warning
 - Triangulate polygons upon creation?
 - Map borders
 - Inconsistent wall declaration colors (declared wall on one side of wall, declared no wall on other side of wall)
@@ -121,7 +113,11 @@ Low-pri:
 - Crash animation for both modes
 - Unit tests
 - Try to break the simulator from within the algos
-- Should the mouse starting corner parameter be a string ("LOWER_LEFT, UPPER_RIGHT", etc.)?
+- Colors for log statements
+- De-duplicate some code in ParamParser... the usefulness of lots of logs
+  though is that we're told which log it is. So we should write a function that
+  get's the log strings, but the logging should still happen where it's currently
+  happening.
 
 Clean-Up:
 - Change map.count(item) != 0 to map.find(item) != map.end()

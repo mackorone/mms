@@ -16,7 +16,23 @@
 
 namespace sim {
 
-Mouse::Mouse(const Maze* maze) : m_maze(maze), m_initialized(false), m_rotation(Radians(0.0)) {
+Mouse::Mouse(const Maze* maze) : m_maze(maze), m_initialized(false) {
+
+    // Set the initial rotation of the mouse
+    switch (DIRECTION_STRINGS.at(P()->mouseStartingDirection())) {
+        case NORTH:
+            m_rotation = Degrees(0.0);
+            break;
+        case EAST:
+            m_rotation = Degrees(270.0);
+            break;
+        case SOUTH:
+            m_rotation = Degrees(180.0);
+            break;
+        case WEST:
+            m_rotation = Degrees(90.0);
+            break;
+    }
 }
 
 bool Mouse::getInitialized() const {
@@ -64,12 +80,9 @@ bool Mouse::initialize(const std::string& mouseFile) {
     for (std::pair<std::string, Sensor> pair : m_sensors) {
         polygons.push_back(pair.second.getInitialPolygon());
     }
-    // TODO: UP-FOR-GRABS: This should be changed from convexHull to union, once it's ready
-    m_initialCollisionPolygon = GeometryUtilities::convexHull(polygons);
 
-    // TODO: MACK - Rotate and translate the mouse (to a different corner) here
-    //m_rotation = Degrees(180);
-    //m_translation += ...
+    // Technically not correct (should be union), but it's a good approximation
+    m_initialCollisionPolygon = GeometryUtilities::convexHull(polygons);
 
     // Indicate that we're done with the initiaization
     m_initialized = true;

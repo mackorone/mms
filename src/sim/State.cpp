@@ -25,7 +25,7 @@ State::State() {
     m_mainThreadId = std::this_thread::get_id();
     m_mainLoopEntered = false;
     m_crashed = false;
-    m_interfaceType = DISCRETE; // Arbitrary default value
+    m_interfaceType; // Undefined default value
     m_rotateZoomedMap = P()->defaultRotateZoomedMap();
     m_zoomedMapScale = P()->defaultZoomedMapScale();
     m_mousePathVisible = P()->defaultMousePathVisible();

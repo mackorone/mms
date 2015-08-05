@@ -26,6 +26,7 @@
 #include "Assert.h"
 #include "Param.h"
 #include "State.h"
+#include "Logging.h"
 
 namespace sim {
 
@@ -49,8 +50,6 @@ void SimUtilities::quit() {
 }
 
 void SimUtilities::print(const std::string& msg) {
-    // Note: We can't use P() in here - doing so would cause a circular dependency
-    // TODO: MACK - revisit this
     std::cout << msg << std::endl;
 }
 
@@ -92,7 +91,7 @@ std::string SimUtilities::getDateTime() {
     struct tm tstruct;
     char buf[80];
     tstruct = *gmtime(&now);
-    strftime(buf, sizeof(buf), "%Y-%m-%d_%X", &tstruct);
+    strftime(buf, sizeof(buf), "%Y-%m-%d %X", &tstruct);
     return buf;
 }
 
@@ -210,6 +209,20 @@ bool SimUtilities::isFile(const std::string& path) {
 
 int SimUtilities::getDirectionIndex(Direction direction) {
     return std::find(DIRECTIONS.begin(), DIRECTIONS.end(), direction) - DIRECTIONS.begin();
+}
+
+void SimUtilities::removeExcessArchivedRuns() {
+    // TODO: upforgrabs
+    // Information about each run is stored in the run/ directory. As it turns
+    // out, this information can pile up pretty quickly. We should remove the
+    // oldest stuff so that the run/ directory doesn't get too full. In
+    // particular, supposing that there are N runs in the run/ directory, and
+    // supposing N >= P()->numberOfArchivedRuns(), implement this function to
+    // remove the (N - P()->numberOfArchivedRuns() + 1) oldest directories in
+    // run/.  Make sure that your solution is cross-platform, and LOG where
+    // appropriate (e.g., if, for some reason, we can't delete one of the
+    // directories in run/). This function is already called in the appropriate
+    // place, so once you implement it, it should "just work".
 }
 
 } // namespace sim

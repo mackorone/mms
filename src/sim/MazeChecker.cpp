@@ -7,6 +7,11 @@ namespace sim {
 
 bool MazeChecker::validMaze(const std::vector<std::vector<BasicTile>>& maze) {
 
+    if (!isNonempty(maze)) {
+        SimUtilities::print("Error: The maze is empty.");
+        return false;
+    }
+
     if (!isRectangular(maze)) {
         SimUtilities::print("Error: The maze is not rectangular.");
         return false;
@@ -23,6 +28,10 @@ bool MazeChecker::validMaze(const std::vector<std::vector<BasicTile>>& maze) {
     }
 
     return true;
+}
+
+bool MazeChecker::isNonempty(const std::vector<std::vector<BasicTile>>& maze) {
+    return (maze.size() == 0 ? false : 0 < maze.at(0).size());
 }
 
 bool MazeChecker::isRectangular(const std::vector<std::vector<BasicTile>>& maze) {
@@ -55,7 +64,9 @@ bool MazeChecker::isEnclosed(const std::vector<std::vector<BasicTile>>& maze) {
 }
 
 bool MazeChecker::hasConsistentWalls(const std::vector<std::vector<BasicTile>>& maze) {
-    // TODO: UP-FOR-GRABS - implement this method
+    // TODO: upforgrabs
+    // Implement this method so that it returns true if the walls of the maze
+    // are consistent, and false otherwise.
     return true;
 }
 
@@ -63,15 +74,17 @@ bool MazeChecker::officialMaze(const std::vector<std::vector<BasicTile>>& maze) 
 
     ASSERT(validMaze(maze));
 
-    // TODO: UP-FOR-GRABS - The center should have no walls in it
-    // TODO: What about size requirements?
-
     if (!isSquare(maze)) {
         SimUtilities::print("Error: The maze is not square.");
         return false;
     }
 
-    if (!hasPathToCenter(maze, 0, 0)) {
+    if (!hasPathToCenter(maze)) {
+        SimUtilities::print("Error: The maze does not have a path to the center.");
+        return false;
+    }
+
+    if (!hasHollowCenter(maze)) {
         SimUtilities::print("Error: The maze does not have a path to the center.");
         return false;
     }
@@ -81,7 +94,7 @@ bool MazeChecker::officialMaze(const std::vector<std::vector<BasicTile>>& maze) 
         return false;
     }
 
-    if (!hasWallAttachedToEachPost(maze, 1, 1)) {
+    if (!hasWallAttachedToEachPost(maze)) {
         SimUtilities::print("Error: There is at least one non-center post with no walls connected to it.");
         return false;
     }
@@ -105,242 +118,60 @@ bool MazeChecker::officialMaze(const std::vector<std::vector<BasicTile>>& maze) 
 }
 
 bool MazeChecker::isSquare(const std::vector<std::vector<BasicTile>>& maze) {
-    // TODO: UP-FOR-GRABS - implement this method
+    // TODO: upforgrabs
+    // Implement this method so that it returns true if the maze is square, and
+    // false otherwise.
     return true;
 }
 
-
-/*
-//Recursively check every combination and left and right wall follows
-//to ensure the maze cannot be solved by a random wall follower
-bool cannotWallFollow(const std::vector<std::vector<BasicTile>>& maze) {
-    std::vector<std::vector<int>> orientations;
-
-    //note: the 0,0,0 arguments assume the robot starts in coordinates
-    //x=0, y=0, and facing North where cardinal directions NESW = 0123
-    return !(recursiveLeftWallFollow(maze, 0, 0, 0, orientations) ||
-             recursiveRightWallFollow(maze, 0, 0, 0, orientations));
+bool MazeChecker::hasPathToCenter(const std::vector<std::vector<BasicTile>>& maze) {
+    // TODO: upforgrabs
+    // Implement this method so that it returns true if there is a path to the
+    // center of the maze, and false otherwise.
+    return false;
 }
 
-bool recursiveLeftWallFollow(const std::vector<std::vector<BasicTile>>& maze, int x, int y, int dir, std::vector<std::vector<int>> orientations) {
-    //check to see if center is found
-    if((x==7||x==8)&&(y==7||y==8)){
-        return true;
-    }
-
-    //Orientation contains information about prior positions of the solver
-    //Each element is a vector containing:
-    //[x coord, y coord, direction (NESW = 0123), and left (1) or right(2)]
-    //The idea is that if the algorithm finds itself in an orientation
-    //it's been in before without reaching the center, then it will
-    //never reach the center
-    std::vector<int> orientation;
-    orientation.push_back(x);
-    orientation.push_back(y);
-    orientation.push_back(dir);
-    orientation.push_back(1);
-    bool dejavu = false;
-    for(int i = 0; i < orientations.size(); i++) {
-        for(int j = 0; j < orientation.size(); j++) {
-            if(orientation.at(j) != orientations.at(i).at(j)) {
-                break;
-            }
-            if(j == (orientation.size() - 1)) {
-                dejavu = true;
-            }
-        }
-        if(dejavu) {
-            return false;
-        }
-    }
-    //save current orientation for future comparison
-    orientations.push_back(orientation);            
-    
-    //now move on like a normal left follower
-    int left = dir - 1;
-    if(left < 0) left = 3;
-
-    int right = dir + 1;
-    if(right > 3) right = 0;
-
-    if(!maze.at(x).at(y).walls.at(left)){
-        dir = left;
-    }
-    while(maze.at(x).at(y).walls.at(dir)){
-        dir = right;
-        right = dir + 1;
-        if(right > 3) right = 0;
-    }
-
-    if(dir == 0) y++;
-    else if(dir == 1) x++;
-    else if(dir == 2) y--;
-    else if(dir == 3) x--;
-
-    //now branch into right and left followers from new position
-    return recursiveLeftWallFollow(maze, x, y, dir, orientations) ||
-           recursiveRightWallFollow(maze, x, y, dir, orientations);
-}
-
-//refer to recursiveLeftWallFollow for comments
-bool recursiveRightWallFollow(const std::vector<std::vector<BasicTile>>& maze, int x, int y, int dir, std::vector<std::vector<int>> orientations) {
-    if((x==7||x==8)&&(y==7||y==8)){
-        return true;
-    }
-
-    std::vector<int> orientation;
-    orientation.push_back(x);
-    orientation.push_back(y);
-    orientation.push_back(dir);
-    orientation.push_back(2);
-    bool dejavu = false;
-    for(int i = 0; i < orientations.size(); i++) {
-        for(int j = 0; j < orientation.size(); j++) {
-            if(orientation.at(j) != orientations.at(i).at(j)) {
-                break;
-            }
-            if(j == (orientation.size() - 1)) {
-                dejavu = true;
-            }
-        }
-        if(dejavu) {
-            return false;
-        }
-    }
-    orientations.push_back(orientation);            
-    
-    //now move on like a normal right follower
-    int left = dir - 1;
-    if(left < 0) left = 3;
-
-    int right = dir + 1;
-    if(right > 3) right = 0;
-
-    if(!maze.at(x).at(y).walls.at(right)){
-        dir = right;
-    }
-    while(maze.at(x).at(y).walls.at(dir)){
-        dir = left;
-        left = dir - 1;
-        if(left < 0) left = 3;
-    }
-
-    if(dir == 0) y++;
-    else if(dir == 1) x++;
-    else if(dir == 2) y--;
-    else if(dir == 3) x--;
-
-    //now branch into right and left followers from new position
-    return recursiveLeftWallFollow(maze, x, y, dir, orientations) ||
-           recursiveRightWallFollow(maze, x, y, dir, orientations);
- 
-}
-*/
-
-bool MazeChecker::hasPathToCenter(const std::vector<std::vector<BasicTile>>& maze, int x, int y) {
-    static std::vector<bool> checkRow(16, false);
-    static std::vector<std::vector<bool>> checkTiles(16, checkRow);
-    checkTiles.at(x).at(y) = true;
-    bool eastCheck = false, southCheck = false, westCheck = false, northCheck = false;
-    
-    // Check for center tile
-    if ((x==7||x==8)&&(y==7||y==8)) {
-        return true;
-    }
-
-    // Check north tile
-    if (y != 15 && !maze.at(x).at(y).walls.at(NORTH) && !checkTiles.at(x).at(y+1)) {
-        northCheck = hasPathToCenter(maze, x, y+1);
-    }
-
-    // Check east tile
-    if (x != 15 && !maze.at(x).at(y).walls.at(EAST) && !checkTiles.at(x+1).at(y)) {
-        eastCheck = hasPathToCenter(maze, x+1, y);
-    }
-    // Check south tile
-    if (y != 0 && !maze.at(x).at(y).walls.at(SOUTH) && !checkTiles.at(x).at(y-1)) { 
-        southCheck = hasPathToCenter(maze, x, y-1);
-    }
-    // Check west tile
-    if (x != 0 && !maze.at(x).at(y).walls.at(WEST) && !checkTiles.at(x-1).at(y)) {
-        westCheck = hasPathToCenter(maze, x-1, y);
-    }
-
-    return eastCheck || southCheck || westCheck || northCheck;
+bool MazeChecker::hasHollowCenter(const std::vector<std::vector<BasicTile>>& maze) {
+    // TODO: upforgrabs
+    // Implement this method so that it returns true if the maze has no walls
+    // in the center tiles, and false otherwise.
+    return false;
 }
 
 bool MazeChecker::hasOneEntranceToCenter(const std::vector<std::vector<BasicTile>>& maze) {
-    int entranceCounter = 0;
-    
-    //Check lower left entrances
-    entranceCounter += !maze.at(7).at(7).walls.at(SOUTH);
-    entranceCounter += !maze.at(7).at(7).walls.at(WEST);
-    //Check upper left entrances
-    entranceCounter += !maze.at(7).at(8).walls.at(NORTH);
-    entranceCounter += !maze.at(7).at(8).walls.at(WEST);
-    //Check lower right entrances
-    entranceCounter += !maze.at(8).at(7).walls.at(SOUTH);
-    entranceCounter += !maze.at(8).at(7).walls.at(EAST);
-    //Check upper right entrances
-    entranceCounter += !maze.at(8).at(8).walls.at(NORTH);
-    entranceCounter += !maze.at(8).at(8).walls.at(EAST);
-
-    return entranceCounter == 1;
+    // TODO: upforgrabs
+    // Implement this method so that it returns true if there is exactly one
+    // entrance into the center of the maze, and false otherwise.
+    return false;
 }
 
-bool MazeChecker::hasWallAttachedToEachPost(const std::vector<std::vector<BasicTile>>& maze, int x, int y) {
-    static std::vector<bool> checkRow(16, false);
-    static std::vector<std::vector<bool>> checkTiles(16, checkRow);
-    bool northCheck = true, eastCheck = true;    
-
-    checkTiles.at(x).at(y) = true;
-    
-    //Check if upper right tile
-    if (x == 15 && y == 15) {
-        return true;
-    }  
-
-    int wallCount = 0;
-    //Check bottom left post
-    wallCount += maze.at(x).at(y).walls.at(WEST);
-    wallCount += maze.at(x).at(y).walls.at(SOUTH);   
-    if(x != 0) {
-        wallCount += maze.at(x-1).at(y).walls.at(SOUTH);
-    }
-    if(y != 0) {
-        wallCount += maze.at(x).at(y-1).walls.at(WEST);
-    }
-
-    if(wallCount == 0 && (x != 8 || y != 8)) {
-        return false;
-    }
-    else {
-        if(y != 15 && checkTiles.at(x).at(y+1) == false) {
-            northCheck = hasWallAttachedToEachPost(maze, x, y + 1);
-        }
-        if(x != 15 && checkTiles.at(x+1).at(y) == false) {
-            eastCheck = hasWallAttachedToEachPost(maze, x + 1, y);
-        }
-        return northCheck && eastCheck;
-    }
+bool MazeChecker::hasWallAttachedToEachPost(const std::vector<std::vector<BasicTile>>& maze) {
+    // TODO: upforgrabs
+    // Implement this method so that it returns true if there is at least one
+    // wall attached to every post (except for the center post), and false
+    // otherwise.
+    return false;
 }
 
 bool MazeChecker::hasThreeStartingWalls(const std::vector<std::vector<BasicTile>>& maze) {
-    int wallCount = 0;
-    wallCount += (maze.at(0).at(0).walls.at(NORTH) ? 1 : 0);
-    wallCount += (maze.at(0).at(0).walls.at(EAST)  ? 1 : 0);
-    wallCount += (maze.at(0).at(0).walls.at(SOUTH) ? 1 : 0);
-    wallCount += (maze.at(0).at(0).walls.at(WEST)  ? 1 : 0);
-    return wallCount == 3;
+    // Assumptions:
+    // 1) The maze is nonempty
+    // 2) The mouse always starts in the lower-left corner
+    auto walls = maze.at(0).at(0).walls;
+    return walls.at(NORTH) != walls.at(EAST);
 }
 
 bool MazeChecker::isUnsolvableByWallFollower(const std::vector<std::vector<BasicTile>>& maze) {
-    // TODO: UP-FOR-GRABS - implement this method
+    // TODO: upforgrabs
+    // Implement this method so that it returns true if the maze is unsolvable
+    // by a wall-following robot, and false otherwise.
     return false;
 }
 
 bool MazeChecker::hasNoInaccesibleLocations(const std::vector<std::vector<BasicTile>>& maze) {
-    // TODO: UP-FOR-GRABS - implement this method
+    // TODO: upforgrabs
+    // Implement this method so that it returns true if there are no
+    // inaccessible locations in the maze, and false otherwise.
     return false;
 }
 

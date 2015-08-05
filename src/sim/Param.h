@@ -65,6 +65,7 @@ public:
     bool printLateSensorReads();
     int numberOfCircleApproximationPoints();
     int numberOfSensorEdgePoints();
+    int numberOfArchivedRuns();
 
     // Maze parameters
     double wallWidth();
@@ -84,7 +85,6 @@ public:
     // Mouse parameters
     std::string mouseDirectory();
     std::string mouseAlgorithm();
-    int mouseStartingCorner();
     std::string mouseStartingDirection();
 
 private:
@@ -143,8 +143,9 @@ private:
     int m_collisionDetectionRate;
     bool m_printLateCollisionDetections;
     bool m_printLateSensorReads;
-    double m_numberOfCircleApproximationPoints;
-    double m_numberOfSensorEdgePoints;
+    int m_numberOfCircleApproximationPoints;
+    int m_numberOfSensorEdgePoints;
+    int m_numberOfArchivedRuns;
 
     // Maze parameters
     double m_wallWidth;
@@ -164,7 +165,6 @@ private:
     // Mouse parameters
     std::string m_mouseDirectory;
     std::string m_mouseAlgorithm;
-    int m_mouseStartingCorner;
     std::string m_mouseStartingDirection;
 };
 

@@ -40,7 +40,7 @@ GLuint g_transformationMatixId;
 
 int main(int argc, char* argv[]) {
 
-    // First, we have to determine the runId
+    // First, determine the runId (just datetime, for now)
     std::string runId = sim::SimUtilities::getDateTime();
 
     // Then we can initiliaze Logging
@@ -52,6 +52,9 @@ int main(int argc, char* argv[]) {
     // 2) Register this thread as the main thread
     // 3) Initialize the Param object
     sim::S()->setRunId(runId);
+
+    // Remove any excessive archived runs
+    sim::SimUtilities::removeExcessArchivedRuns();
 
     // Initialize local objects
     sim::Maze maze;
@@ -139,7 +142,7 @@ void draw() {
 
     // Notify the user of a late frame
     if (sim::P()->printLateFrames() && duration > 1.0/sim::P()->frameRate()) {
-        LOG_SIM(WARNING) << "A frame was late by " << duration - 1.0/sim::P()->frameRate()
+        LOG(WARN) << "A frame was late by " << duration - 1.0/sim::P()->frameRate()
             << std::string(" seconds, which is ")
             << std::to_string((duration - 1.0/sim::P()->frameRate())/(1.0/sim::P()->frameRate()) * 100)
             << std::string(" percent late.");

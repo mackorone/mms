@@ -22,9 +22,13 @@ Param* Param::getInstance() {
 
 Param::Param() {
 
+    // Don't use SimUtilities::quit() in this method. Getting simulation
+    // parameters should never cause the simulator to crash, thanks to default
+    // values. Furthermore, calling SimUtilities::quit() causes an infinite
+    // loop. So don't do it.
+
     // Create the parameter parser object
     ParamParser parser(SimUtilities::getProjectDirectory() + "res/parameters.xml");
-    // TODO: MACK - are we sure the default values are being used if this fails???
 
     // Graphical Parameters
     m_initialWindowWidth = parser.getIntIfHasInt("initial-window-width", 930);
@@ -36,30 +40,25 @@ Param::Param() {
     m_defaultRotateZoomedMap = parser.getBoolIfHasBool("default-rotate-zoomed-map", false);
     m_frameRate = parser.getIntIfHasInt("frame-rate", 60);
     m_printLateFrames = parser.getBoolIfHasBool("print-late-frames", false);
-    m_tileBaseColor = parser.getStringIfHasString("tile-base-color", "BLACK");
-    m_tileWallColor = parser.getStringIfHasString("tile-wall-color", "RED");
-    m_tileCornerColor = parser.getStringIfHasString("tile-corner-color", "GRAY");
-    m_tileTextColor = parser.getStringIfHasString("tile-text-color", "DARK_GREEN");
-    m_tileFogColor = parser.getStringIfHasString("tile-fog-color", "GRAY");
-    m_tileUndeclaredWallColor = parser.getStringIfHasString("tile-undeclared-wall-color", "DARK_RED");
-    m_tileUndeclaredNoWallColor = parser.getStringIfHasString("tile-undeclared-no-wall-color", "DARK_GRAY");
-    m_tileIncorrectlyDeclaredWallColor = parser.getStringIfHasString("tile-incorrectly-declared-wall-color", "ORANGE");
-    m_tileIncorrectlyDeclaredNoWallColor = parser.getStringIfHasString("tile-incorrectly-declared-no-wall-color", "DARK_CYAN");
-    m_mouseBodyColor = parser.getStringIfHasString("mouse-body-color", "BLUE");
-    m_mouseWheelColor = parser.getStringIfHasString("mouse-wheel-color", "GREEN");
-    m_mouseSensorColor = parser.getStringIfHasString("mouse-sensor-color", "GREEN");
-    m_mouseViewColor = parser.getStringIfHasString("mouse-view-color", "WHITE");
+    m_tileBaseColor = parser.getStringIfHasStringAndIsColor("tile-base-color", "BLACK");
+    m_tileWallColor = parser.getStringIfHasStringAndIsColor("tile-wall-color", "RED");
+    m_tileCornerColor = parser.getStringIfHasStringAndIsColor("tile-corner-color", "GRAY");
+    m_tileTextColor = parser.getStringIfHasStringAndIsColor("tile-text-color", "DARK_GREEN");
+    m_tileFogColor = parser.getStringIfHasStringAndIsColor("tile-fog-color", "GRAY");
+    m_tileUndeclaredWallColor = parser.getStringIfHasStringAndIsColor("tile-undeclared-wall-color", "DARK_RED");
+    m_tileUndeclaredNoWallColor = parser.getStringIfHasStringAndIsColor("tile-undeclared-no-wall-color", "DARK_GRAY");
+    m_tileIncorrectlyDeclaredWallColor = parser.getStringIfHasStringAndIsColor("tile-incorrectly-declared-wall-color", "ORANGE");
+    m_tileIncorrectlyDeclaredNoWallColor = parser.getStringIfHasStringAndIsColor("tile-incorrectly-declared-no-wall-color", "DARK_CYAN");
+    m_mouseBodyColor = parser.getStringIfHasStringAndIsColor("mouse-body-color", "BLUE");
+    m_mouseWheelColor = parser.getStringIfHasStringAndIsColor("mouse-wheel-color", "GREEN");
+    m_mouseSensorColor = parser.getStringIfHasStringAndIsColor("mouse-sensor-color", "GREEN");
+    m_mouseViewColor = parser.getStringIfHasStringAndIsColor("mouse-view-color", "WHITE");
     m_defaultMousePathVisible = parser.getBoolIfHasBool("default-mouse-path-visible", true);
     m_defaultWallTruthVisible = parser.getBoolIfHasBool("default-wall-truth-visible", false);
     m_defaultTileColorsVisible = parser.getBoolIfHasBool("default-tile-colors-visible", true);
     m_defaultTileTextVisible = parser.getBoolIfHasBool("default-tile-text-visible", true);
     m_defaultTileFogVisible = parser.getBoolIfHasBool("default-tile-fog-visible", true);
-    m_tileFogAlpha = parser.getDoubleIfHasDouble("tile-fog-alpha", 0.15);
-    if (m_tileFogAlpha < 0.0 || 1.0 < m_tileFogAlpha) {
-        SimUtilities::print("Error: The tile-fog-alpha value of " + std::to_string(m_tileFogAlpha)
-            + " is not in the valid range, [0.0, 1.0].");
-        SimUtilities::quit();
-    }
+    m_tileFogAlpha = parser.getDoubleIfHasDoubleAndInRange("tile-fog-alpha", 0.15, 0.0, 1.0);
     m_defaultWireframeMode = parser.getBoolIfHasBool("default-wireframe-mode", false);
 
     // Simulation Parameters
@@ -67,7 +66,7 @@ Param::Param() {
     if (useRandomSeed && !parser.hasIntValue("random-seed")) {
         SimUtilities::print(std::string("Error: The value of use-random-seed is true but no")
             + " valid random-seed value was provided.");
-        SimUtilities::quit();
+        useRandomSeed = false;
     }
     m_randomSeed = (useRandomSeed ? parser.getIntValue("random-seed") : std::random_device()());
     m_crashMessage = parser.getStringIfHasString("crash-message", "CRASH");
@@ -85,8 +84,9 @@ Param::Param() {
     m_collisionDetectionRate = parser.getIntIfHasInt("collision-detection-rate", 40);
     m_printLateCollisionDetections = parser.getBoolIfHasBool("print-late-collision-detections", false);
     m_printLateSensorReads = parser.getBoolIfHasBool("print-late-sensor-reads", false);
-    m_numberOfCircleApproximationPoints = parser.getDoubleIfHasDouble("number-of-circle-approximation-points", 8);
-    m_numberOfSensorEdgePoints = parser.getDoubleIfHasDouble("number-of-sensor-edge-points", 3);
+    m_numberOfCircleApproximationPoints = parser.getIntIfHasInt("number-of-circle-approximation-points", 8);
+    m_numberOfSensorEdgePoints = parser.getIntIfHasInt("number-of-sensor-edge-points", 3);
+    m_numberOfArchivedRuns = parser.getIntIfHasInt("number-of-archived-runs", 20);
 
     // Maze Parameters
     m_wallWidth = parser.getDoubleIfHasDouble("wall-width", 0.012);
@@ -101,32 +101,12 @@ Param::Param() {
     m_mazeAlgorithm = parser.getStringIfHasString("maze-algorithm", "Tomasz");
     m_saveGeneratedMaze = parser.getBoolIfHasBool("save-generated-maze", true);
     m_mazeMirrored = parser.getBoolIfHasBool("maze-mirrored", false);
-    m_mazeRotations = parser.getIntIfHasInt("maze-rotations", 0);
-    if (m_mazeRotations < 0 || 3 < m_mazeRotations) {
-        SimUtilities::print("Error: The maze-rotations value of " + std::to_string(m_mazeRotations)
-            + " is not in the valid range, [0, 3].");
-        SimUtilities::quit();
-    }
+    m_mazeRotations = parser.getIntIfHasIntAndInRange("maze-rotations", 0, 0, 3);
 
     // Mouse parameters
     m_mouseDirectory = parser.getStringIfHasString("mouse-directory", "res/mouse/");
     m_mouseAlgorithm = parser.getStringIfHasString("mouse-algorithm", "RightWallFollow");
-    m_mouseStartingCorner = parser.getIntIfHasInt("mouse-starting-corner", 0);
-    if (m_mazeRotations < 0 || 3 < m_mazeRotations) {
-        SimUtilities::print("Error: The mouse-starting-corner value of " + std::to_string(m_mouseStartingCorner)
-            + " is not in the valid range, [0, 3].");
-        SimUtilities::quit();
-        // TODO MACK: LOG(WARN) in ParamParser and return default
-    }
-    m_mouseStartingDirection = parser.getStringIfHasString("mouse-starting-direction", "NORTH");
-    if (DIRECTION_STRINGS.find(m_mouseStartingDirection) == DIRECTION_STRINGS.end()) {
-        SimUtilities::print("Error: The mouse-starting-direction of " + m_mouseStartingDirection
-            + " is not a valid mouse starting direction.");
-        SimUtilities::quit();
-    }
-
-    // TODO: MACK - we either can't use quit in this constructor or we can't use P() and S() in the quit method
-    // TODO: We're probably better off just not using quit in here...
+    m_mouseStartingDirection = parser.getStringIfHasStringAndIsDirection("mouse-starting-direction", "NORTH");
 }
 
 int Param::initialWindowWidth() {
@@ -317,6 +297,10 @@ int Param::numberOfSensorEdgePoints() {
     return m_numberOfSensorEdgePoints;
 }
 
+int Param::numberOfArchivedRuns() {
+    return m_numberOfArchivedRuns;
+}
+
 std::string Param::mazeDirectory() {
     return m_mazeDirectory;
 }
@@ -375,10 +359,6 @@ std::string Param::mouseDirectory() {
 
 std::string Param::mouseAlgorithm() {
     return m_mouseAlgorithm;
-}
-
-int Param::mouseStartingCorner() {
-    return m_mouseStartingCorner;
 }
 
 std::string Param::mouseStartingDirection() {

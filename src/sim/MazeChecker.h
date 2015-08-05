@@ -14,6 +14,7 @@ public:
     static bool validMaze(const std::vector<std::vector<BasicTile>>& maze);
 
     // validMaze helper functions
+    static bool isNonempty(const std::vector<std::vector<BasicTile>>& maze);
     static bool isRectangular(const std::vector<std::vector<BasicTile>>& maze);
     static bool isEnclosed(const std::vector<std::vector<BasicTile>>& maze);
     static bool hasConsistentWalls(const std::vector<std::vector<BasicTile>>& maze);
@@ -23,9 +24,10 @@ public:
 
     // officialMaze helper functions
     static bool isSquare(const std::vector<std::vector<BasicTile>>& maze);
-    static bool hasPathToCenter(const std::vector<std::vector<BasicTile>>& maze, int x, int y);
+    static bool hasPathToCenter(const std::vector<std::vector<BasicTile>>& maze);
+    static bool hasHollowCenter(const std::vector<std::vector<BasicTile>>& maze);
     static bool hasOneEntranceToCenter(const std::vector<std::vector<BasicTile>>& maze);
-    static bool hasWallAttachedToEachPost(const std::vector<std::vector<BasicTile>>& maze, int x, int y);
+    static bool hasWallAttachedToEachPost(const std::vector<std::vector<BasicTile>>& maze);
     static bool hasThreeStartingWalls(const std::vector<std::vector<BasicTile>>& maze);
     static bool isUnsolvableByWallFollower(const std::vector<std::vector<BasicTile>>& maze);
     static bool hasNoInaccesibleLocations(const std::vector<std::vector<BasicTile>>& maze);

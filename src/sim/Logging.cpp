@@ -23,18 +23,18 @@ void Logging::initialize(const std::string& runId) {
     // Set the runId
     m_runId = runId;
 
-    // Register and configure each of the loggers
-    for (const std::string& str : {MAZE_STRING, MOUSE_STRING, SIM_STRING}) {
-        el::Loggers::getLogger(str);
-        el::Configurations config;
-        el::Loggers::addFlag(el::LoggingFlag::StrictLogFileSizeCheck);
-        config.setGlobally(el::ConfigurationType::Filename,
-            SimUtilities::getProjectDirectory() + "run/" + m_runId + "/logs/last.txt");
-        config.setGlobally(el::ConfigurationType::MaxLogFileSize,
-            std::to_string(10 * 1024 * 1024)); // 10 MB, ~10,000 lines
-        el::Loggers::reconfigureLogger(str, config);
-        el::Helpers::installPreRollOutCallback(rolloutHandler);
-    }
+    // Register and configure the default logger
+    el::Configurations config;
+    el::Loggers::addFlag(el::LoggingFlag::StrictLogFileSizeCheck);
+    config.setGlobally(el::ConfigurationType::Filename,
+        SimUtilities::getProjectDirectory() + "run/" + m_runId + "/logs/last.txt");
+    config.setGlobally(el::ConfigurationType::MaxLogFileSize,
+        std::to_string(10 * 1024 * 1024)); // 10 MB, ~10,000 lines
+    config.setGlobally(el::ConfigurationType::MillisecondsWidth, "3");
+    config.setGlobally(el::ConfigurationType::Format,
+        "%datetime{%Y-%M-%d %H:%m:%s.%g} [%level] %loc - %msg");
+    el::Loggers::reconfigureAllLoggers(config);
+    el::Helpers::installPreRollOutCallback(rolloutHandler);
 }
 
 std::string Logging::getNextLogFileName() {

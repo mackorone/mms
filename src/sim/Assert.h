@@ -9,15 +9,13 @@
 
 #include <iostream>
 
-// TODO: UP-FOR-GRABS
-//
+// TODO: upforgrabs
 // Get rid of ASSERT(condition) and add the following:
 // - ASSERT_TRUE
 // - ASSERT_FALSE
 // - ASSERT_EQUAL (already done for you)
 // - ASSERT_NOT_EQUAL
 // - ASSERT_LESS_THAN
-//
 // Then search the code for every use of ASSERT(condition) and replace it with
 // the appropriate new assert. If there are places that require
 // ASSERT_LESS_THAN_OR_EQUAL, write it and use it. If not, don't.

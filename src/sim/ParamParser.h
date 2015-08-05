@@ -10,36 +10,37 @@ namespace sim {
 class ParamParser {
 
 public:
-    ParamParser(std::string filePath);
+    ParamParser(const std::string& filePath);
 
     // Check the existence and type of a value
-    bool hasBoolValue(std::string tag);
-    bool hasDoubleValue(std::string tag);
-    bool hasIntValue(std::string tag);
-    bool hasStringValue(std::string tag);
+    bool hasBoolValue(const std::string& tag);
+    bool hasDoubleValue(const std::string& tag);
+    bool hasIntValue(const std::string& tag);
+    bool hasStringValue(const std::string& tag);
 
     // Retrieve the particular value
-    bool getBoolValue(std::string tag);
-    double getDoubleValue(std::string tag);
-    int getIntValue(std::string tag);
-    std::string getStringValue(std::string tag);
+    bool getBoolValue(const std::string& tag);
+    double getDoubleValue(const std::string& tag);
+    int getIntValue(const std::string& tag);
+    std::string getStringValue(const std::string& tag);
 
     // Get a value if we can, otherwise return a default
-    bool getBoolIfHasBool(std::string tag, bool defaultValue);
-    double getDoubleIfHasDouble(std::string tag, double defaultValue);
-    int getIntIfHasInt(std::string tag, int defaultValue);
-    std::string getStringIfHasString(std::string tag, std::string defaultValue);
+    bool getBoolIfHasBool(const std::string& tag, bool defaultValue);
+    double getDoubleIfHasDouble(const std::string& tag, double defaultValue);
+    int getIntIfHasInt(const std::string& tag, int defaultValue);
+    std::string getStringIfHasString(const std::string& tag, const std::string& defaultValue);
 
     // If we can get a value and it's in the valid range then return it, else return default
-    double getDoubleIfHasDoubleAndInRange(std::string tag, double defaultValue, double min, double max);
-    int getIntIfHasIntAndInRange(std::string tag, int defaultValue, int min, int max);
+    double getDoubleIfHasDoubleAndInRange(const std::string& tag, double defaultValue, double min, double max);
+    int getIntIfHasIntAndInRange(const std::string& tag, int defaultValue, int min, int max);
 
-    // If we can get a value and it's in a key in the map then return it, else return default
-    template<class T>
-    std::string getStringIfHasStringAndIsKey(std::string tag, std::string defaultValue, std::map<std::string, T> map);
+    // If we can get a value and it's valid then return it, else return default
+    std::string getStringIfHasStringAndIsColor(const std::string& tag, const std::string& defaultValue);
+    std::string getStringIfHasStringAndIsDirection(const std::string& tag, const std::string& defaultValue);
 
 private:
     pugi::xml_document m_doc;
+    pugi::xml_parse_result m_result;
 
 };
 

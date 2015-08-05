@@ -139,7 +139,7 @@ bool GeometryUtilities::linesIntersect(const std::pair<const Cartesian&, const C
 Cartesian GeometryUtilities::getIntersectionPoint(const std::pair<const Cartesian&, const Cartesian&>& A,
                                                   const std::pair<const Cartesian&, const Cartesian&>& B) {
 
-    // TODO: UP-FOR-GRABS - Explain/Clean this functionality - right now, I don't know how it works
+    // TODO: Explain/Clean this functionality
 
     // Assert that the lines do intersect
     ASSERT(linesIntersect(A, B));
@@ -188,6 +188,8 @@ Cartesian GeometryUtilities::getIntersectionPoint(const std::pair<const Cartesia
 
 Polygon GeometryUtilities::convexHull(const std::vector<Polygon>& polygons) {
 
+    // TODO: Explain/Clean this functionality
+
     // Implementation of Andrew's monotone chain 2D convex hull algorithm
     // Asymptotic complexity: O(n log n).
     // Returns a list of points on the convex hull in counter-clockwise order.
@@ -227,42 +229,6 @@ Polygon GeometryUtilities::convexHull(const std::vector<Polygon>& polygons) {
     hull.resize(k);
 
     return Polygon(hull);
-}
-
-Polygon GeometryUtilities::getUnionMultiple(const std::vector<Polygon>& polygons) {
-    // TODO: UP-FOR-GRABS - This function should return the union of the polygons
-    // Assumptions:
-    // - The polygons are connected
-    // - The output polygon has no holes in it
-    // - None of the polygons are self-intersecting
-}
-
-Polygon GeometryUtilities::getUnionTwo(const Polygon& A, const Polygon& B) {
-    std::vector<Cartesian> APoints = A.getVertices();
-    std::vector<Cartesian> BPoints = B.getVertices();
-
-    auto APoint = APoints.begin();
-
-    std::vector<std::pair<Cartesian, Cartesian>> AEdges = A.getLineSegments();
-    std::vector<std::pair<Cartesian, Cartesian>> BEdges = B.getLineSegments();
-
-    //For each edge in polygon A
-    for(std::pair<Cartesian, Cartesian> edgeA : AEdges) {
-        auto BPoint = BPoints.begin();
-        //For each edge in Polygon B
-        for(std::pair<Cartesian, Cartesian> edgeB : BEdges) {
-            std::vector<Cartesian> intersects;
-            if(linesIntersect(edgeA, edgeB)) {
-                Cartesian intersect = getIntersectionPoint(edgeA, edgeB);
-                intersects.push_back(intersect);
-                //Insert intersect into BPoints
-            }
-        }
-        //Sort points in intersects by distance from start point
-        //Insert intersects into APoints 
-    }
-
-    return A;
 }
 
 MetersSquared GeometryUtilities::crossProduct(const Cartesian& Z, const Cartesian& A, const Cartesian& B) {

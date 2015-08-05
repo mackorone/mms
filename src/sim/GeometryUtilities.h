@@ -20,7 +20,6 @@ public:
                                const std::pair<const Cartesian&, const Cartesian&>& B);
 
     // Finds the point at which the line segments A and B intersect
-    // Note: This should only be called if the lines actually intersect
     static Cartesian getIntersectionPoint(const std::pair<const Cartesian&, const Cartesian&>& A,
                                           const std::pair<const Cartesian&, const Cartesian&>& B);
 
@@ -34,10 +33,6 @@ private:
 
     // Returns the cross product of the vectors ZA and ZB
     static MetersSquared crossProduct(const Cartesian& Z, const Cartesian& A, const Cartesian& B);
-
-    // Returns the polygon that is the union all of the polygons
-    static Polygon getUnionMultiple(const std::vector<Polygon>& polygons);
-    static Polygon getUnionTwo(const Polygon& A, const Polygon& B); 
 
 };
 

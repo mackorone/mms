@@ -17,6 +17,18 @@ public:
     // Quits the simulation
     static void quit();
 
+    // TODO: upforgrabs
+    // We recently adopted a logging system for the simulator, which can give
+    // us much more context and information about messages. We should no longer
+    // use the SimUtilities::print function. Your mission, should you choose to
+    // accept it, is to replace, everywhere in the code, SimUtilities::print
+    // with an appropriate LOG. Be mindful of the severity (INFO, WARN, ERROR,
+    // FATAL) that you use for the LOG statements, and make sure to format the
+    // messages correctly (keeping whitespace in mind). Once you've replaced
+    // all of the SimUtilities::print, remove the print function from here and
+    // from SimUtilities.cpp. See the end of the draw() function in Main.cpp
+    // for an example of how to use the LOG macro.
+
     // Prints a message to stdout
     static void print(const std::string& msg);
 
@@ -54,6 +66,9 @@ public:
 
     // Returns the index of the direction in DIRECTIONS
     static int getDirectionIndex(Direction direction);
+
+    // Remove oldest runs from the run/ directory if necessary
+    static void removeExcessArchivedRuns();
 
 private:
 
