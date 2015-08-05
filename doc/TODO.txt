@@ -1,9 +1,14 @@
 High Pri:
 
+- Distinguish between logging that we want the user to see and loggin that we don't
+    - Maybe LOG_USER (LOG2U) and LOG_SIM, one that prints to the terminal one that doesn't...
 - Set some numeric parameter min/max values in param.cpp
-
+- De-duplicate some code in ParamParser
 - Parameters...
     - Does printLateFrames (and others) make sense any more???
+    - Yes, if we have 2 separate logs... and we can have 2 files even too!
+
+- Add a way to turn on/off each of the maps (to prevent motion sickness)
 
 - Maze size requirements and validity
 
@@ -57,6 +62,7 @@ High Pri:
 - Draw a path of where the robot has been (the history object could be used for recording as well)
 
 Med Pri:
+- Algo checklist?
 - Still view a maze if it passes validation, but don't let the sim continue...
 - File paths on other platforms might be broken...
 - Use vertex buffer object for the mouse body (only triangulate the mouse once)
@@ -111,12 +117,9 @@ Low-pri:
 - 3D
 - Crash animation for both modes
 - Unit tests
-- Try to break the simulator from within the algos
+- Try to break the simulator from within the algos, make it tamper-resistant
+- Reduce include dependencies as much as possible
 - Colors for log statements
-- De-duplicate some code in ParamParser... the usefulness of lots of logs
-  though is that we're told which log it is. So we should write a function that
-  get's the log strings, but the logging should still happen where it's currently
-  happening.
 
 Clean-Up:
 - Change map.count(item) != 0 to map.find(item) != map.end()
