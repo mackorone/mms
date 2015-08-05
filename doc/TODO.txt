@@ -2,13 +2,17 @@ High Pri:
 
 - Distinguish between logging that we want the user to see and loggin that we don't
     - Maybe LOG_USER (LOG2U) and LOG_SIM, one that prints to the terminal one that doesn't...
+    - Maybe LOG_USER and LOG_SIM both print to the (same) file, but only LOG_USER shows on the terminal...
+    - LOG and PRINT
 - Set some numeric parameter min/max values in param.cpp
 - De-duplicate some code in ParamParser
 - Parameters...
-    - Does printLateFrames (and others) make sense any more???
+    - Does printLateFrames (and others) make sense any more??? Yes, to differentiate between the logs options...
     - Yes, if we have 2 separate logs... and we can have 2 files even too!
 
 - Add a way to turn on/off each of the maps (to prevent motion sickness)
+    - One button that toggles two maps vs one
+    - One button that toggles between maps
 
 - Maze size requirements and validity
 
@@ -16,6 +20,7 @@ High Pri:
 - Make a note of contributing projects in the documentation
 
 - Document that the mouse always starts in the lower left, but can be rotated to simulate other orientatiosn
+    - Tell the algorithm that the mouse is starting off rotated
 
 - Rewrite text so that it's performant
     - Make sure that MackAlgo looks normal... the walls look gray under the colored tiles...

@@ -23,6 +23,7 @@ void Logging::initialize(const std::string& runId) {
     // Set the runId
     m_runId = runId;
 
+    // TODO: MACK - Configure each of the logger types here...
     // Register and configure the default logger
     el::Configurations config;
     el::Loggers::addFlag(el::LoggingFlag::StrictLogFileSizeCheck);
