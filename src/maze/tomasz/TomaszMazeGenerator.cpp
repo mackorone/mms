@@ -560,9 +560,6 @@ void TomaszMazeGenerator::makeCenter(){
 
 void TomaszMazeGenerator::setWall(int x, int y, Direction direction, bool value) {
 
-    // TODO
-    //ASSERT(direction != UNDEFINED); // This method makes no sense for no direction
-
     switch (direction) {
         case NORTH:
             getTile(x, y)->walls[NORTH] = value;

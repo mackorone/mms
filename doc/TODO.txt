@@ -1,21 +1,19 @@
 High Pri:
 
-- Numeric parameter min/max values
+- Set some numeric parameter min/max values in param.cpp
 
 - Parameters...
     - Does printLateFrames (and others) make sense any more???
-
-- Better run number system
 
 - Maze size requirements and validity
 
 - Don't use P() or S() in a static context... it breaks things really badly... put this in coding standards
 - Make a note of contributing projects in the documentation
-- Linting...
 
 - Document that the mouse always starts in the lower left, but can be rotated to simulate other orientatiosn
 
 - Rewrite text so that it's performant
+    - Make sure that MackAlgo looks normal... the walls look gray under the colored tiles...
 - Put the vertex shader in its own source file
 - Tile distances
     - Depending on the maze size, the valid distances will be different - make this the case for the text
@@ -40,7 +38,6 @@ High Pri:
 - Figure out how to get rid of ifdefs in algorithm
 - Make a SimInterface and make sure it's easy to "extract" an algorithm for use on Arduino
 - VSync so the graphics don't tear
-- Add a linter to the code
 - Updates on the tile boundaries, not centers
 - Figure out a nice way to use a vector for the simulation, but an array for real life
 - If you shrink the window too skinny, an assertion fails (line 47 of GraphicUtilties.cpp)
@@ -77,6 +74,7 @@ Med Pri:
 - Randomly select a pre-defined maze
 - Write a good continuous algorithm
 - Buffer communication (like with the real robot)
+- Add a linter to the code
 - Data recording for pause, rewind, fast forward
 - Interrupt interface
 - Run the program with maximum thread priority
@@ -95,6 +93,7 @@ bullets in other physics simulators
 - Error checking for param string type (startingDirection, color, etc.)
 
 Low-pri:
+- Better run number system
 - Update the check_params.py script to make sure that the return type of the
   Param methods is the same as the type of the member variable
 - Parameter for auto-generated maze name
