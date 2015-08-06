@@ -11,8 +11,10 @@ ParamParser::ParamParser(const std::string& filePath) {
     // Open the document
     m_result = m_doc.load_file(filePath.c_str());
     if (!m_result) {
+            /*
         LOG(ERROR) << "Unable to read parameters from \"" << filePath  << "\": "
             << m_result.description() << ". Using default values for all parameters.";
+            */
     }
 }
 
@@ -51,8 +53,10 @@ std::string ParamParser::getStringValue(const std::string& tag) {
 bool ParamParser::getBoolIfHasBool(const std::string& tag, bool defaultValue) {
     if (!hasBoolValue(tag)) {
         if (m_result) {
+            /*
             LOG(WARN) << "Could not find bool parameter \"" << tag << "\". Using default value of "
                 << (defaultValue ? "true" : "false") << " for \""  << tag << "\".";
+            */
         }
         return defaultValue;
     }
@@ -62,8 +66,10 @@ bool ParamParser::getBoolIfHasBool(const std::string& tag, bool defaultValue) {
 double ParamParser::getDoubleIfHasDouble(const std::string& tag, double defaultValue) {
     if (!hasDoubleValue(tag)) {
         if (m_result) {
+            /*
             LOG(WARN) << "Could not find double parameter \"" << tag
                 << "\". Using default value of " << defaultValue << " for \"" << tag << "\".";
+            */
         }
         return defaultValue;
     }
@@ -73,8 +79,10 @@ double ParamParser::getDoubleIfHasDouble(const std::string& tag, double defaultV
 int ParamParser::getIntIfHasInt(const std::string& tag, int defaultValue) {
     if (!hasIntValue(tag)) {
         if (m_result) {
+            /*
             LOG(WARN) << "Could not find int parameter \"" << tag
                 << "\". Using default value of " << defaultValue << " for \"" << tag << "\".";
+            */
         }
         return defaultValue;
     }
@@ -84,8 +92,10 @@ int ParamParser::getIntIfHasInt(const std::string& tag, int defaultValue) {
 std::string ParamParser::getStringIfHasString(const std::string& tag, const std::string& defaultValue) {
     if (!hasStringValue(tag)) {
         if (m_result) {
+            /*
             LOG(WARN) << "Could not find string parameter \"" << tag
                 << "\". Using default value of \"" << defaultValue << "\" for \"" << tag << "\".";
+            */
         }
         return defaultValue;
     }
@@ -95,16 +105,20 @@ std::string ParamParser::getStringIfHasString(const std::string& tag, const std:
 double ParamParser::getDoubleIfHasDoubleAndInRange(const std::string& tag, double defaultValue, double min, double max) {
     if (!hasDoubleValue(tag)) {
         if (m_result) {
+            /*
             LOG(WARN) << "Could not find double parameter \"" << tag
                 << "\". Using default value of " << defaultValue << " for \""  << tag << "\".";
+            */
         }
         return defaultValue;
     }
     double value = getDoubleValue(tag);
     if (value < min || max < value) {
+            /*
         LOG(WARN) << "The value of the double parameter \"" << tag << "\" is " << value
             << " and not in the valid range of [" << min << ", " << max
             << "]. Using default value of " << defaultValue << " for \""  << tag << "\".";
+            */
         return defaultValue;
     }
     return value;
@@ -113,16 +127,20 @@ double ParamParser::getDoubleIfHasDoubleAndInRange(const std::string& tag, doubl
 int ParamParser::getIntIfHasIntAndInRange(const std::string& tag, int defaultValue, int min, int max) {
     if (!hasIntValue(tag)) {
         if (m_result) {
+            /*
             LOG(WARN) << "Could not find int parameter \"" << tag
                 << "\". Using default value of " << defaultValue << " for \"" << tag << "\".";
+            */
         }
         return defaultValue;
     }
     int value = getIntValue(tag);
     if (value < min || max < value) {
+            /*
         LOG(WARN) << "The value of the int parameter \"" << tag << "\" is " << value
             << " and not in the valid range of [" << min << ", " << max
             << "]. Using default value of " << defaultValue << " for \"" << tag << "\".";
+            */
         return defaultValue;
     }
     return value;
@@ -131,16 +149,20 @@ int ParamParser::getIntIfHasIntAndInRange(const std::string& tag, int defaultVal
 std::string ParamParser::getStringIfHasStringAndIsColor(const std::string& tag, const std::string& defaultValue) {
     if (!hasStringValue(tag)) {
         if (m_result) {
+            /*
             LOG(WARN) << "Could not find string parameter \"" << tag
                 << "\". Using default value of \"" << defaultValue << "\" for \"" << tag << "\".";
+            */
         }
         return defaultValue;
     }
     std::string value = getStringValue(tag);
     if (COLOR_STRINGS.find(value) == COLOR_STRINGS.end()) {
+            /*
         LOG(WARN) << "The value of string parameter \"" << tag << "\" is \"" << value
             << "\" and is not a valid color. Using default value of \"" << defaultValue
             << "\" for \"" << tag << "\".";
+            */
         return defaultValue;
     }
     return value;
@@ -149,16 +171,20 @@ std::string ParamParser::getStringIfHasStringAndIsColor(const std::string& tag, 
 std::string ParamParser::getStringIfHasStringAndIsDirection(const std::string& tag, const std::string& defaultValue) {
     if (!hasStringValue(tag)) {
         if (m_result) {
+            /*
             LOG(WARN) << "Could not find string parameter \"" << tag
                 << "\". Using default value of \"" << defaultValue << "\" for \"" << tag << "\".";
+            */
         }
         return defaultValue;
     }
     std::string value = getStringValue(tag);
     if (DIRECTION_STRINGS.find(value) == DIRECTION_STRINGS.end()) {
+            /*
         LOG(WARN) << "The value of string parameter \"" << tag << "\" is \"" << value
             << "\" and is not a valid direction. Using default value of \"" << defaultValue
             << "\" for \"" << tag << "\".";
+            */
         return defaultValue;
     }
     return value;

@@ -22,12 +22,13 @@ public:
     // us much more context and information about messages. We should no longer
     // use the SimUtilities::print function. Your mission, should you choose to
     // accept it, is to replace, everywhere in the code, SimUtilities::print
-    // with an appropriate LOG. Be mindful of the severity (INFO, WARN, ERROR,
-    // FATAL) that you use for the LOG statements, and make sure to format the
-    // messages correctly (keeping whitespace in mind). Once you've replaced
-    // all of the SimUtilities::print, remove the print function from here and
-    // from SimUtilities.cpp. See the end of the draw() function in Main.cpp
-    // for an example of how to use the LOG macro.
+    // with an appropriate LOG, PRINT, or PRINT_IF_ELSE_LOG. Be mindful of the
+    // severity (DEBUG, INFO, WARN, ERROR, FATAL) that you use for log LOG
+    // statements, and make sure to format the messages correctly (keeping
+    // whitespace in mind). Once you've replaced all of the
+    // SimUtilities::print, remove the print function from here and from
+    // SimUtilities.cpp. See the end of the draw() function in Main.cpp for an
+    // example of how to use the PRINT_IF_ELSE_LOG macro.
 
     // Prints a message to stdout
     static void print(const std::string& msg);

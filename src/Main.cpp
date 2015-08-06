@@ -141,11 +141,11 @@ void draw() {
     double duration = end - start;
 
     // Notify the user of a late frame
-    if (sim::P()->printLateFrames() && duration > 1.0/sim::P()->frameRate()) {
-        LOG(WARN) << "A frame was late by " << duration - 1.0/sim::P()->frameRate()
-            << std::string(" seconds, which is ")
-            << std::to_string((duration - 1.0/sim::P()->frameRate())/(1.0/sim::P()->frameRate()) * 100)
-            << std::string(" percent late.");
+    if (duration > 1.0/sim::P()->frameRate()) {
+        PRINT_IF_ELSE_LOG(sim::P()->printLateFrames(), WARN,
+            "A frame was late by %v seconds, which is %v percent late.",
+            duration - 1.0/sim::P()->frameRate(),
+            (duration - 1.0/sim::P()->frameRate())/(1.0/sim::P()->frameRate()) * 100);
     }
 
     // Sleep the appropriate amount of time, base on the drawing duration
