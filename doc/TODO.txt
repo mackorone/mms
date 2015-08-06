@@ -1,14 +1,12 @@
 High Pri:
 
-- Distinguish between logging that we want the user to see and loggin that we don't
-    - Maybe LOG_USER (LOG2U) and LOG_SIM, one that prints to the terminal one that doesn't...
-    - Maybe LOG_USER and LOG_SIM both print to the (same) file, but only LOG_USER shows on the terminal...
-    - LOG and PRINT
 - Set some numeric parameter min/max values in param.cpp
 - De-duplicate some code in ParamParser
-- Parameters...
-    - Does printLateFrames (and others) make sense any more??? Yes, to differentiate between the logs options...
-    - Yes, if we have 2 separate logs... and we can have 2 files even too!
+- Replace LOGs to use current mechanism
+- __VA_ARGS__ with no extra args? Rewrite Log (with arg counting trick) so that it works is visual studio too
+    - PRINT(INFO, "SUCCESS"); should work everywhere
+
+- Replace NULL with nullptr
 
 - Add a way to turn on/off each of the maps (to prevent motion sickness)
     - One button that toggles two maps vs one

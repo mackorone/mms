@@ -12,16 +12,19 @@ namespace sim {
 // Create and initialize the static variables
 el::Logger* Logging::m_logger = nullptr;
 el::Logger* Logging::m_printer = nullptr;
+std::string Logging::m_loggerPath = "";
+std::string Logging::m_printerPath = "";
 std::string Logging::m_runId = "";
-int Logging::m_numLogFiles = 0;
+int Logging::m_numLoggerFiles = 0;
+int Logging::m_numPrinterFiles = 0;
 
 el::Logger* Logging::logger() {
-    ASSERT(m_logger != NULL);
+    ASSERT(m_logger != nullptr);
     return m_logger;
 }
 
 el::Logger* Logging::printer() {
-    ASSERT(m_printer != NULL);
+    ASSERT(m_printer != nullptr);
     return m_printer;
 }
 
@@ -35,12 +38,15 @@ void Logging::initialize(const std::string& runId) {
     // Set the runId
     m_runId = runId;
 
+    // Set the file paths
+    m_loggerPath = SimUtilities::getProjectDirectory() + "run/" + m_runId + "/log/last.txt";
+    m_printerPath = SimUtilities::getProjectDirectory() + "run/" + m_runId + "/print/last.txt";
+
     // Register and configure the logger
     el::Configurations logConfig;
     m_logger = el::Loggers::getLogger(LOG_STRING);
     logConfig.setGlobally(el::ConfigurationType::ToStandardOutput, "false");
-    logConfig.setGlobally(el::ConfigurationType::Filename,
-        SimUtilities::getProjectDirectory() + "run/" + m_runId + "/logs/last.txt");
+    logConfig.setGlobally(el::ConfigurationType::Filename, m_loggerPath);
     logConfig.setGlobally(el::ConfigurationType::MaxLogFileSize,
         std::to_string(10 * 1024 * 1024)); // 10 MiB, ~10,000 lines
     logConfig.setGlobally(el::ConfigurationType::MillisecondsWidth, "3");
@@ -53,20 +59,29 @@ void Logging::initialize(const std::string& runId) {
     // Register and configure the printer
     el::Configurations printConfig;
     m_printer = el::Loggers::getLogger(PRINT_STRING);
-    printConfig.setGlobally(el::ConfigurationType::ToFile, "false");
+    printConfig.setGlobally(el::ConfigurationType::Filename, m_printerPath);
+    printConfig.setGlobally(el::ConfigurationType::MaxLogFileSize,
+        std::to_string(10 * 1024 * 1024)); // 10 MiB, ~10,000 lines
     printConfig.setGlobally(el::ConfigurationType::MillisecondsWidth, "3");
     printConfig.setGlobally(el::ConfigurationType::Format, "[%level] - %msg");
     el::Loggers::reconfigureLogger(PRINT_STRING, printConfig);
 }
 
-std::string Logging::getNextLogFileName() {
-    m_numLogFiles += 1;
-    return SimUtilities::getProjectDirectory() + "run/" + m_runId
-        + "/logs/" + std::to_string(m_numLogFiles) + ".txt";
+std::string Logging::getNextFileName(const char* filename) {
+    std::string path = "";
+    if (std::string(filename) == m_loggerPath) {
+        m_numLoggerFiles += 1;
+        path = "/log/" + std::to_string(m_numLoggerFiles) + ".txt";
+    }
+    else if (std::string(filename) == m_printerPath) {
+        m_numPrinterFiles += 1;
+        path = "/print/" + std::to_string(m_numPrinterFiles) + ".txt";
+    }
+    return SimUtilities::getProjectDirectory() + "run/" + m_runId + path;
 }
 
 void Logging::rolloutHandler(const char* filename, std::size_t size) {
-    int value = std::rename(filename, getNextLogFileName().c_str());
+    int value = std::rename(filename, getNextFileName(filename).c_str());
     ASSERT_EQUAL(value, 0);
 }
 
