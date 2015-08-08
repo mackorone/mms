@@ -142,7 +142,7 @@ void draw() {
 
     // Notify the user of a late frame
     if (duration > 1.0/sim::P()->frameRate()) {
-        PRINT_IF_ELSE_LOG(sim::P()->printLateFrames(), WARN,
+        IF_PRINT_ELSE_LOG(sim::P()->printLateFrames(), WARN,
             "A frame was late by %v seconds, which is %v percent late.",
             duration - 1.0/sim::P()->frameRate(),
             (duration - 1.0/sim::P()->frameRate())/(1.0/sim::P()->frameRate()) * 100);
