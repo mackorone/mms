@@ -12,6 +12,9 @@ class GeometryUtilities {
 
 public:
 
+    // The GeometryUtilities class is not constructible
+    GeometryUtilities() = delete;
+
     // Returns all of the tiles touched by the segment AB
     static std::vector<const Tile*> lineSegmentTileCover(const Cartesian& A, const Cartesian& B, const Maze& maze);
 
@@ -27,9 +30,6 @@ public:
     static Polygon convexHull(const std::vector<Polygon>& polygons);
 
 private:
-
-    // A private constructor to restrict creation of any GeometryUtilities objects
-    GeometryUtilities();
 
     // Returns the cross product of the vectors ZA and ZB
     static MetersSquared crossProduct(const Cartesian& Z, const Cartesian& A, const Cartesian& B);

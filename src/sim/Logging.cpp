@@ -38,13 +38,17 @@ void Logging::initialize(const std::string& runId) {
     // Set the runId
     m_runId = runId;
 
+    // The logger names
+    const std::string loggerName = "logger";
+    const std::string printerName = "printer";
+
     // Set the file paths
     m_loggerPath = SimUtilities::getProjectDirectory() + "run/" + m_runId + "/log/last.txt";
     m_printerPath = SimUtilities::getProjectDirectory() + "run/" + m_runId + "/print/last.txt";
 
     // Register and configure the logger
     el::Configurations logConfig;
-    m_logger = el::Loggers::getLogger(LOG_STRING);
+    m_logger = el::Loggers::getLogger(loggerName);
     logConfig.setGlobally(el::ConfigurationType::ToStandardOutput, "false");
     logConfig.setGlobally(el::ConfigurationType::Filename, m_loggerPath);
     logConfig.setGlobally(el::ConfigurationType::MaxLogFileSize,
@@ -52,19 +56,19 @@ void Logging::initialize(const std::string& runId) {
     logConfig.setGlobally(el::ConfigurationType::MillisecondsWidth, "3");
     logConfig.setGlobally(el::ConfigurationType::Format,
         "%datetime{%Y-%M-%d %H:%m:%s.%g} [%level] %msg");
-    el::Loggers::reconfigureLogger(LOG_STRING, logConfig);
+    el::Loggers::reconfigureLogger(loggerName, logConfig);
     el::Loggers::addFlag(el::LoggingFlag::StrictLogFileSizeCheck);
     el::Helpers::installPreRollOutCallback(rolloutHandler);
 
     // Register and configure the printer
     el::Configurations printConfig;
-    m_printer = el::Loggers::getLogger(PRINT_STRING);
+    m_printer = el::Loggers::getLogger(printerName);
     printConfig.setGlobally(el::ConfigurationType::Filename, m_printerPath);
     printConfig.setGlobally(el::ConfigurationType::MaxLogFileSize,
         std::to_string(10 * 1024 * 1024)); // 10 MiB, ~10,000 lines
     printConfig.setGlobally(el::ConfigurationType::MillisecondsWidth, "3");
     printConfig.setGlobally(el::ConfigurationType::Format, "[%level] - %msg");
-    el::Loggers::reconfigureLogger(PRINT_STRING, printConfig);
+    el::Loggers::reconfigureLogger(printerName, printConfig);
 }
 
 std::string Logging::getNextFileName(const char* filename) {

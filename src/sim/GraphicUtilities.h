@@ -13,6 +13,9 @@ class GraphicUtilities {
 
 public:
 
+    // The GraphicUtilities class is not constructible.
+    GraphicUtilities() = delete;
+
     // The big, CPU-side triangle graphics buffer
     static std::vector<TriangleGraphic> TGB;
 
@@ -52,9 +55,6 @@ public:
     static void drawMousePolygon(const Polygon& polygon, const GLfloat* color, float sensorAlpha);
 
 private:
-
-    // A private constructor to restrict creation of any GeometryUtilities objects
-    GraphicUtilities();
 
     // Window dimensions in pixels
     static int m_windowWidth;

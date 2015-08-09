@@ -14,6 +14,9 @@ class SimUtilities {
 
 public:
 
+    // The SimUtilities class is not constructible
+    SimUtilities() = delete;
+
     // Quits the simulation
     static void quit();
 
@@ -71,10 +74,6 @@ public:
     // Remove oldest runs from the run/ directory if necessary
     static void removeExcessArchivedRuns();
 
-private:
-
-    // A private constructor to restrict creation of any GeometryUtilities objects
-    SimUtilities();
 };
 
 } // namespace sim

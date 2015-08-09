@@ -1,7 +1,9 @@
 #include "Param.h"
 
+#include <limits>
 #include <random>
 
+#include "Logging.h"
 #include "ParamParser.h"
 #include "SimUtilities.h"
 
@@ -31,14 +33,15 @@ Param::Param() {
     ParamParser parser(SimUtilities::getProjectDirectory() + "res/parameters.xml");
 
     // Graphical Parameters
-    m_initialWindowWidth = parser.getIntIfHasInt("initial-window-width", 930);
-    m_initialWindowHeight = parser.getIntIfHasInt("initial-window-height", 470);
-    m_windowBorderWidth = parser.getIntIfHasInt("window-border-width", 10);
-    m_minZoomedMapScale = parser.getDoubleIfHasDouble("min-zoomed-map-scale", 0.02);
-    m_maxZoomedMapScale = parser.getDoubleIfHasDouble("max-zoomed-map-scale", 1.0);
-    m_defaultZoomedMapScale = parser.getDoubleIfHasDouble("default-zoomed-map-scale", 0.1);
+    m_initialWindowWidth = parser.getIntIfHasIntAndNotLessThan("initial-window-width", 930, 100);
+    m_initialWindowHeight = parser.getIntIfHasIntAndNotLessThan("initial-window-height", 470, 100);
+    m_windowBorderWidth = parser.getIntIfHasIntAndInRange("window-border-width", 10, 0, 25);
+    m_minZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange("min-zoomed-map-scale", 0.02, 0.01, 0.1);
+    m_maxZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange("max-zoomed-map-scale", 1.0, 0.5, 2.0);
+    m_defaultZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange(
+        "default-zoomed-map-scale", 0.1, m_minZoomedMapScale, m_maxZoomedMapScale);
     m_defaultRotateZoomedMap = parser.getBoolIfHasBool("default-rotate-zoomed-map", false);
-    m_frameRate = parser.getIntIfHasInt("frame-rate", 60);
+    m_frameRate = parser.getIntIfHasIntAndInRange("frame-rate", 60, 1, 120);
     m_printLateFrames = parser.getBoolIfHasBool("print-late-frames", false);
     m_tileBaseColor = parser.getStringIfHasStringAndIsColor("tile-base-color", "BLACK");
     m_tileWallColor = parser.getStringIfHasStringAndIsColor("tile-wall-color", "RED");
@@ -64,40 +67,46 @@ Param::Param() {
     // Simulation Parameters
     bool useRandomSeed = parser.getBoolIfHasBool("use-random-seed", false);
     if (useRandomSeed && !parser.hasIntValue("random-seed")) {
-        SimUtilities::print(std::string("Error: The value of use-random-seed is true but no")
-            + " valid random-seed value was provided.");
+        PRINT(WARN,
+            "The value of use-random-seed is true but no valid random-seed "
+            "value was provided. Setting \"use-random-seed\" to false.");
         useRandomSeed = false;
     }
     m_randomSeed = (useRandomSeed ? parser.getIntValue("random-seed") : std::random_device()());
     m_crashMessage = parser.getStringIfHasString("crash-message", "CRASH");
-    m_glutInitDuration = parser.getDoubleIfHasDouble("glut-init-duration", 0.1);
+    m_glutInitDuration = parser.getDoubleIfHasDoubleAndInRange("glut-init-duration", 0.1, 0.0, 5.0);
     m_defaultPaused = parser.getBoolIfHasBool("default-paused", false);
-    m_minSleepDuration = parser.getDoubleIfHasDouble("min-sleep-duration", 5);
+    m_minSleepDuration = parser.getDoubleIfHasDoubleAndInRange("min-sleep-duration", 5, 1, 25);
+
+    // TODO: MACK - get rid of these once I've written the simulation time component
     m_discreteInterfaceMinSpeed = parser.getDoubleIfHasDouble("discrete-interface-min-speed", 1.0);
     m_discreteInterfaceMaxSpeed = parser.getDoubleIfHasDouble("discrete-interface-max-speed", 300.0);
-    m_discreteInterfaceDefaultSpeed = parser.getDoubleIfHasDouble("discrete-interface-default-speed", 30.0);
+    m_discreteInterfaceDefaultSpeed = parser.getDoubleIfHasDoubleAndInRange(
+        "discrete-interface-default-speed", 30.0, m_discreteInterfaceMinSpeed, m_discreteInterfaceMaxSpeed);
+
     m_discreteInterfaceDeclareWallOnRead = parser.getBoolIfHasBool("discrete-interface-declare-wall-on-read", true);
     m_discreteInterfaceUnfogTileOnEntry = parser.getBoolIfHasBool("discrete-interface-unfog-tile-on-entry", true);
     m_declareBothWallHalves = parser.getBoolIfHasBool("declare-both-wall-halves", true);
-    m_mousePositionUpdateRate = parser.getIntIfHasInt("mouse-position-update-rate", 1000);
+    m_mousePositionUpdateRate = parser.getIntIfHasIntAndInRange("mouse-position-update-rate", 1000, 100, 10000);
     m_printLateMousePostitionUpdates = parser.getBoolIfHasBool("print-late-mouse-position-updates", false);
-    m_collisionDetectionRate = parser.getIntIfHasInt("collision-detection-rate", 40);
+    m_collisionDetectionRate = parser.getIntIfHasIntAndInRange("collision-detection-rate", 40, 1, 100);
     m_printLateCollisionDetections = parser.getBoolIfHasBool("print-late-collision-detections", false);
     m_printLateSensorReads = parser.getBoolIfHasBool("print-late-sensor-reads", false);
-    m_numberOfCircleApproximationPoints = parser.getIntIfHasInt("number-of-circle-approximation-points", 8);
-    m_numberOfSensorEdgePoints = parser.getIntIfHasInt("number-of-sensor-edge-points", 3);
-    m_numberOfArchivedRuns = parser.getIntIfHasInt("number-of-archived-runs", 20);
+    m_numberOfCircleApproximationPoints = parser.getIntIfHasIntAndInRange(
+        "number-of-circle-approximation-points", 8, 3, 30);
+    m_numberOfSensorEdgePoints = parser.getIntIfHasIntAndInRange("number-of-sensor-edge-points", 3, 2, 10);
+    m_numberOfArchivedRuns = parser.getIntIfHasIntAndInRange("number-of-archived-runs", 20, 0, 1000);
 
     // Maze Parameters
-    m_wallWidth = parser.getDoubleIfHasDouble("wall-width", 0.012);
-    m_wallLength = parser.getDoubleIfHasDouble("wall-length", 0.168);
-    m_wallHeight = parser.getDoubleIfHasDouble("wall-height", 0.05);
+    m_wallWidth = parser.getDoubleIfHasDoubleAndInRange("wall-width", 0.012, 0.006, 0.024);
+    m_wallLength = parser.getDoubleIfHasDoubleAndInRange("wall-length", 0.168, 0.084, 0.336);
+    m_wallHeight = parser.getDoubleIfHasDoubleAndInRange("wall-height", 0.05, 0.025, 0.1);
     m_enforceOfficialMazeRules = parser.getBoolIfHasBool("enforce-official-maze-rules", false);
     m_mazeDirectory = parser.getStringIfHasString("maze-directory", "res/maze/");
     m_mazeFile = parser.getStringIfHasString("maze-file", "");
     m_useMazeFile = parser.getBoolIfHasBool("use-maze-file", false);
-    m_generatedMazeWidth = parser.getIntIfHasInt("generated-maze-width", 16);
-    m_generatedMazeHeight = parser.getIntIfHasInt("generated-maze-height", 16);
+    m_generatedMazeWidth = parser.getIntIfHasIntAndInRange("generated-maze-width", 16, 1, 256);
+    m_generatedMazeHeight = parser.getIntIfHasIntAndInRange("generated-maze-height", 16, 1, 256);
     m_mazeAlgorithm = parser.getStringIfHasString("maze-algorithm", "Tomasz");
     m_saveGeneratedMaze = parser.getBoolIfHasBool("save-generated-maze", true);
     m_mazeMirrored = parser.getBoolIfHasBool("maze-mirrored", false);

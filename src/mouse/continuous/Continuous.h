@@ -14,7 +14,7 @@ public:
 private:
     bool wallRight();
     bool wallFront();
-
+    bool wallLeft();
     void turnRight();
     void turnLeft();
     void moveForward();

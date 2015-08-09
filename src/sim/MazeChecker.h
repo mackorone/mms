@@ -10,6 +10,9 @@ class MazeChecker {
 
 public:
 
+    // The MazeChecker class is not constructible
+    MazeChecker() = delete;
+
     // Returns true is a maze is valid (usable by the simulator), false otherwise
     static bool validMaze(const std::vector<std::vector<BasicTile>>& maze);
 
@@ -32,10 +35,6 @@ public:
     static bool isUnsolvableByWallFollower(const std::vector<std::vector<BasicTile>>& maze);
     static bool hasNoInaccesibleLocations(const std::vector<std::vector<BasicTile>>& maze);
 
-private:
-
-    // A private constructor to restrict creation of any MazeChecker objects
-    MazeChecker();
 };
 
 } // namespace sim

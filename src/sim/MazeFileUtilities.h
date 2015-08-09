@@ -11,6 +11,9 @@ class MazeFileUtilities {
 
 public:
 
+    // The MazeFileUtilities class is not constructible
+    MazeFileUtilities() = delete;
+
     // Returns whether or not the contents of the file have the proper format
     static bool isMazeFile(const std::string& mazeFilePath);
 
@@ -18,10 +21,6 @@ public:
     static void saveMaze(const std::vector<std::vector<BasicTile>>& maze, const std::string& mazeFilePath);
     static std::vector<std::vector<BasicTile>> loadMaze(const std::string& mazeFilePath);
 
-private:
-
-    // A private constructor to restrict creation of any MazeFileUtilities objects
-    MazeFileUtilities();
 };
 
 } // namespace sim

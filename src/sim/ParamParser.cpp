@@ -8,13 +8,12 @@
 namespace sim {
 
 ParamParser::ParamParser(const std::string& filePath) {
-    // Open the document
-    m_result = m_doc.load_file(filePath.c_str());
-    if (!m_result) {
-            /*
-        LOG(ERROR) << "Unable to read parameters from \"" << filePath  << "\": "
-            << m_result.description() << ". Using default values for all parameters.";
-            */
+    m_fileIsReadable = m_doc.load_file(filePath.c_str());
+    if (!m_fileIsReadable) {
+        PRINT(ERROR,
+            "Unable to read parameters from \"%v\": %v. "
+            "Using default values for all parameters.",
+            filePath, m_fileIsReadable.description());
     }
 }
 
@@ -52,12 +51,7 @@ std::string ParamParser::getStringValue(const std::string& tag) {
 
 bool ParamParser::getBoolIfHasBool(const std::string& tag, bool defaultValue) {
     if (!hasBoolValue(tag)) {
-        if (m_result) {
-            /*
-            LOG(WARN) << "Could not find bool parameter \"" << tag << "\". Using default value of "
-                << (defaultValue ? "true" : "false") << " for \""  << tag << "\".";
-            */
-        }
+        printTagNotFound("bool", tag, (defaultValue ? "true" : "false"));
         return defaultValue;
     }
     return getBoolValue(tag);
@@ -65,12 +59,7 @@ bool ParamParser::getBoolIfHasBool(const std::string& tag, bool defaultValue) {
 
 double ParamParser::getDoubleIfHasDouble(const std::string& tag, double defaultValue) {
     if (!hasDoubleValue(tag)) {
-        if (m_result) {
-            /*
-            LOG(WARN) << "Could not find double parameter \"" << tag
-                << "\". Using default value of " << defaultValue << " for \"" << tag << "\".";
-            */
-        }
+        printTagNotFound("double", tag, std::to_string(defaultValue));
         return defaultValue;
     }
     return getDoubleValue(tag);
@@ -78,12 +67,7 @@ double ParamParser::getDoubleIfHasDouble(const std::string& tag, double defaultV
 
 int ParamParser::getIntIfHasInt(const std::string& tag, int defaultValue) {
     if (!hasIntValue(tag)) {
-        if (m_result) {
-            /*
-            LOG(WARN) << "Could not find int parameter \"" << tag
-                << "\". Using default value of " << defaultValue << " for \"" << tag << "\".";
-            */
-        }
+        printTagNotFound("int", tag, std::to_string(defaultValue));
         return defaultValue;
     }
     return getIntValue(tag);
@@ -91,103 +75,74 @@ int ParamParser::getIntIfHasInt(const std::string& tag, int defaultValue) {
 
 std::string ParamParser::getStringIfHasString(const std::string& tag, const std::string& defaultValue) {
     if (!hasStringValue(tag)) {
-        if (m_result) {
-            /*
-            LOG(WARN) << "Could not find string parameter \"" << tag
-                << "\". Using default value of \"" << defaultValue << "\" for \"" << tag << "\".";
-            */
-        }
+        printTagNotFound("string", tag, std::string("\"") + defaultValue + std::string("\""));
         return defaultValue;
     }
     return getStringValue(tag);
 }
 
+double ParamParser::getDoubleIfHasDoubleAndNotLessThan(const std::string& tag, double defaultValue, double min) {
+    return getNumIfHasNumAndInRange("double", tag, defaultValue, min, std::numeric_limits<double>::max());
+}
+
+double ParamParser::getDoubleIfHasDoubleAndNotGreaterThan(const std::string& tag, double defaultValue, double max) {
+    return getNumIfHasNumAndInRange("double", tag, defaultValue, std::numeric_limits<double>::min(), max);
+}
+
 double ParamParser::getDoubleIfHasDoubleAndInRange(const std::string& tag, double defaultValue, double min, double max) {
-    if (!hasDoubleValue(tag)) {
-        if (m_result) {
-            /*
-            LOG(WARN) << "Could not find double parameter \"" << tag
-                << "\". Using default value of " << defaultValue << " for \""  << tag << "\".";
-            */
-        }
-        return defaultValue;
-    }
-    double value = getDoubleValue(tag);
-    if (value < min || max < value) {
-            /*
-        LOG(WARN) << "The value of the double parameter \"" << tag << "\" is " << value
-            << " and not in the valid range of [" << min << ", " << max
-            << "]. Using default value of " << defaultValue << " for \""  << tag << "\".";
-            */
-        return defaultValue;
-    }
-    return value;
+    return getNumIfHasNumAndInRange("double", tag, defaultValue, min, max);
+}
+
+int ParamParser::getIntIfHasIntAndNotLessThan(const std::string& tag, int defaultValue, int min) {
+    return getNumIfHasNumAndInRange("int", tag, defaultValue, min, std::numeric_limits<int>::max());
+}
+
+int ParamParser::getIntIfHasIntAndNotGreaterThan(const std::string& tag, int defaultValue, int max) {
+    return getNumIfHasNumAndInRange("int", tag, defaultValue, std::numeric_limits<int>::min(), max);
 }
 
 int ParamParser::getIntIfHasIntAndInRange(const std::string& tag, int defaultValue, int min, int max) {
-    if (!hasIntValue(tag)) {
-        if (m_result) {
-            /*
-            LOG(WARN) << "Could not find int parameter \"" << tag
-                << "\". Using default value of " << defaultValue << " for \"" << tag << "\".";
-            */
-        }
-        return defaultValue;
-    }
-    int value = getIntValue(tag);
-    if (value < min || max < value) {
-            /*
-        LOG(WARN) << "The value of the int parameter \"" << tag << "\" is " << value
-            << " and not in the valid range of [" << min << ", " << max
-            << "]. Using default value of " << defaultValue << " for \"" << tag << "\".";
-            */
-        return defaultValue;
-    }
-    return value;
+    return getNumIfHasNumAndInRange("int", tag, defaultValue, min, max);
 }
 
 std::string ParamParser::getStringIfHasStringAndIsColor(const std::string& tag, const std::string& defaultValue) {
-    if (!hasStringValue(tag)) {
-        if (m_result) {
-            /*
-            LOG(WARN) << "Could not find string parameter \"" << tag
-                << "\". Using default value of \"" << defaultValue << "\" for \"" << tag << "\".";
-            */
-        }
-        return defaultValue;
-    }
-    std::string value = getStringValue(tag);
-    if (COLOR_STRINGS.find(value) == COLOR_STRINGS.end()) {
-            /*
-        LOG(WARN) << "The value of string parameter \"" << tag << "\" is \"" << value
-            << "\" and is not a valid color. Using default value of \"" << defaultValue
-            << "\" for \"" << tag << "\".";
-            */
-        return defaultValue;
-    }
-    return value;
+    return getStringIfHasStringAndIsSpecial("color", tag, defaultValue, COLOR_STRINGS);
 }
 
 std::string ParamParser::getStringIfHasStringAndIsDirection(const std::string& tag, const std::string& defaultValue) {
-    if (!hasStringValue(tag)) {
-        if (m_result) {
-            /*
-            LOG(WARN) << "Could not find string parameter \"" << tag
-                << "\". Using default value of \"" << defaultValue << "\" for \"" << tag << "\".";
-            */
-        }
-        return defaultValue;
+    return getStringIfHasStringAndIsSpecial("direction", tag, defaultValue, DIRECTION_STRINGS);
+}
+
+void ParamParser::printTagNotFound(const std::string& type, const std::string& tag, const std::string& defaultValue) {
+    if (m_fileIsReadable) {
+        PRINT(WARN,
+            "Could not find %v parameter \"%v\". Using default value of %v.",
+            type, tag, defaultValue);
     }
-    std::string value = getStringValue(tag);
-    if (DIRECTION_STRINGS.find(value) == DIRECTION_STRINGS.end()) {
-            /*
-        LOG(WARN) << "The value of string parameter \"" << tag << "\" is \"" << value
-            << "\" and is not a valid direction. Using default value of \"" << defaultValue
-            << "\" for \"" << tag << "\".";
-            */
-        return defaultValue;
-    }
-    return value;
+}
+
+void ParamParser::printLessThan(const std::string& type, const std::string& tag, const std::string& value,
+    const std::string& defaultValue, const std::string& min) {
+    PRINT(WARN,
+        "The value of the %v parameter \"%v\" is %v and is less than "
+        "the minimum allowed value of %v. Using default value of %v.",
+        type, tag, value, min, defaultValue);
+}
+
+void ParamParser::printGreaterThan(const std::string& type, const std::string& tag, const std::string& value,
+    const std::string& defaultValue, const std::string& max) {
+    PRINT(WARN,
+        "The value of the %v parameter \"%v\" is %v and is greater than "
+        "the maximum allowed value of %v. Using default value of %v.",
+        type, tag, value, max, defaultValue);
+}
+
+void ParamParser::printNotSpecialString(const std::string& type, const std::string& tag,
+    const std::string& value, const std::string& defaultValue) {
+    PRINT(WARN,
+        "The value of string parameter \"%v\" is \"%v\" and is "
+        "not a valid %v. Using default value of \"%v\".",
+        tag, value, type, defaultValue);
 }
 
 }; // namespace sim

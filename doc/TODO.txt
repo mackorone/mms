@@ -1,12 +1,7 @@
 High Pri:
 
-- Set some numeric parameter min/max values in param.cpp
-- De-duplicate some code in ParamParser
+- Fix check_params.py - breaks on getNumIfInRange
 - Replace LOGs to use current mechanism
-- __VA_ARGS__ with no extra args? Rewrite Log (with arg counting trick) so that it works is visual studio too
-    - PRINT(INFO, "SUCCESS"); should work everywhere
-
-- Replace NULL with nullptr
 
 - Add a way to turn on/off each of the maps (to prevent motion sickness)
     - One button that toggles two maps vs one
@@ -39,8 +34,7 @@ High Pri:
 - -Wall flag...
 
 - Look at Tomasz' maze website
-- Crash recovery semantics
-    - mouse speed, elapsed time, etc.
+- mouse speed, elapsed time, etc.
 - Maze Validation (both physically valid mazes and competition valid mazes)
     - Official maze size parameters
 - Figure out how to get rid of ifdefs in algorithm
@@ -62,9 +56,12 @@ High Pri:
     - ave steps
     - etc.
 - Add gridlines (see https://www.youtube.com/watch?v=LGRutv9cGBA and https://www.youtube.com/watch?v=gtnTBf5ItEc)
-- Draw a path of where the robot has been (the history object could be used for recording as well)
+- Buffer communication (like with the real robot)
+- Continuous mode improvements (overall)
+- Gyroscope support
 
 Med Pri:
+- Mouse wheel positive radians per second should be counter-clockwise by convention
 - Algo checklist?
 - Still view a maze if it passes validation, but don't let the sim continue...
 - File paths on other platforms might be broken...
@@ -75,6 +72,8 @@ Med Pri:
     - Figure out how to make sensors more efficient
     - Make the sensor polygon model better
 - Add manual mode high scores
+- M_PI is not cross-platform
+- std::min, std::max is not cross-platform
 - Add a way to set the text color of each tile individually
 - Enum parameters?
 - Make some functions available to the algo writers
@@ -82,7 +81,6 @@ Med Pri:
 - Shortest path graphic (phantom bot that travels along other shortest paths)
 - Randomly select a pre-defined maze
 - Write a good continuous algorithm
-- Buffer communication (like with the real robot)
 - Add a linter to the code
 - Data recording for pause, rewind, fast forward
 - Interrupt interface
@@ -100,6 +98,8 @@ to implement some logic that checks this ahead of time and then just teleports..
 bullets in other physics simulators
 - Add trajectory lines (see https://www.youtube.com/watch?v=kgJClVCPu3w)
 - Error checking for param string type (startingDirection, color, etc.)
+- Crash recovery semantics
+- Draw a path of where the robot has been (the history object could be used for recording as well)
 
 Low-pri:
 - Better run number system
@@ -123,6 +123,7 @@ Low-pri:
 - Try to break the simulator from within the algos, make it tamper-resistant
 - Reduce include dependencies as much as possible
 - Colors for log statements
+- Sometimes we segfault when we hit 'q'
 
 Clean-Up:
 - Change map.count(item) != 0 to map.find(item) != map.end()
@@ -160,7 +161,8 @@ Clean-Up:
 - The interfaces don't need to be passed as pointers, right? Try passing as values...
 - Upgrade convert_mazes.py to Python 3
 - Move as much OpenGL code to a single file (Main.cpp) as possible
-- P() be const? L()?
+- P() be const? S()?
 - init vs initialize
 - Write a script to ensure that ASSERTS don't hold any state
 - Ensure boolean operators aren't used in asserts... should be using a different assert
+- Replace NULL with nullptr

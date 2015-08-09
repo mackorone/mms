@@ -52,9 +52,12 @@ public:
     bool defaultPaused();
     std::string crashMessage();
     double minSleepDuration();
+
+    // TODO: MACK - Get rid of these...
     double discreteInterfaceMinSpeed();
     double discreteInterfaceMaxSpeed();
     double discreteInterfaceDefaultSpeed();
+
     bool discreteInterfaceDeclareWallOnRead();
     bool discreteInterfaceUnfogTileOnEntry();
     bool declareBothWallHalves();

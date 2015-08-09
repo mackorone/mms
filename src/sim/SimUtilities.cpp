@@ -202,6 +202,7 @@ std::string SimUtilities::trim(const std::string& str) {
 }
 
 bool SimUtilities::isFile(const std::string& path) {
+// TODO: MACK - this isn't cross-platform...
     struct stat buf;
     stat(path.c_str(), &buf);
     return S_ISREG(buf.st_mode);
