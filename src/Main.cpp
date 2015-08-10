@@ -184,7 +184,11 @@ void solve() {
     }
 
     // Finally, begin execution of the mouse algorithm
-    algorithm->solve(g_mazeGraphic->getWidth(), g_mazeGraphic->getHeight(), g_mouseInterface);
+    algorithm->solve(
+        g_mazeGraphic->getWidth(),
+        g_mazeGraphic->getHeight(),
+        sim::DIRECTION_TO_CHAR.at(sim::STRING_TO_DIRECTION.at(sim::P()->mouseStartingDirection())),
+        g_mouseInterface);
 }
 
 void keyPress(unsigned char key, int x, int y) {

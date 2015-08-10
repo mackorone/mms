@@ -16,23 +16,8 @@
 
 namespace sim {
 
-Mouse::Mouse(const Maze* maze) : m_maze(maze), m_initialized(false) {
-
-    // Set the initial rotation of the mouse
-    switch (DIRECTION_STRINGS.at(P()->mouseStartingDirection())) {
-        case NORTH:
-            m_rotation = Degrees(0.0);
-            break;
-        case EAST:
-            m_rotation = Degrees(270.0);
-            break;
-        case SOUTH:
-            m_rotation = Degrees(180.0);
-            break;
-        case WEST:
-            m_rotation = Degrees(90.0);
-            break;
-    }
+Mouse::Mouse(const Maze* maze) : m_maze(maze), m_initialized(false),
+    m_rotation(DIRECTION_TO_ANGLE.at(STRING_TO_DIRECTION.at(P()->mouseStartingDirection()))) {
 }
 
 bool Mouse::getInitialized() const {

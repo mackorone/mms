@@ -22,7 +22,7 @@ class FloodFill : public IMouseAlgorithm {
 public:
     std::string mouseFile() const;
     sim::InterfaceType interfaceType() const;
-    void solve(int mazeWidth, int mazeHeight, sim::MouseInterface* mouse); // IMouseAlgorithm interface method
+    void solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse); // IMouseAlgorithm interface method
 
 private:
     sim::MouseInterface* m_mouse; // A pointer to the mouse interface

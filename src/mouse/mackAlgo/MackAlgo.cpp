@@ -29,12 +29,17 @@ sim::InterfaceType MackAlgo::interfaceType() const {
     return sim::DISCRETE;
 }
 
-void MackAlgo::solve(int mazeWidth, int mazeHeight, sim::MouseInterface* mouse) {
+void MackAlgo::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
     m_mouse = mouse;
     if (MAZE_WIDTH != mazeWidth || MAZE_HEIGHT != mazeHeight) {
         std::cout << "I am programmed to think the maze is " << MAZE_WIDTH << " x " << MAZE_HEIGHT
             << " but I'm being told that the maze is actually " << mazeWidth << " x " << mazeHeight
             << ". I'm giving up..." << std::endl;
+        return;
+    }
+    if ('n' != initialDirection) {
+        std::cout << "I am programmed to think I'm starting facing north, but I'm not actually facing north."
+            << " I'm giving up..." << std::endl;
         return;
     }
 #else

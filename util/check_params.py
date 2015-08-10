@@ -17,6 +17,12 @@ with open(utilPath + '/../res/parameters.xml', 'r') as xml, open(utilPath + '/..
         tokens = re.split('[<|>]', tag)
         xml_dict[tokens[1]] = tokens[2]
 
+    # TODO: upforgrabs
+    # This script is broken in two ways. First, the default value may be
+    # followed by a comma and not just a parenthesis. Second, the
+    # initialization of a single variable may span two lines. The cpp_regex and
+    # other lines of logic don't account for either of these. Fix this.
+
     cpp_regex = re.compile('parser\.get.+IfHas.+\(\"\S+\".*\)')
     cpp_lines = cpp_regex.findall(cpp.read())
     cpp_dict = dict()

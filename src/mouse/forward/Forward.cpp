@@ -10,7 +10,7 @@ sim::InterfaceType Forward::interfaceType() const {
     return sim::DISCRETE;
 }
 
-void Forward::solve(int mazeWidth, int mazeHeight, sim::MouseInterface* mouse) {
+void Forward::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
     while (true) {
         mouse->moveForward();
     }

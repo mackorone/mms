@@ -1,20 +1,7 @@
 High Pri:
-
-- Fix check_params.py - breaks on getNumIfInRange
-- Replace LOGs to use current mechanism
-
 - Add a way to turn on/off each of the maps (to prevent motion sickness)
     - One button that toggles two maps vs one
     - One button that toggles between maps
-
-- Maze size requirements and validity
-
-- Don't use P() or S() in a static context... it breaks things really badly... put this in coding standards
-- Make a note of contributing projects in the documentation
-
-- Document that the mouse always starts in the lower left, but can be rotated to simulate other orientatiosn
-    - Tell the algorithm that the mouse is starting off rotated
-
 - Rewrite text so that it's performant
     - Make sure that MackAlgo looks normal... the walls look gray under the colored tiles...
 - Put the vertex shader in its own source file
@@ -23,16 +10,15 @@ High Pri:
 - Actual distance values on the tile
     - MazeUtilities class that can get the distances???
     - State variable and key to control whether these are visible or not
-
+- Maze size requirements and validity
+- Make a note of contributing projects in the documentation
 - Put a toolbar at the top or bottom with info
 - Display a clock
 - Make some utility that keeps track of elapse time
     - Make the sim speed non-arbitrary
-
+    - Fix the Params associated with discrete sim-speed
 - Run-time parameters for the algos
-
 - -Wall flag...
-
 - Look at Tomasz' maze website
 - mouse speed, elapsed time, etc.
 - Maze Validation (both physically valid mazes and competition valid mazes)

@@ -7,6 +7,7 @@
 #include "units/Duration.h"
 
 #include "Directions.h"
+#include "Maze.h"
 
 namespace sim {
 
@@ -25,13 +26,13 @@ public:
     // us much more context and information about messages. We should no longer
     // use the SimUtilities::print function. Your mission, should you choose to
     // accept it, is to replace, everywhere in the code, SimUtilities::print
-    // with an appropriate LOG, PRINT, or PRINT_IF_ELSE_LOG. Be mindful of the
-    // severity (DEBUG, INFO, WARN, ERROR, FATAL) that you use for log LOG
+    // with an appropriate PRINT or IF_PRINT_ELSE_LOG. Be mindful of the
+    // severity (DEBUG, INFO, WARN, ERROR, FATAL) that you use for log
     // statements, and make sure to format the messages correctly (keeping
     // whitespace in mind). Once you've replaced all of the
     // SimUtilities::print, remove the print function from here and from
     // SimUtilities.cpp. See the end of the draw() function in Main.cpp for an
-    // example of how to use the PRINT_IF_ELSE_LOG macro.
+    // example of how to use the IF_PRINT_ELSE_LOG macro.
 
     // Prints a message to stdout
     static void print(const std::string& msg);
@@ -73,6 +74,12 @@ public:
 
     // Remove oldest runs from the run/ directory if necessary
     static void removeExcessArchivedRuns();
+
+    // Returns whether or not a map contains a particular key
+    template<class K, class V>
+    static bool mapContains(const std::map<K, V>& map, K key) {
+        return map.find(key) != map.end();
+    }
 
 };
 

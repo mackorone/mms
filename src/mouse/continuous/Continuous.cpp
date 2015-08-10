@@ -12,7 +12,7 @@ sim::InterfaceType Continuous::interfaceType() const {
     return sim::CONTINUOUS;
 }
 
-void Continuous::solve(int mazeWidth, int mazeHeight, sim::MouseInterface* mouse) {
+void Continuous::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
 
     m_mouse = mouse;
 

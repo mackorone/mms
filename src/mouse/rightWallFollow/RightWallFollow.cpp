@@ -10,7 +10,7 @@ sim::InterfaceType RightWallFollow::interfaceType() const {
     return sim::DISCRETE;
 }
 
-void RightWallFollow::solve(int mazeWidth, int mazeHeight, sim::MouseInterface* mouse) {
+void RightWallFollow::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
     while (true){
         rightWallFollowStep(mouse);
     }

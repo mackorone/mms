@@ -10,7 +10,7 @@ sim::InterfaceType DoNothing::interfaceType() const {
     return sim::DISCRETE;
 }
 
-void DoNothing::solve(int mazeWidth, int mazeHeight, sim::MouseInterface* mouse) {
+void DoNothing::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
 }
 
 } // namespace doNothing

@@ -202,10 +202,8 @@ std::string SimUtilities::trim(const std::string& str) {
 }
 
 bool SimUtilities::isFile(const std::string& path) {
-// TODO: MACK - this isn't cross-platform...
-    struct stat buf;
-    stat(path.c_str(), &buf);
-    return S_ISREG(buf.st_mode);
+    std::ifstream infile(path);
+    return infile.good();
 }
 
 int SimUtilities::getDirectionIndex(Direction direction) {
@@ -224,6 +222,7 @@ void SimUtilities::removeExcessArchivedRuns() {
     // appropriate (e.g., if, for some reason, we can't delete one of the
     // directories in run/). This function is already called in the appropriate
     // place, so once you implement it, it should "just work".
+    // Hint: Use std::remove
 }
 
 } // namespace sim

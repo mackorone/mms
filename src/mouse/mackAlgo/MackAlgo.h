@@ -24,7 +24,7 @@ public:
 #if (SIMULATOR)
     std::string mouseFile() const;
     sim::InterfaceType interfaceType() const;
-    void solve(int mazeWidth, int mazeHeight, sim::MouseInterface* mouse);
+    void solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse);
 #else
     void solve();
 #endif

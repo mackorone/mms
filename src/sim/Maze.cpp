@@ -32,7 +32,7 @@ Maze::Maze() {
 
         MazeAlgorithms mazeAlgorithms;
         std::map<std::string, IMazeAlgorithm*> algorithms = mazeAlgorithms.getAlgorithms();
-        if (algorithms.find(sim::P()->mazeAlgorithm()) == algorithms.end()) {
+        if (!SimUtilities::mapContains(algorithms, sim::P()->mazeAlgorithm())) {
             SimUtilities::print("Error: \"" + sim::P()->mazeAlgorithm() + "\" is not a valid maze algorithm.");
             SimUtilities::quit();
         }

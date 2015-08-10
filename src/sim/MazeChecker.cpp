@@ -46,6 +46,9 @@ bool MazeChecker::isRectangular(const std::vector<std::vector<BasicTile>>& maze)
 bool MazeChecker::isEnclosed(const std::vector<std::vector<BasicTile>>& maze) {
     for (int x = 0; x < maze.size(); x += 1) {
         for (int y = 0; y < maze.at(x).size(); y += 1) {
+            if (1 < x && x < maze.size() - 1 && 1 < y && y < maze.at(x).size() - 1) {
+                continue;
+            }
             if (x == 0 && !maze.at(x).at(y).walls.at(WEST)) {
                 return false; 
             }

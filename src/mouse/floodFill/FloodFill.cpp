@@ -20,7 +20,7 @@ sim::InterfaceType FloodFill::interfaceType() const {
     return sim::DISCRETE;
 }
 
-void FloodFill::solve(int mazeWidth, int mazeHeight, sim::MouseInterface* mouse) {
+void FloodFill::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
 
     // Store a reference to the interface
     m_mouse = mouse;
@@ -30,6 +30,13 @@ void FloodFill::solve(int mazeWidth, int mazeHeight, sim::MouseInterface* mouse)
         std::cout << "I am programmed to think the maze is " << MAZE_SIZE_X << " x " << MAZE_SIZE_Y
             << " but I'm being told that the maze is actually " << mazeWidth << " x " << mazeHeight
             << ". I'm giving up..." << std::endl;
+        return;
+    }
+
+    // Check that our assumed initial direction matches the actual initial direction
+    if ('n' != initialDirection) {
+        std::cout << "I am programmed to think I'm starting facing north, but I'm not actually facing north."
+            << " I'm giving up..." << std::endl;
         return;
     }
 

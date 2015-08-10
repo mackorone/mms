@@ -68,8 +68,12 @@ private:
     Direction getDiscretizedRotation() const;
 
     void prepareForLaunch();
+
     void checkPaused() const;
     bool isWall(std::pair<int, int> position, Direction direction);
+    bool withinMaze(int x, int y) const;
+    bool hasOpposingWall(int x, int y, Direction direction) const;
+    std::pair<std::pair<int, int>, Direction> getOpposingWall(int x, int y, Direction direction) const;
 
     friend class manual::Manual;
 };

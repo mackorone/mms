@@ -17,27 +17,12 @@ void MazeInterface::setWall(int x, int y, char direction, bool wallExists) {
         return;
     }
 
-    Direction d;
-    switch (direction) {
-        case 'n':
-            d = NORTH;
-            break;
-        case 'e':
-            d = EAST;
-            break;
-        case 's':
-            d = SOUTH;
-            break;
-        case 'w':
-            d = WEST;
-            break;
-        default:
-            SimUtilities::print(std::string("Error: The character '") + direction
-                + std::string("' is not mapped to a valid direction."));
-            return;
+    if (!SimUtilities::mapContains(CHAR_TO_DIRECTION, direction)) {
+        SimUtilities::print(std::string("Error: The character '") + direction
+            + std::string("' is not mapped to a valid direction."));
+        return;
     }
-
-    m_basicMaze->at(x).at(y).walls.at(d) = wallExists;
+    m_basicMaze->at(x).at(y).walls.at(CHAR_TO_DIRECTION.at(direction)) = wallExists;
 }
 
 double MazeInterface::getRandom() {

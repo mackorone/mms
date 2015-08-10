@@ -10,6 +10,7 @@
 
 #include "Assert.h"
 #include "Colors.h"
+#include "Logging.h"
 #include "Param.h"
 #include "State.h"
 #include "SimUtilities.h"
@@ -26,44 +27,44 @@ void MouseInterface::delay(int milliseconds) {
 
 void MouseInterface::setTileColor(int x, int y, char color) {
 
-    if (x < 0 || m_mazeGraphic->getWidth() <= x || y < 0 || m_mazeGraphic->getHeight() <= y) {
+    if (!withinMaze(x, y)) {
         SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
             + std::to_string(y) + std::string("), and thus you cannot set its color."));
         return;
     }
 
-    if (COLOR_CHARS.find(color) == COLOR_CHARS.end()) {
+    if (!SimUtilities::mapContains(CHAR_TO_COLOR, color)) {
         SimUtilities::print(std::string("Error: The character '") + color + std::string("' is not mapped to a color."));
         return;
     }
 
-    m_mazeGraphic->setTileColor(x, y, COLOR_CHARS.at(color));
+    m_mazeGraphic->setTileColor(x, y, CHAR_TO_COLOR.at(color));
     m_tilesWithColor.insert(std::make_pair(x, y));
 }
 
 void MouseInterface::clearTileColor(int x, int y) {
 
-    if (x < 0 || m_mazeGraphic->getWidth() <= x || y < 0 || m_mazeGraphic->getHeight() <= y) {
+    if (!withinMaze(x, y)) {
         SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
             + std::to_string(y) + std::string("), and thus you cannot clear its color."));
         return;
     }
 
-    m_mazeGraphic->setTileColor(x, y, COLOR_STRINGS.at(P()->tileBaseColor()));
+    m_mazeGraphic->setTileColor(x, y, STRING_TO_COLOR.at(P()->tileBaseColor()));
     m_tilesWithColor.erase(std::make_pair(x, y));
 }
 
 void MouseInterface::clearAllTileColor() {
 
     for (std::pair<int, int> position : m_tilesWithColor) {
-        m_mazeGraphic->setTileColor(position.first, position.second, COLOR_STRINGS.at(P()->tileBaseColor()));
+        m_mazeGraphic->setTileColor(position.first, position.second, STRING_TO_COLOR.at(P()->tileBaseColor()));
     }
     m_tilesWithColor.clear();
 }
 
 void MouseInterface::setTileDistance(int x, int y, int distance) {
 
-    if (x < 0 || m_mazeGraphic->getWidth() <= x || y < 0 || m_mazeGraphic->getHeight() <= y) {
+    if (!withinMaze(x, y)) {
         SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
             + std::to_string(y) + std::string("), and thus you cannot set its distance."));
         return;
@@ -81,7 +82,7 @@ void MouseInterface::setTileDistance(int x, int y, int distance) {
 
 void MouseInterface::clearTileDistance(int x, int y) {
 
-    if (x < 0 || m_mazeGraphic->getWidth() <= x || y < 0 || m_mazeGraphic->getHeight() <= y) {
+    if (!withinMaze(x, y)) {
         SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
             + std::to_string(y) + std::string("), and thus you cannot clear its distance."));
         return;
@@ -101,7 +102,7 @@ void MouseInterface::clearAllTileDistance() {
 
 void MouseInterface::setTileFogginess(int x, int y, bool foggy) {
 
-    if (x < 0 || m_mazeGraphic->getWidth() <= x || y < 0 || m_mazeGraphic->getHeight() <= y) {
+    if (!withinMaze(x, y)) {
         SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
             + std::to_string(y) + std::string("), and thus you cannot set its fogginess."));
         return;
@@ -112,105 +113,41 @@ void MouseInterface::setTileFogginess(int x, int y, bool foggy) {
 
 void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) {
 
-    if (x < 0 || m_mazeGraphic->getWidth() <= x || y < 0 || m_mazeGraphic->getHeight() <= y) {
+    if (!withinMaze(x, y)) {
         SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
             + std::to_string(y) + std::string("), and thus you cannot declare any of its walls."));
         return;
     }
 
-    switch (direction) {
-        case 'n':
-            m_mazeGraphic->declareWall(x, y, NORTH, wallExists); 
-            break;
-        case 'e':
-            m_mazeGraphic->declareWall(x, y, EAST, wallExists); 
-            break;
-        case 's':
-            m_mazeGraphic->declareWall(x, y, SOUTH, wallExists); 
-            break;
-        case 'w':
-            m_mazeGraphic->declareWall(x, y, WEST, wallExists); 
-            break;
-        default:
-            SimUtilities::print(std::string("The character '") + direction + std::string("' is not mapped to a valid direction."));
-            return;
+    if (!SimUtilities::mapContains(CHAR_TO_DIRECTION, direction)) {
+        SimUtilities::print(std::string("The character '") + direction + std::string("' is not mapped to a valid direction."));
+        return;
     }
 
-    if (P()->declareBothWallHalves()) {
-        switch (direction) {
-            case 'n':
-                if (y < m_maze->getHeight() - 1) {
-                    m_mazeGraphic->declareWall(x, y + 1, SOUTH, wallExists); 
-                }
-                break;
-            case 'e':
-                if (x < m_maze->getWidth() - 1) {
-                    m_mazeGraphic->declareWall(x + 1, y, WEST, wallExists); 
-                }
-                break;
-            case 's':
-                if (y > 0) {
-                    m_mazeGraphic->declareWall(x, y - 1, NORTH, wallExists); 
-                }
-                break;
-            case 'w':
-                if (x > 0) {
-                    m_mazeGraphic->declareWall(x - 1, y, EAST, wallExists); 
-                }
-                break;
-        }
+    m_mazeGraphic->declareWall(x, y, CHAR_TO_DIRECTION.at(direction), wallExists); 
+    if (P()->declareBothWallHalves() && hasOpposingWall(x, y, CHAR_TO_DIRECTION.at(direction))) {
+        std::pair<std::pair<int, int>, Direction> opposing = getOpposingWall(x, y, CHAR_TO_DIRECTION.at(direction));
+        m_mazeGraphic->declareWall(opposing.first.first, opposing.first.second, opposing.second, wallExists); 
     }
 }
 
 void MouseInterface::undeclareWall(int x, int y, char direction) {
 
-    if (x < 0 || m_mazeGraphic->getWidth() <= x || y < 0 || m_mazeGraphic->getHeight() <= y) {
+    if (!withinMaze(x, y)) {
         SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
             + std::to_string(y) + std::string("), and thus you cannot undeclare any of its walls."));
         return;
     }
 
-    switch (direction) {
-        case 'n':
-            m_mazeGraphic->undeclareWall(x, y, NORTH); 
-            break;
-        case 'e':
-            m_mazeGraphic->undeclareWall(x, y, EAST); 
-            break;
-        case 's':
-            m_mazeGraphic->undeclareWall(x, y, SOUTH); 
-            break;
-        case 'w':
-            m_mazeGraphic->undeclareWall(x, y, WEST); 
-            break;
-        default:
-            SimUtilities::print(std::string("Error: The character '") + direction + std::string("' is not mapped to a valid direction"));
-            return;
+    if (!SimUtilities::mapContains(CHAR_TO_DIRECTION, direction)) {
+        SimUtilities::print(std::string("The character '") + direction + std::string("' is not mapped to a valid direction."));
+        return;
     }
 
-    if (P()->declareBothWallHalves()) {
-        switch (direction) {
-            case 'n':
-                if (y < m_maze->getHeight() - 1) {
-                    m_mazeGraphic->undeclareWall(x, y + 1, SOUTH); 
-                }
-                break;
-            case 'e':
-                if (x < m_maze->getWidth() - 1) {
-                    m_mazeGraphic->undeclareWall(x + 1, y, WEST); 
-                }
-                break;
-            case 's':
-                if (y > 0) {
-                    m_mazeGraphic->undeclareWall(x, y - 1, NORTH); 
-                }
-                break;
-            case 'w':
-                if (x > 0) {
-                    m_mazeGraphic->undeclareWall(x - 1, y, EAST); 
-                }
-                break;
-        }
+    m_mazeGraphic->undeclareWall(x, y, CHAR_TO_DIRECTION.at(direction));
+    if (P()->declareBothWallHalves() && hasOpposingWall(x, y, CHAR_TO_DIRECTION.at(direction))) {
+        std::pair<std::pair<int, int>, Direction> opposing = getOpposingWall(x, y, CHAR_TO_DIRECTION.at(direction));
+        m_mazeGraphic->undeclareWall(opposing.first.first, opposing.first.second, opposing.second);
     }
 }
 
@@ -551,23 +488,41 @@ bool MouseInterface::isWall(std::pair<int, int> position, Direction direction) {
     bool wallExists = m_maze->getTile(position.first, position.second)->isWall(direction);
 
     if (P()->discreteInterfaceDeclareWallOnRead()) {
-        switch (direction) {
-            case NORTH:
-                declareWall(position.first, position.second, 'n', wallExists);
-                break;
-            case EAST:
-                declareWall(position.first, position.second, 'e', wallExists);
-                break;
-            case SOUTH:
-                declareWall(position.first, position.second, 's', wallExists);
-                break;
-            case WEST:
-                declareWall(position.first, position.second, 'w', wallExists);
-                break;
-        }
+        declareWall(position.first, position.second, DIRECTION_TO_CHAR.at(direction), wallExists);
     }
 
     return wallExists;
+}
+
+bool MouseInterface::withinMaze(int x, int y) const {
+    return 0 <= x && x < m_maze->getWidth() && 0 <= y && y < m_maze->getHeight();
+}
+
+bool MouseInterface::hasOpposingWall(int x, int y, Direction direction) const {
+    switch (direction) {
+        case NORTH:
+            return y < m_maze->getHeight() - 1;
+        case EAST:
+            return x < m_maze->getWidth() - 1;
+        case SOUTH:
+            return y > 0;
+        case WEST:
+            return x > 0;
+    }
+}
+
+std::pair<std::pair<int, int>, Direction> MouseInterface::getOpposingWall(int x, int y, Direction direction) const {
+    ASSERT(hasOpposingWall(x, y, direction));
+    switch (direction) {
+        case NORTH:
+            return std::make_pair(std::make_pair(x, y + 1), SOUTH);
+        case EAST:
+            return std::make_pair(std::make_pair(x + 1, y), WEST);
+        case SOUTH:
+            return std::make_pair(std::make_pair(x, y - 1), NORTH);
+        case WEST:
+            return std::make_pair(std::make_pair(x - 1, y), EAST);
+    }
 }
 
 } // namespace sim

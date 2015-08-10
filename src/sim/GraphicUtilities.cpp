@@ -188,15 +188,15 @@ std::vector<float> GraphicUtilities::getZoomedMapTransformationMatrix(const Coor
     double zoomedMapCenterYPixels = zoomedMapPosition.second + 0.5 * zoomedMapSize.second;
     double staticTranslationXPixels = zoomedMapCenterXPixels - centerXPixels;
     double staticTranslationYPixels = zoomedMapCenterYPixels - centerYPixels;
-    std::pair<double, double> staticTranslation
-        = mapPixelCoordinateToOpenGlCoordinate(staticTranslationXPixels, staticTranslationYPixels);
+    std::pair<double, double> staticTranslation =
+        mapPixelCoordinateToOpenGlCoordinate(staticTranslationXPixels, staticTranslationYPixels);
 
     // Part B: Find the dynamic translation, i.e., the current translation of the mouse.
     Cartesian mouseTranslationDelta = Cartesian(currentMouseTranslation) - initialMouseTranslation;
     double dynamicTranslationXPixels = mouseTranslationDelta.getX().getMeters() * pixelsPerMeter;
     double dynamicTranslationYPixels = mouseTranslationDelta.getY().getMeters() * pixelsPerMeter;
-    std::pair<double, double> dynamicTranslation
-        = mapPixelCoordinateToOpenGlCoordinate(dynamicTranslationXPixels, dynamicTranslationYPixels);
+    std::pair<double, double> dynamicTranslation =
+        mapPixelCoordinateToOpenGlCoordinate(dynamicTranslationXPixels, dynamicTranslationYPixels);
 
     // Combine the transalations and form the translation matrix
     double horizontalTranslation = staticTranslation.first -  dynamicTranslation.first + openGlOrigin.first;

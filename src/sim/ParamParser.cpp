@@ -106,11 +106,11 @@ int ParamParser::getIntIfHasIntAndInRange(const std::string& tag, int defaultVal
 }
 
 std::string ParamParser::getStringIfHasStringAndIsColor(const std::string& tag, const std::string& defaultValue) {
-    return getStringIfHasStringAndIsSpecial("color", tag, defaultValue, COLOR_STRINGS);
+    return getStringIfHasStringAndIsSpecial("color", tag, defaultValue, STRING_TO_COLOR);
 }
 
 std::string ParamParser::getStringIfHasStringAndIsDirection(const std::string& tag, const std::string& defaultValue) {
-    return getStringIfHasStringAndIsSpecial("direction", tag, defaultValue, DIRECTION_STRINGS);
+    return getStringIfHasStringAndIsSpecial("direction", tag, defaultValue, STRING_TO_DIRECTION);
 }
 
 void ParamParser::printTagNotFound(const std::string& type, const std::string& tag, const std::string& defaultValue) {

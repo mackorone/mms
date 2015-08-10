@@ -21,7 +21,7 @@ static const GLfloat DARK_GREEN  [3] = { 0.0f, 0.3f, 0.0f};
 static const GLfloat DARK_RED    [3] = { 0.3f, 0.0f, 0.0f};
 static const GLfloat DARK_YELLOW [3] = { 0.1f, 0.1f, 0.0f};
 
-static const std::map<std::string, const GLfloat*> COLOR_STRINGS = {
+static const std::map<std::string, const GLfloat*> STRING_TO_COLOR = {
     {"BLACK", BLACK},
     {"BLUE", BLUE},
     {"CYAN", CYAN},
@@ -39,7 +39,7 @@ static const std::map<std::string, const GLfloat*> COLOR_STRINGS = {
     {"DARK_YELLOW", DARK_YELLOW},
 };
 
-static const std::map<char, const GLfloat*> COLOR_CHARS = {
+static const std::map<char, const GLfloat*> CHAR_TO_COLOR = {
     {'k', BLACK},
     {'b', BLUE},
     {'a', GRAY},

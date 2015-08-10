@@ -3,16 +3,17 @@
 #include "Colors.h"
 #include "GraphicUtilities.h"
 #include "Param.h"
+#include "SimUtilities.h"
 #include "State.h"
 
 namespace sim {
 
-TileGraphic::TileGraphic(const Tile* tile) : m_tile(tile), m_color(COLOR_STRINGS.at(P()->tileBaseColor())),
+TileGraphic::TileGraphic(const Tile* tile) : m_tile(tile), m_color(STRING_TO_COLOR.at(P()->tileBaseColor())),
         m_distance(0), m_foggy(true) {
 }
 
 bool TileGraphic::wallDeclared(Direction direction) const {
-    return m_declaredWalls.find(direction) != m_declaredWalls.end();
+    return SimUtilities::mapContains(m_declaredWalls, direction);
 }
 
 void TileGraphic::setColor(const GLfloat* color) {
@@ -44,7 +45,7 @@ void TileGraphic::draw() const {
 
     // Draw the base of the tile
     GraphicUtilities::drawTileGraphicBase(m_tile->getX(), m_tile->getY(), m_tile->getFullPolygon(),
-        S()->tileColorsVisible() ? m_color : COLOR_STRINGS.at(P()->tileBaseColor()));
+        S()->tileColorsVisible() ? m_color : STRING_TO_COLOR.at(P()->tileBaseColor()));
 
     // Draw each of the walls of the tile
     for (Direction direction : DIRECTIONS) {
@@ -61,7 +62,7 @@ void TileGraphic::draw() const {
     std::vector<Polygon> cornerPolygons = m_tile->getCornerPolygons();
     for (int cornerNumber = 0; cornerNumber < cornerPolygons.size(); cornerNumber += 1) {
         GraphicUtilities::drawTileGraphicCorner(m_tile->getX(), m_tile->getY(), cornerNumber,
-            cornerPolygons.at(cornerNumber), COLOR_STRINGS.at(P()->tileCornerColor()));
+            cornerPolygons.at(cornerNumber), STRING_TO_COLOR.at(P()->tileCornerColor()));
     }
 
     // Draw the distance character textures
@@ -75,7 +76,7 @@ void TileGraphic::draw() const {
 
     // Draw the fog
     GraphicUtilities::drawTileGraphicFog(m_tile->getX(), m_tile->getY(), m_tile->getFullPolygon(),
-        COLOR_STRINGS.at(P()->tileFogColor()), m_foggy && S()->tileFogVisible() ? P()->tileFogAlpha() : 0.0);
+        STRING_TO_COLOR.at(P()->tileFogColor()), m_foggy && S()->tileFogVisible() ? P()->tileFogAlpha() : 0.0);
 
     // TODO: Draw the shortest path graphic, which is usefule because this is
     // the metric by which mice that don't reach the center are ranked
@@ -84,7 +85,7 @@ void TileGraphic::draw() const {
 
 void TileGraphic::updateColor() const {
     GraphicUtilities::updateTileGraphicBaseColor(m_tile->getX(), m_tile->getY(),
-        S()->tileColorsVisible() ? m_color : COLOR_STRINGS.at(P()->tileBaseColor()));
+        S()->tileColorsVisible() ? m_color : STRING_TO_COLOR.at(P()->tileBaseColor()));
 }
 
 void TileGraphic::updateDistance() const {
@@ -95,7 +96,7 @@ void TileGraphic::updateDistance() const {
         for (int col = 0; col < 5; col += 1) {
             /*
             GraphicUtilities::updateTileGraphicDistanceCharacter(m_tile->getX(), m_tile->getY(),
-                row, col, S()->tileTextVisible() ? m_color : COLOR_STRINGS.at(P()->tileBaseColor()));
+                row, col, S()->tileTextVisible() ? m_color : STRING_TO_COLOR.at(P()->tileBaseColor()));
             */
         }
     }
@@ -126,7 +127,7 @@ std::pair<const GLfloat*, GLfloat> TileGraphic::deduceWallColorAndAlpha(Directio
 
     // Either draw the true walls of the tile ...
     if (S()->wallTruthVisible()) {
-        wallColor = COLOR_STRINGS.at(P()->tileWallColor());
+        wallColor = STRING_TO_COLOR.at(P()->tileWallColor());
         wallAlpha = m_tile->isWall(direction) ? 1.0 : 0.0;
     }
 
@@ -137,20 +138,22 @@ std::pair<const GLfloat*, GLfloat> TileGraphic::deduceWallColorAndAlpha(Directio
         wallAlpha = 1.0;
 
         // If the wall was declared, use the wall color and tile base color ...
-        if (m_declaredWalls.find(direction) != m_declaredWalls.end()) {
+        if (wallDeclared(direction)) {
             if (m_declaredWalls.at(direction)) {
                 if (m_tile->isWall(direction)) {
-                    wallColor = COLOR_STRINGS.at(P()->tileWallColor());
+                    wallColor = STRING_TO_COLOR.at(P()->tileWallColor());
                 }
                 else {
-                    wallColor = COLOR_STRINGS.at(P()->tileIncorrectlyDeclaredWallColor());
+                    wallColor = STRING_TO_COLOR.at(P()->tileIncorrectlyDeclaredWallColor());
                 }
             }
             else {
                 if (m_tile->isWall(direction)) {
-                    wallColor = COLOR_STRINGS.at(P()->tileIncorrectlyDeclaredNoWallColor());
+                    wallColor = STRING_TO_COLOR.at(P()->tileIncorrectlyDeclaredNoWallColor());
                 }
                 else {
+                    // We assign an arbitrary value here to avoid a nullptr derefernce
+                    wallColor = STRING_TO_COLOR.at(P()->tileWallColor());
                     wallAlpha = 0.0;
                 }
             }
@@ -159,10 +162,10 @@ std::pair<const GLfloat*, GLfloat> TileGraphic::deduceWallColorAndAlpha(Directio
         // ... otherwise, use the undeclared walls colors
         else {
             if (m_tile->isWall(direction)) {
-                wallColor = COLOR_STRINGS.at(P()->tileUndeclaredWallColor());
+                wallColor = STRING_TO_COLOR.at(P()->tileUndeclaredWallColor());
             }
             else {
-                wallColor = COLOR_STRINGS.at(P()->tileUndeclaredNoWallColor());
+                wallColor = STRING_TO_COLOR.at(P()->tileUndeclaredNoWallColor());
             }
         }
     }

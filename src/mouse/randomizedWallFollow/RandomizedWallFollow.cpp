@@ -12,7 +12,7 @@ sim::InterfaceType RandomizedWallFollow::interfaceType() const {
     return sim::DISCRETE;
 }
 
-void RandomizedWallFollow::solve(int mazeWidth, int mazeHeight, sim::MouseInterface* mouse) {
+void RandomizedWallFollow::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
     while (true){
         if (rand() % 2 == 0){
             rightWallFollowStep(mouse);

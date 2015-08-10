@@ -116,6 +116,10 @@ Indentation
 
 // One level of indentation equals four spaces. No more, no less, and certainly no tab characters.
 
+// If you're performing a multi-line assignment, put the equals sign on the first line, as in:
+int reallyLongVariableNameThatReallyShouldBeSomethingElse =
+    someReallyLongFunctionNameThatCouldProbablyBeShorter();
+
 
 Pass by Reference vs Pass by Value vs Passing a Pointer
 -------------------------------------------------------
@@ -186,3 +190,10 @@ Includes
 #include "MyFileOne.h"
 #include "ZooFoo.h"
 
+
+Gotchas
+-------
+
+// Don't use sim::P() or sim::S() to initialize any static variables. The
+// initialization order of static variables is undefined and thus can mess with
+// the delicate instantiation of the Param and State objects.
