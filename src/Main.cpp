@@ -4,6 +4,7 @@
 
 #include "mouse/MouseAlgorithms.h"
 #include "sim/GraphicUtilities.h"
+#include "sim/InterfaceTypes.h"
 #include "sim/Keys.h"
 #include "sim/Logging.h"
 #include "sim/Maze.h"
@@ -156,7 +157,7 @@ void solve() {
     // First, check to ensure that the mouse algorithm is valid
     MouseAlgorithms mouseAlgorithms;
     std::map<std::string, IMouseAlgorithm*> algorithms = mouseAlgorithms.getAlgorithms();
-    if (algorithms.find(sim::P()->mouseAlgorithm()) == algorithms.end()) {
+    if (!sim::SimUtilities::mapContains(algorithms, sim::P()->mouseAlgorithm())) {
         sim::SimUtilities::print("Error: \"" + sim::P()->mouseAlgorithm() + "\" is not a valid mouse algorithm.");
         sim::SimUtilities::quit();
     }
@@ -172,7 +173,16 @@ void solve() {
     }
 
     // Initialize the interface type
-    sim::S()->setInterfaceType(algorithm->interfaceType());
+    if (!sim::SimUtilities::mapContains(sim::STRING_TO_INTERFACE_TYPE, algorithm->interfaceType())) {
+        PRINT(ERROR, "\"%v\" is not a valid interface type. You must declare the "
+            "interface type of the mouse algorithm \"%v\" to be either \"%v\" or \"%v\".",
+            algorithm->interfaceType(),
+            sim::P()->mouseAlgorithm(),
+            sim::INTERFACE_TYPE_TO_STRING.at(sim::InterfaceType::DISCRETE),
+            sim::INTERFACE_TYPE_TO_STRING.at(sim::InterfaceType::CONTINUOUS));
+        sim::SimUtilities::quit();
+    }
+    sim::S()->setInterfaceType(sim::STRING_TO_INTERFACE_TYPE.at(algorithm->interfaceType()));
 
     // Wait for the window to appear
     sim::SimUtilities::sleep(sim::Seconds(sim::P()->glutInitDuration()));

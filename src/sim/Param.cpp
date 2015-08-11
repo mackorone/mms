@@ -3,6 +3,9 @@
 #include <limits>
 #include <random>
 
+#include "Colors.h"
+#include "Directions.h"
+#include "Layouts.h"
 #include "Logging.h"
 #include "ParamParser.h"
 #include "SimUtilities.h"
@@ -33,40 +36,70 @@ Param::Param() {
     ParamParser parser(SimUtilities::getProjectDirectory() + "res/parameters.xml");
 
     // Graphical Parameters
-    m_defaultWindowWidth = parser.getIntIfHasIntAndNotLessThan("default-window-width", 930, 100);
-    m_defaultWindowHeight = parser.getIntIfHasIntAndNotLessThan("default-window-height", 470, 100);
-    m_defaultLayout = parser.getStringIfHasStringAndIsLayout("default-layout", "BOTH");
-    m_windowBorderWidth = parser.getIntIfHasIntAndInRange("window-border-width", 10, 0, 25);
-    m_minZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange("min-zoomed-map-scale", 0.02, 0.01, 0.1);
-    m_maxZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange("max-zoomed-map-scale", 1.0, 0.5, 2.0);
+    m_defaultWindowWidth = parser.getIntIfHasIntAndNotLessThan(
+        "default-window-width", 930, 100);
+    m_defaultWindowHeight = parser.getIntIfHasIntAndNotLessThan(
+        "default-window-height", 470, 100);
+    m_defaultLayout = parser.getStringIfHasStringAndIsLayout(
+        "default-layout", LAYOUT_TO_STRING.at(Layout::BOTH));
+    m_windowBorderWidth = parser.getIntIfHasIntAndInRange(
+        "window-border-width", 10, 0, 25);
+    m_minZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange(
+        "min-zoomed-map-scale", 0.02, 0.01, 0.1);
+    m_maxZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange(
+        "max-zoomed-map-scale", 1.0, 0.5, 2.0);
     m_defaultZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange(
         "default-zoomed-map-scale", 0.1, m_minZoomedMapScale, m_maxZoomedMapScale);
-    m_defaultRotateZoomedMap = parser.getBoolIfHasBool("default-rotate-zoomed-map", false);
-    m_frameRate = parser.getIntIfHasIntAndInRange("frame-rate", 60, 1, 120);
-    m_printLateFrames = parser.getBoolIfHasBool("print-late-frames", false);
-    m_tileBaseColor = parser.getStringIfHasStringAndIsColor("tile-base-color", "BLACK");
-    m_tileWallColor = parser.getStringIfHasStringAndIsColor("tile-wall-color", "RED");
-    m_tileCornerColor = parser.getStringIfHasStringAndIsColor("tile-corner-color", "GRAY");
-    m_tileTextColor = parser.getStringIfHasStringAndIsColor("tile-text-color", "DARK_GREEN");
-    m_tileFogColor = parser.getStringIfHasStringAndIsColor("tile-fog-color", "GRAY");
-    m_tileUndeclaredWallColor = parser.getStringIfHasStringAndIsColor("tile-undeclared-wall-color", "DARK_RED");
-    m_tileUndeclaredNoWallColor = parser.getStringIfHasStringAndIsColor("tile-undeclared-no-wall-color", "DARK_GRAY");
-    m_tileIncorrectlyDeclaredWallColor = parser.getStringIfHasStringAndIsColor("tile-incorrectly-declared-wall-color", "ORANGE");
-    m_tileIncorrectlyDeclaredNoWallColor = parser.getStringIfHasStringAndIsColor("tile-incorrectly-declared-no-wall-color", "DARK_CYAN");
-    m_mouseBodyColor = parser.getStringIfHasStringAndIsColor("mouse-body-color", "BLUE");
-    m_mouseWheelColor = parser.getStringIfHasStringAndIsColor("mouse-wheel-color", "GREEN");
-    m_mouseSensorColor = parser.getStringIfHasStringAndIsColor("mouse-sensor-color", "GREEN");
-    m_mouseViewColor = parser.getStringIfHasStringAndIsColor("mouse-view-color", "WHITE");
-    m_defaultMousePathVisible = parser.getBoolIfHasBool("default-mouse-path-visible", true);
-    m_defaultWallTruthVisible = parser.getBoolIfHasBool("default-wall-truth-visible", false);
-    m_defaultTileColorsVisible = parser.getBoolIfHasBool("default-tile-colors-visible", true);
-    m_defaultTileTextVisible = parser.getBoolIfHasBool("default-tile-text-visible", true);
-    m_defaultTileFogVisible = parser.getBoolIfHasBool("default-tile-fog-visible", true);
-    m_tileFogAlpha = parser.getDoubleIfHasDoubleAndInRange("tile-fog-alpha", 0.15, 0.0, 1.0);
-    m_defaultWireframeMode = parser.getBoolIfHasBool("default-wireframe-mode", false);
+    m_defaultRotateZoomedMap = parser.getBoolIfHasBool(
+        "default-rotate-zoomed-map", false);
+    m_frameRate = parser.getIntIfHasIntAndInRange(
+        "frame-rate", 60, 1, 120);
+    m_printLateFrames = parser.getBoolIfHasBool(
+        "print-late-frames", false);
+    m_tileBaseColor = parser.getStringIfHasStringAndIsColor(
+        "tile-base-color", COLOR_TO_STRING.at(Color::BLACK));
+    m_tileWallColor = parser.getStringIfHasStringAndIsColor(
+        "tile-wall-color", COLOR_TO_STRING.at(Color::RED));
+    m_tileCornerColor = parser.getStringIfHasStringAndIsColor(
+        "tile-corner-color", COLOR_TO_STRING.at(Color::GRAY));
+    m_tileTextColor = parser.getStringIfHasStringAndIsColor(
+        "tile-text-color", COLOR_TO_STRING.at(Color::DARK_GREEN));
+    m_tileFogColor = parser.getStringIfHasStringAndIsColor(
+        "tile-fog-color", COLOR_TO_STRING.at(Color::GRAY));
+    m_tileUndeclaredWallColor = parser.getStringIfHasStringAndIsColor(
+        "tile-undeclared-wall-color", COLOR_TO_STRING.at(Color::DARK_RED));
+    m_tileUndeclaredNoWallColor = parser.getStringIfHasStringAndIsColor(
+        "tile-undeclared-no-wall-color", COLOR_TO_STRING.at(Color::DARK_GRAY));
+    m_tileIncorrectlyDeclaredWallColor = parser.getStringIfHasStringAndIsColor(
+        "tile-incorrectly-declared-wall-color", COLOR_TO_STRING.at(Color::ORANGE));
+    m_tileIncorrectlyDeclaredNoWallColor = parser.getStringIfHasStringAndIsColor(
+        "tile-incorrectly-declared-no-wall-color", COLOR_TO_STRING.at(Color::DARK_CYAN));
+    m_mouseBodyColor = parser.getStringIfHasStringAndIsColor(
+        "mouse-body-color", COLOR_TO_STRING.at(Color::BLUE));
+    m_mouseWheelColor = parser.getStringIfHasStringAndIsColor(
+        "mouse-wheel-color", COLOR_TO_STRING.at(Color::GREEN));
+    m_mouseSensorColor = parser.getStringIfHasStringAndIsColor(
+        "mouse-sensor-color", COLOR_TO_STRING.at(Color::GREEN));
+    m_mouseViewColor = parser.getStringIfHasStringAndIsColor(
+        "mouse-view-color", COLOR_TO_STRING.at(Color::WHITE));
+    m_defaultMousePathVisible = parser.getBoolIfHasBool(
+        "default-mouse-path-visible", true);
+    m_defaultWallTruthVisible = parser.getBoolIfHasBool(
+        "default-wall-truth-visible", false);
+    m_defaultTileColorsVisible = parser.getBoolIfHasBool(
+        "default-tile-colors-visible", true);
+    m_defaultTileTextVisible = parser.getBoolIfHasBool(
+        "default-tile-text-visible", true);
+    m_defaultTileFogVisible = parser.getBoolIfHasBool(
+        "default-tile-fog-visible", true);
+    m_tileFogAlpha = parser.getDoubleIfHasDoubleAndInRange(
+        "tile-fog-alpha", 0.15, 0.0, 1.0);
+    m_defaultWireframeMode = parser.getBoolIfHasBool(
+        "default-wireframe-mode", false);
 
     // Simulation Parameters
-    bool useRandomSeed = parser.getBoolIfHasBool("use-random-seed", false);
+    bool useRandomSeed = parser.getBoolIfHasBool(
+        "use-random-seed", false);
     if (useRandomSeed && !parser.hasIntValue("random-seed")) {
         PRINT(WARN,
             "The value of use-random-seed is true but no valid random-seed "
@@ -74,49 +107,81 @@ Param::Param() {
         useRandomSeed = false;
     }
     m_randomSeed = (useRandomSeed ? parser.getIntValue("random-seed") : std::random_device()());
-    m_crashMessage = parser.getStringIfHasString("crash-message", "CRASH");
-    m_glutInitDuration = parser.getDoubleIfHasDoubleAndInRange("glut-init-duration", 0.1, 0.0, 5.0);
-    m_defaultPaused = parser.getBoolIfHasBool("default-paused", false);
-    m_minSleepDuration = parser.getDoubleIfHasDoubleAndInRange("min-sleep-duration", 5, 1, 25);
+    m_crashMessage = parser.getStringIfHasString(
+        "crash-message", "CRASH");
+    m_glutInitDuration = parser.getDoubleIfHasDoubleAndInRange(
+        "glut-init-duration", 0.1, 0.0, 5.0);
+    m_defaultPaused = parser.getBoolIfHasBool(
+        "default-paused", false);
+    m_minSleepDuration = parser.getDoubleIfHasDoubleAndInRange(
+        "min-sleep-duration", 5, 1, 25);
 
     // TODO: MACK - get rid of these once I've written the simulation time component
-    m_discreteInterfaceMinSpeed = parser.getDoubleIfHasDouble("discrete-interface-min-speed", 1.0);
-    m_discreteInterfaceMaxSpeed = parser.getDoubleIfHasDouble("discrete-interface-max-speed", 300.0);
+    m_discreteInterfaceMinSpeed = parser.getDoubleIfHasDouble(
+        "discrete-interface-min-speed", 1.0);
+    m_discreteInterfaceMaxSpeed = parser.getDoubleIfHasDouble(
+        "discrete-interface-max-speed", 300.0);
     m_discreteInterfaceDefaultSpeed = parser.getDoubleIfHasDoubleAndInRange(
         "discrete-interface-default-speed", 30.0, m_discreteInterfaceMinSpeed, m_discreteInterfaceMaxSpeed);
 
-    m_discreteInterfaceDeclareWallOnRead = parser.getBoolIfHasBool("discrete-interface-declare-wall-on-read", true);
-    m_discreteInterfaceUnfogTileOnEntry = parser.getBoolIfHasBool("discrete-interface-unfog-tile-on-entry", true);
-    m_declareBothWallHalves = parser.getBoolIfHasBool("declare-both-wall-halves", true);
-    m_mousePositionUpdateRate = parser.getIntIfHasIntAndInRange("mouse-position-update-rate", 1000, 100, 10000);
-    m_printLateMousePostitionUpdates = parser.getBoolIfHasBool("print-late-mouse-position-updates", false);
-    m_collisionDetectionRate = parser.getIntIfHasIntAndInRange("collision-detection-rate", 40, 1, 100);
-    m_printLateCollisionDetections = parser.getBoolIfHasBool("print-late-collision-detections", false);
-    m_printLateSensorReads = parser.getBoolIfHasBool("print-late-sensor-reads", false);
+    m_discreteInterfaceDeclareWallOnRead = parser.getBoolIfHasBool(
+        "discrete-interface-declare-wall-on-read", true);
+    m_discreteInterfaceUnfogTileOnEntry = parser.getBoolIfHasBool(
+        "discrete-interface-unfog-tile-on-entry", true);
+    m_declareBothWallHalves = parser.getBoolIfHasBool(
+        "declare-both-wall-halves", true);
+    m_mousePositionUpdateRate = parser.getIntIfHasIntAndInRange(
+        "mouse-position-update-rate", 1000, 100, 10000);
+    m_printLateMousePostitionUpdates = parser.getBoolIfHasBool(
+        "print-late-mouse-position-updates", false);
+    m_collisionDetectionRate = parser.getIntIfHasIntAndInRange(
+        "collision-detection-rate", 40, 1, 100);
+    m_printLateCollisionDetections = parser.getBoolIfHasBool(
+        "print-late-collision-detections", false);
+    m_printLateSensorReads = parser.getBoolIfHasBool(
+        "print-late-sensor-reads", false);
     m_numberOfCircleApproximationPoints = parser.getIntIfHasIntAndInRange(
         "number-of-circle-approximation-points", 8, 3, 30);
-    m_numberOfSensorEdgePoints = parser.getIntIfHasIntAndInRange("number-of-sensor-edge-points", 3, 2, 10);
-    m_numberOfArchivedRuns = parser.getIntIfHasIntAndInRange("number-of-archived-runs", 20, 0, 1000);
+    m_numberOfSensorEdgePoints = parser.getIntIfHasIntAndInRange(
+        "number-of-sensor-edge-points", 3, 2, 10);
+    m_numberOfArchivedRuns = parser.getIntIfHasIntAndInRange(
+        "number-of-archived-runs", 20, 0, 1000);
 
     // Maze Parameters
-    m_wallWidth = parser.getDoubleIfHasDoubleAndInRange("wall-width", 0.012, 0.006, 0.024);
-    m_wallLength = parser.getDoubleIfHasDoubleAndInRange("wall-length", 0.168, 0.084, 0.336);
-    m_wallHeight = parser.getDoubleIfHasDoubleAndInRange("wall-height", 0.05, 0.025, 0.1);
-    m_enforceOfficialMazeRules = parser.getBoolIfHasBool("enforce-official-maze-rules", false);
-    m_mazeDirectory = parser.getStringIfHasString("maze-directory", "res/maze/");
-    m_mazeFile = parser.getStringIfHasString("maze-file", "");
-    m_useMazeFile = parser.getBoolIfHasBool("use-maze-file", false);
-    m_generatedMazeWidth = parser.getIntIfHasIntAndInRange("generated-maze-width", 16, 1, 256);
-    m_generatedMazeHeight = parser.getIntIfHasIntAndInRange("generated-maze-height", 16, 1, 256);
-    m_mazeAlgorithm = parser.getStringIfHasString("maze-algorithm", "Tomasz");
-    m_saveGeneratedMaze = parser.getBoolIfHasBool("save-generated-maze", true);
-    m_mazeMirrored = parser.getBoolIfHasBool("maze-mirrored", false);
-    m_mazeRotations = parser.getIntIfHasIntAndInRange("maze-rotations", 0, 0, 3);
+    m_wallWidth = parser.getDoubleIfHasDoubleAndInRange(
+        "wall-width", 0.012, 0.006, 0.024);
+    m_wallLength = parser.getDoubleIfHasDoubleAndInRange(
+        "wall-length", 0.168, 0.084, 0.336);
+    m_wallHeight = parser.getDoubleIfHasDoubleAndInRange(
+        "wall-height", 0.05, 0.025, 0.1);
+    m_enforceOfficialMazeRules = parser.getBoolIfHasBool(
+        "enforce-official-maze-rules", false);
+    m_mazeDirectory = parser.getStringIfHasString(
+        "maze-directory", "res/maze/");
+    m_mazeFile = parser.getStringIfHasString(
+        "maze-file", "");
+    m_useMazeFile = parser.getBoolIfHasBool(
+        "use-maze-file", false);
+    m_generatedMazeWidth = parser.getIntIfHasIntAndInRange(
+        "generated-maze-width", 16, 1, 256);
+    m_generatedMazeHeight = parser.getIntIfHasIntAndInRange(
+        "generated-maze-height", 16, 1, 256);
+    m_mazeAlgorithm = parser.getStringIfHasString(
+        "maze-algorithm", "Tomasz");
+    m_saveGeneratedMaze = parser.getBoolIfHasBool(
+        "save-generated-maze", true);
+    m_mazeMirrored = parser.getBoolIfHasBool(
+        "maze-mirrored", false);
+    m_mazeRotations = parser.getIntIfHasIntAndInRange(
+        "maze-rotations", 0, 0, 3);
 
     // Mouse parameters
-    m_mouseDirectory = parser.getStringIfHasString("mouse-directory", "res/mouse/");
-    m_mouseAlgorithm = parser.getStringIfHasString("mouse-algorithm", "RightWallFollow");
-    m_mouseStartingDirection = parser.getStringIfHasStringAndIsDirection("mouse-starting-direction", "NORTH");
+    m_mouseDirectory = parser.getStringIfHasString(
+        "mouse-directory", "res/mouse/");
+    m_mouseAlgorithm = parser.getStringIfHasString(
+        "mouse-algorithm", "RightWallFollow");
+    m_mouseStartingDirection = parser.getStringIfHasStringAndIsDirection(
+        "mouse-starting-direction", DIRECTION_TO_STRING.at(Direction::NORTH));
 }
 
 int Param::defaultWindowWidth() {

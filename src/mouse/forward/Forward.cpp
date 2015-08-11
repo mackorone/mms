@@ -6,8 +6,8 @@ std::string Forward::mouseFile() const {
     return "mouse.xml";
 }
 
-sim::InterfaceType Forward::interfaceType() const {
-    return sim::InterfaceType::DISCRETE;
+std::string Forward::interfaceType() const {
+    return "DISCRETE";
 }
 
 void Forward::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {

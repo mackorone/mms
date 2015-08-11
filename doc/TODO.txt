@@ -1,6 +1,5 @@
 High Pri:
 
-- The mouse algorithms shouldn't deal with InterfaceType... use a string or something instead, put a map in InterfaceTypes..
 - Rewrite text so that it's performant
     - Make sure that MackAlgo looks normal... the walls look gray under the colored tiles...
 - Put the vertex shader in its own source file

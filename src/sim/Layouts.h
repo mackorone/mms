@@ -13,6 +13,12 @@ static const std::map<Layout, Layout> LAYOUT_CYCLE {
     {Layout::BOTH, Layout::FULL},
 };
 
+static const std::map<Layout, std::string> LAYOUT_TO_STRING {
+    {Layout::FULL, "FULL"},
+    {Layout::ZOOMED, "ZOOMED"},
+    {Layout::BOTH, "BOTH"},
+};
+
 static const std::map<std::string, Layout> STRING_TO_LAYOUT {
     {"FULL", Layout::FULL},
     {"ZOOMED", Layout::ZOOMED},

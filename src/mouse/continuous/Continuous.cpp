@@ -8,8 +8,8 @@ std::string Continuous::mouseFile() const {
     return "megaMouse.xml";
 }
 
-sim::InterfaceType Continuous::interfaceType() const {
-    return sim::InterfaceType::CONTINUOUS;
+std::string Continuous::interfaceType() const {
+    return "CONTINUOUS";
 }
 
 void Continuous::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {

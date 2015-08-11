@@ -28,7 +28,7 @@ public:
     // use the SimUtilities::print function. Your mission, should you choose to
     // accept it, is to replace, everywhere in the code, SimUtilities::print
     // with an appropriate PRINT or IF_PRINT_ELSE_LOG. Be mindful of the
-    // severity (DEBUG, INFO, WARN, ERROR, FATAL) that you use for log
+    // severity (DEBUG, INFO, WARN, ERROR) that you use for log
     // statements, and make sure to format the messages correctly (keeping
     // whitespace in mind). Once you've replaced all of the
     // SimUtilities::print, remove the print function from here and from

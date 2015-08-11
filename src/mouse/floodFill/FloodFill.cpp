@@ -16,8 +16,8 @@ std::string FloodFill::mouseFile() const {
     return "mouse.xml";
 }
 
-sim::InterfaceType FloodFill::interfaceType() const {
-    return sim::InterfaceType::DISCRETE;
+std::string FloodFill::interfaceType() const {
+    return "DISCRETE";
 }
 
 void FloodFill::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {

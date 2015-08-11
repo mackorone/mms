@@ -8,8 +8,8 @@ std::string RandomizedWallFollow::mouseFile() const {
     return "mouse.xml";
 }
 
-sim::InterfaceType RandomizedWallFollow::interfaceType() const {
-    return sim::InterfaceType::DISCRETE;
+std::string RandomizedWallFollow::interfaceType() const {
+    return "DISCRETE";
 }
 
 void RandomizedWallFollow::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {

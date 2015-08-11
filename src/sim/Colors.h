@@ -42,6 +42,24 @@ static const std::map<Color, std::tuple<float, float, float>> COLOR_TO_RGB {
     {Color::DARK_YELLOW, std::make_tuple(0.1f, 0.1f, 0.0f)},
 };
 
+static const std::map<Color, std::string> COLOR_TO_STRING = {
+    {Color::BLACK      , "BLACK"      },
+    {Color::BLUE       , "BLUE"       },
+    {Color::CYAN       , "CYAN"       },
+    {Color::GRAY       , "GRAY"       },
+    {Color::GREEN      , "GREEN"      },
+    {Color::ORANGE     , "ORANGE"     },
+    {Color::RED        , "RED"        },
+    {Color::WHITE      , "WHITE"      },
+    {Color::YELLOW     , "YELLOW"     },
+    {Color::DARK_BLUE  , "DARK_BLUE"  },
+    {Color::DARK_CYAN  , "DARK_CYAN"  },
+    {Color::DARK_GRAY  , "DARK_GRAY"  },
+    {Color::DARK_GREEN , "DARK_GREEN" },
+    {Color::DARK_RED   , "DARK_RED"   },
+    {Color::DARK_YELLOW, "DARK_YELLOW"},
+};
+
 static const std::map<std::string, Color> STRING_TO_COLOR = {
     {"BLACK"      , Color::BLACK      },
     {"BLUE"       , Color::BLUE       },

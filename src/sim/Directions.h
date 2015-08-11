@@ -37,6 +37,13 @@ static const std::map<char, Direction> CHAR_TO_DIRECTION {
     {'w', Direction::WEST},
 };
 
+static const std::map<Direction, std::string> DIRECTION_TO_STRING {
+    {Direction::NORTH, "NORTH"},
+    {Direction::EAST, "EAST"},
+    {Direction::SOUTH, "SOUTH"},
+    {Direction::WEST, "WEST"},
+};
+
 static const std::map<std::string, Direction> STRING_TO_DIRECTION {
     {"NORTH", Direction::NORTH},
     {"EAST", Direction::EAST},

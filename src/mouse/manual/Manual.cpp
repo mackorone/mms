@@ -12,8 +12,8 @@ std::string Manual::mouseFile() const {
     return "mouse.xml";
 }
 
-sim::InterfaceType Manual::interfaceType() const {
-    return sim::InterfaceType::CONTINUOUS;
+std::string Manual::interfaceType() const {
+    return "CONTINUOUS";
 }
 
 void Manual::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {

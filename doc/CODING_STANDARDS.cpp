@@ -5,6 +5,14 @@ Line Length
 // broken up into two lines.
 
 
+Constants
+---------
+
+// Don't use string literals for any value of type Color, Direction, Key, Layout, or InterfaceType.
+// Instead, to provide better safety, get the string value by using the appropriately defined map, as in:
+std::string northString = STRING_TO_DIRECTION.at(Direction::NORTH);
+
+
 Braces
 ------
 
