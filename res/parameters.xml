@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!-- Graphical Parameters -->
-<initial-window-width>930</initial-window-width> <!-- Pixels -->
-<initial-window-height>470</initial-window-height> <!-- Pixels -->
+<default-window-width>930</default-window-width> <!-- Pixels -->
+<default-window-height>470</default-window-height> <!-- Pixels -->
+<default-layout>FULL</default-layout> <!-- FULL, ZOOMED, BOTH -->
 <window-border-width>10</window-border-width> <!-- Pixels -->
 <min-zoomed-map-scale>0.02</min-zoomed-map-scale>
 <max-zoomed-map-scale>1.0</max-zoomed-map-scale>
@@ -71,5 +72,5 @@
 
 <!-- Mouse Parameters -->
 <mouse-directory>res/mouse/</mouse-directory> <!-- Relative to project root -->
-<mouse-algorithm>FloodFill</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
+<mouse-algorithm>Manual</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
 <mouse-starting-direction>NORTH</mouse-starting-direction> <!-- NORTH, EAST, SOUTH, or WEST -->

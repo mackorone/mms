@@ -16,8 +16,9 @@ public:
     static Param* getInstance();
 
     // Graphics parameters
-    int initialWindowWidth();
-    int initialWindowHeight();
+    int defaultWindowWidth();
+    int defaultWindowHeight();
+    std::string defaultLayout();
     int windowBorderWidth();
     double minZoomedMapScale();
     double maxZoomedMapScale();
@@ -99,8 +100,9 @@ private:
     static Param* INSTANCE;
 
     // Graphics parameters
-    int m_initialWindowWidth;
-    int m_initialWindowHeight;
+    int m_defaultWindowWidth;
+    int m_defaultWindowHeight;
+    std::string m_defaultLayout;
     int m_windowBorderWidth;
     double m_minZoomedMapScale;
     double m_maxZoomedMapScale;

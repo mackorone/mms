@@ -4,13 +4,16 @@
 
 namespace sim {
 
-static const int SPACE =  32;
+enum class Key { LEFT, RIGHT, UP, DOWN, SPACE };
 
-static const int LEFT  = 100;
-static const int UP    = 101;
-static const int RIGHT = 102;
-static const int DOWN  = 103;
+static const std::vector<Key> ARROW_KEYS = { Key::LEFT, Key::RIGHT, Key::UP, Key::DOWN };
 
-static const std::vector<int> ARROW_KEYS = { LEFT, UP, RIGHT, DOWN };
+static const std::map<int, Key> INT_TO_KEY {
+    { 32, Key::SPACE},
+    {100, Key::LEFT},
+    {102, Key::RIGHT},
+    {101, Key::UP},
+    {103, Key::DOWN},
+};
 
 } // namespace sim

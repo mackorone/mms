@@ -49,16 +49,16 @@ bool MazeChecker::isEnclosed(const std::vector<std::vector<BasicTile>>& maze) {
             if (1 < x && x < maze.size() - 1 && 1 < y && y < maze.at(x).size() - 1) {
                 continue;
             }
-            if (x == 0 && !maze.at(x).at(y).walls.at(WEST)) {
+            if (x == 0 && !maze.at(x).at(y).walls.at(Direction::WEST)) {
                 return false; 
             }
-            if (y == 0 && !maze.at(x).at(y).walls.at(SOUTH)) {
+            if (y == 0 && !maze.at(x).at(y).walls.at(Direction::SOUTH)) {
                 return false; 
             }
-            if (x == maze.size() - 1 && !maze.at(x).at(y).walls.at(EAST)) {
+            if (x == maze.size() - 1 && !maze.at(x).at(y).walls.at(Direction::EAST)) {
                 return false; 
             }
-            if (y == maze.at(x).size() - 1 && !maze.at(x).at(y).walls.at(NORTH)) {
+            if (y == maze.at(x).size() - 1 && !maze.at(x).at(y).walls.at(Direction::NORTH)) {
                 return false; 
             }
         }
@@ -161,7 +161,7 @@ bool MazeChecker::hasThreeStartingWalls(const std::vector<std::vector<BasicTile>
     // 1) The maze is nonempty
     // 2) The mouse always starts in the lower-left corner
     auto walls = maze.at(0).at(0).walls;
-    return walls.at(NORTH) != walls.at(EAST);
+    return walls.at(Direction::NORTH) != walls.at(Direction::EAST);
 }
 
 bool MazeChecker::isUnsolvableByWallFollower(const std::vector<std::vector<BasicTile>>& maze) {

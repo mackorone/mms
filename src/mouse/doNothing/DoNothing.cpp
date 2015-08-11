@@ -7,7 +7,7 @@ std::string DoNothing::mouseFile() const {
 }
 
 sim::InterfaceType DoNothing::interfaceType() const {
-    return sim::DISCRETE;
+    return sim::InterfaceType::DISCRETE;
 }
 
 void DoNothing::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {

@@ -234,14 +234,14 @@ bool MouseInterface::wallRight() {
     std::pair<int, int> position = getDiscretizedTranslation();
 
     switch (getDiscretizedRotation()) {
-        case NORTH:
-            return isWall(position, EAST);
-        case EAST:
-            return isWall(position, SOUTH);
-        case SOUTH:
-            return isWall(position, WEST);
-        case WEST:
-            return isWall(position, NORTH);
+        case Direction::NORTH:
+            return isWall(position, Direction::EAST);
+        case Direction::EAST:
+            return isWall(position, Direction::SOUTH);
+        case Direction::SOUTH:
+            return isWall(position, Direction::WEST);
+        case Direction::WEST:
+            return isWall(position, Direction::NORTH);
     }
 }
 
@@ -252,14 +252,14 @@ bool MouseInterface::wallLeft() {
     std::pair<int, int> position = getDiscretizedTranslation();
 
     switch (getDiscretizedRotation()) {
-        case NORTH:
-            return isWall(position, WEST);
-        case EAST:
-            return isWall(position, NORTH);
-        case SOUTH:
-            return isWall(position, EAST);
-        case WEST:
-            return isWall(position, SOUTH);
+        case Direction::NORTH:
+            return isWall(position, Direction::WEST);
+        case Direction::EAST:
+            return isWall(position, Direction::NORTH);
+        case Direction::SOUTH:
+            return isWall(position, Direction::EAST);
+        case Direction::WEST:
+            return isWall(position, Direction::SOUTH);
     }
 }
 
@@ -288,7 +288,7 @@ void MouseInterface::moveForward() {
     Degrees destinationRotation(0.0);
 
     switch (getDiscretizedRotation()) {
-        case NORTH: {
+        case Direction::NORTH: {
             destinationTranslation += Cartesian(Meters(0), tileLength);
             destinationRotation = Degrees(0);
             while (m_mouse->getCurrentTranslation().getY() < destinationTranslation.getY()) {
@@ -298,7 +298,7 @@ void MouseInterface::moveForward() {
             }
             break;
         }
-        case EAST: {
+        case Direction::EAST: {
             destinationTranslation += Cartesian(tileLength, Meters(0));
             destinationRotation = Degrees(270);
             while (m_mouse->getCurrentTranslation().getX() < destinationTranslation.getX()) {
@@ -308,7 +308,7 @@ void MouseInterface::moveForward() {
             }
             break;
         }
-        case SOUTH: {
+        case Direction::SOUTH: {
             destinationTranslation += Cartesian(Meters(0), tileLength * -1);
             destinationRotation = Degrees(180);
             while (destinationTranslation.getY() < m_mouse->getCurrentTranslation().getY()) {
@@ -318,7 +318,7 @@ void MouseInterface::moveForward() {
             }
             break;
         }
-        case WEST: {
+        case Direction::WEST: {
             destinationTranslation += Cartesian(tileLength * -1, Meters(0));
             destinationRotation = Degrees(90);
             while (destinationTranslation.getX() < m_mouse->getCurrentTranslation().getX()) {
@@ -346,7 +346,7 @@ void MouseInterface::turnRight() {
     Degrees destinationRotation = m_mouse->getCurrentRotation() - Degrees(90);
 
     switch (getDiscretizedRotation()) {
-        case NORTH: {
+        case Direction::NORTH: {
             while (destinationRotation < m_mouse->getCurrentRotation() || m_mouse->getCurrentRotation() < Degrees(180)) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(-S()->simSpeed()/2.0), RadiansPerSecond(-S()->simSpeed()/2.0));
@@ -354,8 +354,8 @@ void MouseInterface::turnRight() {
             }
             break;
         }
-        case EAST:
-        case SOUTH: {
+        case Direction::EAST:
+        case Direction::SOUTH: {
             while (destinationRotation < m_mouse->getCurrentRotation()) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(-S()->simSpeed()/2.0), RadiansPerSecond(-S()->simSpeed()/2.0));
@@ -363,7 +363,7 @@ void MouseInterface::turnRight() {
             }
             break;
         }
-        case WEST: {
+        case Direction::WEST: {
             while (m_mouse->getCurrentRotation() < Degrees(180)) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(-S()->simSpeed()/2.0), RadiansPerSecond(-S()->simSpeed()/2.0));
@@ -385,7 +385,7 @@ void MouseInterface::turnLeft() {
     Degrees destinationRotation = m_mouse->getCurrentRotation() + Degrees(90);
 
     switch (getDiscretizedRotation()) {
-        case NORTH: {
+        case Direction::NORTH: {
             while (m_mouse->getCurrentRotation() < destinationRotation ||  Degrees(180) < m_mouse->getCurrentRotation()) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(S()->simSpeed()/2.0), RadiansPerSecond(S()->simSpeed()/2.0));
@@ -393,7 +393,7 @@ void MouseInterface::turnLeft() {
             }
             break;
         }
-        case EAST: {
+        case Direction::EAST: {
             while (Degrees(180) < m_mouse->getCurrentRotation()) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(S()->simSpeed()/2.0), RadiansPerSecond(S()->simSpeed()/2.0));
@@ -401,8 +401,8 @@ void MouseInterface::turnLeft() {
             }
             break;
         }
-        case SOUTH:
-        case WEST: {
+        case Direction::SOUTH:
+        case Direction::WEST: {
             while (m_mouse->getCurrentRotation() < destinationRotation) {
                 checkPaused();
                 m_mouse->setWheelSpeeds(RadiansPerSecond(S()->simSpeed()/2.0), RadiansPerSecond(S()->simSpeed()/2.0));
@@ -425,16 +425,16 @@ void MouseInterface::turnAround() {
 }
 
 void MouseInterface::ensureDiscreteInterface(const std::string& callingFunction) const {
-    if (S()->interfaceType() != DISCRETE) {
-        SimUtilities::print(std::string("Error: You must declare the interface type to be sim::DISCRETE to use MouseInterface::")
+    if (S()->interfaceType() != InterfaceType::DISCRETE) {
+        SimUtilities::print(std::string("Error: You must declare the interface type to be sim::InterfaceType::DISCRETE to use MouseInterface::")
             + callingFunction + std::string("()."));
         SimUtilities::quit();
     }
 }
 
 void MouseInterface::ensureContinuousInterface(const std::string& callingFunction) const {
-    if (S()->interfaceType() != CONTINUOUS) {
-        SimUtilities::print(std::string("Error: You must declare the interface type to be sim::CONTINUOUS to use MouseInterface::")
+    if (S()->interfaceType() != InterfaceType::CONTINUOUS) {
+        SimUtilities::print(std::string("Error: You must declare the interface type to be sim::InterfaceType::CONTINUOUS to use MouseInterface::")
             + callingFunction + std::string("()."));
         SimUtilities::quit();
     }
@@ -450,13 +450,13 @@ Direction MouseInterface::getDiscretizedRotation() const {
     int dir = static_cast<int>(floor((m_mouse->getCurrentRotation() + Degrees(45)) / Degrees(90)));
     switch (dir) {
         case 0:
-            return NORTH;
+            return Direction::NORTH;
         case 1:
-            return WEST;
+            return Direction::WEST;
         case 2:
-            return SOUTH;
+            return Direction::SOUTH;
         case 3:
-            return EAST;
+            return Direction::EAST;
     }
 }
 
@@ -466,7 +466,7 @@ void MouseInterface::prepareForLaunch() {
     sim::SimUtilities::sleep(Seconds(P()->glutInitDuration()));
 
     // Unfog the beginning tile if necessary
-    if (S()->interfaceType() == DISCRETE && P()->discreteInterfaceUnfogTileOnEntry()) {
+    if (S()->interfaceType() == InterfaceType::DISCRETE && P()->discreteInterfaceUnfogTileOnEntry()) {
         m_mazeGraphic->setTileFogginess(0, 0, false);
     }
 }
@@ -500,13 +500,13 @@ bool MouseInterface::withinMaze(int x, int y) const {
 
 bool MouseInterface::hasOpposingWall(int x, int y, Direction direction) const {
     switch (direction) {
-        case NORTH:
+        case Direction::NORTH:
             return y < m_maze->getHeight() - 1;
-        case EAST:
+        case Direction::EAST:
             return x < m_maze->getWidth() - 1;
-        case SOUTH:
+        case Direction::SOUTH:
             return y > 0;
-        case WEST:
+        case Direction::WEST:
             return x > 0;
     }
 }
@@ -514,14 +514,14 @@ bool MouseInterface::hasOpposingWall(int x, int y, Direction direction) const {
 std::pair<std::pair<int, int>, Direction> MouseInterface::getOpposingWall(int x, int y, Direction direction) const {
     ASSERT(hasOpposingWall(x, y, direction));
     switch (direction) {
-        case NORTH:
-            return std::make_pair(std::make_pair(x, y + 1), SOUTH);
-        case EAST:
-            return std::make_pair(std::make_pair(x + 1, y), WEST);
-        case SOUTH:
-            return std::make_pair(std::make_pair(x, y - 1), NORTH);
-        case WEST:
-            return std::make_pair(std::make_pair(x - 1, y), EAST);
+        case Direction::NORTH:
+            return std::make_pair(std::make_pair(x, y + 1), Direction::SOUTH);
+        case Direction::EAST:
+            return std::make_pair(std::make_pair(x + 1, y), Direction::WEST);
+        case Direction::SOUTH:
+            return std::make_pair(std::make_pair(x, y - 1), Direction::NORTH);
+        case Direction::WEST:
+            return std::make_pair(std::make_pair(x - 1, y), Direction::EAST);
     }
 }
 

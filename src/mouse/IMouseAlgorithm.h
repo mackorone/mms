@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../sim/InterfaceType.h"
+#include "../sim/InterfaceTypes.h"
 #include "../sim/MouseInterface.h"
 
 class IMouseAlgorithm {

@@ -1,6 +1,5 @@
 #include "SimUtilities.h"
 
-#include <algorithm>
 #include <chrono>
 #include <ctime>
 #include <ratio>

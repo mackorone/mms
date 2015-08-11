@@ -1,22 +1,25 @@
 High Pri:
-- Add a way to turn on/off each of the maps (to prevent motion sickness)
-    - One button that toggles two maps vs one
-    - One button that toggles between maps
+
+- Make the colors and enum...
 - Rewrite text so that it's performant
     - Make sure that MackAlgo looks normal... the walls look gray under the colored tiles...
 - Put the vertex shader in its own source file
+
 - Tile distances
     - Depending on the maze size, the valid distances will be different - make this the case for the text
 - Actual distance values on the tile
     - MazeUtilities class that can get the distances???
     - State variable and key to control whether these are visible or not
+
 - Maze size requirements and validity
 - Make a note of contributing projects in the documentation
+
 - Put a toolbar at the top or bottom with info
 - Display a clock
 - Make some utility that keeps track of elapse time
     - Make the sim speed non-arbitrary
     - Fix the Params associated with discrete sim-speed
+
 - Run-time parameters for the algos
 - -Wall flag...
 - Look at Tomasz' maze website

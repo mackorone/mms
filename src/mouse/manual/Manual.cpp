@@ -13,7 +13,7 @@ std::string Manual::mouseFile() const {
 }
 
 sim::InterfaceType Manual::interfaceType() const {
-    return sim::CONTINUOUS;
+    return sim::InterfaceType::CONTINUOUS;
 }
 
 void Manual::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
@@ -26,10 +26,10 @@ void Manual::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::Mo
     double rightWheelSpeed = 0.0;
 
     std::map<char, sim::Direction> directionsMap;
-    directionsMap.insert(std::make_pair('n', sim::NORTH));
-    directionsMap.insert(std::make_pair('e', sim::EAST));
-    directionsMap.insert(std::make_pair('s', sim::SOUTH));
-    directionsMap.insert(std::make_pair('w', sim::WEST));
+    directionsMap.insert(std::make_pair('n', sim::Direction::NORTH));
+    directionsMap.insert(std::make_pair('e', sim::Direction::EAST));
+    directionsMap.insert(std::make_pair('s', sim::Direction::SOUTH));
+    directionsMap.insert(std::make_pair('w', sim::Direction::WEST));
 
     while (true) {
 
@@ -43,19 +43,19 @@ void Manual::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::Mo
         leftWheelSpeed /= decelerateAmount;
         rightWheelSpeed /= decelerateAmount;
 
-        if (sim::S()->arrowKeyIsPressed(sim::UP)) {
+        if (sim::S()->arrowKeyIsPressed(sim::Key::UP)) {
             leftWheelSpeed -= accelerateAmount;
             rightWheelSpeed += accelerateAmount;
         }
-        if (sim::S()->arrowKeyIsPressed(sim::DOWN)) {
+        if (sim::S()->arrowKeyIsPressed(sim::Key::DOWN)) {
             leftWheelSpeed += accelerateAmount;
             rightWheelSpeed -= accelerateAmount;
         }
-        if (sim::S()->arrowKeyIsPressed(sim::RIGHT)) {
+        if (sim::S()->arrowKeyIsPressed(sim::Key::RIGHT)) {
             leftWheelSpeed -= accelerateAmount / 4.0;
             rightWheelSpeed -= accelerateAmount / 4.0;
         }
-        if (sim::S()->arrowKeyIsPressed(sim::LEFT)) {
+        if (sim::S()->arrowKeyIsPressed(sim::Key::LEFT)) {
             leftWheelSpeed += accelerateAmount / 4.0;
             rightWheelSpeed += accelerateAmount / 4.0;
         }

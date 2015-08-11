@@ -9,7 +9,7 @@ std::string Continuous::mouseFile() const {
 }
 
 sim::InterfaceType Continuous::interfaceType() const {
-    return sim::CONTINUOUS;
+    return sim::InterfaceType::CONTINUOUS;
 }
 
 void Continuous::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {

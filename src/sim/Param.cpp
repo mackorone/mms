@@ -33,8 +33,9 @@ Param::Param() {
     ParamParser parser(SimUtilities::getProjectDirectory() + "res/parameters.xml");
 
     // Graphical Parameters
-    m_initialWindowWidth = parser.getIntIfHasIntAndNotLessThan("initial-window-width", 930, 100);
-    m_initialWindowHeight = parser.getIntIfHasIntAndNotLessThan("initial-window-height", 470, 100);
+    m_defaultWindowWidth = parser.getIntIfHasIntAndNotLessThan("default-window-width", 930, 100);
+    m_defaultWindowHeight = parser.getIntIfHasIntAndNotLessThan("default-window-height", 470, 100);
+    m_defaultLayout = parser.getStringIfHasStringAndIsLayout("default-layout", "BOTH");
     m_windowBorderWidth = parser.getIntIfHasIntAndInRange("window-border-width", 10, 0, 25);
     m_minZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange("min-zoomed-map-scale", 0.02, 0.01, 0.1);
     m_maxZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange("max-zoomed-map-scale", 1.0, 0.5, 2.0);
@@ -118,12 +119,16 @@ Param::Param() {
     m_mouseStartingDirection = parser.getStringIfHasStringAndIsDirection("mouse-starting-direction", "NORTH");
 }
 
-int Param::initialWindowWidth() {
-    return m_initialWindowWidth;
+int Param::defaultWindowWidth() {
+    return m_defaultWindowWidth;
 }
 
-int Param::initialWindowHeight() {
-    return m_initialWindowHeight;
+int Param::defaultWindowHeight() {
+    return m_defaultWindowHeight;
+}
+
+std::string Param::defaultLayout() {
+    return m_defaultLayout;
 }
 
 int Param::windowBorderWidth() {

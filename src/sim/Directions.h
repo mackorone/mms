@@ -7,39 +7,39 @@
 
 namespace sim {
 
-enum Direction { NORTH, EAST, SOUTH, WEST };
+enum class Direction { NORTH, EAST, SOUTH, WEST };
 
 // This vector serves two functions:
 // 1) Serves as a convenient way to enumerate through all of the directions
 // 2) Determines the order of wall information in the maze files
-static const std::vector<Direction> DIRECTIONS { NORTH, EAST, SOUTH, WEST };
+static const std::vector<Direction> DIRECTIONS { Direction::NORTH, Direction::EAST, Direction::SOUTH, Direction::WEST };
 
 static const std::map<Direction, Degrees> DIRECTION_TO_ANGLE {
-    {NORTH, Degrees(0)},
-    {EAST, Degrees(270)},
-    {SOUTH, Degrees(180)},
-    {WEST, Degrees(90)},
+    {Direction::NORTH, Degrees(0)},
+    {Direction::EAST, Degrees(270)},
+    {Direction::SOUTH, Degrees(180)},
+    {Direction::WEST, Degrees(90)},
 };
 
 static const std::map<Direction, char> DIRECTION_TO_CHAR {
-    {NORTH, 'n'},
-    {EAST, 'e'},
-    {SOUTH, 's'},
-    {WEST, 'w'},
+    {Direction::NORTH, 'n'},
+    {Direction::EAST, 'e'},
+    {Direction::SOUTH, 's'},
+    {Direction::WEST, 'w'},
 };
 
 static const std::map<char, Direction> CHAR_TO_DIRECTION {
-    {'n', NORTH},
-    {'e', EAST},
-    {'s', SOUTH},
-    {'w', WEST},
+    {'n', Direction::NORTH},
+    {'e', Direction::EAST},
+    {'s', Direction::SOUTH},
+    {'w', Direction::WEST},
 };
 
 static const std::map<std::string, Direction> STRING_TO_DIRECTION {
-    {"NORTH", NORTH},
-    {"EAST", EAST},
-    {"SOUTH", SOUTH},
-    {"WEST", WEST},
+    {"NORTH", Direction::NORTH},
+    {"EAST", Direction::EAST},
+    {"SOUTH", Direction::SOUTH},
+    {"WEST", Direction::WEST},
 };
 
 } // namespace sim

@@ -26,7 +26,7 @@ std::string MackAlgo::mouseFile() const {
 }
 
 sim::InterfaceType MackAlgo::interfaceType() const {
-    return sim::DISCRETE;
+    return sim::InterfaceType::DISCRETE;
 }
 
 void MackAlgo::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "InterfaceType.h"
+#include "InterfaceTypes.h"
 #include "MazeGraphic.h"
 #include "Mouse.h"
 #include "Param.h"

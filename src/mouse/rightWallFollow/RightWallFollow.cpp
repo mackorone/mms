@@ -7,7 +7,7 @@ std::string RightWallFollow::mouseFile() const {
 }
 
 sim::InterfaceType RightWallFollow::interfaceType() const {
-    return sim::DISCRETE;
+    return sim::InterfaceType::DISCRETE;
 }
 
 void RightWallFollow::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {

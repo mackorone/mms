@@ -26,6 +26,7 @@ State::State() {
     m_mainLoopEntered = false;
     m_crashed = false;
     m_interfaceType; // Undefined default value
+    m_layout = STRING_TO_LAYOUT.at(P()->defaultLayout());
     m_rotateZoomedMap = P()->defaultRotateZoomedMap();
     m_zoomedMapScale = P()->defaultZoomedMapScale();
     m_mousePathVisible = P()->defaultMousePathVisible();
@@ -39,7 +40,7 @@ State::State() {
     for (int i = 0; i < 10; i += 1) {
         m_inputButtons.insert(std::make_pair(i, false));
     }
-    for (int key : ARROW_KEYS) {
+    for (Key key : ARROW_KEYS) {
         m_arrowKeys.insert(std::make_pair(key, false));
     }
 }
@@ -62,6 +63,10 @@ bool State::crashed() {
 
 InterfaceType State::interfaceType() {
     return m_interfaceType;
+}
+
+Layout State::layout() {
+    return m_layout;
 }
 
 bool State::rotateZoomedMap() {
@@ -105,13 +110,12 @@ double State::simSpeed() {
 }
 
 bool State::inputButtonWasPressed(int inputButton) {
-    ASSERT(0 <= inputButton && inputButton <= 9);
-    ASSERT(1 == m_inputButtons.count(inputButton));
+    ASSERT(SimUtilities::mapContains(m_inputButtons, inputButton));
     return m_inputButtons.at(inputButton);
 }
 
-bool State::arrowKeyIsPressed(int key) {
-    ASSERT(1 == m_arrowKeys.count(key));
+bool State::arrowKeyIsPressed(Key key) {
+    ASSERT(SimUtilities::mapContains(m_arrowKeys, key));
     return m_arrowKeys.at(key);
 }
 
@@ -133,6 +137,10 @@ void State::setCrashed() {
 
 void State::setInterfaceType(InterfaceType interfaceType) {
     m_interfaceType = interfaceType;
+}
+
+void State::setLayout(Layout layout) {
+    m_layout = layout;
 }
 
 void State::setRotateZoomedMap(bool rotateZoomedMap) {
@@ -192,13 +200,12 @@ void State::setSimSpeed(double simSpeed) {
 }
 
 void State::setInputButtonWasPressed(int inputButton, bool pressed) {
-    ASSERT(0 <= inputButton && inputButton <= 9);
-    ASSERT(1 == m_inputButtons.count(inputButton));
+    ASSERT(SimUtilities::mapContains(m_inputButtons, inputButton));
     m_inputButtons.at(inputButton) = pressed;
 }
 
-void State::setArrowKeyIsPressed(int key, bool pressed) {
-    ASSERT(1 == m_arrowKeys.count(key));
+void State::setArrowKeyIsPressed(Key key, bool pressed) {
+    ASSERT(SimUtilities::mapContains(m_arrowKeys, key));
     m_arrowKeys.at(key) = pressed;
 }
 

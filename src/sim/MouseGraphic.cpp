@@ -29,7 +29,7 @@ void MouseGraphic::draw() {
     }
 
     // Only draw the sensors and views if we're using a continuous interface
-    float sensorAlpha = (S()->interfaceType() == CONTINUOUS ? 1.0 : 0.0);
+    float sensorAlpha = (S()->interfaceType() == InterfaceType::CONTINUOUS ? 1.0 : 0.0);
 
     // Next, we draw the sensors
     for (Polygon sensorPolygon : m_mouse->getSensorPolygons()) {

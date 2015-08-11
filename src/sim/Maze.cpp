@@ -151,10 +151,10 @@ std::vector<std::vector<BasicTile>> Maze::mirrorAcrossVertical(const std::vector
             BasicTile tile;
             tile.x = x;
             tile.y = y;
-            tile.walls.insert(std::make_pair(NORTH, basicMaze.at(basicMaze.size() - 1 - x).at(y).walls.at(NORTH)));
-            tile.walls.insert(std::make_pair(EAST, basicMaze.at(basicMaze.size() - 1 - x).at(y).walls.at(WEST)));
-            tile.walls.insert(std::make_pair(SOUTH, basicMaze.at(basicMaze.size() - 1 - x).at(y).walls.at(SOUTH)));
-            tile.walls.insert(std::make_pair(WEST, basicMaze.at(basicMaze.size() - 1 - x).at(y).walls.at(EAST)));
+            tile.walls.insert(std::make_pair(Direction::NORTH, basicMaze.at(basicMaze.size() - 1 - x).at(y).walls.at(Direction::NORTH)));
+            tile.walls.insert(std::make_pair(Direction::EAST, basicMaze.at(basicMaze.size() - 1 - x).at(y).walls.at(Direction::WEST)));
+            tile.walls.insert(std::make_pair(Direction::SOUTH, basicMaze.at(basicMaze.size() - 1 - x).at(y).walls.at(Direction::SOUTH)));
+            tile.walls.insert(std::make_pair(Direction::WEST, basicMaze.at(basicMaze.size() - 1 - x).at(y).walls.at(Direction::EAST)));
             column.push_back(tile);
         }
         mirrored.push_back(column);
@@ -174,10 +174,10 @@ std::vector<std::vector<BasicTile>> Maze::rotateCounterClockwise(const std::vect
             BasicTile tile;
             tile.x = basicMaze.at(x).size() - 1 - y;
             tile.y = x;
-            tile.walls.insert(std::make_pair(NORTH, basicMaze.at(x).at(y).walls.at(EAST)));
-            tile.walls.insert(std::make_pair(EAST, basicMaze.at(x).at(y).walls.at(SOUTH)));
-            tile.walls.insert(std::make_pair(SOUTH, basicMaze.at(x).at(y).walls.at(WEST)));
-            tile.walls.insert(std::make_pair(WEST, basicMaze.at(x).at(y).walls.at(NORTH)));
+            tile.walls.insert(std::make_pair(Direction::NORTH, basicMaze.at(x).at(y).walls.at(Direction::EAST)));
+            tile.walls.insert(std::make_pair(Direction::EAST, basicMaze.at(x).at(y).walls.at(Direction::SOUTH)));
+            tile.walls.insert(std::make_pair(Direction::SOUTH, basicMaze.at(x).at(y).walls.at(Direction::WEST)));
+            tile.walls.insert(std::make_pair(Direction::WEST, basicMaze.at(x).at(y).walls.at(Direction::NORTH)));
             if (rotated.size() <= tile.x) {
                 rotated.push_back({tile});
             }

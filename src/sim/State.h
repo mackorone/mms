@@ -3,7 +3,9 @@
 #include <map>
 #include <thread>
 
-#include "InterfaceType.h"
+#include "InterfaceTypes.h"
+#include "Keys.h"
+#include "Layouts.h"
 
 namespace sim {
 
@@ -24,6 +26,7 @@ public:
     bool mainLoopEntered();
     bool crashed();
     InterfaceType interfaceType();
+    Layout layout();
     bool rotateZoomedMap();
     double zoomedMapScale();
     bool mousePathVisible(); // TODO: Implement the mouse path
@@ -35,13 +38,14 @@ public:
     bool paused();
     double simSpeed();
     bool inputButtonWasPressed(int inputButton);
-    bool arrowKeyIsPressed(int key);
+    bool arrowKeyIsPressed(Key key);
 
     // Mutators
     void setRunId(const std::string& runId);
     void enterMainLoop();
     void setCrashed();
     void setInterfaceType(InterfaceType interfaceType);
+    void setLayout(Layout layout);
     void setRotateZoomedMap(bool rotateZoomedMap);
     void setZoomedMapScale(double zoomedMapScale);
     void setMousePathVisible(bool mousePathVisible);
@@ -53,7 +57,7 @@ public:
     void setPaused(bool paused);
     void setSimSpeed(double simSpeed);
     void setInputButtonWasPressed(int inputButton, bool pressed);
-    void setArrowKeyIsPressed(int key, bool pressed);
+    void setArrowKeyIsPressed(Key key, bool pressed);
 
 private:
 
@@ -68,6 +72,7 @@ private:
     bool m_mainLoopEntered;
     bool m_crashed;
     InterfaceType m_interfaceType;
+    Layout m_layout;
     bool m_rotateZoomedMap;
     double m_zoomedMapScale;
     bool m_mousePathVisible;
@@ -79,7 +84,7 @@ private:
     bool m_paused;
     double m_simSpeed;
     std::map<int, bool> m_inputButtons;
-    std::map<int, bool> m_arrowKeys;
+    std::map<Key, bool> m_arrowKeys;
 };
 
 } // namespace sim

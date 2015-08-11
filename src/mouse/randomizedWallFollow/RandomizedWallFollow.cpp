@@ -9,7 +9,7 @@ std::string RandomizedWallFollow::mouseFile() const {
 }
 
 sim::InterfaceType RandomizedWallFollow::interfaceType() const {
-    return sim::DISCRETE;
+    return sim::InterfaceType::DISCRETE;
 }
 
 void RandomizedWallFollow::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {

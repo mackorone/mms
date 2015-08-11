@@ -2,6 +2,7 @@
 
 #include "Assert.h"
 #include "Colors.h"
+#include "Layouts.h"
 #include "Logging.h"
 #include "SimUtilities.h"
 
@@ -111,6 +112,10 @@ std::string ParamParser::getStringIfHasStringAndIsColor(const std::string& tag, 
 
 std::string ParamParser::getStringIfHasStringAndIsDirection(const std::string& tag, const std::string& defaultValue) {
     return getStringIfHasStringAndIsSpecial("direction", tag, defaultValue, STRING_TO_DIRECTION);
+}
+
+std::string ParamParser::getStringIfHasStringAndIsLayout(const std::string& tag, const std::string& defaultValue) {
+    return getStringIfHasStringAndIsSpecial("layout", tag, defaultValue, STRING_TO_LAYOUT);
 }
 
 void ParamParser::printTagNotFound(const std::string& type, const std::string& tag, const std::string& defaultValue) {

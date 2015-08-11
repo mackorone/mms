@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -74,6 +75,12 @@ public:
 
     // Remove oldest runs from the run/ directory if necessary
     static void removeExcessArchivedRuns();
+
+    // Returns whether or not a vector contains a particular item
+    template<class T>
+    static bool vectorContains(const std::vector<T>& vector, T item) {
+        return std::find(vector.begin(), vector.end(), item) != vector.end();
+    }
 
     // Returns whether or not a map contains a particular key
     template<class K, class V>

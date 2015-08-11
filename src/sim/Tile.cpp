@@ -138,8 +138,8 @@ void Tile::initWallPolygons(int mazeWidth, int mazeHeight) {
     northWall.push_back(Cartesian(innerUpperLeftPoint.getX(), outerUpperLeftPoint.getY()));
     northWall.push_back(Cartesian(innerUpperRightPoint.getX(), outerUpperRightPoint.getY()));
     northWall.push_back(innerUpperRightPoint);
-    m_allWallPolygons.insert(std::make_pair(NORTH, Polygon(northWall)));
-    if (isWall(NORTH)) {
+    m_allWallPolygons.insert(std::make_pair(Direction::NORTH, Polygon(northWall)));
+    if (isWall(Direction::NORTH)) {
         m_actualWallPolygons.push_back(Polygon(northWall));
     }
 
@@ -148,8 +148,8 @@ void Tile::initWallPolygons(int mazeWidth, int mazeHeight) {
     eastWall.push_back(innerUpperRightPoint);
     eastWall.push_back(Cartesian(outerUpperRightPoint.getX(), innerUpperRightPoint.getY()));
     eastWall.push_back(Cartesian(outerLowerRightPoint.getX(), innerLowerRightPoint.getY()));
-    m_allWallPolygons.insert(std::make_pair(EAST, Polygon(eastWall)));
-    if (isWall(EAST)) {
+    m_allWallPolygons.insert(std::make_pair(Direction::EAST, Polygon(eastWall)));
+    if (isWall(Direction::EAST)) {
         m_actualWallPolygons.push_back(Polygon(eastWall));
     }
 
@@ -158,8 +158,8 @@ void Tile::initWallPolygons(int mazeWidth, int mazeHeight) {
     southWall.push_back(innerLowerLeftPoint);
     southWall.push_back(innerLowerRightPoint);
     southWall.push_back(Cartesian(innerLowerRightPoint.getX(), outerLowerRightPoint.getY()));
-    m_allWallPolygons.insert(std::make_pair(SOUTH, Polygon(southWall)));
-    if (isWall(SOUTH)) {
+    m_allWallPolygons.insert(std::make_pair(Direction::SOUTH, Polygon(southWall)));
+    if (isWall(Direction::SOUTH)) {
         m_actualWallPolygons.push_back(Polygon(southWall));
     }
 
@@ -168,8 +168,8 @@ void Tile::initWallPolygons(int mazeWidth, int mazeHeight) {
     westWall.push_back(Cartesian(outerUpperLeftPoint.getX(), innerUpperLeftPoint.getY()));
     westWall.push_back(innerUpperLeftPoint);
     westWall.push_back(innerLowerLeftPoint);
-    m_allWallPolygons.insert(std::make_pair(WEST, Polygon(westWall)));
-    if (isWall(WEST)) {
+    m_allWallPolygons.insert(std::make_pair(Direction::WEST, Polygon(westWall)));
+    if (isWall(Direction::WEST)) {
         m_actualWallPolygons.push_back(Polygon(westWall));
     }
 

@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <thread>
 
 #include <glut.h>
@@ -179,7 +178,7 @@ void solve() {
     sim::SimUtilities::sleep(sim::Seconds(sim::P()->glutInitDuration()));
 
     // Unfog the beginning tile if necessary
-    if (sim::S()->interfaceType() == sim::DISCRETE && sim::P()->discreteInterfaceUnfogTileOnEntry()) {
+    if (sim::S()->interfaceType() == sim::InterfaceType::DISCRETE && sim::P()->discreteInterfaceUnfogTileOnEntry()) {
         g_mazeGraphic->setTileFogginess(0, 0, false);
     }
 
@@ -193,7 +192,8 @@ void solve() {
 
 void keyPress(unsigned char key, int x, int y) {
 
-    if (key == sim::SPACE) {
+    if (sim::SimUtilities::mapContains(sim::INT_TO_KEY, static_cast<int>(key))
+        && sim::INT_TO_KEY.at(key) == sim::Key::SPACE) {
         // Pause the simulation (only in discrete mode)
         sim::S()->setPaused(!sim::S()->paused());
     }
@@ -205,17 +205,27 @@ void keyPress(unsigned char key, int x, int y) {
         // Slower (only in discrete mode)
         sim::S()->setSimSpeed(sim::S()->simSpeed() / 1.5);
     }
+    else if (key == 'l') {
+        // Cycle through the available layouts
+        sim::S()->setLayout(sim::LAYOUT_CYCLE.at(sim::S()->layout()));
+    }
     else if (key == 'r') {
-        // Toggle rotate zoomed map
-        sim::S()->setRotateZoomedMap(!sim::S()->rotateZoomedMap());
+        // Toggle rotate zoomed map, but only if zoomed map is visible
+        if (sim::S()->layout() != sim::Layout::FULL) {
+            sim::S()->setRotateZoomedMap(!sim::S()->rotateZoomedMap());
+        }
     }
     else if (key == 'i') {
-        // Zoom in
-        sim::S()->setZoomedMapScale(sim::S()->zoomedMapScale() * 1.5);
+        // Zoom in, but only if zoomed map is visible
+        if (sim::S()->layout() != sim::Layout::FULL) {
+            sim::S()->setZoomedMapScale(sim::S()->zoomedMapScale() * 1.5);
+        }
     }
     else if (key == 'o') {
-        // Zoom out
-        sim::S()->setZoomedMapScale(sim::S()->zoomedMapScale() / 1.5);
+        // Zoom out, but only if zoomed map is visible
+        if (sim::S()->layout() != sim::Layout::FULL) {
+            sim::S()->setZoomedMapScale(sim::S()->zoomedMapScale() / 1.5);
+        }
     }
     else if (key == 'p') {
         // Toggle mouse path visibility
@@ -257,14 +267,14 @@ void keyPress(unsigned char key, int x, int y) {
 }
 
 void specialKeyPress(int key, int x, int y) {
-    if (std::find(sim::ARROW_KEYS.begin(), sim::ARROW_KEYS.end(), key) != sim::ARROW_KEYS.end()) {
-        sim::S()->setArrowKeyIsPressed(key, true);
+    if (sim::SimUtilities::vectorContains(sim::ARROW_KEYS, sim::INT_TO_KEY.at(key))) {
+        sim::S()->setArrowKeyIsPressed(sim::INT_TO_KEY.at(key), true);
     }
 }
 
 void specialKeyRelease(int key, int x, int y) {
-    if (std::find(sim::ARROW_KEYS.begin(), sim::ARROW_KEYS.end(), key) != sim::ARROW_KEYS.end()) {
-        sim::S()->setArrowKeyIsPressed(key, false);
+    if (sim::SimUtilities::vectorContains(sim::ARROW_KEYS, sim::INT_TO_KEY.at(key))) {
+        sim::S()->setArrowKeyIsPressed(sim::INT_TO_KEY.at(key), false);
     }
 }
 
@@ -273,8 +283,8 @@ void initGraphics(int argc, char* argv[]) {
     // GLUT Initialization
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA);
-    glutInitWindowSize(sim::P()->initialWindowWidth(), sim::P()->initialWindowHeight());
-    sim::GraphicUtilities::setWindowSize(sim::P()->initialWindowWidth(), sim::P()->initialWindowHeight());
+    glutInitWindowSize(sim::P()->defaultWindowWidth(), sim::P()->defaultWindowHeight());
+    sim::GraphicUtilities::setWindowSize(sim::P()->defaultWindowWidth(), sim::P()->defaultWindowHeight());
     glutInitWindowPosition(0, 0);
     glutCreateWindow("Micromouse Simulator");
     glClearColor(0.0, 0.0, 0.0, 1.0);
