@@ -29,7 +29,7 @@ bool MazeGraphic::wallDeclared(int x, int y, Direction direction) const {
     return m_tileGraphics.at(x).at(y).wallDeclared(direction);
 }
 
-void MazeGraphic::setTileColor(int x, int y, const GLfloat* color) {
+void MazeGraphic::setTileColor(int x, int y, Color color) {
     ASSERT(0 <= x && x <= getWidth() && 0 <= y && y < getHeight());
     m_tileGraphics.at(x).at(y).setColor(color);
 }

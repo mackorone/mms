@@ -2,6 +2,7 @@
 
 #include <glut.h>
 
+#include "Colors.h"
 #include "Tile.h"
 
 namespace sim {
@@ -14,7 +15,7 @@ public:
 
     bool wallDeclared(Direction direction) const;
 
-    void setColor(const GLfloat* color);
+    void setColor(const Color color);
     void setDistance(int distance);
     void setFogginess(bool foggy);
     void declareWall(Direction direction, bool isWall);
@@ -28,13 +29,13 @@ public:
     
 private:
     const Tile* m_tile;
-    const GLfloat* m_color;
+    Color m_color;
     int m_distance;
     bool m_foggy;
     std::map<Direction, bool> m_declaredWalls;
 
     void updateWall(Direction direction) const;
-    std::pair<const GLfloat*, GLfloat> deduceWallColorAndAlpha(Direction direction) const;
+    std::pair<Color, float> deduceWallColorAndAlpha(Direction direction) const;
     Polygon getDistanceCharacterPolygon(int row, int col) const;
 };
 

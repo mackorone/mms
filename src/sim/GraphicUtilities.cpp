@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <glut.h>
 
 #include "Assert.h"
 #include "GeometryUtilities.h"
@@ -264,7 +263,7 @@ std::vector<float> GraphicUtilities::getZoomedMapTransformationMatrix(const Coor
     return zoomedMapCameraMatrix;
 }
 
-void GraphicUtilities::drawTileGraphicBase(int x, int y, const Polygon& polygon, const GLfloat* color) {
+void GraphicUtilities::drawTileGraphicBase(int x, int y, const Polygon& polygon, Color color) {
     std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, 1.0);
     for (int i = 0; i < tgs.size(); i += 1) {
         TGB.push_back(tgs.at(i));
@@ -272,7 +271,7 @@ void GraphicUtilities::drawTileGraphicBase(int x, int y, const Polygon& polygon,
 }
 
 void GraphicUtilities::drawTileGraphicWall(int x, int y, Direction direction, const Polygon& polygon,
-        const GLfloat* color, GLfloat alpha) {
+        Color color, float alpha) {
     std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, alpha);
     for (int i = 0; i < tgs.size(); i += 1) {
         TGB.push_back(tgs.at(i));
@@ -280,7 +279,7 @@ void GraphicUtilities::drawTileGraphicWall(int x, int y, Direction direction, co
 }
 
 void GraphicUtilities::drawTileGraphicCorner(int x, int y, int cornerNumber, const Polygon& polygon,
-        const GLfloat* color) {
+        Color color) {
     std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, 1.0);
     for (int i = 0; i < tgs.size(); i += 1) {
         TGB.push_back(tgs.at(i));
@@ -289,57 +288,57 @@ void GraphicUtilities::drawTileGraphicCorner(int x, int y, int cornerNumber, con
 
 void GraphicUtilities::drawTileGraphicDistanceCharacter(int x, int y, int row, int col, const Polygon& polygon, char c) {
     // TODO: MACK: This will be different since we have textures...
-    GLfloat c1[] = {0.0, 0.0, 0.0};
-    GLfloat c2[] = {0.0, 0.0, 0.0};
-    std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, c == 'a' ? c1 : c2, 0.5);
+    std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, c == 'a' ? Color::BLACK : Color::BLACK, 0.5);
     for (int i = 0; i < tgs.size(); i += 1) {
         TGB.push_back(tgs.at(i));
     }
 }
 
-void GraphicUtilities::drawTileGraphicFog(int x, int y, const Polygon& polygon, const GLfloat* color, GLfloat alpha) {
+void GraphicUtilities::drawTileGraphicFog(int x, int y, const Polygon& polygon, Color color, float alpha) {
     std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, alpha);
     for (int i = 0; i < tgs.size(); i += 1) {
         TGB.push_back(tgs.at(i));
     }
 }
 
-void GraphicUtilities::updateTileGraphicBaseColor(int x, int y, const GLfloat* color) {
+void GraphicUtilities::updateTileGraphicBaseColor(int x, int y, Color color) {
     int index = getTileGraphicBaseStartingIndex(x, y);
+    std::tuple<float, float, float> colorValues = COLOR_TO_RGB.at(color);
     for (int i = 0; i < 2; i += 1) {
         TriangleGraphic* triangleGraphic = &TGB.at(index + i);
-        triangleGraphic->p1.r = color[0];
-        triangleGraphic->p1.g = color[1];
-        triangleGraphic->p1.b = color[2];
-        triangleGraphic->p2.r = color[0];
-        triangleGraphic->p2.g = color[1];
-        triangleGraphic->p2.b = color[2];
-        triangleGraphic->p3.r = color[0];
-        triangleGraphic->p3.g = color[1];
-        triangleGraphic->p3.b = color[2];
+        triangleGraphic->p1.r = std::get<0>(colorValues);
+        triangleGraphic->p1.g = std::get<1>(colorValues);
+        triangleGraphic->p1.b = std::get<2>(colorValues);
+        triangleGraphic->p2.r = std::get<0>(colorValues);
+        triangleGraphic->p2.g = std::get<1>(colorValues);
+        triangleGraphic->p2.b = std::get<2>(colorValues);
+        triangleGraphic->p3.r = std::get<0>(colorValues);
+        triangleGraphic->p3.g = std::get<1>(colorValues);
+        triangleGraphic->p3.b = std::get<2>(colorValues);
     }
 }
 
-void GraphicUtilities::updateTileGraphicWallColor(int x, int y, Direction direction, const GLfloat* color, GLfloat alpha) {
+void GraphicUtilities::updateTileGraphicWallColor(int x, int y, Direction direction, Color color, float alpha) {
     int index = getTileGraphicWallStartingIndex(x, y, direction);
+    std::tuple<float, float, float> colorValues = COLOR_TO_RGB.at(color);
     for (int i = 0; i < 2; i += 1) {
         TriangleGraphic* triangleGraphic = &TGB.at(index + i);
-        triangleGraphic->p1.r = color[0];
-        triangleGraphic->p1.g = color[1];
-        triangleGraphic->p1.b = color[2];
+        triangleGraphic->p1.r = std::get<0>(colorValues);
+        triangleGraphic->p1.g = std::get<1>(colorValues);
+        triangleGraphic->p1.b = std::get<2>(colorValues);
         triangleGraphic->p1.a = alpha;
-        triangleGraphic->p2.r = color[0];
-        triangleGraphic->p2.g = color[1];
-        triangleGraphic->p2.b = color[2];
+        triangleGraphic->p2.r = std::get<0>(colorValues);
+        triangleGraphic->p2.g = std::get<1>(colorValues);
+        triangleGraphic->p2.b = std::get<2>(colorValues);
         triangleGraphic->p2.a = alpha;
-        triangleGraphic->p3.r = color[0];
-        triangleGraphic->p3.g = color[1];
-        triangleGraphic->p3.b = color[2];
+        triangleGraphic->p3.r = std::get<0>(colorValues);
+        triangleGraphic->p3.g = std::get<1>(colorValues);
+        triangleGraphic->p3.b = std::get<2>(colorValues);
         triangleGraphic->p3.a = alpha;
     }
 }
 
-void GraphicUtilities::updateTileGraphicFog(int x, int y, GLfloat alpha) {
+void GraphicUtilities::updateTileGraphicFog(int x, int y, float alpha) {
     int index = getTileGraphicFogStartingIndex(x, y);
     for (int i = 0; i < 2; i += 1) {
         TriangleGraphic* triangleGraphic = &TGB.at(index + i);
@@ -349,7 +348,7 @@ void GraphicUtilities::updateTileGraphicFog(int x, int y, GLfloat alpha) {
     }
 }
 
-void GraphicUtilities::drawMousePolygon(const Polygon& polygon, const GLfloat* color, float sensorAlpha) {
+void GraphicUtilities::drawMousePolygon(const Polygon& polygon, Color color, float sensorAlpha) {
     std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, sensorAlpha);
     TGB.insert(TGB.end(), tgs.begin(), tgs.end());
 }
@@ -392,14 +391,18 @@ std::pair<double, double> GraphicUtilities::mapPixelCoordinateToOpenGlCoordinate
     return std::make_pair(2 * x / m_windowWidth - 1, 2 * y / m_windowHeight - 1);
 }
 
-std::vector<TriangleGraphic> GraphicUtilities::polygonToTriangleGraphics(const Polygon& polygon, const GLfloat* color, GLfloat alpha) {
+std::vector<TriangleGraphic> GraphicUtilities::polygonToTriangleGraphics(const Polygon& polygon, Color color, float alpha) {
     std::vector<Triangle> triangles = polygon.triangulate();
     std::vector<TriangleGraphic> triangleGraphics;
+    std::tuple<float, float, float> colorValues = COLOR_TO_RGB.at(color);
     for (Triangle triangle : triangles) {
         triangleGraphics.push_back({
-            {triangle.getP1().getX().getMeters(), triangle.getP1().getY().getMeters(), color[0], color[1], color[2], alpha},
-            {triangle.getP2().getX().getMeters(), triangle.getP2().getY().getMeters(), color[0], color[1], color[2], alpha},
-            {triangle.getP3().getX().getMeters(), triangle.getP3().getY().getMeters(), color[0], color[1], color[2], alpha}});
+            {triangle.getP1().getX().getMeters(), triangle.getP1().getY().getMeters(),
+                std::get<0>(colorValues), std::get<1>(colorValues), std::get<2>(colorValues), alpha},
+            {triangle.getP2().getX().getMeters(), triangle.getP2().getY().getMeters(),
+                std::get<0>(colorValues), std::get<1>(colorValues), std::get<2>(colorValues), alpha},
+            {triangle.getP3().getX().getMeters(), triangle.getP3().getY().getMeters(),
+                std::get<0>(colorValues), std::get<1>(colorValues), std::get<2>(colorValues), alpha}});
     }
     return triangleGraphics;
 }

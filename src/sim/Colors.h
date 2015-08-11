@@ -2,59 +2,80 @@
 
 #include <glut.h>
 #include <map>
+#include <tuple>
 
 namespace sim {
 
-static const GLfloat BLACK  [3] = { 0.0f, 0.0f, 0.0f};
-static const GLfloat BLUE   [3] = { 0.0f, 0.0f, 0.7f};
-static const GLfloat CYAN   [3] = { 0.0f, 0.4f, 0.4f};
-static const GLfloat GRAY   [3] = { 0.7f, 0.7f, 0.7f};
-static const GLfloat GREEN  [3] = { 0.0f, 0.7f, 0.0f};
-static const GLfloat ORANGE [3] = { 0.7f, 0.4f, 0.0f};
-static const GLfloat RED    [3] = { 0.8f, 0.0f, 0.0f};
-static const GLfloat WHITE  [3] = { 1.0f, 1.0f, 1.0f};
-static const GLfloat YELLOW [3] = { 0.7f, 0.7f, 0.0f};
-static const GLfloat DARK_BLUE   [3] = { 0.0f, 0.0f, 0.2f};
-static const GLfloat DARK_CYAN   [3] = { 0.0f, 0.2f, 0.2f};
-static const GLfloat DARK_GRAY   [3] = { 0.1f, 0.1f, 0.1f};
-static const GLfloat DARK_GREEN  [3] = { 0.0f, 0.3f, 0.0f};
-static const GLfloat DARK_RED    [3] = { 0.3f, 0.0f, 0.0f};
-static const GLfloat DARK_YELLOW [3] = { 0.1f, 0.1f, 0.0f};
-
-static const std::map<std::string, const GLfloat*> STRING_TO_COLOR = {
-    {"BLACK", BLACK},
-    {"BLUE", BLUE},
-    {"CYAN", CYAN},
-    {"GRAY", GRAY},
-    {"GREEN", GREEN},
-    {"ORANGE", ORANGE},
-    {"RED", RED},
-    {"WHITE", WHITE},
-    {"YELLOW", YELLOW},
-    {"DARK_BLUE", DARK_BLUE},
-    {"DARK_CYAN", DARK_CYAN},
-    {"DARK_GRAY", DARK_GRAY},
-    {"DARK_GREEN", DARK_GREEN},
-    {"DARK_RED", DARK_RED},
-    {"DARK_YELLOW", DARK_YELLOW},
+enum class Color {
+    BLACK,
+    BLUE,
+    CYAN,
+    GRAY,
+    GREEN,
+    ORANGE,
+    RED,
+    WHITE,
+    YELLOW,
+    DARK_BLUE,
+    DARK_CYAN,
+    DARK_GRAY,
+    DARK_GREEN,
+    DARK_RED,
+    DARK_YELLOW,
 };
 
-static const std::map<char, const GLfloat*> CHAR_TO_COLOR = {
-    {'k', BLACK},
-    {'b', BLUE},
-    {'a', GRAY},
-    {'c', CYAN},
-    {'g', GREEN},
-    {'o', ORANGE},
-    {'r', RED},
-    {'w', WHITE},
-    {'y', YELLOW},
-    {'B', DARK_BLUE},
-    {'C', DARK_CYAN},
-    {'A', DARK_GRAY},
-    {'G', DARK_GREEN},
-    {'R', DARK_RED},
-    {'Y', DARK_YELLOW},
+static const std::map<Color, std::tuple<float, float, float>> COLOR_TO_RGB {
+    {Color::BLACK      , std::make_tuple(0.0f, 0.0f, 0.0f)},
+    {Color::BLUE       , std::make_tuple(0.0f, 0.0f, 0.7f)},
+    {Color::CYAN       , std::make_tuple(0.0f, 0.4f, 0.4f)},
+    {Color::GRAY       , std::make_tuple(0.7f, 0.7f, 0.7f)},
+    {Color::GREEN      , std::make_tuple(0.0f, 0.7f, 0.0f)},
+    {Color::ORANGE     , std::make_tuple(0.7f, 0.4f, 0.0f)},
+    {Color::RED        , std::make_tuple(0.8f, 0.0f, 0.0f)},
+    {Color::WHITE      , std::make_tuple(1.0f, 1.0f, 1.0f)},
+    {Color::YELLOW     , std::make_tuple(0.7f, 0.7f, 0.0f)},
+    {Color::DARK_BLUE  , std::make_tuple(0.0f, 0.0f, 0.2f)},
+    {Color::DARK_CYAN  , std::make_tuple(0.0f, 0.2f, 0.2f)},
+    {Color::DARK_GRAY  , std::make_tuple(0.1f, 0.1f, 0.1f)},
+    {Color::DARK_GREEN , std::make_tuple(0.0f, 0.3f, 0.0f)},
+    {Color::DARK_RED   , std::make_tuple(0.3f, 0.0f, 0.0f)},
+    {Color::DARK_YELLOW, std::make_tuple(0.1f, 0.1f, 0.0f)},
+};
+
+static const std::map<std::string, Color> STRING_TO_COLOR = {
+    {"BLACK"      , Color::BLACK      },
+    {"BLUE"       , Color::BLUE       },
+    {"CYAN"       , Color::CYAN       },
+    {"GRAY"       , Color::GRAY       },
+    {"GREEN"      , Color::GREEN      },
+    {"ORANGE"     , Color::ORANGE     },
+    {"RED"        , Color::RED        },
+    {"WHITE"      , Color::WHITE      },
+    {"YELLOW"     , Color::YELLOW     },
+    {"DARK_BLUE"  , Color::DARK_BLUE  },
+    {"DARK_CYAN"  , Color::DARK_CYAN  },
+    {"DARK_GRAY"  , Color::DARK_GRAY  },
+    {"DARK_GREEN" , Color::DARK_GREEN },
+    {"DARK_RED"   , Color::DARK_RED   },
+    {"DARK_YELLOW", Color::DARK_YELLOW},
+};
+
+static const std::map<char, Color> CHAR_TO_COLOR = {
+    {'k', Color::BLACK      },
+    {'b', Color::BLUE       },
+    {'a', Color::GRAY       },
+    {'c', Color::CYAN       },
+    {'g', Color::GREEN      },
+    {'o', Color::ORANGE     },
+    {'r', Color::RED        },
+    {'w', Color::WHITE      },
+    {'y', Color::YELLOW     },
+    {'B', Color::DARK_BLUE  },
+    {'C', Color::DARK_CYAN  },
+    {'A', Color::DARK_GRAY  },
+    {'G', Color::DARK_GREEN },
+    {'R', Color::DARK_RED   },
+    {'Y', Color::DARK_YELLOW},
 };
 
 } // namespace sim

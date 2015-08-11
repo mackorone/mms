@@ -16,7 +16,7 @@ bool TileGraphic::wallDeclared(Direction direction) const {
     return SimUtilities::mapContains(m_declaredWalls, direction);
 }
 
-void TileGraphic::setColor(const GLfloat* color) {
+void TileGraphic::setColor(Color color) {
     m_color = color;
     updateColor();
 }
@@ -51,7 +51,7 @@ void TileGraphic::draw() const {
     for (Direction direction : DIRECTIONS) {
 
         // Get the wall color and alpha
-        std::pair<const GLfloat*, GLfloat> colorAndAlpha = deduceWallColorAndAlpha(direction);
+        std::pair<Color, float> colorAndAlpha = deduceWallColorAndAlpha(direction);
 
         // Draw the polygon
         GraphicUtilities::drawTileGraphicWall(m_tile->getX(), m_tile->getY(), direction,
@@ -114,16 +114,16 @@ void TileGraphic::updateWalls() const {
 }
 
 void TileGraphic::updateWall(Direction direction) const {
-    std::pair<const GLfloat*, GLfloat> colorAndAlpha = deduceWallColorAndAlpha(direction);
+    std::pair<Color, float> colorAndAlpha = deduceWallColorAndAlpha(direction);
     GraphicUtilities::updateTileGraphicWallColor(m_tile->getX(), m_tile->getY(), direction,
         colorAndAlpha.first, colorAndAlpha.second);
 }
 
-std::pair<const GLfloat*, GLfloat> TileGraphic::deduceWallColorAndAlpha(Direction direction) const {
+std::pair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction) const {
 
     // Declare the wall color and alpha
-    const GLfloat* wallColor;
-    GLfloat wallAlpha;
+    Color wallColor;
+    float wallAlpha;
 
     // Either draw the true walls of the tile ...
     if (S()->wallTruthVisible()) {

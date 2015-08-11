@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "Colors.h"
 #include "Maze.h"
 #include "TileGraphic.h"
 
@@ -17,7 +18,7 @@ public:
 
     bool wallDeclared(int x, int y, Direction direction) const;
 
-    void setTileColor(int x, int y, const GLfloat* color);
+    void setTileColor(int x, int y, Color color);
     void setTileDistance(int x, int y, int distance);
     void setTileFogginess(int x, int y, bool foggy);
     void declareWall(int x, int y, Direction direction, bool isWall);

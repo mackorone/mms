@@ -3,6 +3,7 @@
 #include <glut.h>
 #include <string>
 
+#include "Colors.h"
 #include "Directions.h"
 #include "Polygon.h"
 #include "TriangleGraphic.h"
@@ -39,20 +40,20 @@ public:
         const Coordinate& currentMouseTranslation, const Angle& currentMouseRotation);
 
     // The draw methods here should only be called once - they actually populate the buffer
-    static void drawTileGraphicBase(int x, int y, const Polygon& polygon, const GLfloat* color);
-    static void drawTileGraphicWall(int x, int y, Direction direction, const Polygon& polygon, const GLfloat* color, const GLfloat alpha);
-    static void drawTileGraphicCorner(int x, int y, int cornerNumber, const Polygon& polygon, const GLfloat* color);
+    static void drawTileGraphicBase(int x, int y, const Polygon& polygon, Color color);
+    static void drawTileGraphicWall(int x, int y, Direction direction, const Polygon& polygon, Color color, float alpha);
+    static void drawTileGraphicCorner(int x, int y, int cornerNumber, const Polygon& polygon, Color color);
     static void drawTileGraphicDistanceCharacter(int x, int y, int row, int col, const Polygon& polygon, char c); // TODO: MACK
-    static void drawTileGraphicFog(int x, int y, const Polygon& polygon, const GLfloat* color, GLfloat alpha);
+    static void drawTileGraphicFog(int x, int y, const Polygon& polygon, Color color, float alpha);
 
     // These methods are inexpensive, and may be called many times
-    static void updateTileGraphicBaseColor(int x, int y, const GLfloat* color);
-    static void updateTileGraphicWallColor(int x, int y, Direction direction, const GLfloat* color, GLfloat alpha);
+    static void updateTileGraphicBaseColor(int x, int y, Color color);
+    static void updateTileGraphicWallColor(int x, int y, Direction direction, Color color, float alpha);
     static void updateTileGraphicDistanceCharacter(int x, int y, int row, int col, char c);
-    static void updateTileGraphicFog(int x, int y, GLfloat alpha);
+    static void updateTileGraphicFog(int x, int y, float alpha);
 
     // TODO: MACK - Add an update method for the mouse so that we only triangulate once
-    static void drawMousePolygon(const Polygon& polygon, const GLfloat* color, float sensorAlpha);
+    static void drawMousePolygon(const Polygon& polygon, Color color, float sensorAlpha);
 
 private:
 
@@ -78,7 +79,7 @@ private:
     static std::pair<double, double> mapPixelCoordinateToOpenGlCoordinate(double x, double y);
 
     // Converts a polygon to a vector of triangle graphics
-    static std::vector<TriangleGraphic> polygonToTriangleGraphics(const Polygon& polygon, const GLfloat* color, GLfloat alpha);
+    static std::vector<TriangleGraphic> polygonToTriangleGraphics(const Polygon& polygon, Color color, float alpha);
 
     // Retrieve the indices into the TGB for each specific type of Tile triangle
     static int trianglesPerTile();

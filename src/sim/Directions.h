@@ -12,7 +12,9 @@ enum class Direction { NORTH, EAST, SOUTH, WEST };
 // This vector serves two functions:
 // 1) Serves as a convenient way to enumerate through all of the directions
 // 2) Determines the order of wall information in the maze files
-static const std::vector<Direction> DIRECTIONS { Direction::NORTH, Direction::EAST, Direction::SOUTH, Direction::WEST };
+static const std::vector<Direction> DIRECTIONS {
+    Direction::NORTH, Direction::EAST, Direction::SOUTH, Direction::WEST,
+};
 
 static const std::map<Direction, Degrees> DIRECTION_TO_ANGLE {
     {Direction::NORTH, Degrees(0)},
