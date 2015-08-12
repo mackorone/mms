@@ -82,8 +82,6 @@ Param::Param() {
         "mouse-sensor-color", COLOR_TO_STRING.at(Color::GREEN));
     m_mouseViewColor = parser.getStringIfHasStringAndIsColor(
         "mouse-view-color", COLOR_TO_STRING.at(Color::WHITE));
-    m_defaultMousePathVisible = parser.getBoolIfHasBool(
-        "default-mouse-path-visible", true);
     m_defaultWallTruthVisible = parser.getBoolIfHasBool(
         "default-wall-truth-visible", false);
     m_defaultTileColorsVisible = parser.getBoolIfHasBool(
@@ -274,10 +272,6 @@ std::string Param::mouseSensorColor() {
 
 std::string Param::mouseViewColor() {
     return m_mouseViewColor;
-}
-
-bool Param::defaultMousePathVisible() {
-    return m_defaultMousePathVisible;
 }
 
 bool Param::defaultWallTruthVisible() {

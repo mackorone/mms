@@ -202,8 +202,7 @@ void solve() {
 
 void keyPress(unsigned char key, int x, int y) {
 
-    if (sim::SimUtilities::mapContains(sim::INT_TO_KEY, static_cast<int>(key))
-        && sim::INT_TO_KEY.at(key) == sim::Key::SPACE) {
+    if (key == 'p') {
         // Pause the simulation (only in discrete mode)
         sim::S()->setPaused(!sim::S()->paused());
     }
@@ -236,10 +235,6 @@ void keyPress(unsigned char key, int x, int y) {
         if (sim::S()->layout() != sim::Layout::FULL) {
             sim::S()->setZoomedMapScale(sim::S()->zoomedMapScale() / 1.5);
         }
-    }
-    else if (key == 'p') {
-        // Toggle mouse path visibility
-        sim::S()->setMousePathVisible(!sim::S()->mousePathVisible());
     }
     else if (key == 't') {
         // Toggle wall truth visibility

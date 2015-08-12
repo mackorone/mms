@@ -114,7 +114,7 @@ Low-pri:
 
 Clean-Up:
 - Change map.count(item) != 0 to map.find(item) != map.end()
-- Add IMouseAlgorithm (and maze) to the build path so we can just do #include <IMouseAlgorithm.h>
+- Add IMouseAlgorithm (and maze) to the build path so we can just do #include <IMouseAlgorithm.h> (maybe...)
 - Run the parameter consistency script, make sure values align
 - Convert primitive types to GL types
 - Return const references instead of values (pointers???)

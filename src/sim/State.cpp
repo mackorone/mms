@@ -29,7 +29,6 @@ State::State() {
     m_layout = STRING_TO_LAYOUT.at(P()->defaultLayout());
     m_rotateZoomedMap = P()->defaultRotateZoomedMap();
     m_zoomedMapScale = P()->defaultZoomedMapScale();
-    m_mousePathVisible = P()->defaultMousePathVisible();
     m_wallTruthVisible = P()->defaultWallTruthVisible();
     m_tileColorsVisible = P()->defaultTileColorsVisible();
     m_tileTextVisible = P()->defaultTileTextVisible();
@@ -75,10 +74,6 @@ bool State::rotateZoomedMap() {
 
 double State::zoomedMapScale() {
     return m_zoomedMapScale;
-}
-
-bool State::mousePathVisible() {
-    return m_mousePathVisible;
 }
 
 bool State::wallTruthVisible() {
@@ -157,10 +152,6 @@ void State::setZoomedMapScale(double zoomedMapScale) {
     else {
         m_zoomedMapScale = zoomedMapScale;
     }
-}
-
-void State::setMousePathVisible(bool mousePathVisible) {
-    m_mousePathVisible = mousePathVisible;
 }
 
 void State::setWallTruthVisible(bool wallTruthVisible) {

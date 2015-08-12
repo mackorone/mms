@@ -39,7 +39,6 @@ public:
     std::string mouseWheelColor();
     std::string mouseSensorColor();
     std::string mouseViewColor();
-    bool defaultMousePathVisible();
     bool defaultWallTruthVisible();
     bool defaultTileColorsVisible();
     bool defaultTileTextVisible();
@@ -123,7 +122,6 @@ private:
     std::string m_mouseWheelColor;
     std::string m_mouseSensorColor;
     std::string m_mouseViewColor;
-    bool m_defaultMousePathVisible;
     bool m_defaultWallTruthVisible;
     bool m_defaultTileColorsVisible;
     bool m_defaultTileTextVisible;

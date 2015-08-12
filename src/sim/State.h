@@ -29,7 +29,6 @@ public:
     Layout layout();
     bool rotateZoomedMap();
     double zoomedMapScale();
-    bool mousePathVisible(); // TODO: Implement the mouse path
     bool wallTruthVisible();
     bool tileColorsVisible();
     bool tileTextVisible();
@@ -48,7 +47,6 @@ public:
     void setLayout(Layout layout);
     void setRotateZoomedMap(bool rotateZoomedMap);
     void setZoomedMapScale(double zoomedMapScale);
-    void setMousePathVisible(bool mousePathVisible);
     void setWallTruthVisible(bool wallTruthVisible);
     void setTileColorsVisible(bool tileColorsVisible);
     void setTileTextVisible(bool tileTextVisible);
@@ -75,7 +73,6 @@ private:
     Layout m_layout;
     bool m_rotateZoomedMap;
     double m_zoomedMapScale;
-    bool m_mousePathVisible;
     bool m_wallTruthVisible;
     bool m_tileColorsVisible;
     bool m_tileTextVisible;

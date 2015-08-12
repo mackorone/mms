@@ -66,8 +66,8 @@ void TileGraphic::draw() const {
     }
 
     // Draw the distance character textures
-    for (int row = 0; row < 3; row += 1) {
-        for (int col = 0; col < 5; col += 1) {
+    for (int row = 0; row < 2; row += 1) {
+        for (int col = 0; col < 4; col += 1) {
             // TODO: MACK - pass in the correct characters here
             GraphicUtilities::drawTileGraphicDistanceCharacter(m_tile->getX(), m_tile->getY(), row, col,
                 getDistanceCharacterPolygon(row, col), ((col + row) % 2 == 0 ? 'a' : 'b'));
@@ -77,10 +77,6 @@ void TileGraphic::draw() const {
     // Draw the fog
     GraphicUtilities::drawTileGraphicFog(m_tile->getX(), m_tile->getY(), m_tile->getFullPolygon(),
         STRING_TO_COLOR.at(P()->tileFogColor()), m_foggy && S()->tileFogVisible() ? P()->tileFogAlpha() : 0.0);
-
-    // TODO: Draw the shortest path graphic, which is usefule because this is
-    // the metric by which mice that don't reach the center are ranked
-
 }
 
 void TileGraphic::updateColor() const {
@@ -92,8 +88,8 @@ void TileGraphic::updateDistance() const {
     // TODO: MACK - change tile text to tile color, 
     // TODO: MACK - add a param for whether or not the actual distance values displayed
     // TODO: MACK - text color???
-    for (int row = 0; row < 3; row += 1) {
-        for (int col = 0; col < 5; col += 1) {
+    for (int row = 0; row < 2; row += 1) {
+        for (int col = 0; col < 4; col += 1) {
             /*
             GraphicUtilities::updateTileGraphicDistanceCharacter(m_tile->getX(), m_tile->getY(),
                 row, col, S()->tileTextVisible() ? m_color : STRING_TO_COLOR.at(P()->tileBaseColor()));
@@ -121,39 +117,37 @@ void TileGraphic::updateWall(Direction direction) const {
 
 std::pair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction) const {
 
-    // Declare the wall color and alpha
-    Color wallColor;
-    float wallAlpha;
+    // Declare the wall color and alpha, assign defaults
+    Color wallColor = STRING_TO_COLOR.at(P()->tileWallColor());
+    float wallAlpha = 1.0;
 
     // Either draw the true walls of the tile ...
     if (S()->wallTruthVisible()) {
-        wallColor = STRING_TO_COLOR.at(P()->tileWallColor());
         wallAlpha = m_tile->isWall(direction) ? 1.0 : 0.0;
     }
 
     // ... or the algorithm's (un)declared walls
     else {
 
-        // (un)declared walls have an alpha value of 1.0 (except for one case)
-        wallAlpha = 1.0;
-
         // If the wall was declared, use the wall color and tile base color ...
         if (wallDeclared(direction)) {
             if (m_declaredWalls.at(direction)) {
+                // Correct declaration
                 if (m_tile->isWall(direction)) {
                     wallColor = STRING_TO_COLOR.at(P()->tileWallColor());
                 }
+                // Incorrect declaration
                 else {
                     wallColor = STRING_TO_COLOR.at(P()->tileIncorrectlyDeclaredWallColor());
                 }
             }
             else {
+                // Incorrect declaration
                 if (m_tile->isWall(direction)) {
                     wallColor = STRING_TO_COLOR.at(P()->tileIncorrectlyDeclaredNoWallColor());
                 }
+                // Correct declaration
                 else {
-                    // We assign an arbitrary value here to avoid a nullptr derefernce
-                    wallColor = STRING_TO_COLOR.at(P()->tileWallColor());
                     wallAlpha = 0.0;
                 }
             }
@@ -175,25 +169,26 @@ std::pair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction
 
 Polygon TileGraphic::getDistanceCharacterPolygon(int row, int col) const {
 
-    //                     *--*--------------*--*
-    //                     |  |              |  |
-    //                     *--*--------------Y--*
-    //                     |  |    |    |    |  |
-    //                     |  | 00 | 01 | 02 |  |
-    //                     |  |____|____|____|  |
-    //                     |  |    |    |    |  |
-    //                     |  | 10 | 11 | 12 |  |
-    //                     |  |    |    |    |  |
-    //                     *--X--------------*--*
-    //                     |  |              |  |
-    //                     *--*--------------*--*
-    // TODO: MACK
+    //                   *--*-------------------*--*
+    //                   |  |                   |  |
+    //                   *--*-------------------Y--*
+    //                   |  |    |    |    |    |  |
+    //                   |  |    |    |    |    |  |
+    //                   |  | 00 | 01 | 02 | 03 |  |
+    //                   |  |____|____|____|____|  |
+    //                   |  |    |    |    |    |  |
+    //                   |  |    |    |    |    |  |
+    //                   |  | 10 | 11 | 12 | 13 |  |
+    //                   |  |    |    |    |    |  |
+    //                   *--X-------------------*--*
+    //                   |  |                   |  |
+    //                   *--*-------------------*--*
 
     Cartesian X = m_tile->getInteriorPolygon().getVertices().at(0);
     Cartesian Y = m_tile->getInteriorPolygon().getVertices().at(2);
     Cartesian diagonal = Y - X;
-    Meters characterWidth = diagonal.getX() / 5.0;
-    Meters characterHeight = diagonal.getY() / 3.0;
+    Meters characterWidth = diagonal.getX() / 4.0;
+    Meters characterHeight = diagonal.getY() / 2.0;
     return Polygon({
         X + Cartesian(characterWidth *  col     , characterHeight *  row     ),
         X + Cartesian(characterWidth *  col     , characterHeight * (row + 1)),

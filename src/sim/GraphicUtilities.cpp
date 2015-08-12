@@ -296,7 +296,7 @@ void GraphicUtilities::drawTileGraphicCorner(int x, int y, int cornerNumber, con
 
 void GraphicUtilities::drawTileGraphicDistanceCharacter(int x, int y, int row, int col, const Polygon& polygon, char c) {
     // TODO: MACK: This will be different since we have textures...
-    std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, c == 'a' ? Color::BLACK : Color::BLACK, 0.5);
+    std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, c == 'a' ? Color::DARK_BLUE : Color::DARK_GREEN, 1.0);
     for (int i = 0; i < tgs.size(); i += 1) {
         TGB.push_back(tgs.at(i));
     }
@@ -416,14 +416,21 @@ std::vector<TriangleGraphic> GraphicUtilities::polygonToTriangleGraphics(const P
 }
 
 int GraphicUtilities::trianglesPerTile() {
-    // This value must be predetermined, and was done so as follows:
-    // - 1 x Base polygon: 2 triangles
-    // - 4 x Wall polygon: 2 triangles each
-    // - 4 x Corner polygon: 2 triangles each
-    // - 15 x Distance character polygon: 2 triangles each
-    // - 1 x Fog polygon: 2 triangles 
+
     // TODO: MACK - this doesn't need to be hardcoded
-    return 50;
+    // TODO: MACK - Make sure there is a limit to the distance that a user can input... 9999, perhaps???
+    // TODO: MACK - Some sort of symbol for unreachable??? inf perhaps???
+    // TODO: MACK - rename distance polygon to text polygons... make sure that's consistent... or do use distance
+
+    // This value must be predetermined, and was done so as follows:
+    // - Base polygon:      2 (2 triangles x 1 polygon  per tile)
+    // - Wall polygon:      8 (2 triangles x 4 polygons per tile)
+    // - Corner polygon:    8 (2 triangles x 4 polygons per tile)
+    // - Distance polygon: 16 (2 triangles x 8 polygons per tile)
+    // - Fog polygon:       2 (2 triangles x 1 polygon  per tile)
+    // ----------------------
+    // Total               36
+    return 36;
 }
 
 int GraphicUtilities::getTileGraphicBaseStartingIndex(int x, int y) {
@@ -444,7 +451,7 @@ int GraphicUtilities::getTileGraphicDistanceCharacterStartingIndex(int x, int y,
 }
 
 int GraphicUtilities::getTileGraphicFogStartingIndex(int x, int y) {
-    return 48 + trianglesPerTile() * (m_mazeHeight * x + y);
+    return 34 + trianglesPerTile() * (m_mazeHeight * x + y);
 }
 
 } // namespace sim
