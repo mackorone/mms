@@ -7,7 +7,7 @@
 #include <glut.h>
 #include "units/Duration.h"
 
-#include "Directions.h"
+#include "Direction.h"
 #include "Maze.h"
 
 namespace sim {

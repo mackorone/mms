@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "Polygon.h"
-#include "Directions.h"
+#include "Direction.h"
 
 namespace sim {
 

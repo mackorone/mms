@@ -3,9 +3,9 @@
 #include <limits>
 #include <random>
 
-#include "Colors.h"
-#include "Directions.h"
-#include "Layouts.h"
+#include "Color.h"
+#include "Direction.h"
+#include "Layout.h"
 #include "Logging.h"
 #include "ParamParser.h"
 #include "SimUtilities.h"

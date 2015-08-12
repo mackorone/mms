@@ -2,8 +2,8 @@
 
 #include <utility>
 
-#include "../../sim/Directions.h"
-#include "../../sim/Keys.h"
+#include "../../sim/Direction.h"
+#include "../../sim/Key.h"
 #include "../../sim/State.h"
 
 namespace manual {

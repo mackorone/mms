@@ -22,7 +22,6 @@ High Pri:
 - Run-time parameters for the algos
 - -Wall flag...
 - Look at Tomasz' maze website
-- mouse speed, elapsed time, etc.
 - Maze Validation (both physically valid mazes and competition valid mazes)
     - Official maze size parameters
 - Figure out how to get rid of ifdefs in algorithm
@@ -49,6 +48,7 @@ High Pri:
 - Gyroscope support
 
 Med Pri:
+- Make sure that the mouse fits in the starting square
 - Mouse wheel positive radians per second should be counter-clockwise by convention
 - Algo checklist?
 - Still view a maze if it passes validation, but don't let the sim continue...

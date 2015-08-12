@@ -3,8 +3,8 @@
 #include <glut.h>
 #include <string>
 
-#include "Colors.h"
-#include "Directions.h"
+#include "Color.h"
+#include "Direction.h"
 #include "Polygon.h"
 #include "TriangleGraphic.h"
 

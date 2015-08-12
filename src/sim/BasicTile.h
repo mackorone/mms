@@ -2,7 +2,7 @@
 
 #include <map>
 
-#include "Directions.h"
+#include "Direction.h"
 
 namespace sim {
 

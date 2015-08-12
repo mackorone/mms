@@ -4,8 +4,8 @@
 
 #include "mouse/MouseAlgorithms.h"
 #include "sim/GraphicUtilities.h"
-#include "sim/InterfaceTypes.h"
-#include "sim/Keys.h"
+#include "sim/InterfaceType.h"
+#include "sim/Key.h"
 #include "sim/Logging.h"
 #include "sim/Maze.h"
 #include "sim/MazeGraphic.h"

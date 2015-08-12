@@ -37,33 +37,33 @@ std::pair<int, int> GraphicUtilities::getFullMapPosition() {
 }
 
 std::pair<int, int> GraphicUtilities::getZoomedMapPosition() {
-    if (S()->layout() == Layout::ZOOMED) {
-        return std::make_pair(P()->windowBorderWidth(), P()->windowBorderWidth());
+    if (S()->layout() == Layout::BOTH) {
+        return std::make_pair((m_windowWidth + P()->windowBorderWidth()) / 2, P()->windowBorderWidth());
     }
-    return std::make_pair((m_windowWidth + P()->windowBorderWidth()) / 2, P()->windowBorderWidth());
+    return std::make_pair(P()->windowBorderWidth(), P()->windowBorderWidth());
 }
 
 std::pair<int, int> GraphicUtilities::getFullMapSize() {
-    int width = (m_windowWidth - 3 * P()->windowBorderWidth()) / 2;
+    int width = m_windowWidth - 2 * P()->windowBorderWidth();
     int height = m_windowHeight - 2 * P()->windowBorderWidth();
     if (S()->layout() == Layout::ZOOMED) {
         width = 0;
     }
-    else if (S()->layout() == Layout::FULL) {
-        width = width * 2 + P()->windowBorderWidth();
+    else if (S()->layout() == Layout::BOTH) {
+        width = (width - P()->windowBorderWidth()) / 2;
     }
     ASSERT(0 <= width && 0 <= height);
     return std::make_pair(width, height);
 }
 
 std::pair<int, int> GraphicUtilities::getZoomedMapSize() {
-    int width = (m_windowWidth - 3 * P()->windowBorderWidth()) / 2;
+    int width = m_windowWidth - 2 * P()->windowBorderWidth();
     int height = m_windowHeight - 2 * P()->windowBorderWidth();
     if (S()->layout() == Layout::FULL) {
         width = 0;
     }
-    else if (S()->layout() == Layout::ZOOMED) {
-        width = width * 2 + P()->windowBorderWidth();
+    else if (S()->layout() == Layout::BOTH) {
+        width = (width - P()->windowBorderWidth()) / 2;
     }
     ASSERT(0 <= width && 0 <= height);
     return std::make_pair(width, height);

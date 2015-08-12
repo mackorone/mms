@@ -1,8 +1,8 @@
 #include "ParamParser.h"
 
 #include "Assert.h"
-#include "Colors.h"
-#include "Layouts.h"
+#include "Color.h"
+#include "Layout.h"
 #include "Logging.h"
 #include "SimUtilities.h"
 

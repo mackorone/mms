@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "Colors.h"
+#include "Color.h"
 #include "Maze.h"
 #include "TileGraphic.h"
 

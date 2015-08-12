@@ -2,7 +2,7 @@
 
 #include <glut.h>
 
-#include "Colors.h"
+#include "Color.h"
 #include "Tile.h"
 
 namespace sim {

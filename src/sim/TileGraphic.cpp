@@ -1,6 +1,6 @@
 #include "TileGraphic.h"
 
-#include "Colors.h"
+#include "Color.h"
 #include "GraphicUtilities.h"
 #include "Param.h"
 #include "SimUtilities.h"

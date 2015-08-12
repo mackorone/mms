@@ -3,9 +3,9 @@
 #include <map>
 #include <thread>
 
-#include "InterfaceTypes.h"
-#include "Keys.h"
-#include "Layouts.h"
+#include "InterfaceType.h"
+#include "Key.h"
+#include "Layout.h"
 
 namespace sim {
 
