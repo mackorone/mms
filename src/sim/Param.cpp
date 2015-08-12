@@ -45,7 +45,7 @@ Param::Param() {
     m_windowBorderWidth = parser.getIntIfHasIntAndInRange(
         "window-border-width", 10, 0, 25);
     m_minZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange(
-        "min-zoomed-map-scale", 0.02, 0.01, 0.1);
+        "min-zoomed-map-scale", 0.02, 0.01, 0.04);
     m_maxZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange(
         "max-zoomed-map-scale", 1.0, 0.5, 2.0);
     m_defaultZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange(

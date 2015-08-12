@@ -52,7 +52,6 @@ std::pair<int, int> GraphicUtilities::getFullMapSize() {
     else if (S()->layout() == Layout::BOTH) {
         width = (width - P()->windowBorderWidth()) / 2;
     }
-    ASSERT(0 <= width && 0 <= height);
     return std::make_pair(width, height);
 }
 
@@ -65,7 +64,6 @@ std::pair<int, int> GraphicUtilities::getZoomedMapSize() {
     else if (S()->layout() == Layout::BOTH) {
         width = (width - P()->windowBorderWidth()) / 2;
     }
-    ASSERT(0 <= width && 0 <= height);
     return std::make_pair(width, height);
 }
 

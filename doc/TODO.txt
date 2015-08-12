@@ -29,7 +29,6 @@ High Pri:
 - VSync so the graphics don't tear
 - Updates on the tile boundaries, not centers
 - Figure out a nice way to use a vector for the simulation, but an array for real life
-- If you shrink the window too skinny, an assertion fails (line 47 of GraphicUtilties.cpp)
 - Other mouse movements - curve turns, j-turns, diagonals, etc.
 - Support stepper motor / encoders interface
 - Sensor readings for walls other than front, left right
