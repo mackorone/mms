@@ -1,10 +1,11 @@
 High Pri:
 
 - Rewrite text so that it's performant
-    - Make sure that MackAlgo looks normal... the walls look gray under the colored tiles...
+    - Use freetype-gl
 - Put the vertex shader in its own source file
 
 - Tile distances
+    - Should we rename these to tile text???
     - Depending on the maze size, the valid distances will be different - make this the case for the text
 - Actual distance values on the tile
     - MazeUtilities class that can get the distances???
@@ -62,6 +63,7 @@ Med Pri:
 - M_PI is not cross-platform
 - std::min, std::max is not cross-platform
 - Add a way to set the text color of each tile individually
+- Center the view of the zoomed map more towards the center (especially for continuous... perhaps mouse adjust?)
 - Enum parameters?
 - Make some functions available to the algo writers
 - Zoomed map mouse is a bit jumpy when going at high speeds
