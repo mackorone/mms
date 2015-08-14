@@ -1,6 +1,7 @@
 #include <thread>
 
 #include <glut.h>
+#include <fontstash.h> // TODO: MACK
 
 #include "mouse/MouseAlgorithms.h"
 #include "sim/GraphicUtilities.h"
@@ -38,6 +39,12 @@ sim::MouseInterface* g_mouseInterface;
 // the physical coordinate system and transforms them into the OpenGL system.
 GLuint g_transformationMatixId;
 
+// TODO: MACK
+struct sth_stash* stash; // TODO
+int droid; // TODO
+GLuint vertex_buffer_object;
+GLuint program;
+
 int main(int argc, char* argv[]) {
 
     // First, determine the runId (just datetime, for now)
@@ -73,6 +80,13 @@ int main(int argc, char* argv[]) {
 
     // Initialize all of the graphics
     initGraphics(argc, argv);
+
+// TODO: MACK
+    /* create a font stash with a maximum texture size of 512 x 512 */
+    stash = sth_create(512, 512);
+    /* load truetype font */
+    droid = sth_add_font(stash, (sim::SimUtilities::getProjectDirectory() + "res/fonts/DroidSerif-Regular.ttf").c_str());
+// TODO: MACK
 
     // Start the physics loop
     std::thread physicsThread([](){
@@ -130,6 +144,56 @@ void draw() {
 
     // We disable scissoring so that the glClear can take effect
     glDisable(GL_SCISSOR_TEST);
+
+    // ------------- TODO: MACK: We should be able to disable scissoring after we draw all of the text...
+#if(0)
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glUseProgram(0);
+
+    glColor4ub(255,255,255,255); // TODO: Sets color to white
+    glLoadIdentity();
+    //glOrtho(0, sim::P()->windowWidth(), 0, sim::P()->windowHeight(), -1, 1);
+    glOrtho(0, 930, 0, 470, -1, 1);
+
+    /* TODO: Rotation perhaps?
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, 640, 480, 0, 1, -1);
+    glMatrixMode(GL_MODELVIEW);
+    */
+    /*
+    std::vector<float> mat = {
+        1,0,0,0,
+        0,1,0,0,
+        0,0,1,0,
+        0,0,0,1,
+    };
+    glLoadMatrixf(&mat.front());
+    */
+    /*
+    glLoadMatrixf(&sim::GraphicUtilities::getZoomedMapTransformationMatrix(
+        g_mouse->getInitialTranslation(), g_mouse->getCurrentTranslation(), g_mouse->getCurrentRotation()).front());
+    */
+
+    // TODO: Should be fine... I just have to figure out a mechanism for drawing it.
+    //glRotated(45.0, 0.0, 0.0, 1.0);
+    sth_begin_draw(stash);
+    for (int i = 0; i < 256; i += 1) {
+        for (int j = 0; j < 2; j += 1) {
+            for (int k = 0; k < 4; k += 1) {
+                sth_draw_text(stash, droid, 12.0f, 14 + (i / 16) * 28 + 5 * k, 16 + (i % 16) * 28 + 9 * j, "X", NULL);
+            }
+        }
+    }
+    sth_end_draw(stash);
+    //glRotated(-45.0, 0.0, 0.0, 1.0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
+    glUseProgram(program);
+    // TODO: Draw the mouse on top of the 
+    //glDrawArrays(GL_TRIANGLES, 3 * mouseTrianglesStartingIndex, 3 * sim::GraphicUtilities::TGB.size());
+    // ------------- TODO
+#endif
 
     // Display the result
     glutSwapBuffers();
@@ -316,7 +380,7 @@ void initGraphics(int argc, char* argv[]) {
     }
 
     // Generate vertex buffer object
-    GLuint vertex_buffer_object;
+    /*GLuint*/ vertex_buffer_object; // TODO: MACK
     glGenBuffers(1,  &vertex_buffer_object);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
 
@@ -336,7 +400,7 @@ void initGraphics(int argc, char* argv[]) {
     glCompileShader(vs);
 
     // Generate the rendering program
-    GLuint program = glCreateProgram();
+    /*GLuint*/ program = glCreateProgram(); // TODO: MACK
     glAttachShader(program, vs);
     glLinkProgram(program);
     glUseProgram(program);
