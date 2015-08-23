@@ -23,7 +23,7 @@
 //
 // PRINT(DEBUG,
 //  "Message %v %v %v. This is really long and really should be on "
-//  "its own line because it wouldn't fit on just a single line.",
+//  "at least two lines because it wouldn't fit on just a single line.",
 //  'c', "foo", 4);
 
 namespace sim {

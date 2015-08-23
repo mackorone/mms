@@ -924,6 +924,10 @@ int stbtt_FindGlyphIndex(const stbtt_fontinfo *info, int unicode_codepoint)
          if (unicode_codepoint > end)
             search += searchRange*2;
          --entrySelector;
+
+        (void) start; // NOTE: Added by @mackorone to pass -Wall
+        (void) end; // NOTE: Added by @mackorone to pass -Wall
+
       }
       search += 2;
 
@@ -938,6 +942,8 @@ int stbtt_FindGlyphIndex(const stbtt_fontinfo *info, int unicode_codepoint)
       offset = ttUSHORT(data + index_map + 14 + segcount*6 + 2 + 2*item);
       if (offset == 0)
          return (stbtt_uint16) (unicode_codepoint + ttSHORT(data + index_map + 14 + segcount*4 + 2 + 2*item));
+
+        (void) end; // NOTE: Added by @mackorone to pass -Wall
 
       return ttUSHORT(data + offset + (unicode_codepoint-start)*2 + index_map + 14 + segcount*6 + 2 + 2*item);
    } else if (format == 12 || format == 13) {

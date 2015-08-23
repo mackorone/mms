@@ -143,7 +143,7 @@ Param::Param() {
     m_numberOfSensorEdgePoints = parser.getIntIfHasIntAndInRange(
         "number-of-sensor-edge-points", 3, 2, 10);
     m_numberOfArchivedRuns = parser.getIntIfHasIntAndInRange(
-        "number-of-archived-runs", 20, 0, 1000);
+        "number-of-archived-runs", 20, 1, 1000);
 
     // Maze Parameters
     m_wallWidth = parser.getDoubleIfHasDoubleAndInRange(

@@ -21,7 +21,7 @@ public:
 
     // Any interface methods
     // TODO: random???
-    // TODO: logging??? NOPE print instead
+    // TODO: logging??? NOPE print (arduino) instead
     void delay(int milliseconds);
 
     void setTileColor(int x, int y, char color);

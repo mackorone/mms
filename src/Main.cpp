@@ -380,7 +380,7 @@ void initGraphics(int argc, char* argv[]) {
     }
 
     // Generate vertex buffer object
-    /*GLuint*/ vertex_buffer_object; // TODO: MACK
+    ///*GLuint*/ vertex_buffer_object; // TODO: MACK
     glGenBuffers(1,  &vertex_buffer_object);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
 

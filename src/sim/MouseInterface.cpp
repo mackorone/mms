@@ -28,13 +28,18 @@ void MouseInterface::delay(int milliseconds) {
 void MouseInterface::setTileColor(int x, int y, char color) {
 
     if (!withinMaze(x, y)) {
-        SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
-            + std::to_string(y) + std::string("), and thus you cannot set its color."));
+        PRINT(WARN,
+            "There is no tile at position (%v, %v) and thus you cannot set its "
+            "color.",
+            x, y);
         return;
     }
 
     if (!SimUtilities::mapContains(CHAR_TO_COLOR, color)) {
-        SimUtilities::print(std::string("Error: The character '") + color + std::string("' is not mapped to a color."));
+        PRINT(WARN,
+            "You cannot set the color of tile (%v, %v) to '%v' since '%v' is "
+            "not mapped to a color.",
+            x, y, color, color);
         return;
     }
 
@@ -45,8 +50,10 @@ void MouseInterface::setTileColor(int x, int y, char color) {
 void MouseInterface::clearTileColor(int x, int y) {
 
     if (!withinMaze(x, y)) {
-        SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
-            + std::to_string(y) + std::string("), and thus you cannot clear its color."));
+        PRINT(WARN,
+            "There is no tile at position (%v, %v) and thus you cannot clear its "
+            "color.",
+            x, y);
         return;
     }
 
