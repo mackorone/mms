@@ -1,21 +1,28 @@
 #include "MazeAlgorithms.h"
 
-#include <map>
+#include "../sim/Assert.h"
 
 #include "randomize/Randomize.h"
 #include "tomasz/TomaszMazeGenerator.h"
 
-MazeAlgorithms::MazeAlgorithms() {
-    m_algorithms.insert(std::make_pair("Randomize", new randomize::Randomize()));
-    m_algorithms.insert(std::make_pair("Tomasz", new tomasz::TomaszMazeGenerator()));
+bool MazeAlgorithms::isMazeAlgorithm(const std::string& str) {
+    return helper(str, true).first;
 }
 
-MazeAlgorithms::~MazeAlgorithms() {
-    for (std::pair<std::string, IMazeAlgorithm*> pair : m_algorithms) {
-        delete pair.second;
+IMazeAlgorithm* MazeAlgorithms::getMazeAlgorithm(const std::string& str) {
+    ASSERT(isMazeAlgorithm(str));
+    return helper(str, false).second;
+}
+
+std::pair<bool, IMazeAlgorithm*> MazeAlgorithms::helper(const std::string& str, bool justChecking) {
+
+    #define ALGO(NAME, INSTANCE)\
+    if (str == NAME) {\
+        return std::make_pair(true, justChecking ? nullptr : INSTANCE);\
     }
-}
 
-const std::map<std::string, IMazeAlgorithm*>& MazeAlgorithms::getAlgorithms() const {
-    return m_algorithms;
+    ALGO("Randomize", new randomize::Randomize());
+    ALGO("Tomasz", new tomasz::TomaszMazeGenerator());
+
+    return std::make_pair(false, nullptr);
 }

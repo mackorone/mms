@@ -221,8 +221,6 @@ float MackAlgo::getStraightAwayCost(int length) {
 bool MackAlgo::inspectNeighbor(Cell* current, Cell* neighbor, int direction) {
 
     bool pushToHeap = false;
-    int x = current->getX();
-    int y = current->getY();
 
     // Determine the cost if routed through the currect node
     float costToNeighbor = current->getDistance();

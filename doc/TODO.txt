@@ -10,6 +10,8 @@ High Pri:
     - MazeUtilities class that can get the distances???
     - State variable and key to control whether these are visible or not
 
+- Do mouse initialization before starting other threads
+
 - Maze size requirements and validity
 - Make a note of contributing projects in the documentation
 
@@ -20,7 +22,6 @@ High Pri:
     - Fix the Params associated with discrete sim-speed
 
 - Run-time parameters for the algos
-- -Wall flag...
 - Look at Tomasz' maze website
 - Maze Validation (both physically valid mazes and competition valid mazes)
     - Official maze size parameters
@@ -118,6 +119,7 @@ Low-pri:
 - Sometimes we segfault when we hit 'q'
 - Log level options
     - Like only print/log DEBUG, INFO, WARN, ERROR, etc.
+- Implement perfect hashing for key input and algo selection
 
 Clean-Up:
 - Change map.count(item) != 0 to map.find(item) != map.end()
@@ -161,3 +163,4 @@ Clean-Up:
 - Ensure boolean operators aren't used in asserts... should be using a different assert
 - Replace NULL with nullptr
 - Rename Tile to Cell?
+- Fix up so that -Wall -Werror -pedantic-error flags pass

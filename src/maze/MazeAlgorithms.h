@@ -5,11 +5,13 @@
 class MazeAlgorithms {
     
 public:
-    MazeAlgorithms();
-    ~MazeAlgorithms();
-    const std::map<std::string, IMazeAlgorithm*>& getAlgorithms() const;
+    // The MazeAlgorithms class is not constructible
+    MazeAlgorithms() = delete;
+
+    static bool isMazeAlgorithm(const std::string& str);
+    static IMazeAlgorithm* getMazeAlgorithm(const std::string& str);
 
 private:
-    std::map<std::string, IMazeAlgorithm*> m_algorithms;
+    static std::pair<bool, IMazeAlgorithm*> helper(const std::string& str, bool justChecking);
 
 };

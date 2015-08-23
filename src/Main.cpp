@@ -26,11 +26,13 @@ void solve();
 void keyPress(unsigned char key, int x, int y);
 void specialKeyPress(int key, int x, int y);
 void specialKeyRelease(int key, int x, int y);
+void initRunAndLogging();
+void initSimObjects();
 void initGraphics(int argc, char* argv[]);
 
 // Global variable declarations
-sim::World* g_world;
 sim::Mouse* g_mouse;
+sim::World* g_world;
 sim::MazeGraphic* g_mazeGraphic;
 sim::MouseGraphic* g_mouseGraphic;
 sim::MouseInterface* g_mouseInterface;
@@ -47,38 +49,13 @@ GLuint program;
 
 int main(int argc, char* argv[]) {
 
-    // First, determine the runId (just datetime, for now)
-    std::string runId = sim::SimUtilities::getDateTime();
+    // Step 0: Initialze the current run and logging function
+    initRunAndLogging();
 
-    // Then we can initiliaze Logging
-    sim::Logging::initialize(runId);
+    // Step 1: Initialize the simulation objects
+    initSimObjects();
 
-    // Initialize the State object in order to:
-    // 0) Set the runId
-    // 1) Avoid a race condition
-    // 2) Register this thread as the main thread
-    // 3) Initialize the Param object
-    sim::S()->setRunId(runId);
-
-    // Remove any excessive archived runs
-    sim::SimUtilities::removeExcessArchivedRuns();
-
-    // Initialize local objects
-    sim::Maze maze;
-    sim::Mouse mouse(&maze);
-    sim::World world(&maze, &mouse);
-    sim::MazeGraphic mazeGraphic(&maze);
-    sim::MouseGraphic mouseGraphic(&mouse);
-    sim::MouseInterface mouseInterface(&maze, &mouse, &mazeGraphic);
-
-    // Assign global variables
-    g_world = &world;
-    g_mouse = &mouse;
-    g_mazeGraphic = &mazeGraphic;
-    g_mouseGraphic = &mouseGraphic;
-    g_mouseInterface = &mouseInterface;
-
-    // Initialize all of the graphics
+    // Step 2: Initialize the graphics
     initGraphics(argc, argv);
 
 // TODO: MACK
@@ -88,13 +65,17 @@ int main(int argc, char* argv[]) {
     droid = sth_add_font(stash, (sim::SimUtilities::getProjectDirectory() + "res/fonts/DroidSerif-Regular.ttf").c_str());
 // TODO: MACK
 
-    // Start the physics loop
-    std::thread physicsThread([](){
-        g_world->simulate();
-    });
+    // TODO: Do mouse initialization before starting all of the other threads...
     
     // Start the solving loop
     std::thread solvingThread(solve);
+    // TODO: MACK - turn the above into a lambda
+
+    // Start the physics loop
+    std::thread physicsThread([](){
+        // TODO: Put delay in here...
+        g_world->simulate();
+    });
 
     // Start the graphics loop
     sim::S()->enterMainLoop();
@@ -152,7 +133,7 @@ void draw() {
 
     glColor4ub(255,255,255,255); // TODO: Sets color to white
     glLoadIdentity();
-    //glOrtho(0, sim::P()->windowWidth(), 0, sim::P()->windowHeight(), -1, 1);
+    glOrtho(0, sim::P()->windowWidth(), 0, sim::P()->windowHeight(), -1, 1);
     glOrtho(0, 930, 0, 470, -1, 1);
 
     /* TODO: Rotation perhaps?
@@ -176,7 +157,7 @@ void draw() {
     */
 
     // TODO: Should be fine... I just have to figure out a mechanism for drawing it.
-    //glRotated(45.0, 0.0, 0.0, 1.0);
+    glRotated(45.0, 0.0, 0.0, 1.0);
     sth_begin_draw(stash);
     for (int i = 0; i < 256; i += 1) {
         for (int j = 0; j < 2; j += 1) {
@@ -186,7 +167,7 @@ void draw() {
         }
     }
     sth_end_draw(stash);
-    //glRotated(-45.0, 0.0, 0.0, 1.0);
+    glRotated(-45.0, 0.0, 0.0, 1.0);
 
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
     glUseProgram(program);
@@ -219,13 +200,11 @@ void draw() {
 void solve() {
 
     // First, check to ensure that the mouse algorithm is valid
-    MouseAlgorithms mouseAlgorithms;
-    std::map<std::string, IMouseAlgorithm*> algorithms = mouseAlgorithms.getAlgorithms();
-    if (!sim::SimUtilities::mapContains(algorithms, sim::P()->mouseAlgorithm())) {
+    if (!MouseAlgorithms::isMouseAlgorithm(sim::P()->mouseAlgorithm())) {
         sim::SimUtilities::print("Error: \"" + sim::P()->mouseAlgorithm() + "\" is not a valid mouse algorithm.");
         sim::SimUtilities::quit();
     }
-    IMouseAlgorithm* algorithm = algorithms.at(sim::P()->mouseAlgorithm());
+    IMouseAlgorithm* algorithm = MouseAlgorithms::getMouseAlgorithm(sim::P()->mouseAlgorithm());
 
     // Initialize the mouse with the file provided
     std::string mouseFile = algorithm->mouseFile();
@@ -345,6 +324,34 @@ void specialKeyRelease(int key, int x, int y) {
     if (sim::SimUtilities::vectorContains(sim::ARROW_KEYS, sim::INT_TO_KEY.at(key))) {
         sim::S()->setArrowKeyIsPressed(sim::INT_TO_KEY.at(key), false);
     }
+}
+
+void initRunAndLogging() {
+
+    // First, determine the runId (just datetime, for now)
+    std::string runId = sim::SimUtilities::getDateTime();
+
+    // Then we can initiliaze Logging
+    sim::Logging::initialize(runId);
+
+    // Initialize the State object in order to:
+    // 0) Set the runId
+    // 1) Avoid a race condition
+    // 2) Register this thread as the main thread
+    // 3) Initialize the Param object
+    sim::S()->setRunId(runId);
+
+    // Remove any excessive archived runs
+    sim::SimUtilities::removeExcessArchivedRuns();
+}
+
+void initSimObjects() {
+    sim::Maze* maze = new sim::Maze();
+    g_mouse = new sim::Mouse(maze);
+    g_world = new sim::World(maze, g_mouse);
+    g_mazeGraphic = new sim::MazeGraphic(maze);
+    g_mouseGraphic = new sim::MouseGraphic(g_mouse);
+    g_mouseInterface = new sim::MouseInterface(maze, g_mouse, g_mazeGraphic);
 }
 
 void initGraphics(int argc, char* argv[]) {

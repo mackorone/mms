@@ -13,12 +13,13 @@ LIBS = -lGLEW -lGL -lglut -lGLU -lpthread
 INC = -I$(SRC)lib -I$(SRC)lib/easyloggingpp/src -I$(SRC)lib/fontstash/src -I$(SRC)lib/polypartition/src -I$(SRC)lib/pugixml-1.6/src
 
 # Flags
-# -std=c++11: Use the C++11 standard
 # -MMD: Automatically generate dependency files
+# -std=c++11: Use the C++11 standard
 # -g: Add debugging symbols
 # -Wall: Show all warning messages
-# TODO: -pedantic-errors
-FLAGS = -MMD -std=c++11 -g#-Wall TODO: Fix all errors
+# -Werror: Fail compilation on warnings
+# -pedantic-errors: Flag even the most pedantic of errors
+FLAGS = -MMD -std=c++11 -g # -Wall -Werror -pedantic-errors
 
 # Recursively find all source files
 PRELIMSOURCES = $(shell find $(SRC) -name '*.cpp')

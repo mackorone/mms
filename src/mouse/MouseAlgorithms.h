@@ -5,11 +5,13 @@
 class MouseAlgorithms {
     
 public:
-    MouseAlgorithms();
-    ~MouseAlgorithms();
-    const std::map<std::string, IMouseAlgorithm*>& getAlgorithms() const;
+    // The MouseAlgorithms class is not constructible
+    MouseAlgorithms() = delete;
+
+    static bool isMouseAlgorithm(const std::string& str);
+    static IMouseAlgorithm* getMouseAlgorithm(const std::string& str);
 
 private:
-    std::map<std::string, IMouseAlgorithm*> m_algorithms;
+    static std::pair<bool, IMouseAlgorithm*> helper(const std::string& str, bool justChecking);
 
 };

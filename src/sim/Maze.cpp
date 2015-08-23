@@ -30,16 +30,14 @@ Maze::Maze() {
     }
     else {
 
-        MazeAlgorithms mazeAlgorithms;
-        std::map<std::string, IMazeAlgorithm*> algorithms = mazeAlgorithms.getAlgorithms();
-        if (!SimUtilities::mapContains(algorithms, sim::P()->mazeAlgorithm())) {
+        if (!MazeAlgorithms::isMazeAlgorithm(sim::P()->mazeAlgorithm())) {
             SimUtilities::print("Error: \"" + sim::P()->mazeAlgorithm() + "\" is not a valid maze algorithm.");
             SimUtilities::quit();
         }
 
         basicMaze = getBlankBasicMaze(P()->generatedMazeWidth(), P()->generatedMazeHeight());
         MazeInterface mazeInterface(&basicMaze);
-        algorithms.at(sim::P()->mazeAlgorithm())->generate(
+        MazeAlgorithms::getMazeAlgorithm(sim::P()->mazeAlgorithm())->generate(
             P()->generatedMazeWidth(), P()->generatedMazeHeight(), &mazeInterface);
     }
 
