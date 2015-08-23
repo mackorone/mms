@@ -15,12 +15,6 @@ World::World(Maze* maze, Mouse* mouse) : m_maze(maze), m_mouse(mouse), m_collisi
 
 void World::simulate() {
 
-    // Wait until the interface type is declared
-    // TODO: MACK - factor this out once we get rid of getInitialized
-    while (!m_mouse->getInitialized()) {
-        sim::SimUtilities::sleep(Seconds(P()->glutInitDuration()));
-    }
-
     // Start a separate collision detection thread
     std::thread collisionDetector(&World::checkCollision, this);
 

@@ -3,6 +3,7 @@
 #include <glut.h>
 #include <fontstash.h> // TODO: MACK
 
+#include "mouse/IMouseAlgorithm.h"
 #include "mouse/MouseAlgorithms.h"
 #include "sim/GraphicUtilities.h"
 #include "sim/InterfaceType.h"
@@ -22,20 +23,23 @@
 
 // Function declarations
 void draw();
-void solve();
 void keyPress(unsigned char key, int x, int y);
 void specialKeyPress(int key, int x, int y);
 void specialKeyRelease(int key, int x, int y);
+
+// Initialization functions, declared in the order they should be called
 void initRunAndLogging();
 void initSimObjects();
 void initGraphics(int argc, char* argv[]);
+void initMouseAlgo();
 
 // Global variable declarations
 sim::Mouse* g_mouse;
-sim::World* g_world;
 sim::MazeGraphic* g_mazeGraphic;
 sim::MouseGraphic* g_mouseGraphic;
 sim::MouseInterface* g_mouseInterface;
+sim::World* g_world;
+IMouseAlgorithm* g_algorithm;
 
 // The ID of the transformation matrix, which takes triangle graphic objects in
 // the physical coordinate system and transforms them into the OpenGL system.
@@ -58,26 +62,34 @@ int main(int argc, char* argv[]) {
     // Step 2: Initialize the graphics
     initGraphics(argc, argv);
 
-// TODO: MACK
-    /* create a font stash with a maximum texture size of 512 x 512 */
-    stash = sth_create(512, 512);
-    /* load truetype font */
-    droid = sth_add_font(stash, (sim::SimUtilities::getProjectDirectory() + "res/fonts/DroidSerif-Regular.ttf").c_str());
-// TODO: MACK
+    // Step 3: Initialize the mouse algorithm
+    initMouseAlgo();
 
-    // TODO: Do mouse initialization before starting all of the other threads...
-    
-    // Start the solving loop
-    std::thread solvingThread(solve);
-    // TODO: MACK - turn the above into a lambda
-
-    // Start the physics loop
+    // Step 4: Start the physics loop
     std::thread physicsThread([](){
-        // TODO: Put delay in here...
         g_world->simulate();
     });
 
-    // Start the graphics loop
+    // Step 5: Start the solving loop
+    std::thread solvingThread([](){
+
+        // Wait for the window to appear
+        sim::SimUtilities::sleep(sim::Seconds(sim::P()->glutInitDuration()));
+
+        // Unfog the beginning tile if necessary
+        if (sim::S()->interfaceType() == sim::InterfaceType::DISCRETE && sim::P()->discreteInterfaceUnfogTileOnEntry()) {
+            g_mazeGraphic->setTileFogginess(0, 0, false);
+        }
+
+        // Finally, begin execution of the mouse algorithm
+        g_algorithm->solve(
+            g_mazeGraphic->getWidth(),
+            g_mazeGraphic->getHeight(),
+            sim::DIRECTION_TO_CHAR.at(sim::STRING_TO_DIRECTION.at(sim::P()->mouseStartingDirection())),
+            g_mouseInterface);
+    });
+
+    // Step 6: Start the graphics loop
     sim::S()->enterMainLoop();
     glutMainLoop();
 }
@@ -197,52 +209,6 @@ void draw() {
     sim::SimUtilities::sleep(sim::Seconds(std::max(0.0, 1.0/sim::P()->frameRate() - duration)));
 }
 
-void solve() {
-
-    // First, check to ensure that the mouse algorithm is valid
-    if (!MouseAlgorithms::isMouseAlgorithm(sim::P()->mouseAlgorithm())) {
-        sim::SimUtilities::print("Error: \"" + sim::P()->mouseAlgorithm() + "\" is not a valid mouse algorithm.");
-        sim::SimUtilities::quit();
-    }
-    IMouseAlgorithm* algorithm = MouseAlgorithms::getMouseAlgorithm(sim::P()->mouseAlgorithm());
-
-    // Initialize the mouse with the file provided
-    std::string mouseFile = algorithm->mouseFile();
-    bool success = g_mouse->initialize(mouseFile);
-    if (!success) {
-        sim::SimUtilities::print("Error: Unable to successfully initialize the mouse in the algorithm \""
-            + sim::P()->mouseAlgorithm() + "\" from \"" + mouseFile + "\".");
-        sim::SimUtilities::quit();
-    }
-
-    // Initialize the interface type
-    if (!sim::SimUtilities::mapContains(sim::STRING_TO_INTERFACE_TYPE, algorithm->interfaceType())) {
-        PRINT(ERROR, "\"%v\" is not a valid interface type. You must declare the "
-            "interface type of the mouse algorithm \"%v\" to be either \"%v\" or \"%v\".",
-            algorithm->interfaceType(),
-            sim::P()->mouseAlgorithm(),
-            sim::INTERFACE_TYPE_TO_STRING.at(sim::InterfaceType::DISCRETE),
-            sim::INTERFACE_TYPE_TO_STRING.at(sim::InterfaceType::CONTINUOUS));
-        sim::SimUtilities::quit();
-    }
-    sim::S()->setInterfaceType(sim::STRING_TO_INTERFACE_TYPE.at(algorithm->interfaceType()));
-
-    // Wait for the window to appear
-    sim::SimUtilities::sleep(sim::Seconds(sim::P()->glutInitDuration()));
-
-    // Unfog the beginning tile if necessary
-    if (sim::S()->interfaceType() == sim::InterfaceType::DISCRETE && sim::P()->discreteInterfaceUnfogTileOnEntry()) {
-        g_mazeGraphic->setTileFogginess(0, 0, false);
-    }
-
-    // Finally, begin execution of the mouse algorithm
-    algorithm->solve(
-        g_mazeGraphic->getWidth(),
-        g_mazeGraphic->getHeight(),
-        sim::DIRECTION_TO_CHAR.at(sim::STRING_TO_DIRECTION.at(sim::P()->mouseStartingDirection())),
-        g_mouseInterface);
-}
-
 void keyPress(unsigned char key, int x, int y) {
 
     if (key == 'p') {
@@ -348,10 +314,10 @@ void initRunAndLogging() {
 void initSimObjects() {
     sim::Maze* maze = new sim::Maze();
     g_mouse = new sim::Mouse(maze);
-    g_world = new sim::World(maze, g_mouse);
     g_mazeGraphic = new sim::MazeGraphic(maze);
     g_mouseGraphic = new sim::MouseGraphic(g_mouse);
     g_mouseInterface = new sim::MouseInterface(maze, g_mouse, g_mazeGraphic);
+    g_world = new sim::World(maze, g_mouse);
 }
 
 void initGraphics(int argc, char* argv[]) {
@@ -423,6 +389,44 @@ void initGraphics(int argc, char* argv[]) {
     glVertexAttribPointer(coordinate, 2, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), 0);
     glVertexAttribPointer(color, 4, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), (char*) NULL + 2 * sizeof(double));
 
+// TODO: MACK
+    /* create a font stash with a maximum texture size of 512 x 512 */
+    stash = sth_create(512, 512);
+    /* load truetype font */
+    droid = sth_add_font(stash, (sim::SimUtilities::getProjectDirectory() + "res/fonts/DroidSerif-Regular.ttf").c_str());
+// TODO: MACK
+
     // Lastly, initially populate the vertex buffer object with tile information
     g_mazeGraphic->draw();
+}
+
+void initMouseAlgo() {
+
+    // First, check to ensure that the mouse algorithm is valid
+    if (!MouseAlgorithms::isMouseAlgorithm(sim::P()->mouseAlgorithm())) {
+        sim::SimUtilities::print("Error: \"" + sim::P()->mouseAlgorithm() + "\" is not a valid mouse algorithm.");
+        sim::SimUtilities::quit();
+    }
+    g_algorithm = MouseAlgorithms::getMouseAlgorithm(sim::P()->mouseAlgorithm());
+
+    // Initialize the mouse with the file provided
+    std::string mouseFile = g_algorithm->mouseFile();
+    bool success = g_mouse->initialize(mouseFile);
+    if (!success) {
+        sim::SimUtilities::print("Error: Unable to successfully initialize the mouse in the algorithm \""
+            + sim::P()->mouseAlgorithm() + "\" from \"" + mouseFile + "\".");
+        sim::SimUtilities::quit();
+    }
+
+    // Initialize the interface type
+    if (!sim::SimUtilities::mapContains(sim::STRING_TO_INTERFACE_TYPE, g_algorithm->interfaceType())) {
+        PRINT(ERROR, "\"%v\" is not a valid interface type. You must declare the "
+            "interface type of the mouse algorithm \"%v\" to be either \"%v\" or \"%v\".",
+            g_algorithm->interfaceType(),
+            sim::P()->mouseAlgorithm(),
+            sim::INTERFACE_TYPE_TO_STRING.at(sim::InterfaceType::DISCRETE),
+            sim::INTERFACE_TYPE_TO_STRING.at(sim::InterfaceType::CONTINUOUS));
+        sim::SimUtilities::quit();
+    }
+    sim::S()->setInterfaceType(sim::STRING_TO_INTERFACE_TYPE.at(g_algorithm->interfaceType()));
 }

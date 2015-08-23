@@ -14,12 +14,6 @@ MouseGraphic::MouseGraphic(const Mouse* mouse) : m_mouse(mouse) {
 
 void MouseGraphic::draw() {
 
-    // Only draw the mouse if it has been initialized
-    // TODO: MACK - get rid of this once we factor out getInitialized
-    if (!m_mouse->getInitialized()) {
-        return;
-    }
-
     // First, we draw the body
     GraphicUtilities::drawMousePolygon(m_mouse->getBodyPolygon(), STRING_TO_COLOR.at(P()->mouseBodyColor()), 1.0);
 

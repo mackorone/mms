@@ -10,8 +10,6 @@ High Pri:
     - MazeUtilities class that can get the distances???
     - State variable and key to control whether these are visible or not
 
-- Do mouse initialization before starting other threads
-
 - Maze size requirements and validity
 - Make a note of contributing projects in the documentation
 

@@ -16,18 +16,11 @@
 
 namespace sim {
 
-Mouse::Mouse(const Maze* maze) : m_maze(maze), m_initialized(false),
+Mouse::Mouse(const Maze* maze) : m_maze(maze),
     m_rotation(DIRECTION_TO_ANGLE.at(STRING_TO_DIRECTION.at(P()->mouseStartingDirection()))) {
 }
 
-bool Mouse::getInitialized() const {
-    return m_initialized;
-}
-
 bool Mouse::initialize(const std::string& mouseFile) {
-
-    // A mouse may only be initiaized once
-    ASSERT(!m_initialized);
 
     // TODO: This should fail at most once
 
@@ -68,9 +61,6 @@ bool Mouse::initialize(const std::string& mouseFile) {
 
     // Technically not correct (should be union), but it's a good approximation
     m_initialCollisionPolygon = GeometryUtilities::convexHull(polygons);
-
-    // Indicate that we're done with the initiaization
-    m_initialized = true;
 
     // Return success
     return true;
