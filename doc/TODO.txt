@@ -25,7 +25,6 @@ High Pri:
     - Official maze size parameters
 - Figure out how to get rid of ifdefs in algorithm
 - Make a SimInterface and make sure it's easy to "extract" an algorithm for use on Arduino
-- VSync so the graphics don't tear
 - Updates on the tile boundaries, not centers
 - Figure out a nice way to use a vector for the simulation, but an array for real life
 - Other mouse movements - curve turns, j-turns, diagonals, etc.
@@ -93,6 +92,7 @@ bullets in other physics simulators
     - But PRINT and LOG have to be resilient to Param reading failing
 
 Low-pri:
+- VSync so the graphics don't tear
 - Better run number system
 - Update the check_params.py script to make sure that the return type of the
   Param methods is the same as the type of the member variable

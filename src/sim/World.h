@@ -1,9 +1,10 @@
 #pragma once
 
+#include <vector>
+
 #include "Maze.h"
 #include "Mouse.h"
 #include "Polygon.h"
-#include <vector>
 
 namespace sim {
 

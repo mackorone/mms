@@ -2,6 +2,10 @@
 
 namespace sim {
 
+Seconds::Seconds() {
+    m_seconds = 0.0;
+}
+
 Seconds::Seconds(double seconds) {
     m_seconds = seconds;
 }
@@ -12,6 +16,10 @@ Seconds::Seconds(const Duration& duration) {
 
 Seconds Seconds::operator+(const Duration& duration) const {
     return Seconds(getSeconds() + duration.getSeconds());
+}
+
+void Seconds::operator+=(const Duration& duration) {
+    m_seconds += duration.getSeconds();
 }
 
 } // namespace sim
