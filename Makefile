@@ -19,7 +19,7 @@ INC = -I$(SRC)lib -I$(SRC)lib/easyloggingpp/src -I$(SRC)lib/fontstash/src -I$(SR
 # -Wall: Show all warning messages
 # -Werror: Fail compilation on warnings
 # -pedantic-errors: Flag even the most pedantic of errors
-FLAGS = -MMD -std=c++11 -g # -Wall -Werror -pedantic-errors
+FLAGS = -MMD -std=c++11 -g# -Wall -Werror -pedantic-errors
 
 # Recursively find all source files
 PRELIMSOURCES = $(shell find $(SRC) -name '*.cpp')

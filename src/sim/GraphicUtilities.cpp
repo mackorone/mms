@@ -296,7 +296,7 @@ void GraphicUtilities::drawTileGraphicCorner(int x, int y, int cornerNumber, con
 
 void GraphicUtilities::drawTileGraphicDistanceCharacter(int x, int y, int row, int col, const Polygon& polygon, char c) {
     // TODO: MACK: This will be different since we have textures...
-    std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, c == 'a' ? Color::DARK_BLUE : Color::DARK_GREEN, 1.0);
+    std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, c == 'a' ? Color::BLACK : Color::BLACK, 1.0);
     for (int i = 0; i < tgs.size(); i += 1) {
         TGB.push_back(tgs.at(i));
     }
@@ -420,16 +420,15 @@ int GraphicUtilities::trianglesPerTile() {
     // TODO: MACK - this doesn't need to be hardcoded
     // TODO: MACK - Make sure there is a limit to the distance that a user can input... 9999, perhaps???
     // TODO: MACK - Some sort of symbol for unreachable??? inf perhaps???
-    // TODO: MACK - rename distance polygon to text polygons... make sure that's consistent... or do use distance
 
     // This value must be predetermined, and was done so as follows:
-    // - Base polygon:      2 (2 triangles x 1 polygon  per tile)
-    // - Wall polygon:      8 (2 triangles x 4 polygons per tile)
-    // - Corner polygon:    8 (2 triangles x 4 polygons per tile)
-    // - Distance polygon: 16 (2 triangles x 8 polygons per tile)
-    // - Fog polygon:       2 (2 triangles x 1 polygon  per tile)
-    // ----------------------
-    // Total               36
+    // Base polygon:      2 (2 triangles x 1 polygon  per tile)
+    // Wall polygon:      8 (2 triangles x 4 polygons per tile)
+    // Corner polygon:    8 (2 triangles x 4 polygons per tile)
+    // Distance polygon: 16 (2 triangles x 8 polygons per tile)
+    // Fog polygon:       2 (2 triangles x 1 polygon  per tile)
+    // --------------------
+    // Total             36
     return 36;
 }
 

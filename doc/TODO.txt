@@ -33,18 +33,18 @@ High Pri:
 - Include Arduino "types" with the MouseInterface
 - More Arduino function support
 - Add some nice LaTeX documentation
+- Add gridlines (see https://www.youtube.com/watch?v=LGRutv9cGBA and https://www.youtube.com/watch?v=gtnTBf5ItEc)
+    - Variable width?
+- Buffer communication (like with the real robot)
+- Gyroscope support
+
+Med Pri:
 - Make a system for nearly instantly checking stats on many mazes:
     - like unit tests
     - solved or not
     - how many steps
     - ave steps
     - etc.
-- Add gridlines (see https://www.youtube.com/watch?v=LGRutv9cGBA and https://www.youtube.com/watch?v=gtnTBf5ItEc)
-- Buffer communication (like with the real robot)
-- Continuous mode improvements (overall)
-- Gyroscope support
-
-Med Pri:
 - Make sure that the mouse fits in the starting square
 - Mouse wheel positive radians per second should be counter-clockwise by convention
 - Algo checklist?
@@ -57,6 +57,7 @@ Med Pri:
     - Figure out how to make sensors more efficient
     - Make the sensor polygon model better
 - Add manual mode high scores
+- Continuous mode improvements (overall)
 - M_PI is not cross-platform
 - std::min, std::max is not cross-platform
 - Add a way to set the text color of each tile individually

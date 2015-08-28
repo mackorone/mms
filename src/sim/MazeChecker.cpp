@@ -35,6 +35,7 @@ bool MazeChecker::isNonempty(const std::vector<std::vector<BasicTile>>& maze) {
 }
 
 bool MazeChecker::isRectangular(const std::vector<std::vector<BasicTile>>& maze) {
+    ASSERT(isNonempty(maze));
     for (int i = 0; i < maze.size() - 1; i += 1) {
         if (maze.at(i).size() != maze.at(i + 1).size()) {
             return false;
@@ -44,6 +45,7 @@ bool MazeChecker::isRectangular(const std::vector<std::vector<BasicTile>>& maze)
 }
 
 bool MazeChecker::isEnclosed(const std::vector<std::vector<BasicTile>>& maze) {
+    ASSERT(isRectangular(maze));
     for (int x = 0; x < maze.size(); x += 1) {
         for (int y = 0; y < maze.at(x).size(); y += 1) {
             if (1 < x && x < maze.size() - 1 && 1 < y && y < maze.at(x).size() - 1) {
@@ -67,6 +69,7 @@ bool MazeChecker::isEnclosed(const std::vector<std::vector<BasicTile>>& maze) {
 }
 
 bool MazeChecker::hasConsistentWalls(const std::vector<std::vector<BasicTile>>& maze) {
+    ASSERT(isEnclosed(maze));
     // TODO: upforgrabs
     // Implement this method so that it returns true if the walls of the maze
     // are consistent, and false otherwise.

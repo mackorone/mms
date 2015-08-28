@@ -47,6 +47,9 @@ void TileGraphic::draw() const {
     GraphicUtilities::drawTileGraphicBase(m_tile->getX(), m_tile->getY(), m_tile->getFullPolygon(),
         S()->tileColorsVisible() ? m_color : STRING_TO_COLOR.at(P()->tileBaseColor()));
 
+    // TODO: MACK - Draw the tile gridlines...
+    // Ideally, we should only have to draw a few lines that span the entire maze, as opposed to many little lines...
+
     // Draw each of the walls of the tile
     for (Direction direction : DIRECTIONS) {
 
@@ -169,20 +172,20 @@ std::pair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction
 
 Polygon TileGraphic::getDistanceCharacterPolygon(int row, int col) const {
 
-    //                   *--*-------------------*--*
-    //                   |  |                   |  |
-    //                   *--*-------------------Y--*
-    //                   |  |    |    |    |    |  |
-    //                   |  |    |    |    |    |  |
-    //                   |  | 00 | 01 | 02 | 03 |  |
-    //                   |  |____|____|____|____|  |
-    //                   |  |    |    |    |    |  |
-    //                   |  |    |    |    |    |  |
-    //                   |  | 10 | 11 | 12 | 13 |  |
-    //                   |  |    |    |    |    |  |
-    //                   *--X-------------------*--*
-    //                   |  |                   |  |
-    //                   *--*-------------------*--*
+    //                  *---*-------------------*---*
+    //                  |   |                   |   |
+    //                  *---*-------------------Y---*
+    //                  |   |    |    |    |    |   |
+    //                  |   |    |    |    |    |   |
+    //                  |   | 00 | 01 | 02 | 03 |   |
+    //                  |   |____|____|____|____|   |
+    //                  |   |    |    |    |    |   |
+    //                  |   |    |    |    |    |   |
+    //                  |   | 10 | 11 | 12 | 13 |   |
+    //                  |   |    |    |    |    |   |
+    //                  *---X-------------------*---*
+    //                  |   |                   |   |
+    //                  *---*-------------------*---*
 
     Cartesian X = m_tile->getInteriorPolygon().getVertices().at(0);
     Cartesian Y = m_tile->getInteriorPolygon().getVertices().at(2);

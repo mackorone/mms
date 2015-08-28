@@ -39,9 +39,13 @@ void SimUtilities::quit() {
         exit(0);
     }
 
-    glutLeaveMainLoop(); 
-    if (std::this_thread::get_id() != S()->mainThreadId()) {
-        // If we're not the main thread, just sleep until the program terminates
+    // If we're the main thread, exit the main loop
+    if (std::this_thread::get_id() == S()->mainThreadId()) {
+        glutLeaveMainLoop(); 
+    }
+
+    // If we're not the main thread, just sleep until the program terminates
+    else {
         while (true) {
             sleep(Seconds(1)); 
         }
