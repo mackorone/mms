@@ -1,5 +1,14 @@
 High Pri:
 
+- Make a note of contributing projects in the man documentation
+    - include as much as you can for the projects, including licenses and such
+    - Make a note about what I change...
+    - Copy tdogl code, what I need, and get rid of the other stuff...
+
+- Turn logging on/off
+    - Be able to have no run directories kept
+
+- Use markdown in the readme
 - Rewrite text so that it's performant
     - Use fontstash for fonts other than the tile distances
 - Put the vertex shader in its own source file
@@ -11,7 +20,6 @@ High Pri:
     - State variable and key to control whether these are visible or not
 
 - Maze size requirements and validity
-- Make a note of contributing projects in the documentation
 
 - Put a toolbar at the top or bottom with info
 - Display a clock
@@ -119,6 +127,7 @@ Low-pri:
 - Log level options
     - Like only print/log DEBUG, INFO, WARN, ERROR, etc.
 - Implement perfect hashing for key input and algo selection
+- Add some shading to the wheels so we can see what direction they're turning
 
 Clean-Up:
 - Change map.count(item) != 0 to map.find(item) != map.end()
@@ -163,3 +172,9 @@ Clean-Up:
 - Replace NULL with nullptr
 - Rename Tile to Cell?
 - Fix up so that -Wall -Werror -pedantic-error flags pass
+- -Wall: Show all warning messages
+- -Werror: Fail compilation on warnings
+- -pedantic-errors: Flag even the most pedantic of errors
+- Take out -g makefile option
+- Reduce the number of LIBS in makefile
+- Does the makefile work for multiple platofrms???

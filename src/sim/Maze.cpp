@@ -61,14 +61,14 @@ Maze::Maze() {
         SimUtilities::quit();
     }
 
-    // Load the maze given by the maze generation algorithm
-    initializeFromBasicMaze(basicMaze);
-
     // Optionally save the maze
-    if (P()->useMazeFile() && P()->saveGeneratedMaze()) {
+    if (!P()->useMazeFile() && P()->saveGeneratedMaze()) {
         MazeFileUtilities::saveMaze(extractBasicMaze(),
             SimUtilities::getProjectDirectory() + P()->mazeDirectory() + "auto_generated_maze.maz");
     }
+
+    // Load the maze given by the maze generation algorithm
+    initializeFromBasicMaze(basicMaze);
 }
 
 int Maze::getWidth() const {
@@ -142,6 +142,7 @@ std::vector<std::vector<BasicTile>> Maze::getBlankBasicMaze(int mazeWidth, int m
 }
 
 std::vector<std::vector<BasicTile>> Maze::mirrorAcrossVertical(const std::vector<std::vector<BasicTile>>& basicMaze) {
+    ASSERT(MazeChecker::isRectangular(basicMaze));
     std::vector<std::vector<BasicTile>> mirrored;
     for (int x = 0; x < basicMaze.size(); x += 1) {
         std::vector<BasicTile> column;
@@ -161,10 +162,7 @@ std::vector<std::vector<BasicTile>> Maze::mirrorAcrossVertical(const std::vector
 }
 
 std::vector<std::vector<BasicTile>> Maze::rotateCounterClockwise(const std::vector<std::vector<BasicTile>>& basicMaze) {
-
-    // We can't rotate a non-rectangular maze
     ASSERT(MazeChecker::isRectangular(basicMaze));
-
     std::vector<std::vector<BasicTile>> rotated;
     for (int x = 0; x < basicMaze.size(); x += 1) {
         std::vector<BasicTile> row;

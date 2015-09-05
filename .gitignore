@@ -1,6 +1,7 @@
 bin/
 obj/
-run/*
+run/
+zip/
 *auto_generated_maze.maz
 *.swp
 mm.jar

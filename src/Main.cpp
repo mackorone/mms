@@ -54,6 +54,7 @@ GLuint program;
 int main(int argc, char* argv[]) {
 
     // Step 0: Initialze the current run and logging function
+    // TODO: Rename to bootstrap or something
     initRunAndLogging();
 
     // Step 1: Initialize the simulation objects
