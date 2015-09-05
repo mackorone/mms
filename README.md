@@ -8,10 +8,15 @@ See the "doc" directory for more information.
 
 ## Contributing Projects
 
-| Name          | Copyright | License | GitHub Repository | Location | Use Case |
-|---------------|-----------|---------|-------------------|----------|----------|
-| opengl-series | Thomas Dalling | | https://github.com/tomdalling/opengl-series | `src/lib/tdogl` | |
-| easyloggingpp | muflihun.com | | https://github.com/easylogging/easyloggingpp | `src/lib/easyloggingpp` | Logging |
-| polypartition | Ivan Fratric | | https://github.com/ivanfratric/polypartition | `src/lib/polypartition` | Polygon Triangulation |
-| pugixml       | Arseny Kapoulkine | | https://github.com/zeux/pugixml | `src/lib/pugixml` | XML Parsing |
-| fontstash     | Mikko Mononen | | https://github.com/memononen/fontstash | `src/lib/fontstash` | Text Rendering |
+| Name          | GitHub Repository                            |
+|---------------|----------------------------------------------|
+| easyloggingpp | https://github.com/easylogging/easyloggingpp |
+| fontstash     | https://github.com/memononen/fontstash       |
+| freeglut      | https://github.com/dcnieho/FreeGLUT          |
+| glew          | https://github.com/nigels-com/glew           |
+| glfw          | https://github.com/glfw/glfw                 |
+| glm           | https://github.com/g-truc/glm                |
+| opengl-series | https://github.com/tomdalling/opengl-series  |
+| polypartition | https://github.com/ivanfratric/polypartition |
+| pugixml       | https://github.com/zeux/pugixml              |
+| stb           | https://github.com/nothings/stb              |
