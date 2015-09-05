@@ -8,15 +8,4 @@ See the "doc" directory for more information.
 
 ## Contributing Projects
 
-| Name          | GitHub Repository                            |
-|---------------|----------------------------------------------|
-| easyloggingpp | https://github.com/easylogging/easyloggingpp |
-| fontstash     | https://github.com/memononen/fontstash       |
-| freeglut      | https://github.com/dcnieho/FreeGLUT          |
-| glew          | https://github.com/nigels-com/glew           |
-| glfw          | https://github.com/glfw/glfw                 |
-| glm           | https://github.com/g-truc/glm                |
-| opengl-series | https://github.com/tomdalling/opengl-series  |
-| polypartition | https://github.com/ivanfratric/polypartition |
-| pugixml       | https://github.com/zeux/pugixml              |
-| stb           | https://github.com/nothings/stb              |
+For a list of contributing projects, see the `src/lib` directory.
