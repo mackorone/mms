@@ -1,6 +1,5 @@
 #pragma once
 
-#include <glut.h>
 #include <map>
 #include <tuple>
 

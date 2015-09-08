@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 
-#include <pugixml.hpp>
+#include <pugixml/pugixml.hpp>
 
 #include "Assert.h"
 #include "SimUtilities.h"

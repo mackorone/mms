@@ -1,7 +1,5 @@
 #pragma once
 
-#include <glut.h>
-
 #include "Color.h"
 #include "Tile.h"
 

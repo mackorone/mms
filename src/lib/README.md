@@ -9,7 +9,7 @@ edits, simply search this directory for `@mackorone`.
 | Name          | Copyright         | License           | GitHub Repository                             | Use Case              |
 |---------------|-------------------|-------------------|-----------------------------------------------|-----------------------|
 | easyloggingpp | muflihun.com      | MIT               | https://github.com/easylogging/easyloggingpp  | Logging               |
-| fontstash     | Mikko Mononen     | zlib              | https://github.com/memononen/fontstash        | Text Rendering        |
+| fontstash     | Andreas Krinke    | zlib              | https://github.com/akrinke/Font-Stash         | Text Rendering        |
 | opengl-series | Thomas Dalling    | Apache License v2 | https://github.com/tomdalling/opengl-series   | OpenGL Functionality  |
 | polypartition | Ivan Fratric      | MIT               | https://github.com/ivanfratric/polypartition  | Polygon Triangulation |
 | pugixml       | Arseny Kapoulkine | MIT               | https://github.com/zeux/pugixml               | XML Parsing           |

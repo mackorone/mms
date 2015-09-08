@@ -1,7 +1,11 @@
 #include <thread>
 
-#include <glut.h>
-#include <fontstash.h> // TODO: MACK
+#include <fontstash/fontstash.h>
+#include <glut/glut.h>
+#include <tdogl/Bitmap.h>
+#include <tdogl/Program.h>
+#include <tdogl/Shader.h>
+#include <tdogl/Texture.h>
 
 #include "mouse/IMouseAlgorithm.h"
 #include "mouse/MouseAlgorithms.h"
@@ -15,11 +19,12 @@
 #include "sim/MouseGraphic.h"
 #include "sim/MouseInterface.h"
 #include "sim/Param.h"
-#include "sim/State.h"
 #include "sim/SimUtilities.h"
+#include "sim/State.h"
+#include "sim/TextDrawer.h"
 #include "sim/TriangleGraphic.h"
-#include "sim/units/Seconds.h"
 #include "sim/World.h"
+#include "sim/units/Seconds.h"
 
 // Function declarations
 void draw();
@@ -45,11 +50,118 @@ IMouseAlgorithm* g_algorithm;
 // the physical coordinate system and transforms them into the OpenGL system.
 GLuint g_transformationMatixId;
 
+// TODO: Hide some state
+
 // TODO: MACK
-struct sth_stash* stash; // TODO
-int droid; // TODO
+sim::TextDrawer* drawer;//("DroidSerif-Regular.ttf", 12.0); // TODO: THis can't be static
+//struct sth_stash* stash; // TODO
+//int droid; // TODO
 GLuint vertex_buffer_object;
 GLuint program;
+
+// TODO: MACK
+tdogl::Texture* textureAtlas = NULL;
+tdogl::Program* textureProgram = NULL;
+GLuint gVAO = 0;
+GLuint gVAO2 = 0;
+GLuint gVBO = 0;
+
+int rows = 2;
+int cols = 4;
+
+// loads the vertex shader and fragment shader, and links them to make the global textureProgram
+static void LoadShaders() {
+    std::vector<tdogl::Shader> shaders;
+    shaders.push_back(
+        tdogl::Shader::shaderFromFile(sim::SimUtilities::getProjectDirectory() + "/res/shaders/vertex-shader.txt", GL_VERTEX_SHADER));
+    shaders.push_back(
+        tdogl::Shader::shaderFromFile(sim::SimUtilities::getProjectDirectory() + "/res/shaders/fragment-shader.txt", GL_FRAGMENT_SHADER));
+    textureProgram = new tdogl::Program(shaders);
+}
+
+// loads a triangle into the VAO global
+static void LoadTriangle() {
+    // make and bind the VAO
+    glGenVertexArrays(1, &gVAO);
+    glBindVertexArray(gVAO);
+    
+    // make and bind the VBO
+    glGenBuffers(1, &gVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, gVBO);
+
+    // Put the three triangle vertices (XYZ) and texture coordinates (UV) into the VBO
+    GLfloat vertexData[15 * rows * cols];
+    for (int i = 0; i < rows; i += 1) {
+        for (int j = 0; j < cols; j += 1) {
+            vertexData[15*cols*i + 15*j +  0] = (j * 1.0 / float(cols)) * 2 - 1;
+            vertexData[15*cols*i + 15*j +  1] = (i * 1.0 / float(rows)) * 2 - 1;
+            vertexData[15*cols*i + 15*j +  2] = 0.0; // Z
+            vertexData[15*cols*i + 15*j +  3] = 0.5; // U
+            vertexData[15*cols*i + 15*j +  4] = 1.0; // V
+            vertexData[15*cols*i + 15*j +  5] = (j * 1.0 / float(cols) + 0.5 / float(cols)) * 2 - 1;
+            vertexData[15*cols*i + 15*j +  6] = ((i + 1) * 1.0 / float(rows)) * 2 - 1;
+            vertexData[15*cols*i + 15*j +  7] = 0.0; // Z
+            vertexData[15*cols*i + 15*j +  8] = 0.0; // U
+            vertexData[15*cols*i + 15*j +  9] = 0.0; // V
+            vertexData[15*cols*i + 15*j + 10] = ((j + 1) * 1.0 / float(cols)) * 2 - 1;
+            vertexData[15*cols*i + 15*j + 11] = (i * 1.0 / float(rows)) * 2 - 1;
+            vertexData[15*cols*i + 15*j + 12] = 0.0; // Z
+            vertexData[15*cols*i + 15*j + 13] = 1.0; // U
+            vertexData[15*cols*i + 15*j + 14] = 0.0; // V
+        }
+    }
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
+
+    // connect the xyz to the "vert" attribute of the vertex shader
+    glEnableVertexAttribArray(textureProgram->attrib("vert"));
+    glVertexAttribPointer(textureProgram->attrib("vert"), 3, GL_FLOAT, GL_FALSE, 5*sizeof(GLfloat), NULL);
+        
+    // connect the uv coords to the "vertTexCoord" attribute of the vertex shader
+    glEnableVertexAttribArray(textureProgram->attrib("vertTexCoord"));
+    glVertexAttribPointer(textureProgram->attrib("vertTexCoord"), 2, GL_FLOAT, GL_TRUE,  5*sizeof(GLfloat), (const GLvoid*)(3 * sizeof(GLfloat)));
+
+    // unbind the VAO
+    glBindVertexArray(0);
+}
+
+// loads the file "hazard.png" into textureAtlas
+static void LoadTexture() {
+    tdogl::Bitmap bmp = tdogl::Bitmap::bitmapFromFile(sim::SimUtilities::getProjectDirectory() + "/res/textures/hazard.png");
+    bmp.flipVertically();
+    textureAtlas = new tdogl::Texture(bmp);
+}
+
+static void Render() {
+    // clear everything
+    //glClearColor(0, 0, 0, 1); // black
+    //glClear(GL_COLOR_BUFFER_BIT);
+    
+    // bind the program (the shaders)
+    textureProgram->use();
+        
+    // bind the texture and set the "tex" uniform in the fragment shader
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureAtlas->object());
+    textureProgram->setUniform("tex", 0); //set to 0 because the texture is bound to GL_TEXTURE0
+
+    // bind the VAO (the triangle)
+    glBindVertexArray(gVAO);
+    
+    // draw the VAO
+    glDrawArrays(GL_TRIANGLES, 0, 15 * rows * cols); // TODO: Mack - isn't working quite rights...
+    
+    // unbind the VAO, the program and the texture
+    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    textureProgram->stopUsing();
+    
+    // swap the display buffers (displays what was just drawn)
+    //glfwSwapBuffers(gWindow);
+    //glutSwapBuffers(); // TODO: MACK
+}
+
+// TODO: MACK
+
 
 int main(int argc, char* argv[]) {
 
@@ -62,6 +174,17 @@ int main(int argc, char* argv[]) {
 
     // Step 2: Initialize the graphics
     initGraphics(argc, argv);
+
+// TODO: MACK -----
+    LoadShaders();
+    LoadTexture();
+    LoadTriangle();
+    //glutIdleFunc(Render);
+    //glutDisplayFunc(Render);
+    //glutMainLoop();
+// TODO: MACK -----
+
+    drawer = new sim::TextDrawer("DroidSerif-Regular.ttf", 470.0); // TODO: MACK
 
     // Step 3: Initialize the mouse algorithm
     initMouseAlgo();
@@ -110,7 +233,11 @@ void draw() {
     // Fill the CPU buffer with new mouse triangles
     g_mouseGraphic->draw();
 
+    // TODO: MACK
+    glBindVertexArray(gVAO2);
+
     // Clear the vertex buffer object and copy over the CPU buffer
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
     glBufferData(GL_ARRAY_BUFFER, sim::GraphicUtilities::TGB.size() * sizeof(sim::TriangleGraphic), NULL, GL_DYNAMIC_DRAW);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sim::GraphicUtilities::TGB.size() * sizeof(sim::TriangleGraphic),
         &sim::GraphicUtilities::TGB.front());
@@ -136,41 +263,36 @@ void draw() {
         g_mouse->getInitialTranslation(), g_mouse->getCurrentTranslation(), g_mouse->getCurrentRotation()).front());
     glDrawArrays(GL_TRIANGLES, 0, 3 * sim::GraphicUtilities::TGB.size());
 
+    // TODO: MACK
+    glBindVertexArray(0);
+
     // We disable scissoring so that the glClear can take effect
     glDisable(GL_SCISSOR_TEST);
 
-    // ------------- TODO: MACK: We should be able to disable scissoring after we draw all of the text...
-#if(0)
+    // TODO: MACK - Font-stash drawing
+#if(1)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glUseProgram(0);
 
-    glColor4ub(255,255,255,255); // TODO: Sets color to white
-    glLoadIdentity();
-    glOrtho(0, sim::P()->windowWidth(), 0, sim::P()->windowHeight(), -1, 1);
-    glOrtho(0, 930, 0, 470, -1, 1);
+    //glColor4ub(255,255,255,255);
+    //glLoadIdentity();
+    //glOrtho(0, 930, 0, 470, -1, 1);
+    //glRotated(45.0, 0.0, 0.0, 1.0);
 
-    /* TODO: Rotation perhaps?
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0, 640, 480, 0, 1, -1);
-    glMatrixMode(GL_MODELVIEW);
-    */
+    drawer->commenceDrawingTextForFrame();
+    auto size = sim::GraphicUtilities::getWindowSize();
+    drawer->drawText(size.first - 400, size.second - 400, "X");
     /*
-    std::vector<float> mat = {
-        1,0,0,0,
-        0,1,0,0,
-        0,0,1,0,
-        0,0,0,1,
-    };
-    glLoadMatrixf(&mat.front());
+    for (int i = 0; i < 256; i += 1) {
+        for (int j = 0; j < 2; j += 1) {
+            for (int k = 0; k < 4; k += 1) {
+                drawer->drawText(14 + (i / 16) * 28 + 5 * k, 16 + (i % 16) * 28 + 9 * j, "X");
+            }
+        }
+    }
     */
+    drawer->concludeDrawingTextForFrame();
     /*
-    glLoadMatrixf(&sim::GraphicUtilities::getZoomedMapTransformationMatrix(
-        g_mouse->getInitialTranslation(), g_mouse->getCurrentTranslation(), g_mouse->getCurrentRotation()).front());
-    */
-
-    // TODO: Should be fine... I just have to figure out a mechanism for drawing it.
-    glRotated(45.0, 0.0, 0.0, 1.0);
     sth_begin_draw(stash);
     for (int i = 0; i < 256; i += 1) {
         for (int j = 0; j < 2; j += 1) {
@@ -180,13 +302,16 @@ void draw() {
         }
     }
     sth_end_draw(stash);
-    glRotated(-45.0, 0.0, 0.0, 1.0);
+    */
+
+    //glRotated(-45.0, 0.0, 0.0, 1.0);
+
+// TODO: MACK
+    Render();
+// TODO: MACK
 
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
     glUseProgram(program);
-    // TODO: Draw the mouse on top of the 
-    //glDrawArrays(GL_TRIANGLES, 3 * mouseTrianglesStartingIndex, 3 * sim::GraphicUtilities::TGB.size());
-    // ------------- TODO
 #endif
 
     // Display the result
@@ -333,8 +458,8 @@ void initGraphics(int argc, char* argv[]) {
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
-    glutDisplayFunc(draw);
-    glutIdleFunc(draw);
+    glutDisplayFunc(draw); // TODO
+    glutIdleFunc(draw); // TODO
     glutKeyboardFunc(keyPress);
     glutSpecialFunc(specialKeyPress);
     glutSpecialUpFunc(specialKeyRelease);
@@ -352,6 +477,10 @@ void initGraphics(int argc, char* argv[]) {
         sim::SimUtilities::print("Error: Unable to initialize GLEW.");
         sim::SimUtilities::quit();
     }
+
+    // TODO: these could probably go a bit lower....
+    glGenVertexArrays(1, &gVAO2); // TODO: MACK
+    glBindVertexArray(gVAO2); // TODO: MACK
 
     // Generate vertex buffer object
     ///*GLuint*/ vertex_buffer_object; // TODO: MACK
@@ -392,20 +521,25 @@ void initGraphics(int argc, char* argv[]) {
 
 // TODO: MACK
     /* create a font stash with a maximum texture size of 512 x 512 */
-    stash = sth_create(512, 512);
+    //stash = sth_create(512, 512);
     /* load truetype font */
-    droid = sth_add_font(stash, (sim::SimUtilities::getProjectDirectory() + "res/fonts/DroidSerif-Regular.ttf").c_str());
+    //droid = sth_add_font(stash, (sim::SimUtilities::getProjectDirectory() + "res/fonts/DroidSerif-Regular.ttf").c_str());
 // TODO: MACK
 
     // Lastly, initially populate the vertex buffer object with tile information
     g_mazeGraphic->draw();
+
+    // TODO
+    glBindVertexArray(0); // TODO: MACK
 }
 
 void initMouseAlgo() {
 
     // First, check to ensure that the mouse algorithm is valid
     if (!MouseAlgorithms::isMouseAlgorithm(sim::P()->mouseAlgorithm())) {
-        sim::SimUtilities::print("Error: \"" + sim::P()->mouseAlgorithm() + "\" is not a valid mouse algorithm.");
+        // TODO: MACK - make a note about the file where it needs to be declared
+        PRINT(ERROR, "\"%v\" is not a valid mouse algorithm.",
+            sim::P()->mouseAlgorithm());
         sim::SimUtilities::quit();
     }
     g_algorithm = MouseAlgorithms::getMouseAlgorithm(sim::P()->mouseAlgorithm());
@@ -414,15 +548,20 @@ void initMouseAlgo() {
     std::string mouseFile = g_algorithm->mouseFile();
     bool success = g_mouse->initialize(mouseFile);
     if (!success) {
-        sim::SimUtilities::print("Error: Unable to successfully initialize the mouse in the algorithm \""
-            + sim::P()->mouseAlgorithm() + "\" from \"" + mouseFile + "\".");
+        PRINT(ERROR,
+            "Unable to successfully initialize the mouse in the algorithm "
+            "\"%v\" from \"%v\".",
+            sim::P()->mouseAlgorithm(),
+            mouseFile);
         sim::SimUtilities::quit();
     }
 
     // Initialize the interface type
     if (!sim::SimUtilities::mapContains(sim::STRING_TO_INTERFACE_TYPE, g_algorithm->interfaceType())) {
-        PRINT(ERROR, "\"%v\" is not a valid interface type. You must declare the "
-            "interface type of the mouse algorithm \"%v\" to be either \"%v\" or \"%v\".",
+        PRINT(ERROR,
+            "\"%v\" is not a valid interface type. You must declare the "
+            "interface type of the mouse algorithm \"%v\" to be either \"%v\" "
+            "or \"%v\".",
             g_algorithm->interfaceType(),
             sim::P()->mouseAlgorithm(),
             sim::INTERFACE_TYPE_TO_STRING.at(sim::InterfaceType::DISCRETE),

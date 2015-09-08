@@ -1,6 +1,5 @@
 #pragma once
 
-#include <glut.h>
 #include <string>
 
 #include "Color.h"
@@ -20,7 +19,8 @@ public:
     // The big, CPU-side triangle graphics buffer
     static std::vector<TriangleGraphic> TGB;
 
-    // Sets the window size, in pixels
+    // Get and set the window size, in pixels
+    static std::pair<int, int> getWindowSize();
     static void setWindowSize(int windowWidth, int windowHeight);
 
     // Sets the maze size, in tiles

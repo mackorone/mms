@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <cmath>
 
+#include <glut/glut.h>
+
 #include "Assert.h"
 #include "GeometryUtilities.h"
 #include "Param.h"
@@ -17,6 +19,11 @@ std::vector<TriangleGraphic> GraphicUtilities::TGB;
 
 int GraphicUtilities::m_windowWidth = 0;
 int GraphicUtilities::m_windowHeight = 0;
+
+std::pair<int, int> GraphicUtilities::getWindowSize() {
+    return std::make_pair(m_windowWidth, m_windowHeight);
+}
+
 void GraphicUtilities::setWindowSize(int windowWidth, int windowHeight) {
     ASSERT(0 < windowWidth && 0 < windowHeight);
     m_windowWidth = windowWidth;
@@ -102,7 +109,7 @@ std::vector<float> GraphicUtilities::getFullMapTransformationMatrix() {
         0.0, 0.0, 0.0,                                        1.0,
     };
 
-    // ensure that the maze width and height always appear equally scaled.
+    // Ensure that the maze width and height always appear equally scaled.
     std::pair<double, double> physicalMazeSize = getPhysicalMazeSize();
     double physicalWidth = physicalMazeSize.first;
     double physicalHeight = physicalMazeSize.second;
@@ -146,7 +153,8 @@ std::vector<float> GraphicUtilities::getFullMapTransformationMatrix() {
     // Step 4: Compose the matrices
     std::vector<float> transformationMatrix =
         multiply4x4Matrices(translationMatrix,
-        multiply4x4Matrices(scalingMatrix, initialTranslationMatrix));
+        multiply4x4Matrices(scalingMatrix,
+                            initialTranslationMatrix));
     return transformationMatrix;
 }
 
@@ -295,7 +303,7 @@ void GraphicUtilities::drawTileGraphicCorner(int x, int y, int cornerNumber, con
 }
 
 void GraphicUtilities::drawTileGraphicDistanceCharacter(int x, int y, int row, int col, const Polygon& polygon, char c) {
-    // TODO: MACK: This will be different since we have textures...
+    // TODO: MACK: This will be different since we have textures... Then remove glut/glut.h
     std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, c == 'a' ? Color::BLACK : Color::BLACK, 1.0);
     for (int i = 0; i < tgs.size(); i += 1) {
         TGB.push_back(tgs.at(i));
@@ -362,6 +370,7 @@ void GraphicUtilities::drawMousePolygon(const Polygon& polygon, Color color, flo
 }
 
 double GraphicUtilities::getScreenPixelsPerMeter() {
+    // TODO: MACK - make this part of initialization in the main function...
     // Assumptions:
     // 1) These values will not change during an execution of the program
     // 2) Monitor pixels are square (and thus the pixels per meter is the same

@@ -1,9 +1,7 @@
 High Pri:
 
-- Make a note of contributing projects in the man documentation
-    - include as much as you can for the projects, including licenses and such
-    - Make a note about what I change...
-    - Copy tdogl code, what I need, and get rid of the other stuff...
+- Clean up the coding standards
+- Make directory class to get all of the different directories...
 
 - Turn logging on/off
     - Be able to have no run directories kept
@@ -18,6 +16,8 @@ High Pri:
 - Actual distance values on the tile
     - MazeUtilities class that can get the distances???
     - State variable and key to control whether these are visible or not
+
+- Figure out how to get rid of logging error message on fatal
 
 - Maze size requirements and validity
 
@@ -128,6 +128,7 @@ Low-pri:
     - Like only print/log DEBUG, INFO, WARN, ERROR, etc.
 - Implement perfect hashing for key input and algo selection
 - Add some shading to the wheels so we can see what direction they're turning
+- Support more than just black and white fonts
 
 Clean-Up:
 - Change map.count(item) != 0 to map.find(item) != map.end()

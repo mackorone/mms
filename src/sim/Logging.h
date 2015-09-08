@@ -4,7 +4,7 @@
 #define ELPP_NO_DEFAULT_LOG_FILE
 #define ELPP_THREAD_SAFE
 
-#include <easylogging++.h>
+#include <easyloggingpp/easylogging++.h>
 #include "LoggingMacros.h"
 
 // The purpose of LOG is to log something interally. Nothing will displayed to

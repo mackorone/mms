@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 
-#include <glut.h>
 #include "units/Duration.h"
 
 #include "Direction.h"

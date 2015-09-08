@@ -30,6 +30,10 @@
 // not enough memory
 #define STH_ENOMEM -4
 
+// ----- @mackorone: added ----- //
+#include <glut/glut.h>
+// ----- @mackorone: end ----- //
+
 struct sth_stash* sth_create(int cachew, int cacheh);
 
 int sth_add_font(struct sth_stash* stash, const char* path);

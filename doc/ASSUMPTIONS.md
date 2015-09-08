@@ -1,0 +1,10 @@
+# Assumptions
+
+* Differential drive
+    * Two wheeled
+    * Both wheels are parallel
+    * Both wheels are perpendicular to the line that connects their centerpoints
+    * The motors are mounted opposite - that is, a counter-clockwise rotation of the
+      left wheel will pull the robot forward, which a counter-clockwise rotation of the
+      right wheel will pull the robot backwards.
+* For a discrete interface, we assume that the mouse can rotate freely in a square

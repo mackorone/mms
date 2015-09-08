@@ -6,18 +6,11 @@ SRC = ./src/
 OBJ = ./obj/
 BIN = ./bin/
 
-# Any external libraries
+# Dynamically linked libraries
 LIBS = -lGLEW -lGL -lglut -lGLU -lpthread
 
 # Any extra include paths
-INC =\
--I$(SRC)lib/easyloggingpp\
--I$(SRC)lib/fontstash\
--I$(SRC)lib/glut\
--I$(SRC)lib/polypartition\
--I$(SRC)lib/pugixml\
--I$(SRC)lib/stb\
--I$(SRC)lib/tdogl\
+INC = -I$(SRC)lib
 
 # Flags
 # -MMD: Automatically generate dependency files

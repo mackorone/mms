@@ -4,6 +4,7 @@
 #include <ctime>
 #include <ratio>
 #include <fstream>
+#include <glut/glut.h>
 #include <iostream>
 #include <iterator>
 #include <sstream>
@@ -41,6 +42,7 @@ void SimUtilities::quit() {
 
     // If we're the main thread, exit the main loop
     if (std::this_thread::get_id() == S()->mainThreadId()) {
+        // TODO: MACK - get rid of this as a dependency here...
         glutLeaveMainLoop(); 
     }
 
