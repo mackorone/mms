@@ -10,7 +10,6 @@ TextDrawer* TextDrawer::m_activeTextDrawer = nullptr;
 TextDrawer::TextDrawer(const std::string& font, float pt) :
     m_stash(sth_create(512, 512)),
     m_font(sth_add_font(m_stash, (sim::SimUtilities::getProjectDirectory() + "res/fonts/" + font).c_str())),
-    // TODO: MACK - convert this to pixels in height...
     m_pt(pt) {
 }
 

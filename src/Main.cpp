@@ -33,7 +33,7 @@ void specialKeyPress(int key, int x, int y);
 void specialKeyRelease(int key, int x, int y);
 
 // Initialization functions, declared in the order they should be called
-void initRunAndLogging();
+void bootstrap();
 void initSimObjects();
 void initGraphics(int argc, char* argv[]);
 void initMouseAlgo();
@@ -52,10 +52,8 @@ GLuint g_transformationMatixId;
 
 // TODO: Hide some state
 
-// TODO: MACK
-sim::TextDrawer* drawer;//("DroidSerif-Regular.ttf", 12.0); // TODO: THis can't be static
-//struct sth_stash* stash; // TODO
-//int droid; // TODO
+// TODO: MACK - can't be created before
+sim::TextDrawer* textDrawer;
 GLuint vertex_buffer_object;
 GLuint program;
 
@@ -66,16 +64,16 @@ GLuint gVAO = 0;
 GLuint gVAO2 = 0;
 GLuint gVBO = 0;
 
-int rows = 2;
-int cols = 4;
+int rows = 2; // TODO: MACK
+int cols = 3; // TODO: MACK
 
 // loads the vertex shader and fragment shader, and links them to make the global textureProgram
 static void LoadShaders() {
     std::vector<tdogl::Shader> shaders;
     shaders.push_back(
-        tdogl::Shader::shaderFromFile(sim::SimUtilities::getProjectDirectory() + "/res/shaders/vertex-shader.txt", GL_VERTEX_SHADER));
+        tdogl::Shader::shaderFromFile(sim::SimUtilities::getProjectDirectory() + "/res/shaders/textureVertexShader.txt", GL_VERTEX_SHADER));
     shaders.push_back(
-        tdogl::Shader::shaderFromFile(sim::SimUtilities::getProjectDirectory() + "/res/shaders/fragment-shader.txt", GL_FRAGMENT_SHADER));
+        tdogl::Shader::shaderFromFile(sim::SimUtilities::getProjectDirectory() + "/res/shaders/textureFragmentShader.txt", GL_FRAGMENT_SHADER));
     textureProgram = new tdogl::Program(shaders);
 }
 
@@ -165,9 +163,13 @@ static void Render() {
 
 int main(int argc, char* argv[]) {
 
-    // Step 0: Initialze the current run and logging function
-    // TODO: Rename to bootstrap or something
-    initRunAndLogging();
+    // Step 0: Determine the runId, configure logging,
+    // and initialize the State and Param objects.
+    bootstrap();
+
+    // TODO: MACK
+    // Remove any excessive archived runs
+    sim::SimUtilities::removeExcessArchivedRuns();
 
     // Step 1: Initialize the simulation objects
     initSimObjects();
@@ -179,12 +181,9 @@ int main(int argc, char* argv[]) {
     LoadShaders();
     LoadTexture();
     LoadTriangle();
-    //glutIdleFunc(Render);
-    //glutDisplayFunc(Render);
-    //glutMainLoop();
 // TODO: MACK -----
 
-    drawer = new sim::TextDrawer("DroidSerif-Regular.ttf", 470.0); // TODO: MACK
+    textDrawer = new sim::TextDrawer("DroidSerif-Regular.ttf", 400.0); // TODO: MACK
 
     // Step 3: Initialize the mouse algorithm
     initMouseAlgo();
@@ -219,6 +218,10 @@ int main(int argc, char* argv[]) {
 }
 
 void draw() {
+
+    // TODO: MACK
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
+    glUseProgram(program);
 
     // In order to ensure we're sleeping the correct amount of time, we time
     // the drawing operation and take it into account when we sleep.
@@ -269,49 +272,22 @@ void draw() {
     // We disable scissoring so that the glClear can take effect
     glDisable(GL_SCISSOR_TEST);
 
-    // TODO: MACK - Font-stash drawing
-#if(1)
+    // TODO: MACK
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glUseProgram(0);
 
-    //glColor4ub(255,255,255,255);
-    //glLoadIdentity();
-    //glOrtho(0, 930, 0, 470, -1, 1);
-    //glRotated(45.0, 0.0, 0.0, 1.0);
+#if(0)
 
-    drawer->commenceDrawingTextForFrame();
+    // TODO: MACK - Font-stash drawing
+    textDrawer->commenceDrawingTextForFrame();
     auto size = sim::GraphicUtilities::getWindowSize();
-    drawer->drawText(size.first - 400, size.second - 400, "X");
-    /*
-    for (int i = 0; i < 256; i += 1) {
-        for (int j = 0; j < 2; j += 1) {
-            for (int k = 0; k < 4; k += 1) {
-                drawer->drawText(14 + (i / 16) * 28 + 5 * k, 16 + (i % 16) * 28 + 9 * j, "X");
-            }
-        }
-    }
-    */
-    drawer->concludeDrawingTextForFrame();
-    /*
-    sth_begin_draw(stash);
-    for (int i = 0; i < 256; i += 1) {
-        for (int j = 0; j < 2; j += 1) {
-            for (int k = 0; k < 4; k += 1) {
-                sth_draw_text(stash, droid, 12.0f, 14 + (i / 16) * 28 + 5 * k, 16 + (i % 16) * 28 + 9 * j, "X", NULL);
-            }
-        }
-    }
-    sth_end_draw(stash);
-    */
-
-    //glRotated(-45.0, 0.0, 0.0, 1.0);
+    textDrawer->drawText(size.first - 400, size.second - 400, "X");
+    textDrawer->concludeDrawingTextForFrame();
 
 // TODO: MACK
     Render();
 // TODO: MACK
 
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
-    glUseProgram(program);
 #endif
 
     // Display the result
@@ -418,7 +394,7 @@ void specialKeyRelease(int key, int x, int y) {
     }
 }
 
-void initRunAndLogging() {
+void bootstrap() {
 
     // First, determine the runId (just datetime, for now)
     std::string runId = sim::SimUtilities::getDateTime();
@@ -428,13 +404,10 @@ void initRunAndLogging() {
 
     // Initialize the State object in order to:
     // 0) Set the runId
-    // 1) Avoid a race condition
+    // 1) Avoid a race condition (between threads)
     // 2) Register this thread as the main thread
     // 3) Initialize the Param object
     sim::S()->setRunId(runId);
-
-    // Remove any excessive archived runs
-    sim::SimUtilities::removeExcessArchivedRuns();
 }
 
 void initSimObjects() {
@@ -458,8 +431,8 @@ void initGraphics(int argc, char* argv[]) {
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
-    glutDisplayFunc(draw); // TODO
-    glutIdleFunc(draw); // TODO
+    glutDisplayFunc(draw);
+    glutIdleFunc(draw);
     glutKeyboardFunc(keyPress);
     glutSpecialFunc(specialKeyPress);
     glutSpecialUpFunc(specialKeyRelease);
@@ -490,7 +463,7 @@ void initGraphics(int argc, char* argv[]) {
     // Generate the vertex shader
     GLuint vs = glCreateShader(GL_VERTEX_SHADER);
     std::string str = 
-        "#version 110\n"
+        "#version 130\n"
         "attribute vec2 coordinate;"
         "attribute vec4 color;"
         "uniform mat4 transformationMatrix;"

@@ -1,5 +1,7 @@
 High Pri:
 
+- Make the readme into an actual markdown doc
+
 - Clean up the coding standards
 - Make directory class to get all of the different directories...
 

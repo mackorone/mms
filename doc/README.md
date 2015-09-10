@@ -8,16 +8,13 @@ the MicroMouse competition, see http://en.wikipedia.org/wiki/Micromouse.
 
 -------------------------------------------------------------------------------
 
-Ubuntu Requirements
-===================
+## Ubuntu Requirements
 
-http://freeglut.sourceforge.net/
+We have to install g++, freeglut, and GLEW:
 
-[freeglut] : sudo apt-get install freeglut3-dev
-[g++-4.9]  : sudo apt-get install g++-4.9
-
-NOTE: You will probably have to update your g++ version.
-see http://mortenvp.com/installing-a-newer-gccg-on-ubuntu-12-04-lts/
+'''bash
+sudo apt-get install g++ freeglut3-dev libglew-dev
+'''
 
 -------------------------------------------------------------------------------
 
