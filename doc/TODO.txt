@@ -1,6 +1,12 @@
 High Pri:
 
+- Alt crashes the program
+- Add a simple polygonFragmentShader
+
 - Make the readme into an actual markdown doc
+- Make getMouseFile and getInterfaceType static methods
+    - Make a getMouseAlgoName method
+- Make a directory class that gets all of the directories.
 
 - Clean up the coding standards
 - Make directory class to get all of the different directories...

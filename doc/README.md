@@ -12,9 +12,7 @@ the MicroMouse competition, see http://en.wikipedia.org/wiki/Micromouse.
 
 We have to install g++, freeglut, and GLEW:
 
-'''bash
-sudo apt-get install g++ freeglut3-dev libglew-dev
-'''
+`sudo apt-get install g++ freeglut3-dev libglew-dev`
 
 -------------------------------------------------------------------------------
 

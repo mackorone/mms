@@ -48,18 +48,19 @@ IMouseAlgorithm* g_algorithm;
 
 // The ID of the transformation matrix, which takes triangle graphic objects in
 // the physical coordinate system and transforms them into the OpenGL system.
-GLuint g_transformationMatixId;
+// GLuint g_transformationMatixId;
 
 // TODO: Hide some state
 
-// TODO: MACK - can't be created before
+// TODO: MACK - can't be created before glInit is called, so can't be created statically
 sim::TextDrawer* textDrawer;
 GLuint vertex_buffer_object;
-GLuint program;
 
 // TODO: MACK
-tdogl::Texture* textureAtlas = NULL;
-tdogl::Program* textureProgram = NULL;
+tdogl::Program* polygonProgram = nullptr;
+tdogl::Program* textureProgram = nullptr;
+tdogl::Texture* textureAtlas = nullptr;
+
 GLuint gVAO = 0;
 GLuint gVAO2 = 0;
 GLuint gVBO = 0;
@@ -70,10 +71,10 @@ int cols = 3; // TODO: MACK
 // loads the vertex shader and fragment shader, and links them to make the global textureProgram
 static void LoadShaders() {
     std::vector<tdogl::Shader> shaders;
-    shaders.push_back(
-        tdogl::Shader::shaderFromFile(sim::SimUtilities::getProjectDirectory() + "/res/shaders/textureVertexShader.txt", GL_VERTEX_SHADER));
-    shaders.push_back(
-        tdogl::Shader::shaderFromFile(sim::SimUtilities::getProjectDirectory() + "/res/shaders/textureFragmentShader.txt", GL_FRAGMENT_SHADER));
+    shaders.push_back(tdogl::Shader::shaderFromFile(
+        sim::SimUtilities::getProjectDirectory() + "/res/shaders/textureVertexShader.txt", GL_VERTEX_SHADER));
+    shaders.push_back(tdogl::Shader::shaderFromFile(
+        sim::SimUtilities::getProjectDirectory() + "/res/shaders/textureFragmentShader.txt", GL_FRAGMENT_SHADER));
     textureProgram = new tdogl::Program(shaders);
 }
 
@@ -220,8 +221,8 @@ int main(int argc, char* argv[]) {
 void draw() {
 
     // TODO: MACK
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
-    glUseProgram(program);
+    //glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
+    //glUseProgram(program);
 
     // In order to ensure we're sleeping the correct amount of time, we time
     // the drawing operation and take it into account when we sleep.
@@ -235,6 +236,25 @@ void draw() {
 
     // Fill the CPU buffer with new mouse triangles
     g_mouseGraphic->draw();
+
+    // TODO: MACK ---------------------------
+    polygonProgram->use();
+        
+    // bind the texture and set the "tex" uniform in the fragment shader
+    //textureProgram->setUniform("tex", 0); //set to 0 because the texture is bound to GL_TEXTURE0 // TODO
+
+    // bind the VAO (the triangle)
+    //glBindVertexArray(gVAO);
+    
+    // draw the VAO
+    //glDrawArrays(GL_TRIANGLES, 0, 15 * rows * cols); // TODO: Mack - isn't working quite rights...
+    
+    // unbind the VAO, the program and the texture
+    //glBindVertexArray(0);
+    //glBindTexture(GL_TEXTURE_2D, 0);
+    //textureProgram->stopUsing();
+    // TODO: MACK ---------------------------
+
 
     // TODO: MACK
     glBindVertexArray(gVAO2);
@@ -255,15 +275,15 @@ void draw() {
     std::pair<int, int> fullMapPosition = sim::GraphicUtilities::getFullMapPosition();
     std::pair<int, int> fullMapSize = sim::GraphicUtilities::getFullMapSize();
     glScissor(fullMapPosition.first, fullMapPosition.second, fullMapSize.first, fullMapSize.second);
-    glUniformMatrix4fv(g_transformationMatixId, 1, GL_TRUE, &sim::GraphicUtilities::getFullMapTransformationMatrix().front());
+    polygonProgram->setUniformMatrix4("transformationMatrix", &sim::GraphicUtilities::getFullMapTransformationMatrix().front(), 1, GL_TRUE);
     glDrawArrays(GL_TRIANGLES, 0, 3 * sim::GraphicUtilities::TGB.size());
 
     // Render the zoomed map
     std::pair<int, int> zoomedMapPosition = sim::GraphicUtilities::getZoomedMapPosition();
     std::pair<int, int> zoomedMapSize = sim::GraphicUtilities::getZoomedMapSize();
     glScissor(zoomedMapPosition.first, zoomedMapPosition.second, zoomedMapSize.first, zoomedMapSize.second);
-    glUniformMatrix4fv(g_transformationMatixId, 1, GL_TRUE, &sim::GraphicUtilities::getZoomedMapTransformationMatrix(
-        g_mouse->getInitialTranslation(), g_mouse->getCurrentTranslation(), g_mouse->getCurrentRotation()).front());
+    polygonProgram->setUniformMatrix4("transformationMatrix", &sim::GraphicUtilities::getZoomedMapTransformationMatrix(
+        g_mouse->getInitialTranslation(), g_mouse->getCurrentTranslation(), g_mouse->getCurrentRotation()).front(), 1, GL_TRUE);
     glDrawArrays(GL_TRIANGLES, 0, 3 * sim::GraphicUtilities::TGB.size());
 
     // TODO: MACK
@@ -274,9 +294,9 @@ void draw() {
 
     // TODO: MACK
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glUseProgram(0);
+    polygonProgram->stopUsing();
 
-#if(0)
+#if(1)
 
     // TODO: MACK - Font-stash drawing
     textDrawer->commenceDrawingTextForFrame();
@@ -461,49 +481,54 @@ void initGraphics(int argc, char* argv[]) {
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
 
     // Generate the vertex shader
-    GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-    std::string str = 
-        "#version 130\n"
-        "attribute vec2 coordinate;"
-        "attribute vec4 color;"
-        "uniform mat4 transformationMatrix;"
-        "void main(void) {"
-        "    gl_Position = transformationMatrix * vec4(coordinate, 0.0, 1.0);"
-        "    gl_FrontColor = color;"
-        "}";
-    const char *vs_source = str.c_str();
-    glShaderSource(vs, 1, &vs_source, NULL);
-    glCompileShader(vs);
+    // GLuint vs = glCreateShader(GL_VERTEX_SHADER);
+    // std::string str = 
+    //     "#version 130\n"
+    //     "attribute vec2 coordinate;"
+    //     "attribute vec4 color;"
+    //     "uniform mat4 transformationMatrix;"
+    //     "void main(void) {"
+    //     "    gl_Position = transformationMatrix * vec4(coordinate, 0.0, 1.0);"
+    //     "    gl_FrontColor = color;"
+    //     "}";
+    // const char *vs_source = str.c_str();
+    // glShaderSource(vs, 1, &vs_source, NULL);
+    // glCompileShader(vs);
 
-    // Generate the rendering program
-    /*GLuint*/ program = glCreateProgram(); // TODO: MACK
-    glAttachShader(program, vs);
-    glLinkProgram(program);
-    glUseProgram(program);
+    // // Generate the rendering program
+    // /*GLuint*/ program = glCreateProgram(); // TODO: MACK
+    // glAttachShader(program, vs);
+    // glLinkProgram(program);
+    // glUseProgram(program);
+
+    // TODO: MACK
+    polygonProgram = new tdogl::Program({tdogl::Shader::shaderFromFile(
+        sim::SimUtilities::getProjectDirectory() + "/res/shaders/polygonVertexShader.txt", GL_VERTEX_SHADER)});
+    glEnableVertexAttribArray(polygonProgram->attrib("coordinate"));
+    glVertexAttribPointer(polygonProgram->attrib("coordinate"), 2, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), 0);
+    glEnableVertexAttribArray(polygonProgram->attrib("color"));
+    glVertexAttribPointer(polygonProgram->attrib("color"), 4, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), (char*) NULL + 2 * sizeof(double));
+
+    // unbind the VAO
+    glBindVertexArray(0);
 
     // Retrieve the attribute IDs and enable our attributes
-    GLuint coordinate = glGetAttribLocation(program, "coordinate");
-    GLuint color = glGetAttribLocation(program, "color");
-    g_transformationMatixId = glGetUniformLocation(program, "transformationMatrix");
-    glEnableVertexAttribArray(coordinate);
-    glEnableVertexAttribArray(color);
+    //GLuint coordinate = glGetAttribLocation(program, "coordinate");
+    //GLuint color = glGetAttribLocation(program, "color");
+    //g_transformationMatixId = glGetUniformLocation(program, "transformationMatrix"); // TODO: MACK
+    //glEnableVertexAttribArray(coordinate);
+    //glEnableVertexAttribArray(color);
 
     // Specify the information within our buffer
-    glVertexAttribPointer(coordinate, 2, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), 0);
-    glVertexAttribPointer(color, 4, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), (char*) NULL + 2 * sizeof(double));
-
-// TODO: MACK
-    /* create a font stash with a maximum texture size of 512 x 512 */
-    //stash = sth_create(512, 512);
-    /* load truetype font */
-    //droid = sth_add_font(stash, (sim::SimUtilities::getProjectDirectory() + "res/fonts/DroidSerif-Regular.ttf").c_str());
-// TODO: MACK
+    //glVertexAttribPointer(coordinate, 2, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), 0);
+    //glVertexAttribPointer(color, 4, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), (char*) NULL + 2 * sizeof(double));
 
     // Lastly, initially populate the vertex buffer object with tile information
     g_mazeGraphic->draw();
 
     // TODO
-    glBindVertexArray(0); // TODO: MACK
+    //glBindBuffer(GL_ARRAY_BUFFER, 0); // TODO: MACK
+    //glBindVertexArray(0); // TODO: MACK
 }
 
 void initMouseAlgo() {
