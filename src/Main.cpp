@@ -46,27 +46,23 @@ sim::MouseInterface* g_mouseInterface;
 sim::World* g_world;
 IMouseAlgorithm* g_algorithm;
 
-// The ID of the transformation matrix, which takes triangle graphic objects in
-// the physical coordinate system and transforms them into the OpenGL system.
-// GLuint g_transformationMatixId;
-
 // TODO: Hide some state
 
 // TODO: MACK - can't be created before glInit is called, so can't be created statically
-sim::TextDrawer* textDrawer;
-GLuint vertex_buffer_object;
+sim::TextDrawer* textDrawer = nullptr;
+int rows = 2; // TODO: MACK
+int cols = 3; // TODO: MACK
 
 // TODO: MACK
 tdogl::Program* polygonProgram = nullptr;
-tdogl::Program* textureProgram = nullptr;
+GLuint polygonVertexArrayObjectId = 0;
+GLuint polygonVertexBufferObjectId = 0;
+
+// TODO: MACK
 tdogl::Texture* textureAtlas = nullptr;
-
-GLuint gVAO = 0;
-GLuint gVAO2 = 0;
-GLuint gVBO = 0;
-
-int rows = 2; // TODO: MACK
-int cols = 3; // TODO: MACK
+tdogl::Program* textureProgram = nullptr;
+GLuint textureVertexArrayObjectId = 0;
+GLuint textureVertexBufferObjectId = 0;
 
 // loads the vertex shader and fragment shader, and links them to make the global textureProgram
 static void LoadShaders() {
@@ -81,12 +77,12 @@ static void LoadShaders() {
 // loads a triangle into the VAO global
 static void LoadTriangle() {
     // make and bind the VAO
-    glGenVertexArrays(1, &gVAO);
-    glBindVertexArray(gVAO);
+    glGenVertexArrays(1, &textureVertexArrayObjectId);
+    glBindVertexArray(textureVertexArrayObjectId);
     
     // make and bind the VBO
-    glGenBuffers(1, &gVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, gVBO);
+    glGenBuffers(1, &textureVertexBufferObjectId);
+    glBindBuffer(GL_ARRAY_BUFFER, textureVertexBufferObjectId);
 
     // Put the three triangle vertices (XYZ) and texture coordinates (UV) into the VBO
     GLfloat vertexData[15 * rows * cols];
@@ -131,9 +127,6 @@ static void LoadTexture() {
 }
 
 static void Render() {
-    // clear everything
-    //glClearColor(0, 0, 0, 1); // black
-    //glClear(GL_COLOR_BUFFER_BIT);
     
     // bind the program (the shaders)
     textureProgram->use();
@@ -144,23 +137,16 @@ static void Render() {
     textureProgram->setUniform("tex", 0); //set to 0 because the texture is bound to GL_TEXTURE0
 
     // bind the VAO (the triangle)
-    glBindVertexArray(gVAO);
+    glBindVertexArray(textureVertexArrayObjectId);
     
     // draw the VAO
-    glDrawArrays(GL_TRIANGLES, 0, 15 * rows * cols); // TODO: Mack - isn't working quite rights...
+    glDrawArrays(GL_TRIANGLES, 0, 15 * rows * cols);
     
     // unbind the VAO, the program and the texture
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
     textureProgram->stopUsing();
-    
-    // swap the display buffers (displays what was just drawn)
-    //glfwSwapBuffers(gWindow);
-    //glutSwapBuffers(); // TODO: MACK
 }
-
-// TODO: MACK
-
 
 int main(int argc, char* argv[]) {
 
@@ -182,9 +168,8 @@ int main(int argc, char* argv[]) {
     LoadShaders();
     LoadTexture();
     LoadTriangle();
+    textDrawer = new sim::TextDrawer("DroidSerif-Regular.ttf", 400.0);
 // TODO: MACK -----
-
-    textDrawer = new sim::TextDrawer("DroidSerif-Regular.ttf", 400.0); // TODO: MACK
 
     // Step 3: Initialize the mouse algorithm
     initMouseAlgo();
@@ -220,10 +205,6 @@ int main(int argc, char* argv[]) {
 
 void draw() {
 
-    // TODO: MACK
-    //glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
-    //glUseProgram(program);
-
     // In order to ensure we're sleeping the correct amount of time, we time
     // the drawing operation and take it into account when we sleep.
     double start(sim::SimUtilities::getHighResTime());
@@ -237,30 +218,8 @@ void draw() {
     // Fill the CPU buffer with new mouse triangles
     g_mouseGraphic->draw();
 
-    // TODO: MACK ---------------------------
-    polygonProgram->use();
-        
-    // bind the texture and set the "tex" uniform in the fragment shader
-    //textureProgram->setUniform("tex", 0); //set to 0 because the texture is bound to GL_TEXTURE0 // TODO
-
-    // bind the VAO (the triangle)
-    //glBindVertexArray(gVAO);
-    
-    // draw the VAO
-    //glDrawArrays(GL_TRIANGLES, 0, 15 * rows * cols); // TODO: Mack - isn't working quite rights...
-    
-    // unbind the VAO, the program and the texture
-    //glBindVertexArray(0);
-    //glBindTexture(GL_TEXTURE_2D, 0);
-    //textureProgram->stopUsing();
-    // TODO: MACK ---------------------------
-
-
-    // TODO: MACK
-    glBindVertexArray(gVAO2);
-
     // Clear the vertex buffer object and copy over the CPU buffer
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
+    glBindBuffer(GL_ARRAY_BUFFER, polygonVertexBufferObjectId);
     glBufferData(GL_ARRAY_BUFFER, sim::GraphicUtilities::TGB.size() * sizeof(sim::TriangleGraphic), NULL, GL_DYNAMIC_DRAW);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sim::GraphicUtilities::TGB.size() * sizeof(sim::TriangleGraphic),
         &sim::GraphicUtilities::TGB.front());
@@ -271,30 +230,36 @@ void draw() {
     // Enable scissoring so that the maps are only draw in specified locations
     glEnable(GL_SCISSOR_TEST);
 
+    // TODO: MACK ---------------------------
+    polygonProgram->use();
+    glBindVertexArray(polygonVertexArrayObjectId);
+    // TODO: MACK ---------------------------
+
     // Render the full map
     std::pair<int, int> fullMapPosition = sim::GraphicUtilities::getFullMapPosition();
     std::pair<int, int> fullMapSize = sim::GraphicUtilities::getFullMapSize();
     glScissor(fullMapPosition.first, fullMapPosition.second, fullMapSize.first, fullMapSize.second);
-    polygonProgram->setUniformMatrix4("transformationMatrix", &sim::GraphicUtilities::getFullMapTransformationMatrix().front(), 1, GL_TRUE);
+    polygonProgram->setUniformMatrix4("transformationMatrix",
+        &sim::GraphicUtilities::getFullMapTransformationMatrix().front(), 1, GL_TRUE);
     glDrawArrays(GL_TRIANGLES, 0, 3 * sim::GraphicUtilities::TGB.size());
 
     // Render the zoomed map
     std::pair<int, int> zoomedMapPosition = sim::GraphicUtilities::getZoomedMapPosition();
     std::pair<int, int> zoomedMapSize = sim::GraphicUtilities::getZoomedMapSize();
     glScissor(zoomedMapPosition.first, zoomedMapPosition.second, zoomedMapSize.first, zoomedMapSize.second);
-    polygonProgram->setUniformMatrix4("transformationMatrix", &sim::GraphicUtilities::getZoomedMapTransformationMatrix(
+    polygonProgram->setUniformMatrix4("transformationMatrix",
+        &sim::GraphicUtilities::getZoomedMapTransformationMatrix(
         g_mouse->getInitialTranslation(), g_mouse->getCurrentTranslation(), g_mouse->getCurrentRotation()).front(), 1, GL_TRUE);
     glDrawArrays(GL_TRIANGLES, 0, 3 * sim::GraphicUtilities::TGB.size());
 
-    // TODO: MACK
+    // TODO: MACK ---------------------------
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+    polygonProgram->stopUsing();
+    // TODO: MACK ---------------------------
 
     // We disable scissoring so that the glClear can take effect
     glDisable(GL_SCISSOR_TEST);
-
-    // TODO: MACK
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    polygonProgram->stopUsing();
 
 #if(1)
 
@@ -467,39 +432,18 @@ void initGraphics(int argc, char* argv[]) {
     // GLEW Initialization
     GLenum err = glewInit();
     if (GLEW_OK != err) {
-        sim::SimUtilities::print("Error: Unable to initialize GLEW.");
+        PRINT(ERROR, "Unable to initialize GLEW.");
         sim::SimUtilities::quit();
     }
 
     // TODO: these could probably go a bit lower....
-    glGenVertexArrays(1, &gVAO2); // TODO: MACK
-    glBindVertexArray(gVAO2); // TODO: MACK
+    glGenVertexArrays(1, &polygonVertexArrayObjectId); // TODO: MACK
+    glBindVertexArray(polygonVertexArrayObjectId); // TODO: MACK
 
     // Generate vertex buffer object
-    ///*GLuint*/ vertex_buffer_object; // TODO: MACK
-    glGenBuffers(1,  &vertex_buffer_object);
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
-
-    // Generate the vertex shader
-    // GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-    // std::string str = 
-    //     "#version 130\n"
-    //     "attribute vec2 coordinate;"
-    //     "attribute vec4 color;"
-    //     "uniform mat4 transformationMatrix;"
-    //     "void main(void) {"
-    //     "    gl_Position = transformationMatrix * vec4(coordinate, 0.0, 1.0);"
-    //     "    gl_FrontColor = color;"
-    //     "}";
-    // const char *vs_source = str.c_str();
-    // glShaderSource(vs, 1, &vs_source, NULL);
-    // glCompileShader(vs);
-
-    // // Generate the rendering program
-    // /*GLuint*/ program = glCreateProgram(); // TODO: MACK
-    // glAttachShader(program, vs);
-    // glLinkProgram(program);
-    // glUseProgram(program);
+    ///*GLuint*/ polygonVertexBufferObjectId; // TODO: MACK
+    glGenBuffers(1,  &polygonVertexBufferObjectId);
+    glBindBuffer(GL_ARRAY_BUFFER, polygonVertexBufferObjectId);
 
     // TODO: MACK
     polygonProgram = new tdogl::Program({tdogl::Shader::shaderFromFile(
@@ -511,17 +455,6 @@ void initGraphics(int argc, char* argv[]) {
 
     // unbind the VAO
     glBindVertexArray(0);
-
-    // Retrieve the attribute IDs and enable our attributes
-    //GLuint coordinate = glGetAttribLocation(program, "coordinate");
-    //GLuint color = glGetAttribLocation(program, "color");
-    //g_transformationMatixId = glGetUniformLocation(program, "transformationMatrix"); // TODO: MACK
-    //glEnableVertexAttribArray(coordinate);
-    //glEnableVertexAttribArray(color);
-
-    // Specify the information within our buffer
-    //glVertexAttribPointer(coordinate, 2, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), 0);
-    //glVertexAttribPointer(color, 4, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), (char*) NULL + 2 * sizeof(double));
 
     // Lastly, initially populate the vertex buffer object with tile information
     g_mazeGraphic->draw();
