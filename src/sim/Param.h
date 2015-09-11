@@ -75,7 +75,6 @@ public:
     double wallLength();
     double wallHeight();
     bool enforceOfficialMazeRules();
-    std::string mazeDirectory();
     std::string mazeFile();
     bool useMazeFile();
     int generatedMazeWidth();
@@ -86,7 +85,6 @@ public:
     int mazeRotations();
 
     // Mouse parameters
-    std::string mouseDirectory();
     std::string mouseAlgorithm();
     std::string mouseStartingDirection();
 
@@ -155,7 +153,6 @@ private:
     double m_wallLength;
     double m_wallHeight;
     bool m_enforceOfficialMazeRules;
-    std::string m_mazeDirectory;
     std::string m_mazeFile;
     bool m_useMazeFile;
     int m_generatedMazeWidth;
@@ -166,7 +163,6 @@ private:
     int m_mazeRotations;
 
     // Mouse parameters
-    std::string m_mouseDirectory;
     std::string m_mouseAlgorithm;
     std::string m_mouseStartingDirection;
 };

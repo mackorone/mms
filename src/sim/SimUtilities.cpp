@@ -13,11 +13,7 @@
 #include <thread>
 #include <random>
 
-#ifdef __linux
-    #include <limits.h>
-    #include <sys/time.h>
-    #include <unistd.h>
-#elif _WIN32
+#ifdef _WIN32
     #include <windows.h>
 #endif
 
@@ -98,33 +94,6 @@ std::string SimUtilities::getDateTime() {
     tstruct = *gmtime(&now);
     strftime(buf, sizeof(buf), "%Y-%m-%d %X", &tstruct);
     return buf;
-}
-
-std::string SimUtilities::getProjectDirectory() {
-
-    // This approach is claimed to be more reliable than argv[0] on windows
-    // and linux.  On Windows GetModuleFileName is the directory to the executable
-    // which is located in /mms/src/Debug/.  On linux /proc/self/exe is a path to exe.
-    // This approach does not work for all flavors to Linux, but should work on most
-    // common ones. The executable on Linux is located in "mms/bin".
-
-    std::string path;
-
-#ifdef __linux
-    char result[PATH_MAX];
-    ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
-    path = std::string(result, (count > 0) ? count : 0);
-    path = path.substr(0, path.find_last_of("\\/")); // Remove the executable name as it is part of path
-    path = path.substr(0, path.find_last_of("\\/")) + "/"; // Remove the "bin" from the path
-#elif _WIN32
-    char result[MAX_PATH];
-    path = std::string(result, GetModuleFileName(NULL, result, MAX_PATH));
-    path = path.substr(0, path.find_last_of("\\/"));; // Remove the executable name as it is part of path
-    path += "\\..\\..\\"; // Point to /mms/
-    // Windows uses \ in directory
-#endif
-
-    return path;
 }
 
 bool SimUtilities::isBool(const std::string& str) {

@@ -49,9 +49,6 @@ public:
     // Returns the UTC datetime formatted as YY-MM-DD_HH:MM:SS
     static std::string getDateTime();
 
-    // Returns the path the mms project directory
-    static std::string getProjectDirectory();
-
     // Convert between types
     static bool isBool(const std::string& str);
     static bool isInt(const std::string& str);

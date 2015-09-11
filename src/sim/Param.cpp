@@ -5,10 +5,10 @@
 
 #include "Color.h"
 #include "Direction.h"
+#include "Directory.h"
 #include "Layout.h"
 #include "Logging.h"
 #include "ParamParser.h"
-#include "SimUtilities.h"
 
 namespace sim {
 
@@ -33,7 +33,7 @@ Param::Param() {
     // loop. So don't do it.
 
     // Create the parameter parser object
-    ParamParser parser(SimUtilities::getProjectDirectory() + "res/parameters.xml");
+    ParamParser parser(Directory::getResDirectory() + "parameters.xml");
 
     // Graphical Parameters
     m_defaultWindowWidth = parser.getIntIfHasIntAndNotLessThan(
@@ -154,8 +154,6 @@ Param::Param() {
         "wall-height", 0.05, 0.025, 0.1);
     m_enforceOfficialMazeRules = parser.getBoolIfHasBool(
         "enforce-official-maze-rules", false);
-    m_mazeDirectory = parser.getStringIfHasString(
-        "maze-directory", "res/maze/");
     m_mazeFile = parser.getStringIfHasString(
         "maze-file", "");
     m_useMazeFile = parser.getBoolIfHasBool(
@@ -174,8 +172,6 @@ Param::Param() {
         "maze-rotations", 0, 0, 3);
 
     // Mouse parameters
-    m_mouseDirectory = parser.getStringIfHasString(
-        "mouse-directory", "res/mouse/");
     m_mouseAlgorithm = parser.getStringIfHasString(
         "mouse-algorithm", "RightWallFollow");
     m_mouseStartingDirection = parser.getStringIfHasStringAndIsDirection(
@@ -374,10 +370,6 @@ int Param::numberOfArchivedRuns() {
     return m_numberOfArchivedRuns;
 }
 
-std::string Param::mazeDirectory() {
-    return m_mazeDirectory;
-}
-
 std::string Param::mazeFile() {
     return m_mazeFile;
 }
@@ -424,10 +416,6 @@ bool Param::mazeMirrored() {
 
 int Param::mazeRotations() {
     return m_mazeRotations;
-}
-
-std::string Param::mouseDirectory() {
-    return m_mouseDirectory;
 }
 
 std::string Param::mouseAlgorithm() {

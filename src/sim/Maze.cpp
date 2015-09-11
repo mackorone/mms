@@ -5,6 +5,7 @@
 #include "../maze/IMazeAlgorithm.h"
 #include "../maze/MazeAlgorithms.h"
 #include "Assert.h"
+#include "Directory.h"
 #include "MazeChecker.h"
 #include "MazeFileUtilities.h"
 #include "MazeInterface.h"
@@ -20,7 +21,7 @@ Maze::Maze() {
 
     if (P()->useMazeFile()) {
 
-        std::string mazeFilePath = SimUtilities::getProjectDirectory() + P()->mazeDirectory() + P()->mazeFile();
+        std::string mazeFilePath = Directory::getResMazeDirectory() + P()->mazeFile();
         if (!MazeFileUtilities::isMazeFile(mazeFilePath)) {
             SimUtilities::print("Error: Unable to initialize maze from file \"" + mazeFilePath + "\".");
             SimUtilities::quit();
@@ -64,7 +65,7 @@ Maze::Maze() {
     // Optionally save the maze
     if (!P()->useMazeFile() && P()->saveGeneratedMaze()) {
         MazeFileUtilities::saveMaze(extractBasicMaze(),
-            SimUtilities::getProjectDirectory() + P()->mazeDirectory() + "auto_generated_maze.maz");
+            Directory::getResMazeDirectory() + "auto_generated_maze.maz");
     }
 
     // Load the maze given by the maze generation algorithm

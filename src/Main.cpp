@@ -9,6 +9,7 @@
 
 #include "mouse/IMouseAlgorithm.h"
 #include "mouse/MouseAlgorithms.h"
+#include "sim/Directory.h"
 #include "sim/GraphicUtilities.h"
 #include "sim/InterfaceType.h"
 #include "sim/Key.h"
@@ -26,56 +27,62 @@
 #include "sim/World.h"
 #include "sim/units/Seconds.h"
 
-// Function declarations
-void draw();
-void keyPress(unsigned char key, int x, int y);
-void specialKeyPress(int key, int x, int y);
-void specialKeyRelease(int key, int x, int y);
+// TODO: To hide more, put all of this in a class and just call a method of the class in main()
 
-// Initialization functions, declared in the order they should be called
-void bootstrap();
-void initSimObjects();
-void initGraphics(int argc, char* argv[]);
-void initMouseAlgo();
+// Simulation objects
+sim::Mouse*          mouse;
+sim::MazeGraphic*    mazeGraphic;
+sim::MouseGraphic*   mouseGraphic;
+sim::MouseInterface* mouseInterface;
+sim::World*          world;
 
-// Global variable declarations
-sim::Mouse* g_mouse;
-sim::MazeGraphic* g_mazeGraphic;
-sim::MouseGraphic* g_mouseGraphic;
-sim::MouseInterface* g_mouseInterface;
-sim::World* g_world;
-IMouseAlgorithm* g_algorithm;
+// Micromouse algorithm object
+IMouseAlgorithm* algorithm;
 
-// TODO: Hide some state
+// Text drawing object
+sim::TextDrawer* textDrawer;
 
-// TODO: MACK - can't be created before glInit is called, so can't be created statically
-sim::TextDrawer* textDrawer = nullptr;
-int rows = 2; // TODO: MACK
-int cols = 3; // TODO: MACK
+// Polygon program variables
+tdogl::Program* polygonProgram;
+GLuint          polygonVertexArrayObjectId;
+GLuint          polygonVertexBufferObjectId;
 
-// TODO: MACK
-tdogl::Program* polygonProgram = nullptr;
-GLuint polygonVertexArrayObjectId = 0;
-GLuint polygonVertexBufferObjectId = 0;
+// Texture program variables
+tdogl::Texture* textureAtlas;
+tdogl::Program* textureProgram;
+GLuint          textureVertexArrayObjectId;
+GLuint          textureVertexBufferObjectId;
+int rows = 32; // TODO: MACK
+int cols = 64; // TODO: MACK
 
-// TODO: MACK
-tdogl::Texture* textureAtlas = nullptr;
-tdogl::Program* textureProgram = nullptr;
-GLuint textureVertexArrayObjectId = 0;
-GLuint textureVertexBufferObjectId = 0;
+void bootstrap() {
 
-// loads the vertex shader and fragment shader, and links them to make the global textureProgram
-static void LoadShaders() {
-    std::vector<tdogl::Shader> shaders;
-    shaders.push_back(tdogl::Shader::shaderFromFile(
-        sim::SimUtilities::getProjectDirectory() + "/res/shaders/textureVertexShader.txt", GL_VERTEX_SHADER));
-    shaders.push_back(tdogl::Shader::shaderFromFile(
-        sim::SimUtilities::getProjectDirectory() + "/res/shaders/textureFragmentShader.txt", GL_FRAGMENT_SHADER));
-    textureProgram = new tdogl::Program(shaders);
+    // First, determine the runId (just datetime, for now)
+    std::string runId = sim::SimUtilities::getDateTime();
+
+    // Then we can initiliaze Logging
+    sim::Logging::initialize(runId);
+
+    // Initialize the State object in order to:
+    // 0) Set the runId
+    // 1) Avoid a race condition (between threads)
+    // 2) Register this thread as the main thread
+    // 3) Initialize the Param object
+    sim::S()->setRunId(runId);
+}
+
+void initSimObjects() {
+    sim::Maze* maze = new sim::Maze();
+    mouse = new sim::Mouse(maze);
+    mazeGraphic = new sim::MazeGraphic(maze);
+    mouseGraphic = new sim::MouseGraphic(mouse);
+    mouseInterface = new sim::MouseInterface(maze, mouse, mazeGraphic);
+    world = new sim::World(maze, mouse);
 }
 
 // loads a triangle into the VAO global
 static void LoadTriangle() {
+
     // make and bind the VAO
     glGenVertexArrays(1, &textureVertexArrayObjectId);
     glBindVertexArray(textureVertexArrayObjectId);
@@ -88,18 +95,18 @@ static void LoadTriangle() {
     GLfloat vertexData[15 * rows * cols];
     for (int i = 0; i < rows; i += 1) {
         for (int j = 0; j < cols; j += 1) {
-            vertexData[15*cols*i + 15*j +  0] = (j * 1.0 / float(cols)) * 2 - 1;
-            vertexData[15*cols*i + 15*j +  1] = (i * 1.0 / float(rows)) * 2 - 1;
+            vertexData[15*cols*i + 15*j +  0] = (j * 1.0 / float(cols)) * 2 - 1; // X
+            vertexData[15*cols*i + 15*j +  1] = (i * 1.0 / float(rows)) * 2 - 1; // Y
             vertexData[15*cols*i + 15*j +  2] = 0.0; // Z
             vertexData[15*cols*i + 15*j +  3] = 0.5; // U
             vertexData[15*cols*i + 15*j +  4] = 1.0; // V
-            vertexData[15*cols*i + 15*j +  5] = (j * 1.0 / float(cols) + 0.5 / float(cols)) * 2 - 1;
-            vertexData[15*cols*i + 15*j +  6] = ((i + 1) * 1.0 / float(rows)) * 2 - 1;
+            vertexData[15*cols*i + 15*j +  5] = (j * 1.0 / float(cols) + 0.5 / float(cols)) * 2 - 1; // X
+            vertexData[15*cols*i + 15*j +  6] = ((i + 1) * 1.0 / float(rows)) * 2 - 1; // Y
             vertexData[15*cols*i + 15*j +  7] = 0.0; // Z
             vertexData[15*cols*i + 15*j +  8] = 0.0; // U
             vertexData[15*cols*i + 15*j +  9] = 0.0; // V
-            vertexData[15*cols*i + 15*j + 10] = ((j + 1) * 1.0 / float(cols)) * 2 - 1;
-            vertexData[15*cols*i + 15*j + 11] = (i * 1.0 / float(rows)) * 2 - 1;
+            vertexData[15*cols*i + 15*j + 10] = ((j + 1) * 1.0 / float(cols)) * 2 - 1; // X
+            vertexData[15*cols*i + 15*j + 11] = (i * 1.0 / float(rows)) * 2 - 1; // Y
             vertexData[15*cols*i + 15*j + 12] = 0.0; // Z
             vertexData[15*cols*i + 15*j + 13] = 1.0; // U
             vertexData[15*cols*i + 15*j + 14] = 0.0; // V
@@ -119,90 +126,6 @@ static void LoadTriangle() {
     glBindVertexArray(0);
 }
 
-// loads the file "hazard.png" into textureAtlas
-static void LoadTexture() {
-    tdogl::Bitmap bmp = tdogl::Bitmap::bitmapFromFile(sim::SimUtilities::getProjectDirectory() + "/res/textures/hazard.png");
-    bmp.flipVertically();
-    textureAtlas = new tdogl::Texture(bmp);
-}
-
-static void Render() {
-    
-    // bind the program (the shaders)
-    textureProgram->use();
-        
-    // bind the texture and set the "tex" uniform in the fragment shader
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureAtlas->object());
-    textureProgram->setUniform("tex", 0); //set to 0 because the texture is bound to GL_TEXTURE0
-
-    // bind the VAO (the triangle)
-    glBindVertexArray(textureVertexArrayObjectId);
-    
-    // draw the VAO
-    glDrawArrays(GL_TRIANGLES, 0, 15 * rows * cols);
-    
-    // unbind the VAO, the program and the texture
-    glBindVertexArray(0);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    textureProgram->stopUsing();
-}
-
-int main(int argc, char* argv[]) {
-
-    // Step 0: Determine the runId, configure logging,
-    // and initialize the State and Param objects.
-    bootstrap();
-
-    // TODO: MACK
-    // Remove any excessive archived runs
-    sim::SimUtilities::removeExcessArchivedRuns();
-
-    // Step 1: Initialize the simulation objects
-    initSimObjects();
-
-    // Step 2: Initialize the graphics
-    initGraphics(argc, argv);
-
-// TODO: MACK -----
-    LoadShaders();
-    LoadTexture();
-    LoadTriangle();
-    textDrawer = new sim::TextDrawer("DroidSerif-Regular.ttf", 400.0);
-// TODO: MACK -----
-
-    // Step 3: Initialize the mouse algorithm
-    initMouseAlgo();
-
-    // Step 4: Start the physics loop
-    std::thread physicsThread([](){
-        g_world->simulate();
-    });
-
-    // Step 5: Start the solving loop
-    std::thread solvingThread([](){
-
-        // Wait for the window to appear
-        sim::SimUtilities::sleep(sim::Seconds(sim::P()->glutInitDuration()));
-
-        // Unfog the beginning tile if necessary
-        if (sim::S()->interfaceType() == sim::InterfaceType::DISCRETE && sim::P()->discreteInterfaceUnfogTileOnEntry()) {
-            g_mazeGraphic->setTileFogginess(0, 0, false);
-        }
-
-        // Finally, begin execution of the mouse algorithm
-        g_algorithm->solve(
-            g_mazeGraphic->getWidth(),
-            g_mazeGraphic->getHeight(),
-            sim::DIRECTION_TO_CHAR.at(sim::STRING_TO_DIRECTION.at(sim::P()->mouseStartingDirection())),
-            g_mouseInterface);
-    });
-
-    // Step 6: Start the graphics loop
-    sim::S()->enterMainLoop();
-    glutMainLoop();
-}
-
 void draw() {
 
     // In order to ensure we're sleeping the correct amount of time, we time
@@ -216,24 +139,25 @@ void draw() {
     sim::GraphicUtilities::TGB.erase(sim::GraphicUtilities::TGB.begin() + mouseTrianglesStartingIndex, sim::GraphicUtilities::TGB.end());
 
     // Fill the CPU buffer with new mouse triangles
-    g_mouseGraphic->draw();
+    mouseGraphic->draw();
+
+    // Clear the screen
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    // ----- Drawing the polygons ----- //
+
+    // Enable scissoring so that the maps are only draw in specified locations
+    glEnable(GL_SCISSOR_TEST);
+
+    // Enable the program and vertex array object
+    polygonProgram->use();
+    glBindVertexArray(polygonVertexArrayObjectId);
 
     // Clear the vertex buffer object and copy over the CPU buffer
     glBindBuffer(GL_ARRAY_BUFFER, polygonVertexBufferObjectId);
     glBufferData(GL_ARRAY_BUFFER, sim::GraphicUtilities::TGB.size() * sizeof(sim::TriangleGraphic), NULL, GL_DYNAMIC_DRAW);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sim::GraphicUtilities::TGB.size() * sizeof(sim::TriangleGraphic),
         &sim::GraphicUtilities::TGB.front());
-
-    // Clear the screen
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    // Enable scissoring so that the maps are only draw in specified locations
-    glEnable(GL_SCISSOR_TEST);
-
-    // TODO: MACK ---------------------------
-    polygonProgram->use();
-    glBindVertexArray(polygonVertexArrayObjectId);
-    // TODO: MACK ---------------------------
 
     // Render the full map
     std::pair<int, int> fullMapPosition = sim::GraphicUtilities::getFullMapPosition();
@@ -249,29 +173,46 @@ void draw() {
     glScissor(zoomedMapPosition.first, zoomedMapPosition.second, zoomedMapSize.first, zoomedMapSize.second);
     polygonProgram->setUniformMatrix4("transformationMatrix",
         &sim::GraphicUtilities::getZoomedMapTransformationMatrix(
-        g_mouse->getInitialTranslation(), g_mouse->getCurrentTranslation(), g_mouse->getCurrentRotation()).front(), 1, GL_TRUE);
+        mouse->getInitialTranslation(), mouse->getCurrentTranslation(), mouse->getCurrentRotation()).front(), 1, GL_TRUE);
     glDrawArrays(GL_TRIANGLES, 0, 3 * sim::GraphicUtilities::TGB.size());
 
-    // TODO: MACK ---------------------------
+    // Disable the program and unbind both the vertex buffer object and vertex array object
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
     polygonProgram->stopUsing();
-    // TODO: MACK ---------------------------
 
     // We disable scissoring so that the glClear can take effect
     glDisable(GL_SCISSOR_TEST);
 
+    // ----- Drawing the textures ----- //
+
+// TODO: MACK
 #if(1)
+
+    // Bind the texture program
+    textureProgram->use();
+        
+    // Bind the texture and vertex array object
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureAtlas->object());
+    glBindVertexArray(textureVertexArrayObjectId);
+    
+    // Render the texture
+    textureProgram->setUniform("tex", 0); //set to 0 because the texture is bound to GL_TEXTURE0
+    glDrawArrays(GL_TRIANGLES, 0, 15 * rows * cols);
+    
+    // Unbind the program and both the vertex array object and vertex buffer object
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindVertexArray(0);
+    textureProgram->stopUsing();
+
+    // ----- Drawing the text ----- //
 
     // TODO: MACK - Font-stash drawing
     textDrawer->commenceDrawingTextForFrame();
     auto size = sim::GraphicUtilities::getWindowSize();
-    textDrawer->drawText(size.first - 400, size.second - 400, "X");
+    textDrawer->drawText(100, size.second - 100, "In the town where I was born, lived a man: 1234");
     textDrawer->concludeDrawingTextForFrame();
-
-// TODO: MACK
-    Render();
-// TODO: MACK
 
 #endif
 
@@ -335,12 +276,12 @@ void keyPress(unsigned char key, int x, int y) {
     else if (key == 't') {
         // Toggle wall truth visibility
         sim::S()->setWallTruthVisible(!sim::S()->wallTruthVisible());
-        g_mazeGraphic->updateWalls();
+        mazeGraphic->updateWalls();
     }
     else if (key == 'c') {
         // Toggle tile colors
         sim::S()->setTileColorsVisible(!sim::S()->tileColorsVisible());
-        g_mazeGraphic->updateColor();
+        mazeGraphic->updateColor();
     }
     else if (key == 'x') {
         // Toggle tile text
@@ -349,7 +290,7 @@ void keyPress(unsigned char key, int x, int y) {
     else if (key == 'g') {
         // Toggle tile fog
         sim::S()->setTileFogVisible(!sim::S()->tileFogVisible());
-        g_mazeGraphic->updateFog();
+        mazeGraphic->updateFog();
     }
     else if (key == 'w') {
         // Toggle wireframe mode
@@ -368,40 +309,61 @@ void keyPress(unsigned char key, int x, int y) {
 }
 
 void specialKeyPress(int key, int x, int y) {
+    if (!sim::SimUtilities::mapContains(sim::INT_TO_KEY, key)) {
+        return;
+    }
     if (sim::SimUtilities::vectorContains(sim::ARROW_KEYS, sim::INT_TO_KEY.at(key))) {
         sim::S()->setArrowKeyIsPressed(sim::INT_TO_KEY.at(key), true);
     }
 }
 
 void specialKeyRelease(int key, int x, int y) {
+    if (!sim::SimUtilities::mapContains(sim::INT_TO_KEY, key)) {
+        return;
+    }
     if (sim::SimUtilities::vectorContains(sim::ARROW_KEYS, sim::INT_TO_KEY.at(key))) {
         sim::S()->setArrowKeyIsPressed(sim::INT_TO_KEY.at(key), false);
     }
 }
 
-void bootstrap() {
+void initPolygonProgram() {
 
-    // First, determine the runId (just datetime, for now)
-    std::string runId = sim::SimUtilities::getDateTime();
+    // Generate the polygon vertex array object and vertex buffer object
+    glGenVertexArrays(1, &polygonVertexArrayObjectId);
+    glBindVertexArray(polygonVertexArrayObjectId);
+    glGenBuffers(1,  &polygonVertexBufferObjectId);
+    glBindBuffer(GL_ARRAY_BUFFER, polygonVertexBufferObjectId);
 
-    // Then we can initiliaze Logging
-    sim::Logging::initialize(runId);
+    // Set up the program and attribute pointers
+    polygonProgram = new tdogl::Program({tdogl::Shader::shaderFromFile(
+        sim::Directory::getResShadersDirectory() + "polygonVertexShader.txt", GL_VERTEX_SHADER)});
+    glEnableVertexAttribArray(polygonProgram->attrib("coordinate"));
+    glVertexAttribPointer(polygonProgram->attrib("coordinate"), 2, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), 0);
+    glEnableVertexAttribArray(polygonProgram->attrib("color"));
+    glVertexAttribPointer(polygonProgram->attrib("color"), 4, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), (char*) NULL + 2 * sizeof(double));
 
-    // Initialize the State object in order to:
-    // 0) Set the runId
-    // 1) Avoid a race condition (between threads)
-    // 2) Register this thread as the main thread
-    // 3) Initialize the Param object
-    sim::S()->setRunId(runId);
+    // Unbind the vertex array object and vertex buffer object
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }
 
-void initSimObjects() {
-    sim::Maze* maze = new sim::Maze();
-    g_mouse = new sim::Mouse(maze);
-    g_mazeGraphic = new sim::MazeGraphic(maze);
-    g_mouseGraphic = new sim::MouseGraphic(g_mouse);
-    g_mouseInterface = new sim::MouseInterface(maze, g_mouse, g_mazeGraphic);
-    g_world = new sim::World(maze, g_mouse);
+void initTextureProgram() {
+
+    // Generate the texture vertex array object and vertex buffer object
+    std::vector<tdogl::Shader> shaders;
+    shaders.push_back(tdogl::Shader::shaderFromFile(
+        sim::Directory::getResShadersDirectory() + "textureVertexShader.txt", GL_VERTEX_SHADER));
+    shaders.push_back(tdogl::Shader::shaderFromFile(
+        sim::Directory::getResShadersDirectory() + "textureFragmentShader.txt", GL_FRAGMENT_SHADER));
+    textureProgram = new tdogl::Program(shaders);
+
+    // Load the bitmap texture into the texture atlas
+    tdogl::Bitmap bmp = tdogl::Bitmap::bitmapFromFile(sim::Directory::getResTexturesDirectory() + "hazard.png");
+    bmp.flipVertically();
+    textureAtlas = new tdogl::Texture(bmp);
+
+    // TODO
+    LoadTriangle();
 }
 
 void initGraphics(int argc, char* argv[]) {
@@ -435,33 +397,18 @@ void initGraphics(int argc, char* argv[]) {
         PRINT(ERROR, "Unable to initialize GLEW.");
         sim::SimUtilities::quit();
     }
+    
+    // Initialize the text drawer object // TODO: MACK - get the font from param
+    textDrawer = new sim::TextDrawer("DroidSansMono.ttf", 30.0);
 
-    // TODO: these could probably go a bit lower....
-    glGenVertexArrays(1, &polygonVertexArrayObjectId); // TODO: MACK
-    glBindVertexArray(polygonVertexArrayObjectId); // TODO: MACK
+    // Initialize the polygon drawing program
+    initPolygonProgram();
 
-    // Generate vertex buffer object
-    ///*GLuint*/ polygonVertexBufferObjectId; // TODO: MACK
-    glGenBuffers(1,  &polygonVertexBufferObjectId);
-    glBindBuffer(GL_ARRAY_BUFFER, polygonVertexBufferObjectId);
-
-    // TODO: MACK
-    polygonProgram = new tdogl::Program({tdogl::Shader::shaderFromFile(
-        sim::SimUtilities::getProjectDirectory() + "/res/shaders/polygonVertexShader.txt", GL_VERTEX_SHADER)});
-    glEnableVertexAttribArray(polygonProgram->attrib("coordinate"));
-    glVertexAttribPointer(polygonProgram->attrib("coordinate"), 2, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), 0);
-    glEnableVertexAttribArray(polygonProgram->attrib("color"));
-    glVertexAttribPointer(polygonProgram->attrib("color"), 4, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), (char*) NULL + 2 * sizeof(double));
-
-    // unbind the VAO
-    glBindVertexArray(0);
+    // Initialize the texture drawing program
+    initTextureProgram();
 
     // Lastly, initially populate the vertex buffer object with tile information
-    g_mazeGraphic->draw();
-
-    // TODO
-    //glBindBuffer(GL_ARRAY_BUFFER, 0); // TODO: MACK
-    //glBindVertexArray(0); // TODO: MACK
+    mazeGraphic->draw();
 }
 
 void initMouseAlgo() {
@@ -473,11 +420,11 @@ void initMouseAlgo() {
             sim::P()->mouseAlgorithm());
         sim::SimUtilities::quit();
     }
-    g_algorithm = MouseAlgorithms::getMouseAlgorithm(sim::P()->mouseAlgorithm());
+    algorithm = MouseAlgorithms::getMouseAlgorithm(sim::P()->mouseAlgorithm());
 
     // Initialize the mouse with the file provided
-    std::string mouseFile = g_algorithm->mouseFile();
-    bool success = g_mouse->initialize(mouseFile);
+    std::string mouseFile = algorithm->mouseFile();
+    bool success = mouse->initialize(mouseFile);
     if (!success) {
         PRINT(ERROR,
             "Unable to successfully initialize the mouse in the algorithm "
@@ -488,16 +435,63 @@ void initMouseAlgo() {
     }
 
     // Initialize the interface type
-    if (!sim::SimUtilities::mapContains(sim::STRING_TO_INTERFACE_TYPE, g_algorithm->interfaceType())) {
+    if (!sim::SimUtilities::mapContains(sim::STRING_TO_INTERFACE_TYPE, algorithm->interfaceType())) {
         PRINT(ERROR,
             "\"%v\" is not a valid interface type. You must declare the "
             "interface type of the mouse algorithm \"%v\" to be either \"%v\" "
             "or \"%v\".",
-            g_algorithm->interfaceType(),
+            algorithm->interfaceType(),
             sim::P()->mouseAlgorithm(),
             sim::INTERFACE_TYPE_TO_STRING.at(sim::InterfaceType::DISCRETE),
             sim::INTERFACE_TYPE_TO_STRING.at(sim::InterfaceType::CONTINUOUS));
         sim::SimUtilities::quit();
     }
-    sim::S()->setInterfaceType(sim::STRING_TO_INTERFACE_TYPE.at(g_algorithm->interfaceType()));
+    sim::S()->setInterfaceType(sim::STRING_TO_INTERFACE_TYPE.at(algorithm->interfaceType()));
+}
+
+int main(int argc, char* argv[]) {
+
+    // Step 0: Determine the runId, configure logging,
+    // and initialize the State and Param objects.
+    bootstrap();
+
+    // Step 0.5: Remove any excessive archived runs
+    sim::SimUtilities::removeExcessArchivedRuns();
+
+    // Step 1: Initialize the simulation objects
+    initSimObjects();
+
+    // Step 2: Initialize the graphics
+    initGraphics(argc, argv);
+
+    // Step 3: Initialize the mouse algorithm
+    initMouseAlgo();
+
+    // Step 4: Start the physics loop
+    std::thread physicsThread([](){
+        world->simulate();
+    });
+
+    // Step 5: Start the solving loop
+    std::thread solvingThread([](){
+
+        // Wait for the window to appear
+        sim::SimUtilities::sleep(sim::Seconds(sim::P()->glutInitDuration()));
+
+        // Unfog the beginning tile if necessary
+        if (sim::S()->interfaceType() == sim::InterfaceType::DISCRETE && sim::P()->discreteInterfaceUnfogTileOnEntry()) {
+            mazeGraphic->setTileFogginess(0, 0, false);
+        }
+
+        // Finally, begin execution of the mouse algorithm
+        algorithm->solve(
+            mazeGraphic->getWidth(),
+            mazeGraphic->getHeight(),
+            sim::DIRECTION_TO_CHAR.at(sim::STRING_TO_DIRECTION.at(sim::P()->mouseStartingDirection())),
+            mouseInterface);
+    });
+
+    // Step 6: Start the graphics loop
+    sim::S()->enterMainLoop();
+    glutMainLoop();
 }

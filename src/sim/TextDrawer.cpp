@@ -1,15 +1,15 @@
 #include "TextDrawer.h"
 
 #include "Assert.h"
+#include "Directory.h"
 #include "GraphicUtilities.h"
-#include "SimUtilities.h"
 
 namespace sim {
 
 TextDrawer* TextDrawer::m_activeTextDrawer = nullptr;
 TextDrawer::TextDrawer(const std::string& font, float pt) :
     m_stash(sth_create(512, 512)),
-    m_font(sth_add_font(m_stash, (sim::SimUtilities::getProjectDirectory() + "res/fonts/" + font).c_str())),
+    m_font(sth_add_font(m_stash, (Directory::getResFontsDirectory() + font).c_str())),
     m_pt(pt) {
 }
 

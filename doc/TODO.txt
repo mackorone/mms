@@ -1,23 +1,23 @@
 High Pri:
 
-- Alt crashes the program
-- Add a simple polygonFragmentShader
+- Check that a font exists, die if not
+- Make font height based on pixels, not pt.
+- Check to make sure font won't be cut off, use ellipses if so
+- Put a toolbar at the top or bottom with info
+- Display a clock
+- Make some utility that keeps track of elapse time
+    - Make the sim speed non-arbitrary
+    - Fix the Params associated with discrete sim-speed
 
-- Make the readme into an actual markdown doc
 - Make getMouseFile and getInterfaceType static methods
     - Make a getMouseAlgoName method
-- Make a directory class that gets all of the directories.
-
-- Clean up the coding standards
-- Make directory class to get all of the different directories...
 
 - Turn logging on/off
     - Be able to have no run directories kept
 
 - Use markdown in the readme
+
 - Rewrite text so that it's performant
-    - Use fontstash for fonts other than the tile distances
-- Put the vertex shader in its own source file
 - Tile distances
     - Should we rename these to tile text???
     - Depending on the maze size, the valid distances will be different - make this the case for the text
@@ -28,12 +28,6 @@ High Pri:
 - Figure out how to get rid of logging error message on fatal
 
 - Maze size requirements and validity
-
-- Put a toolbar at the top or bottom with info
-- Display a clock
-- Make some utility that keeps track of elapse time
-    - Make the sim speed non-arbitrary
-    - Fix the Params associated with discrete sim-speed
 
 - Run-time parameters for the algos
 - Look at Tomasz' maze website
@@ -61,6 +55,7 @@ Med Pri:
     - how many steps
     - ave steps
     - etc.
+- Protect functions that shouldn't be accessed by the algo by checking thread ID
 - Make sure that the mouse fits in the starting square
 - Mouse wheel positive radians per second should be counter-clockwise by convention
 - Algo checklist?
@@ -78,6 +73,8 @@ Med Pri:
 - std::min, std::max is not cross-platform
 - Add a way to set the text color of each tile individually
 - Center the view of the zoomed map to the centroid of the mouse body polygon (this might not be good, but we should try it)
+- Xorg and compiz performance...
+- Kill SimUtilities...
 - Enum parameters?
 - Make some functions available to the algo writers
 - Zoomed map mouse is a bit jumpy when going at high speeds
@@ -109,6 +106,7 @@ bullets in other physics simulators
     - But PRINT and LOG have to be resilient to Param reading failing
 
 Low-pri:
+- Clean up the coding standards
 - VSync so the graphics don't tear
 - Better run number system
 - Update the check_params.py script to make sure that the return type of the
@@ -117,6 +115,7 @@ Low-pri:
 - Detect STL use in maze and mouse algos, send a warning
 - Triangulate polygons upon creation?
 - Map borders
+- Add a simple polygonFragmentShader
 - Inconsistent wall declaration colors (declared wall on one side of wall, declared no wall on other side of wall)
 - Inconsistent wall declaration colors (declared one side of wall but not the other)
 - Perhaps impose memory limits on the algorithm

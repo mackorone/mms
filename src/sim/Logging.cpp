@@ -3,7 +3,7 @@
 #include <cstdio>
 
 #include "Assert.h"
-#include "SimUtilities.h"
+#include "Directory.h"
 
 INITIALIZE_EASYLOGGINGPP
 
@@ -43,8 +43,8 @@ void Logging::initialize(const std::string& runId) {
     const std::string printerName = "printer";
 
     // Set the file paths
-    m_loggerPath = SimUtilities::getProjectDirectory() + "run/" + m_runId + "/log/last.txt";
-    m_printerPath = SimUtilities::getProjectDirectory() + "run/" + m_runId + "/print/last.txt";
+    m_loggerPath = Directory::getRunDirectory() + m_runId + "/log/last.txt";
+    m_printerPath = Directory::getRunDirectory() + m_runId + "/print/last.txt";
 
     // Register and configure the logger
     el::Configurations logConfig;
@@ -81,7 +81,7 @@ std::string Logging::getNextFileName(const char* filename) {
         m_numPrinterFiles += 1;
         path = "/print/" + std::to_string(m_numPrinterFiles) + ".txt";
     }
-    return SimUtilities::getProjectDirectory() + "run/" + m_runId + path;
+    return Directory::getRunDirectory() + m_runId + path;
 }
 
 void Logging::rolloutHandler(const char* filename, std::size_t size) {

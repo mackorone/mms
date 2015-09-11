@@ -8,10 +8,10 @@
 #include "units/Polar.h"
 
 #include "Assert.h"
+#include "Directory.h"
 #include "GeometryUtilities.h"
 #include "MouseParser.h"
 #include "Param.h"
-#include "SimUtilities.h"
 #include "State.h"
 
 namespace sim {
@@ -28,7 +28,7 @@ bool Mouse::initialize(const std::string& mouseFile) {
     // TODO: Just return false - abort...
 
     // Create the mouse parser object
-    MouseParser parser(SimUtilities::getProjectDirectory() + P()->mouseDirectory() + mouseFile);
+    MouseParser parser(Directory::getResMouseDirectory() + mouseFile);
 
     // Initialize the body of the mouse
     m_initialBodyPolygon = parser.getBody();
