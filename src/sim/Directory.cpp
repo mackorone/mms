@@ -14,23 +14,23 @@ std::string Directory::getResDirectory() {
 }
 
 std::string Directory::getResFontsDirectory() {
-    return getProjectDirectory() + "res/fonts/";
+    return getResDirectory() + "fonts/";
 }
 
 std::string Directory::getResMazeDirectory() {
-    return getProjectDirectory() + "res/maze/";
+    return getResDirectory() + "maze/";
 }
 
 std::string Directory::getResMouseDirectory() {
-    return getProjectDirectory() + "res/mouse/";
+    return getResDirectory() + "mouse/";
 }
 
 std::string Directory::getResShadersDirectory() {
-    return getProjectDirectory() + "res/shaders/";
+    return getResDirectory() + "shaders/";
 }
 
 std::string Directory::getResTexturesDirectory() {
-    return getProjectDirectory() + "res/textures/";
+    return getResDirectory() + "textures/";
 }
 
 std::string Directory::getRunDirectory() {

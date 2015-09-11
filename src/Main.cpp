@@ -52,8 +52,8 @@ tdogl::Texture* textureAtlas;
 tdogl::Program* textureProgram;
 GLuint          textureVertexArrayObjectId;
 GLuint          textureVertexBufferObjectId;
-int rows = 32; // TODO: MACK
-int cols = 64; // TODO: MACK
+int rows = 2; // TODO: MACK
+int cols = 3; // TODO: MACK
 
 void bootstrap() {
 

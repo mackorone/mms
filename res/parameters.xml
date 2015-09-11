@@ -51,7 +51,7 @@
 <print-late-sensor-reads>true</print-late-sensor-reads>
 <number-of-circle-approximation-points>8</number-of-circle-approximation-points> <!-- The number of edges in a polygon for a circle -->
 <number-of-sensor-edge-points>3</number-of-sensor-edge-points> <!-- The number of points of the edge of a sensor-->
-<number-of-archived-runs>20</number-of-archived-runs> <!-- The number of runs to keep in the run/ director -->
+<number-of-archived-runs>20</number-of-archived-runs> <!-- The number of runs to keep in the mms/run/ directory -->
 
 <!-- Maze Parameters -->
 <wall-length>0.168</wall-length> <!-- meters -->
