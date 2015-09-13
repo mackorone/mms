@@ -17,20 +17,15 @@ Param* P() {
 }
 
 // Definition of the variable for linking
-Param* Param::INSTANCE = NULL;
+Param* Param::INSTANCE = nullptr;
 Param* Param::getInstance() {
-    if (NULL == INSTANCE) {
+    if (nullptr == INSTANCE) {
         INSTANCE = new Param();
     }
     return INSTANCE;
 }
 
 Param::Param() {
-
-    // Don't use SimUtilities::quit() in this method. Getting simulation
-    // parameters should never cause the simulator to crash, thanks to default
-    // values. Furthermore, calling SimUtilities::quit() causes an infinite
-    // loop. So don't do it.
 
     // Create the parameter parser object
     ParamParser parser(Directory::getResDirectory() + "parameters.xml");

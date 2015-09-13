@@ -27,27 +27,7 @@
 namespace sim {
 
 void SimUtilities::quit() {
-
-    // The reason we don't just call exit() is because sometimes the window
-    // wasn't reclaimed properly. So we use glutLeaveMainLoop, but only after
-    // we've actually entered the main loop.
-
-    if (!S()->mainLoopEntered()) {
-        exit(0);
-    }
-
-    // If we're the main thread, exit the main loop
-    if (std::this_thread::get_id() == S()->mainThreadId()) {
-        // TODO: MACK - get rid of this as a dependency here...
-        glutLeaveMainLoop(); 
-    }
-
-    // If we're not the main thread, just sleep until the program terminates
-    else {
-        while (true) {
-            sleep(Seconds(1)); 
-        }
-    }
+    exit(0);
 }
 
 void SimUtilities::print(const std::string& msg) {
@@ -134,7 +114,6 @@ double SimUtilities::strToDouble(const std::string& str) {
     ASSERT(isDouble(str));
     return std::stof(str);
 }
-
 
 std::vector<std::string> SimUtilities::tokenize(const std::string& str, bool respectQuotes) {
 

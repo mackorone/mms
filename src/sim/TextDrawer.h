@@ -15,7 +15,7 @@ public:
 
     // Note that the TextDrawer may only be instantiated after
     // glutInit is called. Thus, you may not declare it statically.
-    TextDrawer(const std::string& font, float pt);
+    TextDrawer(const std::string& font, float size);
 
     // Using the class is as easy as calling these methods, in order, during
     // the rendering loop. Commence and conclude should only be called once per
@@ -27,7 +27,7 @@ public:
 private:
     sth_stash* m_stash;
     int m_font;
-    float m_pt; // TODO: MACK - Convert pt. to heightInPixels
+    float m_size;
 
     // Only one TextDrawer be active at a time. We use a static
     // class member to ensure that this requirement is upheld.

@@ -1,21 +1,16 @@
 #pragma once
 
 #include <glut/glut.h>
+#include <tdogl/Program.h>
+#include <tdogl/Texture.h>
 
-// Forward declarations
-namespace tdogl {
-    class Program;
-    class Texture;
-}
-namespace sim {
-    class IMouseAlgorithm;
-    class MazeGraphic;
-    class Mouse;
-    class MouseGraphic;
-    class MouseInterface;
-    class TextDrawer;
-    class World;
-}
+#include "../mouse/IMouseAlgorithm.h"
+#include "MazeGraphic.h"
+#include "Mouse.h"
+#include "MouseGraphic.h"
+#include "MouseInterface.h"
+#include "TextDrawer.h"
+#include "World.h"
 
 namespace sim {
 
@@ -32,11 +27,11 @@ public:
 private:
 
     // Simulation objects
-    static Mouse*          m_mouse;
-    static MazeGraphic*    m_mazeGraphic;
-    static MouseGraphic*   m_mouseGraphic;
+    static Mouse* m_mouse;
+    static MazeGraphic* m_mazeGraphic;
+    static MouseGraphic* m_mouseGraphic;
     static MouseInterface* m_mouseInterface;
-    static World*          m_world;
+    static World* m_world;
 
     // Micromouse algorithm object
     static IMouseAlgorithm* m_algorithm;
@@ -46,31 +41,36 @@ private:
 
     // Polygon program variables
     static tdogl::Program* m_polygonProgram;
-    static GLuint          m_polygonVertexArrayObjectId;
-    static GLuint          m_polygonVertexBufferObjectId;
+    static GLuint m_polygonVertexArrayObjectId;
+    static GLuint m_polygonVertexBufferObjectId;
 
     // Texture program variables
     static tdogl::Texture* m_textureAtlas;
     static tdogl::Program* m_textureProgram;
-    static GLuint          m_textureVertexArrayObjectId;
-    static GLuint          m_textureVertexBufferObjectId;
+    static GLuint m_textureVertexArrayObjectId;
+    static GLuint m_textureVertexBufferObjectId;
 
-    // TODO: put some good descriptions here...
+    // Set up logging, State, and Param
     static void bootstrap();
 
+    // Initialize all of the simulation objects
     static void initSimObjects();
 
-    static void LoadTriangle(); // TODO: kill this
+    // TODO: kill this
+    static void LoadTriangle();
 
+    // Callback functions
     static void draw();
     static void keyPress(unsigned char key, int x, int y);
     static void specialKeyPress(int key, int x, int y);
     static void specialKeyRelease(int key, int x, int y);
 
+    // Initialize all of the graphics
     static void initPolygonProgram();
     static void initTextureProgram();
     static void initGraphics(int argc, char* argv[]);
 
+    // Initialize the mouse algorithm
     static void initMouseAlgo();
 };
 

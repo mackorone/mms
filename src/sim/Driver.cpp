@@ -2,38 +2,50 @@
 
 #include <fontstash/fontstash.h>
 #include <tdogl/Bitmap.h>
-#include <tdogl/Program.h>
 #include <tdogl/Shader.h>
-#include <tdogl/Texture.h>
 #include <thread>
 
-#include "../mouse/IMouseAlgorithm.h"
 #include "../mouse/MouseAlgorithms.h"
-
+#include "Assert.h"
 #include "Directory.h"
 #include "GraphicUtilities.h"
 #include "InterfaceType.h"
 #include "Key.h"
 #include "Logging.h"
 #include "Maze.h"
-#include "MazeGraphic.h"
-#include "Mouse.h"
-#include "MouseGraphic.h"
-#include "MouseInterface.h"
 #include "Param.h"
 #include "SimUtilities.h"
 #include "State.h"
-#include "TextDrawer.h"
 #include "TriangleGraphic.h"
 #include "units/Seconds.h"
-#include "World.h"
 
 namespace sim {
+
+// Definition of the static variables for linking
+Mouse* Driver::m_mouse;
+MazeGraphic* Driver::m_mazeGraphic;
+MouseGraphic* Driver::m_mouseGraphic;
+MouseInterface* Driver::m_mouseInterface;
+World* Driver::m_world;
+IMouseAlgorithm* Driver::m_algorithm;
+TextDrawer* Driver::m_textDrawer;
+tdogl::Program* Driver::m_polygonProgram;
+GLuint Driver::m_polygonVertexArrayObjectId;
+GLuint Driver::m_polygonVertexBufferObjectId;
+tdogl::Texture* Driver::m_textureAtlas;
+tdogl::Program* Driver::m_textureProgram;
+GLuint Driver::m_textureVertexArrayObjectId;
+GLuint Driver::m_textureVertexBufferObjectId;
 
 int rows = 2; // TODO: MACK
 int cols = 3; // TODO: MACK
 
 void Driver::drive(int argc, char* argv[]) {
+
+    // Step -1: Make sure that this function is only ever called once
+    static bool alreadyCalled = false;
+    ASSERT(!alreadyCalled);
+    alreadyCalled = true;
 
     // Step 0: Determine the runId, configure logging,
     // and initialize the State and Param objects.
@@ -76,7 +88,6 @@ void Driver::drive(int argc, char* argv[]) {
     });
 
     // Step 6: Start the graphics loop
-    S()->enterMainLoop();
     glutMainLoop();
 }
 
@@ -106,7 +117,7 @@ void Driver::initSimObjects() {
 }
 
 // loads a triangle into the VAO global
-static void Driver::LoadTriangle() {
+void Driver::LoadTriangle() {
 
     // make and bind the VAO
     glGenVertexArrays(1, &m_textureVertexArrayObjectId);
@@ -120,6 +131,7 @@ static void Driver::LoadTriangle() {
     GLfloat vertexData[15 * rows * cols];
     for (int i = 0; i < rows; i += 1) {
         for (int j = 0; j < cols; j += 1) {
+            // TODO: Should only need 20 data points
             vertexData[15*cols*i + 15*j +  0] = (j * 1.0 / float(cols)) * 2 - 1; // X
             vertexData[15*cols*i + 15*j +  1] = (i * 1.0 / float(rows)) * 2 - 1; // Y
             vertexData[15*cols*i + 15*j +  2] = 0.0; // Z
@@ -234,10 +246,11 @@ void Driver::draw() {
     // ----- Drawing the text ----- //
 
     // TODO: MACK - Font-stash drawing
-    textDrawer->commenceDrawingTextForFrame();
+    m_textDrawer->commenceDrawingTextForFrame();
     auto size = GraphicUtilities::getWindowSize();
-    textDrawer->drawText(100, size.second - 100, "In the town where I was born, lived a man: 1234");
-    textDrawer->concludeDrawingTextForFrame();
+    m_textDrawer->drawText(0, 0, "01234");
+    m_textDrawer->drawText(0, 470.0/2.0, "ABCDj");
+    m_textDrawer->concludeDrawingTextForFrame();
 
 #endif
 
@@ -424,7 +437,8 @@ void Driver::initGraphics(int argc, char* argv[]) {
     }
     
     // Initialize the text drawer object // TODO: MACK - get the font from param
-    textDrawer = new TextDrawer("DroidSansMono.ttf", 30.0);
+    // TODO: MACK - If the font doesn't exist, we silently fail and draw no text whatsoever
+    m_textDrawer = new TextDrawer("Hack-Regular.ttf", 470.0 / 2.0);
 
     // Initialize the polygon drawing program
     initPolygonProgram();

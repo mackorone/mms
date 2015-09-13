@@ -3,11 +3,14 @@ High Pri:
 - Check that a font exists, die if not
 - Make font height based on pixels, not pt.
 - Check to make sure font won't be cut off, use ellipses if so
+
 - Put a toolbar at the top or bottom with info
 - Display a clock
 - Make some utility that keeps track of elapse time
     - Make the sim speed non-arbitrary
     - Fix the Params associated with discrete sim-speed
+
+- Set the mouse algo in State
 
 - Make getMouseFile and getInterfaceType static methods
     - Make a getMouseAlgoName method

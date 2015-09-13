@@ -22,8 +22,6 @@ public:
 
     // Accessors
     std::string runId();
-    std::thread::id mainThreadId();
-    bool mainLoopEntered();
     bool crashed();
     InterfaceType interfaceType();
     Layout layout();
@@ -41,7 +39,6 @@ public:
 
     // Mutators
     void setRunId(const std::string& runId);
-    void enterMainLoop();
     void setCrashed();
     void setInterfaceType(InterfaceType interfaceType);
     void setLayout(Layout layout);
@@ -66,8 +63,6 @@ private:
     static State* INSTANCE;
 
     std::string m_runId;
-    std::thread::id m_mainThreadId;
-    bool m_mainLoopEntered;
     bool m_crashed;
     InterfaceType m_interfaceType;
     Layout m_layout;

@@ -22,8 +22,6 @@ State* State::getInstance() {
 
 State::State() {
     m_runId = "";
-    m_mainThreadId = std::this_thread::get_id();
-    m_mainLoopEntered = false;
     m_crashed = false;
     m_interfaceType; // Undefined default value
     m_layout = STRING_TO_LAYOUT.at(P()->defaultLayout());
@@ -46,14 +44,6 @@ State::State() {
 
 std::string State::runId() {
     return m_runId;
-}
-
-std::thread::id State::mainThreadId() {
-    return m_mainThreadId;
-}
-
-bool State::mainLoopEntered() {
-    return m_mainLoopEntered;
 }
 
 bool State::crashed() {
@@ -117,12 +107,6 @@ bool State::arrowKeyIsPressed(Key key) {
 void State::setRunId(const std::string& runId) {
     ASSERT_EQUAL(m_runId, "");
     m_runId = runId;
-}
-
-void State::enterMainLoop() {
-    ASSERT(std::this_thread::get_id() == m_mainThreadId);
-    ASSERT(!m_mainLoopEntered);
-    m_mainLoopEntered = true;
 }
 
 void State::setCrashed() {
