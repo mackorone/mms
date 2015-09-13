@@ -224,7 +224,7 @@ If you need to clean for some reason you can go to Build -> Clean Solution
 Contact
 =======
 
-Questions pertaining to Windows development can be directed to tomaszpi@buffalo.edu
+Questions pertaining to Windows development can be directed to kt49@buffalo.edu and tomaszpi@buffalo.edu. 
 All other questions can be directed to mward4@buffalo.edu
 
 -------------------------------------------------------------------------------
