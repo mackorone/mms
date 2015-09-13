@@ -1,6 +1,6 @@
-#include "Degrees.h"
+#include <CrossPlatformMath.h>
 
-#include <cmath>
+#include "Degrees.h"
 
 namespace sim {
 

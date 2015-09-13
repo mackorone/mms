@@ -1,6 +1,7 @@
+#include <CrossPlatformMath.h>
+
 #include "Wheel.h"
 
-#include <cmath>
 
 namespace sim {
 

@@ -1,6 +1,7 @@
+#include <CrossPlatformMath.h>
+
 #include "Continuous.h"
 
-#include <cmath>
 #include <iostream>
 namespace continuous {
 

@@ -6,15 +6,23 @@
 #include "Logging.h"
 #include "SimUtilities.h"
 
+#undef max // Needed for Windows compatibility
+#undef min // Needed for Windows compatibility
+
 namespace sim {
 
 ParamParser::ParamParser(const std::string& filePath) {
     m_fileIsReadable = m_doc.load_file(filePath.c_str());
     if (!m_fileIsReadable) {
-        PRINT(ERROR,
-            "Unable to read parameters from \"%v\": %v. "
-            "Using default values for all parameters.",
-            filePath, m_fileIsReadable.description());
+		#if defined (_WIN32)
+
+		#else
+			PRINT(ERROR,
+				"Unable to read parameters from \"%v\": %v. "
+				"Using default values for all parameters.",
+				filePath, m_fileIsReadable.description());
+
+		#endif
     }
 }
 
@@ -120,34 +128,51 @@ std::string ParamParser::getStringIfHasStringAndIsLayout(const std::string& tag,
 
 void ParamParser::printTagNotFound(const std::string& type, const std::string& tag, const std::string& defaultValue) {
     if (m_fileIsReadable) {
-        PRINT(WARN,
-            "Could not find %v parameter \"%v\". Using default value of %v.",
-            type, tag, defaultValue);
+		#if defined (_WIN32)
+
+		#else
+			PRINT(WARN,
+				"Could not find %v parameter \"%v\". Using default value of %v.",
+				type, tag, defaultValue);
+			
+		#endif
     }
 }
 
 void ParamParser::printLessThan(const std::string& type, const std::string& tag, const std::string& value,
     const std::string& defaultValue, const std::string& min) {
-    PRINT(WARN,
-        "The value of the %v parameter \"%v\" is %v and is less than "
-        "the minimum allowed value of %v. Using default value of %v.",
-        type, tag, value, min, defaultValue);
+		#if defined (_WIN32)
+	
+		#else
+			PRINT(WARN,
+				"The value of the %v parameter \"%v\" is %v and is less than "
+				"the minimum allowed value of %v. Using default value of %v.",
+				type, tag, value, min, defaultValue);
+		#endif
 }
 
 void ParamParser::printGreaterThan(const std::string& type, const std::string& tag, const std::string& value,
     const std::string& defaultValue, const std::string& max) {
-    PRINT(WARN,
-        "The value of the %v parameter \"%v\" is %v and is greater than "
-        "the maximum allowed value of %v. Using default value of %v.",
-        type, tag, value, max, defaultValue);
+		#if defined (_WIN32)
+		
+		#else
+			PRINT(WARN,
+				"The value of the %v parameter \"%v\" is %v and is greater than "
+				"the maximum allowed value of %v. Using default value of %v.",
+				type, tag, value, max, defaultValue);	
+		#endif
 }
 
 void ParamParser::printNotSpecialString(const std::string& type, const std::string& tag,
     const std::string& value, const std::string& defaultValue) {
-    PRINT(WARN,
-        "The value of string parameter \"%v\" is \"%v\" and is "
-        "not a valid %v. Using default value of \"%v\".",
-        tag, value, type, defaultValue);
+		#if defined (_WIN32)
+
+		#else
+			PRINT(WARN,
+				"The value of string parameter \"%v\" is \"%v\" and is "
+				"not a valid %v. Using default value of \"%v\".",
+				tag, value, type, defaultValue);
+		#endif
 }
 
 }; // namespace sim

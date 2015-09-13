@@ -7,7 +7,6 @@
 #include <tdogl/Shader.h>
 #include <tdogl/Texture.h>
 
-#include "mouse/IMouseAlgorithm.h"
 #include "mouse/MouseAlgorithms.h"
 #include "sim/GraphicUtilities.h"
 #include "sim/InterfaceType.h"
@@ -64,8 +63,8 @@ GLuint gVAO = 0;
 GLuint gVAO2 = 0;
 GLuint gVBO = 0;
 
-int rows = 2; // TODO: MACK
-int cols = 3; // TODO: MACK
+const int rows = 2; // TODO: MACK
+const int cols = 3; // TODO: MACK
 
 // loads the vertex shader and fragment shader, and links them to make the global textureProgram
 static void LoadShaders() {
@@ -292,7 +291,7 @@ void draw() {
 
     // Display the result
     glutSwapBuffers();
-
+	
     // Get the duration of the drawing operation, in seconds. Note that this duration
     // is simply the total number of real seconds that have passed, which is exactly
     // what we want (since the frame-rate is perceived in real-time and not CPU time).
@@ -301,10 +300,14 @@ void draw() {
 
     // Notify the user of a late frame
     if (duration > 1.0/sim::P()->frameRate()) {
-        IF_PRINT_ELSE_LOG(sim::P()->printLateFrames(), WARN,
-            "A frame was late by %v seconds, which is %v percent late.",
-            duration - 1.0/sim::P()->frameRate(),
-            (duration - 1.0/sim::P()->frameRate())/(1.0/sim::P()->frameRate()) * 100);
+		#if defined (_WIN32)
+
+		#else
+			IF_PRINT_ELSE_LOG(sim::P()->printLateFrames(), WARN,
+				"A frame was late by %v seconds, which is %v percent late.",
+				duration - 1.0/sim::P()->frameRate(),
+				(duration - 1.0/sim::P()->frameRate())/(1.0/sim::P()->frameRate()) * 100);
+		#endif
     }
 
     // Sleep the appropriate amount of time, base on the drawing duration
@@ -511,8 +514,12 @@ void initMouseAlgo() {
     // First, check to ensure that the mouse algorithm is valid
     if (!MouseAlgorithms::isMouseAlgorithm(sim::P()->mouseAlgorithm())) {
         // TODO: MACK - make a note about the file where it needs to be declared
-        PRINT(ERROR, "\"%v\" is not a valid mouse algorithm.",
-            sim::P()->mouseAlgorithm());
+		#if defined (_WIN32)
+
+		#else
+			PRINT(ERROR, "\"%v\" is not a valid mouse algorithm.",
+				sim::P()->mouseAlgorithm());
+		#endif
         sim::SimUtilities::quit();
     }
     g_algorithm = MouseAlgorithms::getMouseAlgorithm(sim::P()->mouseAlgorithm());
@@ -521,24 +528,32 @@ void initMouseAlgo() {
     std::string mouseFile = g_algorithm->mouseFile();
     bool success = g_mouse->initialize(mouseFile);
     if (!success) {
-        PRINT(ERROR,
-            "Unable to successfully initialize the mouse in the algorithm "
-            "\"%v\" from \"%v\".",
-            sim::P()->mouseAlgorithm(),
-            mouseFile);
+		#if defined (_WIN32)
+
+		#else
+			PRINT(ERROR,
+				"Unable to successfully initialize the mouse in the algorithm "
+				"\"%v\" from \"%v\".",
+				sim::P()->mouseAlgorithm(),
+				mouseFile);
+		#endif
         sim::SimUtilities::quit();
     }
 
     // Initialize the interface type
     if (!sim::SimUtilities::mapContains(sim::STRING_TO_INTERFACE_TYPE, g_algorithm->interfaceType())) {
-        PRINT(ERROR,
-            "\"%v\" is not a valid interface type. You must declare the "
-            "interface type of the mouse algorithm \"%v\" to be either \"%v\" "
-            "or \"%v\".",
-            g_algorithm->interfaceType(),
-            sim::P()->mouseAlgorithm(),
-            sim::INTERFACE_TYPE_TO_STRING.at(sim::InterfaceType::DISCRETE),
-            sim::INTERFACE_TYPE_TO_STRING.at(sim::InterfaceType::CONTINUOUS));
+		#if defined (_WIN32)
+
+		#else
+		PRINT(ERROR,
+			"\"%v\" is not a valid interface type. You must declare the "
+			"interface type of the mouse algorithm \"%v\" to be either \"%v\" "
+			"or \"%v\".",
+			g_algorithm->interfaceType(),
+			sim::P()->mouseAlgorithm(),
+			sim::INTERFACE_TYPE_TO_STRING.at(sim::InterfaceType::DISCRETE),
+			sim::INTERFACE_TYPE_TO_STRING.at(sim::InterfaceType::CONTINUOUS));
+		#endif
         sim::SimUtilities::quit();
     }
     sim::S()->setInterfaceType(sim::STRING_TO_INTERFACE_TYPE.at(g_algorithm->interfaceType()));

@@ -1,7 +1,8 @@
+#include <CrossPlatformMath.h>
+
 #include "Sensor.h"
 
 #include <algorithm>
-#include <cmath>
 
 #include "units/Polar.h"
 

@@ -60,7 +60,7 @@
 <enforce-official-maze-rules>false</enforce-official-maze-rules>
 <maze-directory>res/maze/</maze-directory> <!-- relative to project root -->
 <maze-file>longpath.maz</maze-file> <!-- relative to maze-directory -->
-<use-maze-file>false</use-maze-file> <!-- whether or not to use the maze file above -->
+<use-maze-file>true</use-maze-file> <!-- whether or not to use the maze file above -->
 <generated-maze-width>16</generated-maze-width> <!-- number of tiles -->
 <generated-maze-height>16</generated-maze-height> <!-- number of tiles -->
 <maze-algorithm>Tomasz</maze-algorithm> <!-- The name as specified in src/maze/MazeAlgorithms.cpp -->

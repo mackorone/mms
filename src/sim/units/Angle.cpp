@@ -1,6 +1,6 @@
-#include "Angle.h"
+#include <CrossPlatformMath.h>
 
-#include <cmath>
+#include "Angle.h"
 
 namespace sim {
 
