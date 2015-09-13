@@ -2,12 +2,12 @@
 
 attribute vec2 coordinate;
 attribute vec2 textureCoordinate;
-//uniform mat4 transformationMatrix;
+uniform mat4 transformationMatrix;
 
-// TODO...
+// TODO: MACK - clean this up
 varying vec2 fragTexCoord;
 
 void main() {
-    gl_Position = /*transformationMatrix */ vec4(coordinate, 0.0, 1.0);
+    gl_Position = transformationMatrix * vec4(coordinate, 0.0, 1.0);
     fragTexCoord = textureCoordinate;
 }

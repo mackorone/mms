@@ -37,8 +37,8 @@ tdogl::Program* Driver::m_textureProgram;
 GLuint Driver::m_textureVertexArrayObjectId;
 GLuint Driver::m_textureVertexBufferObjectId;
 
-int rows = 2; // TODO: MACK
-int cols = 3; // TODO: MACK
+int rows = 32; // TODO: MACK
+int cols = 64; // TODO: MACK
 
 void Driver::drive(int argc, char* argv[]) {
 
@@ -135,38 +135,38 @@ void Driver::LoadTriangle() {
             // TODO: Should only need 16 vertices. Repeat somehow...
 
             // Lower left
-            vertexData[24*cols*i + 24*j +  0] = (j * 1.0 / float(cols)) * 2 - 1; // X
-            vertexData[24*cols*i + 24*j +  1] = (i * 1.0 / float(rows)) * 2 - 1; // Y
+            vertexData[24*cols*i + 24*j +  0] = (j * 3.0 / float(cols)); // X
+            vertexData[24*cols*i + 24*j +  1] = (i * 3.0 / float(rows)); // Y
             vertexData[24*cols*i + 24*j +  2] = 0.0; // U
             vertexData[24*cols*i + 24*j +  3] = 0.0; // V
 
             // Upper left
-            vertexData[24*cols*i + 24*j +  4] = (j * 1.0 / float(cols)) * 2 - 1; // X
-            vertexData[24*cols*i + 24*j +  5] = ((i + 1) * 1.0 / float(rows)) * 2 - 1; // Y
+            vertexData[24*cols*i + 24*j +  4] = (j * 3.0 / float(cols)); // X
+            vertexData[24*cols*i + 24*j +  5] = ((i + 1) * 3.0 / float(rows)); // Y
             vertexData[24*cols*i + 24*j +  6] = 0.0; // U
             vertexData[24*cols*i + 24*j +  7] = 1.0; // V
 
             // Upper right
-            vertexData[24*cols*i + 24*j +  8] = ((j + 1) * 1.0 / float(cols)) * 2 - 1; // X
-            vertexData[24*cols*i + 24*j +  9] = ((i + 1) * 1.0 / float(rows)) * 2 - 1; // Y
+            vertexData[24*cols*i + 24*j +  8] = ((j + 1) * 3.0 / float(cols)); // X
+            vertexData[24*cols*i + 24*j +  9] = ((i + 1) * 3.0 / float(rows)); // Y
             vertexData[24*cols*i + 24*j + 10] = 1.0; // U
             vertexData[24*cols*i + 24*j + 11] = 1.0; // V
 
             // Lower left
-            vertexData[24*cols*i + 24*j + 12] = (j * 1.0 / float(cols)) * 2 - 1; // X
-            vertexData[24*cols*i + 24*j + 13] = (i * 1.0 / float(rows)) * 2 - 1; // Y
+            vertexData[24*cols*i + 24*j + 12] = (j * 3.0 / float(cols)); // X
+            vertexData[24*cols*i + 24*j + 13] = (i * 3.0 / float(rows)); // Y
             vertexData[24*cols*i + 24*j + 14] = 0.0; // U
             vertexData[24*cols*i + 24*j + 15] = 0.0; // V
 
             // Upper right
-            vertexData[24*cols*i + 24*j + 16] = ((j + 1) * 1.0 / float(cols)) * 2 - 1; // X
-            vertexData[24*cols*i + 24*j + 17] = ((i + 1) * 1.0 / float(rows)) * 2 - 1; // Y
+            vertexData[24*cols*i + 24*j + 16] = ((j + 1) * 3.0 / float(cols)); // X
+            vertexData[24*cols*i + 24*j + 17] = ((i + 1) * 3.0 / float(rows)); // Y
             vertexData[24*cols*i + 24*j + 18] = 1.0; // U
             vertexData[24*cols*i + 24*j + 19] = 1.0; // V
 
             // Lower right
-            vertexData[24*cols*i + 24*j + 20] = ((j + 1) * 1.0 / float(cols)) * 2 - 1; // X
-            vertexData[24*cols*i + 24*j + 21] = (i * 1.0 / float(rows)) * 2 - 1; // Y
+            vertexData[24*cols*i + 24*j + 20] = ((j + 1) * 3.0 / float(cols)); // X
+            vertexData[24*cols*i + 24*j + 21] = (i * 3.0 / float(rows)); // Y
             vertexData[24*cols*i + 24*j + 22] = 1.0; // U
             vertexData[24*cols*i + 24*j + 23] = 0.0; // V
         }
@@ -205,10 +205,10 @@ void Driver::draw() {
     // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // ----- Drawing the polygons ----- //
-
     // Enable scissoring so that the maps are only draw in specified locations
     glEnable(GL_SCISSOR_TEST);
+
+    // ----- Drawing the polygons ----- //
 
     // Enable the program and vertex array object
     m_polygonProgram->use();
@@ -242,9 +242,6 @@ void Driver::draw() {
     glBindVertexArray(0);
     m_polygonProgram->stopUsing();
 
-    // We disable scissoring so that the glClear can take effect
-    glDisable(GL_SCISSOR_TEST);
-
     // ----- Drawing the textures ----- //
 
 // TODO: MACK
@@ -260,7 +257,16 @@ void Driver::draw() {
     
     // Render the texture
     m_textureProgram->setUniform("tex", 0); //set to 0 because the texture is bound to GL_TEXTURE0
-    glDrawArrays(GL_TRIANGLES, 0, 15 * rows * cols);
+    glScissor(fullMapPosition.first, fullMapPosition.second, fullMapSize.first, fullMapSize.second);
+    m_textureProgram->setUniformMatrix4("transformationMatrix",
+        &GraphicUtilities::getFullMapTransformationMatrix().front(), 1, GL_TRUE);
+    glDrawArrays(GL_TRIANGLES, 0, 24 * rows * cols);
+
+    glScissor(zoomedMapPosition.first, zoomedMapPosition.second, zoomedMapSize.first, zoomedMapSize.second);
+    m_textureProgram->setUniformMatrix4("transformationMatrix",
+        &GraphicUtilities::getZoomedMapTransformationMatrix(
+        m_mouse->getInitialTranslation(), m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation()).front(), 1, GL_TRUE);
+    glDrawArrays(GL_TRIANGLES, 0, 24 * rows * cols);
     
     // Unbind the program and both the vertex array object and vertex buffer object
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -277,6 +283,9 @@ void Driver::draw() {
     //m_textDrawer->drawText(0, 0, "01234");
     //m_textDrawer->drawText(0, 470.0/2.0, "ABCDj");
     m_textDrawer->concludeDrawingTextForFrame();
+
+    // We disable scissoring so that the glClear can take effect
+    glDisable(GL_SCISSOR_TEST);
 
     // Display the result
     glutSwapBuffers();
