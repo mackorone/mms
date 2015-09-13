@@ -52,7 +52,7 @@ a project in Visual Studio.  To do this automatically:
    
     Hit Next
 
-4)  Make sure 'Use Visual Studio' is check
+4)  Make sure 'Use Visual Studio' is checked
     and under 'Project Type' it says 'Console Application Project'.
     Nothing else should be checked
 
@@ -68,9 +68,13 @@ a project in Visual Studio.  To do this automatically:
     folders within the freeglut and GLEW folders you downloaded earlier, along
     with the GL folder within the include folder for GLEW, and the lib folder within /src.
     For me it looks like this:
+	
     C:\Users\Kyle\Desktop\openGL\glew-1.11.0\include\GL
+	
     C:\Users\Kyle\Documents\GitHub\mms\src\lib
+	
     C:\Users\Kyle\Desktop\openGL\glew-1.11.0\include
+	
     C:\Users\Kyle\Desktop\openGL\freeglut\include
    
 9)  Under C/C++ - Output Files - Object File Name: Enter '$(IntDir)/%(RelativeDir)/
@@ -78,11 +82,15 @@ a project in Visual Studio.  To do this automatically:
 10) Under Linker - General - Additional Library Directories: Add the lib folders
     within the freeglut and GLEW folders.  
 	For me it looks like this:
+	
 	C:\Users\Kyle\Desktop\openGL\glew-1.11.0\lib
+	
 	C:\Users\Kyle\Desktop\openGL\freeglut\include
 	
 11) Under Linker - Input: Add the following:
+
 	freeglut.lib
+	
 	glew32.lib
 	
 12) In the 'Solution Explorer' right click 'Resource Files' and select 
