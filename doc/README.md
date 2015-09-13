@@ -21,48 +21,78 @@ sudo apt-get install g++ freeglut3-dev libglew-dev
 Windows Requirements
 ====================
 
-Install freeglut
-----------------
+Download freeglut and GLEW
+--------------------------
 See http://www.cs.uregina.ca/Links/class-info/390AN/WWW/Lab1/GLUT/windows.html
-NOTE: You do not need to install glew.  You only need to follow the first section
+Unzip them and place them wherever you desire.
 
 Setting up Visual Studio Project
 --------------------------------
-NOTE: These instructions were written for VS 2013 Profesional.
+NOTE: These instructions were written for VS 2015
 
-Once freeglut is installed as per the above instruction you will want to create
+Once freeglut and GLEW are downloaded as per the above instruction you will want to create
 a project in Visual Studio.  To do this automatically:
 
-1) Open VS and select: File -> New -> Project From Existing Code
+1)  Open VS and select: File -> New -> Project From Existing Code
 
-2) Select Visual C++ from the dropdown and hit Next
+2)  Select Visual C++ from the dropdown and hit Next
 
-3) Enter the following options on the subsequent screen
+3)  Enter the following options on the subsequent screen
 
-   Project file location - The path to INSIDE the /src folder
+    Project file location - The path to INSIDE the /src folder
         (ex. D:\Users\Tomasz\Documents\GitHub\mms\src)
 
-   Project name - The name you wish the project to have (ex. MMS)
+    Project name - The name you wish the project to have (ex. MMS)
 
-   Add files to the project from these folder - Unimportant
+    Add files to the project from these folder - Leave Default
 
-   File types to add to the project - Leave Default
+    File types to add to the project - Leave Default
 
-   Show all files in Solution Explorer - Checked
+    Show all files in Solution Explorer - Checked
+   
+    Hit Next
 
-4) In the subsequent screen make sure 'Use Visual Studio' is check
-   and under 'Project Type' it says 'Console Application Proejct'.
-   Nothing else should be checked
+4)  Make sure 'Use Visual Studio' is check
+    and under 'Project Type' it says 'Console Application Project'.
+    Nothing else should be checked
 
-5) Hit Finish and Visual Studio will assemble the project for you
+5)  Hit Finish and Visual Studio will assemble the project for you
 
-6) *Encouraged* - Check 'Show all Files' under the 'Project' menu
-   this will make the 'Solution Explorer' pane mirror the directory structure
+6)  *Encouraged* - Check 'Show all Files' under the 'Project' menu
+    this will make the 'Solution Explorer' pane mirror the directory structure
+   
+7)  In the 'Solution Explorer' right click the project file 
+    (should be the second from the top) and select 'Properties'.
 
-7) To build the project select Build -> Build Solution or just run it and you will
+8)  Under C/C++ - General - Additional Include Directories: Add the include 
+    folders within the freeglut and GLEW folders you downloaded earlier, along
+    with the GL folder within the include folder for GLEW, and the lib folder within /src.
+    For me it looks like this:
+    C:\Users\Kyle\Desktop\openGL\glew-1.11.0\include\GL
+    C:\Users\Kyle\Documents\GitHub\mms\src\lib
+    C:\Users\Kyle\Desktop\openGL\glew-1.11.0\include
+    C:\Users\Kyle\Desktop\openGL\freeglut\include
+   
+9)  Under C/C++ - Output Files - Object File Name: Enter '$(IntDir)/%(RelativeDir)/
+
+10) Under Linker - General - Additional Library Directories: Add the lib folders
+    within the freeglut and GLEW folders.  
+	For me it looks like this:
+	C:\Users\Kyle\Desktop\openGL\glew-1.11.0\lib
+	C:\Users\Kyle\Desktop\openGL\freeglut\include
+	
+11) Under Linker - Input: Add the following:
+	freeglut.lib
+	glew32.lib
+	
+12) In the 'Solution Explorer' right click 'Resource Files' and select 
+	Add -> Existing Item.  Select mms\res\parameters.xml.  This allows
+	for easy access to the parameters file.
+
+13) To build the project select Build -> Build Solution or just run it and you will
    be prompted if you want to build the changed project
 
-8) To run the program select Debug -> Run Without Debugging
+14) To run the program select Debug -> Start Without Debugging
 
 -------------------------------------------------------------------------------
 
