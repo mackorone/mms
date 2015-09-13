@@ -15,7 +15,9 @@
 namespace sim {
 
 // Here we have to explicity create the TGB, since we only declared it in the header
+// TODO: MACK - Documentation here
 std::vector<TriangleGraphic> GraphicUtilities::TGB;
+std::vector<TriangleGraphic> GraphicUtilities::TEXTURE_CPU_BUFFER; // TODO: MACK
 
 int GraphicUtilities::m_windowWidth = 0;
 int GraphicUtilities::m_windowHeight = 0;
@@ -52,7 +54,7 @@ std::pair<int, int> GraphicUtilities::getZoomedMapPosition() {
 
 std::pair<int, int> GraphicUtilities::getFullMapSize() {
     int width = m_windowWidth - 2 * P()->windowBorderWidth();
-    int height = m_windowHeight - 2 * P()->windowBorderWidth();
+    int height = m_windowHeight - 2 * P()->windowBorderWidth() - 100; // TODO: MACK - add an info panel
     if (S()->layout() == Layout::ZOOMED) {
         width = 0;
     }
@@ -64,7 +66,7 @@ std::pair<int, int> GraphicUtilities::getFullMapSize() {
 
 std::pair<int, int> GraphicUtilities::getZoomedMapSize() {
     int width = m_windowWidth - 2 * P()->windowBorderWidth();
-    int height = m_windowHeight - 2 * P()->windowBorderWidth();
+    int height = m_windowHeight - 2 * P()->windowBorderWidth() - 100; // TODO: MACK - add an info panel
     if (S()->layout() == Layout::FULL) {
         width = 0;
     }

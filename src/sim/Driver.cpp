@@ -127,37 +127,61 @@ void Driver::LoadTriangle() {
     glGenBuffers(1, &m_textureVertexBufferObjectId);
     glBindBuffer(GL_ARRAY_BUFFER, m_textureVertexBufferObjectId);
 
-    // Put the three triangle vertices (XYZ) and texture coordinates (UV) into the VBO
-    GLfloat vertexData[15 * rows * cols];
+    // Put the triangle vertices (XYZ) and texture coordinates (UV) into the VBO
+    GLfloat vertexData[24 * rows * cols];
     for (int i = 0; i < rows; i += 1) {
         for (int j = 0; j < cols; j += 1) {
-            // TODO: Should only need 20 data points
-            vertexData[15*cols*i + 15*j +  0] = (j * 1.0 / float(cols)) * 2 - 1; // X
-            vertexData[15*cols*i + 15*j +  1] = (i * 1.0 / float(rows)) * 2 - 1; // Y
-            vertexData[15*cols*i + 15*j +  2] = 0.0; // Z
-            vertexData[15*cols*i + 15*j +  3] = 0.5; // U
-            vertexData[15*cols*i + 15*j +  4] = 1.0; // V
-            vertexData[15*cols*i + 15*j +  5] = (j * 1.0 / float(cols) + 0.5 / float(cols)) * 2 - 1; // X
-            vertexData[15*cols*i + 15*j +  6] = ((i + 1) * 1.0 / float(rows)) * 2 - 1; // Y
-            vertexData[15*cols*i + 15*j +  7] = 0.0; // Z
-            vertexData[15*cols*i + 15*j +  8] = 0.0; // U
-            vertexData[15*cols*i + 15*j +  9] = 0.0; // V
-            vertexData[15*cols*i + 15*j + 10] = ((j + 1) * 1.0 / float(cols)) * 2 - 1; // X
-            vertexData[15*cols*i + 15*j + 11] = (i * 1.0 / float(rows)) * 2 - 1; // Y
-            vertexData[15*cols*i + 15*j + 12] = 0.0; // Z
-            vertexData[15*cols*i + 15*j + 13] = 1.0; // U
-            vertexData[15*cols*i + 15*j + 14] = 0.0; // V
+
+            // TODO: Should only need 16 vertices. Repeat somehow...
+
+            // Lower left
+            vertexData[24*cols*i + 24*j +  0] = (j * 1.0 / float(cols)) * 2 - 1; // X
+            vertexData[24*cols*i + 24*j +  1] = (i * 1.0 / float(rows)) * 2 - 1; // Y
+            vertexData[24*cols*i + 24*j +  2] = 0.0; // U
+            vertexData[24*cols*i + 24*j +  3] = 0.0; // V
+
+            // Upper left
+            vertexData[24*cols*i + 24*j +  4] = (j * 1.0 / float(cols)) * 2 - 1; // X
+            vertexData[24*cols*i + 24*j +  5] = ((i + 1) * 1.0 / float(rows)) * 2 - 1; // Y
+            vertexData[24*cols*i + 24*j +  6] = 0.0; // U
+            vertexData[24*cols*i + 24*j +  7] = 1.0; // V
+
+            // Upper right
+            vertexData[24*cols*i + 24*j +  8] = ((j + 1) * 1.0 / float(cols)) * 2 - 1; // X
+            vertexData[24*cols*i + 24*j +  9] = ((i + 1) * 1.0 / float(rows)) * 2 - 1; // Y
+            vertexData[24*cols*i + 24*j + 10] = 1.0; // U
+            vertexData[24*cols*i + 24*j + 11] = 1.0; // V
+
+            // Lower left
+            vertexData[24*cols*i + 24*j + 12] = (j * 1.0 / float(cols)) * 2 - 1; // X
+            vertexData[24*cols*i + 24*j + 13] = (i * 1.0 / float(rows)) * 2 - 1; // Y
+            vertexData[24*cols*i + 24*j + 14] = 0.0; // U
+            vertexData[24*cols*i + 24*j + 15] = 0.0; // V
+
+            // Upper right
+            vertexData[24*cols*i + 24*j + 16] = ((j + 1) * 1.0 / float(cols)) * 2 - 1; // X
+            vertexData[24*cols*i + 24*j + 17] = ((i + 1) * 1.0 / float(rows)) * 2 - 1; // Y
+            vertexData[24*cols*i + 24*j + 18] = 1.0; // U
+            vertexData[24*cols*i + 24*j + 19] = 1.0; // V
+
+            // Lower right
+            vertexData[24*cols*i + 24*j + 20] = ((j + 1) * 1.0 / float(cols)) * 2 - 1; // X
+            vertexData[24*cols*i + 24*j + 21] = (i * 1.0 / float(rows)) * 2 - 1; // Y
+            vertexData[24*cols*i + 24*j + 22] = 1.0; // U
+            vertexData[24*cols*i + 24*j + 23] = 0.0; // V
         }
     }
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
 
+    // TODO: MACK - should only need 16 data points... figure out how to repeat this...
+
     // connect the xyz to the "vert" attribute of the vertex shader
-    glEnableVertexAttribArray(m_textureProgram->attrib("vert"));
-    glVertexAttribPointer(m_textureProgram->attrib("vert"), 3, GL_FLOAT, GL_FALSE, 5*sizeof(GLfloat), NULL);
+    glEnableVertexAttribArray(m_textureProgram->attrib("coordinate"));
+    glVertexAttribPointer(m_textureProgram->attrib("coordinate"), 2, GL_FLOAT, GL_FALSE, 4*sizeof(GLfloat), NULL);
         
     // connect the uv coords to the "vertTexCoord" attribute of the vertex shader
-    glEnableVertexAttribArray(m_textureProgram->attrib("vertTexCoord"));
-    glVertexAttribPointer(m_textureProgram->attrib("vertTexCoord"), 2, GL_FLOAT, GL_TRUE,  5*sizeof(GLfloat), (const GLvoid*)(3 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(m_textureProgram->attrib("textureCoordinate"));
+    glVertexAttribPointer(m_textureProgram->attrib("textureCoordinate"), 2, GL_FLOAT, GL_TRUE,  4*sizeof(GLfloat), (const GLvoid*)(2 * sizeof(GLfloat)));
 
     // unbind the VAO
     glBindVertexArray(0);
@@ -243,16 +267,16 @@ void Driver::draw() {
     glBindVertexArray(0);
     m_textureProgram->stopUsing();
 
+#endif
+
     // ----- Drawing the text ----- //
 
     // TODO: MACK - Font-stash drawing
     m_textDrawer->commenceDrawingTextForFrame();
     auto size = GraphicUtilities::getWindowSize();
-    m_textDrawer->drawText(0, 0, "01234");
-    m_textDrawer->drawText(0, 470.0/2.0, "ABCDj");
+    //m_textDrawer->drawText(0, 0, "01234");
+    //m_textDrawer->drawText(0, 470.0/2.0, "ABCDj");
     m_textDrawer->concludeDrawingTextForFrame();
-
-#endif
 
     // Display the result
     glutSwapBuffers();

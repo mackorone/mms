@@ -1,13 +1,13 @@
 #version 130
 
-attribute vec3 vert;
-attribute vec2 vertTexCoord;
+attribute vec2 coordinate;
+attribute vec2 textureCoordinate;
+//uniform mat4 transformationMatrix;
 
+// TODO...
 varying vec2 fragTexCoord;
 
 void main() {
-    // Pass the tex coord straight through to the fragment shader
-    fragTexCoord = vertTexCoord;
-    
-    gl_Position = vec4(vert, 1);
+    gl_Position = /*transformationMatrix */ vec4(coordinate, 0.0, 1.0);
+    fragTexCoord = textureCoordinate;
 }

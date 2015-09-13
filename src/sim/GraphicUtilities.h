@@ -16,8 +16,10 @@ public:
     // The GraphicUtilities class is not constructible.
     GraphicUtilities() = delete;
 
+    // TODO: MACK - Is this the best design??? Triangle Graphic and Triangle Texture
     // The big, CPU-side triangle graphics buffer
     static std::vector<TriangleGraphic> TGB;
+    static std::vector<TriangleGraphic> TEXTURE_CPU_BUFFER; // Triangle texture buffer // TODO: MACK
 
     // Get and set the window size, in pixels
     static std::pair<int, int> getWindowSize();
