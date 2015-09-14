@@ -1,8 +1,8 @@
 #version 130
 
-uniform sampler2D tex;
-varying vec2 fragTexCoord; // TODO: MACK - Clean this up
+uniform sampler2D _texture;
+varying vec2 _textureCoordinate;
 
 void main() {
-    gl_FragColor = texture(tex, fragTexCoord);
+    gl_FragColor = texture(_texture, _textureCoordinate);
 }

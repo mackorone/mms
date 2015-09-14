@@ -6,6 +6,7 @@
 #include "Direction.h"
 #include "Polygon.h"
 #include "TriangleGraphic.h"
+#include "TriangleTexture.h"
 
 namespace sim {
 
@@ -16,10 +17,9 @@ public:
     // The GraphicUtilities class is not constructible.
     GraphicUtilities() = delete;
 
-    // TODO: MACK - Is this the best design??? Triangle Graphic and Triangle Texture
-    // The big, CPU-side triangle graphics buffer
-    static std::vector<TriangleGraphic> TGB;
-    static std::vector<TriangleGraphic> TEXTURE_CPU_BUFFER; // Triangle texture buffer // TODO: MACK
+    // CPU-side buffers
+    static std::vector<TriangleGraphic> GRAPHIC_CPU_BUFFER;
+    static std::vector<TriangleTexture> TEXTURE_CPU_BUFFER;
 
     // Get and set the window size, in pixels
     static std::pair<int, int> getWindowSize();
@@ -83,7 +83,7 @@ private:
     // Converts a polygon to a vector of triangle graphics
     static std::vector<TriangleGraphic> polygonToTriangleGraphics(const Polygon& polygon, Color color, float alpha);
 
-    // Retrieve the indices into the TGB for each specific type of Tile triangle
+    // Retrieve the indices into the GRAPHIC_CPU_BUFFER for each specific type of Tile triangle
     static int trianglesPerTile();
     static int getTileGraphicBaseStartingIndex(int x, int y);
     static int getTileGraphicWallStartingIndex(int x, int y, Direction direction);

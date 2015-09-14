@@ -14,10 +14,8 @@
 
 namespace sim {
 
-// Here we have to explicity create the TGB, since we only declared it in the header
-// TODO: MACK - Documentation here
-std::vector<TriangleGraphic> GraphicUtilities::TGB;
-std::vector<TriangleGraphic> GraphicUtilities::TEXTURE_CPU_BUFFER; // TODO: MACK
+std::vector<TriangleGraphic> GraphicUtilities::GRAPHIC_CPU_BUFFER;
+std::vector<TriangleTexture> GraphicUtilities::TEXTURE_CPU_BUFFER;
 
 int GraphicUtilities::m_windowWidth = 0;
 int GraphicUtilities::m_windowHeight = 0;
@@ -284,7 +282,7 @@ std::vector<float> GraphicUtilities::getZoomedMapTransformationMatrix(const Coor
 void GraphicUtilities::drawTileGraphicBase(int x, int y, const Polygon& polygon, Color color) {
     std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, 1.0);
     for (int i = 0; i < tgs.size(); i += 1) {
-        TGB.push_back(tgs.at(i));
+        GRAPHIC_CPU_BUFFER.push_back(tgs.at(i));
     }
 }
 
@@ -292,7 +290,7 @@ void GraphicUtilities::drawTileGraphicWall(int x, int y, Direction direction, co
         Color color, float alpha) {
     std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, alpha);
     for (int i = 0; i < tgs.size(); i += 1) {
-        TGB.push_back(tgs.at(i));
+        GRAPHIC_CPU_BUFFER.push_back(tgs.at(i));
     }
 }
 
@@ -300,7 +298,7 @@ void GraphicUtilities::drawTileGraphicCorner(int x, int y, int cornerNumber, con
         Color color) {
     std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, 1.0);
     for (int i = 0; i < tgs.size(); i += 1) {
-        TGB.push_back(tgs.at(i));
+        GRAPHIC_CPU_BUFFER.push_back(tgs.at(i));
     }
 }
 
@@ -308,14 +306,14 @@ void GraphicUtilities::drawTileGraphicDistanceCharacter(int x, int y, int row, i
     // TODO: MACK: This will be different since we have textures... Then remove glut/glut.h
     std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, c == 'a' ? Color::BLACK : Color::BLACK, 1.0);
     for (int i = 0; i < tgs.size(); i += 1) {
-        TGB.push_back(tgs.at(i));
+        GRAPHIC_CPU_BUFFER.push_back(tgs.at(i));
     }
 }
 
 void GraphicUtilities::drawTileGraphicFog(int x, int y, const Polygon& polygon, Color color, float alpha) {
     std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, alpha);
     for (int i = 0; i < tgs.size(); i += 1) {
-        TGB.push_back(tgs.at(i));
+        GRAPHIC_CPU_BUFFER.push_back(tgs.at(i));
     }
 }
 
@@ -323,7 +321,7 @@ void GraphicUtilities::updateTileGraphicBaseColor(int x, int y, Color color) {
     int index = getTileGraphicBaseStartingIndex(x, y);
     std::tuple<float, float, float> colorValues = COLOR_TO_RGB.at(color);
     for (int i = 0; i < 2; i += 1) {
-        TriangleGraphic* triangleGraphic = &TGB.at(index + i);
+        TriangleGraphic* triangleGraphic = &GRAPHIC_CPU_BUFFER.at(index + i);
         triangleGraphic->p1.r = std::get<0>(colorValues);
         triangleGraphic->p1.g = std::get<1>(colorValues);
         triangleGraphic->p1.b = std::get<2>(colorValues);
@@ -340,7 +338,7 @@ void GraphicUtilities::updateTileGraphicWallColor(int x, int y, Direction direct
     int index = getTileGraphicWallStartingIndex(x, y, direction);
     std::tuple<float, float, float> colorValues = COLOR_TO_RGB.at(color);
     for (int i = 0; i < 2; i += 1) {
-        TriangleGraphic* triangleGraphic = &TGB.at(index + i);
+        TriangleGraphic* triangleGraphic = &GRAPHIC_CPU_BUFFER.at(index + i);
         triangleGraphic->p1.r = std::get<0>(colorValues);
         triangleGraphic->p1.g = std::get<1>(colorValues);
         triangleGraphic->p1.b = std::get<2>(colorValues);
@@ -359,7 +357,7 @@ void GraphicUtilities::updateTileGraphicWallColor(int x, int y, Direction direct
 void GraphicUtilities::updateTileGraphicFog(int x, int y, float alpha) {
     int index = getTileGraphicFogStartingIndex(x, y);
     for (int i = 0; i < 2; i += 1) {
-        TriangleGraphic* triangleGraphic = &TGB.at(index + i);
+        TriangleGraphic* triangleGraphic = &GRAPHIC_CPU_BUFFER.at(index + i);
         triangleGraphic->p1.a = alpha;
         triangleGraphic->p2.a = alpha;
         triangleGraphic->p3.a = alpha;
@@ -368,7 +366,7 @@ void GraphicUtilities::updateTileGraphicFog(int x, int y, float alpha) {
 
 void GraphicUtilities::drawMousePolygon(const Polygon& polygon, Color color, float sensorAlpha) {
     std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, sensorAlpha);
-    TGB.insert(TGB.end(), tgs.begin(), tgs.end());
+    GRAPHIC_CPU_BUFFER.insert(GRAPHIC_CPU_BUFFER.end(), tgs.begin(), tgs.end());
 }
 
 double GraphicUtilities::getScreenPixelsPerMeter() {

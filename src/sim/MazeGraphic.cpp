@@ -57,10 +57,10 @@ void MazeGraphic::undeclareWall(int x, int y, Direction direction) {
 
 void MazeGraphic::draw() const {
 
-    // We need the maze size to determine the layout of the TGB, among other things
+    // We need the maze size to determine the layout of the GRAPHIC_CPU_BUFFER, among other things
     GraphicUtilities::setMazeSize(getWidth(), getHeight());
 
-    // Then we fill the TGB
+    // Then we fill the GRAPHIC_CPU_BUFFER
     for (int x = 0; x < m_tileGraphics.size(); x += 1) {
         for (int y = 0; y < m_tileGraphics.at(x).size(); y += 1) {
             m_tileGraphics.at(x).at(y).draw();

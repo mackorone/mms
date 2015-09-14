@@ -1,5 +1,6 @@
 High Pri:
 
+- Why do I need to static cast to float? Isn't there a matrix function that can multiply doubles??? for transformation matrix?
 - Check that a font exists, die if not
 - Make font height based on pixels, not pt.
 - Check to make sure font won't be cut off, use ellipses if so
@@ -110,6 +111,7 @@ bullets in other physics simulators
 
 Low-pri:
 - Clean up the coding standards
+- Optimize for space in the TEXTURE_CPU_BUFFER and GRAPHIC_CPU_BUFFER - Don't repeat vertices
 - VSync so the graphics don't tear
 - Better run number system
 - Update the check_params.py script to make sure that the return type of the
