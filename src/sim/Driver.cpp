@@ -37,9 +37,6 @@ tdogl::Program* Driver::m_textureProgram;
 GLuint Driver::m_textureVertexArrayObjectId;
 GLuint Driver::m_textureVertexBufferObjectId;
 
-int rows = 32; // TODO: MACK
-int cols = 64; // TODO: MACK
-
 void Driver::drive(int argc, char* argv[]) {
 
     // Step -1: Make sure that this function is only ever called once
@@ -116,52 +113,6 @@ void Driver::initSimObjects() {
     m_world = new World(maze, m_mouse);
 }
 
-// loads a triangle into the VAO global
-void Driver::LoadTriangle() {
-
-    // make and bind the VAO
-    glGenVertexArrays(1, &m_textureVertexArrayObjectId);
-    glBindVertexArray(m_textureVertexArrayObjectId);
-    
-    // make and bind the VBO
-    glGenBuffers(1, &m_textureVertexBufferObjectId);
-    glBindBuffer(GL_ARRAY_BUFFER, m_textureVertexBufferObjectId);
-
-    // Put the triangle vertices (XYZ) and texture coordinates (UV) into the VBO
-    GLfloat vertexData[24 * rows * cols];
-    for (int i = 0; i < rows; i += 1) {
-        for (int j = 0; j < cols; j += 1) {
-            VertexTexture p1 { // LL
-                j * 3.0 / float(cols), i * 3.0 / float(rows), 0.0, 0.0,
-            };
-            VertexTexture p2 { // UL
-                j * 3.0 / float(cols), (i + 1) * 3.0 / float(rows), 0.0, 1.0,
-            };
-            VertexTexture p3 { // UR
-                (j + 1) * 3.0 / float(cols), (i + 1) * 3.0 / float(rows), 1.0, 1.0,
-            };
-            VertexTexture p4 { // LR
-                (j + 1) * 3.0 / float(cols), i * 3.0 / float(rows), 1.0, 0.0,
-            };
-            TriangleTexture t1 = { p1, p2, p3 };
-            TriangleTexture t2 = { p1, p3, p4 };
-            GraphicUtilities::TEXTURE_CPU_BUFFER.push_back(t1);
-            GraphicUtilities::TEXTURE_CPU_BUFFER.push_back(t2);
-        }
-    }
-
-    // connect the xyz to the "coordinate" attribute of the vertex shader
-    glEnableVertexAttribArray(m_textureProgram->attrib("coordinate"));
-    glVertexAttribPointer(m_textureProgram->attrib("coordinate"), 2, GL_DOUBLE, GL_FALSE, 4*sizeof(double), NULL);
-        
-    // connect the uv coords to the "textureCoordinate" attribute of the vertex shader
-    glEnableVertexAttribArray(m_textureProgram->attrib("textureCoordinate"));
-    glVertexAttribPointer(m_textureProgram->attrib("textureCoordinate"), 2, GL_DOUBLE, GL_TRUE,  4*sizeof(double), (const GLvoid*)(2 * sizeof(double)));
-
-    // unbind the VAO
-    glBindVertexArray(0);
-}
-
 void Driver::draw() {
 
     // In order to ensure we're sleeping the correct amount of time, we time
@@ -190,7 +141,9 @@ void Driver::draw() {
     std::pair<int, int> zoomedMapPosition = GraphicUtilities::getZoomedMapPosition();
     std::pair<int, int> zoomedMapSize = GraphicUtilities::getZoomedMapSize();
 
-    // ----- Drawing the polygons ----- //
+    // ----- Drawing the maze polygons ----- //
+
+    // TODO: MACK - Write a helper method
 
     // Enable
     m_polygonProgram->use();
@@ -206,7 +159,7 @@ void Driver::draw() {
     glScissor(fullMapPosition.first, fullMapPosition.second, fullMapSize.first, fullMapSize.second);
     m_polygonProgram->setUniformMatrix4("transformationMatrix",
         &GraphicUtilities::getFullMapTransformationMatrix().front(), 1, GL_TRUE);
-    glDrawArrays(GL_TRIANGLES, 0, 3 * GraphicUtilities::GRAPHIC_CPU_BUFFER.size());
+    glDrawArrays(GL_TRIANGLES, 0, 3 * mouseTrianglesStartingIndex);
 
     // Render the zoomed map
     glScissor(zoomedMapPosition.first, zoomedMapPosition.second, zoomedMapSize.first, zoomedMapSize.second);
@@ -214,14 +167,14 @@ void Driver::draw() {
         &GraphicUtilities::getZoomedMapTransformationMatrix(
             m_mouse->getInitialTranslation(), m_mouse->getCurrentTranslation(),
             m_mouse->getCurrentRotation()).front(), 1, GL_TRUE);
-    glDrawArrays(GL_TRIANGLES, 0, 3 * GraphicUtilities::GRAPHIC_CPU_BUFFER.size());
+    glDrawArrays(GL_TRIANGLES, 0, 3 * mouseTrianglesStartingIndex);
 
     // Disable
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
     m_polygonProgram->stopUsing();
 
-    // ----- Drawing the textures ----- //
+    // ----- Drawing the maze textures (text) ----- //
 
     // Enable
     m_textureProgram->use();
@@ -255,6 +208,39 @@ void Driver::draw() {
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindVertexArray(0);
     m_textureProgram->stopUsing();
+
+    // ----- Drawing the mouse polygons ----- //
+
+    // Enable
+    m_polygonProgram->use();
+    glBindVertexArray(m_polygonVertexArrayObjectId);
+
+    // Clear the vertex buffer object and copy over the CPU buffer
+    glBindBuffer(GL_ARRAY_BUFFER, m_polygonVertexBufferObjectId);
+    glBufferData(GL_ARRAY_BUFFER, GraphicUtilities::GRAPHIC_CPU_BUFFER.size() * sizeof(TriangleGraphic), NULL, GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, GraphicUtilities::GRAPHIC_CPU_BUFFER.size() * sizeof(TriangleGraphic),
+        &GraphicUtilities::GRAPHIC_CPU_BUFFER.front());
+
+    // Render the full map
+    glScissor(fullMapPosition.first, fullMapPosition.second, fullMapSize.first, fullMapSize.second);
+    m_polygonProgram->setUniformMatrix4("transformationMatrix",
+        &GraphicUtilities::getFullMapTransformationMatrix().front(), 1, GL_TRUE);
+    glDrawArrays(GL_TRIANGLES, 3 * mouseTrianglesStartingIndex,
+        3 * (GraphicUtilities::GRAPHIC_CPU_BUFFER.size() - mouseTrianglesStartingIndex));
+
+    // Render the zoomed map
+    glScissor(zoomedMapPosition.first, zoomedMapPosition.second, zoomedMapSize.first, zoomedMapSize.second);
+    m_polygonProgram->setUniformMatrix4("transformationMatrix",
+        &GraphicUtilities::getZoomedMapTransformationMatrix(
+            m_mouse->getInitialTranslation(), m_mouse->getCurrentTranslation(),
+            m_mouse->getCurrentRotation()).front(), 1, GL_TRUE);
+    glDrawArrays(GL_TRIANGLES, 3 * mouseTrianglesStartingIndex,
+        3 * (GraphicUtilities::GRAPHIC_CPU_BUFFER.size() - mouseTrianglesStartingIndex));
+
+    // Disable
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+    m_polygonProgram->stopUsing();
 
     // ----- Drawing the text ----- //
 
@@ -390,10 +376,11 @@ void Driver::initPolygonProgram() {
     m_polygonProgram = new tdogl::Program({tdogl::Shader::shaderFromFile(
         Directory::getResShadersDirectory() + "polygonVertexShader.txt", GL_VERTEX_SHADER)});
     glEnableVertexAttribArray(m_polygonProgram->attrib("coordinate"));
-    // TODO: MACK sizeof(TriangleGraphic)
-    glVertexAttribPointer(m_polygonProgram->attrib("coordinate"), 2, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), 0);
+    glVertexAttribPointer(m_polygonProgram->attrib("coordinate"),
+        2, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), 0);
     glEnableVertexAttribArray(m_polygonProgram->attrib("color"));
-    glVertexAttribPointer(m_polygonProgram->attrib("color"), 4, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), (char*) NULL + 2 * sizeof(double));
+    glVertexAttribPointer(m_polygonProgram->attrib("color"),
+        4, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), (char*) NULL + 2 * sizeof(double));
 
     // Unbind the vertex array object and vertex buffer object
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -403,20 +390,33 @@ void Driver::initPolygonProgram() {
 void Driver::initTextureProgram() {
 
     // Generate the texture vertex array object and vertex buffer object
+    glGenVertexArrays(1, &m_textureVertexArrayObjectId);
+    glBindVertexArray(m_textureVertexArrayObjectId);
+    glGenBuffers(1, &m_textureVertexBufferObjectId);
+    glBindBuffer(GL_ARRAY_BUFFER, m_textureVertexBufferObjectId);
+
+    // Set up the program and attribute pointers
     std::vector<tdogl::Shader> shaders;
     shaders.push_back(tdogl::Shader::shaderFromFile(
         Directory::getResShadersDirectory() + "textureVertexShader.txt", GL_VERTEX_SHADER));
     shaders.push_back(tdogl::Shader::shaderFromFile(
         Directory::getResShadersDirectory() + "textureFragmentShader.txt", GL_FRAGMENT_SHADER));
     m_textureProgram = new tdogl::Program(shaders);
+    glEnableVertexAttribArray(m_textureProgram->attrib("coordinate"));
+    glVertexAttribPointer(m_textureProgram->attrib("coordinate"),
+        2, GL_DOUBLE, GL_FALSE, 4 * sizeof(double), NULL);
+    glEnableVertexAttribArray(m_textureProgram->attrib("textureCoordinate"));
+    glVertexAttribPointer(m_textureProgram->attrib("textureCoordinate"),
+        2, GL_DOUBLE, GL_TRUE, 4 * sizeof(double), (char*) NULL + 2 * sizeof(double));
 
     // Load the bitmap texture into the texture atlas
-    tdogl::Bitmap bmp = tdogl::Bitmap::bitmapFromFile(Directory::getResTexturesDirectory() + "hazard.png");
+    tdogl::Bitmap bmp = tdogl::Bitmap::bitmapFromFile(Directory::getResTexturesDirectory() + "1.png");
     bmp.flipVertically();
     m_textureAtlas = new tdogl::Texture(bmp);
 
-    // TODO
-    LoadTriangle();
+    // Unbind the vertex array object and vertex buffer object
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }
 
 void Driver::initGraphics(int argc, char* argv[]) {

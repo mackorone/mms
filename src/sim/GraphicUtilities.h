@@ -41,18 +41,15 @@ public:
     static std::vector<float> getZoomedMapTransformationMatrix(const Coordinate& initialMouseTranslation,
         const Coordinate& currentMouseTranslation, const Angle& currentMouseRotation);
 
-    // The draw methods here should only be called once - they actually populate the buffer
-    static void drawTileGraphicBase(int x, int y, const Polygon& polygon, Color color);
-    static void drawTileGraphicWall(int x, int y, Direction direction, const Polygon& polygon, Color color, float alpha);
-    static void drawTileGraphicCorner(int x, int y, int cornerNumber, const Polygon& polygon, Color color);
-    static void drawTileGraphicDistanceCharacter(int x, int y, int row, int col, const Polygon& polygon, char c); // TODO: MACK
-    static void drawTileGraphicFog(int x, int y, const Polygon& polygon, Color color, float alpha);
+    // Fills the GRAPHIC_CPU_BUFFER and TEXTURE_CPU_BUFFER
+    static void insertIntoGraphicCpuBuffer(const Polygon& polygon, Color color, float alpha);
+    static void insertIntoTextureCpuBuffer(const Polygon& polygon, char c); // TODO: MACK - define valid characters
 
     // These methods are inexpensive, and may be called many times
     static void updateTileGraphicBaseColor(int x, int y, Color color);
     static void updateTileGraphicWallColor(int x, int y, Direction direction, Color color, float alpha);
-    static void updateTileGraphicDistanceCharacter(int x, int y, int row, int col, char c);
     static void updateTileGraphicFog(int x, int y, float alpha);
+    static void updateTileGraphicText(int x, int y, int row, int col, char c);
 
     // TODO: MACK - Add an update method for the mouse so that we only triangulate once
     static void drawMousePolygon(const Polygon& polygon, Color color, float sensorAlpha);
@@ -80,16 +77,19 @@ private:
     // to the OpenGL coordinate system ((-1,-1) in the bottom left, (1,1) in the upper right)
     static std::pair<double, double> mapPixelCoordinateToOpenGlCoordinate(double x, double y);
 
-    // Converts a polygon to a vector of triangle graphics
+    // Converts a polygon to a vector of triangle graphics or triangle textures
     static std::vector<TriangleGraphic> polygonToTriangleGraphics(const Polygon& polygon, Color color, float alpha);
+    static std::vector<TriangleTexture> polygonToTriangleTextures(const Polygon& polygon, char c);
 
     // Retrieve the indices into the GRAPHIC_CPU_BUFFER for each specific type of Tile triangle
     static int trianglesPerTile();
     static int getTileGraphicBaseStartingIndex(int x, int y);
     static int getTileGraphicWallStartingIndex(int x, int y, Direction direction);
     static int getTileGraphicCornerStartingIndex(int x, int y, int cornerNumber);
-    static int getTileGraphicDistanceCharacterStartingIndex(int x, int y, int row, int col);
     static int getTileGraphicFogStartingIndex(int x, int y);
+
+    // Retrieve the indices into the TEXTURE_CPU_BUFFER
+    static int getTileGraphicTextStartingIndex(int x, int y, int row, int col);
 };
 
 } // namespace sim

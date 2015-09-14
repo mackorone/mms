@@ -52,7 +52,7 @@ std::pair<int, int> GraphicUtilities::getZoomedMapPosition() {
 
 std::pair<int, int> GraphicUtilities::getFullMapSize() {
     int width = m_windowWidth - 2 * P()->windowBorderWidth();
-    int height = m_windowHeight - 2 * P()->windowBorderWidth() - 100; // TODO: MACK - add an info panel
+    int height = m_windowHeight - 2 * P()->windowBorderWidth();// - 100; // TODO: MACK - add an info panel
     if (S()->layout() == Layout::ZOOMED) {
         width = 0;
     }
@@ -64,7 +64,7 @@ std::pair<int, int> GraphicUtilities::getFullMapSize() {
 
 std::pair<int, int> GraphicUtilities::getZoomedMapSize() {
     int width = m_windowWidth - 2 * P()->windowBorderWidth();
-    int height = m_windowHeight - 2 * P()->windowBorderWidth() - 100; // TODO: MACK - add an info panel
+    int height = m_windowHeight - 2 * P()->windowBorderWidth();// - 100; // TODO: MACK - add an info panel
     if (S()->layout() == Layout::FULL) {
         width = 0;
     }
@@ -279,41 +279,29 @@ std::vector<float> GraphicUtilities::getZoomedMapTransformationMatrix(const Coor
     return zoomedMapCameraMatrix;
 }
 
-void GraphicUtilities::drawTileGraphicBase(int x, int y, const Polygon& polygon, Color color) {
-    std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, 1.0);
+void GraphicUtilities::insertIntoGraphicCpuBuffer(const Polygon& polygon, Color color, float alpha) {
+    std::vector<TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, alpha);
     for (int i = 0; i < tgs.size(); i += 1) {
         GRAPHIC_CPU_BUFFER.push_back(tgs.at(i));
     }
 }
 
-void GraphicUtilities::drawTileGraphicWall(int x, int y, Direction direction, const Polygon& polygon,
-        Color color, float alpha) {
-    std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, alpha);
-    for (int i = 0; i < tgs.size(); i += 1) {
-        GRAPHIC_CPU_BUFFER.push_back(tgs.at(i));
-    }
-}
-
-void GraphicUtilities::drawTileGraphicCorner(int x, int y, int cornerNumber, const Polygon& polygon,
-        Color color) {
-    std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, 1.0);
-    for (int i = 0; i < tgs.size(); i += 1) {
-        GRAPHIC_CPU_BUFFER.push_back(tgs.at(i));
-    }
-}
-
-void GraphicUtilities::drawTileGraphicDistanceCharacter(int x, int y, int row, int col, const Polygon& polygon, char c) {
-    // TODO: MACK: This will be different since we have textures... Then remove glut/glut.h
-    std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, c == 'a' ? Color::BLACK : Color::BLACK, 1.0);
-    for (int i = 0; i < tgs.size(); i += 1) {
-        GRAPHIC_CPU_BUFFER.push_back(tgs.at(i));
-    }
-}
-
-void GraphicUtilities::drawTileGraphicFog(int x, int y, const Polygon& polygon, Color color, float alpha) {
-    std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, alpha);
-    for (int i = 0; i < tgs.size(); i += 1) {
-        GRAPHIC_CPU_BUFFER.push_back(tgs.at(i));
+void GraphicUtilities::insertIntoTextureCpuBuffer(const Polygon& polygon, char c) {
+    // Note that we expect the polygon to be a rectangle whose vertices are in
+    // the following order: lower-left, upper-left, upper-right, lower-right.
+    Cartesian ll = polygon.getVertices().at(0);
+    Cartesian ul = polygon.getVertices().at(1);
+    Cartesian ur = polygon.getVertices().at(2);
+    Cartesian lr = polygon.getVertices().at(3);
+    ASSERT(ll.getX().getMeters() == ul.getX().getMeters());
+    ASSERT(lr.getX().getMeters() == ur.getX().getMeters());
+    ASSERT(ll.getY().getMeters() == lr.getY().getMeters());
+    ASSERT(ul.getY().getMeters() == ur.getY().getMeters());
+    ASSERT(ll.getX().getMeters() <= ur.getX().getMeters());
+    ASSERT(ll.getY().getMeters() <= ur.getY().getMeters());
+    std::vector<TriangleTexture> tts = polygonToTriangleTextures(polygon, c);
+    for (int i = 0; i < tts.size(); i += 1) {
+        TEXTURE_CPU_BUFFER.push_back(tts.at(i));
     }
 }
 
@@ -364,8 +352,13 @@ void GraphicUtilities::updateTileGraphicFog(int x, int y, float alpha) {
     }
 }
 
+void GraphicUtilities::updateTileGraphicText(int x, int y, int row, int col, char c) {
+    // TODO: MACK
+    // I'll have to define getTileGraphicTextStartingIndex() for this 
+}
+
 void GraphicUtilities::drawMousePolygon(const Polygon& polygon, Color color, float sensorAlpha) {
-    std::vector<sim::TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, sensorAlpha);
+    std::vector<TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, sensorAlpha);
     GRAPHIC_CPU_BUFFER.insert(GRAPHIC_CPU_BUFFER.end(), tgs.begin(), tgs.end());
 }
 
@@ -411,6 +404,7 @@ std::pair<double, double> GraphicUtilities::mapPixelCoordinateToOpenGlCoordinate
 std::vector<TriangleGraphic> GraphicUtilities::polygonToTriangleGraphics(const Polygon& polygon, Color color, float alpha) {
     std::vector<Triangle> triangles = polygon.triangulate();
     std::vector<TriangleGraphic> triangleGraphics;
+    // TODO: MACK 3 - can these be doubles?
     std::tuple<float, float, float> colorValues = COLOR_TO_RGB.at(color);
     for (Triangle triangle : triangles) {
         triangleGraphics.push_back({
@@ -424,25 +418,44 @@ std::vector<TriangleGraphic> GraphicUtilities::polygonToTriangleGraphics(const P
     return triangleGraphics;
 }
 
+std::vector<TriangleTexture> GraphicUtilities::polygonToTriangleTextures(const Polygon& polygon, char c) {
+    // Note that this function should only be called by
+    // insertIntoTextureCpuBuffer. Also note that we expect the polygon to be a
+    // rectangle whose vertices are in the following order: lower-left,
+    // upper-left, upper-right, lower-right.
+    Cartesian ll = polygon.getVertices().at(0);
+    Cartesian ul = polygon.getVertices().at(1);
+    Cartesian ur = polygon.getVertices().at(2);
+    Cartesian lr = polygon.getVertices().at(3);
+    VertexTexture p1 { // LL
+        ll.getX().getMeters(), ll.getY().getMeters(), 0.0, 0.0,
+    };
+    VertexTexture p2 { // UL
+        ul.getX().getMeters(), ul.getY().getMeters(), 0.0, 1.0,
+    };
+    VertexTexture p3 { // UR
+        ur.getX().getMeters(), ur.getY().getMeters(), 1.0, 1.0,
+    };
+    VertexTexture p4 { // LR
+        lr.getX().getMeters(), lr.getY().getMeters(), 1.0, 0.0,
+    };
+    TriangleTexture t1 {p1, p2, p3};
+    TriangleTexture t2 {p1, p3, p4};
+    return {t1, t2};
+}
+
 int GraphicUtilities::trianglesPerTile() {
-
-    // TODO: MACK - this doesn't need to be hardcoded
-    // TODO: MACK - Make sure there is a limit to the distance that a user can input... 9999, perhaps???
-    // TODO: MACK - Some sort of symbol for unreachable??? inf perhaps???
-
     // This value must be predetermined, and was done so as follows:
     // Base polygon:      2 (2 triangles x 1 polygon  per tile)
     // Wall polygon:      8 (2 triangles x 4 polygons per tile)
     // Corner polygon:    8 (2 triangles x 4 polygons per tile)
-    // Distance polygon: 16 (2 triangles x 8 polygons per tile)
     // Fog polygon:       2 (2 triangles x 1 polygon  per tile)
     // --------------------
-    // Total             36
-    return 36;
+    // Total             20
+    return 20;
 }
 
 int GraphicUtilities::getTileGraphicBaseStartingIndex(int x, int y) {
-    // TODO: MACK - do these indices need to be hardcoded?
     return  0 + trianglesPerTile() * (m_mazeHeight * x + y);
 }
 
@@ -454,12 +467,12 @@ int GraphicUtilities::getTileGraphicCornerStartingIndex(int x, int y, int corner
     return 10 + trianglesPerTile() * (m_mazeHeight * x + y) + (2 * cornerNumber);
 }
 
-int GraphicUtilities::getTileGraphicDistanceCharacterStartingIndex(int x, int y, int row, int col) {
-    return 18 + trianglesPerTile() * (m_mazeHeight * x + y) + (2 * (3 * row + col));
+int GraphicUtilities::getTileGraphicFogStartingIndex(int x, int y) {
+    return 18 + trianglesPerTile() * (m_mazeHeight * x + y);
 }
 
-int GraphicUtilities::getTileGraphicFogStartingIndex(int x, int y) {
-    return 34 + trianglesPerTile() * (m_mazeHeight * x + y);
+int GraphicUtilities::getTileGraphicTextStartingIndex(int x, int y, int row, int col) {
+    // TODO: MACK
 }
 
 } // namespace sim

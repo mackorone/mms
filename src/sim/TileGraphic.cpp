@@ -43,62 +43,57 @@ void TileGraphic::undeclareWall(Direction direction) {
 
 void TileGraphic::draw() const {
 
+    // Note that the order in which we call insertIntoGraphicCpuBuffer
+    // determines the order in which the polygons are drawn. Also note that the
+    // *StartingIndex methods in GrahicsUtilities.h depend upon this order.
+
     // Draw the base of the tile
-    GraphicUtilities::drawTileGraphicBase(m_tile->getX(), m_tile->getY(), m_tile->getFullPolygon(),
-        S()->tileColorsVisible() ? m_color : STRING_TO_COLOR.at(P()->tileBaseColor()));
+    GraphicUtilities::insertIntoGraphicCpuBuffer(
+        m_tile->getFullPolygon(),
+        S()->tileColorsVisible() ? m_color : STRING_TO_COLOR.at(P()->tileBaseColor()),
+        1.0);
+
+    // Draw each of the walls of the tile
+    for (Direction direction : DIRECTIONS) {
+        std::pair<Color, float> colorAndAlpha = deduceWallColorAndAlpha(direction);
+        GraphicUtilities::insertIntoGraphicCpuBuffer(
+            m_tile->getWallPolygon(direction),
+            colorAndAlpha.first,
+            colorAndAlpha.second);
+    }
+
+    // Draw the corners of the tile
+    for (Polygon polygon : m_tile->getCornerPolygons()) {
+        GraphicUtilities::insertIntoGraphicCpuBuffer(
+            polygon,
+            STRING_TO_COLOR.at(P()->tileCornerColor()),
+            1.0);
+    }
+
+    // Draw the fog
+    GraphicUtilities::insertIntoGraphicCpuBuffer(
+        m_tile->getFullPolygon(),
+        STRING_TO_COLOR.at(P()->tileFogColor()),
+        m_foggy && S()->tileFogVisible() ? P()->tileFogAlpha() : 0.0);
 
     // TODO: MACK - Draw the tile gridlines...
     // Ideally, we should only have to draw a few lines that span the entire maze, as opposed to many little lines...
 
-    // Draw each of the walls of the tile
-    for (Direction direction : DIRECTIONS) {
-
-        // Get the wall color and alpha
-        std::pair<Color, float> colorAndAlpha = deduceWallColorAndAlpha(direction);
-
-        // Draw the polygon
-        GraphicUtilities::drawTileGraphicWall(m_tile->getX(), m_tile->getY(), direction,
-            m_tile->getWallPolygon(direction), colorAndAlpha.first, colorAndAlpha.second);
-    }
-
-    // Draw the corners of the tile
-    std::vector<Polygon> cornerPolygons = m_tile->getCornerPolygons();
-    for (int cornerNumber = 0; cornerNumber < cornerPolygons.size(); cornerNumber += 1) {
-        GraphicUtilities::drawTileGraphicCorner(m_tile->getX(), m_tile->getY(), cornerNumber,
-            cornerPolygons.at(cornerNumber), STRING_TO_COLOR.at(P()->tileCornerColor()));
-    }
-
     // Draw the distance character textures
-    for (int row = 0; row < 2; row += 1) {
-        for (int col = 0; col < 4; col += 1) {
-            // TODO: MACK - pass in the correct characters here
-            GraphicUtilities::drawTileGraphicDistanceCharacter(m_tile->getX(), m_tile->getY(), row, col,
-                getDistanceCharacterPolygon(row, col), ((col + row) % 2 == 0 ? 'a' : 'b'));
+    static int numRows = 2; // TODO: MACK - Make this a constant somewhere
+    static int numCols = 4; // TODO: MACK - Make this a constant somewhere
+    for (int row = 0; row < numRows; row += 1) {
+        for (int col = 0; col < numCols; col += 1) {
+            GraphicUtilities::insertIntoTextureCpuBuffer(
+                getTextPolygon(numRows, numCols, row, col),
+                ' ');
         }
     }
-
-    // Draw the fog
-    GraphicUtilities::drawTileGraphicFog(m_tile->getX(), m_tile->getY(), m_tile->getFullPolygon(),
-        STRING_TO_COLOR.at(P()->tileFogColor()), m_foggy && S()->tileFogVisible() ? P()->tileFogAlpha() : 0.0);
 }
 
 void TileGraphic::updateColor() const {
     GraphicUtilities::updateTileGraphicBaseColor(m_tile->getX(), m_tile->getY(),
         S()->tileColorsVisible() ? m_color : STRING_TO_COLOR.at(P()->tileBaseColor()));
-}
-
-void TileGraphic::updateDistance() const {
-    // TODO: MACK - change tile text to tile color, 
-    // TODO: MACK - add a param for whether or not the actual distance values displayed
-    // TODO: MACK - text color???
-    for (int row = 0; row < 2; row += 1) {
-        for (int col = 0; col < 4; col += 1) {
-            /*
-            GraphicUtilities::updateTileGraphicDistanceCharacter(m_tile->getX(), m_tile->getY(),
-                row, col, S()->tileTextVisible() ? m_color : STRING_TO_COLOR.at(P()->tileBaseColor()));
-            */
-        }
-    }
 }
 
 void TileGraphic::updateFog() const {
@@ -170,18 +165,29 @@ std::pair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction
     return std::make_pair(wallColor, wallAlpha);
 }
 
-Polygon TileGraphic::getDistanceCharacterPolygon(int row, int col) const {
+void TileGraphic::updateDistance() const {
+    for (int row = 0; row < 2; row += 1) {
+        for (int col = 0; col < 4; col += 1) {
+            /*
+            GraphicUtilities::updateTileGraphicDistanceCharacter(m_tile->getX(), m_tile->getY(),
+                row, col, S()->tileTextVisible() ? m_color : STRING_TO_COLOR.at(P()->tileBaseColor()));
+            */
+        }
+    }
+}
+
+Polygon TileGraphic::getTextPolygon(int numRows, int numCols, int row, int col) const {
 
     //                  *---*-------------------*---*
     //                  |   |                   |   |
     //                  *---*-------------------Y---*
     //                  |   |    |    |    |    |   |
     //                  |   |    |    |    |    |   |
-    //                  |   | 00 | 01 | 02 | 03 |   |
+    //                  |   | 10 | 11 | 12 | 13 |   |
     //                  |   |____|____|____|____|   |
     //                  |   |    |    |    |    |   |
     //                  |   |    |    |    |    |   |
-    //                  |   | 10 | 11 | 12 | 13 |   |
+    //                  |   | 00 | 01 | 02 | 03 |   |
     //                  |   |    |    |    |    |   |
     //                  *---X-------------------*---*
     //                  |   |                   |   |
@@ -190,8 +196,8 @@ Polygon TileGraphic::getDistanceCharacterPolygon(int row, int col) const {
     Cartesian X = m_tile->getInteriorPolygon().getVertices().at(0);
     Cartesian Y = m_tile->getInteriorPolygon().getVertices().at(2);
     Cartesian diagonal = Y - X;
-    Meters characterWidth = diagonal.getX() / 4.0;
-    Meters characterHeight = diagonal.getY() / 2.0;
+    Meters characterWidth = diagonal.getX() / static_cast<double>(numCols);
+    Meters characterHeight = diagonal.getY() / static_cast<double>(numRows);
     return Polygon({
         X + Cartesian(characterWidth *  col     , characterHeight *  row     ),
         X + Cartesian(characterWidth *  col     , characterHeight * (row + 1)),

@@ -34,7 +34,7 @@ private:
 
     void updateWall(Direction direction) const;
     std::pair<Color, float> deduceWallColorAndAlpha(Direction direction) const;
-    Polygon getDistanceCharacterPolygon(int row, int col) const;
+    Polygon getTextPolygon(int numRows, int numCols, int row, int col) const;
 };
 
 } // namespace sim

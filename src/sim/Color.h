@@ -23,6 +23,7 @@ enum class Color {
     DARK_YELLOW,
 };
 
+// TODO: MACK 3 - Can these be doubles
 static const std::map<Color, std::tuple<float, float, float>> COLOR_TO_RGB {
     {Color::BLACK      , std::make_tuple(0.0f, 0.0f, 0.0f)},
     {Color::BLUE       , std::make_tuple(0.0f, 0.0f, 0.7f)},

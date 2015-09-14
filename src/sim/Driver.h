@@ -56,9 +56,6 @@ private:
     // Initialize all of the simulation objects
     static void initSimObjects();
 
-    // TODO: kill this
-    static void LoadTriangle();
-
     // Callback functions
     static void draw();
     static void keyPress(unsigned char key, int x, int y);
