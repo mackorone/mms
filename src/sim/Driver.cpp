@@ -410,7 +410,7 @@ void Driver::initTextureProgram() {
         2, GL_DOUBLE, GL_TRUE, 4 * sizeof(double), (char*) NULL + 2 * sizeof(double));
 
     // Load the bitmap texture into the texture atlas
-    tdogl::Bitmap bmp = tdogl::Bitmap::bitmapFromFile(Directory::getResTexturesDirectory() + "1.png");
+    tdogl::Bitmap bmp = tdogl::Bitmap::bitmapFromFile(Directory::getResImgsDirectory() + "1.png");
     bmp.flipVertically();
     m_textureAtlas = new tdogl::Texture(bmp);
 

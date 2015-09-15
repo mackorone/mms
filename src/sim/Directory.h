@@ -26,8 +26,8 @@ public:
     // mms/res/shaders
     static std::string getResShadersDirectory();
 
-    // mms/res/textures
-    static std::string getResTexturesDirectory();
+    // mms/res/imgs
+    static std::string getResImgsDirectory();
 
     // mms/run
     static std::string getRunDirectory();

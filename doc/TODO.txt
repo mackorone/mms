@@ -10,7 +10,7 @@ High Pri:
     - Make the sim speed non-arbitrary
     - Fix the Params associated with discrete sim-speed
 
-- Set the mouse algo in State
+- Set the mouse algo in State (make that info available via the state object? for display?)
 
 - Make getMouseFile and getInterfaceType static methods
     - Make a getMouseAlgoName method
@@ -18,7 +18,14 @@ High Pri:
 - Turn logging on/off
     - Be able to have no run directories kept
 
+- ifPrintElseRun is probably broken if we have single/multiple args...
+
 - Use markdown in the readme
+
+- Gyroscope support
+- Support stepper motor / encoders interface
+- Tomasz maze-gen issues
+- Kyle push (Windows issues and clean up)
 
 - Rewrite text so that it's performant
 - Tile distances
@@ -41,7 +48,6 @@ High Pri:
 - Updates on the tile boundaries, not centers
 - Figure out a nice way to use a vector for the simulation, but an array for real life
 - Other mouse movements - curve turns, j-turns, diagonals, etc.
-- Support stepper motor / encoders interface
 - Sensor readings for walls other than front, left right
 - Include Arduino "types" with the MouseInterface
 - More Arduino function support
@@ -49,7 +55,6 @@ High Pri:
 - Add gridlines (see https://www.youtube.com/watch?v=LGRutv9cGBA and https://www.youtube.com/watch?v=gtnTBf5ItEc)
     - Variable width?
 - Buffer communication (like with the real robot)
-- Gyroscope support
 
 Med Pri:
 - Make a system for nearly instantly checking stats on many mazes:

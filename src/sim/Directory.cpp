@@ -29,8 +29,8 @@ std::string Directory::getResShadersDirectory() {
     return getResDirectory() + "shaders/";
 }
 
-std::string Directory::getResTexturesDirectory() {
-    return getResDirectory() + "textures/";
+std::string Directory::getResImgsDirectory() {
+    return getResDirectory() + "imgs/";
 }
 
 std::string Directory::getRunDirectory() {

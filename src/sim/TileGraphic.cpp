@@ -81,7 +81,7 @@ void TileGraphic::draw() const {
 
     // Draw the distance character textures
     static int numRows = 2; // TODO: MACK - Make this a constant somewhere
-    static int numCols = 4; // TODO: MACK - Make this a constant somewhere
+    static int numCols = 1; // TODO: MACK - Make this a constant somewhere
     for (int row = 0; row < numRows; row += 1) {
         for (int col = 0; col < numCols; col += 1) {
             GraphicUtilities::insertIntoTextureCpuBuffer(
