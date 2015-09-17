@@ -4,7 +4,7 @@
 
 namespace sim{
 
-Tile::Tile() : m_x(-1), m_y(-1) {
+Tile::Tile() : m_x(-1), m_y(-1), m_distanceFromCenter(0) {
     for (Direction direction : DIRECTIONS) {
         m_walls[direction] = false;
     }
@@ -29,6 +29,15 @@ bool Tile::isWall(Direction direction) const {
 
 void Tile::setWall(Direction direction, bool isWall) {
     m_walls[direction] = isWall;
+}
+
+int Tile::getDistanceFromCenter() const {
+    return m_distanceFromCenter;
+}
+
+void Tile::setDistanceFromCenter(int distance) {
+    // TODO: MACK - Call this function to actually set the distances
+    m_distanceFromCenter = distance;
 }
 
 Polygon Tile::getFullPolygon() const {

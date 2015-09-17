@@ -14,8 +14,8 @@
 <tile-base-color>BLACK</tile-base-color>
 <tile-wall-color>RED</tile-wall-color>
 <tile-corner-color>GRAY</tile-corner-color>
-<tile-text-color>DARK_GREEN</tile-text-color>
 <tile-fog-color>GRAY</tile-fog-color>
+<tile-text-color>DARK_GREEN</tile-text-color>
 <tile-undeclared-wall-color>DARK_RED</tile-undeclared-wall-color>
 <tile-undeclared-no-wall-color>DARK_GRAY</tile-undeclared-no-wall-color>
 <tile-incorrectly-declared-wall-color>ORANGE</tile-incorrectly-declared-wall-color>
@@ -24,10 +24,11 @@
 <mouse-wheel-color>GREEN</mouse-wheel-color>
 <mouse-sensor-color>GREEN</mouse-sensor-color>
 <mouse-view-color>WHITE</mouse-view-color>
-<default-wall-truth-visible>false</default-wall-truth-visible>
 <default-tile-colors-visible>true</default-tile-colors-visible>
-<default-tile-text-visible>true</default-tile-text-visible>
+<default-wall-truth-visible>false</default-wall-truth-visible>
 <default-tile-fog-visible>true</default-tile-fog-visible>
+<default-tile-text-visible>true</default-tile-text-visible>
+<default-tile-distance-visible>true</default-tile-distance-visible>
 <tile-fog-alpha>0.15</tile-fog-alpha> <!-- Must be in [0.0, 1.0] -->
 <default-wireframe-mode>false</default-wireframe-mode>
 

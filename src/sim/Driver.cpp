@@ -324,15 +324,22 @@ void Driver::keyPress(unsigned char key, int x, int y) {
         S()->setTileColorsVisible(!S()->tileColorsVisible());
         m_mazeGraphic->updateColor();
     }
+    else if (key == 'g') {
+        // Toggle tile fog
+        S()->setTileFogVisible(!S()->tileFogVisible());
+        m_mazeGraphic->updateFog();
+    }
     else if (key == 'x') {
         // Toggle tile text
         S()->setTileTextVisible(!S()->tileTextVisible());
         m_mazeGraphic->updateText();
     }
-    else if (key == 'g') {
-        // Toggle tile fog
-        S()->setTileFogVisible(!S()->tileFogVisible());
-        m_mazeGraphic->updateFog();
+    else if (key == 'd') {
+        // Toggle tile distance visibility, but only if tile text is visible
+        if (S()->tileTextVisible()) {
+            S()->setTileDistanceVisible(!S()->tileDistanceVisible());
+            m_mazeGraphic->updateText();
+        }
     }
     else if (key == 'w') {
         // Toggle wireframe mode
@@ -414,6 +421,7 @@ void Driver::initTextureProgram() {
         2, GL_DOUBLE, GL_TRUE, 4 * sizeof(double), (char*) NULL + 2 * sizeof(double));
 
     // Load the bitmap texture into the texture atlas
+    // TODO: MACK - Make the font image a parameter...
     tdogl::Bitmap bmp = tdogl::Bitmap::bitmapFromFile(Directory::getResImgsDirectory() + "DroidSansMono.png");
     bmp.flipVertically();
     m_textureAtlas = new tdogl::Texture(bmp);

@@ -57,8 +57,6 @@ Param::Param() {
         "tile-wall-color", COLOR_TO_STRING.at(Color::RED));
     m_tileCornerColor = parser.getStringIfHasStringAndIsColor(
         "tile-corner-color", COLOR_TO_STRING.at(Color::GRAY));
-    m_tileTextColor = parser.getStringIfHasStringAndIsColor(
-        "tile-text-color", COLOR_TO_STRING.at(Color::DARK_GREEN));
     m_tileFogColor = parser.getStringIfHasStringAndIsColor(
         "tile-fog-color", COLOR_TO_STRING.at(Color::GRAY));
     m_tileUndeclaredWallColor = parser.getStringIfHasStringAndIsColor(
@@ -81,10 +79,12 @@ Param::Param() {
         "default-wall-truth-visible", false);
     m_defaultTileColorsVisible = parser.getBoolIfHasBool(
         "default-tile-colors-visible", true);
-    m_defaultTileTextVisible = parser.getBoolIfHasBool(
-        "default-tile-text-visible", true);
     m_defaultTileFogVisible = parser.getBoolIfHasBool(
         "default-tile-fog-visible", true);
+    m_defaultTileTextVisible = parser.getBoolIfHasBool(
+        "default-tile-text-visible", true);
+    m_defaultTileDistanceVisible = parser.getBoolIfHasBool(
+        "default-tile-distance-visible", true);
     m_tileFogAlpha = parser.getDoubleIfHasDoubleAndInRange(
         "tile-fog-alpha", 0.15, 0.0, 1.0);
     m_defaultWireframeMode = parser.getBoolIfHasBool(
@@ -227,10 +227,6 @@ std::string Param::tileCornerColor() {
     return m_tileCornerColor;
 }
 
-std::string Param::tileTextColor() {
-    return m_tileTextColor;
-}
-
 std::string Param::tileFogColor() {
     return m_tileFogColor;
 }
@@ -275,12 +271,16 @@ bool Param::defaultTileColorsVisible() {
     return m_defaultTileColorsVisible;
 }
 
+bool Param::defaultTileFogVisible() {
+    return m_defaultTileFogVisible;
+}
+
 bool Param::defaultTileTextVisible() {
     return m_defaultTileTextVisible;
 }
 
-bool Param::defaultTileFogVisible() {
-    return m_defaultTileFogVisible;
+bool Param::defaultTileDistanceVisible() {
+    return m_defaultTileDistanceVisible;
 }
 
 double Param::tileFogAlpha() {

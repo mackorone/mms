@@ -29,8 +29,9 @@ public:
     double zoomedMapScale();
     bool wallTruthVisible();
     bool tileColorsVisible();
-    bool tileTextVisible();
     bool tileFogVisible();
+    bool tileTextVisible();
+    bool tileDistanceVisible();
     bool wireframeMode();
     bool paused();
     double simSpeed();
@@ -46,8 +47,9 @@ public:
     void setZoomedMapScale(double zoomedMapScale);
     void setWallTruthVisible(bool wallTruthVisible);
     void setTileColorsVisible(bool tileColorsVisible);
-    void setTileTextVisible(bool tileTextVisible);
     void setTileFogVisible(bool tileFogVisible);
+    void setTileTextVisible(bool tileTextVisible);
+    void setTileDistanceVisible(bool tileDistanceVisible);
     void setWireframeMode(bool wireframeMode);
     void setPaused(bool paused);
     void setSimSpeed(double simSpeed);
@@ -70,8 +72,9 @@ private:
     double m_zoomedMapScale;
     bool m_wallTruthVisible;
     bool m_tileColorsVisible;
-    bool m_tileTextVisible;
     bool m_tileFogVisible;
+    bool m_tileTextVisible;
+    bool m_tileDistanceVisible;
     bool m_wireframeMode;
     bool m_paused;
     double m_simSpeed;

@@ -20,6 +20,9 @@ public:
     bool isWall(Direction direction) const;
     void setWall(Direction direction, bool isWall);
 
+    int getDistanceFromCenter() const;
+    void setDistanceFromCenter(int distance);
+
     Polygon getFullPolygon() const;
     Polygon getInteriorPolygon() const;
     Polygon getWallPolygon(Direction direction) const;
@@ -32,6 +35,7 @@ private:
     int m_x;
     int m_y;
     std::map<Direction, bool> m_walls;
+    int m_distanceFromCenter;
 
     Polygon m_fullPolygon;
     Polygon m_interiorPolygon;

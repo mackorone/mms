@@ -30,6 +30,7 @@ State::State() {
     m_wallTruthVisible = P()->defaultWallTruthVisible();
     m_tileColorsVisible = P()->defaultTileColorsVisible();
     m_tileTextVisible = P()->defaultTileTextVisible();
+    m_tileDistanceVisible = P()->defaultTileDistanceVisible();
     m_tileFogVisible = P()->defaultTileFogVisible();
     m_wireframeMode = P()->defaultWireframeMode();
     m_paused = P()->defaultPaused();
@@ -74,12 +75,16 @@ bool State::tileColorsVisible() {
     return m_tileColorsVisible;
 }
 
+bool State::tileFogVisible() {
+    return m_tileFogVisible;
+}
+
 bool State::tileTextVisible() {
     return m_tileTextVisible;
 }
 
-bool State::tileFogVisible() {
-    return m_tileFogVisible;
+bool State::tileDistanceVisible() {
+    return m_tileDistanceVisible;
 }
 
 bool State::wireframeMode() {
@@ -146,12 +151,16 @@ void State::setTileColorsVisible(bool tileColorsVisible) {
     m_tileColorsVisible = tileColorsVisible;
 }
 
+void State::setTileFogVisible(bool tileFogVisible) {
+    m_tileFogVisible = tileFogVisible;
+}
+
 void State::setTileTextVisible(bool tileTextVisible) {
     m_tileTextVisible = tileTextVisible;
 }
 
-void State::setTileFogVisible(bool tileFogVisible) {
-    m_tileFogVisible = tileFogVisible;
+void State::setTileDistanceVisible(bool tileDistanceVisible) {
+    m_tileDistanceVisible = tileDistanceVisible;
 }
 
 void State::setWireframeMode(bool wireframeMode) {

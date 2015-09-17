@@ -80,14 +80,14 @@ void TileGraphic::draw() const {
     // TODO: MACK - Draw the tile gridlines... (maybe just one big texture???)
     // Ideally, we should only have to draw a few lines that span the entire maze, as opposed to many little lines...
 
-    // Insert all of the tile texture objects into the buffer
+    // Insert all of the triangle texture objects into the buffer ...
     std::pair<int, int> maxRowsAndCols = GraphicUtilities::getTileGraphicTextMaxSize();
     for (int row = 0; row < maxRowsAndCols.first; row += 1) {
         for (int col = 0; col < maxRowsAndCols.second; col += 1) {
             GraphicUtilities::insertIntoTextureCpuBuffer();
         }
     }
-    // TODO: MACK - draw the tile distances here if necessary (we're always drawing nothing at first)
+    // ... and then populate those triangle texture objects with data
     updateText();
 }
 
@@ -109,12 +109,12 @@ void TileGraphic::updateFog() const {
 
 void TileGraphic::updateText() const {
 
-    std::pair<int, int> maxRowsAndCols = GraphicUtilities::getTileGraphicTextMaxSize();
-    // TODO: MACK: Check to see if we should show actual distances.
-    // If so, prepend to the rows and push down the other rows and show
     std::vector<std::string> rows = m_rowsOfText;
-    //rows.insert(rows.begin(), "1234");
+    if (S()->tileDistanceVisible()) {
+        rows.insert(rows.begin(), std::to_string(m_tile->getDistanceFromCenter()));
+    }
 
+    std::pair<int, int> maxRowsAndCols = GraphicUtilities::getTileGraphicTextMaxSize();
     for (int row = 0; row < maxRowsAndCols.first; row += 1) {
         for (int col = 0; col < maxRowsAndCols.second; col += 1) {
             GraphicUtilities::updateTileGraphicText(

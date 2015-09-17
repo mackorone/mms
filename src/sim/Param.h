@@ -29,7 +29,6 @@ public:
     std::string tileBaseColor();
     std::string tileWallColor();
     std::string tileCornerColor();
-    std::string tileTextColor();
     std::string tileFogColor();
     std::string tileUndeclaredWallColor();
     std::string tileUndeclaredNoWallColor();
@@ -41,8 +40,9 @@ public:
     std::string mouseViewColor();
     bool defaultWallTruthVisible();
     bool defaultTileColorsVisible();
-    bool defaultTileTextVisible();
     bool defaultTileFogVisible();
+    bool defaultTileTextVisible();
+    bool defaultTileDistanceVisible();
     double tileFogAlpha();
     bool defaultWireframeMode();
 
@@ -110,7 +110,6 @@ private:
     std::string m_tileBaseColor;
     std::string m_tileWallColor;
     std::string m_tileCornerColor;
-    std::string m_tileTextColor;
     std::string m_tileFogColor;
     std::string m_tileUndeclaredWallColor;
     std::string m_tileUndeclaredNoWallColor;
@@ -122,8 +121,9 @@ private:
     std::string m_mouseViewColor;
     bool m_defaultWallTruthVisible;
     bool m_defaultTileColorsVisible;
-    bool m_defaultTileTextVisible;
     bool m_defaultTileFogVisible;
+    bool m_defaultTileTextVisible;
+    bool m_defaultTileDistanceVisible;
     double m_tileFogAlpha;
     bool m_defaultWireframeMode;
 
