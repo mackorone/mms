@@ -111,7 +111,7 @@ void TileGraphic::updateText() const {
 
     std::vector<std::string> rows = m_rowsOfText;
     if (S()->tileDistanceVisible()) {
-        rows.insert(rows.begin(), std::to_string(m_tile->getDistanceFromCenter()));
+        rows.insert(rows.begin(), (0 <= m_tile->getDistance() ? std::to_string(m_tile->getDistance()) : "inf"));
     }
 
     std::pair<int, int> maxRowsAndCols = GraphicUtilities::getTileGraphicTextMaxSize();

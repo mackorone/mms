@@ -1,12 +1,13 @@
 High Pri:
 
+- Cross platform support
 - Check that a font exists, die if not
 - Check to make sure font won't be cut off, use ellipses if so
 - If can't open file, print error
 
 - Make a helper method in graphic utilities specifically for toggling tile text
+    - Update text is too slow... it's optimizing time
 
-- inf distance?
 - Put a toolbar at the top or bottom with info
 - Display a clock
 - Make some utility that keeps track of elapse time
@@ -14,9 +15,6 @@ High Pri:
     - Fix the Params associated with discrete sim-speed
 
 - Set the mouse algo in State (make that info available via the state object? for display?)
-
-- Make getMouseFile and getInterfaceType static methods
-    - Make a getMouseAlgoName method
 
 - Turn logging on/off
     - Be able to have no run directories kept
@@ -28,11 +26,9 @@ High Pri:
 - Gyroscope support
 - Support stepper motor / encoders interface
 - Tomasz maze-gen issues
-- Kyle push (Windows issues and clean up)
 
 - Rewrite text so that it's performant
 - Tile distances
-    - Should we rename these to tile text???
     - Depending on the maze size, the valid distances will be different - make this the case for the text
 - Actual distance values on the tile
     - MazeUtilities class that can get the distances???
@@ -70,8 +66,7 @@ Med Pri:
 - Make sure that the mouse fits in the starting square
 - Mouse wheel positive radians per second should be counter-clockwise by convention
 - Algo checklist?
-- Still view a maze if it passes validation, but don't let the sim continue...
-- File paths on other platforms might be broken...
+- Still view a maze if it fails validation, but don't let the sim continue...
 - Use vertex buffer object for the mouse body (only triangulate the mouse once)
     - Get rid of getInitialized method in mouse once we implement mouse drawing only once
 - Check megaMouse performance
@@ -80,8 +75,6 @@ Med Pri:
     - Make the sensor polygon model better
 - Add manual mode high scores
 - Continuous mode improvements (overall)
-- M_PI is not cross-platform
-- std::min, std::max is not cross-platform
 - Add a way to set the text color of each tile individually
 - Center the view of the zoomed map to the centroid of the mouse body polygon (this might not be good, but we should try it)
 - Xorg and compiz performance...

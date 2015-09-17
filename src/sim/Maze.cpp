@@ -70,6 +70,8 @@ Maze::Maze() {
 
     // Load the maze given by the maze generation algorithm
     initializeFromBasicMaze(basicMaze);
+
+    // TODO: MACK - Do some processing to set the distanceFromCenter property of the tiles
 }
 
 int Maze::getWidth() const {
