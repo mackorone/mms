@@ -1,9 +1,9 @@
 #include "Polygon.h"
 
-#include <cmath>
 #include <polypartition/polypartition.h>
 
 #include "units/Polar.h"
+#include "CPMath.h"
 
 namespace sim {
 

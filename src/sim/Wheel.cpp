@@ -1,6 +1,6 @@
 #include "Wheel.h"
 
-#include <cmath>
+#include "CPMath.h"
 
 namespace sim {
 

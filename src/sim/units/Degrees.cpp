@@ -1,6 +1,6 @@
 #include "Degrees.h"
 
-#include <cmath>
+#include "../CPMath.h"
 
 namespace sim {
 

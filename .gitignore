@@ -89,6 +89,9 @@ ipch/
 *.sdf
 *.cachefile
 
+# Windows glut/GLEW dll files
+*.dll
+
 # Visual Studio profiler
 *.psess
 *.vsp

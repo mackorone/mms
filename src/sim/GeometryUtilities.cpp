@@ -1,9 +1,10 @@
 #include "GeometryUtilities.h"
 
 #include <algorithm>
-#include <cmath>
 
 #include "Assert.h"
+#include "CPMath.h"
+#include "CPMinMax.h"
 #include "Param.h"
 
 namespace sim {

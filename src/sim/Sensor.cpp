@@ -1,10 +1,10 @@
 #include "Sensor.h"
 
 #include <algorithm>
-#include <cmath>
 
 #include "units/Polar.h"
 
+#include "CPMath.h"
 #include "GeometryUtilities.h"
 #include "Param.h"
 

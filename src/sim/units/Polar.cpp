@@ -1,7 +1,6 @@
 #include "Polar.h"
 
-#include <cmath>
-
+#include "../CPMath.h"
 #include "Cartesian.h"
 
 namespace sim {

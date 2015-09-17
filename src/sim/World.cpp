@@ -1,8 +1,9 @@
 #include "World.h"
 
-#include <cmath>
 #include <thread>
 
+#include "CPMath.h"
+#include "CPMinMax.h"
 #include "GeometryUtilities.h"
 #include "Param.h"
 #include "SimUtilities.h"
@@ -11,7 +12,6 @@
 namespace sim {
 
 World::World(Maze* maze, Mouse* mouse) : m_maze(maze), m_mouse(mouse), m_collision(false) {
-
 }
 
 void World::simulate() {

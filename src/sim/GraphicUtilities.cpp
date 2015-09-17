@@ -1,11 +1,12 @@
 #include "GraphicUtilities.h"
 
 #include <algorithm>
-#include <cmath>
 
 #include <glut/glut.h>
 
 #include "Assert.h"
+#include "CPMath.h"
+#include "CPMinMax.h"
 #include "GeometryUtilities.h"
 #include "Param.h"
 #include "SimUtilities.h"

@@ -6,3 +6,4 @@
 * Mitchell Rathbun - mrathbun@buffalo.edu
 * James Mazur - jamesmaz@buffalo.edu
 * Tomasz Pietruszka - tomaszpi@buffalo.edu
+* Kyle Thompson - kt49@buffalo.edu

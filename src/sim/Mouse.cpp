@@ -1,6 +1,5 @@
 #include "Mouse.h"
 
-#include <cmath>
 #include <iostream>
 
 #include "units/Meters.h"
@@ -8,6 +7,7 @@
 #include "units/Polar.h"
 
 #include "Assert.h"
+#include "CPMath.h"
 #include "Directory.h"
 #include "GeometryUtilities.h"
 #include "MouseParser.h"

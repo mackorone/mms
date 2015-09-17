@@ -1,7 +1,16 @@
 #include "Continuous.h"
 
-#include <cmath>
 #include <iostream>
+
+#ifdef _WIN32
+#   define _USE_MATH_DEFINES
+#   undef max
+#   undef min
+#endif
+#include <cmath>
+#undef M_PI
+#define M_PI 3.14159265358979323846
+
 namespace continuous {
 
 std::string Continuous::mouseFile() const {

@@ -1,7 +1,5 @@
 #include "MouseInterface.h"
 
-#include <cmath>
-
 #include "units/Meters.h"
 #include "units/MetersPerSecond.h"
 #include "units/Milliseconds.h"
@@ -9,6 +7,8 @@
 
 #include "Assert.h"
 #include "Color.h"
+#include "CPMath.h"
+#include "CPMinMax.h"
 #include "Logging.h"
 #include "Param.h"
 #include "State.h"
@@ -27,18 +27,23 @@ void MouseInterface::delay(int milliseconds) {
 void MouseInterface::setTileColor(int x, int y, char color) {
 
     if (!withinMaze(x, y)) {
+
+#ifndef _WIN32 // TODO
         PRINT(WARN,
             "There is no tile at position (%v, %v) and thus you cannot set its "
             "color.",
             x, y);
+#endif
         return;
     }
 
     if (!SimUtilities::mapContains(CHAR_TO_COLOR, color)) {
+#ifndef _WIN32 // TODO
         PRINT(WARN,
             "You cannot set the color of tile (%v, %v) to '%v' since '%v' is "
             "not mapped to a color.",
             x, y, color, color);
+#endif
         return;
     }
 
@@ -49,10 +54,12 @@ void MouseInterface::setTileColor(int x, int y, char color) {
 void MouseInterface::clearTileColor(int x, int y) {
 
     if (!withinMaze(x, y)) {
+#ifndef _WIN32 // TODO
         PRINT(WARN,
             "There is no tile at position (%v, %v) and thus you cannot clear its "
             "color.",
             x, y);
+#endif
         return;
     }
 
