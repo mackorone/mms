@@ -76,14 +76,16 @@ void MouseInterface::setTileDistance(int x, int y, int distance) {
         return;
     }
 
+    /* // TODO: MACK
     if (distance < 0 || 255 < distance) {
         SimUtilities::print(std::string("Error: You cannot set the distance of the tile at position ("
             + std::to_string(x) + std::string(", ") + std::to_string(y) + std::string(") to " + std::to_string(distance)
             + " since that falls outside of [0,255], the range of valid tile distances.")));
         return;
     }
+    */
 
-    m_mazeGraphic->setTileDistance(x, y, distance);
+    m_mazeGraphic->setTileText(x, y, {std::to_string(distance)});
 }
 
 void MouseInterface::clearTileDistance(int x, int y) {
@@ -94,14 +96,14 @@ void MouseInterface::clearTileDistance(int x, int y) {
         return;
     }
 
-    m_mazeGraphic->setTileDistance(x, y, -1);
+    m_mazeGraphic->setTileText(x, y, {});
 }
 
 void MouseInterface::clearAllTileDistance() {
 
     for (int x = 0; x < m_mazeGraphic->getWidth(); x += 1) {
         for (int y = 0; y < m_mazeGraphic->getHeight(); y += 1) {
-            m_mazeGraphic->setTileDistance(x, y, -1); 
+            m_mazeGraphic->setTileText(x, y, {}); 
         }
     }
 }

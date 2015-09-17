@@ -4,7 +4,7 @@ import sys
 def char_to_quoted_filename(char):
     return '"_' + char + '_.png"'
 
-characters = ' 0123456789inf'
+characters = '0123456789 inf'
 
 fontpath = sys.argv[1]
 fontname = fontpath[fontpath.rfind('/') + 1 : fontpath.rfind('.')]
@@ -12,7 +12,7 @@ fontname = fontpath[fontpath.rfind('/') + 1 : fontpath.rfind('.')]
 # Options for the imagemagick "convert" command
 options = {
     'background': 'none',
-    'extent': '16x32',
+    'extent': '16x28',
     'fill': 'gray75',
     'font': fontpath,
     'gravity': 'center',

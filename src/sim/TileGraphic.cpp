@@ -9,7 +9,7 @@
 namespace sim {
 
 TileGraphic::TileGraphic(const Tile* tile) : m_tile(tile), m_color(STRING_TO_COLOR.at(P()->tileBaseColor())),
-        m_distance(0), m_foggy(true) {
+        m_foggy(true) {
 }
 
 bool TileGraphic::wallDeclared(Direction direction) const {
@@ -21,16 +21,6 @@ void TileGraphic::setColor(Color color) {
     updateColor();
 }
 
-void TileGraphic::setDistance(int distance) {
-    m_distance = distance;
-    updateDistance();
-}
-
-void TileGraphic::setFogginess(bool foggy) {
-    m_foggy = foggy;
-    updateFog();
-}
-
 void TileGraphic::declareWall(Direction direction, bool isWall) {
     m_declaredWalls[direction] = isWall;
     updateWall(direction);
@@ -39,6 +29,16 @@ void TileGraphic::declareWall(Direction direction, bool isWall) {
 void TileGraphic::undeclareWall(Direction direction) {
     m_declaredWalls.erase(direction);
     updateWall(direction);
+}
+
+void TileGraphic::setFogginess(bool foggy) {
+    m_foggy = foggy;
+    updateFog();
+}
+
+void TileGraphic::setText(const std::vector<std::string>& rowsOfText) {
+    m_rowsOfText = rowsOfText;
+    updateText();
 }
 
 void TileGraphic::draw() const {
@@ -76,19 +76,18 @@ void TileGraphic::draw() const {
         STRING_TO_COLOR.at(P()->tileFogColor()),
         m_foggy && S()->tileFogVisible() ? P()->tileFogAlpha() : 0.0);
 
-    // TODO: MACK - Draw the tile gridlines...
+    // TODO: MACK - Draw the tile gridlines... (maybe just one big texture???)
     // Ideally, we should only have to draw a few lines that span the entire maze, as opposed to many little lines...
 
-    // Draw the distance character textures
-    static int numRows = 2; // TODO: MACK - Make this a constant somewhere
-    static int numCols = 1; // TODO: MACK - Make this a constant somewhere
-    for (int row = 0; row < numRows; row += 1) {
-        for (int col = 0; col < numCols; col += 1) {
-            GraphicUtilities::insertIntoTextureCpuBuffer(
-                getTextPolygon(numRows, numCols, row, col),
-                ' ');
+    // Insert all of the tile texture objects into the buffer
+    std::pair<int, int> maxRowsAndCols = GraphicUtilities::getTileGraphicTextMaxSize();
+    for (int row = 0; row < maxRowsAndCols.first; row += 1) {
+        for (int col = 0; col < maxRowsAndCols.second; col += 1) {
+            GraphicUtilities::insertIntoTextureCpuBuffer();
         }
     }
+    // TODO: MACK - draw the tile distances here if necessary (we're always drawing nothing at first)
+    updateText();
 }
 
 void TileGraphic::updateColor() const {
@@ -96,14 +95,37 @@ void TileGraphic::updateColor() const {
         S()->tileColorsVisible() ? m_color : STRING_TO_COLOR.at(P()->tileBaseColor()));
 }
 
+void TileGraphic::updateWalls() const {
+    for (Direction direction : DIRECTIONS) {
+        updateWall(direction);
+    }
+}
+
 void TileGraphic::updateFog() const {
     GraphicUtilities::updateTileGraphicFog(m_tile->getX(), m_tile->getY(),
         m_foggy && S()->tileFogVisible() ? P()->tileFogAlpha() : 0.0);
 }
 
-void TileGraphic::updateWalls() const {
-    for (Direction direction : DIRECTIONS) {
-        updateWall(direction);
+void TileGraphic::updateText() const {
+
+    std::pair<int, int> maxRowsAndCols = GraphicUtilities::getTileGraphicTextMaxSize();
+    // TODO: MACK: Check to see if we should show actual distances.
+    // If so, prepend to the rows and push down the other rows and show
+    std::vector<std::string> rows = m_rowsOfText;
+    //rows.insert(rows.begin(), "1234");
+
+    for (int row = 0; row < maxRowsAndCols.first; row += 1) {
+        for (int col = 0; col < maxRowsAndCols.second; col += 1) {
+            GraphicUtilities::updateTileGraphicText(
+                m_tile,
+                std::min(static_cast<int>(rows.size()), maxRowsAndCols.first),
+                std::min(
+                    static_cast<int>((row < rows.size() ? rows.at(row).size() : 0)),
+                    maxRowsAndCols.second),
+                row,
+                col,
+                (S()->tileTextVisible() && row < rows.size() && col < rows.at(row).size() ? rows.at(row).at(col) : ' '));
+        }
     }
 }
 
@@ -163,46 +185,6 @@ std::pair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction
     }
 
     return std::make_pair(wallColor, wallAlpha);
-}
-
-void TileGraphic::updateDistance() const {
-    for (int row = 0; row < 2; row += 1) {
-        for (int col = 0; col < 4; col += 1) {
-            /*
-            GraphicUtilities::updateTileGraphicDistanceCharacter(m_tile->getX(), m_tile->getY(),
-                row, col, S()->tileTextVisible() ? m_color : STRING_TO_COLOR.at(P()->tileBaseColor()));
-            */
-        }
-    }
-}
-
-Polygon TileGraphic::getTextPolygon(int numRows, int numCols, int row, int col) const {
-
-    //                  *---*-------------------*---*
-    //                  |   |                   |   |
-    //                  *---*-------------------Y---*
-    //                  |   |    |    |    |    |   |
-    //                  |   |    |    |    |    |   |
-    //                  |   | 10 | 11 | 12 | 13 |   |
-    //                  |   |____|____|____|____|   |
-    //                  |   |    |    |    |    |   |
-    //                  |   |    |    |    |    |   |
-    //                  |   | 00 | 01 | 02 | 03 |   |
-    //                  |   |    |    |    |    |   |
-    //                  *---X-------------------*---*
-    //                  |   |                   |   |
-    //                  *---*-------------------*---*
-
-    Cartesian X = m_tile->getInteriorPolygon().getVertices().at(0);
-    Cartesian Y = m_tile->getInteriorPolygon().getVertices().at(2);
-    Cartesian diagonal = Y - X;
-    Meters characterWidth = diagonal.getX() / static_cast<double>(numCols);
-    Meters characterHeight = diagonal.getY() / static_cast<double>(numRows);
-    return Polygon({
-        X + Cartesian(characterWidth *  col     , characterHeight *  row     ),
-        X + Cartesian(characterWidth *  col     , characterHeight * (row + 1)),
-        X + Cartesian(characterWidth * (col + 1), characterHeight * (row + 1)),
-        X + Cartesian(characterWidth * (col + 1), characterHeight *  row     )});
 }
 
 } // namespace sim

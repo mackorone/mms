@@ -5,6 +5,7 @@
 #include "Color.h"
 #include "Direction.h"
 #include "Polygon.h"
+#include "Tile.h"
 #include "TriangleGraphic.h"
 #include "TriangleTexture.h"
 
@@ -43,13 +44,16 @@ public:
 
     // Fills the GRAPHIC_CPU_BUFFER and TEXTURE_CPU_BUFFER
     static void insertIntoGraphicCpuBuffer(const Polygon& polygon, Color color, float alpha);
-    static void insertIntoTextureCpuBuffer(const Polygon& polygon, char c); // TODO: MACK - define valid characters
+    static void insertIntoTextureCpuBuffer();
+
+    // Returns the maximum number of rows and columns of text in a tile graphic
+    static std::pair<int, int> getTileGraphicTextMaxSize();
 
     // These methods are inexpensive, and may be called many times
     static void updateTileGraphicBaseColor(int x, int y, Color color);
     static void updateTileGraphicWallColor(int x, int y, Direction direction, Color color, float alpha);
     static void updateTileGraphicFog(int x, int y, float alpha);
-    static void updateTileGraphicText(int x, int y, int row, int col, char c);
+    static void updateTileGraphicText(const Tile* tile, int numRows, int numCols, int row, int col, char c);
 
     // TODO: MACK - Add an update method for the mouse so that we only triangulate once
     static void drawMousePolygon(const Polygon& polygon, Color color, float sensorAlpha);
@@ -63,6 +67,9 @@ private:
     // Maze dimensions in tiles
     static int m_mazeWidth;
     static int m_mazeHeight;
+
+    // The characters in the font image
+    static const std::string m_fontImageCharacters;
 
     // Returns the number of pixels per meter of the screen
     static double getScreenPixelsPerMeter();
@@ -79,7 +86,6 @@ private:
 
     // Converts a polygon to a vector of triangle graphics or triangle textures
     static std::vector<TriangleGraphic> polygonToTriangleGraphics(const Polygon& polygon, Color color, float alpha);
-    static std::vector<TriangleTexture> polygonToTriangleTextures(const Polygon& polygon, char c);
 
     // Retrieve the indices into the GRAPHIC_CPU_BUFFER for each specific type of Tile triangle
     static int trianglesPerTile();
@@ -90,6 +96,7 @@ private:
 
     // Retrieve the indices into the TEXTURE_CPU_BUFFER
     static int getTileGraphicTextStartingIndex(int x, int y, int row, int col);
+
 };
 
 } // namespace sim

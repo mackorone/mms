@@ -324,6 +324,7 @@ void Driver::keyPress(unsigned char key, int x, int y) {
     else if (key == 'x') {
         // Toggle tile text
         S()->setTileTextVisible(!S()->tileTextVisible());
+        m_mazeGraphic->updateText();
     }
     else if (key == 'g') {
         // Toggle tile fog
@@ -410,7 +411,7 @@ void Driver::initTextureProgram() {
         2, GL_DOUBLE, GL_TRUE, 4 * sizeof(double), (char*) NULL + 2 * sizeof(double));
 
     // Load the bitmap texture into the texture atlas
-    tdogl::Bitmap bmp = tdogl::Bitmap::bitmapFromFile(Directory::getResImgsDirectory() + "1.png");
+    tdogl::Bitmap bmp = tdogl::Bitmap::bitmapFromFile(Directory::getResImgsDirectory() + "DroidSansMono.png");
     bmp.flipVertically();
     m_textureAtlas = new tdogl::Texture(bmp);
 

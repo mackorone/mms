@@ -34,17 +34,6 @@ void MazeGraphic::setTileColor(int x, int y, Color color) {
     m_tileGraphics.at(x).at(y).setColor(color);
 }
 
-void MazeGraphic::setTileDistance(int x, int y, int distance) {
-    ASSERT(0 <= x && x <= getWidth() && 0 <= y && y < getHeight());
-    ASSERT(-1 <= distance && distance <= 255);
-    m_tileGraphics.at(x).at(y).setDistance(distance);
-}
-
-void MazeGraphic::setTileFogginess(int x, int y, bool foggy) {
-    ASSERT(0 <= x && x <= getWidth() && 0 <= y && y < getHeight());
-    m_tileGraphics.at(x).at(y).setFogginess(foggy);
-}
-
 void MazeGraphic::declareWall(int x, int y, Direction direction, bool isWall) {
     ASSERT(0 <= x && x <= getWidth() && 0 <= y && y < getHeight());
     m_tileGraphics.at(x).at(y).declareWall(direction, isWall);
@@ -53,6 +42,16 @@ void MazeGraphic::declareWall(int x, int y, Direction direction, bool isWall) {
 void MazeGraphic::undeclareWall(int x, int y, Direction direction) {
     ASSERT(0 <= x && x <= getWidth() && 0 <= y && y < getHeight());
     m_tileGraphics.at(x).at(y).undeclareWall(direction);
+}
+
+void MazeGraphic::setTileFogginess(int x, int y, bool foggy) {
+    ASSERT(0 <= x && x <= getWidth() && 0 <= y && y < getHeight());
+    m_tileGraphics.at(x).at(y).setFogginess(foggy);
+}
+
+void MazeGraphic::setTileText(int x, int y, const std::vector<std::string>& rowsOfText) {
+    ASSERT(0 <= x && x <= getWidth() && 0 <= y && y < getHeight());
+    m_tileGraphics.at(x).at(y).setText(rowsOfText);
 }
 
 void MazeGraphic::draw() const {
@@ -88,6 +87,14 @@ void MazeGraphic::updateFog() const {
     for (int x = 0; x < getWidth(); x += 1) {
         for (int y = 0; y < getHeight(); y += 1) {
             m_tileGraphics.at(x).at(y).updateFog();
+        }
+    }
+}
+
+void MazeGraphic::updateText() const {
+    for (int x = 0; x < getWidth(); x += 1) {
+        for (int y = 0; y < getHeight(); y += 1) {
+            m_tileGraphics.at(x).at(y).updateText();
         }
     }
 }

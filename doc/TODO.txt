@@ -2,6 +2,9 @@ High Pri:
 
 - Check that a font exists, die if not
 - Check to make sure font won't be cut off, use ellipses if so
+- If can't open file, print error
+
+- Make a helper method in graphic utilities specifically for toggling tile text
 
 - inf distance?
 - Put a toolbar at the top or bottom with info

@@ -11,6 +11,7 @@
 #include "SimUtilities.h"
 #include "State.h"
 #include "Triangle.h"
+#include "VertexTexture.h"
 
 namespace sim {
 
@@ -19,6 +20,12 @@ std::vector<TriangleTexture> GraphicUtilities::TEXTURE_CPU_BUFFER;
 
 int GraphicUtilities::m_windowWidth = 0;
 int GraphicUtilities::m_windowHeight = 0;
+
+int GraphicUtilities::m_mazeWidth = 0;
+int GraphicUtilities::m_mazeHeight = 0;
+
+// These values must perfectly reflect the font image being used
+const std::string GraphicUtilities::m_fontImageCharacters = "0123456789 inf";
 
 std::pair<int, int> GraphicUtilities::getWindowSize() {
     return std::make_pair(m_windowWidth, m_windowHeight);
@@ -30,8 +37,6 @@ void GraphicUtilities::setWindowSize(int windowWidth, int windowHeight) {
     m_windowHeight = windowHeight;
 }
 
-int GraphicUtilities::m_mazeWidth = 0;
-int GraphicUtilities::m_mazeHeight = 0;
 void GraphicUtilities::setMazeSize(int mazeWidth, int mazeHeight) {
     ASSERT(m_mazeWidth == 0 && m_mazeHeight == 0);
     ASSERT(0 < mazeWidth && 0 < mazeHeight);
@@ -286,23 +291,24 @@ void GraphicUtilities::insertIntoGraphicCpuBuffer(const Polygon& polygon, Color 
     }
 }
 
-void GraphicUtilities::insertIntoTextureCpuBuffer(const Polygon& polygon, char c) {
-    // Note that we expect the polygon to be a rectangle whose vertices are in
-    // the following order: lower-left, upper-left, upper-right, lower-right.
-    Cartesian ll = polygon.getVertices().at(0);
-    Cartesian ul = polygon.getVertices().at(1);
-    Cartesian ur = polygon.getVertices().at(2);
-    Cartesian lr = polygon.getVertices().at(3);
-    ASSERT(ll.getX().getMeters() == ul.getX().getMeters());
-    ASSERT(lr.getX().getMeters() == ur.getX().getMeters());
-    ASSERT(ll.getY().getMeters() == lr.getY().getMeters());
-    ASSERT(ul.getY().getMeters() == ur.getY().getMeters());
-    ASSERT(ll.getX().getMeters() <= ur.getX().getMeters());
-    ASSERT(ll.getY().getMeters() <= ur.getY().getMeters());
-    std::vector<TriangleTexture> tts = polygonToTriangleTextures(polygon, c);
-    for (int i = 0; i < tts.size(); i += 1) {
-        TEXTURE_CPU_BUFFER.push_back(tts.at(i));
+void GraphicUtilities::insertIntoTextureCpuBuffer() {
+    // Here we just insert dummy TriangleTexture objects. All of the actual
+    // values of the objects will be set on calls to the update method.
+    TriangleTexture t {
+        {0.0, 0.0, 0.0, 0.0},
+        {0.0, 0.0, 0.0, 0.0},
+        {0.0, 0.0, 0.0, 0.0},
+    };
+    // There are exactly two triangle texture objects needed, since there are
+    // two triangles per rectangular texture
+    for (int i = 0; i < 2; i += 1) {
+        TEXTURE_CPU_BUFFER.push_back(t);
     }
+}
+
+std::pair<int, int> GraphicUtilities::getTileGraphicTextMaxSize() {
+    static std::pair<int, int> maxRowsAndCols = std::make_pair(2, 4);
+    return maxRowsAndCols;
 }
 
 void GraphicUtilities::updateTileGraphicBaseColor(int x, int y, Color color) {
@@ -352,9 +358,66 @@ void GraphicUtilities::updateTileGraphicFog(int x, int y, float alpha) {
     }
 }
 
-void GraphicUtilities::updateTileGraphicText(int x, int y, int row, int col, char c) {
-    // TODO: MACK
-    // I'll have to define getTileGraphicTextStartingIndex() for this 
+void GraphicUtilities::updateTileGraphicText(const Tile* tile, int numRows, int numCols, int row, int col, char c) {
+
+    //                          col
+    //
+    //             *---*-------------------*---*
+    //             |   |                   |   |
+    //             *---*------------------[Y]--*
+    //             |   |    |    |    |    |   |
+    //             |   |    |    |    |    |   |
+    //             |   | 00 | 01 | 02 | 03 |   |
+    // rowsFromTop |   |____|____|____|____|   |
+    //             |   |    |    |    |    |   |
+    //             |   |    |    |    |    |   |
+    //             |   | 10 | 11 | 12 | 13 |   |
+    //             |   |    |    |    |    |   |
+    //             *--[X]------------------*---*
+    //             |   |                   |   |
+    //             *---*-------------------*---*
+
+    std::pair<int, int> maxRowsAndCols = GraphicUtilities::getTileGraphicTextMaxSize();
+    Cartesian X = tile->getInteriorPolygon().getVertices().at(0);
+    Cartesian Y = tile->getInteriorPolygon().getVertices().at(2);
+    Cartesian diagonal = Y - X;
+    Meters characterWidth = diagonal.getX() / static_cast<double>(maxRowsAndCols.second);
+    Meters characterHeight = diagonal.getY() / static_cast<double>(maxRowsAndCols.first);
+
+    // The rows start from the top and increase down the cell
+    int rowsFromTop = maxRowsAndCols.first - row - 1;
+    double rowOffset = rowsFromTop - static_cast<double>(maxRowsAndCols.first - numRows) / 2.0;
+    double colOffset = col + static_cast<double>(maxRowsAndCols.second - numCols) / 2.0;
+
+    int fontImageCharacterIndex = m_fontImageCharacters.find_first_of(c);
+    VertexTexture p1 = { // LL
+        (X + Cartesian(characterWidth *  colOffset     , characterHeight *  rowOffset     )).getX().getMeters(),
+        (X + Cartesian(characterWidth *  colOffset     , characterHeight *  rowOffset     )).getY().getMeters(),
+        static_cast<double>(fontImageCharacterIndex) / static_cast<double>(m_fontImageCharacters.size()),
+        0.0,
+    };
+    VertexTexture p2 = { // UL
+        (X + Cartesian(characterWidth *  colOffset     , characterHeight * (rowOffset + 1))).getX().getMeters(),
+        (X + Cartesian(characterWidth *  colOffset     , characterHeight * (rowOffset + 1))).getY().getMeters(),
+        static_cast<double>(fontImageCharacterIndex) / static_cast<double>(m_fontImageCharacters.size()),
+        1.0,
+    };
+    VertexTexture p3 = { // UR
+        (X + Cartesian(characterWidth * (colOffset + 1), characterHeight * (rowOffset + 1))).getX().getMeters(),
+        (X + Cartesian(characterWidth * (colOffset + 1), characterHeight * (rowOffset + 1))).getY().getMeters(),
+        static_cast<double>(fontImageCharacterIndex + 1) / static_cast<double>(m_fontImageCharacters.size()),
+        1.0,
+    };
+    VertexTexture p4 = { // LR
+        (X + Cartesian(characterWidth * (colOffset + 1), characterHeight *  rowOffset     )).getX().getMeters(),
+        (X + Cartesian(characterWidth * (colOffset + 1), characterHeight *  rowOffset     )).getY().getMeters(),
+        static_cast<double>(fontImageCharacterIndex + 1) / static_cast<double>(m_fontImageCharacters.size()),
+        0.0,
+    };
+
+    int triangleTextureIndex = getTileGraphicTextStartingIndex(tile->getX(), tile->getY(), row, col);
+    TEXTURE_CPU_BUFFER.at(triangleTextureIndex) = {p1, p2, p3};
+    TEXTURE_CPU_BUFFER.at(triangleTextureIndex + 1) = {p1, p3, p4};
 }
 
 void GraphicUtilities::drawMousePolygon(const Polygon& polygon, Color color, float sensorAlpha) {
@@ -418,32 +481,6 @@ std::vector<TriangleGraphic> GraphicUtilities::polygonToTriangleGraphics(const P
     return triangleGraphics;
 }
 
-std::vector<TriangleTexture> GraphicUtilities::polygonToTriangleTextures(const Polygon& polygon, char c) {
-    // Note that this function should only be called by
-    // insertIntoTextureCpuBuffer. Also note that we expect the polygon to be a
-    // rectangle whose vertices are in the following order: lower-left,
-    // upper-left, upper-right, lower-right.
-    Cartesian ll = polygon.getVertices().at(0);
-    Cartesian ul = polygon.getVertices().at(1);
-    Cartesian ur = polygon.getVertices().at(2);
-    Cartesian lr = polygon.getVertices().at(3);
-    VertexTexture p1 { // LL
-        ll.getX().getMeters(), ll.getY().getMeters(), 0.0, 0.0,
-    };
-    VertexTexture p2 { // UL
-        ul.getX().getMeters(), ul.getY().getMeters(), 0.0, 1.0,
-    };
-    VertexTexture p3 { // UR
-        ur.getX().getMeters(), ur.getY().getMeters(), 1.0, 1.0,
-    };
-    VertexTexture p4 { // LR
-        lr.getX().getMeters(), lr.getY().getMeters(), 1.0, 0.0,
-    };
-    TriangleTexture t1 {p1, p2, p3};
-    TriangleTexture t2 {p1, p3, p4};
-    return {t1, t2};
-}
-
 int GraphicUtilities::trianglesPerTile() {
     // This value must be predetermined, and was done so as follows:
     // Base polygon:      2 (2 triangles x 1 polygon  per tile)
@@ -472,7 +509,9 @@ int GraphicUtilities::getTileGraphicFogStartingIndex(int x, int y) {
 }
 
 int GraphicUtilities::getTileGraphicTextStartingIndex(int x, int y, int row, int col) {
-    // TODO: MACK
+    static std::pair<int, int> maxRowsAndCols = getTileGraphicTextMaxSize();
+    static int triangleTexturesPerTile = 2 * maxRowsAndCols.first * maxRowsAndCols.second;
+    return triangleTexturesPerTile * (m_mazeHeight * x + y) + 2 * (row * maxRowsAndCols.second + col);
 }
 
 } // namespace sim
