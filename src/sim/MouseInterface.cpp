@@ -8,11 +8,11 @@
 #include "Assert.h"
 #include "Color.h"
 #include "CPMath.h"
-#include "CPMinMax.h"
 #include "Logging.h"
 #include "Param.h"
 #include "State.h"
 #include "SimUtilities.h"
+#include "CPMinMax.h"
 
 namespace sim {
 

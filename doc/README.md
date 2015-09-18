@@ -74,8 +74,10 @@ a project in Visual Studio.  To do this automatically:
     C:\Users\Kyle\Desktop\openGL\glew-1.11.0\include
 	
     C:\Users\Kyle\Desktop\openGL\freeglut\include
+	
+	Click "Apply".
    
-9)  Under C/C++ - Output Files - Object File Name: Enter '$(IntDir)/%(RelativeDir)/
+9)  Under C/C++ - Output Files - Object File Name: Enter '$(IntDir)/%(RelativeDir)/'. Click "Apply".
 
 10) Under Linker - General - Additional Library Directories: Add the lib folders
     within the freeglut and GLEW folders.  
@@ -85,20 +87,26 @@ a project in Visual Studio.  To do this automatically:
 	
 	C:\Users\Kyle\Desktop\openGL\freeglut\include
 	
-11) Under Linker - Input: Add the following:
+	Click "Apply".
+	
+11) Under Linker - Input - Additional Dependencies: Add the following:
 
 	freeglut.lib
 	
 	glew32.lib
 	
-12) In the 'Solution Explorer' right click 'Resource Files' and select 
+	Click "Apply".
+	
+12) Place glew.dll and freeglut.dll inside the src folder.
+	
+13) In the 'Solution Explorer' right click 'Resource Files' and select 
 	Add -> Existing Item.  Select mms\res\parameters.xml.  This allows
 	for easy access to the parameters file.
 
-13) To build the project select Build -> Build Solution or just run it and you will
+14) To build the project select Build -> Build Solution or just run it and you will
    be prompted if you want to build the changed project
 
-14) To run the program select Debug -> Start Without Debugging
+15) To run the program select Debug -> Start Without Debugging
 
 -------------------------------------------------------------------------------
 
@@ -178,7 +186,7 @@ object, and the the variable name for the pointer is "m_mouse"):
     5) m_mouse->turnRight()
     6) m_mouse->turnLeft()
 
-Functions 1-3 return true or false values correpsonding to whether or not there
+Functions 1-3 return true or false values corresponding to whether or not there
 is a wall to the front, right, or left of the robot. Functions 4-6 instruct the
 robot to move forward, turn left, or turn right. No other functions are
 provided to the user and all other functionality must be supplied else-where, 
