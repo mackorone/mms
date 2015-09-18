@@ -177,6 +177,9 @@ void Mouse::update(const Duration& elapsed) {
     Meters distance((rightWheelSpeed - leftWheelSpeed).getMetersPerSecond() / 2.0 * elapsed.getSeconds());
     m_translation += Polar(distance, Wheel().getInitialRotation() + m_rotation); // This could be optimized
 
+    // Update the amount each wheel has rotated
+    // TODO: MACK
+
     // -----------------------------------------------------------------------------------------------------
 
     // TODO: This is the technically corect implementation...

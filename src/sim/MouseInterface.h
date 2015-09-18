@@ -5,6 +5,11 @@
 #include "Mouse.h"
 #include "Param.h"
 
+// Windows compatibility
+#ifdef _WIN32
+#define __func__ __FUNCTION__
+#endif
+
 #define ENSURE_DISCRETE_INTERFACE ensureDiscreteInterface(__func__);
 #define ENSURE_CONTINUOUS_INTERFACE ensureContinuousInterface(__func__);
 

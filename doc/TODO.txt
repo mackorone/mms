@@ -1,38 +1,42 @@
 High Pri:
 
-- Cross platform support
-- Check that a font exists, die if not
-- Check to make sure font won't be cut off, use ellipses if so
-- If can't open file, print error
+- Support stepper motor / encoders interface
+    - Mouse wheel positive radians per second should be counter-clockwise by convention
 
-- Make a helper method in graphic utilities specifically for toggling tile text
+- Gyroscope support
+
+- Tile Text
+    - Check that a font and image exist, print error and die if not
+    - Make a helper method in graphic utilities specifically for toggling tile text
+    - Build a cache with positions already pre-calculated
+    - Use a map instead of a string for quicker search
     - Update text is too slow... it's optimizing time
 
-- Put a toolbar at the top or bottom with info
-- Display a clock
+- Tile distances
+    - Actual distance values on the tile
+    - MazeUtilities class that can get the distances???
+    - Depending on the maze size, the valid distances will be different - make this the case for the text
+
 - Make some utility that keeps track of elapse time
     - Make the sim speed non-arbitrary
     - Fix the Params associated with discrete sim-speed
 
-- Set the mouse algo in State (make that info available via the state object? for display?)
+- Put a toolbar at the top or bottom with info
+    - Display a clock
+    - Check to make sure font won't be cut off, use ellipses if so
+    - Set the mouse algo in State for display in the toolbar
 
-- Turn logging on/off
-    - Be able to have no run directories kept
+- Logging
+    - Limit the number of run directories kept
+        - This is tricky... what should be the semantics of this operation?
+    - Cross platform support for logging
+    - Turn logging on/off
+        - Be able to have no run directories kept
+    - Figure out how to get rid of logging error message on fatal
 
 - Use markdown in the readme
 
-- Gyroscope support
-- Support stepper motor / encoders interface
 - Tomasz maze-gen issues
-
-- Rewrite text so that it's performant
-- Tile distances
-    - Depending on the maze size, the valid distances will be different - make this the case for the text
-- Actual distance values on the tile
-    - MazeUtilities class that can get the distances???
-    - State variable and key to control whether these are visible or not
-
-- Figure out how to get rid of logging error message on fatal
 
 - Maze size requirements and validity
 
@@ -62,7 +66,6 @@ Med Pri:
     - etc.
 - Protect functions that shouldn't be accessed by the algo by checking thread ID
 - Make sure that the mouse fits in the starting square
-- Mouse wheel positive radians per second should be counter-clockwise by convention
 - Algo checklist?
 - Still view a maze if it fails validation, but don't let the sim continue...
 - Use vertex buffer object for the mouse body (only triangulate the mouse once)
