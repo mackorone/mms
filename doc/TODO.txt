@@ -19,8 +19,6 @@ High Pri:
 - Turn logging on/off
     - Be able to have no run directories kept
 
-- ifPrintElseRun is probably broken if we have single/multiple args...
-
 - Use markdown in the readme
 
 - Gyroscope support

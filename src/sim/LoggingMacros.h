@@ -89,10 +89,10 @@ VARIADIC_LOG(level, MESSAGE, __VA_ARGS__)
 #define PRINT(...) GET_PRINT_MACRO(__VA_ARGS__)(__VA_ARGS__)
 
 // Convenience macro for printing if appropriate, logging if not
-#define IF_PRINT_ELSE_LOG(CONDITION, LEVEL, MESSAGE, ...)\
+#define IF_PRINT_ELSE_LOG(CONDITION, LEVEL, ...)\
 if (CONDITION) {\
-    PRINT(LEVEL, MESSAGE, __VA_ARGS__);\
+    PRINT(LEVEL, __VA_ARGS__);\
 }\
 else {\
-    LOG(LEVEL, MESSAGE, __VA_ARGS__);\
+    LOG(LEVEL, __VA_ARGS__);\
 }
