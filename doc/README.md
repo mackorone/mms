@@ -85,7 +85,7 @@ a project in Visual Studio.  To do this automatically:
 	
 	C:\Users\Kyle\Desktop\openGL\glew-1.11.0\lib
 	
-	C:\Users\Kyle\Desktop\openGL\freeglut\include
+	C:\Users\Kyle\Desktop\openGL\freeglut\lib
 	
 	Click "Apply".
 	
