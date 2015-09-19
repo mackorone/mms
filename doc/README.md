@@ -97,16 +97,29 @@ a project in Visual Studio.  To do this automatically:
 	
 	Click "Apply".
 	
-12) Place glew.dll and freeglut.dll inside the src folder.
+12) Go to the folder where the glew files are held, glew-1.1x.0 (there are different versions: 1.11 and 1.13 are proven to work).
+	Go the lib directory and the following files may or may not be there:
 	
-13) In the 'Solution Explorer' right click 'Resource Files' and select 
+	glew32.lib
+	
+	glew32s.lib
+	
+	If they are not already in lib, go to Release\Win32 and copy them to the lib directory.
+	
+13) Copy the freeglut.dll and glew32.dll files to the src folder, they can be found here:
+
+	...\freeglut\bin
+
+	...\glew-1.1x.0\bin\Release\Win32
+	
+14) In the 'Solution Explorer' right click 'Resource Files' and select 
 	Add -> Existing Item.  Select mms\res\parameters.xml.  This allows
 	for easy access to the parameters file.
 
-14) To build the project select Build -> Build Solution or just run it and you will
+15) To build the project select Build -> Build Solution or just run it and you will
    be prompted if you want to build the changed project
 
-15) To run the program select Debug -> Start Without Debugging
+16) To run the program select Debug -> Start Without Debugging
 
 -------------------------------------------------------------------------------
 
