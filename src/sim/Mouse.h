@@ -54,6 +54,9 @@ public:
     // Get the read time of a particular sensor
     Seconds getReadDuration(const std::string& name) const;
 
+    // Returns the value of the gyroscope
+    RadiansPerSecond readGyro() const;
+
     // For use with the discrete interface *only*
     Cartesian getInitialTranslation() const;
     Cartesian getCurrentTranslation() const;
@@ -69,7 +72,8 @@ private:
     Polygon m_initialBodyPolygon; // The polygon of strictly the body of the mouse
     Polygon m_initialCollisionPolygon; // The polygon containing all collidable parts of the mouse
 
-    // The rotation and translation of the mouse, which change throughout execution
+    // The gyro, rotationr, and translation of the mouse, which change throughout execution
+    RadiansPerSecond m_gyro;
     Radians m_rotation;
     Cartesian m_translation;
 

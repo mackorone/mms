@@ -237,6 +237,13 @@ double MouseInterface::read(std::string name) {
     return value;
 }
 
+double MouseInterface::readGyro() {
+
+    ENSURE_CONTINUOUS_INTERFACE
+
+    return m_mouse->readGyro().getDegreesPerSecond();
+}
+
 bool MouseInterface::wallFront() {
 
     ENSURE_DISCRETE_INTERFACE

@@ -50,6 +50,7 @@ public:
     // Continuous interface methods
     void setWheelSpeeds(double leftWheelRadiansPerSeconds, double rightWheelRadiansPerSecond);
     double read(std::string name);
+    double readGyro();
 
     // Discrete interface methods
     bool wallFront();

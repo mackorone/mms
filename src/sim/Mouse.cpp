@@ -10,13 +10,14 @@
 #include "CPMath.h"
 #include "Directory.h"
 #include "GeometryUtilities.h"
+#include "Logging.h" // TODO: MACK
 #include "MouseParser.h"
 #include "Param.h"
 #include "State.h"
 
 namespace sim {
 
-Mouse::Mouse(const Maze* maze) : m_maze(maze),
+Mouse::Mouse(const Maze* maze) : m_maze(maze), m_gyro(RadiansPerSecond(0.0)),
     m_rotation(DIRECTION_TO_ANGLE.at(STRING_TO_DIRECTION.at(P()->mouseStartingDirection()))) {
 }
 
@@ -170,15 +171,18 @@ void Mouse::update(const Duration& elapsed) {
     // Then get the distance between the two wheels
     Meters base(m_rightWheel.getInitialTranslation().getX() - m_leftWheel.getInitialTranslation().getX());
 
+    // Update the amount each wheel has rotated
+    // TODO: MACK
+
+    // Update the gyro
+    m_gyro = RadiansPerSecond((rightWheelSpeed + leftWheelSpeed).getMetersPerSecond() / base.getMeters());
+    
     // Update the rotation
-    m_rotation += Radians((rightWheelSpeed + leftWheelSpeed).getMetersPerSecond() / base.getMeters() * elapsed.getSeconds());
+    m_rotation += m_gyro * elapsed;
 
     // Update the translation
     Meters distance((rightWheelSpeed - leftWheelSpeed).getMetersPerSecond() / 2.0 * elapsed.getSeconds());
     m_translation += Polar(distance, Wheel().getInitialRotation() + m_rotation); // This could be optimized
-
-    // Update the amount each wheel has rotated
-    // TODO: MACK
 
     // -----------------------------------------------------------------------------------------------------
 
@@ -256,6 +260,10 @@ double Mouse::read(const std::string& name) const {
 Seconds Mouse::getReadDuration(const std::string& name) const {
     ASSERT(m_sensors.count(name) != 0);
     return m_sensors.at(name).getReadDuration();
+}
+
+RadiansPerSecond Mouse::readGyro() const {
+    return m_gyro;
 }
 
 Cartesian Mouse::getInitialTranslation() const {

@@ -28,7 +28,7 @@
 <default-wall-truth-visible>false</default-wall-truth-visible>
 <default-tile-fog-visible>true</default-tile-fog-visible>
 <default-tile-text-visible>true</default-tile-text-visible>
-<default-tile-distance-visible>true</default-tile-distance-visible>
+<default-tile-distance-visible>false</default-tile-distance-visible>
 <tile-fog-alpha>0.15</tile-fog-alpha> <!-- Must be in [0.0, 1.0] -->
 <default-wireframe-mode>false</default-wireframe-mode>
 
@@ -60,7 +60,7 @@
 <wall-height>0.05</wall-height> <!-- meters -->
 <enforce-official-maze-rules>false</enforce-official-maze-rules>
 <maze-file>longpath.maz</maze-file> <!-- relative to maze-directory -->
-<use-maze-file>true</use-maze-file> <!-- whether or not to use the maze file above -->
+<use-maze-file>false</use-maze-file> <!-- whether or not to use the maze file above -->
 <generated-maze-width>16</generated-maze-width> <!-- number of tiles -->
 <generated-maze-height>16</generated-maze-height> <!-- number of tiles -->
 <maze-algorithm>Tomasz</maze-algorithm> <!-- The name as specified in src/maze/MazeAlgorithms.cpp -->
