@@ -174,8 +174,8 @@ void Mouse::update(const Duration& elapsed) {
     // Update the amount each wheel has rotated
     // TODO: MACK
 
-    // Update the gyro
-    m_gyro = RadiansPerSecond((rightWheelSpeed + leftWheelSpeed).getMetersPerSecond() / base.getMeters());
+    // Update the gyro; -1 since positive wheel angular velocity causes negative gyro angular velocity
+    m_gyro = RadiansPerSecond(-1 * (leftWheelSpeed + rightWheelSpeed).getMetersPerSecond() / base.getMeters());
     
     // Update the rotation
     m_rotation += m_gyro * elapsed;

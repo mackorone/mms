@@ -24,7 +24,8 @@ class MouseInterface {
 public:
     MouseInterface(const Maze* maze, Mouse* mouse, MazeGraphic* mazeGraphic);
 
-    // Any interface methods
+    // ----- Any interface methods ----- //
+
     // TODO: random???
     // TODO: logging??? NOPE print (arduino) instead
     void delay(int milliseconds);
@@ -47,12 +48,19 @@ public:
     bool inputButtonPressed(int inputButton);
     void acknowledgeInputButtonPressed(int inputButton);
 
-    // Continuous interface methods
+    // ----- Continuous interface methods ----- //
+
+    // Counterclockwise looking into the wheel is positive, clockwise looking into the wheel is negative
     void setWheelSpeeds(double leftWheelRadiansPerSeconds, double rightWheelRadiansPerSecond);
+
+    // Returns a value in [0.0, 1.0]
     double read(std::string name);
+
+    // Returns deg/s of rotation
     double readGyro();
 
-    // Discrete interface methods
+    // ----- Discrete interface methods ----- //
+
     bool wallFront();
     bool wallRight();
     bool wallLeft();

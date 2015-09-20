@@ -1,9 +1,6 @@
 High Pri:
 
 - Support stepper motor / encoders interface
-    - Mouse wheel positive radians per second should be counter-clockwise by convention
-
-- Gyroscope support
 
 - Tile Text
     - Check that a font and image exist, print error and die if not
@@ -33,6 +30,9 @@ High Pri:
     - Turn logging on/off
         - Be able to have no run directories kept
     - Figure out how to get rid of logging error message on fatal
+    - Allowing 0 runs as the number of runs to keep in the run directory
+        - PRINT and LOG should be NOP when 0 is chosen
+        - But PRINT and LOG have to be resilient to Param reading failing
 
 - Use markdown in the readme
 
@@ -91,8 +91,8 @@ Med Pri:
 - Interrupt interface
 - Run the program with maximum thread priority
 - New maze w/o restarting app
+    - Be able to restart in the middle of a run (this is tricky with the algo thread...)
 - Fix the makefile so that if header files disappear we don't need to make clean
-- Be able to restart in the middle of a run (this is tricky with the algo thread...)
 - Make terminal style output at bottom or right of window (GUI)
 - Normalize random number generation (Implement Windows random number generation) // TODO: Should be fixed...
 - Make a nice mechanism for writing our own maze generation algorithms
@@ -106,9 +106,6 @@ bullets in other physics simulators
 - Crash recovery semantics
 - Draw a path of where the robot has been (the history object could be used for recording as well)
 - Perhaps use a separate process entirely for the mouse (so we can restart it easily)
-- Allowing 0 runs as the number of runs to keep in the run directory
-    - PRINT and LOG should be NOP when 0 is chosen
-    - But PRINT and LOG have to be resilient to Param reading failing
 
 Low-pri:
 - Clean up the coding standards
