@@ -112,7 +112,7 @@ a project in Visual Studio.  To do this automatically:
 
 	...\glew-1.1x.0\bin\Release\Win32
 	
-14) In the 'Solution Explorer' right click 'Resource Files' and select 
+14) In the 'Solution Explorer' right click the project and select 
 	Add -> Existing Item.  Select mms\res\parameters.xml.  This allows
 	for easy access to the parameters file.
 
