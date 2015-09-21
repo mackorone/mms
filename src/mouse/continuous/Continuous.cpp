@@ -1,8 +1,8 @@
 #include "Continuous.h"
 
 #include <iostream>
-#include <Windows.h>
 #ifdef _WIN32
+#   include <Windows.h>
 #   define _USE_MATH_DEFINES
 #   undef max
 #   undef min
@@ -23,6 +23,7 @@ std::string Continuous::interfaceType() const {
 
 void Continuous::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
 
+#if(0)
 	m_mouse = mouse;
 	/*
 	while (true) {
@@ -68,8 +69,10 @@ void Continuous::solve(int mazeWidth, int mazeHeight, char initialDirection, sim
 		//bluetoothPrint();
 		//solve();
 	}
+#endif
 }
 
+#if(0)
 
 //1ms timer
 void Continuous::correction() {
@@ -976,6 +979,7 @@ float Continuous::getAngle(float speedLeft, float speedRight) {
 	//.05741
 	return 0;
 }
+#endif
 
 
 } // namespace continuous

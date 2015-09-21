@@ -5,7 +5,8 @@
 // std::cerr. If, for some reason, this is insufficient for you, you're
 // probably using it incorrectly. 
 
-#if (1) // 1 = on, 0 = off
+#include "CompiledParams.h"
+#if (ASSERTS_ON)
 
 #include <iostream>
 
@@ -42,9 +43,9 @@ if ((one) != (two)) {\
     exit(1);\
 }
 
-#else
+#else // if (ASSERTS_ON)
 
 #define ASSERT(condition) ;
 #define ASSERT_EQUAL(one, two) ;
 
-#endif
+#endif // if (ASSERTS_ON)
