@@ -34,14 +34,13 @@ public:
     void clearTileColor(int x, int y);
     void clearAllTileColor();
 
-    void setTileDistance(int x, int y, int distance);
-    void clearTileDistance(int x, int y);
-    void clearAllTileDistance();
+    void declareWall(int x, int y, char direction, bool wallExists);
+    void undeclareWall(int x, int y, char direction);
 
     void setTileFogginess(int x, int y, bool foggy);
 
-    void declareWall(int x, int y, char direction, bool wallExists);
-    void undeclareWall(int x, int y, char direction);
+    void declareTileDistance(int x, int y, int distance);
+    void undeclareTileDistance(int x, int y);
 
     void resetPosition();
 

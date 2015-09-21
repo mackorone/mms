@@ -3,7 +3,6 @@
 #include <queue>
 #include <set>
 #include <vector>
-#include <iostream> // TODO: MACK
 
 #include "../maze/IMazeAlgorithm.h"
 #include "../maze/MazeAlgorithms.h"
@@ -238,13 +237,15 @@ std::vector<std::vector<Tile>> Maze::setTileDistances(std::vector<std::vector<Ti
 
     // Now do a BFS
     while (!discovered.empty()){
-        Tile* node = discovered.front();
+        Tile* tile = discovered.front();
         discovered.pop(); // Removes the element
         for (Direction direction : DIRECTIONS) {
-            Tile* neighbor = getNeighbor(node->getX(), node->getY(), direction);
-            if (!node->isWall(direction) && neighbor != nullptr && neighbor->getDistance() == -1) {
-                neighbor->setDistance(node->getDistance() + 1);
-                discovered.push(neighbor);
+            if (!tile->isWall(direction)) {
+                Tile* neighbor = getNeighbor(tile->getX(), tile->getY(), direction);
+                if (neighbor != nullptr && neighbor->getDistance() == -1) {
+                    neighbor->setDistance(tile->getDistance() + 1);
+                    discovered.push(neighbor);
+                }
             }
         }
     }

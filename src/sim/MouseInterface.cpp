@@ -77,57 +77,6 @@ void MouseInterface::clearAllTileColor() {
     m_tilesWithColor.clear();
 }
 
-void MouseInterface::setTileDistance(int x, int y, int distance) {
-
-    if (!withinMaze(x, y)) {
-        SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
-            + std::to_string(y) + std::string("), and thus you cannot set its distance."));
-        return;
-    }
-
-    /* // TODO: MACK
-    if (distance < 0 || 255 < distance) {
-        SimUtilities::print(std::string("Error: You cannot set the distance of the tile at position ("
-            + std::to_string(x) + std::string(", ") + std::to_string(y) + std::string(") to " + std::to_string(distance)
-            + " since that falls outside of [0,255], the range of valid tile distances.")));
-        return;
-    }
-    */
-
-    m_mazeGraphic->setTileText(x, y, {std::to_string(distance)});
-}
-
-void MouseInterface::clearTileDistance(int x, int y) {
-
-    if (!withinMaze(x, y)) {
-        SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
-            + std::to_string(y) + std::string("), and thus you cannot clear its distance."));
-        return;
-    }
-
-    m_mazeGraphic->setTileText(x, y, {});
-}
-
-void MouseInterface::clearAllTileDistance() {
-
-    for (int x = 0; x < m_mazeGraphic->getWidth(); x += 1) {
-        for (int y = 0; y < m_mazeGraphic->getHeight(); y += 1) {
-            m_mazeGraphic->setTileText(x, y, {}); 
-        }
-    }
-}
-
-void MouseInterface::setTileFogginess(int x, int y, bool foggy) {
-
-    if (!withinMaze(x, y)) {
-        SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
-            + std::to_string(y) + std::string("), and thus you cannot set its fogginess."));
-        return;
-    }
-
-    m_mazeGraphic->setTileFogginess(x, y, foggy);
-}
-
 void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) {
 
     if (!withinMaze(x, y)) {
@@ -166,6 +115,39 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
         std::pair<std::pair<int, int>, Direction> opposing = getOpposingWall(x, y, CHAR_TO_DIRECTION.at(direction));
         m_mazeGraphic->undeclareWall(opposing.first.first, opposing.first.second, opposing.second);
     }
+}
+
+void MouseInterface::setTileFogginess(int x, int y, bool foggy) {
+
+    if (!withinMaze(x, y)) {
+        SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
+            + std::to_string(y) + std::string("), and thus you cannot set its fogginess."));
+        return;
+    }
+
+    m_mazeGraphic->setTileFogginess(x, y, foggy);
+}
+
+void MouseInterface::declareTileDistance(int x, int y, int distance) {
+
+    if (!withinMaze(x, y)) {
+        SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
+            + std::to_string(y) + std::string("), and thus you cannot set its distance."));
+        return;
+    }
+
+    m_mazeGraphic->setTileText(x, y, {std::to_string(distance)});
+}
+
+void MouseInterface::undeclareTileDistance(int x, int y) {
+
+    if (!withinMaze(x, y)) {
+        SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
+            + std::to_string(y) + std::string("), and thus you cannot clear its distance."));
+        return;
+    }
+
+    m_mazeGraphic->setTileText(x, y, {});
 }
 
 void MouseInterface::resetPosition() {

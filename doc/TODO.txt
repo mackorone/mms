@@ -13,9 +13,7 @@ High Pri:
     - Build a cache with positions already pre-calculated
     - Use a map instead of a string for quicker search
     - Update text is too slow... it's optimizing time
-
-- Tile distances
-    - Depending on the maze size, the valid distances will be different - make this the case for the text
+    - Make maxRowsAndCols a runtime parameter
 
 - Make some utility that keeps track of elapse time
     - Make the sim speed non-arbitrary
@@ -31,6 +29,7 @@ High Pri:
 - Tomasz maze-gen issues
 
 - Maze size requirements and validity
+    - Should official maze have to be 16x16?
 
 - Run-time parameters for the algos
 - Look at Tomasz' maze website
@@ -56,7 +55,6 @@ Med Pri:
     - how many steps
     - ave steps
     - etc.
-- Protect functions that shouldn't be accessed by the algo by checking thread ID
 - Make sure that the mouse fits in the starting square
 - Algo checklist?
 - Still view a maze if it fails validation, but don't let the sim continue...
@@ -130,7 +128,8 @@ Low-pri:
     - Like only print/log DEBUG, INFO, WARN, ERROR, etc.
 - Implement perfect hashing for key input and algo selection
 - Add some shading to the wheels so we can see what direction they're turning
-- Support more than just black and white fonts
+- Support more than just white fonts
+- Protect functions that shouldn't be accessed by the algo by checking thread ID
 
 Clean-Up:
 - Change map.count(item) != 0 to map.find(item) != map.end()
