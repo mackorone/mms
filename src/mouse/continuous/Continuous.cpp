@@ -6,8 +6,12 @@
 #   define _USE_MATH_DEFINES
 #   undef max
 #   undef min
+#	include <Windows.h>
 #endif
+#include <iostream>
+using namespace std;
 #include <cmath>
+#include <ctime>
 #undef M_PI
 #define M_PI 3.14159265358979323846
 
@@ -23,7 +27,6 @@ std::string Continuous::interfaceType() const {
 
 void Continuous::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
 
-#if(0)
 	m_mouse = mouse;
 	/*
 	while (true) {
@@ -39,8 +42,6 @@ void Continuous::solve(int mazeWidth, int mazeHeight, char initialDirection, sim
 	}
 	*/
 
-	delay(1000);
-
 	//read initial sensor values to determine first cell move
 	walls_global[0] = wallLeft();
 	walls_global[1] = wallFront();
@@ -49,30 +50,35 @@ void Continuous::solve(int mazeWidth, int mazeHeight, char initialDirection, sim
 	haveSensorReading = false;
 	movesDoneAndWallsSet = true;
 
-	////Runs every 1ms and controls mouse movements
-	//correctionTimer.priority(255);
-	//correctionTimer.begin(correction, 1000);
-	long long start = millis();
-
+	/***********************************GYRO TEST**************************************************/
+	//long long start = millis();
+	double angle = 0;
+	int timeConst = 1; //ms
+	setSpeed(10, 10);
+	clock_t start;
+	clock_t elapsed;
+	start = clock();
 	while (true) {//void loop
 		// ....
-		long long elapsed = millis() - start;
-		if (elapsed >= 1) {
-			start = millis();
-			correction();
+		//long long elapsed = millis() - start;
+		elapsed = clock() - start;
+		if (elapsed >= timeConst) {
+			//start = millis();
+			start = clock();
+			angle += m_mouse->readGyro() * timeConst / 1000;
+			//cout << angle << "\n";
+			//start = millis();
+			//correction();
+			if (angle <= -180) {
+				setSpeed(0, 0);
+				while (true);
+			}
 		}
-		//  wheelCalib();
-
-		//Solve the maze
-		//algo.solve();
-
-		//bluetoothPrint();
-		//solve();
 	}
-#endif
-}
 
-#if(0)
+}
+/***************************************END GYRO TEST**********************************************/
+
 
 //1ms timer
 void Continuous::correction() {
@@ -87,7 +93,7 @@ void Continuous::correction() {
 		return;
 	}
 	readSensors();
-	angle = getAngle();
+	angle += m_mouse->readGyro() * 0.001;
 	if (currentMoveDone) {
 		movedForward = false;
 		if (firstMove) {
@@ -551,7 +557,7 @@ void Continuous::turnCorrection() {
 
 	if (!straight) {
 		if (turn) {
-			targetAngle = curve2[i];
+			//targetAngle = curve2[i];	TODO
 
 			//Smaller value = overturn
 			if (moveType == TURN_RIGHT) {
@@ -676,7 +682,7 @@ void Continuous::turnCorrection() {
 		setSpeed(currentLeftPWM, currentRightPWM);
 	}
 
-	if (i >= curve2Time && !straight) {
+	/*if (i >= curve2Time && !straight) { TODO
 		straight = true;
 
 		leftValid = false;
@@ -688,7 +694,7 @@ void Continuous::turnCorrection() {
 		else {
 			targetAngle = 110;
 		}
-	}
+	}*/
 
 	//Detects when turn is done
 	if (straight) {
@@ -959,27 +965,23 @@ void Continuous::delay(int ms) {
 	m_mouse->delay(ms);
 }
 
-long long millis() {
-	//http://gamedev.stackexchange.com/questions/26759/best-way-to-get-elapsed-time-in-miliseconds-in-windows
-	static LARGE_INTEGER s_frequency;
-	static BOOL s_use_qpc = QueryPerformanceFrequency(&s_frequency);
-	if (s_use_qpc) {
-		LARGE_INTEGER now;
-		QueryPerformanceCounter(&now);
-		return (1000LL * now.QuadPart) / s_frequency.QuadPart;
-	}
-	else {
-		return GetTickCount();
-	}
+void Continuous::readSensors() {
+
 }
 
-float Continuous::getAngle(float speedLeft, float speedRight) {
-	//put in h file
-	float radius = .01225;
-	//.05741
-	return 0;
-}
-#endif
 
+//long long Continuous::millis() {
+//	//http://gamedev.stackexchange.com/questions/26759/best-way-to-get-elapsed-time-in-miliseconds-in-windows
+//	static LARGE_INTEGER s_frequency;
+//	static BOOL s_use_qpc = QueryPerformanceFrequency(&s_frequency);
+//	if (s_use_qpc) {
+//		LARGE_INTEGER now;
+//		QueryPerformanceCounter(&now);
+//		return (1000LL * now.QuadPart) / s_frequency.QuadPart;
+//	}
+//	else {
+//		return GetTickCount();
+//	}
+//}
 
 } // namespace continuous

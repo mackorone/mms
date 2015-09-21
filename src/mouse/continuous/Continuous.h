@@ -101,6 +101,7 @@ private:
 	void turnCorrection();
 	void pivotTurnRight();
 	void pivotTurnLeft();
+	long long millis();
 	void pivotTurnRight90();
 	void wallFollow();
 	void setSpeed(double left, double right);
