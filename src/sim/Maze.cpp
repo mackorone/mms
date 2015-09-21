@@ -1,6 +1,9 @@
 #include "Maze.h"
 
+#include <queue>
+#include <set>
 #include <vector>
+#include <iostream> // TODO: MACK
 
 #include "../maze/IMazeAlgorithm.h"
 #include "../maze/MazeAlgorithms.h"
@@ -64,14 +67,12 @@ Maze::Maze() {
 
     // Optionally save the maze
     if (!P()->useMazeFile() && P()->saveGeneratedMaze()) {
-        MazeFileUtilities::saveMaze(extractBasicMaze(),
+        MazeFileUtilities::saveMaze(extractBasicMaze(m_maze),
             Directory::getResMazeDirectory() + "auto_generated_maze.maz");
     }
 
     // Load the maze given by the maze generation algorithm
-    initializeFromBasicMaze(basicMaze);
-
-    // TODO: MACK - Do some processing to set the distanceFromCenter property of the tiles
+    m_maze = initializeFromBasicMaze(basicMaze);
 }
 
 int Maze::getWidth() const {
@@ -92,7 +93,8 @@ const Tile* Maze::getTile(int x, int y) const {
     return &m_maze.at(x).at(y);
 }
 
-void Maze::initializeFromBasicMaze(const std::vector<std::vector<BasicTile>>& basicMaze) {
+std::vector<std::vector<Tile>> Maze::initializeFromBasicMaze(const std::vector<std::vector<BasicTile>>& basicMaze) const {
+    std::vector<std::vector<Tile>> maze;
     for (int x = 0; x < basicMaze.size(); x += 1) {
         std::vector<Tile> column;
         for (int y = 0; y < basicMaze.at(x).size(); y += 1) {
@@ -104,15 +106,17 @@ void Maze::initializeFromBasicMaze(const std::vector<std::vector<BasicTile>>& ba
             tile.initPolygons(basicMaze.size(), basicMaze.at(x).size());
             column.push_back(tile);
         }
-        m_maze.push_back(column);
+        maze.push_back(column);
     }
+    maze = setTileDistances(maze);
+    return maze;
 }
 
-std::vector<std::vector<BasicTile>> Maze::extractBasicMaze() const {
+std::vector<std::vector<BasicTile>> Maze::extractBasicMaze(const std::vector<std::vector<Tile>>& maze) const {
     std::vector<std::vector<BasicTile>> basicMaze;
-    for (int x = 0; x < m_maze.size(); x += 1) {
+    for (int x = 0; x < maze.size(); x += 1) {
         std::vector<BasicTile> column;
-        for (int y = 0; y < m_maze.at(x).size(); y += 1) {
+        for (int y = 0; y < maze.at(x).size(); y += 1) {
             BasicTile tile;
             tile.x = x;
             tile.y = y;
@@ -144,7 +148,7 @@ std::vector<std::vector<BasicTile>> Maze::getBlankBasicMaze(int mazeWidth, int m
     return blankMaze;
 }
 
-std::vector<std::vector<BasicTile>> Maze::mirrorAcrossVertical(const std::vector<std::vector<BasicTile>>& basicMaze) {
+std::vector<std::vector<BasicTile>> Maze::mirrorAcrossVertical(const std::vector<std::vector<BasicTile>>& basicMaze) const {
     ASSERT(MazeChecker::isRectangular(basicMaze));
     std::vector<std::vector<BasicTile>> mirrored;
     for (int x = 0; x < basicMaze.size(); x += 1) {
@@ -164,7 +168,7 @@ std::vector<std::vector<BasicTile>> Maze::mirrorAcrossVertical(const std::vector
     return mirrored; 
 }
 
-std::vector<std::vector<BasicTile>> Maze::rotateCounterClockwise(const std::vector<std::vector<BasicTile>>& basicMaze) {
+std::vector<std::vector<BasicTile>> Maze::rotateCounterClockwise(const std::vector<std::vector<BasicTile>>& basicMaze) const {
     ASSERT(MazeChecker::isRectangular(basicMaze));
     std::vector<std::vector<BasicTile>> rotated;
     for (int x = 0; x < basicMaze.size(); x += 1) {
@@ -187,6 +191,65 @@ std::vector<std::vector<BasicTile>> Maze::rotateCounterClockwise(const std::vect
     }
 
     return rotated;
+}
+
+std::vector<std::vector<Tile>> Maze::setTileDistances(std::vector<std::vector<Tile>> maze) const {
+
+    // The maze is guarenteed to be nonempty and rectangular
+    int width = maze.size();
+    int height = maze.at(0).size();
+
+    // Helper lambda for retrieving and adjacent tile if one exists, nullptr if not
+    auto getNeighbor = [&maze, &width, &height](int x, int y, Direction direction) {
+        switch (direction) {
+            case Direction::NORTH:
+                return (y < height - 1 ? &maze.at(x).at(y + 1) : nullptr);
+            case Direction::EAST:
+                return (x < width - 1 ? &maze.at(x + 1).at(y) : nullptr);
+            case Direction::SOUTH:
+                return (0 < y ? &maze.at(x).at(y - 1) : nullptr);
+            case Direction::WEST:
+                return (0 < x ? &maze.at(x - 1).at(y) : nullptr);
+        }
+    };
+
+    // The queue for the BFS
+    std::queue<Tile*> discovered;
+
+    // Determine all of the center tiles
+    std::vector<Tile*> centerTiles;
+            centerTiles.push_back(&maze.at((width - 1) / 2).at((height - 1) / 2));
+    if (width % 2 == 0) {
+            centerTiles.push_back(&maze.at( width      / 2).at((height - 1) / 2));
+        if (height % 2 == 0) {
+            centerTiles.push_back(&maze.at((width - 1) / 2).at( height      / 2));
+            centerTiles.push_back(&maze.at( width      / 2).at( height      / 2));
+        }
+    }
+    else if (height % 2 == 0) {
+            centerTiles.push_back(&maze.at((width - 1) / 2).at( height      / 2));
+    }
+
+    // Set the distances of the center tiles and push them to the queue
+    for (Tile* tile : centerTiles) {
+        tile->setDistance(0); 
+        discovered.push(tile);
+    }
+
+    // Now do a BFS
+    while (!discovered.empty()){
+        Tile* node = discovered.front();
+        discovered.pop(); // Removes the element
+        for (Direction direction : DIRECTIONS) {
+            Tile* neighbor = getNeighbor(node->getX(), node->getY(), direction);
+            if (!node->isWall(direction) && neighbor != nullptr && neighbor->getDistance() == -1) {
+                neighbor->setDistance(node->getDistance() + 1);
+                discovered.push(neighbor);
+            }
+        }
+    }
+
+    return maze;
 }
 
 } // namespace sim

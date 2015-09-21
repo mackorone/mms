@@ -15,8 +15,6 @@ High Pri:
     - Update text is too slow... it's optimizing time
 
 - Tile distances
-    - Actual distance values on the tile
-    - MazeUtilities class that can get the distances???
     - Depending on the maze size, the valid distances will be different - make this the case for the text
 
 - Make some utility that keeps track of elapse time
