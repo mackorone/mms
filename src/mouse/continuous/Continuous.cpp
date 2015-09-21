@@ -27,7 +27,6 @@ std::string Continuous::interfaceType() const {
 
 void Continuous::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
 
-#if(0)
 	m_mouse = mouse;
 	/*
 	while (true) {
@@ -70,17 +69,16 @@ void Continuous::solve(int mazeWidth, int mazeHeight, char initialDirection, sim
 			//cout << angle << "\n";
 			//start = millis();
 			//correction();
-			if (angle >=180) {
+			if (angle <= -180) {
 				setSpeed(0, 0);
 				while (true);
 			}
 		}
 	}
-#endif
+
 }
 /***************************************END GYRO TEST**********************************************/
 
-#if(0)
 
 //1ms timer
 void Continuous::correction() {
@@ -970,7 +968,7 @@ void Continuous::delay(int ms) {
 void Continuous::readSensors() {
 
 }
-#endif
+
 
 //long long Continuous::millis() {
 //	//http://gamedev.stackexchange.com/questions/26759/best-way-to-get-elapsed-time-in-miliseconds-in-windows
