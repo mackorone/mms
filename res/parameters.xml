@@ -60,7 +60,7 @@
 <wall-height>0.05</wall-height> <!-- meters -->
 <enforce-official-maze-rules>false</enforce-official-maze-rules>
 <maze-file>longpath.maz</maze-file> <!-- relative to maze-directory -->
-<use-maze-file>false</use-maze-file> <!-- whether or not to use the maze file above -->
+<use-maze-file>true</use-maze-file> <!-- whether or not to use the maze file above -->
 <generated-maze-width>16</generated-maze-width> <!-- number of tiles -->
 <generated-maze-height>16</generated-maze-height> <!-- number of tiles -->
 <maze-algorithm>Tomasz</maze-algorithm> <!-- The name as specified in src/maze/MazeAlgorithms.cpp -->
@@ -69,5 +69,5 @@
 <maze-rotations>0</maze-rotations> <!-- 0-3 counterclockwise rotations -->
 
 <!-- Mouse Parameters -->
-<mouse-algorithm>FloodFill</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
+<mouse-algorithm>Continuous</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
 <mouse-starting-direction>NORTH</mouse-starting-direction> <!-- NORTH, EAST, SOUTH, or WEST -->
