@@ -2,9 +2,12 @@ High Pri:
 
 - Support stepper motor / encoders interface
 
+- Clean up draw function in Driver.cpp
+
 - Logging
     - Cross platform support for logging
     - implement "removeExcessArchivedRuns()"
+    - Get rid of messages that print out when ^C
 
 - Tile Text
     - Assert that a character exsits before we try to draw it to the tile
@@ -14,6 +17,8 @@ High Pri:
     - Use a map instead of a string for quicker search
     - Update text is too slow... it's optimizing time
     - Make maxRowsAndCols a runtime parameter
+    - Should we have text alignment be a parameter?
+    - Be able to just show actual distances
 
 - Make some utility that keeps track of elapse time
     - Make the sim speed non-arbitrary
@@ -22,6 +27,7 @@ High Pri:
 - Put a toolbar at the top or bottom with info
     - Display a clock
     - Check to make sure font won't be cut off, use ellipses if so
+        - How do we deal with text being cut off in the vertical direction???
     - Set the mouse algo in State for display in the toolbar
 
 - Use markdown in the readme
@@ -29,7 +35,7 @@ High Pri:
 - Tomasz maze-gen issues
 
 - Maze size requirements and validity
-    - Should official maze have to be 16x16?
+    - Should official maze have to be 16x16? Yes
 
 - Run-time parameters for the algos
 - Look at Tomasz' maze website
@@ -47,6 +53,7 @@ High Pri:
 - Add gridlines (see https://www.youtube.com/watch?v=LGRutv9cGBA and https://www.youtube.com/watch?v=gtnTBf5ItEc)
     - Variable width?
 - Buffer communication (like with the real robot)
+- Clang compiler support
 
 Med Pri:
 - Make a system for nearly instantly checking stats on many mazes:

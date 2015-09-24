@@ -212,9 +212,6 @@ std::vector<std::vector<Tile>> Maze::setTileDistances(std::vector<std::vector<Ti
         }
     };
 
-    // The queue for the BFS
-    std::queue<Tile*> discovered;
-
     // Determine all of the center tiles
     std::vector<Tile*> centerTiles;
             centerTiles.push_back(&maze.at((width - 1) / 2).at((height - 1) / 2));
@@ -228,6 +225,9 @@ std::vector<std::vector<Tile>> Maze::setTileDistances(std::vector<std::vector<Ti
     else if (height % 2 == 0) {
             centerTiles.push_back(&maze.at((width - 1) / 2).at( height      / 2));
     }
+
+    // The queue for the BFS
+    std::queue<Tile*> discovered;
 
     // Set the distances of the center tiles and push them to the queue
     for (Tile* tile : centerTiles) {
