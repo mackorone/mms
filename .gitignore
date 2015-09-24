@@ -3,11 +3,6 @@ obj/
 run/
 zip/
 
-doc/*.aux
-doc/*.log
-doc/*.out
-doc/*.toc
-
 .fuse_hidden*
 *.swp
 auto_generated_maze.maz

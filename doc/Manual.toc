@@ -1,0 +1,31 @@
+\contentsline {section}{\numberline {1}Introduction}{4}{section.1}
+\contentsline {subsection}{\numberline {1.1}Summary}{4}{subsection.1.1}
+\contentsline {section}{\numberline {2}Introduction}{4}{section.2}
+\contentsline {subsection}{\numberline {2.1}Summary}{4}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Motivation}{4}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.3}Contributing Projects}{4}{subsection.2.3}
+\contentsline {section}{\numberline {3}Installation}{4}{section.3}
+\contentsline {subsubsection}{\numberline {3.0.1}\href {http://freeglut.sourceforge.net/}{freeglut}}{5}{subsubsection.3.0.1}
+\contentsline {subsubsection}{\numberline {3.0.2}\href {http://glew.sourceforge.net/}{GLEW}}{5}{subsubsection.3.0.2}
+\contentsline {subsection}{\numberline {3.1}Linux (Ubuntu)}{5}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Windows}{5}{subsection.3.2}
+\contentsline {subsubsection}{\numberline {3.2.1}Download freeglut and GLEW}{5}{subsubsection.3.2.1}
+\contentsline {subsubsection}{\numberline {3.2.2}Setting up Visual Studio Project}{6}{subsubsection.3.2.2}
+\contentsline {subsection}{\numberline {3.3}Mac}{7}{subsection.3.3}
+\contentsline {section}{\numberline {4}Building}{8}{section.4}
+\contentsline {subsection}{\numberline {4.1}Linux}{8}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}Windows}{8}{subsection.4.2}
+\contentsline {subsection}{\numberline {4.3}Mac}{8}{subsection.4.3}
+\contentsline {section}{\numberline {5}Running}{8}{section.5}
+\contentsline {subsection}{\numberline {5.1}Keyboard Commands}{8}{subsection.5.1}
+\contentsline {subsection}{\numberline {5.2}Runtime Parameters}{9}{subsection.5.2}
+\contentsline {section}{\numberline {6}Writing Your Own Algorithms}{9}{section.6}
+\contentsline {subsection}{\numberline {6.1}Discrete and Continuous Modes}{9}{subsection.6.1}
+\contentsline {subsection}{\numberline {6.2}IMouseInterface}{9}{subsection.6.2}
+\contentsline {subsection}{\numberline {6.3}Getting Started}{9}{subsection.6.3}
+\contentsline {subsection}{\numberline {6.4}Input Buttons}{10}{subsection.6.4}
+\contentsline {section}{\numberline {7}Implementation}{10}{section.7}
+\contentsline {subsection}{\numberline {7.1}Modern OpenGL}{10}{subsection.7.1}
+\contentsline {subsection}{\numberline {7.2}Collision Detection}{10}{subsection.7.2}
+\contentsline {subsection}{\numberline {7.3}Logging}{10}{subsection.7.3}
+\contentsline {subsection}{\numberline {7.4}Parameters and State}{10}{subsection.7.4}
