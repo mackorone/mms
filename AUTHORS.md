@@ -1,9 +1,9 @@
-# Author and Maintainer
-* Mack Ward - mward4@buffalo.edu
-
-# Contributors
-* Sam Siegart - srsiegar@buffalo.edu
-* Mitchell Rathbun - mrathbun@buffalo.edu
-* James Mazur - jamesmaz@buffalo.edu
-* Tomasz Pietruszka - tomaszpi@buffalo.edu
-* Kyle Thompson - kt49@buffalo.edu
+| Name              | Email                | Role                  |
+|-------------------|----------------------|-----------------------|
+| Mack Ward         | mward4@buffalo.edu   | Author and Maintainer |
+|-------------------|----------------------|-----------------------|
+| James Mazur       | jamesmaz@buffalo.edu | Contributer           |
+| Tomasz Pietruszka | tomaszpi@buffalo.edu | Contributer           |
+| Mitchell Rathbun  | mrathbun@buffalo.edu | Contributer           |
+| Sam Siegart       | srsiegar@buffalo.edu | Contributer           |
+| Kyle Thompson     | kt49@buffalo.edu     | Contributer           |
