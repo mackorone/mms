@@ -1,6 +1,29 @@
-\contentsline {section}{\numberline {1}Introduction}{3}
-\contentsline {section}{\numberline {2}Installation}{3}
-\contentsline {section}{\numberline {3}Contributing Projects}{3}
-\contentsline {section}{\numberline {4}Logging}{3}
-\contentsline {section}{\numberline {5}Parameters}{3}
-\contentsline {section}{\numberline {6}State}{3}
+\contentsline {section}{\numberline {1}Introduction}{4}{section.1}
+\contentsline {subsection}{\numberline {1.1}Summary}{4}{subsection.1.1}
+\contentsline {subsection}{\numberline {1.2}Motivation}{4}{subsection.1.2}
+\contentsline {subsection}{\numberline {1.3}Contributing Projects}{4}{subsection.1.3}
+\contentsline {section}{\numberline {2}Installation}{4}{section.2}
+\contentsline {subsubsection}{\numberline {2.0.1}\href {http://freeglut.sourceforge.net/}{freeglut}}{4}{subsubsection.2.0.1}
+\contentsline {subsubsection}{\numberline {2.0.2}\href {http://glew.sourceforge.net/}{GLEW}}{5}{subsubsection.2.0.2}
+\contentsline {subsection}{\numberline {2.1}Linux (Ubuntu)}{5}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Windows}{5}{subsection.2.2}
+\contentsline {subsubsection}{\numberline {2.2.1}Download freeglut and GLEW}{5}{subsubsection.2.2.1}
+\contentsline {subsubsection}{\numberline {2.2.2}Setting up Visual Studio Project}{5}{subsubsection.2.2.2}
+\contentsline {subsection}{\numberline {2.3}Mac}{7}{subsection.2.3}
+\contentsline {section}{\numberline {3}Building}{7}{section.3}
+\contentsline {subsection}{\numberline {3.1}Linux}{7}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Windows}{8}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Mac}{8}{subsection.3.3}
+\contentsline {section}{\numberline {4}Running}{8}{section.4}
+\contentsline {subsection}{\numberline {4.1}Keyboard Commands}{8}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}Runtime Parameters}{9}{subsection.4.2}
+\contentsline {section}{\numberline {5}Writing Your Own Algorithms}{9}{section.5}
+\contentsline {subsection}{\numberline {5.1}Discrete and Continuous Modes}{9}{subsection.5.1}
+\contentsline {subsection}{\numberline {5.2}IMouseInterface}{9}{subsection.5.2}
+\contentsline {subsection}{\numberline {5.3}Getting Started}{9}{subsection.5.3}
+\contentsline {subsection}{\numberline {5.4}Input Buttons}{9}{subsection.5.4}
+\contentsline {section}{\numberline {6}Implementation}{10}{section.6}
+\contentsline {subsection}{\numberline {6.1}Modern OpenGL}{10}{subsection.6.1}
+\contentsline {subsection}{\numberline {6.2}Collision Detection}{10}{subsection.6.2}
+\contentsline {subsection}{\numberline {6.3}Logging}{10}{subsection.6.3}
+\contentsline {subsection}{\numberline {6.4}Parameters and State}{10}{subsection.6.4}
