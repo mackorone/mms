@@ -47,8 +47,9 @@ Now run it:
 
 #### Other Platforms
 
-[Windows wiki page](https://www.github.com/mackorone/mms/wiki/Windows)
-[Mac wiki page](https://www.github.com/mackorone/mms/wiki/Mac)
+[Windows](https://www.github.com/mackorone/mms/wiki/Windows)
+
+[Mac](https://www.github.com/mackorone/mms/wiki/Mac)
 
 ## Writing An Algorithm
 
@@ -153,4 +154,4 @@ std::pair<bool, IMouseAlgorithm*> MouseAlgorithms::helper(...) {
 
 ## Wiki
 
-See the [mms wiki](https://www.github.com/mackorone/mms/wiki) for more information and documentation.
+See the [wiki](https://www.github.com/mackorone/mms/wiki) for more information and documentation.
