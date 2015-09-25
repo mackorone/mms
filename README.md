@@ -19,7 +19,7 @@ TODO
 
 ## Who
 
-### Authors
+#### Authors
 
 | Name              | Email                | Role                  |
 |-------------------|----------------------|-----------------------|
@@ -32,11 +32,11 @@ TODO
 
 ### Contributing Projects
 
-| Name          | Copyright         | License           | GitHub Repository                             | Use Case              |
-|---------------|-------------------|-------------------|-----------------------------------------------|-----------------------|
-| easyloggingpp | muflihun.com      | MIT               | https://github.com/easylogging/easyloggingpp  | Logging               |
-| fontstash     | Andreas Krinke    | zlib              | https://github.com/akrinke/Font-Stash         | Text Rendering        |
-| opengl-series | Thomas Dalling    | Apache License v2 | https://github.com/tomdalling/opengl-series   | OpenGL Functionality  |
-| polypartition | Ivan Fratric      | MIT               | https://github.com/ivanfratric/polypartition  | Polygon Triangulation |
-| pugixml       | Arseny Kapoulkine | MIT               | https://github.com/zeux/pugixml               | XML Parsing           |
-| stb           | Sean Barrett      | public domain     | https://github.com/nothings/stb               | Images and Fonts      |
+| Name                                                          | Author            | Use Case              |
+|---------------------------------------------------------------|-------------------|-----------------------|
+| [easyloggingpp](https://github.com/easylogging/easyloggingpp) | muflihun.com      | Logging               |
+| [fontstash](https://github.com/akrinke/Font-Stash)            | Andreas Krinke    | Text Rendering        |
+| [opengl-series](https://github.com/tomdalling/opengl-series)  | Thomas Dalling    | OpenGL Functionality  |
+| [polypartition](https://github.com/ivanfratric/polypartition) | Ivan Fratric      | Polygon Triangulation |
+| [pugixml](https://github.com/zeux/pugixml)                    | Arseny Kapoulkine | XML Parsing           |
+| [stb](https://github.com/nothings/stb)                        | Sean Barrett      | Images and Fonts      |
