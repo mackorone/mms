@@ -2,9 +2,7 @@
 
 ![](https://raw.githubusercontent.com/wiki/mackorone/mms/logo.png)
 
-## What
-
-### About
+## About
 
 *mms* is a Micromouse simulator. It allows programmers to write and test
 Micromouse code as if it were running on an actual robot - and so much more.
@@ -16,7 +14,7 @@ robot from point *A* to point *B* while programmer *Y* ensures you don't crash
 along the way. And all of *that* can happen while engineer *Z* tries to figure
 out how to properly power a stepper motor.
 
-### Features
+## Features
 
 * Provides a framework for:
     * Writing portable maze-solving code
@@ -30,19 +28,17 @@ out how to properly power a stepper motor.
 * Supports loading mazes from `.maz` files
 * Highly configurable and customizable
 
-## How
+## Writing a Maze-Solving Algorithm
 
-Writing an algorithm for *mms* is as easy as 1, 2, 3:
-
-1. Create a directory within `src/mouse` for your algorithm:
+#### Step 1: Create a directory within `src/mouse` for your algorithm:
 
 ```
 mkdir src/mouse/foo
 ```
 
-Then, withing that directory, define a class that implements the IMouseAlgorithm interface, like:
+#### Step 2: Within that directory, define a class that implements the IMouseAlgorithm interface:
 
-#### src/mouse/foo/Foo.h
+**`src/mouse/foo/Foo.h`**
 ```c++
 #pragma once
 
@@ -55,14 +51,15 @@ class Foo : public IMouseAlgorithm {
 public:
     std::string mouseFile() const;
     std::string interfaceType() const;
-    void solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse);
+    void solve(int mazeWidth, int mazeHeight, char initialDirection,
+        sim::MouseInterface* mouse);
 
 };
 
 } // namespace foo
 ```
 
-#### src/mouse/foo/Foo.cpp
+**`src/mouse/foo/Foo.cpp`**
 ```c++
 
 namespace foo {
@@ -75,7 +72,8 @@ std::string Foo::interfaceType() const {
     return "DISCRETE";
 }
 
-void Foo::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
+void Foo::solve(int mazeWidth, int mazeHeight, char initialDirection,
+        sim::MouseInterface* mouse) {
     // The mouse will move forward one tile and then stop
     mouse->moveForward();
 }
@@ -83,9 +81,9 @@ void Foo::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::Mouse
 } // namespace foo
 ```
 
-2. Add your class to the the list of algorithms in `src/mouse/MouseAlgorithms.cpp`:
+#### Step 3: Add your class to the the list of algorithms in `src/mouse/MouseAlgorithms.cpp`:
 
-#### src/mouse/MouseAlgorithms.cpp
+**`src/mouse/MouseAlgorithms.cpp`**
 ```c++
 #include "MouseAlgorithms.h"
 
@@ -93,7 +91,7 @@ void Foo::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::Mouse
 #include "foo/Foo.h"
 ...
 
-std::pair<bool, IMouseAlgorithm*> MouseAlgorithms::helper(const std::string& str, bool justChecking) {
+std::pair<bool, IMouseAlgorithm*> MouseAlgorithms::helper(...) {
 
     ...
     ALGO("Foo", new foo::Foo());
@@ -102,19 +100,17 @@ std::pair<bool, IMouseAlgorithm*> MouseAlgorithms::helper(const std::string& str
 ```
 
 
-3. Change the mouse-algorithm parameter in `res/parameters.xml` to the name of your algorithm:
+#### Step 4: Change the mouse-algorithm parameter in `res/parameters.xml` to the name of your algorithm:
 
-#### res/parameters.xml
+**`res/parameters.xml`**
 ```xml
 ...
 <!-- Mouse Parameters -->
-<mouse-algorithm>Foo</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
+<mouse-algorithm>Foo</mouse-algorithm>
 ...
 ```
 
-## Who
-
-### Authors
+## Authors
 
 | Name              | Email                | Role                  |
 |-------------------|----------------------|-----------------------|
@@ -125,7 +121,7 @@ std::pair<bool, IMouseAlgorithm*> MouseAlgorithms::helper(const std::string& str
 | Sam Siegart       | srsiegar@buffalo.edu | Contributor           |
 | Kyle Thompson     | kt49@buffalo.edu     | Contributor           |
 
-### Contributing Projects
+## Contributing Projects
 
 | Name                                                          | Author            | Use Case              |
 |---------------------------------------------------------------|-------------------|-----------------------|
@@ -136,6 +132,6 @@ std::pair<bool, IMouseAlgorithm*> MouseAlgorithms::helper(const std::string& str
 | [pugixml](https://github.com/zeux/pugixml)                    | Arseny Kapoulkine | XML Parsing           |
 | [stb](https://github.com/nothings/stb)                        | Sean Barrett      | Images and Fonts      |
 
-## Where
+## Wiki
 
 See the [mms wiki](https://www.github.com/mackorone/mms/wiki) for more information and documentation.
