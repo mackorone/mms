@@ -1,5 +1,5 @@
 # Program name
-PROGRAM = MMSim
+PROGRAM = mms
 
 # Directories
 SRC = ./src/

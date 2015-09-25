@@ -28,9 +28,31 @@ out how to properly power a stepper motor.
 * Supports loading mazes from `.maz` files
 * Highly configurable and customizable
 
+## Installation, Building, and Running
+
+#### Ubuntu
+
+First, install the necessary software packages:
+```bash
+sudo apt-get install g++ freeglut3-dev libglew-dev
+```
+Then build the project:
+```bash
+make
+```
+Now run it:
+```bash
+./bin/mms
+```
+
+#### Other Platforms
+
+[Windows wiki page](https://www.github.com/mackorone/mms/wiki/Windows)
+[Mac wiki page](https://www.github.com/mackorone/mms/wiki/Mac)
+
 ## Writing An Algorithm
 
-#### Step 1: Create a directory within for your algorithm:
+#### Step 1: Create a directory for your algorithm:
 
 ```
 mkdir src/mouse/foo
@@ -86,13 +108,10 @@ void Foo::solve(int mazeWidth, int mazeHeight, char initialDirection,
 **`src/mouse/MouseAlgorithms.cpp`**
 ```c++
 #include "MouseAlgorithms.h"
-
 ...
 #include "foo/Foo.h"
 ...
-
 std::pair<bool, IMouseAlgorithm*> MouseAlgorithms::helper(...) {
-
     ...
     ALGO("Foo", new foo::Foo());
     ...
@@ -100,13 +119,14 @@ std::pair<bool, IMouseAlgorithm*> MouseAlgorithms::helper(...) {
 ```
 
 
-#### Step 4: Change the `mouse-algorithm` parameter to the name of your algorithm:
+#### Step 4: Update the `mouse-algorithm` parameter:
 
 **`res/parameters.xml`**
 ```xml
 ...
 <!-- Mouse Parameters -->
 <mouse-algorithm>Foo</mouse-algorithm>
+...
 ```
 
 ## Authors
