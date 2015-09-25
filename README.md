@@ -104,7 +104,7 @@ void Foo::solve(int mazeWidth, int mazeHeight, char initialDirection,
 } // namespace foo
 ```
 
-#### Step 3: Add your class to the the list of algorithms:
+#### Step 3: Add your class to the list of algorithms:
 
 **`src/mouse/MouseAlgorithms.cpp`**
 ```c++
