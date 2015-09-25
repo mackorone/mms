@@ -28,15 +28,15 @@ out how to properly power a stepper motor.
 * Supports loading mazes from `.maz` files
 * Highly configurable and customizable
 
-## Writing a Maze-Solving Algorithm
+## Writing An Algorithm
 
-#### Step 1: Create a directory within `src/mouse` for your algorithm:
+#### Step 1: Create a directory within for your algorithm:
 
 ```
 mkdir src/mouse/foo
 ```
 
-#### Step 2: Within that directory, define a class that implements the IMouseAlgorithm interface:
+#### Step 2: Define a class that implements the IMouseAlgorithm interface:
 
 **`src/mouse/foo/Foo.h`**
 ```c++
@@ -81,7 +81,7 @@ void Foo::solve(int mazeWidth, int mazeHeight, char initialDirection,
 } // namespace foo
 ```
 
-#### Step 3: Add your class to the the list of algorithms in `src/mouse/MouseAlgorithms.cpp`:
+#### Step 3: Add your class to the the list of algorithms:
 
 **`src/mouse/MouseAlgorithms.cpp`**
 ```c++
@@ -100,14 +100,13 @@ std::pair<bool, IMouseAlgorithm*> MouseAlgorithms::helper(...) {
 ```
 
 
-#### Step 4: Change the mouse-algorithm parameter in `res/parameters.xml` to the name of your algorithm:
+#### Step 4: Change the `mouse-algorithm` parameter to the name of your algorithm:
 
 **`res/parameters.xml`**
 ```xml
 ...
 <!-- Mouse Parameters -->
 <mouse-algorithm>Foo</mouse-algorithm>
-...
 ```
 
 ## Authors
