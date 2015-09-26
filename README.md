@@ -9,7 +9,7 @@
 Micromouse code as if it were running on an actual robot - and so much more.
 
 It has two modes of operation, `DISCRETE` and `CONTINUOUS`, which offer
-different layers of abstraction for writing maze-solving and robot-control
+different levels of abstraction for writing maze-solving and robot-control
 code, respectively. This means that programmer *X* can write code that gets the
 robot from point *A* to point *B* while programmer *Y* ensures you don't crash
 along the way. And all of *that* can happen while engineer *Z* tries to figure
@@ -85,6 +85,7 @@ public:
 
 **`src/mouse/foo/Foo.cpp`**
 ```c++
+#include "Foo.h"
 
 namespace foo {
 
