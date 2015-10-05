@@ -280,6 +280,9 @@ void Driver::draw() {
 
 void Driver::keyPress(unsigned char key, int x, int y) {
 
+    // NOTE: If you're adding or removing anything from this function, make
+    // sure to update wiki/Keys.md
+
     if (key == 'p') {
         // Pause the simulation (only in discrete mode)
         S()->setPaused(!S()->paused());

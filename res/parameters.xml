@@ -25,8 +25,8 @@
 <mouse-sensor-color>GREEN</mouse-sensor-color>
 <mouse-view-color>WHITE</mouse-view-color>
 <default-tile-colors-visible>true</default-tile-colors-visible>
-<default-wall-truth-visible>true</default-wall-truth-visible>
-<default-tile-fog-visible>false</default-tile-fog-visible>
+<default-wall-truth-visible>false</default-wall-truth-visible>
+<default-tile-fog-visible>true</default-tile-fog-visible>
 <default-tile-text-visible>true</default-tile-text-visible>
 <default-tile-distance-visible>false</default-tile-distance-visible>
 <tile-fog-alpha>0.15</tile-fog-alpha> <!-- Must be in [0.0, 1.0] -->
@@ -37,7 +37,7 @@
 <use-random-seed>false</use-random-seed> <!-- Whether or not to use the seed value -->
 <crash-message>Oh no! Your mouse crashed! It can't move anymore...</crash-message>
 <glut-init-duration>0.1</glut-init-duration> <!-- Seconds -->
-<default-paused>true</default-paused>
+<default-paused>false</default-paused>
 <min-sleep-duration>5</min-sleep-duration> <!-- Milliseconds -->
 <discrete-interface-min-speed>1.0</discrete-interface-min-speed> <!-- No units -->
 <discrete-interface-max-speed>300.0</discrete-interface-max-speed> <!-- No units -->
