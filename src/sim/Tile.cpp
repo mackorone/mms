@@ -6,7 +6,7 @@ namespace sim{
 
 Tile::Tile() : m_x(-1), m_y(-1), m_distance(-1) {
     for (Direction direction : DIRECTIONS) {
-        m_walls.at(direction) = false;
+        m_walls.insert(std::make_pair(direction, false));
     }
 }
 

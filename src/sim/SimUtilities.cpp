@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <ctime>
+#include <dirent.h>
 #include <ratio>
 #include <fstream>
 #include <glut/glut.h>
@@ -20,6 +21,7 @@
 #include "units/Seconds.h"
 
 #include "Assert.h"
+#include "Directory.h"
 #include "Param.h"
 #include "State.h"
 #include "Logging.h"
@@ -163,19 +165,37 @@ int SimUtilities::getDirectionIndex(Direction direction) {
     return std::find(DIRECTIONS.begin(), DIRECTIONS.end(), direction) - DIRECTIONS.begin();
 }
 
+std::vector<std::string> SimUtilities::getDirectoryContents(const std::string& path) {
+
+    std::vector<std::string> contents;
+
+    // Taken from http://stackoverflow.com/a/612176/3176152
+    DIR *dir = opendir(path.c_str());
+    if (dir != NULL) {
+        struct dirent *ent;
+        while ((ent = readdir(dir)) != NULL) {
+            contents.push_back(path + std::string(ent->d_name));
+        }
+        closedir(dir);
+    }
+
+    return contents;
+}
+
 void SimUtilities::removeExcessArchivedRuns() {
-    // TODO: upforgrabs
     // Information about each run is stored in the run/ directory. As it turns
     // out, this information can pile up pretty quickly. We should remove the
-    // oldest stuff so that the run/ directory doesn't get too full. In
-    // particular, supposing that there are N runs in the run/ directory, and
-    // supposing N >= P()->numberOfArchivedRuns(), implement this function to
-    // remove the (N - P()->numberOfArchivedRuns() + 1) oldest directories in
-    // run/.  Make sure that your solution is cross-platform, and LOG where
-    // appropriate (e.g., if, for some reason, we can't delete one of the
-    // directories in run/). This function is already called in the appropriate
-    // place, so once you implement it, it should "just work".
-    // Hint: Use std::remove
+    // oldest stuff so that the run/ directory doesn't get too full.
+    std::vector<std::string> contents = getDirectoryContents(Directory::getRunDirectory());
+    std::sort(contents.begin(), contents.end());
+    for (int i = 2; i < static_cast<int>(contents.size()) - P()->numberOfArchivedRuns(); i += 1) {
+#ifdef _WIN32
+        // TODO: upforgrabs
+        // Implement a windows version of directory removal
+#else
+        system((std::string("rm -rf \"") + contents.at(i) + std::string("\"")).c_str());
+#endif
+    }
 }
 
 } // namespace sim

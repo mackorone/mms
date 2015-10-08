@@ -69,6 +69,9 @@ public:
     // Returns the index of the direction in DIRECTIONS
     static int getDirectionIndex(Direction direction);
 
+    // Returns a vector of strings of paths of the given directory's contents
+    static std::vector<std::string> getDirectoryContents(const std::string& path);
+
     // Remove oldest runs from the run/ directory if necessary
     static void removeExcessArchivedRuns();
 
