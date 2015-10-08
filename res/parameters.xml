@@ -31,6 +31,8 @@
 <default-tile-distance-visible>false</default-tile-distance-visible>
 <tile-fog-alpha>0.15</tile-fog-alpha> <!-- Must be in [0.0, 1.0] -->
 <default-wireframe-mode>false</default-wireframe-mode>
+<set-tile-base-color-when-distance-correct>false</set-tile-base-color-when-distance-correct>
+<distance-correct-tile-base-color>DARK_YELLOW</distance-correct-tile-base-color>
 
 <!-- Simulation Parameters -->
 <random-seed>12345</random-seed> <!-- The seed value for rand() -->

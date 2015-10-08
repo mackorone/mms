@@ -6,7 +6,7 @@ namespace sim{
 
 Tile::Tile() : m_x(-1), m_y(-1), m_distance(-1) {
     for (Direction direction : DIRECTIONS) {
-        m_walls[direction] = false;
+        m_walls.at(direction) = false;
     }
 }
 
@@ -28,7 +28,7 @@ bool Tile::isWall(Direction direction) const {
 }
 
 void Tile::setWall(Direction direction, bool isWall) {
-    m_walls[direction] = isWall;
+    m_walls.at(direction) = isWall;
 }
 
 int Tile::getDistance() const {
@@ -77,17 +77,17 @@ void Tile::initPolygons(int mazeWidth, int mazeHeight) {
     //      upperRightCorner: 89ab
     //      lowerRightCorner: cdef
     //
-    //      5--6-------------9--a
-    //      |  |             |  |
-    //      4--7-------------8--b
-    //      |  |             |  |
-    //      |  |             |  |
-    //      |  |             |  |
-    //      |  |             |  |
-    //      |  |             |  |
-    //      1--2-------------d--e
-    //      |  |             |  |
-    //      0--3-------------c--f
+    //      5---6-------------9---a
+    //      |   |             |   |
+    //      4---7-------------8---b
+    //      |   |             |   |
+    //      |   |             |   |
+    //      |   |             |   |
+    //      |   |             |   |
+    //      |   |             |   |
+    //      1---2-------------d---e
+    //      |   |             |   |
+    //      0---3-------------c---f
 
     // Order is important
     initFullPolygon(mazeWidth, mazeHeight);

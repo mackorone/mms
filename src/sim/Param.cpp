@@ -89,6 +89,10 @@ Param::Param() {
         "tile-fog-alpha", 0.15, 0.0, 1.0);
     m_defaultWireframeMode = parser.getBoolIfHasBool(
         "default-wireframe-mode", false);
+    m_setTileBaseColorWhenDistanceCorrect = parser.getBoolIfHasBool(
+        "set-tile-base-color-when-distance-correct", false);
+    m_distanceCorrectTileBaseColor = parser.getStringIfHasStringAndIsColor(
+        "distance-correct-tile-base-color", COLOR_TO_STRING.at(Color::DARK_YELLOW));
 
     // Simulation Parameters
     bool useRandomSeed = parser.getBoolIfHasBool(
@@ -289,6 +293,14 @@ double Param::tileFogAlpha() {
 
 bool Param::defaultWireframeMode() {
     return m_defaultWireframeMode;
+}
+
+bool Param::setTileBaseColorWhenDistanceCorrect() {
+    return m_setTileBaseColorWhenDistanceCorrect;
+}
+
+std::string Param::distanceCorrectTileBaseColor() {
+    return m_distanceCorrectTileBaseColor;
 }
 
 int Param::randomSeed() {

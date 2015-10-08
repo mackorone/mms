@@ -1,16 +1,12 @@
 # High Priority
 
-- Indicate when a tile's distance is the correct distance
-- GLFW
-- Make the state accessible by the interface (set tile text, wall color, zoom, rotation, etc.)
-- Make all of the colors just default colors - allow them to be changed programmatically
+- Make the fogginess update for continuous
+    - Actual Fog vs User declared fog
 - Add README.md to the other directories in the project
 - Make a note about the wiki submodule: http://brendancleary.com/2013/03/08/including-a-github-wiki-in-a-repository-as-a-submodule/
-- Write some unittests
-- Write scripts we can execute (like unit tests) to make sure that our docs are in sync with the code
 - Support stepper motor / encoders interface
 - Clean up draw function in Driver.cpp
-    - Make the buffer objects private, at Driver as a friend class
+    - Make the buffer objects private, add Driver as a friend class
 - Logging
     - Logging and printing for the algo
     - Cross platform support for logging
@@ -53,6 +49,10 @@
     - Variable width?
 - Buffer communication (like with the real robot)
 - Clang compiler support
+- Make the params and state accessible by the interface (set tile text, wall color, zoom, rotation, etc.)
+    - But think about the importance of decoupling the simulator functionality with the algos
+    - Think about the best mechanism for doing this
+- Make all of the colors just default colors - allow them to be changed programmatically
 
 # Medum Priority
 
@@ -101,6 +101,7 @@
 - Crash recovery semantics
 - Draw a path of where the robot has been (the history object could be used for recording as well)
 - Perhaps use a separate process entirely for the mouse (so we can restart it easily)
+- Write scripts we can execute (like unit tests) to make sure that our docs are in sync with the code
 
 Low Priority
 
@@ -137,6 +138,7 @@ Low Priority
 
 # Clean-Up
 
+- Write some unittests
 - Change map.count(item) != 0 to map.find(item) != map.end()
 - Add IMouseAlgorithm (and maze) to the build path so we can just do #include <IMouseAlgorithm.h> (maybe...)
 - Run the parameter consistency script, make sure values align

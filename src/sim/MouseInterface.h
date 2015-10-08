@@ -38,6 +38,7 @@ public:
     void undeclareWall(int x, int y, char direction);
 
     void setTileFogginess(int x, int y, bool foggy);
+    // TODO: MACK - (un)declareTraversed (how should this work???)
 
     void declareTileDistance(int x, int y, int distance);
     void undeclareTileDistance(int x, int y);

@@ -40,6 +40,10 @@ void TileGraphic::setFogginess(bool foggy) {
 void TileGraphic::setText(const std::vector<std::string>& rowsOfText) {
     m_rowsOfText = rowsOfText;
     updateText();
+    if (P()->setTileBaseColorWhenDistanceCorrect() && 0 < rowsOfText.size()
+        && std::to_string(m_tile->getDistance()) == rowsOfText.at(0)) {
+            setColor(STRING_TO_COLOR.at(P()->distanceCorrectTileBaseColor()));
+    }
 }
 
 void TileGraphic::draw() const {

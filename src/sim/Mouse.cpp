@@ -13,6 +13,7 @@
 #include "Logging.h" // TODO: MACK
 #include "MouseParser.h"
 #include "Param.h"
+#include "SimUtilities.h"
 #include "State.h"
 
 namespace sim {
@@ -236,13 +237,13 @@ void Mouse::setWheelSpeeds(const AngularVelocity& leftWheelSpeed, const AngularV
 }
 
 bool Mouse::hasSensor(const std::string& name) const {
-    return m_sensors.count(name) != 0;
+    return SimUtilities::mapContains(m_sensors, name);
 }
 
 double Mouse::read(const std::string& name) const {
 
     // Validate the input
-    ASSERT(m_sensors.count(name) != 0);
+    ASSERT(hasSensor(name));
     Sensor sensor = m_sensors.at(name);
 
     // Retrieve the current translation and rotation

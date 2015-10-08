@@ -45,6 +45,8 @@ public:
     bool defaultTileDistanceVisible();
     double tileFogAlpha();
     bool defaultWireframeMode();
+    bool setTileBaseColorWhenDistanceCorrect();
+    std::string distanceCorrectTileBaseColor();
 
     // Simulation parameters
     int randomSeed();
@@ -126,6 +128,8 @@ private:
     bool m_defaultTileDistanceVisible;
     double m_tileFogAlpha;
     bool m_defaultWireframeMode;
+    bool m_setTileBaseColorWhenDistanceCorrect;
+    std::string m_distanceCorrectTileBaseColor;
 
     // Simulation parameters
     int m_randomSeed;
