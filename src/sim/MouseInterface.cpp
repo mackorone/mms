@@ -125,6 +125,11 @@ void MouseInterface::setTileFogginess(int x, int y, bool foggy) {
         return;
     }
 
+    if (!P()->algorithmControlsTileFog()) { 
+        // TODO: MACK - error statement
+        return;
+    }
+
     m_mazeGraphic->setTileFogginess(x, y, foggy);
 }
 
@@ -338,10 +343,6 @@ void MouseInterface::moveForward() {
 
     m_mouse->setWheelSpeeds(RadiansPerSecond(0), RadiansPerSecond(0));
     m_mouse->teleport(destinationTranslation, destinationRotation);
-
-    if (P()->discreteInterfaceUnfogTileOnEntry()) {
-        m_mazeGraphic->setTileFogginess(getDiscretizedTranslation().first, getDiscretizedTranslation().second, false);
-    }
 }
 
 void MouseInterface::turnRight() {
@@ -446,37 +447,6 @@ void MouseInterface::ensureContinuousInterface(const std::string& callingFunctio
     }
 }
 
-std::pair<int, int> MouseInterface::getDiscretizedTranslation() const {
-    int x = static_cast<int>(floor((m_mouse->getCurrentTranslation().getX() / Meters(P()->wallLength() + P()->wallWidth()))));
-    int y = static_cast<int>(floor((m_mouse->getCurrentTranslation().getY() / Meters(P()->wallLength() + P()->wallWidth()))));
-    return std::make_pair(x, y);
-}
-
-Direction MouseInterface::getDiscretizedRotation() const {
-    int dir = static_cast<int>(floor((m_mouse->getCurrentRotation() + Degrees(45)) / Degrees(90)));
-    switch (dir) {
-        case 0:
-            return Direction::NORTH;
-        case 1:
-            return Direction::WEST;
-        case 2:
-            return Direction::SOUTH;
-        case 3:
-            return Direction::EAST;
-    }
-}
-
-void MouseInterface::prepareForLaunch() {
-
-    // Wait for everything to stabilize
-    sim::SimUtilities::sleep(Seconds(P()->glutInitDuration()));
-
-    // Unfog the beginning tile if necessary
-    if (S()->interfaceType() == InterfaceType::DISCRETE && P()->discreteInterfaceUnfogTileOnEntry()) {
-        m_mazeGraphic->setTileFogginess(0, 0, false);
-    }
-}
-
 void MouseInterface::checkPaused() const {
     if (S()->paused()) {
         m_mouse->setWheelSpeeds(RadiansPerSecond(0), RadiansPerSecond(0));
@@ -529,6 +499,14 @@ std::pair<std::pair<int, int>, Direction> MouseInterface::getOpposingWall(int x,
         case Direction::WEST:
             return std::make_pair(std::make_pair(x - 1, y), Direction::EAST);
     }
+}
+
+std::pair<int, int> MouseInterface::getDiscretizedTranslation() const {
+    return m_mouse->getDiscretizedTranslation();
+}
+
+Direction MouseInterface::getDiscretizedRotation() const {
+    return m_mouse->getDiscretizedRotation();
 }
 
 } // namespace sim

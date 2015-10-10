@@ -61,7 +61,7 @@ public:
     double discreteInterfaceDefaultSpeed();
 
     bool discreteInterfaceDeclareWallOnRead();
-    bool discreteInterfaceUnfogTileOnEntry();
+    bool algorithmControlsTileFog();
     bool declareBothWallHalves();
     int mousePositionUpdateRate();
     bool printLateMousePositionUpdates();
@@ -141,7 +141,7 @@ private:
     double m_discreteInterfaceMaxSpeed;
     double m_discreteInterfaceDefaultSpeed;
     bool m_discreteInterfaceDeclareWallOnRead;
-    bool m_discreteInterfaceUnfogTileOnEntry;
+    bool m_algorithmControlsTileFog;
     bool m_declareBothWallHalves;
     int m_mousePositionUpdateRate;
     bool m_printLateMousePostitionUpdates;

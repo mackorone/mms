@@ -267,6 +267,26 @@ RadiansPerSecond Mouse::readGyro() const {
     return m_gyro;
 }
 
+std::pair<int, int> Mouse::getDiscretizedTranslation() const {
+    int x = static_cast<int>(floor((getCurrentTranslation().getX() / Meters(P()->wallLength() + P()->wallWidth()))));
+    int y = static_cast<int>(floor((getCurrentTranslation().getY() / Meters(P()->wallLength() + P()->wallWidth()))));
+    return std::make_pair(x, y);
+}
+
+Direction Mouse::getDiscretizedRotation() const {
+    int dir = static_cast<int>(floor((getCurrentRotation() + Degrees(45)) / Degrees(90)));
+    switch (dir) {
+        case 0:
+            return Direction::NORTH;
+        case 1:
+            return Direction::WEST;
+        case 2:
+            return Direction::SOUTH;
+        case 3:
+            return Direction::EAST;
+    }
+}
+
 Cartesian Mouse::getInitialTranslation() const {
     return m_initialTranslation;
 }

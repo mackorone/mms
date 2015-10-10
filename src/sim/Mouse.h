@@ -57,11 +57,16 @@ public:
     // Returns the value of the gyroscope
     RadiansPerSecond readGyro() const;
 
+    // Discretized information
+    std::pair<int, int> getDiscretizedTranslation() const;
+    Direction getDiscretizedRotation() const;
+
     // For use with the discrete interface *only*
     Cartesian getInitialTranslation() const;
     Cartesian getCurrentTranslation() const;
     Radians getCurrentRotation() const;
     void teleport(const Cartesian& translation, const Angle& rotation);
+
 
 private:
     // Used for the sensor readings

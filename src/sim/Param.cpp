@@ -125,8 +125,8 @@ Param::Param() {
 
     m_discreteInterfaceDeclareWallOnRead = parser.getBoolIfHasBool(
         "discrete-interface-declare-wall-on-read", true);
-    m_discreteInterfaceUnfogTileOnEntry = parser.getBoolIfHasBool(
-        "discrete-interface-unfog-tile-on-entry", true);
+    m_algorithmControlsTileFog = parser.getBoolIfHasBool(
+        "algorithm-controls-tile-fog", false);
     m_declareBothWallHalves = parser.getBoolIfHasBool(
         "declare-both-wall-halves", true);
     m_mousePositionUpdateRate = parser.getIntIfHasIntAndInRange(
@@ -339,8 +339,8 @@ bool Param::discreteInterfaceDeclareWallOnRead() {
     return m_discreteInterfaceDeclareWallOnRead;
 }
 
-bool Param::discreteInterfaceUnfogTileOnEntry() {
-    return m_discreteInterfaceUnfogTileOnEntry;
+bool Param::algorithmControlsTileFog() {
+    return m_algorithmControlsTileFog;
 }
 
 bool Param::declareBothWallHalves() {

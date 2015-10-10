@@ -72,12 +72,7 @@ void Driver::drive(int argc, char* argv[]) {
         // Wait for the window to appear
         SimUtilities::sleep(Seconds(P()->glutInitDuration()));
 
-        // Unfog the beginning tile if necessary
-        if (S()->interfaceType() == InterfaceType::DISCRETE && P()->discreteInterfaceUnfogTileOnEntry()) {
-            m_mazeGraphic->setTileFogginess(0, 0, false);
-        }
-
-        // Finally, begin execution of the mouse algorithm
+        // Begin execution of the mouse algorithm
         m_algorithm->solve(
             m_mazeGraphic->getWidth(),
             m_mazeGraphic->getHeight(),
@@ -111,7 +106,7 @@ void Driver::initSimObjects() {
     m_mazeGraphic = new MazeGraphic(maze);
     m_mouseGraphic = new MouseGraphic(m_mouse);
     m_mouseInterface = new MouseInterface(maze, m_mouse, m_mazeGraphic);
-    m_world = new World(maze, m_mouse);
+    m_world = new World(maze, m_mouse, m_mazeGraphic);
 }
 
 void Driver::draw() {

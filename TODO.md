@@ -1,7 +1,5 @@
 # High Priority
 
-- Make the fogginess update for continuous
-    - Actual Fog vs User declared fog
 - Add README.md to the other directories in the project
 - Make a note about the wiki submodule: http://brendancleary.com/2013/03/08/including-a-github-wiki-in-a-repository-as-a-submodule/
 - Support stepper motor / encoders interface
@@ -10,7 +8,6 @@
 - Logging
     - Logging and printing for the algo
     - Cross platform support for logging
-    - implement "removeExcessArchivedRuns()"
     - Get rid of messages that print out when ^C or otherwise crash
 - Tile Text
     - Assert that a character exsits before we try to draw it to the tile

@@ -45,7 +45,7 @@
 <discrete-interface-max-speed>300.0</discrete-interface-max-speed> <!-- No units -->
 <discrete-interface-default-speed>30.0</discrete-interface-default-speed> <!-- No units -->
 <discrete-interface-declare-wall-on-read>true</discrete-interface-declare-wall-on-read>
-<discrete-interface-unfog-tile-on-entry>true</discrete-interface-unfog-tile-on-entry>
+<algorithm-controls-tile-fog>false</algorithm-controls-tile-fog>
 <declare-both-wall-halves>true</declare-both-wall-halves>
 <mouse-position-update-rate>1000</mouse-position-update-rate> <!-- Updates per second -->
 <print-late-mouse-position-updates>true</print-late-mouse-position-updates>

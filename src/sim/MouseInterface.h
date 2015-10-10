@@ -78,11 +78,6 @@ private:
     void ensureDiscreteInterface(const std::string& callingFunction) const;
     void ensureContinuousInterface(const std::string& callingFunction) const;
 
-    std::pair<int, int> getDiscretizedTranslation() const;
-    Direction getDiscretizedRotation() const;
-
-    void prepareForLaunch();
-
     void checkPaused() const;
     bool isWall(std::pair<int, int> position, Direction direction);
     bool withinMaze(int x, int y) const;
@@ -90,6 +85,8 @@ private:
     std::pair<std::pair<int, int>, Direction> getOpposingWall(int x, int y, Direction direction) const;
 
     friend class manual::Manual;
+    std::pair<int, int> getDiscretizedTranslation() const;
+    Direction getDiscretizedRotation() const;
 };
 
 } // namespace sim

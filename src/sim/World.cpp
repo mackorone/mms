@@ -11,7 +11,8 @@
 
 namespace sim {
 
-World::World(Maze* maze, Mouse* mouse) : m_maze(maze), m_mouse(mouse), m_collision(false) {
+World::World(Maze* maze, Mouse* mouse, MazeGraphic* mazeGraphic) : m_maze(maze), m_mouse(mouse),
+        m_mazeGraphic(mazeGraphic), m_collision(false) {
 }
 
 void World::simulate() {
@@ -34,6 +35,12 @@ void World::simulate() {
 
         // Update the position of the mouse
         m_mouse->update(Seconds(1.0/P()->mousePositionUpdateRate()));
+
+        // Update the tile fog
+        if (!P()->algorithmControlsTileFog()) {
+            std::pair<int, int> location = m_mouse->getDiscretizedTranslation();
+            m_mazeGraphic->setTileFogginess(location.first, location.second, false);
+        }
 
         // Get the duration of the mouse position update, in seconds. Note that this duration
         // is simply the total number of real seconds that have passed, which is exactly
