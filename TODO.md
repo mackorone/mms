@@ -1,10 +1,11 @@
 # High Priority
 
 - Add README.md to the other directories in the project
-- Make a note about the wiki submodule: http://brendancleary.com/2013/03/08/including-a-github-wiki-in-a-repository-as-a-submodule/
-- Support stepper motor / encoders interface
+- Make a note about the wiki submodule:
+    http://brendancleary.com/2013/03/08/including-a-github-wiki-in-a-repository-as-a-submodule/
 - Clean up draw function in Driver.cpp
     - Make the buffer objects private, add Driver as a friend class
+- Support stepper motor / encoders interface
 - Logging
     - Logging and printing for the algo
     - Cross platform support for logging
@@ -28,7 +29,7 @@
     - Set the mouse algo in State for display in the toolbar
 - Tomasz maze-gen issues
 - Maze size requirements and validity
-    - Should official maze have to be 16x16? Yes
+    - Should official maze have to be 16x16? - Yes
 - Run-time parameters for the algos
 - Look at Tomasz' maze website
 - Maze Validation (both physically valid mazes and competition valid mazes)

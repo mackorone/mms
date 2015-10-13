@@ -1,7 +1,6 @@
 #pragma once
 
 #include <map>
-#include <thread>
 
 #include "InterfaceType.h"
 #include "Key.h"

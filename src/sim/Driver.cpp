@@ -93,9 +93,8 @@ void Driver::bootstrap() {
     Logging::initialize(runId);
 
     // Initialize the State object in order to:
-    // 0) Set the runId
-    // 1) Avoid a race condition (between threads)
-    // 2) Register this thread as the main thread
+    // 1) Set the runId
+    // 2) Avoid a race condition (between threads)
     // 3) Initialize the Param object
     S()->setRunId(runId);
 }
@@ -238,6 +237,11 @@ void Driver::draw() {
     glBindVertexArray(0);
     m_polygonProgram->stopUsing();
 
+    // ----------
+
+    // We disable scissoring so that the glClear can take effect
+    glDisable(GL_SCISSOR_TEST);
+
     // ----- Drawing the text ----- //
 
     // TODO: MACK - Font-stash drawing
@@ -247,8 +251,7 @@ void Driver::draw() {
     //m_textDrawer->drawText(0, 470.0/2.0, "ABCDj");
     m_textDrawer->concludeDrawingTextForFrame();
 
-    // We disable scissoring so that the glClear can take effect
-    glDisable(GL_SCISSOR_TEST);
+    // -------------
 
     // Display the result
     glutSwapBuffers();
