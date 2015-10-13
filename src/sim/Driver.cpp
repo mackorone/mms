@@ -117,140 +117,36 @@ void Driver::draw() {
     // Determine the starting index of the mouse
     static const int mouseTrianglesStartingIndex = GraphicUtilities::GRAPHIC_CPU_BUFFER.size();
 
-    // Make space for mouse updates and copy to the CPU buffer
+    // Make space for mouse updates and fill the CPU buffer with new mouse triangles
     GraphicUtilities::GRAPHIC_CPU_BUFFER.erase(
         GraphicUtilities::GRAPHIC_CPU_BUFFER.begin() + mouseTrianglesStartingIndex,
         GraphicUtilities::GRAPHIC_CPU_BUFFER.end());
-
-    // Fill the CPU buffer with new mouse triangles
     m_mouseGraphic->draw();
 
     // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Enable scissoring so that the maps are only draw in specified locations.
-    // Additionally, get the sizes and positions of each of the maps.
     glEnable(GL_SCISSOR_TEST);
-    std::pair<int, int> fullMapPosition = GraphicUtilities::getFullMapPosition();
-    std::pair<int, int> fullMapSize = GraphicUtilities::getFullMapSize();
-    std::pair<int, int> zoomedMapPosition = GraphicUtilities::getZoomedMapPosition();
-    std::pair<int, int> zoomedMapSize = GraphicUtilities::getZoomedMapSize();
 
-    // ----- Drawing the maze polygons ----- //
+    // Re-populate both vertex buffer objects and then draw the tiles, the tile text, and then the mouse
+    repopulateVertexBufferObjects();
+    drawFullAndZoomedMaps(m_polygonProgram, m_polygonVertexArrayObjectId,
+        0, 3 * mouseTrianglesStartingIndex);
+    drawFullAndZoomedMaps(m_textureProgram, m_textureVertexArrayObjectId,
+        0, 3 * GraphicUtilities::TEXTURE_CPU_BUFFER.size());
+    drawFullAndZoomedMaps(m_polygonProgram, m_polygonVertexArrayObjectId,
+        3 * mouseTrianglesStartingIndex, 3 * (GraphicUtilities::GRAPHIC_CPU_BUFFER.size() - mouseTrianglesStartingIndex));
 
-    // TODO: MACK - Write a helper method
-
-    // Enable
-    m_polygonProgram->use();
-    glBindVertexArray(m_polygonVertexArrayObjectId);
-
-    // Clear the vertex buffer object and copy over the CPU buffer
-    glBindBuffer(GL_ARRAY_BUFFER, m_polygonVertexBufferObjectId);
-    glBufferData(GL_ARRAY_BUFFER, GraphicUtilities::GRAPHIC_CPU_BUFFER.size() * sizeof(TriangleGraphic), NULL, GL_DYNAMIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, GraphicUtilities::GRAPHIC_CPU_BUFFER.size() * sizeof(TriangleGraphic),
-        &GraphicUtilities::GRAPHIC_CPU_BUFFER.front());
-
-    // Render the full map
-    glScissor(fullMapPosition.first, fullMapPosition.second, fullMapSize.first, fullMapSize.second);
-    m_polygonProgram->setUniformMatrix4("transformationMatrix",
-        &GraphicUtilities::getFullMapTransformationMatrix().front(), 1, GL_TRUE);
-    glDrawArrays(GL_TRIANGLES, 0, 3 * mouseTrianglesStartingIndex);
-
-    // Render the zoomed map
-    glScissor(zoomedMapPosition.first, zoomedMapPosition.second, zoomedMapSize.first, zoomedMapSize.second);
-    m_polygonProgram->setUniformMatrix4("transformationMatrix",
-        &GraphicUtilities::getZoomedMapTransformationMatrix(
-            m_mouse->getInitialTranslation(), m_mouse->getCurrentTranslation(),
-            m_mouse->getCurrentRotation()).front(), 1, GL_TRUE);
-    glDrawArrays(GL_TRIANGLES, 0, 3 * mouseTrianglesStartingIndex);
-
-    // Disable
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-    m_polygonProgram->stopUsing();
-
-    // ----- Drawing the maze textures (text) ----- //
-
-    // Enable
-    m_textureProgram->use();
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_textureAtlas->object());
-    glBindVertexArray(m_textureVertexArrayObjectId);
-    m_textureProgram->setUniform("_texture", 0);
-
-    // Bind and fill the buffer with data
-    glBindBuffer(GL_ARRAY_BUFFER, m_textureVertexBufferObjectId);
-    glBufferData(GL_ARRAY_BUFFER, GraphicUtilities::TEXTURE_CPU_BUFFER.size() * sizeof(TriangleTexture), NULL, GL_DYNAMIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, GraphicUtilities::TEXTURE_CPU_BUFFER.size() * sizeof(TriangleTexture),
-        &GraphicUtilities::TEXTURE_CPU_BUFFER.front());
-
-    // Render the texture on the full map
-    glScissor(fullMapPosition.first, fullMapPosition.second, fullMapSize.first, fullMapSize.second);
-    m_textureProgram->setUniformMatrix4("transformationMatrix",
-        &GraphicUtilities::getFullMapTransformationMatrix().front(), 1, GL_TRUE);
-    glDrawArrays(GL_TRIANGLES, 0, 3 * GraphicUtilities::TEXTURE_CPU_BUFFER.size());
-
-    // Render the texture on the zoomed map
-    glScissor(zoomedMapPosition.first, zoomedMapPosition.second, zoomedMapSize.first, zoomedMapSize.second);
-    m_textureProgram->setUniformMatrix4("transformationMatrix",
-        &GraphicUtilities::getZoomedMapTransformationMatrix(
-            m_mouse->getInitialTranslation(), m_mouse->getCurrentTranslation(),
-            m_mouse->getCurrentRotation()).front(), 1, GL_TRUE);
-    glDrawArrays(GL_TRIANGLES, 0, 3 * GraphicUtilities::TEXTURE_CPU_BUFFER.size());
-    
-    // Disable
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glBindVertexArray(0);
-    m_textureProgram->stopUsing();
-
-    // ----- Drawing the mouse polygons ----- //
-
-    // Enable
-    m_polygonProgram->use();
-    glBindVertexArray(m_polygonVertexArrayObjectId);
-
-    // Clear the vertex buffer object and copy over the CPU buffer
-    glBindBuffer(GL_ARRAY_BUFFER, m_polygonVertexBufferObjectId);
-    glBufferData(GL_ARRAY_BUFFER, GraphicUtilities::GRAPHIC_CPU_BUFFER.size() * sizeof(TriangleGraphic), NULL, GL_DYNAMIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, GraphicUtilities::GRAPHIC_CPU_BUFFER.size() * sizeof(TriangleGraphic),
-        &GraphicUtilities::GRAPHIC_CPU_BUFFER.front());
-
-    // Render the full map
-    glScissor(fullMapPosition.first, fullMapPosition.second, fullMapSize.first, fullMapSize.second);
-    m_polygonProgram->setUniformMatrix4("transformationMatrix",
-        &GraphicUtilities::getFullMapTransformationMatrix().front(), 1, GL_TRUE);
-    glDrawArrays(GL_TRIANGLES, 3 * mouseTrianglesStartingIndex,
-        3 * (GraphicUtilities::GRAPHIC_CPU_BUFFER.size() - mouseTrianglesStartingIndex));
-
-    // Render the zoomed map
-    glScissor(zoomedMapPosition.first, zoomedMapPosition.second, zoomedMapSize.first, zoomedMapSize.second);
-    m_polygonProgram->setUniformMatrix4("transformationMatrix",
-        &GraphicUtilities::getZoomedMapTransformationMatrix(
-            m_mouse->getInitialTranslation(), m_mouse->getCurrentTranslation(),
-            m_mouse->getCurrentRotation()).front(), 1, GL_TRUE);
-    glDrawArrays(GL_TRIANGLES, 3 * mouseTrianglesStartingIndex,
-        3 * (GraphicUtilities::GRAPHIC_CPU_BUFFER.size() - mouseTrianglesStartingIndex));
-
-    // Disable
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-    m_polygonProgram->stopUsing();
-
-    // ----------
-
-    // We disable scissoring so that the glClear can take effect
+    // Disable scissoring so that the glClear can take effect, and so that
+    // drawn text isn't clipped at all
     glDisable(GL_SCISSOR_TEST);
 
     // ----- Drawing the text ----- //
-
     // TODO: MACK - Font-stash drawing
     m_textDrawer->commenceDrawingTextForFrame();
-    auto size = GraphicUtilities::getWindowSize();
     //m_textDrawer->drawText(0, 0, "01234");
-    //m_textDrawer->drawText(0, 470.0/2.0, "ABCDj");
     m_textDrawer->concludeDrawingTextForFrame();
-
     // -------------
 
     // Display the result
@@ -522,6 +418,66 @@ void Driver::initMouseAlgo() {
         SimUtilities::quit();
     }
     S()->setInterfaceType(STRING_TO_INTERFACE_TYPE.at(m_algorithm->interfaceType()));
+}
+
+void Driver::repopulateVertexBufferObjects() {
+
+    // Clear the polygon vertex buffer object and re-populate it with data
+    glBindBuffer(GL_ARRAY_BUFFER, m_polygonVertexBufferObjectId);
+    glBufferData(GL_ARRAY_BUFFER, GraphicUtilities::GRAPHIC_CPU_BUFFER.size() * sizeof(TriangleGraphic), NULL, GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, GraphicUtilities::GRAPHIC_CPU_BUFFER.size() * sizeof(TriangleGraphic),
+        &GraphicUtilities::GRAPHIC_CPU_BUFFER.front());
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    // Clear the texture vertex buffer object and re-populate it with data
+    glBindBuffer(GL_ARRAY_BUFFER, m_textureVertexBufferObjectId);
+    glBufferData(GL_ARRAY_BUFFER, GraphicUtilities::TEXTURE_CPU_BUFFER.size() * sizeof(TriangleTexture), NULL, GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, GraphicUtilities::TEXTURE_CPU_BUFFER.size() * sizeof(TriangleTexture),
+        &GraphicUtilities::TEXTURE_CPU_BUFFER.front());
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void Driver::drawFullAndZoomedMaps(tdogl::Program* program, int vaoId, int vboStartingIndex, int vboEndingIndex) {
+
+    // Get the sizes and positions of each of the maps.
+    std::pair<int, int> fullMapPosition = GraphicUtilities::getFullMapPosition();
+    std::pair<int, int> fullMapSize = GraphicUtilities::getFullMapSize();
+    std::pair<int, int> zoomedMapPosition = GraphicUtilities::getZoomedMapPosition();
+    std::pair<int, int> zoomedMapSize = GraphicUtilities::getZoomedMapSize();
+
+    // Start using the program and vertex array object
+    program->use();
+    glBindVertexArray(vaoId);
+
+    // If it's the texture program, bind the texture and set the uniform
+    if (program == m_textureProgram) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, m_textureAtlas->object());
+        program->setUniform("_texture", 0);
+    }
+
+    // Render the full map
+    glScissor(fullMapPosition.first, fullMapPosition.second, fullMapSize.first, fullMapSize.second);
+    program->setUniformMatrix4("transformationMatrix",
+        &GraphicUtilities::getFullMapTransformationMatrix().front(), 1, GL_TRUE);
+    glDrawArrays(GL_TRIANGLES, vboStartingIndex, vboEndingIndex);
+
+    // Render the zoomed map
+    glScissor(zoomedMapPosition.first, zoomedMapPosition.second, zoomedMapSize.first, zoomedMapSize.second);
+    program->setUniformMatrix4("transformationMatrix",
+        &GraphicUtilities::getZoomedMapTransformationMatrix(
+            m_mouse->getInitialTranslation(), m_mouse->getCurrentTranslation(),
+            m_mouse->getCurrentRotation()).front(), 1, GL_TRUE);
+    glDrawArrays(GL_TRIANGLES, vboStartingIndex, vboEndingIndex);
+
+    // Stop using the program and vertex array object
+    glBindVertexArray(0);
+    program->stopUsing();
+
+    // If it's the texture program, we should additionally unbind the texture
+    if (program == m_textureProgram) {
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
 }
 
 } // namespace sim

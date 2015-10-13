@@ -36,7 +36,13 @@ void World::simulate() {
         // Update the position of the mouse
         m_mouse->update(Seconds(1.0/P()->mousePositionUpdateRate()));
 
-        // Update the tile fog
+        // Update the tile fog. Note that this is a bit of a one-off case. We
+        // shouldn't really put any sort of graphics-related stuff in this
+        // class, as it's supposed to only be responsible for progressing the
+        // simulation. However, since it'd be a bit much to create a class for
+        // just this one bit of code, this is fine for now. If we end up
+        // needing more graphics functionality here, it'd be wise to make a
+        // separate class.
         if (!P()->algorithmControlsTileFog()) {
             std::pair<int, int> location = m_mouse->getDiscretizedTranslation();
             m_mazeGraphic->setTileFogginess(location.first, location.second, false);

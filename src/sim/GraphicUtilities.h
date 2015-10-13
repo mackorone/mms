@@ -4,6 +4,7 @@
 
 #include "Color.h"
 #include "Direction.h"
+#include "Driver.h"
 #include "Polygon.h"
 #include "Tile.h"
 #include "TriangleGraphic.h"
@@ -17,10 +18,6 @@ public:
 
     // The GraphicUtilities class is not constructible.
     GraphicUtilities() = delete;
-
-    // CPU-side buffers
-    static std::vector<TriangleGraphic> GRAPHIC_CPU_BUFFER;
-    static std::vector<TriangleTexture> TEXTURE_CPU_BUFFER;
 
     // Get and set the window size, in pixels
     static std::pair<int, int> getWindowSize();
@@ -59,6 +56,11 @@ public:
     static void drawMousePolygon(const Polygon& polygon, Color color, float sensorAlpha);
 
 private:
+
+    // CPU-side buffers
+    friend sim::Driver;
+    static std::vector<TriangleGraphic> GRAPHIC_CPU_BUFFER;
+    static std::vector<TriangleTexture> TEXTURE_CPU_BUFFER;
 
     // Window dimensions in pixels
     static int m_windowWidth;

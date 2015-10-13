@@ -69,6 +69,11 @@ private:
 
     // Initialize the mouse algorithm
     static void initMouseAlgo();
+
+    // Drawing helper methods
+    static void repopulateVertexBufferObjects();
+    static void drawFullAndZoomedMaps(tdogl::Program* program, int vaoId,
+        int vboStartingIndex, int vboEndingIndex);
 };
 
 } // namespace sim
