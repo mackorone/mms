@@ -7,7 +7,7 @@ rules - we can simply search this directory for files that end in `.cpp`.
 
 The subdirectories are used as follows:
 
-`lib` - Contains code (mostly) borrowed from other open source projects
-`maze` - Contains code for all maze generation algorithms
-`mouse` - Contains code for all mouse (maze-solving) algorithms
-`sim` - Contains code internal to the simulator
+* `lib` - Contains code (mostly) borrowed from other open source projects
+* `maze` - Contains code for all maze generation algorithms
+* `mouse` - Contains code for all mouse (maze-solving) algorithms
+* `sim` - Contains code internal to the simulator
