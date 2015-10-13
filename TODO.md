@@ -1,7 +1,5 @@
 # High Priority
 
-- Clean up draw function in Driver.cpp
-    - Make the buffer objects private, add Driver as a friend class
 - Support stepper motor / encoders interface
 - Logging
     - Logging and printing for the algo
