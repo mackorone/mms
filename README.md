@@ -157,3 +157,15 @@ std::pair<bool, IMouseAlgorithm*> MouseAlgorithms::helper(...) {
 ## Wiki
 
 See the [wiki](https://www.github.com/mackorone/mms/wiki) for more information and documentation.
+
+Note that the *wiki* repository is contained within the *mms* repository as a
+[submodule](https://git-scm.com/docs/git-submodule). This means that if you
+want to see/edit the wiki source, you'll have to first clone (not download the
+zip of) *mms*, and then initialize (and update) the submodule:
+
+```bash
+git clone https://github.com/mackorone/mms.git
+cd mms/wiki
+git submodule init
+git submodule update
+```

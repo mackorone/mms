@@ -1,8 +1,5 @@
 # High Priority
 
-- Add README.md to the other directories in the project
-- Make a note about the wiki submodule:
-    http://brendancleary.com/2013/03/08/including-a-github-wiki-in-a-repository-as-a-submodule/
 - Clean up draw function in Driver.cpp
     - Make the buffer objects private, add Driver as a friend class
 - Support stepper motor / encoders interface
