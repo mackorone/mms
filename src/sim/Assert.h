@@ -5,9 +5,6 @@
 // std::cerr. If, for some reason, this is insufficient for you, you're
 // probably using it incorrectly. 
 
-#include "CompiledParams.h"
-#if (ASSERTS_ON)
-
 #include <iostream>
 
 // TODO: upforgrabs
@@ -42,10 +39,3 @@ if ((one) != (two)) {\
               << "---------------------------------------" << std::endl;\
     exit(1);\
 }
-
-#else // if (ASSERTS_ON)
-
-#define ASSERT(condition) ;
-#define ASSERT_EQUAL(one, two) ;
-
-#endif // if (ASSERTS_ON)

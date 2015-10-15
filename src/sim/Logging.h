@@ -1,27 +1,23 @@
 #pragma once
 
 // These must be declared before we include easylogging++.h
+#define ELPP_STL_LOGGING
+#define ELPP_THREAD_SAFE // TODO: MACK - investigate
 #define ELPP_NO_DEFAULT_LOG_FILE
-#define ELPP_THREAD_SAFE
+#define ELPP_DISABLE_DEFAULT_CRASH_HANDLING // TODO: MACK - investigate
 
 #include <easyloggingpp/easylogging++.h>
-#include "LoggingMacros.h"
 
-// The purpose of LOG is to log something interally. Nothing will displayed to
-// the user. The purpose of PRINT is to print something to the user as well as
-// log it internally. The reasoning is that if it was shown to the user,
-// someone debugging the program would want to know about it as well.
+// To print and log something, simply provide the level and use printf-like syntax:
 //
-// To LOG or PRINT something, simply provide the level and use printf-like syntax:
-//
-// LOG(INFO, "Message");
-// PRINT(WARN, "Message %v %v %v", 'c', "foo", 4);
+// simLogger->info("Message");
+// mazeLogger->warn("Message %v %v %v", 'c', "foo", 4);
 //
 // Note that we you should use %v for arguments of all types, and that the
 // string must a string literal (no std::strings are allowed). You can write
-// multiline LOG or PRINT statements as follows:
+// multiline logging statements as follows:
 //
-// PRINT(DEBUG,
+// mouseLogger->debug(
 //  "Message %v %v %v. This is really long and really should be on "
 //  "at least two lines because it wouldn't fit on just a single line.",
 //  'c', "foo", 4);
@@ -36,28 +32,28 @@ public:
     Logging() = delete;
 
     // Accessors for our loggers 
-    static el::Logger* logger();
-    static el::Logger* printer();
+    static el::Logger* simLogger();
+    static el::Logger* mazeLogger();
+    static el::Logger* mouseLogger();
 
     // Initializes all of the loggers, should only be called once
     static void initialize(const std::string& runId);
 
 private:
 
-    // Our two loggers :)
-    static el::Logger* m_logger;
-    static el::Logger* m_printer;
-
-    // The default paths of our two loggers
-    static std::string m_loggerPath;
-    static std::string m_printerPath;
-
     // Used to determine part of the log file paths
     static std::string m_runId;
 
-    // Keep track of the number of log files, so we can make more if necessary
-    static int m_numLoggerFiles;
-    static int m_numPrinterFiles;
+    // The names of each of our loggers
+    static std::string m_simLoggerName;
+    static std::string m_mazeLoggerName;
+    static std::string m_mouseLoggerName;
+
+    // A map of (loggerName) -> (path, numLogFiles)
+    static std::map<std::string, std::pair<std::string, int>> m_info;
+
+    // Helper method for retrieving a particular logger
+    static el::Logger* getLogger(const std::string& loggerName);
 
     // Easy function for getting the next available log file name
     static std::string getNextFileName(const char* filename);

@@ -21,7 +21,7 @@ public:
     // Quits the simulation
     static void quit();
 
-    // TODO: upforgrabs
+    // TODO: MACK
     // We recently adopted a logging system for the simulator, which can give
     // us much more context and information about messages. We should no longer
     // use the SimUtilities::print function. Your mission, should you choose to

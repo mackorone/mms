@@ -1,10 +1,16 @@
 # High Priority
 
+- Logging/Printing
+    - One logger for sim
+    - One logger for maze algo
+    - One logger for mouse algo
+    - Some way to turn the algo loggers on/off
+    - Remove the ugly macro stuff - use logger class better
+    - Actual time elapsed
+    - Simulation time too
+- Kill CompiledParams.cpp
+- Fix CPMinMax.h - order of includes matter, unforunately...
 - Support stepper motor / encoders interface
-- Logging
-    - Logging and printing for the algo
-    - Cross platform support for logging
-    - Get rid of messages that print out when ^C or otherwise crash
 - Tile Text
     - Assert that a character exsits before we try to draw it to the tile
     - Check that a font and image exist, print error and die if not
@@ -12,7 +18,7 @@
     - Build a cache with positions already pre-calculated
     - Use a map instead of a string for quicker search
     - Update text is too slow... it's optimizing time
-    - Make maxRowsAndCols a runtime parameter
+    - Make maxRowsAndCols a runtime parameter (make it 2 x 3 for now)
     - Should we have text alignment be a parameter?
     - Be able to just show actual distances
 - Make some utility that keeps track of elapse time
@@ -66,7 +72,6 @@
     - Make the sensor polygon model better
 - Add manual mode high scores
 - Continuous mode improvements (overall)
-- Add a way to set the text color of each tile individually
 - Center the view of the zoomed map to the centroid of the mouse body polygon (this might not be good, but we should try it)
 - Xorg and compiz performance...
 - Kill SimUtilities...
@@ -90,7 +95,6 @@
 - Change over the Makefile to use cmake
 - In discrete mode, the mouse can overturn or go too far if the sim speed is to high. We need to implement some logic that checks this ahead of time and then just teleports... sort of like bullets in other physics simulators
 - Add trajectory lines (see https://www.youtube.com/watch?v=kgJClVCPu3w)
-- Error checking for param string type (startingDirection, color, etc.)
 - Crash recovery semantics
 - Draw a path of where the robot has been (the history object could be used for recording as well)
 - Perhaps use a separate process entirely for the mouse (so we can restart it easily)

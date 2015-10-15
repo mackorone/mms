@@ -1,35 +1,37 @@
 #include "Logging.h"
 
-#include <cstdio>
-
 #include "Assert.h"
-#include "CompiledParams.h"
 #include "Directory.h"
+#include "SimUtilities.h"
 
 INITIALIZE_EASYLOGGINGPP
 
 namespace sim {
 
 // Create and initialize the static variables
-el::Logger* Logging::m_logger = nullptr;
-el::Logger* Logging::m_printer = nullptr;
-std::string Logging::m_loggerPath = "";
-std::string Logging::m_printerPath = "";
 std::string Logging::m_runId = "";
-int Logging::m_numLoggerFiles = 0;
-int Logging::m_numPrinterFiles = 0;
+std::string Logging::m_simLoggerName = "sim";
+std::string Logging::m_mazeLoggerName = "maze";
+std::string Logging::m_mouseLoggerName = "mouse";
+std::map<std::string, std::pair<std::string, int>> Logging::m_info;
 
-el::Logger* Logging::logger() {
-    ASSERT(m_logger != nullptr);
-    return m_logger;
+el::Logger* Logging::simLogger() {
+    return getLogger(m_simLoggerName);
 }
 
-el::Logger* Logging::printer() {
-    ASSERT(m_printer != nullptr);
-    return m_printer;
+el::Logger* Logging::mazeLogger() {
+    return getLogger(m_mazeLoggerName);
+}
+
+el::Logger* Logging::mouseLogger() {
+    return getLogger(m_mouseLoggerName);
 }
 
 void Logging::initialize(const std::string& runId) {
+
+    // TODO: MACK - initialize the maze and mouse loggers after reading the params so that we can decide if we want to log at runtime
+    // TODO: MACK - is there a way to print only above a certain level? runtime param, perhaps?
+    // TODO: MACK - get the high res time, set up the custom formatter thingy
 
     // Ensure we only initialize the loggers once
     static bool initialized = false;
@@ -39,58 +41,49 @@ void Logging::initialize(const std::string& runId) {
     // Set the runId
     m_runId = runId;
 
-    // The logger names
-    const std::string loggerName = "logger";
-    const std::string printerName = "printer";
+    // For each of the logger names ...
+    for (std::string loggerName : {m_simLoggerName, m_mazeLoggerName, m_mouseLoggerName}) {
+        
+        // ... create the logger ...
+        el::Logger* logger = el::Loggers::getLogger(loggerName);
+        std::string loggerPath = Directory::getRunDirectory() + m_runId + "/" + loggerName + "/default.txt";
+        m_info.insert(std::make_pair(loggerName, std::make_pair(loggerPath, 1)));
 
-    // Set the file paths
-    m_loggerPath = Directory::getRunDirectory() + m_runId + "/log/last.txt";
-    m_printerPath = Directory::getRunDirectory() + m_runId + "/print/last.txt";
-
-    // Register and configure the logger
-    el::Configurations logConfig;
-    m_logger = el::Loggers::getLogger(loggerName);
-    if (LOGGING_ON == 1) {
-        logConfig.setGlobally(el::ConfigurationType::Filename, m_loggerPath);
+        // ... and configure it
+        el::Configurations loggerConfig;
+        loggerConfig.setGlobally(el::ConfigurationType::Filename, loggerPath); // TODO: MACK - surround with if-checks to prevent logging
+        loggerConfig.setGlobally(el::ConfigurationType::ToStandardOutput, "true"); // TODO: MACK Potentially configurable for maze and mouse
+        loggerConfig.setGlobally(el::ConfigurationType::MaxLogFileSize,
+            std::to_string(10 * 1024 * 1024)); // 10 MiB, ~10,000 lines
+        loggerConfig.setGlobally(el::ConfigurationType::MillisecondsWidth, "3");
+        loggerConfig.setGlobally(el::ConfigurationType::Format,
+            "[%datetime{%Y-%M-%d %H:%m:%s.%g}] # %logger # (%level) - %msg"); // TODO: Don't print the datetime, instead print elapsed real/sim time
+        el::Loggers::reconfigureLogger(logger, loggerConfig);
     }
-    logConfig.setGlobally(el::ConfigurationType::ToStandardOutput,
-        "false");
-    logConfig.setGlobally(el::ConfigurationType::MaxLogFileSize,
-        std::to_string(10 * 1024 * 1024)); // 10 MiB, ~10,000 lines
-    logConfig.setGlobally(el::ConfigurationType::MillisecondsWidth, "3");
-    logConfig.setGlobally(el::ConfigurationType::Format,
-        "%datetime{%Y-%M-%d %H:%m:%s.%g} [%level] %msg");
-    el::Loggers::reconfigureLogger(loggerName, logConfig);
 
-    // Register and configure the printer
-    el::Configurations printConfig;
-    m_printer = el::Loggers::getLogger(printerName);
-    if (LOGGING_ON == 1) {
-        printConfig.setGlobally(el::ConfigurationType::Filename, m_printerPath);
-    }
-    printConfig.setGlobally(el::ConfigurationType::ToStandardOutput,
-        (PRINTING_ON == 1 ? "true" : "false"));
-    printConfig.setGlobally(el::ConfigurationType::MaxLogFileSize,
-        std::to_string(10 * 1024 * 1024)); // 10 MiB, ~10,000 lines
-    printConfig.setGlobally(el::ConfigurationType::MillisecondsWidth, "3");
-    printConfig.setGlobally(el::ConfigurationType::Format,
-        "[%level] - %msg");
-    el::Loggers::reconfigureLogger(printerName, printConfig);
-
-    // Set some rollout flags
+    // Set some flags and the rollout callback
     el::Loggers::addFlag(el::LoggingFlag::StrictLogFileSizeCheck);
+    el::Loggers::addFlag(el::LoggingFlag::ColoredTerminalOutput);
     el::Helpers::installPreRollOutCallback(rolloutHandler);
+}
+
+el::Logger* Logging::getLogger(const std::string& loggerName) {
+    ASSERT(SimUtilities::mapContains(m_info, loggerName)); // TODO: MACK - is this the best assert??
+    return el::Loggers::getLogger(loggerName);
 }
 
 std::string Logging::getNextFileName(const char* filename) {
     std::string path = "";
-    if (std::string(filename) == m_loggerPath) {
-        m_numLoggerFiles += 1;
-        path = "/log/" + std::to_string(m_numLoggerFiles) + ".txt";
-    }
-    else if (std::string(filename) == m_printerPath) {
-        m_numPrinterFiles += 1;
-        path = "/print/" + std::to_string(m_numPrinterFiles) + ".txt";
+    // TODO: MACK - Does this even work???
+    for (auto logger : m_info) {
+        /*
+        std::string loggerPath = logger.second.second.first;
+        if (std::string(filename) == loggerPath) {
+            m_info.insert(std::make_pair(logger.first,
+                std::make_pair(logger.second.first, logger.second.second.first, logger.second.second.second + 1)));
+            path = "/" + logger.first "/" + std::to_string(logger.second.second.second) + ".txt";
+        }
+        */
     }
     return Directory::getRunDirectory() + m_runId + path;
 }

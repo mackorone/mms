@@ -161,10 +161,12 @@ void Driver::draw() {
     // Notify the user of a late frame
     if (duration > 1.0/P()->frameRate()) {
 #ifndef _WIN32 // TODO
+        /*
         IF_PRINT_ELSE_LOG(P()->printLateFrames(), WARN,
             "A frame was late by %v seconds, which is %v percent late.",
             duration - 1.0/P()->frameRate(),
             (duration - 1.0/P()->frameRate())/(1.0/P()->frameRate()) * 100);
+        */
 #endif
     }
 
@@ -357,7 +359,9 @@ void Driver::initGraphics(int argc, char* argv[]) {
     GLenum err = glewInit();
     if (GLEW_OK != err) {
 #ifndef _WIN32 // TODO
+        /*
         PRINT(ERROR, "Unable to initialize GLEW.");
+        */
 #endif
         SimUtilities::quit();
     }
@@ -382,8 +386,10 @@ void Driver::initMouseAlgo() {
     if (!MouseAlgorithms::isMouseAlgorithm(P()->mouseAlgorithm())) {
         // TODO: MACK - make a note about the file where it needs to be declared
 #ifndef _WIN32 // TODO
+        /*
         PRINT(ERROR, "\"%v\" is not a valid mouse algorithm.",
             P()->mouseAlgorithm());
+        */
 #endif
         SimUtilities::quit();
     }
@@ -394,11 +400,13 @@ void Driver::initMouseAlgo() {
     bool success = m_mouse->initialize(mouseFile);
     if (!success) {
 #ifndef _WIN32 // TODO
+        /*
         PRINT(ERROR,
             "Unable to successfully initialize the mouse in the algorithm "
             "\"%v\" from \"%v\".",
             P()->mouseAlgorithm(),
             mouseFile);
+        */
 #endif
         SimUtilities::quit();
     }
@@ -406,6 +414,7 @@ void Driver::initMouseAlgo() {
     // Initialize the interface type
     if (!SimUtilities::mapContains(STRING_TO_INTERFACE_TYPE, m_algorithm->interfaceType())) {
 #ifndef _WIN32 // TODO
+        /*
         PRINT(ERROR,
             "\"%v\" is not a valid interface type. You must declare the "
             "interface type of the mouse algorithm \"%v\" to be either \"%v\" "
@@ -414,6 +423,7 @@ void Driver::initMouseAlgo() {
             P()->mouseAlgorithm(),
             INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE),
             INTERFACE_TYPE_TO_STRING.at(InterfaceType::CONTINUOUS));
+        */
 #endif
         SimUtilities::quit();
     }

@@ -98,8 +98,8 @@ Param::Param() {
     bool useRandomSeed = parser.getBoolIfHasBool(
         "use-random-seed", false);
     if (useRandomSeed && !parser.hasIntValue("random-seed")) {
-#ifndef _WIN32 // TODO
-        PRINT(WARN,
+#ifndef _WIN32 // TODO: MACK
+        Logging::simLogger()->warn(
             "The value of use-random-seed is true but no valid random-seed "
             "value was provided. Setting \"use-random-seed\" to false.");
 #endif
