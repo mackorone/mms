@@ -98,7 +98,7 @@ Param::Param() {
     bool useRandomSeed = parser.getBoolIfHasBool(
         "use-random-seed", false);
     if (useRandomSeed && !parser.hasIntValue("random-seed")) {
-        Logging::simLogger()->warn(
+        L()->warn(
             "The value of use-random-seed is true but no valid random-seed "
             "value was provided. Setting \"use-random-seed\" to false.");
         useRandomSeed = false;

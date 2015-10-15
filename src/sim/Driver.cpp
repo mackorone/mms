@@ -161,7 +161,7 @@ void Driver::draw() {
     // Notify the user of a late frame
     if (duration > 1.0/P()->frameRate()) {
         // TODO: MACK - print late frames...
-        Logging::simLogger()->warn(
+        L()->warn(
             "A frame was late by %v seconds, which is %v percent late.",
             duration - 1.0/P()->frameRate(),
             (duration - 1.0/P()->frameRate())/(1.0/P()->frameRate()) * 100);
@@ -355,7 +355,7 @@ void Driver::initGraphics(int argc, char* argv[]) {
     // GLEW Initialization
     GLenum err = glewInit();
     if (GLEW_OK != err) {
-        Logging::simLogger()->error("Unable to initialize GLEW.");
+        L()->error("Unable to initialize GLEW.");
         SimUtilities::quit();
     }
     
@@ -378,7 +378,7 @@ void Driver::initMouseAlgo() {
     // First, check to ensure that the mouse algorithm is valid
     if (!MouseAlgorithms::isMouseAlgorithm(P()->mouseAlgorithm())) {
         // TODO: MACK - make a note about the file where it needs to be declared
-        Logging::simLogger()->error("\"%v\" is not a valid mouse algorithm.",
+        L()->error("\"%v\" is not a valid mouse algorithm.",
             P()->mouseAlgorithm());
         SimUtilities::quit();
     }
@@ -388,7 +388,7 @@ void Driver::initMouseAlgo() {
     std::string mouseFile = m_algorithm->mouseFile();
     bool success = m_mouse->initialize(mouseFile);
     if (!success) {
-        Logging::simLogger()->error(
+        L()->error(
             "Unable to successfully initialize the mouse in the algorithm "
             "\"%v\" from \"%v\".",
             P()->mouseAlgorithm(),
@@ -398,7 +398,7 @@ void Driver::initMouseAlgo() {
 
     // Initialize the interface type
     if (!SimUtilities::mapContains(STRING_TO_INTERFACE_TYPE, m_algorithm->interfaceType())) {
-        Logging::simLogger()->error(
+        L()->error(
             "\"%v\" is not a valid interface type. You must declare the "
             "interface type of the mouse algorithm \"%v\" to be either \"%v\" "
             "or \"%v\".",

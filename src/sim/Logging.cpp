@@ -15,15 +15,19 @@ std::string Logging::m_mazeLoggerName = "maze";
 std::string Logging::m_mouseLoggerName = "mouse";
 std::map<std::string, std::pair<std::string, int>> Logging::m_info;
 
-el::Logger* Logging::simLogger() {
+el::Logger* L() {
+    return Logging::getSimLogger();
+}
+
+el::Logger* Logging::getSimLogger() {
     return getLogger(m_simLoggerName);
 }
 
-el::Logger* Logging::mazeLogger() {
+el::Logger* Logging::getMazeLogger() {
     return getLogger(m_mazeLoggerName);
 }
 
-el::Logger* Logging::mouseLogger() {
+el::Logger* Logging::getMouseLogger() {
     return getLogger(m_mouseLoggerName);
 }
 
