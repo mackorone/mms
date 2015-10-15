@@ -21,19 +21,7 @@ public:
     // Quits the simulation
     static void quit();
 
-    // TODO: MACK
-    // We recently adopted a logging system for the simulator, which can give
-    // us much more context and information about messages. We should no longer
-    // use the SimUtilities::print function. Your mission, should you choose to
-    // accept it, is to replace, everywhere in the code, SimUtilities::print
-    // with an appropriate PRINT or IF_PRINT_ELSE_LOG. Be mindful of the
-    // severity (DEBUG, INFO, WARN, ERROR) that you use for log
-    // statements, and make sure to format the messages correctly (keeping
-    // whitespace in mind). Once you've replaced all of the
-    // SimUtilities::print, remove the print function from here and from
-    // SimUtilities.cpp. See the end of the draw() function in Main.cpp for an
-    // example of how to use the IF_PRINT_ELSE_LOG macro.
-
+    // TODO: MACK - kill this
     // Prints a message to stdout
     static void print(const std::string& msg);
 

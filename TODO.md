@@ -1,13 +1,10 @@
 # High Priority
 
 - Logging/Printing
-    - One logger for sim
-    - One logger for maze algo
-    - One logger for mouse algo
     - Some way to turn the algo loggers on/off
-    - Remove the ugly macro stuff - use logger class better
     - Actual time elapsed
     - Simulation time too
+    - A way to log only info or higher, warn or higher, etc.
 - Kill CompiledParams.cpp
 - Fix CPMinMax.h - order of includes matter, unforunately...
 - Support stepper motor / encoders interface

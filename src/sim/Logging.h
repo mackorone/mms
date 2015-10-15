@@ -10,17 +10,17 @@
 
 // To print and log something, simply provide the level and use printf-like syntax:
 //
-// simLogger->info("Message");
-// mazeLogger->warn("Message %v %v %v", 'c', "foo", 4);
+// Logging::simLogger->info("Message");
+// Logging::mazeLogger->warn("Message %v %v %v", 'c', "foo", 4);
 //
 // Note that we you should use %v for arguments of all types, and that the
 // string must a string literal (no std::strings are allowed). You can write
 // multiline logging statements as follows:
 //
-// mouseLogger->debug(
-//  "Message %v %v %v. This is really long and really should be on "
-//  "at least two lines because it wouldn't fit on just a single line.",
-//  'c', "foo", 4);
+// Logging::mouseLogger->debug(
+//     "Message %v %v %v. This is really long and really should be on "
+//     "at least two lines because it wouldn't fit on just a single line.",
+//     'c', "foo", 4);
 
 namespace sim {
 
