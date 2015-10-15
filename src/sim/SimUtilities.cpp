@@ -1,6 +1,7 @@
 #include "SimUtilities.h"
 
 #include <chrono>
+#include <cstdlib>
 #include <ctime>
 #include <dirent.h>
 #include <ratio>
@@ -29,7 +30,7 @@
 namespace sim {
 
 void SimUtilities::quit() {
-    exit(0);
+    quick_exit(0);
 }
 
 void SimUtilities::print(const std::string& msg) {

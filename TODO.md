@@ -5,6 +5,8 @@
     - Actual time elapsed
     - Simulation time too
     - A way to log only info or higher, warn or higher, etc.
+    - Kill SimUtilities::print
+    - Add debug, info, warn, error to mouse and maze interfaces
 - Kill CompiledParams.cpp
 - Fix CPMinMax.h - order of includes matter, unforunately...
 - Support stepper motor / encoders interface
@@ -124,7 +126,6 @@ Low Priority
 - Try to break the simulator from within the algos, make it tamper-resistant
 - Reduce include dependencies as much as possible
 - Colors for log statements
-- Sometimes we segfault when we hit 'q'
 - Implement perfect hashing for key input and algo selection
 - Add some shading to the wheels so we can see what direction they're turning
 - Support more than just white fonts

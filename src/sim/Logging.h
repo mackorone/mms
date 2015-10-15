@@ -21,6 +21,9 @@
 //     "Message %v %v %v. This is really long and really should be on "
 //     "at least two lines because it wouldn't fit on just a single line.",
 //     'c', "foo", 4);
+//
+// The valid methods on the logger are debug, info, warn, and error. There are
+// others, but those are the main ones you should use.
 
 namespace sim {
 
