@@ -9,19 +9,19 @@ MazeInterface::MazeInterface(std::vector<std::vector<BasicTile>>* basicMaze) : m
 }
 
 void MazeInterface::debug(const std::string& str) {
-    Logging::getMouseLogger()->debug(str);
+    Logging::getMazeLogger()->debug(str);
 }
 
 void MazeInterface::info(const std::string& str) {
-    Logging::getMouseLogger()->info(str);
+    Logging::getMazeLogger()->info(str);
 }
 
 void MazeInterface::warn(const std::string& str) {
-    Logging::getMouseLogger()->warn(str);
+    Logging::getMazeLogger()->warn(str);
 }
 
 void MazeInterface::error(const std::string& str) {
-    Logging::getMouseLogger()->error(str);
+    Logging::getMazeLogger()->error(str);
 }
 
 void MazeInterface::quit() {
