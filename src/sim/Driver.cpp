@@ -86,11 +86,14 @@ void Driver::drive(int argc, char* argv[]) {
 
 void Driver::bootstrap() {
 
-    // First, determine the runId (just datetime, for now)
+    // First, determine the start time of the program
+    double startTime = SimUtilities::getHighResTime();
+
+    // Then, determine the runId (just datetime, for now)
     std::string runId = SimUtilities::getDateTime();
 
-    // Then we can initiliaze Logging
-    Logging::initialize(runId);
+    // Then, initiliaze logging
+    Logging::initialize(startTime, runId);
 
     // Initialize the State object in order to:
     // 1) Set the runId

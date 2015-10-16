@@ -31,7 +31,7 @@ el::Logger* Logging::getMouseLogger() {
     return getLogger(m_mouseLoggerName);
 }
 
-void Logging::initialize(const std::string& runId) {
+void Logging::initialize(double startTime, const std::string& runId) {
 
     // Ensure we only initialize the loggers once
     static bool initialized = false;
@@ -56,10 +56,10 @@ void Logging::initialize(const std::string& runId) {
         loggerConfig.setGlobally(el::ConfigurationType::Filename, loggerPath);
         loggerConfig.setGlobally(el::ConfigurationType::ToStandardOutput, "true");
         loggerConfig.setGlobally(el::ConfigurationType::MaxLogFileSize,
-            std::to_string(10 * 24)); // 10 MiB, ~10,000 lines
+            std::to_string(10 * 1024 * 1024)); // 10 MiB, ~10,000 lines
         loggerConfig.setGlobally(el::ConfigurationType::MillisecondsWidth, "3");
         loggerConfig.setGlobally(el::ConfigurationType::Format,
-            "[%datetime{%Y-%M-%d %H:%m:%s.%g}] # %logger # (%level) - %msg");
+            "[ %time | %level | %logger ] - %msg");
         el::Loggers::reconfigureLogger(logger, loggerConfig);
     }
 
@@ -67,6 +67,10 @@ void Logging::initialize(const std::string& runId) {
     el::Loggers::addFlag(el::LoggingFlag::StrictLogFileSizeCheck);
     el::Loggers::addFlag(el::LoggingFlag::ColoredTerminalOutput);
     el::Helpers::installPreRollOutCallback(rolloutHandler);
+    el::Helpers::installCustomFormatSpecifier(el::CustomFormatSpecifier("%time", [=](){
+        std::string timeString = SimUtilities::formatSeconds(SimUtilities::getHighResTime() - startTime);
+        return timeString.substr(0, timeString.find(".") + 4).c_str(); // Trim to 3 decimal places
+    }));
 }
 
 el::Logger* Logging::getLogger(const std::string& loggerName) {

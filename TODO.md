@@ -1,14 +1,7 @@
 # High Priority
 
 - Logging/Printing
-    - Some way to turn the algo loggers on/off
-    - Actual time elapsed
-    - Simulation time too
-    - A way to log/print only info or higher, warn or higher, etc.
-    - Kill SimUtilities::print
     - Add debug, info, warn, error to mouse and maze interfaces
-- Kill CompiledParams.cpp
-- Fix CPMinMax.h - order of includes matter, unforunately...
 - Support stepper motor / encoders interface
 - Tile Text
     - Assert that a character exsits before we try to draw it to the tile
@@ -20,9 +13,12 @@
     - Make maxRowsAndCols a runtime parameter (make it 2 x 3 for now)
     - Should we have text alignment be a parameter?
     - Be able to just show actual distances
-- Make some utility that keeps track of elapse time
+- Make some utility that keeps track of simulation and real elapsed time
     - Make the sim speed non-arbitrary
     - Fix the Params associated with discrete sim-speed
+    - Simulation time too
+    - Add the simulation time to the logging
+        - Perhaps even refactor the elapsed time in logging
 - Put a toolbar at the top or bottom with info
     - Display a clock
     - Check to make sure font won't be cut off, use ellipses if so (How do we deal with text being cut off in the vertical direction?)
@@ -75,6 +71,7 @@
 - Xorg and compiz performance...
 - Kill SimUtilities...
 - Enum parameters?
+- Fix CPMinMax.h - order of includes matter, unforunately...
 - Make some functions available to the algo writers
 - Zoomed map mouse is a bit jumpy when going at high speeds
 - Shortest path graphic (phantom bot that travels along other shortest paths)
@@ -98,6 +95,8 @@
 - Draw a path of where the robot has been (the history object could be used for recording as well)
 - Perhaps use a separate process entirely for the mouse (so we can restart it easily)
 - Write scripts we can execute (like unit tests) to make sure that our docs are in sync with the code
+- Some way to turn the loggers on/off
+- A way to log/print only info or higher, warn or higher, etc.
 
 Low Priority
 

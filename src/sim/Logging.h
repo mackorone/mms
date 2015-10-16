@@ -2,9 +2,9 @@
 
 // These must be declared before we include easylogging++.h
 #define ELPP_STL_LOGGING
-#define ELPP_THREAD_SAFE // TODO: MACK - investigate
+#define ELPP_THREAD_SAFE
 #define ELPP_NO_DEFAULT_LOG_FILE
-#define ELPP_DISABLE_DEFAULT_CRASH_HANDLING // TODO: MACK - investigate
+#define ELPP_DISABLE_DEFAULT_CRASH_HANDLING
 
 #include <easyloggingpp/easylogging++.h>
 
@@ -44,7 +44,7 @@ public:
     static el::Logger* getMouseLogger();
 
     // Initializes all of the loggers, should only be called once
-    static void initialize(const std::string& runId);
+    static void initialize(double startTime, const std::string& runId);
 
 private:
 

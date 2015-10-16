@@ -33,6 +33,9 @@ public:
     // Returns the UTC datetime formatted as YY-MM-DD_HH:MM:SS
     static std::string getDateTime();
 
+    // Converts seconds to mm:ss.ssss... string
+    static std::string formatSeconds(double seconds);
+
     // Convert between types
     static bool isBool(const std::string& str);
     static bool isInt(const std::string& str);

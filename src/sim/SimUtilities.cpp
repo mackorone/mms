@@ -76,6 +76,23 @@ std::string SimUtilities::getDateTime() {
     return buf;
 }
 
+std::string SimUtilities::formatSeconds(double seconds) {
+    int minutes = 0;
+    while (seconds >= 60) {
+        minutes += 1;
+        seconds -= 60;
+    }
+    std::string secondsString = std::to_string(seconds);
+    if (secondsString.find(".") < 2) {
+        secondsString.insert(0, 1, '0');
+    }
+    std::string minutesString = std::to_string(minutes);
+    if (minutesString.size() < 2) {
+        minutesString.insert(0, 1, '0');
+    }
+    return minutesString + ":" + secondsString;
+}
+
 bool SimUtilities::isBool(const std::string& str) {
     return 0 == str.compare("true") || 0 == str.compare("false");
 }
