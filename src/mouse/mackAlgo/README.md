@@ -1,4 +1,4 @@
-# floodFill
+# mackAlgo
 
 This directory contains the code that was used by the University at Buffalo at
 the 2015 IEEE Region 1 Micromouse competition. It's an implementation of Dijkstra's 

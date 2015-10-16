@@ -26,25 +26,37 @@ public:
 
     // ----- Any interface methods ----- //
 
-    // TODO: random???
-    // TODO: logging??? NOPE print (arduino) instead
-    void delay(int milliseconds);
+    // Logging functions
+    void debug(const std::string& str);
+    void info(const std::string& str);
+    void warn(const std::string& str);
+    void error(const std::string& str);
 
+    // Misc functions
+    double getRandom();
+    void delay(int milliseconds);
+    void quit();
+
+    // Tile color
     void setTileColor(int x, int y, char color);
     void clearTileColor(int x, int y);
     void clearAllTileColor();
 
+    // Tile walls
     void declareWall(int x, int y, char direction, bool wallExists);
     void undeclareWall(int x, int y, char direction);
 
+    // Tile fog
     void setTileFogginess(int x, int y, bool foggy);
-    // TODO: MACK - (un)declareTraversed (how should this work???)
 
+    // Tile distance
     void declareTileDistance(int x, int y, int distance);
     void undeclareTileDistance(int x, int y);
 
+    // Reset position of the mouse
     void resetPosition();
 
+    // Input buttons
     bool inputButtonPressed(int inputButton);
     void acknowledgeInputButtonPressed(int inputButton);
 

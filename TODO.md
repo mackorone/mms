@@ -1,7 +1,5 @@
 # High Priority
 
-- Logging/Printing
-    - Add debug, info, warn, error to mouse and maze interfaces
 - Support stepper motor / encoders interface
 - Tile Text
     - Assert that a character exsits before we try to draw it to the tile
@@ -50,6 +48,7 @@
 
 # Medum Priority
 
+- Make some default Arduino implementations for some functions
 - Make a system for nearly instantly checking stats on many mazes:
     - like unit tests
     - solved or not

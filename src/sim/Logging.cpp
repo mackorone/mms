@@ -45,7 +45,7 @@ void Logging::initialize(double startTime, const std::string& runId) {
     for (std::string loggerName : {m_simLoggerName, m_mazeLoggerName, m_mouseLoggerName}) {
         
         // ... create the logger info ...
-        std::string loggerPath = Directory::getRunDirectory() + m_runId + "/" + loggerName + "/default.txt";
+        std::string loggerPath = Directory::getRunDirectory() + m_runId + "/logs/" + loggerName + "/default.txt";
         m_info.insert(std::make_pair(loggerName, std::make_pair(loggerPath, 1)));
 
         // ... and then create the logger ...
@@ -85,7 +85,7 @@ std::string Logging::getNextFileName(const char* filename) {
         std::string loggerPath = info.second.first;
         int numLogFiles = info.second.second;
         if (std::string(filename) == loggerPath) {
-            path = "/" + loggerName + "/" + std::to_string(numLogFiles) + ".txt";
+            path = "/logs/" + loggerName + "/" + std::to_string(numLogFiles) + ".txt";
             m_info.at(loggerName) = std::make_pair(loggerPath, numLogFiles + 1);
         }
     }

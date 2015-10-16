@@ -8,6 +8,30 @@ namespace sim {
 MazeInterface::MazeInterface(std::vector<std::vector<BasicTile>>* basicMaze) : m_basicMaze(basicMaze) {
 }
 
+void MazeInterface::debug(const std::string& str) {
+    Logging::getMouseLogger()->debug(str);
+}
+
+void MazeInterface::info(const std::string& str) {
+    Logging::getMouseLogger()->info(str);
+}
+
+void MazeInterface::warn(const std::string& str) {
+    Logging::getMouseLogger()->warn(str);
+}
+
+void MazeInterface::error(const std::string& str) {
+    Logging::getMouseLogger()->error(str);
+}
+
+void MazeInterface::quit() {
+    SimUtilities::quit();
+}
+
+double MazeInterface::getRandom() {
+    return SimUtilities::getRandom();
+}
+
 void MazeInterface::setWall(int x, int y, char direction, bool wallExists) {
 
     if (x < 0 || getWidth() <= x || y < 0 || getHeight() <= y) {
@@ -23,10 +47,6 @@ void MazeInterface::setWall(int x, int y, char direction, bool wallExists) {
         return;
     }
     m_basicMaze->at(x).at(y).walls.at(CHAR_TO_DIRECTION.at(direction)) = wallExists;
-}
-
-double MazeInterface::getRandom() {
-    return SimUtilities::getRandom();
 }
 
 int MazeInterface::getWidth() {

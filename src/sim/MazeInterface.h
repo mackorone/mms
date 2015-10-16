@@ -11,10 +11,18 @@ class MazeInterface {
 public:
     MazeInterface(std::vector<std::vector<BasicTile>>* basicMaze);
 
-    void setWall(int x, int y, char direction, bool wallExists);
-    double getRandom();
+    // Logging functions
+    void debug(const std::string& str);
+    void info(const std::string& str);
+    void warn(const std::string& str);
+    void error(const std::string& str);
 
-    // TODO: Logging...?
+    // Misc functions
+    double getRandom();
+    void quit();
+
+    // Sets the wall
+    void setWall(int x, int y, char direction, bool wallExists);
 
 private:
     std::vector<std::vector<BasicTile>>* m_basicMaze;

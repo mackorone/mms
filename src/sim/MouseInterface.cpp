@@ -22,8 +22,32 @@ MouseInterface::MouseInterface(const Maze* maze, Mouse* mouse, MazeGraphic* maze
         m_maze(maze), m_mouse(mouse), m_mazeGraphic(mazeGraphic) {
 }
 
+void MouseInterface::debug(const std::string& str) {
+    Logging::getMouseLogger()->debug(str);
+}
+
+void MouseInterface::info(const std::string& str) {
+    Logging::getMouseLogger()->info(str);
+}
+
+void MouseInterface::warn(const std::string& str) {
+    Logging::getMouseLogger()->warn(str);
+}
+
+void MouseInterface::error(const std::string& str) {
+    Logging::getMouseLogger()->error(str);
+}
+
+double MouseInterface::getRandom() {
+    return SimUtilities::getRandom();
+}
+
 void MouseInterface::delay(int milliseconds) {
     sim::SimUtilities::sleep(Milliseconds(milliseconds));
+}
+
+void MouseInterface::quit() {
+    sim::SimUtilities::quit();
 }
 
 void MouseInterface::setTileColor(int x, int y, char color) {
