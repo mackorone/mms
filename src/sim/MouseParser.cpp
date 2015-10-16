@@ -1,6 +1,7 @@
 #include "MouseParser.h"
 
 #include "Assert.h"
+#include "Logging.h"
 #include "SimUtilities.h"
 
 namespace sim {
@@ -10,7 +11,7 @@ MouseParser::MouseParser(const std::string& filePath) {
     pugi::xml_parse_result result = m_doc.load_file(filePath.c_str());
     // TODO: Check the directories, etc. Give better error message to users
     if (!result) {
-        SimUtilities::print("Unable to read mouse parameters in \"" + filePath + "\": " + result.description());
+        L()->warn("Unable to read mouse parameters in \"%v\": %v", filePath, result.description());
         SimUtilities::quit(); // TODO: MACK - shouldn't quit here... allow other messages to print out
     }
     

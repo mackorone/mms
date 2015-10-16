@@ -30,16 +30,16 @@ void MouseInterface::setTileColor(int x, int y, char color) {
 
     if (!withinMaze(x, y)) {
         L()->warn(
-            "There is no tile at position (%v, %v) and thus you cannot set its "
-            "color.",
+            "There is no tile at position (%v, %v) and thus you cannot set its"
+            " color.",
             x, y);
         return;
     }
 
     if (!SimUtilities::mapContains(CHAR_TO_COLOR, color)) {
         L()->warn(
-            "You cannot set the color of tile (%v, %v) to '%v' since '%v' is "
-            "not mapped to a color.",
+            "You cannot set the color of tile (%v, %v) to '%v' since '%v' is"
+            " not mapped to a color.",
             x, y, color, color);
         return;
     }
@@ -52,8 +52,8 @@ void MouseInterface::clearTileColor(int x, int y) {
 
     if (!withinMaze(x, y)) {
         L()->warn(
-            "There is no tile at position (%v, %v) and thus you cannot clear its "
-            "color.",
+            "There is no tile at position (%v, %v), and thus you cannot clear its"
+            " color.",
             x, y);
         return;
     }
@@ -73,13 +73,14 @@ void MouseInterface::clearAllTileColor() {
 void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) {
 
     if (!withinMaze(x, y)) {
-        SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
-            + std::to_string(y) + std::string("), and thus you cannot declare any of its walls."));
+        L()->warn(
+            "There is no tile at position (%v, %v), and thus you cannot declare"
+            " any of its walls.", x, y);
         return;
     }
 
     if (!SimUtilities::mapContains(CHAR_TO_DIRECTION, direction)) {
-        SimUtilities::print(std::string("The character '") + direction + std::string("' is not mapped to a valid direction."));
+        L()->warn("The character '%v' is not mapped to a valid direction.", direction);
         return;
     }
 
@@ -93,13 +94,14 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
 void MouseInterface::undeclareWall(int x, int y, char direction) {
 
     if (!withinMaze(x, y)) {
-        SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
-            + std::to_string(y) + std::string("), and thus you cannot undeclare any of its walls."));
+        L()->warn(
+            "There is no tile at position (%v, %v) and thus you cannot"
+            " undeclare any of its walls.", x, y);
         return;
     }
 
     if (!SimUtilities::mapContains(CHAR_TO_DIRECTION, direction)) {
-        SimUtilities::print(std::string("The character '") + direction + std::string("' is not mapped to a valid direction."));
+        L()->warn("The character '%v' is not mapped to a valid direction.", direction);
         return;
     }
 
@@ -113,8 +115,9 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
 void MouseInterface::setTileFogginess(int x, int y, bool foggy) {
 
     if (!withinMaze(x, y)) {
-        SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
-            + std::to_string(y) + std::string("), and thus you cannot set its fogginess."));
+        L()->warn(
+            "There is no tile at position (%v, %v), and thus you cannot set"
+            " its fogginess.", x, y);
         return;
     }
 
@@ -129,8 +132,9 @@ void MouseInterface::setTileFogginess(int x, int y, bool foggy) {
 void MouseInterface::declareTileDistance(int x, int y, int distance) {
 
     if (!withinMaze(x, y)) {
-        SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
-            + std::to_string(y) + std::string("), and thus you cannot set its distance."));
+        L()->warn(
+            "There is no tile at position (%v, %v), and thus you cannot set"
+            " its distance.", x, y);
         return;
     }
 
@@ -140,8 +144,9 @@ void MouseInterface::declareTileDistance(int x, int y, int distance) {
 void MouseInterface::undeclareTileDistance(int x, int y) {
 
     if (!withinMaze(x, y)) {
-        SimUtilities::print(std::string("Error: There is no tile at position (") + std::to_string(x) + std::string(", ")
-            + std::to_string(y) + std::string("), and thus you cannot clear its distance."));
+        L()->warn(
+            "There is no tile at position (%v, %v), and thus you cannot clear"
+            " its distance.", x, y);
         return;
     }
 
@@ -155,8 +160,9 @@ void MouseInterface::resetPosition() {
 bool MouseInterface::inputButtonPressed(int inputButton) {
 
     if (inputButton < 0 || 9 < inputButton) {
-        SimUtilities::print(std::string("Error: There is no input button with the number ") + std::to_string(inputButton)
-            + std::string(", and thus you cannot check to see if it has been pressed."));
+        L()->warn(
+            "There is no input button with the number %v, and thus you cannot"
+            " check to see if it has been pressed.", inputButton);
         return false;
     }
 
@@ -166,8 +172,9 @@ bool MouseInterface::inputButtonPressed(int inputButton) {
 void MouseInterface::acknowledgeInputButtonPressed(int inputButton) {
 
     if (inputButton < 0 || 9 < inputButton) {
-        SimUtilities::print(std::string("Error: There is no input button with the number ") + std::to_string(inputButton)
-            + std::string(", and thus you cannot acknowledge that it has been pressed."));
+        L()->warn(
+            "There is no input button with the number %v, and thus you cannot"
+            " acknowledge that it has been pressed.", inputButton);
         return;
     }
 
@@ -186,8 +193,7 @@ double MouseInterface::read(std::string name) {
     ENSURE_CONTINUOUS_INTERFACE
 
     if (!m_mouse->hasSensor(name)) {
-        SimUtilities::print(std::string("Error: There is no sensor called \"") + std::string(name)
-            + std::string("\" and thus you cannot read its value."));
+        L()->warn("There is no sensor called \"%v\" and thus you cannot read its value.", name);
         return 0.0;
     }
 
@@ -203,11 +209,10 @@ double MouseInterface::read(std::string name) {
 
     // Display to the user, if requested
     if (sim::P()->printLateSensorReads() && duration > m_mouse->getReadDuration(name).getSeconds()) {
-        sim::SimUtilities::print(std::string("A sensor read was late by ")
-            + std::to_string(duration - m_mouse->getReadDuration(name).getSeconds())
-            + std::string(" seconds, which is ")
-            + std::to_string((duration - m_mouse->getReadDuration(name).getSeconds())/(m_mouse->getReadDuration(name).getSeconds()) * 100)
-            + std::string(" percent late."));
+        L()->warn(
+            "A sensor read was late by %v seconds, which is %v percent late.",
+            (duration - m_mouse->getReadDuration(name).getSeconds()),
+            (duration - m_mouse->getReadDuration(name).getSeconds())/(m_mouse->getReadDuration(name).getSeconds()) * 100);
     }
 
     // Sleep for the read time
@@ -426,16 +431,19 @@ void MouseInterface::turnAround() {
 
 void MouseInterface::ensureDiscreteInterface(const std::string& callingFunction) const {
     if (S()->interfaceType() != InterfaceType::DISCRETE) {
-        SimUtilities::print(std::string("Error: You must declare the interface type to be sim::InterfaceType::DISCRETE to use MouseInterface::")
-            + callingFunction + std::string("()."));
+        L()->error(
+            "You must declare the interface type to be"
+            " sim::InterfaceType::DISCRETE to use MouseInterface::%v().",
+            callingFunction);
         SimUtilities::quit();
     }
 }
 
 void MouseInterface::ensureContinuousInterface(const std::string& callingFunction) const {
     if (S()->interfaceType() != InterfaceType::CONTINUOUS) {
-        SimUtilities::print(std::string("Error: You must declare the interface type to be sim::InterfaceType::CONTINUOUS to use MouseInterface::")
-            + callingFunction + std::string("()."));
+        L()->error(
+            "You must declare the interface type to be sim::InterfaceType::CONTINUOUS to use MouseInterface::%v().",
+            callingFunction);
         SimUtilities::quit();
     }
 }

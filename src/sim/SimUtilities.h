@@ -21,10 +21,6 @@ public:
     // Quits the simulation
     static void quit();
 
-    // TODO: MACK - kill this
-    // Prints a message to stdout
-    static void print(const std::string& msg);
-
     // Returns a double in [0.0, 1.0]
     static double getRandom();
 

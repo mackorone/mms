@@ -3,7 +3,6 @@
 #include <chrono>
 #include <cstdlib>
 #include <ctime>
-#include <dirent.h>
 #include <ratio>
 #include <fstream>
 #include <glut/glut.h>
@@ -17,24 +16,22 @@
 
 #ifdef _WIN32
     #include <windows.h>
+#else
+    #include <dirent.h>
 #endif
 
 #include "units/Seconds.h"
 
 #include "Assert.h"
 #include "Directory.h"
+#include "Logging.h"
 #include "Param.h"
 #include "State.h"
-#include "Logging.h"
 
 namespace sim {
 
 void SimUtilities::quit() {
     quick_exit(0);
-}
-
-void SimUtilities::print(const std::string& msg) {
-    std::cout << msg << std::endl;
 }
 
 double SimUtilities::getRandom() {
@@ -170,6 +167,10 @@ std::vector<std::string> SimUtilities::getDirectoryContents(const std::string& p
 
     std::vector<std::string> contents;
 
+#ifdef _WIN32
+    // TODO: upforgrabs
+    // Implement a windows version of getDirectoryContents
+#else
     // Taken from http://stackoverflow.com/a/612176/3176152
     DIR *dir = opendir(path.c_str());
     if (dir != NULL) {
@@ -179,6 +180,7 @@ std::vector<std::string> SimUtilities::getDirectoryContents(const std::string& p
         }
         closedir(dir);
     }
+#endif
 
     return contents;
 }

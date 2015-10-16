@@ -1,5 +1,6 @@
 #include "MazeInterface.h"
 
+#include "Logging.h"
 #include "SimUtilities.h"
 
 namespace sim {
@@ -10,16 +11,15 @@ MazeInterface::MazeInterface(std::vector<std::vector<BasicTile>>* basicMaze) : m
 void MazeInterface::setWall(int x, int y, char direction, bool wallExists) {
 
     if (x < 0 || getWidth() <= x || y < 0 || getHeight() <= y) {
-        SimUtilities::print(std::string("Error: The generated maze width and height values are "
-        + std::to_string(getWidth()) + " and " + std::to_string(getHeight()) + ", respectively."
-        + "There is no tile at position (") + std::to_string(x) + std::string(", ")
-            + std::to_string(y) + std::string("), and thus you cannot set its wall value."));
+        L()->warn(
+            "The generated maze width and height values are %v and %v, respectively."
+            " There is no tile at position (%v, %v), and thus you cannot set its wall value.",
+            getWidth(), getHeight(), x, y);
         return;
     }
 
     if (!SimUtilities::mapContains(CHAR_TO_DIRECTION, direction)) {
-        SimUtilities::print(std::string("Error: The character '") + direction
-            + std::string("' is not mapped to a valid direction."));
+        L()->warn("The character '%v' is not mapped to a valid direction.", direction);
         return;
     }
     m_basicMaze->at(x).at(y).walls.at(CHAR_TO_DIRECTION.at(direction)) = wallExists;

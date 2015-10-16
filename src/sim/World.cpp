@@ -5,6 +5,7 @@
 #include "CPMath.h"
 #include "CPMinMax.h"
 #include "GeometryUtilities.h"
+#include "Logging.h"
 #include "Param.h"
 #include "SimUtilities.h"
 #include "State.h"
@@ -56,11 +57,10 @@ void World::simulate() {
 
         // Notify the use of a late mouse position update
         if (P()->printLateMousePositionUpdates() && duration > 1.0/P()->mousePositionUpdateRate()) {
-            SimUtilities::print(std::string("A mouse position update was late by ")
-                + std::to_string(duration - 1.0/P()->mousePositionUpdateRate())
-                + std::string(" seconds, which is ")
-                + std::to_string((duration - 1.0/P()->mousePositionUpdateRate())/(1.0/P()->mousePositionUpdateRate()) * 100)
-                + std::string(" percent late."));
+            L()->warn(
+                "A mouse position update was late by %v seconds, which is %v percent late.",
+                (duration - 1.0/P()->mousePositionUpdateRate()),
+                (duration - 1.0/P()->mousePositionUpdateRate())/(1.0/P()->mousePositionUpdateRate()) * 100);
         }
 
         // Sleep the appropriate amout of time, based on the mouse update duration
@@ -113,11 +113,10 @@ void World::checkCollision() {
 
         // Notify the use of a late collision detection
         if (P()->printLateCollisionDetections() && duration > 1.0/sim::P()->collisionDetectionRate()) {
-            sim::SimUtilities::print(std::string("A collision detection was late by ")
-                + std::to_string(duration - 1.0/sim::P()->collisionDetectionRate())
-                + std::string(" seconds, which is ")
-                + std::to_string((duration - 1.0/P()->collisionDetectionRate())/(1.0/P()->collisionDetectionRate()) * 100)
-                + std::string(" percent late."));
+            L()->warn(
+                "A collision detection was late by %v seconds, which is %v percent late.",
+                (duration - 1.0/P()->collisionDetectionRate()),
+                (duration - 1.0/P()->collisionDetectionRate())/(1.0/P()->collisionDetectionRate()) * 100);
         }
 
         // Sleep the appropriate amout of time, based on the collision detection duration

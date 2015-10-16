@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include "Assert.h"
+#include "Logging.h"
 #include "SimUtilities.h"
 
 namespace sim {
@@ -35,7 +36,7 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
 
     // First, make sure we've been given a file
     if (!SimUtilities::isFile(mazeFilePath)) {
-        SimUtilities::print("Error: \"" + mazeFilePath + "\" is not a file.");
+        L()->warn("\"%v\" is not a file.", mazeFilePath);
         return false;
     }
 
@@ -44,13 +45,13 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
 
     // Error opening file
     if (!file.is_open()) {
-        SimUtilities::print("Error: Could not open \"" + mazeFilePath + "\" for maze validation.");
+        L()->warn("Could not open \"%v\" for maze validation.", mazeFilePath);
         return false;
     }
 
     // Empty file
     if (file.peek() == std::ifstream::traits_type::eof()) {
-        SimUtilities::print("Error: \"" + mazeFilePath + "\" is empty.");
+        L()->warn("\"%v\" is empty.", mazeFilePath);
         return false;
     }
 
@@ -69,8 +70,11 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
 
         // Check to see that there are exactly six entries...
         if (6 != tokens.size()) {
-            SimUtilities::print("Error: \"" + mazeFilePath + "\" does not contain six entries on each line: line "
-                + std::to_string(lineNum) + " contains " + std::to_string(tokens.size()) + " entries.");
+            L()->warn(
+                "\"%v\" does not contain six entries on each line: line %v contains %v entries.",
+                mazeFilePath,
+                std::to_string(lineNum),
+                std::to_string(tokens.size()));
             return false;
         }
 
@@ -78,8 +82,13 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
         std::vector<int> values;
         for (int i = 0; i < tokens.size(); i += 1) {
             if (!SimUtilities::isInt(tokens.at(i))) {
-                SimUtilities::print("Error: \"" + mazeFilePath + "\" contains non-numeric entries: the entry \"" + tokens.at(i)
-                    + "\" on line " + std::to_string(lineNum) + " in position " + std::to_string(i + 1) + " is not numeric.");
+                L()->warn(
+                    "\"%v\" contains non-numeric entries: the entry"
+                    " \"%v\" on line %v in position %v is not numeric.",
+                    mazeFilePath,
+                    tokens.at(i),
+                    std::to_string(lineNum),
+                    std::to_string(i + 1));
                 return false;
             }
             else {
@@ -92,9 +101,12 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
         bool caseOne = values.at(0) == expectedX     && values.at(1) == expectedY;
         bool caseTwo = values.at(0) == expectedX + 1 && values.at(1) == 0 && expectedY != 0;
         if (!(caseOne || caseTwo)) {
-            SimUtilities::print("Error: \"" + mazeFilePath + "\" contains unexpected x and y values of "
-                + std::to_string(values.at(0)) + " and " + std::to_string(values.at(1))
-                + " on line " + std::to_string(lineNum) + ".");
+            L()->warn(
+                "\"%v\" contains unexpected x and y values of %v and %v on line %v.",
+                mazeFilePath,
+                std::to_string(values.at(0)),
+                std::to_string(values.at(1)),
+                std::to_string(lineNum));
             return false;
         }
         if (caseOne) {
@@ -109,9 +121,13 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
         for (int i = 0; i < 4; i += 1) {
             int value = values.at(2 + i);
             if (!(value == 0 || value == 1)) {
-                SimUtilities::print("Error: \"" + mazeFilePath + "\" contains an invalid value of "
-                    + std::to_string(value) + " in position " + std::to_string(2 + i + 1) + " on line "
-                    + std::to_string(lineNum) + ". All wall values must be either \"0\" or \"1\".");
+                L()->warn(
+                    "\"%v\" contains an invalid value of %v in position %v on"
+                    " line %v. All wall values must be either \"0\" or \"1\".",
+                    mazeFilePath,
+                    std::to_string(value),
+                    std::to_string(2 + i + 1),
+                    std::to_string(lineNum));
                 return false;
             }
         }
@@ -127,7 +143,7 @@ void MazeFileUtilities::saveMaze(const std::vector<std::vector<BasicTile>>& maze
 
     // Make sure the file is open
     if (!file.is_open()) {
-        SimUtilities::print("Error: Unable to save maze to \"" + mazeFilePath + "\".");
+        L()->warn("Unable to save maze to \"%v\".", mazeFilePath);
         return;
     }
 

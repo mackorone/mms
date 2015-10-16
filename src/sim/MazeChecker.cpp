@@ -1,6 +1,7 @@
 #include "MazeChecker.h"
 
 #include "Assert.h"
+#include "Logging.h"
 #include "SimUtilities.h"
 
 namespace sim {
@@ -8,22 +9,22 @@ namespace sim {
 bool MazeChecker::validMaze(const std::vector<std::vector<BasicTile>>& maze) {
 
     if (!isNonempty(maze)) {
-        SimUtilities::print("Error: The maze is empty.");
+        L()->warn("The maze is empty.");
         return false;
     }
 
     if (!isRectangular(maze)) {
-        SimUtilities::print("Error: The maze is not rectangular.");
+        L()->warn("The maze is not rectangular.");
         return false;
     }
 
     if (!isEnclosed(maze)) {
-        SimUtilities::print("Error: The maze is not enclosed by walls.");
+        L()->warn("The maze is not enclosed by walls.");
         return false;
     }
 
     if (!hasConsistentWalls(maze)) {
-        SimUtilities::print("Error: The maze does not have consistent walls.");
+        L()->warn("The maze does not have consistent walls.");
         return false;
     }
 
@@ -81,42 +82,42 @@ bool MazeChecker::officialMaze(const std::vector<std::vector<BasicTile>>& maze) 
     ASSERT(validMaze(maze));
 
     if (!isSquare(maze)) {
-        SimUtilities::print("Error: The maze is not square.");
+        L()->warn("The maze is not square.");
         return false;
     }
 
     if (!hasPathToCenter(maze)) {
-        SimUtilities::print("Error: The maze does not have a path to the center.");
+        L()->warn("The maze does not have a path to the center.");
         return false;
     }
 
     if (!hasHollowCenter(maze)) {
-        SimUtilities::print("Error: The maze does not have a path to the center.");
+        L()->warn("The maze does not have a hollow center.");
         return false;
     }
 
     if (!hasOneEntranceToCenter(maze)) {
-        SimUtilities::print("Error: The center of the maze has more than one entrance.");
+        L()->warn("The center of the maze has more than one entrance.");
         return false;
     }
 
     if (!hasWallAttachedToEachPost(maze)) {
-        SimUtilities::print("Error: There is at least one non-center post with no walls connected to it.");
+        L()->warn("There is at least one non-center post with no walls connected to it.");
         return false;
     }
     
     if (!hasThreeStartingWalls(maze)) {
-        SimUtilities::print("Error: There are not exactly three starting walls.");
+        L()->warn("There are not exactly three starting walls.");
         return false;
     }
 
     if (!isUnsolvableByWallFollower(maze)) {
-        SimUtilities::print("Error: The maze is solvable by a maze-following robot.");
+        L()->warn("The maze is solvable by a maze-following robot.");
         return false;
     }
 
     if (!hasNoInaccesibleLocations(maze)) {
-        SimUtilities::print("Error: There are inaccessible locations in the maze.");
+        L()->warn("There are inaccessible locations in the maze.");
         return false;
     }
 

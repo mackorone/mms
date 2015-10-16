@@ -4,7 +4,7 @@
     - Some way to turn the algo loggers on/off
     - Actual time elapsed
     - Simulation time too
-    - A way to log only info or higher, warn or higher, etc.
+    - A way to log/print only info or higher, warn or higher, etc.
     - Kill SimUtilities::print
     - Add debug, info, warn, error to mouse and maze interfaces
 - Kill CompiledParams.cpp
@@ -101,6 +101,7 @@
 
 Low Priority
 
+- Get rid of as much platform dependant code as possible
 - Clean up the coding standards
 - Optimize for space in the TEXTURE_CPU_BUFFER and GRAPHIC_CPU_BUFFER - Don't repeat vertices
 - VSync so the graphics don't tear

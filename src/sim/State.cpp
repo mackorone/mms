@@ -2,6 +2,7 @@
 
 #include "Assert.h"
 #include "Key.h"
+#include "Logging.h"
 #include "Param.h"
 #include "SimUtilities.h"
 
@@ -116,7 +117,7 @@ void State::setRunId(const std::string& runId) {
 
 void State::setCrashed() {
     m_crashed = true;
-    SimUtilities::print(P()->crashMessage());
+    L()->warn("%v", P()->crashMessage());
 }
 
 void State::setInterfaceType(InterfaceType interfaceType) {

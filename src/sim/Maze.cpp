@@ -8,6 +8,7 @@
 #include "../maze/MazeAlgorithms.h"
 #include "Assert.h"
 #include "Directory.h"
+#include "Logging.h"
 #include "MazeChecker.h"
 #include "MazeFileUtilities.h"
 #include "MazeInterface.h"
@@ -25,7 +26,7 @@ Maze::Maze() {
 
         std::string mazeFilePath = Directory::getResMazeDirectory() + P()->mazeFile();
         if (!MazeFileUtilities::isMazeFile(mazeFilePath)) {
-            SimUtilities::print("Error: Unable to initialize maze from file \"" + mazeFilePath + "\".");
+            L()->error("Unable to initialize maze from file \"%v\".", mazeFilePath);
             SimUtilities::quit();
         }
 
@@ -33,20 +34,20 @@ Maze::Maze() {
     }
     else {
 
-        if (!MazeAlgorithms::isMazeAlgorithm(sim::P()->mazeAlgorithm())) {
-            SimUtilities::print("Error: \"" + sim::P()->mazeAlgorithm() + "\" is not a valid maze algorithm.");
+        if (!MazeAlgorithms::isMazeAlgorithm(P()->mazeAlgorithm())) {
+            L()->error("\"%v\" is not a valid maze algorithm.", P()->mazeAlgorithm());
             SimUtilities::quit();
         }
 
         basicMaze = getBlankBasicMaze(P()->generatedMazeWidth(), P()->generatedMazeHeight());
         MazeInterface mazeInterface(&basicMaze);
-        MazeAlgorithms::getMazeAlgorithm(sim::P()->mazeAlgorithm())->generate(
+        MazeAlgorithms::getMazeAlgorithm(P()->mazeAlgorithm())->generate(
             P()->generatedMazeWidth(), P()->generatedMazeHeight(), &mazeInterface);
     }
 
     // Check to see if it's a valid maze
     if (!MazeChecker::validMaze(basicMaze)) {
-        SimUtilities::print("Error: Failed maze validation.");
+        L()->error("Failed maze validation.");
         SimUtilities::quit();
     }
 
@@ -60,7 +61,7 @@ Maze::Maze() {
 
     // Then, check and enforce official maze rules
     if (P()->enforceOfficialMazeRules() && !MazeChecker::officialMaze(basicMaze)) {
-        SimUtilities::print("Error: Failed official maze validation.");
+        L()->error("Failed official maze validation.");
         SimUtilities::quit();
     }
 
