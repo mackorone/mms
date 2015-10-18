@@ -25,38 +25,38 @@ int MazeGraphic::getHeight() const {
 }
 
 bool MazeGraphic::wallDeclared(int x, int y, Direction direction) const {
-    ASSERT_IN_CLOSED_OPEN_INTERVAL(0, x, getWidth());
-    ASSERT_IN_CLOSED_OPEN_INTERVAL(0, y, getHeight());
+    ASSERT_LE_LT(0, x, getWidth());
+    ASSERT_LE_LT(0, y, getHeight());
     return m_tileGraphics.at(x).at(y).wallDeclared(direction);
 }
 
 void MazeGraphic::setTileColor(int x, int y, Color color) {
-    ASSERT_IN_CLOSED_OPEN_INTERVAL(0, x, getWidth());
-    ASSERT_IN_CLOSED_OPEN_INTERVAL(0, y, getHeight());
+    ASSERT_LE_LT(0, x, getWidth());
+    ASSERT_LE_LT(0, y, getHeight());
     m_tileGraphics.at(x).at(y).setColor(color);
 }
 
 void MazeGraphic::declareWall(int x, int y, Direction direction, bool isWall) {
-    ASSERT_IN_CLOSED_OPEN_INTERVAL(0, x, getWidth());
-    ASSERT_IN_CLOSED_OPEN_INTERVAL(0, y, getHeight());
+    ASSERT_LE_LT(0, x, getWidth());
+    ASSERT_LE_LT(0, y, getHeight());
     m_tileGraphics.at(x).at(y).declareWall(direction, isWall);
 }
 
 void MazeGraphic::undeclareWall(int x, int y, Direction direction) {
-    ASSERT_IN_CLOSED_OPEN_INTERVAL(0, x, getWidth());
-    ASSERT_IN_CLOSED_OPEN_INTERVAL(0, y, getHeight());
+    ASSERT_LE_LT(0, x, getWidth());
+    ASSERT_LE_LT(0, y, getHeight());
     m_tileGraphics.at(x).at(y).undeclareWall(direction);
 }
 
 void MazeGraphic::setTileFogginess(int x, int y, bool foggy) {
-    ASSERT_IN_CLOSED_OPEN_INTERVAL(0, x, getWidth());
-    ASSERT_IN_CLOSED_OPEN_INTERVAL(0, y, getHeight());
+    ASSERT_LE_LT(0, x, getWidth());
+    ASSERT_LE_LT(0, y, getHeight());
     m_tileGraphics.at(x).at(y).setFogginess(foggy);
 }
 
 void MazeGraphic::setTileText(int x, int y, const std::vector<std::string>& rowsOfText) {
-    ASSERT_IN_CLOSED_OPEN_INTERVAL(0, x, getWidth());
-    ASSERT_IN_CLOSED_OPEN_INTERVAL(0, y, getHeight());
+    ASSERT_LE_LT(0, x, getWidth());
+    ASSERT_LE_LT(0, y, getHeight());
     m_tileGraphics.at(x).at(y).setText(rowsOfText);
 }
 

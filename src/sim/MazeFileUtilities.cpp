@@ -164,7 +164,7 @@ void MazeFileUtilities::saveMaze(const std::vector<std::vector<BasicTile>>& maze
 std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMaze(const std::string& mazeFilePath) {
 
     // This should only be called on files that are actually maze files
-    ASSERT_TRUE(MazeFileUtilities::isMazeFile(mazeFilePath));
+    ASSERT_TR(MazeFileUtilities::isMazeFile(mazeFilePath));
 
     // The maze to be returned
     std::vector<std::vector<BasicTile>> maze;

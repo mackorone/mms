@@ -39,7 +39,7 @@ bool Mouse::initialize(const std::string& mouseFile) {
 
     // TODO: Validate the contents of the mouse file (like valid mouse starting position)
     // Note: The y-position of the wheels must be the exact same at the start of execution
-    ASSERT_EQUAL(m_leftWheel.getInitialTranslation().getY().getMeters(),
+    ASSERT_EQ(m_leftWheel.getInitialTranslation().getY().getMeters(),
         m_rightWheel.getInitialTranslation().getY().getMeters());
 
     // Reassign the translation to be the midpoint of the axis connecting the two wheels
@@ -242,7 +242,7 @@ bool Mouse::hasSensor(const std::string& name) const {
 double Mouse::read(const std::string& name) const {
 
     // Validate the input
-    ASSERT_TRUE(hasSensor(name));
+    ASSERT_TR(hasSensor(name));
     Sensor sensor = m_sensors.at(name);
 
     // Retrieve the current translation and rotation
@@ -258,7 +258,7 @@ double Mouse::read(const std::string& name) const {
 }
 
 Seconds Mouse::getReadDuration(const std::string& name) const {
-    ASSERT_TRUE(SimUtilities::mapContains(m_sensors, name));
+    ASSERT_TR(SimUtilities::mapContains(m_sensors, name));
     return m_sensors.at(name).getReadDuration();
 }
 

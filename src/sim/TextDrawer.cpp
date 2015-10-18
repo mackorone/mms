@@ -19,7 +19,7 @@ void TextDrawer::commenceDrawingTextForFrame() {
 }
 
 void TextDrawer::drawText(float x, float y, const std::string& str) {
-    ASSERT_EQUAL(m_activeTextDrawer, this);
+    ASSERT_EQ(m_activeTextDrawer, this);
     glLoadIdentity();
     std::pair<int, int> windowSize = GraphicUtilities::getWindowSize();
     glOrtho(0, windowSize.first, 0, windowSize.second, -1, 1);

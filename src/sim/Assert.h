@@ -1,16 +1,16 @@
 #pragma once
 
-// ASSERT is a simple, development-time condition-checking mechanism. It is
-// meant to be used by authors of mms code and, as such, simply prints to
+// Asserts are a simple, development-time condition-checking mechanism. They are
+// meant to be used by authors of mms code and, as such, simply print to
 // std::cerr. If, for some reason, this is insufficient for you, you're
-// probably using it incorrectly. 
+// probably using them incorrectly. 
 
 #include <iostream>
 
 #define OPENING "---------- Assertion failed! ----------"
 #define CLOSING "---------------------------------------"
 
-#define ASSERT_TRUE(condition)\
+#define ASSERT_TR(condition)\
 if (!(condition)) {\
     std::cerr << OPENING << std::endl\
               << "FILE: " <<  __FILE__  << std::endl\
@@ -20,7 +20,7 @@ if (!(condition)) {\
     exit(1);\
 }
 
-#define ASSERT_FALSE(condition)\
+#define ASSERT_FA(condition)\
 if (condition) {\
     std::cerr << OPENING << std::endl\
               << "FILE: " <<  __FILE__  << std::endl\
@@ -30,7 +30,7 @@ if (condition) {\
     exit(1);\
 }
 
-#define ASSERT_EQUAL(lhs, rhs)\
+#define ASSERT_EQ(lhs, rhs)\
 if (!((lhs) == (rhs))) {\
     std::cerr << OPENING << std::endl\
               << "FILE: " <<  __FILE__  << std::endl\
@@ -42,7 +42,7 @@ if (!((lhs) == (rhs))) {\
     exit(1);\
 }
 
-#define ASSERT_NOT_EQUAL(lhs, rhs)\
+#define ASSERT_NE(lhs, rhs)\
 if (!((lhs) != (rhs))) {\
     std::cerr << OPENING << std::endl\
               << "FILE: " <<  __FILE__  << std::endl\
@@ -54,7 +54,7 @@ if (!((lhs) != (rhs))) {\
     exit(1);\
 }
 
-#define ASSERT_LESS_THAN(lhs, rhs)\
+#define ASSERT_LT(lhs, rhs)\
 if (!((lhs) < (rhs))) {\
     std::cerr << OPENING << std::endl\
               << "FILE: " <<  __FILE__  << std::endl\
@@ -66,7 +66,7 @@ if (!((lhs) < (rhs))) {\
     exit(1);\
 }
 
-#define ASSERT_LESS_THAN_OR_EQUAL(lhs, rhs)\
+#define ASSERT_LE(lhs, rhs)\
 if (!((lhs) <= (rhs))) {\
     std::cerr << OPENING << std::endl\
               << "FILE: " <<  __FILE__  << std::endl\
@@ -78,7 +78,7 @@ if (!((lhs) <= (rhs))) {\
     exit(1);\
 }
 
-#define ASSERT_IN_CLOSED_OPEN_INTERVAL(lhs, val, rhs)\
+#define ASSERT_LE_LT(lhs, val, rhs)\
 if (!(((lhs) <= (val)) && ((val) < (rhs)))) {\
     std::cerr << OPENING << std::endl\
               << "FILE: " <<  __FILE__  << std::endl\
@@ -91,7 +91,7 @@ if (!(((lhs) <= (val)) && ((val) < (rhs)))) {\
     exit(1);\
 }
 
-#define ASSERT_IN_CLOSED_CLOSED_INTERVAL(lhs, val, rhs)\
+#define ASSERT_LE_LE(lhs, val, rhs)\
 if (!(((lhs) <= (val)) && ((val) <= (rhs)))) {\
     std::cerr << OPENING << std::endl\
               << "FILE: " <<  __FILE__  << std::endl\

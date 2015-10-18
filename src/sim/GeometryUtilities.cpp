@@ -143,7 +143,7 @@ Cartesian GeometryUtilities::getIntersectionPoint(const std::pair<const Cartesia
     // TODO: Explain/Clean this functionality
 
     // Assert that the lines do intersect
-    ASSERT_TRUE(linesIntersect(A, B));
+    ASSERT_TR(linesIntersect(A, B));
 
     // Taken from http://alienryderflex.com/intersect/
 
