@@ -10,7 +10,6 @@
 #include "CPMath.h"
 #include "Directory.h"
 #include "GeometryUtilities.h"
-#include "Logging.h" // TODO: MACK
 #include "MouseParser.h"
 #include "Param.h"
 #include "SimUtilities.h"
@@ -25,7 +24,6 @@ Mouse::Mouse(const Maze* maze) : m_maze(maze), m_gyro(RadiansPerSecond(0.0)),
 bool Mouse::initialize(const std::string& mouseFile) {
 
     // TODO: This should fail at most once
-
     // TODO: What to do if this fails??? Make sure this file exists...
     // TODO: Just return false - abort...
 
@@ -41,7 +39,8 @@ bool Mouse::initialize(const std::string& mouseFile) {
 
     // TODO: Validate the contents of the mouse file (like valid mouse starting position)
     // Note: The y-position of the wheels must be the exact same at the start of execution
-    ASSERT(m_leftWheel.getInitialTranslation().getY() == m_rightWheel.getInitialTranslation().getY());
+    ASSERT_EQUAL(m_leftWheel.getInitialTranslation().getY().getMeters(),
+        m_rightWheel.getInitialTranslation().getY().getMeters());
 
     // Reassign the translation to be the midpoint of the axis connecting the two wheels
     m_initialTranslation = Cartesian(
@@ -145,11 +144,11 @@ void Mouse::update(const Duration& elapsed) {
      *              / \
      *      y <----0---0
      *
-     *  Note that dx/dy = 0 since it's impossible for the robot to move laterally. Also note
+     *  Note that dy/dt = 0 since it's impossible for the robot to move laterally. Also note
      *  that since the left and right wheels are oriented oppositely, a positive wheel speed
-     *  of the right wheel means that the wheel moves in the positive y direction (with
+     *  of the right wheel means that the wheel moves in the negative y direction (with
      *  respect to the robot) while a positive wheel speed of the left wheel means that the
-     *  wheel moves in the negative y directions (again, with respect to the robot). Given
+     *  wheel moves in the positive y direction (again, with respect to the robot). Given
      *  these few equations, we can easily approximate the motion of the robot with respect
      *  to the maze by multiplying the instantaneous rate of change in the translation and
      *  rotation with the elapsed time. This is certainly an approximation because the rotation
@@ -243,7 +242,7 @@ bool Mouse::hasSensor(const std::string& name) const {
 double Mouse::read(const std::string& name) const {
 
     // Validate the input
-    ASSERT(hasSensor(name));
+    ASSERT_TRUE(hasSensor(name));
     Sensor sensor = m_sensors.at(name);
 
     // Retrieve the current translation and rotation
@@ -259,7 +258,7 @@ double Mouse::read(const std::string& name) const {
 }
 
 Seconds Mouse::getReadDuration(const std::string& name) const {
-    ASSERT(m_sensors.count(name) != 0);
+    ASSERT_TRUE(SimUtilities::mapContains(m_sensors, name));
     return m_sensors.at(name).getReadDuration();
 }
 

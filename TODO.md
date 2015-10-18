@@ -1,6 +1,7 @@
 # High Priority
 
 - Support stepper motor / encoders interface
+    - Fix the abstraction between the wheel/motor/encoder
 - Tile Text
     - Assert that a character exsits before we try to draw it to the tile
     - Check that a font and image exist, print error and die if not
@@ -14,7 +15,6 @@
 - Make some utility that keeps track of simulation and real elapsed time
     - Make the sim speed non-arbitrary
     - Fix the Params associated with discrete sim-speed
-    - Simulation time too
     - Add the simulation time to the logging
         - Perhaps even refactor the elapsed time in logging
 - Put a toolbar at the top or bottom with info
@@ -31,20 +31,15 @@
 - Figure out how to get rid of ifdefs in algorithm
 - Make a SimInterface and make sure it's easy to "extract" an algorithm for use on Arduino
 - Updates on the tile boundaries, not centers
-- Figure out a nice way to use a vector for the simulation, but an array for real life
+- Figure out a nice way to use a vector for tiles for the simulation, but an array for real life
 - Other mouse movements - curve turns, j-turns, diagonals, etc.
 - Sensor readings for walls other than front, left right
 - Include Arduino "types" with the MouseInterface
 - More Arduino function support
-- Add some nice LaTeX documentation
 - Add gridlines (see https://www.youtube.com/watch?v=LGRutv9cGBA and https://www.youtube.com/watch?v=gtnTBf5ItEc)
     - Variable width?
 - Buffer communication (like with the real robot)
 - Clang compiler support
-- Make the params and state accessible by the interface (set tile text, wall color, zoom, rotation, etc.)
-    - But think about the importance of decoupling the simulator functionality with the algos
-    - Think about the best mechanism for doing this
-- Make all of the colors just default colors - allow them to be changed programmatically
 
 # Medum Priority
 
@@ -96,6 +91,7 @@
 - Write scripts we can execute (like unit tests) to make sure that our docs are in sync with the code
 - Some way to turn the loggers on/off
 - A way to log/print only info or higher, warn or higher, etc.
+- Replace the convexHull with union in the mouse collision polygon initialization
 
 Low Priority
 

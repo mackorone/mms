@@ -483,8 +483,8 @@ void MouseInterface::checkPaused() const {
 
 bool MouseInterface::isWall(std::pair<int, int> position, Direction direction) {
 
-    ASSERT(0 <= position.first && position.first < m_maze->getWidth()
-        && 0 <= position.second && position.second < m_maze->getHeight());
+    ASSERT_IN_CLOSED_OPEN_INTERVAL(0, position.first, m_maze->getWidth());
+    ASSERT_IN_CLOSED_OPEN_INTERVAL(0, position.second, m_maze->getHeight());
 
     bool wallExists = m_maze->getTile(position.first, position.second)->isWall(direction);
 
@@ -513,7 +513,7 @@ bool MouseInterface::hasOpposingWall(int x, int y, Direction direction) const {
 }
 
 std::pair<std::pair<int, int>, Direction> MouseInterface::getOpposingWall(int x, int y, Direction direction) const {
-    ASSERT(hasOpposingWall(x, y, direction));
+    ASSERT_TRUE(hasOpposingWall(x, y, direction));
     switch (direction) {
         case Direction::NORTH:
             return std::make_pair(std::make_pair(x, y + 1), Direction::SOUTH);

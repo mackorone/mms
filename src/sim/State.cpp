@@ -101,12 +101,12 @@ double State::simSpeed() {
 }
 
 bool State::inputButtonWasPressed(int inputButton) {
-    ASSERT(SimUtilities::mapContains(m_inputButtons, inputButton));
+    ASSERT_TRUE(SimUtilities::mapContains(m_inputButtons, inputButton));
     return m_inputButtons.at(inputButton);
 }
 
 bool State::arrowKeyIsPressed(Key key) {
-    ASSERT(SimUtilities::mapContains(m_arrowKeys, key));
+    ASSERT_TRUE(SimUtilities::mapContains(m_arrowKeys, key));
     return m_arrowKeys.at(key);
 }
 
@@ -185,12 +185,12 @@ void State::setSimSpeed(double simSpeed) {
 }
 
 void State::setInputButtonWasPressed(int inputButton, bool pressed) {
-    ASSERT(SimUtilities::mapContains(m_inputButtons, inputButton));
+    ASSERT_TRUE(SimUtilities::mapContains(m_inputButtons, inputButton));
     m_inputButtons.at(inputButton) = pressed;
 }
 
 void State::setArrowKeyIsPressed(Key key, bool pressed) {
-    ASSERT(SimUtilities::mapContains(m_arrowKeys, key));
+    ASSERT_TRUE(SimUtilities::mapContains(m_arrowKeys, key));
     m_arrowKeys.at(key) = pressed;
 }
 

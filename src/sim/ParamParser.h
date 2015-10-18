@@ -61,8 +61,8 @@ private:
     // Generic helper method for getting numeric values within a specific range
     template<class T>
     T getNumIfHasNumAndInRange(const std::string& type, const std::string& tag, T defaultValue, T min, T max) {
-        ASSERT(type == "int" || type == "double");
-        ASSERT(min <= defaultValue && defaultValue <= max);
+        ASSERT_TRUE(type == "int" || type == "double");
+        ASSERT_IN_CLOSED_CLOSED_INTERVAL(min, defaultValue, max);
         if (!((type == "int" && hasIntValue(tag)) || (type == "double" && hasDoubleValue(tag)))) {
             printTagNotFound(type, tag, std::to_string(defaultValue));
             return defaultValue;

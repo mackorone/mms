@@ -84,12 +84,14 @@ int Maze::getHeight() const {
 }
 
 Tile* Maze::getTile(int x, int y) {
-    ASSERT(0 <= x && x < getWidth() && 0 <= y && y < getHeight());
+    ASSERT_IN_CLOSED_OPEN_INTERVAL(0, x, getWidth());
+    ASSERT_IN_CLOSED_OPEN_INTERVAL(0, y, getHeight());
     return &m_maze.at(x).at(y);
 }
 
 const Tile* Maze::getTile(int x, int y) const {
-    ASSERT(0 <= x && x < getWidth() && 0 <= y && y < getHeight());
+    ASSERT_IN_CLOSED_OPEN_INTERVAL(0, x, getWidth());
+    ASSERT_IN_CLOSED_OPEN_INTERVAL(0, y, getHeight());
     return &m_maze.at(x).at(y);
 }
 
@@ -149,7 +151,7 @@ std::vector<std::vector<BasicTile>> Maze::getBlankBasicMaze(int mazeWidth, int m
 }
 
 std::vector<std::vector<BasicTile>> Maze::mirrorAcrossVertical(const std::vector<std::vector<BasicTile>>& basicMaze) const {
-    ASSERT(MazeChecker::isRectangular(basicMaze));
+    ASSERT_TRUE(MazeChecker::isRectangular(basicMaze));
     std::vector<std::vector<BasicTile>> mirrored;
     for (int x = 0; x < basicMaze.size(); x += 1) {
         std::vector<BasicTile> column;
@@ -169,7 +171,7 @@ std::vector<std::vector<BasicTile>> Maze::mirrorAcrossVertical(const std::vector
 }
 
 std::vector<std::vector<BasicTile>> Maze::rotateCounterClockwise(const std::vector<std::vector<BasicTile>>& basicMaze) const {
-    ASSERT(MazeChecker::isRectangular(basicMaze));
+    ASSERT_TRUE(MazeChecker::isRectangular(basicMaze));
     std::vector<std::vector<BasicTile>> rotated;
     for (int x = 0; x < basicMaze.size(); x += 1) {
         std::vector<BasicTile> row;

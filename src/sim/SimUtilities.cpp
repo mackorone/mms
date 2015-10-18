@@ -47,7 +47,7 @@ double SimUtilities::getRandom() {
 }
 
 void SimUtilities::sleep(const Duration& duration) {
-    ASSERT(duration.getMilliseconds() >= 0);
+    ASSERT_LESS_THAN_OR_EQUAL(0, duration.getMilliseconds());
 	std::this_thread::sleep_for(std::chrono::microseconds(static_cast<int>(duration.getMicroseconds())));
 }
 
@@ -118,17 +118,17 @@ bool SimUtilities::isDouble(const std::string& str) {
 }
 
 bool SimUtilities::strToBool(const std::string& str) {
-    ASSERT(isBool(str));
+    ASSERT_TRUE(isBool(str));
     return 0 == str.compare("true");
 }
 
 int SimUtilities::strToInt(const std::string& str) {
-    ASSERT(isInt(str));
+    ASSERT_TRUE(isInt(str));
     return std::stoi(str.c_str());
 }
 
 double SimUtilities::strToDouble(const std::string& str) {
-    ASSERT(isDouble(str));
+    ASSERT_TRUE(isDouble(str));
     return std::stof(str);
 }
 

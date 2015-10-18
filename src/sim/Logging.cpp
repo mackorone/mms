@@ -35,7 +35,7 @@ void Logging::initialize(double startTime, const std::string& runId) {
 
     // Ensure we only initialize the loggers once
     static bool initialized = false;
-    ASSERT(!initialized);
+    ASSERT_FALSE(initialized);
     initialized = true;
 
     // Set the runId
@@ -74,7 +74,7 @@ void Logging::initialize(double startTime, const std::string& runId) {
 }
 
 el::Logger* Logging::getLogger(const std::string& loggerName) {
-    ASSERT(SimUtilities::mapContains(m_info, loggerName));
+    ASSERT_TRUE(SimUtilities::mapContains(m_info, loggerName));
     return el::Loggers::getLogger(loggerName);
 }
 
@@ -89,7 +89,7 @@ std::string Logging::getNextFileName(const char* filename) {
             m_info.at(loggerName) = std::make_pair(loggerPath, numLogFiles + 1);
         }
     }
-    ASSERT(path != "");
+    ASSERT_NOT_EQUAL(path, "");
     return Directory::getRunDirectory() + m_runId + path;
 }
 

@@ -33,14 +33,17 @@ std::pair<int, int> GraphicUtilities::getWindowSize() {
 }
 
 void GraphicUtilities::setWindowSize(int windowWidth, int windowHeight) {
-    ASSERT(0 < windowWidth && 0 < windowHeight);
+    ASSERT_LESS_THAN(0, windowWidth);
+    ASSERT_LESS_THAN(0, windowHeight);
     m_windowWidth = windowWidth;
     m_windowHeight = windowHeight;
 }
 
 void GraphicUtilities::setMazeSize(int mazeWidth, int mazeHeight) {
-    ASSERT(m_mazeWidth == 0 && m_mazeHeight == 0);
-    ASSERT(0 < mazeWidth && 0 < mazeHeight);
+    ASSERT_EQUAL(m_mazeWidth, 0);
+    ASSERT_EQUAL(m_mazeHeight, 0);
+    ASSERT_LESS_THAN(0, mazeWidth);
+    ASSERT_LESS_THAN(0, mazeHeight);
     m_mazeWidth = mazeWidth;
     m_mazeHeight = mazeHeight;
 }
@@ -445,8 +448,8 @@ std::pair<double, double> GraphicUtilities::getPhysicalMazeSize() {
 }
 
 std::vector<float> GraphicUtilities::multiply4x4Matrices(std::vector<float> left, std::vector<float> right) {
-    ASSERT(left.size() == 16);
-    ASSERT(right.size() == 16);
+    ASSERT_EQUAL(left.size(), 16);
+    ASSERT_EQUAL(right.size(), 16);
     std::vector<float> result;
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
@@ -457,7 +460,7 @@ std::vector<float> GraphicUtilities::multiply4x4Matrices(std::vector<float> left
             result.push_back(value);
         }
     }
-    ASSERT (result.size() == 16);
+    ASSERT_EQUAL(result.size(), 16);
     return result;
 }
 

@@ -23,23 +23,22 @@ enum class Color {
     DARK_YELLOW,
 };
 
-// TODO: MACK 3 - Can these be doubles
-static const std::map<Color, std::tuple<float, float, float>> COLOR_TO_RGB {
-    {Color::BLACK      , std::make_tuple(0.0f, 0.0f, 0.0f)},
-    {Color::BLUE       , std::make_tuple(0.0f, 0.0f, 0.7f)},
-    {Color::CYAN       , std::make_tuple(0.0f, 0.4f, 0.4f)},
-    {Color::GRAY       , std::make_tuple(0.7f, 0.7f, 0.7f)},
-    {Color::GREEN      , std::make_tuple(0.0f, 0.7f, 0.0f)},
-    {Color::ORANGE     , std::make_tuple(0.7f, 0.4f, 0.0f)},
-    {Color::RED        , std::make_tuple(0.8f, 0.0f, 0.0f)},
-    {Color::WHITE      , std::make_tuple(1.0f, 1.0f, 1.0f)},
-    {Color::YELLOW     , std::make_tuple(0.7f, 0.7f, 0.0f)},
-    {Color::DARK_BLUE  , std::make_tuple(0.0f, 0.0f, 0.2f)},
-    {Color::DARK_CYAN  , std::make_tuple(0.0f, 0.2f, 0.2f)},
-    {Color::DARK_GRAY  , std::make_tuple(0.1f, 0.1f, 0.1f)},
-    {Color::DARK_GREEN , std::make_tuple(0.0f, 0.3f, 0.0f)},
-    {Color::DARK_RED   , std::make_tuple(0.3f, 0.0f, 0.0f)},
-    {Color::DARK_YELLOW, std::make_tuple(0.1f, 0.1f, 0.0f)},
+static const std::map<Color, std::tuple<double, double, double>> COLOR_TO_RGB {
+    {Color::BLACK      , std::make_tuple(0.0, 0.0, 0.0)},
+    {Color::BLUE       , std::make_tuple(0.0, 0.0, 0.7)},
+    {Color::CYAN       , std::make_tuple(0.0, 0.4, 0.4)},
+    {Color::GRAY       , std::make_tuple(0.7, 0.7, 0.7)},
+    {Color::GREEN      , std::make_tuple(0.0, 0.7, 0.0)},
+    {Color::ORANGE     , std::make_tuple(0.7, 0.4, 0.0)},
+    {Color::RED        , std::make_tuple(0.8, 0.0, 0.0)},
+    {Color::WHITE      , std::make_tuple(1.0, 1.0, 1.0)},
+    {Color::YELLOW     , std::make_tuple(0.7, 0.7, 0.0)},
+    {Color::DARK_BLUE  , std::make_tuple(0.0, 0.0, 0.2)},
+    {Color::DARK_CYAN  , std::make_tuple(0.0, 0.2, 0.2)},
+    {Color::DARK_GRAY  , std::make_tuple(0.1, 0.1, 0.1)},
+    {Color::DARK_GREEN , std::make_tuple(0.0, 0.3, 0.0)},
+    {Color::DARK_RED   , std::make_tuple(0.3, 0.0, 0.0)},
+    {Color::DARK_YELLOW, std::make_tuple(0.1, 0.1, 0.0)},
 };
 
 static const std::map<Color, std::string> COLOR_TO_STRING = {

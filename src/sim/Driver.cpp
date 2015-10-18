@@ -42,7 +42,7 @@ void Driver::drive(int argc, char* argv[]) {
 
     // Step -1: Make sure that this function is only ever called once
     static bool alreadyCalled = false;
-    ASSERT(!alreadyCalled);
+    ASSERT_FALSE(alreadyCalled);
     alreadyCalled = true;
 
     // Step 0: Determine the runId, configure logging,
