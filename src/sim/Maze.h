@@ -24,9 +24,6 @@ private:
     // Initializes all of the tiles of the basic maze
     std::vector<std::vector<Tile>> initializeFromBasicMaze(const std::vector<std::vector<BasicTile>>& basicMaze) const;
 
-    // Extracts all basic maze information
-    std::vector<std::vector<BasicTile>> extractBasicMaze(const std::vector<std::vector<Tile>>& maze) const;
-
     // Returns a basic maze of a particular width and height
     std::vector<std::vector<BasicTile>> getBlankBasicMaze(int mazeWidth, int mazeHeight) const;
 

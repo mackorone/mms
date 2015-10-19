@@ -81,8 +81,8 @@ bool MazeChecker::officialMaze(const std::vector<std::vector<BasicTile>>& maze) 
 
     ASSERT_TR(validMaze(maze));
 
-    if (!isSquare(maze)) {
-        L()->warn("The maze is not square.");
+    if (!is16x16(maze)) {
+        L()->warn("The maze is not 16 x 16.");
         return false;
     }
 
@@ -124,11 +124,9 @@ bool MazeChecker::officialMaze(const std::vector<std::vector<BasicTile>>& maze) 
     return true;
 }
 
-bool MazeChecker::isSquare(const std::vector<std::vector<BasicTile>>& maze) {
-    // TODO: upforgrabs
-    // Implement this method so that it returns true if the maze is square, and
-    // false otherwise.
-    return true;
+bool MazeChecker::is16x16(const std::vector<std::vector<BasicTile>>& maze) {
+    ASSERT_TR(isRectangular(maze));
+    return maze.size() == 16 && maze.at(0).size() == 16;
 }
 
 bool MazeChecker::hasPathToCenter(const std::vector<std::vector<BasicTile>>& maze) {
@@ -164,6 +162,7 @@ bool MazeChecker::hasThreeStartingWalls(const std::vector<std::vector<BasicTile>
     // Assumptions:
     // 1) The maze is nonempty
     // 2) The mouse always starts in the lower-left corner
+    // 3) The 
     auto walls = maze.at(0).at(0).walls;
     return walls.at(Direction::NORTH) != walls.at(Direction::EAST);
 }

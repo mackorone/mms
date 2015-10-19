@@ -40,7 +40,7 @@ public:
         const Coordinate& currentMouseTranslation, const Angle& currentMouseRotation);
 
     // Fills the GRAPHIC_CPU_BUFFER and TEXTURE_CPU_BUFFER
-    static void insertIntoGraphicCpuBuffer(const Polygon& polygon, Color color, float alpha);
+    static void insertIntoGraphicCpuBuffer(const Polygon& polygon, Color color, double alpha);
     static void insertIntoTextureCpuBuffer();
 
     // Returns the maximum number of rows and columns of text in a tile graphic
@@ -48,12 +48,12 @@ public:
 
     // These methods are inexpensive, and may be called many times
     static void updateTileGraphicBaseColor(int x, int y, Color color);
-    static void updateTileGraphicWallColor(int x, int y, Direction direction, Color color, float alpha);
-    static void updateTileGraphicFog(int x, int y, float alpha);
+    static void updateTileGraphicWallColor(int x, int y, Direction direction, Color color, double alpha);
+    static void updateTileGraphicFog(int x, int y, double alpha);
     static void updateTileGraphicText(const Tile* tile, int numRows, int numCols, int row, int col, char c);
 
     // TODO: MACK - Add an update method for the mouse so that we only triangulate once
-    static void drawMousePolygon(const Polygon& polygon, Color color, float sensorAlpha);
+    static void drawMousePolygon(const Polygon& polygon, Color color, double sensorAlpha);
 
 private:
 
@@ -87,7 +87,7 @@ private:
     static std::pair<double, double> mapPixelCoordinateToOpenGlCoordinate(double x, double y);
 
     // Converts a polygon to a vector of triangle graphics or triangle textures
-    static std::vector<TriangleGraphic> polygonToTriangleGraphics(const Polygon& polygon, Color color, float alpha);
+    static std::vector<TriangleGraphic> polygonToTriangleGraphics(const Polygon& polygon, Color color, double alpha);
 
     // Retrieve the indices into the GRAPHIC_CPU_BUFFER for each specific type of Tile triangle
     static int trianglesPerTile();

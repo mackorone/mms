@@ -67,8 +67,8 @@ Maze::Maze() {
 
     // Optionally save the maze
     if (!P()->useMazeFile() && P()->saveGeneratedMaze()) {
-        MazeFileUtilities::saveMaze(extractBasicMaze(m_maze),
-            Directory::getResMazeDirectory() + "auto_generated_maze.maz");
+        MazeFileUtilities::saveMaze(basicMaze,
+            Directory::getResMazeDirectory() + P()->generatedMazeFile());
     }
 
     // Load the maze given by the maze generation algorithm
@@ -112,24 +112,6 @@ std::vector<std::vector<Tile>> Maze::initializeFromBasicMaze(const std::vector<s
     }
     maze = setTileDistances(maze);
     return maze;
-}
-
-std::vector<std::vector<BasicTile>> Maze::extractBasicMaze(const std::vector<std::vector<Tile>>& maze) const {
-    std::vector<std::vector<BasicTile>> basicMaze;
-    for (int x = 0; x < maze.size(); x += 1) {
-        std::vector<BasicTile> column;
-        for (int y = 0; y < maze.at(x).size(); y += 1) {
-            BasicTile tile;
-            tile.x = x;
-            tile.y = y;
-            for (Direction direction : DIRECTIONS) {
-                tile.walls.insert(std::make_pair(direction, getTile(x, y)->isWall(direction)));
-            }
-            column.push_back(tile);
-        }
-        basicMaze.push_back(column);
-    }
-    return basicMaze;
 }
 
 std::vector<std::vector<BasicTile>> Maze::getBlankBasicMaze(int mazeWidth, int mazeHeight) const {

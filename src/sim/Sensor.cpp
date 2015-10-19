@@ -33,14 +33,19 @@ Sensor::Sensor(const Coordinate& position, const Distance& radius, const Angle& 
     m_initialView = Polygon(view);
 }
 
+// TODO: MACK - do we need this?
+/*
 Cartesian Sensor::getInitialTranslation() const {
     return m_initialTranslation;
 }
+*/
 
+// TODO: MACK - do we need this?
 Radians Sensor::getInitialRotation() const {
     return m_initialRotation;
 }
 
+// TODO: MACK - do we need this?
 Polygon Sensor::getInitialPolygon() const {
     return m_initialPolygon;
 }

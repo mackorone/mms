@@ -1,8 +1,12 @@
 # High Priority
 
 - Support stepper motor / encoders interface
+    - Refactor the sensors
     - Fix the abstraction between the wheel/motor/encoder
+- Rename Tile to Cell
+- Figure out what's causing the jitter
 - Tile Text
+    - Fix the fact that the bitmap is initialized in driver but the string of characters is in GraphicUtilities
     - Assert that a character exsits before we try to draw it to the tile
     - Check that a font and image exist, print error and die if not
     - Make a helper method in graphic utilities specifically for toggling tile text
@@ -12,11 +16,14 @@
     - Make maxRowsAndCols a runtime parameter (make it 2 x 3 for now)
     - Should we have text alignment be a parameter?
     - Be able to just show actual distances
+- Convert the floats in vertex data to doubles
+- Rename TriangleTexture and VertexTexture
 - Make some utility that keeps track of simulation and real elapsed time
     - Make the sim speed non-arbitrary
     - Fix the Params associated with discrete sim-speed
     - Add the simulation time to the logging
         - Perhaps even refactor the elapsed time in logging
+- Make MouseInterface into an interface, and then implement the simulator interface, make a real-world interface
 - Put a toolbar at the top or bottom with info
     - Display a clock
     - Check to make sure font won't be cut off, use ellipses if so (How do we deal with text being cut off in the vertical direction?)
@@ -40,9 +47,13 @@
     - Variable width?
 - Buffer communication (like with the real robot)
 - Clang compiler support
+- Number of unique cells traversed
 
 # Medum Priority
 
+- Support reading or writing multiple file types
+    - .maz (plain text), .MAZ (binary), .map (ascii map)
+    - https://code.google.com/p/maze-solver/wiki/MazeFileFormats
 - Make some default Arduino implementations for some functions
 - Make a system for nearly instantly checking stats on many mazes:
     - like unit tests
@@ -102,7 +113,6 @@ Low Priority
 - Better run number system
 - Update the check_params.py script to make sure that the return type of the
   Param methods is the same as the type of the member variable
-- Parameter for auto-generated maze name
 - Detect STL use in maze and mouse algos, send a warning
 - Triangulate polygons upon creation?
 - Map borders

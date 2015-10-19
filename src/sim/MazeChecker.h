@@ -26,7 +26,7 @@ public:
     static bool officialMaze(const std::vector<std::vector<BasicTile>>& maze);
 
     // officialMaze helper functions
-    static bool isSquare(const std::vector<std::vector<BasicTile>>& maze);
+    static bool is16x16(const std::vector<std::vector<BasicTile>>& maze);
     static bool hasPathToCenter(const std::vector<std::vector<BasicTile>>& maze);
     static bool hasHollowCenter(const std::vector<std::vector<BasicTile>>& maze);
     static bool hasOneEntranceToCenter(const std::vector<std::vector<BasicTile>>& maze);

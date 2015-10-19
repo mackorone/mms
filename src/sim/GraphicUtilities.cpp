@@ -288,7 +288,7 @@ std::vector<float> GraphicUtilities::getZoomedMapTransformationMatrix(const Coor
     return zoomedMapCameraMatrix;
 }
 
-void GraphicUtilities::insertIntoGraphicCpuBuffer(const Polygon& polygon, Color color, float alpha) {
+void GraphicUtilities::insertIntoGraphicCpuBuffer(const Polygon& polygon, Color color, double alpha) {
     std::vector<TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, alpha);
     for (int i = 0; i < tgs.size(); i += 1) {
         GRAPHIC_CPU_BUFFER.push_back(tgs.at(i));
@@ -317,7 +317,7 @@ std::pair<int, int> GraphicUtilities::getTileGraphicTextMaxSize() {
 
 void GraphicUtilities::updateTileGraphicBaseColor(int x, int y, Color color) {
     int index = getTileGraphicBaseStartingIndex(x, y);
-    std::tuple<float, float, float> colorValues = COLOR_TO_RGB.at(color);
+    std::tuple<double, double, double> colorValues = COLOR_TO_RGB.at(color);
     for (int i = 0; i < 2; i += 1) {
         TriangleGraphic* triangleGraphic = &GRAPHIC_CPU_BUFFER.at(index + i);
         triangleGraphic->p1.r = std::get<0>(colorValues);
@@ -332,9 +332,9 @@ void GraphicUtilities::updateTileGraphicBaseColor(int x, int y, Color color) {
     }
 }
 
-void GraphicUtilities::updateTileGraphicWallColor(int x, int y, Direction direction, Color color, float alpha) {
+void GraphicUtilities::updateTileGraphicWallColor(int x, int y, Direction direction, Color color, double alpha) {
     int index = getTileGraphicWallStartingIndex(x, y, direction);
-    std::tuple<float, float, float> colorValues = COLOR_TO_RGB.at(color);
+    std::tuple<double, double, double> colorValues = COLOR_TO_RGB.at(color);
     for (int i = 0; i < 2; i += 1) {
         TriangleGraphic* triangleGraphic = &GRAPHIC_CPU_BUFFER.at(index + i);
         triangleGraphic->p1.r = std::get<0>(colorValues);
@@ -352,7 +352,7 @@ void GraphicUtilities::updateTileGraphicWallColor(int x, int y, Direction direct
     }
 }
 
-void GraphicUtilities::updateTileGraphicFog(int x, int y, float alpha) {
+void GraphicUtilities::updateTileGraphicFog(int x, int y, double alpha) {
     int index = getTileGraphicFogStartingIndex(x, y);
     for (int i = 0; i < 2; i += 1) {
         TriangleGraphic* triangleGraphic = &GRAPHIC_CPU_BUFFER.at(index + i);
@@ -424,7 +424,7 @@ void GraphicUtilities::updateTileGraphicText(const Tile* tile, int numRows, int 
     TEXTURE_CPU_BUFFER.at(triangleTextureIndex + 1) = {p1, p3, p4};
 }
 
-void GraphicUtilities::drawMousePolygon(const Polygon& polygon, Color color, float sensorAlpha) {
+void GraphicUtilities::drawMousePolygon(const Polygon& polygon, Color color, double sensorAlpha) {
     std::vector<TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, sensorAlpha);
     GRAPHIC_CPU_BUFFER.insert(GRAPHIC_CPU_BUFFER.end(), tgs.begin(), tgs.end());
 }
@@ -468,11 +468,10 @@ std::pair<double, double> GraphicUtilities::mapPixelCoordinateToOpenGlCoordinate
     return std::make_pair(2 * x / m_windowWidth - 1, 2 * y / m_windowHeight - 1);
 }
 
-std::vector<TriangleGraphic> GraphicUtilities::polygonToTriangleGraphics(const Polygon& polygon, Color color, float alpha) {
+std::vector<TriangleGraphic> GraphicUtilities::polygonToTriangleGraphics(const Polygon& polygon, Color color, double alpha) {
     std::vector<Triangle> triangles = polygon.triangulate();
     std::vector<TriangleGraphic> triangleGraphics;
-    // TODO: MACK 3 - can these be doubles?
-    std::tuple<float, float, float> colorValues = COLOR_TO_RGB.at(color);
+    std::tuple<double, double, double> colorValues = COLOR_TO_RGB.at(color);
     for (Triangle triangle : triangles) {
         triangleGraphics.push_back({
             {triangle.getP1().getX().getMeters(), triangle.getP1().getY().getMeters(),

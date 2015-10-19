@@ -165,6 +165,8 @@ Param::Param() {
         "maze-algorithm", "Tomasz");
     m_saveGeneratedMaze = parser.getBoolIfHasBool(
         "save-generated-maze", true);
+    m_generatedMazeFile = parser.getStringIfHasString(
+        "generated-maze-file", "auto_generated_maze.maz");
     m_mazeMirrored = parser.getBoolIfHasBool(
         "maze-mirrored", false);
     m_mazeRotations = parser.getIntIfHasIntAndInRange(
@@ -415,6 +417,10 @@ std::string Param::mazeAlgorithm() {
 
 bool Param::saveGeneratedMaze() {
     return m_saveGeneratedMaze;
+}
+
+std::string Param::generatedMazeFile() {
+    return m_generatedMazeFile;
 }
 
 bool Param::mazeMirrored() {
