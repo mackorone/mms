@@ -99,7 +99,7 @@ void Driver::bootstrap() {
     // 1) Set the runId
     // 2) Avoid a race condition (between threads)
     // 3) Initialize the Param object
-    S()->setRunId(runId);
+    S()->setRunId(runId); // TODO: MACK - set the start time here
 }
 
 void Driver::initSimObjects() {

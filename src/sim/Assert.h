@@ -2,8 +2,8 @@
 
 // Asserts are a simple, development-time condition-checking mechanism. They are
 // meant to be used by authors of mms code and, as such, simply print to
-// std::cerr. If, for some reason, this is insufficient for you, you're
-// probably using them incorrectly. 
+// std::cerr. If, for some reason, this is insufficient for you, you're probably
+// using them incorrectly. 
 
 #include <iostream>
 
