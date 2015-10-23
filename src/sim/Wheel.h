@@ -10,24 +10,30 @@ namespace sim {
 class Wheel {
 
 public:
-    Wheel(); // Necessary evil due to delayed wheel initialization in the mouse constructor
-    Wheel(const Distance& radius, const Distance& width, const Coordinate& position);
-    Meters getRadius() const;
-    Cartesian getInitialTranslation() const;
-    Radians getInitialRotation() const;
+    Wheel(const Distance& diameter, const Distance& width, const Coordinate& position, const Angle& direction);
+
+    // Wheel
+    Meters getDiameter() const;
+    Cartesian getInitialPosition() const;
+    Radians getInitialDirection() const;
     Polygon getInitialPolygon() const;
 
-    // DC motor methods
+    // Motor
     RadiansPerSecond getAngularVelocity() const;
     void setAngularVelocity(const AngularVelocity& angularVelocity);
 
+    // Encoder
+    // TODO
+
 private:
-    Meters m_radius;
-    Cartesian m_initialTranslation;
-    Radians m_initialRotation;
+
+    // Wheel
+    Meters m_diameter;
+    Cartesian m_initialPosition;
+    Radians m_initialDirection;
     Polygon m_initialPolygon;
 
-    // Variables
+    // Motor
     RadiansPerSecond m_angularVelocity;
 };
 

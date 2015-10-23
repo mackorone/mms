@@ -1,10 +1,18 @@
 # High Priority
 
 - Support stepper motor / encoders interface
+    - Determine the default specification direction
+    - decouple the body specification from the initial position
+    - Consistency between view and viewPolygon
+    - radius -> diameter
+    - rotation -> direction
+    - Rename translation to position where appropriate
+    - CENTER OF MASS???
     - Refactor the sensors
     - Fix the abstraction between the wheel/motor/encoder
+    - Adjust Mouse parser to fit new xml
+    - Test different wheel arrangements
 - Rename Tile to Cell
-- Figure out what's causing the jitter
 - Tile Text
     - Fix the fact that the bitmap is initialized in driver but the string of characters is in GraphicUtilities
     - Assert that a character exsits before we try to draw it to the tile
@@ -29,8 +37,6 @@
     - Check to make sure font won't be cut off, use ellipses if so (How do we deal with text being cut off in the vertical direction?)
     - Set the mouse algo in State for display in the toolbar
 - Tomasz maze-gen issues
-- Maze size requirements and validity
-    - Should official maze have to be 16x16? - Yes
 - Run-time parameters for the algos
 - Look at Tomasz' maze website
 - Maze Validation (both physically valid mazes and competition valid mazes)
@@ -51,6 +57,7 @@
 
 # Medum Priority
 
+- Figure out what's causing the jitter during mouse updates
 - Support reading or writing multiple file types
     - .maz (plain text), .MAZ (binary), .map (ascii map)
     - https://code.google.com/p/maze-solver/wiki/MazeFileFormats

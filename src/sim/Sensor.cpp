@@ -10,10 +10,18 @@
 
 namespace sim {
 
-Sensor::Sensor(const Coordinate& position, const Distance& radius, const Angle& rotation, const Distance& range,
-        const Angle& halfWidth, const Duration& readDuration) :
-        m_initialTranslation(position), m_initialRotation(rotation), m_range(range), m_halfWidth(halfWidth),
-        m_readDuration(readDuration) {
+Sensor::Sensor(
+        const Distance& radius,
+        const Distance& range,
+        const Angle& halfWidth,
+        const Duration& readDuration,
+        const Coordinate& position,
+        const Angle& direction) :
+        m_range(range),
+        m_halfWidth(halfWidth),
+        m_readDuration(readDuration),
+        m_initialPosition(position),
+        m_initialDirection(direction) {
 
     // Create the polygon for the body of the sensor
     std::vector<Cartesian> polygon;
@@ -25,24 +33,28 @@ Sensor::Sensor(const Coordinate& position, const Distance& radius, const Angle& 
 
     // Create the polygon for the view of the sensor
     std::vector<Cartesian> view;
-    view.push_back(position); // This needs to be first - the Mouse.cpp relies on this
+    view.push_back(position); // XXX: This needs to be first - the Mouse.cpp relies on this TODO: MACK
     for (int i = -1*(P()->numberOfCircleApproximationPoints()/2); i <= P()->numberOfCircleApproximationPoints()/2; i += 1) {
         double radians = i*2*halfWidth.getRadians()/P()->numberOfCircleApproximationPoints();
-        view.push_back(Polar(range, Radians(radians) + rotation) + position);
+        view.push_back(Polar(range, Radians(radians) + direction) + position);
     }
     m_initialView = Polygon(view);
 }
 
+Seconds Sensor::getReadDuration() const {
+    return m_readDuration;
+}
+
 // TODO: MACK - do we need this?
 /*
-Cartesian Sensor::getInitialTranslation() const {
-    return m_initialTranslation;
+Cartesian Sensor::getInitialPosition() const {
+    return m_initialPosition;
 }
 */
 
 // TODO: MACK - do we need this?
-Radians Sensor::getInitialRotation() const {
-    return m_initialRotation;
+Radians Sensor::getInitialDirection() const {
+    return m_initialDirection;
 }
 
 // TODO: MACK - do we need this?
@@ -55,6 +67,8 @@ Polygon Sensor::getInitialView() const {
 }
 
 Polygon Sensor::getCurrentView(const Cartesian& currentPosition, const Radians& currentRotation, const Maze& maze) const {
+
+    // TODO: MACK - we can do wayyyy better - we know exactly where the walls *could* be since we know the layout of the maze
 
     // TODO: If a vector is north-east, we only need to check the south-west walls, etc
 
@@ -91,10 +105,6 @@ Polygon Sensor::getCurrentView(const Cartesian& currentPosition, const Radians& 
     // Adjoin the edge to the currentPosition and return the polygon
     edge.insert(edge.begin(), currentPosition);
     return Polygon(edge);
-}
-
-Seconds Sensor::getReadDuration() const {
-    return m_readDuration;
 }
 
 } // namespace sim

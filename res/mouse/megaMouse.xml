@@ -1,126 +1,135 @@
+<!-- TODO: MACK - make sure this isn't broken -->
 <Body>
-    <Point>
+    <Vertex>
         <X>.065</X> 
         <Y>.0604</Y>
-    </Point>
-    <Point>
+    </Vertex>
+    <Vertex>
         <X>.065</X> 
         <Y>.1204</Y>
-    </Point>
-    <Point>
+    </Vertex>
+    <Vertex>
         <X>.0535</X> 
         <Y>.1204</Y>
-    </Point>
-    <Point>
+    </Vertex>
+    <Vertex>
         <X>.065</X> 
         <Y>.145</Y>
-    </Point>
-    <Point>
+    </Vertex>
+    <Vertex>
         <X>.09</X> 
         <Y>.1574</Y>
-    </Point>
-    <Point>
+    </Vertex>
+    <Vertex>
         <X>.115</X> 
         <Y>.145</Y>
-    </Point>
-    <Point>
+    </Vertex>
+    <Vertex>
         <X>.1265</X> 
         <Y>.1204</Y>
-    </Point>
-    <Point>
+    </Vertex>
+    <Vertex>
         <X>.115</X> 
         <Y>.1204</Y>
-    </Point>
-    <Point>
+    </Vertex>
+    <Vertex>
         <X>.115</X> 
         <Y>.0604</Y>
-    </Point>
+    </Vertex>
 </Body>
-<LeftWheel>
-    <Radius>.01225</Radius>
+<Wheel>
+    <Name>left</Name>
+    <Diameter>.0245</Diameter>
     <Width>.0077</Width>
     <Position>
         <X>.0574</X>
         <Y>.09</Y>
     </Position>
-</LeftWheel>
-<RightWheel>
-    <Radius>.01225</Radius>
+    <Direction>270</Direction> <!-- 0 degrees + positive angular velocity causes travel along the X-axis in the positive direciton -->
+    <!-- Motor params go here -->
+    <!-- Encoder params go here -->
+</Wheel>
+<Wheel>
+    <Name>right</Name>
+    <Diameter>.0245</Diameter>
     <Width>.0077</Width>
     <Position>
         <X>.1226</X>
         <Y>.09</Y>
     </Position>
-</RightWheel>
+    <Direction>90</Direction> <!-- 0 degrees + positive angular velocity causes travel along the X-axis in the positive direciton -->
+    <!-- Motor params go here -->
+    <!-- Encoder params go here -->
+</Wheel>
 <Sensor>
     <Name>leftFront</Name>
+    <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
+    <Range>.20</Range> <!-- Meters -->
+    <HalfWidth>5</HalfWidth> <!-- Degrees -->
+    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
     <Position>
         <X>.0631</X>
         <Y>.1334</Y>
     </Position>
-    <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
-    <Rotation>90</Rotation> <!-- Degrees -->
-    <Range>.20</Range> <!-- Meters -->
-    <HalfWidth>5</HalfWidth> <!-- Degrees -->
-    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
+    <Direction>90</Direction> <!-- Degrees from the positive x axis -->
 </Sensor>
 <Sensor>
     <Name>leftMiddle</Name>
+    <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
+    <Range>.20</Range> <!-- Meters -->
+    <HalfWidth>5</HalfWidth> <!-- Degrees -->
+    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
     <Position>
         <X>.0725</X>
         <Y>.1434</Y>
     </Position>
-    <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
-    <Rotation>135</Rotation> <!-- Degrees -->
-    <Range>.20</Range> <!-- Meters -->
-    <HalfWidth>5</HalfWidth> <!-- Degrees -->
-    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
+    <Direction>135</Direction> <!-- Degrees -->
 </Sensor>
 <Sensor>
     <Name>left</Name>
+    <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
+    <Range>.20</Range> <!-- Meters -->
+    <HalfWidth>5</HalfWidth> <!-- Degrees -->
+    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
     <Position>
         <X>.0895</X>
         <Y>.1534</Y>
     </Position>
-    <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
-    <Rotation>180</Rotation> <!-- Degrees -->
-    <Range>.20</Range> <!-- Meters -->
-    <HalfWidth>5</HalfWidth> <!-- Degrees -->
-    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
+    <Direction>180</Direction> <!-- Degrees -->
 </Sensor>
 <Sensor>
     <Name>rightFront</Name>
+    <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
+    <Range>.20</Range> <!-- Meters -->
+    <HalfWidth>5</HalfWidth> <!-- Degrees -->
+    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
     <Position>
         <X>.1169</X>
         <Y>.1334</Y>
     </Position>
-    <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
-    <Rotation>90</Rotation> <!-- Degrees -->
-    <Range>.20</Range> <!-- Meters -->
-    <HalfWidth>5</HalfWidth> <!-- Degrees -->
-    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
+    <Direction>90</Direction> <!-- Degrees -->
 </Sensor>
 <Sensor>
     <Name>rightMiddle</Name>
+    <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
+    <Range>.20</Range> <!-- Meters -->
+    <HalfWidth>5</HalfWidth> <!-- Degrees -->
+    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
     <Position>
         <X>.1075</X>
         <Y>.1434</Y>
     </Position>
-    <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
-    <Rotation>45</Rotation> <!-- Degrees -->
-    <Range>.20</Range> <!-- Meters -->
-    <HalfWidth>5</HalfWidth> <!-- Degrees -->
-    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
+    <Direction>45</Direction> <!-- Degrees -->
 </Sensor>
 <Sensor>
     <Name>right</Name>
+    <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
+    <Range>.20</Range> <!-- Meters -->
+    <HalfWidth>5</HalfWidth> <!-- Degrees -->
+    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
     <Position>
         <X>.0905</X>
         <Y>.1534</Y>
     </Position>
-    <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
-    <Rotation>0</Rotation> <!-- Degrees -->
-    <Range>.20</Range> <!-- Meters -->
-    <HalfWidth>5</HalfWidth> <!-- Degrees -->
-    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
+    <Direction>0</Direction> <!-- Degrees -->
 </Sensor>

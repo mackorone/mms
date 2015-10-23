@@ -18,14 +18,11 @@ class Mouse {
 public:
     Mouse(const Maze* maze);
 
-    // Initializes the mouse (body, sensors, etc.). Returns true if successful, false if not.
+    // Initializes the mouse (body, wheels, sensors, etc.); returns true if successful, false if not
     bool initialize(const std::string& mouseFile);
 
     // Retrieves the polygon comprised of all parts of the mouse that could collide with walls
     Polygon getCollisionPolygon() const;
-
-    // We have to know the interface type before we can initialize the collision polygon
-    void initializeCollisionPolygon();
 
     // Retrieves the polygon of just the body of the mouse
     Polygon getBodyPolygon() const;
@@ -57,16 +54,15 @@ public:
     // Returns the value of the gyroscope
     RadiansPerSecond readGyro() const;
 
-    // Discretized information
+    // Discretized information // TODO: MACK - aren't these implemented elsewhere???
     std::pair<int, int> getDiscretizedTranslation() const;
     Direction getDiscretizedRotation() const;
 
-    // For use with the discrete interface *only*
+    // For use with the discrete interface *only* // TODO: MACK - isn't this implemented elsewhere now???
     Cartesian getInitialTranslation() const;
     Cartesian getCurrentTranslation() const;
     Radians getCurrentRotation() const;
     void teleport(const Cartesian& translation, const Angle& rotation);
-
 
 private:
     // Used for the sensor readings
@@ -77,15 +73,16 @@ private:
     Polygon m_initialBodyPolygon; // The polygon of strictly the body of the mouse
     Polygon m_initialCollisionPolygon; // The polygon containing all collidable parts of the mouse
 
-    // The gyro, rotationr, and translation of the mouse, which change throughout execution
+    // The gyro, rotation, and translation of the mouse, which change throughout execution
     RadiansPerSecond m_gyro;
     Radians m_rotation;
     Cartesian m_translation;
 
-    // By assumption, the mouse is differential drive.
-    Wheel m_leftWheel;
-    Wheel m_rightWheel;
-    std::mutex m_wheelMutex; // Ensures the wheel speeds are accessed together atomically
+    // TODO: MACK - is this necessary???
+    std::mutex m_comboMutex; // Ensures the wheel speeds are accessed together atomically
+
+    // The wheels of the mouse
+    std::map<std::string, Wheel> m_wheels;
 
     // The sensors on the mouse
     std::map<std::string, Sensor> m_sensors;

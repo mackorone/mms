@@ -17,14 +17,11 @@ class MouseParser {
 public:
     MouseParser(const std::string& filePath);
     Polygon getBody();
-    Wheel getLeftWheel();
-    Wheel getRightWheel();
+    std::map<std::string, Wheel> getWheels();
     std::map<std::string, Sensor> getSensors();
 
 private:
     pugi::xml_document m_doc;
-
-    Wheel getWheel(bool left);
 };
 
 } // namespace sim

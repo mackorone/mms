@@ -17,10 +17,10 @@ static const std::vector<Direction> DIRECTIONS {
 };
 
 static const std::map<Direction, Degrees> DIRECTION_TO_ANGLE {
-    {Direction::NORTH, Degrees(0)},
-    {Direction::EAST, Degrees(270)},
-    {Direction::SOUTH, Degrees(180)},
-    {Direction::WEST, Degrees(90)},
+    {Direction::NORTH, Degrees(90)},
+    {Direction::EAST, Degrees(0)},
+    {Direction::SOUTH, Degrees(270)},
+    {Direction::WEST, Degrees(180)},
 };
 
 static const std::map<Direction, char> DIRECTION_TO_CHAR {

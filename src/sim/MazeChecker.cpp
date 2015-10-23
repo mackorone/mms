@@ -160,10 +160,9 @@ bool MazeChecker::hasWallAttachedToEachPost(const std::vector<std::vector<BasicT
 
 bool MazeChecker::hasThreeStartingWalls(const std::vector<std::vector<BasicTile>>& maze) {
     // Assumptions:
-    // 1) The maze is nonempty
+    // 1) The maze is valid (nonempty, enclosed)
     // 2) The mouse always starts in the lower-left corner
-    // 3) The 
-    auto walls = maze.at(0).at(0).walls;
+    std::map<Direction, bool> walls = maze.at(0).at(0).walls;
     return walls.at(Direction::NORTH) != walls.at(Direction::EAST);
 }
 
