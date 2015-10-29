@@ -2,24 +2,16 @@
 
 - ParamParser min max values aren't working as expected... entering the min or max results in an error
 - Support stepper motor / encoders interface
-    - Should we center the centroid of the mouse??
-        - Annotate the centroid? Draw a circle polygon???
-    - Is there any abstraction that would get rid of forward=north???
+    - Annotate the center of the mouse? Draw a circle polygon???
     - Functions for discreteCompatible, continuousCompatible
         - fits inside square to start
-    - Determine the default specification direction
-    - Automatically center the mouse in the first tile
-        - Give the user some way to adjust this...
-    - decouple the body specification from the initial position
     - Consistency between view and viewPolygon
     - radius -> diameter
     - rotation -> direction
-    - Rename translation to position where appropriate
     - Refactor the sensors
-    - Fix the abstraction between the wheel/motor/encoder
-    - Adjust Mouse parser to fit new xml
     - Test different wheel arrangements
-- Rename Tile to Cell
+- Use vertex buffer object for the mouse body (only triangulate the mouse once)
+    - Get rid of getInitialized method in mouse once we implement mouse drawing only once
 - Tile Text
     - Fix the fact that the bitmap is initialized in driver but the string of characters is in GraphicUtilities
     - Assert that a character exsits before we try to draw it to the tile
@@ -64,6 +56,7 @@
 
 # Medum Priority
 
+- Rename Tile to Cell
 - Figure out what's causing the jitter during mouse updates
 - Support reading or writing multiple file types
     - .maz (plain text), .MAZ (binary), .map (ascii map)
@@ -78,8 +71,6 @@
 - Make sure that the mouse fits in the starting square
 - Algo checklist?
 - Still view a maze if it fails validation, but don't let the sim continue...
-- Use vertex buffer object for the mouse body (only triangulate the mouse once)
-    - Get rid of getInitialized method in mouse once we implement mouse drawing only once
 - Check megaMouse performance
     - Better implementation of sensor view collision detectio
     - Figure out how to make sensors more efficie

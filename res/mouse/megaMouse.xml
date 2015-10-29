@@ -108,8 +108,8 @@
     <HalfWidth>5</HalfWidth> <!-- Degrees -->
     <ReadDuration>.015</ReadDuration> <!-- Seconds -->
     <Position>
-        <X>.0725</X>
-        <Y>.1434</Y>
+        <X>.0685</X>
+        <Y>.1484</Y>
     </Position>
     <Direction>135</Direction> <!-- Degrees -->
 </Sensor>
@@ -144,8 +144,8 @@
     <HalfWidth>5</HalfWidth> <!-- Degrees -->
     <ReadDuration>.015</ReadDuration> <!-- Seconds -->
     <Position>
-        <X>.1075</X>
-        <Y>.1434</Y>
+        <X>.1115</X>
+        <Y>.1484</Y>
     </Position>
     <Direction>45</Direction> <!-- Degrees -->
 </Sensor>

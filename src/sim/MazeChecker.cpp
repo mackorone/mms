@@ -49,9 +49,6 @@ bool MazeChecker::isEnclosed(const std::vector<std::vector<BasicTile>>& maze) {
     ASSERT_TR(isRectangular(maze));
     for (int x = 0; x < maze.size(); x += 1) {
         for (int y = 0; y < maze.at(x).size(); y += 1) {
-            if (1 < x && x < maze.size() - 1 && 1 < y && y < maze.at(x).size() - 1) {
-                continue;
-            }
             if (x == 0 && !maze.at(x).at(y).walls.at(Direction::WEST)) {
                 return false; 
             }
@@ -71,9 +68,30 @@ bool MazeChecker::isEnclosed(const std::vector<std::vector<BasicTile>>& maze) {
 
 bool MazeChecker::hasConsistentWalls(const std::vector<std::vector<BasicTile>>& maze) {
     ASSERT_TR(isEnclosed(maze));
-    // TODO: upforgrabs
-    // Implement this method so that it returns true if the walls of the maze
-    // are consistent, and false otherwise.
+    for (int x = 0; x < maze.size(); x += 1) {
+        for (int y = 0; y < maze.at(x).size(); y += 1) {
+            if (0 < x) {
+                if (maze.at(x).at(y).walls.at(Direction::WEST) != maze.at(x - 1).at(y).walls.at(Direction::EAST)) {
+                    return false;
+                }
+            }
+            if (0 < y) {
+                if (maze.at(x).at(y).walls.at(Direction::SOUTH) != maze.at(x).at(y - 1).walls.at(Direction::NORTH)) {
+                    return false;
+                }
+            }
+            if (x < maze.size() - 1) {
+                if (maze.at(x).at(y).walls.at(Direction::EAST) != maze.at(x + 1).at(y).walls.at(Direction::WEST)) {
+                    return false;
+                }
+            }
+            if (y < maze.at(x).size() - 1) {
+                if (maze.at(x).at(y).walls.at(Direction::NORTH) != maze.at(x).at(y + 1).walls.at(Direction::SOUTH)) {
+                    return false;
+                }
+            }
+        }
+    }
     return true;
 }
 
@@ -162,6 +180,7 @@ bool MazeChecker::hasThreeStartingWalls(const std::vector<std::vector<BasicTile>
     // Assumptions:
     // 1) The maze is valid (nonempty, enclosed)
     // 2) The mouse always starts in the lower-left corner
+    ASSERT_TR(validMaze(maze));
     std::map<Direction, bool> walls = maze.at(0).at(0).walls;
     return walls.at(Direction::NORTH) != walls.at(Direction::EAST);
 }

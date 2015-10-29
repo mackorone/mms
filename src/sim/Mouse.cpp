@@ -31,7 +31,7 @@ bool Mouse::initialize(const std::string& mouseFile) {
 
     // The mouse always begins at the center of the starting tile
     m_initialTranslation = centerOfStartingTile;
-    m_translation = m_initialTranslation; // TODO: add a parameter for starting postiion offset in the x and y directions
+    m_translation = m_initialTranslation;
 
     // Determine the translation necessary to actually put the center of mass
     // of the mouse in the center of the starting tile
@@ -159,6 +159,7 @@ void Mouse::update(const Duration& elapsed) {
      */
 
     // TODO: MACK - update this to take wheel direction into account
+    // TODO: MACK - update this to support all wheels wheel direction into account
 
     // First get the speed of each wheel (atomically)
     m_wheelMutex.lock();
