@@ -69,7 +69,7 @@ private:
     const Maze* m_maze;
 
     // The mouse, as it's positioned at the start execution
-    Cartesian m_initialTranslation;
+    Cartesian m_initialTranslation; // Always the center of the starting tile
     Polygon m_initialBodyPolygon; // The polygon of strictly the body of the mouse
     Polygon m_initialCollisionPolygon; // The polygon containing all collidable parts of the mouse
 
@@ -78,14 +78,14 @@ private:
     Radians m_rotation;
     Cartesian m_translation;
 
-    // TODO: MACK - is this necessary???
-    std::mutex m_comboMutex; // Ensures the wheel speeds are accessed together atomically
-
     // The wheels of the mouse
     std::map<std::string, Wheel> m_wheels;
 
     // The sensors on the mouse
     std::map<std::string, Sensor> m_sensors;
+
+    // Ensures the wheel speeds are accessed together atomically
+    std::mutex m_wheelMutex; 
 };
 
 } // namespace sim

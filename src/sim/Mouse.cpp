@@ -1,7 +1,5 @@
 #include "Mouse.h"
 
-#include <iostream>
-
 #include "units/Meters.h"
 #include "units/MetersPerSecond.h"
 #include "units/Polar.h"
@@ -17,30 +15,40 @@
 
 namespace sim {
 
-Mouse::Mouse(const Maze* maze) : m_maze(maze), m_gyro(RadiansPerSecond(0.0)),
-    // TODO: MACK - refactor this - the mouse is specified as facing north, but the initial rotation is also north
-    m_rotation(DIRECTION_TO_ANGLE.at(STRING_TO_DIRECTION.at(P()->mouseStartingDirection())) + Degrees(270)) {
+Mouse::Mouse(const Maze* maze) : m_maze(maze), m_gyro(RadiansPerSecond(0.0)) {
 }
 
 bool Mouse::initialize(const std::string& mouseFile) {
 
-    // TODO: This should fail at most once
-    // TODO: What to do if this fails??? Make sure this file exists...
-    // TODO: Just return false - abort...
+    // TODO: MACK If fails, return false
+    // TODO: add a parameter for starting postiion offset in the x and y directions
 
     // Create the mouse parser object
     MouseParser parser(Directory::getResMouseDirectory() + mouseFile);
 
-    // Initialize the body, wheels, and sensors
-    m_initialBodyPolygon = parser.getBody();
-    m_wheels = parser.getWheels();
-    m_sensors = parser.getSensors();
+    // First, determine the center of the starting tile
+    double halfOfTileDistance = (P()->wallLength() + P()->wallWidth()) / 2.0;
+    Cartesian centerOfStartingTile = Cartesian(Meters(halfOfTileDistance), Meters(halfOfTileDistance));
 
-    // TODO: MACK - should be the center of mass, not hardcoded
-    m_initialTranslation = Cartesian(Meters(.09), Meters(.09));
+    // The mouse always begins at the center of the starting tile
+    m_initialTranslation = centerOfStartingTile;
     m_translation = m_initialTranslation;
 
-    // Initialize the collision polygon
+    // Determine the translation necessary to actually put the center of mass
+    // of the mouse in the center of the starting tile
+    Cartesian centerOfMass = parser.getCenterOfMass();
+    Cartesian translationToAlignCenters = centerOfStartingTile - centerOfMass;
+
+    // Initialize the body, wheels, and sensors
+    m_initialBodyPolygon = parser.getBody(translationToAlignCenters);
+    m_wheels = parser.getWheels(translationToAlignCenters);
+    m_sensors = parser.getSensors(translationToAlignCenters);
+
+    // Set the rotation the mouse based on the forward direction and the desired starting direction
+    m_rotation = DIRECTION_TO_ANGLE.at(STRING_TO_DIRECTION.at(P()->mouseStartingDirection())) - parser.getForwardDirection();
+
+    // Initialize the collision polygon; this is technically not correct since
+    // we should be using union, not convexHull, but it's a good approximation
     std::vector<Polygon> polygons;
     polygons.push_back(m_initialBodyPolygon);
     for (std::pair<std::string, Wheel> pair : m_wheels) {
@@ -49,8 +57,6 @@ bool Mouse::initialize(const std::string& mouseFile) {
     for (std::pair<std::string, Sensor> pair : m_sensors) {
         polygons.push_back(pair.second.getInitialPolygon());
     }
-
-    // Technically not correct (should be union), but it's a good approximation
     m_initialCollisionPolygon = GeometryUtilities::convexHull(polygons);
 
     // Return success
@@ -67,7 +73,7 @@ Polygon Mouse::getBodyPolygon() const {
 
 std::vector<Polygon> Mouse::getWheelPolygons() const {
 
-    // TODO: MACK - dedup with the below function
+    // TODO: MACK - dedup with the below getSensorPolygons function
 
     // Get the initial wheel polygons
     std::vector<Polygon> initialPolygons;
@@ -153,14 +159,16 @@ void Mouse::update(const Duration& elapsed) {
      *  small and thus the change in rotation should be mostly negligible.
      */
 
+    // TODO: MACK - update this to take wheel direction into account
+
     // First get the speed of each wheel (atomically)
-    m_comboMutex.lock();
+    m_wheelMutex.lock();
     // TODO: MACK - we'll have to change this for arbitrarily many wheels
     MetersPerSecond rightWheelSpeed(
         m_wheels.at("right").getAngularVelocity().getRadiansPerSecond() * m_wheels.at("right").getDiameter().getMeters() / 2.0);
     MetersPerSecond leftWheelSpeed(
         m_wheels.at("left").getAngularVelocity().getRadiansPerSecond() * m_wheels.at("left").getDiameter().getMeters() / 2.0);
-    m_comboMutex.unlock();
+    m_wheelMutex.unlock();
 
     // Then get the distance between the two wheels
     Meters base(m_wheels.at("right").getInitialPosition().getX() - m_wheels.at("left").getInitialPosition().getX());
@@ -224,10 +232,10 @@ void Mouse::update(const Duration& elapsed) {
 }
 
 void Mouse::setWheelSpeeds(const AngularVelocity& leftWheelSpeed, const AngularVelocity& rightWheelSpeed) {
-    m_comboMutex.lock();
+    m_wheelMutex.lock();
     m_wheels.at("left").setAngularVelocity(leftWheelSpeed);
     m_wheels.at("right").setAngularVelocity(rightWheelSpeed);
-    m_comboMutex.unlock();
+    m_wheelMutex.unlock();
 }
 
 bool Mouse::hasSensor(const std::string& name) const {

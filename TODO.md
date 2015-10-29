@@ -1,13 +1,20 @@
 # High Priority
 
+- ParamParser min max values aren't working as expected... entering the min or max results in an error
 - Support stepper motor / encoders interface
+    - Should we center the centroid of the mouse??
+        - Annotate the centroid? Draw a circle polygon???
+    - Is there any abstraction that would get rid of forward=north???
+    - Functions for discreteCompatible, continuousCompatible
+        - fits inside square to start
     - Determine the default specification direction
+    - Automatically center the mouse in the first tile
+        - Give the user some way to adjust this...
     - decouple the body specification from the initial position
     - Consistency between view and viewPolygon
     - radius -> diameter
     - rotation -> direction
     - Rename translation to position where appropriate
-    - CENTER OF MASS???
     - Refactor the sensors
     - Fix the abstraction between the wheel/motor/encoder
     - Adjust Mouse parser to fit new xml

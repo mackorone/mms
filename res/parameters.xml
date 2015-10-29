@@ -39,7 +39,7 @@
 <use-random-seed>false</use-random-seed> <!-- Whether or not to use the seed value -->
 <crash-message>Oh no! Your mouse crashed! It can't move anymore...</crash-message>
 <glut-init-duration>0.1</glut-init-duration> <!-- Seconds -->
-<default-paused>false</default-paused>
+<default-paused>true</default-paused>
 <min-sleep-duration>5</min-sleep-duration> <!-- Milliseconds -->
 <discrete-interface-min-speed>1.0</discrete-interface-min-speed> <!-- No units -->
 <discrete-interface-max-speed>300.0</discrete-interface-max-speed> <!-- No units -->
@@ -59,7 +59,6 @@
 <!-- Maze Parameters -->
 <wall-length>0.168</wall-length> <!-- meters -->
 <wall-width>0.012</wall-width> <!-- meters -->
-<wall-height>0.05</wall-height> <!-- meters -->
 <enforce-official-maze-rules>false</enforce-official-maze-rules>
 <maze-file>longpath.maz</maze-file> <!-- relative to maze-directory -->
 <use-maze-file>false</use-maze-file> <!-- whether or not to use the maze file above -->

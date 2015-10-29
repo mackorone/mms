@@ -1,4 +1,9 @@
 <!-- TODO: MACK - make sure this isn't broken -->
+<Forward-Direction>90</Forward-Direction>
+<Center-of-Mass>
+    <X>.09</X> 
+    <Y>.09</Y>
+</Center-of-Mass>
 <Body>
     <Vertex>
         <X>.065</X> 
@@ -45,7 +50,7 @@
         <X>.0574</X>
         <Y>.09</Y>
     </Position>
-    <Direction>270</Direction> <!-- 0 degrees + positive angular velocity causes travel along the X-axis in the positive direciton -->
+    <Direction>270</Direction> <!-- 0 degrees and positive angular velocity causes the wheel to travel west -->
     <!-- Motor params go here -->
     <!-- Encoder params go here -->
 </Wheel>
@@ -57,7 +62,7 @@
         <X>.1226</X>
         <Y>.09</Y>
     </Position>
-    <Direction>90</Direction> <!-- 0 degrees + positive angular velocity causes travel along the X-axis in the positive direciton -->
+    <Direction>90</Direction> <!-- 0 degrees and positive angular velocity causes the wheel to travel west -->
     <!-- Motor params go here -->
     <!-- Encoder params go here -->
 </Wheel>

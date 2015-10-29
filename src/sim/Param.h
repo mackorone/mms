@@ -75,7 +75,6 @@ public:
     // Maze parameters
     double wallWidth();
     double wallLength();
-    double wallHeight();
     bool enforceOfficialMazeRules();
     std::string mazeFile();
     bool useMazeFile();
@@ -156,7 +155,6 @@ private:
     // Maze parameters
     double m_wallWidth;
     double m_wallLength;
-    double m_wallHeight;
     bool m_enforceOfficialMazeRules;
     std::string m_mazeFile;
     bool m_useMazeFile;

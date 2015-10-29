@@ -16,9 +16,11 @@ class MouseParser {
 
 public:
     MouseParser(const std::string& filePath);
-    Polygon getBody();
-    std::map<std::string, Wheel> getWheels();
-    std::map<std::string, Sensor> getSensors();
+    Radians getForwardDirection();
+    Cartesian getCenterOfMass();
+    Polygon getBody(Cartesian translationToAlignCenters);
+    std::map<std::string, Wheel> getWheels(Cartesian translationToAlignCenters);
+    std::map<std::string, Sensor> getSensors(Cartesian translationToAlignCenters);
 
 private:
     pugi::xml_document m_doc;

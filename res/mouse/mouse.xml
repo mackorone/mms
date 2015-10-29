@@ -1,23 +1,28 @@
+<Forward-Direction>90</Forward-Direction>
+<Center-of-Mass>
+    <X>.03</X> 
+    <Y>.03</Y>
+</Center-of-Mass>
 <Body>
     <Vertex>
-        <X>.06</X> 
+        <X>.00</X> 
+        <Y>.00</Y>
+    </Vertex>
+    <Vertex>
+        <X>.00</X>
+        <Y>.06</Y>
+    </Vertex>
+    <Vertex>
+        <X>.03</X>
+        <Y>.09</Y>
+    </Vertex>
+    <Vertex>
+        <X>.06</X>
         <Y>.06</Y>
     </Vertex>
     <Vertex>
         <X>.06</X>
-        <Y>.12</Y>
-    </Vertex>
-    <Vertex>
-        <X>.09</X>
-        <Y>.15</Y>
-    </Vertex>
-    <Vertex>
-        <X>.12</X>
-        <Y>.12</Y>
-    </Vertex>
-    <Vertex>
-        <X>.12</X>
-        <Y>.06</Y>
+        <Y>.00</Y>
     </Vertex>
 </Body>
 <Wheel>
@@ -25,10 +30,10 @@
     <Diameter>.04</Diameter>
     <Width>.01</Width>
     <Position>
-        <X>.06</X>
-        <Y>.09</Y>
+        <X>.00</X>
+        <Y>.03</Y>
     </Position>
-    <Direction>270</Direction> <!-- 0 degrees and positive angular velocity causes travel along the X-axis in the positive direciton -->
+    <Direction>270</Direction> <!-- 0 degrees and positive angular velocity causes the wheel to travel west -->
     <!-- Motor params go here -->
     <!-- * Type-->
     <!-- * Max speed -->
@@ -42,10 +47,10 @@
     <Diameter>.04</Diameter>
     <Width>.01</Width>
     <Position>
-        <X>.12</X>
-        <Y>.09</Y>
+        <X>.06</X>
+        <Y>.03</Y>
     </Position>
-    <Direction>90</Direction> <!-- 0 degrees and positive angular velocity causes travel along the X-axis in the positive direciton -->
+    <Direction>90</Direction> <!-- 0 degrees and positive angular velocity causes the wheel to travel west -->
     <!-- Motor params go here -->
     <!-- * Type-->
     <!-- * Max speed -->

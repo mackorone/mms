@@ -149,8 +149,6 @@ Param::Param() {
         "wall-width", 0.012, 0.006, 0.024);
     m_wallLength = parser.getDoubleIfHasDoubleAndInRange(
         "wall-length", 0.168, 0.084, 0.336);
-    m_wallHeight = parser.getDoubleIfHasDoubleAndInRange(
-        "wall-height", 0.05, 0.025, 0.1);
     m_enforceOfficialMazeRules = parser.getBoolIfHasBool(
         "enforce-official-maze-rules", false);
     m_mazeFile = parser.getStringIfHasString(
@@ -393,10 +391,6 @@ double Param::wallWidth() {
 
 double Param::wallLength() {
     return m_wallLength;
-}
-
-double Param::wallHeight() {
-    return m_wallHeight;
 }
 
 int Param::generatedMazeWidth() {

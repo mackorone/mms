@@ -14,6 +14,7 @@
 #include "Key.h"
 #include "Logging.h"
 #include "Maze.h"
+#include "MouseChecker.h"
 #include "Param.h"
 #include "SimUtilities.h"
 #include "State.h"
@@ -380,7 +381,6 @@ void Driver::initMouseAlgo() {
 
     // First, check to ensure that the mouse algorithm is valid
     if (!MouseAlgorithms::isMouseAlgorithm(P()->mouseAlgorithm())) {
-        // TODO: MACK - make a note about the file where it needs to be declared
         L()->error("\"%v\" is not a valid mouse algorithm.",
             P()->mouseAlgorithm());
         SimUtilities::quit();
@@ -412,6 +412,20 @@ void Driver::initMouseAlgo() {
         SimUtilities::quit();
     }
     S()->setInterfaceType(STRING_TO_INTERFACE_TYPE.at(m_algorithm->interfaceType()));
+
+    // Validate the mouse
+    if (S()->interfaceType() == InterfaceType::DISCRETE) {
+        if (!MouseChecker::isDiscreteInterfaceCompatible(*m_mouse)) {
+            L()->error("The mouse file \"%v\" is not discrete interface compatible.", mouseFile);
+            SimUtilities::quit();
+        }
+    }
+    else { // InterfaceType::CONTINUOUS
+        if (!MouseChecker::isContinuousInterfaceCompatible(*m_mouse)) {
+            L()->error("The mouse file \"%v\" is not continuous interface compatible.", mouseFile);
+            SimUtilities::quit();
+        }
+    }
 }
 
 void Driver::repopulateVertexBufferObjects() {
