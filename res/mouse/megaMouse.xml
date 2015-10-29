@@ -1,4 +1,3 @@
-<!-- TODO: MACK - make sure this isn't broken -->
 <Forward-Direction>90</Forward-Direction>
 <Center-of-Mass>
     <X>.09</X> 
@@ -19,7 +18,7 @@
     </Vertex>
     <Vertex>
         <X>.065</X> 
-        <Y>.145</Y>
+        <Y>.150</Y>
     </Vertex>
     <Vertex>
         <X>.09</X> 
@@ -27,7 +26,7 @@
     </Vertex>
     <Vertex>
         <X>.115</X> 
-        <Y>.145</Y>
+        <Y>.150</Y>
     </Vertex>
     <Vertex>
         <X>.1265</X> 
@@ -43,24 +42,48 @@
     </Vertex>
 </Body>
 <Wheel>
-    <Name>left</Name>
+    <Name>left-lower</Name>
     <Diameter>.0245</Diameter>
     <Width>.0077</Width>
     <Position>
         <X>.0574</X>
-        <Y>.09</Y>
+        <Y>.07615</Y>
     </Position>
     <Direction>270</Direction> <!-- 0 degrees and positive angular velocity causes the wheel to travel west -->
     <!-- Motor params go here -->
     <!-- Encoder params go here -->
 </Wheel>
 <Wheel>
-    <Name>right</Name>
+    <Name>left</Name> <!-- TODO: MACK - Rename these -->
+    <Diameter>.0245</Diameter>
+    <Width>.0077</Width>
+    <Position>
+        <X>.0574</X>
+        <Y>.1044</Y>
+    </Position>
+    <Direction>270</Direction> <!-- 0 degrees and positive angular velocity causes the wheel to travel west -->
+    <!-- Motor params go here -->
+    <!-- Encoder params go here -->
+</Wheel>
+<Wheel>
+    <Name>right-lower</Name>
     <Diameter>.0245</Diameter>
     <Width>.0077</Width>
     <Position>
         <X>.1226</X>
-        <Y>.09</Y>
+        <Y>.07615</Y>
+    </Position>
+    <Direction>90</Direction> <!-- 0 degrees and positive angular velocity causes the wheel to travel west -->
+    <!-- Motor params go here -->
+    <!-- Encoder params go here -->
+</Wheel>
+<Wheel>
+    <Name>right</Name> <!-- TODO: MACK - Rename these -->
+    <Diameter>.0245</Diameter>
+    <Width>.0077</Width>
+    <Position>
+        <X>.1226</X>
+        <Y>.1044</Y>
     </Position>
     <Direction>90</Direction> <!-- 0 degrees and positive angular velocity causes the wheel to travel west -->
     <!-- Motor params go here -->

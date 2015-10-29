@@ -21,7 +21,6 @@ Mouse::Mouse(const Maze* maze) : m_maze(maze), m_gyro(RadiansPerSecond(0.0)) {
 bool Mouse::initialize(const std::string& mouseFile) {
 
     // TODO: MACK If fails, return false
-    // TODO: add a parameter for starting postiion offset in the x and y directions
 
     // Create the mouse parser object
     MouseParser parser(Directory::getResMouseDirectory() + mouseFile);
@@ -32,7 +31,7 @@ bool Mouse::initialize(const std::string& mouseFile) {
 
     // The mouse always begins at the center of the starting tile
     m_initialTranslation = centerOfStartingTile;
-    m_translation = m_initialTranslation;
+    m_translation = m_initialTranslation; // TODO: add a parameter for starting postiion offset in the x and y directions
 
     // Determine the translation necessary to actually put the center of mass
     // of the mouse in the center of the starting tile
