@@ -2,7 +2,6 @@
 
 #include <fstream>
 #include <iterator>
-#include <sstream>
 
 #include "Assert.h"
 #include "Logging.h"
@@ -66,7 +65,7 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
         lineNum += 1;
 
         // Extract the whitespace separated tokens
-        std::vector<std::string> tokens = SimUtilities::tokenize(line, false);
+        std::vector<std::string> tokens = SimUtilities::tokenize(line);
 
         // Check to see that there are exactly six entries...
         if (6 != tokens.size()) {
@@ -100,7 +99,14 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
         // very first line. The "&& expectedY != 0" ensures that the first line must be (0,0).
         bool caseOne = values.at(0) == expectedX     && values.at(1) == expectedY;
         bool caseTwo = values.at(0) == expectedX + 1 && values.at(1) == 0 && expectedY != 0;
-        if (!(caseOne || caseTwo)) {
+        if (caseOne) {
+            expectedY += 1;
+        }
+        else if (caseTwo) {
+            expectedX += 1;
+            expectedY = 1;
+        }
+        else {
             L()->warn(
                 "\"%v\" contains unexpected x and y values of %v and %v on line %v.",
                 mazeFilePath,
@@ -108,13 +114,6 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
                 std::to_string(values.at(1)),
                 std::to_string(lineNum));
             return false;
-        }
-        if (caseOne) {
-            expectedY += 1;
-        }
-        else { // caseTwo
-            expectedX += 1;
-            expectedY = 1;
         }
 
         // Check the wall values to ensure that they're either 0 or 1
@@ -172,16 +171,13 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMaze(const std::strin
     // The column to be appended
     std::vector<BasicTile> column;
 
-    // Lastly, read the file and populate the wall values
+    // Read the file and populate the wall values
     std::ifstream file(mazeFilePath.c_str());
     std::string line("");
     while (getline(file, line)) {
 
         // Put the tokens in a vector
-        std::istringstream iss(line);
-        std::vector<std::string> tokens;
-        copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(),
-             std::back_inserter<std::vector<std::string>>(tokens));
+        std::vector<std::string> tokens = SimUtilities::tokenize(line);
 
         // Fill the BasicTile object with the values
         BasicTile tile;

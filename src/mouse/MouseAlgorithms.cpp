@@ -11,6 +11,7 @@
 #include "randomizedWallFollow/RandomizedWallFollow.h"
 #include "floodFill/FloodFill.h"
 #include "mackAlgo/MackAlgo.h"
+#include "test/Test.h"
 
 bool MouseAlgorithms::isMouseAlgorithm(const std::string& str) {
     return helper(str, true).first;
@@ -37,6 +38,7 @@ std::pair<bool, IMouseAlgorithm*> MouseAlgorithms::helper(const std::string& str
     ALGO("RandomizedWallFollow", new randomizedWallFollow::RandomizedWallFollow());
     ALGO("FloodFill", new floodFill::FloodFill());
     ALGO("MackAlgo", new mackAlgo::MackAlgo());
+    ALGO("Test", new test::Test());
 
     return std::make_pair(false, nullptr);
 }

@@ -54,11 +54,11 @@ public:
     // Returns the value of the gyroscope
     RadiansPerSecond readGyro() const;
 
-    // Discretized information // TODO: MACK - aren't these implemented elsewhere???
+    // Discretized information, used by MouseInterface
     std::pair<int, int> getDiscretizedTranslation() const;
     Direction getDiscretizedRotation() const;
 
-    // For use with the discrete interface *only* // TODO: MACK - isn't this implemented elsewhere now???
+    // For use with the discrete interface *only*
     Cartesian getInitialTranslation() const;
     Cartesian getCurrentTranslation() const;
     Radians getCurrentRotation() const;
@@ -86,6 +86,22 @@ private:
 
     // Ensures the wheel speeds are accessed together atomically
     std::mutex m_wheelMutex; 
+
+    // Helper function for getWheelPolygons and getSensorPolygons
+    template<class T>
+    std::vector<Polygon> getPolygonsFromMap(std::map<std::string, T> map) const {
+        std::vector<Polygon> initialPolygons;
+        for (std::pair<std::string, T> pair : map) {
+            initialPolygons.push_back(pair.second.getInitialPolygon());
+        }
+        std::vector<Polygon> adjustedPolygons;
+        for (Polygon polygon : initialPolygons) {
+            adjustedPolygons.push_back(
+                polygon.translate(m_translation - m_initialTranslation).rotateAroundPoint(m_rotation, m_translation));
+        }
+        return adjustedPolygons;
+    }
+
 };
 
 } // namespace sim

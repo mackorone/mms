@@ -70,6 +70,11 @@ void World::simulate() {
 
 void World::checkCollision() {
 
+    // If collision detectino isn't enabled, let this thread exit
+    if (!P()->collisionDetectionEnabled()) {
+        return;
+    }
+
     // If the interface type is not continuous, let this thread exit
     if (S()->interfaceType() != InterfaceType::CONTINUOUS) {
         return;

@@ -71,41 +71,11 @@ Polygon Mouse::getBodyPolygon() const {
 }
 
 std::vector<Polygon> Mouse::getWheelPolygons() const {
-
-    // TODO: MACK - dedup with the below getSensorPolygons function
-
-    // Get the initial wheel polygons
-    std::vector<Polygon> initialPolygons;
-    for (std::pair<std::string, Wheel> pair : m_wheels) {
-        initialPolygons.push_back(pair.second.getInitialPolygon());
-    }
-
-    // Translate and rotate the polygons appropriately
-    std::vector<Polygon> adjustedPolygons;
-    for (Polygon polygon : initialPolygons) {
-        adjustedPolygons.push_back(
-            polygon.translate(m_translation - m_initialTranslation).rotateAroundPoint(m_rotation, m_translation));
-    }
-
-    return adjustedPolygons;
+    return getPolygonsFromMap(m_wheels);
 }
 
 std::vector<Polygon> Mouse::getSensorPolygons() const {
-
-    // Get the initial sensor polygons
-    std::vector<Polygon> initialPolygons;
-    for (std::pair<std::string, Sensor> pair : m_sensors) {
-        initialPolygons.push_back(pair.second.getInitialPolygon());
-    }
-
-    // Translate and rotate the polygons appropriately
-    std::vector<Polygon> adjustedPolygons;
-    for (Polygon polygon : initialPolygons) {
-        adjustedPolygons.push_back(
-            polygon.translate(m_translation - m_initialTranslation).rotateAroundPoint(m_rotation, m_translation));
-    }
-
-    return adjustedPolygons;
+    return getPolygonsFromMap(m_sensors);
 }
 
 std::vector<Polygon> Mouse::getViewPolygons() const {

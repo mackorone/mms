@@ -52,6 +52,7 @@ public:
     int randomSeed();
     double glutInitDuration();
     bool defaultPaused();
+    bool collisionDetectionEnabled();
     std::string crashMessage();
     double minSleepDuration();
 
@@ -135,6 +136,7 @@ private:
     int m_randomSeed;
     double m_glutInitDuration;
     bool m_defaultPaused;
+    bool m_collisionDetectionEnabled;
     std::string m_crashMessage;
     double m_minSleepDuration;
     double m_discreteInterfaceMinSpeed;

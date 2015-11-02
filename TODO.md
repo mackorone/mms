@@ -1,17 +1,13 @@
 # High Priority
 
-- ParamParser min max values aren't working as expected... entering the min or max results in an error
 - Support stepper motor / encoders interface
     - Annotate the center of the mouse? Draw a circle polygon???
     - Functions for discreteCompatible, continuousCompatible
         - fits inside square to start
     - Consistency between view and viewPolygon
-    - radius -> diameter
     - rotation -> direction
-    - Refactor the sensors
     - Test different wheel arrangements
 - Use vertex buffer object for the mouse body (only triangulate the mouse once)
-    - Get rid of getInitialized method in mouse once we implement mouse drawing only once
 - Tile Text
     - Fix the fact that the bitmap is initialized in driver but the string of characters is in GraphicUtilities
     - Assert that a character exsits before we try to draw it to the tile
@@ -53,6 +49,7 @@
 - Buffer communication (like with the real robot)
 - Clang compiler support
 - Number of unique cells traversed
+- Some way to wite algorithms in Python
 
 # Medum Priority
 
@@ -72,7 +69,7 @@
 - Algo checklist?
 - Still view a maze if it fails validation, but don't let the sim continue...
 - Check megaMouse performance
-    - Better implementation of sensor view collision detectio
+    - Better implementation of sensor view collision detection
     - Figure out how to make sensors more efficie
     - Make the sensor polygon model better
 - Add manual mode high scores

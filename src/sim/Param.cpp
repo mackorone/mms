@@ -104,12 +104,14 @@ Param::Param() {
         useRandomSeed = false;
     }
     m_randomSeed = (useRandomSeed ? parser.getIntValue("random-seed") : std::random_device()());
-    m_crashMessage = parser.getStringIfHasString(
-        "crash-message", "CRASH");
     m_glutInitDuration = parser.getDoubleIfHasDoubleAndInRange(
         "glut-init-duration", 0.1, 0.0, 5.0);
     m_defaultPaused = parser.getBoolIfHasBool(
         "default-paused", false);
+    m_collisionDetectionEnabled = parser.getBoolIfHasBool(
+        "collision-detection-enabled", true);
+    m_crashMessage = parser.getStringIfHasString(
+        "crash-message", "CRASH");
     m_minSleepDuration = parser.getDoubleIfHasDoubleAndInRange(
         "min-sleep-duration", 5, 1, 25);
 
@@ -305,16 +307,20 @@ int Param::randomSeed() {
     return m_randomSeed;
 }
 
-std::string Param::crashMessage() {
-    return m_crashMessage;
-}
-
 double Param::glutInitDuration() {
     return m_glutInitDuration;
 }
 
 bool Param::defaultPaused() {
     return m_defaultPaused;
+}
+
+bool Param::collisionDetectionEnabled() {
+    return m_collisionDetectionEnabled;
+}
+
+std::string Param::crashMessage() {
+    return m_crashMessage;
 }
 
 double Param::minSleepDuration() {

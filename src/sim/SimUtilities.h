@@ -45,7 +45,7 @@ public:
     static double strToDouble(const std::string& str);
 
     // Tokenizes a string on whitespace
-    static std::vector<std::string> tokenize(const std::string& str, bool respectQuotes);
+    static std::vector<std::string> tokenize(const std::string& str, bool respectQuotes = false);
 
     // Returns the string str with the leading and trailing spaces removed
     static std::string trim(const std::string& str);

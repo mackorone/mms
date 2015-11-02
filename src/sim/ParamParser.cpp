@@ -6,8 +6,7 @@
 #include "Logging.h"
 #include "SimUtilities.h"
 
-#undef max // Needed for Windows compatibility
-#undef min // Needed for Windows compatibility
+#include "CPMinMax.h" // Needed for Windows compatibility
 
 namespace sim {
 

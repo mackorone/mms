@@ -129,7 +129,7 @@ int SimUtilities::strToInt(const std::string& str) {
 
 double SimUtilities::strToDouble(const std::string& str) {
     ASSERT_TR(isDouble(str));
-    return std::stof(str);
+    return std::stod(str);
 }
 
 std::vector<std::string> SimUtilities::tokenize(const std::string& str, bool respectQuotes) {
@@ -137,7 +137,7 @@ std::vector<std::string> SimUtilities::tokenize(const std::string& str, bool res
     std::vector<std::string> tokens;
     std::string word = "";
 
-    for (int i = 0; i < str.size(); ++i) {
+    for (int i = 0; i < str.size(); i += 1) {
         if (respectQuotes && str.at(i) == '\"') {
             do {
                 word += str.at(i);
@@ -167,8 +167,8 @@ std::string SimUtilities::trim(const std::string& str) {
     if (first == std::string::npos) {
         return "";
     }
-    std::size_t last  = str.find_last_not_of(' ');
-    return str.substr(first, last-first+1);
+    std::size_t last = str.find_last_not_of(' ');
+    return str.substr(first, last - first + 1);
 }
 
 bool SimUtilities::isFile(const std::string& path) {
