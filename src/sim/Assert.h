@@ -77,29 +77,3 @@ if (!((lhs) <= (rhs))) {\
               << CLOSING << std::endl;\
     exit(1);\
 }
-
-#define ASSERT_LE_LT(lhs, val, rhs)\
-if (!(((lhs) <= (val)) && ((val) < (rhs)))) {\
-    std::cerr << OPENING << std::endl\
-              << "FILE: " <<  __FILE__  << std::endl\
-              << "LINE: " <<  __LINE__  << std::endl\
-              << "COND: " << #lhs << " <= " << #val << " < " << #rhs << std::endl\
-              << "LHS: " << lhs << std::endl\
-              << "VAL: " << val << std::endl\
-              << "RHS: " << rhs << std::endl\
-              << CLOSING << std::endl;\
-    exit(1);\
-}
-
-#define ASSERT_LE_LE(lhs, val, rhs)\
-if (!(((lhs) <= (val)) && ((val) <= (rhs)))) {\
-    std::cerr << OPENING << std::endl\
-              << "FILE: " <<  __FILE__  << std::endl\
-              << "LINE: " <<  __LINE__  << std::endl\
-              << "COND: " << #lhs << " <= " << #val << " <= " << #rhs << std::endl\
-              << "LHS: " << lhs << std::endl\
-              << "VAL: " << val << std::endl\
-              << "RHS: " << rhs << std::endl\
-              << CLOSING << std::endl;\
-    exit(1);\
-}

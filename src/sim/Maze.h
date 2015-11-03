@@ -14,6 +14,7 @@ public:
     Maze();
     int getWidth() const;
     int getHeight() const;
+    bool withinMaze(int x, int y) const;
     Tile* getTile(int x, int y);
     const Tile* getTile(int x, int y) const;
 

@@ -62,7 +62,8 @@ private:
     template<class T>
     T getNumIfHasNumAndInRange(const std::string& type, const std::string& tag, T defaultValue, T min, T max) {
         ASSERT_TR(type == "int" || type == "double");
-        ASSERT_LE_LE(min, defaultValue, max);
+        ASSERT_LE(min, defaultValue);
+        ASSERT_LE(defaultValue, max);
         if (!((type == "int" && hasIntValue(tag)) || (type == "double" && hasDoubleValue(tag)))) {
             printTagNotFound(type, tag, std::to_string(defaultValue));
             return defaultValue;

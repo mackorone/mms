@@ -83,15 +83,17 @@ int Maze::getHeight() const {
     return (m_maze.size() > 0 ? m_maze.at(0).size() : 0);
 }
 
+bool Maze::withinMaze(int x, int y) const {
+    return 0 <= x && x < getWidth() && 0 <= y && y < getHeight();
+}
+
 Tile* Maze::getTile(int x, int y) {
-    ASSERT_LE_LT(0, x, getWidth());
-    ASSERT_LE_LT(0, y, getHeight());
+    ASSERT_TR(withinMaze(x, y));
     return &m_maze.at(x).at(y);
 }
 
 const Tile* Maze::getTile(int x, int y) const {
-    ASSERT_LE_LT(0, x, getWidth());
-    ASSERT_LE_LT(0, y, getHeight());
+    ASSERT_TR(withinMaze(x, y));
     return &m_maze.at(x).at(y);
 }
 

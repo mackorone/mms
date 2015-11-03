@@ -212,7 +212,7 @@ bool Mouse::hasSensor(const std::string& name) const {
     return SimUtilities::mapContains(m_sensors, name);
 }
 
-double Mouse::read(const std::string& name) const {
+double Mouse::readSensor(const std::string& name) const {
 
     // Validate the input
     ASSERT_TR(hasSensor(name));
@@ -230,7 +230,7 @@ double Mouse::read(const std::string& name) const {
     return 1.0 - currentView.area().getMetersSquared() / fullView.area().getMetersSquared();
 }
 
-Seconds Mouse::getReadDuration(const std::string& name) const {
+Seconds Mouse::getSensorReadDuration(const std::string& name) const {
     ASSERT_TR(SimUtilities::mapContains(m_sensors, name));
     return m_sensors.at(name).getReadDuration();
 }

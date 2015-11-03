@@ -31,6 +31,7 @@ public:
     void updateText() const;
 
 private:
+    const Maze* m_maze;
     std::vector<std::vector<TileGraphic>> m_tileGraphics;
 };
 

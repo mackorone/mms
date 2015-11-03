@@ -46,10 +46,10 @@ public:
     bool hasSensor(const std::string& name) const;
 
     // Read a sensor, and returns a value from 0.0 (completely free) to 1.0 (completely blocked)
-    double read(const std::string& name) const;
+    double readSensor(const std::string& name) const;
 
     // Get the read time of a particular sensor
-    Seconds getReadDuration(const std::string& name) const;
+    Seconds getSensorReadDuration(const std::string& name) const;
 
     // Returns the value of the gyroscope
     RadiansPerSecond readGyro() const;
@@ -101,7 +101,6 @@ private:
         }
         return adjustedPolygons;
     }
-
 };
 
 } // namespace sim

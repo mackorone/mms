@@ -52,7 +52,7 @@ void MouseInterface::quit() {
 
 void MouseInterface::setTileColor(int x, int y, char color) {
 
-    if (!withinMaze(x, y)) {
+    if (!m_maze->withinMaze(x, y)) {
         L()->warn(
             "There is no tile at position (%v, %v) and thus you cannot set its"
             " color.",
@@ -74,7 +74,7 @@ void MouseInterface::setTileColor(int x, int y, char color) {
 
 void MouseInterface::clearTileColor(int x, int y) {
 
-    if (!withinMaze(x, y)) {
+    if (!m_maze->withinMaze(x, y)) {
         L()->warn(
             "There is no tile at position (%v, %v), and thus you cannot clear its"
             " color.",
@@ -96,7 +96,7 @@ void MouseInterface::clearAllTileColor() {
 
 void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) {
 
-    if (!withinMaze(x, y)) {
+    if (!m_maze->withinMaze(x, y)) {
         L()->warn(
             "There is no tile at position (%v, %v), and thus you cannot declare"
             " any of its walls.", x, y);
@@ -117,7 +117,7 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
 
 void MouseInterface::undeclareWall(int x, int y, char direction) {
 
-    if (!withinMaze(x, y)) {
+    if (!m_maze->withinMaze(x, y)) {
         L()->warn(
             "There is no tile at position (%v, %v) and thus you cannot"
             " undeclare any of its walls.", x, y);
@@ -138,7 +138,7 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
 
 void MouseInterface::setTileFogginess(int x, int y, bool foggy) {
 
-    if (!withinMaze(x, y)) {
+    if (!m_maze->withinMaze(x, y)) {
         L()->warn(
             "There is no tile at position (%v, %v), and thus you cannot set"
             " its fogginess.", x, y);
@@ -155,7 +155,7 @@ void MouseInterface::setTileFogginess(int x, int y, bool foggy) {
 
 void MouseInterface::declareTileDistance(int x, int y, int distance) {
 
-    if (!withinMaze(x, y)) {
+    if (!m_maze->withinMaze(x, y)) {
         L()->warn(
             "There is no tile at position (%v, %v), and thus you cannot set"
             " its distance.", x, y);
@@ -167,7 +167,7 @@ void MouseInterface::declareTileDistance(int x, int y, int distance) {
 
 void MouseInterface::undeclareTileDistance(int x, int y) {
 
-    if (!withinMaze(x, y)) {
+    if (!m_maze->withinMaze(x, y)) {
         L()->warn(
             "There is no tile at position (%v, %v), and thus you cannot clear"
             " its distance.", x, y);
@@ -225,18 +225,19 @@ double MouseInterface::read(std::string name) {
     double start(sim::SimUtilities::getHighResTime());
 
     // Retrieve the value
-    double value = m_mouse->read(name);
+    double value = m_mouse->readSensor(name);
 
     // Stop the timer
     double end(sim::SimUtilities::getHighResTime());
     double duration = end - start;
 
     // Display to the user, if requested
-    if (sim::P()->printLateSensorReads() && duration > m_mouse->getReadDuration(name).getSeconds()) {
+    double readDurationSeconds = m_mouse->getSensorReadDuration(name).getSeconds();
+    if (sim::P()->printLateSensorReads() && duration > readDurationSeconds) {
         L()->warn(
             "A sensor read was late by %v seconds, which is %v percent late.",
-            (duration - m_mouse->getReadDuration(name).getSeconds()),
-            (duration - m_mouse->getReadDuration(name).getSeconds())/(m_mouse->getReadDuration(name).getSeconds()) * 100);
+            (duration - readDurationSeconds),
+            (duration - readDurationSeconds)/readDurationSeconds * 100);
     }
 
     // Sleep for the read time
@@ -483,8 +484,7 @@ void MouseInterface::checkPaused() const {
 
 bool MouseInterface::isWall(std::pair<int, int> position, Direction direction) {
 
-    ASSERT_LE_LT(0, position.first, m_maze->getWidth());
-    ASSERT_LE_LT(0, position.second, m_maze->getHeight());
+    ASSERT_TR(m_maze->withinMaze(position.first, position.second));
 
     bool wallExists = m_maze->getTile(position.first, position.second)->isWall(direction);
 
@@ -493,10 +493,6 @@ bool MouseInterface::isWall(std::pair<int, int> position, Direction direction) {
     }
 
     return wallExists;
-}
-
-bool MouseInterface::withinMaze(int x, int y) const {
-    return 0 <= x && x < m_maze->getWidth() && 0 <= y && y < m_maze->getHeight();
 }
 
 bool MouseInterface::hasOpposingWall(int x, int y, Direction direction) const {
