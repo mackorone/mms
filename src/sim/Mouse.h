@@ -101,10 +101,6 @@ private:
         }
         return adjustedPolygons;
     }
-
-    // TODO: MACK
-    void update2(const Duration& elapsed);
-    
 };
 
 } // namespace sim

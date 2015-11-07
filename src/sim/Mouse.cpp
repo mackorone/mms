@@ -13,8 +13,6 @@
 #include "SimUtilities.h"
 #include "State.h"
 
-#include <iostream> // TODO: MACK
-
 namespace sim {
 
 Mouse::Mouse(const Maze* maze) : m_maze(maze), m_gyro(RadiansPerSecond(0.0)) {
@@ -95,124 +93,50 @@ std::vector<Polygon> Mouse::getViewPolygons() const {
 
 void Mouse::update(const Duration& elapsed) {
 
-    // TODO: MACK
-    update2(elapsed);
-    return;
-
-    /*
-     *  In a differential drive system (two-wheeled drive system), the angular velocities of
-     *  each of the two wheels completely determine the movement of the robot. The equations
-     *  for the instantaneous change in rotation and translation (with respect to the robot)
-     *  are as follows:
-     *
-     *      dx/dt = (rightWheelSpeed - leftWheelSpeed) / 2
-     *      dy/dt = 0
-     *      d0/dt = (rightWheelSpeed + leftWheelSpeed) / base
-     *
-     *  where the coordinate axes with respect to the robot are as follows:
-     *
-     *               x
-     *               ^
-     *               |
-     *               |
-     *              / \
-     *      y <----0---0
-     *
-     *  Note that dy/dt = 0 since it's impossible for the robot to move laterally. Also note
-     *  that since the left and right wheels are oriented oppositely, a positive wheel speed
-     *  of the right wheel means that the wheel moves in the negative y direction (with
-     *  respect to the robot) while a positive wheel speed of the left wheel means that the
-     *  wheel moves in the positive y direction (again, with respect to the robot). Given
-     *  these few equations, we can easily approximate the motion of the robot with respect
-     *  to the maze by multiplying the instantaneous rate of change in the translation and
-     *  rotation with the elapsed time. This is certainly an approximation because the rotation
-     *  of the robot is not constant throughout the duration of the motion. Thus, while the
-     *  rate of change of rotation is not a function of time, the rate of change of the
-     *  translation of robot (with respect the the maze) is a function of time. While there
-     *  is a closed form solution for the translation of the robot given a non-zero rate of
-     *  rotation of the robot, it's unnecessary to use it here. Our elapsed times should be
-     *  small and thus the change in rotation should be mostly negligible.
-     */
-
-    // TODO: MACK - update this to take wheel direction into account
-    // TODO: MACK - update this to support all wheels wheel direction into account
-
-    // First get the speed of each wheel (atomically)
+    // Atomically retrieve the current angular velocities of the wheels
+    std::map<std::string, RadiansPerSecond> wheelAngularVelocities;
     m_wheelMutex.lock();
-    // TODO: MACK - we'll have to change this for arbitrarily many wheels
-    MetersPerSecond rightWheelSpeed(
-        m_wheels.at("right").getAngularVelocity().getRadiansPerSecond() * m_wheels.at("right").getDiameter().getMeters() / 2.0);
-    MetersPerSecond leftWheelSpeed(
-        m_wheels.at("left").getAngularVelocity().getRadiansPerSecond() * m_wheels.at("left").getDiameter().getMeters() / 2.0);
+    for (std::pair<std::string, Wheel> wheel : m_wheels) {
+        wheelAngularVelocities.insert(std::make_pair(wheel.first, wheel.second.getAngularVelocity()));
+    }
     m_wheelMutex.unlock();
+    
+    MetersPerSecond sumDx(0);
+    MetersPerSecond sumDy(0);
+    RadiansPerSecond sumDr(0);
 
-    // Then get the distance between the two wheels
-    Meters base(m_wheels.at("right").getInitialPosition().getX() - m_wheels.at("left").getInitialPosition().getX());
+    for (std::pair<std::string, Wheel> wheel : m_wheels) {
+
+        double radius = wheel.second.getDiameter().getMeters() / 2.0;
+        MetersPerSecond linearVelocity(
+            wheelAngularVelocities.at(wheel.first).getRadiansPerSecond() * radius);
+        MetersPerSecond dx = linearVelocity * (m_rotation + wheel.second.getInitialDirection()).getCos() * -1;
+        MetersPerSecond dy = linearVelocity * (m_rotation + wheel.second.getInitialDirection()).getSin() * -1;
+
+        Cartesian centerToWheel = wheel.second.getInitialPosition() - m_initialTranslation;
+        RadiansPerSecond dr(
+            linearVelocity.getMetersPerSecond() / centerToWheel.getRho().getMeters()
+            * (centerToWheel.getTheta() - wheel.second.getInitialDirection()).getSin());
+
+        sumDx += dx;
+        sumDy += dy;
+        sumDr += dr;
+    }
+
+    MetersPerSecond aveDx = sumDx / static_cast<double>(m_wheels.size());
+    MetersPerSecond aveDy = sumDy / static_cast<double>(m_wheels.size());
+    RadiansPerSecond aveDr = sumDr / static_cast<double>(m_wheels.size());
 
     // Update the amount each wheel has rotated
     // TODO: MACK
 
-    // Update the gyro; -1 since positive wheel angular velocity causes negative gyro angular velocity
-    m_gyro = RadiansPerSecond(-1 * (leftWheelSpeed + rightWheelSpeed).getMetersPerSecond() / base.getMeters());
-
-    if (m_gyro.getRadiansPerSecond() != 0) {
-        std::cout << m_gyro.getRadiansPerSecond() << std::endl; // TODO: MACK
-    }
-    
-    // Update the rotation
-    m_rotation += m_gyro * elapsed;
-    //std::cout << m_rotation.getRadians() << std::endl; // TODO: MACK
-
-    // Update the translation
-    Meters distance((leftWheelSpeed - rightWheelSpeed).getMetersPerSecond() / 2.0 * elapsed.getSeconds());
-    m_translation += Polar(distance, Degrees(90) + m_rotation); // This could be optimized
-    // TODO: MACK ^^^ The above hardcoded should not be...
-
-    // -----------------------------------------------------------------------------------------------------
-
-    // TODO: This is the technically corect implementation...
-    /*
-    double BASELINE(m_wheels.at("right").getInitialPosition().getX().getMeters() - m_wheels.at("left").getInitialPosition().getX().getMeters());
-
-    if (fabs(rightWheelSpeed.getMetersPerSecond() == -1*leftWheelSpeed.getMetersPerSecond())) {
-        Meters distance((-0.5 * leftWheelSpeed.getMetersPerSecond() + 0.5 * rightWheelSpeed.getMetersPerSecond()) * elapsed.getSeconds());
-        m_translation = m_translation + Polar(distance, Radians(M_PI / 2.0) + m_rotation);
-        static int i = 0;
-        std::cout << i++ << std::endl;
-    }
-    else {
-        leftWheelSpeed = MetersPerSecond(-1*leftWheelSpeed.getMetersPerSecond());
-
-        double x_0 = m_translation.getY().getMeters();
-        double y_0 = -1*m_translation.getX().getMeters();
-
-        double x = x_0 +
-
-                  (BASELINE*(rightWheelSpeed+leftWheelSpeed).getMetersPerSecond())
-                  /(2.0*(rightWheelSpeed-leftWheelSpeed).getMetersPerSecond())
-
-                  *(sin((rightWheelSpeed-leftWheelSpeed).getMetersPerSecond() * elapsed.getSeconds() / BASELINE + m_rotation.getRadians())
-                   -sin(m_rotation.getRadians()));
-
-        double y = y_0 -
-
-                  (BASELINE*(rightWheelSpeed+leftWheelSpeed).getMetersPerSecond())
-                  /(2.0*(rightWheelSpeed-leftWheelSpeed).getMetersPerSecond())
-
-                  *(cos((rightWheelSpeed-leftWheelSpeed).getMetersPerSecond() * elapsed.getSeconds() / BASELINE + m_rotation.getRadians())
-                   -cos(m_rotation.getRadians()));
-
-        m_translation = Cartesian(Meters(-y), Meters(x));
-
-        leftWheelSpeed = MetersPerSecond(-1*leftWheelSpeed.getMetersPerSecond());
-    }
-
-    Radians theta((rightWheelSpeed.getMetersPerSecond() - (-leftWheelSpeed.getMetersPerSecond())) / BASELINE * elapsed.getSeconds());
-    m_rotation = m_rotation + theta;
-    */
+    m_gyro = aveDr;
+    m_rotation += Radians(aveDr * elapsed);
+    m_translation += Cartesian(aveDx * elapsed, aveDy * elapsed);
 }
 
 void Mouse::setWheelSpeeds(const AngularVelocity& leftWheelSpeed, const AngularVelocity& rightWheelSpeed) {
+    // TODO: MACK - extend this to arbitrary wheels
     m_wheelMutex.lock();
     m_wheels.at("left").setAngularVelocity(leftWheelSpeed);
     m_wheels.at("right").setAngularVelocity(rightWheelSpeed);
@@ -285,52 +209,6 @@ Radians Mouse::getCurrentRotation() const {
 void Mouse::teleport(const Cartesian& translation, const Angle& rotation) {
     m_translation = translation;
     m_rotation = rotation;
-}
-
-void Mouse::update2(const Duration& elapsed) {
-
-    // TODO: MACK - optimize this...
-
-    // Atomically retrieve the current angular velocities of the wheels
-    std::map<std::string, RadiansPerSecond> wheelAngularVelocities;
-    m_wheelMutex.lock();
-    for (std::pair<std::string, Wheel> wheel : m_wheels) {
-        wheelAngularVelocities.insert(std::make_pair(wheel.first, wheel.second.getAngularVelocity()));
-    }
-    m_wheelMutex.unlock();
-    
-    MetersPerSecond sumDx(0);
-    MetersPerSecond sumDy(0);
-    RadiansPerSecond sumDr(0);
-
-    for (std::pair<std::string, Wheel> wheel : m_wheels) {
-
-        double radius = wheel.second.getDiameter().getMeters() / 2.0;
-        MetersPerSecond linearVelocity(
-            wheelAngularVelocities.at(wheel.first).getRadiansPerSecond() * radius);
-        MetersPerSecond dx = linearVelocity * (m_rotation + wheel.second.getInitialDirection()).getCos() * -1;
-        MetersPerSecond dy = linearVelocity * (m_rotation + wheel.second.getInitialDirection()).getSin() * -1;
-
-        Cartesian centerToWheel = wheel.second.getInitialPosition() - m_initialTranslation;
-        RadiansPerSecond dr(
-            linearVelocity.getMetersPerSecond() / centerToWheel.getRho().getMeters()
-            * (centerToWheel.getTheta() - wheel.second.getInitialDirection()).getSin());
-
-        sumDx += dx;
-        sumDy += dy;
-        sumDr += dr;
-    }
-
-    MetersPerSecond aveDx = sumDx / static_cast<double>(m_wheels.size());
-    MetersPerSecond aveDy = sumDy / static_cast<double>(m_wheels.size());
-    RadiansPerSecond aveDr = sumDr / static_cast<double>(m_wheels.size());
-
-    // Update the amount each wheel has rotated
-    // TODO: MACK
-
-    m_gyro = aveDr;
-    m_rotation += Radians(aveDr * elapsed);
-    m_translation += Cartesian(aveDx * elapsed, aveDy * elapsed);
 }
 
 } // namespace sim
