@@ -13,16 +13,14 @@ Wheel::Wheel(
         m_initialPosition(position),
         m_initialDirection(direction),
         m_angularVelocity(RadiansPerSecond(0.0)) {
-
-    // Initialize the polygon for the wheel
-    Meters halfWidth = Meters(width) / 2.0;
     Meters radius = Meters(diameter) / 2.0;
+    Meters halfWidth = Meters(width) / 2.0;
     std::vector<Cartesian> polygon;
-    polygon.push_back(Cartesian(halfWidth * -1, Meters(radius) * -1) + position);
-    polygon.push_back(Cartesian(halfWidth * -1, Meters(radius) *  1) + position);
-    polygon.push_back(Cartesian(halfWidth *  1, Meters(radius) *  1) + position);
-    polygon.push_back(Cartesian(halfWidth *  1, Meters(radius) * -1) + position);
-    m_initialPolygon = Polygon(polygon);
+    polygon.push_back(Cartesian(Meters(radius) * -1, halfWidth * -1) + position);
+    polygon.push_back(Cartesian(Meters(radius) *  1, halfWidth * -1) + position);
+    polygon.push_back(Cartesian(Meters(radius) *  1, halfWidth *  1) + position);
+    polygon.push_back(Cartesian(Meters(radius) * -1, halfWidth *  1) + position);
+    m_initialPolygon = Polygon(polygon).rotateAroundPoint(direction, position);
 }
 
 Meters Wheel::getDiameter() const {

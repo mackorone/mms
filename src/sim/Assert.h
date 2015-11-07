@@ -25,7 +25,7 @@ if (condition) {\
     std::cerr << OPENING << std::endl\
               << "FILE: " <<  __FILE__  << std::endl\
               << "LINE: " <<  __LINE__  << std::endl\
-              << "COND: " << "!" << #condition << std::endl\
+              << "COND: " << "!(" << #condition << ")" << std::endl\
               << CLOSING << std::endl;\
     exit(1);\
 }

@@ -10,6 +10,8 @@ public:
     Degrees();
     Degrees(double degrees);
     Degrees(const Angle& angle);
+
+    // TODO: MACK move these to angle
     Degrees operator+(const Angle& angle) const;
     Degrees operator-(const Angle& angle) const;
     Degrees operator*(double factor) const;

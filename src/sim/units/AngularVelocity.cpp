@@ -15,11 +15,11 @@ double AngularVelocity::getRadiansPerSecond() const {
 }
 
 double AngularVelocity::getDegreesPerSecond() const {
-    return m_radiansPerSecond * 180.0 / M_PI;
+    return getRadiansPerSecond() * 180.0 / M_PI;
 }
 
 Radians AngularVelocity::operator*(const Duration& duration) const {
-    return m_radiansPerSecond * duration.getSeconds();
+    return Radians(getRadiansPerSecond() * duration.getSeconds());
 }
 
 } // namespace sim

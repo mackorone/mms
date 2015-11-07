@@ -1,5 +1,8 @@
 # High Priority
 
+- Ensure [0, 2pi) on angle - yes - fix this...
+- Enable rotation of wheels and motors during run
+- Set acceleration of all moving/rotating things
 - Support stepper motor / encoders interface
     - Annotate the center of the mouse? Draw a circle polygon???
     - Functions for discreteCompatible, continuousCompatible
@@ -7,7 +10,9 @@
     - Consistency between view and viewPolygon
     - rotation -> direction
     - Test different wheel arrangements
+- Move some graphics stuff in Driver into GraphicUtilities
 - Use vertex buffer object for the mouse body (only triangulate the mouse once)
+    - This should really improve performance of continuous
 - Tile Text
     - Fix the fact that the bitmap is initialized in driver but the string of characters is in GraphicUtilities
     - Assert that a character exsits before we try to draw it to the tile

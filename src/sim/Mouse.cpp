@@ -13,6 +13,8 @@
 #include "SimUtilities.h"
 #include "State.h"
 
+#include <iostream> // TODO: MACK
+
 namespace sim {
 
 Mouse::Mouse(const Maze* maze) : m_maze(maze), m_gyro(RadiansPerSecond(0.0)) {
@@ -93,6 +95,10 @@ std::vector<Polygon> Mouse::getViewPolygons() const {
 
 void Mouse::update(const Duration& elapsed) {
 
+    // TODO: MACK
+    update2(elapsed);
+    return;
+
     /*
      *  In a differential drive system (two-wheeled drive system), the angular velocities of
      *  each of the two wheels completely determine the movement of the robot. The equations
@@ -148,12 +154,17 @@ void Mouse::update(const Duration& elapsed) {
 
     // Update the gyro; -1 since positive wheel angular velocity causes negative gyro angular velocity
     m_gyro = RadiansPerSecond(-1 * (leftWheelSpeed + rightWheelSpeed).getMetersPerSecond() / base.getMeters());
+
+    if (m_gyro.getRadiansPerSecond() != 0) {
+        std::cout << m_gyro.getRadiansPerSecond() << std::endl; // TODO: MACK
+    }
     
     // Update the rotation
     m_rotation += m_gyro * elapsed;
+    //std::cout << m_rotation.getRadians() << std::endl; // TODO: MACK
 
     // Update the translation
-    Meters distance((rightWheelSpeed - leftWheelSpeed).getMetersPerSecond() / 2.0 * elapsed.getSeconds());
+    Meters distance((leftWheelSpeed - rightWheelSpeed).getMetersPerSecond() / 2.0 * elapsed.getSeconds());
     m_translation += Polar(distance, Degrees(90) + m_rotation); // This could be optimized
     // TODO: MACK ^^^ The above hardcoded should not be...
 
@@ -274,6 +285,52 @@ Radians Mouse::getCurrentRotation() const {
 void Mouse::teleport(const Cartesian& translation, const Angle& rotation) {
     m_translation = translation;
     m_rotation = rotation;
+}
+
+void Mouse::update2(const Duration& elapsed) {
+
+    // TODO: MACK - optimize this...
+
+    // Atomically retrieve the current angular velocities of the wheels
+    std::map<std::string, RadiansPerSecond> wheelAngularVelocities;
+    m_wheelMutex.lock();
+    for (std::pair<std::string, Wheel> wheel : m_wheels) {
+        wheelAngularVelocities.insert(std::make_pair(wheel.first, wheel.second.getAngularVelocity()));
+    }
+    m_wheelMutex.unlock();
+    
+    MetersPerSecond sumDx(0);
+    MetersPerSecond sumDy(0);
+    RadiansPerSecond sumDr(0);
+
+    for (std::pair<std::string, Wheel> wheel : m_wheels) {
+
+        double radius = wheel.second.getDiameter().getMeters() / 2.0;
+        MetersPerSecond linearVelocity(
+            wheelAngularVelocities.at(wheel.first).getRadiansPerSecond() * radius);
+        MetersPerSecond dx = linearVelocity * (m_rotation + wheel.second.getInitialDirection()).getCos() * -1;
+        MetersPerSecond dy = linearVelocity * (m_rotation + wheel.second.getInitialDirection()).getSin() * -1;
+
+        Cartesian centerToWheel = wheel.second.getInitialPosition() - m_initialTranslation;
+        RadiansPerSecond dr(
+            linearVelocity.getMetersPerSecond() / centerToWheel.getRho().getMeters()
+            * (centerToWheel.getTheta() - wheel.second.getInitialDirection()).getSin());
+
+        sumDx += dx;
+        sumDy += dy;
+        sumDr += dr;
+    }
+
+    MetersPerSecond aveDx = sumDx / static_cast<double>(m_wheels.size());
+    MetersPerSecond aveDy = sumDy / static_cast<double>(m_wheels.size());
+    RadiansPerSecond aveDr = sumDr / static_cast<double>(m_wheels.size());
+
+    // Update the amount each wheel has rotated
+    // TODO: MACK
+
+    m_gyro = aveDr;
+    m_rotation += Radians(aveDr * elapsed);
+    m_translation += Cartesian(aveDx * elapsed, aveDy * elapsed);
 }
 
 } // namespace sim

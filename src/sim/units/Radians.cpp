@@ -26,6 +26,10 @@ Radians Radians::operator*(double factor) const {
     return Radians(getRadians() * factor);
 }
 
+Radians Radians::operator/(double factor) const {
+    return Radians(getRadians() / factor);
+}
+
 double Radians::operator/(const Angle& angle) const {
     return getRadians() / angle.getRadians();
 }

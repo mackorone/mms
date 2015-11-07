@@ -1,13 +1,12 @@
 #include "Polar.h"
 
-#include "../CPMath.h"
 #include "Cartesian.h"
 
 namespace sim {
 
 Polar::Polar(const Distance& rho, const Angle& theta) {
-    m_x = Meters(rho.getMeters() * cos(theta.getRadians()));
-    m_y = Meters(rho.getMeters() * sin(theta.getRadians()));
+    m_x = Meters(rho.getMeters() * theta.getCos());
+    m_y = Meters(rho.getMeters() * theta.getSin());
 }
 
 Polar::Polar(const Coordinate& coordinate) {
