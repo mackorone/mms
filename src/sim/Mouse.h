@@ -39,8 +39,11 @@ public:
     // Instruct the mouse to update its own position based on how much simulation time has elapsed
     void update(const Duration& elapsed);
 
+    // Returns whether or not the mouse has a wheel by a particular name
+    bool hasWheel(const std::string& name) const;
+
     // An atomic interface for setting the wheel speeds
-    void setWheelSpeeds(const AngularVelocity& leftWheelSpeed, const AngularVelocity& rightWheelSpeed);
+    void setWheelSpeeds(const std::map<std::string, RadiansPerSecond>& wheelSpeeds);
 
     // Returns whether or not the mouse has a sensor by a particular name
     bool hasSensor(const std::string& name) const;

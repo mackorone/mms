@@ -26,7 +26,8 @@ std::string Test::interfaceType() const {
 }
 
 void Test::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
-    mouse->setWheelSpeeds(0, 5);
+    mouse->setWheelSpeed("left", 0);
+    mouse->setWheelSpeed("right", 5);
 }
 
 } // namespace test

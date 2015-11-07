@@ -62,8 +62,8 @@ public:
 
     // ----- Continuous interface methods ----- //
 
-    // Counterclockwise looking into the wheel is positive, clockwise looking into the wheel is negative
-    void setWheelSpeeds(double leftWheelRadiansPerSeconds, double rightWheelRadiansPerSecond);
+    // Set the speed of any one wheel
+    void setWheelSpeed(const std::string& name, double radiansPerSecond);
 
     // Returns a value in [0.0, 1.0]
     double read(std::string name);

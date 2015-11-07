@@ -60,7 +60,8 @@ void Manual::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::Mo
             rightWheelSpeed -= accelerateAmount / 4.0;
         }
 
-        mouse->setWheelSpeeds(leftWheelSpeed, rightWheelSpeed);
+        mouse->setWheelSpeed("left", leftWheelSpeed);
+        mouse->setWheelSpeed("right", leftWheelSpeed);
         mouse->delay(30);
     }
 }

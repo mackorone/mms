@@ -1,8 +1,8 @@
 # High Priority
 
-- Ensure [0, 2pi) on angle - yes - fix this...
 - Enable rotation of wheels and motors during run
 - Set acceleration of all moving/rotating things
+- Figure out how to get rid of (or formalize) "left" and "right" wheels for discrete interface
 - Support stepper motor / encoders interface
     - Annotate the center of the mouse? Draw a circle polygon???
     - Functions for discreteCompatible, continuousCompatible

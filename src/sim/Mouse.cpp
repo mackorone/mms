@@ -135,11 +135,16 @@ void Mouse::update(const Duration& elapsed) {
     m_translation += Cartesian(aveDx * elapsed, aveDy * elapsed);
 }
 
-void Mouse::setWheelSpeeds(const AngularVelocity& leftWheelSpeed, const AngularVelocity& rightWheelSpeed) {
-    // TODO: MACK - extend this to arbitrary wheels
+bool Mouse::hasWheel(const std::string& name) const {
+    return SimUtilities::mapContains(m_wheels, name);
+}
+
+void Mouse::setWheelSpeeds(const std::map<std::string, RadiansPerSecond>& wheelSpeeds) {
     m_wheelMutex.lock();
-    m_wheels.at("left").setAngularVelocity(leftWheelSpeed);
-    m_wheels.at("right").setAngularVelocity(rightWheelSpeed);
+    for (std::pair<std::string, RadiansPerSecond> pair : wheelSpeeds) {
+        ASSERT_TR(SimUtilities::mapContains(m_wheels, pair.first));
+        m_wheels.at(pair.first).setAngularVelocity(pair.second);
+    }
     m_wheelMutex.unlock();
 }
 

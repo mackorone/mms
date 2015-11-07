@@ -906,19 +906,25 @@ bool Continuous::wallFront() {
 }
 
 void Continuous::turnRight() {
-    m_mouse->setWheelSpeeds(-5*M_PI, -5*M_PI);
+    m_mouse->setWheelSpeed("left", -5*M_PI);
+    m_mouse->setWheelSpeed("right", -5*M_PI);
     delay(290);
-    m_mouse->setWheelSpeeds(-10*M_PI, 10*M_PI);
+    m_mouse->setWheelSpeed("left", -10*M_PI);
+    m_mouse->setWheelSpeed("right", 10*M_PI);
     m_mouse->delay(100);
-    m_mouse->setWheelSpeeds(-0, 0);  
+    m_mouse->setWheelSpeed("left", 0);  
+    m_mouse->setWheelSpeed("right", 0);  
 }
 
 void Continuous::turnLeft() {
-    m_mouse->setWheelSpeeds(5*M_PI, 5*M_PI);
+    m_mouse->setWheelSpeed("left", 5*M_PI);
+    m_mouse->setWheelSpeed("right", 5*M_PI);
     m_mouse->delay(290);
-    m_mouse->setWheelSpeeds(-10*M_PI, 10*M_PI);
+    m_mouse->setWheelSpeed("left", -10*M_PI);
+    m_mouse->setWheelSpeed("right", 10*M_PI);
     m_mouse->delay(100);
-    m_mouse->setWheelSpeeds(-0, 0);
+    m_mouse->setWheelSpeed("left", 0);  
+    m_mouse->setWheelSpeed("right", 0);  
 }
 
 
@@ -958,7 +964,8 @@ void Continuous::turnLeft() {
 //}
 
 void Continuous::setSpeed(double left, double right) {
-	m_mouse->setWheelSpeeds(left, right);
+	m_mouse->setWheelSpeed("left", left);
+	m_mouse->setWheelSpeed("right", right);
 }
 
 void Continuous::delay(int ms) {
