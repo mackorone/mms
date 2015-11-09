@@ -21,7 +21,9 @@
 <tile-incorrectly-declared-wall-color>ORANGE</tile-incorrectly-declared-wall-color>
 <tile-incorrectly-declared-no-wall-color>DARK_CYAN</tile-incorrectly-declared-no-wall-color>
 <mouse-body-color>BLUE</mouse-body-color>
+<mouse-center-of-mass-color>ORANGE</mouse-center-of-mass-color>
 <mouse-wheel-color>GREEN</mouse-wheel-color>
+<mouse-wheel-speed-indicator-color>DARK_GREEN</mouse-wheel-speed-indicator-color>
 <mouse-sensor-color>GREEN</mouse-sensor-color>
 <mouse-view-color>WHITE</mouse-view-color>
 <default-tile-colors-visible>true</default-tile-colors-visible>
@@ -72,5 +74,5 @@
 <maze-rotations>0</maze-rotations> <!-- 0-3 counterclockwise rotations -->
 
 <!-- Mouse Parameters -->
-<mouse-algorithm>Test</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
+<mouse-algorithm>FloodFill</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
 <mouse-starting-direction>NORTH</mouse-starting-direction> <!-- NORTH, EAST, SOUTH, or WEST -->

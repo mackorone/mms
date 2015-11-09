@@ -2,6 +2,10 @@
 
 namespace sim {
 
+RadiansPerSecond::RadiansPerSecond() {
+    m_radiansPerSecond = 0;
+}
+
 RadiansPerSecond::RadiansPerSecond(double radiansPerSecond) {
     m_radiansPerSecond = radiansPerSecond;
 }

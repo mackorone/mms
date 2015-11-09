@@ -69,8 +69,12 @@ Param::Param() {
         "tile-incorrectly-declared-no-wall-color", COLOR_TO_STRING.at(Color::DARK_CYAN));
     m_mouseBodyColor = parser.getStringIfHasStringAndIsColor(
         "mouse-body-color", COLOR_TO_STRING.at(Color::BLUE));
+    m_mouseCenterOfMassColor = parser.getStringIfHasStringAndIsColor(
+        "mouse-center-of-mass-color", COLOR_TO_STRING.at(Color::ORANGE));
     m_mouseWheelColor = parser.getStringIfHasStringAndIsColor(
         "mouse-wheel-color", COLOR_TO_STRING.at(Color::GREEN));
+    m_mouseWheelSpeedIndicatorColor = parser.getStringIfHasStringAndIsColor(
+        "mouse-wheel-speed-indicator-color", COLOR_TO_STRING.at(Color::DARK_GREEN));
     m_mouseSensorColor = parser.getStringIfHasStringAndIsColor(
         "mouse-sensor-color", COLOR_TO_STRING.at(Color::GREEN));
     m_mouseViewColor = parser.getStringIfHasStringAndIsColor(
@@ -255,8 +259,16 @@ std::string Param::mouseBodyColor() {
     return m_mouseBodyColor;
 }
 
+std::string Param::mouseCenterOfMassColor() {
+    return m_mouseCenterOfMassColor;
+}
+
 std::string Param::mouseWheelColor() {
     return m_mouseWheelColor;
+}
+
+std::string Param::mouseWheelSpeedIndicatorColor() {
+    return m_mouseWheelSpeedIndicatorColor;
 }
 
 std::string Param::mouseSensorColor() {

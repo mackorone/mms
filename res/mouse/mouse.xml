@@ -33,13 +33,13 @@
         <X>.00</X>
         <Y>.03</Y>
     </Position>
-    <Direction>270</Direction> <!-- 0 degrees and positive angular velocity causes the wheel to travel west -->
+    <Direction>270</Direction> <!-- positive angular velocity causes the wheel to travel forward -->
     <!-- Motor params go here -->
-    <!-- * Type-->
+    <!-- * Type -->
     <!-- * Max speed -->
     <!-- * Max acceleration -->
     <!-- Encoder params go here -->
-    <!-- * Type-->
+    <!-- * Type -->
     <!-- * Ticks per revolution -->
 </Wheel>
 <Wheel>
@@ -50,12 +50,12 @@
         <X>.06</X>
         <Y>.03</Y>
     </Position>
-    <Direction>90</Direction> <!-- 0 degrees and positive angular velocity causes the wheel to travel west -->
+    <Direction>90</Direction> <!-- positive angular velocity causes the wheel to travel forward -->
     <!-- Motor params go here -->
-    <!-- * Type-->
+    <!-- * Type -->
     <!-- * Max speed -->
     <!-- * Max acceleration -->
     <!-- Encoder params go here -->
-    <!-- * Type-->
+    <!-- * Type -->
     <!-- * Ticks per revolution -->
 </Wheel>

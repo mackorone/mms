@@ -58,20 +58,43 @@ bool Mouse::initialize(const std::string& mouseFile) {
     }
     m_initialCollisionPolygon = GeometryUtilities::convexHull(polygons);
 
+    // Initialize the center of mass polygon
+    m_initialCenterOfMassPolygon = Polygon::createCirclePolygon(m_initialTranslation, Meters(.005), 5);
+
     // Return success
     return true;
 }
 
-Polygon Mouse::getCollisionPolygon() const {
-    return m_initialCollisionPolygon.translate(m_translation - m_initialTranslation).rotateAroundPoint(m_rotation, m_translation);
+Polygon Mouse::getBodyPolygon() const {
+    return m_initialBodyPolygon
+        .translate(m_translation - m_initialTranslation)
+        .rotateAroundPoint(m_rotation, m_translation);
 }
 
-Polygon Mouse::getBodyPolygon() const {
-    return m_initialBodyPolygon.translate(m_translation - m_initialTranslation).rotateAroundPoint(m_rotation, m_translation);
+Polygon Mouse::getCollisionPolygon() const {
+    return m_initialCollisionPolygon
+        .translate(m_translation - m_initialTranslation)
+        .rotateAroundPoint(m_rotation, m_translation);
+}
+
+Polygon Mouse::getCenterOfMassPolygon() const {
+    return m_initialCenterOfMassPolygon
+        .translate(m_translation - m_initialTranslation)
+        .rotateAroundPoint(m_rotation + Degrees(90), m_translation);
 }
 
 std::vector<Polygon> Mouse::getWheelPolygons() const {
     return getPolygonsFromMap(m_wheels);
+}
+
+std::vector<Polygon> Mouse::getWheelSpeedIndicatorPolygons() const {
+    std::vector<Polygon> polygons;
+    for (std::pair<std::string, Wheel> pair : m_wheels) {
+        polygons.push_back(pair.second.getSpeedIndicatorPolygon()
+            .translate(m_translation - m_initialTranslation)
+            .rotateAroundPoint(m_rotation, m_translation));
+    }
+    return polygons;
 }
 
 std::vector<Polygon> Mouse::getSensorPolygons() const {
@@ -83,7 +106,8 @@ std::vector<Polygon> Mouse::getViewPolygons() const {
     // Get the current view for the all of the sensors
     std::vector<Polygon> polygons;
     for (std::pair<std::string, Sensor> pair : m_sensors) {
-        Polygon adjusted = pair.second.getInitialView().translate(m_translation - m_initialTranslation)
+        Polygon adjusted = pair.second.getInitialView()
+            .translate(m_translation - m_initialTranslation)
             .rotateAroundPoint(m_rotation, m_translation);
         polygons.push_back(pair.second.getCurrentView(
             adjusted.getVertices().at(0), m_rotation + pair.second.getInitialDirection(), *m_maze));
@@ -110,13 +134,13 @@ void Mouse::update(const Duration& elapsed) {
         double radius = wheel.second.getDiameter().getMeters() / 2.0;
         MetersPerSecond linearVelocity(
             wheelAngularVelocities.at(wheel.first).getRadiansPerSecond() * radius);
-        MetersPerSecond dx = linearVelocity * (m_rotation + wheel.second.getInitialDirection()).getCos() * -1;
-        MetersPerSecond dy = linearVelocity * (m_rotation + wheel.second.getInitialDirection()).getSin() * -1;
+        MetersPerSecond dx = linearVelocity * (m_rotation + wheel.second.getInitialDirection()).getCos();
+        MetersPerSecond dy = linearVelocity * (m_rotation + wheel.second.getInitialDirection()).getSin();
 
-        Cartesian centerToWheel = wheel.second.getInitialPosition() - m_initialTranslation;
+        Cartesian wheelToCenter = m_initialTranslation - wheel.second.getInitialPosition();
         RadiansPerSecond dr(
-            linearVelocity.getMetersPerSecond() / centerToWheel.getRho().getMeters()
-            * (centerToWheel.getTheta() - wheel.second.getInitialDirection()).getSin());
+            linearVelocity.getMetersPerSecond() / wheelToCenter.getRho().getMeters()
+            * (wheelToCenter.getTheta() - wheel.second.getInitialDirection()).getSin());
 
         sumDx += dx;
         sumDy += dy;
@@ -163,11 +187,12 @@ double Mouse::readSensor(const std::string& name) const {
     Radians currentRotation = m_rotation;
 
     // Determine the reading
-    Polygon fullView = sensor.getInitialView().translate(currentTranslation - m_initialTranslation)
+    Polygon fullView = sensor.getInitialView()
+        .translate(currentTranslation - m_initialTranslation)
         .rotateAroundPoint(currentRotation, currentTranslation);
     Polygon currentView = sensor.getCurrentView(
         fullView.getVertices().at(0), currentRotation + sensor.getInitialDirection(), *m_maze);
-    return 1.0 - currentView.area().getMetersSquared() / fullView.area().getMetersSquared();
+    return 1.0 - currentView.area() / fullView.area();
 }
 
 Seconds Mouse::getSensorReadDuration(const std::string& name) const {

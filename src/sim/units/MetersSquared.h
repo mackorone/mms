@@ -13,6 +13,7 @@ public:
     MetersSquared operator+(const Area& area) const;
     MetersSquared operator-(const Area& area) const;
     MetersSquared operator*(double factor) const;
+    double operator/(const Area& area) const;
 
 };
 

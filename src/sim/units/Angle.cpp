@@ -13,7 +13,13 @@ Angle::~Angle() {
 
 double Angle::getRadians() const {
     // Ensure [0, 2pi)
-    double radians = m_radians - M_TWOPI * floor(m_radians / M_TWOPI);
+    double radians = fmod(m_radians, M_TWOPI);
+    if (radians < 0) {
+       radians += M_TWOPI;
+    }
+    if (M_TWOPI <= radians) {
+        radians -= M_TWOPI;
+    }
     ASSERT_LE(0, radians);
     ASSERT_LT(radians, M_TWOPI);
     return radians;

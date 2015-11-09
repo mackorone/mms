@@ -9,6 +9,7 @@ namespace sim {
 class MetersPerSecond : public Speed {
 
 public:
+    MetersPerSecond();
     MetersPerSecond(double metersPerSecond);
     MetersPerSecond(const Speed& speed);
     MetersPerSecond operator+(const Speed& speed) const;

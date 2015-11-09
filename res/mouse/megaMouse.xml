@@ -49,7 +49,7 @@
         <X>.0574</X>
         <Y>.07615</Y>
     </Position>
-    <Direction>270</Direction> <!-- 0 degrees and positive angular velocity causes the wheel to travel west -->
+    <Direction>270</Direction> <!-- positive angular velocity causes the wheel to travel forward -->
     <!-- Motor params go here -->
     <!-- Encoder params go here -->
 </Wheel>
@@ -61,7 +61,7 @@
         <X>.0574</X>
         <Y>.1044</Y>
     </Position>
-    <Direction>270</Direction> <!-- 0 degrees and positive angular velocity causes the wheel to travel west -->
+    <Direction>270</Direction> <!-- positive angular velocity causes the wheel to travel forward -->
     <!-- Motor params go here -->
     <!-- Encoder params go here -->
 </Wheel>
@@ -73,7 +73,7 @@
         <X>.1226</X>
         <Y>.07615</Y>
     </Position>
-    <Direction>90</Direction> <!-- 0 degrees and positive angular velocity causes the wheel to travel west -->
+    <Direction>90</Direction> <!-- positive angular velocity causes the wheel to travel forward -->
     <!-- Motor params go here -->
     <!-- Encoder params go here -->
 </Wheel>
@@ -85,7 +85,7 @@
         <X>.1226</X>
         <Y>.1044</Y>
     </Position>
-    <Direction>90</Direction> <!-- 0 degrees and positive angular velocity causes the wheel to travel west -->
+    <Direction>90</Direction> <!-- positive angular velocity causes the wheel to travel forward -->
     <!-- Motor params go here -->
     <!-- Encoder params go here -->
 </Wheel>

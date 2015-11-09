@@ -12,6 +12,7 @@ public:
     double getRadiansPerSecond() const;
     double getDegreesPerSecond() const;
     Radians operator*(const Duration& duration) const;
+    double operator/(const AngularVelocity& angularVelocity) const;
 
 protected:
     AngularVelocity();

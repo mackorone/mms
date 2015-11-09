@@ -9,7 +9,6 @@
 #	include <Windows.h>
 #endif
 #include <iostream>
-using namespace std;
 #include <cmath>
 #include <ctime>
 #undef M_PI
@@ -26,8 +25,8 @@ std::string Test::interfaceType() const {
 }
 
 void Test::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
-    mouse->setWheelSpeed("left", 0);
-    mouse->setWheelSpeed("right", 5);
+    mouse->setWheelSpeed("left", -10);
+    mouse->setWheelSpeed("right", 10);
 }
 
 } // namespace test

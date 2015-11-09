@@ -2,6 +2,10 @@
 
 namespace sim {
 
+MetersPerSecond::MetersPerSecond() {
+    m_metersPerSecond = 0;
+}
+
 MetersPerSecond::MetersPerSecond(double metersPerSecond) {
     m_metersPerSecond = metersPerSecond;
 }

@@ -17,6 +17,7 @@ public:
     Cartesian getInitialPosition() const;
     Radians getInitialDirection() const;
     Polygon getInitialPolygon() const;
+    Polygon getSpeedIndicatorPolygon() const;
 
     // Motor
     RadiansPerSecond getAngularVelocity() const;
@@ -29,12 +30,17 @@ private:
 
     // Wheel
     Meters m_diameter;
+    Meters m_halfWidth;
     Cartesian m_initialPosition;
     Radians m_initialDirection;
     Polygon m_initialPolygon;
+    Polygon m_speedIndicatorPolygon;
 
     // Motor
     RadiansPerSecond m_angularVelocity;
+
+    // Helper function for updating the speed indicator polygon
+    void updateSpeedIndicatorPolygon(const AngularVelocity& angularVelocity);
 };
 
 } // namespace sim

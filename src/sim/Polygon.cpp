@@ -2,6 +2,7 @@
 
 #include <polypartition/polypartition.h>
 
+#include "Assert.h"
 #include "units/Polar.h"
 #include "CPMath.h"
 
@@ -16,6 +17,15 @@ Polygon::Polygon(const Polygon& polygon) {
 
 Polygon::Polygon(const std::vector<Cartesian>& vertices) {
     m_vertices = vertices;
+}
+
+Polygon Polygon::createCirclePolygon(const Cartesian& position, const Distance& radius, int numberOfEdges) {
+    ASSERT_LE(3, numberOfEdges);
+    std::vector<Cartesian> polygon;
+    for (int i = 0; i < numberOfEdges; i += 1) {
+        polygon.push_back(Polar(radius, Radians(i * M_TWOPI / numberOfEdges)) + position);
+    }
+    return Polygon(polygon);
 }
 
 std::vector<Cartesian> Polygon::getVertices() const {

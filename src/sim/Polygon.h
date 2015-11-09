@@ -16,6 +16,8 @@ public:
     Polygon(const Polygon& polygon);
     Polygon(const std::vector<Cartesian>& vertices);
 
+    static Polygon createCirclePolygon(const Cartesian& position, const Distance& radius, int numberOfEdges = 8);
+
     std::vector<Cartesian> getVertices() const;
     std::vector<std::pair<Cartesian, Cartesian>> getLineSegments() const;
 

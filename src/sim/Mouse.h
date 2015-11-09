@@ -21,14 +21,20 @@ public:
     // Initializes the mouse (body, wheels, sensors, etc.); returns true if successful, false if not
     bool initialize(const std::string& mouseFile);
 
-    // Retrieves the polygon comprised of all parts of the mouse that could collide with walls
-    Polygon getCollisionPolygon() const;
-
     // Retrieves the polygon of just the body of the mouse
     Polygon getBodyPolygon() const;
 
+    // Retrieves the polygon comprised of all parts of the mouse that could collide with walls
+    Polygon getCollisionPolygon() const;
+
+    // Retrieves the center of mass polygon of the mouse
+    Polygon getCenterOfMassPolygon() const;
+
     // Retrieves the polygons of the wheels of the robot
     std::vector<Polygon> getWheelPolygons() const;
+
+    // Retrieves the speed indicator polygons of the wheels of the robot
+    std::vector<Polygon> getWheelSpeedIndicatorPolygons() const;
 
     // Retrieves the polygons of the sensors of the robot
     std::vector<Polygon> getSensorPolygons() const;
@@ -75,6 +81,7 @@ private:
     Cartesian m_initialTranslation; // Always the center of the starting tile
     Polygon m_initialBodyPolygon; // The polygon of strictly the body of the mouse
     Polygon m_initialCollisionPolygon; // The polygon containing all collidable parts of the mouse
+    Polygon m_initialCenterOfMassPolygon; // The polygon overlaying the center of mass of the mouse
 
     // The gyro, rotation, and translation of the mouse, which change throughout execution
     RadiansPerSecond m_gyro;

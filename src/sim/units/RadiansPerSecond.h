@@ -9,6 +9,7 @@ namespace sim {
 class RadiansPerSecond : public AngularVelocity {
 
 public:
+    RadiansPerSecond();
     RadiansPerSecond(double radiansPerSecond);
     RadiansPerSecond(const AngularVelocity& angularVelocity);
     RadiansPerSecond operator+(const AngularVelocity& angularVelocity) const;

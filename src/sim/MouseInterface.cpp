@@ -328,7 +328,10 @@ void MouseInterface::moveForward() {
     // A single step to take within the while loops
     auto step = [=](){
         checkPaused();
-        m_mouse->setWheelSpeeds({{"left", RadiansPerSecond(S()->simSpeed())}, {"right", RadiansPerSecond(-S()->simSpeed())}});
+        m_mouse->setWheelSpeeds({
+            {"left",  RadiansPerSecond(-S()->simSpeed())},
+            {"right", RadiansPerSecond( S()->simSpeed())},
+        });
         sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
     };
 
@@ -367,7 +370,10 @@ void MouseInterface::moveForward() {
         }
     }
 
-    m_mouse->setWheelSpeeds({{"left", RadiansPerSecond(0)}, {"right", RadiansPerSecond(0)}});
+    m_mouse->setWheelSpeeds({
+        {"left",  RadiansPerSecond(0)},
+        {"right", RadiansPerSecond(0)},
+    });
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
 
@@ -381,7 +387,10 @@ void MouseInterface::turnRight() {
     // A single step to take within the while loops
     auto step = [=](){
         checkPaused();
-        m_mouse->setWheelSpeeds({{"left", RadiansPerSecond(S()->simSpeed()/2.0)}, {"right", RadiansPerSecond(S()->simSpeed()/2.0)}});
+        m_mouse->setWheelSpeeds({
+            {"left",  RadiansPerSecond(-S()->simSpeed()/2.0)},
+            {"right", RadiansPerSecond(-S()->simSpeed()/2.0)},
+        });
         sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
     };
 
@@ -407,7 +416,10 @@ void MouseInterface::turnRight() {
         }
     }
 
-    m_mouse->setWheelSpeeds({{"left", RadiansPerSecond(0)}, {"right", RadiansPerSecond(0)}});
+    m_mouse->setWheelSpeeds({
+        {"left",  RadiansPerSecond(0)},
+        {"right", RadiansPerSecond(0)},
+    });
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
 
@@ -421,7 +433,10 @@ void MouseInterface::turnLeft() {
     // A single step to take within the while loops
     auto step = [=](){
         checkPaused();
-        m_mouse->setWheelSpeeds({{"left", RadiansPerSecond(-S()->simSpeed()/2.0)}, {"right", RadiansPerSecond(-S()->simSpeed()/2.0)}});
+        m_mouse->setWheelSpeeds({
+            {"left",  RadiansPerSecond(S()->simSpeed()/2.0)},
+            {"right", RadiansPerSecond(S()->simSpeed()/2.0)},
+        });
         sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
     };
 
@@ -447,7 +462,10 @@ void MouseInterface::turnLeft() {
         }
     }
 
-    m_mouse->setWheelSpeeds({{"left", RadiansPerSecond(0)}, {"right", RadiansPerSecond(0)}});
+    m_mouse->setWheelSpeeds({
+        {"left",  RadiansPerSecond(0)},
+        {"right", RadiansPerSecond(0)},
+    });
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
 
@@ -480,7 +498,10 @@ void MouseInterface::ensureContinuousInterface(const std::string& callingFunctio
 
 void MouseInterface::checkPaused() const {
     if (S()->paused()) {
-        m_mouse->setWheelSpeeds({{"left", RadiansPerSecond(0)}, {"right", RadiansPerSecond(0)}});
+        m_mouse->setWheelSpeeds({
+            {"left",  RadiansPerSecond(0)},
+            {"right", RadiansPerSecond(0)},
+        });
         while (S()->paused()) {
             sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
         }

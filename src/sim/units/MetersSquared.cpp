@@ -26,4 +26,8 @@ MetersSquared MetersSquared::operator*(double factor) const {
     return MetersSquared(getMetersSquared() * factor);
 }
 
+double MetersSquared::operator/(const Area& area) const {
+    return getMetersSquared() / area.getMetersSquared();
+}
+
 } // namespace sim

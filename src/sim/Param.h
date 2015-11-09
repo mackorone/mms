@@ -35,7 +35,9 @@ public:
     std::string tileIncorrectlyDeclaredWallColor();
     std::string tileIncorrectlyDeclaredNoWallColor();
     std::string mouseBodyColor();
+    std::string mouseCenterOfMassColor();
     std::string mouseWheelColor();
+    std::string mouseWheelSpeedIndicatorColor();
     std::string mouseSensorColor();
     std::string mouseViewColor();
     bool defaultWallTruthVisible();
@@ -119,7 +121,9 @@ private:
     std::string m_tileIncorrectlyDeclaredWallColor;
     std::string m_tileIncorrectlyDeclaredNoWallColor;
     std::string m_mouseBodyColor;
+    std::string m_mouseCenterOfMassColor;
     std::string m_mouseWheelColor;
+    std::string m_mouseWheelSpeedIndicatorColor;
     std::string m_mouseSensorColor;
     std::string m_mouseViewColor;
     bool m_defaultWallTruthVisible;

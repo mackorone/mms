@@ -24,12 +24,7 @@ Sensor::Sensor(
         m_initialDirection(direction) {
 
     // Create the polygon for the body of the sensor
-    std::vector<Cartesian> polygon;
-    for (int i = 1; i <= P()->numberOfCircleApproximationPoints(); i += 1) {
-        double radians = i*2*M_PI/P()->numberOfCircleApproximationPoints();
-        polygon.push_back(Polar(radius, Radians(radians)) + position);
-    }
-    m_initialPolygon = Polygon(polygon);
+    m_initialPolygon = Polygon::createCirclePolygon(position, radius, P()->numberOfCircleApproximationPoints());
 
     // Create the polygon for the view of the sensor
     std::vector<Cartesian> view;

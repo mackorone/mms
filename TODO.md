@@ -1,18 +1,16 @@
 # High Priority
 
-- Enable rotation of wheels and motors during run
-- Set acceleration of all moving/rotating things
-- Figure out how to get rid of (or formalize) "left" and "right" wheels for discrete interface
-- Support stepper motor / encoders interface
-    - Annotate the center of the mouse? Draw a circle polygon???
-    - Functions for discreteCompatible, continuousCompatible
-        - fits inside square to start
-    - Consistency between view and viewPolygon
-    - rotation -> direction
-    - Test different wheel arrangements
-- Move some graphics stuff in Driver into GraphicUtilities
 - Use vertex buffer object for the mouse body (only triangulate the mouse once)
     - This should really improve performance of continuous
+- Figure out how to get rid of (or formalize) "left" and "right" wheels for discrete interface
+- Make some utility that keeps track of simulation and real elapsed time
+    - Make the sim speed non-arbitrary
+    - Fix the Params associated with discrete sim-speed
+    - Add the simulation time to the logging
+        - Perhaps even refactor the elapsed time in logging
+- Add the ability to start in the direction of the opening of the maze
+- Support stepper motor / encoders interface
+- Move some graphics stuff in Driver into GraphicUtilities
 - Tile Text
     - Fix the fact that the bitmap is initialized in driver but the string of characters is in GraphicUtilities
     - Assert that a character exsits before we try to draw it to the tile
@@ -24,18 +22,14 @@
     - Make maxRowsAndCols a runtime parameter (make it 2 x 3 for now)
     - Should we have text alignment be a parameter?
     - Be able to just show actual distances
-- Convert the floats in vertex data to doubles
-- Rename TriangleTexture and VertexTexture
-- Make some utility that keeps track of simulation and real elapsed time
-    - Make the sim speed non-arbitrary
-    - Fix the Params associated with discrete sim-speed
-    - Add the simulation time to the logging
-        - Perhaps even refactor the elapsed time in logging
-- Make MouseInterface into an interface, and then implement the simulator interface, make a real-world interface
 - Put a toolbar at the top or bottom with info
+    - Information of the wheel speeds
     - Display a clock
     - Check to make sure font won't be cut off, use ellipses if so (How do we deal with text being cut off in the vertical direction?)
     - Set the mouse algo in State for display in the toolbar
+- Convert the floats in vertex data to doubles
+- Rename TriangleTexture and VertexTexture
+- Make MouseInterface into an interface, and then implement the simulator interface, make a real-world interface
 - Tomasz maze-gen issues
 - Run-time parameters for the algos
 - Look at Tomasz' maze website
@@ -58,6 +52,9 @@
 
 # Medum Priority
 
+- isDiscreteInterfaceCompatible and isContinuousInterfaceCompatible
+- Enable rotation of wheels and motors during run
+- Set acceleration of all moving/rotating things
 - Rename Tile to Cell
 - Figure out what's causing the jitter during mouse updates
 - Support reading or writing multiple file types
@@ -192,4 +189,5 @@ Low Priority
 - -pedantic-errors: Flag even the most pedantic of errors
 - Take out -g makefile option
 - Reduce the number of LIBS in makefile
+- rotation vs. direction
 - Does the makefile work for multiple platofrms???
