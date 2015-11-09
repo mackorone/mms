@@ -10,6 +10,7 @@
         - Perhaps even refactor the elapsed time in logging
 - Add the ability to start in the direction of the opening of the maze
 - Support stepper motor / encoders interface
+- Sensor type (digital or analog)
 - Move some graphics stuff in Driver into GraphicUtilities
 - Tile Text
     - Fix the fact that the bitmap is initialized in driver but the string of characters is in GraphicUtilities
@@ -24,7 +25,10 @@
     - Be able to just show actual distances
 - Put a toolbar at the top or bottom with info
     - Information of the wheel speeds
-    - Display a clock
+    - Display a clock (real and sim time)
+    - Current layout
+    - Pretty much all state information
+    - Print out zoom (16:1, etc.)
     - Check to make sure font won't be cut off, use ellipses if so (How do we deal with text being cut off in the vertical direction?)
     - Set the mouse algo in State for display in the toolbar
 - Convert the floats in vertex data to doubles

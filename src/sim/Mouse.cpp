@@ -59,7 +59,7 @@ bool Mouse::initialize(const std::string& mouseFile) {
     m_initialCollisionPolygon = GeometryUtilities::convexHull(polygons);
 
     // Initialize the center of mass polygon
-    m_initialCenterOfMassPolygon = Polygon::createCirclePolygon(m_initialTranslation, Meters(.005), 5);
+    m_initialCenterOfMassPolygon = Polygon::createCirclePolygon(m_initialTranslation, Meters(.005), 8);
 
     // Return success
     return true;
@@ -80,7 +80,7 @@ Polygon Mouse::getCollisionPolygon() const {
 Polygon Mouse::getCenterOfMassPolygon() const {
     return m_initialCenterOfMassPolygon
         .translate(m_translation - m_initialTranslation)
-        .rotateAroundPoint(m_rotation + Degrees(90), m_translation);
+        .rotateAroundPoint(m_rotation, m_translation);
 }
 
 std::vector<Polygon> Mouse::getWheelPolygons() const {
@@ -131,16 +131,14 @@ void Mouse::update(const Duration& elapsed) {
 
     for (std::pair<std::string, Wheel> wheel : m_wheels) {
 
-        double radius = wheel.second.getDiameter().getMeters() / 2.0;
-        MetersPerSecond linearVelocity(
-            wheelAngularVelocities.at(wheel.first).getRadiansPerSecond() * radius);
+        MetersPerSecond linearVelocity = wheelAngularVelocities.at(wheel.first) * wheel.second.getRadius();
         MetersPerSecond dx = linearVelocity * (m_rotation + wheel.second.getInitialDirection()).getCos();
         MetersPerSecond dy = linearVelocity * (m_rotation + wheel.second.getInitialDirection()).getSin();
 
         Cartesian wheelToCenter = m_initialTranslation - wheel.second.getInitialPosition();
-        RadiansPerSecond dr(
-            linearVelocity.getMetersPerSecond() / wheelToCenter.getRho().getMeters()
-            * (wheelToCenter.getTheta() - wheel.second.getInitialDirection()).getSin());
+        double rotationFactor = (wheelToCenter.getTheta() - wheel.second.getInitialDirection()).getSin();
+        RadiansPerSecond dr = RadiansPerSecond(
+            linearVelocity.getMetersPerSecond() / wheelToCenter.getRho().getMeters() * rotationFactor);
 
         sumDx += dx;
         sumDy += dy;

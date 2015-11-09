@@ -26,6 +26,10 @@ Radians RadiansPerSecond::operator*(const Duration& duration) const {
     return Radians(getRadiansPerSecond() * duration.getSeconds());
 }
 
+MetersPerSecond RadiansPerSecond::operator*(const Distance& radius) const {
+    return MetersPerSecond(getRadiansPerSecond() * radius.getMeters());
+}
+
 void RadiansPerSecond::operator+=(const AngularVelocity& angularVelocity) {
     m_radiansPerSecond += angularVelocity.getRadiansPerSecond();
 }

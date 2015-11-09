@@ -13,7 +13,7 @@ public:
     Wheel(const Distance& diameter, const Distance& width, const Coordinate& position, const Angle& direction);
 
     // Wheel
-    Meters getDiameter() const;
+    Meters getRadius() const;
     Cartesian getInitialPosition() const;
     Radians getInitialDirection() const;
     Polygon getInitialPolygon() const;
@@ -29,7 +29,7 @@ public:
 private:
 
     // Wheel
-    Meters m_diameter;
+    Meters m_radius;
     Meters m_halfWidth;
     Cartesian m_initialPosition;
     Radians m_initialDirection;
@@ -40,7 +40,7 @@ private:
     RadiansPerSecond m_angularVelocity;
 
     // Helper function for updating the speed indicator polygon
-    void updateSpeedIndicatorPolygon(const AngularVelocity& angularVelocity);
+    Polygon getSpeedIndicatorPolygon(const AngularVelocity& angularVelocity);
 };
 
 } // namespace sim
