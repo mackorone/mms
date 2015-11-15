@@ -2,12 +2,14 @@
 
 - Use vertex buffer object for the mouse body (only triangulate the mouse once)
     - This should really improve performance of continuous
-- Figure out how to get rid of (or formalize) "left" and "right" wheels for discrete interface
+    - Memoize the triangulation of the polygon
+- Print something out when input buttons are pressed and handled
 - Make some utility that keeps track of simulation and real elapsed time
     - Make the sim speed non-arbitrary
     - Fix the Params associated with discrete sim-speed
     - Add the simulation time to the logging
         - Perhaps even refactor the elapsed time in logging
+- Figure out how to get rid of (or formalize) "left" and "right" wheels for discrete interface
 - Add the ability to start in the direction of the opening of the maze
 - Support stepper motor / encoders interface
 - Sensor type (digital or analog)

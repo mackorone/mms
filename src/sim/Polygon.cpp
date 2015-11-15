@@ -16,6 +16,7 @@ Polygon::Polygon(const Polygon& polygon) {
 }
 
 Polygon::Polygon(const std::vector<Cartesian>& vertices) {
+    ASSERT_LE(3, vertices.size());
     m_vertices = vertices;
 }
 
@@ -114,9 +115,11 @@ std::vector<Triangle> Polygon::triangulate() const {
     // Populate the output vector
     std::vector<Triangle> triangles;
     for (auto it = result.begin(); it != result.end(); it++) {
-        Triangle triangle(Cartesian(Meters((*it)[0].x), Meters((*it)[0].y)),
-                          Cartesian(Meters((*it)[1].x), Meters((*it)[1].y)),
-                          Cartesian(Meters((*it)[2].x), Meters((*it)[2].y)));
+        Triangle triangle {
+            Cartesian(Meters((*it)[0].x), Meters((*it)[0].y)),
+            Cartesian(Meters((*it)[1].x), Meters((*it)[1].y)),
+            Cartesian(Meters((*it)[2].x), Meters((*it)[2].y)),
+        };
         triangles.push_back(triangle);
     }
 

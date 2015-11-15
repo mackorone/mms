@@ -474,11 +474,11 @@ std::vector<TriangleGraphic> GraphicUtilities::polygonToTriangleGraphics(const P
     std::tuple<double, double, double> colorValues = COLOR_TO_RGB.at(color);
     for (Triangle triangle : triangles) {
         triangleGraphics.push_back({
-            {triangle.getP1().getX().getMeters(), triangle.getP1().getY().getMeters(),
+            {triangle.p1.getX().getMeters(), triangle.p1.getY().getMeters(),
                 std::get<0>(colorValues), std::get<1>(colorValues), std::get<2>(colorValues), alpha},
-            {triangle.getP2().getX().getMeters(), triangle.getP2().getY().getMeters(),
+            {triangle.p2.getX().getMeters(), triangle.p2.getY().getMeters(),
                 std::get<0>(colorValues), std::get<1>(colorValues), std::get<2>(colorValues), alpha},
-            {triangle.getP3().getX().getMeters(), triangle.getP3().getY().getMeters(),
+            {triangle.p3.getX().getMeters(), triangle.p3.getY().getMeters(),
                 std::get<0>(colorValues), std::get<1>(colorValues), std::get<2>(colorValues), alpha}});
     }
     return triangleGraphics;

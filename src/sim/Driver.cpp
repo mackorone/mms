@@ -164,7 +164,6 @@ void Driver::draw() {
 
     // Notify the user of a late frame
     if (duration > 1.0/P()->frameRate()) {
-        // TODO: MACK - print late frames...
         L()->warn(
             "A frame was late by %v seconds, which is %v percent late.",
             duration - 1.0/P()->frameRate(),
