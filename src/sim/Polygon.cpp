@@ -13,11 +13,13 @@ Polygon::Polygon() {
 
 Polygon::Polygon(const Polygon& polygon) {
     m_vertices = polygon.getVertices();
+    m_triangles = polygon.getTriangles();
 }
 
 Polygon::Polygon(const std::vector<Cartesian>& vertices) {
     ASSERT_LE(3, vertices.size());
     m_vertices = vertices;
+    m_triangles = triangulate();
 }
 
 Polygon Polygon::createCirclePolygon(const Cartesian& position, const Distance& radius, int numberOfEdges) {
@@ -31,6 +33,10 @@ Polygon Polygon::createCirclePolygon(const Cartesian& position, const Distance& 
 
 std::vector<Cartesian> Polygon::getVertices() const {
     return m_vertices;
+}
+
+std::vector<Triangle> Polygon::getTriangles() const {
+    return m_triangles;
 }
 
 std::vector<std::pair<Cartesian, Cartesian>> Polygon::getLineSegments() const {

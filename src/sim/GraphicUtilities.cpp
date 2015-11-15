@@ -469,7 +469,7 @@ std::pair<double, double> GraphicUtilities::mapPixelCoordinateToOpenGlCoordinate
 }
 
 std::vector<TriangleGraphic> GraphicUtilities::polygonToTriangleGraphics(const Polygon& polygon, Color color, double alpha) {
-    std::vector<Triangle> triangles = polygon.triangulate();
+    std::vector<Triangle> triangles = polygon.getTriangles();
     std::vector<TriangleGraphic> triangleGraphics;
     std::tuple<double, double, double> colorValues = COLOR_TO_RGB.at(color);
     for (Triangle triangle : triangles) {
