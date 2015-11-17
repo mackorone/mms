@@ -4,9 +4,7 @@
     - We're triangulating every update (for sensors) instead of every frame - this is super expensive...
     - I don't think we need to triangulate except for drawing
 - Make some utility that keeps track of simulation and real elapsed time
-    - Limit continous interface max speed (and min speed)
-    - Pausing should still show wheelSpeedIndicator
-    - Pausing and adjusting speed for continuous
+    - Confirm that the discreteInterfaceWheelSpeed is working properly
     - Fix shaking of graphics
         - get all polygons simultaneously
     - Add the simulation time to the logging
@@ -29,6 +27,10 @@
     - Should we have text alignment be a parameter?
     - Be able to just show actual distances
 - Put a toolbar at the top or bottom with info
+    - Allow zoom in/out when zoomed map not visible once I have the toolbar
+        - Show zoom level
+        - Show sim speed level
+        - Show toggle tile text, even when not visible
     - Information of the wheel speeds
     - Display a clock (real and sim time)
     - Current layout

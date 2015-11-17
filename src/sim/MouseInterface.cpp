@@ -329,7 +329,6 @@ void MouseInterface::moveForward() {
 
     // A single step to take within the while loops
     auto step = [=](){
-        checkPaused();
         m_mouse->setWheelSpeeds({
             {"left",  RevolutionsPerSecond(-P()->discreteInterfaceWheelSpeed())},
             {"right", RevolutionsPerSecond( P()->discreteInterfaceWheelSpeed())},
@@ -388,7 +387,6 @@ void MouseInterface::turnRight() {
 
     // A single step to take within the while loops
     auto step = [=](){
-        checkPaused();
         m_mouse->setWheelSpeeds({
             {"left",  RevolutionsPerSecond(-P()->discreteInterfaceWheelSpeed()/2.0)},
             {"right", RevolutionsPerSecond(-P()->discreteInterfaceWheelSpeed()/2.0)},
@@ -434,7 +432,6 @@ void MouseInterface::turnLeft() {
 
     // A single step to take within the while loops
     auto step = [=](){
-        checkPaused();
         m_mouse->setWheelSpeeds({
             {"left",  RevolutionsPerSecond(P()->discreteInterfaceWheelSpeed()/2.0)},
             {"right", RevolutionsPerSecond(P()->discreteInterfaceWheelSpeed()/2.0)},
@@ -495,18 +492,6 @@ void MouseInterface::ensureContinuousInterface(const std::string& callingFunctio
             "You must declare the interface type to be sim::InterfaceType::CONTINUOUS to use MouseInterface::%v().",
             callingFunction);
         SimUtilities::quit();
-    }
-}
-
-void MouseInterface::checkPaused() const {
-    if (S()->paused()) {
-        m_mouse->setWheelSpeeds({
-            {"left",  RevolutionsPerSecond(0)},
-            {"right", RevolutionsPerSecond(0)},
-        });
-        while (S()->paused()) {
-            sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-        }
     }
 }
 

@@ -180,38 +180,53 @@ void Driver::keyPress(unsigned char key, int x, int y) {
     // sure to update wiki/Keys.md
 
     if (key == 'p') {
-        // Pause the simulation (only in discrete mode)
-        S()->setPaused(!S()->paused());
+        // Toggle pause (only in discrete mode)
+        if (S()->interfaceType() == InterfaceType::DISCRETE) {
+            S()->setPaused(!S()->paused());
+        }
+        else {
+            L()->warn(
+                "Pausing the simulator is only allowed in %v mode.",
+                INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE));
+        }
     }
     else if (key == 'f') {
         // Faster (only in discrete mode)
-        S()->setSimSpeed(S()->simSpeed() * 1.5);
+        if (S()->interfaceType() == InterfaceType::DISCRETE) {
+            S()->setSimSpeed(S()->simSpeed() * 1.5);
+        }
+        else {
+            L()->warn(
+                "Increasing the simulator speed is only allowed in %v mode.",
+                INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE));
+        }
     }
     else if (key == 's') {
         // Slower (only in discrete mode)
-        S()->setSimSpeed(S()->simSpeed() / 1.5);
+        if (S()->interfaceType() == InterfaceType::DISCRETE) {
+            S()->setSimSpeed(S()->simSpeed() / 1.5);
+        }
+        else {
+            L()->warn(
+                "Decreasing the simulator speed is only allowed in %v mode.",
+                INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE));
+        }
     }
     else if (key == 'l') {
         // Cycle through the available layouts
         S()->setLayout(LAYOUT_CYCLE.at(S()->layout()));
     }
     else if (key == 'r') {
-        // Toggle rotate zoomed map, but only if zoomed map is visible
-        if (S()->layout() != Layout::FULL) {
-            S()->setRotateZoomedMap(!S()->rotateZoomedMap());
-        }
+        // Toggle rotate zoomed map
+        S()->setRotateZoomedMap(!S()->rotateZoomedMap());
     }
     else if (key == 'i') {
-        // Zoom in, but only if zoomed map is visible
-        if (S()->layout() != Layout::FULL) {
-            S()->setZoomedMapScale(S()->zoomedMapScale() * 1.5);
-        }
+        // Zoom in
+        S()->setZoomedMapScale(S()->zoomedMapScale() * 1.5);
     }
     else if (key == 'o') {
-        // Zoom out, but only if zoomed map is visible
-        if (S()->layout() != Layout::FULL) {
-            S()->setZoomedMapScale(S()->zoomedMapScale() / 1.5);
-        }
+        // Zoom out
+        S()->setZoomedMapScale(S()->zoomedMapScale() / 1.5);
     }
     else if (key == 't') {
         // Toggle wall truth visibility
@@ -234,11 +249,9 @@ void Driver::keyPress(unsigned char key, int x, int y) {
         m_mazeGraphic->updateText();
     }
     else if (key == 'd') {
-        // Toggle tile distance visibility, but only if tile text is visible
-        if (S()->tileTextVisible()) {
-            S()->setTileDistanceVisible(!S()->tileDistanceVisible());
-            m_mazeGraphic->updateText();
-        }
+        // Toggle tile distance visibility
+        S()->setTileDistanceVisible(!S()->tileDistanceVisible());
+        m_mazeGraphic->updateText();
     }
     else if (key == 'w') {
         // Toggle wireframe mode
@@ -257,7 +270,9 @@ void Driver::keyPress(unsigned char key, int x, int y) {
             L()->info("Input button %v was pressed.", inputButton);
         }
         else {
-            L()->info("Input button %v has not yet been acknowledged as pressed; pressing it has no effect.", inputButton);
+            L()->info(
+                "Input button %v has not yet been acknowledged as pressed; pressing it has no effect.",
+                inputButton);
         }
     }
 }
