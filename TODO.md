@@ -8,8 +8,6 @@
 - Make some utility that keeps track of simulation and real elapsed time
     - Actually keep track of the elapsed simulation time
     - Max speeds for manual algorithm
-    - Fix shaking of graphics
-        - get all polygons simultaneously
     - Add the simulation time to the logging
         - Perhaps even refactor the elapsed time in logging
 - Figure out how to get rid of (or formalize) "left" and "right" wheels for discrete interface
