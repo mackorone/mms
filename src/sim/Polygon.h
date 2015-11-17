@@ -1,6 +1,5 @@
 #pragma once
 
-#include <map>
 #include <vector>
 
 #include "units/Angle.h"
@@ -42,10 +41,6 @@ private:
     // Helper functions for translate and rotateAroundPoint
     static Cartesian translateVertex(const Cartesian& vertex, const Coordinate& translation);
     static Cartesian rotateVertexAroundPoint(const Cartesian& vertex, const Angle& angle, const Coordinate& point);
-    static Cartesian memoizedTranslateVertex(
-        std::map<Cartesian, Cartesian>* cache, const Cartesian& vertex, const Coordinate& translation);
-    static Cartesian memoizedRotateVertexAroundPoint(
-        std::map<Cartesian, Cartesian>* cache, const Cartesian& vertex, const Angle& angle, const Coordinate& point);
 
     static std::vector<Triangle> triangulate(const std::vector<Cartesian>& vertices);
 };
