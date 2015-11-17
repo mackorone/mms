@@ -21,8 +21,6 @@ public:
     // Initializes the mouse (body, wheels, sensors, etc.); returns true if successful, false if not
     bool initialize(const std::string& mouseFile);
 
-    // TODO: MACK - clean up the duplicate methods
-
     // Retrieves the polygon of just the body of the mouse
     Polygon getBodyPolygon() const;
     Polygon getBodyPolygon(const Cartesian& translation, const Radians& rotation) const;
