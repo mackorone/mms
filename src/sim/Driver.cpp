@@ -121,11 +121,15 @@ void Driver::draw() {
     // Determine the starting index of the mouse
     static const int mouseTrianglesStartingIndex = GraphicUtilities::GRAPHIC_CPU_BUFFER.size();
 
+    // Get the current mouse translation and rotation
+    Cartesian currentMouseTranslation = m_mouse->getCurrentTranslation();
+    Radians currentMouseRotation = m_mouse->getCurrentRotation();
+
     // Make space for mouse updates and fill the CPU buffer with new mouse triangles
     GraphicUtilities::GRAPHIC_CPU_BUFFER.erase(
         GraphicUtilities::GRAPHIC_CPU_BUFFER.begin() + mouseTrianglesStartingIndex,
         GraphicUtilities::GRAPHIC_CPU_BUFFER.end());
-    m_mouseGraphic->draw();
+    m_mouseGraphic->draw(currentMouseTranslation, currentMouseRotation);
 
     // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT);
@@ -135,12 +139,13 @@ void Driver::draw() {
 
     // Re-populate both vertex buffer objects and then draw the tiles, the tile text, and then the mouse
     repopulateVertexBufferObjects();
-    drawFullAndZoomedMaps(m_polygonProgram, m_polygonVertexArrayObjectId,
-        0, 3 * mouseTrianglesStartingIndex);
-    drawFullAndZoomedMaps(m_textureProgram, m_textureVertexArrayObjectId,
-        0, 3 * GraphicUtilities::TEXTURE_CPU_BUFFER.size());
-    drawFullAndZoomedMaps(m_polygonProgram, m_polygonVertexArrayObjectId,
-        3 * mouseTrianglesStartingIndex, 3 * (GraphicUtilities::GRAPHIC_CPU_BUFFER.size() - mouseTrianglesStartingIndex));
+    drawFullAndZoomedMaps(currentMouseTranslation, currentMouseRotation,
+        m_polygonProgram, m_polygonVertexArrayObjectId, 0, 3 * mouseTrianglesStartingIndex);
+    drawFullAndZoomedMaps(currentMouseTranslation, currentMouseRotation,
+        m_textureProgram, m_textureVertexArrayObjectId, 0, 3 * GraphicUtilities::TEXTURE_CPU_BUFFER.size());
+    drawFullAndZoomedMaps(currentMouseTranslation, currentMouseRotation,
+        m_polygonProgram, m_polygonVertexArrayObjectId, 3 * mouseTrianglesStartingIndex,
+        3 * (GraphicUtilities::GRAPHIC_CPU_BUFFER.size() - mouseTrianglesStartingIndex));
 
     // Disable scissoring so that the glClear can take effect, and so that
     // drawn text isn't clipped at all
@@ -465,7 +470,9 @@ void Driver::repopulateVertexBufferObjects() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Driver::drawFullAndZoomedMaps(tdogl::Program* program, int vaoId, int vboStartingIndex, int vboEndingIndex) {
+void Driver::drawFullAndZoomedMaps(
+        const Coordinate& currentMouseTranslation, const Angle& currentMouseRotation,
+        tdogl::Program* program, int vaoId, int vboStartingIndex, int vboEndingIndex) {
 
     // Get the sizes and positions of each of the maps.
     std::pair<int, int> fullMapPosition = GraphicUtilities::getFullMapPosition();
@@ -494,8 +501,7 @@ void Driver::drawFullAndZoomedMaps(tdogl::Program* program, int vaoId, int vboSt
     glScissor(zoomedMapPosition.first, zoomedMapPosition.second, zoomedMapSize.first, zoomedMapSize.second);
     program->setUniformMatrix4("transformationMatrix",
         &GraphicUtilities::getZoomedMapTransformationMatrix(
-            m_mouse->getInitialTranslation(), m_mouse->getCurrentTranslation(),
-            m_mouse->getCurrentRotation()).front(), 1, GL_TRUE);
+            m_mouse->getInitialTranslation(), currentMouseTranslation, currentMouseRotation).front(), 1, GL_TRUE);
     glDrawArrays(GL_TRIANGLES, vboStartingIndex, vboEndingIndex);
 
     // Stop using the program and vertex array object

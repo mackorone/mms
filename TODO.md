@@ -67,7 +67,6 @@
 - Enable rotation of wheels and motors during run
 - Set acceleration of all moving/rotating things
 - Rename Tile to Cell
-- Figure out what's causing the jitter during mouse updates
 - Support reading or writing multiple file types
     - .maz (plain text), .MAZ (binary), .map (ascii map)
     - https://code.google.com/p/maze-solver/wiki/MazeFileFormats

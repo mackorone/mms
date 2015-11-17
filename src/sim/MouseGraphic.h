@@ -9,7 +9,7 @@ class MouseGraphic {
 
 public:
     MouseGraphic(const Mouse* mouse);
-    void draw();
+    void draw(const Coordinate& currentTranslation, const Angle& currentRotation) const;
 
 private:
     const Mouse* m_mouse;

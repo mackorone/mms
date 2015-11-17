@@ -72,8 +72,9 @@ private:
 
     // Drawing helper methods
     static void repopulateVertexBufferObjects();
-    static void drawFullAndZoomedMaps(tdogl::Program* program, int vaoId,
-        int vboStartingIndex, int vboEndingIndex);
+    static void drawFullAndZoomedMaps(
+        const Coordinate& currentMouseTranslation, const Angle& currentMouseRotation,
+        tdogl::Program* program, int vaoId, int vboStartingIndex, int vboEndingIndex);
 };
 
 } // namespace sim
