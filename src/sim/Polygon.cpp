@@ -5,6 +5,7 @@
 #include "Assert.h"
 #include "units/Polar.h"
 #include "CPMath.h"
+#include "SimUtilities.h"
 
 namespace sim {
 
@@ -19,16 +20,16 @@ Polygon::Polygon(const Polygon& polygon) {
 Polygon::Polygon(const std::vector<Cartesian>& vertices) {
     ASSERT_LE(3, vertices.size());
     m_vertices = vertices;
-    m_triangles = triangulate();
+    m_triangles = triangulate(vertices);
 }
 
 Polygon Polygon::createCirclePolygon(const Cartesian& position, const Distance& radius, int numberOfEdges) {
     ASSERT_LE(3, numberOfEdges);
-    std::vector<Cartesian> polygon;
+    std::vector<Cartesian> vertices;
     for (int i = 0; i < numberOfEdges; i += 1) {
-        polygon.push_back(Polar(radius, Radians(i * M_TWOPI / numberOfEdges)) + position);
+        vertices.push_back(Polar(radius, Radians(i * M_TWOPI / numberOfEdges)) + position);
     }
-    return Polygon(polygon);
+    return Polygon(vertices);
 }
 
 std::vector<Cartesian> Polygon::getVertices() const {
@@ -84,32 +85,94 @@ Cartesian Polygon::centroid() const {
 }
 
 Polygon Polygon::translate(const Coordinate& translation) const {
+
+    auto translateVertex = [&](const Cartesian& vertex){
+        return vertex + translation;
+    };
+
+    // Memoization fixes graphics tearing
+    std::map<Cartesian, Cartesian> cache;
+    auto memoizedTranslateVertex = [&](const Cartesian& vertex){
+        if (!SimUtilities::mapContains(cache, vertex)) {
+            cache.insert(std::make_pair(vertex, translateVertex(vertex)));
+        }
+        return cache.at(vertex);
+    };
+
     std::vector<Cartesian> vertices;
     for (Cartesian vertex : m_vertices) {
-        vertices.push_back(vertex + translation);
+        vertices.push_back(memoizedTranslateVertex(vertex));
     }
-    return Polygon(vertices);
+
+    std::vector<Triangle> triangles;
+    for (Triangle triangle : m_triangles) {
+        triangles.push_back({
+            memoizedTranslateVertex(triangle.p1),
+            memoizedTranslateVertex(triangle.p2),
+            memoizedTranslateVertex(triangle.p3),
+        });
+    }
+
+    return Polygon(vertices, triangles);
 }
 
 Polygon Polygon::rotateAroundPoint(const Angle& angle, const Coordinate& point) const {
+
+    auto rotateVertexAroundPoint = [&](const Cartesian& vertex){
+        Cartesian relativeVertex(
+            vertex.getX() - point.getX(),
+            vertex.getY() - point.getY()
+        );
+        Polar rotatedRelativeVertex(
+            relativeVertex.getRho(),
+            relativeVertex.getTheta() + angle
+        );
+        Cartesian rotatedVertex(
+            rotatedRelativeVertex.getX() + point.getX(),
+            rotatedRelativeVertex.getY() + point.getY()
+        );
+        return rotatedVertex;
+    };
+
+    // Memoization fixes graphics tearing
+    std::map<Cartesian, Cartesian> cache;
+    auto memoizedRotateVertexAroundPoint = [&](const Cartesian& vertex){
+        if (!SimUtilities::mapContains(cache, vertex)) {
+            cache.insert(std::make_pair(vertex, rotateVertexAroundPoint(vertex)));
+        }
+        return cache.at(vertex);
+    };
+
     std::vector<Cartesian> vertices;
     for (Cartesian vertex : m_vertices) {
-        Cartesian relative(vertex.getX() - point.getX(), vertex.getY() - point.getY());
-        Polar rotated(relative.getRho(), relative.getTheta() + angle);
-        Cartesian absolute(rotated.getX() + point.getX(), rotated.getY() + point.getY());
-        vertices.push_back(absolute);
+        vertices.push_back(memoizedRotateVertexAroundPoint(vertex));
     }
-    return Polygon(vertices);
+
+    std::vector<Triangle> triangles;
+    for (Triangle triangle : m_triangles) {
+        triangles.push_back({
+            memoizedRotateVertexAroundPoint(triangle.p1),
+            memoizedRotateVertexAroundPoint(triangle.p2),
+            memoizedRotateVertexAroundPoint(triangle.p3),
+        });
+    }
+
+    return Polygon(vertices, triangles);
 }
 
-std::vector<Triangle> Polygon::triangulate() const {
+Polygon::Polygon(const std::vector<Cartesian>& vertices, const std::vector<Triangle>& triangles) {
+    m_vertices = vertices;
+    m_triangles = triangles;
+}
+
+std::vector<Triangle> Polygon::triangulate(const std::vector<Cartesian>& vertices) {
 
     // Populate the TPPLPoly
     TPPLPoly tpplPoly;
-    tpplPoly.Init(m_vertices.size());
-    for (int i = 0; i < m_vertices.size(); i += 1) {
-        tpplPoly[i].x = m_vertices.at(i).getX().getMeters();
-        tpplPoly[i].y = m_vertices.at(i).getY().getMeters();
+    tpplPoly.Init(vertices.size());
+    for (int i = 0; i < vertices.size(); i += 1) {
+        tpplPoly[i].x = vertices.at(i).getX().getMeters();
+        tpplPoly[i].y = vertices.at(i).getY().getMeters();
     }
     tpplPoly.SetOrientation(TPPL_CCW);
 
@@ -121,12 +184,11 @@ std::vector<Triangle> Polygon::triangulate() const {
     // Populate the output vector
     std::vector<Triangle> triangles;
     for (auto it = result.begin(); it != result.end(); it++) {
-        Triangle triangle {
+        triangles.push_back({
             Cartesian(Meters((*it)[0].x), Meters((*it)[0].y)),
             Cartesian(Meters((*it)[1].x), Meters((*it)[1].y)),
             Cartesian(Meters((*it)[2].x), Meters((*it)[2].y)),
-        };
-        triangles.push_back(triangle);
+        });
     }
 
     return triangles;

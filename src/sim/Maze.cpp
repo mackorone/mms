@@ -97,7 +97,7 @@ const Tile* Maze::getTile(int x, int y) const {
     return &m_maze.at(x).at(y);
 }
 
-std::vector<std::vector<Tile>> Maze::initializeFromBasicMaze(const std::vector<std::vector<BasicTile>>& basicMaze) const {
+std::vector<std::vector<Tile>> Maze::initializeFromBasicMaze(const std::vector<std::vector<BasicTile>>& basicMaze) {
     std::vector<std::vector<Tile>> maze;
     for (int x = 0; x < basicMaze.size(); x += 1) {
         std::vector<Tile> column;
@@ -116,7 +116,7 @@ std::vector<std::vector<Tile>> Maze::initializeFromBasicMaze(const std::vector<s
     return maze;
 }
 
-std::vector<std::vector<BasicTile>> Maze::getBlankBasicMaze(int mazeWidth, int mazeHeight) const {
+std::vector<std::vector<BasicTile>> Maze::getBlankBasicMaze(int mazeWidth, int mazeHeight) {
     std::vector<std::vector<BasicTile>> blankMaze;
     for (int x = 0; x < mazeWidth; x += 1) {
         std::vector<BasicTile> column;
@@ -134,7 +134,7 @@ std::vector<std::vector<BasicTile>> Maze::getBlankBasicMaze(int mazeWidth, int m
     return blankMaze;
 }
 
-std::vector<std::vector<BasicTile>> Maze::mirrorAcrossVertical(const std::vector<std::vector<BasicTile>>& basicMaze) const {
+std::vector<std::vector<BasicTile>> Maze::mirrorAcrossVertical(const std::vector<std::vector<BasicTile>>& basicMaze) {
     ASSERT_TR(MazeChecker::isRectangular(basicMaze));
     std::vector<std::vector<BasicTile>> mirrored;
     for (int x = 0; x < basicMaze.size(); x += 1) {
@@ -158,7 +158,7 @@ std::vector<std::vector<BasicTile>> Maze::mirrorAcrossVertical(const std::vector
     return mirrored; 
 }
 
-std::vector<std::vector<BasicTile>> Maze::rotateCounterClockwise(const std::vector<std::vector<BasicTile>>& basicMaze) const {
+std::vector<std::vector<BasicTile>> Maze::rotateCounterClockwise(const std::vector<std::vector<BasicTile>>& basicMaze) {
     ASSERT_TR(MazeChecker::isRectangular(basicMaze));
     std::vector<std::vector<BasicTile>> rotated;
     for (int x = 0; x < basicMaze.size(); x += 1) {
@@ -182,7 +182,7 @@ std::vector<std::vector<BasicTile>> Maze::rotateCounterClockwise(const std::vect
     return rotated;
 }
 
-std::vector<std::vector<Tile>> Maze::setTileDistances(std::vector<std::vector<Tile>> maze) const {
+std::vector<std::vector<Tile>> Maze::setTileDistances(std::vector<std::vector<Tile>> maze) {
 
     // The maze is guarenteed to be nonempty and rectangular
     int width = maze.size();

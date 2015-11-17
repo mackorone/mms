@@ -23,17 +23,17 @@ private:
     std::vector<std::vector<Tile>> m_maze;
 
     // Initializes all of the tiles of the basic maze
-    std::vector<std::vector<Tile>> initializeFromBasicMaze(const std::vector<std::vector<BasicTile>>& basicMaze) const;
+    static std::vector<std::vector<Tile>> initializeFromBasicMaze(const std::vector<std::vector<BasicTile>>& basicMaze);
 
     // Returns a basic maze of a particular width and height
-    std::vector<std::vector<BasicTile>> getBlankBasicMaze(int mazeWidth, int mazeHeight) const;
+    static std::vector<std::vector<BasicTile>> getBlankBasicMaze(int mazeWidth, int mazeHeight);
 
     // Basic maze geometric transformations
-    std::vector<std::vector<BasicTile>> mirrorAcrossVertical(const std::vector<std::vector<BasicTile>>& basicMaze) const;
-    std::vector<std::vector<BasicTile>> rotateCounterClockwise(const std::vector<std::vector<BasicTile>>& basicMaze) const;
+    static std::vector<std::vector<BasicTile>> mirrorAcrossVertical(const std::vector<std::vector<BasicTile>>& basicMaze);
+    static std::vector<std::vector<BasicTile>> rotateCounterClockwise(const std::vector<std::vector<BasicTile>>& basicMaze);
 
     // (Re)set the distance values for the tiles in maze that are reachable from the center
-    std::vector<std::vector<Tile>> setTileDistances(std::vector<std::vector<Tile>> maze) const;
+    static std::vector<std::vector<Tile>> setTileDistances(std::vector<std::vector<Tile>> maze);
 };
 
 } // namespace sim

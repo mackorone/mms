@@ -32,7 +32,13 @@ private:
     std::vector<Cartesian> m_vertices;
     std::vector<Triangle> m_triangles;
 
-    std::vector<Triangle> triangulate() const;
+    // This special constructor makes it so that rotate and translate don't
+    // require re-triangulation. We keep it private since it's pretty easy to
+    // abuse the fact that the triangles argument should be the triangulation
+    // of the polygon specified by the vertices argument.
+    Polygon(const std::vector<Cartesian>& vertices, const std::vector<Triangle>& triangles);
+
+    static std::vector<Triangle> triangulate(const std::vector<Cartesian>& vertices);
 };
 
 } // namespace sim

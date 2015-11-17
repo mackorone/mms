@@ -1,8 +1,6 @@
 # High Priority
 
-- Use vertex buffer object for the mouse body (only triangulate the mouse once)
-    - This should really improve performance of continuous
-    - Memoize the triangulation of the polygon
+- Improve lambda performance in Polygon translation and rotation code
 - Print something out when input buttons are pressed and handled
 - Make some utility that keeps track of simulation and real elapsed time
     - Make the sim speed non-arbitrary
