@@ -52,16 +52,16 @@ void Manual::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::Mo
             rightWheelSpeed -= accelerateAmount;
         }
         if (sim::S()->arrowKeyIsPressed(sim::Key::RIGHT)) {
-            leftWheelSpeed += accelerateAmount / 4.0;
-            rightWheelSpeed += accelerateAmount / 4.0;
-        }
-        if (sim::S()->arrowKeyIsPressed(sim::Key::LEFT)) {
             leftWheelSpeed -= accelerateAmount / 4.0;
             rightWheelSpeed -= accelerateAmount / 4.0;
         }
+        if (sim::S()->arrowKeyIsPressed(sim::Key::LEFT)) {
+            leftWheelSpeed += accelerateAmount / 4.0;
+            rightWheelSpeed += accelerateAmount / 4.0;
+        }
 
         mouse->setWheelSpeed("left", leftWheelSpeed);
-        mouse->setWheelSpeed("right", leftWheelSpeed);
+        mouse->setWheelSpeed("right", rightWheelSpeed);
         mouse->delay(30);
     }
 }

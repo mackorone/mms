@@ -270,7 +270,7 @@ void Driver::keyPress(unsigned char key, int x, int y) {
             L()->info("Input button %v was pressed.", inputButton);
         }
         else {
-            L()->info(
+            L()->warn(
                 "Input button %v has not yet been acknowledged as pressed; pressing it has no effect.",
                 inputButton);
         }

@@ -1,15 +1,17 @@
 # High Priority
 
+- MinSleepDuration is a little bit weird - sometimes we try to sleep less than that
 - Continuous performance
     - We're triangulating every update (for sensors) instead of every frame - this is super expensive...
     - I don't think we need to triangulate except for drawing
+- I'm not using sensor edge points right now...
 - Make some utility that keeps track of simulation and real elapsed time
-    - Confirm that the discreteInterfaceWheelSpeed is working properly
+    - Actually keep track of the elapsed simulation time
+    - Max speeds for manual algorithm
     - Fix shaking of graphics
         - get all polygons simultaneously
     - Add the simulation time to the logging
         - Perhaps even refactor the elapsed time in logging
-    - Pausing in continuous??? Interrrupt???
 - Figure out how to get rid of (or formalize) "left" and "right" wheels for discrete interface
 - Add the ability to start in the direction of the opening of the maze
 - Support stepper motor / encoders interface

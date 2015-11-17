@@ -9,6 +9,7 @@
 #include "Param.h"
 #include "SimUtilities.h"
 #include "State.h"
+#include "units/Milliseconds.h"
 
 namespace sim {
 
@@ -34,10 +35,14 @@ void World::simulate() {
             return;
         }
 
-        // Update the position of the mouse
-        if (!S()->paused()) {
-            m_mouse->update(Seconds(1.0/P()->mousePositionUpdateRate()) * S()->simSpeed());
+        // If the simulation is paused, simply sleep and continue
+        if (S()->paused()) {
+            SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
+            continue;
         }
+
+        // Update the position of the mouse
+        m_mouse->update(Seconds(1.0/P()->mousePositionUpdateRate()) * S()->simSpeed());
 
         // Update the tile fog. Note that this is a bit of a one-off case. We
         // shouldn't really put any sort of graphics-related stuff in this
