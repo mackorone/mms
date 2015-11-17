@@ -112,21 +112,20 @@ Param::Param() {
         "glut-init-duration", 0.1, 0.0, 5.0);
     m_defaultPaused = parser.getBoolIfHasBool(
         "default-paused", false);
+    m_minSimSpeed = parser.getDoubleIfHasDoubleAndInRange(
+        "min-sim-speed", 0.1, 0.01, 0.5);
+    m_maxSimSpeed = parser.getDoubleIfHasDoubleAndInRange(
+        "max-sim-speed", 100.0, 2.0, 100.0);
+    m_defaultSimSpeed = parser.getDoubleIfHasDoubleAndInRange(
+        "default-sim-speed", 1.0, m_minSimSpeed, m_maxSimSpeed);
     m_collisionDetectionEnabled = parser.getBoolIfHasBool(
         "collision-detection-enabled", true);
     m_crashMessage = parser.getStringIfHasString(
         "crash-message", "CRASH");
     m_minSleepDuration = parser.getDoubleIfHasDoubleAndInRange(
         "min-sleep-duration", 5, 1, 25);
-
-    // TODO: MACK - get rid of these once I've written the simulation time component
-    m_discreteInterfaceMinSpeed = parser.getDoubleIfHasDouble(
-        "discrete-interface-min-speed", 1.0);
-    m_discreteInterfaceMaxSpeed = parser.getDoubleIfHasDouble(
-        "discrete-interface-max-speed", 300.0);
-    m_discreteInterfaceDefaultSpeed = parser.getDoubleIfHasDoubleAndInRange(
-        "discrete-interface-default-speed", 30.0, m_discreteInterfaceMinSpeed, m_discreteInterfaceMaxSpeed);
-
+    m_discreteInterfaceWheelSpeed = parser.getDoubleIfHasDoubleAndInRange(
+        "discrete-interface-wheel-speed", 1.0, 0.1, 10.0);
     m_discreteInterfaceDeclareWallOnRead = parser.getBoolIfHasBool(
         "discrete-interface-declare-wall-on-read", true);
     m_algorithmControlsTileFog = parser.getBoolIfHasBool(
@@ -134,7 +133,7 @@ Param::Param() {
     m_declareBothWallHalves = parser.getBoolIfHasBool(
         "declare-both-wall-halves", true);
     m_mousePositionUpdateRate = parser.getIntIfHasIntAndInRange(
-        "mouse-position-update-rate", 1000, 100, 10000);
+        "mouse-position-update-rate", 500, 100, 2500);
     m_printLateMousePostitionUpdates = parser.getBoolIfHasBool(
         "print-late-mouse-position-updates", false);
     m_collisionDetectionRate = parser.getIntIfHasIntAndInRange(
@@ -327,6 +326,18 @@ bool Param::defaultPaused() {
     return m_defaultPaused;
 }
 
+double Param::minSimSpeed() {
+    return m_minSimSpeed;
+}
+
+double Param::maxSimSpeed() {
+    return m_maxSimSpeed;
+}
+
+double Param::defaultSimSpeed() {
+    return m_defaultSimSpeed;
+}
+
 bool Param::collisionDetectionEnabled() {
     return m_collisionDetectionEnabled;
 }
@@ -339,16 +350,8 @@ double Param::minSleepDuration() {
     return m_minSleepDuration;
 }
 
-double Param::discreteInterfaceMinSpeed() {
-    return m_discreteInterfaceMinSpeed;
-}
-
-double Param::discreteInterfaceMaxSpeed() {
-    return m_discreteInterfaceMaxSpeed;
-}
-
-double Param::discreteInterfaceDefaultSpeed() {
-    return m_discreteInterfaceDefaultSpeed;
+double Param::discreteInterfaceWheelSpeed() {
+    return m_discreteInterfaceWheelSpeed;
 }
 
 bool Param::discreteInterfaceDeclareWallOnRead() {

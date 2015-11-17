@@ -54,15 +54,13 @@ public:
     int randomSeed();
     double glutInitDuration();
     bool defaultPaused();
+    double minSimSpeed();
+    double maxSimSpeed();
+    double defaultSimSpeed();
     bool collisionDetectionEnabled();
     std::string crashMessage();
     double minSleepDuration();
-
-    // TODO: MACK - Get rid of these...
-    double discreteInterfaceMinSpeed();
-    double discreteInterfaceMaxSpeed();
-    double discreteInterfaceDefaultSpeed();
-
+    double discreteInterfaceWheelSpeed();
     bool discreteInterfaceDeclareWallOnRead();
     bool algorithmControlsTileFog();
     bool declareBothWallHalves();
@@ -140,12 +138,13 @@ private:
     int m_randomSeed;
     double m_glutInitDuration;
     bool m_defaultPaused;
+    double m_minSimSpeed;
+    double m_maxSimSpeed;
+    double m_defaultSimSpeed;
     bool m_collisionDetectionEnabled;
     std::string m_crashMessage;
     double m_minSleepDuration;
-    double m_discreteInterfaceMinSpeed;
-    double m_discreteInterfaceMaxSpeed;
-    double m_discreteInterfaceDefaultSpeed;
+    double m_discreteInterfaceWheelSpeed;
     bool m_discreteInterfaceDeclareWallOnRead;
     bool m_algorithmControlsTileFog;
     bool m_declareBothWallHalves;

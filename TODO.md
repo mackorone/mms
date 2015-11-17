@@ -1,10 +1,17 @@
 # High Priority
 
+- Continuous performance
+    - We're triangulating every update (for sensors) instead of every frame - this is super expensive...
+    - I don't think we need to triangulate except for drawing
 - Make some utility that keeps track of simulation and real elapsed time
-    - Make the sim speed non-arbitrary
-    - Fix the Params associated with discrete sim-speed
+    - Limit continous interface max speed (and min speed)
+    - Pausing should still show wheelSpeedIndicator
+    - Pausing and adjusting speed for continuous
+    - Fix shaking of graphics
+        - get all polygons simultaneously
     - Add the simulation time to the logging
         - Perhaps even refactor the elapsed time in logging
+    - Pausing in continuous??? Interrrupt???
 - Figure out how to get rid of (or formalize) "left" and "right" wheels for discrete interface
 - Add the ability to start in the direction of the opening of the maze
 - Support stepper motor / encoders interface

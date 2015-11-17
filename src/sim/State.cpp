@@ -35,7 +35,7 @@ State::State() {
     m_tileFogVisible = P()->defaultTileFogVisible();
     m_wireframeMode = P()->defaultWireframeMode();
     m_paused = P()->defaultPaused();
-    m_simSpeed = P()->discreteInterfaceDefaultSpeed();
+    m_simSpeed = P()->defaultSimSpeed();
     for (int i = 0; i < 10; i += 1) {
         m_inputButtons.insert(std::make_pair(i, false));
     }
@@ -173,11 +173,11 @@ void State::setPaused(bool paused) {
 }
 
 void State::setSimSpeed(double simSpeed) {
-    if (simSpeed < P()->discreteInterfaceMinSpeed()) {
-        m_simSpeed = P()->discreteInterfaceMinSpeed();
+    if (simSpeed < P()->minSimSpeed()) {
+        m_simSpeed = P()->minSimSpeed();
     }
-    else if (P()->discreteInterfaceMaxSpeed() < simSpeed) {
-        m_simSpeed = P()->discreteInterfaceMaxSpeed();
+    else if (P()->maxSimSpeed() < simSpeed) {
+        m_simSpeed = P()->maxSimSpeed();
     }
     else {
         m_simSpeed = simSpeed;

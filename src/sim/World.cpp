@@ -35,7 +35,7 @@ void World::simulate() {
         }
 
         // Update the position of the mouse
-        m_mouse->update(Seconds(1.0/P()->mousePositionUpdateRate()));
+        m_mouse->update(Seconds(1.0/P()->mousePositionUpdateRate()) * S()->simSpeed());
 
         // Update the tile fog. Note that this is a bit of a one-off case. We
         // shouldn't really put any sort of graphics-related stuff in this

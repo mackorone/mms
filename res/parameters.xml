@@ -43,14 +43,15 @@
 <crash-message>Oh no! Your mouse crashed! It can't move anymore...</crash-message>
 <glut-init-duration>0.1</glut-init-duration> <!-- Seconds -->
 <default-paused>false</default-paused>
+<min-sim-speed>0.1</min-sim-speed> <!-- Fraction/factor of actual time -->
+<max-sim-speed>100.0</max-sim-speed> <!-- Fraction/factor of actual time -->
+<default-sim-speed>1.0</default-sim-speed> <!-- Fraction/factor of actual time -->
 <min-sleep-duration>5</min-sleep-duration> <!-- Milliseconds -->
-<discrete-interface-min-speed>1.0</discrete-interface-min-speed> <!-- No units -->
-<discrete-interface-max-speed>300.0</discrete-interface-max-speed> <!-- No units -->
-<discrete-interface-default-speed>30.0</discrete-interface-default-speed> <!-- No units -->
+<discrete-interface-wheel-speed>1.0</discrete-interface-wheel-speed> <!-- rev/s -->
 <discrete-interface-declare-wall-on-read>true</discrete-interface-declare-wall-on-read>
 <algorithm-controls-tile-fog>false</algorithm-controls-tile-fog>
 <declare-both-wall-halves>true</declare-both-wall-halves>
-<mouse-position-update-rate>1000</mouse-position-update-rate> <!-- Updates per second -->
+<mouse-position-update-rate>500</mouse-position-update-rate> <!-- Updates per second -->
 <print-late-mouse-position-updates>true</print-late-mouse-position-updates>
 <collision-detection-rate>40</collision-detection-rate> <!-- Checks per second -->
 <print-late-collision-detections>false</print-late-collision-detections>

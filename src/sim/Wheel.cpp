@@ -1,6 +1,7 @@
 #include "Wheel.h"
 
 #include "CPMath.h"
+#include "units/RevolutionsPerSecond.h"
 
 namespace sim {
 
@@ -57,7 +58,7 @@ void Wheel::setAngularVelocity(const AngularVelocity& angularVelocity) {
 }
 
 Polygon Wheel::getSpeedIndicatorPolygon(const AngularVelocity& angularVelocity) {
-    double fractionOfMaxSpeed = angularVelocity / RadiansPerSecond(20); // TODO: MACK - max speed and max accel
+    double fractionOfMaxSpeed = angularVelocity / RevolutionsPerSecond(1.0); // TODO: MACK - max speed and max accel
     return Polygon({
         Cartesian(m_initialPosition) + Cartesian(m_radius * fractionOfMaxSpeed, Meters(0)),
         Cartesian(m_initialPosition) + Cartesian(Meters(0), Meters(m_halfWidth *  1)),
