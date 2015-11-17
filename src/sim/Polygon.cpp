@@ -86,30 +86,20 @@ Cartesian Polygon::centroid() const {
 
 Polygon Polygon::translate(const Coordinate& translation) const {
 
-    auto translateVertex = [&](const Cartesian& vertex){
-        return vertex + translation;
-    };
-
     // Memoization fixes graphics tearing
     std::map<Cartesian, Cartesian> cache;
-    auto memoizedTranslateVertex = [&](const Cartesian& vertex){
-        if (!SimUtilities::mapContains(cache, vertex)) {
-            cache.insert(std::make_pair(vertex, translateVertex(vertex)));
-        }
-        return cache.at(vertex);
-    };
 
     std::vector<Cartesian> vertices;
     for (Cartesian vertex : m_vertices) {
-        vertices.push_back(memoizedTranslateVertex(vertex));
+        vertices.push_back(memoizedTranslateVertex(&cache, vertex, translation));
     }
 
     std::vector<Triangle> triangles;
     for (Triangle triangle : m_triangles) {
         triangles.push_back({
-            memoizedTranslateVertex(triangle.p1),
-            memoizedTranslateVertex(triangle.p2),
-            memoizedTranslateVertex(triangle.p3),
+            memoizedTranslateVertex(&cache, triangle.p1, translation),
+            memoizedTranslateVertex(&cache, triangle.p2, translation),
+            memoizedTranslateVertex(&cache, triangle.p3, translation),
         });
     }
 
@@ -118,51 +108,64 @@ Polygon Polygon::translate(const Coordinate& translation) const {
 
 Polygon Polygon::rotateAroundPoint(const Angle& angle, const Coordinate& point) const {
 
-    auto rotateVertexAroundPoint = [&](const Cartesian& vertex){
-        Cartesian relativeVertex(
-            vertex.getX() - point.getX(),
-            vertex.getY() - point.getY()
-        );
-        Polar rotatedRelativeVertex(
-            relativeVertex.getRho(),
-            relativeVertex.getTheta() + angle
-        );
-        Cartesian rotatedVertex(
-            rotatedRelativeVertex.getX() + point.getX(),
-            rotatedRelativeVertex.getY() + point.getY()
-        );
-        return rotatedVertex;
-    };
-
     // Memoization fixes graphics tearing
     std::map<Cartesian, Cartesian> cache;
-    auto memoizedRotateVertexAroundPoint = [&](const Cartesian& vertex){
-        if (!SimUtilities::mapContains(cache, vertex)) {
-            cache.insert(std::make_pair(vertex, rotateVertexAroundPoint(vertex)));
-        }
-        return cache.at(vertex);
-    };
 
     std::vector<Cartesian> vertices;
     for (Cartesian vertex : m_vertices) {
-        vertices.push_back(memoizedRotateVertexAroundPoint(vertex));
+        vertices.push_back(memoizedRotateVertexAroundPoint(&cache, vertex, angle, point));
     }
 
     std::vector<Triangle> triangles;
     for (Triangle triangle : m_triangles) {
         triangles.push_back({
-            memoizedRotateVertexAroundPoint(triangle.p1),
-            memoizedRotateVertexAroundPoint(triangle.p2),
-            memoizedRotateVertexAroundPoint(triangle.p3),
+            memoizedRotateVertexAroundPoint(&cache, triangle.p1, angle, point),
+            memoizedRotateVertexAroundPoint(&cache, triangle.p2, angle, point),
+            memoizedRotateVertexAroundPoint(&cache, triangle.p3, angle, point),
         });
     }
 
     return Polygon(vertices, triangles);
 }
-
-Polygon::Polygon(const std::vector<Cartesian>& vertices, const std::vector<Triangle>& triangles) {
+m
     m_vertices = vertices;
     m_triangles = triangles;
+}
+
+Cartesian Polygon::translateVertex(const Cartesian& vertex, const Coordinate& translation) {
+    return vertex + translation;
+}
+
+Cartesian Polygon::rotateVertexAroundPoint(const Cartesian& vertex, const Angle& angle, const Coordinate& point) {
+    Cartesian relativeVertex(
+        vertex.getX() - point.getX(),
+        vertex.getY() - point.getY()
+    );
+    Polar rotatedRelativeVertex(
+        relativeVertex.getRho(),
+        relativeVertex.getTheta() + angle
+    );
+    Cartesian rotatedVertex(
+        rotatedRelativeVertex.getX() + point.getX(),
+        rotatedRelativeVertex.getY() + point.getY()
+    );
+    return rotatedVertex;
+}
+
+Cartesian Polygon::memoizedTranslateVertex(
+        std::map<Cartesian, Cartesian>* cache, const Cartesian& vertex, const Coordinate& translation) {
+    if (!SimUtilities::mapContains(*cache, vertex)) {
+        cache->insert(std::make_pair(vertex, translateVertex(vertex, translation)));
+    }
+    return cache->at(vertex);
+}
+
+Cartesian Polygon::memoizedRotateVertexAroundPoint(
+        std::map<Cartesian, Cartesian>* cache, const Cartesian& vertex, const Angle& angle, const Coordinate& point) {
+    if (!SimUtilities::mapContains(*cache, vertex)) {
+        cache->insert(std::make_pair(vertex, rotateVertexAroundPoint(vertex, angle, point)));
+    }
+    return cache->at(vertex);
 }
 
 std::vector<Triangle> Polygon::triangulate(const std::vector<Cartesian>& vertices) {
