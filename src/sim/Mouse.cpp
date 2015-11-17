@@ -69,50 +69,46 @@ Polygon Mouse::getBodyPolygon() const {
     return getBodyPolygon(m_translation, m_rotation);
 }
 
-Polygon Mouse::getBodyPolygon(const Cartesian& translation, const Radians& rotation) const {
-    return m_initialBodyPolygon
-        .translate(translation - m_initialTranslation)
-        .rotateAroundPoint(rotation, translation);
+Polygon Mouse::getBodyPolygon(const Coordinate& translation, const Angle& rotation) const {
+    return getPolygon(m_initialBodyPolygon, translation, rotation);
 }
 
 Polygon Mouse::getCollisionPolygon() const {
     return getCollisionPolygon(m_translation, m_rotation);
 }
 
-Polygon Mouse::getCollisionPolygon(const Cartesian& translation, const Radians& rotation) const {
-    return m_initialCollisionPolygon
-        .translate(translation - m_initialTranslation)
-        .rotateAroundPoint(rotation, translation);
+Polygon Mouse::getCollisionPolygon(const Coordinate& translation, const Angle& rotation) const {
+    return getPolygon(m_initialCollisionPolygon, translation, rotation);
 }
 
 Polygon Mouse::getCenterOfMassPolygon() const {
     return getCenterOfMassPolygon(m_translation, m_rotation);
 }
 
-Polygon Mouse::getCenterOfMassPolygon(const Cartesian& translation, const Radians& rotation) const {
-    return m_initialCenterOfMassPolygon
-        .translate(translation - m_initialTranslation)
-        .rotateAroundPoint(rotation, translation);
+Polygon Mouse::getCenterOfMassPolygon(const Coordinate& translation, const Angle& rotation) const {
+    return getPolygon(m_initialCenterOfMassPolygon, translation, rotation);
 }
 
 std::vector<Polygon> Mouse::getWheelPolygons() const {
     return getWheelPolygons(m_translation, m_rotation);
 }
 
-std::vector<Polygon> Mouse::getWheelPolygons(const Cartesian& translation, const Radians& rotation) const {
-    return getPolygonsFromMap(m_wheels, translation, rotation);
+std::vector<Polygon> Mouse::getWheelPolygons(const Coordinate& translation, const Angle& rotation) const {
+    std::vector<Polygon> polygons;
+    for (std::pair<std::string, Wheel> pair : m_wheels) {
+        polygons.push_back(getPolygon(pair.second.getInitialPolygon(), translation, rotation));
+    }
+    return polygons;
 }
 
 std::vector<Polygon> Mouse::getWheelSpeedIndicatorPolygons() const {
     return getWheelSpeedIndicatorPolygons(m_translation, m_rotation);
 }
 
-std::vector<Polygon> Mouse::getWheelSpeedIndicatorPolygons(const Cartesian& translation, const Radians& rotation) const {
+std::vector<Polygon> Mouse::getWheelSpeedIndicatorPolygons(const Coordinate& translation, const Angle& rotation) const {
     std::vector<Polygon> polygons;
     for (std::pair<std::string, Wheel> pair : m_wheels) {
-        polygons.push_back(pair.second.getSpeedIndicatorPolygon()
-            .translate(translation - m_initialTranslation)
-            .rotateAroundPoint(rotation, translation));
+        polygons.push_back(getPolygon(pair.second.getSpeedIndicatorPolygon(), translation, rotation));
     }
     return polygons;
 }
@@ -121,24 +117,26 @@ std::vector<Polygon> Mouse::getSensorPolygons() const {
     return getSensorPolygons(m_translation, m_rotation);
 }
 
-std::vector<Polygon> Mouse::getSensorPolygons(const Cartesian& translation, const Radians& rotation) const {
-    return getPolygonsFromMap(m_sensors, translation, rotation);
+std::vector<Polygon> Mouse::getSensorPolygons(const Coordinate& translation, const Angle& rotation) const {
+    std::vector<Polygon> polygons;
+    for (std::pair<std::string, Sensor> pair : m_sensors) {
+        polygons.push_back(getPolygon(pair.second.getInitialPolygon(), translation, rotation));
+    }
+    return polygons;
 }
 
 std::vector<Polygon> Mouse::getViewPolygons() const {
     return getViewPolygons(m_translation, m_rotation);
 }
 
-std::vector<Polygon> Mouse::getViewPolygons(const Cartesian& translation, const Radians& rotation) const {
+std::vector<Polygon> Mouse::getViewPolygons(const Coordinate& translation, const Angle& rotation) const {
 
     // Get the current view for the all of the sensors
     std::vector<Polygon> polygons;
     for (std::pair<std::string, Sensor> pair : m_sensors) {
-        Polygon adjusted = pair.second.getInitialView()
-            .translate(translation - m_initialTranslation)
-            .rotateAroundPoint(rotation, translation);
+        Polygon adjusted = getPolygon(pair.second.getInitialView(), translation, rotation);
         polygons.push_back(pair.second.getCurrentView(
-            adjusted.getVertices().at(0), rotation + pair.second.getInitialDirection(), *m_maze));
+            adjusted.getVertices().at(0), pair.second.getInitialDirection() + rotation, *m_maze));
     }
     return polygons;
 }
@@ -262,9 +260,15 @@ Radians Mouse::getCurrentRotation() const {
     return m_rotation;
 }
 
-void Mouse::teleport(const Cartesian& translation, const Angle& rotation) {
+void Mouse::teleport(const Coordinate& translation, const Angle& rotation) {
     m_translation = translation;
     m_rotation = rotation;
+}
+
+Polygon Mouse::getPolygon(const Polygon& polygon, const Cartesian& translation, const Radians& rotation) const {
+    return polygon
+        .translate(translation - m_initialTranslation)
+        .rotateAroundPoint(rotation, translation);
 }
 
 } // namespace sim

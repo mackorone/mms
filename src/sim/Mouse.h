@@ -23,31 +23,31 @@ public:
 
     // Retrieves the polygon of just the body of the mouse
     Polygon getBodyPolygon() const;
-    Polygon getBodyPolygon(const Cartesian& translation, const Radians& rotation) const;
+    Polygon getBodyPolygon(const Coordinate& translation, const Angle& rotation) const;
 
     // Retrieves the polygon comprised of all parts of the mouse that could collide with walls
     Polygon getCollisionPolygon() const;
-    Polygon getCollisionPolygon(const Cartesian& translation, const Radians& rotation) const;
+    Polygon getCollisionPolygon(const Coordinate& translation, const Angle& rotation) const;
 
     // Retrieves the center of mass polygon of the mouse
     Polygon getCenterOfMassPolygon() const;
-    Polygon getCenterOfMassPolygon(const Cartesian& translation, const Radians& rotation) const;
+    Polygon getCenterOfMassPolygon(const Coordinate& translation, const Angle& rotation) const;
 
     // Retrieves the polygons of the wheels of the robot
     std::vector<Polygon> getWheelPolygons() const;
-    std::vector<Polygon> getWheelPolygons(const Cartesian& translation, const Radians& rotation) const;
+    std::vector<Polygon> getWheelPolygons(const Coordinate& translation, const Angle& rotation) const;
 
     // Retrieves the speed indicator polygons of the wheels of the robot
     std::vector<Polygon> getWheelSpeedIndicatorPolygons() const;
-    std::vector<Polygon> getWheelSpeedIndicatorPolygons(const Cartesian& translation, const Radians& rotation) const;
+    std::vector<Polygon> getWheelSpeedIndicatorPolygons(const Coordinate& translation, const Angle& rotation) const;
 
     // Retrieves the polygons of the sensors of the robot
     std::vector<Polygon> getSensorPolygons() const;
-    std::vector<Polygon> getSensorPolygons(const Cartesian& translation, const Radians& rotation) const;
+    std::vector<Polygon> getSensorPolygons(const Coordinate& translation, const Angle& rotation) const;
 
     // Retrieve the polygons corresponding to the views of the sensors
     std::vector<Polygon> getViewPolygons() const;
-    std::vector<Polygon> getViewPolygons(const Cartesian& translation, const Radians& rotation) const;
+    std::vector<Polygon> getViewPolygons(const Coordinate& translation, const Angle& rotation) const;
 
     // Instruct the mouse to update its own position based on how much simulation time has elapsed
     void update(const Duration& elapsed);
@@ -74,11 +74,11 @@ public:
     std::pair<int, int> getDiscretizedTranslation() const;
     Direction getDiscretizedRotation() const;
 
-    // For use with the discrete interface *only*
+    // For use with the discrete interface and graphics *only*
     Cartesian getInitialTranslation() const;
     Cartesian getCurrentTranslation() const;
     Radians getCurrentRotation() const;
-    void teleport(const Cartesian& translation, const Angle& rotation);
+    void teleport(const Coordinate& translation, const Angle& rotation);
 
 private:
     // Used for the sensor readings
@@ -104,20 +104,8 @@ private:
     // Ensures the wheel speeds are accessed together atomically
     std::mutex m_wheelMutex; 
 
-    // Helper function for getWheelPolygons and getSensorPolygons
-    template<class T>
-    std::vector<Polygon> getPolygonsFromMap(std::map<std::string, T> map, const Cartesian& translation, const Angle& rotation) const {
-        std::vector<Polygon> initialPolygons;
-        for (std::pair<std::string, T> pair : map) {
-            initialPolygons.push_back(pair.second.getInitialPolygon());
-        }
-        std::vector<Polygon> adjustedPolygons;
-        for (Polygon polygon : initialPolygons) {
-            adjustedPolygons.push_back(
-                polygon.translate(translation - m_initialTranslation).rotateAroundPoint(rotation, translation));
-        }
-        return adjustedPolygons;
-    }
+    // Helper function for polygon retrieval based on a given mouse translation and rotation
+    Polygon getPolygon(const Polygon& polygon, const Cartesian& translation, const Radians& rotation) const;
 };
 
 } // namespace sim
