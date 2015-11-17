@@ -203,6 +203,7 @@ void MouseInterface::acknowledgeInputButtonPressed(int inputButton) {
     }
 
     S()->setInputButtonWasPressed(inputButton, false);
+    L()->info("Input button %v was acknowledged as pressed; it can now be pressed again.", inputButton);
 }
 
 void MouseInterface::setWheelSpeed(const std::string& name, double radiansPerSecond) {

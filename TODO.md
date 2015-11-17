@@ -1,8 +1,5 @@
 # High Priority
 
-- Improve lambda performance in Polygon translation and rotation code
-    - Make them standard functions, see the performance
-- Print something out when input buttons are pressed and handled
 - Make some utility that keeps track of simulation and real elapsed time
     - Make the sim speed non-arbitrary
     - Fix the Params associated with discrete sim-speed

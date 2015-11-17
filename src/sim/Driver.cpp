@@ -252,7 +252,13 @@ void Driver::keyPress(unsigned char key, int x, int y) {
     else if (std::string("0123456789").find(key) != std::string::npos) {
         // Press an input button
         int inputButton = std::string("0123456789").find(key);
-        S()->setInputButtonWasPressed(inputButton, true);
+        if (!S()->inputButtonWasPressed(inputButton)) {
+            S()->setInputButtonWasPressed(inputButton, true);
+            L()->info("Input button %v was pressed.", inputButton);
+        }
+        else {
+            L()->info("Input button %v has not yet been acknowledged as pressed; pressing it has no effect.", inputButton);
+        }
     }
 }
 
