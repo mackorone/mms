@@ -78,27 +78,17 @@ Cartesian Polygon::centroid() const {
 
 Polygon Polygon::translate(const Coordinate& translation) const {
 
-    // Memoization fixes graphics tearing
-    std::map<Cartesian, Cartesian> cache;
-    auto memoizedTranslateVertex = [&](const Cartesian& vertex){
-        if (!SimUtilities::mapContains(cache, vertex)) {
-            cache.insert(std::make_pair(vertex,
-                GeometryUtilities::translateVertex(vertex, translation)));
-        }
-        return cache.at(vertex);
-    };
-
     std::vector<Cartesian> vertices;
     for (Cartesian vertex : m_vertices) {
-        vertices.push_back(memoizedTranslateVertex(vertex));
+        vertices.push_back(GeometryUtilities::translateVertex(vertex, translation));
     }
 
     std::vector<Triangle> triangles;
     for (Triangle triangle : m_triangles) {
         triangles.push_back({
-            memoizedTranslateVertex(triangle.p1),
-            memoizedTranslateVertex(triangle.p2),
-            memoizedTranslateVertex(triangle.p3),
+            GeometryUtilities::translateVertex(triangle.p1, translation),
+            GeometryUtilities::translateVertex(triangle.p2, translation),
+            GeometryUtilities::translateVertex(triangle.p3, translation),
         });
     }
 
@@ -107,27 +97,17 @@ Polygon Polygon::translate(const Coordinate& translation) const {
 
 Polygon Polygon::rotateAroundPoint(const Angle& angle, const Coordinate& point) const {
 
-    // Memoization fixes graphics tearing
-    std::map<Cartesian, Cartesian> cache;
-    auto memoizedRotateVertexAroundPoint = [&](const Cartesian& vertex){
-        if (!SimUtilities::mapContains(cache, vertex)) {
-            cache.insert(std::make_pair(vertex,
-                GeometryUtilities::rotateVertexAroundPoint(vertex, angle, point)));
-        }
-        return cache.at(vertex);
-    };
-
     std::vector<Cartesian> vertices;
     for (Cartesian vertex : m_vertices) {
-        vertices.push_back(memoizedRotateVertexAroundPoint(vertex));
+        vertices.push_back(GeometryUtilities::rotateVertexAroundPoint(vertex, angle, point));
     }
 
     std::vector<Triangle> triangles;
     for (Triangle triangle : m_triangles) {
         triangles.push_back({
-            memoizedRotateVertexAroundPoint(triangle.p1),
-            memoizedRotateVertexAroundPoint(triangle.p2),
-            memoizedRotateVertexAroundPoint(triangle.p3),
+            GeometryUtilities::rotateVertexAroundPoint(triangle.p1, angle, point),
+            GeometryUtilities::rotateVertexAroundPoint(triangle.p2, angle, point),
+            GeometryUtilities::rotateVertexAroundPoint(triangle.p3, angle, point),
         });
     }
 
