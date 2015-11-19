@@ -168,7 +168,7 @@ std::vector<float> GraphicUtilities::getFullMapTransformationMatrix() {
 }
 
 std::vector<float> GraphicUtilities::getZoomedMapTransformationMatrix(
-    const Coordinate& initialMouseTranslation, const Angle& initialMouseRotation,
+    const Coordinate& initialMouseTranslation,
     const Coordinate& currentMouseTranslation, const Angle& currentMouseRotation) {
 
     // The purpose of this function is to produce a 4x4 matrix which,
@@ -244,7 +244,8 @@ std::vector<float> GraphicUtilities::getZoomedMapTransformationMatrix(
     // it, rotate it, scale it, and then translate it back to the proper
     // location. Hence all of the matrices.
 
-    double theta = currentMouseRotation.getRadians() - initialMouseRotation.getRadians();
+    // We subtract Degrees(90) here since we want forward to face NORTH
+    double theta = (Degrees(currentMouseRotation) - Degrees(90)).getRadians();
     std::vector<float> rotationMatrix = {
         static_cast<float>( cos(theta)), static_cast<float>(sin(theta)), 0.0, 0.0,
         static_cast<float>(-sin(theta)), static_cast<float>(cos(theta)), 0.0, 0.0,

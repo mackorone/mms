@@ -501,8 +501,7 @@ void Driver::drawFullAndZoomedMaps(
     glScissor(zoomedMapPosition.first, zoomedMapPosition.second, zoomedMapSize.first, zoomedMapSize.second);
     program->setUniformMatrix4("transformationMatrix",
         &GraphicUtilities::getZoomedMapTransformationMatrix(
-            m_mouse->getInitialTranslation(), m_mouse->getInitialRotation(),
-            currentMouseTranslation, currentMouseRotation).front(), 1, GL_TRUE);
+            m_mouse->getInitialTranslation(), currentMouseTranslation, currentMouseRotation).front(), 1, GL_TRUE);
     glDrawArrays(GL_TRIANGLES, vboStartingIndex, vboEndingIndex);
 
     // Stop using the program and vertex array object

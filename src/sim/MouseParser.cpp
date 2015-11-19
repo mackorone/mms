@@ -16,24 +16,6 @@ MouseParser::MouseParser(const std::string& filePath) {
         SimUtilities::quit(); // TODO: MACK - shouldn't quit here... allow other messages to print out
     }
     // TODO: MACK - use an explicit intialization step here so we can return false and then print out a more meaningful error message
-    // TODO: Copy Param Parser
-}
-
-// TODO: MACK - add these to the constructor, don't need methods for them
-Radians MouseParser::getForwardDirection() {
-    // TODO: Handle the failing case
-    double degrees = SimUtilities::strToDouble(
-        m_doc.child("Forward-Direction").child_value());
-    return Radians(Degrees(degrees));
-}
-
-Cartesian MouseParser::getCenterOfMass() {
-    // TODO: Handle the failing case
-    std::vector<Cartesian> vertices;
-    pugi::xml_node center = m_doc.child("Center-of-Mass");
-    double x = SimUtilities::strToDouble(center.child("X").child_value());
-    double y = SimUtilities::strToDouble(center.child("Y").child_value());
-    return Cartesian(Meters(x), Meters(y));
 }
 
 Polygon MouseParser::getBody(
@@ -125,6 +107,22 @@ Cartesian MouseParser::alignVertex(const Cartesian& vertex, const Cartesian& ali
         const Radians& alignmentRotation, const Cartesian& rotationPoint) {
     Cartesian translated = GeometryUtilities::translateVertex(vertex, alignmentTranslation);
     return GeometryUtilities::rotateVertexAroundPoint(translated, alignmentRotation, rotationPoint);
+}
+
+Radians MouseParser::getForwardDirection() {
+    // TODO: Handle the failing case
+    double degrees = SimUtilities::strToDouble(
+        m_doc.child("Forward-Direction").child_value());
+    return Radians(Degrees(degrees));
+}
+
+Cartesian MouseParser::getCenterOfMass() {
+    // TODO: Handle the failing case
+    std::vector<Cartesian> vertices;
+    pugi::xml_node center = m_doc.child("Center-of-Mass");
+    double x = SimUtilities::strToDouble(center.child("X").child_value());
+    double y = SimUtilities::strToDouble(center.child("Y").child_value());
+    return Cartesian(Meters(x), Meters(y));
 }
 
 } // namespace sim
