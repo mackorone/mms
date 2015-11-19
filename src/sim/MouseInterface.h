@@ -95,8 +95,8 @@ private:
     std::pair<std::pair<int, int>, Direction> getOpposingWall(int x, int y, Direction direction) const;
 
     friend class manual::Manual;
-    std::pair<int, int> getDiscretizedTranslation() const;
-    Direction getDiscretizedRotation() const;
+    std::pair<int, int> getCurrentDiscretizedTranslation() const;
+    Direction getCurrentDiscretizedRotation() const;
 };
 
 } // namespace sim

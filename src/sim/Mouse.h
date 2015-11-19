@@ -25,10 +25,13 @@ public:
     Cartesian getInitialTranslation() const;
     Radians getInitialRotation() const;
 
-    // Gets the current translation and rotation of the mouse. We intentionally
-    // force ourselves to always retrieve the two together, since if they're
-    // retrieved apart from one another, inconsistencies could easily arise.
-    std::pair<Cartesian, Radians> getCurrentTranslationAndRotation() const;
+    // Gets the current translation and rotation of the mouse
+    Cartesian getCurrentTranslation() const;
+    Radians getCurrentRotation() const;
+
+    // Gets the current discretized translation and rotation of the mouse
+    std::pair<int, int> getCurrentDiscretizedTranslation() const;
+    Direction getCurrentDiscretizedRotation() const;
 
     // Sets the current translation and rotation of the mouse
     void teleport(const Coordinate& translation, const Angle& rotation);
@@ -82,10 +85,6 @@ public:
     // Returns the value of the gyroscope
     RadiansPerSecond readGyro() const;
 
-    // Discretized information, used by MouseInterface // TODO: MACK
-    std::pair<int, int> getDiscretizedTranslation() const;
-    Direction getDiscretizedRotation() const;
-
 private:
     // Used for the sensor readings
     const Maze* m_maze;
@@ -94,11 +93,10 @@ private:
     Cartesian m_initialTranslation;
     Radians m_initialRotation;
 
-    // TODO: MACK - should we call these initial polygons???
-    // The parts of the mouse, as they exist when positioned at m_initialTranslation and m_initialRotation
-    Polygon m_bodyPolygon; // The polygon of strictly the body of the mouse
-    Polygon m_collisionPolygon; // The polygon containing all collidable parts of the mouse
-    Polygon m_centerOfMassPolygon; // The polygon overlaying the center of mass of the mouse
+    // The parts of the mouse, as when positioned at m_initialTranslation and m_initialRotation
+    Polygon m_initialBodyPolygon; // The polygon of strictly the body of the mouse
+    Polygon m_initialCollisionPolygon; // The polygon containing all collidable parts of the mouse
+    Polygon m_initialCenterOfMassPolygon; // The polygon overlaying the center of mass of the mouse
     std::map<std::string, Wheel> m_wheels; // The wheels of the mouse
     std::map<std::string, Sensor> m_sensors; // The sensors on the mouse
 

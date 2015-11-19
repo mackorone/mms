@@ -122,9 +122,8 @@ void Driver::draw() {
     static const int mouseTrianglesStartingIndex = GraphicUtilities::GRAPHIC_CPU_BUFFER.size();
 
     // Get the current mouse translation and rotation
-    std::pair<Cartesian, Radians> currentTranslationAndRotation = m_mouse->getCurrentTranslationAndRotation();
-    Cartesian currentMouseTranslation = currentTranslationAndRotation.first;
-    Radians currentMouseRotation = currentTranslationAndRotation.second;
+    Cartesian currentMouseTranslation = m_mouse->getCurrentTranslation();
+    Radians currentMouseRotation = m_mouse->getCurrentRotation();
 
     // Make space for mouse updates and fill the CPU buffer with new mouse triangles
     GraphicUtilities::GRAPHIC_CPU_BUFFER.erase(

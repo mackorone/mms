@@ -13,8 +13,6 @@
 #include "SimUtilities.h"
 #include "State.h"
 
-#include "Logging.h" // TODO: MACK
-
 namespace sim {
 
 Mouse::Mouse(const Maze* maze) : m_maze(maze), m_currentGyro(RadiansPerSecond(0.0)) {
@@ -38,24 +36,24 @@ bool Mouse::initialize(const std::string& mouseFile) {
 
     // Initialize the body, wheels, and sensors, such that they have the
     // correct initial translation and rotation
-    m_bodyPolygon = parser.getBody(m_initialTranslation, m_initialRotation);
+    m_initialBodyPolygon = parser.getBody(m_initialTranslation, m_initialRotation);
     m_wheels = parser.getWheels(m_initialTranslation, m_initialRotation);
     m_sensors = parser.getSensors(m_initialTranslation, m_initialRotation);
 
     // Initialize the collision polygon; this is technically not correct since
     // we should be using union, not convexHull, but it's a good approximation
     std::vector<Polygon> polygons;
-    polygons.push_back(m_bodyPolygon);
+    polygons.push_back(m_initialBodyPolygon);
     for (std::pair<std::string, Wheel> pair : m_wheels) {
         polygons.push_back(pair.second.getInitialPolygon());
     }
     for (std::pair<std::string, Sensor> pair : m_sensors) {
         polygons.push_back(pair.second.getInitialPolygon());
     }
-    m_collisionPolygon = GeometryUtilities::convexHull(polygons);
+    m_initialCollisionPolygon = GeometryUtilities::convexHull(polygons);
 
     // Initialize the center of mass polygon
-    m_centerOfMassPolygon = GeometryUtilities::createCirclePolygon(m_initialTranslation, Meters(.005), 8);
+    m_initialCenterOfMassPolygon = GeometryUtilities::createCirclePolygon(m_initialTranslation, Meters(.005), 8);
 
     // Return success
     return true;
@@ -69,8 +67,33 @@ Radians Mouse::getInitialRotation() const {
     return m_initialRotation;
 }
 
-std::pair<Cartesian, Radians> Mouse::getCurrentTranslationAndRotation() const {
-    return std::make_pair(m_currentTranslation, m_currentRotation);
+Cartesian Mouse::getCurrentTranslation() const {
+    return m_currentTranslation;
+}
+
+Radians Mouse::getCurrentRotation() const {
+    return m_currentRotation;
+}
+
+std::pair<int, int> Mouse::getCurrentDiscretizedTranslation() const {
+    Cartesian currentTranslation = getCurrentTranslation();
+    int x = static_cast<int>(floor((currentTranslation.getX() / Meters(P()->wallLength() + P()->wallWidth()))));
+    int y = static_cast<int>(floor((currentTranslation.getY() / Meters(P()->wallLength() + P()->wallWidth()))));
+    return std::make_pair(x, y);
+}
+
+Direction Mouse::getCurrentDiscretizedRotation() const {
+    int dir = static_cast<int>(floor((getCurrentRotation() + Degrees(45)) / Degrees(90)));
+    switch (dir) {
+        case 0:
+            return Direction::EAST;
+        case 1:
+            return Direction::NORTH;
+        case 2:
+            return Direction::WEST;
+        case 3:
+            return Direction::SOUTH;
+    }
 }
 
 void Mouse::teleport(const Coordinate& translation, const Angle& rotation) {
@@ -80,17 +103,17 @@ void Mouse::teleport(const Coordinate& translation, const Angle& rotation) {
 
 Polygon Mouse::getCurrentBodyPolygon(
         const Coordinate& currentTranslation, const Angle& currentRotation) const {
-    return getCurrentPolygon(m_bodyPolygon, currentTranslation, currentRotation);
+    return getCurrentPolygon(m_initialBodyPolygon, currentTranslation, currentRotation);
 }
 
 Polygon Mouse::getCurrentCollisionPolygon(
         const Coordinate& currentTranslation, const Angle& currentRotation) const {
-    return getCurrentPolygon(m_collisionPolygon, currentTranslation, currentRotation);
+    return getCurrentPolygon(m_initialCollisionPolygon, currentTranslation, currentRotation);
 }
 
 Polygon Mouse::getCurrentCenterOfMassPolygon(
         const Coordinate& currentTranslation, const Angle& currentRotation) const {
-    return getCurrentPolygon(m_centerOfMassPolygon, currentTranslation, currentRotation);
+    return getCurrentPolygon(m_initialCenterOfMassPolygon, currentTranslation, currentRotation);
 }
 
 std::vector<Polygon> Mouse::getCurrentWheelPolygons(
@@ -141,10 +164,6 @@ void Mouse::update(const Duration& elapsed) {
     }
     m_wheelMutex.unlock();
 
-    std::pair<Cartesian, Radians> currentTranslationAndRotation = getCurrentTranslationAndRotation();
-    Cartesian currentTranslation = currentTranslationAndRotation.first;
-    Radians currentRotation = currentTranslationAndRotation.second;
-    
     MetersPerSecond sumDx(0);
     MetersPerSecond sumDy(0);
     RadiansPerSecond sumDr(0);
@@ -152,8 +171,10 @@ void Mouse::update(const Duration& elapsed) {
     for (std::pair<std::string, Wheel> wheel : m_wheels) {
 
         MetersPerSecond linearVelocity = wheelAngularVelocities.at(wheel.first) * wheel.second.getRadius();
-        MetersPerSecond dx = linearVelocity * (currentRotation - getInitialRotation() + wheel.second.getInitialDirection()).getCos(); // TODO: MACK
-        MetersPerSecond dy = linearVelocity * (currentRotation - getInitialRotation() + wheel.second.getInitialDirection()).getSin(); // TODO: MACK
+        MetersPerSecond dx = linearVelocity *
+            (getCurrentRotation() - getInitialRotation() + wheel.second.getInitialDirection()).getCos();
+        MetersPerSecond dy = linearVelocity *
+            (getCurrentRotation() - getInitialRotation() + wheel.second.getInitialDirection()).getSin();
 
         Cartesian wheelToCenter = getInitialTranslation() - wheel.second.getInitialPosition();
         double rotationFactor = (wheelToCenter.getTheta() - wheel.second.getInitialDirection()).getSin();
@@ -201,9 +222,8 @@ double Mouse::readSensor(const std::string& name) const {
     Sensor sensor = m_sensors.at(name);
 
     // Retrieve the current translation and rotation
-    std::pair<Cartesian, Radians> currentTranslationAndRotation = getCurrentTranslationAndRotation();
-    Cartesian currentTranslation = currentTranslationAndRotation.first;
-    Radians currentRotation = currentTranslationAndRotation.second;
+    Cartesian currentTranslation = getCurrentTranslation();
+    Radians currentRotation = getCurrentRotation();
 
     // Determine the reading
     Polygon fullView = sensor.getInitialView()
@@ -221,29 +241,6 @@ Seconds Mouse::getSensorReadDuration(const std::string& name) const {
 
 RadiansPerSecond Mouse::readGyro() const {
     return m_currentGyro;
-}
-
-// TODO: MACK - What to do about these...
-std::pair<int, int> Mouse::getDiscretizedTranslation() const {
-    Cartesian currentTranslation = getCurrentTranslationAndRotation().first;
-    int x = static_cast<int>(floor((currentTranslation.getX() / Meters(P()->wallLength() + P()->wallWidth()))));
-    int y = static_cast<int>(floor((currentTranslation.getY() / Meters(P()->wallLength() + P()->wallWidth()))));
-    return std::make_pair(x, y);
-}
-
-Direction Mouse::getDiscretizedRotation() const {
-    Radians currentRotation = getCurrentTranslationAndRotation().second;
-    int dir = static_cast<int>(floor((currentRotation + Degrees(45)) / Degrees(90)));
-    switch (dir) {
-        case 0:
-            return Direction::EAST;
-        case 1:
-            return Direction::NORTH;
-        case 2:
-            return Direction::WEST;
-        case 3:
-            return Direction::SOUTH;
-    }
 }
 
 Polygon Mouse::getCurrentPolygon(const Polygon& initialPolygon,

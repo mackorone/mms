@@ -52,7 +52,7 @@ void World::simulate() {
         // needing more graphics functionality here, it'd be wise to make a
         // separate class.
         if (!P()->algorithmControlsTileFog()) {
-            std::pair<int, int> location = m_mouse->getDiscretizedTranslation();
+            std::pair<int, int> location = m_mouse->getCurrentDiscretizedTranslation();
             m_mazeGraphic->setTileFogginess(location.first, location.second, false);
         }
 
@@ -93,12 +93,9 @@ void World::checkCollision() {
         // the collision detection operation and take it into account when we sleep.
         double start(sim::SimUtilities::getHighResTime());
 
-        // Get the current translation and rotation of the mouse
-        std::pair<Cartesian, Radians> curPos = m_mouse->getCurrentTranslationAndRotation();
-
         // For each line segment in the mouse polygon ...
-        for (std::pair<Cartesian, Cartesian> B :
-                m_mouse->getCurrentCollisionPolygon(curPos.first, curPos.second).getLineSegments()) {
+        for (std::pair<Cartesian, Cartesian> B : m_mouse->getCurrentCollisionPolygon(
+                m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation()).getLineSegments()) {
 
             // ... and for each tile the segment could be intersecting with ...
             for (const Tile* tile : GeometryUtilities::lineSegmentTileCover(B.first, B.second, *m_maze)) {

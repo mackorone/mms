@@ -33,7 +33,7 @@ void Manual::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::Mo
 
     while (true) {
 
-        std::pair<int, int> location = mouse->getDiscretizedTranslation();
+        std::pair<int, int> location = mouse->getCurrentDiscretizedTranslation();
         mouse->setTileFogginess(location.first, location.second, false);
         for (std::pair<char, sim::Direction> pair : directionsMap) {
             mouse->declareWall(location.first, location.second, pair.first,

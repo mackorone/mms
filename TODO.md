@@ -1,5 +1,6 @@
 # High Priority
 
+- Check to make sure that rotation is working properly
 - View -> sensorView
 - InitialPolgon -> something else
 - Position -> translation
