@@ -36,7 +36,8 @@ public:
 
     // Retrieve the 4x4 transformation matrices for each map
     static std::vector<float> getFullMapTransformationMatrix();
-    static std::vector<float> getZoomedMapTransformationMatrix(const Coordinate& initialMouseTranslation,
+    static std::vector<float> getZoomedMapTransformationMatrix(
+        const Coordinate& initialMouseTranslation, const Angle& initialMouseRotation,
         const Coordinate& currentMouseTranslation, const Angle& currentMouseRotation);
 
     // Fills the GRAPHIC_CPU_BUFFER and TEXTURE_CPU_BUFFER

@@ -21,33 +21,45 @@ public:
     // Initializes the mouse (body, wheels, sensors, etc.); returns true if successful, false if not
     bool initialize(const std::string& mouseFile);
 
+    // Gets the initial translation and rotation of the mouse
+    Cartesian getInitialTranslation() const;
+    Radians getInitialRotation() const;
+
+    // Gets the current translation and rotation of the mouse. We intentionally
+    // force ourselves to always retrieve the two together, since if they're
+    // retrieved apart from one another, inconsistencies could easily arise.
+    std::pair<Cartesian, Radians> getCurrentTranslationAndRotation() const;
+
+    // Sets the current translation and rotation of the mouse
+    void teleport(const Coordinate& translation, const Angle& rotation);
+
     // Retrieves the polygon of just the body of the mouse
-    Polygon getBodyPolygon() const;
-    Polygon getBodyPolygon(const Coordinate& translation, const Angle& rotation) const;
+    Polygon getCurrentBodyPolygon(
+        const Coordinate& currentTranslation, const Angle& currentRotation) const;
 
     // Retrieves the polygon comprised of all parts of the mouse that could collide with walls
-    Polygon getCollisionPolygon() const;
-    Polygon getCollisionPolygon(const Coordinate& translation, const Angle& rotation) const;
+    Polygon getCurrentCollisionPolygon(
+        const Coordinate& currentTranslation, const Angle& currentRotation) const;
 
     // Retrieves the center of mass polygon of the mouse
-    Polygon getCenterOfMassPolygon() const;
-    Polygon getCenterOfMassPolygon(const Coordinate& translation, const Angle& rotation) const;
+    Polygon getCurrentCenterOfMassPolygon(
+        const Coordinate& currentTranslation, const Angle& currentRotation) const;
 
     // Retrieves the polygons of the wheels of the robot
-    std::vector<Polygon> getWheelPolygons() const;
-    std::vector<Polygon> getWheelPolygons(const Coordinate& translation, const Angle& rotation) const;
+    std::vector<Polygon> getCurrentWheelPolygons(
+        const Coordinate& currentTranslation, const Angle& currentRotation) const;
 
     // Retrieves the speed indicator polygons of the wheels of the robot
-    std::vector<Polygon> getWheelSpeedIndicatorPolygons() const;
-    std::vector<Polygon> getWheelSpeedIndicatorPolygons(const Coordinate& translation, const Angle& rotation) const;
+    std::vector<Polygon> getCurrentWheelSpeedIndicatorPolygons(
+        const Coordinate& currentTranslation, const Angle& currentRotation) const;
 
     // Retrieves the polygons of the sensors of the robot
-    std::vector<Polygon> getSensorPolygons() const;
-    std::vector<Polygon> getSensorPolygons(const Coordinate& translation, const Angle& rotation) const;
+    std::vector<Polygon> getCurrentSensorPolygons(
+        const Coordinate& currentTranslation, const Angle& currentRotation) const;
 
     // Retrieve the polygons corresponding to the views of the sensors
-    std::vector<Polygon> getViewPolygons() const;
-    std::vector<Polygon> getViewPolygons(const Coordinate& translation, const Angle& rotation) const;
+    std::vector<Polygon> getCurrentViewPolygons(
+        const Coordinate& currentTranslation, const Angle& currentRotation) const;
 
     // Instruct the mouse to update its own position based on how much simulation time has elapsed
     void update(const Duration& elapsed);
@@ -70,42 +82,38 @@ public:
     // Returns the value of the gyroscope
     RadiansPerSecond readGyro() const;
 
-    // Discretized information, used by MouseInterface
+    // Discretized information, used by MouseInterface // TODO: MACK
     std::pair<int, int> getDiscretizedTranslation() const;
     Direction getDiscretizedRotation() const;
-
-    // For use with the discrete interface and graphics *only*
-    Cartesian getInitialTranslation() const;
-    Cartesian getCurrentTranslation() const;
-    Radians getCurrentRotation() const;
-    void teleport(const Coordinate& translation, const Angle& rotation);
 
 private:
     // Used for the sensor readings
     const Maze* m_maze;
 
-    // The mouse, as it's positioned at the start execution
-    Cartesian m_initialTranslation; // Always the center of the starting tile
-    Polygon m_initialBodyPolygon; // The polygon of strictly the body of the mouse
-    Polygon m_initialCollisionPolygon; // The polygon containing all collidable parts of the mouse
-    Polygon m_initialCenterOfMassPolygon; // The polygon overlaying the center of mass of the mouse
+    // The initial translation and rotation of the mouse
+    Cartesian m_initialTranslation;
+    Radians m_initialRotation;
 
-    // The gyro, rotation, and translation of the mouse, which change throughout execution
-    RadiansPerSecond m_gyro;
-    Radians m_rotation;
-    Cartesian m_translation;
+    // TODO: MACK - should we call these initial polygons???
+    // The parts of the mouse, as they exist when positioned at m_initialTranslation and m_initialRotation
+    Polygon m_bodyPolygon; // The polygon of strictly the body of the mouse
+    Polygon m_collisionPolygon; // The polygon containing all collidable parts of the mouse
+    Polygon m_centerOfMassPolygon; // The polygon overlaying the center of mass of the mouse
+    std::map<std::string, Wheel> m_wheels; // The wheels of the mouse
+    std::map<std::string, Sensor> m_sensors; // The sensors on the mouse
 
-    // The wheels of the mouse
-    std::map<std::string, Wheel> m_wheels;
-
-    // The sensors on the mouse
-    std::map<std::string, Sensor> m_sensors;
+    // The gyro (rate of rotation), rotation, and translation of the mouse,
+    // which change throughout execution
+    RadiansPerSecond m_currentGyro;
+    Cartesian m_currentTranslation;
+    Radians m_currentRotation;
 
     // Ensures the wheel speeds are accessed together atomically
     std::mutex m_wheelMutex; 
 
     // Helper function for polygon retrieval based on a given mouse translation and rotation
-    Polygon getPolygon(const Polygon& polygon, const Cartesian& translation, const Radians& rotation) const;
+    Polygon getCurrentPolygon(const Polygon& initialPolygon,
+        const Cartesian& currentTranslation, const Radians& currentRotation) const;
 };
 
 } // namespace sim

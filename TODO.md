@@ -1,5 +1,9 @@
 # High Priority
 
+- View -> sensorView
+- InitialPolgon -> something else
+- Position -> translation
+- Do I need polygon translation/rotation vertex memoization anymore
 - MinSleepDuration is a little bit weird - sometimes we try to sleep less than that
 - Continuous performance
     - We're triangulating every update (for sensors) instead of every frame - this is super expensive...
@@ -27,15 +31,13 @@
     - Should we have text alignment be a parameter?
     - Be able to just show actual distances
 - Put a toolbar at the top or bottom with info
-    - Allow zoom in/out when zoomed map not visible once I have the toolbar
-        - Show zoom level
-        - Show sim speed level
-        - Show toggle tile text, even when not visible
     - Information of the wheel speeds
     - Display a clock (real and sim time)
     - Current layout
     - Pretty much all state information
-    - Print out zoom (16:1, etc.)
+        - zoom level (16:1, etc.)
+        - sim speed
+        - Show toggle tile text, even when not visible
     - Check to make sure font won't be cut off, use ellipses if so (How do we deal with text being cut off in the vertical direction?)
     - Set the mouse algo in State for display in the toolbar
 - Convert the floats in vertex data to doubles

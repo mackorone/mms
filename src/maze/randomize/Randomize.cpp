@@ -1,7 +1,5 @@
 #include "Randomize.h"
 
-#include <cstdlib>
-
 namespace randomize {
 
 void Randomize::generate(int mazeWidth, int mazeHeight, sim::MazeInterface* maze) {

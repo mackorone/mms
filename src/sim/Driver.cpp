@@ -122,8 +122,9 @@ void Driver::draw() {
     static const int mouseTrianglesStartingIndex = GraphicUtilities::GRAPHIC_CPU_BUFFER.size();
 
     // Get the current mouse translation and rotation
-    Cartesian currentMouseTranslation = m_mouse->getCurrentTranslation();
-    Radians currentMouseRotation = m_mouse->getCurrentRotation();
+    std::pair<Cartesian, Radians> currentTranslationAndRotation = m_mouse->getCurrentTranslationAndRotation();
+    Cartesian currentMouseTranslation = currentTranslationAndRotation.first;
+    Radians currentMouseRotation = currentTranslationAndRotation.second;
 
     // Make space for mouse updates and fill the CPU buffer with new mouse triangles
     GraphicUtilities::GRAPHIC_CPU_BUFFER.erase(
@@ -501,7 +502,8 @@ void Driver::drawFullAndZoomedMaps(
     glScissor(zoomedMapPosition.first, zoomedMapPosition.second, zoomedMapSize.first, zoomedMapSize.second);
     program->setUniformMatrix4("transformationMatrix",
         &GraphicUtilities::getZoomedMapTransformationMatrix(
-            m_mouse->getInitialTranslation(), currentMouseTranslation, currentMouseRotation).front(), 1, GL_TRUE);
+            m_mouse->getInitialTranslation(), m_mouse->getInitialRotation(),
+            currentMouseTranslation, currentMouseRotation).front(), 1, GL_TRUE);
     glDrawArrays(GL_TRIANGLES, vboStartingIndex, vboEndingIndex);
 
     // Stop using the program and vertex array object

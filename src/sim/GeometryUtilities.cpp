@@ -6,81 +6,49 @@
 #include "CPMath.h"
 #include "CPMinMax.h"
 #include "Param.h"
+#include "units/Polar.h"
 
 namespace sim {
 
-std::vector<const Tile*> GeometryUtilities::lineSegmentTileCover(const Cartesian& A, const Cartesian& B, const Maze& maze) {
+Cartesian GeometryUtilities::translateVertex(const Cartesian& vertex, const Coordinate& translation) {
+    return vertex + translation;
+}
 
-    // The output vector
-    std::vector<const Tile*> tilesInRange;
+Cartesian GeometryUtilities::rotateVertexAroundPoint(const Cartesian& vertex, const Angle& angle, const Coordinate& point) {
+    Cartesian relativeVertex(
+        vertex.getX() - point.getX(),
+        vertex.getY() - point.getY()
+    );
+    Polar rotatedRelativeVertex(
+        relativeVertex.getRho(),
+        relativeVertex.getTheta() + angle
+    );
+    Cartesian rotatedVertex(
+        rotatedRelativeVertex.getX() + point.getX(),
+        rotatedRelativeVertex.getY() + point.getY()
+    );
+    return rotatedVertex;
+}
 
-    // The length of any one tile
-    Meters tileLength = P()->wallLength() + P()->wallWidth();
-
-    // Lexicographical ordering
-    Cartesian p0 = std::min(A, B);
-    Cartesian p1 = std::max(A, B);
-
-    // Starting tile
-    int x0 = static_cast<int>(floor(p0.getX() / tileLength));
-    int y0 = static_cast<int>(floor(p0.getY() / tileLength)); 
-
-    // Ending tile
-    int x1 = static_cast<int>(floor(p1.getX() / tileLength));
-    int y1 = static_cast<int>(floor(p1.getY() / tileLength));
-
-    // Difference between the points
-    Meters dx = p1.getX() - p0.getX(); // Always non-negative
-    Meters dy = p1.getY() - p0.getY(); // Could have any sign
-
-    // For all y-intercepts to the right of the the starting point
-    for (int i = 1; tileLength * (x0 + i) < p1.getX(); i += 1) {
-        Meters fx = tileLength * (x0 + i);
-        Meters fy = p0.getY() + (fx - p0.getX()) * (dy / dx);
-        // Add the tile that is to the left of the y-intercept 
-        int x = x0 + i - 1;
-        int y = static_cast<int>(floor(fy / tileLength));
-        if (0 <= x && x < maze.getWidth() && 0 <= y && y < maze.getHeight()) {
-            tilesInRange.push_back(maze.getTile(x, y));
-        }
+Polygon GeometryUtilities::createCirclePolygon(const Cartesian& position, const Distance& radius, int numberOfEdges) {
+    ASSERT_LE(3, numberOfEdges);
+    std::vector<Cartesian> vertices;
+    for (int i = 0; i < numberOfEdges; i += 1) {
+        vertices.push_back(Polar(radius, Radians(i * M_TWOPI / numberOfEdges)) + position);
     }
+    return Polygon(vertices);
+}
 
-    // For all x-intercepts above the the starting point, if the slope is positive ...
-    if (0 < dy.getMeters()) {
-        for (int i = 1; tileLength * (y0 + i) < p1.getY(); i += 1) {
-            Meters fy = tileLength * (y0 + i);
-            Meters fx = p0.getX() + (fy - p0.getY()) * (dx / dy);
-            // Add the tile that is below the x-intercept
-            int x = static_cast<int>(floor(fx / tileLength));
-            int y = y0 + i - 1;
-            if (0 <= x && x < maze.getWidth() && 0 <= y && y < maze.getHeight()) {
-                tilesInRange.push_back(maze.getTile(x, y));
-            }
-        }
-    }
+MetersSquared GeometryUtilities::crossProduct(const Cartesian& Z, const Cartesian& A, const Cartesian& B) {
 
-    // ... or for all x-intercepts below the the starting point, if the slope is negative
-    else {
-        for (int i = 0; p1.getY() < tileLength * (y0 - i); i += 1) {
-            Meters fy = tileLength * (y0 - i);
-            Meters fx = p0.getX() + (fy - p0.getY()) * (dx / dy);
-            // Add the tile that is above the x-intercept
-            int x = static_cast<int>(floor(fx / tileLength));
-            int y = y0 - i;
-            if (0 <= x && x < maze.getWidth() && 0 <= y && y < maze.getHeight()) {
-                tilesInRange.push_back(maze.getTile(x, y));
-            }
-        }
-    }
+    // The cross product of ZA and ZB is simply the determinant of the following matrix:
+    //
+    //                                |A_x-Z_x, A_y-Z_y|
+    //                                |B_x-Z_x, B_y-Z_y|
+    //
+    // Where Z is simply the location of the origin for the vectors A and B
 
-    // Lastly, add the destination tile
-    if (0 <= x1 && x1 < maze.getWidth() && 0 <= y1 && y1 < maze.getHeight()) {
-        tilesInRange.push_back(maze.getTile(x1, y1));
-    }
-
-    // Sort the tiles lexicographically
-    std::sort(tilesInRange.begin(), tilesInRange.end());
-    return tilesInRange;
+    return (A.getX() - Z.getX()) * (B.getY() - Z.getY()) - (A.getY() - Z.getY()) * (B.getX() - Z.getX());
 }
 
 bool GeometryUtilities::linesIntersect(const std::pair<const Cartesian&, const Cartesian&>& A,
@@ -187,6 +155,80 @@ Cartesian GeometryUtilities::getIntersectionPoint(const std::pair<const Cartesia
     return Cartesian(Meters(a1x+ABpos*theCos), Meters(a1y+ABpos*theSin));
 }
 
+std::vector<const Tile*> GeometryUtilities::lineSegmentTileCover(const Cartesian& A, const Cartesian& B, const Maze& maze) {
+
+    // The output vector
+    std::vector<const Tile*> tilesInRange;
+
+    // The length of any one tile
+    Meters tileLength = P()->wallLength() + P()->wallWidth();
+
+    // Lexicographical ordering
+    Cartesian p0 = std::min(A, B);
+    Cartesian p1 = std::max(A, B);
+
+    // Starting tile
+    int x0 = static_cast<int>(floor(p0.getX() / tileLength));
+    int y0 = static_cast<int>(floor(p0.getY() / tileLength)); 
+
+    // Ending tile
+    int x1 = static_cast<int>(floor(p1.getX() / tileLength));
+    int y1 = static_cast<int>(floor(p1.getY() / tileLength));
+
+    // Difference between the points
+    Meters dx = p1.getX() - p0.getX(); // Always non-negative
+    Meters dy = p1.getY() - p0.getY(); // Could have any sign
+
+    // For all y-intercepts to the right of the the starting point
+    for (int i = 1; tileLength * (x0 + i) < p1.getX(); i += 1) {
+        Meters fx = tileLength * (x0 + i);
+        Meters fy = p0.getY() + (fx - p0.getX()) * (dy / dx);
+        // Add the tile that is to the left of the y-intercept 
+        int x = x0 + i - 1;
+        int y = static_cast<int>(floor(fy / tileLength));
+        if (0 <= x && x < maze.getWidth() && 0 <= y && y < maze.getHeight()) {
+            tilesInRange.push_back(maze.getTile(x, y));
+        }
+    }
+
+    // For all x-intercepts above the the starting point, if the slope is positive ...
+    if (0 < dy.getMeters()) {
+        for (int i = 1; tileLength * (y0 + i) < p1.getY(); i += 1) {
+            Meters fy = tileLength * (y0 + i);
+            Meters fx = p0.getX() + (fy - p0.getY()) * (dx / dy);
+            // Add the tile that is below the x-intercept
+            int x = static_cast<int>(floor(fx / tileLength));
+            int y = y0 + i - 1;
+            if (0 <= x && x < maze.getWidth() && 0 <= y && y < maze.getHeight()) {
+                tilesInRange.push_back(maze.getTile(x, y));
+            }
+        }
+    }
+
+    // ... or for all x-intercepts below the the starting point, if the slope is negative
+    else {
+        for (int i = 0; p1.getY() < tileLength * (y0 - i); i += 1) {
+            Meters fy = tileLength * (y0 - i);
+            Meters fx = p0.getX() + (fy - p0.getY()) * (dx / dy);
+            // Add the tile that is above the x-intercept
+            int x = static_cast<int>(floor(fx / tileLength));
+            int y = y0 - i;
+            if (0 <= x && x < maze.getWidth() && 0 <= y && y < maze.getHeight()) {
+                tilesInRange.push_back(maze.getTile(x, y));
+            }
+        }
+    }
+
+    // Lastly, add the destination tile
+    if (0 <= x1 && x1 < maze.getWidth() && 0 <= y1 && y1 < maze.getHeight()) {
+        tilesInRange.push_back(maze.getTile(x1, y1));
+    }
+
+    // Sort the tiles lexicographically
+    std::sort(tilesInRange.begin(), tilesInRange.end());
+    return tilesInRange;
+}
+
 Polygon GeometryUtilities::convexHull(const std::vector<Polygon>& polygons) {
 
     // TODO: Explain/Clean this functionality
@@ -230,18 +272,6 @@ Polygon GeometryUtilities::convexHull(const std::vector<Polygon>& polygons) {
     hull.resize(k);
 
     return Polygon(hull);
-}
-
-MetersSquared GeometryUtilities::crossProduct(const Cartesian& Z, const Cartesian& A, const Cartesian& B) {
-
-    // The cross product of ZA and ZB is simply the determinant of the following matrix:
-    //
-    //                                |A_x-Z_x, A_y-Z_y|
-    //                                |B_x-Z_x, B_y-Z_y|
-    //
-    // Where Z is simply the location of the origin for the vectors A and B
-
-    return (A.getX() - Z.getX()) * (B.getY() - Z.getY()) - (A.getY() - Z.getY()) * (B.getX() - Z.getX());
 }
 
 } // namespace sim

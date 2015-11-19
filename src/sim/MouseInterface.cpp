@@ -179,7 +179,7 @@ void MouseInterface::undeclareTileDistance(int x, int y) {
 }
 
 void MouseInterface::resetPosition() {
-    m_mouse->teleport(m_mouse->getInitialTranslation(), Radians(0.0));
+    m_mouse->teleport(m_mouse->getInitialTranslation(), m_mouse->getInitialRotation());
 }
 
 bool MouseInterface::inputButtonPressed(int inputButton) {
@@ -325,7 +325,7 @@ void MouseInterface::moveForward() {
 
     // We modify these values in the switch statement
     Cartesian destinationTranslation = Cartesian(currentX, currentY);
-    Degrees destinationRotation(0.0);
+    Degrees destinationRotation = m_mouse->getCurrentTranslationAndRotation().second;
 
     // A single step to take within the while loops
     auto step = [=](){
@@ -339,32 +339,28 @@ void MouseInterface::moveForward() {
     switch (getDiscretizedRotation()) {
         case Direction::NORTH: {
             destinationTranslation += Cartesian(Meters(0), tileLength);
-            destinationRotation = Degrees(0);
-            while (m_mouse->getCurrentTranslation().getY() < destinationTranslation.getY()) {
+            while (m_mouse->getCurrentTranslationAndRotation().first.getY() < destinationTranslation.getY()) {
                 step();
             }
             break;
         }
         case Direction::EAST: {
             destinationTranslation += Cartesian(tileLength, Meters(0));
-            destinationRotation = Degrees(270);
-            while (m_mouse->getCurrentTranslation().getX() < destinationTranslation.getX()) {
+            while (m_mouse->getCurrentTranslationAndRotation().first.getX() < destinationTranslation.getX()) {
                 step();
             }
             break;
         }
         case Direction::SOUTH: {
             destinationTranslation += Cartesian(Meters(0), tileLength * -1);
-            destinationRotation = Degrees(180);
-            while (destinationTranslation.getY() < m_mouse->getCurrentTranslation().getY()) {
+            while (destinationTranslation.getY() < m_mouse->getCurrentTranslationAndRotation().first.getY()) {
                 step();
             }
             break;
         }
         case Direction::WEST: {
             destinationTranslation += Cartesian(tileLength * -1, Meters(0));
-            destinationRotation = Degrees(90);
-            while (destinationTranslation.getX() < m_mouse->getCurrentTranslation().getX()) {
+            while (destinationTranslation.getX() < m_mouse->getCurrentTranslationAndRotation().first.getX()) {
                 step();
             }
             break;
@@ -382,8 +378,9 @@ void MouseInterface::turnRight() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
-    Degrees destinationRotation = m_mouse->getCurrentRotation() - Degrees(90);
+    std::pair<Cartesian, Radians> currentTranslationAndRotation = m_mouse->getCurrentTranslationAndRotation();
+    Cartesian destinationTranslation = currentTranslationAndRotation.first;
+    Degrees destinationRotation = currentTranslationAndRotation.second - Degrees(90);
 
     // A single step to take within the while loops
     auto step = [=](){
@@ -396,20 +393,21 @@ void MouseInterface::turnRight() {
 
     switch (getDiscretizedRotation()) {
         case Direction::NORTH: {
-            while (destinationRotation < m_mouse->getCurrentRotation() || m_mouse->getCurrentRotation() < Degrees(180)) {
+            while (m_mouse->getCurrentTranslationAndRotation().second < Degrees(180)) {
                 step();
             }
             break;
         }
-        case Direction::EAST:
-        case Direction::SOUTH: {
-            while (destinationRotation < m_mouse->getCurrentRotation()) {
+        case Direction::EAST: {
+            while (m_mouse->getCurrentTranslationAndRotation().second < Degrees(180) ||
+                    destinationRotation < m_mouse->getCurrentTranslationAndRotation().second) {
                 step();
             }
             break;
         }
+        case Direction::SOUTH:
         case Direction::WEST: {
-            while (m_mouse->getCurrentRotation() < Degrees(180)) {
+            while (destinationRotation < m_mouse->getCurrentTranslationAndRotation().second) {
                 step();
             }
             break;
@@ -427,8 +425,9 @@ void MouseInterface::turnLeft() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
-    Degrees destinationRotation = m_mouse->getCurrentRotation() + Degrees(90);
+    std::pair<Cartesian, Radians> currentTranslationAndRotation = m_mouse->getCurrentTranslationAndRotation();
+    Cartesian destinationTranslation = currentTranslationAndRotation.first;
+    Degrees destinationRotation = currentTranslationAndRotation.second + Degrees(90);
 
     // A single step to take within the while loops
     auto step = [=](){
@@ -440,21 +439,22 @@ void MouseInterface::turnLeft() {
     };
 
     switch (getDiscretizedRotation()) {
-        case Direction::NORTH: {
-            while (m_mouse->getCurrentRotation() < destinationRotation ||  Degrees(180) < m_mouse->getCurrentRotation()) {
-                step();
-            }
-            break;
-        }
         case Direction::EAST: {
-            while (Degrees(180) < m_mouse->getCurrentRotation()) {
+            while (Degrees(180) < m_mouse->getCurrentTranslationAndRotation().second ||
+                    m_mouse->getCurrentTranslationAndRotation().second < destinationRotation) {
                 step();
             }
             break;
         }
-        case Direction::SOUTH:
-        case Direction::WEST: {
-            while (m_mouse->getCurrentRotation() < destinationRotation) {
+        case Direction::SOUTH: {
+            while (Degrees(180) < m_mouse->getCurrentTranslationAndRotation().second) {
+                step();
+            }
+            break;
+        }
+        case Direction::WEST:
+        case Direction::NORTH: {
+            while (m_mouse->getCurrentTranslationAndRotation().second < destinationRotation) {
                 step();
             }
             break;

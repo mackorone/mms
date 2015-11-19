@@ -24,7 +24,7 @@ Sensor::Sensor(
         m_initialDirection(direction) {
 
     // Create the polygon for the body of the sensor
-    m_initialPolygon = Polygon::createCirclePolygon(position, radius, P()->numberOfCircleApproximationPoints());
+    m_initialPolygon = GeometryUtilities::createCirclePolygon(position, radius, P()->numberOfCircleApproximationPoints());
 
     // Create the polygon for the view of the sensor
     std::vector<Cartesian> view;

@@ -3,9 +3,10 @@
 #include <polypartition/polypartition.h>
 
 #include "Assert.h"
-#include "units/Polar.h"
 #include "CPMath.h"
+#include "GeometryUtilities.h"
 #include "SimUtilities.h"
+#include "units/Polar.h"
 
 namespace sim {
 
@@ -21,15 +22,6 @@ Polygon::Polygon(const std::vector<Cartesian>& vertices) {
     ASSERT_LE(3, vertices.size());
     m_vertices = vertices;
     m_triangles = triangulate(vertices);
-}
-
-Polygon Polygon::createCirclePolygon(const Cartesian& position, const Distance& radius, int numberOfEdges) {
-    ASSERT_LE(3, numberOfEdges);
-    std::vector<Cartesian> vertices;
-    for (int i = 0; i < numberOfEdges; i += 1) {
-        vertices.push_back(Polar(radius, Radians(i * M_TWOPI / numberOfEdges)) + position);
-    }
-    return Polygon(vertices);
 }
 
 std::vector<Cartesian> Polygon::getVertices() const {
@@ -90,7 +82,8 @@ Polygon Polygon::translate(const Coordinate& translation) const {
     std::map<Cartesian, Cartesian> cache;
     auto memoizedTranslateVertex = [&](const Cartesian& vertex){
         if (!SimUtilities::mapContains(cache, vertex)) {
-            cache.insert(std::make_pair(vertex, translateVertex(vertex, translation)));
+            cache.insert(std::make_pair(vertex,
+                GeometryUtilities::translateVertex(vertex, translation)));
         }
         return cache.at(vertex);
     };
@@ -118,7 +111,8 @@ Polygon Polygon::rotateAroundPoint(const Angle& angle, const Coordinate& point) 
     std::map<Cartesian, Cartesian> cache;
     auto memoizedRotateVertexAroundPoint = [&](const Cartesian& vertex){
         if (!SimUtilities::mapContains(cache, vertex)) {
-            cache.insert(std::make_pair(vertex, rotateVertexAroundPoint(vertex, angle, point)));
+            cache.insert(std::make_pair(vertex,
+                GeometryUtilities::rotateVertexAroundPoint(vertex, angle, point)));
         }
         return cache.at(vertex);
     };
@@ -143,26 +137,6 @@ Polygon Polygon::rotateAroundPoint(const Angle& angle, const Coordinate& point) 
 Polygon::Polygon(const std::vector<Cartesian>& vertices, const std::vector<Triangle>& triangles) {
     m_vertices = vertices;
     m_triangles = triangles;
-}
-
-Cartesian Polygon::translateVertex(const Cartesian& vertex, const Coordinate& translation) {
-    return vertex + translation;
-}
-
-Cartesian Polygon::rotateVertexAroundPoint(const Cartesian& vertex, const Angle& angle, const Coordinate& point) {
-    Cartesian relativeVertex(
-        vertex.getX() - point.getX(),
-        vertex.getY() - point.getY()
-    );
-    Polar rotatedRelativeVertex(
-        relativeVertex.getRho(),
-        relativeVertex.getTheta() + angle
-    );
-    Cartesian rotatedVertex(
-        rotatedRelativeVertex.getX() + point.getX(),
-        rotatedRelativeVertex.getY() + point.getY()
-    );
-    return rotatedVertex;
 }
 
 std::vector<Triangle> Polygon::triangulate(const std::vector<Cartesian>& vertices) {

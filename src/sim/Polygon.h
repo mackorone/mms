@@ -16,8 +16,6 @@ public:
     Polygon(const Polygon& polygon);
     Polygon(const std::vector<Cartesian>& vertices);
 
-    static Polygon createCirclePolygon(const Cartesian& position, const Distance& radius, int numberOfEdges = 8);
-
     std::vector<Cartesian> getVertices() const;
     std::vector<Triangle> getTriangles() const;
     std::vector<std::pair<Cartesian, Cartesian>> getLineSegments() const;
@@ -37,10 +35,6 @@ private:
     // abuse the fact that the triangles argument should be the triangulation
     // of the polygon specified by the vertices argument.
     Polygon(const std::vector<Cartesian>& vertices, const std::vector<Triangle>& triangles);
-
-    // Helper functions for translate and rotateAroundPoint
-    static Cartesian translateVertex(const Cartesian& vertex, const Coordinate& translation);
-    static Cartesian rotateVertexAroundPoint(const Cartesian& vertex, const Angle& angle, const Coordinate& point);
 
     static std::vector<Triangle> triangulate(const std::vector<Cartesian>& vertices);
 };

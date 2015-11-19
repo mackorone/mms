@@ -93,8 +93,12 @@ void World::checkCollision() {
         // the collision detection operation and take it into account when we sleep.
         double start(sim::SimUtilities::getHighResTime());
 
+        // Get the current translation and rotation of the mouse
+        std::pair<Cartesian, Radians> curPos = m_mouse->getCurrentTranslationAndRotation();
+
         // For each line segment in the mouse polygon ...
-        for (std::pair<Cartesian, Cartesian> B : m_mouse->getCollisionPolygon().getLineSegments()) {
+        for (std::pair<Cartesian, Cartesian> B :
+                m_mouse->getCurrentCollisionPolygon(curPos.first, curPos.second).getLineSegments()) {
 
             // ... and for each tile the segment could be intersecting with ...
             for (const Tile* tile : GeometryUtilities::lineSegmentTileCover(B.first, B.second, *m_maze)) {
