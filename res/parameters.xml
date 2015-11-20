@@ -39,7 +39,7 @@
 <!-- Simulation Parameters -->
 <random-seed>12345</random-seed> <!-- The seed value for rand() -->
 <use-random-seed>false</use-random-seed> <!-- Whether or not to use the seed value -->
-<collision-detection-enabled>false</collision-detection-enabled>
+<collision-detection-enabled>true</collision-detection-enabled>
 <crash-message>Oh no! Your mouse crashed! It can't move anymore...</crash-message>
 <glut-init-duration>0.1</glut-init-duration> <!-- Seconds -->
 <default-paused>false</default-paused>
@@ -75,5 +75,5 @@
 <maze-rotations>0</maze-rotations> <!-- 0-3 counterclockwise rotations -->
 
 <!-- Mouse Parameters -->
-<mouse-algorithm>FloodFill</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
+<mouse-algorithm>Test</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
 <mouse-starting-direction>NORTH</mouse-starting-direction> <!-- NORTH, EAST, SOUTH, or WEST -->

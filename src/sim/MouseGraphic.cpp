@@ -49,7 +49,7 @@ void MouseGraphic::draw(const Coordinate& currentTranslation, const Angle& curre
     }
 
     // Lastly, we draw the sensor views
-    for (Polygon polygon : m_mouse->getCurrentViewPolygons(currentTranslation, currentRotation)) {
+    for (Polygon polygon : m_mouse->getCurrentSensorViewPolygons(currentTranslation, currentRotation)) {
         GraphicUtilities::drawMousePolygon(
             polygon,
             STRING_TO_COLOR.at(P()->mouseViewColor()), sensorAlpha);

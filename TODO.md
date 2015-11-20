@@ -1,14 +1,10 @@
 # High Priority
 
-- Check to make sure that rotation is working properly
-- View -> sensorView
-- InitialPolgon -> something else
-- Position -> translation
-- Do I need polygon translation/rotation vertex memoization anymore
+- Clean up mouse parser
 - MinSleepDuration is a little bit weird - sometimes we try to sleep less than that
+- Max speed and accel
 - Continuous performance
-    - We're triangulating every update (for sensors) instead of every frame - this is super expensive...
-    - I don't think we need to triangulate except for drawing
+    - Reading the sensors is super non-performant...
 - I'm not using sensor edge points right now...
 - Make some utility that keeps track of simulation and real elapsed time
     - Actually keep track of the elapsed simulation time

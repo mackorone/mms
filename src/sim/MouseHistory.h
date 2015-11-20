@@ -20,10 +20,10 @@ public:
 private:
 
     typedef struct {
-        double m_x; // x-position, in meters
-        double m_y; // y-position, in meters
-        double m_r; // rotation, in radians
-        double m_t; // time, in seconds since the start of the run
+        double x; // x-position, in meters
+        double y; // y-position, in meters
+        double r; // rotation, in radians
+        double t; // time, in seconds since the start of the run
     } position;
 
     std::list<position> m_history;

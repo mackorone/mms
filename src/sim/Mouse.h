@@ -61,7 +61,7 @@ public:
         const Coordinate& currentTranslation, const Angle& currentRotation) const;
 
     // Retrieve the polygons corresponding to the views of the sensors
-    std::vector<Polygon> getCurrentViewPolygons(
+    std::vector<Polygon> getCurrentSensorViewPolygons(
         const Coordinate& currentTranslation, const Angle& currentRotation) const;
 
     // Instruct the mouse to update its own position based on how much simulation time has elapsed
@@ -111,6 +111,10 @@ private:
 
     // Helper function for polygon retrieval based on a given mouse translation and rotation
     Polygon getCurrentPolygon(const Polygon& initialPolygon,
+        const Cartesian& currentTranslation, const Radians& currentRotation) const;
+
+    // Helper function for retrieving the polygon corresponding to the view of a sensor
+    Polygon getCurrentSensorViewPolygon(const Sensor& sensor,
         const Cartesian& currentTranslation, const Radians& currentRotation) const;
 };
 

@@ -10,7 +10,11 @@ namespace sim {
 class Wheel {
 
 public:
-    Wheel(const Distance& diameter, const Distance& width, const Coordinate& position, const Angle& direction);
+    Wheel(
+        const Distance& diameter,
+        const Distance& width,
+        const Coordinate& position,
+        const Angle& direction);
 
     // Wheel
     Meters getRadius() const;

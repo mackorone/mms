@@ -53,7 +53,7 @@ public:
     static void updateTileGraphicFog(int x, int y, double alpha);
     static void updateTileGraphicText(const Tile* tile, int numRows, int numCols, int row, int col, char c);
 
-    // TODO: MACK - Add an update method for the mouse so that we only triangulate once
+    // Appends a mouse polygon to the GRAPHIC_CPU_BUFFER
     static void drawMousePolygon(const Polygon& polygon, Color color, double sensorAlpha);
 
 private:

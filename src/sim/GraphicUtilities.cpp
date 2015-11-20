@@ -92,24 +92,24 @@ std::vector<float> GraphicUtilities::getFullMapTransformationMatrix() {
 
     // Step 1: The physical point (0,0) corresponds to the middle of the
     // bottom-left corner piece:
-    //                                 |
-    //                                 |--------
+    //                                 |       |
+    //                                 +-------+---
     //                                 |       |
     //                                 |   X   |
     //                                 |       |
-    //                                 |------------
+    //                                 +-------+---
     //
     // However, we want to make sure that the entire maze is visible within the
     // map window. To ensure this, we first have to translate the physical
     // positions so that (0,0) actually refers to the bottom-left corner of the
     // bottom-left corner:
     //
-    //                                 |
-    //                                 |--------
+    //                                 |       |
+    //                                 +-------+---
     //                                 |       |
     //                                 |       |
     //                                 |       |
-    //                                 X------------
+    //                                 X-------+---
     //
     std::vector<float> initialTranslationMatrix = {
         1.0, 0.0, 0.0, static_cast<float>(0.5 * P()->wallWidth()),

@@ -143,13 +143,11 @@ std::vector<Polygon> Mouse::getCurrentSensorPolygons(
     return polygons;
 }
 
-std::vector<Polygon> Mouse::getCurrentViewPolygons(
+std::vector<Polygon> Mouse::getCurrentSensorViewPolygons(
         const Coordinate& currentTranslation, const Angle& currentRotation) const {
     std::vector<Polygon> polygons;
     for (std::pair<std::string, Sensor> pair : m_sensors) {
-        Polygon adjusted = getCurrentPolygon(pair.second.getInitialView(), currentTranslation, currentRotation);
-        polygons.push_back(pair.second.getCurrentView(
-            adjusted.getVertices().at(0), pair.second.getInitialDirection() + currentRotation, *m_maze));
+        polygons.push_back(getCurrentSensorViewPolygon(pair.second, currentTranslation, currentRotation));
     }
     return polygons;
 }
@@ -216,22 +214,11 @@ bool Mouse::hasSensor(const std::string& name) const {
 }
 
 double Mouse::readSensor(const std::string& name) const {
-
-    // Validate the input
     ASSERT_TR(hasSensor(name));
     Sensor sensor = m_sensors.at(name);
-
-    // Retrieve the current translation and rotation
-    Cartesian currentTranslation = getCurrentTranslation();
-    Radians currentRotation = getCurrentRotation();
-
-    // Determine the reading
-    Polygon fullView = sensor.getInitialView()
-        .translate(currentTranslation - getInitialTranslation())
-        .rotateAroundPoint(currentRotation, currentTranslation);
-    Polygon currentView = sensor.getCurrentView(
-        fullView.getVertices().at(0), currentRotation + sensor.getInitialDirection(), *m_maze);
-    return 1.0 - currentView.area() / fullView.area();
+    Polygon currentView = getCurrentSensorViewPolygon(
+        sensor, getCurrentTranslation(), getCurrentRotation());
+    return 1.0 - currentView.area() / sensor.getInitialViewPolygon().area();
 }
 
 Seconds Mouse::getSensorReadDuration(const std::string& name) const {
@@ -248,6 +235,21 @@ Polygon Mouse::getCurrentPolygon(const Polygon& initialPolygon,
     return initialPolygon
         .translate(currentTranslation - getInitialTranslation())
         .rotateAroundPoint(currentRotation - getInitialRotation(), currentTranslation);
+}
+
+Polygon Mouse::getCurrentSensorViewPolygon(const Sensor& sensor,
+        const Cartesian& currentTranslation, const Radians& currentRotation) const {
+    Cartesian translationDelta = currentTranslation - getInitialTranslation();
+    Radians rotationDelta = currentRotation - getInitialRotation();
+    return sensor.getCurrentViewPolygon(
+        GeometryUtilities::rotateVertexAroundPoint(
+            GeometryUtilities::translateVertex(
+                sensor.getInitialPosition(),
+                translationDelta),
+            rotationDelta,
+            currentTranslation),
+        sensor.getInitialDirection() + rotationDelta,
+        *m_maze);
 }
 
 } // namespace sim

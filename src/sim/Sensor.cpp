@@ -33,35 +33,33 @@ Sensor::Sensor(
         double radians = i*2*halfWidth.getRadians()/P()->numberOfCircleApproximationPoints();
         view.push_back(Polar(range, Radians(radians) + direction) + position);
     }
-    m_initialView = Polygon(view);
+    m_initialViewPolygon = Polygon(view);
 }
 
 Seconds Sensor::getReadDuration() const {
     return m_readDuration;
 }
 
-// TODO: MACK - do we need this?
-/*
 Cartesian Sensor::getInitialPosition() const {
     return m_initialPosition;
 }
-*/
 
-// TODO: MACK - do we need this?
 Radians Sensor::getInitialDirection() const {
     return m_initialDirection;
 }
 
-// TODO: MACK - do we need this?
 Polygon Sensor::getInitialPolygon() const {
     return m_initialPolygon;
 }
 
-Polygon Sensor::getInitialView() const {
-    return m_initialView;
+Polygon Sensor::getInitialViewPolygon() const {
+    return m_initialViewPolygon;
 }
 
-Polygon Sensor::getCurrentView(const Cartesian& currentPosition, const Radians& currentRotation, const Maze& maze) const {
+Polygon Sensor::getCurrentViewPolygon(
+        const Cartesian& currentPosition,
+        const Radians& currentDirection,
+        const Maze& maze) const {
 
     // TODO: MACK - we can do wayyyy better - we know exactly where the walls *could* be since we know the layout of the maze
 
@@ -70,7 +68,7 @@ Polygon Sensor::getCurrentView(const Cartesian& currentPosition, const Radians& 
     // First, get the edge of the view of the sensor
     std::vector<Cartesian> edge;
     for (double i = -1; i <= 1; i += 2.0/(P()->numberOfSensorEdgePoints() - 1)) {
-        edge.push_back(currentPosition + Polar(m_range, currentRotation + (m_halfWidth * i)));
+        edge.push_back(currentPosition + Polar(m_range, currentDirection + (m_halfWidth * i)));
     }
 
     // For each point along the edge of the view ...
