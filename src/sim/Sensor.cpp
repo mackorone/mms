@@ -28,11 +28,11 @@ Sensor::Sensor(
 
     // Create the polygon for the view of the sensor
     std::vector<Cartesian> view;
-    view.push_back(position); // XXX: This needs to be first - the Mouse.cpp relies on this TODO: MACK
-    for (int i = -1*(P()->numberOfCircleApproximationPoints()/2); i <= P()->numberOfCircleApproximationPoints()/2; i += 1) {
-        double radians = i*2*halfWidth.getRadians()/P()->numberOfCircleApproximationPoints();
-        view.push_back(Polar(range, Radians(radians) + direction) + position);
+    view.push_back(position);
+    for (double i = -1; i <= 1; i += 2.0/(P()->numberOfSensorEdgePoints() - 1)) {
+        view.push_back(Polar(range, (Radians(halfWidth) * i) + direction) + position);
     }
+
     m_initialViewPolygon = Polygon(view);
 }
 

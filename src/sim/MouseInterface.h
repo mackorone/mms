@@ -62,6 +62,9 @@ public:
 
     // ----- Continuous interface methods ----- //
 
+    // Get the magnitude of the max speed of any one wheel
+    double getWheelMaxSpeed(const std::string& name);
+
     // Set the speed of any one wheel
     void setWheelSpeed(const std::string& name, double radiansPerSecond);
 

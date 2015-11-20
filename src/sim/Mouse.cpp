@@ -8,6 +8,7 @@
 #include "CPMath.h"
 #include "Directory.h"
 #include "GeometryUtilities.h"
+#include "Logging.h" // TODO: MACK
 #include "MouseParser.h"
 #include "Param.h"
 #include "SimUtilities.h"
@@ -210,7 +211,7 @@ void Mouse::setWheelSpeeds(const std::map<std::string, RadiansPerSecond>& wheelS
     for (std::pair<std::string, RadiansPerSecond> pair : wheelSpeeds) {
         ASSERT_TR(SimUtilities::mapContains(m_wheels, pair.first));
         ASSERT_LE(
-            abs(pair.second.getRevolutionsPerSecond()),
+            std::abs(pair.second.getRevolutionsPerSecond()),
             getWheelMaxSpeed(pair.first).getRevolutionsPerSecond());
         m_wheels.at(pair.first).setAngularVelocity(pair.second);
     }

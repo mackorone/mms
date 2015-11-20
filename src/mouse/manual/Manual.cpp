@@ -21,7 +21,7 @@ void Manual::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::Mo
     sim::S()->setRotateZoomedMap(true);
 
     double accelerateAmount = 5.0;
-    double decelerateAmount = 1.2;
+    double decelerateAmount = 1.5;
     double leftWheelSpeed = 0.0;
     double rightWheelSpeed = 0.0;
 
@@ -58,6 +58,19 @@ void Manual::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::Mo
         if (sim::S()->arrowKeyIsPressed(sim::Key::LEFT)) {
             leftWheelSpeed += accelerateAmount / 4.0;
             rightWheelSpeed += accelerateAmount / 4.0;
+        }
+
+        if (leftWheelSpeed < -mouse->getWheelMaxSpeed("left")) {
+            leftWheelSpeed = -mouse->getWheelMaxSpeed("left");    
+        }
+        if (mouse->getWheelMaxSpeed("left") < leftWheelSpeed) {
+            leftWheelSpeed = mouse->getWheelMaxSpeed("left");
+        }
+        if (rightWheelSpeed < -mouse->getWheelMaxSpeed("right")) {
+            rightWheelSpeed = -mouse->getWheelMaxSpeed("right");    
+        }
+        if (mouse->getWheelMaxSpeed("right") < rightWheelSpeed) {
+            rightWheelSpeed = mouse->getWheelMaxSpeed("right");
         }
 
         mouse->setWheelSpeed("left", leftWheelSpeed);

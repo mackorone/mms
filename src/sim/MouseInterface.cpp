@@ -207,6 +207,17 @@ void MouseInterface::acknowledgeInputButtonPressed(int inputButton) {
     L()->info("Input button %v was acknowledged as pressed; it can now be pressed again.", inputButton);
 }
 
+double MouseInterface::getWheelMaxSpeed(const std::string& name) {
+
+    ENSURE_CONTINUOUS_INTERFACE
+
+    if (!m_mouse->hasWheel(name)) {
+        L()->warn("There is no wheel called \"%v\" and thus you cannot get its max speed.", name);
+    }
+
+    return m_mouse->getWheelMaxSpeed(name).getRadiansPerSecond();
+}
+
 void MouseInterface::setWheelSpeed(const std::string& name, double radiansPerSecond) {
 
     ENSURE_CONTINUOUS_INTERFACE

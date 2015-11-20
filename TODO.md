@@ -1,12 +1,11 @@
 # High Priority
 
-- Ensure that the magnitude is non-negative
-- Ensure that the wheel speed is not too high in the MouseInterface
 - Clean up mouse parser
-- MinSleepDuration is a little bit weird - sometimes we try to sleep less than that
+    - Ensure that the magnitude is non-negative
+- Ensure that the wheel speed is not too high in the MouseInterface
 - Continuous performance
     - Reading the sensors is super non-performant...
-- I'm not using sensor edge points right now...
+    - MinSleepDuration is a little bit weird - sometimes we try to sleep less than that
 - Make some utility that keeps track of simulation and real elapsed time
     - Actually keep track of the elapsed simulation time
     - Max speeds for manual algorithm
@@ -17,6 +16,8 @@
 - Support stepper motor / encoders interface
 - Sensor type (digital or analog)
 - Move some graphics stuff in Driver into GraphicUtilities
+- Change float to units (including in the ParamParser and Param class)
+- Type safety (in terms of units) of the parameters
 - Tile Text
     - Fix the fact that the bitmap is initialized in driver but the string of characters is in GraphicUtilities
     - Assert that a character exsits before we try to draw it to the tile
@@ -38,8 +39,7 @@
         - Show toggle tile text, even when not visible
     - Check to make sure font won't be cut off, use ellipses if so (How do we deal with text being cut off in the vertical direction?)
     - Set the mouse algo in State for display in the toolbar
-- Convert the floats in vertex data to doubles
-- Rename TriangleTexture and VertexTexture
+    - Make terminal style output at bottom or right of window (GUI)
 - Make MouseInterface into an interface, and then implement the simulator interface, make a real-world interface
 - Tomasz maze-gen issues
 - Run-time parameters for the algos
@@ -77,8 +77,6 @@
     - how many steps
     - ave steps
     - etc.
-- Make sure that the mouse fits in the starting square
-- Algo checklist?
 - Still view a maze if it fails validation, but don't let the sim continue...
 - Check megaMouse performance
     - Better implementation of sensor view collision detection
@@ -86,28 +84,20 @@
     - Make the sensor polygon model better
 - Add manual mode high scores
 - Continuous mode improvements (overall)
-- Center the view of the zoomed map to the centroid of the mouse body polygon (this might not be good, but we should try it)
 - Xorg and compiz performance...
 - Kill SimUtilities...
-- Enum parameters?
 - Fix CPMinMax.h - order of includes matter, unforunately...
-- Make some functions available to the algo writers
-- Zoomed map mouse is a bit jumpy when going at high speeds
 - Shortest path graphic (phantom bot that travels along other shortest paths)
 - Randomly select a pre-defined maze
 - Write a good continuous algorithm
-- Add a linter to the code
 - Data recording for pause, rewind, fast forward
 - Interrupt interface
 - Run the program with maximum thread priority
 - New maze w/o restarting app
     - Be able to restart in the middle of a run (this is tricky with the algo thread...)
 - Fix the makefile so that if header files disappear we don't need to make clean
-- Make terminal style output at bottom or right of window (GUI)
 - Normalize random number generation (Implement Windows random number generation) // TODO: Should be fixed...
 - Make a nice mechanism for writing our own maze generation algorithms
-- Add Wheel max speed (specificed in mouse parameter file)
-- Change over the Makefile to use cmake
 - In discrete mode, the mouse can overturn or go too far if the sim speed is to high. We need to implement some logic that checks this ahead of time and then just teleports... sort of like bullets in other physics simulators
 - Add trajectory lines (see https://www.youtube.com/watch?v=kgJClVCPu3w)
 - Crash recovery semantics
@@ -118,7 +108,7 @@
 - A way to log/print only info or higher, warn or higher, etc.
 - Replace the convexHull with union in the mouse collision polygon initialization
 
-Low Priority
+# Low Priority
 
 - Get rid of as much platform dependant code as possible
 - Clean up the coding standards
@@ -128,38 +118,32 @@ Low Priority
 - Update the check_params.py script to make sure that the return type of the
   Param methods is the same as the type of the member variable
 - Detect STL use in maze and mouse algos, send a warning
-- Triangulate polygons upon creation?
-- Map borders
 - Add a simple polygonFragmentShader
 - Inconsistent wall declaration colors (declared wall on one side of wall, declared no wall on other side of wall)
 - Inconsistent wall declaration colors (declared one side of wall but not the other)
 - Perhaps impose memory limits on the algorithm
 - Add a way to change the mouse color
-- Support more than two wheels (let's hold off on this for now...)
 - Bluetooth connection to the actual mouse
-- Indicator of sim speed (real time, 10x fast, etc.)
 - Change FreeGLUT to GLFW
 - 3D
 - Crash animation for both modes
 - Unit tests
 - Try to break the simulator from within the algos, make it tamper-resistant
 - Reduce include dependencies as much as possible
-- Colors for log statements
 - Implement perfect hashing for key input and algo selection
-- Add some shading to the wheels so we can see what direction they're turning
 - Support more than just white fonts
 - Protect functions that shouldn't be accessed by the algo by checking thread ID
+- Change over the Makefile to use cmake
 
 # Clean-Up
 
+- Rename TriangleTexture and VertexTexture
 - Write some unittests
 - Change map.count(item) != 0 to map.find(item) != map.end()
 - Add IMouseAlgorithm (and maze) to the build path so we can just do #include <IMouseAlgorithm.h> (maybe...)
 - Run the parameter consistency script, make sure values align
 - Convert primitive types to GL types
 - Return const references instead of values (pointers???)
-- Change float to units (including in the ParamParser and Param class)
-- Type safety (in terms of units) of the parameters
 - Reduce includes as much as possible
 - Rewrite the Makefile to use an "inc" directory
 - Change "bool foo(false)" to "bool foo = false" for primitive - they look like function calls
@@ -199,5 +183,4 @@ Low Priority
 - -pedantic-errors: Flag even the most pedantic of errors
 - Take out -g makefile option
 - Reduce the number of LIBS in makefile
-- rotation vs. direction
 - Does the makefile work for multiple platofrms???
