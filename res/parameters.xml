@@ -44,10 +44,10 @@
 <glut-init-duration>0.1</glut-init-duration> <!-- Seconds -->
 <default-paused>false</default-paused>
 <min-sim-speed>0.1</min-sim-speed> <!-- Fraction/factor of actual time -->
-<max-sim-speed>100.0</max-sim-speed> <!-- Fraction/factor of actual time -->
+<max-sim-speed>10.0</max-sim-speed> <!-- Fraction/factor of actual time -->
 <default-sim-speed>1.0</default-sim-speed> <!-- Fraction/factor of actual time -->
 <min-sleep-duration>5</min-sleep-duration> <!-- Milliseconds -->
-<discrete-interface-wheel-speed>1.0</discrete-interface-wheel-speed> <!-- rev/s -->
+<discrete-interface-wheel-speed>3.0</discrete-interface-wheel-speed> <!-- rev/s -->
 <discrete-interface-declare-wall-on-read>true</discrete-interface-declare-wall-on-read>
 <algorithm-controls-tile-fog>false</algorithm-controls-tile-fog>
 <declare-both-wall-halves>true</declare-both-wall-halves>
@@ -75,5 +75,5 @@
 <maze-rotations>0</maze-rotations> <!-- 0-3 counterclockwise rotations -->
 
 <!-- Mouse Parameters -->
-<mouse-algorithm>Test</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
+<mouse-algorithm>FloodFill</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
 <mouse-starting-direction>NORTH</mouse-starting-direction> <!-- NORTH, EAST, SOUTH, or WEST -->

@@ -9,12 +9,14 @@ Wheel::Wheel(
         const Distance& diameter,
         const Distance& width,
         const Coordinate& position,
-        const Angle& direction) :
+        const Angle& direction,
+        const AngularVelocity& maxAngularVelocityMagnitude) :
         m_radius(Meters(diameter) / 2.0),
         m_halfWidth(Meters(width) / 2.0),
         m_initialPosition(position),
         m_initialDirection(direction),
-        m_angularVelocity(RadiansPerSecond(0.0)) {
+        m_angularVelocity(RadiansPerSecond(0.0)),
+        m_maxAngularVelocityMagnitude(maxAngularVelocityMagnitude) {
 
     // Create the initial wheel polygon
     std::vector<Cartesian> polygon;
@@ -25,7 +27,7 @@ Wheel::Wheel(
     m_initialPolygon = Polygon(polygon).rotateAroundPoint(m_initialDirection, m_initialPosition);
 
     // Create the initial speed indicator polygon
-    m_speedIndicatorPolygon = getSpeedIndicatorPolygon(m_angularVelocity);
+    m_speedIndicatorPolygon = getSpeedIndicatorPolygon(getAngularVelocity());
 }
 
 Meters Wheel::getRadius() const {
@@ -52,13 +54,17 @@ RadiansPerSecond Wheel::getAngularVelocity() const {
     return m_angularVelocity;
 }
 
+RadiansPerSecond Wheel::getMaxAngularVelocityMagnitude() const {
+    return m_maxAngularVelocityMagnitude;
+}
+
 void Wheel::setAngularVelocity(const AngularVelocity& angularVelocity) {
     m_angularVelocity = angularVelocity;
     m_speedIndicatorPolygon = getSpeedIndicatorPolygon(angularVelocity);
 }
 
 Polygon Wheel::getSpeedIndicatorPolygon(const AngularVelocity& angularVelocity) {
-    double fractionOfMaxSpeed = angularVelocity / RevolutionsPerSecond(1.0); // TODO: MACK - max speed and max accel
+    double fractionOfMaxSpeed = angularVelocity / getMaxAngularVelocityMagnitude();
     return Polygon({
         Cartesian(m_initialPosition) + Cartesian(m_radius * fractionOfMaxSpeed, Meters(0)),
         Cartesian(m_initialPosition) + Cartesian(Meters(0), Meters(m_halfWidth *  1)),

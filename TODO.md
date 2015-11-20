@@ -1,8 +1,9 @@
 # High Priority
 
+- Ensure that the magnitude is non-negative
+- Ensure that the wheel speed is not too high in the MouseInterface
 - Clean up mouse parser
 - MinSleepDuration is a little bit weird - sometimes we try to sleep less than that
-- Max speed and accel
 - Continuous performance
     - Reading the sensors is super non-performant...
 - I'm not using sensor edge points right now...

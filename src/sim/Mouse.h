@@ -70,6 +70,9 @@ public:
     // Returns whether or not the mouse has a wheel by a particular name
     bool hasWheel(const std::string& name) const;
 
+    // Returns the magnitde of the max angular velocity of the wheel
+    RadiansPerSecond getWheelMaxSpeed(const std::string& name) const;
+
     // An atomic interface for setting the wheel speeds
     void setWheelSpeeds(const std::map<std::string, RadiansPerSecond>& wheelSpeeds);
 

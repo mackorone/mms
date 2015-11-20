@@ -14,7 +14,8 @@ public:
         const Distance& diameter,
         const Distance& width,
         const Coordinate& position,
-        const Angle& direction);
+        const Angle& direction,
+        const AngularVelocity& maxAngularVelocityMagnitude);
 
     // Wheel
     Meters getRadius() const;
@@ -25,6 +26,7 @@ public:
 
     // Motor
     RadiansPerSecond getAngularVelocity() const;
+    RadiansPerSecond getMaxAngularVelocityMagnitude() const;
     void setAngularVelocity(const AngularVelocity& angularVelocity);
 
     // Encoder
@@ -42,6 +44,7 @@ private:
 
     // Motor
     RadiansPerSecond m_angularVelocity;
+    RadiansPerSecond m_maxAngularVelocityMagnitude;
 
     // Helper function for updating the speed indicator polygon
     Polygon getSpeedIndicatorPolygon(const AngularVelocity& angularVelocity);

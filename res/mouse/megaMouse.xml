@@ -50,6 +50,7 @@
         <Y>.07615</Y>
     </Position>
     <Direction>270</Direction> <!-- positive angular velocity causes the wheel to travel forward -->
+    <Max-Speed>10</Max-Speed> <!-- rev/s -->
     <!-- Motor params go here -->
     <!-- Encoder params go here -->
 </Wheel>
@@ -62,6 +63,7 @@
         <Y>.1044</Y>
     </Position>
     <Direction>270</Direction> <!-- positive angular velocity causes the wheel to travel forward -->
+    <Max-Speed>10</Max-Speed> <!-- rev/s -->
     <!-- Motor params go here -->
     <!-- Encoder params go here -->
 </Wheel>
@@ -74,6 +76,7 @@
         <Y>.07615</Y>
     </Position>
     <Direction>90</Direction> <!-- positive angular velocity causes the wheel to travel forward -->
+    <Max-Speed>10</Max-Speed> <!-- rev/s -->
     <!-- Motor params go here -->
     <!-- Encoder params go here -->
 </Wheel>
@@ -86,6 +89,7 @@
         <Y>.1044</Y>
     </Position>
     <Direction>90</Direction> <!-- positive angular velocity causes the wheel to travel forward -->
+    <Max-Speed>10</Max-Speed> <!-- rev/s -->
     <!-- Motor params go here -->
     <!-- Encoder params go here -->
 </Wheel>

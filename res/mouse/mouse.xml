@@ -1,46 +1,44 @@
-<Forward-Direction>90</Forward-Direction>
+<Forward-Direction>90</Forward-Direction> <!-- Degrees -->
 <Center-of-Mass>
-    <X>.03</X> 
-    <Y>.03</Y>
+    <X>.03</X> <!-- Meters -->
+    <Y>.03</Y> <!-- Meters -->
 </Center-of-Mass>
 <Body>
     <Vertex>
-        <X>.00</X> 
-        <Y>.00</Y>
+        <X>.00</X> <!-- Meters -->
+        <Y>.00</Y> <!-- Meters -->
     </Vertex>
     <Vertex>
-        <X>.00</X>
-        <Y>.06</Y>
+        <X>.00</X> <!-- Meters -->
+        <Y>.06</Y> <!-- Meters -->
     </Vertex>
     <Vertex>
-        <X>.03</X>
-        <Y>.09</Y>
+        <X>.03</X> <!-- Meters -->
+        <Y>.09</Y> <!-- Meters -->
     </Vertex>
     <Vertex>
-        <X>.06</X>
-        <Y>.06</Y>
+        <X>.06</X> <!-- Meters -->
+        <Y>.06</Y> <!-- Meters -->
     </Vertex>
     <Vertex>
-        <X>.06</X>
-        <Y>.00</Y>
+        <X>.06</X> <!-- Meters -->
+        <Y>.00</Y> <!-- Meters -->
     </Vertex>
 </Body>
 <Wheel>
     <Name>left</Name>
-    <Diameter>.04</Diameter>
-    <Width>.01</Width>
+    <Diameter>.04</Diameter> <!-- Meters -->
+    <Width>.01</Width> <!-- Meters -->
     <Position>
-        <X>.00</X>
-        <Y>.03</Y>
+        <X>.00</X> <!-- Meters -->
+        <Y>.03</Y> <!-- Meters -->
     </Position>
-    <Direction>270</Direction> <!-- positive angular velocity causes the wheel to travel forward -->
-    <!-- Motor params go here -->
-    <!-- * Type -->
-    <!-- * Max speed -->
-    <!-- * Max acceleration -->
-    <!-- Encoder params go here -->
-    <!-- * Type -->
-    <!-- * Ticks per revolution -->
+    <Direction>270</Direction> <!-- Degrees, positive angular velocity causes the wheel to travel forward -->
+    <Max-Speed>3</Max-Speed> <!-- rev/s -->
+    <!-- Motor type -->
+    <!-- Motor Max acceleration -->
+    <!-- Encoder type -->
+    <!-- Encoder ticks per revolution -->
 </Wheel>
 <Wheel>
     <Name>right</Name>
@@ -50,12 +48,10 @@
         <X>.06</X>
         <Y>.03</Y>
     </Position>
-    <Direction>90</Direction> <!-- positive angular velocity causes the wheel to travel forward -->
-    <!-- Motor params go here -->
-    <!-- * Type -->
-    <!-- * Max speed -->
-    <!-- * Max acceleration -->
-    <!-- Encoder params go here -->
-    <!-- * Type -->
-    <!-- * Ticks per revolution -->
+    <Direction>90</Direction> <!-- Degrees, positive angular velocity causes the wheel to travel forward -->
+    <Max-Speed>3</Max-Speed> <!-- rev/s -->
+    <!-- Motor type -->
+    <!-- Motor Max acceleration -->
+    <!-- Encoder type -->
+    <!-- Encoder ticks per revolution -->
 </Wheel>

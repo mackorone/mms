@@ -200,10 +200,18 @@ bool Mouse::hasWheel(const std::string& name) const {
     return SimUtilities::mapContains(m_wheels, name);
 }
 
+RadiansPerSecond Mouse::getWheelMaxSpeed(const std::string& name) const {
+    ASSERT_TR(SimUtilities::mapContains(m_wheels, name));
+    return m_wheels.at(name).getMaxAngularVelocityMagnitude();
+}
+
 void Mouse::setWheelSpeeds(const std::map<std::string, RadiansPerSecond>& wheelSpeeds) {
     m_wheelMutex.lock();
     for (std::pair<std::string, RadiansPerSecond> pair : wheelSpeeds) {
         ASSERT_TR(SimUtilities::mapContains(m_wheels, pair.first));
+        ASSERT_LE(
+            abs(pair.second.getRevolutionsPerSecond()),
+            getWheelMaxSpeed(pair.first).getRevolutionsPerSecond());
         m_wheels.at(pair.first).setAngularVelocity(pair.second);
     }
     m_wheelMutex.unlock();

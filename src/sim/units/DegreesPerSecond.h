@@ -7,7 +7,7 @@ namespace sim {
 class DegreesPerSecond : public AngularVelocity {
 
 public:
-    DegreesPerSecond(double radiansPerSecond);
+    DegreesPerSecond(double degreesPerSecond);
     DegreesPerSecond(const AngularVelocity& angularVelocity);
 
 };

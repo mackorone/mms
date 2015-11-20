@@ -115,7 +115,7 @@ Param::Param() {
     m_minSimSpeed = parser.getDoubleIfHasDoubleAndInRange(
         "min-sim-speed", 0.1, 0.01, 0.5);
     m_maxSimSpeed = parser.getDoubleIfHasDoubleAndInRange(
-        "max-sim-speed", 100.0, 2.0, 100.0);
+        "max-sim-speed", 10.0, 2.0, 100.0);
     m_defaultSimSpeed = parser.getDoubleIfHasDoubleAndInRange(
         "default-sim-speed", 1.0, m_minSimSpeed, m_maxSimSpeed);
     m_collisionDetectionEnabled = parser.getBoolIfHasBool(
@@ -125,7 +125,7 @@ Param::Param() {
     m_minSleepDuration = parser.getDoubleIfHasDoubleAndInRange(
         "min-sleep-duration", 5, 1, 25);
     m_discreteInterfaceWheelSpeed = parser.getDoubleIfHasDoubleAndInRange(
-        "discrete-interface-wheel-speed", 1.0, 0.1, 10.0);
+        "discrete-interface-wheel-speed", 3.0, 0.5, 10.0);
     m_discreteInterfaceDeclareWallOnRead = parser.getBoolIfHasBool(
         "discrete-interface-declare-wall-on-read", true);
     m_algorithmControlsTileFog = parser.getBoolIfHasBool(

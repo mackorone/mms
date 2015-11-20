@@ -1,9 +1,11 @@
 #include "DegreesPerSecond.h"
 
+#include "../CPMath.h"
+
 namespace sim {
 
-DegreesPerSecond::DegreesPerSecond(double radiansPerSecond) {
-    m_radiansPerSecond = radiansPerSecond;
+DegreesPerSecond::DegreesPerSecond(double degreesPerSecond) {
+    m_radiansPerSecond = degreesPerSecond / 180 * M_PI;
 }
 
 DegreesPerSecond::DegreesPerSecond(const AngularVelocity& angularVelocity) {

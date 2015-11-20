@@ -4,6 +4,7 @@
 #include "GeometryUtilities.h"
 #include "Logging.h"
 #include "SimUtilities.h"
+#include "units/RevolutionsPerSecond.h"
 
 namespace sim {
 
@@ -43,7 +44,7 @@ std::map<std::string, Wheel> MouseParser::getWheels(
         const Cartesian& initialTranslation, const Radians& initialRotation) {
     Cartesian alignmentTranslation = initialTranslation - getCenterOfMass();
     Radians alignmentRotation = initialRotation - getForwardDirection();
-    // TODO: Handle the failing case
+    // TODO: Handle the failing case (strToDouble will fail)
     std::map<std::string, Wheel> wheels;
     for (pugi::xml_node wheel : m_doc.children("Wheel")) {
         // TODO: Check for duplicate name
@@ -53,6 +54,7 @@ std::map<std::string, Wheel> MouseParser::getWheels(
         double x = SimUtilities::strToDouble(wheel.child("Position").child("X").child_value());
         double y = SimUtilities::strToDouble(wheel.child("Position").child("Y").child_value());
         double direction = SimUtilities::strToDouble(wheel.child("Direction").child_value());
+        double maxAngularVelocityMagnitude = SimUtilities::strToDouble(wheel.child("Max-Speed").child_value());
         wheels.insert(
             std::make_pair(
                 name,
@@ -64,7 +66,8 @@ std::map<std::string, Wheel> MouseParser::getWheels(
                         alignmentTranslation,
                         alignmentRotation,
                         initialTranslation),
-                    Degrees(direction) + alignmentRotation)));
+                    Degrees(direction) + alignmentRotation,
+                    RevolutionsPerSecond(maxAngularVelocityMagnitude))));
     }
     return wheels;
 }
