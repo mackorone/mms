@@ -61,10 +61,6 @@ Polygon Sensor::getCurrentViewPolygon(
         const Radians& currentDirection,
         const Maze& maze) const {
 
-    // TODO: MACK - we can do wayyyy better - we know exactly where the walls *could* be since we know the layout of the maze
-
-    // TODO: If a vector is north-east, we only need to check the south-west walls, etc
-
     // First, get the edge of the view of the sensor
     std::vector<Cartesian> edge;
     for (double i = -1; i <= 1; i += 2.0/(P()->numberOfSensorEdgePoints() - 1)) {
@@ -81,8 +77,6 @@ Polygon Sensor::getCurrentViewPolygon(
             for (std::vector<Polygon> group : {tile->getActualWallPolygons(), tile->getCornerPolygons()}) {
                 for (Polygon obstacle : group) {
                     for (std::pair<Cartesian, Cartesian> A : obstacle.getLineSegments()) {
-
-                        // TODO: Is there a way to "join" some of the line segments, so that we can do less work?
 
                         // ... and check for intersections
                         std::pair<Cartesian, Cartesian> B = std::make_pair(currentPosition, edge.at(i));

@@ -81,8 +81,6 @@ void TileGraphic::draw() const {
         STRING_TO_COLOR.at(P()->tileFogColor()),
         m_foggy && S()->tileFogVisible() ? P()->tileFogAlpha() : 0.0);
 
-    // TODO: MACK - Draw the tile gridlines... (maybe just one big texture???)
-    // Ideally, we should only have to draw a few lines that span the entire maze, as opposed to many little lines...
 
     // Insert all of the triangle texture objects into the buffer ...
     std::pair<int, int> maxRowsAndCols = GraphicUtilities::getTileGraphicTextMaxSize();

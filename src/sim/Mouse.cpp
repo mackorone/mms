@@ -8,7 +8,6 @@
 #include "CPMath.h"
 #include "Directory.h"
 #include "GeometryUtilities.h"
-#include "Logging.h" // TODO: MACK
 #include "MouseParser.h"
 #include "Param.h"
 #include "SimUtilities.h"
@@ -188,9 +187,6 @@ void Mouse::update(const Duration& elapsed) {
     MetersPerSecond aveDx = sumDx / static_cast<double>(m_wheels.size());
     MetersPerSecond aveDy = sumDy / static_cast<double>(m_wheels.size());
     RadiansPerSecond aveDr = sumDr / static_cast<double>(m_wheels.size());
-
-    // Update the amount each wheel has rotated
-    // TODO: MACK
 
     m_currentGyro = aveDr;
     m_currentRotation += Radians(aveDr * elapsed);

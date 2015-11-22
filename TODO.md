@@ -1,5 +1,11 @@
 # High Priority
 
+- Omni-mouse (3 wheeled mouse)
+- Arbitrary tile text
+- Encoders
+- Allow someone to specify inf distance for the tile
+- Figure out how to get rid of (or formalize) "left" and "right" wheels for discrete interface
+    - Figure out which wheels contribute to what and use that for discrete motions
 - Clean up mouse parser
     - Ensure that the magnitude is non-negative
 - Ensure that the wheel speed is not too high in the MouseInterface
@@ -11,7 +17,6 @@
     - Max speeds for manual algorithm
     - Add the simulation time to the logging
         - Perhaps even refactor the elapsed time in logging
-- Figure out how to get rid of (or formalize) "left" and "right" wheels for discrete interface
 - Add the ability to start in the direction of the opening of the maze
 - Support stepper motor / encoders interface
 - Sensor type (digital or analog)

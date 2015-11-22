@@ -139,15 +139,18 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
 
 void MouseInterface::setTileFogginess(int x, int y, bool foggy) {
 
+    if (!P()->algorithmControlsTileFog()) { 
+        L()->warn(
+            "The simulation parameters indicate that the simulator should"
+            " control the tile fog, not the algorithm. Thus you may not set"
+            " the fogginess for tile in position (%v, %v).", x, y);
+        return;
+    }
+
     if (!m_maze->withinMaze(x, y)) {
         L()->warn(
             "There is no tile at position (%v, %v), and thus you cannot set"
             " its fogginess.", x, y);
-        return;
-    }
-
-    if (!P()->algorithmControlsTileFog()) { 
-        // TODO: MACK - error statement
         return;
     }
 
