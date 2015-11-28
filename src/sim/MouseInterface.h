@@ -80,8 +80,8 @@ public:
     bool wallRight();
     bool wallLeft();
     void moveForward();
-    void turnRight();
     void turnLeft();
+    void turnRight();
     void turnAround();
 
 private:

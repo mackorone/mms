@@ -73,8 +73,19 @@ public:
     // Returns the magnitde of the max angular velocity of the wheel
     RadiansPerSecond getWheelMaxSpeed(const std::string& name) const;
 
+    // TODO: MACK - Make this private, memoize, clean up interface
+    // TODO: MACK - make a note that this only works for symmetrical mice
+    std::map<std::string, std::pair<double, double>> getWheelMaxContributions() const;
+
     // An atomic interface for setting the wheel speeds
     void setWheelSpeeds(const std::map<std::string, RadiansPerSecond>& wheelSpeeds);
+
+    // Helper methods for setting many wheel speeds at once, without having to
+    // know the names of each of the wheels
+    void setWheelSpeedsForMoveForward();
+    void setWheelSpeedsForTurnLeft();
+    void setWheelSpeedsForTurnRight();
+    void stopAllWheels();
 
     // Returns whether or not the mouse has a sensor by a particular name
     bool hasSensor(const std::string& name) const;

@@ -18,8 +18,16 @@ RadiansPerSecond RadiansPerSecond::operator+(const AngularVelocity& angularVeloc
     return RadiansPerSecond(getRadiansPerSecond() + angularVelocity.getRadiansPerSecond());
 }
 
+RadiansPerSecond RadiansPerSecond::operator*(double factor) const {
+    return RadiansPerSecond(getRadiansPerSecond() * factor);
+}
+
 RadiansPerSecond RadiansPerSecond::operator/(double factor) const {
     return RadiansPerSecond(getRadiansPerSecond() / factor);
+}
+
+double RadiansPerSecond::operator/(const AngularVelocity& angularVelocity) const {
+    return getRadiansPerSecond() / angularVelocity.getRadiansPerSecond();
 }
 
 Radians RadiansPerSecond::operator*(const Duration& duration) const {

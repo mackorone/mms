@@ -13,7 +13,7 @@
 namespace floodFill {
 
 std::string FloodFill::mouseFile() const {
-    return "mouse.xml";
+    return "megaMouse.xml";
 }
 
 std::string FloodFill::interfaceType() const {

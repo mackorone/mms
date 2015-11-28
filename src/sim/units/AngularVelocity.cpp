@@ -30,6 +30,10 @@ double AngularVelocity::operator/(const AngularVelocity& angularVelocity) const 
     return getRadiansPerSecond() / angularVelocity.getRadiansPerSecond();
 }
 
+bool AngularVelocity::operator<(const AngularVelocity& angularVelocity) const {
+    return getRadiansPerSecond() < angularVelocity.getRadiansPerSecond();
+}
+
 bool AngularVelocity::operator<=(const AngularVelocity& angularVelocity) const {
     return getRadiansPerSecond() <= angularVelocity.getRadiansPerSecond();
 }

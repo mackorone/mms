@@ -1,11 +1,11 @@
 # High Priority
 
-- Omni-mouse (3 wheeled mouse)
 - Arbitrary tile text
 - Encoders
 - Allow someone to specify inf distance for the tile
 - Figure out how to get rid of (or formalize) "left" and "right" wheels for discrete interface
     - Figure out which wheels contribute to what and use that for discrete motions
+    - Make a note about this
 - Clean up mouse parser
     - Ensure that the magnitude is non-negative
 - Ensure that the wheel speed is not too high in the MouseInterface
@@ -68,6 +68,10 @@
 
 # Medum Priority
 
+- For curve turns, see if you can figure out the arc that the mouse should go on to simulate a curve turn, use checkpoints
+    - No curve turn has two line segments, each is tangent
+        - first order curve turn has 3 line segments total, equally spaced, etc.
+        - second order curve turn has 4 line segments total, equally spaced, etc.
 - isDiscreteInterfaceCompatible and isContinuousInterfaceCompatible
 - Enable rotation of wheels and motors during run
 - Set acceleration of all moving/rotating things

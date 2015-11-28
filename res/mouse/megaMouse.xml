@@ -55,7 +55,7 @@
     <!-- Encoder params go here -->
 </Wheel>
 <Wheel>
-    <Name>left</Name> <!-- TODO: MACK - Rename these -->
+    <Name>left-upper</Name>
     <Diameter>.0245</Diameter>
     <Width>.0077</Width>
     <Position>
@@ -81,7 +81,7 @@
     <!-- Encoder params go here -->
 </Wheel>
 <Wheel>
-    <Name>right</Name> <!-- TODO: MACK - Rename these -->
+    <Name>right-upper</Name>
     <Diameter>.0245</Diameter>
     <Width>.0077</Width>
     <Position>
@@ -94,7 +94,7 @@
     <!-- Encoder params go here -->
 </Wheel>
 <Sensor>
-    <Name>leftFront</Name>
+    <Name>left-front</Name>
     <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
     <Range>.20</Range> <!-- Meters -->
     <HalfWidth>5</HalfWidth> <!-- Degrees -->
@@ -106,7 +106,7 @@
     <Direction>90</Direction> <!-- Degrees from the positive x axis -->
 </Sensor>
 <Sensor>
-    <Name>leftMiddle</Name>
+    <Name>left-middle</Name>
     <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
     <Range>.20</Range> <!-- Meters -->
     <HalfWidth>5</HalfWidth> <!-- Degrees -->
@@ -118,7 +118,7 @@
     <Direction>135</Direction> <!-- Degrees -->
 </Sensor>
 <Sensor>
-    <Name>left</Name>
+    <Name>left-side</Name>
     <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
     <Range>.20</Range> <!-- Meters -->
     <HalfWidth>5</HalfWidth> <!-- Degrees -->
@@ -130,7 +130,7 @@
     <Direction>180</Direction> <!-- Degrees -->
 </Sensor>
 <Sensor>
-    <Name>rightFront</Name>
+    <Name>right-front</Name>
     <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
     <Range>.20</Range> <!-- Meters -->
     <HalfWidth>5</HalfWidth> <!-- Degrees -->
@@ -142,7 +142,7 @@
     <Direction>90</Direction> <!-- Degrees -->
 </Sensor>
 <Sensor>
-    <Name>rightMiddle</Name>
+    <Name>right-middle</Name>
     <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
     <Range>.20</Range> <!-- Meters -->
     <HalfWidth>5</HalfWidth> <!-- Degrees -->
@@ -154,7 +154,7 @@
     <Direction>45</Direction> <!-- Degrees -->
 </Sensor>
 <Sensor>
-    <Name>right</Name>
+    <Name>right-side</Name>
     <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
     <Range>.20</Range> <!-- Meters -->
     <HalfWidth>5</HalfWidth> <!-- Degrees -->

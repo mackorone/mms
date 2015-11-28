@@ -7,6 +7,7 @@ class Speed {
 public:
     virtual ~Speed() = 0;
     double getMetersPerSecond() const;
+    bool operator<(const Speed& speed) const;
 
 protected:
     Speed();

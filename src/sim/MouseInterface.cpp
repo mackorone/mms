@@ -218,7 +218,8 @@ double MouseInterface::getWheelMaxSpeed(const std::string& name) {
         L()->warn("There is no wheel called \"%v\" and thus you cannot get its max speed.", name);
     }
 
-    return m_mouse->getWheelMaxSpeed(name).getRadiansPerSecond();
+    // TODO: MACK - rev/s or rad/s?
+    return m_mouse->getWheelMaxSpeed(name).getRevolutionsPerSecond();
 }
 
 void MouseInterface::setWheelSpeed(const std::string& name, double radiansPerSecond) {
@@ -229,6 +230,7 @@ void MouseInterface::setWheelSpeed(const std::string& name, double radiansPerSec
         L()->warn("There is no wheel called \"%v\" and thus you cannot set its speed.", name);
     }
 
+    // TODO: MACK - rev/s or rad/s?
     m_mouse->setWheelSpeeds({{name, radiansPerSecond}});
 }
 
@@ -328,109 +330,47 @@ void MouseInterface::moveForward() {
         return;
     }
 
-    // TODO: Check speed here, skip logic and just teleport if too fast (then sleep for the remaining)
-    // TODO: Do the same for other movement methods
-    // TODO: Try to increase max speed
-    //if (S()->simSpeed() < X) {
-
+    // Get the length of a single tile
     Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
-    Meters currentX = tileLength * (getCurrentDiscretizedTranslation().first) + m_mouse->getInitialTranslation().getX();
-    Meters currentY = tileLength * (getCurrentDiscretizedTranslation().second) + m_mouse->getInitialTranslation().getY();
 
     // We modify these values in the switch statement
-    Cartesian destinationTranslation = Cartesian(currentX, currentY);
+    Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
     Degrees destinationRotation = m_mouse->getCurrentRotation();
 
-    // A single step to take within the while loops
-    auto step = [=](){
-        m_mouse->setWheelSpeeds({
-            {"left",  RevolutionsPerSecond(-P()->discreteInterfaceWheelSpeed())},
-            {"right", RevolutionsPerSecond( P()->discreteInterfaceWheelSpeed())},
-        });
-        sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-    };
+    m_mouse->setWheelSpeedsForMoveForward();
 
     switch (getCurrentDiscretizedRotation()) {
         case Direction::NORTH: {
             destinationTranslation += Cartesian(Meters(0), tileLength);
             while (m_mouse->getCurrentTranslation().getY() < destinationTranslation.getY()) {
-                step();
+                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
             break;
         }
         case Direction::EAST: {
             destinationTranslation += Cartesian(tileLength, Meters(0));
             while (m_mouse->getCurrentTranslation().getX() < destinationTranslation.getX()) {
-                step();
+                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
             break;
         }
         case Direction::SOUTH: {
             destinationTranslation += Cartesian(Meters(0), tileLength * -1);
             while (destinationTranslation.getY() < m_mouse->getCurrentTranslation().getY()) {
-                step();
+                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
             break;
         }
         case Direction::WEST: {
             destinationTranslation += Cartesian(tileLength * -1, Meters(0));
             while (destinationTranslation.getX() < m_mouse->getCurrentTranslation().getX()) {
-                step();
+                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
             break;
         }
     }
 
-    m_mouse->setWheelSpeeds({
-        {"left",  RevolutionsPerSecond(0)},
-        {"right", RevolutionsPerSecond(0)},
-    });
-    m_mouse->teleport(destinationTranslation, destinationRotation);
-}
-
-void MouseInterface::turnRight() {
-
-    ENSURE_DISCRETE_INTERFACE
-
-    Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
-    Degrees destinationRotation = m_mouse->getCurrentRotation() - Degrees(90);
-
-    // A single step to take within the while loops
-    auto step = [=](){
-        m_mouse->setWheelSpeeds({
-            {"left",  RevolutionsPerSecond(-P()->discreteInterfaceWheelSpeed()/2.0)},
-            {"right", RevolutionsPerSecond(-P()->discreteInterfaceWheelSpeed()/2.0)},
-        });
-        sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-    };
-
-    switch (getCurrentDiscretizedRotation()) {
-        case Direction::NORTH: {
-            while (m_mouse->getCurrentRotation() < Degrees(180)) {
-                step();
-            }
-            break;
-        }
-        case Direction::EAST: {
-            while (m_mouse->getCurrentRotation() < Degrees(180) ||
-                    destinationRotation < m_mouse->getCurrentRotation()) {
-                step();
-            }
-            break;
-        }
-        case Direction::SOUTH:
-        case Direction::WEST: {
-            while (destinationRotation < m_mouse->getCurrentRotation()) {
-                step();
-            }
-            break;
-        }
-    }
-
-    m_mouse->setWheelSpeeds({
-        {"left",  RevolutionsPerSecond(0)},
-        {"right", RevolutionsPerSecond(0)},
-    });
+    m_mouse->stopAllWheels();
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
 
@@ -441,42 +381,68 @@ void MouseInterface::turnLeft() {
     Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
     Degrees destinationRotation = m_mouse->getCurrentRotation() + Degrees(90);
 
-    // A single step to take within the while loops
-    auto step = [=](){
-        m_mouse->setWheelSpeeds({
-            {"left",  RevolutionsPerSecond(P()->discreteInterfaceWheelSpeed()/2.0)},
-            {"right", RevolutionsPerSecond(P()->discreteInterfaceWheelSpeed()/2.0)},
-        });
-        sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-    };
+    m_mouse->setWheelSpeedsForTurnLeft();
 
     switch (getCurrentDiscretizedRotation()) {
         case Direction::EAST: {
             while (Degrees(180) < m_mouse->getCurrentRotation() ||
                     m_mouse->getCurrentRotation() < destinationRotation) {
-                step();
+                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
             break;
         }
         case Direction::SOUTH: {
             while (Degrees(180) < m_mouse->getCurrentRotation()) {
-                step();
+                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
             break;
         }
         case Direction::WEST:
         case Direction::NORTH: {
             while (m_mouse->getCurrentRotation() < destinationRotation) {
-                step();
+                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
             break;
         }
     }
 
-    m_mouse->setWheelSpeeds({
-        {"left",  RevolutionsPerSecond(0)},
-        {"right", RevolutionsPerSecond(0)},
-    });
+    m_mouse->stopAllWheels();
+    m_mouse->teleport(destinationTranslation, destinationRotation);
+}
+
+void MouseInterface::turnRight() {
+
+    ENSURE_DISCRETE_INTERFACE
+
+    Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
+    Degrees destinationRotation = m_mouse->getCurrentRotation() - Degrees(90);
+
+    m_mouse->setWheelSpeedsForTurnRight();
+
+    switch (getCurrentDiscretizedRotation()) {
+        case Direction::NORTH: {
+            while (m_mouse->getCurrentRotation() < Degrees(180)) {
+                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
+            }
+            break;
+        }
+        case Direction::EAST: {
+            while (m_mouse->getCurrentRotation() < Degrees(180) ||
+                    destinationRotation < m_mouse->getCurrentRotation()) {
+                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
+            }
+            break;
+        }
+        case Direction::SOUTH:
+        case Direction::WEST: {
+            while (destinationRotation < m_mouse->getCurrentRotation()) {
+                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
+            }
+            break;
+        }
+    }
+
+    m_mouse->stopAllWheels();
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
 
@@ -491,9 +457,8 @@ void MouseInterface::turnAround() {
 void MouseInterface::ensureDiscreteInterface(const std::string& callingFunction) const {
     if (S()->interfaceType() != InterfaceType::DISCRETE) {
         L()->error(
-            "You must declare the interface type to be"
-            " sim::InterfaceType::DISCRETE to use MouseInterface::%v().",
-            callingFunction);
+            "You must declare the interface type to be \"%v\" to use MouseInterface::%v().",
+            INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE), callingFunction);
         SimUtilities::quit();
     }
 }
@@ -501,8 +466,8 @@ void MouseInterface::ensureDiscreteInterface(const std::string& callingFunction)
 void MouseInterface::ensureContinuousInterface(const std::string& callingFunction) const {
     if (S()->interfaceType() != InterfaceType::CONTINUOUS) {
         L()->error(
-            "You must declare the interface type to be sim::InterfaceType::CONTINUOUS to use MouseInterface::%v().",
-            callingFunction);
+            "You must declare the interface type to be \"%v\" to use MouseInterface::%v().",
+            INTERFACE_TYPE_TO_STRING.at(InterfaceType::CONTINUOUS), callingFunction);
         SimUtilities::quit();
     }
 }

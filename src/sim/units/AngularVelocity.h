@@ -14,6 +14,7 @@ public:
     double getRevolutionsPerSecond() const;
     Radians operator*(const Duration& duration) const;
     double operator/(const AngularVelocity& angularVelocity) const;
+    bool operator<(const AngularVelocity& angularVelocity) const;
     bool operator<=(const AngularVelocity& angularVelocity) const;
 
 protected:

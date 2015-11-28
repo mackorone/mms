@@ -30,6 +30,10 @@ MetersPerSecond MetersPerSecond::operator/(double factor) const {
     return MetersPerSecond(getMetersPerSecond() / factor);
 }
 
+double MetersPerSecond::operator/(const Speed& speed) const {
+    return getMetersPerSecond() / speed.getMetersPerSecond();
+}
+
 Meters MetersPerSecond::operator*(const Duration& duration) const {
     return Meters(getMetersPerSecond() * duration.getSeconds());
 }

@@ -101,10 +101,10 @@ void Tile::initFullPolygon(int mazeWidth, int mazeHeight) {
 
     Meters halfWallWidth = Meters(P()->wallWidth()) / 2.0;
     Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
-    Cartesian lowerLeftPoint(tileLength * m_x - halfWallWidth * (m_x == 0 ? 1 : 0),
-                             tileLength * m_y - halfWallWidth * (m_y == 0 ? 1 : 0));
-    Cartesian upperRightPoint(tileLength * (m_x + 1) + halfWallWidth * (m_x == mazeWidth - 1 ? 1 : 0),
-                              tileLength * (m_y + 1) + halfWallWidth * (m_y == mazeHeight - 1 ? 1 : 0));
+    Cartesian lowerLeftPoint(tileLength * getX() - halfWallWidth * (getX() == 0 ? 1 : 0),
+                             tileLength * getY() - halfWallWidth * (getY() == 0 ? 1 : 0));
+    Cartesian upperRightPoint(tileLength * (getX() + 1) + halfWallWidth * (getX() == mazeWidth - 1 ? 1 : 0),
+                              tileLength * (getY() + 1) + halfWallWidth * (getY() == mazeHeight - 1 ? 1 : 0));
     Cartesian lowerRightPoint(upperRightPoint.getX(), lowerLeftPoint.getY());
     Cartesian upperLeftPoint(lowerLeftPoint.getX(), upperRightPoint.getY());
     m_fullPolygon = Polygon({lowerLeftPoint, upperLeftPoint, upperRightPoint, lowerRightPoint});
@@ -120,13 +120,13 @@ void Tile::initInteriorPolygon(int mazeWidth, int mazeHeight) {
 
     m_interiorPolygon = Polygon({
         lowerLeftPoint + Cartesian(
-            halfWallWidth * (m_x == 0 ? 2 : 1), halfWallWidth * (m_y == 0 ? 2 : 1)),
+            halfWallWidth * (getX() == 0 ? 2 : 1), halfWallWidth * (getY() == 0 ? 2 : 1)),
         upperLeftPoint + Cartesian(
-            halfWallWidth * (m_x == 0 ? 2 : 1), halfWallWidth * (m_y == mazeHeight - 1 ? -2 : -1)),
+            halfWallWidth * (getX() == 0 ? 2 : 1), halfWallWidth * (getY() == mazeHeight - 1 ? -2 : -1)),
         upperRightPoint + Cartesian(
-            halfWallWidth * (m_x == mazeWidth - 1 ? -2 : -1), halfWallWidth * (m_y == mazeHeight - 1 ? -2 : -1)),
+            halfWallWidth * (getX() == mazeWidth - 1 ? -2 : -1), halfWallWidth * (getY() == mazeHeight - 1 ? -2 : -1)),
         lowerRightPoint + Cartesian(
-            halfWallWidth * (m_x == mazeWidth - 1 ? -2 : -1), halfWallWidth * (m_y == 0 ? 2 : 1))});
+            halfWallWidth * (getX() == mazeWidth - 1 ? -2 : -1), halfWallWidth * (getY() == 0 ? 2 : 1))});
 }
 
 void Tile::initWallPolygons(int mazeWidth, int mazeHeight) {
