@@ -1,7 +1,11 @@
 # High Priority
 
+- Refactor some stuff
+- CPU
 - Arbitrary tile text
 - Encoders
+- Stepper motor
+- Sensor type (digital or analog)
 - Allow someone to specify inf distance for the tile
 - Figure out how to get rid of (or formalize) "left" and "right" wheels for discrete interface
     - Figure out which wheels contribute to what and use that for discrete motions
@@ -9,6 +13,8 @@
 - Clean up mouse parser
     - Ensure that the magnitude is non-negative
 - Ensure that the wheel speed is not too high in the MouseInterface
+    - DiscreteInterfaceWheelSpeed?
+    - Figure out how to make discrete interface wheel speed more uniform among algos...
 - Continuous performance
     - Reading the sensors is super non-performant...
     - MinSleepDuration is a little bit weird - sometimes we try to sleep less than that
@@ -18,8 +24,6 @@
     - Add the simulation time to the logging
         - Perhaps even refactor the elapsed time in logging
 - Add the ability to start in the direction of the opening of the maze
-- Support stepper motor / encoders interface
-- Sensor type (digital or analog)
 - Move some graphics stuff in Driver into GraphicUtilities
 - Change float to units (including in the ParamParser and Param class)
 - Type safety (in terms of units) of the parameters
@@ -163,7 +167,7 @@
 - Performance on different systems???
 - The mouse sometimes rotates weirdly (goes slowly, backwards for a second, and then forwards fast. You can see what I mean by just increasing the view length of the sensors for a continuous algo)
 - Remove as many c_str() as possible
-- Replace "cout" with "LOG"
+- Replace "cout" with "L()"
 - Pass things by reference when possible
 - Sprinkle assertions everywhere
 - Validate the coding standards (especially "{" placement)

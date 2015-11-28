@@ -202,44 +202,6 @@ RadiansPerSecond Mouse::getWheelMaxSpeed(const std::string& name) const {
     return m_wheels.at(name).getMaxAngularVelocityMagnitude();
 }
 
-std::map<std::string, std::pair<double, double>> Mouse::getWheelMaxContributions() const {
-    // TODO: MACK Memoize this so I only have to do the computation once
-    // TODO: MACK - rename these
-    // TODO: MACK Dedup with th above function
-    MetersPerSecond maxTranslationMagnitude(0);
-    RadiansPerSecond maxRotationalMagnitude(0);
-
-    std::vector<std::pair<std::string, std::pair<MetersPerSecond, RadiansPerSecond>>> maxContributions;
-    for (std::pair<std::string, Wheel> wheel : m_wheels) {
-
-        MetersPerSecond maxLinearVelocity = wheel.second.getMaxAngularVelocityMagnitude() * wheel.second.getRadius();
-        MetersPerSecond maxForwardContribution = maxLinearVelocity *
-            (getInitialRotation() - wheel.second.getInitialDirection()).getCos();
-
-        Cartesian wheelToCenter = getInitialTranslation() - wheel.second.getInitialPosition();
-        double rotationFactor = (wheelToCenter.getTheta() - wheel.second.getInitialDirection()).getSin();
-        RadiansPerSecond maxRadialContribution = RadiansPerSecond(
-            maxLinearVelocity.getMetersPerSecond() / wheelToCenter.getRho().getMeters() * rotationFactor);
-
-        maxContributions.push_back(std::make_pair(wheel.first, std::make_pair(maxForwardContribution, maxRadialContribution)));
-
-        if (maxTranslationMagnitude < maxForwardContribution) {
-            maxTranslationMagnitude = maxForwardContribution;
-        }
-        if (maxRotationalMagnitude < maxRadialContribution) {
-            maxRotationalMagnitude = maxRadialContribution;
-        }
-    }
-
-    std::map<std::string, std::pair<double, double>> contributionFactors;
-    for (auto c : maxContributions) {
-        contributionFactors.insert(std::make_pair(c.first,
-            std::make_pair(c.second.first / maxTranslationMagnitude, c.second.second / maxRotationalMagnitude)));
-    }
-    
-    return contributionFactors;
-}
-
 void Mouse::setWheelSpeeds(const std::map<std::string, RadiansPerSecond>& wheelSpeeds) {
     m_wheelMutex.lock();
     for (std::pair<std::string, RadiansPerSecond> pair : wheelSpeeds) {
@@ -253,31 +215,28 @@ void Mouse::setWheelSpeeds(const std::map<std::string, RadiansPerSecond>& wheelS
 }
 
 void Mouse::setWheelSpeedsForMoveForward() {
-    // TODO: MACK - refactor this
     std::map<std::string, RadiansPerSecond> wheelSpeeds;
     for (std::pair<std::string, Wheel> wheel : m_wheels) {
         wheelSpeeds.insert(std::make_pair(wheel.first,
-            getWheelMaxSpeed(wheel.first) * getWheelMaxContributions().at(wheel.first).first));
+            getWheelMaxSpeed(wheel.first) * getWheelContributionFactors(wheel.first).first));
     }
     setWheelSpeeds(wheelSpeeds);
 }
 
 void Mouse::setWheelSpeedsForTurnLeft() {
-    // TODO: MACK - refactor this
     std::map<std::string, RadiansPerSecond> wheelSpeeds;
     for (std::pair<std::string, Wheel> wheel : m_wheels) {
         wheelSpeeds.insert(std::make_pair(wheel.first,
-            getWheelMaxSpeed(wheel.first) * getWheelMaxContributions().at(wheel.first).second));
+            getWheelMaxSpeed(wheel.first) * getWheelContributionFactors(wheel.first).second));
     }
     setWheelSpeeds(wheelSpeeds);
 }
 
 void Mouse::setWheelSpeedsForTurnRight() {
-    // TODO: MACK - refactor this
     std::map<std::string, RadiansPerSecond> wheelSpeeds;
     for (std::pair<std::string, Wheel> wheel : m_wheels) {
         wheelSpeeds.insert(std::make_pair(wheel.first,
-            getWheelMaxSpeed(wheel.first) * getWheelMaxContributions().at(wheel.first).second * -1));
+            getWheelMaxSpeed(wheel.first) * getWheelContributionFactors(wheel.first).second * -1));
     }
     setWheelSpeeds(wheelSpeeds);
 }
@@ -331,6 +290,51 @@ Polygon Mouse::getCurrentSensorViewPolygon(const Sensor& sensor,
             currentTranslation),
         sensor.getInitialDirection() + rotationDelta,
         *m_maze);
+}
+
+std::pair<double, double> Mouse::getWheelContributionFactors(const std::string& name) const {
+
+    static std::map<std::string, std::pair<double, double>> contributionFactors;
+
+    if (contributionFactors.empty()) {
+
+        MetersPerSecond maxForwardContributionMagnitude(0);
+        RadiansPerSecond maxRadialContributionMagnitude(0);
+        std::map<std::string, std::pair<MetersPerSecond, RadiansPerSecond>> contributionPairs;
+
+        for (std::pair<std::string, Wheel> wheel : m_wheels) {
+
+            MetersPerSecond maxLinearVelocity = wheel.second.getMaxAngularVelocityMagnitude() * wheel.second.getRadius();
+            MetersPerSecond forwardContribution = maxLinearVelocity *
+                (getInitialRotation() - wheel.second.getInitialDirection()).getCos();
+
+            Cartesian wheelToCenter = getInitialTranslation() - wheel.second.getInitialPosition();
+            double rotationFactor = (wheelToCenter.getTheta() - wheel.second.getInitialDirection()).getSin();
+            RadiansPerSecond radialContribuition = RadiansPerSecond(
+                maxLinearVelocity.getMetersPerSecond() / wheelToCenter.getRho().getMeters() * rotationFactor);
+
+            contributionPairs.insert(std::make_pair(wheel.first, std::make_pair(forwardContribution, radialContribuition)));
+
+            MetersPerSecond forwardContributionMagnitude(std::abs(forwardContribution.getMetersPerSecond()));
+            RadiansPerSecond radialContributionMagnitude(std::abs(radialContribuition.getRadiansPerSecond()));
+            if (maxForwardContributionMagnitude < forwardContributionMagnitude) {
+                maxForwardContributionMagnitude = forwardContributionMagnitude;
+            }
+            if (maxRadialContributionMagnitude < radialContributionMagnitude) {
+                maxRadialContributionMagnitude = radialContributionMagnitude;
+            }
+        }
+
+        for (std::pair<std::string, std::pair<MetersPerSecond, RadiansPerSecond>> pair : contributionPairs) {
+            contributionFactors.insert(std::make_pair(pair.first,
+                std::make_pair(
+                    pair.second.first / maxForwardContributionMagnitude,
+                    pair.second.second / maxRadialContributionMagnitude)));
+        }
+    }
+    
+    ASSERT_TR(SimUtilities::mapContains(contributionFactors, name));
+    return contributionFactors.at(name);
 }
 
 } // namespace sim

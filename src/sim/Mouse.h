@@ -73,10 +73,6 @@ public:
     // Returns the magnitde of the max angular velocity of the wheel
     RadiansPerSecond getWheelMaxSpeed(const std::string& name) const;
 
-    // TODO: MACK - Make this private, memoize, clean up interface
-    // TODO: MACK - make a note that this only works for symmetrical mice
-    std::map<std::string, std::pair<double, double>> getWheelMaxContributions() const;
-
     // An atomic interface for setting the wheel speeds
     void setWheelSpeeds(const std::map<std::string, RadiansPerSecond>& wheelSpeeds);
 
@@ -130,6 +126,9 @@ private:
     // Helper function for retrieving the polygon corresponding to the view of a sensor
     Polygon getCurrentSensorViewPolygon(const Sensor& sensor,
         const Cartesian& currentTranslation, const Radians& currentRotation) const;
+
+    // Get the forward and radial contribution factors for a wheel
+    std::pair<double, double> getWheelContributionFactors(const std::string& name) const;
 };
 
 } // namespace sim

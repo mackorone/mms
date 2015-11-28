@@ -26,6 +26,7 @@ public:
 private:
     pugi::xml_document m_doc;
 
+    // TODO: MACK - make these into member vars
     Radians getForwardDirection();
     Cartesian getCenterOfMass();
 
