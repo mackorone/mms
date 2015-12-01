@@ -1,21 +1,26 @@
 # High Priority
 
-- Refactor some stuff
-- CPU
+- Remove friending in manual algo
+- Algo params should not be runtime - just put the params in a class
+- Algo specifies algo param file...
+- Specify some options/params in the mouseAlgorithm
+- Manual mode fog breakage
+    - Automatically clear tile fog?
+    - Allow the algo to specify this?
+    - Other algo options???
+- Make a note about symmetry with discrete interface
 - Arbitrary tile text
 - Encoders
 - Stepper motor
 - Sensor type (digital or analog)
 - Allow someone to specify inf distance for the tile
-- Figure out how to get rid of (or formalize) "left" and "right" wheels for discrete interface
-    - Figure out which wheels contribute to what and use that for discrete motions
-    - Make a note about this
 - Clean up mouse parser
     - Ensure that the magnitude is non-negative
-- Ensure that the wheel speed is not too high in the MouseInterface
+- Ensure that the wheel speed is not too high in the MouseInterface (so that the mouse doesn't clip through walls)
     - DiscreteInterfaceWheelSpeed?
     - Figure out how to make discrete interface wheel speed more uniform among algos...
 - Continuous performance
+    - CPU with megaMouse.xml
     - Reading the sensors is super non-performant...
     - MinSleepDuration is a little bit weird - sometimes we try to sleep less than that
 - Make some utility that keeps track of simulation and real elapsed time
@@ -69,9 +74,11 @@
 - Clang compiler support
 - Number of unique cells traversed
 - Some way to wite algorithms in Python
+- Make a separate process for algo, so if the algo dies the sim stays alive, and so that we can start an algo over really easily
 
 # Medum Priority
 
+- Color palettes
 - For curve turns, see if you can figure out the arc that the mouse should go on to simulate a curve turn, use checkpoints
     - No curve turn has two line segments, each is tangent
         - first order curve turn has 3 line segments total, equally spaced, etc.
