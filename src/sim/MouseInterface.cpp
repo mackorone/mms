@@ -234,7 +234,7 @@ void MouseInterface::setWheelSpeed(const std::string& name, double radiansPerSec
     m_mouse->setWheelSpeeds({{name, radiansPerSecond}});
 }
 
-double MouseInterface::read(std::string name) {
+double MouseInterface::readSensor(std::string name) {
 
     ENSURE_CONTINUOUS_INTERFACE
 

@@ -902,15 +902,15 @@ void Continuous::wallFollow() {
 }
 
 bool Continuous::wallRight() {
-    return m_mouse->read("right-side") > 0.6;
+    return m_mouse->readSensor("right-side") > 0.6;
 }
 
 bool Continuous::wallLeft() {
-    return m_mouse->read("left-side") > 0.6;
+    return m_mouse->readSensor("left-side") > 0.6;
 }
 
 bool Continuous::wallFront() {
-    return m_mouse->read("right-front") > 0.9;
+    return m_mouse->readSensor("right-front") > 0.9;
 }
 
 void Continuous::turnRight() {
@@ -959,18 +959,18 @@ int Kp;
     double error;
     double totalError;
     if (wallRight() && wallLeft()) {
-        //error = m_mouse->read("right-side") - m_mouse->read("left-side");
-		error = m_mouse->read("left-side") - m_mouse->read("right-side");
+        //error = m_mouse->readSensor("right-side") - m_mouse->readSensor("left-side");
+		error = m_mouse->readSensor("left-side") - m_mouse->readSensor("right-side");
         Kp = 20;
     }
 
     else if (wallRight()) {
-        error = .5 * (0.776 - m_mouse->read("right-side"));
+        error = .5 * (0.776 - m_mouse->readSensor("right-side"));
 	Kp = 5;
     }
     
     else if (wallLeft()) {
-        error = .5 * (m_mouse->read("left-side") - 0.825);//.776
+        error = .5 * (m_mouse->readSensor("left-side") - 0.825);//.776
         Kp = 20;
     }
 
@@ -982,8 +982,8 @@ int Kp;
 	m_mouse->setWheelSpeed("left-lower", -(25 * M_PI + totalError));
 	m_mouse->setWheelSpeed("right-lower", 25 * M_PI - totalError);
     //m_mouse->delay(1);
-    //std::cout << m_mouse->read("left") << std::endl;
-    //std::cout << m_mouse->read("leftMiddle") << std::endl;
+    //std::cout << m_mouse->readSensor("left") << std::endl;
+    //std::cout << m_mouse->readSensor("leftMiddle") << std::endl;
     //std::cout << std::endl;
     //m_mouse->setWheelSpeeds(0, 0);
     //m_mouse->delay(0);
@@ -1008,6 +1008,7 @@ float Continuous::readGyro() {
 
 
 long long Continuous::millis() {
+#if(0) // TODO: KYLE
 	//http://gamedev.stackexchange.com/questions/26759/best-way-to-get-elapsed-time-in-miliseconds-in-windows
 	static LARGE_INTEGER s_frequency;
 	static BOOL s_use_qpc = QueryPerformanceFrequency(&s_frequency);
@@ -1019,6 +1020,8 @@ long long Continuous::millis() {
 	else {
 		return GetTickCount();
 	}
+#endif
+    return 0;
 }
 
 } // namespace continuous

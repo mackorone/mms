@@ -69,7 +69,7 @@ public:
     void setWheelSpeed(const std::string& name, double radiansPerSecond);
 
     // Returns a value in [0.0, 1.0]
-    double read(std::string name);
+    double readSensor(std::string name);
 
     // Returns deg/s of rotation
     double readGyro();

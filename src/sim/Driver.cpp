@@ -21,6 +21,8 @@
 #include "TriangleGraphic.h"
 #include "units/Seconds.h"
 
+#include "Dummy.h" // TODO: MACK
+
 namespace sim {
 
 // Definition of the static variables for linking
@@ -80,6 +82,8 @@ void Driver::drive(int argc, char* argv[]) {
             DIRECTION_TO_CHAR.at(STRING_TO_DIRECTION.at(P()->mouseStartingDirection())),
             m_mouseInterface);
     });
+
+    L()->info("Dummy number: %v", getDummyNumber()); // TODO: MACK
 
     // Step 6: Start the graphics loop
     glutMainLoop();

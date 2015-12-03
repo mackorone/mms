@@ -1,5 +1,7 @@
 # High Priority
 
+- Remove dummy file
+- RPM
 - Rename "read" to "readSensor" in MouseInterface
 - Dedup in Mouse.cpp
 - Fix wheel/sensor name error messages
@@ -78,6 +80,7 @@
 - Number of unique cells traversed
 - Some way to wite algorithms in Python
 - Make a separate process for algo, so if the algo dies the sim stays alive, and so that we can start an algo over really easily
+- Figure out what to do if an algo doesn't compile...
 
 # Medum Priority
 
