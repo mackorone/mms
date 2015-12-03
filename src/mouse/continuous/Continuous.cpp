@@ -28,19 +28,27 @@ std::string Continuous::interfaceType() const {
 void Continuous::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
 
 	m_mouse = mouse;
-	/*
+	
 	while (true) {
-		if (!wallRight()) {
-			m_mouse->delay(350);
+		if (!wallFront()) {
+			moveForward();
+		}
+		else {
 			turnRight();
 		}
-		while (wallFront()) {
-			turnLeft();
-		}
-		moveForward();
-		correctErrors();
+		
+		//if (!wallRight()) {
+		//	//m_mouse->delay(350);
+		//	turnRight();
+		//}
+		//while (wallFront()) {
+		//	turnLeft();
+		//}
+		//moveForward();
+		////correctErrors();
+		//
 	}
-	*/
+	
 
 	//read initial sensor values to determine first cell move
 	walls_global[0] = wallLeft();
@@ -51,25 +59,25 @@ void Continuous::solve(int mazeWidth, int mazeHeight, char initialDirection, sim
 	movesDoneAndWallsSet = true;
 
 	/***********************************GYRO TEST**************************************************/
-	//long long start = millis();
+	long long start = millis();
 	double angle = 0;
 	int timeConst = 1; //ms
-	setSpeed(10, 10);
-	clock_t start;
-	clock_t elapsed;
-	start = clock();
+	setSpeed(25, 25);
+	//clock_t start;
+	//clock_t elapsed;
+	//start = clock();
 	while (true) {//void loop
 		// ....
-		//long long elapsed = millis() - start;
-		elapsed = clock() - start;
+		long long elapsed = millis() - start;
+		//elapsed = clock() - start;
 		if (elapsed >= timeConst) {
 			//start = millis();
-			start = clock();
+			//start = clock();
 			angle += m_mouse->readGyro() * timeConst / 1000;
 			//cout << angle << "\n";
-			//start = millis();
+			start = millis();
 			//correction();
-			if (angle <= -180) {
+			if (angle <= -90) {
 				setSpeed(0, 0);
 				while (true);
 			}
@@ -195,33 +203,33 @@ void Continuous::correction() {
 
 	haveSensorReading = false;
 }
-
-void Continuous::moveForward() {
-	if (firstCell) {
-		rightTicks = 70;
-		leftTicks = 70;
-		firstCell = false;
-		leftBaseSpeed = 0;
-		rightBaseSpeed = 0;
-		accelerate = true;
-	}
-	else if (afterTurnAround) {
-		leftBaseSpeed = 0;
-		rightBaseSpeed = 0;
-		accelerate = true;
-		rightTicks = 100;
-		leftTicks = 100;
-		afterTurnAround = false;
-	}
-	else {
-		rightTicks = 0;
-		leftTicks = 0;
-	}
-
-	rightValid = wallRight();
-	leftValid = wallLeft();
-	moveType = FORWARD;
-}
+//
+//void Continuous::moveForward() {
+//	if (firstCell) {
+//		rightTicks = 70;
+//		leftTicks = 70;
+//		firstCell = false;
+//		leftBaseSpeed = 0;
+//		rightBaseSpeed = 0;
+//		accelerate = true;
+//	}
+//	else if (afterTurnAround) {
+//		leftBaseSpeed = 0;
+//		rightBaseSpeed = 0;
+//		accelerate = true;
+//		rightTicks = 100;
+//		leftTicks = 100;
+//		afterTurnAround = false;
+//	}
+//	else {
+//		rightTicks = 0;
+//		leftTicks = 0;
+//	}
+//
+//	rightValid = wallRight();
+//	leftValid = wallLeft();
+//	moveType = FORWARD;
+//}
 
 void Continuous::turnAround() {
 	const int frontLeftStop = 1400;
@@ -894,78 +902,96 @@ void Continuous::wallFollow() {
 }
 
 bool Continuous::wallRight() {
-    return m_mouse->read("right") > 0.5;
+    return m_mouse->read("right-side") > 0.6;
 }
 
 bool Continuous::wallLeft() {
-    return m_mouse->read("left") > 0.5;
+    return m_mouse->read("left-side") > 0.6;
 }
 
 bool Continuous::wallFront() {
-    return m_mouse->read("rightFront") > 0.9;
+    return m_mouse->read("right-front") > 0.9;
 }
 
 void Continuous::turnRight() {
-    m_mouse->setWheelSpeed("left", -5*M_PI);
-    m_mouse->setWheelSpeed("right", -5*M_PI);
-    delay(290);
-    m_mouse->setWheelSpeed("left", -10*M_PI);
-    m_mouse->setWheelSpeed("right", 10*M_PI);
-    m_mouse->delay(100);
-    m_mouse->setWheelSpeed("left", 0);  
-    m_mouse->setWheelSpeed("right", 0);  
+  // // m_mouse->setWheelSpeed("left-front", 5*M_PI);
+  ////  m_mouse->setWheelSpeed("right-front", 5*M_PI);
+  //  delay(350);
+  //  m_mouse->setWheelSpeed("left-lower", -10*M_PI);
+  //  m_mouse->setWheelSpeed("right-lower", -10*M_PI);
+  //  m_mouse->delay(350);
+  //  m_mouse->setWheelSpeed("left-lower", 0);  
+  //  m_mouse->setWheelSpeed("right-lower", 0);  
+
+	long long start = millis();
+	double angle = 0;
+	int timeConst = 1; //ms
+	setSpeed(-25, -25);
+	while (true) {//void loop
+		long long elapsed = millis() - start;
+		if (elapsed >= timeConst) {
+			angle += readGyro() * timeConst / 1000;
+			start = millis();
+			if (angle <= -90) {
+				setSpeed(0, 0);
+				break;
+			}
+		}
+	}
 }
 
 void Continuous::turnLeft() {
-    m_mouse->setWheelSpeed("left", 5*M_PI);
-    m_mouse->setWheelSpeed("right", 5*M_PI);
+    m_mouse->setWheelSpeed("left-lower", 5*M_PI);
+    m_mouse->setWheelSpeed("right-lower", 5*M_PI);
     m_mouse->delay(290);
-    m_mouse->setWheelSpeed("left", -10*M_PI);
-    m_mouse->setWheelSpeed("right", 10*M_PI);
+    m_mouse->setWheelSpeed("left-lower", -10*M_PI);
+    m_mouse->setWheelSpeed("right-lower", 10*M_PI);
     m_mouse->delay(100);
-    m_mouse->setWheelSpeed("left", 0);  
-    m_mouse->setWheelSpeed("right", 0);  
+    m_mouse->setWheelSpeed("left-lower", 0);  
+    m_mouse->setWheelSpeed("right-lower", 0);  
 }
 
 
-//void Continuous::moveForward() {
-//    //m_mouse->setWheelSpeeds(-10*M_PI, 10*M_PI);
-//    //m_mouse->delay(280);
-//int Kp;
-//    double error;
-//    double totalError;
-//    if (wallRight() && wallLeft()) {
-//        error = m_mouse->read("left") - m_mouse->read("right");
-//        Kp = 20;
-//    }
-//
-//    else if (wallRight()) {
-//        error = .5 * (0.776 - m_mouse->read("right"));
-//	Kp = 5;
-//    }
-//    
-//    else if (wallLeft()) {
-//        error = .5 * (m_mouse->read("left") - 0.776);
-//        Kp = 5;
-//    }
-//
-//    else {
-//        error = 0;
-//    }
-//
-//    totalError = Kp * error;
-//    m_mouse->setWheelSpeeds(-(10*M_PI + totalError), 10*M_PI - totalError);
-//    m_mouse->delay(1);
-//    //std::cout << m_mouse->read("left") << std::endl;
-//    //std::cout << m_mouse->read("leftMiddle") << std::endl;
-//    //std::cout << std::endl;
-//    //m_mouse->setWheelSpeeds(0, 0);
-//    //m_mouse->delay(0);
-//}
+void Continuous::moveForward() {
+    //m_mouse->setWheelSpeeds(-10*M_PI, 10*M_PI);
+    //m_mouse->delay(280);
+int Kp;
+    double error;
+    double totalError;
+    if (wallRight() && wallLeft()) {
+        //error = m_mouse->read("right-side") - m_mouse->read("left-side");
+		error = m_mouse->read("left-side") - m_mouse->read("right-side");
+        Kp = 20;
+    }
+
+    else if (wallRight()) {
+        error = .5 * (0.776 - m_mouse->read("right-side"));
+	Kp = 5;
+    }
+    
+    else if (wallLeft()) {
+        error = .5 * (m_mouse->read("left-side") - 0.825);//.776
+        Kp = 20;
+    }
+
+    else {
+        error = 0;
+    }
+    totalError = Kp * error;
+    //m_mouse->setSpeed(-(10*M_PI + totalError), 10*M_PI - totalError);
+	m_mouse->setWheelSpeed("left-lower", -(25 * M_PI + totalError));
+	m_mouse->setWheelSpeed("right-lower", 25 * M_PI - totalError);
+    //m_mouse->delay(1);
+    //std::cout << m_mouse->read("left") << std::endl;
+    //std::cout << m_mouse->read("leftMiddle") << std::endl;
+    //std::cout << std::endl;
+    //m_mouse->setWheelSpeeds(0, 0);
+    //m_mouse->delay(0);
+}
 
 void Continuous::setSpeed(double left, double right) {
-	m_mouse->setWheelSpeed("left", left);
-	m_mouse->setWheelSpeed("right", right);
+	m_mouse->setWheelSpeed("left-lower", left);
+	m_mouse->setWheelSpeed("right-lower", right);
 }
 
 void Continuous::delay(int ms) {
@@ -976,19 +1002,23 @@ void Continuous::readSensors() {
 
 }
 
+float Continuous::readGyro() {
+	return .7 * m_mouse->readGyro();
+}
 
-//long long Continuous::millis() {
-//	//http://gamedev.stackexchange.com/questions/26759/best-way-to-get-elapsed-time-in-miliseconds-in-windows
-//	static LARGE_INTEGER s_frequency;
-//	static BOOL s_use_qpc = QueryPerformanceFrequency(&s_frequency);
-//	if (s_use_qpc) {
-//		LARGE_INTEGER now;
-//		QueryPerformanceCounter(&now);
-//		return (1000LL * now.QuadPart) / s_frequency.QuadPart;
-//	}
-//	else {
-//		return GetTickCount();
-//	}
-//}
+
+long long Continuous::millis() {
+	//http://gamedev.stackexchange.com/questions/26759/best-way-to-get-elapsed-time-in-miliseconds-in-windows
+	static LARGE_INTEGER s_frequency;
+	static BOOL s_use_qpc = QueryPerformanceFrequency(&s_frequency);
+	if (s_use_qpc) {
+		LARGE_INTEGER now;
+		QueryPerformanceCounter(&now);
+		return (1000LL * now.QuadPart) / s_frequency.QuadPart;
+	}
+	else {
+		return GetTickCount();
+	}
+}
 
 } // namespace continuous

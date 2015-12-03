@@ -3,13 +3,14 @@
 #include <thread>
 
 #include "CPMath.h"
-#include "CPMinMax.h"
+
 #include "GeometryUtilities.h"
 #include "Logging.h"
 #include "Param.h"
 #include "SimUtilities.h"
 #include "State.h"
 #include "units/Milliseconds.h"
+#include "CPMinMax.h"
 
 namespace sim {
 

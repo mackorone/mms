@@ -108,6 +108,7 @@ private:
 	void turnAround();
 	void readSensors();
     void correctErrors();
+	float readGyro();
 	void delay(int ms);
 	void correction();
 	float getAngle(float speedLeft, float speedRight);
