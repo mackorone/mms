@@ -26,31 +26,31 @@
 <mouse-wheel-speed-indicator-color>DARK_GREEN</mouse-wheel-speed-indicator-color>
 <mouse-sensor-color>GREEN</mouse-sensor-color>
 <mouse-view-color>WHITE</mouse-view-color>
-<default-tile-colors-visible>true</default-tile-colors-visible>
-<default-wall-truth-visible>false</default-wall-truth-visible>
-<default-tile-fog-visible>true</default-tile-fog-visible>
-<default-tile-text-visible>true</default-tile-text-visible>
-<default-tile-distance-visible>false</default-tile-distance-visible>
+<default-tile-colors-visible>true</default-tile-colors-visible> <!-- TODO -->
+<default-wall-truth-visible>false</default-wall-truth-visible> <!-- TODO -->
+<default-tile-fog-visible>true</default-tile-fog-visible> <!-- TODO -->
+<default-tile-text-visible>true</default-tile-text-visible> <!-- TODO -->
+<default-tile-distance-visible>false</default-tile-distance-visible> <!-- TODO -->
 <tile-fog-alpha>0.15</tile-fog-alpha> <!-- Must be in [0.0, 1.0] -->
 <default-wireframe-mode>false</default-wireframe-mode>
-<set-tile-base-color-when-distance-correct>false</set-tile-base-color-when-distance-correct>
+<set-tile-base-color-when-distance-correct>false</set-tile-base-color-when-distance-correct> <!-- TODO -->
 <distance-correct-tile-base-color>DARK_YELLOW</distance-correct-tile-base-color>
 
 <!-- Simulation Parameters -->
 <random-seed>12345</random-seed> <!-- The seed value for rand() -->
 <use-random-seed>false</use-random-seed> <!-- Whether or not to use the seed value -->
-<collision-detection-enabled>true</collision-detection-enabled>
-<crash-message>Oh no! Your mouse crashed! It can't move anymore...</crash-message>
+<collision-detection-enabled>true</collision-detection-enabled> <!-- TODO -->
+<crash-message>Oh no! Your mouse crashed! It can't move anymore...</crash-message> <!-- TODO -->
 <glut-init-duration>0.1</glut-init-duration> <!-- Seconds -->
-<default-paused>false</default-paused>
+<default-paused>false</default-paused> <!-- TODO -->
 <min-sim-speed>0.1</min-sim-speed> <!-- Fraction/factor of actual time -->
 <max-sim-speed>10.0</max-sim-speed> <!-- Fraction/factor of actual time -->
-<default-sim-speed>1.0</default-sim-speed> <!-- Fraction/factor of actual time -->
+<default-sim-speed>1.0</default-sim-speed> <!-- Fraction/factor of actual time --> <!-- TODO -->
 <min-sleep-duration>5</min-sleep-duration> <!-- Milliseconds -->
-<discrete-interface-wheel-speed>3.0</discrete-interface-wheel-speed> <!-- rev/s -->
-<discrete-interface-declare-wall-on-read>true</discrete-interface-declare-wall-on-read>
-<algorithm-controls-tile-fog>false</algorithm-controls-tile-fog>
-<declare-both-wall-halves>true</declare-both-wall-halves>
+<discrete-interface-wheel-speed>3.0</discrete-interface-wheel-speed> <!-- rev/s --> <!-- TODO -->
+<discrete-interface-declare-wall-on-read>true</discrete-interface-declare-wall-on-read> <!-- TODO -->
+<algorithm-controls-tile-fog>false</algorithm-controls-tile-fog> <!-- TODO -->
+<declare-both-wall-halves>true</declare-both-wall-halves> <!-- TODO -->
 <mouse-position-update-rate>500</mouse-position-update-rate> <!-- Updates per second -->
 <print-late-mouse-position-updates>true</print-late-mouse-position-updates>
 <collision-detection-rate>40</collision-detection-rate> <!-- Checks per second -->
@@ -63,7 +63,7 @@
 <!-- Maze Parameters -->
 <wall-length>0.168</wall-length> <!-- meters -->
 <wall-width>0.012</wall-width> <!-- meters -->
-<enforce-official-maze-rules>false</enforce-official-maze-rules>
+<enforce-official-maze-rules>false</enforce-official-maze-rules> <!-- TODO -->
 <maze-file>mazeish.maz</maze-file> <!-- relative to maze-directory -->
 <use-maze-file>true</use-maze-file> <!-- whether or not to use the maze file above -->
 <generated-maze-width>16</generated-maze-width> <!-- number of tiles -->
@@ -75,5 +75,5 @@
 <maze-rotations>0</maze-rotations> <!-- 0-3 counterclockwise rotations -->
 
 <!-- Mouse Parameters -->
-<mouse-algorithm>DoNothing</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
-<mouse-starting-direction>NORTH</mouse-starting-direction> <!-- NORTH, EAST, SOUTH, or WEST -->
+<mouse-algorithm>MackAlgo</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
+<mouse-starting-direction>NORTH</mouse-starting-direction> <!-- NORTH, EAST, SOUTH, or WEST --> <!-- TODO -->

@@ -1,7 +1,10 @@
 # High Priority
 
+- Rename "read" to "readSensor" in MouseInterface
+- Dedup in Mouse.cpp
+- Fix wheel/sensor name error messages
 - Remove friending in manual algo
-- Algo params should not be runtime - just put the params in a class
+- Algo params should not be runtime - just put the params in a class (could the default be runtime???)
 - Algo specifies algo param file...
 - Specify some options/params in the mouseAlgorithm
 - Manual mode fog breakage
@@ -154,6 +157,7 @@
 - Support more than just white fonts
 - Protect functions that shouldn't be accessed by the algo by checking thread ID
 - Change over the Makefile to use cmake
+- Rewrite/clean floodfill
 
 # Clean-Up
 
