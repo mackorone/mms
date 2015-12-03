@@ -54,7 +54,7 @@
 <mouse-position-update-rate>500</mouse-position-update-rate> <!-- Updates per second -->
 <print-late-mouse-position-updates>true</print-late-mouse-position-updates>
 <collision-detection-rate>40</collision-detection-rate> <!-- Checks per second -->
-<print-late-collision-detections>false</print-late-collision-detections>
+<print-late-collision-detections>true</print-late-collision-detections>
 <print-late-sensor-reads>true</print-late-sensor-reads>
 <number-of-circle-approximation-points>8</number-of-circle-approximation-points> <!-- The number of edges in a polygon for a circle -->
 <number-of-sensor-edge-points>3</number-of-sensor-edge-points> <!-- The number of points of the edge of a sensor-->
