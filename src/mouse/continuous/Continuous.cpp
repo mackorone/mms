@@ -1008,7 +1008,7 @@ float Continuous::readGyro() {
 
 
 long long Continuous::millis() {
-#if(0) // TODO: KYLE
+#ifdef __WIN32 // TODO: KYLE
 	//http://gamedev.stackexchange.com/questions/26759/best-way-to-get-elapsed-time-in-miliseconds-in-windows
 	static LARGE_INTEGER s_frequency;
 	static BOOL s_use_qpc = QueryPerformanceFrequency(&s_frequency);
@@ -1020,8 +1020,9 @@ long long Continuous::millis() {
 	else {
 		return GetTickCount();
 	}
-#endif
+#else
     return 0;
+#endif
 }
 
 } // namespace continuous
