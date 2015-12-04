@@ -1,5 +1,5 @@
 #include "Continuous.h"
-
+#include "CurveProfile.h"
 #include <iostream>
 #ifdef _WIN32
 #   include <Windows.h>
@@ -9,11 +9,13 @@
 #	include <Windows.h>
 #endif
 #include <iostream>
+
 using namespace std;
 #include <cmath>
 #include <ctime>
 #undef M_PI
 #define M_PI 3.14159265358979323846
+
 
 namespace continuous {
 
@@ -28,25 +30,25 @@ std::string Continuous::interfaceType() const {
 void Continuous::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
 
 	m_mouse = mouse;
-	
+
 	while (true) {
-		if (!wallFront()) {
+		/*if (wallRight()) {
 			moveForward();
 		}
 		else {
-			turnRight();
-		}
+			curveTurnRight();
+		}*/
 		
-		//if (!wallRight()) {
-		//	//m_mouse->delay(350);
-		//	turnRight();
-		//}
-		//while (wallFront()) {
-		//	turnLeft();
-		//}
-		//moveForward();
-		////correctErrors();
-		//
+		if (!wallRight()) {
+			//m_mouse->delay(350);
+			curveTurnRight();
+		}
+		while (wallFront()) {
+			curveTurnLeft();
+		}
+		moveForward();
+		//correctErrors();
+		
 	}
 	
 
@@ -902,11 +904,11 @@ void Continuous::wallFollow() {
 }
 
 bool Continuous::wallRight() {
-    return m_mouse->readSensor("right-side") > 0.6;
+    return m_mouse->readSensor("right-side") > 0.5;
 }
 
 bool Continuous::wallLeft() {
-    return m_mouse->readSensor("left-side") > 0.6;
+    return m_mouse->readSensor("left-side") > 0.5;
 }
 
 bool Continuous::wallFront() {
@@ -951,6 +953,85 @@ void Continuous::turnLeft() {
     m_mouse->setWheelSpeed("right-lower", 0);  
 }
 
+void Continuous::simpleTurnAround() { 
+
+	long long start = millis();
+	double angle = 0;
+	int timeConst = 1; //ms
+	setSpeed(-25, -25);
+	while (true) {//void loop
+		long long elapsed = millis() - start;
+		if (elapsed >= timeConst) {
+			angle += readGyro() * timeConst / 1000;
+			start = millis();
+			if (angle <= -180) {
+				break;
+			}
+		}
+	}
+}
+
+void Continuous::curveTurnRight() {
+	double error;
+	double totalError;
+	int Kp = 2;
+	double targetAngle;
+	long long start = millis();
+	double angle = 0;
+	int timeConst = 3; //ms
+	int i = 0;
+	while (true) {//void loop
+		long long elapsed = millis() - start;
+		if (elapsed >= timeConst) {
+			targetAngle = -curve[i];
+			angle += readGyro() * timeConst / 1000;
+			error = angle - targetAngle;
+			start = millis();
+			totalError = Kp * error;
+			//m_mouse->setSpeed(-(10*M_PI + totalError), 10*M_PI - totalError);
+			m_mouse->setWheelSpeed("left-lower", -(25 * M_PI + totalError));
+			m_mouse->setWheelSpeed("right-lower", 25 * M_PI - totalError);
+			if (angle <= -90 || i >= curveTime-1) {
+				break;
+			}
+			if (i < curveTime) {
+				i++;
+			}
+			
+		}
+	}
+}
+
+void Continuous::curveTurnLeft() {
+	double error;
+	double totalError;
+	int Kp = 2;
+	double targetAngle;
+	long long start = millis();
+	double angle = 0;
+	int timeConst = 3; //ms
+	int i = 0;
+	while (true) {//void loop
+		long long elapsed = millis() - start;
+		if (elapsed >= timeConst) {
+			targetAngle = curve[i];
+			angle += readGyro() * timeConst / 1000;
+			error = angle - targetAngle;
+			start = millis();
+			totalError = Kp * error;
+			//m_mouse->setSpeed(-(10*M_PI + totalError), 10*M_PI - totalError);
+			m_mouse->setWheelSpeed("left-lower", -(25 * M_PI + totalError));
+			m_mouse->setWheelSpeed("right-lower", 25 * M_PI - totalError);
+			if (angle >= 90 || i >= curveTime - 1) {
+				break;
+			}
+			if (i < curveTime) {
+				i++;
+			}
+			
+		}
+	}
+}
 
 void Continuous::moveForward() {
     //m_mouse->setWheelSpeeds(-10*M_PI, 10*M_PI);

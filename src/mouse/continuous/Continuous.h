@@ -106,8 +106,11 @@ private:
 	void wallFollow();
 	void setSpeed(double left, double right);
 	void turnAround();
+	void simpleTurnAround();
+	void curveTurnLeft();
 	void readSensors();
     void correctErrors();
+	void curveTurnRight();
 	float readGyro();
 	void delay(int ms);
 	void correction();
