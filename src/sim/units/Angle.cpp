@@ -26,15 +26,16 @@ double Angle::getRadians() const {
 }
 
 double Angle::getDegrees() const {
-    return getRadians() * 360 / (2 * M_PI);
+    static const double degreesPerRadian = 360.0 / M_TWOPI;
+    return degreesPerRadian * getRadians();
 }
 
 double Angle::getSin() const {
-    return sin(getRadians());
+    return std::sin(getRadians());
 }
 
 double Angle::getCos() const {
-    return cos(getRadians());
+    return std::cos(getRadians());
 }
 
 bool Angle::operator<(const Angle& angle) {

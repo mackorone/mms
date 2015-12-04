@@ -50,9 +50,10 @@
         <Y>.07615</Y>
     </Position>
     <Direction>270</Direction> <!-- positive angular velocity causes the wheel to travel forward -->
-    <Max-Speed>100</Max-Speed> <!-- rev/s -->
+    <Max-Speed>6000</Max-Speed> <!-- rpm -->
     <!-- Motor params go here -->
     <!-- Encoder params go here -->
+    <Encoder-Ticks>360</Encoder-Ticks> <!-- per revolution -->
 </Wheel>
 <Wheel>
     <Name>left-upper</Name>
@@ -63,9 +64,10 @@
         <Y>.1044</Y>
     </Position>
     <Direction>270</Direction> <!-- positive angular velocity causes the wheel to travel forward -->
-    <Max-Speed>100</Max-Speed> <!-- rev/s -->
+    <Max-Speed>6000</Max-Speed> <!-- rpm -->
     <!-- Motor params go here -->
     <!-- Encoder params go here -->
+    <Encoder-Ticks>360</Encoder-Ticks> <!-- per revolution -->
 </Wheel>
 <Wheel>
     <Name>right-lower</Name>
@@ -76,9 +78,10 @@
         <Y>.07615</Y>
     </Position>
     <Direction>90</Direction> <!-- positive angular velocity causes the wheel to travel forward -->
-    <Max-Speed>100</Max-Speed> <!-- rev/s -->
+    <Max-Speed>6000</Max-Speed> <!-- rpm -->
     <!-- Motor params go here -->
     <!-- Encoder params go here -->
+    <Encoder-Ticks>360</Encoder-Ticks> <!-- per revolution -->
 </Wheel>
 <Wheel>
     <Name>right-upper</Name>
@@ -89,9 +92,10 @@
         <Y>.1044</Y>
     </Position>
     <Direction>90</Direction> <!-- positive angular velocity causes the wheel to travel forward -->
-    <Max-Speed>100</Max-Speed> <!-- rev/s -->
+    <Max-Speed>6000</Max-Speed> <!-- rpm -->
     <!-- Motor params go here -->
     <!-- Encoder params go here -->
+    <Encoder-Ticks>360</Encoder-Ticks> <!-- per revolution -->
 </Wheel>
 <Sensor>
     <Name>left-front</Name>

@@ -13,11 +13,13 @@ double Duration::getSeconds() const {
 }
 
 double Duration::getMilliseconds() const {
-    return getSeconds() * 1000;
+    static const double millisecondsPerSecond = 1000.0;
+    return millisecondsPerSecond * getSeconds();
 }
 
 double Duration::getMicroseconds() const {
-    return getSeconds() * 1000 * 1000;
+    static const double microsecondsPerSecond = 1000.0 * 1000.0;
+    return microsecondsPerSecond * getSeconds();
 }
 
 bool Duration::operator<(const Duration& duration) const {

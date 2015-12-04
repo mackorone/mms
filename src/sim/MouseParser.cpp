@@ -4,7 +4,7 @@
 #include "GeometryUtilities.h"
 #include "Logging.h"
 #include "SimUtilities.h"
-#include "units/RevolutionsPerSecond.h"
+#include "units/RevolutionsPerMinute.h"
 
 namespace sim {
 
@@ -55,6 +55,7 @@ std::map<std::string, Wheel> MouseParser::getWheels(
         double y = SimUtilities::strToDouble(wheel.child("Position").child("Y").child_value());
         double direction = SimUtilities::strToDouble(wheel.child("Direction").child_value());
         double maxAngularVelocityMagnitude = SimUtilities::strToDouble(wheel.child("Max-Speed").child_value());
+        double encoderTicksPerRevolution = SimUtilities::strToDouble(wheel.child("Encoder-Ticks").child_value());
         wheels.insert(
             std::make_pair(
                 name,
@@ -67,7 +68,8 @@ std::map<std::string, Wheel> MouseParser::getWheels(
                         alignmentRotation,
                         initialTranslation),
                     Degrees(direction) + alignmentRotation,
-                    RevolutionsPerSecond(maxAngularVelocityMagnitude))));
+                    RevolutionsPerMinute(maxAngularVelocityMagnitude),
+                    encoderTicksPerRevolution)));
     }
     return wheels;
 }

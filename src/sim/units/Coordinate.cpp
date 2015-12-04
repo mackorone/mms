@@ -19,11 +19,11 @@ Meters Coordinate::getY() const {
 }
 
 Meters Coordinate::getRho() const {
-    return Meters(hypot(m_x.getMeters(), m_y.getMeters()));
+    return Meters(std::hypot(m_x.getMeters(), m_y.getMeters()));
 }
 
 Radians Coordinate::getTheta() const {
-    return Radians(atan2(m_y.getMeters(), m_x.getMeters()));
+    return Radians(std::atan2(m_y.getMeters(), m_x.getMeters()));
 }
 
 bool Coordinate::operator==(const Coordinate& coordinate) const {

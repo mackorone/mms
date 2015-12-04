@@ -3,7 +3,8 @@
 namespace sim {
 
 Milliseconds::Milliseconds(double milliseconds) {
-    m_seconds = milliseconds / 1000.0;
+    static const double secondsPerMillisecond = 1.0 / 1000.0;
+    m_seconds = secondsPerMillisecond * milliseconds;
 }
 
 Milliseconds::Milliseconds(const Duration& duration) {

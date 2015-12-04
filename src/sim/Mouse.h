@@ -83,6 +83,12 @@ public:
     void setWheelSpeedsForTurnRight();
     void stopAllWheels();
 
+    // Returns the number of encoder ticks per revolution for a particular wheel given by name
+    double getWheelEncoderTicksPerRevolution(const std::string& name) const;
+
+    // Returns the reading of the encoder of the wheel given by name
+    int readWheelEncoder(const std::string& name);
+
     // Returns whether or not the mouse has a sensor by a particular name
     bool hasSensor(const std::string& name) const;
 
@@ -116,8 +122,8 @@ private:
     Cartesian m_currentTranslation;
     Radians m_currentRotation;
 
-    // Ensures the wheel speeds are accessed together atomically
-    std::mutex m_wheelMutex; 
+    // Ensures that updates happen atomically
+    std::mutex m_updateMutex; 
 
     // Helper function for polygon retrieval based on a given mouse translation and rotation
     Polygon getCurrentPolygon(const Polygon& initialPolygon,

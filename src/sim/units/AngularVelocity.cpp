@@ -15,11 +15,14 @@ double AngularVelocity::getRadiansPerSecond() const {
 }
 
 double AngularVelocity::getDegreesPerSecond() const {
-    return getRadiansPerSecond() * 180.0 / M_PI;
+    static const double degreesPerRadian = 360.0 / M_TWOPI;
+    return degreesPerRadian * getRadiansPerSecond();
 }
 
-double AngularVelocity::getRevolutionsPerSecond() const {
-    return getRadiansPerSecond() / M_TWOPI;
+double AngularVelocity::getRevolutionsPerMinute() const {
+    static const double revolutionsPerRadian = 1.0 / M_TWOPI;
+    static const double secondsPerMinute = 60.0;
+    return revolutionsPerRadian * getRadiansPerSecond() * secondsPerMinute;
 }
 
 Radians AngularVelocity::operator*(const Duration& duration) const {

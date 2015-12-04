@@ -13,7 +13,8 @@ double Distance::getMeters() const {
 }
 
 double Distance::getCentimeters() const {
-    return getMeters() * 100;
+    static const double centimetersPerMeter = 100.0;
+    return centimetersPerMeter * getMeters();
 }
 
 bool Distance::operator==(const Distance& distance) const {
@@ -29,7 +30,7 @@ bool Distance::operator<(const Distance& distance) const {
 }
 
 Seconds Distance::operator/(const Speed& speed) const {
-    return Seconds(getMeters()/speed.getMetersPerSecond());
+    return Seconds(getMeters() / speed.getMetersPerSecond());
 }
 
 } // namespace sim

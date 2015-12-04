@@ -26,11 +26,11 @@
         <Y>.02598</Y> <!-- Meters -->
     </Position>
     <Direction>240</Direction> <!-- Degrees, positive angular velocity causes the wheel to travel forward -->
-    <Max-Speed>3</Max-Speed> <!-- rev/s -->
+    <Max-Speed>200</Max-Speed> <!-- rpm -->
     <!-- Motor type -->
     <!-- Motor Max acceleration -->
     <!-- Encoder type -->
-    <!-- Encoder ticks per revolution -->
+    <Encoder-Ticks>360</Encoder-Ticks> <!-- per revolution -->
 </Wheel>
 <Wheel>
     <Name>upper-right</Name>
@@ -41,11 +41,11 @@
         <Y>.02598</Y>
     </Position>
     <Direction>120</Direction> <!-- Degrees, positive angular velocity causes the wheel to travel forward -->
-    <Max-Speed>3</Max-Speed> <!-- rev/s -->
+    <Max-Speed>200</Max-Speed> <!-- rpm -->
     <!-- Motor type -->
     <!-- Motor Max acceleration -->
     <!-- Encoder type -->
-    <!-- Encoder ticks per revolution -->
+    <Encoder-Ticks>360</Encoder-Ticks> <!-- per revolution -->
 </Wheel>
 <Wheel>
     <Name>bottom</Name>
@@ -56,9 +56,9 @@
         <Y>.00000</Y>
     </Position>
     <Direction>0</Direction> <!-- Degrees, positive angular velocity causes the wheel to travel forward -->
-    <Max-Speed>3</Max-Speed> <!-- rev/s -->
+    <Max-Speed>200</Max-Speed> <!-- rpm -->
     <!-- Motor type -->
     <!-- Motor Max acceleration -->
     <!-- Encoder type -->
-    <!-- Encoder ticks per revolution -->
+    <Encoder-Ticks>360</Encoder-Ticks> <!-- per revolution -->
 </Wheel>

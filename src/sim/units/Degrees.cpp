@@ -9,7 +9,8 @@ Degrees::Degrees() {
 }
 
 Degrees::Degrees(double degrees) {
-    m_radians = degrees * (2 * M_PI) / 360;
+    static const double radiansPerDegree = M_TWOPI / 360.0;
+    m_radians = radiansPerDegree * degrees;
 }
 
 Degrees::Degrees(const Angle& angle) {

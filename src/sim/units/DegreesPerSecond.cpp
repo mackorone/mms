@@ -5,7 +5,8 @@
 namespace sim {
 
 DegreesPerSecond::DegreesPerSecond(double degreesPerSecond) {
-    m_radiansPerSecond = degreesPerSecond / 180 * M_PI;
+    static const double radiansPerDegree = M_TWOPI / 360.0;
+    m_radiansPerSecond = radiansPerDegree * degreesPerSecond;
 }
 
 DegreesPerSecond::DegreesPerSecond(const AngularVelocity& angularVelocity) {

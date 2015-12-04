@@ -11,7 +11,7 @@ public:
     virtual ~AngularVelocity() = 0;
     double getRadiansPerSecond() const;
     double getDegreesPerSecond() const;
-    double getRevolutionsPerSecond() const;
+    double getRevolutionsPerMinute() const;
     Radians operator*(const Duration& duration) const;
     double operator/(const AngularVelocity& angularVelocity) const;
     bool operator<(const AngularVelocity& angularVelocity) const;

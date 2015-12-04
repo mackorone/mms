@@ -1,12 +1,14 @@
 # High Priority
 
-- Remove dummy file
-- RPM
-- Rename "read" to "readSensor" in MouseInterface
+- Make sure encoder ticks is positive double number
+    - What to do if some of the mouse params are missing?
+    - Check to make sure that the only intersection point of body polygon is at the vertices, no complex polys
 - Dedup in Mouse.cpp
+- Discrete mode speed...
 - Fix wheel/sensor name error messages
 - Remove friending in manual algo
 - Algo params should not be runtime - just put the params in a class (could the default be runtime???)
+    - Make a note about how to do params in algos
 - Algo specifies algo param file...
 - Specify some options/params in the mouseAlgorithm
 - Manual mode fog breakage
@@ -14,6 +16,7 @@
     - Allow the algo to specify this?
     - Other algo options???
 - Make a note about symmetry with discrete interface
+    - Make a formal check for symmetry
 - Arbitrary tile text
 - Encoders
 - Stepper motor

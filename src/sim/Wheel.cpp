@@ -1,7 +1,6 @@
 #include "Wheel.h"
 
 #include "CPMath.h"
-#include "units/RevolutionsPerSecond.h"
 
 namespace sim {
 
@@ -10,13 +9,16 @@ Wheel::Wheel(
         const Distance& width,
         const Coordinate& position,
         const Angle& direction,
-        const AngularVelocity& maxAngularVelocityMagnitude) :
+        const AngularVelocity& maxAngularVelocityMagnitude,
+        double encoderTicksPerRevolution) :
         m_radius(Meters(diameter) / 2.0),
         m_halfWidth(Meters(width) / 2.0),
         m_initialPosition(position),
         m_initialDirection(direction),
         m_angularVelocity(RadiansPerSecond(0.0)),
-        m_maxAngularVelocityMagnitude(maxAngularVelocityMagnitude) {
+        m_maxAngularVelocityMagnitude(maxAngularVelocityMagnitude),
+        m_encoderTicksPerRevolution(encoderTicksPerRevolution),
+        m_rotation(Radians(0)) {
 
     // Create the initial wheel polygon
     std::vector<Cartesian> polygon;
@@ -61,6 +63,18 @@ RadiansPerSecond Wheel::getMaxAngularVelocityMagnitude() const {
 void Wheel::setAngularVelocity(const AngularVelocity& angularVelocity) {
     m_angularVelocity = angularVelocity;
     m_speedIndicatorPolygon = getSpeedIndicatorPolygon(angularVelocity);
+}
+
+double Wheel::getEncoderTicksPerRevolution() const {
+    return m_encoderTicksPerRevolution;
+}
+
+void Wheel::updateRotation(const Angle& angle) {
+    m_rotation += angle;
+}
+
+int Wheel::readEncoder() const {
+    return static_cast<int>(std::floor(m_encoderTicksPerRevolution * m_rotation.getRadians() / M_TWOPI));
 }
 
 Polygon Wheel::getSpeedIndicatorPolygon(const AngularVelocity& angularVelocity) {

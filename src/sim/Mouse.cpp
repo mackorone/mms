@@ -77,13 +77,13 @@ Radians Mouse::getCurrentRotation() const {
 
 std::pair<int, int> Mouse::getCurrentDiscretizedTranslation() const {
     Cartesian currentTranslation = getCurrentTranslation();
-    int x = static_cast<int>(floor((currentTranslation.getX() / Meters(P()->wallLength() + P()->wallWidth()))));
-    int y = static_cast<int>(floor((currentTranslation.getY() / Meters(P()->wallLength() + P()->wallWidth()))));
+    int x = static_cast<int>(std::floor((currentTranslation.getX() / Meters(P()->wallLength() + P()->wallWidth()))));
+    int y = static_cast<int>(std::floor((currentTranslation.getY() / Meters(P()->wallLength() + P()->wallWidth()))));
     return std::make_pair(x, y);
 }
 
 Direction Mouse::getCurrentDiscretizedRotation() const {
-    int dir = static_cast<int>(floor((getCurrentRotation() + Degrees(45)) / Degrees(90)));
+    int dir = static_cast<int>(std::floor((getCurrentRotation() + Degrees(45)) / Degrees(90)));
     switch (dir) {
         case 0:
             return Direction::EAST;
@@ -154,21 +154,17 @@ std::vector<Polygon> Mouse::getCurrentSensorViewPolygons(
 
 void Mouse::update(const Duration& elapsed) {
 
-    // Atomically retrieve the current angular velocities of the wheels
-    std::map<std::string, RadiansPerSecond> wheelAngularVelocities;
-    m_wheelMutex.lock();
-    for (std::pair<std::string, Wheel> wheel : m_wheels) {
-        wheelAngularVelocities.insert(std::make_pair(wheel.first, wheel.second.getAngularVelocity()));
-    }
-    m_wheelMutex.unlock();
+    m_updateMutex.lock();
 
     MetersPerSecond sumDx(0);
     MetersPerSecond sumDy(0);
     RadiansPerSecond sumDr(0);
 
-    for (std::pair<std::string, Wheel> wheel : m_wheels) {
+    for (const std::pair<std::string, Wheel>& wheel : m_wheels) {
 
-        MetersPerSecond linearVelocity = wheelAngularVelocities.at(wheel.first) * wheel.second.getRadius();
+        m_wheels.at(wheel.first).updateRotation(wheel.second.getAngularVelocity() * elapsed);
+
+        MetersPerSecond linearVelocity = wheel.second.getAngularVelocity() * wheel.second.getRadius();
         MetersPerSecond dx = linearVelocity *
             (getCurrentRotation() - getInitialRotation() + wheel.second.getInitialDirection()).getCos();
         MetersPerSecond dy = linearVelocity *
@@ -191,6 +187,8 @@ void Mouse::update(const Duration& elapsed) {
     m_currentGyro = aveDr;
     m_currentRotation += Radians(aveDr * elapsed);
     m_currentTranslation += Cartesian(aveDx * elapsed, aveDy * elapsed);
+
+    m_updateMutex.unlock();
 }
 
 bool Mouse::hasWheel(const std::string& name) const {
@@ -203,15 +201,15 @@ RadiansPerSecond Mouse::getWheelMaxSpeed(const std::string& name) const {
 }
 
 void Mouse::setWheelSpeeds(const std::map<std::string, RadiansPerSecond>& wheelSpeeds) {
-    m_wheelMutex.lock();
+    m_updateMutex.lock();
     for (std::pair<std::string, RadiansPerSecond> pair : wheelSpeeds) {
         ASSERT_TR(SimUtilities::mapContains(m_wheels, pair.first));
         ASSERT_LE(
-            std::abs(pair.second.getRevolutionsPerSecond()),
-            getWheelMaxSpeed(pair.first).getRevolutionsPerSecond());
+            std::abs(pair.second.getRevolutionsPerMinute()),
+            getWheelMaxSpeed(pair.first).getRevolutionsPerMinute());
         m_wheels.at(pair.first).setAngularVelocity(pair.second);
     }
-    m_wheelMutex.unlock();
+    m_updateMutex.unlock();
 }
 
 void Mouse::setWheelSpeedsForMoveForward() {
@@ -247,6 +245,19 @@ void Mouse::stopAllWheels() {
         wheelSpeeds.insert(std::make_pair(wheel.first, RadiansPerSecond(0)));
     }
     setWheelSpeeds(wheelSpeeds);
+}
+
+double Mouse::getWheelEncoderTicksPerRevolution(const std::string& name) const {
+    ASSERT_TR(hasWheel(name));
+    return m_wheels.at(name).getEncoderTicksPerRevolution();
+}
+
+int Mouse::readWheelEncoder(const std::string& name) {
+    ASSERT_TR(hasWheel(name));
+    m_updateMutex.lock();
+    int encoderReading = m_wheels.at(name).readEncoder();
+    m_updateMutex.unlock();
+    return encoderReading;
 }
 
 bool Mouse::hasSensor(const std::string& name) const {
@@ -294,8 +305,10 @@ Polygon Mouse::getCurrentSensorViewPolygon(const Sensor& sensor,
 
 std::pair<double, double> Mouse::getWheelContributionFactors(const std::string& name) const {
 
+    // TODO: MACK - this shouldn't really be static, in case we have two mice
     static std::map<std::string, std::pair<double, double>> contributionFactors;
 
+    // TODO: Move memoization to separate function
     if (contributionFactors.empty()) {
 
         MetersPerSecond maxForwardContributionMagnitude(0);
@@ -304,10 +317,12 @@ std::pair<double, double> Mouse::getWheelContributionFactors(const std::string& 
 
         for (std::pair<std::string, Wheel> wheel : m_wheels) {
 
+            // TODO: MACK Dedup some of this
             MetersPerSecond maxLinearVelocity = wheel.second.getMaxAngularVelocityMagnitude() * wheel.second.getRadius();
             MetersPerSecond forwardContribution = maxLinearVelocity *
                 (getInitialRotation() - wheel.second.getInitialDirection()).getCos();
 
+            // TODO: MACK Dedup some of this
             Cartesian wheelToCenter = getInitialTranslation() - wheel.second.getInitialPosition();
             double rotationFactor = (wheelToCenter.getTheta() - wheel.second.getInitialDirection()).getSin();
             RadiansPerSecond radialContribuition = RadiansPerSecond(
@@ -326,10 +341,12 @@ std::pair<double, double> Mouse::getWheelContributionFactors(const std::string& 
         }
 
         for (std::pair<std::string, std::pair<MetersPerSecond, RadiansPerSecond>> pair : contributionPairs) {
-            contributionFactors.insert(std::make_pair(pair.first,
+            contributionFactors.insert(
                 std::make_pair(
-                    pair.second.first / maxForwardContributionMagnitude,
-                    pair.second.second / maxRadialContributionMagnitude)));
+                    pair.first,
+                    std::make_pair(
+                        pair.second.first / maxForwardContributionMagnitude,
+                        pair.second.second / maxRadialContributionMagnitude)));
         }
     }
     

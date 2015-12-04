@@ -3,7 +3,7 @@
 #include "units/Meters.h"
 #include "units/MetersPerSecond.h"
 #include "units/Milliseconds.h"
-#include "units/RevolutionsPerSecond.h"
+#include "units/RevolutionsPerMinute.h"
 #include "units/Seconds.h"
 
 #include "Assert.h"
@@ -216,22 +216,56 @@ double MouseInterface::getWheelMaxSpeed(const std::string& name) {
 
     if (!m_mouse->hasWheel(name)) {
         L()->warn("There is no wheel called \"%v\" and thus you cannot get its max speed.", name);
+        return 0.0;
     }
 
-    // TODO: MACK - rev/s or rad/s?
-    return m_mouse->getWheelMaxSpeed(name).getRevolutionsPerSecond();
+    return m_mouse->getWheelMaxSpeed(name).getRevolutionsPerMinute();
 }
 
-void MouseInterface::setWheelSpeed(const std::string& name, double radiansPerSecond) {
+void MouseInterface::setWheelSpeed(const std::string& name, double rpm) {
 
     ENSURE_CONTINUOUS_INTERFACE
 
     if (!m_mouse->hasWheel(name)) {
         L()->warn("There is no wheel called \"%v\" and thus you cannot set its speed.", name);
+        return;
     }
 
-    // TODO: MACK - rev/s or rad/s?
-    m_mouse->setWheelSpeeds({{name, radiansPerSecond}});
+    if (getWheelMaxSpeed(name) < std::abs(rpm)) {
+        L()->warn(
+            "You're attempting to set the speed of wheel \"%v\" to %v rpm,"
+            " which has magnitude greater than the max speed of %v rpm. Thus,"
+            " the wheel speed was not set.", name, rpm, getWheelMaxSpeed(name));
+        return;
+    }
+
+    m_mouse->setWheelSpeeds({{name, RadiansPerSecond(RevolutionsPerMinute(rpm))}});
+}
+
+double MouseInterface::getWheelEncoderTicksPerRevolution(const std::string& name) {
+
+    ENSURE_CONTINUOUS_INTERFACE
+
+    if (!m_mouse->hasWheel(name)) {
+        L()->warn(
+            "There is no wheel called \"%v\" and thus you cannot get its number"
+            " of encoder ticks per revolution.", name);
+        return 0.0;
+    }
+
+    return m_mouse->getWheelEncoderTicksPerRevolution(name);
+}
+
+int MouseInterface::readWheelEncoder(const std::string& name) {
+
+    ENSURE_CONTINUOUS_INTERFACE
+
+    if (!m_mouse->hasWheel(name)) {
+        L()->warn("There is no wheel called \"%v\" and thus you cannot read its encoder.", name);
+        return 0;
+    }
+
+    return m_mouse->readWheelEncoder(name);
 }
 
 double MouseInterface::readSensor(std::string name) {
@@ -259,11 +293,11 @@ double MouseInterface::readSensor(std::string name) {
         L()->warn(
             "A sensor read was late by %v seconds, which is %v percent late.",
             (duration - readDurationSeconds),
-            (duration - readDurationSeconds)/readDurationSeconds * 100);
+            (duration - readDurationSeconds) / readDurationSeconds * 100);
     }
 
     // Sleep for the read time
-    sim::SimUtilities::sleep(sim::Seconds(std::max(0.0, 1.0/sim::P()->frameRate() - duration)));
+    sim::SimUtilities::sleep(sim::Seconds(std::max(0.0, 1.0 / sim::P()->frameRate() - duration)));
 
     // Return the value
     return value;

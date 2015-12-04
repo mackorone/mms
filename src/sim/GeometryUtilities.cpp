@@ -168,12 +168,12 @@ std::vector<const Tile*> GeometryUtilities::lineSegmentTileCover(const Cartesian
     Cartesian p1 = std::max(A, B);
 
     // Starting tile
-    int x0 = static_cast<int>(floor(p0.getX() / tileLength));
-    int y0 = static_cast<int>(floor(p0.getY() / tileLength)); 
+    int x0 = static_cast<int>(std::floor(p0.getX() / tileLength));
+    int y0 = static_cast<int>(std::floor(p0.getY() / tileLength)); 
 
     // Ending tile
-    int x1 = static_cast<int>(floor(p1.getX() / tileLength));
-    int y1 = static_cast<int>(floor(p1.getY() / tileLength));
+    int x1 = static_cast<int>(std::floor(p1.getX() / tileLength));
+    int y1 = static_cast<int>(std::floor(p1.getY() / tileLength));
 
     // Difference between the points
     Meters dx = p1.getX() - p0.getX(); // Always non-negative
@@ -185,7 +185,7 @@ std::vector<const Tile*> GeometryUtilities::lineSegmentTileCover(const Cartesian
         Meters fy = p0.getY() + (fx - p0.getX()) * (dy / dx);
         // Add the tile that is to the left of the y-intercept 
         int x = x0 + i - 1;
-        int y = static_cast<int>(floor(fy / tileLength));
+        int y = static_cast<int>(std::floor(fy / tileLength));
         if (0 <= x && x < maze.getWidth() && 0 <= y && y < maze.getHeight()) {
             tilesInRange.push_back(maze.getTile(x, y));
         }
@@ -197,7 +197,7 @@ std::vector<const Tile*> GeometryUtilities::lineSegmentTileCover(const Cartesian
             Meters fy = tileLength * (y0 + i);
             Meters fx = p0.getX() + (fy - p0.getY()) * (dx / dy);
             // Add the tile that is below the x-intercept
-            int x = static_cast<int>(floor(fx / tileLength));
+            int x = static_cast<int>(std::floor(fx / tileLength));
             int y = y0 + i - 1;
             if (0 <= x && x < maze.getWidth() && 0 <= y && y < maze.getHeight()) {
                 tilesInRange.push_back(maze.getTile(x, y));
@@ -211,7 +211,7 @@ std::vector<const Tile*> GeometryUtilities::lineSegmentTileCover(const Cartesian
             Meters fy = tileLength * (y0 - i);
             Meters fx = p0.getX() + (fy - p0.getY()) * (dx / dy);
             // Add the tile that is above the x-intercept
-            int x = static_cast<int>(floor(fx / tileLength));
+            int x = static_cast<int>(std::floor(fx / tileLength));
             int y = y0 - i;
             if (0 <= x && x < maze.getWidth() && 0 <= y && y < maze.getHeight()) {
                 tilesInRange.push_back(maze.getTile(x, y));

@@ -62,11 +62,17 @@ public:
 
     // ----- Continuous interface methods ----- //
 
-    // Get the magnitude of the max speed of any one wheel
+    // Get the magnitude of the max speed of any one wheel in rpm
     double getWheelMaxSpeed(const std::string& name);
 
     // Set the speed of any one wheel
-    void setWheelSpeed(const std::string& name, double radiansPerSecond);
+    void setWheelSpeed(const std::string& name, double rpm);
+
+    // Get the number of encoder ticks per revolution for a wheel
+    double getWheelEncoderTicksPerRevolution(const std::string& name);
+
+    // Read the encoder for a particular wheel
+    int readWheelEncoder(const std::string& name);
 
     // Returns a value in [0.0, 1.0]
     double readSensor(std::string name);

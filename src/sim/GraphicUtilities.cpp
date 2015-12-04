@@ -247,8 +247,8 @@ std::vector<float> GraphicUtilities::getZoomedMapTransformationMatrix(
     // We subtract Degrees(90) here since we want forward to face NORTH
     double theta = (Degrees(currentMouseRotation) - Degrees(90)).getRadians();
     std::vector<float> rotationMatrix = {
-        static_cast<float>( cos(theta)), static_cast<float>(sin(theta)), 0.0, 0.0,
-        static_cast<float>(-sin(theta)), static_cast<float>(cos(theta)), 0.0, 0.0,
+        static_cast<float>( std::cos(theta)), static_cast<float>(std::sin(theta)), 0.0, 0.0,
+        static_cast<float>(-std::sin(theta)), static_cast<float>(std::cos(theta)), 0.0, 0.0,
                                     0.0,                            0.0, 1.0, 0.0,
                                     0.0,                            0.0, 0.0, 1.0,
     };
