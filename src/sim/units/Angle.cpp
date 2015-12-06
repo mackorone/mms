@@ -42,7 +42,7 @@ bool Angle::operator<(const Angle& angle) {
 double Angle::getRadians(bool zeroTo2pi) const {
     double radians = m_radians;
     if (zeroTo2pi) {
-        radians = fmod(m_radians, M_TWOPI);
+        radians = fmod(radians, M_TWOPI);
         if (radians < 0) {
            radians += M_TWOPI;
         }

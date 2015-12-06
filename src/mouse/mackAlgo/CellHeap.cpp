@@ -78,7 +78,7 @@ int CellHeap::getLeftChildIndex(int index) {
 }
 
 int CellHeap::getRightChildIndex(int index) {
-    return (index + 1 ) * 2;
+    return (index + 1) * 2;
 }
 
 void CellHeap::swap(int indexOne, int indexTwo) {

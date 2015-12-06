@@ -20,7 +20,8 @@ Mouse::Mouse(const Maze* maze) : m_maze(maze), m_currentGyro(RadiansPerSecond(0.
 
 bool Mouse::initialize(const std::string& mouseFile) {
 
-    // TODO: MACK If fails, return false
+    // We begin with the assumption that the initialization will succeed
+    bool success = true;
 
     // The initial translation of the mouse is just the center of the starting tile
     Meters halfOfTileDistance = Meters((P()->wallLength() + P()->wallWidth()) / 2.0);
@@ -32,13 +33,13 @@ bool Mouse::initialize(const std::string& mouseFile) {
     m_currentRotation = m_initialRotation;
 
     // Create the mouse parser object
-    MouseParser parser(Directory::getResMouseDirectory() + mouseFile);
+    MouseParser parser(Directory::getResMouseDirectory() + mouseFile, &success);
 
     // Initialize the body, wheels, and sensors, such that they have the
     // correct initial translation and rotation
-    m_initialBodyPolygon = parser.getBody(m_initialTranslation, m_initialRotation);
-    m_wheels = parser.getWheels(m_initialTranslation, m_initialRotation);
-    m_sensors = parser.getSensors(m_initialTranslation, m_initialRotation);
+    m_initialBodyPolygon = parser.getBody(m_initialTranslation, m_initialRotation, &success);
+    m_wheels = parser.getWheels(m_initialTranslation, m_initialRotation, &success);
+    m_sensors = parser.getSensors(m_initialTranslation, m_initialRotation, &success);
 
     // Initialize the collision polygon; this is technically not correct since
     // we should be using union, not convexHull, but it's a good approximation
@@ -56,7 +57,7 @@ bool Mouse::initialize(const std::string& mouseFile) {
     m_initialCenterOfMassPolygon = GeometryUtilities::createCirclePolygon(m_initialTranslation, Meters(.005), 8);
 
     // Return success
-    return true;
+    return success;
 }
 
 Cartesian Mouse::getInitialTranslation() const {
