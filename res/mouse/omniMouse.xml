@@ -29,7 +29,7 @@
     <Max-Speed>200</Max-Speed> <!-- rpm -->
     <!-- Motor type -->
     <!-- Motor Max acceleration -->
-    <!-- Encoder type -->
+    <Encoder-Type>RELATIVE</Encoder-Type> <!-- ABSOLUTE or RELATIVE -->
     <Encoder-Ticks>360</Encoder-Ticks> <!-- per revolution -->
 </Wheel>
 <Wheel>
@@ -44,7 +44,7 @@
     <Max-Speed>200</Max-Speed> <!-- rpm -->
     <!-- Motor type -->
     <!-- Motor Max acceleration -->
-    <!-- Encoder type -->
+    <Encoder-Type>RELATIVE</Encoder-Type> <!-- ABSOLUTE or RELATIVE -->
     <Encoder-Ticks>360</Encoder-Ticks> <!-- per revolution -->
 </Wheel>
 <Wheel>
@@ -59,6 +59,6 @@
     <Max-Speed>200</Max-Speed> <!-- rpm -->
     <!-- Motor type -->
     <!-- Motor Max acceleration -->
-    <!-- Encoder type -->
+    <Encoder-Type>RELATIVE</Encoder-Type> <!-- ABSOLUTE or RELATIVE -->
     <Encoder-Ticks>360</Encoder-Ticks> <!-- per revolution -->
 </Wheel>

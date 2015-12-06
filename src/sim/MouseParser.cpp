@@ -1,6 +1,7 @@
 #include "MouseParser.h"
 
 #include "Assert.h"
+#include "EncoderType.h"
 #include "GeometryUtilities.h"
 #include "Logging.h"
 #include "SimUtilities.h"
@@ -55,7 +56,19 @@ std::map<std::string, Wheel> MouseParser::getWheels(
         double y = SimUtilities::strToDouble(wheel.child("Position").child("Y").child_value());
         double direction = SimUtilities::strToDouble(wheel.child("Direction").child_value());
         double maxAngularVelocityMagnitude = SimUtilities::strToDouble(wheel.child("Max-Speed").child_value());
-        double encoderTicksPerRevolution = SimUtilities::strToDouble(wheel.child("Encoder-Ticks").child_value());
+        std::string encoderTypeString = wheel.child("Encoder-Type").child_value();
+        if (!SimUtilities::mapContains(STRING_TO_ENCODER_TYPE, encoderTypeString)) {
+            L()->error(
+                "The encoder type \"%v\" is not valid. The only valid encoder"
+                " types are \"%v\" and \"%v\".",
+                encoderTypeString, 
+                ENCODER_TYPE_TO_STRING.at(EncoderType::ABSOLUTE),
+                ENCODER_TYPE_TO_STRING.at(EncoderType::RELATIVE));
+            // TODO: MACK - don't quit here, just return false???
+            SimUtilities::quit();
+        }
+        EncoderType encoderType = STRING_TO_ENCODER_TYPE.at(encoderTypeString);
+        double encoderTicksPerRevolution = SimUtilities::strToDouble(wheel.child("Encoder-Ticks-Per-Revolution").child_value());
         wheels.insert(
             std::make_pair(
                 name,
@@ -69,6 +82,7 @@ std::map<std::string, Wheel> MouseParser::getWheels(
                         initialTranslation),
                     Degrees(direction) + alignmentRotation,
                     RevolutionsPerMinute(maxAngularVelocityMagnitude),
+                    encoderType, 
                     encoderTicksPerRevolution)));
     }
     return wheels;

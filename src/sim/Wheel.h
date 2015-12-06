@@ -1,5 +1,6 @@
 #pragma once
 
+#include "EncoderType.h"
 #include "Polygon.h"
 #include "units/Cartesian.h"
 #include "units/Meters.h"
@@ -16,6 +17,7 @@ public:
         const Coordinate& position,
         const Angle& direction,
         const AngularVelocity& maxAngularVelocityMagnitude,
+        EncoderType encoderType,
         double encoderTicksPerRevolution);
 
     // Wheel
@@ -31,9 +33,12 @@ public:
     void setAngularVelocity(const AngularVelocity& angularVelocity);
 
     // Encoder
+    EncoderType getEncoderType() const;
     double getEncoderTicksPerRevolution() const;
+    int readAbsoluteEncoder() const;
+    int readRelativeEncoder() const;
+    void resetRelativeEncoder();
     void updateRotation(const Angle& angle);
-    int readEncoder() const;
 
 private:
 
@@ -50,8 +55,10 @@ private:
     RadiansPerSecond m_maxAngularVelocityMagnitude;
 
     // Encoder
+    EncoderType m_encoderType;
     double m_encoderTicksPerRevolution;
-    Radians m_rotation;
+    Radians m_absoluteRotation;
+    Radians m_relativeRotation;
 
     // Helper function for updating the speed indicator polygon
     Polygon getSpeedIndicatorPolygon(const AngularVelocity& angularVelocity);

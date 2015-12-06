@@ -77,13 +77,20 @@ Radians Mouse::getCurrentRotation() const {
 
 std::pair<int, int> Mouse::getCurrentDiscretizedTranslation() const {
     Cartesian currentTranslation = getCurrentTranslation();
-    int x = static_cast<int>(std::floor((currentTranslation.getX() / Meters(P()->wallLength() + P()->wallWidth()))));
-    int y = static_cast<int>(std::floor((currentTranslation.getY() / Meters(P()->wallLength() + P()->wallWidth()))));
+    int x = static_cast<int>(std::floor(
+        currentTranslation.getX() / Meters(P()->wallLength() + P()->wallWidth())
+    ));
+    int y = static_cast<int>(std::floor(
+        currentTranslation.getY() / Meters(P()->wallLength() + P()->wallWidth())
+    ));
     return std::make_pair(x, y);
 }
 
 Direction Mouse::getCurrentDiscretizedRotation() const {
-    int dir = static_cast<int>(std::floor((getCurrentRotation() + Degrees(45)) / Degrees(90)));
+    int dir = static_cast<int>(std::floor(
+        (getCurrentRotation() + Degrees(45)).getRadiansZeroTo2pi() /
+        Degrees(90).getRadiansZeroTo2pi()
+    ));
     switch (dir) {
         case 0:
             return Direction::EAST;
@@ -247,17 +254,37 @@ void Mouse::stopAllWheels() {
     setWheelSpeeds(wheelSpeeds);
 }
 
+EncoderType Mouse::getWheelEncoderType(const std::string& name) const {
+    ASSERT_TR(hasWheel(name));
+    return m_wheels.at(name).getEncoderType();
+}
+
 double Mouse::getWheelEncoderTicksPerRevolution(const std::string& name) const {
     ASSERT_TR(hasWheel(name));
     return m_wheels.at(name).getEncoderTicksPerRevolution();
 }
 
-int Mouse::readWheelEncoder(const std::string& name) {
+int Mouse::readWheelAbsoluteEncoder(const std::string& name) {
     ASSERT_TR(hasWheel(name));
     m_updateMutex.lock();
-    int encoderReading = m_wheels.at(name).readEncoder();
+    int encoderReading = m_wheels.at(name).readAbsoluteEncoder();
     m_updateMutex.unlock();
     return encoderReading;
+}
+
+int Mouse::readWheelRelativeEncoder(const std::string& name) {
+    ASSERT_TR(hasWheel(name));
+    m_updateMutex.lock();
+    int encoderReading = m_wheels.at(name).readRelativeEncoder();
+    m_updateMutex.unlock();
+    return encoderReading;
+}
+
+void Mouse::resetWheelRelativeEncoder(const std::string& name) {
+    ASSERT_TR(hasWheel(name));
+    m_updateMutex.lock();
+    m_wheels.at(name).resetRelativeEncoder();
+    m_updateMutex.unlock();
 }
 
 bool Mouse::hasSensor(const std::string& name) const {

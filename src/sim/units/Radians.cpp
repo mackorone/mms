@@ -11,31 +11,27 @@ Radians::Radians(double radians) {
 }
 
 Radians::Radians(const Angle& angle) {
-    m_radians = angle.getRadians();
+    m_radians = angle.getRadiansNotBounded();
 }
 
 Radians Radians::operator+(const Angle& angle) const {
-    return Radians(getRadians() + angle.getRadians());
+    return Radians(getRadiansNotBounded() + angle.getRadiansNotBounded());
 }
 
 Radians Radians::operator-(const Angle& angle) const {
-    return Radians(getRadians() - angle.getRadians());
+    return Radians(getRadiansNotBounded() - angle.getRadiansNotBounded());
 }
 
 Radians Radians::operator*(double factor) const {
-    return Radians(getRadians() * factor);
+    return Radians(getRadiansNotBounded() * factor);
 }
 
 Radians Radians::operator/(double factor) const {
-    return Radians(getRadians() / factor);
-}
-
-double Radians::operator/(const Angle& angle) const {
-    return getRadians() / angle.getRadians();
+    return Radians(getRadiansNotBounded() / factor);
 }
 
 void Radians::operator+=(const Angle& angle) {
-    m_radians += angle.getRadians();
+    m_radians += angle.getRadiansNotBounded();
 }
 
 } // namespace sim

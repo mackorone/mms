@@ -25,13 +25,13 @@ std::string Test::interfaceType() const {
 }
 
 void Test::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
-    mouse->setWheelSpeed("left",  100);
-    mouse->setWheelSpeed("right", 100);
-    while (mouse->readWheelEncoder("left") < 300) {
-        mouse->delay(10);
+    mouse->setWheelSpeed("left", -10);
+    mouse->setWheelSpeed("right", 10);
+    while (true) {
+        mouse->info(std::string("L: ") + std::to_string(mouse->readWheelEncoder("left")));
+        mouse->info(std::string("R: ") + std::to_string(mouse->readWheelEncoder("right")));
+        mouse->delay(100);
     }
-    mouse->setWheelSpeed("left",  0);
-    mouse->setWheelSpeed("right", 0);
 }
 
 } // namespace test

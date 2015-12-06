@@ -52,7 +52,7 @@
     <Direction>270</Direction> <!-- positive angular velocity causes the wheel to travel forward -->
     <Max-Speed>6000</Max-Speed> <!-- rpm -->
     <!-- Motor params go here -->
-    <!-- Encoder params go here -->
+    <Encoder-Type>RELATIVE</Encoder-Type> <!-- ABSOLUTE or RELATIVE -->
     <Encoder-Ticks>360</Encoder-Ticks> <!-- per revolution -->
 </Wheel>
 <Wheel>
@@ -66,7 +66,7 @@
     <Direction>270</Direction> <!-- positive angular velocity causes the wheel to travel forward -->
     <Max-Speed>6000</Max-Speed> <!-- rpm -->
     <!-- Motor params go here -->
-    <!-- Encoder params go here -->
+    <Encoder-Type>RELATIVE</Encoder-Type> <!-- ABSOLUTE or RELATIVE -->
     <Encoder-Ticks>360</Encoder-Ticks> <!-- per revolution -->
 </Wheel>
 <Wheel>
@@ -80,7 +80,7 @@
     <Direction>90</Direction> <!-- positive angular velocity causes the wheel to travel forward -->
     <Max-Speed>6000</Max-Speed> <!-- rpm -->
     <!-- Motor params go here -->
-    <!-- Encoder params go here -->
+    <Encoder-Type>RELATIVE</Encoder-Type> <!-- ABSOLUTE or RELATIVE -->
     <Encoder-Ticks>360</Encoder-Ticks> <!-- per revolution -->
 </Wheel>
 <Wheel>
@@ -94,7 +94,7 @@
     <Direction>90</Direction> <!-- positive angular velocity causes the wheel to travel forward -->
     <Max-Speed>6000</Max-Speed> <!-- rpm -->
     <!-- Motor params go here -->
-    <!-- Encoder params go here -->
+    <Encoder-Type>RELATIVE</Encoder-Type> <!-- ABSOLUTE or RELATIVE -->
     <Encoder-Ticks>360</Encoder-Ticks> <!-- per revolution -->
 </Wheel>
 <Sensor>

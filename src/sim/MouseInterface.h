@@ -74,6 +74,9 @@ public:
     // Read the encoder for a particular wheel
     int readWheelEncoder(const std::string& name);
 
+    // Reset the encoder for a particular wheel to zero, but only if the encoder type is relative
+    void resetWheelEncoder(const std::string& name);
+
     // Returns a value in [0.0, 1.0]
     double readSensor(std::string name);
 

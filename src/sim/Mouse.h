@@ -6,6 +6,7 @@
 #include "units/Cartesian.h"
 #include "units/RadiansPerSecond.h"
 
+#include "EncoderType.h"
 #include "Maze.h"
 #include "Polygon.h"
 #include "Sensor.h"
@@ -83,11 +84,20 @@ public:
     void setWheelSpeedsForTurnRight();
     void stopAllWheels();
 
+    // Returns the encoder type of the wheel given by name
+    EncoderType getWheelEncoderType(const std::string& name) const;
+
     // Returns the number of encoder ticks per revolution for a particular wheel given by name
     double getWheelEncoderTicksPerRevolution(const std::string& name) const;
 
     // Returns the reading of the encoder of the wheel given by name
-    int readWheelEncoder(const std::string& name);
+    int readWheelAbsoluteEncoder(const std::string& name);
+
+    // Returns the reading of the encoder of the wheel given by name
+    int readWheelRelativeEncoder(const std::string& name);
+
+    // Sets the value of the relative encoder to zero
+    void resetWheelRelativeEncoder(const std::string& name);
 
     // Returns whether or not the mouse has a sensor by a particular name
     bool hasSensor(const std::string& name) const;

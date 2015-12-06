@@ -14,19 +14,19 @@ Degrees::Degrees(double degrees) {
 }
 
 Degrees::Degrees(const Angle& angle) {
-    m_radians = angle.getRadians();
+    m_radians = angle.getRadiansNotBounded();
 }
 
 Degrees Degrees::operator+(const Angle& angle) const {
-    return Degrees(getDegrees() + angle.getDegrees());
+    return Degrees(getDegreesNotBounded() + angle.getDegreesNotBounded());
 }
 
 Degrees Degrees::operator-(const Angle& angle) const {
-    return Degrees(getDegrees() - angle.getDegrees());
+    return Degrees(getDegreesNotBounded() - angle.getDegreesNotBounded());
 }
 
 Degrees Degrees::operator*(double factor) const {
-    return Degrees(getDegrees() * factor);
+    return Degrees(getDegreesNotBounded() * factor);
 }
 
 } // namespace sim

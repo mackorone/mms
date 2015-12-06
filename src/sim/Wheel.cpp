@@ -10,6 +10,7 @@ Wheel::Wheel(
         const Coordinate& position,
         const Angle& direction,
         const AngularVelocity& maxAngularVelocityMagnitude,
+        EncoderType encoderType,
         double encoderTicksPerRevolution) :
         m_radius(Meters(diameter) / 2.0),
         m_halfWidth(Meters(width) / 2.0),
@@ -17,8 +18,10 @@ Wheel::Wheel(
         m_initialDirection(direction),
         m_angularVelocity(RadiansPerSecond(0.0)),
         m_maxAngularVelocityMagnitude(maxAngularVelocityMagnitude),
+        m_encoderType(encoderType),
         m_encoderTicksPerRevolution(encoderTicksPerRevolution),
-        m_rotation(Radians(0)) {
+        m_absoluteRotation(Radians(0)),
+        m_relativeRotation(Radians(0)) {
 
     // Create the initial wheel polygon
     std::vector<Cartesian> polygon;
@@ -65,16 +68,32 @@ void Wheel::setAngularVelocity(const AngularVelocity& angularVelocity) {
     m_speedIndicatorPolygon = getSpeedIndicatorPolygon(angularVelocity);
 }
 
+EncoderType Wheel::getEncoderType() const {
+    return m_encoderType;
+}
+
 double Wheel::getEncoderTicksPerRevolution() const {
     return m_encoderTicksPerRevolution;
 }
 
-void Wheel::updateRotation(const Angle& angle) {
-    m_rotation += angle;
+int Wheel::readAbsoluteEncoder() const {
+    return static_cast<int>(std::floor(
+        m_encoderTicksPerRevolution * m_absoluteRotation.getRadiansZeroTo2pi() / M_TWOPI));
 }
 
-int Wheel::readEncoder() const {
-    return static_cast<int>(std::floor(m_encoderTicksPerRevolution * m_rotation.getRadians() / M_TWOPI));
+int Wheel::readRelativeEncoder() const {
+    // We use std::trunc instead of std::floor so we round towards zero
+    return static_cast<int>(std::trunc(
+        m_encoderTicksPerRevolution * m_relativeRotation.getRadiansNotBounded() / M_TWOPI));
+}
+
+void Wheel::resetRelativeEncoder() {
+    m_relativeRotation = Radians(0);
+}
+
+void Wheel::updateRotation(const Angle& angle) {
+    m_absoluteRotation += angle;
+    m_relativeRotation += angle;
 }
 
 Polygon Wheel::getSpeedIndicatorPolygon(const AngularVelocity& angularVelocity) {

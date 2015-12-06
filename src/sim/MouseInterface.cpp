@@ -265,7 +265,34 @@ int MouseInterface::readWheelEncoder(const std::string& name) {
         return 0;
     }
 
-    return m_mouse->readWheelEncoder(name);
+    switch (m_mouse->getWheelEncoderType(name)) {
+        case EncoderType::ABSOLUTE:
+            return m_mouse->readWheelAbsoluteEncoder(name);
+        case EncoderType::RELATIVE:
+            return m_mouse->readWheelRelativeEncoder(name);
+    }
+}
+
+void MouseInterface::resetWheelEncoder(const std::string& name) {
+
+    ENSURE_CONTINUOUS_INTERFACE
+
+    if (!m_mouse->hasWheel(name)) {
+        L()->warn("There is no wheel called \"%v\" and thus you cannot reset its encoder.", name);
+        return;
+    }
+
+    if (m_mouse->getWheelEncoderType(name) != EncoderType::RELATIVE) {
+        L()->warn(
+            "The encoder type of the wheel \"%v\" is \"%v\". However, you may"
+            " only reset the wheel encoder if the encoder type is \"%v\".",
+            name,
+            ENCODER_TYPE_TO_STRING.at(m_mouse->getWheelEncoderType(name)),
+            ENCODER_TYPE_TO_STRING.at(EncoderType::RELATIVE));
+        return;
+    }
+
+    m_mouse->resetWheelRelativeEncoder(name);
 }
 
 double MouseInterface::readSensor(std::string name) {
