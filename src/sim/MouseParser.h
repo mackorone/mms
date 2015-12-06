@@ -4,8 +4,10 @@
 #include <string>
 #include <vector>
 
+#include "Logging.h"
 #include "Polygon.h"
 #include "Sensor.h"
+#include "SimUtilities.h"
 #include "units/Cartesian.h"
 #include "units/Meters.h"
 #include "Wheel.h"
@@ -33,6 +35,9 @@ private:
     Cartesian getCenterOfMass();
 
     double getDoubleIfHasDouble(const pugi::xml_node& node, const std::string& tag, bool* success);
+    pugi::xml_node getChildPositionNode(const pugi::xml_node& node, bool* success);
+    EncoderType getEncoderTypeIfValid(const pugi::xml_node& node, bool* success);
+
     Cartesian alignVertex(const Cartesian& vertex, const Cartesian& alignmentTranslation,
         const Radians& alignmentRotation, const Cartesian& rotationPoint);
 
@@ -57,6 +62,21 @@ private:
     static const std::string RANGE_TAG;
     static const std::string HALF_WIDTH_TAG;
     static const std::string READ_DURATION_TAG;
+
+    template<class T>
+    std::string getNameIfNonemptyAndUnique(const std::string& type,
+            const pugi::xml_node& node, const std::map<std::string, T>& map, bool* success) {
+        std::string name = node.child(NAME_TAG.c_str()).child_value();
+        if (name.empty()) {
+            L()->warn("No %v name specified.", type);
+            *success = false;
+        }
+        if (SimUtilities::mapContains(map, name)) {
+            L()->warn("Two %vs both have the name \"%v\".", type, name);
+            *success = false;
+        }
+        return name;
+    }
 };
 
 } // namespace sim

@@ -3,8 +3,6 @@
 #include "Assert.h"
 #include "EncoderType.h"
 #include "GeometryUtilities.h"
-#include "Logging.h"
-#include "SimUtilities.h"
 #include "units/RevolutionsPerMinute.h"
 
 namespace sim {
@@ -62,7 +60,6 @@ Polygon MouseParser::getBody(
     if (body.begin() == body.end()) {
         L()->warn("No \"%v\" tag found.", BODY_TAG);
         *success = false;
-        return NULL_POLYGON;
     }
 
     std::vector<Cartesian> vertices;
@@ -70,9 +67,6 @@ Polygon MouseParser::getBody(
         pugi::xml_node p = *it;
         double x = getDoubleIfHasDouble(p, X_TAG, success);
         double y = getDoubleIfHasDouble(p, Y_TAG, success);
-        if (!*success) {
-            return NULL_POLYGON;
-        }
         vertices.push_back(
             alignVertex(
                 Cartesian(Meters(x), Meters(y)),
@@ -83,12 +77,14 @@ Polygon MouseParser::getBody(
 
     if (vertices.size() < 3) {
         L()->warn(
-            "Invalid mouse \"%v\" - less than three vertices were specified.",
+            "Invalid mouse \"%v\" - less than three valid vertices were specified.",
             BODY_TAG);
         *success = false;
-        return NULL_POLYGON;
     }
 
+    if (!*success) {
+        return NULL_POLYGON;
+    }
     return Polygon(vertices);
 }
 
@@ -101,50 +97,15 @@ std::map<std::string, Wheel> MouseParser::getWheels(
     std::map<std::string, Wheel> wheels;
     for (pugi::xml_node wheel : m_doc.children(WHEEL_TAG.c_str())) {
 
-        std::string name = wheel.child(NAME_TAG.c_str()).child_value();
-        if (name.empty()) {
-            L()->warn("No wheel name specified.");
-            *success = false;
-            break;
-        }
-        if (SimUtilities::mapContains(wheels, name)) {
-            L()->warn("Two wheels both have the name \"%v\".", name);
-            *success = false;
-            break;
-        }
-
+        std::string name = getNameIfNonemptyAndUnique("wheel", wheel, wheels, success);
         double diameter = getDoubleIfHasDouble(wheel, DIAMETER_TAG, success);
         double width = getDoubleIfHasDouble(wheel, WIDTH_TAG, success);
-
-        pugi::xml_node position = wheel.child(POSITION_TAG.c_str());
-        if (!position) {
-            L()->warn(
-                "No wheel \"%v\" tag found. This means that the \"%v\" and"
-                " \"%v\" tags won't be found either.",
-                POSITION_TAG, X_TAG, Y_TAG);
-            *success = false;
-        }
+        pugi::xml_node position = getChildPositionNode(wheel, success);
         double x = getDoubleIfHasDouble(position, X_TAG, success);
         double y = getDoubleIfHasDouble(position, Y_TAG, success);
-
         double direction = getDoubleIfHasDouble(wheel, DIRECTION_TAG, success);
         double maxAngularVelocityMagnitude = getDoubleIfHasDouble(wheel, MAX_SPEED_TAG, success);
-
-        EncoderType encoderType;
-        std::string encoderTypeString = wheel.child(ENCODER_TYPE_TAG.c_str()).child_value();
-        if (SimUtilities::mapContains(STRING_TO_ENCODER_TYPE, encoderTypeString)) {
-            encoderType = STRING_TO_ENCODER_TYPE.at(encoderTypeString);
-        }
-        else {
-            L()->warn(
-                "The encoder type \"%v\" is not valid. The only valid encoder"
-                " types are \"%v\" and \"%v\".",
-                encoderTypeString, 
-                ENCODER_TYPE_TO_STRING.at(EncoderType::ABSOLUTE),
-                ENCODER_TYPE_TO_STRING.at(EncoderType::RELATIVE));
-            *success = false;
-        }
-
+        EncoderType encoderType = getEncoderTypeIfValid(wheel, success);
         double encoderTicksPerRevolution = getDoubleIfHasDouble(wheel, ENCODER_TICKS_PER_REVOLUTION_TAG, success);
 
         if (success) {
@@ -178,34 +139,14 @@ std::map<std::string, Sensor> MouseParser::getSensors(
     std::map<std::string, Sensor> sensors;
     for (pugi::xml_node sensor : m_doc.children(SENSOR_TAG.c_str())) {
 
-        std::string name = sensor.child(NAME_TAG.c_str()).child_value();
-        if (name.empty()) {
-            L()->warn("No wheel name specified.");
-            *success = false;
-            break;
-        }
-        if (SimUtilities::mapContains(sensors, name)) {
-            L()->warn("Two wheels both have the name \"%v\".", name);
-            *success = false;
-            break;
-        }
-
+        std::string name = getNameIfNonemptyAndUnique("sensor", sensor, sensors, success);
         double radius = getDoubleIfHasDouble(sensor, RADIUS_TAG, success);
         double range = getDoubleIfHasDouble(sensor, RANGE_TAG, success);
         double halfWidth = getDoubleIfHasDouble(sensor, HALF_WIDTH_TAG, success);
         double readDuration = getDoubleIfHasDouble(sensor, READ_DURATION_TAG, success);
-
-        pugi::xml_node position = sensor.child(POSITION_TAG.c_str());
-        if (!position) {
-            L()->warn(
-                "No sensor \"%v\" tag found. This means that the \"%v\" and"
-                " \"%v\" tags won't be found either.",
-                POSITION_TAG, X_TAG, Y_TAG);
-            *success = false;
-        }
+        pugi::xml_node position = getChildPositionNode(sensor, success);
         double x = getDoubleIfHasDouble(position, X_TAG, success);
         double y = getDoubleIfHasDouble(position, Y_TAG, success);
-
         double direction = getDoubleIfHasDouble(sensor, DIRECTION_TAG, success);
 
         if (success) {
@@ -239,6 +180,36 @@ double MouseParser::getDoubleIfHasDouble(const pugi::xml_node& node, const std::
         return 0.0;
     }
     return SimUtilities::strToDouble(valueString);
+}
+
+pugi::xml_node MouseParser::getChildPositionNode(const pugi::xml_node& node, bool* success) {
+    pugi::xml_node position = node.child(POSITION_TAG.c_str());
+    if (!position) {
+        L()->warn(
+            "No wheel \"%v\" tag found. This means that the \"%v\" and"
+            " \"%v\" tags won't be found either.",
+            POSITION_TAG, X_TAG, Y_TAG);
+        *success = false;
+    }
+    return position;
+}
+
+EncoderType MouseParser::getEncoderTypeIfValid(const pugi::xml_node& node, bool* success) {
+    EncoderType encoderType;
+    std::string encoderTypeString = node.child(ENCODER_TYPE_TAG.c_str()).child_value();
+    if (SimUtilities::mapContains(STRING_TO_ENCODER_TYPE, encoderTypeString)) {
+        encoderType = STRING_TO_ENCODER_TYPE.at(encoderTypeString);
+    }
+    else {
+        L()->warn(
+            "The encoder type \"%v\" is not valid. The only valid encoder"
+            " types are \"%v\" and \"%v\".",
+            encoderTypeString, 
+            ENCODER_TYPE_TO_STRING.at(EncoderType::ABSOLUTE),
+            ENCODER_TYPE_TO_STRING.at(EncoderType::RELATIVE));
+        *success = false;
+    }
+    return encoderType;
 }
 
 Cartesian MouseParser::alignVertex(const Cartesian& vertex, const Cartesian& alignmentTranslation,
