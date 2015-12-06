@@ -44,9 +44,12 @@ MouseParser::MouseParser(const std::string& filePath, bool* success) :
         *success = false;
     }
     else {
-        // TODO: MACK - what if this fails...
-        m_forwardDirection = getForwardDirection();
-        m_centerOfMass = getCenterOfMass();
+        m_forwardDirection = Radians(Degrees(
+            getDoubleIfHasDouble(m_doc, FORWARD_DIRECTION_TAG, success)));
+        pugi::xml_node centerOfMassNode = getContainerNode(m_doc, CENTER_OF_MASS_TAG, success);
+        double x = getDoubleIfHasDouble(centerOfMassNode, X_TAG, success);
+        double y = getDoubleIfHasDouble(centerOfMassNode, Y_TAG, success);
+        m_centerOfMass = Cartesian(Meters(x), Meters(y));
     }
 }
 
@@ -63,10 +66,9 @@ Polygon MouseParser::getBody(
     }
 
     std::vector<Cartesian> vertices;
-    for (auto it = body.begin(); it != body.end(); ++it) {
-        pugi::xml_node p = *it;
-        double x = getDoubleIfHasDouble(p, X_TAG, success);
-        double y = getDoubleIfHasDouble(p, Y_TAG, success);
+    for (pugi::xml_node vertex : body.children(VERTEX_TAG.c_str())) {
+        double x = getDoubleIfHasDouble(vertex, X_TAG, success);
+        double y = getDoubleIfHasDouble(vertex, Y_TAG, success);
         vertices.push_back(
             alignVertex(
                 Cartesian(Meters(x), Meters(y)),
@@ -91,8 +93,8 @@ Polygon MouseParser::getBody(
 std::map<std::string, Wheel> MouseParser::getWheels(
         const Cartesian& initialTranslation, const Radians& initialRotation, bool* success) {
 
-    Cartesian alignmentTranslation = initialTranslation - getCenterOfMass();
-    Radians alignmentRotation = initialRotation - getForwardDirection();
+    Cartesian alignmentTranslation = initialTranslation - m_centerOfMass;
+    Radians alignmentRotation = initialRotation - m_forwardDirection;
 
     std::map<std::string, Wheel> wheels;
     for (pugi::xml_node wheel : m_doc.children(WHEEL_TAG.c_str())) {
@@ -100,7 +102,7 @@ std::map<std::string, Wheel> MouseParser::getWheels(
         std::string name = getNameIfNonemptyAndUnique("wheel", wheel, wheels, success);
         double diameter = getDoubleIfHasDouble(wheel, DIAMETER_TAG, success);
         double width = getDoubleIfHasDouble(wheel, WIDTH_TAG, success);
-        pugi::xml_node position = getChildPositionNode(wheel, success);
+        pugi::xml_node position = getContainerNode(wheel, POSITION_TAG, success);
         double x = getDoubleIfHasDouble(position, X_TAG, success);
         double y = getDoubleIfHasDouble(position, Y_TAG, success);
         double direction = getDoubleIfHasDouble(wheel, DIRECTION_TAG, success);
@@ -133,8 +135,8 @@ std::map<std::string, Wheel> MouseParser::getWheels(
 std::map<std::string, Sensor> MouseParser::getSensors(
         const Cartesian& initialTranslation, const Radians& initialRotation, bool* success) {
 
-    Cartesian alignmentTranslation = initialTranslation - getCenterOfMass();
-    Radians alignmentRotation = initialRotation - getForwardDirection();
+    Cartesian alignmentTranslation = initialTranslation - m_centerOfMass;
+    Radians alignmentRotation = initialRotation - m_forwardDirection;
 
     std::map<std::string, Sensor> sensors;
     for (pugi::xml_node sensor : m_doc.children(SENSOR_TAG.c_str())) {
@@ -144,7 +146,7 @@ std::map<std::string, Sensor> MouseParser::getSensors(
         double range = getDoubleIfHasDouble(sensor, RANGE_TAG, success);
         double halfWidth = getDoubleIfHasDouble(sensor, HALF_WIDTH_TAG, success);
         double readDuration = getDoubleIfHasDouble(sensor, READ_DURATION_TAG, success);
-        pugi::xml_node position = getChildPositionNode(sensor, success);
+        pugi::xml_node position = getContainerNode(sensor, POSITION_TAG, success);
         double x = getDoubleIfHasDouble(position, X_TAG, success);
         double y = getDoubleIfHasDouble(position, Y_TAG, success);
         double direction = getDoubleIfHasDouble(sensor, DIRECTION_TAG, success);
@@ -182,16 +184,16 @@ double MouseParser::getDoubleIfHasDouble(const pugi::xml_node& node, const std::
     return SimUtilities::strToDouble(valueString);
 }
 
-pugi::xml_node MouseParser::getChildPositionNode(const pugi::xml_node& node, bool* success) {
-    pugi::xml_node position = node.child(POSITION_TAG.c_str());
-    if (!position) {
+pugi::xml_node MouseParser::getContainerNode(const pugi::xml_node& node, const std::string& tag, bool* success) {
+    pugi::xml_node containerNode = node.child(tag.c_str());
+    if (!containerNode) {
         L()->warn(
             "No wheel \"%v\" tag found. This means that the \"%v\" and"
             " \"%v\" tags won't be found either.",
-            POSITION_TAG, X_TAG, Y_TAG);
+            tag, X_TAG, Y_TAG);
         *success = false;
     }
-    return position;
+    return containerNode;
 }
 
 EncoderType MouseParser::getEncoderTypeIfValid(const pugi::xml_node& node, bool* success) {
@@ -216,22 +218,6 @@ Cartesian MouseParser::alignVertex(const Cartesian& vertex, const Cartesian& ali
         const Radians& alignmentRotation, const Cartesian& rotationPoint) {
     Cartesian translated = GeometryUtilities::translateVertex(vertex, alignmentTranslation);
     return GeometryUtilities::rotateVertexAroundPoint(translated, alignmentRotation, rotationPoint);
-}
-
-Radians MouseParser::getForwardDirection() {
-    // TODO: MACK Handle the failing case
-    double degrees = SimUtilities::strToDouble(
-        m_doc.child("Forward-Direction").child_value());
-    return Radians(Degrees(degrees));
-}
-
-Cartesian MouseParser::getCenterOfMass() {
-    // TODO: MACK Handle the failing case
-    std::vector<Cartesian> vertices;
-    pugi::xml_node center = m_doc.child("Center-of-Mass");
-    double x = SimUtilities::strToDouble(center.child("X").child_value());
-    double y = SimUtilities::strToDouble(center.child("Y").child_value());
-    return Cartesian(Meters(x), Meters(y));
 }
 
 } // namespace sim

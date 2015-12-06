@@ -1,8 +1,8 @@
 <Forward-Direction>90</Forward-Direction>
-<Center-of-Mass>
+<Center-Of-Mass>
     <X>.09</X> 
     <Y>.09</Y>
-</Center-of-Mass>
+</Center-Of-Mass>
 <Body>
     <Vertex>
         <X>.065</X> 

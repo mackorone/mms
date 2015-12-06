@@ -30,12 +30,8 @@ private:
     Radians m_forwardDirection;
     Cartesian m_centerOfMass;
 
-    // TODO: MACK - kill these
-    Radians getForwardDirection();
-    Cartesian getCenterOfMass();
-
     double getDoubleIfHasDouble(const pugi::xml_node& node, const std::string& tag, bool* success);
-    pugi::xml_node getChildPositionNode(const pugi::xml_node& node, bool* success);
+    pugi::xml_node getContainerNode(const pugi::xml_node& node, const std::string& tag, bool* success);
     EncoderType getEncoderTypeIfValid(const pugi::xml_node& node, bool* success);
 
     Cartesian alignVertex(const Cartesian& vertex, const Cartesian& alignmentTranslation,
