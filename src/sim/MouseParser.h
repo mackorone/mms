@@ -52,6 +52,11 @@ private:
     static const std::string MAX_SPEED_TAG;
     static const std::string ENCODER_TYPE_TAG;
     static const std::string ENCODER_TICKS_PER_REVOLUTION_TAG;
+    static const std::string SENSOR_TAG;
+    static const std::string RADIUS_TAG;
+    static const std::string RANGE_TAG;
+    static const std::string HALF_WIDTH_TAG;
+    static const std::string READ_DURATION_TAG;
 };
 
 } // namespace sim

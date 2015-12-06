@@ -97,8 +97,8 @@
     <Name>left-front</Name>
     <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
     <Range>.20</Range> <!-- Meters -->
-    <HalfWidth>5</HalfWidth> <!-- Degrees -->
-    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
+    <Half-Width>5</Half-Width> <!-- Degrees -->
+    <Read-Duration>.015</Read-Duration> <!-- Seconds -->
     <Position>
         <X>.0631</X>
         <Y>.1334</Y>
@@ -109,8 +109,8 @@
     <Name>left-middle</Name>
     <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
     <Range>.20</Range> <!-- Meters -->
-    <HalfWidth>5</HalfWidth> <!-- Degrees -->
-    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
+    <Half-Width>5</Half-Width> <!-- Degrees -->
+    <Read-Duration>.015</Read-Duration> <!-- Seconds -->
     <Position>
         <X>.0685</X>
         <Y>.1484</Y>
@@ -121,8 +121,8 @@
     <Name>left-side</Name>
     <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
     <Range>.20</Range> <!-- Meters -->
-    <HalfWidth>5</HalfWidth> <!-- Degrees -->
-    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
+    <Half-Width>5</Half-Width> <!-- Degrees -->
+    <Read-Duration>.015</Read-Duration> <!-- Seconds -->
     <Position>
         <X>.0895</X>
         <Y>.1534</Y>
@@ -133,8 +133,8 @@
     <Name>right-front</Name>
     <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
     <Range>.20</Range> <!-- Meters -->
-    <HalfWidth>5</HalfWidth> <!-- Degrees -->
-    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
+    <Half-Width>5</Half-Width> <!-- Degrees -->
+    <Read-Duration>.015</Read-Duration> <!-- Seconds -->
     <Position>
         <X>.1169</X>
         <Y>.1334</Y>
@@ -145,8 +145,8 @@
     <Name>right-middle</Name>
     <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
     <Range>.20</Range> <!-- Meters -->
-    <HalfWidth>5</HalfWidth> <!-- Degrees -->
-    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
+    <Half-Width>5</Half-Width> <!-- Degrees -->
+    <Read-Duration>.015</Read-Duration> <!-- Seconds -->
     <Position>
         <X>.1115</X>
         <Y>.1484</Y>
@@ -157,8 +157,8 @@
     <Name>right-side</Name>
     <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
     <Range>.20</Range> <!-- Meters -->
-    <HalfWidth>5</HalfWidth> <!-- Degrees -->
-    <ReadDuration>.015</ReadDuration> <!-- Seconds -->
+    <Half-Width>5</Half-Width> <!-- Degrees -->
+    <Read-Duration>.015</Read-Duration> <!-- Seconds -->
     <Position>
         <X>.0905</X>
         <Y>.1534</Y>

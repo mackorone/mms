@@ -29,6 +29,11 @@ const std::string MouseParser::DIRECTION_TAG = "Direction";
 const std::string MouseParser::MAX_SPEED_TAG = "Max-Speed";
 const std::string MouseParser::ENCODER_TYPE_TAG = "Encoder-Type";
 const std::string MouseParser::ENCODER_TICKS_PER_REVOLUTION_TAG = "Encoder-Ticks-Per-Revolution";
+const std::string MouseParser::SENSOR_TAG = "Sensor";
+const std::string MouseParser::RADIUS_TAG = "Radius";
+const std::string MouseParser::RANGE_TAG = "Range";
+const std::string MouseParser::HALF_WIDTH_TAG = "Half-Width";
+const std::string MouseParser::READ_DURATION_TAG = "Read-Duration";
 
 MouseParser::MouseParser(const std::string& filePath, bool* success) :
         m_forwardDirection(Radians(0)),
@@ -125,8 +130,8 @@ std::map<std::string, Wheel> MouseParser::getWheels(
         double direction = getDoubleIfHasDouble(wheel, DIRECTION_TAG, success);
         double maxAngularVelocityMagnitude = getDoubleIfHasDouble(wheel, MAX_SPEED_TAG, success);
 
-        std::string encoderTypeString = wheel.child(ENCODER_TYPE_TAG.c_str()).child_value();
         EncoderType encoderType;
+        std::string encoderTypeString = wheel.child(ENCODER_TYPE_TAG.c_str()).child_value();
         if (SimUtilities::mapContains(STRING_TO_ENCODER_TYPE, encoderTypeString)) {
             encoderType = STRING_TO_ENCODER_TYPE.at(encoderTypeString);
         }
@@ -166,35 +171,61 @@ std::map<std::string, Wheel> MouseParser::getWheels(
 
 std::map<std::string, Sensor> MouseParser::getSensors(
         const Cartesian& initialTranslation, const Radians& initialRotation, bool* success) {
+
     Cartesian alignmentTranslation = initialTranslation - getCenterOfMass();
     Radians alignmentRotation = initialRotation - getForwardDirection();
-    // TODO: Handle the failing case
+
     std::map<std::string, Sensor> sensors;
-    for (pugi::xml_node sensor : m_doc.children("Sensor")) {
-        // TODO: Check for duplicate name
-        std::string name(sensor.child("Name").child_value());
-        double radius = SimUtilities::strToDouble(sensor.child("Radius").child_value());
-        double range = SimUtilities::strToDouble(sensor.child("Range").child_value());
-        double halfWidth = SimUtilities::strToDouble(sensor.child("HalfWidth").child_value());
-        double readDuration = SimUtilities::strToDouble(sensor.child("ReadDuration").child_value());
-        double x = SimUtilities::strToDouble(sensor.child("Position").child("X").child_value());
-        double y = SimUtilities::strToDouble(sensor.child("Position").child("Y").child_value());
-        double direction = SimUtilities::strToDouble(sensor.child("Direction").child_value());
-        sensors.insert(
-            std::make_pair(
-                name,
-                Sensor(
-                    Meters(radius),
-                    Meters(range), 
-                    Degrees(halfWidth),
-                    Seconds(readDuration),
-                    alignVertex(
-                        Cartesian(Meters(x), Meters(y)),
-                        alignmentTranslation,
-                        alignmentRotation,
-                        initialTranslation),
-                    Degrees(direction) + alignmentRotation)));
+    for (pugi::xml_node sensor : m_doc.children(SENSOR_TAG.c_str())) {
+
+        std::string name = sensor.child(NAME_TAG.c_str()).child_value();
+        if (name.empty()) {
+            L()->warn("No wheel name specified.");
+            *success = false;
+            break;
+        }
+        if (SimUtilities::mapContains(sensors, name)) {
+            L()->warn("Two wheels both have the name \"%v\".", name);
+            *success = false;
+            break;
+        }
+
+        double radius = getDoubleIfHasDouble(sensor, RADIUS_TAG, success);
+        double range = getDoubleIfHasDouble(sensor, RANGE_TAG, success);
+        double halfWidth = getDoubleIfHasDouble(sensor, HALF_WIDTH_TAG, success);
+        double readDuration = getDoubleIfHasDouble(sensor, READ_DURATION_TAG, success);
+
+        pugi::xml_node position = sensor.child(POSITION_TAG.c_str());
+        if (!position) {
+            L()->warn(
+                "No sensor \"%v\" tag found. This means that the \"%v\" and"
+                " \"%v\" tags won't be found either.",
+                POSITION_TAG, X_TAG, Y_TAG);
+            *success = false;
+        }
+        double x = getDoubleIfHasDouble(position, X_TAG, success);
+        double y = getDoubleIfHasDouble(position, Y_TAG, success);
+
+        double direction = getDoubleIfHasDouble(sensor, DIRECTION_TAG, success);
+
+        if (success) {
+            sensors.insert(
+                std::make_pair(
+                    name,
+                    Sensor(
+                        Meters(radius),
+                        Meters(range), 
+                        Degrees(halfWidth),
+                        Seconds(readDuration),
+                        alignVertex(
+                            Cartesian(Meters(x), Meters(y)),
+                            alignmentTranslation,
+                            alignmentRotation,
+                            initialTranslation),
+                        Degrees(direction) + alignmentRotation)));
+        }
     }
+
     return sensors;
 }
 
@@ -217,14 +248,14 @@ Cartesian MouseParser::alignVertex(const Cartesian& vertex, const Cartesian& ali
 }
 
 Radians MouseParser::getForwardDirection() {
-    // TODO: Handle the failing case
+    // TODO: MACK Handle the failing case
     double degrees = SimUtilities::strToDouble(
         m_doc.child("Forward-Direction").child_value());
     return Radians(Degrees(degrees));
 }
 
 Cartesian MouseParser::getCenterOfMass() {
-    // TODO: Handle the failing case
+    // TODO: MACK Handle the failing case
     std::vector<Cartesian> vertices;
     pugi::xml_node center = m_doc.child("Center-of-Mass");
     double x = SimUtilities::strToDouble(center.child("X").child_value());
