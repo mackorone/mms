@@ -31,6 +31,8 @@ private:
     Cartesian m_centerOfMass;
 
     double getDoubleIfHasDouble(const pugi::xml_node& node, const std::string& tag, bool* success);
+    double getDoubleIfHasDoubleAndNonNegative(
+        const pugi::xml_node& node, const std::string& tag, bool* success);
     pugi::xml_node getContainerNode(const pugi::xml_node& node, const std::string& tag, bool* success);
     EncoderType getEncoderTypeIfValid(const pugi::xml_node& node, bool* success);
 

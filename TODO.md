@@ -1,16 +1,13 @@
 # High Priority
 
-- Make sure encoder ticks is positive double number
-    - What to do if some of the mouse params are missing?
-    - Check to make sure that the only intersection point of body polygon is at the vertices, no complex polys
 - Dedup in Mouse.cpp
 - Discrete mode speed...
 - Fix wheel/sensor name error messages
 - Remove friending in manual algo
-- Algo params should not be runtime - just put the params in a class (could the default be runtime???)
+    - Algo params should not be runtime - just put the params in a class (could the default be runtime???)
     - Make a note about how to do params in algos
-- Algo specifies algo param file...
-- Specify some options/params in the mouseAlgorithm
+    - Algo specifies algo param file...
+    - Specify some options/params in the mouseAlgorithm
 - Manual mode fog breakage
     - Automatically clear tile fog?
     - Allow the algo to specify this?
@@ -18,12 +15,9 @@
 - Make a note about symmetry with discrete interface
     - Make a formal check for symmetry
 - Arbitrary tile text
-- Encoders
 - Stepper motor
 - Sensor type (digital or analog)
 - Allow someone to specify inf distance for the tile
-- Clean up mouse parser
-    - Ensure that the magnitude is non-negative
 - Ensure that the wheel speed is not too high in the MouseInterface (so that the mouse doesn't clip through walls)
     - DiscreteInterfaceWheelSpeed?
     - Figure out how to make discrete interface wheel speed more uniform among algos...
@@ -83,17 +77,15 @@
 - Number of unique cells traversed
 - Some way to wite algorithms in Python
 - Make a separate process for algo, so if the algo dies the sim stays alive, and so that we can start an algo over really easily
-- Figure out what to do if an algo doesn't compile...
 
 # Medum Priority
 
-- Color palettes
 - For curve turns, see if you can figure out the arc that the mouse should go on to simulate a curve turn, use checkpoints
     - No curve turn has two line segments, each is tangent
         - first order curve turn has 3 line segments total, equally spaced, etc.
         - second order curve turn has 4 line segments total, equally spaced, etc.
 - isDiscreteInterfaceCompatible and isContinuousInterfaceCompatible
-- Enable rotation of wheels and motors during run
+- Enable steering the wheels and sensors during run
 - Set acceleration of all moving/rotating things
 - Rename Tile to Cell
 - Support reading or writing multiple file types
@@ -136,6 +128,7 @@
 - Some way to turn the loggers on/off
 - A way to log/print only info or higher, warn or higher, etc.
 - Replace the convexHull with union in the mouse collision polygon initialization
+- XML schema/validators
 
 # Low Priority
 
@@ -164,6 +157,7 @@
 - Protect functions that shouldn't be accessed by the algo by checking thread ID
 - Change over the Makefile to use cmake
 - Rewrite/clean floodfill
+- Color palettes
 
 # Clean-Up
 

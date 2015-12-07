@@ -98,7 +98,10 @@ void Wheel::updateRotation(const Angle& angle) {
 }
 
 Polygon Wheel::getSpeedIndicatorPolygon(const AngularVelocity& angularVelocity) {
-    double fractionOfMaxSpeed = angularVelocity / getMaxAngularVelocityMagnitude();
+    double fractionOfMaxSpeed = 0.0;
+    if (0.0 < getMaxAngularVelocityMagnitude().getRadiansPerSecond()) {
+        fractionOfMaxSpeed = angularVelocity / getMaxAngularVelocityMagnitude();
+    }
     return Polygon({
         Cartesian(m_initialPosition) + Cartesian(m_radius * fractionOfMaxSpeed, Meters(0)),
         Cartesian(m_initialPosition) + Cartesian(Meters(0), Meters(m_halfWidth *  1)),

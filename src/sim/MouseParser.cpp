@@ -84,10 +84,21 @@ Polygon MouseParser::getBody(
         *success = false;
     }
 
+    Polygon bodyPolygon;
+    if (success) {
+        bodyPolygon = Polygon(vertices);
+        if (bodyPolygon.getTriangles().size() == 0) {
+            L()->warn(
+                "Invalid mouse \"%v\" - the vertices specified do not"
+                " constitute a simple polygon.", BODY_TAG);
+            *success = false;
+        }
+    }
+
     if (!*success) {
         return NULL_POLYGON;
     }
-    return Polygon(vertices);
+    return bodyPolygon;
 }
 
 std::map<std::string, Wheel> MouseParser::getWheels(
@@ -100,15 +111,17 @@ std::map<std::string, Wheel> MouseParser::getWheels(
     for (pugi::xml_node wheel : m_doc.children(WHEEL_TAG.c_str())) {
 
         std::string name = getNameIfNonemptyAndUnique("wheel", wheel, wheels, success);
-        double diameter = getDoubleIfHasDouble(wheel, DIAMETER_TAG, success);
-        double width = getDoubleIfHasDouble(wheel, WIDTH_TAG, success);
+        double diameter = getDoubleIfHasDoubleAndNonNegative(wheel, DIAMETER_TAG, success);
+        double width = getDoubleIfHasDoubleAndNonNegative(wheel, WIDTH_TAG, success);
         pugi::xml_node position = getContainerNode(wheel, POSITION_TAG, success);
         double x = getDoubleIfHasDouble(position, X_TAG, success);
         double y = getDoubleIfHasDouble(position, Y_TAG, success);
         double direction = getDoubleIfHasDouble(wheel, DIRECTION_TAG, success);
-        double maxAngularVelocityMagnitude = getDoubleIfHasDouble(wheel, MAX_SPEED_TAG, success);
+        double maxAngularVelocityMagnitude = getDoubleIfHasDoubleAndNonNegative(
+            wheel, MAX_SPEED_TAG, success);
         EncoderType encoderType = getEncoderTypeIfValid(wheel, success);
-        double encoderTicksPerRevolution = getDoubleIfHasDouble(wheel, ENCODER_TICKS_PER_REVOLUTION_TAG, success);
+        double encoderTicksPerRevolution = getDoubleIfHasDoubleAndNonNegative(
+            wheel, ENCODER_TICKS_PER_REVOLUTION_TAG, success);
 
         if (success) {
             wheels.insert(
@@ -142,10 +155,10 @@ std::map<std::string, Sensor> MouseParser::getSensors(
     for (pugi::xml_node sensor : m_doc.children(SENSOR_TAG.c_str())) {
 
         std::string name = getNameIfNonemptyAndUnique("sensor", sensor, sensors, success);
-        double radius = getDoubleIfHasDouble(sensor, RADIUS_TAG, success);
-        double range = getDoubleIfHasDouble(sensor, RANGE_TAG, success);
-        double halfWidth = getDoubleIfHasDouble(sensor, HALF_WIDTH_TAG, success);
-        double readDuration = getDoubleIfHasDouble(sensor, READ_DURATION_TAG, success);
+        double radius = getDoubleIfHasDoubleAndNonNegative(sensor, RADIUS_TAG, success);
+        double range = getDoubleIfHasDoubleAndNonNegative(sensor, RANGE_TAG, success);
+        double halfWidth = getDoubleIfHasDoubleAndNonNegative(sensor, HALF_WIDTH_TAG, success);
+        double readDuration = getDoubleIfHasDoubleAndNonNegative(sensor, READ_DURATION_TAG, success);
         pugi::xml_node position = getContainerNode(sensor, POSITION_TAG, success);
         double x = getDoubleIfHasDouble(position, X_TAG, success);
         double y = getDoubleIfHasDouble(position, Y_TAG, success);
@@ -182,6 +195,19 @@ double MouseParser::getDoubleIfHasDouble(const pugi::xml_node& node, const std::
         return 0.0;
     }
     return SimUtilities::strToDouble(valueString);
+}
+
+double MouseParser::getDoubleIfHasDoubleAndNonNegative(
+        const pugi::xml_node& node, const std::string& tag, bool* success) {
+    double value = getDoubleIfHasDouble(node, tag, success);
+    if (success && value < 0.0) {
+        L()->warn(
+            "The value for tag \"%v\" is %v, which is less than the minimum"
+            " allowed value of %v.", tag, value, 0.0);
+        *success = false;
+        return 0.0;
+    }
+    return value;
 }
 
 pugi::xml_node MouseParser::getContainerNode(const pugi::xml_node& node, const std::string& tag, bool* success) {
