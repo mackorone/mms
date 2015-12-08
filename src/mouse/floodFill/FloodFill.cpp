@@ -12,14 +12,6 @@
 
 namespace floodFill {
 
-std::string FloodFill::mouseFile() const {
-    return "megaMouse.xml";
-}
-
-std::string FloodFill::interfaceType() const {
-    return "DISCRETE";
-}
-
 void FloodFill::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
 
     // Store a reference to the interface

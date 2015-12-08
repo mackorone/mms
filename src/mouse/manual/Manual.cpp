@@ -9,7 +9,7 @@
 namespace manual {
 
 std::string Manual::mouseFile() const {
-    return "mouse.xml";
+    return "default.xml";
 }
 
 std::string Manual::interfaceType() const {

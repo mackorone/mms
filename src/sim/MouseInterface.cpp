@@ -166,7 +166,7 @@ void MouseInterface::declareTileDistance(int x, int y, int distance) {
         return;
     }
 
-    m_mazeGraphic->setTileText(x, y, {std::to_string(distance)});
+    m_mazeGraphic->setTileText(x, y, {(0 <= distance ? std::to_string(distance) : "inf")});
 }
 
 void MouseInterface::undeclareTileDistance(int x, int y) {

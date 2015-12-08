@@ -1,8 +1,12 @@
 # High Priority
 
-- Dedup in Mouse.cpp
 - Discrete mode speed...
-- Fix wheel/sensor name error messages
+    - Fraction of wheel speed
+    - DiscreteInterfaceWheelSpeed parameter?
+    - Figure out how to make discrete interface wheel speed more uniform among algos...
+    - Ensure that the wheel speed is not too high in the MouseInterface (so that the mouse does not clip through walls)
+- Make a note about symmetry with discrete interface
+    - Make a formal check for symmetry
 - Remove friending in manual algo
     - Algo params should not be runtime - just put the params in a class (could the default be runtime???)
     - Make a note about how to do params in algos
@@ -12,19 +16,9 @@
     - Automatically clear tile fog?
     - Allow the algo to specify this?
     - Other algo options???
-- Make a note about symmetry with discrete interface
-    - Make a formal check for symmetry
 - Arbitrary tile text
 - Stepper motor
 - Sensor type (digital or analog)
-- Allow someone to specify inf distance for the tile
-- Ensure that the wheel speed is not too high in the MouseInterface (so that the mouse doesn't clip through walls)
-    - DiscreteInterfaceWheelSpeed?
-    - Figure out how to make discrete interface wheel speed more uniform among algos...
-- Continuous performance
-    - CPU with megaMouse.xml
-    - Reading the sensors is super non-performant...
-    - MinSleepDuration is a little bit weird - sometimes we try to sleep less than that
 - Make some utility that keeps track of simulation and real elapsed time
     - Actually keep track of the elapsed simulation time
     - Max speeds for manual algorithm
@@ -75,8 +69,11 @@
 - Buffer communication (like with the real robot)
 - Clang compiler support
 - Number of unique cells traversed
-- Some way to wite algorithms in Python
 - Make a separate process for algo, so if the algo dies the sim stays alive, and so that we can start an algo over really easily
+- Continuous performance
+    - CPU with megaMouse.xml
+    - Reading the sensors is super non-performant...
+    - MinSleepDuration is a little bit weird - sometimes we try to sleep less than that
 
 # Medum Priority
 

@@ -2,14 +2,6 @@
 
 namespace rightWallFollow {
 
-std::string RightWallFollow::mouseFile() const {
-    return "mouse.xml";
-}
-
-std::string RightWallFollow::interfaceType() const {
-    return "DISCRETE";
-}
-
 void RightWallFollow::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
     while (true){
         rightWallFollowStep(mouse);

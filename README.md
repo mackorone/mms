@@ -62,7 +62,7 @@ mkdir src/mouse/foo
 
 #### Step 2: Define a class that implements the IMouseAlgorithm interface:
 
-**`src/mouse/foo/Foo.h`**
+**`src/mouse/foo/Bar.h`**
 ```c++
 #pragma once
 
@@ -70,35 +70,25 @@ mkdir src/mouse/foo
 
 namespace foo {
 
-class Foo : public IMouseAlgorithm {
+class Bar : public IMouseAlgorithm {
 
 public:
-    std::string mouseFile() const;
-    std::string interfaceType() const;
     void solve(int mazeWidth, int mazeHeight, char initialDirection,
-        sim::MouseInterface* mouse);
+               sim::MouseInterface* mouse);
 
 };
 
 } // namespace foo
 ```
 
-**`src/mouse/foo/Foo.cpp`**
+**`src/mouse/foo/Bar.cpp`**
 ```c++
-#include "Foo.h"
+#include "Bar.h"
 
 namespace foo {
 
-std::string Foo::mouseFile() const {
-    return "mouse.xml";
-}
-
-std::string Foo::interfaceType() const {
-    return "DISCRETE";
-}
-
-void Foo::solve(int mazeWidth, int mazeHeight, char initialDirection,
-        sim::MouseInterface* mouse) {
+void Bar::solve(int mazeWidth, int mazeHeight, char initialDirection,
+                sim::MouseInterface* mouse) {
     // The mouse will move forward one tile and then stop
     mouse->moveForward();
 }
@@ -112,11 +102,11 @@ void Foo::solve(int mazeWidth, int mazeHeight, char initialDirection,
 ```c++
 #include "MouseAlgorithms.h"
 ...
-#include "foo/Foo.h"
+#include "foo/Bar.h"
 ...
 std::pair<bool, IMouseAlgorithm*> MouseAlgorithms::helper(...) {
     ...
-    ALGO("Foo", new foo::Foo());
+    ALGO("myFooBar", new foo::Bar());
     ...
 }
 ```
@@ -128,7 +118,7 @@ std::pair<bool, IMouseAlgorithm*> MouseAlgorithms::helper(...) {
 ```xml
 ...
 <!-- Mouse Parameters -->
-<mouse-algorithm>Foo</mouse-algorithm>
+<mouse-algorithm>myFooBar</mouse-algorithm>
 ...
 ```
 

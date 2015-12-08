@@ -34,6 +34,9 @@ bool Mouse::initialize(const std::string& mouseFile) {
 
     // Create the mouse parser object
     MouseParser parser(Directory::getResMouseDirectory() + mouseFile, &success);
+    if (!success) { // A checkpoint so that we can fail faster
+        return false;
+    }
 
     // Initialize the body, wheels, and sensors, such that they have the
     // correct initial translation and rotation
@@ -333,10 +336,27 @@ Polygon Mouse::getCurrentSensorViewPolygon(const Sensor& sensor,
 
 std::pair<double, double> Mouse::getWheelContributionFactors(const std::string& name) const {
 
-    // TODO: MACK - this shouldn't really be static, in case we have two mice
+    // TODO: upforgrabs
+    // This function was implemented really hastily. If you've got the time and
+    // determination, it'd be really nice if this was reimplemented and
+    // deduplicated with the update() method above. This function is supposed
+    // to return a pair of doubles, each in [0.0, 1.0], that specify how much
+    // the wheel contributes the forward movement and rotation of the mouse.
+    // This information is used by the setWheelSpeedsForMoveForward and similar
+    // methods to set the appropriate wheels when a particular action is
+    // requested. That is, if we've got a wheel that's facing to the right, we
+    // don't want to turn that wheel when we're trying to move forward.
+    // Instead, we should only turn the wheels that will actually contribute to
+    // the forward movement of the mouse. I'm not yet sure if we should take
+    // wheel size and/or max angular velocity magnitude into account, but I've
+    // done so here. This can definitely be changed if you decide that it's
+    // better without them. Also, sticking the memoization in this method is
+    // sloppy. First off, it makes the funciton less readable. And second, the
+    // static map means that we can't have multiple mice in the simulator. We
+    // should fix this.
+
     static std::map<std::string, std::pair<double, double>> contributionFactors;
 
-    // TODO: Move memoization to separate function
     if (contributionFactors.empty()) {
 
         MetersPerSecond maxForwardContributionMagnitude(0);
@@ -345,12 +365,10 @@ std::pair<double, double> Mouse::getWheelContributionFactors(const std::string& 
 
         for (std::pair<std::string, Wheel> wheel : m_wheels) {
 
-            // TODO: MACK Dedup some of this
             MetersPerSecond maxLinearVelocity = wheel.second.getMaxAngularVelocityMagnitude() * wheel.second.getRadius();
             MetersPerSecond forwardContribution = maxLinearVelocity *
                 (getInitialRotation() - wheel.second.getInitialDirection()).getCos();
 
-            // TODO: MACK Dedup some of this
             Cartesian wheelToCenter = getInitialTranslation() - wheel.second.getInitialPosition();
             double rotationFactor = (wheelToCenter.getTheta() - wheel.second.getInitialDirection()).getSin();
             RadiansPerSecond radialContribuition = RadiansPerSecond(

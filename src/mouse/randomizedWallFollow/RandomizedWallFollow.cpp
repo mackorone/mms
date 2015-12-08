@@ -4,14 +4,6 @@
 
 namespace randomizedWallFollow {
 
-std::string RandomizedWallFollow::mouseFile() const {
-    return "mouse.xml";
-}
-
-std::string RandomizedWallFollow::interfaceType() const {
-    return "DISCRETE";
-}
-
 void RandomizedWallFollow::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
     while (true){
         if (rand() % 2 == 0){

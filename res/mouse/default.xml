@@ -34,24 +34,20 @@
         <Y>.03</Y> <!-- Meters -->
     </Position>
     <Direction>270</Direction> <!-- Degrees, positive angular velocity causes the wheel to travel forward -->
-    <Max-Speed>200</Max-Speed> <!-- rpm -->
-    <!-- Motor type -->
-    <!-- Motor Max acceleration -->
+    <Max-Speed>200</Max-Speed> <!-- RPM -->
     <Encoder-Type>RELATIVE</Encoder-Type> <!-- ABSOLUTE or RELATIVE -->
     <Encoder-Ticks-Per-Revolution>360</Encoder-Ticks-Per-Revolution>
 </Wheel>
 <Wheel>
     <Name>right</Name>
-    <Diameter>.04</Diameter>
-    <Width>.01</Width>
+    <Diameter>.04</Diameter> <!-- Meters -->
+    <Width>.01</Width> <!-- Meters -->
     <Position>
-        <X>.06</X>
-        <Y>.03</Y>
+        <X>.06</X> <!-- Meters -->
+        <Y>.03</Y> <!-- Meters -->
     </Position>
     <Direction>90</Direction> <!-- Degrees, positive angular velocity causes the wheel to travel forward -->
-    <Max-Speed>200</Max-Speed> <!-- rpm -->
-    <!-- Motor type -->
-    <!-- Motor Max acceleration -->
+    <Max-Speed>200</Max-Speed> <!-- RPM -->
     <Encoder-Type>RELATIVE</Encoder-Type> <!-- ABSOLUTE or RELATIVE -->
     <Encoder-Ticks-Per-Revolution>360</Encoder-Ticks-Per-Revolution>
 </Wheel>

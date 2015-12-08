@@ -20,8 +20,6 @@ enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
 class FloodFill : public IMouseAlgorithm {
 
 public:
-    std::string mouseFile() const;
-    std::string interfaceType() const;
     void solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse); // IMouseAlgorithm interface method
 
 private:

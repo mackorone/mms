@@ -21,14 +21,6 @@ extern volatile bool movesDoneAndWallsSet;
 namespace mackAlgo {
 
 #if (SIMULATOR)
-std::string MackAlgo::mouseFile() const {
-    return "mouse.xml";
-}
-
-std::string MackAlgo::interfaceType() const {
-    return "DISCRETE";
-}
-
 void MackAlgo::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
     m_mouse = mouse;
     if (MAZE_WIDTH != mazeWidth || MAZE_HEIGHT != mazeHeight) {

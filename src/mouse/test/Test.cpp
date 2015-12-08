@@ -17,7 +17,7 @@
 namespace test {
 
 std::string Test::mouseFile() const {
-    return "mouse.xml";
+    return "default.xml";
 }
 
 std::string Test::interfaceType() const {

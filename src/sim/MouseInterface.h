@@ -50,6 +50,7 @@ public:
     void setTileFogginess(int x, int y, bool foggy);
 
     // Tile distance
+    // NOTE: a negative distance corresponds to inf distance
     void declareTileDistance(int x, int y, int distance);
     void undeclareTileDistance(int x, int y);
 
