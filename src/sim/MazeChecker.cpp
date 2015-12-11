@@ -99,11 +99,6 @@ bool MazeChecker::officialMaze(const std::vector<std::vector<BasicTile>>& maze) 
 
     ASSERT_TR(validMaze(maze));
 
-    if (!is16x16(maze)) {
-        L()->warn("The maze is not 16 x 16.");
-        return false;
-    }
-
     if (!hasPathToCenter(maze)) {
         L()->warn("The maze does not have a path to the center.");
         return false;
@@ -140,11 +135,6 @@ bool MazeChecker::officialMaze(const std::vector<std::vector<BasicTile>>& maze) 
     }
 
     return true;
-}
-
-bool MazeChecker::is16x16(const std::vector<std::vector<BasicTile>>& maze) {
-    ASSERT_TR(isRectangular(maze));
-    return maze.size() == 16 && maze.at(0).size() == 16;
 }
 
 bool MazeChecker::hasPathToCenter(const std::vector<std::vector<BasicTile>>& maze) {

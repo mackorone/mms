@@ -24,6 +24,7 @@
 namespace sim {
 
 // Definition of the static variables for linking
+Maze* Driver::m_maze;
 Mouse* Driver::m_mouse;
 MazeGraphic* Driver::m_mazeGraphic;
 MouseGraphic* Driver::m_mouseGraphic;
@@ -60,7 +61,7 @@ void Driver::drive(int argc, char* argv[]) {
     initGraphics(argc, argv);
 
     // Step 3: Initialize the mouse algorithm
-    initMouseAlgo();
+    initMouseAlgo(); // TODO: MACK - join this with initSimObjects so that I can pass options in the mouse MouseInterface constructor
 
     // Step 4: Start the physics loop
     std::thread physicsThread([](){
@@ -77,7 +78,8 @@ void Driver::drive(int argc, char* argv[]) {
         m_algorithm->solve(
             m_mazeGraphic->getWidth(),
             m_mazeGraphic->getHeight(),
-            DIRECTION_TO_CHAR.at(STRING_TO_DIRECTION.at(P()->mouseStartingDirection())),
+            m_maze->officialMaze(),
+            DIRECTION_TO_CHAR.at(m_mouse->getCurrentDiscretizedRotation()),
             m_mouseInterface);
     });
 
@@ -104,12 +106,12 @@ void Driver::bootstrap() {
 }
 
 void Driver::initSimObjects() {
-    Maze* maze = new Maze();
-    m_mouse = new Mouse(maze);
-    m_mazeGraphic = new MazeGraphic(maze);
+    m_maze= new Maze();
+    m_mouse = new Mouse(m_maze);
+    m_mazeGraphic = new MazeGraphic(m_maze);
     m_mouseGraphic = new MouseGraphic(m_mouse);
-    m_mouseInterface = new MouseInterface(maze, m_mouse, m_mazeGraphic);
-    m_world = new World(maze, m_mouse, m_mazeGraphic);
+    m_mouseInterface = new MouseInterface(m_maze, m_mouse, m_mazeGraphic);
+    m_world = new World(m_maze, m_mouse);
 }
 
 void Driver::draw() {
@@ -412,15 +414,19 @@ void Driver::initMouseAlgo() {
     }
     m_algorithm = MouseAlgorithms::getMouseAlgorithm(P()->mouseAlgorithm());
 
-    // Initialize the mouse with the file provided
-    std::string mouseFile = m_algorithm->mouseFile();
-    bool success = m_mouse->initialize(mouseFile);
-    if (!success) {
+    // TODO: MACK - validate mouse initial direction
+    // TODO: MACK - check this
+    if (!SimUtilities::mapContains(STRING_TO_DIRECTION, m_algorithm->initialDirection())) {
         L()->error(
-            "Unable to successfully initialize the mouse in the algorithm "
-            "\"%v\" from \"%v\".",
+            "\"%v\" is not a valid initial direction. You must declare the"
+            " initial direction of the mouse algorithm \"%v\" to be one of"
+            " \"%v\", \"%v\", \"%v\", or \"%v\".",
+            m_algorithm->initialDirection(),
             P()->mouseAlgorithm(),
-            mouseFile);
+            DIRECTION_TO_STRING.at(Direction::NORTH),
+            DIRECTION_TO_STRING.at(Direction::EAST),
+            DIRECTION_TO_STRING.at(Direction::SOUTH),
+            DIRECTION_TO_STRING.at(Direction::WEST));
         SimUtilities::quit();
     }
 
@@ -436,7 +442,32 @@ void Driver::initMouseAlgo() {
             INTERFACE_TYPE_TO_STRING.at(InterfaceType::CONTINUOUS));
         SimUtilities::quit();
     }
-    S()->setInterfaceType(STRING_TO_INTERFACE_TYPE.at(m_algorithm->interfaceType()));
+    S()->setInterfaceType(STRING_TO_INTERFACE_TYPE.at(m_algorithm->interfaceType())); // TODO: MACK This should be a mouse property
+
+    // Initialize the mouse with the file provided
+    std::string mouseFile = m_algorithm->mouseFile();
+    bool success = m_mouse->initialize(
+        mouseFile,
+        STRING_TO_INTERFACE_TYPE.at(m_algorithm->interfaceType()),
+        STRING_TO_DIRECTION.at(m_algorithm->initialDirection())
+    ); // TODO: MACK -- error message
+    if (!success) {
+        L()->error(
+            "Unable to successfully initialize the mouse in the algorithm "
+            "\"%v\" from \"%v\".",
+            P()->mouseAlgorithm(),
+            mouseFile);
+        SimUtilities::quit();
+    }
+
+    // TODO: MACK - clean this up
+    m_mouseInterface->setOptions({
+        m_algorithm->controlTileFog(),
+        m_algorithm->declareBothWallHalves(),
+        m_algorithm->declareWallOnRead(),
+        m_algorithm->setTileBaseColorWhenDistanceCorrect(),
+        m_algorithm->wheelSpeedFraction(),
+    });
 
     // Validate the mouse
     if (S()->interfaceType() == InterfaceType::DISCRETE) {

@@ -40,10 +40,6 @@ void TileGraphic::setFogginess(bool foggy) {
 void TileGraphic::setText(const std::vector<std::string>& rowsOfText) {
     m_rowsOfText = rowsOfText;
     updateText();
-    if (P()->setTileBaseColorWhenDistanceCorrect() && 0 < rowsOfText.size()
-        && std::to_string(m_tile->getDistance()) == rowsOfText.at(0)) {
-            setColor(STRING_TO_COLOR.at(P()->distanceCorrectTileBaseColor()));
-    }
 }
 
 void TileGraphic::draw() const {
@@ -134,8 +130,13 @@ void TileGraphic::updateText() const {
 
 void TileGraphic::updateWall(Direction direction) const {
     std::pair<Color, float> colorAndAlpha = deduceWallColorAndAlpha(direction);
-    GraphicUtilities::updateTileGraphicWallColor(m_tile->getX(), m_tile->getY(), direction,
-        colorAndAlpha.first, colorAndAlpha.second);
+    GraphicUtilities::updateTileGraphicWallColor(
+        m_tile->getX(),
+        m_tile->getY(),
+        direction,
+        colorAndAlpha.first,
+        colorAndAlpha.second
+    );
 }
 
 std::pair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction) const {

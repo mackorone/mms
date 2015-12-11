@@ -21,7 +21,9 @@ extern volatile bool movesDoneAndWallsSet;
 namespace mackAlgo {
 
 #if (SIMULATOR)
-void MackAlgo::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
+void MackAlgo::solve(
+        int mazeWidth, int mazeHeight, bool officialMaze,
+        char initialDirection, sim::MouseInterface* mouse) {
     m_mouse = mouse;
     if (MAZE_WIDTH != mazeWidth || MAZE_HEIGHT != mazeHeight) {
         std::cout << "I am programmed to think the maze is " << MAZE_WIDTH << " x " << MAZE_HEIGHT

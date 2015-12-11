@@ -93,8 +93,6 @@ Param::Param() {
         "tile-fog-alpha", 0.15, 0.0, 1.0);
     m_defaultWireframeMode = parser.getBoolIfHasBool(
         "default-wireframe-mode", false);
-    m_setTileBaseColorWhenDistanceCorrect = parser.getBoolIfHasBool(
-        "set-tile-base-color-when-distance-correct", false);
     m_distanceCorrectTileBaseColor = parser.getStringIfHasStringAndIsColor(
         "distance-correct-tile-base-color", COLOR_TO_STRING.at(Color::DARK_YELLOW));
 
@@ -124,14 +122,6 @@ Param::Param() {
         "crash-message", "CRASH");
     m_minSleepDuration = parser.getDoubleIfHasDoubleAndInRange(
         "min-sleep-duration", 5, 1, 25);
-    m_discreteInterfaceWheelSpeed = parser.getDoubleIfHasDoubleAndInRange(
-        "discrete-interface-wheel-speed", 3.0, 0.5, 10.0);
-    m_discreteInterfaceDeclareWallOnRead = parser.getBoolIfHasBool(
-        "discrete-interface-declare-wall-on-read", true);
-    m_algorithmControlsTileFog = parser.getBoolIfHasBool(
-        "algorithm-controls-tile-fog", false);
-    m_declareBothWallHalves = parser.getBoolIfHasBool(
-        "declare-both-wall-halves", true);
     m_mousePositionUpdateRate = parser.getIntIfHasIntAndInRange(
         "mouse-position-update-rate", 500, 100, 2500);
     m_printLateMousePostitionUpdates = parser.getBoolIfHasBool(
@@ -154,8 +144,6 @@ Param::Param() {
         "wall-width", 0.012, 0.006, 0.024);
     m_wallLength = parser.getDoubleIfHasDoubleAndInRange(
         "wall-length", 0.168, 0.084, 0.336);
-    m_enforceOfficialMazeRules = parser.getBoolIfHasBool(
-        "enforce-official-maze-rules", false);
     m_mazeFile = parser.getStringIfHasString(
         "maze-file", "");
     m_useMazeFile = parser.getBoolIfHasBool(
@@ -178,8 +166,6 @@ Param::Param() {
     // Mouse parameters
     m_mouseAlgorithm = parser.getStringIfHasString(
         "mouse-algorithm", "RightWallFollow");
-    m_mouseStartingDirection = parser.getStringIfHasStringAndIsDirection(
-        "mouse-starting-direction", DIRECTION_TO_STRING.at(Direction::NORTH));
 }
 
 int Param::defaultWindowWidth() {
@@ -306,10 +292,6 @@ bool Param::defaultWireframeMode() {
     return m_defaultWireframeMode;
 }
 
-bool Param::setTileBaseColorWhenDistanceCorrect() {
-    return m_setTileBaseColorWhenDistanceCorrect;
-}
-
 std::string Param::distanceCorrectTileBaseColor() {
     return m_distanceCorrectTileBaseColor;
 }
@@ -348,22 +330,6 @@ std::string Param::crashMessage() {
 
 double Param::minSleepDuration() {
     return m_minSleepDuration;
-}
-
-double Param::discreteInterfaceWheelSpeed() {
-    return m_discreteInterfaceWheelSpeed;
-}
-
-bool Param::discreteInterfaceDeclareWallOnRead() {
-    return m_discreteInterfaceDeclareWallOnRead;
-}
-
-bool Param::algorithmControlsTileFog() {
-    return m_algorithmControlsTileFog;
-}
-
-bool Param::declareBothWallHalves() {
-    return m_declareBothWallHalves;
 }
 
 int Param::mousePositionUpdateRate() {
@@ -422,10 +388,6 @@ int Param::generatedMazeHeight() {
     return m_generatedMazeHeight;
 }
 
-bool Param::enforceOfficialMazeRules() {
-    return m_enforceOfficialMazeRules;
-}
-
 std::string Param::mazeAlgorithm() {
     return m_mazeAlgorithm;
 }
@@ -448,10 +410,6 @@ int Param::mazeRotations() {
 
 std::string Param::mouseAlgorithm() {
     return m_mouseAlgorithm;
-}
-
-std::string Param::mouseStartingDirection() {
-    return m_mouseStartingDirection;
 }
 
 } // namespace sim

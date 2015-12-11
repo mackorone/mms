@@ -47,7 +47,6 @@ public:
     bool defaultTileDistanceVisible();
     double tileFogAlpha();
     bool defaultWireframeMode();
-    bool setTileBaseColorWhenDistanceCorrect();
     std::string distanceCorrectTileBaseColor();
 
     // Simulation parameters
@@ -60,10 +59,6 @@ public:
     bool collisionDetectionEnabled();
     std::string crashMessage();
     double minSleepDuration();
-    double discreteInterfaceWheelSpeed();
-    bool discreteInterfaceDeclareWallOnRead();
-    bool algorithmControlsTileFog();
-    bool declareBothWallHalves();
     int mousePositionUpdateRate();
     bool printLateMousePositionUpdates();
     int collisionDetectionRate();
@@ -76,7 +71,6 @@ public:
     // Maze parameters
     double wallWidth();
     double wallLength();
-    bool enforceOfficialMazeRules();
     std::string mazeFile();
     bool useMazeFile();
     int generatedMazeWidth();
@@ -89,7 +83,6 @@ public:
 
     // Mouse parameters
     std::string mouseAlgorithm();
-    std::string mouseStartingDirection();
 
 private:
 
@@ -131,7 +124,6 @@ private:
     bool m_defaultTileDistanceVisible;
     double m_tileFogAlpha;
     bool m_defaultWireframeMode;
-    bool m_setTileBaseColorWhenDistanceCorrect;
     std::string m_distanceCorrectTileBaseColor;
 
     // Simulation parameters
@@ -144,10 +136,6 @@ private:
     bool m_collisionDetectionEnabled;
     std::string m_crashMessage;
     double m_minSleepDuration;
-    double m_discreteInterfaceWheelSpeed;
-    bool m_discreteInterfaceDeclareWallOnRead;
-    bool m_algorithmControlsTileFog;
-    bool m_declareBothWallHalves;
     int m_mousePositionUpdateRate;
     bool m_printLateMousePostitionUpdates;
     int m_collisionDetectionRate;
@@ -160,7 +148,6 @@ private:
     // Maze parameters
     double m_wallWidth;
     double m_wallLength;
-    bool m_enforceOfficialMazeRules;
     std::string m_mazeFile;
     bool m_useMazeFile;
     int m_generatedMazeWidth;
@@ -173,7 +160,6 @@ private:
 
     // Mouse parameters
     std::string m_mouseAlgorithm;
-    std::string m_mouseStartingDirection;
 };
 
 } // namespace sim

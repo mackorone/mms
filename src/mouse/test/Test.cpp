@@ -24,7 +24,9 @@ std::string Test::interfaceType() const {
     return "CONTINUOUS";
 }
 
-void Test::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
+void Test::solve(
+        int mazeWidth, int mazeHeight, bool officialMaze,
+        char initialDirection, sim::MouseInterface* mouse) {
     mouse->setWheelSpeed("left", -10);
     mouse->setWheelSpeed("right", 10);
     while (true) {

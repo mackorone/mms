@@ -6,7 +6,9 @@
 #include "units/Cartesian.h"
 #include "units/RadiansPerSecond.h"
 
+#include "Direction.h"
 #include "EncoderType.h"
+#include "InterfaceType.h"
 #include "Maze.h"
 #include "Polygon.h"
 #include "Sensor.h"
@@ -20,7 +22,10 @@ public:
     Mouse(const Maze* maze);
 
     // Initializes the mouse (body, wheels, sensors, etc.); returns true if successful, false if not
-    bool initialize(const std::string& mouseFile);
+    bool initialize(
+        const std::string& mouseFile,
+        InterfaceType interfaceType,
+        Direction initialDirection);
 
     // Gets the initial translation and rotation of the mouse
     Cartesian getInitialTranslation() const;

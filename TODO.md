@@ -1,10 +1,18 @@
 # High Priority
 
+- CPWindows.h...
+- Move fog logic to mouse interface
+- Kill interface type in State
+- Rename officialMaze to isOfficialMaze and validMaze to isValidMaze
+- Clean up all algos to use the new params as best as possible
+- Ensure wheel speed fraction is 0.0 to 1.0
 - Discrete mode speed...
+    - Talk about each of the parameters in documentation
     - Fraction of wheel speed
-    - DiscreteInterfaceWheelSpeed parameter?
+    - DiscreteInterfaceWheelSpeed parameter? - kill this
     - Figure out how to make discrete interface wheel speed more uniform among algos...
     - Ensure that the wheel speed is not too high in the MouseInterface (so that the mouse does not clip through walls)
+- Add the ability to start in the direction of the opening of the maze
 - Make a note about symmetry with discrete interface
     - Make a formal check for symmetry
 - Remove friending in manual algo
@@ -24,7 +32,6 @@
     - Max speeds for manual algorithm
     - Add the simulation time to the logging
         - Perhaps even refactor the elapsed time in logging
-- Add the ability to start in the direction of the opening of the maze
 - Move some graphics stuff in Driver into GraphicUtilities
 - Change float to units (including in the ParamParser and Param class)
 - Type safety (in terms of units) of the parameters

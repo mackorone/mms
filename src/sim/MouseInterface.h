@@ -3,6 +3,7 @@
 #include "InterfaceType.h"
 #include "MazeGraphic.h"
 #include "Mouse.h"
+#include "Options.h"
 #include "Param.h"
 
 // Windows compatibility
@@ -98,7 +99,14 @@ private:
     const Maze* m_maze;
     Mouse* m_mouse;
     MazeGraphic* m_mazeGraphic;
+
+    // TODO: MACK - genericize this
     std::set<std::pair<int, int>> m_tilesWithColor;
+
+    // Algo options
+    friend class Driver; // TODO: MACK
+    void setOptions(const Options& options);
+    Options m_options;
 
     void ensureDiscreteInterface(const std::string& callingFunction) const;
     void ensureContinuousInterface(const std::string& callingFunction) const;
@@ -107,7 +115,7 @@ private:
     bool hasOpposingWall(int x, int y, Direction direction) const;
     std::pair<std::pair<int, int>, Direction> getOpposingWall(int x, int y, Direction direction) const;
 
-    friend class manual::Manual;
+    friend class manual::Manual; // TODO: MACK
     std::pair<int, int> getCurrentDiscretizedTranslation() const;
     Direction getCurrentDiscretizedRotation() const;
 };

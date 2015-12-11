@@ -27,6 +27,7 @@ public:
 private:
 
     // Simulation objects
+    static Maze* m_maze;
     static Mouse* m_mouse;
     static MazeGraphic* m_mazeGraphic;
     static MouseGraphic* m_mouseGraphic;

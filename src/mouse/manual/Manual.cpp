@@ -16,7 +16,9 @@ std::string Manual::interfaceType() const {
     return "CONTINUOUS";
 }
 
-void Manual::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
+void Manual::solve(
+        int mazeWidth, int mazeHeight, bool officialMaze,
+        char initialDirection, sim::MouseInterface* mouse) {
 
     sim::S()->setRotateZoomedMap(true);
 

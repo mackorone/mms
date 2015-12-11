@@ -2,7 +2,9 @@
 
 namespace rightWallFollow {
 
-void RightWallFollow::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
+void RightWallFollow::solve(
+        int mazeWidth, int mazeHeight, bool officialMaze,
+        char initialDirection, sim::MouseInterface* mouse) {
     while (true){
         rightWallFollowStep(mouse);
     }

@@ -51,6 +51,12 @@ Maze::Maze() {
         SimUtilities::quit();
     }
 
+    // Optionally save the maze
+    if (!P()->useMazeFile() && P()->saveGeneratedMaze()) {
+        MazeFileUtilities::saveMaze(basicMaze,
+            Directory::getResMazeDirectory() + P()->generatedMazeFile());
+    }
+
     // Mirror and rotate the maze
     if (P()->mazeMirrored()) {
         basicMaze = mirrorAcrossVertical(basicMaze);
@@ -59,17 +65,8 @@ Maze::Maze() {
         basicMaze = rotateCounterClockwise(basicMaze);
     }
 
-    // Then, check and enforce official maze rules
-    if (P()->enforceOfficialMazeRules() && !MazeChecker::officialMaze(basicMaze)) {
-        L()->error("Failed official maze validation.");
-        SimUtilities::quit();
-    }
-
-    // Optionally save the maze
-    if (!P()->useMazeFile() && P()->saveGeneratedMaze()) {
-        MazeFileUtilities::saveMaze(basicMaze,
-            Directory::getResMazeDirectory() + P()->generatedMazeFile());
-    }
+    // Then, store whether or not the maze is an official maze
+    m_officialMaze = MazeChecker::officialMaze(basicMaze);
 
     // Load the maze given by the maze generation algorithm
     m_maze = initializeFromBasicMaze(basicMaze);
@@ -95,6 +92,10 @@ Tile* Maze::getTile(int x, int y) {
 const Tile* Maze::getTile(int x, int y) const {
     ASSERT_TR(withinMaze(x, y));
     return &m_maze.at(x).at(y);
+}
+
+bool Maze::officialMaze() const {
+    return m_officialMaze;
 }
 
 std::vector<std::vector<Tile>> Maze::initializeFromBasicMaze(const std::vector<std::vector<BasicTile>>& basicMaze) {

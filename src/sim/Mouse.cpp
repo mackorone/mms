@@ -18,7 +18,10 @@ namespace sim {
 Mouse::Mouse(const Maze* maze) : m_maze(maze), m_currentGyro(RadiansPerSecond(0.0)) {
 }
 
-bool Mouse::initialize(const std::string& mouseFile) {
+bool Mouse::initialize(
+        const std::string& mouseFile,
+        InterfaceType interfaceType,
+        Direction initialDirection) { // TODO: MACK - make sure these are member vars in the Mouse class
 
     // We begin with the assumption that the initialization will succeed
     bool success = true;
@@ -28,8 +31,8 @@ bool Mouse::initialize(const std::string& mouseFile) {
     m_initialTranslation = Cartesian(halfOfTileDistance, halfOfTileDistance);
     m_currentTranslation = m_initialTranslation;
 
-    // The initial rotation of the mouse, however, is determined by the parameters
-    m_initialRotation = DIRECTION_TO_ANGLE.at(STRING_TO_DIRECTION.at(P()->mouseStartingDirection()));
+    // The initial rotation of the mouse, however, is determined by the options
+    m_initialRotation = DIRECTION_TO_ANGLE.at(initialDirection);
     m_currentRotation = m_initialRotation;
 
     // Create the mouse parser object

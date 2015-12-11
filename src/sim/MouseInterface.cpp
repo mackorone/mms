@@ -110,7 +110,7 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
     }
 
     m_mazeGraphic->declareWall(x, y, CHAR_TO_DIRECTION.at(direction), wallExists); 
-    if (P()->declareBothWallHalves() && hasOpposingWall(x, y, CHAR_TO_DIRECTION.at(direction))) {
+    if (m_options.declareBothWallHalves && hasOpposingWall(x, y, CHAR_TO_DIRECTION.at(direction))) {
         std::pair<std::pair<int, int>, Direction> opposing = getOpposingWall(x, y, CHAR_TO_DIRECTION.at(direction));
         m_mazeGraphic->declareWall(opposing.first.first, opposing.first.second, opposing.second, wallExists); 
     }
@@ -131,7 +131,7 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
     }
 
     m_mazeGraphic->undeclareWall(x, y, CHAR_TO_DIRECTION.at(direction));
-    if (P()->declareBothWallHalves() && hasOpposingWall(x, y, CHAR_TO_DIRECTION.at(direction))) {
+    if (m_options.declareBothWallHalves && hasOpposingWall(x, y, CHAR_TO_DIRECTION.at(direction))) {
         std::pair<std::pair<int, int>, Direction> opposing = getOpposingWall(x, y, CHAR_TO_DIRECTION.at(direction));
         m_mazeGraphic->undeclareWall(opposing.first.first, opposing.first.second, opposing.second);
     }
@@ -139,7 +139,7 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
 
 void MouseInterface::setTileFogginess(int x, int y, bool foggy) {
 
-    if (!P()->algorithmControlsTileFog()) { 
+    if (!m_options.controlTileFog) { 
         L()->warn(
             "The simulation parameters indicate that the simulator should"
             " control the tile fog, not the algorithm. Thus you may not set"
@@ -167,6 +167,11 @@ void MouseInterface::declareTileDistance(int x, int y, int distance) {
     }
 
     m_mazeGraphic->setTileText(x, y, {(0 <= distance ? std::to_string(distance) : "inf")});
+    // TODO: MACK - set tile color when correct
+    /*
+    if (m_options.setTileBaseColorWhenDistaceCorrect) {
+    }
+    */
 }
 
 void MouseInterface::undeclareTileDistance(int x, int y) {
@@ -179,6 +184,11 @@ void MouseInterface::undeclareTileDistance(int x, int y) {
     }
 
     m_mazeGraphic->setTileText(x, y, {});
+    // TODO: MACK - set tile color when correct
+    /*
+    if (m_options.setTileBaseColorWhenDistaceCorrect) {
+    }
+    */
 }
 
 void MouseInterface::resetPosition() {
@@ -515,6 +525,11 @@ void MouseInterface::turnAround() {
     turnRight();
 }
 
+// TODO: MACK - kill this, move it to the constructor
+void MouseInterface::setOptions(const Options& options) {
+    m_options = options;
+}
+
 void MouseInterface::ensureDiscreteInterface(const std::string& callingFunction) const {
     if (S()->interfaceType() != InterfaceType::DISCRETE) {
         L()->error(
@@ -539,7 +554,7 @@ bool MouseInterface::isWall(std::pair<int, int> position, Direction direction) {
 
     bool wallExists = m_maze->getTile(position.first, position.second)->isWall(direction);
 
-    if (P()->discreteInterfaceDeclareWallOnRead()) {
+    if (m_options.declareWallOnRead) {
         declareWall(position.first, position.second, DIRECTION_TO_CHAR.at(direction), wallExists);
     }
 

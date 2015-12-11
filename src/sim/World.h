@@ -9,23 +9,19 @@
 
 namespace sim {
 
-// The world is responsible for knowing the true position of the mouse and the maze,
-// as well as carrying forth the simulation (i.e., stepping forward in time)
 class World {
 
 public:
-    World(Maze* maze, Mouse* mouse, MazeGraphic* mazeGraphic);
+    World(Maze* maze, Mouse* mouse);
     void simulate();
 
 private:
     Maze* m_maze;
     Mouse* m_mouse;
-    MazeGraphic* m_mazeGraphic;
 
     // Whether or not the mouse has collided
     bool m_collision;
     void checkCollision();
-
 };
 
 } // namespace sim
