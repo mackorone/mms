@@ -34,6 +34,11 @@ public:
     static bool isUnsolvableByWallFollower(const std::vector<std::vector<BasicTile>>& maze);
     static bool hasNoInaccesibleLocations(const std::vector<std::vector<BasicTile>>& maze);
 
+private:
+
+    // Misc. helper functions
+    static std::vector<std::pair<int, int>> getCenterTiles(int width, int height);
+
 };
 
 } // namespace sim

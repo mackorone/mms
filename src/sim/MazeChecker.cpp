@@ -138,10 +138,37 @@ bool MazeChecker::isOfficialMaze(const std::vector<std::vector<BasicTile>>& maze
 }
 
 bool MazeChecker::hasPathToCenter(const std::vector<std::vector<BasicTile>>& maze) {
-    // TODO: upforgrabs
-    // Implement this method so that it returns true if there is a path to the
-    // center of the maze, and false otherwise.
-    return false;
+
+    ASSERT_TR(isValidMaze(maze));
+
+    std::set<std::pair<int, int>> explored;
+    std::queue<std::pair<int, int>> queue;
+
+    for (std::pair<int, int> tile : getCenterTiles(maze.size(), maze.at(0).size())) {
+        queue.push(tile);
+    }
+
+    while (!queue.empty()) {
+        std::pair<int, int> tile = queue.front();
+        queue.pop();
+        explored.insert(tile);
+        int x = tile.first;
+        int y = tile.second;
+        for (Direction direction : DIRECTIONS) {
+            if (maze.at(x).at(y).walls.at(direction)) {
+                continue;
+            }
+            std::pair<int, int> neighbor = std::make_pair(
+                (direction == Direction::EAST ? x + 1 : (direction == Direction::WEST ? x - 1 : x)),
+                (direction == Direction::NORTH ? y + 1 : (direction == Direction::SOUTH ? y - 1 : y))
+            );
+            if (explored.count(neighbor) == 0) {
+                queue.push(neighbor);
+            }
+        }
+    }
+    
+    return explored.count(std::make_pair(0, 0)) == 1;
 }
 
 bool MazeChecker::hasHollowCenter(const std::vector<std::vector<BasicTile>>& maze) {
@@ -187,6 +214,22 @@ bool MazeChecker::hasNoInaccesibleLocations(const std::vector<std::vector<BasicT
     // Implement this method so that it returns true if there are no
     // inaccessible locations in the maze, and false otherwise.
     return false;
+}
+
+std::vector<std::pair<int, int>> MazeChecker::getCenterTiles(int width, int height) {
+    std::vector<std::pair<int, int>> centerTiles;
+            centerTiles.push_back(std::make_pair((width - 1) / 2, (height - 1) / 2));
+    if (width % 2 == 0) {
+            centerTiles.push_back(std::make_pair( width      / 2, (height - 1) / 2));
+        if (height % 2 == 0) {
+            centerTiles.push_back(std::make_pair((width - 1) / 2,  height      / 2));
+            centerTiles.push_back(std::make_pair( width      / 2,  height      / 2));
+        }
+    }
+    else if (height % 2 == 0) {
+            centerTiles.push_back(std::make_pair((width - 1) / 2,  height      / 2));
+    }
+    return centerTiles; 
 }
 
 } // namespace sim

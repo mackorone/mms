@@ -1,5 +1,6 @@
 # High Priority
 
+- Do the MazeChecker methods need to be public???
 - Explain which options only work for discrete mode
     - Make a note about how to do params in algos
     - Talk about each of the parameters in documentation
