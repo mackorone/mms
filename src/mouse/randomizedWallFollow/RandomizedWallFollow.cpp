@@ -5,7 +5,7 @@
 namespace randomizedWallFollow {
 
 void RandomizedWallFollow::solve(
-        int mazeWidth, int mazeHeight, bool officialMaze,
+        int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse) {
     while (true){
         if (rand() % 2 == 0){

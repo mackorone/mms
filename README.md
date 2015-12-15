@@ -73,8 +73,9 @@ namespace foo {
 class Bar : public IMouseAlgorithm {
 
 public:
-    void solve(int mazeWidth, int mazeHeight, char initialDirection,
-               sim::MouseInterface* mouse);
+    void solve(
+        int mazeWidth, int mazeHeight, bool isOfficialMaze,
+        char initialDirection, sim::MouseInterface* mouse);
 
 };
 
@@ -87,8 +88,10 @@ public:
 
 namespace foo {
 
-void Bar::solve(int mazeWidth, int mazeHeight, char initialDirection,
-                sim::MouseInterface* mouse) {
+void Bar::solve(
+        int mazeWidth, int mazeHeight, bool isOfficialMaze,
+        char initialDirection, sim::MouseInterface* mouse) {
+
     // The mouse will move forward one tile and then stop
     mouse->moveForward();
 }

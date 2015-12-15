@@ -3,7 +3,7 @@
 namespace rightWallFollow {
 
 void RightWallFollow::solve(
-        int mazeWidth, int mazeHeight, bool officialMaze,
+        int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse) {
     while (true){
         rightWallFollowStep(mouse);

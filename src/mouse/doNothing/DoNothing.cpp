@@ -3,7 +3,7 @@
 namespace doNothing {
 
 void DoNothing::solve(
-        int mazeWidth, int mazeHeight, bool officialMaze,
+        int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse) {
 }
 

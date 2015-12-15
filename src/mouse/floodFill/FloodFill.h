@@ -22,7 +22,7 @@ class FloodFill : public IMouseAlgorithm {
 public:
     bool setTileBaseColorWhenDistanceCorrect() const;
     void solve(
-        int mazeWidth, int mazeHeight, bool officialMaze,
+        int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse);
 
 private:

@@ -12,7 +12,7 @@ std::string Manual::interfaceType() const {
 }
 
 void Manual::solve(
-        int mazeWidth, int mazeHeight, bool officialMaze,
+        int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse) {
 
     sim::S()->setRotateZoomedMap(true);

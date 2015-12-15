@@ -22,7 +22,7 @@ namespace mackAlgo {
 
 #if (SIMULATOR)
 void MackAlgo::solve(
-        int mazeWidth, int mazeHeight, bool officialMaze,
+        int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse) {
     m_mouse = mouse;
     if (MAZE_WIDTH != mazeWidth || MAZE_HEIGHT != mazeHeight) {

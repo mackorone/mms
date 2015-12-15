@@ -28,7 +28,7 @@ std::string Continuous::interfaceType() const {
 }
 
 void Continuous::solve(
-        int mazeWidth, int mazeHeight, bool officialMaze,
+        int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse) {
 
 	m_mouse = mouse;

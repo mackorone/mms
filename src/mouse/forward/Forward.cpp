@@ -3,7 +3,7 @@
 namespace forward {
 
 void Forward::solve(
-        int mazeWidth, int mazeHeight, bool officialMaze,
+        int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse) {
     while (true) {
         mouse->moveForward();
