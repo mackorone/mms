@@ -1,11 +1,10 @@
 # High Priority
 
 - CPWindows.h...
-- Move fog logic to mouse interface
-- Kill interface type in State
+- Break up MouseInterface into DiscreteMouseInterface and ContinuousMouseInterface
+- Explain which options only work for discrete mode
 - Rename officialMaze to isOfficialMaze and validMaze to isValidMaze
 - Clean up all algos to use the new params as best as possible
-- Ensure wheel speed fraction is 0.0 to 1.0
 - Discrete mode speed...
     - Talk about each of the parameters in documentation
     - Fraction of wheel speed
@@ -68,6 +67,7 @@
 - Updates on the tile boundaries, not centers
 - Figure out a nice way to use a vector for tiles for the simulation, but an array for real life
 - Other mouse movements - curve turns, j-turns, diagonals, etc.
+    - Genericize the move forward so that we can do curve turns
 - Sensor readings for walls other than front, left right
 - Include Arduino "types" with the MouseInterface
 - More Arduino function support

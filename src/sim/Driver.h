@@ -55,7 +55,17 @@ private:
     static void bootstrap();
 
     // Initialize all of the simulation objects
-    static void initSimObjects();
+    static void initModel();
+    static void validateMouseAlgorithm(const std::string& mouseAlgorithm);
+    static void validateMouseInterfaceType(
+        const std::string& mouseAlgorithm, const std::string& interfaceType);
+    static void validateMouseInitialDirection(
+        const std::string& mouseAlgorithm, const std::string& initialDirection);
+    static void validateMouseWheelSpeedFraction(
+        const std::string& mouseAlgorithm, double wheelSpeedFraction);
+    static void initAndValidateMouse(
+        const std::string& mouseAlgorithm, const std::string& mouseFile,
+        InterfaceType interfaceType, Direction initialDirection, Mouse* mouse);
 
     // Callback functions
     static void draw();
@@ -67,9 +77,6 @@ private:
     static void initPolygonProgram();
     static void initTextureProgram();
     static void initGraphics(int argc, char* argv[]);
-
-    // Initialize the mouse algorithm
-    static void initMouseAlgo();
 
     // Drawing helper methods
     static void repopulateVertexBufferObjects();

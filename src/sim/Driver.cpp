@@ -42,33 +42,30 @@ GLuint Driver::m_textureVertexBufferObjectId;
 
 void Driver::drive(int argc, char* argv[]) {
 
-    // Step -1: Make sure that this function is only ever called once
+    // Step 0: Make sure that this function is only ever called once
     static bool alreadyCalled = false;
     ASSERT_FA(alreadyCalled);
     alreadyCalled = true;
 
-    // Step 0: Determine the runId, configure logging,
+    // Step 1: Determine the runId, configure logging,
     // and initialize the State and Param objects.
     bootstrap();
 
-    // Step 0.5: Remove any excessive archived runs
+    // Step 2: Remove any excessive archived runs
     SimUtilities::removeExcessArchivedRuns();
 
-    // Step 1: Initialize the simulation objects
-    initSimObjects();
+    // Step 3: Initialize the simulation objects
+    initModel();
 
-    // Step 2: Initialize the graphics
+    // Step 4: Initialize the graphics
     initGraphics(argc, argv);
 
-    // Step 3: Initialize the mouse algorithm
-    initMouseAlgo(); // TODO: MACK - join this with initSimObjects so that I can pass options in the mouse MouseInterface constructor
-
-    // Step 4: Start the physics loop
+    // Step 5: Start the physics loop
     std::thread physicsThread([](){
         m_world->simulate();
     });
 
-    // Step 5: Start the solving loop
+    // Step 6: Start the solving loop
     std::thread solvingThread([](){
 
         // Wait for the window to appear
@@ -83,7 +80,7 @@ void Driver::drive(int argc, char* argv[]) {
             m_mouseInterface);
     });
 
-    // Step 6: Start the graphics loop
+    // Step 7: Start the graphics loop
     glutMainLoop();
 }
 
@@ -105,13 +102,119 @@ void Driver::bootstrap() {
     S()->setRunId(runId); // TODO: MACK - set the start time here
 }
 
-void Driver::initSimObjects() {
-    m_maze= new Maze();
+void Driver::initModel() {
+
+    m_maze = new Maze();
     m_mouse = new Mouse(m_maze);
     m_mazeGraphic = new MazeGraphic(m_maze);
     m_mouseGraphic = new MouseGraphic(m_mouse);
-    m_mouseInterface = new MouseInterface(m_maze, m_mouse, m_mazeGraphic);
-    m_world = new World(m_maze, m_mouse);
+
+    validateMouseAlgorithm(P()->mouseAlgorithm());
+    m_algorithm = MouseAlgorithms::getMouseAlgorithm(P()->mouseAlgorithm());
+    validateMouseInterfaceType(P()->mouseAlgorithm(), m_algorithm->interfaceType());
+    validateMouseInitialDirection(P()->mouseAlgorithm(), m_algorithm->initialDirection());
+    validateMouseWheelSpeedFraction(P()->mouseAlgorithm(), m_algorithm->wheelSpeedFraction());
+
+    initAndValidateMouse(
+        P()->mouseAlgorithm(),
+        m_algorithm->mouseFile(),
+        STRING_TO_INTERFACE_TYPE.at(m_algorithm->interfaceType()),
+        STRING_TO_DIRECTION.at(m_algorithm->initialDirection()),
+        m_mouse);
+
+    m_mouseInterface = new MouseInterface(m_maze, m_mouse, m_mazeGraphic, {
+        m_algorithm->declareBothWallHalves(),
+        m_algorithm->declareWallOnRead(),
+        m_algorithm->setTileBaseColorWhenDistanceCorrect(),
+        m_algorithm->wheelSpeedFraction(),
+        STRING_TO_INTERFACE_TYPE.at(m_algorithm->interfaceType())
+    });
+
+    m_world = new World(m_maze, m_mouse, m_mazeGraphic, {
+        m_algorithm->automaticallyClearFog(),
+        STRING_TO_INTERFACE_TYPE.at(m_algorithm->interfaceType())
+    });
+}
+
+void Driver::validateMouseAlgorithm(const std::string& mouseAlgorithm) {
+    if (!MouseAlgorithms::isMouseAlgorithm(mouseAlgorithm)) {
+        L()->error("\"%v\" is not a valid mouse algorithm.", mouseAlgorithm);
+        SimUtilities::quit();
+    }
+}
+
+void Driver::validateMouseInterfaceType(
+        const std::string& mouseAlgorithm, const std::string& interfaceType) {
+    if (!SimUtilities::mapContains(STRING_TO_INTERFACE_TYPE, interfaceType)) {
+        L()->error(
+            "\"%v\" is not a valid interface type. You must declare the "
+            "interface type of the mouse algorithm \"%v\" to be either \"%v\" "
+            "or \"%v\".",
+            interfaceType,
+            mouseAlgorithm,
+            INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE),
+            INTERFACE_TYPE_TO_STRING.at(InterfaceType::CONTINUOUS));
+        SimUtilities::quit();
+    }
+}
+
+void Driver::validateMouseInitialDirection(
+        const std::string& mouseAlgorithm, const std::string& initialDirection) {
+    if (!SimUtilities::mapContains(STRING_TO_DIRECTION, initialDirection)) {
+        L()->error(
+            "\"%v\" is not a valid initial direction. You must declare the"
+            " initial direction of the mouse algorithm \"%v\" to be one of"
+            " \"%v\", \"%v\", \"%v\", or \"%v\".",
+            initialDirection,
+            mouseAlgorithm,
+            DIRECTION_TO_STRING.at(Direction::NORTH),
+            DIRECTION_TO_STRING.at(Direction::EAST),
+            DIRECTION_TO_STRING.at(Direction::SOUTH),
+            DIRECTION_TO_STRING.at(Direction::WEST));
+        SimUtilities::quit();
+    }
+}
+
+void Driver::validateMouseWheelSpeedFraction(
+    const std::string& mouseAlgorithm, double wheelSpeedFraction) {
+    if (!(0.0 <= wheelSpeedFraction && wheelSpeedFraction <= 1.0)) {
+        L()->error(
+            "\"%v\" is not a valid wheel speed fraction. The wheel speed"
+            " fraction of the mouse algorithm \"%v\" has to be in [0.0, 1.0].",
+            wheelSpeedFraction, 
+            mouseAlgorithm);
+        SimUtilities::quit();
+    }
+}
+
+void Driver::initAndValidateMouse(
+        const std::string& mouseAlgorithm, const std::string& mouseFile,
+        InterfaceType interfaceType, Direction initialDirection, Mouse* mouse) {
+
+    // Initialize the mouse with the file provided
+    bool success = mouse->initialize(mouseFile, initialDirection);
+    if (!success) {
+        L()->error(
+            "Unable to successfully initialize the mouse in the algorithm "
+            "\"%v\" from \"%v\".",
+            mouseAlgorithm,
+            mouseFile);
+        SimUtilities::quit();
+    }
+
+    // Validate the mouse
+    if (interfaceType == InterfaceType::DISCRETE) {
+        if (!MouseChecker::isDiscreteInterfaceCompatible(*mouse)) {
+            L()->error("The mouse file \"%v\" is not discrete interface compatible.", mouseFile);
+            SimUtilities::quit();
+        }
+    }
+    else { // InterfaceType::CONTINUOUS
+        if (!MouseChecker::isContinuousInterfaceCompatible(*mouse)) {
+            L()->error("The mouse file \"%v\" is not continuous interface compatible.", mouseFile);
+            SimUtilities::quit();
+        }
+    }
 }
 
 void Driver::draw() {
@@ -188,7 +291,7 @@ void Driver::keyPress(unsigned char key, int x, int y) {
 
     if (key == 'p') {
         // Toggle pause (only in discrete mode)
-        if (S()->interfaceType() == InterfaceType::DISCRETE) {
+        if (STRING_TO_INTERFACE_TYPE.at(m_algorithm->interfaceType()) == InterfaceType::DISCRETE) {
             S()->setPaused(!S()->paused());
         }
         else {
@@ -199,7 +302,7 @@ void Driver::keyPress(unsigned char key, int x, int y) {
     }
     else if (key == 'f') {
         // Faster (only in discrete mode)
-        if (S()->interfaceType() == InterfaceType::DISCRETE) {
+        if (STRING_TO_INTERFACE_TYPE.at(m_algorithm->interfaceType()) == InterfaceType::DISCRETE) {
             S()->setSimSpeed(S()->simSpeed() * 1.5);
         }
         else {
@@ -210,7 +313,7 @@ void Driver::keyPress(unsigned char key, int x, int y) {
     }
     else if (key == 's') {
         // Slower (only in discrete mode)
-        if (S()->interfaceType() == InterfaceType::DISCRETE) {
+        if (STRING_TO_INTERFACE_TYPE.at(m_algorithm->interfaceType()) == InterfaceType::DISCRETE) {
             S()->setSimSpeed(S()->simSpeed() / 1.5);
         }
         else {
@@ -402,86 +505,6 @@ void Driver::initGraphics(int argc, char* argv[]) {
 
     // Lastly, initially populate the vertex buffer object with tile information
     m_mazeGraphic->draw();
-}
-
-void Driver::initMouseAlgo() {
-
-    // First, check to ensure that the mouse algorithm is valid
-    if (!MouseAlgorithms::isMouseAlgorithm(P()->mouseAlgorithm())) {
-        L()->error("\"%v\" is not a valid mouse algorithm.",
-            P()->mouseAlgorithm());
-        SimUtilities::quit();
-    }
-    m_algorithm = MouseAlgorithms::getMouseAlgorithm(P()->mouseAlgorithm());
-
-    // TODO: MACK - validate mouse initial direction
-    // TODO: MACK - check this
-    if (!SimUtilities::mapContains(STRING_TO_DIRECTION, m_algorithm->initialDirection())) {
-        L()->error(
-            "\"%v\" is not a valid initial direction. You must declare the"
-            " initial direction of the mouse algorithm \"%v\" to be one of"
-            " \"%v\", \"%v\", \"%v\", or \"%v\".",
-            m_algorithm->initialDirection(),
-            P()->mouseAlgorithm(),
-            DIRECTION_TO_STRING.at(Direction::NORTH),
-            DIRECTION_TO_STRING.at(Direction::EAST),
-            DIRECTION_TO_STRING.at(Direction::SOUTH),
-            DIRECTION_TO_STRING.at(Direction::WEST));
-        SimUtilities::quit();
-    }
-
-    // Initialize the interface type
-    if (!SimUtilities::mapContains(STRING_TO_INTERFACE_TYPE, m_algorithm->interfaceType())) {
-        L()->error(
-            "\"%v\" is not a valid interface type. You must declare the "
-            "interface type of the mouse algorithm \"%v\" to be either \"%v\" "
-            "or \"%v\".",
-            m_algorithm->interfaceType(),
-            P()->mouseAlgorithm(),
-            INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE),
-            INTERFACE_TYPE_TO_STRING.at(InterfaceType::CONTINUOUS));
-        SimUtilities::quit();
-    }
-    S()->setInterfaceType(STRING_TO_INTERFACE_TYPE.at(m_algorithm->interfaceType())); // TODO: MACK This should be a mouse property
-
-    // Initialize the mouse with the file provided
-    std::string mouseFile = m_algorithm->mouseFile();
-    bool success = m_mouse->initialize(
-        mouseFile,
-        STRING_TO_INTERFACE_TYPE.at(m_algorithm->interfaceType()),
-        STRING_TO_DIRECTION.at(m_algorithm->initialDirection())
-    ); // TODO: MACK -- error message
-    if (!success) {
-        L()->error(
-            "Unable to successfully initialize the mouse in the algorithm "
-            "\"%v\" from \"%v\".",
-            P()->mouseAlgorithm(),
-            mouseFile);
-        SimUtilities::quit();
-    }
-
-    // TODO: MACK - clean this up
-    m_mouseInterface->setOptions({
-        m_algorithm->controlTileFog(),
-        m_algorithm->declareBothWallHalves(),
-        m_algorithm->declareWallOnRead(),
-        m_algorithm->setTileBaseColorWhenDistanceCorrect(),
-        m_algorithm->wheelSpeedFraction(),
-    });
-
-    // Validate the mouse
-    if (S()->interfaceType() == InterfaceType::DISCRETE) {
-        if (!MouseChecker::isDiscreteInterfaceCompatible(*m_mouse)) {
-            L()->error("The mouse file \"%v\" is not discrete interface compatible.", mouseFile);
-            SimUtilities::quit();
-        }
-    }
-    else { // InterfaceType::CONTINUOUS
-        if (!MouseChecker::isContinuousInterfaceCompatible(*m_mouse)) {
-            L()->error("The mouse file \"%v\" is not continuous interface compatible.", mouseFile);
-            SimUtilities::quit();
-        }
-    }
 }
 
 void Driver::repopulateVertexBufferObjects() {

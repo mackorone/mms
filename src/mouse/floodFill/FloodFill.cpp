@@ -12,6 +12,10 @@
 
 namespace floodFill {
 
+bool FloodFill::setTileBaseColorWhenDistanceCorrect() const {
+    return true;
+}
+
 void FloodFill::solve(
         int mazeWidth, int mazeHeight, bool officialMaze,
         char initialDirection, sim::MouseInterface* mouse) {

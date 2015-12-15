@@ -23,7 +23,11 @@ namespace sim {
 class MouseInterface {
 
 public:
-    MouseInterface(const Maze* maze, Mouse* mouse, MazeGraphic* mazeGraphic);
+    MouseInterface(
+        const Maze* maze,
+        Mouse* mouse,
+        MazeGraphic* mazeGraphic,
+        MouseInterfaceOptions options);
 
     // ----- Any interface methods ----- //
 
@@ -50,8 +54,7 @@ public:
     // Tile fog
     void setTileFogginess(int x, int y, bool foggy);
 
-    // Tile distance
-    // NOTE: a negative distance corresponds to inf distance
+    // Tile distance, where a negative distance corresponds to inf distance
     void declareTileDistance(int x, int y, int distance);
     void undeclareTileDistance(int x, int y);
 
@@ -99,14 +102,10 @@ private:
     const Maze* m_maze;
     Mouse* m_mouse;
     MazeGraphic* m_mazeGraphic;
+    MouseInterfaceOptions m_options;
 
-    // TODO: MACK - genericize this
+    // Cache of colored tiles, for making clearAllTileColor() faster
     std::set<std::pair<int, int>> m_tilesWithColor;
-
-    // Algo options
-    friend class Driver; // TODO: MACK
-    void setOptions(const Options& options);
-    Options m_options;
 
     void ensureDiscreteInterface(const std::string& callingFunction) const;
     void ensureContinuousInterface(const std::string& callingFunction) const;
@@ -114,10 +113,6 @@ private:
     bool isWall(std::pair<int, int> position, Direction direction);
     bool hasOpposingWall(int x, int y, Direction direction) const;
     std::pair<std::pair<int, int>, Direction> getOpposingWall(int x, int y, Direction direction) const;
-
-    friend class manual::Manual; // TODO: MACK
-    std::pair<int, int> getCurrentDiscretizedTranslation() const;
-    Direction getCurrentDiscretizedRotation() const;
 };
 
 } // namespace sim

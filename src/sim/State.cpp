@@ -24,7 +24,6 @@ State* State::getInstance() {
 State::State() {
     m_runId = "";
     m_crashed = false;
-    m_interfaceType; // Undefined default value
     m_layout = STRING_TO_LAYOUT.at(P()->defaultLayout());
     m_rotateZoomedMap = P()->defaultRotateZoomedMap();
     m_zoomedMapScale = P()->defaultZoomedMapScale();
@@ -60,14 +59,6 @@ bool State::crashed() {
 void State::setCrashed() {
     m_crashed = true;
     L()->warn("%v", P()->crashMessage());
-}
-
-InterfaceType State::interfaceType() {
-    return m_interfaceType;
-}
-
-void State::setInterfaceType(InterfaceType interfaceType) {
-    m_interfaceType = interfaceType;
 }
 
 Layout State::layout() {

@@ -14,13 +14,20 @@
 #include "State.h"
 #include "SimUtilities.h"
 
-// Needs to be included last for Windows compatibility
+// Needs to be included last for Windows compatibility // TODO: MACK - does it??
 #include "CPMinMax.h"
 
 namespace sim {
 
-MouseInterface::MouseInterface(const Maze* maze, Mouse* mouse, MazeGraphic* mazeGraphic) :
-        m_maze(maze), m_mouse(mouse), m_mazeGraphic(mazeGraphic) {
+MouseInterface::MouseInterface(
+        const Maze* maze,
+        Mouse* mouse,
+        MazeGraphic* mazeGraphic,
+        MouseInterfaceOptions options) :
+        m_maze(maze),
+        m_mouse(mouse),
+        m_mazeGraphic(mazeGraphic),
+        m_options(options) {
 }
 
 void MouseInterface::debug(const std::string& str) {
@@ -139,14 +146,6 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
 
 void MouseInterface::setTileFogginess(int x, int y, bool foggy) {
 
-    if (!m_options.controlTileFog) { 
-        L()->warn(
-            "The simulation parameters indicate that the simulator should"
-            " control the tile fog, not the algorithm. Thus you may not set"
-            " the fogginess for tile in position (%v, %v).", x, y);
-        return;
-    }
-
     if (!m_maze->withinMaze(x, y)) {
         L()->warn(
             "There is no tile at position (%v, %v), and thus you cannot set"
@@ -167,11 +166,13 @@ void MouseInterface::declareTileDistance(int x, int y, int distance) {
     }
 
     m_mazeGraphic->setTileText(x, y, {(0 <= distance ? std::to_string(distance) : "inf")});
-    // TODO: MACK - set tile color when correct
-    /*
-    if (m_options.setTileBaseColorWhenDistaceCorrect) {
+
+    if (m_options.setTileBaseColorWhenDistanceCorrect) {
+        if (distance == m_maze->getTile(x, y)->getDistance()) {
+            m_mazeGraphic->setTileColor(
+                x, y, STRING_TO_COLOR.at(P()->distanceCorrectTileBaseColor()));
+        }
     }
-    */
 }
 
 void MouseInterface::undeclareTileDistance(int x, int y) {
@@ -184,11 +185,10 @@ void MouseInterface::undeclareTileDistance(int x, int y) {
     }
 
     m_mazeGraphic->setTileText(x, y, {});
-    // TODO: MACK - set tile color when correct
-    /*
-    if (m_options.setTileBaseColorWhenDistaceCorrect) {
+
+    if (m_options.setTileBaseColorWhenDistanceCorrect) {
+        m_mazeGraphic->setTileColor(x, y, STRING_TO_COLOR.at(P()->tileBaseColor()));
     }
-    */
 }
 
 void MouseInterface::resetPosition() {
@@ -351,16 +351,16 @@ bool MouseInterface::wallFront() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    return isWall(getCurrentDiscretizedTranslation(), getCurrentDiscretizedRotation());
+    return isWall(m_mouse->getCurrentDiscretizedTranslation(), m_mouse->getCurrentDiscretizedRotation());
 }
 
 bool MouseInterface::wallRight() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    std::pair<int, int> position = getCurrentDiscretizedTranslation();
+    std::pair<int, int> position = m_mouse->getCurrentDiscretizedTranslation();
 
-    switch (getCurrentDiscretizedRotation()) {
+    switch (m_mouse->getCurrentDiscretizedRotation()) {
         case Direction::NORTH:
             return isWall(position, Direction::EAST);
         case Direction::EAST:
@@ -376,9 +376,9 @@ bool MouseInterface::wallLeft() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    std::pair<int, int> position = getCurrentDiscretizedTranslation();
+    std::pair<int, int> position = m_mouse->getCurrentDiscretizedTranslation();
 
-    switch (getCurrentDiscretizedRotation()) {
+    switch (m_mouse->getCurrentDiscretizedRotation()) {
         case Direction::NORTH:
             return isWall(position, Direction::WEST);
         case Direction::EAST:
@@ -408,34 +408,38 @@ void MouseInterface::moveForward() {
     Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
     Degrees destinationRotation = m_mouse->getCurrentRotation();
 
-    m_mouse->setWheelSpeedsForMoveForward();
+    auto step = [&](){
+        sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
+    };
 
-    switch (getCurrentDiscretizedRotation()) {
+    m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
+
+    switch (m_mouse->getCurrentDiscretizedRotation()) {
         case Direction::NORTH: {
             destinationTranslation += Cartesian(Meters(0), tileLength);
             while (m_mouse->getCurrentTranslation().getY() < destinationTranslation.getY()) {
-                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
+                step();
             }
             break;
         }
         case Direction::EAST: {
             destinationTranslation += Cartesian(tileLength, Meters(0));
             while (m_mouse->getCurrentTranslation().getX() < destinationTranslation.getX()) {
-                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
+                step();
             }
             break;
         }
         case Direction::SOUTH: {
             destinationTranslation += Cartesian(Meters(0), tileLength * -1);
             while (destinationTranslation.getY() < m_mouse->getCurrentTranslation().getY()) {
-                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
+                step();
             }
             break;
         }
         case Direction::WEST: {
             destinationTranslation += Cartesian(tileLength * -1, Meters(0));
             while (destinationTranslation.getX() < m_mouse->getCurrentTranslation().getX()) {
-                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
+                step();
             }
             break;
         }
@@ -452,9 +456,9 @@ void MouseInterface::turnLeft() {
     Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
     Degrees destinationRotation = m_mouse->getCurrentRotation() + Degrees(90);
 
-    m_mouse->setWheelSpeedsForTurnLeft();
+    m_mouse->setWheelSpeedsForTurnLeft(m_options.wheelSpeedFraction / 2.0);
 
-    switch (getCurrentDiscretizedRotation()) {
+    switch (m_mouse->getCurrentDiscretizedRotation()) {
         case Direction::EAST: {
             while (Degrees(180) < m_mouse->getCurrentRotation() ||
                     m_mouse->getCurrentRotation() < destinationRotation) {
@@ -488,9 +492,9 @@ void MouseInterface::turnRight() {
     Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
     Degrees destinationRotation = m_mouse->getCurrentRotation() - Degrees(90);
 
-    m_mouse->setWheelSpeedsForTurnRight();
+    m_mouse->setWheelSpeedsForTurnRight(m_options.wheelSpeedFraction / 2.0);
 
-    switch (getCurrentDiscretizedRotation()) {
+    switch (m_mouse->getCurrentDiscretizedRotation()) {
         case Direction::NORTH: {
             while (m_mouse->getCurrentRotation() < Degrees(180)) {
                 sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
@@ -525,13 +529,8 @@ void MouseInterface::turnAround() {
     turnRight();
 }
 
-// TODO: MACK - kill this, move it to the constructor
-void MouseInterface::setOptions(const Options& options) {
-    m_options = options;
-}
-
 void MouseInterface::ensureDiscreteInterface(const std::string& callingFunction) const {
-    if (S()->interfaceType() != InterfaceType::DISCRETE) {
+    if (m_options.interfaceType != InterfaceType::DISCRETE) {
         L()->error(
             "You must declare the interface type to be \"%v\" to use MouseInterface::%v().",
             INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE), callingFunction);
@@ -540,7 +539,7 @@ void MouseInterface::ensureDiscreteInterface(const std::string& callingFunction)
 }
 
 void MouseInterface::ensureContinuousInterface(const std::string& callingFunction) const {
-    if (S()->interfaceType() != InterfaceType::CONTINUOUS) {
+    if (m_options.interfaceType != InterfaceType::CONTINUOUS) {
         L()->error(
             "You must declare the interface type to be \"%v\" to use MouseInterface::%v().",
             INTERFACE_TYPE_TO_STRING.at(InterfaceType::CONTINUOUS), callingFunction);
@@ -586,14 +585,6 @@ std::pair<std::pair<int, int>, Direction> MouseInterface::getOpposingWall(int x,
         case Direction::WEST:
             return std::make_pair(std::make_pair(x - 1, y), Direction::EAST);
     }
-}
-
-std::pair<int, int> MouseInterface::getCurrentDiscretizedTranslation() const {
-    return m_mouse->getCurrentDiscretizedTranslation();
-}
-
-Direction MouseInterface::getCurrentDiscretizedRotation() const {
-    return m_mouse->getCurrentDiscretizedRotation();
 }
 
 } // namespace sim

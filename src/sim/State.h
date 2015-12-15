@@ -25,9 +25,6 @@ public:
     bool crashed();
     void setCrashed();
 
-    InterfaceType interfaceType();
-    void setInterfaceType(InterfaceType interfaceType);
-
     Layout layout();
     void setLayout(Layout layout);
 
@@ -77,7 +74,6 @@ private:
 
     std::string m_runId;
     bool m_crashed;
-    InterfaceType m_interfaceType;
     Layout m_layout;
     bool m_rotateZoomedMap;
     double m_zoomedMapScale;

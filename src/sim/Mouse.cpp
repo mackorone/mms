@@ -20,8 +20,7 @@ Mouse::Mouse(const Maze* maze) : m_maze(maze), m_currentGyro(RadiansPerSecond(0.
 
 bool Mouse::initialize(
         const std::string& mouseFile,
-        InterfaceType interfaceType,
-        Direction initialDirection) { // TODO: MACK - make sure these are member vars in the Mouse class
+        Direction initialDirection) {
 
     // We begin with the assumption that the initialization will succeed
     bool success = true;
@@ -226,29 +225,32 @@ void Mouse::setWheelSpeeds(const std::map<std::string, RadiansPerSecond>& wheelS
     m_updateMutex.unlock();
 }
 
-void Mouse::setWheelSpeedsForMoveForward() {
+void Mouse::setWheelSpeedsForMoveForward(double fractionOfMaxSpeed) {
     std::map<std::string, RadiansPerSecond> wheelSpeeds;
     for (std::pair<std::string, Wheel> wheel : m_wheels) {
         wheelSpeeds.insert(std::make_pair(wheel.first,
-            getWheelMaxSpeed(wheel.first) * getWheelContributionFactors(wheel.first).first));
+            getWheelMaxSpeed(wheel.first) * fractionOfMaxSpeed *
+            getWheelContributionFactors(wheel.first).first));
     }
     setWheelSpeeds(wheelSpeeds);
 }
 
-void Mouse::setWheelSpeedsForTurnLeft() {
+void Mouse::setWheelSpeedsForTurnLeft(double fractionOfMaxSpeed) {
     std::map<std::string, RadiansPerSecond> wheelSpeeds;
     for (std::pair<std::string, Wheel> wheel : m_wheels) {
         wheelSpeeds.insert(std::make_pair(wheel.first,
-            getWheelMaxSpeed(wheel.first) * getWheelContributionFactors(wheel.first).second));
+            getWheelMaxSpeed(wheel.first) * fractionOfMaxSpeed *
+            getWheelContributionFactors(wheel.first).second));
     }
     setWheelSpeeds(wheelSpeeds);
 }
 
-void Mouse::setWheelSpeedsForTurnRight() {
+void Mouse::setWheelSpeedsForTurnRight(double fractionOfMaxSpeed) {
     std::map<std::string, RadiansPerSecond> wheelSpeeds;
     for (std::pair<std::string, Wheel> wheel : m_wheels) {
         wheelSpeeds.insert(std::make_pair(wheel.first,
-            getWheelMaxSpeed(wheel.first) * getWheelContributionFactors(wheel.first).second * -1));
+            getWheelMaxSpeed(wheel.first) * fractionOfMaxSpeed *
+            getWheelContributionFactors(wheel.first).second * -1));
     }
     setWheelSpeeds(wheelSpeeds);
 }

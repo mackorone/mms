@@ -24,7 +24,6 @@ public:
     // Initializes the mouse (body, wheels, sensors, etc.); returns true if successful, false if not
     bool initialize(
         const std::string& mouseFile,
-        InterfaceType interfaceType,
         Direction initialDirection);
 
     // Gets the initial translation and rotation of the mouse
@@ -84,9 +83,9 @@ public:
 
     // Helper methods for setting many wheel speeds at once, without having to
     // know the names of each of the wheels
-    void setWheelSpeedsForMoveForward();
-    void setWheelSpeedsForTurnLeft();
-    void setWheelSpeedsForTurnRight();
+    void setWheelSpeedsForMoveForward(double fractionOfMaxSpeed);
+    void setWheelSpeedsForTurnLeft(double fractionOfMaxSpeed);
+    void setWheelSpeedsForTurnRight(double fractionOfMaxSpeed);
     void stopAllWheels();
 
     // Returns the encoder type of the wheel given by name

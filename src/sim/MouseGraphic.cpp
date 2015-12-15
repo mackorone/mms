@@ -38,21 +38,18 @@ void MouseGraphic::draw(const Coordinate& currentTranslation, const Angle& curre
             STRING_TO_COLOR.at(P()->mouseWheelSpeedIndicatorColor()), 1.0);
     }
 
-    // Only draw the sensors and views if we're using a continuous interface
-    float sensorAlpha = (S()->interfaceType() == InterfaceType::CONTINUOUS ? 1.0 : 0.0);
-
     // Next, we draw the sensors
     for (Polygon sensorPolygon : m_mouse->getCurrentSensorPolygons(currentTranslation, currentRotation)) {
         GraphicUtilities::drawMousePolygon(
             sensorPolygon,
-            STRING_TO_COLOR.at(P()->mouseSensorColor()), sensorAlpha);
+            STRING_TO_COLOR.at(P()->mouseSensorColor()), 1.0);
     }
 
     // Lastly, we draw the sensor views
     for (Polygon polygon : m_mouse->getCurrentSensorViewPolygons(currentTranslation, currentRotation)) {
         GraphicUtilities::drawMousePolygon(
             polygon,
-            STRING_TO_COLOR.at(P()->mouseViewColor()), sensorAlpha);
+            STRING_TO_COLOR.at(P()->mouseViewColor()), 1.0);
     }
 }
 

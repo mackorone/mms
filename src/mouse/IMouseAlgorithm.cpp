@@ -12,8 +12,8 @@ std::string IMouseAlgorithm::initialDirection() const {
     return "NORTH";
 }
 
-bool IMouseAlgorithm::controlTileFog() const {
-    return false;
+bool IMouseAlgorithm::automaticallyClearFog() const {
+    return true;
 }
 
 bool IMouseAlgorithm::declareBothWallHalves() const {
