@@ -46,7 +46,7 @@ Maze::Maze() {
     }
 
     // Check to see if it's a valid maze
-    if (!MazeChecker::validMaze(basicMaze)) {
+    if (!MazeChecker::isValidMaze(basicMaze)) {
         L()->error("Failed maze validation.");
         SimUtilities::quit();
     }
@@ -66,7 +66,7 @@ Maze::Maze() {
     }
 
     // Then, store whether or not the maze is an official maze
-    m_officialMaze = MazeChecker::officialMaze(basicMaze);
+    m_isOfficialMaze = MazeChecker::isOfficialMaze(basicMaze);
 
     // Load the maze given by the maze generation algorithm
     m_maze = initializeFromBasicMaze(basicMaze);
@@ -94,8 +94,8 @@ const Tile* Maze::getTile(int x, int y) const {
     return &m_maze.at(x).at(y);
 }
 
-bool Maze::officialMaze() const {
-    return m_officialMaze;
+bool Maze::isOfficialMaze() const {
+    return m_isOfficialMaze;
 }
 
 std::vector<std::vector<Tile>> Maze::initializeFromBasicMaze(const std::vector<std::vector<BasicTile>>& basicMaze) {

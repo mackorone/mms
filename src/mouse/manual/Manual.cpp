@@ -7,10 +7,6 @@
 
 namespace manual {
 
-std::string Manual::mouseFile() const {
-    return "default.xml";
-}
-
 std::string Manual::interfaceType() const {
     return "CONTINUOUS";
 }

@@ -17,14 +17,14 @@ public:
     bool withinMaze(int x, int y) const;
     Tile* getTile(int x, int y);
     const Tile* getTile(int x, int y) const;
-    bool officialMaze() const;
+    bool isOfficialMaze() const;
 
 private:
     // Vector to hold all of the tiles
     std::vector<std::vector<Tile>> m_maze;
 
-    // Used for memoizing MazeChecker::officialMaze()
-    bool m_officialMaze;
+    // Used for memoizing MazeChecker::isOfficialMaze()
+    bool m_isOfficialMaze;
 
     // Initializes all of the tiles of the basic maze
     static std::vector<std::vector<Tile>> initializeFromBasicMaze(const std::vector<std::vector<BasicTile>>& basicMaze);

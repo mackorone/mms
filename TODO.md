@@ -1,26 +1,13 @@
 # High Priority
 
 - Explain which options only work for discrete mode
-- Rename officialMaze to isOfficialMaze and validMaze to isValidMaze
-- Clean up all algos to use the new params as best as possible
-- Discrete mode speed...
+    - Make a note about how to do params in algos
     - Talk about each of the parameters in documentation
-    - Fraction of wheel speed
-    - DiscreteInterfaceWheelSpeed parameter? - kill this
-    - Figure out how to make discrete interface wheel speed more uniform among algos...
+- Discrete mode speed...
     - Ensure that the wheel speed is not too high in the MouseInterface (so that the mouse does not clip through walls)
 - Add the ability to start in the direction of the opening of the maze
 - Make a note about symmetry with discrete interface
     - Make a formal check for symmetry
-- Remove friending in manual algo
-    - Algo params should not be runtime - just put the params in a class (could the default be runtime???)
-    - Make a note about how to do params in algos
-    - Algo specifies algo param file...
-    - Specify some options/params in the mouseAlgorithm
-- Manual mode fog breakage
-    - Automatically clear tile fog?
-    - Allow the algo to specify this?
-    - Other algo options???
 - Arbitrary tile text
 - Stepper motor
 - Sensor type (digital or analog)

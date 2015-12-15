@@ -14,18 +14,18 @@ public:
     MazeChecker() = delete;
 
     // Returns true is a maze is valid (usable by the simulator), false otherwise
-    static bool validMaze(const std::vector<std::vector<BasicTile>>& maze);
+    static bool isValidMaze(const std::vector<std::vector<BasicTile>>& maze);
 
-    // validMaze helper functions
+    // isValidMaze helper functions
     static bool isNonempty(const std::vector<std::vector<BasicTile>>& maze);
     static bool isRectangular(const std::vector<std::vector<BasicTile>>& maze);
     static bool isEnclosed(const std::vector<std::vector<BasicTile>>& maze);
     static bool hasConsistentWalls(const std::vector<std::vector<BasicTile>>& maze);
 
     // Returns true if a maze complies with the official rules, false otherwise
-    static bool officialMaze(const std::vector<std::vector<BasicTile>>& maze);
+    static bool isOfficialMaze(const std::vector<std::vector<BasicTile>>& maze);
 
-    // officialMaze helper functions
+    // isOfficialMaze helper functions
     static bool hasPathToCenter(const std::vector<std::vector<BasicTile>>& maze);
     static bool hasHollowCenter(const std::vector<std::vector<BasicTile>>& maze);
     static bool hasOneEntranceToCenter(const std::vector<std::vector<BasicTile>>& maze);

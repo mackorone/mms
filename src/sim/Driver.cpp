@@ -74,7 +74,7 @@ void Driver::drive(int argc, char* argv[]) {
         m_algorithm->solve(
             m_mazeGraphic->getWidth(),
             m_mazeGraphic->getHeight(),
-            m_maze->officialMaze(),
+            m_maze->isOfficialMaze(),
             DIRECTION_TO_CHAR.at(m_mouse->getCurrentDiscretizedRotation()),
             m_mouseInterface);
     });

@@ -6,7 +6,7 @@
 
 namespace sim {
 
-bool MazeChecker::validMaze(const std::vector<std::vector<BasicTile>>& maze) {
+bool MazeChecker::isValidMaze(const std::vector<std::vector<BasicTile>>& maze) {
 
     if (!isNonempty(maze)) {
         L()->warn("The maze is empty.");
@@ -95,9 +95,9 @@ bool MazeChecker::hasConsistentWalls(const std::vector<std::vector<BasicTile>>& 
     return true;
 }
 
-bool MazeChecker::officialMaze(const std::vector<std::vector<BasicTile>>& maze) {
+bool MazeChecker::isOfficialMaze(const std::vector<std::vector<BasicTile>>& maze) {
 
-    ASSERT_TR(validMaze(maze));
+    ASSERT_TR(isValidMaze(maze));
 
     if (!hasPathToCenter(maze)) {
         L()->warn("The maze does not have a path to the center.");
@@ -170,7 +170,7 @@ bool MazeChecker::hasThreeStartingWalls(const std::vector<std::vector<BasicTile>
     // Assumptions:
     // 1) The maze is valid (nonempty, enclosed)
     // 2) The mouse always starts in the lower-left corner
-    ASSERT_TR(validMaze(maze));
+    ASSERT_TR(isValidMaze(maze));
     std::map<Direction, bool> walls = maze.at(0).at(0).walls;
     return walls.at(Direction::NORTH) != walls.at(Direction::EAST);
 }
