@@ -17,7 +17,7 @@
 namespace test {
 
 std::string Test::mouseFile() const {
-    return "default.xml";
+    return "megaMouse.xml";
 }
 
 std::string Test::interfaceType() const {
@@ -27,18 +27,11 @@ std::string Test::interfaceType() const {
 void Test::solve(
         int mazeWidth, int mazeHeight, bool officialMaze,
         char initialDirection, sim::MouseInterface* mouse) {
-    mouse->setWheelSpeed("left", -10);
-    mouse->setWheelSpeed("right", 10);
+    mouse->setWheelSpeed("left-lower", -100);
+    mouse->setWheelSpeed("left-upper", -100);
+    mouse->setWheelSpeed("right-lower", 100);
+    mouse->setWheelSpeed("right-upper", 100);
     while (true) {
-        if (mouse->inputButtonPressed(0)) {
-            mouse->resetWheelEncoder("left");
-            mouse->resetWheelEncoder("right");
-            mouse->acknowledgeInputButtonPressed(0);
-        }
-        int left = mouse->readWheelEncoder("left");
-        int right = mouse->readWheelEncoder("right");
-        mouse->info(std::string("L: ") + std::to_string(left));
-        mouse->info(std::string("R: ") + std::to_string(right));
         mouse->delay(100);
     }
 }

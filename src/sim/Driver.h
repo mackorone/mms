@@ -61,6 +61,7 @@ private:
         const std::string& mouseAlgorithm, const std::string& interfaceType);
     static void validateMouseInitialDirection(
         const std::string& mouseAlgorithm, const std::string& initialDirection);
+    static Direction getInitialDirection(const std::string& initialDirectionString);
     static void validateMouseWheelSpeedFraction(
         const std::string& mouseAlgorithm, double wheelSpeedFraction);
     static void initAndValidateMouse(

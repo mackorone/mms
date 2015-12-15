@@ -5,7 +5,6 @@
     - Talk about each of the parameters in documentation
 - Discrete mode speed...
     - Ensure that the wheel speed is not too high in the MouseInterface (so that the mouse does not clip through walls)
-- Add the ability to start in the direction of the opening of the maze
 - Make a note about symmetry with discrete interface
     - Make a formal check for symmetry
 - Arbitrary tile text

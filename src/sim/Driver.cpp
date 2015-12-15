@@ -22,6 +22,9 @@
 
 namespace sim {
 
+// String used to specify that the mouse should start facing the opening
+static const std::string& OPENING_DIRECTION_STRING = "OPENING";
+
 // Definition of the static variables for linking
 Maze* Driver::m_maze;
 Mouse* Driver::m_mouse;
@@ -118,7 +121,7 @@ void Driver::initModel() {
         P()->mouseAlgorithm(),
         m_algorithm->mouseFile(),
         STRING_TO_INTERFACE_TYPE.at(m_algorithm->interfaceType()),
-        STRING_TO_DIRECTION.at(m_algorithm->initialDirection()),
+        getInitialDirection(m_algorithm->initialDirection()),
         m_mouse);
 
     m_mouseInterface = new MouseInterface(m_maze, m_mouse, m_mazeGraphic, {
@@ -159,19 +162,28 @@ void Driver::validateMouseInterfaceType(
 
 void Driver::validateMouseInitialDirection(
         const std::string& mouseAlgorithm, const std::string& initialDirection) {
-    if (!SimUtilities::mapContains(STRING_TO_DIRECTION, initialDirection)) {
+    if (!(SimUtilities::mapContains(STRING_TO_DIRECTION, initialDirection)
+            || initialDirection == OPENING_DIRECTION_STRING)) {
         L()->error(
             "\"%v\" is not a valid initial direction. You must declare the"
             " initial direction of the mouse algorithm \"%v\" to be one of"
-            " \"%v\", \"%v\", \"%v\", or \"%v\".",
+            " \"%v\", \"%v\", \"%v\", \"%v\", or \"%v\".",
             initialDirection,
             mouseAlgorithm,
             DIRECTION_TO_STRING.at(Direction::NORTH),
             DIRECTION_TO_STRING.at(Direction::EAST),
             DIRECTION_TO_STRING.at(Direction::SOUTH),
-            DIRECTION_TO_STRING.at(Direction::WEST));
+            DIRECTION_TO_STRING.at(Direction::WEST),
+            OPENING_DIRECTION_STRING);
         SimUtilities::quit();
     }
+}
+
+Direction Driver::getInitialDirection(const std::string& initialDirectionString) {
+    if (initialDirectionString == OPENING_DIRECTION_STRING) {
+        return (m_maze->getTile(0, 0)->isWall(Direction::EAST) ? Direction::NORTH : Direction::EAST);
+    }
+    return STRING_TO_DIRECTION.at(initialDirectionString);
 }
 
 void Driver::validateMouseWheelSpeedFraction(
