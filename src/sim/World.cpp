@@ -10,7 +10,6 @@
 #include "SimUtilities.h"
 #include "State.h"
 #include "units/Milliseconds.h"
-#include "CPMinMax.h"
 
 namespace sim {
 

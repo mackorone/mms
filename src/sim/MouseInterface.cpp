@@ -14,9 +14,6 @@
 #include "State.h"
 #include "SimUtilities.h"
 
-// Needs to be included last for Windows compatibility // TODO: MACK - does it??
-#include "CPMinMax.h"
-
 namespace sim {
 
 MouseInterface::MouseInterface(

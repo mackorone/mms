@@ -7,7 +7,6 @@
 
 #include "../mouse/MouseAlgorithms.h"
 #include "Assert.h"
-#include "CPMinMax.h"
 #include "Directory.h"
 #include "GraphicUtilities.h"
 #include "InterfaceType.h"

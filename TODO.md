@@ -1,7 +1,5 @@
 # High Priority
 
-- CPWindows.h...
-- Break up MouseInterface into DiscreteMouseInterface and ContinuousMouseInterface
 - Explain which options only work for discrete mode
 - Rename officialMaze to isOfficialMaze and validMaze to isValidMaze
 - Clean up all algos to use the new params as best as possible
@@ -88,6 +86,7 @@
     - No curve turn has two line segments, each is tangent
         - first order curve turn has 3 line segments total, equally spaced, etc.
         - second order curve turn has 4 line segments total, equally spaced, etc.
+- Break up MouseInterface into DiscreteMouseInterface and ContinuousMouseInterface
 - isDiscreteInterfaceCompatible and isContinuousInterfaceCompatible
 - Enable steering the wheels and sensors during run
 - Set acceleration of all moving/rotating things

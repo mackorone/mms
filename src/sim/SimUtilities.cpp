@@ -14,19 +14,18 @@
 #include <thread>
 #include <random>
 
-#ifdef _WIN32
-    #include <windows.h>
-#else
+#ifdef __linux
     #include <dirent.h>
+#elif _WIN32
+    #include "Windows.h"
 #endif
-
-#include "units/Seconds.h"
 
 #include "Assert.h"
 #include "Directory.h"
 #include "Logging.h"
 #include "Param.h"
 #include "State.h"
+#include "units/Seconds.h"
 
 namespace sim {
 

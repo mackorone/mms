@@ -6,8 +6,6 @@
 #include "Logging.h"
 #include "SimUtilities.h"
 
-#include "CPMinMax.h" // Needed for Windows compatibility
-
 namespace sim {
 
 ParamParser::ParamParser(const std::string& filePath) {

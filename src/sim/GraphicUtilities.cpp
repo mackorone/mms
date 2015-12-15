@@ -6,7 +6,6 @@
 
 #include "Assert.h"
 #include "CPMath.h"
-#include "CPMinMax.h"
 #include "GeometryUtilities.h"
 #include "Param.h"
 #include "SimUtilities.h"
