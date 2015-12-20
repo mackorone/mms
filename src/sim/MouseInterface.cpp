@@ -94,9 +94,57 @@ void MouseInterface::clearTileColor(int x, int y) {
 void MouseInterface::clearAllTileColor() {
 
     for (std::pair<int, int> position : m_tilesWithColor) {
-        m_mazeGraphic->setTileColor(position.first, position.second, STRING_TO_COLOR.at(P()->tileBaseColor()));
+        m_mazeGraphic->setTileColor(
+            position.first,
+            position.second,
+            STRING_TO_COLOR.at(P()->tileBaseColor())
+        );
     }
     m_tilesWithColor.clear();
+}
+
+void MouseInterface::setTileText(int x, int y, const std::string& text) {
+
+    if (!m_maze->withinMaze(x, y)) {
+        L()->warn(
+            "There is no tile at position (%v, %v), and thus you cannot set its"
+            " text to \"%v\".",
+            x, y, text);
+        return;
+    }
+
+    std::vector<std::string> rowsOfText;
+    int row = 0;
+    int index = 0;
+    while (row < m_options.tileTextNumberOfRows && index < text.size()) {
+        rowsOfText.push_back(text.substr(index, m_options.tileTextNumberOfCols));
+        row += 1;
+        index = row * m_options.tileTextNumberOfCols;
+    }
+    m_mazeGraphic->setTileText(x, y, rowsOfText);
+    m_tilesWithText.insert(std::make_pair(x, y));
+}
+
+void MouseInterface::clearTileText(int x, int y) {
+
+    if (!m_maze->withinMaze(x, y)) {
+        L()->warn(
+            "There is no tile at position (%v, %v), and thus you cannot clear its"
+            " text.",
+            x, y);
+        return;
+    }
+
+    m_mazeGraphic->setTileText(x, y, {});
+    m_tilesWithText.erase(std::make_pair(x, y));
+}
+
+void MouseInterface::clearAllTileText() {
+
+    for (std::pair<int, int> position : m_tilesWithText) {
+        m_mazeGraphic->setTileText(position.first, position.second, {});
+    }
+    m_tilesWithText.clear();
 }
 
 void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) {
@@ -162,9 +210,11 @@ void MouseInterface::declareTileDistance(int x, int y, int distance) {
         return;
     }
 
-    m_mazeGraphic->setTileText(x, y, {(0 <= distance ? std::to_string(distance) : "inf")});
+    if (m_options.setTileTextWhenDistanceDeclared) {
+        m_mazeGraphic->setTileText(x, y, {(0 <= distance ? std::to_string(distance) : "inf")});
+    }
 
-    if (m_options.setTileBaseColorWhenDistanceCorrect) {
+    if (m_options.setTileBaseColorWhenDistanceDeclaredCorrectly) {
         if (distance == m_maze->getTile(x, y)->getDistance()) {
             m_mazeGraphic->setTileColor(
                 x, y, STRING_TO_COLOR.at(P()->distanceCorrectTileBaseColor()));
@@ -181,9 +231,11 @@ void MouseInterface::undeclareTileDistance(int x, int y) {
         return;
     }
 
-    m_mazeGraphic->setTileText(x, y, {});
+    if (m_options.setTileTextWhenDistanceDeclared) {
+        m_mazeGraphic->setTileText(x, y, {});
+    }
 
-    if (m_options.setTileBaseColorWhenDistanceCorrect) {
+    if (m_options.setTileBaseColorWhenDistanceDeclaredCorrectly) {
         m_mazeGraphic->setTileColor(x, y, STRING_TO_COLOR.at(P()->tileBaseColor()));
     }
 }

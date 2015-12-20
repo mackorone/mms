@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -66,6 +67,12 @@ public:
     template<class T>
     static bool vectorContains(const std::vector<T>& vector, T item) {
         return std::find(vector.begin(), vector.end(), item) != vector.end();
+    }
+
+    // Returns whether or not a set contains a particular key
+    template<class T>
+    static bool setContains(const std::set<T>& set, T item) {
+        return set.find(item) != set.end();
     }
 
     // Returns whether or not a map contains a particular key

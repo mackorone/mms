@@ -36,7 +36,6 @@ bool MazeChecker::isNonempty(const std::vector<std::vector<BasicTile>>& maze) {
 }
 
 bool MazeChecker::isRectangular(const std::vector<std::vector<BasicTile>>& maze) {
-    ASSERT_TR(isNonempty(maze));
     for (int i = 0; i < maze.size() - 1; i += 1) {
         if (maze.at(i).size() != maze.at(i + 1).size()) {
             return false;
@@ -46,7 +45,6 @@ bool MazeChecker::isRectangular(const std::vector<std::vector<BasicTile>>& maze)
 }
 
 bool MazeChecker::isEnclosed(const std::vector<std::vector<BasicTile>>& maze) {
-    ASSERT_TR(isRectangular(maze));
     for (int x = 0; x < maze.size(); x += 1) {
         for (int y = 0; y < maze.at(x).size(); y += 1) {
             if (x == 0 && !maze.at(x).at(y).walls.at(Direction::WEST)) {
@@ -99,47 +97,42 @@ bool MazeChecker::isOfficialMaze(const std::vector<std::vector<BasicTile>>& maze
 
     ASSERT_TR(isValidMaze(maze));
 
-    if (!hasPathToCenter(maze)) {
-        L()->warn("The maze does not have a path to the center.");
-        return false;
+    bool success = true;
+
+    if (!hasNoInaccessibleLocations(maze)) {
+        L()->warn("There are inaccessible locations in the maze.");
+        success = false;
     }
 
     if (!hasHollowCenter(maze)) {
         L()->warn("The maze does not have a hollow center.");
-        return false;
+        success = false;
     }
 
     if (!hasOneEntranceToCenter(maze)) {
         L()->warn("The center of the maze has more than one entrance.");
-        return false;
+        success = false;
     }
 
-    if (!hasWallAttachedToEachPost(maze)) {
+    if (!hasWallAttachedToEachNonCenterPost(maze)) {
         L()->warn("There is at least one non-center post with no walls connected to it.");
-        return false;
+        success = false;
     }
     
     if (!hasThreeStartingWalls(maze)) {
         L()->warn("There are not exactly three starting walls.");
-        return false;
+        success = false;
     }
 
     if (!isUnsolvableByWallFollower(maze)) {
         L()->warn("The maze is solvable by a maze-following robot.");
-        return false;
+        success = false;
     }
 
-    if (!hasNoInaccesibleLocations(maze)) {
-        L()->warn("There are inaccessible locations in the maze.");
-        return false;
-    }
-
-    return true;
+    return success;
 }
 
-bool MazeChecker::hasPathToCenter(const std::vector<std::vector<BasicTile>>& maze) {
-
-    ASSERT_TR(isValidMaze(maze));
+bool MazeChecker::hasNoInaccessibleLocations(const std::vector<std::vector<BasicTile>>& maze) {
 
     std::set<std::pair<int, int>> explored;
     std::queue<std::pair<int, int>> queue;
@@ -152,68 +145,118 @@ bool MazeChecker::hasPathToCenter(const std::vector<std::vector<BasicTile>>& maz
         std::pair<int, int> tile = queue.front();
         queue.pop();
         explored.insert(tile);
-        int x = tile.first;
-        int y = tile.second;
         for (Direction direction : DIRECTIONS) {
-            if (maze.at(x).at(y).walls.at(direction)) {
+            if (maze.at(tile.first).at(tile.second).walls.at(direction)) {
                 continue;
             }
-            std::pair<int, int> neighbor = std::make_pair(
-                (direction == Direction::EAST ? x + 1 : (direction == Direction::WEST ? x - 1 : x)),
-                (direction == Direction::NORTH ? y + 1 : (direction == Direction::SOUTH ? y - 1 : y))
-            );
-            if (explored.count(neighbor) == 0) {
+            std::pair<int, int> neighbor = positionAfterMovingForward(tile, direction);
+            if (!SimUtilities::setContains(explored, neighbor)) {
                 queue.push(neighbor);
             }
         }
     }
     
-    return explored.count(std::make_pair(0, 0)) == 1;
-}
+    for (int x = 0; x < maze.size(); x += 1) {
+        for (int y = 0; y < maze.at(x).size(); y += 1) {
+            if (!SimUtilities::setContains(explored, std::make_pair(x, y))) {
+                return false;
+            }
+        }
+    }
 
-bool MazeChecker::hasHollowCenter(const std::vector<std::vector<BasicTile>>& maze) {
-    // TODO: upforgrabs
-    // Implement this method so that it returns true if the maze has no walls
-    // in the center tiles, and false otherwise.
-    return false;
-}
-
-bool MazeChecker::hasOneEntranceToCenter(const std::vector<std::vector<BasicTile>>& maze) {
-    // TODO: upforgrabs
-    // Implement this method so that it returns true if there is exactly one
-    // entrance into the center of the maze, and false otherwise.
-    return false;
-}
-
-bool MazeChecker::hasWallAttachedToEachPost(const std::vector<std::vector<BasicTile>>& maze) {
-    // TODO: upforgrabs
-    // Implement this method so that it returns true if there is at least one
-    // wall attached to every post (except for the center post), and false
-    // otherwise.
-    return false;
+    return true;
 }
 
 bool MazeChecker::hasThreeStartingWalls(const std::vector<std::vector<BasicTile>>& maze) {
-    // Assumptions:
-    // 1) The maze is valid (nonempty, enclosed)
-    // 2) The mouse always starts in the lower-left corner
-    ASSERT_TR(isValidMaze(maze));
     std::map<Direction, bool> walls = maze.at(0).at(0).walls;
     return walls.at(Direction::NORTH) != walls.at(Direction::EAST);
 }
 
-bool MazeChecker::isUnsolvableByWallFollower(const std::vector<std::vector<BasicTile>>& maze) {
-    // TODO: upforgrabs
-    // Implement this method so that it returns true if the maze is unsolvable
-    // by a wall-following robot, and false otherwise.
-    return false;
+bool MazeChecker::hasOneEntranceToCenter(const std::vector<std::vector<BasicTile>>& maze) {
+    std::vector<std::pair<int, int>> centerTiles = getCenterTiles(maze.size(), maze.at(0).size()); 
+    int numberOfEntrances = 0;
+    for (std::pair<int, int> tile : centerTiles) {
+        for (Direction direction : DIRECTIONS) {
+            if (SimUtilities::vectorContains(centerTiles, positionAfterMovingForward(tile, direction))) {
+                continue;
+            }
+            if (!maze.at(tile.first).at(tile.second).walls.at(direction)) {
+                numberOfEntrances += 1;
+            }
+        }
+    }
+    return numberOfEntrances == 1;
 }
 
-bool MazeChecker::hasNoInaccesibleLocations(const std::vector<std::vector<BasicTile>>& maze) {
-    // TODO: upforgrabs
-    // Implement this method so that it returns true if there are no
-    // inaccessible locations in the maze, and false otherwise.
-    return false;
+bool MazeChecker::hasHollowCenter(const std::vector<std::vector<BasicTile>>& maze) {
+    std::vector<std::pair<int, int>> centerTiles = getCenterTiles(maze.size(), maze.at(0).size()); 
+    for (std::pair<int, int> tile : centerTiles) {
+        for (std::pair<int, int> otherTile : centerTiles) {
+            for (Direction direction : DIRECTIONS) {
+                if (positionAfterMovingForward(tile, direction) != otherTile) {
+                    continue;
+                }
+                if (maze.at(tile.first).at(tile.second).walls.at(direction)) {
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
+bool MazeChecker::hasWallAttachedToEachNonCenterPost(const std::vector<std::vector<BasicTile>>& maze) {
+    std::vector<std::pair<int, int>> centerTiles = getCenterTiles(maze.size(), maze.at(0).size());
+    auto lessThan = [](const std::pair<int, int>& one, const std::pair<int, int>& two) {
+        return (one.first < two.first ? true : one.second < two.second);
+    };
+    auto upperRightPostIsCenterPost = [&](int x, int y) {
+        return centerTiles.size() == 4 && std::make_pair(x, y) ==
+            *std::min_element(centerTiles.begin(), centerTiles.end(), lessThan);
+    };
+    for (int x = 0; x < maze.size() - 1; x += 1) {
+        for (int y = 0; y < maze.at(x).size() - 1; y += 1) {
+            std::vector<bool> conditions {
+                maze.at(x).at(y).walls.at(Direction::NORTH),
+                maze.at(x).at(y).walls.at(Direction::EAST),
+                maze.at(x + 1).at(y + 1).walls.at(Direction::SOUTH),
+                maze.at(x + 1).at(y + 1).walls.at(Direction::WEST),
+                upperRightPostIsCenterPost(x, y)
+            };
+            if (std::none_of(conditions.begin(), conditions.end(), [](bool _){return _;})) {
+                return false; 
+            }
+        }
+    }
+    return true;
+}
+
+bool MazeChecker::isUnsolvableByWallFollower(const std::vector<std::vector<BasicTile>>& maze) {
+
+    std::set<std::pair<int, int>> reachable;
+
+    std::pair<int, int> position = std::make_pair(0, 0);
+    Direction direction = Direction::NORTH;
+
+    while (!SimUtilities::setContains(reachable, position)) {
+        Direction newDirection = directionAfterRightTurn(direction);
+        if (!maze.at(position.first).at(position.second).walls.at(newDirection)) {
+            direction = newDirection;
+        }
+        while (maze.at(position.first).at(position.second).walls.at(direction)) {
+            direction = directionAfterLeftTurn(direction);
+        }
+        position = positionAfterMovingForward(position, direction);
+        reachable.insert(position);
+    }
+    
+    for (std::pair<int, int> tile : getCenterTiles(maze.size(), maze.at(0).size())) {
+        if (SimUtilities::setContains(reachable, tile)) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 std::vector<std::pair<int, int>> MazeChecker::getCenterTiles(int width, int height) {
@@ -230,6 +273,40 @@ std::vector<std::pair<int, int>> MazeChecker::getCenterTiles(int width, int heig
             centerTiles.push_back(std::make_pair((width - 1) / 2,  height      / 2));
     }
     return centerTiles; 
+}
+
+Direction MazeChecker::directionAfterLeftTurn(Direction direction) {
+    switch (direction) {
+        case Direction::NORTH:
+            return Direction::WEST;
+        case Direction::EAST:
+            return Direction::NORTH;
+        case Direction::SOUTH:
+            return Direction::EAST;
+        case Direction::WEST:
+            return Direction::SOUTH;
+    }
+}
+
+Direction MazeChecker::directionAfterRightTurn(Direction direction) {
+    return directionAfterLeftTurn(
+           directionAfterLeftTurn(
+           directionAfterLeftTurn(direction)));
+}
+
+std::pair<int, int> MazeChecker::positionAfterMovingForward(std::pair<int, int> position, Direction direction) {
+    return {
+        (direction == Direction::EAST ?
+            position.first + 1 :
+        (direction == Direction::WEST ?
+            position.first - 1 :
+        position.first)),
+        (direction == Direction::NORTH ?
+            position.second + 1 :
+        (direction == Direction::SOUTH ?
+            position.second - 1 :
+        position.second))
+    };
 }
 
 } // namespace sim

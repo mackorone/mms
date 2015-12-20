@@ -12,7 +12,7 @@
 
 namespace floodFill {
 
-bool FloodFill::setTileBaseColorWhenDistanceCorrect() const {
+bool FloodFill::setTileBaseColorWhenDistanceDeclaredCorrectly() const {
     return true;
 }
 

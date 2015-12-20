@@ -5,10 +5,13 @@
 namespace sim {
 
 struct MouseInterfaceOptions {
-    bool declareBothWallHalves;
     bool declareWallOnRead;
-    bool setTileBaseColorWhenDistanceCorrect;
+    bool declareBothWallHalves;
+    bool setTileTextWhenDistanceDeclared;
+    bool setTileBaseColorWhenDistanceDeclaredCorrectly;
     double wheelSpeedFraction;
+    int tileTextNumberOfRows;
+    int tileTextNumberOfCols;
     InterfaceType interfaceType;
 };
 

@@ -181,15 +181,13 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMaze(const std::strin
 
         // Fill the BasicTile object with the values
         BasicTile tile;
-        tile.x = SimUtilities::strToInt(tokens.at(0));
-        tile.y = SimUtilities::strToInt(tokens.at(1));
         for (Direction direction : DIRECTIONS) {
             tile.walls.insert(std::make_pair(direction,
                 (1 == SimUtilities::strToInt(tokens.at(2 + SimUtilities::getDirectionIndex(direction))))));
         }
 
         // If the tile belongs to a new column, append the current column and then empty it
-        if (maze.size() < tile.x) {
+        if (maze.size() < SimUtilities::strToInt(tokens.at(0))) {
             maze.push_back(column);
             column.clear();
         }

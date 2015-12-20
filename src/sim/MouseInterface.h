@@ -47,6 +47,11 @@ public:
     void clearTileColor(int x, int y);
     void clearAllTileColor();
 
+    // Tile text
+    void setTileText(int x, int y, const std::string& text);
+    void clearTileText(int x, int y);
+    void clearAllTileText();
+
     // Tile walls
     void declareWall(int x, int y, char direction, bool wallExists);
     void undeclareWall(int x, int y, char direction);
@@ -104,8 +109,9 @@ private:
     MazeGraphic* m_mazeGraphic;
     MouseInterfaceOptions m_options;
 
-    // Cache of colored tiles, for making clearAllTileColor() faster
+    // Cache of tiles, for making clearAll methods faster
     std::set<std::pair<int, int>> m_tilesWithColor;
+    std::set<std::pair<int, int>> m_tilesWithText;
 
     void ensureDiscreteInterface(const std::string& callingFunction) const;
     void ensureContinuousInterface(const std::string& callingFunction) const;

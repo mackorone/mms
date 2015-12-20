@@ -25,6 +25,9 @@ namespace sim {
 // String used to specify that the mouse should start facing the opening
 static const std::string& OPENING_DIRECTION_STRING = "OPENING";
 
+// String used to specify that the mouse should start facing the wall
+static const std::string& WALL_DIRECTION_STRING = "WALL";
+
 // Definition of the static variables for linking
 Maze* Driver::m_maze;
 Mouse* Driver::m_mouse;
@@ -122,13 +125,17 @@ void Driver::initModel() {
         m_algorithm->mouseFile(),
         STRING_TO_INTERFACE_TYPE.at(m_algorithm->interfaceType()),
         getInitialDirection(m_algorithm->initialDirection()),
-        m_mouse);
+        m_mouse
+    );
 
     m_mouseInterface = new MouseInterface(m_maze, m_mouse, m_mazeGraphic, {
-        m_algorithm->declareBothWallHalves(),
         m_algorithm->declareWallOnRead(),
-        m_algorithm->setTileBaseColorWhenDistanceCorrect(),
+        m_algorithm->declareBothWallHalves(),
+        m_algorithm->setTileTextWhenDistanceDeclared(),
+        m_algorithm->setTileBaseColorWhenDistanceDeclaredCorrectly(),
         m_algorithm->wheelSpeedFraction(),
+        m_algorithm->tileTextNumberOfRows(),
+        m_algorithm->tileTextNumberOfCols(),
         STRING_TO_INTERFACE_TYPE.at(m_algorithm->interfaceType())
     });
 
@@ -163,18 +170,20 @@ void Driver::validateMouseInterfaceType(
 void Driver::validateMouseInitialDirection(
         const std::string& mouseAlgorithm, const std::string& initialDirection) {
     if (!(SimUtilities::mapContains(STRING_TO_DIRECTION, initialDirection)
-            || initialDirection == OPENING_DIRECTION_STRING)) {
+            || initialDirection == OPENING_DIRECTION_STRING
+            || initialDirection == WALL_DIRECTION_STRING)) {
         L()->error(
             "\"%v\" is not a valid initial direction. You must declare the"
             " initial direction of the mouse algorithm \"%v\" to be one of"
-            " \"%v\", \"%v\", \"%v\", \"%v\", or \"%v\".",
+            " \"%v\", \"%v\", \"%v\", \"%v\", \"%v\", or \"%v\".",
             initialDirection,
             mouseAlgorithm,
             DIRECTION_TO_STRING.at(Direction::NORTH),
             DIRECTION_TO_STRING.at(Direction::EAST),
             DIRECTION_TO_STRING.at(Direction::SOUTH),
             DIRECTION_TO_STRING.at(Direction::WEST),
-            OPENING_DIRECTION_STRING);
+            OPENING_DIRECTION_STRING,
+            WALL_DIRECTION_STRING);
         SimUtilities::quit();
     }
 }
@@ -182,6 +191,9 @@ void Driver::validateMouseInitialDirection(
 Direction Driver::getInitialDirection(const std::string& initialDirectionString) {
     if (initialDirectionString == OPENING_DIRECTION_STRING) {
         return (m_maze->getTile(0, 0)->isWall(Direction::EAST) ? Direction::NORTH : Direction::EAST);
+    }
+    if (initialDirectionString == WALL_DIRECTION_STRING) {
+        return (m_maze->getTile(0, 0)->isWall(Direction::NORTH) ? Direction::NORTH : Direction::EAST);
     }
     return STRING_TO_DIRECTION.at(initialDirectionString);
 }

@@ -13,10 +13,13 @@ public:
 
     // Runtime options
     virtual bool automaticallyClearFog() const;
-    virtual bool declareBothWallHalves() const;
     virtual bool declareWallOnRead() const;
-    virtual bool setTileBaseColorWhenDistanceCorrect() const;
+    virtual bool declareBothWallHalves() const;
+    virtual bool setTileTextWhenDistanceDeclared() const;
+    virtual bool setTileBaseColorWhenDistanceDeclaredCorrectly() const;
     virtual double wheelSpeedFraction() const;
+    virtual int tileTextNumberOfRows() const;
+    virtual int tileTextNumberOfCols() const;
 
     // Necessary to all algorithms
     virtual void solve(

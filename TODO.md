@@ -1,14 +1,10 @@
 # High Priority
 
-- Do the MazeChecker methods need to be public???
-- Explain which options only work for discrete mode
-    - Make a note about how to do params in algos
-    - Talk about each of the parameters in documentation
-- Discrete mode speed...
-    - Ensure that the wheel speed is not too high in the MouseInterface (so that the mouse does not clip through walls)
-- Make a note about symmetry with discrete interface
-    - Make a formal check for symmetry
 - Arbitrary tile text
+    - What to do if a letter is unknown?
+    - More characters in the bitmap images
+    - So declare on tile distance doesn't wrap the distance... Should it? NO. Make a note of this
+- Make a voluntary Delay in setTileBaseColor, text
 - Stepper motor
 - Sensor type (digital or analog)
 - Make some utility that keeps track of simulation and real elapsed time
@@ -42,11 +38,7 @@
     - Set the mouse algo in State for display in the toolbar
     - Make terminal style output at bottom or right of window (GUI)
 - Make MouseInterface into an interface, and then implement the simulator interface, make a real-world interface
-- Tomasz maze-gen issues
-- Run-time parameters for the algos
 - Look at Tomasz' maze website
-- Maze Validation (both physically valid mazes and competition valid mazes)
-    - Official maze size parameters
 - Figure out how to get rid of ifdefs in algorithm
 - Make a SimInterface and make sure it's easy to "extract" an algorithm for use on Arduino
 - Updates on the tile boundaries, not centers
@@ -66,6 +58,13 @@
     - CPU with megaMouse.xml
     - Reading the sensors is super non-performant...
     - MinSleepDuration is a little bit weird - sometimes we try to sleep less than that
+- Explain which options only work for discrete mode
+    - Make a note about how to do params in algos
+    - Talk about each of the parameters in documentation
+- Discrete mode speed...
+    - Ensure that the wheel speed is not too high in the MouseInterface (so that the mouse does not clip through walls)
+- Make a note about symmetry with discrete interface
+    - Make a formal check for symmetry
 
 # Medum Priority
 
@@ -198,3 +197,4 @@
 - Take out -g makefile option
 - Reduce the number of LIBS in makefile
 - Does the makefile work for multiple platofrms???
+- Segfault on pressing x

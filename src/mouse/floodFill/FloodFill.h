@@ -20,7 +20,7 @@ enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
 class FloodFill : public IMouseAlgorithm {
 
 public:
-    bool setTileBaseColorWhenDistanceCorrect() const;
+    bool setTileBaseColorWhenDistanceDeclaredCorrectly() const;
     void solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse);
