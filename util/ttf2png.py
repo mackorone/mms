@@ -2,9 +2,10 @@ import os
 import sys
 import string
 
-# TODO: MACK - Vertical alignment of the text :/
+# TODO: MACK - Vertical alignment of the lowercase letters :/
 # TODO: MACK - Refactor this to use format strings, methods, etc.
 # TODO: MACK - error message is annoying
+# TODO: MACK - chars.txt file location of space
 
 def char_to_quoted_png_name(char):
     return '"_' + str(ord(char)) + '_.png"'
@@ -13,7 +14,8 @@ def char_to_txt_file_name(char):
     last_slash_index = sys.argv[0].rfind('/') + 1
     return sys.argv[0][:last_slash_index] + 'chars/{}.txt'.format(ord(char))
 
-characters = open('chars.txt').read().rstrip() # Strip off the newline
+# Strip off the newline
+characters = open('chars.txt').read().rstrip()
 
 if (len(sys.argv) < 2):
     print('Usage: python ttf2png.py <TTF-FILE>')

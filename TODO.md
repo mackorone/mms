@@ -1,10 +1,14 @@
 # High Priority
 
 - Arbitrary tile text
+    - Alignment in the png image
+    - Alignment in tile
     - Make a note about text wrapping
     - Make a note about unknown characters
     - What to do if a letter is unknown?
     - More characters in the bitmap images
+    - Make sure that the rows and cols specified by the algo are used by the simulator
+    - Use MouseInterface methods in the MouseInterface class where possible
 - Make a voluntary Delay in setTileBaseColor, text
 - Stepper motor
 - Sensor type (digital or analog)

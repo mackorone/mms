@@ -25,7 +25,9 @@ int GraphicUtilities::m_mazeWidth = 0;
 int GraphicUtilities::m_mazeHeight = 0;
 
 // These values must perfectly reflect the font image being used
-const std::string GraphicUtilities::m_fontImageCharacters = "0123456789 inf";
+// TODO: MACK
+const std::string GraphicUtilities::m_fontImageCharacters =
+    " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
 std::pair<int, int> GraphicUtilities::getWindowSize() {
     return std::make_pair(m_windowWidth, m_windowHeight);
