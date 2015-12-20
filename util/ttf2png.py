@@ -2,6 +2,10 @@ import os
 import sys
 import string
 
+# TODO: MACK - Vertical alignment of the text :/
+# TODO: MACK - Refactor this to use format strings, methods, etc.
+# TODO: MACK - error message is annoying
+
 def char_to_quoted_png_name(char):
     return '"_' + str(ord(char)) + '_.png"'
 
@@ -9,12 +13,7 @@ def char_to_txt_file_name(char):
     last_slash_index = sys.argv[0].rfind('/') + 1
     return sys.argv[0][:last_slash_index] + 'chars/{}.txt'.format(ord(char))
 
-characters = (
-    'abcdefghijklmnopqrstuvwxyz'
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    '0123456789'
-    '!#$%&()*+,-./:;<=>?@[\]^_`{|}~"\' '
-)
+characters = open('chars.txt').read().rstrip() # Strip off the newline
 
 if (len(sys.argv) < 2):
     print('Usage: python ttf2png.py <TTF-FILE>')
@@ -30,6 +29,7 @@ options = {
     'font': fontpath,
     'gravity': 'center',
     'pointsize': '26',
+    'trim': '',
 }
 
 # Create each png image individually, centered in a 16x32 pixel block
