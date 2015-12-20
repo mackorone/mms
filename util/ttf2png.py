@@ -1,11 +1,24 @@
 import os
 import sys
+import string
 
-def char_to_quoted_filename(char):
-    return '"_' + char + '_.png"'
+def char_to_quoted_png_name(char):
+    return '"_' + str(ord(char)) + '_.png"'
 
-characters = '0123456789 inf'
+def char_to_txt_file_name(char):
+    last_slash_index = sys.argv[0].rfind('/') + 1
+    return sys.argv[0][:last_slash_index] + 'chars/{}.txt'.format(ord(char))
 
+characters = (
+    'abcdefghijklmnopqrstuvwxyz'
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    '0123456789'
+    '!#$%&()*+,-./:;<=>?@[\]^_`{|}~"\' '
+)
+
+if (len(sys.argv) < 2):
+    print('Usage: python ttf2png.py <TTF-FILE>')
+    sys.exit(1)
 fontpath = sys.argv[1]
 fontname = fontpath[fontpath.rfind('/') + 1 : fontpath.rfind('.')]
 
@@ -21,17 +34,21 @@ options = {
 
 # Create each png image individually, centered in a 16x32 pixel block
 for char in characters:
-    command = ('convert '
-        + ' '.join('-' + key + ' ' + value for (key, value) in options.iteritems())
-        + ' label:"' + char + '" '
-        + char_to_quoted_filename(char))
+    command = (
+        'convert '
+        + ' '.join('-' + k + ' ' + v for (k, v) in options.items())
+        + ' ' + 'label:@' + char_to_txt_file_name(char)
+        + ' ' + char_to_quoted_png_name(char)
+    )
     os.system(command)
 
 # Join the png images
-os.system('convert '
-    + ' '.join(char_to_quoted_filename(char) for char in characters)
-    + ' +append ' + fontname + '.png')
+os.system(
+    'convert '
+    + ' '.join(char_to_quoted_png_name(char) for char in characters)
+    + ' +append ' + fontname + '.png'
+)
 
 # Remove the individual png images
 for char in characters:
-    os.remove(char_to_quoted_filename(char).strip('"'))
+    os.remove(char_to_quoted_png_name(char).strip('"'))

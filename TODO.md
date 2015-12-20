@@ -1,9 +1,10 @@
 # High Priority
 
 - Arbitrary tile text
+    - Make a note about text wrapping
+    - Make a note about unknown characters
     - What to do if a letter is unknown?
     - More characters in the bitmap images
-    - So declare on tile distance doesn't wrap the distance... Should it? NO. Make a note of this
 - Make a voluntary Delay in setTileBaseColor, text
 - Stepper motor
 - Sensor type (digital or analog)

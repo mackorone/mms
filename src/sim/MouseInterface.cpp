@@ -211,7 +211,7 @@ void MouseInterface::declareTileDistance(int x, int y, int distance) {
     }
 
     if (m_options.setTileTextWhenDistanceDeclared) {
-        m_mazeGraphic->setTileText(x, y, {(0 <= distance ? std::to_string(distance) : "inf")});
+        setTileText(x, y, (0 <= distance ? std::to_string(distance) : "inf"));
     }
 
     if (m_options.setTileBaseColorWhenDistanceDeclaredCorrectly) {
@@ -232,7 +232,7 @@ void MouseInterface::undeclareTileDistance(int x, int y) {
     }
 
     if (m_options.setTileTextWhenDistanceDeclared) {
-        m_mazeGraphic->setTileText(x, y, {});
+        setTileText(x, y, "");
     }
 
     if (m_options.setTileBaseColorWhenDistanceDeclaredCorrectly) {

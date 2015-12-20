@@ -223,7 +223,7 @@ bool MazeChecker::hasWallAttachedToEachNonCenterPost(const std::vector<std::vect
                 maze.at(x + 1).at(y + 1).walls.at(Direction::WEST),
                 upperRightPostIsCenterPost(x, y)
             };
-            if (std::none_of(conditions.begin(), conditions.end(), [](bool _){return _;})) {
+            if (std::none_of(conditions.begin(), conditions.end(), [](bool b){return b;})) {
                 return false; 
             }
         }
@@ -233,12 +233,12 @@ bool MazeChecker::hasWallAttachedToEachNonCenterPost(const std::vector<std::vect
 
 bool MazeChecker::isUnsolvableByWallFollower(const std::vector<std::vector<BasicTile>>& maze) {
 
-    std::set<std::pair<int, int>> reachable;
+    std::set<std::pair<int, int>> reachableByWallFollower;
 
     std::pair<int, int> position = std::make_pair(0, 0);
     Direction direction = Direction::NORTH;
 
-    while (!SimUtilities::setContains(reachable, position)) {
+    while (!SimUtilities::setContains(reachableByWallFollower, position)) {
         Direction newDirection = directionAfterRightTurn(direction);
         if (!maze.at(position.first).at(position.second).walls.at(newDirection)) {
             direction = newDirection;
@@ -247,11 +247,11 @@ bool MazeChecker::isUnsolvableByWallFollower(const std::vector<std::vector<Basic
             direction = directionAfterLeftTurn(direction);
         }
         position = positionAfterMovingForward(position, direction);
-        reachable.insert(position);
+        reachableByWallFollower.insert(position);
     }
     
     for (std::pair<int, int> tile : getCenterTiles(maze.size(), maze.at(0).size())) {
-        if (SimUtilities::setContains(reachable, tile)) {
+        if (SimUtilities::setContains(reachableByWallFollower, tile)) {
             return false;
         }
     }
