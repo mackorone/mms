@@ -25,7 +25,7 @@ int GraphicUtilities::m_mazeWidth = 0;
 int GraphicUtilities::m_mazeHeight = 0;
 
 // These values must perfectly reflect the font image being used
-// TODO: MACK
+// TODO: MACK - make this into a map
 const std::string GraphicUtilities::m_fontImageCharacters =
     " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 

@@ -1,5 +1,7 @@
 # High Priority
 
+- Separate things into graphics and model
+
 - Arbitrary tile text
     - Alignment in tile (left alignged, right aligned)
     - Make a note about text wrapping
