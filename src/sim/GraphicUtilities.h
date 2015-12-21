@@ -4,11 +4,13 @@
 
 #include "Color.h"
 #include "Direction.h"
-#include "Driver.h"
 #include "Polygon.h"
 #include "Tile.h"
 #include "TriangleGraphic.h"
 #include "TriangleTexture.h"
+
+// TODO: MACK
+#include "View.h"
 
 namespace sim {
 
@@ -59,7 +61,7 @@ public:
 private:
 
     // CPU-side buffers
-    friend sim::Driver;
+    friend sim::View;
     static std::vector<TriangleGraphic> GRAPHIC_CPU_BUFFER;
     static std::vector<TriangleTexture> TEXTURE_CPU_BUFFER;
 

@@ -1,97 +1,24 @@
 #include "Driver.h"
 
-#include <fontstash/fontstash.h>
-#include <tdogl/Bitmap.h>
-#include <tdogl/Shader.h>
-#include <thread>
-
-#include "../mouse/MouseAlgorithms.h"
 #include "Assert.h"
-#include "Directory.h"
-#include "GraphicUtilities.h"
-#include "InterfaceType.h"
-#include "Key.h"
 #include "Logging.h"
-#include "Maze.h"
-#include "MouseChecker.h"
 #include "Param.h"
 #include "SimUtilities.h"
 #include "State.h"
-#include "TriangleGraphic.h"
-#include "units/Seconds.h"
 
 namespace sim {
 
-// TODO: MACK - Find a better place for this
-
-// String used to specify that the mouse should start facing the opening
-static const std::string& OPENING_DIRECTION_STRING = "OPENING";
-
-// String used to specify that the mouse should start facing the wall
-static const std::string& WALL_DIRECTION_STRING = "WALL";
-
 // Definition of the static variables for linking
-Maze* Driver::m_maze;
-Mouse* Driver::m_mouse;
-MazeGraphic* Driver::m_mazeGraphic;
-MouseGraphic* Driver::m_mouseGraphic;
-MouseInterface* Driver::m_mouseInterface;
-World* Driver::m_world;
-IMouseAlgorithm* Driver::m_algorithm;
-TextDrawer* Driver::m_textDrawer;
-tdogl::Program* Driver::m_polygonProgram;
-GLuint Driver::m_polygonVertexArrayObjectId;
-GLuint Driver::m_polygonVertexBufferObjectId;
-tdogl::Texture* Driver::m_textureAtlas;
-tdogl::Program* Driver::m_textureProgram;
-GLuint Driver::m_textureVertexArrayObjectId;
-GLuint Driver::m_textureVertexBufferObjectId;
+Model* Driver::m_model;
+View* Driver::m_view;
+Controller* Driver::m_controller;
 
 void Driver::drive(int argc, char* argv[]) {
 
-    // Step 0: Make sure that this function is only ever called once
+    // Make sure that this function is called just once
     static bool alreadyCalled = false;
     ASSERT_FA(alreadyCalled);
     alreadyCalled = true;
-
-    // Step 1: Determine the runId, configure logging,
-    // and initialize the State and Param objects.
-    bootstrap();
-
-    // Step 2: Remove any excessive archived runs
-    SimUtilities::removeExcessArchivedRuns();
-
-    // Step 3: Initialize the simulation objects
-    initModel();
-
-    // Step 4: Initialize the graphics
-    initGraphics(argc, argv);
-
-    // Step 5: Start the physics loop
-    std::thread physicsThread([](){
-        m_world->simulate();
-    });
-
-    // Step 6: Start the solving loop
-    std::thread solvingThread([](){
-
-        // Wait for the window to appear
-        SimUtilities::sleep(Seconds(P()->glutInitDuration()));
-
-        // Begin execution of the mouse algorithm
-        m_algorithm->solve(
-            m_mazeGraphic->getWidth(),
-            m_mazeGraphic->getHeight(),
-            m_maze->isOfficialMaze(),
-            DIRECTION_TO_CHAR.at(m_mouse->getCurrentDiscretizedRotation()),
-            m_mouseInterface);
-    });
-
-    // Step 7: Start the graphics loop
-    glutMainLoop();
-}
-
-void Driver::bootstrap() {
 
     // First, determine the start time of the program
     double startTime = SimUtilities::getHighResTime();
@@ -106,491 +33,51 @@ void Driver::bootstrap() {
     // 1) Set the runId
     // 2) Avoid a race condition (between threads)
     // 3) Initialize the Param object
-    S()->setRunId(runId); // TODO: MACK - set the start time here
-}
+    S()->setRunId(runId);
 
-void Driver::initModel() {
+    // Remove any excessive archived runs
+    SimUtilities::removeExcessArchivedRuns();
 
-    m_maze = new Maze();
-    m_mouse = new Mouse(m_maze);
-    m_mazeGraphic = new MazeGraphic(m_maze);
-    m_mouseGraphic = new MouseGraphic(m_mouse);
+    // Initialize the model, view, and controller
+    m_model = new Model();
+    m_view = new View(m_model, argc, argv, {
+        []() {
+            m_view->draw();
+        },
+        [](unsigned char key, int x, int y) {
+            m_controller->keyPress(key, x, y);
+        },
+        [](int key, int x, int y) {
+            m_controller->specialKeyPress(key, x, y);
+        },
+        [](int key, int x, int y) {
+            m_controller->specialKeyRelease(key, x, y);
+        }
+    });
+    m_controller = new Controller(m_model, m_view);
 
-    validateMouseAlgorithm(P()->mouseAlgorithm());
-    m_algorithm = MouseAlgorithms::getMouseAlgorithm(P()->mouseAlgorithm());
-    validateMouseInterfaceType(P()->mouseAlgorithm(), m_algorithm->interfaceType());
-    validateMouseInitialDirection(P()->mouseAlgorithm(), m_algorithm->initialDirection());
-    validateMouseWheelSpeedFraction(P()->mouseAlgorithm(), m_algorithm->wheelSpeedFraction());
-
-    initAndValidateMouse(
-        P()->mouseAlgorithm(),
-        m_algorithm->mouseFile(),
-        STRING_TO_INTERFACE_TYPE.at(m_algorithm->interfaceType()),
-        getInitialDirection(m_algorithm->initialDirection()),
-        m_mouse
-    );
-
-    m_mouseInterface = new MouseInterface(m_maze, m_mouse, m_mazeGraphic, {
-        m_algorithm->declareWallOnRead(),
-        m_algorithm->declareBothWallHalves(),
-        m_algorithm->setTileTextWhenDistanceDeclared(),
-        m_algorithm->setTileBaseColorWhenDistanceDeclaredCorrectly(),
-        m_algorithm->wheelSpeedFraction(),
-        m_algorithm->tileTextNumberOfRows(),
-        m_algorithm->tileTextNumberOfCols(),
-        STRING_TO_INTERFACE_TYPE.at(m_algorithm->interfaceType())
+    // Start the physics loop
+    std::thread physicsThread([]() {
+        m_controller->getWorld()->simulate();
     });
 
-    m_world = new World(m_maze, m_mouse, m_mazeGraphic, {
-        m_algorithm->automaticallyClearFog(),
-        STRING_TO_INTERFACE_TYPE.at(m_algorithm->interfaceType())
+    // Start the solving loop
+    std::thread solvingThread([]() {
+
+        // Wait for the window to appear
+        SimUtilities::sleep(Seconds(P()->glutInitDuration()));
+
+        // Begin execution of the mouse algorithm
+        m_controller->getMouseAlgorithm()->solve(
+            m_model->getMaze()->getWidth(),
+            m_model->getMaze()->getHeight(),
+            m_model->getMaze()->isOfficialMaze(),
+            DIRECTION_TO_CHAR.at(m_model->getMouse()->getCurrentDiscretizedRotation()),
+            m_controller->getMouseInterface());
     });
-}
 
-void Driver::validateMouseAlgorithm(const std::string& mouseAlgorithm) {
-    if (!MouseAlgorithms::isMouseAlgorithm(mouseAlgorithm)) {
-        L()->error("\"%v\" is not a valid mouse algorithm.", mouseAlgorithm);
-        SimUtilities::quit();
-    }
-}
-
-void Driver::validateMouseInterfaceType(
-        const std::string& mouseAlgorithm, const std::string& interfaceType) {
-    if (!SimUtilities::mapContains(STRING_TO_INTERFACE_TYPE, interfaceType)) {
-        L()->error(
-            "\"%v\" is not a valid interface type. You must declare the "
-            "interface type of the mouse algorithm \"%v\" to be either \"%v\" "
-            "or \"%v\".",
-            interfaceType,
-            mouseAlgorithm,
-            INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE),
-            INTERFACE_TYPE_TO_STRING.at(InterfaceType::CONTINUOUS));
-        SimUtilities::quit();
-    }
-}
-
-void Driver::validateMouseInitialDirection(
-        const std::string& mouseAlgorithm, const std::string& initialDirection) {
-    if (!(SimUtilities::mapContains(STRING_TO_DIRECTION, initialDirection)
-            || initialDirection == OPENING_DIRECTION_STRING
-            || initialDirection == WALL_DIRECTION_STRING)) {
-        L()->error(
-            "\"%v\" is not a valid initial direction. You must declare the"
-            " initial direction of the mouse algorithm \"%v\" to be one of"
-            " \"%v\", \"%v\", \"%v\", \"%v\", \"%v\", or \"%v\".",
-            initialDirection,
-            mouseAlgorithm,
-            DIRECTION_TO_STRING.at(Direction::NORTH),
-            DIRECTION_TO_STRING.at(Direction::EAST),
-            DIRECTION_TO_STRING.at(Direction::SOUTH),
-            DIRECTION_TO_STRING.at(Direction::WEST),
-            OPENING_DIRECTION_STRING,
-            WALL_DIRECTION_STRING);
-        SimUtilities::quit();
-    }
-}
-
-Direction Driver::getInitialDirection(const std::string& initialDirectionString) {
-    if (initialDirectionString == OPENING_DIRECTION_STRING) {
-        return (m_maze->getTile(0, 0)->isWall(Direction::EAST) ? Direction::NORTH : Direction::EAST);
-    }
-    if (initialDirectionString == WALL_DIRECTION_STRING) {
-        return (m_maze->getTile(0, 0)->isWall(Direction::NORTH) ? Direction::NORTH : Direction::EAST);
-    }
-    return STRING_TO_DIRECTION.at(initialDirectionString);
-}
-
-void Driver::validateMouseWheelSpeedFraction(
-    const std::string& mouseAlgorithm, double wheelSpeedFraction) {
-    if (!(0.0 <= wheelSpeedFraction && wheelSpeedFraction <= 1.0)) {
-        L()->error(
-            "\"%v\" is not a valid wheel speed fraction. The wheel speed"
-            " fraction of the mouse algorithm \"%v\" has to be in [0.0, 1.0].",
-            wheelSpeedFraction, 
-            mouseAlgorithm);
-        SimUtilities::quit();
-    }
-}
-
-void Driver::initAndValidateMouse(
-        const std::string& mouseAlgorithm, const std::string& mouseFile,
-        InterfaceType interfaceType, Direction initialDirection, Mouse* mouse) {
-
-    // Initialize the mouse with the file provided
-    bool success = mouse->initialize(mouseFile, initialDirection);
-    if (!success) {
-        L()->error(
-            "Unable to successfully initialize the mouse in the algorithm "
-            "\"%v\" from \"%v\".",
-            mouseAlgorithm,
-            mouseFile);
-        SimUtilities::quit();
-    }
-
-    // Validate the mouse
-    if (interfaceType == InterfaceType::DISCRETE) {
-        if (!MouseChecker::isDiscreteInterfaceCompatible(*mouse)) {
-            L()->error("The mouse file \"%v\" is not discrete interface compatible.", mouseFile);
-            SimUtilities::quit();
-        }
-    }
-    else { // InterfaceType::CONTINUOUS
-        if (!MouseChecker::isContinuousInterfaceCompatible(*mouse)) {
-            L()->error("The mouse file \"%v\" is not continuous interface compatible.", mouseFile);
-            SimUtilities::quit();
-        }
-    }
-}
-
-void Driver::draw() {
-
-    // In order to ensure we're sleeping the correct amount of time, we time
-    // the drawing operation and take it into account when we sleep.
-    double start(SimUtilities::getHighResTime());
-
-    // Determine the starting index of the mouse
-    static const int mouseTrianglesStartingIndex = GraphicUtilities::GRAPHIC_CPU_BUFFER.size();
-
-    // Get the current mouse translation and rotation
-    Cartesian currentMouseTranslation = m_mouse->getCurrentTranslation();
-    Radians currentMouseRotation = m_mouse->getCurrentRotation();
-
-    // Make space for mouse updates and fill the CPU buffer with new mouse triangles
-    GraphicUtilities::GRAPHIC_CPU_BUFFER.erase(
-        GraphicUtilities::GRAPHIC_CPU_BUFFER.begin() + mouseTrianglesStartingIndex,
-        GraphicUtilities::GRAPHIC_CPU_BUFFER.end());
-    m_mouseGraphic->draw(currentMouseTranslation, currentMouseRotation);
-
-    // Clear the screen
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    // Enable scissoring so that the maps are only draw in specified locations.
-    glEnable(GL_SCISSOR_TEST);
-
-    // Re-populate both vertex buffer objects and then draw the tiles, the tile text, and then the mouse
-    repopulateVertexBufferObjects();
-    drawFullAndZoomedMaps(currentMouseTranslation, currentMouseRotation,
-        m_polygonProgram, m_polygonVertexArrayObjectId, 0, 3 * mouseTrianglesStartingIndex);
-    drawFullAndZoomedMaps(currentMouseTranslation, currentMouseRotation,
-        m_textureProgram, m_textureVertexArrayObjectId, 0, 3 * GraphicUtilities::TEXTURE_CPU_BUFFER.size());
-    drawFullAndZoomedMaps(currentMouseTranslation, currentMouseRotation,
-        m_polygonProgram, m_polygonVertexArrayObjectId, 3 * mouseTrianglesStartingIndex,
-        3 * (GraphicUtilities::GRAPHIC_CPU_BUFFER.size() - mouseTrianglesStartingIndex));
-
-    // Disable scissoring so that the glClear can take effect, and so that
-    // drawn text isn't clipped at all
-    glDisable(GL_SCISSOR_TEST);
-
-    // ----- Drawing the text ----- //
-    // TODO: MACK - Font-stash drawing
-    m_textDrawer->commenceDrawingTextForFrame();
-    //m_textDrawer->drawText(0, 0, "01234");
-    m_textDrawer->concludeDrawingTextForFrame();
-    // -------------
-
-    // Display the result
-    glutSwapBuffers();
-
-    // Get the duration of the drawing operation, in seconds. Note that this duration
-    // is simply the total number of real seconds that have passed, which is exactly
-    // what we want (since the frame-rate is perceived in real-time and not CPU time).
-    double end(SimUtilities::getHighResTime());
-    double duration = end - start;
-
-    // Notify the user of a late frame
-    if (duration > 1.0/P()->frameRate()) {
-        L()->warn(
-            "A frame was late by %v seconds, which is %v percent late.",
-            duration - 1.0/P()->frameRate(),
-            (duration - 1.0/P()->frameRate())/(1.0/P()->frameRate()) * 100);
-    }
-
-    // Sleep the appropriate amount of time, base on the drawing duration
-    SimUtilities::sleep(Seconds(std::max(0.0, 1.0/P()->frameRate() - duration)));
-}
-
-void Driver::keyPress(unsigned char key, int x, int y) {
-
-    // NOTE: If you're adding or removing anything from this function, make
-    // sure to update wiki/Keys.md
-
-    if (key == 'p') {
-        // Toggle pause (only in discrete mode)
-        if (STRING_TO_INTERFACE_TYPE.at(m_algorithm->interfaceType()) == InterfaceType::DISCRETE) {
-            S()->setPaused(!S()->paused());
-        }
-        else {
-            L()->warn(
-                "Pausing the simulator is only allowed in %v mode.",
-                INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE));
-        }
-    }
-    else if (key == 'f') {
-        // Faster (only in discrete mode)
-        if (STRING_TO_INTERFACE_TYPE.at(m_algorithm->interfaceType()) == InterfaceType::DISCRETE) {
-            S()->setSimSpeed(S()->simSpeed() * 1.5);
-        }
-        else {
-            L()->warn(
-                "Increasing the simulator speed is only allowed in %v mode.",
-                INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE));
-        }
-    }
-    else if (key == 's') {
-        // Slower (only in discrete mode)
-        if (STRING_TO_INTERFACE_TYPE.at(m_algorithm->interfaceType()) == InterfaceType::DISCRETE) {
-            S()->setSimSpeed(S()->simSpeed() / 1.5);
-        }
-        else {
-            L()->warn(
-                "Decreasing the simulator speed is only allowed in %v mode.",
-                INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE));
-        }
-    }
-    else if (key == 'l') {
-        // Cycle through the available layouts
-        S()->setLayout(LAYOUT_CYCLE.at(S()->layout()));
-    }
-    else if (key == 'r') {
-        // Toggle rotate zoomed map
-        S()->setRotateZoomedMap(!S()->rotateZoomedMap());
-    }
-    else if (key == 'i') {
-        // Zoom in
-        S()->setZoomedMapScale(S()->zoomedMapScale() * 1.5);
-    }
-    else if (key == 'o') {
-        // Zoom out
-        S()->setZoomedMapScale(S()->zoomedMapScale() / 1.5);
-    }
-    else if (key == 't') {
-        // Toggle wall truth visibility
-        S()->setWallTruthVisible(!S()->wallTruthVisible());
-        m_mazeGraphic->updateWalls();
-    }
-    else if (key == 'c') {
-        // Toggle tile colors
-        S()->setTileColorsVisible(!S()->tileColorsVisible());
-        m_mazeGraphic->updateColor();
-    }
-    else if (key == 'g') {
-        // Toggle tile fog
-        S()->setTileFogVisible(!S()->tileFogVisible());
-        m_mazeGraphic->updateFog();
-    }
-    else if (key == 'x') {
-        // Toggle tile text
-        S()->setTileTextVisible(!S()->tileTextVisible());
-        m_mazeGraphic->updateText();
-    }
-    else if (key == 'd') {
-        // Toggle tile distance visibility
-        S()->setTileDistanceVisible(!S()->tileDistanceVisible());
-        m_mazeGraphic->updateText();
-    }
-    else if (key == 'w') {
-        // Toggle wireframe mode
-        S()->setWireframeMode(!S()->wireframeMode());
-        glPolygonMode(GL_FRONT_AND_BACK, S()->wireframeMode() ? GL_LINE : GL_FILL);
-    }
-    else if (key == 'q') {
-        // Quit
-        SimUtilities::quit();
-    }
-    else if (std::string("0123456789").find(key) != std::string::npos) {
-        // Press an input button
-        int inputButton = std::string("0123456789").find(key);
-        if (!S()->inputButtonWasPressed(inputButton)) {
-            S()->setInputButtonWasPressed(inputButton, true);
-            L()->info("Input button %v was pressed.", inputButton);
-        }
-        else {
-            L()->warn(
-                "Input button %v has not yet been acknowledged as pressed; pressing it has no effect.",
-                inputButton);
-        }
-    }
-}
-
-void Driver::specialKeyPress(int key, int x, int y) {
-    if (!SimUtilities::mapContains(INT_TO_KEY, key)) {
-        return;
-    }
-    if (SimUtilities::vectorContains(ARROW_KEYS, INT_TO_KEY.at(key))) {
-        S()->setArrowKeyIsPressed(INT_TO_KEY.at(key), true);
-    }
-}
-
-void Driver::specialKeyRelease(int key, int x, int y) {
-    if (!SimUtilities::mapContains(INT_TO_KEY, key)) {
-        return;
-    }
-    if (SimUtilities::vectorContains(ARROW_KEYS, INT_TO_KEY.at(key))) {
-        S()->setArrowKeyIsPressed(INT_TO_KEY.at(key), false);
-    }
-}
-
-void Driver::initPolygonProgram() {
-
-    // Generate the polygon vertex array object and vertex buffer object
-    glGenVertexArrays(1, &m_polygonVertexArrayObjectId);
-    glBindVertexArray(m_polygonVertexArrayObjectId);
-    glGenBuffers(1, &m_polygonVertexBufferObjectId);
-    glBindBuffer(GL_ARRAY_BUFFER, m_polygonVertexBufferObjectId);
-
-    // Set up the program and attribute pointers
-    m_polygonProgram = new tdogl::Program({tdogl::Shader::shaderFromFile(
-        Directory::getResShadersDirectory() + "polygonVertexShader.txt", GL_VERTEX_SHADER)});
-    glEnableVertexAttribArray(m_polygonProgram->attrib("coordinate"));
-    glVertexAttribPointer(m_polygonProgram->attrib("coordinate"),
-        2, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), 0);
-    glEnableVertexAttribArray(m_polygonProgram->attrib("color"));
-    glVertexAttribPointer(m_polygonProgram->attrib("color"),
-        4, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), (char*) NULL + 2 * sizeof(double));
-
-    // Unbind the vertex array object and vertex buffer object
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-}
-
-void Driver::initTextureProgram() {
-
-    // Generate the texture vertex array object and vertex buffer object
-    glGenVertexArrays(1, &m_textureVertexArrayObjectId);
-    glBindVertexArray(m_textureVertexArrayObjectId);
-    glGenBuffers(1, &m_textureVertexBufferObjectId);
-    glBindBuffer(GL_ARRAY_BUFFER, m_textureVertexBufferObjectId);
-
-    // Set up the program and attribute pointers
-    std::vector<tdogl::Shader> shaders;
-    shaders.push_back(tdogl::Shader::shaderFromFile(
-        Directory::getResShadersDirectory() + "textureVertexShader.txt", GL_VERTEX_SHADER));
-    shaders.push_back(tdogl::Shader::shaderFromFile(
-        Directory::getResShadersDirectory() + "textureFragmentShader.txt", GL_FRAGMENT_SHADER));
-    m_textureProgram = new tdogl::Program(shaders);
-    glEnableVertexAttribArray(m_textureProgram->attrib("coordinate"));
-    glVertexAttribPointer(m_textureProgram->attrib("coordinate"),
-        2, GL_DOUBLE, GL_FALSE, 4 * sizeof(double), NULL);
-    glEnableVertexAttribArray(m_textureProgram->attrib("textureCoordinate"));
-    glVertexAttribPointer(m_textureProgram->attrib("textureCoordinate"),
-        2, GL_DOUBLE, GL_TRUE, 4 * sizeof(double), (char*) NULL + 2 * sizeof(double));
-
-    // Load the bitmap texture into the texture atlas
-    // TODO: MACK - Make the font image a parameter...
-    tdogl::Bitmap bmp = tdogl::Bitmap::bitmapFromFile(Directory::getResImgsDirectory() + "DroidSansMono.png");
-    bmp.flipVertically();
-    m_textureAtlas = new tdogl::Texture(bmp);
-
-    // Unbind the vertex array object and vertex buffer object
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-}
-
-void Driver::initGraphics(int argc, char* argv[]) {
-
-    // GLUT Initialization
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA);
-    glutInitWindowSize(P()->defaultWindowWidth(), P()->defaultWindowHeight());
-    GraphicUtilities::setWindowSize(P()->defaultWindowWidth(), P()->defaultWindowHeight());
-    glutInitWindowPosition(0, 0);
-    glutCreateWindow("Micromouse Simulator");
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-    glutDisplayFunc(draw);
-    glutIdleFunc(draw);
-    glutKeyboardFunc(keyPress);
-    glutSpecialFunc(specialKeyPress);
-    glutSpecialUpFunc(specialKeyRelease);
-    glPolygonMode(GL_FRONT_AND_BACK, S()->wireframeMode() ? GL_LINE : GL_FILL);
-
-    // When the window changes size, notify the graphic utilities
-    glutReshapeFunc([](int width, int height){
-        glViewport(0,0, width, height);
-        GraphicUtilities::setWindowSize(width, height);
-    }); 
-
-    // GLEW Initialization
-    GLenum err = glewInit();
-    if (GLEW_OK != err) {
-        L()->error("Unable to initialize GLEW.");
-        SimUtilities::quit();
-    }
-    
-    // Initialize the text drawer object // TODO: MACK - get the font from param
-    // TODO: MACK - If the font doesn't exist, we silently fail and draw no text whatsoever
-    m_textDrawer = new TextDrawer("Hack-Regular.ttf", 470.0 / 2.0);
-
-    // Initialize the polygon drawing program
-    initPolygonProgram();
-
-    // Initialize the texture drawing program
-    initTextureProgram();
-
-    // Lastly, initially populate the vertex buffer object with tile information
-    m_mazeGraphic->draw();
-}
-
-void Driver::repopulateVertexBufferObjects() {
-
-    // Clear the polygon vertex buffer object and re-populate it with data
-    glBindBuffer(GL_ARRAY_BUFFER, m_polygonVertexBufferObjectId);
-    glBufferData(GL_ARRAY_BUFFER, GraphicUtilities::GRAPHIC_CPU_BUFFER.size() * sizeof(TriangleGraphic), NULL, GL_DYNAMIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, GraphicUtilities::GRAPHIC_CPU_BUFFER.size() * sizeof(TriangleGraphic),
-        &GraphicUtilities::GRAPHIC_CPU_BUFFER.front());
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    // Clear the texture vertex buffer object and re-populate it with data
-    glBindBuffer(GL_ARRAY_BUFFER, m_textureVertexBufferObjectId);
-    glBufferData(GL_ARRAY_BUFFER, GraphicUtilities::TEXTURE_CPU_BUFFER.size() * sizeof(TriangleTexture), NULL, GL_DYNAMIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, GraphicUtilities::TEXTURE_CPU_BUFFER.size() * sizeof(TriangleTexture),
-        &GraphicUtilities::TEXTURE_CPU_BUFFER.front());
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-void Driver::drawFullAndZoomedMaps(
-        const Coordinate& currentMouseTranslation, const Angle& currentMouseRotation,
-        tdogl::Program* program, int vaoId, int vboStartingIndex, int vboEndingIndex) {
-
-    // Get the sizes and positions of each of the maps.
-    std::pair<int, int> fullMapPosition = GraphicUtilities::getFullMapPosition();
-    std::pair<int, int> fullMapSize = GraphicUtilities::getFullMapSize();
-    std::pair<int, int> zoomedMapPosition = GraphicUtilities::getZoomedMapPosition();
-    std::pair<int, int> zoomedMapSize = GraphicUtilities::getZoomedMapSize();
-
-    // Start using the program and vertex array object
-    program->use();
-    glBindVertexArray(vaoId);
-
-    // If it's the texture program, bind the texture and set the uniform
-    if (program == m_textureProgram) {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, m_textureAtlas->object());
-        program->setUniform("_texture", 0);
-    }
-
-    // Render the full map
-    glScissor(fullMapPosition.first, fullMapPosition.second, fullMapSize.first, fullMapSize.second);
-    program->setUniformMatrix4("transformationMatrix",
-        &GraphicUtilities::getFullMapTransformationMatrix().front(), 1, GL_TRUE);
-    glDrawArrays(GL_TRIANGLES, vboStartingIndex, vboEndingIndex);
-
-    // Render the zoomed map
-    glScissor(zoomedMapPosition.first, zoomedMapPosition.second, zoomedMapSize.first, zoomedMapSize.second);
-    program->setUniformMatrix4("transformationMatrix",
-        &GraphicUtilities::getZoomedMapTransformationMatrix(
-            m_mouse->getInitialTranslation(), currentMouseTranslation, currentMouseRotation).front(), 1, GL_TRUE);
-    glDrawArrays(GL_TRIANGLES, vboStartingIndex, vboEndingIndex);
-
-    // Stop using the program and vertex array object
-    glBindVertexArray(0);
-    program->stopUsing();
-
-    // If it's the texture program, we should additionally unbind the texture
-    if (program == m_textureProgram) {
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
+    // Start the graphics loop
+    glutMainLoop();
 }
 
 } // namespace sim

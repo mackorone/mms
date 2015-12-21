@@ -1,6 +1,10 @@
 # High Priority
 
 - Separate things into graphics and model
+    - Get rid of the fact that the mouse needs to be passed a pointer to the maze
+- Support multiple mice
+- Limit the params to the driver...
+- Break up "Options.h", or rename to "Controller Options.h"
 
 - Arbitrary tile text
     - Alignment in tile (left alignged, right aligned)
