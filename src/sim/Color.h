@@ -95,4 +95,22 @@ static const std::map<char, Color> CHAR_TO_COLOR = {
     {'Y', Color::DARK_YELLOW},
 };
 
+static const std::map<Color, char> COLOR_TO_CHAR = {
+    {Color::BLACK      , 'k'},
+    {Color::BLUE       , 'b'},
+    {Color::GRAY       , 'a'},
+    {Color::CYAN       , 'c'},
+    {Color::GREEN      , 'g'},
+    {Color::ORANGE     , 'o'},
+    {Color::RED        , 'r'},
+    {Color::WHITE      , 'w'},
+    {Color::YELLOW     , 'y'},
+    {Color::DARK_BLUE  , 'B'},
+    {Color::DARK_CYAN  , 'C'},
+    {Color::DARK_GRAY  , 'A'},
+    {Color::DARK_GREEN , 'G'},
+    {Color::DARK_RED   , 'R'},
+    {Color::DARK_YELLOW, 'Y'},
+};
+
 } // namespace sim

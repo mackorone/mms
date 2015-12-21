@@ -41,7 +41,7 @@ double SimUtilities::getRandom() {
     // array[std::floor(random * <number of elements>)] without having to check
     // the condition if this function returns 1.
     
-    static std::mt19937 generator(sim::P()->randomSeed());
+    static std::mt19937 generator(P()->randomSeed());
     return std::abs(static_cast<double>(generator()) - 1) / static_cast<double>(generator.max());
 }
 

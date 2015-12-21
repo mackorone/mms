@@ -130,7 +130,7 @@ void World::checkCollision() {
         double duration = end - start;
 
         // Notify the use of a late collision detection
-        if (P()->printLateCollisionDetections() && duration > 1.0/sim::P()->collisionDetectionRate()) {
+        if (P()->printLateCollisionDetections() && duration > 1.0 / P()->collisionDetectionRate()) {
             L()->warn(
                 "A collision detection was late by %v seconds, which is %v percent late.",
                 (duration - 1.0/P()->collisionDetectionRate()),
@@ -138,7 +138,7 @@ void World::checkCollision() {
         }
 
         // Sleep the appropriate amout of time, based on the collision detection duration
-        sim::SimUtilities::sleep(sim::Seconds(std::max(0.0, 1.0/sim::P()->collisionDetectionRate() - duration)));
+        sim::SimUtilities::sleep(sim::Seconds(std::max(0.0, 1.0 / P()->collisionDetectionRate() - duration)));
     }
 }
 

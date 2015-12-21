@@ -92,15 +92,9 @@ void MouseInterface::clearTileColor(int x, int y) {
 }
 
 void MouseInterface::clearAllTileColor() {
-
     for (std::pair<int, int> position : m_tilesWithColor) {
-        m_mazeGraphic->setTileColor(
-            position.first,
-            position.second,
-            STRING_TO_COLOR.at(P()->tileBaseColor())
-        );
+        clearTileColor(position.first, position.second);
     }
-    m_tilesWithColor.clear();
 }
 
 void MouseInterface::setTileText(int x, int y, const std::string& text) {
@@ -140,11 +134,9 @@ void MouseInterface::clearTileText(int x, int y) {
 }
 
 void MouseInterface::clearAllTileText() {
-
     for (std::pair<int, int> position : m_tilesWithText) {
-        m_mazeGraphic->setTileText(position.first, position.second, {});
+        clearTileText(position.first, position.second);
     }
-    m_tilesWithText.clear();
 }
 
 void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) {
@@ -216,8 +208,8 @@ void MouseInterface::declareTileDistance(int x, int y, int distance) {
 
     if (m_options.setTileBaseColorWhenDistanceDeclaredCorrectly) {
         if (distance == m_maze->getTile(x, y)->getDistance()) {
-            m_mazeGraphic->setTileColor(
-                x, y, STRING_TO_COLOR.at(P()->distanceCorrectTileBaseColor()));
+            setTileColor(x, y,
+                COLOR_TO_CHAR.at(STRING_TO_COLOR.at(P()->distanceCorrectTileBaseColor())));
         }
     }
 }
@@ -236,7 +228,7 @@ void MouseInterface::undeclareTileDistance(int x, int y) {
     }
 
     if (m_options.setTileBaseColorWhenDistanceDeclaredCorrectly) {
-        m_mazeGraphic->setTileColor(x, y, STRING_TO_COLOR.at(P()->tileBaseColor()));
+        setTileColor(x, y, COLOR_TO_CHAR.at(STRING_TO_COLOR.at(P()->tileBaseColor())));
     }
 }
 
@@ -375,7 +367,7 @@ double MouseInterface::readSensor(std::string name) {
 
     // Display to the user, if requested
     double readDurationSeconds = m_mouse->getSensorReadDuration(name).getSeconds();
-    if (sim::P()->printLateSensorReads() && duration > readDurationSeconds) {
+    if (P()->printLateSensorReads() && duration > readDurationSeconds) {
         L()->warn(
             "A sensor read was late by %v seconds, which is %v percent late.",
             (duration - readDurationSeconds),
@@ -383,7 +375,7 @@ double MouseInterface::readSensor(std::string name) {
     }
 
     // Sleep for the read time
-    sim::SimUtilities::sleep(sim::Seconds(std::max(0.0, 1.0 / sim::P()->frameRate() - duration)));
+    sim::SimUtilities::sleep(sim::Seconds(std::max(0.0, 1.0 / P()->frameRate() - duration)));
 
     // Return the value
     return value;
@@ -457,38 +449,34 @@ void MouseInterface::moveForward() {
     Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
     Degrees destinationRotation = m_mouse->getCurrentRotation();
 
-    auto step = [&](){
-        sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-    };
-
     m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
 
     switch (m_mouse->getCurrentDiscretizedRotation()) {
         case Direction::NORTH: {
             destinationTranslation += Cartesian(Meters(0), tileLength);
             while (m_mouse->getCurrentTranslation().getY() < destinationTranslation.getY()) {
-                step();
+                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
             break;
         }
         case Direction::EAST: {
             destinationTranslation += Cartesian(tileLength, Meters(0));
             while (m_mouse->getCurrentTranslation().getX() < destinationTranslation.getX()) {
-                step();
+                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
             break;
         }
         case Direction::SOUTH: {
             destinationTranslation += Cartesian(Meters(0), tileLength * -1);
             while (destinationTranslation.getY() < m_mouse->getCurrentTranslation().getY()) {
-                step();
+                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
             break;
         }
         case Direction::WEST: {
             destinationTranslation += Cartesian(tileLength * -1, Meters(0));
             while (destinationTranslation.getX() < m_mouse->getCurrentTranslation().getX()) {
-                step();
+                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
             break;
         }

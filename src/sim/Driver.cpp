@@ -22,6 +22,8 @@
 
 namespace sim {
 
+// TODO: MACK - Find a better place for this
+
 // String used to specify that the mouse should start facing the opening
 static const std::string& OPENING_DIRECTION_STRING = "OPENING";
 
