@@ -95,6 +95,7 @@
     - ave steps
     - etc.
 - Still view a maze if it fails validation, but don't let the sim continue...
+- Testing for resource existence (like the shaders, font images, etc.)
 - Check megaMouse performance
     - Better implementation of sensor view collision detection
     - Figure out how to make sensors more efficie
@@ -138,8 +139,6 @@
   Param methods is the same as the type of the member variable
 - Detect STL use in maze and mouse algos, send a warning
 - Add a simple polygonFragmentShader
-- Inconsistent wall declaration colors (declared wall on one side of wall, declared no wall on other side of wall)
-- Inconsistent wall declaration colors (declared one side of wall but not the other)
 - Perhaps impose memory limits on the algorithm
 - Add a way to change the mouse color
 - Bluetooth connection to the actual mouse
@@ -155,6 +154,7 @@
 - Change over the Makefile to use cmake
 - Rewrite/clean floodfill
 - Color palettes
+- Tile text color
 
 # Clean-Up
 
@@ -168,7 +168,6 @@
 - Reduce includes as much as possible
 - Rewrite the Makefile to use an "inc" directory
 - Change "bool foo(false)" to "bool foo = false" for primitive - they look like function calls
-- Handle bad values in the parameters, such as bad colors, negative values, etc.
 - Put interface in root of src directory
 - write "isDirectory(std::string path)" and enforce this where necessary
 - write getRandom() and replace old calls to rand()

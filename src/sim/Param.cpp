@@ -59,6 +59,8 @@ Param::Param() {
         "tile-corner-color", COLOR_TO_STRING.at(Color::GRAY));
     m_tileFogColor = parser.getStringIfHasStringAndIsColor(
         "tile-fog-color", COLOR_TO_STRING.at(Color::GRAY));
+    m_tileTextFontImage = parser.getStringIfHasString(
+        "tile-text-font-image", "VeraMono.png");
     m_tileUndeclaredWallColor = parser.getStringIfHasStringAndIsColor(
         "tile-undeclared-wall-color", COLOR_TO_STRING.at(Color::DARK_RED));
     m_tileUndeclaredNoWallColor = parser.getStringIfHasStringAndIsColor(
@@ -224,6 +226,10 @@ std::string Param::tileCornerColor() {
 
 std::string Param::tileFogColor() {
     return m_tileFogColor;
+}
+
+std::string Param::tileTextFontImage() {
+    return m_tileTextFontImage;
 }
 
 std::string Param::tileUndeclaredWallColor() {

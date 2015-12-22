@@ -30,6 +30,7 @@ public:
     std::string tileWallColor();
     std::string tileCornerColor();
     std::string tileFogColor();
+    std::string tileTextFontImage();
     std::string tileUndeclaredWallColor();
     std::string tileUndeclaredNoWallColor();
     std::string tileIncorrectlyDeclaredWallColor();
@@ -108,6 +109,7 @@ private:
     std::string m_tileWallColor;
     std::string m_tileCornerColor;
     std::string m_tileFogColor;
+    std::string m_tileTextFontImage;
     std::string m_tileUndeclaredWallColor;
     std::string m_tileUndeclaredNoWallColor;
     std::string m_tileIncorrectlyDeclaredWallColor;

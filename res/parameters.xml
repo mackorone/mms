@@ -15,7 +15,7 @@
 <tile-wall-color>RED</tile-wall-color>
 <tile-corner-color>GRAY</tile-corner-color>
 <tile-fog-color>GRAY</tile-fog-color>
-<tile-text-color>DARK_GREEN</tile-text-color>
+<tile-text-font-image>VeraMono.png</tile-text-font-image>
 <tile-undeclared-wall-color>DARK_RED</tile-undeclared-wall-color>
 <tile-undeclared-no-wall-color>DARK_GRAY</tile-undeclared-no-wall-color>
 <tile-incorrectly-declared-wall-color>ORANGE</tile-incorrectly-declared-wall-color>

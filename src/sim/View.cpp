@@ -213,8 +213,15 @@ void View::initTextureProgram() {
         2, GL_DOUBLE, GL_TRUE, 4 * sizeof(double), (char*) NULL + 2 * sizeof(double));
 
     // Load the bitmap texture into the texture atlas
-    // TODO: MACK - Make the font image a parameter...
-    tdogl::Bitmap bmp = tdogl::Bitmap::bitmapFromFile(Directory::getResImgsDirectory() + "VeraMono.png");
+    std::string tileTextFontImagePath = Directory::getResImgsDirectory() + P()->tileTextFontImage();
+    if (!SimUtilities::isFile(tileTextFontImagePath)) {
+        L()->error(
+            "Could not find font image file \"%v\" in \"%v\".",
+            P()->tileTextFontImage(),
+            Directory::getResImgsDirectory());
+        SimUtilities::quit();
+    }
+    tdogl::Bitmap bmp = tdogl::Bitmap::bitmapFromFile(tileTextFontImagePath);
     bmp.flipVertically();
     m_textureAtlas = new tdogl::Texture(bmp);
 
