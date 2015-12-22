@@ -25,9 +25,6 @@ public:
     static std::pair<int, int> getWindowSize();
     static void setWindowSize(int windowWidth, int windowHeight);
 
-    // Sets the maze size, in tiles
-    static void setMazeSize(int mazeWidth, int mazeHeight);
-
     // Return the positions of the full map and zoomed map, in pixels
     static std::pair<int, int> getFullMapPosition();
     static std::pair<int, int> getZoomedMapPosition();
@@ -37,9 +34,9 @@ public:
     static std::pair<int, int> getZoomedMapSize();
 
     // Retrieve the 4x4 transformation matrices for each map
-    static std::vector<float> getFullMapTransformationMatrix();
+    static std::vector<float> getFullMapTransformationMatrix(std::pair<double, double> physicalMazeSize);
     static std::vector<float> getZoomedMapTransformationMatrix(
-        const Coordinate& initialMouseTranslation,
+        std::pair<double, double> physicalMazeSize, const Coordinate& initialMouseTranslation,
         const Coordinate& currentMouseTranslation, const Angle& currentMouseRotation);
 
     // Fills the GRAPHIC_CPU_BUFFER and TEXTURE_CPU_BUFFER
@@ -69,18 +66,11 @@ private:
     static int m_windowWidth;
     static int m_windowHeight;
 
-    // Maze dimensions in tiles
-    static int m_mazeWidth;
-    static int m_mazeHeight;
-
     // The characters in the font image
     static const std::string m_fontImageCharacters;
 
     // Returns the number of pixels per meter of the screen
     static double getScreenPixelsPerMeter();
-
-    // Returns the physical maze size
-    static std::pair<double, double> getPhysicalMazeSize();
 
     // Multiplies two 4x4 matrices together
     static std::vector<float> multiply4x4Matrices(std::vector<float> left, std::vector<float> right);

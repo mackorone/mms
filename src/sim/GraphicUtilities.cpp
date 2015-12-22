@@ -21,9 +21,6 @@ std::vector<TriangleTexture> GraphicUtilities::TEXTURE_CPU_BUFFER;
 int GraphicUtilities::m_windowWidth = 0;
 int GraphicUtilities::m_windowHeight = 0;
 
-int GraphicUtilities::m_mazeWidth = 0;
-int GraphicUtilities::m_mazeHeight = 0;
-
 // These values must perfectly reflect the font image being used
 // TODO: MACK - make this into a map
 const std::string GraphicUtilities::m_fontImageCharacters =
@@ -38,15 +35,6 @@ void GraphicUtilities::setWindowSize(int windowWidth, int windowHeight) {
     ASSERT_LT(0, windowHeight);
     m_windowWidth = windowWidth;
     m_windowHeight = windowHeight;
-}
-
-void GraphicUtilities::setMazeSize(int mazeWidth, int mazeHeight) {
-    ASSERT_EQ(m_mazeWidth, 0);
-    ASSERT_EQ(m_mazeHeight, 0);
-    ASSERT_LT(0, mazeWidth);
-    ASSERT_LT(0, mazeHeight);
-    m_mazeWidth = mazeWidth;
-    m_mazeHeight = mazeHeight;
 }
 
 std::pair<int, int> GraphicUtilities::getFullMapPosition() {
@@ -84,7 +72,7 @@ std::pair<int, int> GraphicUtilities::getZoomedMapSize() {
     return std::make_pair(width, height);
 }
 
-std::vector<float> GraphicUtilities::getFullMapTransformationMatrix() {
+std::vector<float> GraphicUtilities::getFullMapTransformationMatrix(std::pair<double, double> physicalMazeSize) {
 
     // The purpose of this function is to produce a 4x4 matrix which, when
     // applied to the physical coordinate within the vertex shader, transforms
@@ -120,7 +108,6 @@ std::vector<float> GraphicUtilities::getFullMapTransformationMatrix() {
     };
 
     // Ensure that the maze width and height always appear equally scaled.
-    std::pair<double, double> physicalMazeSize = getPhysicalMazeSize();
     double physicalWidth = physicalMazeSize.first;
     double physicalHeight = physicalMazeSize.second;
 
@@ -136,8 +123,8 @@ std::vector<float> GraphicUtilities::getFullMapTransformationMatrix() {
     double openGlWidth = openGlMazeSize.first - openGlOrigin.first;
     double openGlHeight = openGlMazeSize.second - openGlOrigin.second;
 
-    double horizontalScaling = openGlWidth / physicalMazeSize.first;
-    double verticalScaling = openGlHeight / physicalMazeSize.second;
+    double horizontalScaling = openGlWidth / physicalWidth;
+    double verticalScaling = openGlHeight / physicalHeight;
 
     std::vector<float> scalingMatrix = {
         static_cast<float>(horizontalScaling),                                 0.0, 0.0, 0.0,
@@ -169,7 +156,7 @@ std::vector<float> GraphicUtilities::getFullMapTransformationMatrix() {
 }
 
 std::vector<float> GraphicUtilities::getZoomedMapTransformationMatrix(
-    const Coordinate& initialMouseTranslation,
+    std::pair<double, double> physicalMazeSize, const Coordinate& initialMouseTranslation,
     const Coordinate& currentMouseTranslation, const Angle& currentMouseRotation) {
 
     // The purpose of this function is to produce a 4x4 matrix which,
@@ -179,7 +166,6 @@ std::vector<float> GraphicUtilities::getZoomedMapTransformationMatrix(
     // pixel coordinates will be outside of the map.
 
     // Step 1: Calculate the scaling matrix
-    std::pair<double, double> physicalMazeSize = getPhysicalMazeSize();
     double physicalWidth = physicalMazeSize.first;
     double physicalHeight = physicalMazeSize.second;
 
@@ -194,8 +180,8 @@ std::vector<float> GraphicUtilities::getZoomedMapTransformationMatrix(
     double openGlWidth = openGlMazeSize.first - openGlOrigin.first;
     double openGlHeight = openGlMazeSize.second - openGlOrigin.second;
 
-    double horizontalScaling = openGlWidth / physicalMazeSize.first;
-    double verticalScaling = openGlHeight / physicalMazeSize.second;
+    double horizontalScaling = openGlWidth / physicalWidth;
+    double verticalScaling = openGlHeight / physicalHeight;
 
     std::vector<float> scalingMatrix = {
         static_cast<float>(horizontalScaling),                                 0.0, 0.0, 0.0,
@@ -442,12 +428,6 @@ double GraphicUtilities::getScreenPixelsPerMeter() {
     static double millimeters = glutGet(GLUT_SCREEN_WIDTH_MM);
     static double pixelsPerMeter = 1000 * pixels / millimeters;
     return pixelsPerMeter;
-}
-
-std::pair<double, double> GraphicUtilities::getPhysicalMazeSize() {
-    double width = P()->wallWidth() + m_mazeWidth * (P()->wallWidth() + P()->wallLength());
-    double height = P()->wallWidth() + m_mazeHeight * (P()->wallWidth() + P()->wallLength());
-    return std::make_pair(width, height);
 }
 
 std::vector<float> GraphicUtilities::multiply4x4Matrices(std::vector<float> left, std::vector<float> right) {

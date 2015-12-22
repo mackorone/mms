@@ -13,11 +13,6 @@ class MazeGraphic {
 public:
     MazeGraphic(const Maze* maze);
 
-    int getWidth() const;
-    int getHeight() const;
-
-    bool wallDeclared(int x, int y, Direction direction) const;
-
     void setTileColor(int x, int y, Color color);
     void declareWall(int x, int y, Direction direction, bool isWall);
     void undeclareWall(int x, int y, Direction direction);
@@ -31,8 +26,12 @@ public:
     void updateText() const;
 
 private:
-    const Maze* m_maze;
     std::vector<std::vector<TileGraphic>> m_tileGraphics;
+
+    int getWidth() const;
+    int getHeight() const;
+    bool withinMaze(int x, int y) const;
+
 };
 
 } // namespace sim

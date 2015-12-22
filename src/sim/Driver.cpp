@@ -26,7 +26,7 @@ void Driver::drive(int argc, char* argv[]) {
     // Then, determine the runId (just datetime, for now)
     std::string runId = SimUtilities::getDateTime();
 
-    // Then, initiliaze logging
+    // Then, initiliaze logging (before calling P() or S())
     Logging::initialize(startTime, runId);
 
     // Initialize the State object in order to:

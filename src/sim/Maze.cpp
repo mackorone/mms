@@ -106,6 +106,12 @@ bool Maze::isOfficialMaze() const {
     return m_isOfficialMaze;
 }
 
+std::pair<double, double> Maze::getPhysicalSize() const {
+    double width = P()->wallWidth() + getWidth() * (P()->wallWidth() + P()->wallLength());
+    double height = P()->wallWidth() + getHeight() * (P()->wallWidth() + P()->wallLength());
+    return std::make_pair(width, height);
+}
+
 std::vector<std::vector<Tile>> Maze::initializeFromBasicMaze(const std::vector<std::vector<BasicTile>>& basicMaze) {
     std::vector<std::vector<Tile>> maze;
     for (int x = 0; x < basicMaze.size(); x += 1) {

@@ -6,7 +6,7 @@
 
 namespace sim {
 
-MazeGraphic::MazeGraphic(const Maze* maze) : m_maze(maze) {
+MazeGraphic::MazeGraphic(const Maze* maze) {
     for (int x = 0; x < maze->getWidth(); x += 1) {
         std::vector<TileGraphic> column;
         for (int y = 0; y < maze->getHeight(); y += 1) {
@@ -18,50 +18,39 @@ MazeGraphic::MazeGraphic(const Maze* maze) : m_maze(maze) {
     ASSERT_EQ(getHeight(), maze->getHeight());
 }
 
-int MazeGraphic::getWidth() const {
-    return m_tileGraphics.size();
-}
-
-int MazeGraphic::getHeight() const {
-    return (m_tileGraphics.size() > 0 ? m_tileGraphics.at(0).size() : 0);
-}
-
-bool MazeGraphic::wallDeclared(int x, int y, Direction direction) const {
-    ASSERT_TR(m_maze->withinMaze(x, y));
-    return m_tileGraphics.at(x).at(y).wallDeclared(direction);
-}
-
 void MazeGraphic::setTileColor(int x, int y, Color color) {
-    ASSERT_TR(m_maze->withinMaze(x, y));
+    ASSERT_TR(withinMaze(x, y));
     m_tileGraphics.at(x).at(y).setColor(color);
 }
 
 void MazeGraphic::declareWall(int x, int y, Direction direction, bool isWall) {
-    ASSERT_TR(m_maze->withinMaze(x, y));
+    ASSERT_TR(withinMaze(x, y));
     m_tileGraphics.at(x).at(y).declareWall(direction, isWall);
 }
 
 void MazeGraphic::undeclareWall(int x, int y, Direction direction) {
-    ASSERT_TR(m_maze->withinMaze(x, y));
+    ASSERT_TR(withinMaze(x, y));
     m_tileGraphics.at(x).at(y).undeclareWall(direction);
 }
 
 void MazeGraphic::setTileFogginess(int x, int y, bool foggy) {
-    ASSERT_TR(m_maze->withinMaze(x, y));
+    ASSERT_TR(withinMaze(x, y));
     m_tileGraphics.at(x).at(y).setFogginess(foggy);
 }
 
 void MazeGraphic::setTileText(int x, int y, const std::vector<std::string>& rowsOfText) {
-    ASSERT_TR(m_maze->withinMaze(x, y));
+    ASSERT_TR(withinMaze(x, y));
     m_tileGraphics.at(x).at(y).setText(rowsOfText);
 }
 
 void MazeGraphic::draw() const {
 
-    // We need the maze size to determine the layout of the GRAPHIC_CPU_BUFFER, among other things
-    GraphicUtilities::setMazeSize(getWidth(), getHeight());
+    // Make sure that this function is only called once
+    static bool alreadyCalled = false;
+    ASSERT_FA(alreadyCalled);
+    alreadyCalled = true;
 
-    // Then we fill the GRAPHIC_CPU_BUFFER
+    // Fill the GRAPHIC_CPU_BUFFER
     for (int x = 0; x < m_tileGraphics.size(); x += 1) {
         for (int y = 0; y < m_tileGraphics.at(x).size(); y += 1) {
             m_tileGraphics.at(x).at(y).draw();
@@ -99,6 +88,18 @@ void MazeGraphic::updateText() const {
             m_tileGraphics.at(x).at(y).updateText();
         }
     }
+}
+
+int MazeGraphic::getWidth() const {
+    return m_tileGraphics.size();
+}
+
+int MazeGraphic::getHeight() const {
+    return (m_tileGraphics.size() > 0 ? m_tileGraphics.at(0).size() : 0);
+}
+
+bool MazeGraphic::withinMaze(int x, int y) const {
+    return 0 <= x && x < getWidth() && 0 <= y && y < getHeight();
 }
 
 } // namespace sim

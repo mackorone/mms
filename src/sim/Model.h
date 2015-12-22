@@ -9,8 +9,8 @@ class Model {
 
 public:
     Model();
-    Maze* getMaze(); // TODO: MACK - get rid of these eventually
-    Mouse* getMouse(); // TODO: MACK - get rid of these eventually
+    Maze* getMaze();
+    Mouse* getMouse();
 
 private:
     Maze* m_maze;

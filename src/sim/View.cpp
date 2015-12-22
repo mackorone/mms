@@ -1,34 +1,34 @@
 #include "View.h"
 
-// TODO: MACK
-#include <fontstash/fontstash.h>
 #include <tdogl/Bitmap.h>
 #include <tdogl/Shader.h>
-#include <thread>
 
-// TODO: MACK - do we need these here??
-#include "Assert.h"
 #include "Directory.h"
 #include "GraphicUtilities.h"
-#include "InterfaceType.h"
-#include "Key.h"
 #include "Logging.h"
-#include "Maze.h"
-#include "MouseChecker.h"
 #include "Param.h"
 #include "SimUtilities.h"
 #include "State.h"
 #include "TriangleGraphic.h"
 #include "units/Seconds.h"
 
-#include "SimUtilities.h" // TODO: MACK
-
 namespace sim {
 
 View::View(Model* model, int argc, char* argv[], GlutFunctions functions) : m_model(model) {
+
     m_mazeGraphic = new MazeGraphic(model->getMaze()); 
     m_mouseGraphic = new MouseGraphic(model->getMouse()); 
-    initGraphics(argc, argv, functions); // TODO MACK
+
+    initGraphics(argc, argv, functions);
+    initPolygonProgram();
+    initTextureProgram();
+
+    // TODO: MACK - If the font doesn't exist, we silently fail and draw no text whatsoever
+    // Initialize the text drawer object // TODO: MACK - get the font from param
+    m_textDrawer = new TextDrawer("Hack-Regular.ttf", 470.0 / 2.0);
+
+    // Lastly, initially populate the vertex buffer object with tile information
+    getMazeGraphic()->draw();
 }
 
 MazeGraphic* View::getMazeGraphic() {
@@ -38,7 +38,6 @@ MazeGraphic* View::getMazeGraphic() {
 MouseGraphic* View::getMouseGraphic() {
     return m_mouseGraphic;
 }
-
 
 void View::draw() {
 
@@ -107,6 +106,40 @@ void View::draw() {
     SimUtilities::sleep(Seconds(std::max(0.0, 1.0/P()->frameRate() - duration)));
 }
 
+void View::initGraphics(int argc, char* argv[], GlutFunctions functions) {
+
+    // GLUT Initialization
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA);
+    glutInitWindowSize(P()->defaultWindowWidth(), P()->defaultWindowHeight());
+    GraphicUtilities::setWindowSize(P()->defaultWindowWidth(), P()->defaultWindowHeight());
+    glutInitWindowPosition(0, 0);
+    glutCreateWindow("Micromouse Simulator");
+    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glutDisplayFunc(functions.draw);
+    glutIdleFunc(functions.draw);
+    glutKeyboardFunc(functions.keyPress);
+    glutSpecialFunc(functions.specialKeyPress);
+    glutSpecialUpFunc(functions.specialKeyRelease);
+    glPolygonMode(GL_FRONT_AND_BACK, S()->wireframeMode() ? GL_LINE : GL_FILL);
+
+    // When the window changes size, notify the graphic utilities
+    glutReshapeFunc([](int width, int height) {
+        glViewport(0,0, width, height);
+        GraphicUtilities::setWindowSize(width, height);
+    }); 
+
+    // GLEW Initialization
+    GLenum err = glewInit();
+    if (GLEW_OK != err) {
+        L()->error("Unable to initialize GLEW.");
+        SimUtilities::quit();
+    }
+    
+}
+
 void View::initPolygonProgram() {
 
     // Generate the polygon vertex array object and vertex buffer object
@@ -163,52 +196,6 @@ void View::initTextureProgram() {
     glBindVertexArray(0);
 }
 
-void View::initGraphics(int argc, char* argv[], GlutFunctions functions) {
-
-    // GLUT Initialization
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA);
-    glutInitWindowSize(P()->defaultWindowWidth(), P()->defaultWindowHeight());
-    GraphicUtilities::setWindowSize(P()->defaultWindowWidth(), P()->defaultWindowHeight());
-    glutInitWindowPosition(0, 0);
-    glutCreateWindow("Micromouse Simulator");
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-    glutDisplayFunc(functions.draw);
-    glutIdleFunc(functions.draw);
-    glutKeyboardFunc(functions.keyPress);
-    glutSpecialFunc(functions.specialKeyPress);
-    glutSpecialUpFunc(functions.specialKeyRelease);
-    glPolygonMode(GL_FRONT_AND_BACK, S()->wireframeMode() ? GL_LINE : GL_FILL);
-
-    // When the window changes size, notify the graphic utilities
-    glutReshapeFunc([](int width, int height){
-        glViewport(0,0, width, height);
-        GraphicUtilities::setWindowSize(width, height);
-    }); 
-
-    // GLEW Initialization
-    GLenum err = glewInit();
-    if (GLEW_OK != err) {
-        L()->error("Unable to initialize GLEW.");
-        SimUtilities::quit();
-    }
-    
-    // Initialize the text drawer object // TODO: MACK - get the font from param
-    // TODO: MACK - If the font doesn't exist, we silently fail and draw no text whatsoever
-    m_textDrawer = new TextDrawer("Hack-Regular.ttf", 470.0 / 2.0);
-
-    // Initialize the polygon drawing program
-    initPolygonProgram();
-
-    // Initialize the texture drawing program
-    initTextureProgram();
-
-    // Lastly, initially populate the vertex buffer object with tile information
-    getMazeGraphic()->draw();
-}
-
 void View::repopulateVertexBufferObjects() {
 
     // Clear the polygon vertex buffer object and re-populate it with data
@@ -250,14 +237,17 @@ void View::drawFullAndZoomedMaps(
     // Render the full map
     glScissor(fullMapPosition.first, fullMapPosition.second, fullMapSize.first, fullMapSize.second);
     program->setUniformMatrix4("transformationMatrix",
-        &GraphicUtilities::getFullMapTransformationMatrix().front(), 1, GL_TRUE);
+        &GraphicUtilities::getFullMapTransformationMatrix(
+            m_model->getMaze()->getPhysicalSize()).front(), 1, GL_TRUE);
     glDrawArrays(GL_TRIANGLES, vboStartingIndex, vboEndingIndex);
 
     // Render the zoomed map
     glScissor(zoomedMapPosition.first, zoomedMapPosition.second, zoomedMapSize.first, zoomedMapSize.second);
     program->setUniformMatrix4("transformationMatrix",
         &GraphicUtilities::getZoomedMapTransformationMatrix(
-            m_model->getMouse()->getInitialTranslation(), currentMouseTranslation, currentMouseRotation).front(), 1, GL_TRUE);
+            m_model->getMaze()->getPhysicalSize(),
+            m_model->getMouse()->getInitialTranslation(),
+            currentMouseTranslation, currentMouseRotation).front(), 1, GL_TRUE);
     glDrawArrays(GL_TRIANGLES, vboStartingIndex, vboEndingIndex);
 
     // Stop using the program and vertex array object

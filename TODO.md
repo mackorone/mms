@@ -1,10 +1,19 @@
 # High Priority
 
 - Separate things into graphics and model
-    - Get rid of the fact that the mouse needs to be passed a pointer to the maze
-- Support multiple mice
-- Limit the params to the driver...
+- Get rid of the fact that the mouse needs to be passed a pointer to the maze
+    - This can be done once the sensors are fast enough to run in the sensor
+      loop, then we can just pass the Maze* into the mouse from within the
+      World class
 - Break up "Options.h", or rename to "Controller Options.h"
+
+- Move GraphicUtilties to Graphics
+- get rid of P() uses in GraphicUtilities
+
+
+- Bidirectional map - make this more resilient
+- Fix MackAlgo wall declaration
+    - Fix other wall algos...
 
 - Arbitrary tile text
     - Alignment in tile (left alignged, right aligned)
@@ -127,6 +136,7 @@
 - A way to log/print only info or higher, warn or higher, etc.
 - Replace the convexHull with union in the mouse collision polygon initialization
 - XML schema/validators
+- Support multiple mice
 
 # Low Priority
 
