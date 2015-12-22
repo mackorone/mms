@@ -13,10 +13,13 @@
 
 namespace sim {
 
+// These values must perfectly reflect the font image being used
+// TODO: MACK - make this into a map
+const std::string FONT_IMAGE_CHARS =
+    " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+
 View::View(Model* model, int argc, char* argv[], const GlutFunctions& functions) : m_model(model) {
 
-    m_mazeWidth = model->getMaze()->getWidth();
-    m_mazeHeight = model->getMaze()->getHeight();
     m_mazeGraphic = new MazeGraphic(model->getMaze(), this); // TODO: MACK
     m_mouseGraphic = new MouseGraphic(model->getMouse(), this); // TODO: MACK
 
@@ -553,11 +556,6 @@ double View::getScreenPixelsPerMeter() {
     return pixelsPerMeter;
 }
 
-// These values must perfectly reflect the font image being used
-// TODO: MACK - make this into a map
-const std::string FONT_IMAGE_CHARS =
-    " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
-
 void View::insertIntoGraphicCpuBuffer(const Polygon& polygon, Color color, double alpha) {
     std::vector<TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, alpha);
     for (int i = 0; i < tgs.size(); i += 1) {
@@ -727,25 +725,25 @@ int View::trianglesPerTile() {
 }
 
 int View::getTileGraphicBaseStartingIndex(int x, int y) {
-    return  0 + trianglesPerTile() * (m_mazeHeight * x + y);
+    return  0 + trianglesPerTile() * (m_model->getMaze()->getHeight() * x + y);
 }
 
 int View::getTileGraphicWallStartingIndex(int x, int y, Direction direction) {
-    return  2 + trianglesPerTile() * (m_mazeHeight * x + y) + (2 * SimUtilities::getDirectionIndex(direction));
+    return  2 + trianglesPerTile() * (m_model->getMaze()->getHeight() * x + y) + (2 * SimUtilities::getDirectionIndex(direction));
 }
 
 int View::getTileGraphicCornerStartingIndex(int x, int y, int cornerNumber) {
-    return 10 + trianglesPerTile() * (m_mazeHeight * x + y) + (2 * cornerNumber);
+    return 10 + trianglesPerTile() * (m_model->getMaze()->getHeight() * x + y) + (2 * cornerNumber);
 }
 
 int View::getTileGraphicFogStartingIndex(int x, int y) {
-    return 18 + trianglesPerTile() * (m_mazeHeight * x + y);
+    return 18 + trianglesPerTile() * (m_model->getMaze()->getHeight() * x + y);
 }
 
 int View::getTileGraphicTextStartingIndex(int x, int y, int row, int col) {
     static std::pair<int, int> maxRowsAndCols = getTileGraphicTextMaxSize();
     static int triangleTexturesPerTile = 2 * maxRowsAndCols.first * maxRowsAndCols.second;
-    return triangleTexturesPerTile * (m_mazeHeight * x + y) + 2 * (row * maxRowsAndCols.second + col);
+    return triangleTexturesPerTile * (m_model->getMaze()->getHeight() * x + y) + 2 * (row * maxRowsAndCols.second + col);
 }
 
 } // namespace sim
