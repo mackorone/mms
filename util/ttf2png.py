@@ -2,20 +2,17 @@ import os
 import sys
 import string
 
-# TODO: MACK - Vertical alignment of the lowercase letters :/
+# TODO: MACK - Vertical alignment of the lowercase letters :(
 # TODO: MACK - Refactor this to use format strings, methods, etc.
-# TODO: MACK - error message is annoying
-# TODO: MACK - chars.txt file location of space
 
-def char_to_quoted_png_name(char):
-    return '"_' + str(ord(char)) + '_.png"'
-
-def char_to_txt_file_name(char):
-    last_slash_index = sys.argv[0].rfind('/') + 1
-    return sys.argv[0][:last_slash_index] + 'chars/{}.txt'.format(ord(char))
+# TODO: MACK - I can probably make this work with monospace fonts...
 
 # Strip off the newline
-characters = open('chars.txt').read().rstrip()
+allChars = (
+    " !\"#$%&'()*+,-./0123456789:;<=>?"
+    "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`"
+    "abcdefghijklmnopqrstuvwxyz{|}~"
+)
 
 if (len(sys.argv) < 2):
     print('Usage: python ttf2png.py <TTF-FILE>')
@@ -26,31 +23,17 @@ fontname = fontpath[fontpath.rfind('/') + 1 : fontpath.rfind('.')]
 # Options for the imagemagick "convert" command
 options = {
     'background': 'none',
-    'extent': '16x28',
     'fill': 'gray75',
     'font': fontpath,
+    'geometry': '{}x'.format(16 * len(allChars)),
     'gravity': 'center',
-    'pointsize': '26',
-    'trim': '',
+    'pointsize': '32',
 }
 
-# Create each png image individually, centered in a 16x32 pixel block
-for char in characters:
-    command = (
-        'convert '
-        + ' '.join('-' + k + ' ' + v for (k, v) in options.items())
-        + ' ' + 'label:@' + char_to_txt_file_name(char)
-        + ' ' + char_to_quoted_png_name(char)
-    )
-    os.system(command)
-
-# Join the png images
-os.system(
+command = (
     'convert '
-    + ' '.join(char_to_quoted_png_name(char) for char in characters)
-    + ' +append ' + fontname + '.png'
+    + ' '.join('-' + k + ' ' + v for (k, v) in options.items())
+    + ' ' + 'label:@chars.txt'
+    + ' ' + fontname + '.png'
 )
-
-# Remove the individual png images
-for char in characters:
-    os.remove(char_to_quoted_png_name(char).strip('"'))
+os.system(command)

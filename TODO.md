@@ -1,24 +1,22 @@
 # High Priority
 
 - Arbitrary tile text
+    - Alignment in the png image (worry about this last)
     - Fix the stretching-shrinking of the text
     - Make a note about text wrapping
     - Alignment in tile (left alignged, right aligned)
     - Make sure that the rows and cols specified by the algo are used by the simulator
-
-    - Alignment in the png image (worry about this last)
+    - Use a border?
     - Fix the fact that the bitmap is initialized in driver but the string of characters is in GraphicUtilities
-
     - Check that a font and image exist, print error and die if not
     - Make a helper method in graphic utilities specifically for toggling tile text
     - Update text is too slow... its optimizing time
         - Build a cache with positions already pre-calculated
-
     - Be able to just show actual distances
-    - Use tile text in Mack algo to print out the costs
 
-- Organize params in res/parameters.xml and Param.h/.cpp
+- Sensors
 
+- millis()
 - Make a voluntary Delay in setTileBaseColor, text
 - Stepper motor
 - Sensor type (digital or analog)
@@ -76,6 +74,7 @@
 
 # Medum Priority
 
+- Organize params in res/parameters.xml and Param.h/.cpp
 - For curve turns, see if you can figure out the arc that the mouse should go on to simulate a curve turn, use checkpoints
     - No curve turn has two line segments, each is tangent
         - first order curve turn has 3 line segments total, equally spaced, etc.

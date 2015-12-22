@@ -15,6 +15,26 @@ void Manual::solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse) {
 
+    // TODO: MACK - text testing
+    std::string allChars =
+        " !\"#$%&'()*+,-./0123456789:;<=>?"
+        "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
+        "`abcdefghijklmnopqrstuvwxyz{|}~";
+
+    for (int i = 0; i < 6; i += 1) {
+        for (int j = 0; j < 6; j += 1) {
+            int index = 18 * i + 3 * j + 0;
+            std::string str;
+            for (int k = 0; k < 3; k += 1) {
+                if (index + k < allChars.size()) {
+                    str += allChars.substr(index + k, 1);
+                    str += " ";
+                }
+            }
+            mouse->setTileText(i, 5 - j, str);
+        }
+    }
+
     sim::S()->setRotateZoomedMap(true);
 
     double accelerateAmount = 60.0;

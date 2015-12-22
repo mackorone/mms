@@ -214,7 +214,7 @@ void View::initTextureProgram() {
 
     // Load the bitmap texture into the texture atlas
     // TODO: MACK - Make the font image a parameter...
-    tdogl::Bitmap bmp = tdogl::Bitmap::bitmapFromFile(Directory::getResImgsDirectory() + "DroidSansMono.png");
+    tdogl::Bitmap bmp = tdogl::Bitmap::bitmapFromFile(Directory::getResImgsDirectory() + "VeraMono.png");
     bmp.flipVertically();
     m_textureAtlas = new tdogl::Texture(bmp);
 
