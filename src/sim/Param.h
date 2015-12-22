@@ -18,7 +18,7 @@ public:
     // Graphics parameters
     int defaultWindowWidth();
     int defaultWindowHeight();
-    std::string defaultLayout();
+    std::string defaultLayoutType();
     int windowBorderWidth();
     double minZoomedMapScale();
     double maxZoomedMapScale();
@@ -95,7 +95,7 @@ private:
     // Graphics parameters
     int m_defaultWindowWidth;
     int m_defaultWindowHeight;
-    std::string m_defaultLayout;
+    std::string m_defaultLayoutType;
     int m_windowBorderWidth;
     double m_minZoomedMapScale;
     double m_maxZoomedMapScale;

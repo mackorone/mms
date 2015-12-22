@@ -4,7 +4,7 @@
 
 #include "InterfaceType.h"
 #include "Key.h"
-#include "Layout.h"
+#include "LayoutType.h"
 
 namespace sim {
 
@@ -25,8 +25,8 @@ public:
     bool crashed();
     void setCrashed();
 
-    Layout layout();
-    void setLayout(Layout layout);
+    LayoutType layoutType();
+    void setLayoutType(LayoutType layoutType);
 
     bool rotateZoomedMap();
     void setRotateZoomedMap(bool rotateZoomedMap);
@@ -74,7 +74,7 @@ private:
 
     std::string m_runId;
     bool m_crashed;
-    Layout m_layout;
+    LayoutType m_layoutType;
     bool m_rotateZoomedMap;
     double m_zoomedMapScale;
     bool m_wallTruthVisible;

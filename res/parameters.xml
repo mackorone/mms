@@ -3,7 +3,7 @@
 <!-- Graphical Parameters -->
 <default-window-width>930</default-window-width> <!-- Pixels -->
 <default-window-height>470</default-window-height> <!-- Pixels -->
-<default-layout>BOTH</default-layout> <!-- FULL, ZOOMED, BOTH -->
+<default-layout-type>BOTH</default-layout-type> <!-- FULL, ZOOMED, BOTH -->
 <window-border-width>10</window-border-width> <!-- Pixels -->
 <min-zoomed-map-scale>0.02</min-zoomed-map-scale>
 <max-zoomed-map-scale>1.0</max-zoomed-map-scale>

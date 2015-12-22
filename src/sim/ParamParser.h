@@ -44,7 +44,7 @@ public:
     // If we can get a value and it's valid/special then return it, else return default
     std::string getStringIfHasStringAndIsColor(const std::string& tag, const std::string& defaultValue);
     std::string getStringIfHasStringAndIsDirection(const std::string& tag, const std::string& defaultValue);
-    std::string getStringIfHasStringAndIsLayout(const std::string& tag, const std::string& defaultValue);
+    std::string getStringIfHasStringAndIsLayoutType(const std::string& tag, const std::string& defaultValue);
 
 private:
     pugi::xml_document m_doc;

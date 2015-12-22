@@ -6,7 +6,7 @@
 #include "Color.h"
 #include "Direction.h"
 #include "Directory.h"
-#include "Layout.h"
+#include "LayoutType.h"
 #include "Logging.h"
 #include "ParamParser.h"
 
@@ -35,8 +35,8 @@ Param::Param() {
         "default-window-width", 930, 100);
     m_defaultWindowHeight = parser.getIntIfHasIntAndNotLessThan(
         "default-window-height", 470, 100);
-    m_defaultLayout = parser.getStringIfHasStringAndIsLayout(
-        "default-layout", LAYOUT_TO_STRING.at(Layout::BOTH));
+    m_defaultLayoutType = parser.getStringIfHasStringAndIsLayoutType(
+        "default-layout-type", LAYOUT_TYPE_TO_STRING.at(LayoutType::BOTH));
     m_windowBorderWidth = parser.getIntIfHasIntAndInRange(
         "window-border-width", 10, 0, 25);
     m_minZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange(
@@ -176,8 +176,8 @@ int Param::defaultWindowHeight() {
     return m_defaultWindowHeight;
 }
 
-std::string Param::defaultLayout() {
-    return m_defaultLayout;
+std::string Param::defaultLayoutType() {
+    return m_defaultLayoutType;
 }
 
 int Param::windowBorderWidth() {

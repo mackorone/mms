@@ -200,7 +200,7 @@ void Controller::keyPress(unsigned char key, int x, int y) {
     }
     else if (key == 'l') {
         // Cycle through the available layouts
-        S()->setLayout(LAYOUT_CYCLE.at(S()->layout()));
+        S()->setLayoutType(LAYOUT_TYPE_CYCLE.at(S()->layoutType()));
     }
     else if (key == 'r') {
         // Toggle rotate zoomed map

@@ -295,7 +295,7 @@ std::pair<int, int> View::getFullMapPosition(int windowWidth, int windowHeight) 
 }
 
 std::pair<int, int> View::getZoomedMapPosition(int windowWidth, int windowHeight) {
-    if (S()->layout() == Layout::BOTH) {
+    if (S()->layoutType() == LayoutType::BOTH) {
         return std::make_pair((windowWidth + P()->windowBorderWidth()) / 2, P()->windowBorderWidth());
     }
     return std::make_pair(P()->windowBorderWidth(), P()->windowBorderWidth());
@@ -304,10 +304,10 @@ std::pair<int, int> View::getZoomedMapPosition(int windowWidth, int windowHeight
 std::pair<int, int> View::getFullMapSize(int windowWidth, int windowHeight) {
     int width = windowWidth - 2 * P()->windowBorderWidth();
     int height = windowHeight - 2 * P()->windowBorderWidth();
-    if (S()->layout() == Layout::ZOOMED) {
+    if (S()->layoutType() == LayoutType::ZOOMED) {
         width = 0;
     }
-    else if (S()->layout() == Layout::BOTH) {
+    else if (S()->layoutType() == LayoutType::BOTH) {
         width = (width - P()->windowBorderWidth()) / 2;
     }
     return std::make_pair(width, height);
@@ -316,10 +316,10 @@ std::pair<int, int> View::getFullMapSize(int windowWidth, int windowHeight) {
 std::pair<int, int> View::getZoomedMapSize(int windowWidth, int windowHeight) {
     int width = windowWidth - 2 * P()->windowBorderWidth();
     int height = windowHeight - 2 * P()->windowBorderWidth();
-    if (S()->layout() == Layout::FULL) {
+    if (S()->layoutType() == LayoutType::FULL) {
         width = 0;
     }
-    else if (S()->layout() == Layout::BOTH) {
+    else if (S()->layoutType() == LayoutType::BOTH) {
         width = (width - P()->windowBorderWidth()) / 2;
     }
     return std::make_pair(width, height);

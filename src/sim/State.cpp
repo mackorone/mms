@@ -24,7 +24,7 @@ State* State::getInstance() {
 State::State() {
     m_runId = "";
     m_crashed = false;
-    m_layout = STRING_TO_LAYOUT.at(P()->defaultLayout());
+    m_layoutType = STRING_TO_LAYOUT_TYPE.at(P()->defaultLayoutType());
     m_rotateZoomedMap = P()->defaultRotateZoomedMap();
     m_zoomedMapScale = P()->defaultZoomedMapScale();
     m_wallTruthVisible = P()->defaultWallTruthVisible();
@@ -61,12 +61,12 @@ void State::setCrashed() {
     L()->warn("%v", P()->crashMessage());
 }
 
-Layout State::layout() {
-    return m_layout;
+LayoutType State::layoutType() {
+    return m_layoutType;
 }
 
-void State::setLayout(Layout layout) {
-    m_layout = layout;
+void State::setLayoutType(LayoutType layoutType) {
+    m_layoutType = layoutType;
 }
 
 bool State::rotateZoomedMap() {
