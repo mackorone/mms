@@ -2,6 +2,14 @@
 
 namespace rightWallFollow {
 
+bool RightWallFollow::declareWallOnRead() const {
+    return true;
+}
+
+bool RightWallFollow::declareBothWallHalves() const {
+    return true;
+}
+
 void RightWallFollow::solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse) {

@@ -2,11 +2,24 @@
 
 namespace mackAlgo {
 
-Cell::Cell() : m_x(-1), m_y(-1), m_sequenceNumber(0), m_parent(0), m_sourceDirection(0), m_distance(0), m_examined(false) {
+Cell::Cell() :
+        m_mouse(nullptr),
+        m_x(-1),
+        m_y(-1),
+        m_sequenceNumber(0),
+        m_parent(0),
+        m_sourceDirection(0),
+        m_distance(0),
+        m_examined(false) {
+
     for (int i = 0; i < 4; i += 1) {
         m_walls[i] = false;
         m_known[i] = false;
     }
+}
+
+void Cell::setMouseInterface(sim::MouseInterface* mouse) {
+    m_mouse = mouse;
 }
 
 int Cell::getX() const {
@@ -36,6 +49,10 @@ bool Cell::isKnown(int direction) const {
 
 void Cell::setKnown(int direction, bool isKnown) {
     m_known[direction] = isKnown;
+    if (isKnown) {
+        static char directionChars[] = {'n', 'e', 's', 'w'};
+        m_mouse->declareWall(m_x, m_y, directionChars[direction], m_walls[direction]);
+    }
 }
 
 int Cell::getSequenceNumber() const {

@@ -49,6 +49,7 @@ void MackAlgo::solve() {
     // Initialize the maze
     for (int x = 0; x < MAZE_WIDTH; x += 1) {
         for (int y = 0; y < MAZE_HEIGHT; y += 1) {
+            m_maze[x][y].setMouseInterface(mouse);
             m_maze[x][y].setPosition(x, y);
             m_maze[x][y].setWall(NORTH, (y == MAZE_HEIGHT - 1));
             m_maze[x][y].setWall(EAST, (x == MAZE_WIDTH - 1));

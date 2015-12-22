@@ -4,6 +4,14 @@
 
 namespace randomizedWallFollow {
 
+bool RandomizedWallFollow::declareWallOnRead() const {
+    return true;
+}
+
+bool RandomizedWallFollow::declareBothWallHalves() const {
+    return true;
+}
+
 void RandomizedWallFollow::solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse) {

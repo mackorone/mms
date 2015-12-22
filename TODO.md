@@ -1,13 +1,5 @@
 # High Priority
 
-- Fix MackAlgo wall declaration
-    - Fix other wall algos...
-
-- Get rid of the fact that the mouse needs to be passed a pointer to the maze
-    - This can be done once the sensors are fast enough to run in the sensor
-      loop, then we can just pass the Maze* into the mouse from within the
-      World class
-
 - Arbitrary tile text
     - Alignment in tile (left alignged, right aligned)
     - Make a note about text wrapping
@@ -48,6 +40,10 @@
     - Check to make sure font won't be cut off, use ellipses if so (How do we deal with text being cut off in the vertical direction?)
     - Set the mouse algo in State for display in the toolbar
     - Make terminal style output at bottom or right of window (GUI)
+- Get rid of the fact that the mouse needs to be passed a pointer to the maze
+    - This can be done once the sensors are fast enough to run in the sensor
+      loop, then we can just pass the Maze* into the mouse from within the
+      World class
 - Make MouseInterface into an interface, and then implement the simulator interface, make a real-world interface
 - Look at Tomasz' maze website
 - Figure out how to get rid of ifdefs in algorithm
