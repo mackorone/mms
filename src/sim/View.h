@@ -9,7 +9,8 @@
 #include "Model.h"
 #include "MouseGraphic.h"
 #include "TextDrawer.h"
-#include "ViewData.h"
+#include "TriangleGraphic.h"
+#include "TriangleTexture.h"
 
 namespace sim {
 
@@ -21,7 +22,8 @@ public:
     MouseGraphic* getMouseGraphic();
     void draw();
 
-    std::pair<int, int> getWindowSize(); // TODO: MACK
+    // Get and set the window size, in pixels
+    std::pair<int, int> getWindowSize();
     void setWindowSize(int width, int height);
 
     // Retrieve the 4x4 transformation matrices for each map
@@ -39,13 +41,50 @@ public:
         const Coordinate& currentMouseTranslation,
         const Angle& currentMouseRotation);
 
+// TODO: MACK --------------------------- VIEW DATA
+
+    // Fills the GRAPHIC_CPU_BUFFER and TEXTURE_CPU_BUFFER
+    void insertIntoGraphicCpuBuffer(const Polygon& polygon, Color color, double alpha);
+    void insertIntoTextureCpuBuffer();
+
+    // These methods are inexpensive, and may be called many times
+    void updateTileGraphicBaseColor(int x, int y, Color color);
+    void updateTileGraphicWallColor(int x, int y, Direction direction, Color color, double alpha);
+    void updateTileGraphicFog(int x, int y, double alpha);
+    void updateTileGraphicText(const Tile* tile, int numRows, int numCols, int row, int col, char c);
+
+    // Appends a mouse polygon to the GRAPHIC_CPU_BUFFER
+    void drawMousePolygon(const Polygon& polygon, Color color, double sensorAlpha); // TODO: MACK - move
+
+    // CPU-side buffers
+    std::vector<TriangleGraphic> GRAPHIC_CPU_BUFFER; // TODO: MACK - move
+    std::vector<TriangleTexture> TEXTURE_CPU_BUFFER; // TODO: MACK - move
+
+    // Converts a polygon to a vector of triangle graphics or triangle textures
+    std::vector<TriangleGraphic> polygonToTriangleGraphics(const Polygon& polygon, Color color, double alpha); // TODO: MACK - move
+
+    // Retrieve the indices into the GRAPHIC_CPU_BUFFER for each specific type of Tile triangle
+    int trianglesPerTile();
+    int getTileGraphicBaseStartingIndex(int x, int y);
+    int getTileGraphicWallStartingIndex(int x, int y, Direction direction);
+    int getTileGraphicCornerStartingIndex(int x, int y, int cornerNumber);
+    int getTileGraphicFogStartingIndex(int x, int y);
+
+    // Retrieve the indices into the TEXTURE_CPU_BUFFER
+    int getTileGraphicTextStartingIndex(int x, int y, int row, int col);
+
+    // Returns the maximum number of rows and columns of text in a tile graphic
+    std::pair<int, int> getTileGraphicTextMaxSize(); // TODO: MACK - shouldn't need
+
+// TODO: MACK --------------------------- VIEW DATA
+
 private:
 
     // TODO: MACK Refactor and reorganize all of this
-
+    int m_mazeWidth; // TODO: MACK
+    int m_mazeHeight; // TODO: MACK
 
     Model* m_model;
-    ViewData* m_data; // TODO: MACK - call this something else...
     MazeGraphic* m_mazeGraphic;
     MouseGraphic* m_mouseGraphic;
 

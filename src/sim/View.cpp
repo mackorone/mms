@@ -9,17 +9,16 @@
 #include "Param.h"
 #include "SimUtilities.h"
 #include "State.h"
-#include "TriangleGraphic.h"
 #include "units/Seconds.h"
 
 namespace sim {
 
 View::View(Model* model, int argc, char* argv[], const GlutFunctions& functions) : m_model(model) {
 
-    // TODO: MACK - is this really the best model?
-    m_data = new ViewData(m_model->getMaze()->getWidth(), m_model->getMaze()->getHeight(), this);
-    m_mazeGraphic = new MazeGraphic(model->getMaze(), m_data); // TODO: MACK
-    m_mouseGraphic = new MouseGraphic(model->getMouse(), m_data); // TODO: MACK
+    m_mazeWidth = model->getMaze()->getWidth();
+    m_mazeHeight = model->getMaze()->getHeight();
+    m_mazeGraphic = new MazeGraphic(model->getMaze(), this); // TODO: MACK
+    m_mouseGraphic = new MouseGraphic(model->getMouse(), this); // TODO: MACK
 
     initGraphics(argc, argv, functions);
     initPolygonProgram();
@@ -27,7 +26,7 @@ View::View(Model* model, int argc, char* argv[], const GlutFunctions& functions)
 
     // TODO: MACK - If the font doesn't exist, we silently fail and draw no text whatsoever
     // Initialize the text drawer object // TODO: MACK - get the font from param
-    m_textDrawer = new TextDrawer("Hack-Regular.ttf", 470.0 / 2.0, m_data);
+    m_textDrawer = new TextDrawer("Hack-Regular.ttf", 470.0 / 2.0, this);
 
     // Lastly, initially populate the vertex buffer object with tile information
     getMazeGraphic()->draw();
@@ -52,16 +51,16 @@ void View::draw() {
     double start(SimUtilities::getHighResTime());
 
     // Determine the starting index of the mouse
-    static const int mouseTrianglesStartingIndex = m_data->GRAPHIC_CPU_BUFFER.size();
+    static const int mouseTrianglesStartingIndex = GRAPHIC_CPU_BUFFER.size();
 
     // Get the current mouse translation and rotation
     Cartesian currentMouseTranslation = m_model->getMouse()->getCurrentTranslation();
     Radians currentMouseRotation = m_model->getMouse()->getCurrentRotation();
 
     // Make space for mouse updates and fill the CPU buffer with new mouse triangles
-    m_data->GRAPHIC_CPU_BUFFER.erase(
-        m_data->GRAPHIC_CPU_BUFFER.begin() + mouseTrianglesStartingIndex,
-        m_data->GRAPHIC_CPU_BUFFER.end());
+    GRAPHIC_CPU_BUFFER.erase(
+        GRAPHIC_CPU_BUFFER.begin() + mouseTrianglesStartingIndex,
+        GRAPHIC_CPU_BUFFER.end());
     getMouseGraphic()->draw(currentMouseTranslation, currentMouseRotation);
 
     // Clear the screen
@@ -75,10 +74,10 @@ void View::draw() {
     drawFullAndZoomedMaps(currentMouseTranslation, currentMouseRotation,
         m_polygonProgram, m_polygonVertexArrayObjectId, 0, 3 * mouseTrianglesStartingIndex);
     drawFullAndZoomedMaps(currentMouseTranslation, currentMouseRotation,
-        m_textureProgram, m_textureVertexArrayObjectId, 0, 3 * m_data->TEXTURE_CPU_BUFFER.size());
+        m_textureProgram, m_textureVertexArrayObjectId, 0, 3 * TEXTURE_CPU_BUFFER.size());
     drawFullAndZoomedMaps(currentMouseTranslation, currentMouseRotation,
         m_polygonProgram, m_polygonVertexArrayObjectId, 3 * mouseTrianglesStartingIndex,
-        3 * (m_data->GRAPHIC_CPU_BUFFER.size() - mouseTrianglesStartingIndex));
+        3 * (GRAPHIC_CPU_BUFFER.size() - mouseTrianglesStartingIndex));
 
     // Disable scissoring so that the glClear can take effect, and so that
     // drawn text isn't clipped at all
@@ -211,16 +210,16 @@ void View::repopulateVertexBufferObjects() {
 
     // Clear the polygon vertex buffer object and re-populate it with data
     glBindBuffer(GL_ARRAY_BUFFER, m_polygonVertexBufferObjectId);
-    glBufferData(GL_ARRAY_BUFFER, m_data->GRAPHIC_CPU_BUFFER.size() * sizeof(TriangleGraphic), NULL, GL_DYNAMIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, m_data->GRAPHIC_CPU_BUFFER.size() * sizeof(TriangleGraphic),
-        &m_data->GRAPHIC_CPU_BUFFER.front());
+    glBufferData(GL_ARRAY_BUFFER, GRAPHIC_CPU_BUFFER.size() * sizeof(TriangleGraphic), NULL, GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, GRAPHIC_CPU_BUFFER.size() * sizeof(TriangleGraphic),
+        &GRAPHIC_CPU_BUFFER.front());
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     // Clear the texture vertex buffer object and re-populate it with data
     glBindBuffer(GL_ARRAY_BUFFER, m_textureVertexBufferObjectId);
-    glBufferData(GL_ARRAY_BUFFER, m_data->TEXTURE_CPU_BUFFER.size() * sizeof(TriangleTexture), NULL, GL_DYNAMIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, m_data->TEXTURE_CPU_BUFFER.size() * sizeof(TriangleTexture),
-        &m_data->TEXTURE_CPU_BUFFER.front());
+    glBufferData(GL_ARRAY_BUFFER, TEXTURE_CPU_BUFFER.size() * sizeof(TriangleTexture), NULL, GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, TEXTURE_CPU_BUFFER.size() * sizeof(TriangleTexture),
+        &TEXTURE_CPU_BUFFER.front());
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
@@ -552,6 +551,201 @@ double View::getScreenPixelsPerMeter() {
     static double millimeters = glutGet(GLUT_SCREEN_WIDTH_MM);
     static double pixelsPerMeter = 1000 * pixels / millimeters;
     return pixelsPerMeter;
+}
+
+// These values must perfectly reflect the font image being used
+// TODO: MACK - make this into a map
+const std::string FONT_IMAGE_CHARS =
+    " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+
+void View::insertIntoGraphicCpuBuffer(const Polygon& polygon, Color color, double alpha) {
+    std::vector<TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, alpha);
+    for (int i = 0; i < tgs.size(); i += 1) {
+        GRAPHIC_CPU_BUFFER.push_back(tgs.at(i));
+    }
+}
+
+void View::insertIntoTextureCpuBuffer() {
+    // Here we just insert dummy TriangleTexture objects. All of the actual
+    // values of the objects will be set on calls to the update method.
+    TriangleTexture t {
+        {0.0, 0.0, 0.0, 0.0},
+        {0.0, 0.0, 0.0, 0.0},
+        {0.0, 0.0, 0.0, 0.0},
+    };
+    // There are exactly two triangle texture objects needed, since there are
+    // two triangles per rectangular texture
+    for (int i = 0; i < 2; i += 1) {
+        TEXTURE_CPU_BUFFER.push_back(t);
+    }
+}
+
+std::pair<int, int> View::getTileGraphicTextMaxSize() {
+    static std::pair<int, int> maxRowsAndCols = std::make_pair(2, 4);
+    return maxRowsAndCols;
+}
+
+void View::updateTileGraphicBaseColor(int x, int y, Color color) {
+    int index = getTileGraphicBaseStartingIndex(x, y);
+    std::tuple<double, double, double> colorValues = COLOR_TO_RGB.at(color);
+    for (int i = 0; i < 2; i += 1) {
+        TriangleGraphic* triangleGraphic = &GRAPHIC_CPU_BUFFER.at(index + i);
+        triangleGraphic->p1.r = std::get<0>(colorValues);
+        triangleGraphic->p1.g = std::get<1>(colorValues);
+        triangleGraphic->p1.b = std::get<2>(colorValues);
+        triangleGraphic->p2.r = std::get<0>(colorValues);
+        triangleGraphic->p2.g = std::get<1>(colorValues);
+        triangleGraphic->p2.b = std::get<2>(colorValues);
+        triangleGraphic->p3.r = std::get<0>(colorValues);
+        triangleGraphic->p3.g = std::get<1>(colorValues);
+        triangleGraphic->p3.b = std::get<2>(colorValues);
+    }
+}
+
+void View::updateTileGraphicWallColor(int x, int y, Direction direction, Color color, double alpha) {
+    int index = getTileGraphicWallStartingIndex(x, y, direction);
+    std::tuple<double, double, double> colorValues = COLOR_TO_RGB.at(color);
+    for (int i = 0; i < 2; i += 1) {
+        TriangleGraphic* triangleGraphic = &GRAPHIC_CPU_BUFFER.at(index + i);
+        triangleGraphic->p1.r = std::get<0>(colorValues);
+        triangleGraphic->p1.g = std::get<1>(colorValues);
+        triangleGraphic->p1.b = std::get<2>(colorValues);
+        triangleGraphic->p1.a = alpha;
+        triangleGraphic->p2.r = std::get<0>(colorValues);
+        triangleGraphic->p2.g = std::get<1>(colorValues);
+        triangleGraphic->p2.b = std::get<2>(colorValues);
+        triangleGraphic->p2.a = alpha;
+        triangleGraphic->p3.r = std::get<0>(colorValues);
+        triangleGraphic->p3.g = std::get<1>(colorValues);
+        triangleGraphic->p3.b = std::get<2>(colorValues);
+        triangleGraphic->p3.a = alpha;
+    }
+}
+
+void View::updateTileGraphicFog(int x, int y, double alpha) {
+    int index = getTileGraphicFogStartingIndex(x, y);
+    for (int i = 0; i < 2; i += 1) {
+        TriangleGraphic* triangleGraphic = &GRAPHIC_CPU_BUFFER.at(index + i);
+        triangleGraphic->p1.a = alpha;
+        triangleGraphic->p2.a = alpha;
+        triangleGraphic->p3.a = alpha;
+    }
+}
+
+void View::updateTileGraphicText(const Tile* tile, int numRows, int numCols, int row, int col, char c) {
+
+    //                          col
+    //
+    //             *---*-------------------*---*
+    //             |   |                   |   |
+    //             *---*------------------[Y]--*
+    //             |   |    |    |    |    |   |
+    //             |   |    |    |    |    |   |
+    //             |   | 00 | 01 | 02 | 03 |   |
+    // rowsFromTop |   |____|____|____|____|   |
+    //             |   |    |    |    |    |   |
+    //             |   |    |    |    |    |   |
+    //             |   | 10 | 11 | 12 | 13 |   |
+    //             |   |    |    |    |    |   |
+    //             *--[X]------------------*---*
+    //             |   |                   |   |
+    //             *---*-------------------*---*
+
+    std::pair<int, int> maxRowsAndCols = View::getTileGraphicTextMaxSize();
+    Cartesian X = tile->getInteriorPolygon().getVertices().at(0);
+    Cartesian Y = tile->getInteriorPolygon().getVertices().at(2);
+    Cartesian diagonal = Y - X;
+    Meters characterWidth = diagonal.getX() / static_cast<double>(maxRowsAndCols.second);
+    Meters characterHeight = diagonal.getY() / static_cast<double>(maxRowsAndCols.first);
+
+    // The rows start from the top and increase down the cell
+    int rowsFromTop = maxRowsAndCols.first - row - 1;
+    double rowOffset = rowsFromTop - static_cast<double>(maxRowsAndCols.first - numRows) / 2.0;
+    double colOffset = col + static_cast<double>(maxRowsAndCols.second - numCols) / 2.0;
+
+    int fontImageCharacterIndex = FONT_IMAGE_CHARS.find_first_of(c);
+    VertexTexture p1 = { // LL
+        (X + Cartesian(characterWidth *  colOffset     , characterHeight *  rowOffset     )).getX().getMeters(),
+        (X + Cartesian(characterWidth *  colOffset     , characterHeight *  rowOffset     )).getY().getMeters(),
+        static_cast<double>(fontImageCharacterIndex) / static_cast<double>(FONT_IMAGE_CHARS.size()),
+        0.0,
+    };
+    VertexTexture p2 = { // UL
+        (X + Cartesian(characterWidth *  colOffset     , characterHeight * (rowOffset + 1))).getX().getMeters(),
+        (X + Cartesian(characterWidth *  colOffset     , characterHeight * (rowOffset + 1))).getY().getMeters(),
+        static_cast<double>(fontImageCharacterIndex) / static_cast<double>(FONT_IMAGE_CHARS.size()),
+        1.0,
+    };
+    VertexTexture p3 = { // UR
+        (X + Cartesian(characterWidth * (colOffset + 1), characterHeight * (rowOffset + 1))).getX().getMeters(),
+        (X + Cartesian(characterWidth * (colOffset + 1), characterHeight * (rowOffset + 1))).getY().getMeters(),
+        static_cast<double>(fontImageCharacterIndex + 1) / static_cast<double>(FONT_IMAGE_CHARS.size()),
+        1.0,
+    };
+    VertexTexture p4 = { // LR
+        (X + Cartesian(characterWidth * (colOffset + 1), characterHeight *  rowOffset     )).getX().getMeters(),
+        (X + Cartesian(characterWidth * (colOffset + 1), characterHeight *  rowOffset     )).getY().getMeters(),
+        static_cast<double>(fontImageCharacterIndex + 1) / static_cast<double>(FONT_IMAGE_CHARS.size()),
+        0.0,
+    };
+
+    int triangleTextureIndex = getTileGraphicTextStartingIndex(tile->getX(), tile->getY(), row, col);
+    TEXTURE_CPU_BUFFER.at(triangleTextureIndex) = {p1, p2, p3};
+    TEXTURE_CPU_BUFFER.at(triangleTextureIndex + 1) = {p1, p3, p4};
+}
+
+void View::drawMousePolygon(const Polygon& polygon, Color color, double sensorAlpha) {
+    std::vector<TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, sensorAlpha);
+    GRAPHIC_CPU_BUFFER.insert(GRAPHIC_CPU_BUFFER.end(), tgs.begin(), tgs.end());
+}
+
+std::vector<TriangleGraphic> View::polygonToTriangleGraphics(const Polygon& polygon, Color color, double alpha) {
+    std::vector<Triangle> triangles = polygon.getTriangles();
+    std::vector<TriangleGraphic> triangleGraphics;
+    std::tuple<double, double, double> colorValues = COLOR_TO_RGB.at(color);
+    for (Triangle triangle : triangles) {
+        triangleGraphics.push_back({
+            {triangle.p1.getX().getMeters(), triangle.p1.getY().getMeters(),
+                std::get<0>(colorValues), std::get<1>(colorValues), std::get<2>(colorValues), alpha},
+            {triangle.p2.getX().getMeters(), triangle.p2.getY().getMeters(),
+                std::get<0>(colorValues), std::get<1>(colorValues), std::get<2>(colorValues), alpha},
+            {triangle.p3.getX().getMeters(), triangle.p3.getY().getMeters(),
+                std::get<0>(colorValues), std::get<1>(colorValues), std::get<2>(colorValues), alpha}});
+    }
+    return triangleGraphics;
+}
+
+int View::trianglesPerTile() {
+    // This value must be predetermined, and was done so as follows:
+    // Base polygon:      2 (2 triangles x 1 polygon  per tile)
+    // Wall polygon:      8 (2 triangles x 4 polygons per tile)
+    // Corner polygon:    8 (2 triangles x 4 polygons per tile)
+    // Fog polygon:       2 (2 triangles x 1 polygon  per tile)
+    // --------------------
+    // Total             20
+    return 20;
+}
+
+int View::getTileGraphicBaseStartingIndex(int x, int y) {
+    return  0 + trianglesPerTile() * (m_mazeHeight * x + y);
+}
+
+int View::getTileGraphicWallStartingIndex(int x, int y, Direction direction) {
+    return  2 + trianglesPerTile() * (m_mazeHeight * x + y) + (2 * SimUtilities::getDirectionIndex(direction));
+}
+
+int View::getTileGraphicCornerStartingIndex(int x, int y, int cornerNumber) {
+    return 10 + trianglesPerTile() * (m_mazeHeight * x + y) + (2 * cornerNumber);
+}
+
+int View::getTileGraphicFogStartingIndex(int x, int y) {
+    return 18 + trianglesPerTile() * (m_mazeHeight * x + y);
+}
+
+int View::getTileGraphicTextStartingIndex(int x, int y, int row, int col) {
+    static std::pair<int, int> maxRowsAndCols = getTileGraphicTextMaxSize();
+    static int triangleTexturesPerTile = 2 * maxRowsAndCols.first * maxRowsAndCols.second;
+    return triangleTexturesPerTile * (m_mazeHeight * x + y) + 2 * (row * maxRowsAndCols.second + col);
 }
 
 } // namespace sim
