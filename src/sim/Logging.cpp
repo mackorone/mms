@@ -1,6 +1,7 @@
 #include "Logging.h"
 
 #include "Assert.h"
+#include "ContainerUtilities.h"
 #include "Directory.h"
 #include "SimUtilities.h"
 
@@ -74,7 +75,7 @@ void Logging::initialize(double startTime, const std::string& runId) {
 }
 
 el::Logger* Logging::getLogger(const std::string& loggerName) {
-    ASSERT_TR(SimUtilities::mapContains(m_info, loggerName));
+    ASSERT_TR(ContainerUtilities::mapContains(m_info, loggerName));
     return el::Loggers::getLogger(loggerName);
 }
 

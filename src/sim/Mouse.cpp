@@ -5,12 +5,12 @@
 #include "units/Polar.h"
 
 #include "Assert.h"
+#include "ContainerUtilities.h"
 #include "CPMath.h"
 #include "Directory.h"
 #include "GeometryUtilities.h"
 #include "MouseParser.h"
 #include "Param.h"
-#include "SimUtilities.h"
 #include "State.h"
 
 namespace sim {
@@ -205,18 +205,18 @@ void Mouse::update(const Duration& elapsed) {
 }
 
 bool Mouse::hasWheel(const std::string& name) const {
-    return SimUtilities::mapContains(m_wheels, name);
+    return ContainerUtilities::mapContains(m_wheels, name);
 }
 
 RadiansPerSecond Mouse::getWheelMaxSpeed(const std::string& name) const {
-    ASSERT_TR(SimUtilities::mapContains(m_wheels, name));
+    ASSERT_TR(ContainerUtilities::mapContains(m_wheels, name));
     return m_wheels.at(name).getMaxAngularVelocityMagnitude();
 }
 
 void Mouse::setWheelSpeeds(const std::map<std::string, RadiansPerSecond>& wheelSpeeds) {
     m_updateMutex.lock();
     for (std::pair<std::string, RadiansPerSecond> pair : wheelSpeeds) {
-        ASSERT_TR(SimUtilities::mapContains(m_wheels, pair.first));
+        ASSERT_TR(ContainerUtilities::mapContains(m_wheels, pair.first));
         ASSERT_LE(
             std::abs(pair.second.getRevolutionsPerMinute()),
             getWheelMaxSpeed(pair.first).getRevolutionsPerMinute());
@@ -297,7 +297,7 @@ void Mouse::resetWheelRelativeEncoder(const std::string& name) {
 }
 
 bool Mouse::hasSensor(const std::string& name) const {
-    return SimUtilities::mapContains(m_sensors, name);
+    return ContainerUtilities::mapContains(m_sensors, name);
 }
 
 double Mouse::readSensor(const std::string& name) const {
@@ -309,7 +309,7 @@ double Mouse::readSensor(const std::string& name) const {
 }
 
 Seconds Mouse::getSensorReadDuration(const std::string& name) const {
-    ASSERT_TR(SimUtilities::mapContains(m_sensors, name));
+    ASSERT_TR(ContainerUtilities::mapContains(m_sensors, name));
     return m_sensors.at(name).getReadDuration();
 }
 
@@ -401,7 +401,7 @@ std::pair<double, double> Mouse::getWheelContributionFactors(const std::string& 
         }
     }
     
-    ASSERT_TR(SimUtilities::mapContains(contributionFactors, name));
+    ASSERT_TR(ContainerUtilities::mapContains(contributionFactors, name));
     return contributionFactors.at(name);
 }
 

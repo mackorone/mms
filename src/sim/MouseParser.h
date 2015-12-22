@@ -4,10 +4,10 @@
 #include <string>
 #include <vector>
 
+#include "ContainerUtilities.h"
 #include "Logging.h"
 #include "Polygon.h"
 #include "Sensor.h"
-#include "SimUtilities.h"
 #include "units/Cartesian.h"
 #include "units/Meters.h"
 #include "Wheel.h"
@@ -69,7 +69,7 @@ private:
             L()->warn("No %v name specified.", type);
             *success = false;
         }
-        if (SimUtilities::mapContains(map, name)) {
+        if (ContainerUtilities::mapContains(map, name)) {
             L()->warn("Two %vs both have the name \"%v\".", type, name);
             *success = false;
         }

@@ -8,6 +8,7 @@
 
 #include "Assert.h"
 #include "Color.h"
+#include "ContainerUtilities.h"
 #include "CPMath.h"
 #include "Logging.h"
 #include "Param.h"
@@ -65,7 +66,7 @@ void MouseInterface::setTileColor(int x, int y, char color) {
         return;
     }
 
-    if (!SimUtilities::mapContains(CHAR_TO_COLOR, color)) {
+    if (!ContainerUtilities::mapContains(CHAR_TO_COLOR, color)) {
         L()->warn(
             "You cannot set the color of tile (%v, %v) to '%v' since '%v' is"
             " not mapped to a color.",
@@ -148,7 +149,7 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
         return;
     }
 
-    if (!SimUtilities::mapContains(CHAR_TO_DIRECTION, direction)) {
+    if (!ContainerUtilities::mapContains(CHAR_TO_DIRECTION, direction)) {
         L()->warn("The character '%v' is not mapped to a valid direction.", direction);
         return;
     }
@@ -169,7 +170,7 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
         return;
     }
 
-    if (!SimUtilities::mapContains(CHAR_TO_DIRECTION, direction)) {
+    if (!ContainerUtilities::mapContains(CHAR_TO_DIRECTION, direction)) {
         L()->warn("The character '%v' is not mapped to a valid direction.", direction);
         return;
     }

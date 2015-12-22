@@ -1,8 +1,10 @@
 #include "MouseParser.h"
 
 #include "Assert.h"
+#include "ContainerUtilities.h"
 #include "EncoderType.h"
 #include "GeometryUtilities.h"
+#include "SimUtilities.h"
 #include "units/RevolutionsPerMinute.h"
 
 namespace sim {
@@ -225,7 +227,7 @@ pugi::xml_node MouseParser::getContainerNode(const pugi::xml_node& node, const s
 EncoderType MouseParser::getEncoderTypeIfValid(const pugi::xml_node& node, bool* success) {
     EncoderType encoderType;
     std::string encoderTypeString = node.child(ENCODER_TYPE_TAG.c_str()).child_value();
-    if (SimUtilities::mapContains(STRING_TO_ENCODER_TYPE, encoderTypeString)) {
+    if (ContainerUtilities::mapContains(STRING_TO_ENCODER_TYPE, encoderTypeString)) {
         encoderType = STRING_TO_ENCODER_TYPE.at(encoderTypeString);
     }
     else {

@@ -1,8 +1,9 @@
 #include "Controller.h"
 
+#include "ContainerUtilities.h"
 #include "Logging.h" // TODO: MACK should we need this here?
 #include "Param.h" // TODO: MACK Shouldn't need this here, limit it to the driver...
-#include "SimUtilities.h" // TODO: MACK should we need this here?
+#include "SimUtilities.h"
 #include "State.h" // TODO: MACK should we need this here?
 
 #include "../mouse/MouseAlgorithms.h" // TODO: MACK
@@ -73,7 +74,7 @@ void Controller::validateMouseAlgorithm(const std::string& mouseAlgorithm) {
 
 void Controller::validateMouseInterfaceType(
         const std::string& mouseAlgorithm, const std::string& interfaceType) {
-    if (!SimUtilities::mapContains(STRING_TO_INTERFACE_TYPE, interfaceType)) {
+    if (!ContainerUtilities::mapContains(STRING_TO_INTERFACE_TYPE, interfaceType)) {
         L()->error(
             "\"%v\" is not a valid interface type. You must declare the "
             "interface type of the mouse algorithm \"%v\" to be either \"%v\" "
@@ -88,7 +89,7 @@ void Controller::validateMouseInterfaceType(
 
 void Controller::validateMouseInitialDirection(
         const std::string& mouseAlgorithm, const std::string& initialDirection) {
-    if (!(SimUtilities::mapContains(STRING_TO_DIRECTION, initialDirection)
+    if (!(ContainerUtilities::mapContains(STRING_TO_DIRECTION, initialDirection)
             || initialDirection == OPENING_DIRECTION_STRING
             || initialDirection == WALL_DIRECTION_STRING)) {
         L()->error(
@@ -264,19 +265,19 @@ void Controller::keyPress(unsigned char key, int x, int y) {
 }
 
 void Controller::specialKeyPress(int key, int x, int y) {
-    if (!SimUtilities::mapContains(INT_TO_KEY, key)) {
+    if (!ContainerUtilities::mapContains(INT_TO_KEY, key)) {
         return;
     }
-    if (SimUtilities::vectorContains(ARROW_KEYS, INT_TO_KEY.at(key))) {
+    if (ContainerUtilities::vectorContains(ARROW_KEYS, INT_TO_KEY.at(key))) {
         S()->setArrowKeyIsPressed(INT_TO_KEY.at(key), true);
     }
 }
 
 void Controller::specialKeyRelease(int key, int x, int y) {
-    if (!SimUtilities::mapContains(INT_TO_KEY, key)) {
+    if (!ContainerUtilities::mapContains(INT_TO_KEY, key)) {
         return;
     }
-    if (SimUtilities::vectorContains(ARROW_KEYS, INT_TO_KEY.at(key))) {
+    if (ContainerUtilities::vectorContains(ARROW_KEYS, INT_TO_KEY.at(key))) {
         S()->setArrowKeyIsPressed(INT_TO_KEY.at(key), false);
     }
 }

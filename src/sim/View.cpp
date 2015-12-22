@@ -259,7 +259,6 @@ void View::drawFullAndZoomedMaps(
 
     // Render the full map
     glScissor(fullMapPosition.first, fullMapPosition.second, fullMapSize.first, fullMapSize.second);
-    // TODO: MACK - refactor this, make address operator easier to see/understand
     program->setUniformMatrix4("transformationMatrix",
         &TransformationMatrix::getFullMapTransformationMatrix(
             Meters(P()->wallWidth()),

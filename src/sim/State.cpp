@@ -1,10 +1,10 @@
 #include "State.h"
 
 #include "Assert.h"
+#include "ContainerUtilities.h"
 #include "Key.h"
 #include "Logging.h"
 #include "Param.h"
-#include "SimUtilities.h"
 
 namespace sim {
 
@@ -166,22 +166,22 @@ void State::setSimSpeed(double simSpeed) {
 }
 
 bool State::inputButtonWasPressed(int inputButton) {
-    ASSERT_TR(SimUtilities::mapContains(m_inputButtons, inputButton));
+    ASSERT_TR(ContainerUtilities::mapContains(m_inputButtons, inputButton));
     return m_inputButtons.at(inputButton);
 }
 
 void State::setInputButtonWasPressed(int inputButton, bool pressed) {
-    ASSERT_TR(SimUtilities::mapContains(m_inputButtons, inputButton));
+    ASSERT_TR(ContainerUtilities::mapContains(m_inputButtons, inputButton));
     m_inputButtons.at(inputButton) = pressed;
 }
 
 bool State::arrowKeyIsPressed(Key key) {
-    ASSERT_TR(SimUtilities::mapContains(m_arrowKeys, key));
+    ASSERT_TR(ContainerUtilities::mapContains(m_arrowKeys, key));
     return m_arrowKeys.at(key);
 }
 
 void State::setArrowKeyIsPressed(Key key, bool pressed) {
-    ASSERT_TR(SimUtilities::mapContains(m_arrowKeys, key));
+    ASSERT_TR(ContainerUtilities::mapContains(m_arrowKeys, key));
     m_arrowKeys.at(key) = pressed;
 }
 

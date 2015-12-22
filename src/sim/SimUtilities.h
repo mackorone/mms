@@ -1,14 +1,12 @@
 #pragma once
 
 #include <algorithm>
-#include <set>
 #include <string>
 #include <vector>
 
-#include "units/Duration.h"
-
 #include "Direction.h"
 #include "Maze.h"
+#include "units/Duration.h"
 
 namespace sim {
 
@@ -62,24 +60,6 @@ public:
 
     // Remove oldest runs from the run/ directory if necessary
     static void removeExcessArchivedRuns();
-
-    // Returns whether or not a vector contains a particular item
-    template<class T>
-    static bool vectorContains(const std::vector<T>& vector, T item) {
-        return std::find(vector.begin(), vector.end(), item) != vector.end();
-    }
-
-    // Returns whether or not a set contains a particular key
-    template<class T>
-    static bool setContains(const std::set<T>& set, T item) {
-        return set.find(item) != set.end();
-    }
-
-    // Returns whether or not a map contains a particular key
-    template<class K, class V>
-    static bool mapContains(const std::map<K, V>& map, K key) {
-        return map.find(key) != map.end();
-    }
 
 };
 

@@ -1,5 +1,6 @@
 #include "MazeInterface.h"
 
+#include "ContainerUtilities.h"
 #include "Logging.h"
 #include "SimUtilities.h"
 
@@ -42,7 +43,7 @@ void MazeInterface::setWall(int x, int y, char direction, bool wallExists) {
         return;
     }
 
-    if (!SimUtilities::mapContains(CHAR_TO_DIRECTION, direction)) {
+    if (!ContainerUtilities::mapContains(CHAR_TO_DIRECTION, direction)) {
         L()->warn("The character '%v' is not mapped to a valid direction.", direction);
         return;
     }

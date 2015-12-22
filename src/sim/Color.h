@@ -3,6 +3,8 @@
 #include <map>
 #include <tuple>
 
+#include "ContainerUtilities.h"
+
 namespace sim {
 
 enum class Color {
@@ -41,7 +43,7 @@ static const std::map<Color, std::tuple<double, double, double>> COLOR_TO_RGB {
     {Color::DARK_YELLOW, std::make_tuple(0.1, 0.1, 0.0)},
 };
 
-static const std::map<Color, std::string> COLOR_TO_STRING = {
+static const std::map<Color, std::string> COLOR_TO_STRING {
     {Color::BLACK      , "BLACK"      },
     {Color::BLUE       , "BLUE"       },
     {Color::CYAN       , "CYAN"       },
@@ -59,43 +61,10 @@ static const std::map<Color, std::string> COLOR_TO_STRING = {
     {Color::DARK_YELLOW, "DARK_YELLOW"},
 };
 
-static const std::map<std::string, Color> STRING_TO_COLOR = {
-    {"BLACK"      , Color::BLACK      },
-    {"BLUE"       , Color::BLUE       },
-    {"CYAN"       , Color::CYAN       },
-    {"GRAY"       , Color::GRAY       },
-    {"GREEN"      , Color::GREEN      },
-    {"ORANGE"     , Color::ORANGE     },
-    {"RED"        , Color::RED        },
-    {"WHITE"      , Color::WHITE      },
-    {"YELLOW"     , Color::YELLOW     },
-    {"DARK_BLUE"  , Color::DARK_BLUE  },
-    {"DARK_CYAN"  , Color::DARK_CYAN  },
-    {"DARK_GRAY"  , Color::DARK_GRAY  },
-    {"DARK_GREEN" , Color::DARK_GREEN },
-    {"DARK_RED"   , Color::DARK_RED   },
-    {"DARK_YELLOW", Color::DARK_YELLOW},
-};
+static const std::map<std::string, Color> STRING_TO_COLOR =
+    ContainerUtilities::inverse(COLOR_TO_STRING);
 
-static const std::map<char, Color> CHAR_TO_COLOR = {
-    {'k', Color::BLACK      },
-    {'b', Color::BLUE       },
-    {'a', Color::GRAY       },
-    {'c', Color::CYAN       },
-    {'g', Color::GREEN      },
-    {'o', Color::ORANGE     },
-    {'r', Color::RED        },
-    {'w', Color::WHITE      },
-    {'y', Color::YELLOW     },
-    {'B', Color::DARK_BLUE  },
-    {'C', Color::DARK_CYAN  },
-    {'A', Color::DARK_GRAY  },
-    {'G', Color::DARK_GREEN },
-    {'R', Color::DARK_RED   },
-    {'Y', Color::DARK_YELLOW},
-};
-
-static const std::map<Color, char> COLOR_TO_CHAR = {
+static const std::map<Color, char> COLOR_TO_CHAR {
     {Color::BLACK      , 'k'},
     {Color::BLUE       , 'b'},
     {Color::GRAY       , 'a'},
@@ -112,5 +81,8 @@ static const std::map<Color, char> COLOR_TO_CHAR = {
     {Color::DARK_RED   , 'R'},
     {Color::DARK_YELLOW, 'Y'},
 };
+
+static const std::map<char, Color> CHAR_TO_COLOR =
+    ContainerUtilities::inverse(COLOR_TO_CHAR);
 
 } // namespace sim

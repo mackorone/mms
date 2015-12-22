@@ -1,5 +1,6 @@
 #include "BufferInterface.h"
 
+#include "ContainerUtilities.h"
 #include "SimUtilities.h"
 
 namespace sim {
@@ -122,7 +123,7 @@ void BufferInterface::updateTileGraphicText(const Tile* tile, int numRows, int n
     double colOffset = col + static_cast<double>(maxRowsAndCols.second - numCols) / 2.0;
 
     int fontImageCharacterIndex = m_fontImageMap.at('?'); // TODO: MACK - default character
-    if (SimUtilities::mapContains(m_fontImageMap, c)) {
+    if (ContainerUtilities::mapContains(m_fontImageMap, c)) {
         fontImageCharacterIndex = m_fontImageMap.at(c);
     }
 

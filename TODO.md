@@ -1,21 +1,14 @@
 # High Priority
 
-- Rename BufferInterface, since it's not actually an interface...
-- ViewUpdater class???
 - Rename draw to something more conspicuous
-- Ensure that the static classes don't contain state
-- Easy mechanism for making sure methods are only executed once'.
-- Separate things into graphics and model
+- Easy mechanism for making sure methods are only executed once.
+- Break up "Options.h", or rename to "Controller Options.h"
+
 - Get rid of the fact that the mouse needs to be passed a pointer to the maze
     - This can be done once the sensors are fast enough to run in the sensor
       loop, then we can just pass the Maze* into the mouse from within the
       World class
-- Break up "Options.h", or rename to "Controller Options.h"
 
-- Move GraphicUtilties to Graphics
-- get rid of P() uses in GraphicUtilities
-
-- Bidirectional map - make this more resilient
 - Fix MackAlgo wall declaration
     - Fix other wall algos...
 

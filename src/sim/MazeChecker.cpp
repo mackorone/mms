@@ -1,8 +1,8 @@
 #include "MazeChecker.h"
 
 #include "Assert.h"
+#include "ContainerUtilities.h"
 #include "Logging.h"
-#include "SimUtilities.h"
 
 namespace sim {
 
@@ -150,7 +150,7 @@ bool MazeChecker::hasNoInaccessibleLocations(const std::vector<std::vector<Basic
                 continue;
             }
             std::pair<int, int> neighbor = positionAfterMovingForward(tile, direction);
-            if (!SimUtilities::setContains(explored, neighbor)) {
+            if (!ContainerUtilities::setContains(explored, neighbor)) {
                 queue.push(neighbor);
             }
         }
@@ -158,7 +158,7 @@ bool MazeChecker::hasNoInaccessibleLocations(const std::vector<std::vector<Basic
     
     for (int x = 0; x < maze.size(); x += 1) {
         for (int y = 0; y < maze.at(x).size(); y += 1) {
-            if (!SimUtilities::setContains(explored, std::make_pair(x, y))) {
+            if (!ContainerUtilities::setContains(explored, std::make_pair(x, y))) {
                 return false;
             }
         }
@@ -177,7 +177,7 @@ bool MazeChecker::hasOneEntranceToCenter(const std::vector<std::vector<BasicTile
     int numberOfEntrances = 0;
     for (std::pair<int, int> tile : centerTiles) {
         for (Direction direction : DIRECTIONS) {
-            if (SimUtilities::vectorContains(centerTiles, positionAfterMovingForward(tile, direction))) {
+            if (ContainerUtilities::vectorContains(centerTiles, positionAfterMovingForward(tile, direction))) {
                 continue;
             }
             if (!maze.at(tile.first).at(tile.second).walls.at(direction)) {
@@ -238,7 +238,7 @@ bool MazeChecker::isUnsolvableByWallFollower(const std::vector<std::vector<Basic
     std::pair<int, int> position = std::make_pair(0, 0);
     Direction direction = Direction::NORTH;
 
-    while (!SimUtilities::setContains(reachableByWallFollower, position)) {
+    while (!ContainerUtilities::setContains(reachableByWallFollower, position)) {
         Direction newDirection = directionAfterRightTurn(direction);
         if (!maze.at(position.first).at(position.second).walls.at(newDirection)) {
             direction = newDirection;
@@ -251,7 +251,7 @@ bool MazeChecker::isUnsolvableByWallFollower(const std::vector<std::vector<Basic
     }
     
     for (std::pair<int, int> tile : getCenterTiles(maze.size(), maze.at(0).size())) {
-        if (SimUtilities::setContains(reachableByWallFollower, tile)) {
+        if (ContainerUtilities::setContains(reachableByWallFollower, tile)) {
             return false;
         }
     }

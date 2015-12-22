@@ -6,7 +6,7 @@
 #include <pugixml/pugixml.hpp>
 
 #include "Assert.h"
-#include "SimUtilities.h"
+#include "ContainerUtilities.h"
 
 namespace sim {
 
@@ -89,7 +89,7 @@ private:
             return defaultValue;
         }
         std::string value = getStringValue(tag);
-        if (!SimUtilities::mapContains(map, value)) {
+        if (!ContainerUtilities::mapContains(map, value)) {
             printNotSpecialString(type, tag, value, defaultValue);
             return defaultValue;
         }   

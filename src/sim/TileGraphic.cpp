@@ -1,8 +1,8 @@
 #include "TileGraphic.h"
 
 #include "Color.h"
+#include "ContainerUtilities.h"
 #include "Param.h"
-#include "SimUtilities.h"
 #include "State.h"
 
 namespace sim {
@@ -13,7 +13,7 @@ TileGraphic::TileGraphic(const Tile* tile, BufferInterface* bufferInterface) :
 }
 
 bool TileGraphic::wallDeclared(Direction direction) const {
-    return SimUtilities::mapContains(m_declaredWalls, direction);
+    return ContainerUtilities::mapContains(m_declaredWalls, direction);
 }
 
 void TileGraphic::setColor(Color color) {
