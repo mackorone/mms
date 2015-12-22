@@ -42,6 +42,9 @@ private:
     int m_windowWidth;
     int m_windowHeight;
 
+    // The number of pixels per meter of screen
+    double m_screenPixelsPerMeter;
+
     // Text drawing object
     TextDrawer* m_textDrawer;
 
@@ -75,31 +78,6 @@ private:
     std::pair<int, int> getFullMapSize(int windowWidth, int windowHeight);
     std::pair<int, int> getZoomedMapSize(int windowWidth, int windowHeight);
 
-    // Maps a pixel coordinate ((0,0) in the bottom left, (width, height) in the upper right)
-    // to the OpenGL coordinate system ((-1,-1) in the bottom left, (1,1) in the upper right)
-    std::pair<double, double> mapPixelCoordinateToOpenGlCoordinate(
-        double x, double y, int windowWidth, int windowHeight);
-
-    // Multiplies two 4x4 matrices together
-    std::vector<float> multiply4x4Matrices(std::vector<float> left, std::vector<float> right);
-
-    // Returns the number of pixels per meter of the screen
-    double getScreenPixelsPerMeter();
-
-    // Retrieve the 4x4 transformation matrices for each map
-    // TODO: MACK: Clean these implementations up
-    std::vector<float> getFullMapTransformationMatrix(
-        std::pair<double, double> physicalMazeSize,
-        std::pair<int, int> fullMapPosition,
-        std::pair<int, int> fullMapSize);
-
-    std::vector<float> getZoomedMapTransformationMatrix(
-        std::pair<double, double> physicalMazeSize,
-        std::pair<int, int> zoomedMapPosition,
-        std::pair<int, int> zoomedMapSize,
-        const Coordinate& initialMouseTranslation,
-        const Coordinate& currentMouseTranslation,
-        const Angle& currentMouseRotation);
 };
 
 } // namespace sim
