@@ -5,6 +5,7 @@
 
 #include "BufferInterface.h"
 #include "Directory.h"
+#include "Layout.h"
 #include "Logging.h"
 #include "Param.h"
 #include "SimUtilities.h"
@@ -236,10 +237,14 @@ void View::drawFullAndZoomedMaps(
         tdogl::Program* program, int vaoId, int vboStartingIndex, int vboEndingIndex) {
 
     // Get the sizes and positions of each of the maps.
-    std::pair<int, int> fullMapPosition = getFullMapPosition(m_windowWidth, m_windowHeight);
-    std::pair<int, int> fullMapSize = getFullMapSize(m_windowWidth, m_windowHeight);
-    std::pair<int, int> zoomedMapPosition = getZoomedMapPosition(m_windowWidth, m_windowHeight);
-    std::pair<int, int> zoomedMapSize = getZoomedMapSize(m_windowWidth, m_windowHeight);
+    std::pair<int, int> fullMapPosition = Layout::getFullMapPosition(
+        m_windowWidth, m_windowHeight, P()->windowBorderWidth(), S()->layoutType());
+    std::pair<int, int> fullMapSize = Layout::getFullMapSize(
+        m_windowWidth, m_windowHeight, P()->windowBorderWidth(), S()->layoutType());
+    std::pair<int, int> zoomedMapPosition = Layout::getZoomedMapPosition(
+        m_windowWidth, m_windowHeight, P()->windowBorderWidth(), S()->layoutType());
+    std::pair<int, int> zoomedMapSize = Layout::getZoomedMapSize(
+        m_windowWidth, m_windowHeight, P()->windowBorderWidth(), S()->layoutType());
 
     // Start using the program and vertex array object
     program->use();
@@ -288,41 +293,6 @@ void View::drawFullAndZoomedMaps(
     if (program == m_textureProgram) {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
-}
-
-std::pair<int, int> View::getFullMapPosition(int windowWidth, int windowHeight) {
-    return std::make_pair(P()->windowBorderWidth(), P()->windowBorderWidth());
-}
-
-std::pair<int, int> View::getZoomedMapPosition(int windowWidth, int windowHeight) {
-    if (S()->layoutType() == LayoutType::BOTH) {
-        return std::make_pair((windowWidth + P()->windowBorderWidth()) / 2, P()->windowBorderWidth());
-    }
-    return std::make_pair(P()->windowBorderWidth(), P()->windowBorderWidth());
-}
-
-std::pair<int, int> View::getFullMapSize(int windowWidth, int windowHeight) {
-    int width = windowWidth - 2 * P()->windowBorderWidth();
-    int height = windowHeight - 2 * P()->windowBorderWidth();
-    if (S()->layoutType() == LayoutType::ZOOMED) {
-        width = 0;
-    }
-    else if (S()->layoutType() == LayoutType::BOTH) {
-        width = (width - P()->windowBorderWidth()) / 2;
-    }
-    return std::make_pair(width, height);
-}
-
-std::pair<int, int> View::getZoomedMapSize(int windowWidth, int windowHeight) {
-    int width = windowWidth - 2 * P()->windowBorderWidth();
-    int height = windowHeight - 2 * P()->windowBorderWidth();
-    if (S()->layoutType() == LayoutType::FULL) {
-        width = 0;
-    }
-    else if (S()->layoutType() == LayoutType::BOTH) {
-        width = (width - P()->windowBorderWidth()) / 2;
-    }
-    return std::make_pair(width, height);
 }
 
 } // namespace sim
