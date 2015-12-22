@@ -3,6 +3,8 @@
 #include <fontstash/fontstash.h>
 #include <string>
 
+#include "ViewData.h" // TODO: MACK
+
 namespace sim {
 
 class TextDrawer {
@@ -15,7 +17,7 @@ public:
 
     // Note that the TextDrawer may only be instantiated after
     // glutInit is called. Thus, you may not declare it statically.
-    TextDrawer(const std::string& font, float size);
+    TextDrawer(const std::string& font, float size, ViewData* data); // TODO: MACK
 
     // Using the class is as easy as calling these methods, in order, during
     // the rendering loop. Commence and conclude should only be called once per
@@ -28,6 +30,8 @@ private:
     sth_stash* m_stash;
     int m_font;
     float m_size;
+
+    ViewData* m_data; // TODO: MACK
 
     // Only one TextDrawer be active at a time. We use a static
     // class member to ensure that this requirement is upheld.

@@ -2,6 +2,7 @@
 
 #include "Color.h"
 #include "Tile.h"
+#include "ViewData.h"
 
 namespace sim {
 
@@ -9,7 +10,7 @@ class TileGraphic {
 
 public:
 
-    TileGraphic(const Tile* tile);
+    TileGraphic(const Tile* tile, ViewData* data);
 
     bool wallDeclared(Direction direction) const;
 
@@ -27,6 +28,7 @@ public:
     
 private:
     const Tile* m_tile;
+    ViewData* m_data; // TODO: MACK
     Color m_color;
     std::map<Direction, bool> m_declaredWalls;
     bool m_foggy;

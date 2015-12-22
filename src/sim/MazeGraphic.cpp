@@ -1,16 +1,14 @@
 #include "MazeGraphic.h"
 
 #include "Assert.h"
-#include "GraphicUtilities.h"
-#include "State.h"
 
 namespace sim {
 
-MazeGraphic::MazeGraphic(const Maze* maze) {
+MazeGraphic::MazeGraphic(const Maze* maze, ViewData* data) {
     for (int x = 0; x < maze->getWidth(); x += 1) {
         std::vector<TileGraphic> column;
         for (int y = 0; y < maze->getHeight(); y += 1) {
-            column.push_back(TileGraphic(maze->getTile(x, y)));
+            column.push_back(TileGraphic(maze->getTile(x, y), data)); // TODO: MACK
         }
         m_tileGraphics.push_back(column);
     }

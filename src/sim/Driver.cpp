@@ -44,6 +44,9 @@ void Driver::drive(int argc, char* argv[]) {
         []() {
             m_view->draw();
         },
+        [](int width, int height) {
+            m_view->setWindowSize(width, height);
+        },
         [](unsigned char key, int x, int y) {
             m_controller->keyPress(key, x, y);
         },

@@ -1,5 +1,9 @@
 # High Priority
 
+- ViewUpdater class???
+- Rename draw to something more conspicuous
+- Ensure that the static classes don't contain state
+- Easy mechanism for making sure methods are only executed once'.
 - Separate things into graphics and model
 - Get rid of the fact that the mouse needs to be passed a pointer to the maze
     - This can be done once the sensors are fast enough to run in the sensor
@@ -9,7 +13,6 @@
 
 - Move GraphicUtilties to Graphics
 - get rid of P() uses in GraphicUtilities
-
 
 - Bidirectional map - make this more resilient
 - Fix MackAlgo wall declaration

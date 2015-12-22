@@ -2,15 +2,15 @@
 
 #include "Assert.h"
 #include "Directory.h"
-#include "GraphicUtilities.h"
 
 namespace sim {
 
 TextDrawer* TextDrawer::m_activeTextDrawer = nullptr;
-TextDrawer::TextDrawer(const std::string& font, float size) :
+TextDrawer::TextDrawer(const std::string& font, float size, ViewData* data) :
     m_stash(sth_create(512, 512)),
     m_font(sth_add_font(m_stash, (Directory::getResFontsDirectory() + font).c_str())),
-    m_size(size) {
+    m_size(size),
+    m_data(data) {
 }
 
 void TextDrawer::commenceDrawingTextForFrame() {
@@ -21,7 +21,7 @@ void TextDrawer::commenceDrawingTextForFrame() {
 void TextDrawer::drawText(float x, float y, const std::string& str) {
     ASSERT_EQ(m_activeTextDrawer, this);
     glLoadIdentity();
-    std::pair<int, int> windowSize = GraphicUtilities::getWindowSize();
+    std::pair<int, int> windowSize = m_data->getWindowSize();
     glOrtho(0, windowSize.first, 0, windowSize.second, -1, 1);
     // TODO: upforgrabs
     // Right now, we use a hack to draw the text approximately "size" pixels

@@ -5,13 +5,14 @@
 #include "Color.h"
 #include "Maze.h"
 #include "TileGraphic.h"
+#include "ViewData.h" // TODO: MACK
 
 namespace sim {
 
 class MazeGraphic {
 
 public:
-    MazeGraphic(const Maze* maze);
+    MazeGraphic(const Maze* maze, ViewData* data); // TODO: MACK
 
     void setTileColor(int x, int y, Color color);
     void declareWall(int x, int y, Direction direction, bool isWall);
