@@ -1,6 +1,8 @@
 #include "BufferInterface.h"
 
+#include "Assert.h"
 #include "ContainerUtilities.h"
+#include "Logging.h"
 #include "SimUtilities.h"
 
 namespace sim {
@@ -122,10 +124,8 @@ void BufferInterface::updateTileGraphicText(const Tile* tile, int numRows, int n
     double rowOffset = rowsFromTop - static_cast<double>(maxRowsAndCols.first - numRows) / 2.0;
     double colOffset = col + static_cast<double>(maxRowsAndCols.second - numCols) / 2.0;
 
-    int fontImageCharacterIndex = m_fontImageMap.at('?'); // TODO: MACK - default character
-    if (ContainerUtilities::mapContains(m_fontImageMap, c)) {
-        fontImageCharacterIndex = m_fontImageMap.at(c);
-    }
+    ASSERT_TR(ContainerUtilities::mapContains(m_fontImageMap, c));
+    int fontImageCharacterIndex = m_fontImageMap.at(c);
 
     VertexTexture p1 = { // LL
         (X + Cartesian(characterWidth *  colOffset     , characterHeight *  rowOffset     )).getX().getMeters(),

@@ -120,6 +120,8 @@ Param::Param() {
         "collision-detection-enabled", true);
     m_crashMessage = parser.getStringIfHasString(
         "crash-message", "CRASH");
+    m_defaultTileTextCharacter = parser.getCharIfHasChar(
+        "default-tile-text-character", '?');
     m_minSleepDuration = parser.getDoubleIfHasDoubleAndInRange(
         "min-sleep-duration", 5, 1, 25);
     m_mousePositionUpdateRate = parser.getIntIfHasIntAndInRange(
@@ -326,6 +328,10 @@ bool Param::collisionDetectionEnabled() {
 
 std::string Param::crashMessage() {
     return m_crashMessage;
+}
+
+char Param::defaultTileTextCharacter() {
+    return m_defaultTileTextCharacter;
 }
 
 double Param::minSleepDuration() {

@@ -7,6 +7,19 @@
     - What to do if a letter is unknown (newline, other whitespace, unicode)?
     - Make sure that the rows and cols specified by the algo are used by the simulator
     - Alignment in the png image (worry about this last)
+    - Fix the fact that the bitmap is initialized in driver but the string of characters is in GraphicUtilities
+    - Assert that a character exsits before we try to draw it to the tile
+    - Check that a font and image exist, print error and die if not
+    - Make a helper method in graphic utilities specifically for toggling tile text
+    - Build a cache with positions already pre-calculated
+    - Use a map instead of a string for quicker search
+    - Update text is too slow... its optimizing time
+    - Make maxRowsAndCols a runtime parameter (make it 2 x 3 for now)
+    - Should we have text alignment be a parameter?
+    - Be able to just show actual distances
+    - Use tile text in Mack algo to print out the costs
+
+
 - Make a voluntary Delay in setTileBaseColor, text
 - Stepper motor
 - Sensor type (digital or analog)
@@ -18,17 +31,6 @@
 - Move some graphics stuff in Driver into GraphicUtilities
 - Change float to units (including in the ParamParser and Param class)
 - Type safety (in terms of units) of the parameters
-- Tile Text
-    - Fix the fact that the bitmap is initialized in driver but the string of characters is in GraphicUtilities
-    - Assert that a character exsits before we try to draw it to the tile
-    - Check that a font and image exist, print error and die if not
-    - Make a helper method in graphic utilities specifically for toggling tile text
-    - Build a cache with positions already pre-calculated
-    - Use a map instead of a string for quicker search
-    - Update text is too slow... it's optimizing time
-    - Make maxRowsAndCols a runtime parameter (make it 2 x 3 for now)
-    - Should we have text alignment be a parameter?
-    - Be able to just show actual distances
 - Put a toolbar at the top or bottom with info
     - Information of the wheel speeds
     - Display a clock (real and sim time)

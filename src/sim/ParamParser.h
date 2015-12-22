@@ -19,18 +19,21 @@ public:
     bool hasBoolValue(const std::string& tag);
     bool hasDoubleValue(const std::string& tag);
     bool hasIntValue(const std::string& tag);
+    bool hasCharValue(const std::string& tag);
     bool hasStringValue(const std::string& tag);
 
     // Retrieve the particular value
     bool getBoolValue(const std::string& tag);
     double getDoubleValue(const std::string& tag);
     int getIntValue(const std::string& tag);
+    char getCharValue(const std::string& tag);
     std::string getStringValue(const std::string& tag);
 
     // Get a value if we can, otherwise return a default
     bool getBoolIfHasBool(const std::string& tag, bool defaultValue);
     double getDoubleIfHasDouble(const std::string& tag, double defaultValue);
     int getIntIfHasInt(const std::string& tag, int defaultValue);
+    char getCharIfHasChar(const std::string& tag, char defaultValue);
     std::string getStringIfHasString(const std::string& tag, const std::string& defaultValue);
 
     // If we can get a numeric value and it's valid then return it, else return default

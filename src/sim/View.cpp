@@ -15,18 +15,21 @@
 
 namespace sim {
 
-// These values must perfectly reflect the font image being used
-// TODO: MACK - make this into a map
-const std::string FONT_IMAGE_CHARS =
-    " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
-
 View::View(Model* model, int argc, char* argv[], const GlutFunctions& functions) : m_model(model) {
 
-    // TODO: MACK - make this more elegant
+    // These values must perfectly reflect the font image being used
+    const std::string FONT_IMAGE_CHARS =
+        " !\"#$%&'()*+,-./0123456789:;<=>?"
+        "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
+        "`abcdefghijklmnopqrstuvwxyz{|}~";
+
+    // Get a map of the font image characters (allowable tile text characters)
+    // to their position in the png image (which is the same as in the string)
     std::map<char, int> fontImageMap;
     for (int i = 0; i < FONT_IMAGE_CHARS.size(); i += 1) {
         fontImageMap.insert(std::make_pair(FONT_IMAGE_CHARS.at(i), i));
     }
+    m_allowableTileTextCharacters = ContainerUtilities::keys(fontImageMap);
 
     m_bufferInterface = new BufferInterface(
         std::make_pair(m_model->getMaze()->getWidth(), m_model->getMaze()->getHeight()),
@@ -130,6 +133,10 @@ void View::updateWindowSize(int width, int height) {
     m_windowWidth = width;
     m_windowHeight = height;
     glViewport(0, 0, width, height);
+}
+
+std::set<char> View::getAllowableTileTextCharacters() {
+    return m_allowableTileTextCharacters;
 }
 
 void View::initGraphics(int argc, char* argv[], const GlutFunctions& functions) {

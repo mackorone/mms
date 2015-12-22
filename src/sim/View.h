@@ -23,6 +23,7 @@ public:
 
     void refresh();
     void updateWindowSize(int width, int height);
+    std::set<char> getAllowableTileTextCharacters();
 
 private:
 
@@ -42,6 +43,9 @@ private:
 
     // The number of pixels per meter of screen
     double m_screenPixelsPerMeter;
+
+    // Allowable tile text characters
+    std::set<char> m_allowableTileTextCharacters;
 
     // Text drawing object
     TextDrawer* m_textDrawer;

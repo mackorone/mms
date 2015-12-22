@@ -58,6 +58,7 @@ public:
     double defaultSimSpeed();
     bool collisionDetectionEnabled();
     std::string crashMessage();
+    char defaultTileTextCharacter();
     double minSleepDuration();
     int mousePositionUpdateRate();
     bool printLateMousePositionUpdates();
@@ -135,6 +136,7 @@ private:
     double m_defaultSimSpeed;
     bool m_collisionDetectionEnabled;
     std::string m_crashMessage;
+    char m_defaultTileTextCharacter;
     double m_minSleepDuration;
     int m_mousePositionUpdateRate;
     bool m_printLateMousePostitionUpdates;

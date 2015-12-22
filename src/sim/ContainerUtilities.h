@@ -34,6 +34,16 @@ public:
         return map.find(key) != map.end();
     }
 
+    // Returns the keys of a map
+    template<class K, class V>
+    static std::set<K> keys(const std::map<K, V>& map) {
+        std::set<K> keys;
+        for (auto it = map.begin(); it != map.end(); it++) {
+            keys.insert(it->first);
+        }
+        return keys;
+    }
+
     // Returns the inverse of a map, fails if there are dupliate values
     template<class K, class V>
     static std::map<V, K> inverse(const std::map<K, V>& map) {

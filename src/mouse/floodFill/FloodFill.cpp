@@ -19,7 +19,9 @@ bool FloodFill::setTileBaseColorWhenDistanceDeclaredCorrectly() const {
 void FloodFill::solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse) {
-    
+    mouse->setTileText(1, 1, "\r\n\t?");
+    return;
+
     // Store a reference to the interface
     m_mouse = mouse;
 

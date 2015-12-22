@@ -27,6 +27,7 @@ public:
         const Maze* maze,
         Mouse* mouse,
         MazeGraphic* mazeGraphic,
+        std::set<char> allowableTileTextCharacters,
         MouseInterfaceOptions options);
 
     // ----- Any interface methods ----- //
@@ -107,6 +108,7 @@ private:
     const Maze* m_maze;
     Mouse* m_mouse;
     MazeGraphic* m_mazeGraphic;
+    std::set<char> m_allowableTileTextCharacters;
     MouseInterfaceOptions m_options;
 
     // Cache of tiles, for making clearAll methods faster

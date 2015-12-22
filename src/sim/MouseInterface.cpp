@@ -21,10 +21,12 @@ MouseInterface::MouseInterface(
         const Maze* maze,
         Mouse* mouse,
         MazeGraphic* mazeGraphic,
+        std::set<char> allowableTileTextCharacters, 
         MouseInterfaceOptions options) :
         m_maze(maze),
         m_mouse(mouse),
         m_mazeGraphic(mazeGraphic),
+        m_allowableTileTextCharacters(allowableTileTextCharacters),
         m_options(options) {
 }
 
@@ -112,9 +114,25 @@ void MouseInterface::setTileText(int x, int y, const std::string& text) {
     int row = 0;
     int index = 0;
     while (row < m_options.tileTextNumberOfRows && index < text.size()) {
-        rowsOfText.push_back(text.substr(index, m_options.tileTextNumberOfCols));
+        std::string rowOfText;
+        while (index < (row + 1) * m_options.tileTextNumberOfCols && index < text.size()) {
+            char c = text.at(index);
+            if (!ContainerUtilities::setContains(m_allowableTileTextCharacters, c)) {
+                L()->warn(
+                    "Unable to set the tile text for unprintable character \"%v\"."
+                    " Using the character \"%v\" instead.",
+                    (c == '\n' ? "\\n" :
+                    (c == '\t' ? "\\t" :
+                    (c == '\r' ? "\\r" :
+                    std::to_string(c)))),
+                    P()->defaultTileTextCharacter());
+                c = P()->defaultTileTextCharacter();
+            }
+            rowOfText += c;
+            index += 1;
+        }
+        rowsOfText.push_back(rowOfText); 
         row += 1;
-        index = row * m_options.tileTextNumberOfCols;
     }
     m_mazeGraphic->setTileText(x, y, rowsOfText);
     m_tilesWithText.insert(std::make_pair(x, y));

@@ -36,21 +36,31 @@ Controller::Controller(Model* model, View* view) : m_model(model), m_view(view) 
         m_model->getMouse()
     );
 
-    m_mouseInterface = new MouseInterface(m_model->getMaze(), m_model->getMouse(), m_view->getMazeGraphic(), {
-        m_mouseAlgorithm->declareWallOnRead(),
-        m_mouseAlgorithm->declareBothWallHalves(),
-        m_mouseAlgorithm->setTileTextWhenDistanceDeclared(),
-        m_mouseAlgorithm->setTileBaseColorWhenDistanceDeclaredCorrectly(),
-        m_mouseAlgorithm->wheelSpeedFraction(),
-        m_mouseAlgorithm->tileTextNumberOfRows(),
-        m_mouseAlgorithm->tileTextNumberOfCols(),
-        STRING_TO_INTERFACE_TYPE.at(m_mouseAlgorithm->interfaceType())
-    });
+    m_mouseInterface = new MouseInterface(
+        m_model->getMaze(),
+        m_model->getMouse(),
+        m_view->getMazeGraphic(),
+        m_view->getAllowableTileTextCharacters(),
+        {
+            m_mouseAlgorithm->declareWallOnRead(),
+            m_mouseAlgorithm->declareBothWallHalves(),
+            m_mouseAlgorithm->setTileTextWhenDistanceDeclared(),
+            m_mouseAlgorithm->setTileBaseColorWhenDistanceDeclaredCorrectly(),
+            m_mouseAlgorithm->wheelSpeedFraction(),
+            m_mouseAlgorithm->tileTextNumberOfRows(),
+            m_mouseAlgorithm->tileTextNumberOfCols(),
+            STRING_TO_INTERFACE_TYPE.at(m_mouseAlgorithm->interfaceType())
+        }
+    );
 
-    m_world = new World(m_model->getMaze(), m_model->getMouse(), m_view->getMazeGraphic(), {
-        m_mouseAlgorithm->automaticallyClearFog(),
-        STRING_TO_INTERFACE_TYPE.at(m_mouseAlgorithm->interfaceType())
-    });
+    m_world = new World(
+        m_model->getMaze(), 
+        m_model->getMouse(), m_view->getMazeGraphic(),
+        {
+            m_mouseAlgorithm->automaticallyClearFog(),
+            STRING_TO_INTERFACE_TYPE.at(m_mouseAlgorithm->interfaceType())
+        }
+    );
 }
 
 IMouseAlgorithm* Controller::getMouseAlgorithm() {
