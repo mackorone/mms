@@ -5,8 +5,6 @@
 
 namespace sim {
 
-class View; // TODO: MACK
-
 class TextDrawer {
 
     // This is a convenience class for drawing (relatively) small amounts of
@@ -17,21 +15,19 @@ public:
 
     // Note that the TextDrawer may only be instantiated after
     // glutInit is called. Thus, you may not declare it statically.
-    TextDrawer(const std::string& font, float size, View* view); // TODO: MACK
+    TextDrawer(const std::string& font, float size);
 
     // Using the class is as easy as calling these methods, in order, during
     // the rendering loop. Commence and conclude should only be called once per
     // frame, but note that drawText may be called many times per frame.
     void commenceDrawingTextForFrame();
-    void drawText(float x, float y, const std::string& str);
+    void drawText(float x, float y, int windowWidth, int windowHeight, const std::string& str);
     void concludeDrawingTextForFrame();
 
 private:
     sth_stash* m_stash;
     int m_font;
     float m_size;
-
-    View* m_view; // TODO: MACK
 
     // Only one TextDrawer be active at a time. We use a static
     // class member to ensure that this requirement is upheld.

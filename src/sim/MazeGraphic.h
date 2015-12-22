@@ -2,18 +2,17 @@
 
 #include <vector>
 
+#include "BufferInterface.h"
 #include "Color.h"
 #include "Maze.h"
 #include "TileGraphic.h"
 
 namespace sim {
 
-class View; // TODO: MACK
-
 class MazeGraphic {
 
 public:
-    MazeGraphic(const Maze* maze, View* view); // TODO: MACK
+    MazeGraphic(const Maze* maze, BufferInterface* bufferInterface);
 
     void setTileColor(int x, int y, Color color);
     void declareWall(int x, int y, Direction direction, bool isWall);

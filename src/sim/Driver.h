@@ -16,6 +16,7 @@ private:
     static Model* m_model;
     static View* m_view;
     static Controller* m_controller;
+
 };
 
 } // namespace sim

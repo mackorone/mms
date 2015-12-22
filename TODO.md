@@ -1,5 +1,6 @@
 # High Priority
 
+- Rename BufferInterface, since it's not actually an interface...
 - ViewUpdater class???
 - Rename draw to something more conspicuous
 - Ensure that the static classes don't contain state

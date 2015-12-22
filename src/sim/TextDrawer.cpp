@@ -3,16 +3,13 @@
 #include "Assert.h"
 #include "Directory.h"
 
-#include "View.h" // TODO: MACK
-
 namespace sim {
 
 TextDrawer* TextDrawer::m_activeTextDrawer = nullptr;
-TextDrawer::TextDrawer(const std::string& font, float size, View* view) :
-    m_stash(sth_create(512, 512)),
-    m_font(sth_add_font(m_stash, (Directory::getResFontsDirectory() + font).c_str())),
-    m_size(size),
-    m_view(view) {
+TextDrawer::TextDrawer(const std::string& font, float size) :
+        m_stash(sth_create(512, 512)),
+        m_font(sth_add_font(m_stash, (Directory::getResFontsDirectory() + font).c_str())),
+        m_size(size) {
 }
 
 void TextDrawer::commenceDrawingTextForFrame() {
@@ -20,11 +17,10 @@ void TextDrawer::commenceDrawingTextForFrame() {
     m_activeTextDrawer = this;
 }
 
-void TextDrawer::drawText(float x, float y, const std::string& str) {
+void TextDrawer::drawText(float x, float y, int windowWidth, int windowHeight, const std::string& str) {
     ASSERT_EQ(m_activeTextDrawer, this);
     glLoadIdentity();
-    std::pair<int, int> windowSize = m_view->getWindowSize();
-    glOrtho(0, windowSize.first, 0, windowSize.second, -1, 1);
+    glOrtho(0, windowWidth, 0, windowHeight, -1, 1);
     // TODO: upforgrabs
     // Right now, we use a hack to draw the text approximately "size" pixels
     // tall: simply multiply the given value by 1.6. It'd be nice to figure out

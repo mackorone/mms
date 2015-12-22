@@ -4,11 +4,11 @@
 
 namespace sim {
 
-MazeGraphic::MazeGraphic(const Maze* maze, View* view) {
+MazeGraphic::MazeGraphic(const Maze* maze, BufferInterface* bufferInterface) {
     for (int x = 0; x < maze->getWidth(); x += 1) {
         std::vector<TileGraphic> column;
         for (int y = 0; y < maze->getHeight(); y += 1) {
-            column.push_back(TileGraphic(maze->getTile(x, y), view)); // TODO: MACK
+            column.push_back(TileGraphic(maze->getTile(x, y), bufferInterface));
         }
         m_tileGraphics.push_back(column);
     }

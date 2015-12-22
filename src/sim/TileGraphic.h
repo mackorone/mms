@@ -1,17 +1,16 @@
 #pragma once
 
+#include "BufferInterface.h"
 #include "Color.h"
 #include "Tile.h"
 
 namespace sim {
 
-class View; // TODO: MACK
-
 class TileGraphic {
 
 public:
 
-    TileGraphic(const Tile* tile, View* view); // TODO: MACK
+    TileGraphic(const Tile* tile, BufferInterface* bufferInterface);
 
     bool wallDeclared(Direction direction) const;
 
@@ -29,7 +28,8 @@ public:
     
 private:
     const Tile* m_tile;
-    View* m_view; // TODO: MACK
+    BufferInterface* m_bufferInterface;
+
     Color m_color;
     std::map<Direction, bool> m_declaredWalls;
     bool m_foggy;

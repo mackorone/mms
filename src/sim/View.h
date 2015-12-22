@@ -21,28 +21,10 @@ public:
     MazeGraphic* getMazeGraphic();
     MouseGraphic* getMouseGraphic();
 
-    // TODO: MACK - this is confusing, since this draw method is called frequently but the others aren't
+    // TODO: MACK - this is confusing, since this draw method is called
+    // frequently but the others aren't
     void draw();
-
-    // Get and set the window size, in pixels
-    std::pair<int, int> getWindowSize();
-    void setWindowSize(int width, int height);
-
-    // Returns the maximum number of rows and columns of text in a tile graphic
-    std::pair<int, int> getTileGraphicTextMaxSize(); // TODO: MACK - shouldn't need to be public...
-
-    // Fills the GRAPHIC_CPU_BUFFER and TEXTURE_CPU_BUFFER
-    void insertIntoGraphicCpuBuffer(const Polygon& polygon, Color color, double alpha);
-    void insertIntoTextureCpuBuffer();
-
-    // These methods are inexpensive, and may be called many times
-    void updateTileGraphicBaseColor(int x, int y, Color color);
-    void updateTileGraphicWallColor(int x, int y, Direction direction, Color color, double alpha);
-    void updateTileGraphicFog(int x, int y, double alpha);
-    void updateTileGraphicText(const Tile* tile, int numRows, int numCols, int row, int col, char c);
-
-    // Appends a mouse polygon to the GRAPHIC_CPU_BUFFER
-    void drawMousePolygon(const Polygon& polygon, Color color, double sensorAlpha);
+    void updateWindowSize(int width, int height);
 
 private:
 
@@ -51,9 +33,10 @@ private:
     MazeGraphic* m_mazeGraphic;
     MouseGraphic* m_mouseGraphic;
 
-    // CPU-side buffers
-    std::vector<TriangleGraphic> GRAPHIC_CPU_BUFFER;
-    std::vector<TriangleTexture> TEXTURE_CPU_BUFFER;
+    // CPU-side buffers, and interface
+    std::vector<TriangleGraphic> m_graphicCpuBuffer;
+    std::vector<TriangleTexture> m_textureCpuBuffer;
+    BufferInterface* m_bufferInterface;
 
     // The window size, in pixels
     int m_windowWidth;
@@ -117,20 +100,6 @@ private:
         const Coordinate& initialMouseTranslation,
         const Coordinate& currentMouseTranslation,
         const Angle& currentMouseRotation);
-
-    // Converts a polygon to a vector of triangle graphics or triangle textures
-    std::vector<TriangleGraphic> polygonToTriangleGraphics(const Polygon& polygon, Color color, double alpha);
-
-    // Retrieve the indices into the GRAPHIC_CPU_BUFFER for each specific type of Tile triangle
-    int trianglesPerTile();
-    int getTileGraphicBaseStartingIndex(int x, int y);
-    int getTileGraphicWallStartingIndex(int x, int y, Direction direction);
-    int getTileGraphicCornerStartingIndex(int x, int y, int cornerNumber);
-    int getTileGraphicFogStartingIndex(int x, int y);
-
-    // Retrieve the indices into the TEXTURE_CPU_BUFFER
-    int getTileGraphicTextStartingIndex(int x, int y, int row, int col);
-
 };
 
 } // namespace sim
