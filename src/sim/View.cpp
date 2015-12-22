@@ -33,10 +33,11 @@ View::View(Model* model, int argc, char* argv[], const GlutFunctions& functions)
 
     m_bufferInterface = new BufferInterface(
         std::make_pair(m_model->getMaze()->getWidth(), m_model->getMaze()->getHeight()),
-        std::make_pair(2, 4), // TODO: MACK - actually max size here...
+        std::make_pair(2, 6), // TODO: MACK - actually max size here...
         fontImageMap,
         &m_graphicCpuBuffer,
         &m_textureCpuBuffer);
+
     m_mazeGraphic = new MazeGraphic(model->getMaze(), m_bufferInterface);
     m_mouseGraphic = new MouseGraphic(model->getMouse(), m_bufferInterface);
 

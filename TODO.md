@@ -1,24 +1,23 @@
 # High Priority
 
 - Arbitrary tile text
-    - Alignment in tile (left alignged, right aligned)
+    - Fix the stretching-shrinking of the text
     - Make a note about text wrapping
-    - Make a note about unknown characters
-    - What to do if a letter is unknown (newline, other whitespace, unicode)?
+    - Alignment in tile (left alignged, right aligned)
     - Make sure that the rows and cols specified by the algo are used by the simulator
+
     - Alignment in the png image (worry about this last)
     - Fix the fact that the bitmap is initialized in driver but the string of characters is in GraphicUtilities
-    - Assert that a character exsits before we try to draw it to the tile
+
     - Check that a font and image exist, print error and die if not
     - Make a helper method in graphic utilities specifically for toggling tile text
-    - Build a cache with positions already pre-calculated
-    - Use a map instead of a string for quicker search
     - Update text is too slow... its optimizing time
-    - Make maxRowsAndCols a runtime parameter (make it 2 x 3 for now)
-    - Should we have text alignment be a parameter?
+        - Build a cache with positions already pre-calculated
+
     - Be able to just show actual distances
     - Use tile text in Mack algo to print out the costs
 
+- Organize params in res/parameters.xml and Param.h/.cpp
 
 - Make a voluntary Delay in setTileBaseColor, text
 - Stepper motor

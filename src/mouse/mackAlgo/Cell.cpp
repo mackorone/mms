@@ -93,6 +93,7 @@ float Cell::getDistance() const {
 
 void Cell::setDistance(float distance) {
     m_distance = distance;
+    m_mouse->setTileText(m_x, m_y, std::to_string(distance));
 }
 
 bool Cell::getExamined() const {
