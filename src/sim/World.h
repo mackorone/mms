@@ -5,7 +5,7 @@
 #include "Maze.h"
 #include "MazeGraphic.h"
 #include "Mouse.h"
-#include "Options.h"
+#include "WorldOptions.h"
 
 namespace sim {
 

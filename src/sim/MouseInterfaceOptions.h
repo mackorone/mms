@@ -15,9 +15,4 @@ struct MouseInterfaceOptions {
     InterfaceType interfaceType;
 };
 
-struct WorldOptions {
-    bool automaticallyClearFog;
-    InterfaceType interfaceType;
-};
-
 } // namespace sim

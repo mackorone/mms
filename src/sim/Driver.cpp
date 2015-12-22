@@ -2,6 +2,7 @@
 
 #include "Assert.h"
 #include "Logging.h"
+#include "OnlyExecuteOnce.h"
 #include "Param.h"
 #include "SimUtilities.h"
 #include "State.h"
@@ -16,9 +17,7 @@ Controller* Driver::m_controller;
 void Driver::drive(int argc, char* argv[]) {
 
     // Make sure that this function is called just once
-    static bool alreadyCalled = false;
-    ASSERT_FA(alreadyCalled);
-    alreadyCalled = true;
+    ONLY_EXECUTE_ONCE;
 
     // First, determine the start time of the program
     double startTime = SimUtilities::getHighResTime();
@@ -42,7 +41,7 @@ void Driver::drive(int argc, char* argv[]) {
     m_model = new Model();
     m_view = new View(m_model, argc, argv, {
         []() {
-            m_view->draw();
+            m_view->refresh();
         },
         [](int width, int height) {
             m_view->updateWindowSize(width, height);

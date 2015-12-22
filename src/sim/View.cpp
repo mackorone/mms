@@ -30,7 +30,7 @@ View::View(Model* model, int argc, char* argv[], const GlutFunctions& functions)
 
     m_bufferInterface = new BufferInterface(
         std::make_pair(m_model->getMaze()->getWidth(), m_model->getMaze()->getHeight()),
-        std::make_pair(2, 4),    // TODO: MACK - actually max size here...
+        std::make_pair(2, 4), // TODO: MACK - actually max size here...
         fontImageMap,
         &m_graphicCpuBuffer,
         &m_textureCpuBuffer);
@@ -59,7 +59,7 @@ MouseGraphic* View::getMouseGraphic() {
     return m_mouseGraphic;
 }
 
-void View::draw() {
+void View::refresh() {
 
     // In order to ensure we're sleeping the correct amount of time, we time
     // the drawing operation and take it into account when we sleep.
@@ -144,8 +144,8 @@ void View::initGraphics(int argc, char* argv[], const GlutFunctions& functions) 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
     glPolygonMode(GL_FRONT_AND_BACK, S()->wireframeMode() ? GL_LINE : GL_FILL);
-    glutDisplayFunc(functions.draw);
-    glutIdleFunc(functions.draw);
+    glutDisplayFunc(functions.refresh);
+    glutIdleFunc(functions.refresh);
     glutReshapeFunc(functions.windowResize);
     glutKeyboardFunc(functions.keyPress);
     glutSpecialFunc(functions.specialKeyPress);

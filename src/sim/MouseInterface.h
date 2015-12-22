@@ -3,7 +3,7 @@
 #include "InterfaceType.h"
 #include "MazeGraphic.h"
 #include "Mouse.h"
-#include "Options.h"
+#include "MouseInterfaceOptions.h"
 #include "Param.h"
 
 // Windows compatibility

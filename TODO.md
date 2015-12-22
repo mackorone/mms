@@ -1,16 +1,12 @@
 # High Priority
 
-- Rename draw to something more conspicuous
-- Easy mechanism for making sure methods are only executed once.
-- Break up "Options.h", or rename to "Controller Options.h"
+- Fix MackAlgo wall declaration
+    - Fix other wall algos...
 
 - Get rid of the fact that the mouse needs to be passed a pointer to the maze
     - This can be done once the sensors are fast enough to run in the sensor
       loop, then we can just pass the Maze* into the mouse from within the
       World class
-
-- Fix MackAlgo wall declaration
-    - Fix other wall algos...
 
 - Arbitrary tile text
     - Alignment in tile (left alignged, right aligned)

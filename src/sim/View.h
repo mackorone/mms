@@ -21,9 +21,7 @@ public:
     MazeGraphic* getMazeGraphic();
     MouseGraphic* getMouseGraphic();
 
-    // TODO: MACK - this is confusing, since this draw method is called
-    // frequently but the others aren't
-    void draw();
+    void refresh();
     void updateWindowSize(int width, int height);
 
 private:

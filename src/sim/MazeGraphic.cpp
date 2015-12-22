@@ -1,6 +1,7 @@
 #include "MazeGraphic.h"
 
 #include "Assert.h"
+#include "OnlyExecuteOnce.h"
 
 namespace sim {
 
@@ -44,9 +45,7 @@ void MazeGraphic::setTileText(int x, int y, const std::vector<std::string>& rows
 void MazeGraphic::draw() const {
 
     // Make sure that this function is only called once
-    static bool alreadyCalled = false;
-    ASSERT_FA(alreadyCalled);
-    alreadyCalled = true;
+    ONLY_EXECUTE_ONCE;
 
     // Fill the GRAPHIC_CPU_BUFFER
     for (int x = 0; x < m_tileGraphics.size(); x += 1) {
