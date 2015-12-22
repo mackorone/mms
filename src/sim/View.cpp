@@ -261,22 +261,20 @@ void View::drawFullAndZoomedMaps(
             m_model->getMaze()->getPhysicalSize(),
             fullMapPosition,
             fullMapSize,
-            m_windowWidth,
-            m_windowHeight).front(), 1, GL_TRUE);
+            std::make_pair(m_windowWidth, m_windowHeight)).front(), 1, GL_TRUE);
     glDrawArrays(GL_TRIANGLES, vboStartingIndex, vboEndingIndex);
 
     // Render the zoomed map
     glScissor(zoomedMapPosition.first, zoomedMapPosition.second, zoomedMapSize.first, zoomedMapSize.second);
     program->setUniformMatrix4("transformationMatrix",
         &TransformationMatrix::getZoomedMapTransformationMatrix(
-            S()->rotateZoomedMap(),
-            m_screenPixelsPerMeter,
-            S()->zoomedMapScale(),
             m_model->getMaze()->getPhysicalSize(),
             zoomedMapPosition,
             zoomedMapSize,
-            m_windowWidth,
-            m_windowHeight,
+            std::make_pair(m_windowWidth, m_windowHeight),
+            m_screenPixelsPerMeter,
+            S()->zoomedMapScale(),
+            S()->rotateZoomedMap(),
             m_model->getMouse()->getInitialTranslation(),
             currentMouseTranslation,
             currentMouseRotation).front(), 1, GL_TRUE);

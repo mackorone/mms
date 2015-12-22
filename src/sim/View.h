@@ -70,6 +70,8 @@ private:
         const Coordinate& currentMouseTranslation, const Angle& currentMouseRotation,
         tdogl::Program* program, int vaoId, int vboStartingIndex, int vboEndingIndex);
 
+    // TODO: MACK - move these to a layout class (or something like that..)
+
     // Return the positions of the full map and zoomed map, in pixels
     std::pair<int, int> getFullMapPosition(int windowWidth, int windowHeight);
     std::pair<int, int> getZoomedMapPosition(int windowWidth, int windowHeight);

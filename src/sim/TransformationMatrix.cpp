@@ -10,8 +10,7 @@ std::vector<float> TransformationMatrix::getFullMapTransformationMatrix(
         std::pair<double, double> physicalMazeSize,
         std::pair<int, int> fullMapPosition,
         std::pair<int, int> fullMapSize,
-        int windowWidth,
-        int windowHeight) {
+        std::pair<int, int> windowSize) {
 
     // The purpose of this function is to produce a 4x4 matrix which, when
     // applied to the physical coordinate within the vertex shader, transforms
@@ -56,8 +55,11 @@ std::vector<float> TransformationMatrix::getFullMapTransformationMatrix(
     double pixelWidth = pixelsPerMeter * physicalWidth;
     double pixelHeight = pixelsPerMeter * physicalHeight;
 
-    std::pair<double, double> openGlOrigin = mapPixelCoordinateToOpenGlCoordinate(0, 0, windowWidth, windowHeight);
-    std::pair<double, double> openGlMazeSize = mapPixelCoordinateToOpenGlCoordinate(pixelWidth, pixelHeight, windowWidth, windowHeight);
+    std::pair<double, double> openGlOrigin =
+        mapPixelCoordinateToOpenGlCoordinate(std::make_pair(0, 0), windowSize);
+    std::pair<double, double> openGlMazeSize =
+        mapPixelCoordinateToOpenGlCoordinate(std::make_pair(pixelWidth, pixelHeight), windowSize);
+
     double openGlWidth = openGlMazeSize.first - openGlOrigin.first;
     double openGlHeight = openGlMazeSize.second - openGlOrigin.second;
 
@@ -75,8 +77,8 @@ std::vector<float> TransformationMatrix::getFullMapTransformationMatrix(
     // the maze is centered within the map boundaries.
     double pixelLowerLeftCornerX = fullMapPosition.first + 0.5 * (fullMapSize.first - pixelWidth);
     double pixelLowerLeftCornerY = fullMapPosition.second + 0.5 * (fullMapSize.second - pixelHeight);
-    std::pair<double, double> openGlLowerLeftCorner = mapPixelCoordinateToOpenGlCoordinate(
-        pixelLowerLeftCornerX, pixelLowerLeftCornerY, windowWidth, windowHeight);
+    std::pair<double, double> openGlLowerLeftCorner =
+        mapPixelCoordinateToOpenGlCoordinate(std::make_pair(pixelLowerLeftCornerX, pixelLowerLeftCornerY), windowSize);
     std::vector<float> translationMatrix = {
         1.0, 0.0, 0.0,  static_cast<float>(openGlLowerLeftCorner.first),
         0.0, 1.0, 0.0, static_cast<float>(openGlLowerLeftCorner.second),
@@ -93,14 +95,13 @@ std::vector<float> TransformationMatrix::getFullMapTransformationMatrix(
 }
 
 std::vector<float> TransformationMatrix::getZoomedMapTransformationMatrix(
-    bool rotateZoomedMap,
-    double screenPixelsPerMeter,
-    double zoomedMapScale,
     std::pair<double, double> physicalMazeSize,
     std::pair<int, int> zoomedMapPosition,
     std::pair<int, int> zoomedMapSize,
-    int windowWidth,
-    int windowHeight,
+    std::pair<int, int> windowSize,
+    double screenPixelsPerMeter,
+    double zoomedMapScale,
+    bool rotateZoomedMap,
     const Coordinate& initialMouseTranslation,
     const Coordinate& currentMouseTranslation,
     const Angle& currentMouseRotation) {
@@ -121,8 +122,11 @@ std::vector<float> TransformationMatrix::getZoomedMapTransformationMatrix(
     double pixelWidth = pixelsPerMeter * physicalWidth;
     double pixelHeight = pixelsPerMeter * physicalHeight;
 
-    std::pair<double, double> openGlOrigin = mapPixelCoordinateToOpenGlCoordinate(0, 0, windowWidth, windowHeight);
-    std::pair<double, double> openGlMazeSize = mapPixelCoordinateToOpenGlCoordinate(pixelWidth, pixelHeight, windowWidth, windowHeight);
+    std::pair<double, double> openGlOrigin =
+        mapPixelCoordinateToOpenGlCoordinate(std::make_pair(0, 0), windowSize);
+    std::pair<double, double> openGlMazeSize =
+        mapPixelCoordinateToOpenGlCoordinate(std::make_pair(pixelWidth, pixelHeight), windowSize);
+
     double openGlWidth = openGlMazeSize.first - openGlOrigin.first;
     double openGlHeight = openGlMazeSize.second - openGlOrigin.second;
 
@@ -150,14 +154,14 @@ std::vector<float> TransformationMatrix::getZoomedMapTransformationMatrix(
     double staticTranslationXPixels = zoomedMapCenterXPixels - centerXPixels;
     double staticTranslationYPixels = zoomedMapCenterYPixels - centerYPixels;
     std::pair<double, double> staticTranslation =
-        mapPixelCoordinateToOpenGlCoordinate(staticTranslationXPixels, staticTranslationYPixels, windowWidth, windowHeight);
+        mapPixelCoordinateToOpenGlCoordinate(std::make_pair(staticTranslationXPixels, staticTranslationYPixels), windowSize);
 
     // Part B: Find the dynamic translation, i.e., the current translation of the mouse.
     Cartesian mouseTranslationDelta = Cartesian(currentMouseTranslation) - initialMouseTranslation;
     double dynamicTranslationXPixels = mouseTranslationDelta.getX().getMeters() * pixelsPerMeter;
     double dynamicTranslationYPixels = mouseTranslationDelta.getY().getMeters() * pixelsPerMeter;
     std::pair<double, double> dynamicTranslation =
-        mapPixelCoordinateToOpenGlCoordinate(dynamicTranslationXPixels, dynamicTranslationYPixels, windowWidth, windowHeight);
+        mapPixelCoordinateToOpenGlCoordinate(std::make_pair(dynamicTranslationXPixels, dynamicTranslationYPixels), windowSize);
 
     // Combine the transalations and form the translation matrix
     double horizontalTranslation = staticTranslation.first -  dynamicTranslation.first + openGlOrigin.first;
@@ -192,7 +196,8 @@ std::vector<float> TransformationMatrix::getZoomedMapTransformationMatrix(
     };
 
     std::pair<double, double> zoomedMapCenterOpenGl =
-        mapPixelCoordinateToOpenGlCoordinate(zoomedMapCenterXPixels, zoomedMapCenterYPixels, windowWidth, windowHeight);
+        mapPixelCoordinateToOpenGlCoordinate(std::make_pair(zoomedMapCenterXPixels, zoomedMapCenterYPixels), windowSize);
+
     std::vector<float> translateToOriginMatrix = {
         1.0, 0.0, 0.0,  static_cast<float>(zoomedMapCenterOpenGl.first),
         0.0, 1.0, 0.0, static_cast<float>(zoomedMapCenterOpenGl.second),
@@ -221,7 +226,17 @@ std::vector<float> TransformationMatrix::getZoomedMapTransformationMatrix(
     return zoomedMapCameraMatrix;
 }
 
-std::vector<float> TransformationMatrix::multiply4x4Matrices(std::vector<float> left, std::vector<float> right) {
+std::pair<double, double> TransformationMatrix::mapPixelCoordinateToOpenGlCoordinate(
+        std::pair<double, double> coordinate,
+        std::pair<int, int> windowSize) {
+    return std::make_pair(
+        2 * coordinate.first / windowSize.first - 1,
+        2 * coordinate.second / windowSize.second - 1);
+}
+
+std::vector<float> TransformationMatrix::multiply4x4Matrices(
+        std::vector<float> left,
+        std::vector<float> right) {
     ASSERT_EQ(left.size(), 16);
     ASSERT_EQ(right.size(), 16);
     std::vector<float> result;
@@ -236,11 +251,6 @@ std::vector<float> TransformationMatrix::multiply4x4Matrices(std::vector<float> 
     }
     ASSERT_EQ(result.size(), 16);
     return result;
-}
-
-std::pair<double, double> TransformationMatrix::mapPixelCoordinateToOpenGlCoordinate(
-        double x, double y, int windowWidth, int windowHeight) {
-    return std::make_pair(2 * x / windowWidth - 1, 2 * y / windowHeight - 1);
 }
 
 } // namespace sim
