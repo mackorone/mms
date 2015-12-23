@@ -2,9 +2,9 @@
 
 #include "../IMouseAlgorithm.h"
 
-namespace manual {
+namespace fontTest {
 
-class Manual : public IMouseAlgorithm {
+class FontTest : public IMouseAlgorithm {
 
 public:
     std::string interfaceType() const;
@@ -14,4 +14,4 @@ public:
 
 };
 
-} // namespace manual
+} // namespace fontTest

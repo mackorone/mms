@@ -2,32 +2,44 @@ import os
 import sys
 import string
 
-# TODO: MACK - Vertical alignment of the lowercase letters :(
-# TODO: MACK - Refactor this to use format strings, methods, etc.
-# TODO: MACK - clean this up, test out lots of fonts
+def end_of_path_index(full_path):
+    return full_path.rfind('/') + 1
 
-if (len(sys.argv) < 2):
-    print('Usage: python ttf2png.py <TTF-FILE>')
-    sys.exit(1)
+def get_path(full_path):
+    return full_path[:end_of_path_index(full_path)]
 
-fontpath = sys.argv[1]
-fontname = fontpath[fontpath.rfind('/') + 1 : fontpath.rfind('.')]
+def get_name(full_path):
+    return full_path[end_of_path_index(full_path):]
 
-# Options for the imagemagick "convert" command
-options = {
-    'background': 'none',
-    'fill': 'gray75',
-    'font': fontpath,
-    'geometry': '{}x'.format(16 * len(open('chars.txt').read())),
-    'gravity': 'center',
-    'pointsize': '32', # This is somewhat arbitrary
-}
+def ttf2png(chars_path, font_path, dest_path):
 
-command = (
-    'convert '
-    + ' '.join('-' + k + ' ' + v for (k, v) in options.items())
-    + ' ' + 'label:@chars.txt'
-    + ' ' + fontname + '.png'
-)
+    options = {
+        'background': 'none',
+        'fill': 'gray75',
+        'font': font_path,
+        'geometry': '{}x'.format(16 * len(open(chars_path).read())),
+        'gravity': 'center',
+        'pointsize': '32', # This is somewhat arbitrary
+    }
 
-os.system(command)
+    command = 'convert {options} {label} {dest_path}'.format(
+        options = ' '.join(
+            '-{} {}'.format(k, v) for (k, v) in options.items()
+        ),
+        label = 'label:@{}'.format(chars_path),
+        dest_path = dest_path,
+    )
+
+    os.system(command)
+
+if __name__ == '__main__':
+
+    if (len(sys.argv) < 2):
+        print('Usage: python ttf2png.py <TTF-FILE>')
+        sys.exit(1)
+
+    chars_path = get_path(sys.argv[0]) + 'chars.txt'
+    font_path = sys.argv[1]
+    font_name = get_name(font_path)
+
+    ttf2png(chars_path, font_path, font_name.replace('.ttf', '.png'))

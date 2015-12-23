@@ -1,22 +1,18 @@
 # High Priority
 
 - Arbitrary tile text
-    - Alignment in the png image (worry about this last)
+    - Put the fonts in with all of the copyright info
     - Fix the stretching-shrinking of the text
     - Make a note about text wrapping
     - Alignment in tile (left alignged, right aligned)
     - Make sure that the rows and cols specified by the algo are used by the simulator
-    - Use a border?
+    - Be able to just show actual distances
     - Fix the fact that the bitmap is initialized in driver but the string of characters is in GraphicUtilities
-    - Check that a font and image exist, print error and die if not
-    - Make a helper method in graphic utilities specifically for toggling tile text
+    - Check that a font exists, print error and die if not
     - Update text is too slow... its optimizing time
         - Build a cache with positions already pre-calculated
-    - Be able to just show actual distances
-
-- Sensors
-
-- millis()
+- Sensor performance
+- millis() function available
 - Make a voluntary Delay in setTileBaseColor, text
 - Stepper motor
 - Sensor type (digital or analog)

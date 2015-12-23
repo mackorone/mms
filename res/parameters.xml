@@ -15,7 +15,7 @@
 <tile-wall-color>RED</tile-wall-color>
 <tile-corner-color>GRAY</tile-corner-color>
 <tile-fog-color>GRAY</tile-fog-color>
-<tile-text-font-image>VeraMono.png</tile-text-font-image>
+<tile-text-font-image>Unispace-Bold.png</tile-text-font-image>
 <tile-undeclared-wall-color>DARK_RED</tile-undeclared-wall-color>
 <tile-undeclared-no-wall-color>DARK_GRAY</tile-undeclared-no-wall-color>
 <tile-incorrectly-declared-wall-color>ORANGE</tile-incorrectly-declared-wall-color>
@@ -70,4 +70,4 @@
 <maze-rotations>0</maze-rotations> <!-- 0-3 counterclockwise rotations -->
 
 <!-- Mouse Parameters -->
-<mouse-algorithm>Manual</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
+<mouse-algorithm>FloodFill</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
