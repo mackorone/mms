@@ -23,7 +23,8 @@ BufferInterface::BufferInterface(
 void BufferInterface::initTileGraphicText(
         std::pair<int, int> tileGraphicTextMaxSize,
         const std::map<char, int>& fontImageMap,
-        double borderFraction) {
+        double borderFraction,
+        TileTextAlignment tileTextAlignment) {
 
     // First we assign the text max size and font image map
     m_tileGraphicTextMaxSize = tileGraphicTextMaxSize;
@@ -92,8 +93,23 @@ void BufferInterface::initTileGraphicText(
                     Cartesian UR = Cartesian(Meters(0), Meters(0));
 
                     if (row < numRows && col < numCols) {
-                        double rowOffset = static_cast<double>(maxRows - numRows) / 2.0;
-                        double colOffset = static_cast<double>(maxCols - numCols) / 2.0;
+
+                        double rowOffset = 0.0;
+                        if (ContainerUtilities::setContains(CENTER_STAR_ALIGNMENTS, tileTextAlignment)) {
+                            rowOffset = static_cast<double>(maxRows - numRows) / 2.0;
+                        }
+                        else if (ContainerUtilities::setContains(UPPER_STAR_ALIGNMENTS, tileTextAlignment)) {
+                            rowOffset = static_cast<double>(maxRows - numRows);
+                        }
+
+                        double colOffset = 0.0;
+                        if (ContainerUtilities::setContains(STAR_CENTER_ALIGNMENTS, tileTextAlignment)) {
+                            colOffset = static_cast<double>(maxCols - numCols) / 2.0;
+                        }
+                        else if (ContainerUtilities::setContains(STAR_RIGHT_ALIGNMENTS, tileTextAlignment)) {
+                            colOffset = static_cast<double>(maxCols - numCols);
+                        }
+
                         LL = Cartesian(
                             Meters(C.getX() + characterWidth * (col + colOffset)),
                             Meters(C.getY() + characterHeight * ((numRows - row - 1) + rowOffset))

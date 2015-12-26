@@ -5,6 +5,7 @@
 #include "LayoutType.h"
 #include "Logging.h"
 #include "SimUtilities.h"
+#include "TileTextAlignment.h"
 
 namespace sim {
 
@@ -132,6 +133,10 @@ std::string ParamParser::getStringIfHasStringAndIsDirection(const std::string& t
 
 std::string ParamParser::getStringIfHasStringAndIsLayoutType(const std::string& tag, const std::string& defaultValue) {
     return getStringIfHasStringAndIsSpecial("layout type", tag, defaultValue, STRING_TO_LAYOUT_TYPE);
+}
+
+std::string ParamParser::getStringIfHasStringAndIsTileTextAlignment(const std::string& tag, const std::string& defaultValue) {
+    return getStringIfHasStringAndIsSpecial("tile text alignment", tag, defaultValue, STRING_TO_TILE_TEXT_ALIGNMENT);
 }
 
 void ParamParser::printTagNotFound(const std::string& type, const std::string& tag, const std::string& defaultValue) {

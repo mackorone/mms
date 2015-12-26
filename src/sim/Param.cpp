@@ -9,6 +9,7 @@
 #include "LayoutType.h"
 #include "Logging.h"
 #include "ParamParser.h"
+#include "TileTextAlignment.h"
 
 namespace sim {
 
@@ -63,6 +64,8 @@ Param::Param() {
         "tile-text-font-image", "VeraMono.png");
     m_tileTextBorderFraction = parser.getDoubleIfHasDoubleAndInRange(
         "tile-text-border-fraction", .05, .00, .50);
+    m_tileTextAlignment = parser.getStringIfHasStringAndIsTileTextAlignment(
+        "tile-text-alignment", TILE_TEXT_ALIGNMENT_TO_STRING.at(TileTextAlignment::CENTER_CENTER));
     m_tileUndeclaredWallColor = parser.getStringIfHasStringAndIsColor(
         "tile-undeclared-wall-color", COLOR_TO_STRING.at(Color::DARK_RED));
     m_tileUndeclaredNoWallColor = parser.getStringIfHasStringAndIsColor(
@@ -236,6 +239,10 @@ std::string Param::tileTextFontImage() {
 
 double Param::tileTextBorderFraction() {
     return m_tileTextBorderFraction;
+}
+
+std::string Param::tileTextAlignment() {
+    return m_tileTextAlignment;
 }
 
 std::string Param::tileUndeclaredWallColor() {

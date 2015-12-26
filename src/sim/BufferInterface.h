@@ -3,6 +3,7 @@
 #include "Color.h"
 #include "Direction.h"
 #include "Polygon.h"
+#include "TileTextAlignment.h"
 #include "TriangleGraphic.h"
 #include "TriangleTexture.h"
 
@@ -23,7 +24,8 @@ public:
     void initTileGraphicText(
         std::pair<int, int> tileGraphicTextMaxSize,
         const std::map<char, int>& fontImageMap,
-        double borderFraction);
+        double borderFraction,
+        TileTextAlignment tileTextAlignment);
 
     // Returns the maximum number of rows and columns of text in a tile graphic
     std::pair<int, int> getTileGraphicTextMaxSize();

@@ -17,6 +17,7 @@
 <tile-fog-color>GRAY</tile-fog-color>
 <tile-text-font-image>Unispace-Bold.png</tile-text-font-image>
 <tile-text-border-fraction>.05</tile-text-border-fraction>
+<tile-text-alignment>CENTER_CENTER</tile-text-alignment>
 <tile-undeclared-wall-color>DARK_RED</tile-undeclared-wall-color>
 <tile-undeclared-no-wall-color>DARK_GRAY</tile-undeclared-no-wall-color>
 <tile-incorrectly-declared-wall-color>ORANGE</tile-incorrectly-declared-wall-color>
@@ -39,7 +40,7 @@
 <!-- Simulation Parameters -->
 <random-seed>12345</random-seed> <!-- The seed value for rand() -->
 <use-random-seed>false</use-random-seed> <!-- Whether or not to use the seed value -->
-<collision-detection-enabled>false</collision-detection-enabled>
+<collision-detection-enabled>true</collision-detection-enabled>
 <crash-message>Oh no! Your mouse crashed! It can't move anymore...</crash-message>
 <default-tile-text-character>?</default-tile-text-character>
 <glut-init-duration>0.1</glut-init-duration> <!-- Seconds -->
@@ -71,4 +72,4 @@
 <maze-rotations>0</maze-rotations> <!-- 0-3 counterclockwise rotations -->
 
 <!-- Mouse Parameters -->
-<mouse-algorithm>MackAlgo</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
+<mouse-algorithm>FloodFill</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->

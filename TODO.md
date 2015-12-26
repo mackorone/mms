@@ -1,15 +1,9 @@
 # High Priority
 
 - Arbitrary tile text
+    - Be able to just show actual distances (just talk about these...)
     - Make a note about text automatically wrapping (does the distance text do this???)
-    - Fix the stretching-shrinking of the text (keep the ratios the same)
-    - Alignment in tile (left alignged, right aligned)
-    - Make sure that the rows and cols specified by the algo are used by the simulator
-    - Be able to just show actual distances
-    - Update text is too slow... its optimizing time
-        - Build a cache with positions already pre-calculated
-        - Pull out the tile text cache into a separate class
-    - Border around the outside of the text (check this)
+    - Pull out the tile text cache into a separate class
 - Sensor performance
     - Get rid of the fact that the mouse needs to be passed a pointer to the maze
         - This can be done once the sensors are fast enough to run in the sensor

@@ -128,7 +128,7 @@ void View::initTileGraphicText(std::pair<int, int> tileTextMaxSize) {
 
     // These values must perfectly reflect the font image being used, or else
     // the wrong characters will be displayed on the tiles.
-    const std::string FONT_IMAGE_CHARS =
+    const std::string fontImageChars =
         " !\"#$%&'()*+,-./0123456789:;<=>?"
         "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
         "`abcdefghijklmnopqrstuvwxyz{|}~";
@@ -136,13 +136,17 @@ void View::initTileGraphicText(std::pair<int, int> tileTextMaxSize) {
     // Get a map of the font image characters (allowable tile text characters)
     // to their position in the png image (which is the same as in the string)
     std::map<char, int> fontImageMap;
-    for (int i = 0; i < FONT_IMAGE_CHARS.size(); i += 1) {
-        fontImageMap.insert(std::make_pair(FONT_IMAGE_CHARS.at(i), i));
+    for (int i = 0; i < fontImageChars.size(); i += 1) {
+        fontImageMap.insert(std::make_pair(fontImageChars.at(i), i));
     }
     m_allowableTileTextCharacters = ContainerUtilities::keys(fontImageMap);
 
     // Initialze the tile text in the buffer class, do caching for speed improvement
-    m_bufferInterface->initTileGraphicText(tileTextMaxSize, fontImageMap, P()->tileTextBorderFraction());
+    m_bufferInterface->initTileGraphicText(
+        tileTextMaxSize,
+        fontImageMap,
+        P()->tileTextBorderFraction(),
+        STRING_TO_TILE_TEXT_ALIGNMENT.at(P()->tileTextAlignment()));
 }
 
 void View::initGraphics(int argc, char* argv[], const GlutFunctions& functions) {
