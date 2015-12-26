@@ -96,11 +96,11 @@ void BufferInterface::initTileGraphicText(
                         double colOffset = static_cast<double>(maxCols - numCols) / 2.0;
                         LL = Cartesian(
                             Meters(C.getX() + characterWidth * (col + colOffset)),
-                            Meters(C.getY() + characterHeight * (row + rowOffset))
+                            Meters(C.getY() + characterHeight * ((numRows - row - 1) + rowOffset))
                         );
                         UR = Cartesian(
                             Meters(C.getX() + characterWidth * (col + colOffset + 1)),
-                            Meters(C.getY() + characterHeight * (row + rowOffset + 1))
+                            Meters(C.getY() + characterHeight * ((numRows - row - 1) + rowOffset + 1))
                         );
                     }
 
