@@ -36,6 +36,12 @@ Controller::Controller(Model* model, View* view) : m_model(model), m_view(view) 
         m_model->getMouse()
     );
 
+    // TODO: MACK - validate here (non-negative)
+    m_view->initTileGraphicText(
+        std::make_pair(
+            m_mouseAlgorithm->tileTextNumberOfRows(),
+            m_mouseAlgorithm->tileTextNumberOfCols()));
+
     m_mouseInterface = new MouseInterface(
         m_model->getMaze(),
         m_model->getMouse(),

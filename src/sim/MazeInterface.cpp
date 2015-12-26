@@ -47,6 +47,7 @@ void MazeInterface::setWall(int x, int y, char direction, bool wallExists) {
         L()->warn("The character '%v' is not mapped to a valid direction.", direction);
         return;
     }
+
     m_basicMaze->at(x).at(y).walls.at(CHAR_TO_DIRECTION.at(direction)) = wallExists;
 }
 

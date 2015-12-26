@@ -115,11 +115,10 @@ void TileGraphic::updateText() const {
     for (int row = 0; row < maxRowsAndCols.first; row += 1) {
         for (int col = 0; col < maxRowsAndCols.second; col += 1) {
             m_bufferInterface->updateTileGraphicText(
-                m_tile,
+                m_tile->getX(),
+                m_tile->getY(),
                 std::min(static_cast<int>(rows.size()), maxRowsAndCols.first),
-                std::min(
-                    static_cast<int>((row < rows.size() ? rows.at(row).size() : 0)),
-                    maxRowsAndCols.second),
+                std::min(static_cast<int>((row < rows.size() ? rows.at(row).size() : 0)), maxRowsAndCols.second),
                 row,
                 col,
                 (S()->tileTextVisible() && row < rows.size() && col < rows.at(row).size() ? rows.at(row).at(col) : ' '));

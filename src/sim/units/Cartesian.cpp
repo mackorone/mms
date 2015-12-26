@@ -25,6 +25,10 @@ Cartesian Cartesian::operator-(const Coordinate& coordinate) const {
     return Cartesian(getX() - coordinate.getX(), getY() - coordinate.getY());
 }
 
+Cartesian Cartesian::operator*(double factor) const {
+    return Cartesian(getX() * factor, getY() * factor);
+}
+
 Cartesian Cartesian::operator/(double factor) const {
     return Cartesian(getX() / factor, getY() / factor);
 }

@@ -24,6 +24,7 @@ public:
     void refresh();
     void updateWindowSize(int width, int height);
     std::set<char> getAllowableTileTextCharacters();
+    void initTileGraphicText(std::pair<int, int> tileGraphicTextMaxSize);
 
 private:
 

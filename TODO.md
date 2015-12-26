@@ -1,17 +1,20 @@
 # High Priority
 
 - Arbitrary tile text
-    - Put the fonts in with all of the copyright info
-    - Fix the stretching-shrinking of the text
-    - Make a note about text wrapping
+    - Make a note about text automatically wrapping (does the distance text do this???)
+    - Fix the stretching-shrinking of the text (keep the ratios the same)
     - Alignment in tile (left alignged, right aligned)
     - Make sure that the rows and cols specified by the algo are used by the simulator
     - Be able to just show actual distances
-    - Fix the fact that the bitmap is initialized in driver but the string of characters is in GraphicUtilities
-    - Check that a font exists, print error and die if not
     - Update text is too slow... its optimizing time
         - Build a cache with positions already pre-calculated
+        - Pull out the tile text cache into a separate class
+    - Border around the outside of the text (check this)
 - Sensor performance
+    - Get rid of the fact that the mouse needs to be passed a pointer to the maze
+        - This can be done once the sensors are fast enough to run in the sensor
+          loop, then we can just pass the Maze* into the mouse from within the
+          World class
 - millis() function available
 - Make a voluntary Delay in setTileBaseColor, text
 - Stepper motor
@@ -21,10 +24,8 @@
     - Max speeds for manual algorithm
     - Add the simulation time to the logging
         - Perhaps even refactor the elapsed time in logging
-- Move some graphics stuff in Driver into GraphicUtilities
-- Change float to units (including in the ParamParser and Param class)
-- Type safety (in terms of units) of the parameters
 - Put a toolbar at the top or bottom with info
+    - Check that a font exists, print error and die if not
     - Information of the wheel speeds
     - Display a clock (real and sim time)
     - Current layout
@@ -35,11 +36,9 @@
     - Check to make sure font won't be cut off, use ellipses if so (How do we deal with text being cut off in the vertical direction?)
     - Set the mouse algo in State for display in the toolbar
     - Make terminal style output at bottom or right of window (GUI)
-- Get rid of the fact that the mouse needs to be passed a pointer to the maze
-    - This can be done once the sensors are fast enough to run in the sensor
-      loop, then we can just pass the Maze* into the mouse from within the
-      World class
 - Make MouseInterface into an interface, and then implement the simulator interface, make a real-world interface
+- Change float to units (including in the ParamParser and Param class)
+- Type safety (in terms of units) of the parameters
 - Look at Tomasz' maze website
 - Figure out how to get rid of ifdefs in algorithm
 - Make a SimInterface and make sure it's easy to "extract" an algorithm for use on Arduino

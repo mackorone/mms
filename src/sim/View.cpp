@@ -17,24 +17,10 @@ namespace sim {
 
 View::View(Model* model, int argc, char* argv[], const GlutFunctions& functions) : m_model(model) {
 
-    // These values must perfectly reflect the font image being used
-    const std::string FONT_IMAGE_CHARS =
-        " !\"#$%&'()*+,-./0123456789:;<=>?"
-        "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
-        "`abcdefghijklmnopqrstuvwxyz{|}~";
-
-    // Get a map of the font image characters (allowable tile text characters)
-    // to their position in the png image (which is the same as in the string)
-    std::map<char, int> fontImageMap;
-    for (int i = 0; i < FONT_IMAGE_CHARS.size(); i += 1) {
-        fontImageMap.insert(std::make_pair(FONT_IMAGE_CHARS.at(i), i));
-    }
-    m_allowableTileTextCharacters = ContainerUtilities::keys(fontImageMap);
-
     m_bufferInterface = new BufferInterface(
         std::make_pair(m_model->getMaze()->getWidth(), m_model->getMaze()->getHeight()),
-        std::make_pair(2, 6), // TODO: MACK - actually max size here...
-        fontImageMap,
+        Meters(P()->wallLength()),
+        Meters(P()->wallWidth()),
         &m_graphicCpuBuffer,
         &m_textureCpuBuffer);
 
@@ -45,14 +31,12 @@ View::View(Model* model, int argc, char* argv[], const GlutFunctions& functions)
     initPolygonProgram();
     initTextureProgram();
 
-    // TODO: MACK - If the font doesn't exist, we silently fail and draw no text whatsoever
-    // Initialize the text drawer object // TODO: MACK - get the font from param
-    m_textDrawer = new TextDrawer("Hack-Regular.ttf", 470.0 / 2.0);
-
+    // Initialize the actual screen dimensions
     m_screenPixelsPerMeter = glutGet(GLUT_SCREEN_WIDTH) / (glutGet(GLUT_SCREEN_WIDTH_MM) / 1000.0);
 
-    // Lastly, initially populate the vertex buffer object with tile information
-    getMazeGraphic()->draw();
+    // TODO: MACK - If the font doesn't exist, we silently fail and draw no text whatsoever
+    // Initialize the text drawer object // TODO: MACK - get the font from param
+    m_textDrawer = new TextDrawer("Unispace-Bold.ttf", 470.0 / 2.0);
 }
 
 MazeGraphic* View::getMazeGraphic() {
@@ -138,6 +122,28 @@ void View::updateWindowSize(int width, int height) {
 
 std::set<char> View::getAllowableTileTextCharacters() {
     return m_allowableTileTextCharacters;
+}
+
+void View::initTileGraphicText(std::pair<int, int> tileTextMaxSize) {
+
+    // These values must perfectly reflect the font image being used, or else
+    // the wrong characters will be displayed on the tiles.
+    const std::string FONT_IMAGE_CHARS =
+        " !\"#$%&'()*+,-./0123456789:;<=>?"
+        "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
+        "`abcdefghijklmnopqrstuvwxyz{|}~";
+
+    // Get a map of the font image characters (allowable tile text characters)
+    // to their position in the png image (which is the same as in the string)
+    std::map<char, int> fontImageMap;
+    for (int i = 0; i < FONT_IMAGE_CHARS.size(); i += 1) {
+        fontImageMap.insert(std::make_pair(FONT_IMAGE_CHARS.at(i), i));
+    }
+    m_allowableTileTextCharacters = ContainerUtilities::keys(fontImageMap);
+
+    // Initialze the tile text in the buffer class, do caching for speed improvement
+    // TODO: MACK - border fraction should be a parameter, between 0 and .5
+    m_bufferInterface->initTileGraphicText(tileTextMaxSize, fontImageMap, .05);
 }
 
 void View::initGraphics(int argc, char* argv[], const GlutFunctions& functions) {
@@ -261,6 +267,11 @@ void View::drawFullAndZoomedMaps(
     std::pair<int, int> zoomedMapSize = Layout::getZoomedMapSize(
         m_windowWidth, m_windowHeight, P()->windowBorderWidth(), S()->layoutType());
 
+    // Get the physical size of the maze (in meters)
+    double physicalMazeWidth = P()->wallWidth() + m_model->getMaze()->getWidth() * (P()->wallWidth() + P()->wallLength());
+    double physicalMazeHeight = P()->wallWidth() + m_model->getMaze()->getHeight() * (P()->wallWidth() + P()->wallLength());
+    std::pair<double, double> physicalMazeSize = std::make_pair(physicalMazeWidth, physicalMazeHeight);
+
     // Start using the program and vertex array object
     program->use();
     glBindVertexArray(vaoId);
@@ -277,7 +288,7 @@ void View::drawFullAndZoomedMaps(
     program->setUniformMatrix4("transformationMatrix",
         &TransformationMatrix::getFullMapTransformationMatrix(
             Meters(P()->wallWidth()),
-            m_model->getMaze()->getPhysicalSize(),
+            physicalMazeSize,
             fullMapPosition,
             fullMapSize,
             std::make_pair(m_windowWidth, m_windowHeight)).front(), 1, GL_TRUE);
@@ -287,7 +298,7 @@ void View::drawFullAndZoomedMaps(
     glScissor(zoomedMapPosition.first, zoomedMapPosition.second, zoomedMapSize.first, zoomedMapSize.second);
     program->setUniformMatrix4("transformationMatrix",
         &TransformationMatrix::getZoomedMapTransformationMatrix(
-            m_model->getMaze()->getPhysicalSize(),
+            physicalMazeSize,
             zoomedMapPosition,
             zoomedMapSize,
             std::make_pair(m_windowWidth, m_windowHeight),

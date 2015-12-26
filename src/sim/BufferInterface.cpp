@@ -9,15 +9,117 @@ namespace sim {
 
 BufferInterface::BufferInterface(
         std::pair<int, int> mazeSize,
-        std::pair<int, int> tileGraphicTextMaxSize,
-        std::map<char, int> fontImageMap,
+        const Meters& wallLength,
+        const Meters& wallWidth,
         std::vector<TriangleGraphic>* graphicCpuBuffer,
         std::vector<TriangleTexture>* textureCpuBuffer) :
         m_mazeSize(mazeSize),
-        m_tileGraphicTextMaxSize(tileGraphicTextMaxSize),
-        m_fontImageMap(fontImageMap),
+        m_wallLength(wallLength),
+        m_wallWidth(wallWidth),
         m_graphicCpuBuffer(graphicCpuBuffer),
         m_textureCpuBuffer(textureCpuBuffer) {
+}
+
+void BufferInterface::initTileGraphicText(
+        std::pair<int, int> tileGraphicTextMaxSize,
+        const std::map<char, int>& fontImageMap,
+        double borderFraction) {
+
+    // First we assign the text max size and font image map
+    m_tileGraphicTextMaxSize = tileGraphicTextMaxSize;
+    m_fontImageMap = fontImageMap;
+
+    // Build a cache for the tile text updates
+    // 
+    //                    col
+    //     *-*---------------------------*-*
+    //     *-*-------------------------[UR]*
+    //     | |                           | |
+    //     | |   *-------------[D]--[B]  | |
+    //     | |   |    |    |    |    |   | |
+    //     | |   |    |    |    |    |   | |
+    //     | |   |    | 00 | 01 |    |   | |
+    // row | |   |    |____|____|    |   | |
+    //     | |   |    |    |    |    |   | |
+    //     | |   |    |    |    |    |   | |
+    //     | |   |    | 10 | 11 |    |   | |
+    //     | |   |    |    |    |    |   | |
+    //     | |  [A]--[C]-------------*   | |
+    //     | |                           | |
+    //     *[LL]-------------------------*-*
+    //     *-*---------------------------*-*
+
+    int maxRows = tileGraphicTextMaxSize.first;
+    int maxCols = tileGraphicTextMaxSize.second;
+
+    // First we get the unscaled diagonal
+    Cartesian LL = Cartesian(m_wallWidth / 2.0, m_wallWidth / 2.0);
+    Cartesian UR = LL + Cartesian(m_wallLength, m_wallLength);
+    Cartesian A = LL + Cartesian(m_wallLength, m_wallLength) * borderFraction;
+    Cartesian B = UR - Cartesian(m_wallLength, m_wallLength) * borderFraction;
+    Cartesian AB = B - A;
+
+    // We assume that each character is twice as tall as it is wide, and we scale accordingly
+    Meters characterWidth = AB.getX() / static_cast<double>(maxCols);
+    Meters characterHeight = AB.getY() / static_cast<double>(maxRows);
+    if (characterWidth * 2.0 < characterHeight) {
+        characterHeight = characterWidth * 2.0;
+    }
+    else {
+        characterWidth = characterHeight / 2.0;
+    }
+
+    // Now we get the scaled diagonal (note that we'll only shrink in at most one direction)
+    Cartesian scalingOffset = Cartesian(
+        (AB.getX() - characterWidth * maxCols) / 2.0,
+        (AB.getY() - characterHeight * maxRows) / 2.0
+    );
+    Cartesian C = A + scalingOffset;
+    Cartesian D = B - scalingOffset;
+    Cartesian CD = D - C;
+
+    // For all numbers of rows displayed
+    for (int numRows = 0; numRows <= maxRows; numRows += 1) {
+
+        // For all numbers of columns displayed
+        for (int numCols = 0; numCols <= maxCols; numCols += 1) {
+
+            // For each visible row and col
+            for (int row = 0; row <= maxRows; row += 1) {
+                for (int col = 0; col <= maxCols; col += 1) {
+
+                    Cartesian LL = Cartesian(Meters(0), Meters(0));
+                    Cartesian UR = Cartesian(Meters(0), Meters(0));
+
+                    if (row < numRows && col < numCols) {
+                        double rowOffset = static_cast<double>(maxRows - numRows) / 2.0;
+                        double colOffset = static_cast<double>(maxCols - numCols) / 2.0;
+                        LL = Cartesian(
+                            Meters(C.getX() + characterWidth * (col + colOffset)),
+                            Meters(C.getY() + characterHeight * (row + rowOffset))
+                        );
+                        UR = Cartesian(
+                            Meters(C.getX() + characterWidth * (col + colOffset + 1)),
+                            Meters(C.getY() + characterHeight * (row + rowOffset + 1))
+                        );
+                    }
+
+                    m_tileGraphicTextPositions.insert(
+                        std::make_pair(
+                            std::make_pair(
+                                // The number of rows/cols to be drawn
+                                std::make_pair(numRows, numCols),
+                                // The row and col of the current character
+                                std::make_pair(row, col)
+                            ),
+                            // The lower left and upper right texture coordinate
+                            std::make_pair(LL, UR)
+                        )
+                    );
+                }
+            }
+        }
+    }
 }
 
 std::pair<int, int> BufferInterface::getTileGraphicTextMaxSize() {
@@ -93,66 +195,54 @@ void BufferInterface::updateTileGraphicFog(int x, int y, double alpha) {
     }
 }
 
-void BufferInterface::updateTileGraphicText(const Tile* tile, int numRows, int numCols, int row, int col, char c) {
+void BufferInterface::updateTileGraphicText(int x, int y, int numRows, int numCols, int row, int col, char c) {
 
-    //                          col
-    //
-    //             *---*-------------------*---*
-    //             |   |                   |   |
-    //             *---*------------------[Y]--*
-    //             |   |    |    |    |    |   |
-    //             |   |    |    |    |    |   |
-    //             |   | 00 | 01 | 02 | 03 |   |
-    // rowsFromTop |   |____|____|____|____|   |
-    //             |   |    |    |    |    |   |
-    //             |   |    |    |    |    |   |
-    //             |   | 10 | 11 | 12 | 13 |   |
-    //             |   |    |    |    |    |   |
-    //             *--[X]------------------*---*
-    //             |   |                   |   |
-    //             *---*-------------------*---*
-
-    std::pair<int, int> maxRowsAndCols = BufferInterface::getTileGraphicTextMaxSize();
-    Cartesian X = tile->getInteriorPolygon().getVertices().at(0);
-    Cartesian Y = tile->getInteriorPolygon().getVertices().at(2);
-    Cartesian diagonal = Y - X;
-    Meters characterWidth = diagonal.getX() / static_cast<double>(maxRowsAndCols.second);
-    Meters characterHeight = diagonal.getY() / static_cast<double>(maxRowsAndCols.first);
-
-    // The rows start from the top and increase down the cell
-    int rowsFromTop = maxRowsAndCols.first - row - 1;
-    double rowOffset = rowsFromTop - static_cast<double>(maxRowsAndCols.first - numRows) / 2.0;
-    double colOffset = col + static_cast<double>(maxRowsAndCols.second - numCols) / 2.0;
-
+    // First, get the character index in the font image
     ASSERT_TR(ContainerUtilities::mapContains(m_fontImageMap, c));
     int fontImageCharacterIndex = m_fontImageMap.at(c);
 
+    // Get the character position in the maze for the starting tile
+    std::pair<Cartesian, Cartesian> textPosition = m_tileGraphicTextPositions.at(
+        std::make_pair(
+            std::make_pair(numRows, numCols),
+            std::make_pair(row, col)
+        )
+    );
+
+    // Now get the character position in the maze for *this* tile
+    Meters tileLength = m_wallLength + m_wallWidth;
+    Cartesian tileOffset = Cartesian(tileLength * x, tileLength * y);
+    Cartesian LL = textPosition.first + tileOffset;
+    Cartesian UR = textPosition.second + tileOffset;
+    Cartesian UL = Cartesian(LL.getX(), UR.getY());
+    Cartesian LR = Cartesian(UR.getX(), LL.getY());
+
     VertexTexture p1 = { // LL
-        (X + Cartesian(characterWidth *  colOffset     , characterHeight *  rowOffset     )).getX().getMeters(),
-        (X + Cartesian(characterWidth *  colOffset     , characterHeight *  rowOffset     )).getY().getMeters(),
+        LL.getX().getMeters(),
+        LL.getY().getMeters(),
         static_cast<double>(fontImageCharacterIndex) / static_cast<double>(m_fontImageMap.size()),
         0.0,
     };
     VertexTexture p2 = { // UL
-        (X + Cartesian(characterWidth *  colOffset     , characterHeight * (rowOffset + 1))).getX().getMeters(),
-        (X + Cartesian(characterWidth *  colOffset     , characterHeight * (rowOffset + 1))).getY().getMeters(),
+        UL.getX().getMeters(),
+        UL.getY().getMeters(),
         static_cast<double>(fontImageCharacterIndex) / static_cast<double>(m_fontImageMap.size()),
         1.0,
     };
     VertexTexture p3 = { // UR
-        (X + Cartesian(characterWidth * (colOffset + 1), characterHeight * (rowOffset + 1))).getX().getMeters(),
-        (X + Cartesian(characterWidth * (colOffset + 1), characterHeight * (rowOffset + 1))).getY().getMeters(),
+        UR.getX().getMeters(),
+        UR.getY().getMeters(),
         static_cast<double>(fontImageCharacterIndex + 1) / static_cast<double>(m_fontImageMap.size()),
         1.0,
     };
     VertexTexture p4 = { // LR
-        (X + Cartesian(characterWidth * (colOffset + 1), characterHeight *  rowOffset     )).getX().getMeters(),
-        (X + Cartesian(characterWidth * (colOffset + 1), characterHeight *  rowOffset     )).getY().getMeters(),
+        LR.getX().getMeters(),
+        LR.getY().getMeters(),
         static_cast<double>(fontImageCharacterIndex + 1) / static_cast<double>(m_fontImageMap.size()),
         0.0,
     };
 
-    int triangleTextureIndex = getTileGraphicTextStartingIndex(tile->getX(), tile->getY(), row, col);
+    int triangleTextureIndex = getTileGraphicTextStartingIndex(x, y, row, col);
     m_textureCpuBuffer->at(triangleTextureIndex) = {p1, p2, p3};
     m_textureCpuBuffer->at(triangleTextureIndex + 1) = {p1, p3, p4};
 }

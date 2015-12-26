@@ -18,7 +18,6 @@ public:
     Tile* getTile(int x, int y);
     const Tile* getTile(int x, int y) const;
     bool isOfficialMaze() const;
-    std::pair<double, double> getPhysicalSize() const;
 
 private:
     // Vector to hold all of the tiles

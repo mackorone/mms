@@ -58,6 +58,11 @@ void Driver::drive(int argc, char* argv[]) {
     });
     m_controller = new Controller(m_model, m_view);
 
+    // Lastly, we need to populate the graphics buffers with maze information,
+    // but only after we've initialized the controller, since the controller
+    // initializes tile text
+    m_view->getMazeGraphic()->draw();
+
     // Start the physics loop
     std::thread physicsThread([]() {
         m_controller->getWorld()->simulate();
