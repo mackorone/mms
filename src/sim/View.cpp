@@ -142,8 +142,7 @@ void View::initTileGraphicText(std::pair<int, int> tileTextMaxSize) {
     m_allowableTileTextCharacters = ContainerUtilities::keys(fontImageMap);
 
     // Initialze the tile text in the buffer class, do caching for speed improvement
-    // TODO: MACK - border fraction should be a parameter, between 0 and .5
-    m_bufferInterface->initTileGraphicText(tileTextMaxSize, fontImageMap, .05);
+    m_bufferInterface->initTileGraphicText(tileTextMaxSize, fontImageMap, P()->tileTextBorderFraction());
 }
 
 void View::initGraphics(int argc, char* argv[], const GlutFunctions& functions) {

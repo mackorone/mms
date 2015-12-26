@@ -16,6 +16,7 @@
 <tile-corner-color>GRAY</tile-corner-color>
 <tile-fog-color>GRAY</tile-fog-color>
 <tile-text-font-image>Unispace-Bold.png</tile-text-font-image>
+<tile-text-border-fraction>.05</tile-text-border-fraction>
 <tile-undeclared-wall-color>DARK_RED</tile-undeclared-wall-color>
 <tile-undeclared-no-wall-color>DARK_GRAY</tile-undeclared-no-wall-color>
 <tile-incorrectly-declared-wall-color>ORANGE</tile-incorrectly-declared-wall-color>
