@@ -33,36 +33,36 @@ void BufferInterface::initTileGraphicText(
     // Build a cache for the tile text updates
     // 
     //                    col
-    //     *-*---------------------------*-*
-    //     *-*-------------------------[UR]*
-    //     | |                           | |
-    //     | |   *-------------[D]--[B]  | |
-    //     | |   |    |    |    |    |   | |
-    //     | |   |    |    |    |    |   | |
-    //     | |   |    | 00 | 01 |    |   | |
-    // row | |   |    |____|____|    |   | |
-    //     | |   |    |    |    |    |   | |
-    //     | |   |    |    |    |    |   | |
-    //     | |   |    | 10 | 11 |    |   | |
-    //     | |   |    |    |    |    |   | |
-    //     | |  [A]--[C]-------------*   | |
-    //     | |                           | |
-    //     *[LL]-------------------------*-*
-    //     *-*---------------------------*-*
+    //     *-*---------------------------*-*    *-*---------------------------*-*
+    //     *-*--------------------------[B]*    *-*--------------------------[B]*
+    //     | |                           | |    | |                           | |
+    //     | |   *------------------[D]  | |    | |   *------------------[D]  | |
+    //     | |   |    |    |    |    |   | |    | |   |                   |   | |
+    //     | |   |    |    |    |    |   | |    | |   |                   |   | |
+    //     | |   |    | 00 | 01 |    |   | |    | |   |----|----|----|----|   | |
+    // row | |   |    |____|____|    |   | | or | |   |    |    |    |    |   | |
+    //     | |   |    |    |    |    |   | |    | |   | 00 | 01 | 02 | 03 |   | |
+    //     | |   |    |    |    |    |   | |    | |  [E]---|----|----|----|   | |
+    //     | |   |    | 10 | 11 |    |   | |    | |   |                   |   | |
+    //     | |   |    |    |    |    |   | |    | |   |                   |   | |
+    //     | |  [C]--[E]-------------*   | |    | |  [C]------------------*   | |
+    //     | |                           | |    | |                           | |
+    //     *[A]--------------------------*-*    *[A]--------------------------*-*
+    //     *-*---------------------------*-*    *-*---------------------------*-*
 
     int maxRows = tileGraphicTextMaxSize.first;
     int maxCols = tileGraphicTextMaxSize.second;
 
     // First we get the unscaled diagonal
-    Cartesian LL = Cartesian(m_wallWidth / 2.0, m_wallWidth / 2.0);
-    Cartesian UR = LL + Cartesian(m_wallLength, m_wallLength);
-    Cartesian A = LL + Cartesian(m_wallLength, m_wallLength) * borderFraction;
-    Cartesian B = UR - Cartesian(m_wallLength, m_wallLength) * borderFraction;
-    Cartesian AB = B - A;
+    Cartesian A = Cartesian(m_wallWidth / 2.0, m_wallWidth / 2.0);
+    Cartesian B = A + Cartesian(m_wallLength, m_wallLength);
+    Cartesian C = A + Cartesian(m_wallLength, m_wallLength) * borderFraction;
+    Cartesian D = B - Cartesian(m_wallLength, m_wallLength) * borderFraction;
+    Cartesian CD = D - C;
 
     // We assume that each character is twice as tall as it is wide, and we scale accordingly
-    Meters characterWidth = AB.getX() / static_cast<double>(maxCols);
-    Meters characterHeight = AB.getY() / static_cast<double>(maxRows);
+    Meters characterWidth = CD.getX() / static_cast<double>(maxCols);
+    Meters characterHeight = CD.getY() / static_cast<double>(maxRows);
     if (characterWidth * 2.0 < characterHeight) {
         characterHeight = characterWidth * 2.0;
     }
@@ -72,12 +72,10 @@ void BufferInterface::initTileGraphicText(
 
     // Now we get the scaled diagonal (note that we'll only shrink in at most one direction)
     Cartesian scalingOffset = Cartesian(
-        (AB.getX() - characterWidth * maxCols) / 2.0,
-        (AB.getY() - characterHeight * maxRows) / 2.0
+        (CD.getX() - characterWidth * maxCols) / 2.0,
+        (CD.getY() - characterHeight * maxRows) / 2.0
     );
-    Cartesian C = A + scalingOffset;
-    Cartesian D = B - scalingOffset;
-    Cartesian CD = D - C;
+    Cartesian E = C + scalingOffset;
 
     // For all numbers of rows displayed
     for (int numRows = 0; numRows <= maxRows; numRows += 1) {
@@ -111,12 +109,12 @@ void BufferInterface::initTileGraphicText(
                         }
 
                         LL = Cartesian(
-                            Meters(C.getX() + characterWidth * (col + colOffset)),
-                            Meters(C.getY() + characterHeight * ((numRows - row - 1) + rowOffset))
+                            Meters(E.getX() + characterWidth * (col + colOffset)),
+                            Meters(E.getY() + characterHeight * ((numRows - row - 1) + rowOffset))
                         );
                         UR = Cartesian(
-                            Meters(C.getX() + characterWidth * (col + colOffset + 1)),
-                            Meters(C.getY() + characterHeight * ((numRows - row - 1) + rowOffset + 1))
+                            Meters(E.getX() + characterWidth * (col + colOffset + 1)),
+                            Meters(E.getY() + characterHeight * ((numRows - row - 1) + rowOffset + 1))
                         );
                     }
 

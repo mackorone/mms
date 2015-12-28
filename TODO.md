@@ -1,15 +1,15 @@
 # High Priority
 
 - Arbitrary tile text
-    - Be able to just show actual distances (just talk about these...)
-    - Make a note about text automatically wrapping (does the distance text do this???)
     - Pull out the tile text cache into a separate class
+    - Make a note about how to show actual distances
+    - Make a note about text automatically wrapping (the actual tile distances do not do this)
 - Sensor performance
     - Get rid of the fact that the mouse needs to be passed a pointer to the maze
         - This can be done once the sensors are fast enough to run in the sensor
           loop, then we can just pass the Maze* into the mouse from within the
           World class
-- millis() function available
+- Make a millis() function available
 - Make a voluntary Delay in setTileBaseColor, text
 - Stepper motor
 - Sensor type (digital or analog)
@@ -23,6 +23,7 @@
     - Information of the wheel speeds
     - Display a clock (real and sim time)
     - Current layout
+    - Speed in the x, y, and along the hypotenuse
     - Pretty much all state information
         - zoom level (16:1, etc.)
         - sim speed
