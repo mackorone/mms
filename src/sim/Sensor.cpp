@@ -74,9 +74,9 @@ Polygon Sensor::getCurrentViewPolygon(
         for (const Tile* tile : GeometryUtilities::lineSegmentTileCover(currentPosition, edge.at(i), maze)) {
 
             // ... iterate through all of the tile's polygons ...
-            for (std::vector<Polygon> group : {tile->getActualWallPolygons(), tile->getCornerPolygons()}) {
-                for (Polygon obstacle : group) {
-                    for (std::pair<Cartesian, Cartesian> A : obstacle.getLineSegments()) {
+            for (const std::vector<Polygon>& group : {tile->getActualWallPolygons(), tile->getCornerPolygons()}) {
+                for (const Polygon& obstacle : group) {
+                    for (const std::pair<Cartesian, Cartesian>& A : obstacle.getLineSegments()) {
 
                         // ... and check for intersections
                         std::pair<Cartesian, Cartesian> B = std::make_pair(currentPosition, edge.at(i));

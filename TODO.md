@@ -9,6 +9,9 @@
         - This can be done once the sensors are fast enough to run in the sensor
           loop, then we can just pass the Maze* into the mouse from within the
           World class
+    - Better implementation of sensor view collision detection
+    - Figure out how to make sensors more efficie
+    - Make the sensor polygon model better
 - Make a millis() function available
 - Make a voluntary Delay in setTileBaseColor, text
 - Stepper motor
@@ -59,6 +62,10 @@
     - Talk about each of the parameters in documentation
 - Discrete mode speed...
     - Ensure that the wheel speed is not too high in the MouseInterface (so that the mouse does not clip through walls)
+    - In discrete mode, the mouse can overturn or go too far if the sim speed
+      is to high. We need to implement some logic that checks this ahead of
+      time and then just teleports... sort of like bullets in other physics
+      simulators
 - Make a note about symmetry with discrete interface
     - Make a formal check for symmetry
 
@@ -86,10 +93,6 @@
     - etc.
 - Still view a maze if it fails validation, but don't let the sim continue...
 - Testing for resource existence (like the shaders, font images, etc.)
-- Check megaMouse performance
-    - Better implementation of sensor view collision detection
-    - Figure out how to make sensors more efficie
-    - Make the sensor polygon model better
 - Add manual mode high scores
 - Continuous mode improvements (overall)
 - Xorg and compiz performance...
@@ -104,9 +107,6 @@
 - New maze w/o restarting app
     - Be able to restart in the middle of a run (this is tricky with the algo thread...)
 - Fix the makefile so that if header files disappear we don't need to make clean
-- Normalize random number generation (Implement Windows random number generation) // TODO: Should be fixed...
-- Make a nice mechanism for writing our own maze generation algorithms
-- In discrete mode, the mouse can overturn or go too far if the sim speed is to high. We need to implement some logic that checks this ahead of time and then just teleports... sort of like bullets in other physics simulators
 - Add trajectory lines (see https://www.youtube.com/watch?v=kgJClVCPu3w)
 - Crash recovery semantics
 - Draw a path of where the robot has been (the history object could be used for recording as well)
@@ -138,7 +138,7 @@
 - Unit tests
 - Try to break the simulator from within the algos, make it tamper-resistant
 - Reduce include dependencies as much as possible
-- Implement perfect hashing for key input and algo selection
+- Implement perfect hashing for key input and algo selection (lulz)
 - Support more than just white fonts
 - Protect functions that shouldn't be accessed by the algo by checking thread ID
 - Change over the Makefile to use cmake
@@ -150,15 +150,13 @@
 
 - Rename TriangleTexture and VertexTexture
 - Write some unittests
-- Change map.count(item) != 0 to map.find(item) != map.end()
 - Add IMouseAlgorithm (and maze) to the build path so we can just do #include <IMouseAlgorithm.h> (maybe...)
 - Run the parameter consistency script, make sure values align
-- Convert primitive types to GL types
+- Convert primitive types to GL types (or vice versa)
 - Return const references instead of values (pointers???)
 - Reduce includes as much as possible
 - Rewrite the Makefile to use an "inc" directory
 - Change "bool foo(false)" to "bool foo = false" for primitive - they look like function calls
-- Put interface in root of src directory
 - write "isDirectory(std::string path)" and enforce this where necessary
 - write getRandom() and replace old calls to rand()
 - Performance on different systems???
@@ -171,7 +169,6 @@
 - Rewrite "i++" and "++i" as "i += 1"
 - Give better explanations for the GeometryUtilities
 - Buffer the declared walls and include a quick "resetWalls()" method
-- Change the Mouse to use the technically correct position update implementation
 - Clean up / improve the coding standards
 - Fit code into 80/100 columns... use a linter for this
 - Put consts in GraphicUtilties (and other classes)
@@ -180,7 +177,6 @@
 - for each loop iterations should use const references
 - The interfaces don't need to be passed as pointers, right? Try passing as values...
 - Upgrade convert_mazes.py to Python 3
-- Move as much OpenGL code to a single file (Main.cpp) as possible
 - P() be const? S()?
 - init vs initialize
 - Write a script to ensure that ASSERTS don't hold any state

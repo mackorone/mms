@@ -19,8 +19,6 @@ View::View(Model* model, int argc, char* argv[], const GlutFunctions& functions)
 
     m_bufferInterface = new BufferInterface(
         std::make_pair(m_model->getMaze()->getWidth(), m_model->getMaze()->getHeight()),
-        Meters(P()->wallLength()),
-        Meters(P()->wallWidth()),
         &m_graphicCpuBuffer,
         &m_textureCpuBuffer);
 
@@ -134,15 +132,25 @@ void View::initTileGraphicText(std::pair<int, int> tileTextMaxSize) {
         "`abcdefghijklmnopqrstuvwxyz{|}~";
 
     // Get a map of the font image characters (allowable tile text characters)
-    // to their position in the png image (which is the same as in the string)
-    std::map<char, int> fontImageMap;
+    // to their position in the png image (a fraction from 0.0 to 1.0)
+    std::map<char, std::pair<double, double>> fontImageMap;
     for (int i = 0; i < fontImageChars.size(); i += 1) {
-        fontImageMap.insert(std::make_pair(fontImageChars.at(i), i));
+        fontImageMap.insert(
+            std::make_pair(
+                fontImageChars.at(i),
+                std::make_pair(
+                    static_cast<double>(i + 0) / static_cast<double>(fontImageChars.size()),
+                    static_cast<double>(i + 1) / static_cast<double>(fontImageChars.size())
+                )
+            )
+        );
     }
     m_allowableTileTextCharacters = ContainerUtilities::keys(fontImageMap);
 
     // Initialze the tile text in the buffer class, do caching for speed improvement
     m_bufferInterface->initTileGraphicText(
+        Meters(P()->wallLength()),
+        Meters(P()->wallWidth()),
         tileTextMaxSize,
         fontImageMap,
         P()->tileTextBorderFraction(),

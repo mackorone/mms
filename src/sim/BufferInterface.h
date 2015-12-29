@@ -3,6 +3,7 @@
 #include "Color.h"
 #include "Direction.h"
 #include "Polygon.h"
+#include "TileGraphicTextCache.h"
 #include "TileTextAlignment.h"
 #include "TriangleGraphic.h"
 #include "TriangleTexture.h"
@@ -14,16 +15,16 @@ class BufferInterface {
 public:
     BufferInterface(
         std::pair<int, int> mazeSize,
-        const Meters& wallLength,
-        const Meters& wallWidth,
         std::vector<TriangleGraphic>* graphicCpuBuffer,
         std::vector<TriangleTexture>* textureCpuBuffer);
 
     // Initializes and caches all possible tile text positions. We need this
-    // extra initialization function since the max size is from the algorithm
+    // extra initialization function since the max size is from the algorithm.
     void initTileGraphicText(
+        const Distance& wallLength,
+        const Distance& wallWidth,
         std::pair<int, int> tileGraphicTextMaxSize,
-        const std::map<char, int>& fontImageMap,
+        const std::map<char, std::pair<double, double>>& fontImageMap,
         double borderFraction,
         TileTextAlignment tileTextAlignment);
 
@@ -48,25 +49,12 @@ private:
     // The width and height of the maze
     std::pair<int, int> m_mazeSize;
 
-    // The length and width of the maze walls, respectively
-    Meters m_wallLength;
-    Meters m_wallWidth;
-
     // CPU-side buffers
     std::vector<TriangleGraphic>* m_graphicCpuBuffer;
     std::vector<TriangleTexture>* m_textureCpuBuffer;
 
-    // The maximum number of rows and columns of text in a tile graphic
-    std::pair<int, int> m_tileGraphicTextMaxSize;
-
-    // A map of character to index (position) in a font image, used for texture drawing
-    std::map<char, int> m_fontImageMap;
-
-    // A map of the number of rows/cols to be displayed and the current row/col
-    // to the LL/UR text coordinates for the starting tile, namely tile (0, 0)
-    std::map<
-        std::pair<std::pair<int, int>, std::pair<int, int>>,
-        std::pair<Cartesian, Cartesian>> m_tileGraphicTextPositions;
+    // A cache for tile graphic text information
+    TileGraphicTextCache m_tileGraphicTextCache;
 
     // Converts a polygon to a vector of triangle graphics or triangle textures
     std::vector<TriangleGraphic> polygonToTriangleGraphics(const Polygon& polygon, Color color, double alpha);
