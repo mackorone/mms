@@ -1,10 +1,10 @@
 # High Priority
 
 - Arbitrary tile text
-    - Pull out the tile text cache into a separate class
     - Make a note about how to show actual distances
     - Make a note about text automatically wrapping (the actual tile distances do not do this)
 - Sensor performance
+    - Jittery graphics, nothing is synched up...
     - Get rid of the fact that the mouse needs to be passed a pointer to the maze
         - This can be done once the sensors are fast enough to run in the sensor
           loop, then we can just pass the Maze* into the mouse from within the

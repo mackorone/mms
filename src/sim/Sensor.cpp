@@ -34,6 +34,8 @@ Sensor::Sensor(
     }
 
     m_initialViewPolygon = Polygon(view);
+    // TODO: MACK - update the current polygon here
+    m_currentViewPolygon = m_initialViewPolygon;
 }
 
 Seconds Sensor::getReadDuration() const {
@@ -56,10 +58,16 @@ Polygon Sensor::getInitialViewPolygon() const {
     return m_initialViewPolygon;
 }
 
-Polygon Sensor::getCurrentViewPolygon(
+Polygon Sensor::getCurrentViewPolygon() const {
+    return m_currentViewPolygon;
+}
+
+void Sensor::updateCurrentViewPolygon(
         const Cartesian& currentPosition,
         const Radians& currentDirection,
-        const Maze& maze) const {
+        const Maze& maze) {
+
+    // TODO: MACK - improve this
 
     // First, get the edge of the view of the sensor
     std::vector<Cartesian> edge;
@@ -91,7 +99,9 @@ Polygon Sensor::getCurrentViewPolygon(
 
     // Adjoin the edge to the currentPosition and return the polygon
     edge.insert(edge.begin(), currentPosition);
-    return Polygon(edge);
+
+    // Finally, update the current view polygon
+    m_currentViewPolygon = Polygon(edge);
 }
 
 } // namespace sim

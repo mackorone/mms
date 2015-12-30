@@ -143,10 +143,6 @@ private:
     Polygon getCurrentPolygon(const Polygon& initialPolygon,
         const Cartesian& currentTranslation, const Radians& currentRotation) const;
 
-    // Helper function for retrieving the polygon corresponding to the view of a sensor
-    Polygon getCurrentSensorViewPolygon(const Sensor& sensor,
-        const Cartesian& currentTranslation, const Radians& currentRotation) const;
-
     // Get the forward and radial contribution factors for a wheel
     std::pair<double, double> getWheelContributionFactors(const std::string& name) const;
 };

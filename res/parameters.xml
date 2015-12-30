@@ -49,7 +49,7 @@
 <max-sim-speed>10.0</max-sim-speed> <!-- Fraction/factor of actual time -->
 <default-sim-speed>1.0</default-sim-speed> <!-- Fraction/factor of actual time -->
 <min-sleep-duration>5</min-sleep-duration> <!-- Milliseconds -->
-<mouse-position-update-rate>500</mouse-position-update-rate> <!-- Updates per second -->
+<mouse-position-update-rate>100</mouse-position-update-rate> <!-- Updates per second --> <!-- TODO: MACK - should be ~500 -->
 <print-late-mouse-position-updates>true</print-late-mouse-position-updates>
 <collision-detection-rate>40</collision-detection-rate> <!-- Checks per second -->
 <print-late-collision-detections>true</print-late-collision-detections>
@@ -72,4 +72,4 @@
 <maze-rotations>0</maze-rotations> <!-- 0-3 counterclockwise rotations -->
 
 <!-- Mouse Parameters -->
-<mouse-algorithm>MackAlgo</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
+<mouse-algorithm>FloodFill</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->

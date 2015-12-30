@@ -28,10 +28,11 @@ public:
     Radians getInitialDirection() const;
     Polygon getInitialPolygon() const;
     Polygon getInitialViewPolygon() const;
-    Polygon getCurrentViewPolygon(
+    Polygon getCurrentViewPolygon() const;
+    void updateCurrentViewPolygon(
         const Cartesian& currentPosition,
         const Radians& currentDirection,
-        const Maze& maze) const;
+        const Maze& maze);
 
 private:
     Meters m_range;
@@ -42,6 +43,7 @@ private:
     Radians m_initialDirection;
     Polygon m_initialPolygon;
     Polygon m_initialViewPolygon;
+    Polygon m_currentViewPolygon;
 };
 
 } // namespace sim
