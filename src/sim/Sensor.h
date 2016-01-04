@@ -50,6 +50,8 @@ private:
     Polygon m_initialPolygon;
     Polygon m_initialViewPolygon;
     Polygon m_currentViewPolygon;
+
+    bool isTileEdge(const Meters& pos); // TODO: MACK
 };
 
 } // namespace sim
