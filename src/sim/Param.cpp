@@ -132,7 +132,7 @@ Param::Param() {
     m_minSleepDuration = parser.getDoubleIfHasDoubleAndInRange(
         "min-sleep-duration", 5, 1, 25);
     m_mousePositionUpdateRate = parser.getIntIfHasIntAndInRange(
-        "mouse-position-update-rate", 500, 1, 1000);
+        "mouse-position-update-rate", 500, 1, 2000);
     m_printLateMousePostitionUpdates = parser.getBoolIfHasBool(
         "print-late-mouse-position-updates", false);
     m_collisionDetectionRate = parser.getIntIfHasIntAndInRange(

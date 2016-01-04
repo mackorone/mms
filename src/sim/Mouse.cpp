@@ -168,6 +168,8 @@ std::vector<Polygon> Mouse::getCurrentSensorViewPolygons(
 
 void Mouse::update(const Duration& elapsed) {
 
+    // TODO: MACK - this is a *very* critical loop. Per
+
     m_updateMutex.lock();
 
     MetersPerSecond sumDx(0);
@@ -202,7 +204,7 @@ void Mouse::update(const Duration& elapsed) {
     m_currentRotation += Radians(aveDr * elapsed);
     m_currentTranslation += Cartesian(aveDx * elapsed, aveDy * elapsed);
 
-    // Lastly, update the sensor view polygons
+    // Lastly, update the sensor view polygons TODO: MACK - make this a function call
     Cartesian translationDelta = m_currentTranslation - getInitialTranslation();
     Radians rotationDelta = m_currentRotation - getInitialRotation();
     for (std::pair<std::string, Sensor> pair : m_sensors) {

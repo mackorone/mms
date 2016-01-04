@@ -5,6 +5,10 @@
 
 namespace manual {
 
+std::string Manual::mouseFile() const {
+    return "megaMouse.xml";
+}
+
 std::string Manual::interfaceType() const {
     return "CONTINUOUS";
 }
@@ -42,21 +46,23 @@ void Manual::solve(
             rightWheelSpeed += accelerateAmount / 4.0;
         }
 
-        if (leftWheelSpeed < -mouse->getWheelMaxSpeed("left")) {
-            leftWheelSpeed = -mouse->getWheelMaxSpeed("left");    
+        if (leftWheelSpeed < -mouse->getWheelMaxSpeed("left-upper")) {
+            leftWheelSpeed = -mouse->getWheelMaxSpeed("left-upper");    
         }
-        if (mouse->getWheelMaxSpeed("left") < leftWheelSpeed) {
-            leftWheelSpeed = mouse->getWheelMaxSpeed("left");
+        if (mouse->getWheelMaxSpeed("left-upper") < leftWheelSpeed) {
+            leftWheelSpeed = mouse->getWheelMaxSpeed("left-upper");
         }
-        if (rightWheelSpeed < -mouse->getWheelMaxSpeed("right")) {
-            rightWheelSpeed = -mouse->getWheelMaxSpeed("right");    
+        if (rightWheelSpeed < -mouse->getWheelMaxSpeed("right-upper")) {
+            rightWheelSpeed = -mouse->getWheelMaxSpeed("right-upper");    
         }
-        if (mouse->getWheelMaxSpeed("right") < rightWheelSpeed) {
-            rightWheelSpeed = mouse->getWheelMaxSpeed("right");
+        if (mouse->getWheelMaxSpeed("right-upper") < rightWheelSpeed) {
+            rightWheelSpeed = mouse->getWheelMaxSpeed("right-upper");
         }
 
-        mouse->setWheelSpeed("left", leftWheelSpeed);
-        mouse->setWheelSpeed("right", rightWheelSpeed);
+        mouse->setWheelSpeed("left-upper", leftWheelSpeed);
+        mouse->setWheelSpeed("left-lower", leftWheelSpeed);
+        mouse->setWheelSpeed("right-upper", rightWheelSpeed);
+        mouse->setWheelSpeed("right-lower", rightWheelSpeed);
         mouse->delay(30);
     }
 }

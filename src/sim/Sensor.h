@@ -33,6 +33,12 @@ public:
         const Cartesian& currentPosition,
         const Radians& currentDirection,
         const Maze& maze);
+    void updateCurrentViewPolygon2( // TODO: MACK
+        const Cartesian& currentPosition,
+        const Radians& currentDirection,
+        const Maze& maze);
+
+    Cartesian getEnd(Cartesian A, Cartesian B, const Maze& maze); // TODO: MACK
 
 private:
     Meters m_range;
