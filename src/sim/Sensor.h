@@ -33,12 +33,7 @@ public:
         const Cartesian& currentPosition,
         const Radians& currentDirection,
         const Maze& maze);
-    void updateCurrentViewPolygon2( // TODO: MACK
-        const Cartesian& currentPosition,
-        const Radians& currentDirection,
-        const Maze& maze);
 
-    Cartesian getEnd(Cartesian A, Cartesian B, const Maze& maze); // TODO: MACK
 
 private:
     Meters m_range;
@@ -51,6 +46,7 @@ private:
     Polygon m_initialViewPolygon;
     Polygon m_currentViewPolygon;
 
+    Cartesian getEnd(Cartesian A, Cartesian B, const Maze& maze); // TODO: MACK
     bool isTileEdge(const Meters& pos); // TODO: MACK
 };
 
