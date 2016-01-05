@@ -124,26 +124,6 @@ void Sensor::updateCurrentViewPolygon2(
     // For each point along the edge of the view ...
     for (int i = 0; i < edge.size(); i += 1) {
         edge.at(i) = getEnd(currentPosition, edge.at(i), maze);
-
-        /*
-        // ... for each tile within the range of the edge point ...
-        for (const Tile* tile : GeometryUtilities::lineSegmentTileCover(currentPosition, edge.at(i), maze)) {
-
-            // ... iterate through all of the tile's polygons ...
-            for (const std::vector<Polygon>& group : {tile->getActualWallPolygons(), tile->getCornerPolygons()}) {
-                for (const Polygon& obstacle : group) {
-                    for (const std::pair<Cartesian, Cartesian>& A : obstacle.getLineSegments()) {
-
-                        // ... and check for intersections
-                        std::pair<Cartesian, Cartesian> B = std::make_pair(currentPosition, edge.at(i));
-                        if (GeometryUtilities::linesIntersect(A, B)) {
-                            edge.at(i) = GeometryUtilities::getIntersectionPoint(A, B);
-                        }
-                    }
-                }
-            }
-        }
-        */
     }
 
     // Adjoin the edge to the currentPosition and return the polygon
@@ -247,9 +227,22 @@ Cartesian Sensor::getEnd(Cartesian start, Cartesian end, const Maze& maze) {
         by = &south;
     }
 
+    // TODO: MACK - the problem is that the next x might not be beyond the
+    // current x if it's in the tile's edge
+
     // The x and y values of the next potential collision
+    /*
+    if (isTileEdge(cx)) {
+        ox += ix;
+    }
+    if (isTileEdge(cy)) {
+        oy += iy;
+    }
     nx = tileLength * (sx + ox) + halfWallWidth * (wx == Direction::EAST ? -1 : 1);
     ny = tileLength * (sy + oy) + halfWallWidth * (wy == Direction::NORTH ? -1 : 1);
+    */
+    nx = tileLength * (sx + ox);
+    ny = tileLength * (sy + oy);
 
     // Loop until we've exhausted the entirety of the ray
     while ((*bx)() || (*by)()) {
@@ -258,22 +251,22 @@ Cartesian Sensor::getEnd(Cartesian start, Cartesian end, const Maze& maze) {
         if ((nx - cx) / dx < (ny - cy) / dy) {
             cy = cy + (nx - cx) * (dy / dx);
             cx = nx;
-            if (maze.getTile(sx + ox - px, sy + oy - py)->isWall(wx) || isTileEdge(cy)) {
+            if (isTileEdge(cy) || maze.getTile(sx + ox - px, sy + oy - py)->isWall(wx)) {
                 return Cartesian(cx, cy);
             }
             ox += ix;
-            nx = tileLength * (sx + ox) + halfWallWidth * (wx == Direction::EAST ? -1 : 1);
+            nx = tileLength * (sx + ox);
         }
 
         // y collision will happen first
         else {
             cx = cx + (ny - cy) * (dx / dy);
             cy = ny;
-            if (maze.getTile(sx + ox - px, sy + oy - py)->isWall(wy) || isTileEdge(cx)) {
+            if (isTileEdge(cx) || maze.getTile(sx + ox - px, sy + oy - py)->isWall(wy)) {
                 return Cartesian(cx, cy);
             }
             oy += iy;
-            ny = tileLength * (sy + oy) + halfWallWidth * (wy == Direction::NORTH ? -1 : 1);
+            ny = tileLength * (sy + oy);
         }
     }
 
