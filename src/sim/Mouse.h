@@ -143,6 +143,12 @@ private:
     Polygon getCurrentPolygon(const Polygon& initialPolygon,
         const Cartesian& currentTranslation, const Radians& currentRotation) const;
 
+    // Retrieve the current position/rotation of sensor based on position/rotation of mouse
+    std::pair<Cartesian, Radians> getCurrentSensorPositionAndDirection(
+        const Sensor& sensor,
+        const Cartesian& currentTranslation,
+        const Radians& currentRotation) const;
+
     // Get the forward and radial contribution factors for a wheel
     std::pair<double, double> getWheelContributionFactors(const std::string& name) const;
 };

@@ -6,6 +6,7 @@
 
 #include "ContainerUtilities.h"
 #include "Logging.h"
+#include "Maze.h"
 #include "Polygon.h"
 #include "Sensor.h"
 #include "units/Cartesian.h"
@@ -23,7 +24,7 @@ public:
     std::map<std::string, Wheel> getWheels(
         const Cartesian& initialTranslation, const Radians& initialRotation, bool* success);
     std::map<std::string, Sensor> getSensors(
-        const Cartesian& initialTranslation, const Radians& initialRotation, bool* success);
+        const Cartesian& initialTranslation, const Radians& initialRotation, const Maze& maze, bool* success);
 
 private:
     pugi::xml_document m_doc;

@@ -29,6 +29,19 @@ void World::simulate() {
     // Start a separate collision detection thread
     std::thread collisionDetector(&World::checkCollision, this);
 
+    // Uncomment to do mouse update benchmarking
+    /*
+    double start(SimUtilities::getHighResTime());
+    int limit = 1000;
+    for (int i = 0; i < limit; i += 1) {
+        m_mouse->update(Seconds(1.0 / P()->mousePositionUpdateRate()) * S()->simSpeed());
+    }
+    double end(SimUtilities::getHighResTime());
+    double duration = end - start;
+    L()->info("%v", duration);
+    SimUtilities::quit();
+    */
+
     // Use this thread to perform mouse position updates
     while (true) {
 

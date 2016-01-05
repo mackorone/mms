@@ -148,7 +148,7 @@ std::map<std::string, Wheel> MouseParser::getWheels(
 }
 
 std::map<std::string, Sensor> MouseParser::getSensors(
-        const Cartesian& initialTranslation, const Radians& initialRotation, bool* success) {
+        const Cartesian& initialTranslation, const Radians& initialRotation, const Maze& maze, bool* success) {
 
     Cartesian alignmentTranslation = initialTranslation - m_centerOfMass;
     Radians alignmentRotation = initialRotation - m_forwardDirection;
@@ -180,7 +180,8 @@ std::map<std::string, Sensor> MouseParser::getSensors(
                             alignmentTranslation,
                             alignmentRotation,
                             initialTranslation),
-                        Degrees(direction) + alignmentRotation)));
+                        Degrees(direction) + alignmentRotation,
+                        maze)));
         }
     }
 

@@ -44,7 +44,7 @@ bool Mouse::initialize(
     // correct initial translation and rotation
     m_initialBodyPolygon = parser.getBody(m_initialTranslation, m_initialRotation, &success);
     m_wheels = parser.getWheels(m_initialTranslation, m_initialRotation, &success);
-    m_sensors = parser.getSensors(m_initialTranslation, m_initialRotation, &success);
+    m_sensors = parser.getSensors(m_initialTranslation, m_initialRotation, *m_maze, &success);
 
     // Initialize the collision polygon; this is technically not correct since
     // we should be using union, not convexHull, but it's a good approximation
@@ -160,15 +160,23 @@ std::vector<Polygon> Mouse::getCurrentSensorViewPolygons(
         const Coordinate& currentTranslation, const Angle& currentRotation) const {
     std::vector<Polygon> polygons;
     for (std::pair<std::string, Sensor> pair : m_sensors) {
-        // TODO: MACK - this is causing jittery graphics
-        polygons.push_back(pair.second.getCurrentViewPolygon());
+        std::pair<Cartesian, Radians> translationAndRotation =
+            getCurrentSensorPositionAndDirection(
+                pair.second,
+                currentTranslation,
+                currentRotation);
+        polygons.push_back(
+            pair.second.getCurrentViewPolygon(
+                translationAndRotation.first,
+                translationAndRotation.second,
+                *m_maze));
     }
     return polygons;
 }
 
 void Mouse::update(const Duration& elapsed) {
 
-    // TODO: MACK - this is a *very* critical loop. Per
+    // NOTE: This is a *very* performance critical function
 
     m_updateMutex.lock();
 
@@ -204,18 +212,15 @@ void Mouse::update(const Duration& elapsed) {
     m_currentRotation += Radians(aveDr * elapsed);
     m_currentTranslation += Cartesian(aveDx * elapsed, aveDy * elapsed);
 
-    // Lastly, update the sensor view polygons TODO: MACK - make this a function call
-    Cartesian translationDelta = m_currentTranslation - getInitialTranslation();
-    Radians rotationDelta = m_currentRotation - getInitialRotation();
     for (std::pair<std::string, Sensor> pair : m_sensors) {
-        m_sensors.at(pair.first).updateCurrentViewPolygon(
-            GeometryUtilities::rotateVertexAroundPoint(
-                GeometryUtilities::translateVertex(
-                    m_sensors.at(pair.first).getInitialPosition(),
-                    translationDelta),
-                rotationDelta,
-                m_currentTranslation),
-            m_sensors.at(pair.first).getInitialDirection() + rotationDelta,
+        std::pair<Cartesian, Radians> translationAndRotation =
+            getCurrentSensorPositionAndDirection(
+                pair.second,
+                m_currentTranslation,
+                m_currentRotation);
+        m_sensors.at(pair.first).updateReading(
+            translationAndRotation.first,
+            translationAndRotation.second,
             *m_maze);
     }
 
@@ -319,11 +324,8 @@ bool Mouse::hasSensor(const std::string& name) const {
 }
 
 double Mouse::readSensor(const std::string& name) const {
-    // TODO: MACK - use a mutex here to insure all sensors have been updated
-    // TODO: MACK - perhaps make an API for getting all sensor readings atomically
     ASSERT_TR(hasSensor(name));
-    const Sensor& sensor = m_sensors.at(name);
-    return 1.0 - sensor.getCurrentViewPolygon().area() / sensor.getInitialViewPolygon().area();
+    return m_sensors.at(name).read();
 }
 
 Seconds Mouse::getSensorReadDuration(const std::string& name) const {
@@ -340,6 +342,23 @@ Polygon Mouse::getCurrentPolygon(const Polygon& initialPolygon,
     return initialPolygon
         .translate(currentTranslation - getInitialTranslation())
         .rotateAroundPoint(currentRotation - getInitialRotation(), currentTranslation);
+}
+
+std::pair<Cartesian, Radians> Mouse::getCurrentSensorPositionAndDirection(
+        const Sensor& sensor,
+        const Cartesian& currentTranslation,
+        const Radians& currentRotation) const {
+    Cartesian translationDelta = currentTranslation - getInitialTranslation();
+    Radians rotationDelta = currentRotation - getInitialRotation();
+    return std::make_pair(
+        GeometryUtilities::rotateVertexAroundPoint(
+            GeometryUtilities::translateVertex(
+                sensor.getInitialPosition(),
+                translationDelta),
+            rotationDelta,
+            currentTranslation),
+        sensor.getInitialDirection() + rotationDelta
+    );
 }
 
 std::pair<double, double> Mouse::getWheelContributionFactors(const std::string& name) const {

@@ -13,9 +13,9 @@ namespace sim {
 Polygon::Polygon() {
 }
 
-Polygon::Polygon(const Polygon& polygon) {
-    m_vertices = polygon.getVertices();
-    m_triangles = polygon.getTriangles();
+Polygon::Polygon(const Polygon& polygon) :
+    m_vertices(polygon.getVertices()),
+    m_triangles(polygon.getTriangles()) {
 }
 
 Polygon::Polygon(const std::vector<Cartesian>& vertices) {
@@ -112,9 +112,9 @@ Polygon Polygon::rotateAroundPoint(const Angle& angle, const Coordinate& point) 
     return Polygon(vertices, triangles);
 }
 
-Polygon::Polygon(const std::vector<Cartesian>& vertices, const std::vector<Triangle>& triangles) {
-    m_vertices = vertices;
-    m_triangles = triangles;
+Polygon::Polygon(const std::vector<Cartesian>& vertices, const std::vector<Triangle>& triangles) :
+    m_vertices(vertices),
+    m_triangles(triangles) {
 }
 
 std::vector<Triangle> Polygon::triangulate(const std::vector<Cartesian>& vertices) {
@@ -131,7 +131,7 @@ std::vector<Triangle> Polygon::triangulate(const std::vector<Cartesian>& vertice
     // Perform the triangulation
     TPPLPartition triangulator;
     std::list<TPPLPoly> result;
-    triangulator.Triangulate_OPT(&tpplPoly, &result);
+    triangulator.Triangulate_EC(&tpplPoly, &result);
 
     // Populate the output vector
     std::vector<Triangle> triangles;

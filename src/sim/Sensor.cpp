@@ -16,7 +16,8 @@ Sensor::Sensor(
         const Angle& halfWidth,
         const Duration& readDuration,
         const Coordinate& position,
-        const Angle& direction) :
+        const Angle& direction,
+        const Maze& maze) :
         m_range(range),
         m_halfWidth(halfWidth),
         m_readDuration(readDuration),
@@ -29,13 +30,13 @@ Sensor::Sensor(
     // Create the polygon for the view of the sensor
     std::vector<Cartesian> view;
     view.push_back(position);
-    for (double i = -1; i <= 1; i += 2.0/(P()->numberOfSensorEdgePoints() - 1)) {
+    for (double i = -1; i <= 1; i += 2.0 / (P()->numberOfSensorEdgePoints() - 1)) {
         view.push_back(Polar(range, (Radians(halfWidth) * i) + direction) + position);
     }
-
     m_initialViewPolygon = Polygon(view);
-    // TODO: MACK - update the current polygon here
-    m_currentViewPolygon = m_initialViewPolygon;
+
+    // Initialize the sensor reading
+    updateReading(m_initialPosition, m_initialDirection, maze);
 }
 
 Seconds Sensor::getReadDuration() const {
@@ -58,34 +59,53 @@ Polygon Sensor::getInitialViewPolygon() const {
     return m_initialViewPolygon;
 }
 
-Polygon Sensor::getCurrentViewPolygon() const {
-    return m_currentViewPolygon;
+Polygon Sensor::getCurrentViewPolygon(
+        const Cartesian& currentPosition,
+        const Radians& currentDirection,
+        const Maze& maze) const {
+    return getViewPolygon(currentPosition, currentDirection, maze);
 }
 
-void Sensor::updateCurrentViewPolygon(
+double Sensor::read() const {
+    return m_currentReading;
+}
+
+void Sensor::updateReading(
         const Cartesian& currentPosition,
         const Radians& currentDirection,
         const Maze& maze) {
 
-    // First, get the edge of the view of the sensor
-    std::vector<Cartesian> edge;
-    for (double i = -1; i <= 1; i += 2.0/ (P()->numberOfSensorEdgePoints() - 1)) {
-        edge.push_back(currentPosition + Polar(m_range, currentDirection + (m_halfWidth * i)));
-    }
+    m_currentReading = std::max(
+        0.0,
+        1.0 -
+            getViewPolygon(currentPosition, currentDirection, maze).area() /
+            getInitialViewPolygon().area());
 
-    // For each point along the edge of the view ...
-    for (int i = 0; i < edge.size(); i += 1) {
-        edge.at(i) = getEnd(currentPosition, edge.at(i), maze);
-    }
-
-    // Adjoin the edge to the currentPosition and return the polygon
-    edge.insert(edge.begin(), currentPosition);
-
-    // Finally, update the current view polygon
-    m_currentViewPolygon = Polygon(edge);
+    ASSERT_LE(0.0, m_currentReading);
+    ASSERT_LE(m_currentReading, 1.0);
 }
 
-Cartesian Sensor::getEnd(Cartesian start, Cartesian end, const Maze& maze) {
+Polygon Sensor::getViewPolygon(
+        const Cartesian& currentPosition,
+        const Radians& currentDirection,
+        const Maze& maze) const {
+
+    std::vector<Cartesian> polygon {currentPosition};
+
+    for (double i = -1; i <= 1; i += 2.0 / (P()->numberOfSensorEdgePoints() - 1)) {
+        polygon.push_back(
+            castRay(
+                currentPosition,
+                currentPosition + Polar(m_range, currentDirection + (m_halfWidth * i)),
+                maze
+            )
+        );
+    }
+
+    return Polygon(polygon);
+}
+
+Cartesian Sensor::castRay(const Cartesian& start, const Cartesian& end, const Maze& maze) {
 
     // This is an implementation of ray-casting, a quick way to determine the
     // first object with which a ray collides. It relies on the fact that we
@@ -103,8 +123,8 @@ Cartesian Sensor::getEnd(Cartesian start, Cartesian end, const Maze& maze) {
 
     // Determine the direction of the ray
     std::pair<int, int> direction = std::make_pair(
-        (0 < dx.getMeters() ? 1 : (dx.getMeters() < 0 ? -1 : 0)),
-        (0 < dy.getMeters() ? 1 : (dy.getMeters() < 0 ? -1 : 0))
+        (0 < dx.getMeters() ? 1 : -1),
+        (0 < dy.getMeters() ? 1 : -1)
     );
 
     //  Logical Tiles
@@ -180,8 +200,8 @@ Cartesian Sensor::getEnd(Cartesian start, Cartesian end, const Maze& maze) {
     int oy = py;
 
     // The increment to take on the offset values
-    int ix = (direction.first  == 1 ? 1 : -1);
-    int iy = (direction.second == 1 ? 1 : -1);
+    int ix = direction.first;
+    int iy = direction.second;
 
     // The x and y values of the next potential collision
     Meters nx = tileLength * (sx + ox) + logicalShift.getX();
