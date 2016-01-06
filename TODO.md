@@ -1,9 +1,31 @@
 # High Priority
 
+- Make a millis() function available
+- Add a way to time the algorithms
+    - How long it took to get to the center of the maze
+    - Make this faster than real time
+        - Make sure consistent at all speeds
+- Make a mechanism for easily merging the a discrete algo into a continuous one
+    - Figure out how to bring the high level logic into the control algo
+- Updates on the tile boundaries, not centers
+    - Make this an option in the algo specification
+- Make some video tutorials
+- isTileEdge is behaving incorrectly for areas outside of the maze, because it uses fmod and the value is negative
+- Improve collision detection by casting rays from every collision polygon point to the next
+- Perform collision resolution by updating the x and y values separately
+- Improve sensor readings by getting the actual complete polygon, not apporximated
+- We do not have to triangulate for sensor updates
+    - Make the triangles mutable so we can have lazy initialization in the accessor method
+- Clean up the polygon area function
+- Write some code to make sure update throughput is good
+    - 99% of updates are 1ms apart, or something like that
+- Check the sleep duration of updates to make sure that we're actually doing 1000 updates per second
+- Can we use mutable in the MouseInterface so declare wall on read is const? Make other methods in that class const?
+- Other mouse movements - curve turns, j-turns, diagonals, etc.
+    - Genericize the move forward so that we can do curve turns
 - Arbitrary tile text
     - Make a note about how to show actual distances
     - Make a note about text automatically wrapping (the actual tile distances do not do this)
-- Make a millis() function available
 - Make a voluntary Delay in setTileBaseColor, text
 - Stepper motor
 - Sensor type (digital or analog)
@@ -31,10 +53,7 @@
 - Look at Tomasz' maze website
 - Figure out how to get rid of ifdefs in algorithm
 - Make a SimInterface and make sure it's easy to "extract" an algorithm for use on Arduino
-- Updates on the tile boundaries, not centers
 - Figure out a nice way to use a vector for tiles for the simulation, but an array for real life
-- Other mouse movements - curve turns, j-turns, diagonals, etc.
-    - Genericize the move forward so that we can do curve turns
 - Sensor readings for walls other than front, left right
 - Include Arduino "types" with the MouseInterface
 - More Arduino function support
