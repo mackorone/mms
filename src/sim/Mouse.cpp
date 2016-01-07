@@ -210,57 +210,9 @@ void Mouse::update(const Duration& elapsed) {
     MetersPerSecond aveDy = sumDy / static_cast<double>(m_wheels.size());
     RadiansPerSecond aveDr = sumDr / static_cast<double>(m_wheels.size());
 
-    // TODO: MACK
-    //m_currentGyro = aveDr;
-    //m_currentRotation += Radians(aveDr * elapsed);
-    //m_currentTranslation += Cartesian(aveDx * elapsed, aveDy * elapsed);
-
-    static Meters halfWallWidth = Meters(P()->wallWidth() / 2.0);
-    static Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
-
-    Cartesian x(aveDx * elapsed, Meters(0));
-    Cartesian y(Meters(0), aveDy * elapsed);
-    Radians   r(aveDr * elapsed);
-
-    int numVertices = m_initialCollisionPolygon.getVertices().size();
-    std::vector<Cartesian> withX = 
-        getCurrentCollisionPolygon(m_currentTranslation + x, m_currentRotation).getVertices();
-    std::vector<Cartesian> withY = 
-        getCurrentCollisionPolygon(m_currentTranslation + y, m_currentRotation).getVertices();
-    std::vector<Cartesian> withR = 
-        getCurrentCollisionPolygon(m_currentTranslation, m_currentRotation + r).getVertices();
-
-    bool xCrash = false;
-    bool yCrash = false;
-    bool rCrash = false;
-
-    for (int i = 0; i < numVertices; i += 1) {
-        int j = (i + 1) % numVertices;
-        if (GeometryUtilities::castRay(withX.at(i), withX.at(j), *m_maze, halfWallWidth, tileLength) != withX.at(j)) {
-            xCrash = true;
-        }
-        if (GeometryUtilities::castRay(withY.at(i), withY.at(j), *m_maze, halfWallWidth, tileLength) != withY.at(j)) {
-            yCrash = true;
-        }
-        if (GeometryUtilities::castRay(withR.at(i), withR.at(j), *m_maze, halfWallWidth, tileLength) != withR.at(j)) {
-            rCrash = true;
-        }
-        if (xCrash && yCrash && rCrash) {
-            break;
-        }
-    }
-
-    if (!xCrash) {
-        m_currentTranslation += x;
-    }
-    if (!yCrash) {
-        m_currentTranslation += y;
-    }
-    if (!rCrash) {
-        m_currentRotation += r;
-    }
-
-    // TODO: MACK
+    m_currentGyro = aveDr;
+    m_currentRotation += Radians(aveDr * elapsed);
+    m_currentTranslation += Cartesian(aveDx * elapsed, aveDy * elapsed);
 
     for (std::pair<std::string, Sensor> pair : m_sensors) {
         std::pair<Cartesian, Radians> translationAndRotation =
