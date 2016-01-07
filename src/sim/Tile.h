@@ -26,7 +26,6 @@ public:
     Polygon getFullPolygon() const;
     Polygon getInteriorPolygon() const;
     Polygon getWallPolygon(Direction direction) const;
-    std::vector<Polygon> getActualWallPolygons() const;
     std::vector<Polygon> getCornerPolygons() const;
 
     void initPolygons(int mazeWidth, int mazeHeight);
@@ -39,8 +38,7 @@ private:
 
     Polygon m_fullPolygon;
     Polygon m_interiorPolygon;
-    std::map<Direction, Polygon> m_allWallPolygons;
-    std::vector<Polygon> m_actualWallPolygons;
+    std::map<Direction, Polygon> m_wallPolygons;
     std::vector<Polygon> m_cornerPolygons;
 
     void initFullPolygon(int mazeWidth, int mazeHeight);

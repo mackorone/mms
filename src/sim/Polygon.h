@@ -18,7 +18,6 @@ public:
 
     std::vector<Cartesian> getVertices() const;
     std::vector<Triangle> getTriangles() const;
-    std::vector<std::pair<Cartesian, Cartesian>> getLineSegments() const;
 
     MetersSquared area() const;
     Cartesian centroid() const;

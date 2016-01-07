@@ -113,32 +113,28 @@ void World::checkCollision() {
         // the collision detection operation and take it into account when we sleep.
         double start(sim::SimUtilities::getHighResTime());
 
-        // For each line segment in the mouse polygon ...
-        for (std::pair<Cartesian, Cartesian> B : m_mouse->getCurrentCollisionPolygon(
-                m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation()).getLineSegments()) {
+        // We declare these statically since we only need one copy of them
+        static const Meters halfWallWidth = Meters(P()->wallWidth() / 2.0);
+        static const Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
 
-            // ... and for each tile the segment could be intersecting with ...
-            for (const Tile* tile : GeometryUtilities::lineSegmentTileCover(B.first, B.second, *m_maze)) {
+        // Retrieve the current collision polygon
+        std::vector<Cartesian> currentCollisionPolygonVertices =
+            m_mouse->getCurrentCollisionPolygon(
+                m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation()).getVertices();
 
-                // ... iterate through all of the tile's polygons ...
-                for (std::vector<Polygon> group : {tile->getActualWallPolygons(), tile->getCornerPolygons()}) {
-                    for (Polygon obstacle : group) {
-                        for (std::pair<Cartesian, Cartesian> A : obstacle.getLineSegments()) {
-
-                            // ... and check for a collision
-                            if (GeometryUtilities::linesIntersect(A, B)) {
-                                S()->setCrashed();
-                                return; // If we've crashed, let this thread exit
-                            }
-                        }
-                    }
-                }
+        // Check for collisions
+        for (int i = 0; i < currentCollisionPolygonVertices.size(); i += 1) {
+            int j = (i + 1) % currentCollisionPolygonVertices.size();
+            Cartesian v1 = currentCollisionPolygonVertices.at(i);
+            Cartesian v2 = currentCollisionPolygonVertices.at(j);
+            // If a wall has come between the two vertices, then we have a collision
+            if (GeometryUtilities::castRay(v1, v2, *m_maze, halfWallWidth, tileLength) != v2) {
+                S()->setCrashed();
+                return; // If we've crashed, let this thread exit
             }
         }
 
-        // Get the duration of the collision detection, in seconds. Note that this duration
-        // is simply the total number of real seconds that have passed, which is exactly
-        // what we want (since the framerate is perceived in real-time and not CPU time).
+        // Get the duration of the collision detection, in seconds
         double end(sim::SimUtilities::getHighResTime());
         double duration = end - start;
 

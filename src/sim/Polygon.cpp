@@ -42,16 +42,6 @@ std::vector<Triangle> Polygon::getTriangles() const {
     return m_triangles;
 }
 
-std::vector<std::pair<Cartesian, Cartesian>> Polygon::getLineSegments() const {
-    std::vector<std::pair<Cartesian, Cartesian>> segments;
-    Cartesian previousPoint = m_vertices.back();
-    for (Cartesian currentPoint : m_vertices) {
-        segments.push_back(std::make_pair(previousPoint, currentPoint));
-        previousPoint = currentPoint;
-    }
-    return segments;
-}
-
 MetersSquared Polygon::area() const {
 
     // See http://mathworld.wolfram.com/PolygonArea.html
