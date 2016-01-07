@@ -22,7 +22,7 @@ bool Distance::operator==(const Distance& distance) const {
 }
 
 bool Distance::operator!=(const Distance& distance) const {
-    return getMeters() != distance.getMeters();
+    return (!(operator==(distance)));
 }
 
 bool Distance::operator<(const Distance& distance) const {

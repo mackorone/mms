@@ -14,14 +14,20 @@ Polygon::Polygon() {
 }
 
 Polygon::Polygon(const Polygon& polygon) :
-    m_vertices(polygon.getVertices()),
-    m_triangles(polygon.getTriangles()) {
+    m_vertices(polygon.getVertices()) {
+    // If the polygon being copyed has already been triangulated, we should
+    // grab the triangles, lest we have to re-triangulate in the future. If not,
+    // we can be lazy, in case the triangles for this polygon aren't needed.
+    if (polygon.alreadyPerformedTriangulation()) {
+        m_triangles = polygon.getTriangles();
+    }
 }
 
-Polygon::Polygon(const std::vector<Cartesian>& vertices) {
-    ASSERT_LE(3, vertices.size());
-    m_vertices = vertices;
-    m_triangles = triangulate(vertices);
+Polygon::Polygon(const std::vector<Cartesian>& vertices) :
+    m_vertices(vertices),
+    // Postpone triangulation until we absolutely have to do it.
+    m_triangles({}) {
+    ASSERT_LE(3, m_vertices.size());
 }
 
 std::vector<Cartesian> Polygon::getVertices() const {
@@ -29,6 +35,10 @@ std::vector<Cartesian> Polygon::getVertices() const {
 }
 
 std::vector<Triangle> Polygon::getTriangles() const {
+    // Lazy initialization here
+    if (m_triangles.size() == 0) {
+        m_triangles = triangulate(m_vertices);
+    }
     return m_triangles;
 }
 
@@ -46,14 +56,13 @@ MetersSquared Polygon::area() const {
 
     // See http://mathworld.wolfram.com/PolygonArea.html
 
-    double area = 0.0;
+    double sumOfDeterminants = 0.0;
     for (int i = 0; i < m_vertices.size(); i += 1) {
         int j = (i + 1) % m_vertices.size();
-        area += m_vertices.at(i).getX().getMeters() * m_vertices.at(j).getY().getMeters();
-        area -= m_vertices.at(i).getY().getMeters() * m_vertices.at(j).getX().getMeters();
+        sumOfDeterminants += m_vertices.at(i).getX().getMeters() * m_vertices.at(j).getY().getMeters();
+        sumOfDeterminants -= m_vertices.at(i).getY().getMeters() * m_vertices.at(j).getX().getMeters();
     }
-    area /= 2.0;
-    return MetersSquared(std::abs(area));
+    return MetersSquared(std::abs(sumOfDeterminants / 2.0));
 }
 
 Cartesian Polygon::centroid() const {
@@ -115,6 +124,10 @@ Polygon Polygon::rotateAroundPoint(const Angle& angle, const Coordinate& point) 
 Polygon::Polygon(const std::vector<Cartesian>& vertices, const std::vector<Triangle>& triangles) :
     m_vertices(vertices),
     m_triangles(triangles) {
+}
+
+bool Polygon::alreadyPerformedTriangulation() const {
+    return 0 < m_triangles.size();
 }
 
 std::vector<Triangle> Polygon::triangulate(const std::vector<Cartesian>& vertices) {

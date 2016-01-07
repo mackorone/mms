@@ -56,11 +56,6 @@ private:
         const Cartesian& currentPosition,
         const Radians& currentDirection,
         const Maze& maze) const;
-    static Cartesian castRay(
-        const Cartesian& start,
-        const Cartesian& end,
-        const Maze& maze);
-    static bool isTileEdge(const Meters& pos);
 };
 
 } // namespace sim

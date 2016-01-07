@@ -30,6 +30,10 @@ bool Coordinate::operator==(const Coordinate& coordinate) const {
     return (getX() == coordinate.getX() && getY() == coordinate.getY());
 }
 
+bool Coordinate::operator!=(const Coordinate& coordinate) const {
+    return (!(operator==(coordinate)));
+}
+
 bool Coordinate::operator<(const Coordinate& coordinate) const {
     return (getX() != coordinate.getX() ? getX() < coordinate.getX() : getY() < coordinate.getY());
 }

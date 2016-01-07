@@ -14,9 +14,6 @@
 - Improve collision detection by casting rays from every collision polygon point to the next
 - Perform collision resolution by updating the x and y values separately
 - Improve sensor readings by getting the actual complete polygon, not apporximated
-- We do not have to triangulate for sensor updates
-    - Make the triangles mutable so we can have lazy initialization in the accessor method
-- Clean up the polygon area function
 - Write some code to make sure update throughput is good
     - 99% of updates are 1ms apart, or something like that
 - Check the sleep duration of updates to make sure that we're actually doing 1000 updates per second
