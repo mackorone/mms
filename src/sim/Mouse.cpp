@@ -210,73 +210,54 @@ void Mouse::update(const Duration& elapsed) {
     MetersPerSecond aveDy = sumDy / static_cast<double>(m_wheels.size());
     RadiansPerSecond aveDr = sumDr / static_cast<double>(m_wheels.size());
 
-    m_currentGyro = aveDr;
     // TODO: MACK
+    //m_currentGyro = aveDr;
     //m_currentRotation += Radians(aveDr * elapsed);
     //m_currentTranslation += Cartesian(aveDx * elapsed, aveDy * elapsed);
 
     static Meters halfWallWidth = Meters(P()->wallWidth() / 2.0);
     static Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
 
-    std::vector<Cartesian> currentCollisionPolygonVertices =
-        getCurrentCollisionPolygon(m_currentTranslation, m_currentRotation).getVertices();
+    Cartesian x(aveDx * elapsed, Meters(0));
+    Cartesian y(Meters(0), aveDy * elapsed);
+    Radians   r(aveDr * elapsed);
+
+    int numVertices = m_initialCollisionPolygon.getVertices().size();
+    std::vector<Cartesian> withX = 
+        getCurrentCollisionPolygon(m_currentTranslation + x, m_currentRotation).getVertices();
+    std::vector<Cartesian> withY = 
+        getCurrentCollisionPolygon(m_currentTranslation + y, m_currentRotation).getVertices();
+    std::vector<Cartesian> withR = 
+        getCurrentCollisionPolygon(m_currentTranslation, m_currentRotation + r).getVertices();
 
     bool xCrash = false;
     bool yCrash = false;
+    bool rCrash = false;
 
-    Cartesian potentialDx = Cartesian(aveDx * elapsed, Meters(0));
-    Cartesian potentialDy = Cartesian(Meters(0), aveDy * elapsed);
-
-    for (int i = 0; i < currentCollisionPolygonVertices.size(); i += 1) {
-        int j = (i + 1) % currentCollisionPolygonVertices.size();
-        if (GeometryUtilities::castRay(
-                currentCollisionPolygonVertices.at(i) + potentialDx,
-                currentCollisionPolygonVertices.at(j) + potentialDx,
-                *m_maze,
-                halfWallWidth,
-                tileLength) != currentCollisionPolygonVertices.at(j) + potentialDx) {
+    for (int i = 0; i < numVertices; i += 1) {
+        int j = (i + 1) % numVertices;
+        if (GeometryUtilities::castRay(withX.at(i), withX.at(j), *m_maze, halfWallWidth, tileLength) != withX.at(j)) {
             xCrash = true;
         }
-        if (GeometryUtilities::castRay(
-                currentCollisionPolygonVertices.at(i) + potentialDy,
-                currentCollisionPolygonVertices.at(j) + potentialDy,
-                *m_maze,
-                halfWallWidth,
-                tileLength) != currentCollisionPolygonVertices.at(j) + potentialDy) {
+        if (GeometryUtilities::castRay(withY.at(i), withY.at(j), *m_maze, halfWallWidth, tileLength) != withY.at(j)) {
             yCrash = true;
         }
-        if (xCrash && yCrash) {
+        if (GeometryUtilities::castRay(withR.at(i), withR.at(j), *m_maze, halfWallWidth, tileLength) != withR.at(j)) {
+            rCrash = true;
+        }
+        if (xCrash && yCrash && rCrash) {
             break;
         }
     }
 
     if (!xCrash) {
-        m_currentTranslation += potentialDx;
+        m_currentTranslation += x;
     }
     if (!yCrash) {
-        m_currentTranslation += potentialDy;
+        m_currentTranslation += y;
     }
-
-    bool rCollision = false;
-    std::vector<Cartesian> currentCollisionPolygonVerticesRotated =
-        getCurrentCollisionPolygon(m_currentTranslation, m_currentRotation + aveDr * elapsed).getVertices();
-    for (int i = 0; i < currentCollisionPolygonVerticesRotated.size(); i += 1) {
-        int j = (i + 1) % currentCollisionPolygonVerticesRotated.size();
-        Cartesian end = GeometryUtilities::castRay(
-            currentCollisionPolygonVerticesRotated.at(i),
-            currentCollisionPolygonVerticesRotated.at(j),
-            *m_maze,
-            halfWallWidth,
-            tileLength
-        );
-        if (end != currentCollisionPolygonVerticesRotated.at(j)) {
-            rCollision = true;
-            break;
-        }
-    }
-
-    if (!rCollision) {
-        m_currentRotation += Radians(aveDr * elapsed);
+    if (!rCrash) {
+        m_currentRotation += r;
     }
 
     // TODO: MACK
