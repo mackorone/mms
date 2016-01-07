@@ -270,13 +270,14 @@ void Mouse::update(const Duration& elapsed) {
             tileLength
         );
         if (end != currentCollisionPolygonVerticesRotated.at(j)) {
-            m_currentTranslation += Cartesian((end - currentCollisionPolygonVerticesRotated.at(j)).getX(), Meters(0));
-            currentCollisionPolygonVerticesRotated =
-                getCurrentCollisionPolygon(m_currentTranslation, m_currentRotation + aveDr * elapsed).getVertices();
+            rCollision = true;
+            break;
         }
     }
 
-    m_currentRotation += Radians(aveDr * elapsed);
+    if (!rCollision) {
+        m_currentRotation += Radians(aveDr * elapsed);
+    }
 
     // TODO: MACK
 
