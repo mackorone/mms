@@ -14,19 +14,18 @@
 #include <thread>
 #include <random>
 
-#ifdef _WIN32
-    #include <windows.h>
-#else
+#ifdef __linux
     #include <dirent.h>
+#elif _WIN32
+    #include "Windows.h"
 #endif
-
-#include "units/Seconds.h"
 
 #include "Assert.h"
 #include "Directory.h"
 #include "Logging.h"
 #include "Param.h"
 #include "State.h"
+#include "units/Seconds.h"
 
 namespace sim {
 
@@ -42,7 +41,7 @@ double SimUtilities::getRandom() {
     // array[std::floor(random * <number of elements>)] without having to check
     // the condition if this function returns 1.
     
-    static std::mt19937 generator(sim::P()->randomSeed());
+    static std::mt19937 generator(P()->randomSeed());
     return std::abs(static_cast<double>(generator()) - 1) / static_cast<double>(generator.max());
 }
 

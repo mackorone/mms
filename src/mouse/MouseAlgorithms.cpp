@@ -2,15 +2,16 @@
 
 #include "../sim/Assert.h"
 
-#include "manual/Manual.h"
 #include "continuous/Continuous.h"
 #include "doNothing/DoNothing.h"
+#include "floodFill/FloodFill.h"
+#include "fontTest/FontTest.h"
 #include "forward/Forward.h"
 #include "leftWallFollow/LeftWallFollow.h"
-#include "rightWallFollow/RightWallFollow.h"
-#include "randomizedWallFollow/RandomizedWallFollow.h"
-#include "floodFill/FloodFill.h"
 #include "mackAlgo/MackAlgo.h"
+#include "manual/Manual.h"
+#include "randomizedWallFollow/RandomizedWallFollow.h"
+#include "rightWallFollow/RightWallFollow.h"
 #include "test/Test.h"
 
 bool MouseAlgorithms::isMouseAlgorithm(const std::string& str) {
@@ -29,15 +30,16 @@ std::pair<bool, IMouseAlgorithm*> MouseAlgorithms::helper(const std::string& str
         return std::make_pair(true, justChecking ? nullptr : INSTANCE);\
     }
 
-    ALGO("Manual", new manual::Manual());
     ALGO("Continuous", new continuous::Continuous());
     ALGO("DoNothing", new doNothing::DoNothing());
+    ALGO("FloodFill", new floodFill::FloodFill());
+    ALGO("FontTest", new fontTest::FontTest());
     ALGO("Forward", new forward::Forward());
     ALGO("LeftWallFollow", new leftWallFollow::LeftWallFollow());
-    ALGO("RightWallFollow", new rightWallFollow::RightWallFollow());
-    ALGO("RandomizedWallFollow", new randomizedWallFollow::RandomizedWallFollow());
-    ALGO("FloodFill", new floodFill::FloodFill());
     ALGO("MackAlgo", new mackAlgo::MackAlgo());
+    ALGO("Manual", new manual::Manual());
+    ALGO("RandomizedWallFollow", new randomizedWallFollow::RandomizedWallFollow());
+    ALGO("RightWallFollow", new rightWallFollow::RightWallFollow());
     ALGO("Test", new test::Test());
 
     return std::make_pair(false, nullptr);

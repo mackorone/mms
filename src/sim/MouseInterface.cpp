@@ -8,20 +8,26 @@
 
 #include "Assert.h"
 #include "Color.h"
+#include "ContainerUtilities.h"
 #include "CPMath.h"
 #include "Logging.h"
 #include "Param.h"
 #include "State.h"
 #include "SimUtilities.h"
-// Needs to be included last for Windows compatibility
-#undef ABSOLUTE
-#undef RELATIVE
-#include "CPMinMax.h"
 
 namespace sim {
 
-MouseInterface::MouseInterface(const Maze* maze, Mouse* mouse, MazeGraphic* mazeGraphic) :
-        m_maze(maze), m_mouse(mouse), m_mazeGraphic(mazeGraphic) {
+MouseInterface::MouseInterface(
+        const Maze* maze,
+        Mouse* mouse,
+        MazeGraphic* mazeGraphic,
+        std::set<char> allowableTileTextCharacters, 
+        MouseInterfaceOptions options) :
+        m_maze(maze),
+        m_mouse(mouse),
+        m_mazeGraphic(mazeGraphic),
+        m_allowableTileTextCharacters(allowableTileTextCharacters),
+        m_options(options) {
 }
 
 void MouseInterface::debug(const std::string& str) {
@@ -62,7 +68,7 @@ void MouseInterface::setTileColor(int x, int y, char color) {
         return;
     }
 
-    if (!SimUtilities::mapContains(CHAR_TO_COLOR, color)) {
+    if (!ContainerUtilities::mapContains(CHAR_TO_COLOR, color)) {
         L()->warn(
             "You cannot set the color of tile (%v, %v) to '%v' since '%v' is"
             " not mapped to a color.",
@@ -89,11 +95,67 @@ void MouseInterface::clearTileColor(int x, int y) {
 }
 
 void MouseInterface::clearAllTileColor() {
-
     for (std::pair<int, int> position : m_tilesWithColor) {
-        m_mazeGraphic->setTileColor(position.first, position.second, STRING_TO_COLOR.at(P()->tileBaseColor()));
+        clearTileColor(position.first, position.second);
     }
-    m_tilesWithColor.clear();
+}
+
+void MouseInterface::setTileText(int x, int y, const std::string& text) {
+
+    if (!m_maze->withinMaze(x, y)) {
+        L()->warn(
+            "There is no tile at position (%v, %v), and thus you cannot set its"
+            " text to \"%v\".",
+            x, y, text);
+        return;
+    }
+
+    std::vector<std::string> rowsOfText;
+    int row = 0;
+    int index = 0;
+    while (row < m_options.tileTextNumberOfRows && index < text.size()) {
+        std::string rowOfText;
+        while (index < (row + 1) * m_options.tileTextNumberOfCols && index < text.size()) {
+            char c = text.at(index);
+            if (!ContainerUtilities::setContains(m_allowableTileTextCharacters, c)) {
+                L()->warn(
+                    "Unable to set the tile text for unprintable character \"%v\"."
+                    " Using the character \"%v\" instead.",
+                    (c == '\n' ? "\\n" :
+                    (c == '\t' ? "\\t" :
+                    (c == '\r' ? "\\r" :
+                    std::to_string(c)))),
+                    P()->defaultTileTextCharacter());
+                c = P()->defaultTileTextCharacter();
+            }
+            rowOfText += c;
+            index += 1;
+        }
+        rowsOfText.push_back(rowOfText); 
+        row += 1;
+    }
+    m_mazeGraphic->setTileText(x, y, rowsOfText);
+    m_tilesWithText.insert(std::make_pair(x, y));
+}
+
+void MouseInterface::clearTileText(int x, int y) {
+
+    if (!m_maze->withinMaze(x, y)) {
+        L()->warn(
+            "There is no tile at position (%v, %v), and thus you cannot clear its"
+            " text.",
+            x, y);
+        return;
+    }
+
+    m_mazeGraphic->setTileText(x, y, {});
+    m_tilesWithText.erase(std::make_pair(x, y));
+}
+
+void MouseInterface::clearAllTileText() {
+    for (std::pair<int, int> position : m_tilesWithText) {
+        clearTileText(position.first, position.second);
+    }
 }
 
 void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) {
@@ -105,13 +167,13 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
         return;
     }
 
-    if (!SimUtilities::mapContains(CHAR_TO_DIRECTION, direction)) {
+    if (!ContainerUtilities::mapContains(CHAR_TO_DIRECTION, direction)) {
         L()->warn("The character '%v' is not mapped to a valid direction.", direction);
         return;
     }
 
     m_mazeGraphic->declareWall(x, y, CHAR_TO_DIRECTION.at(direction), wallExists); 
-    if (P()->declareBothWallHalves() && hasOpposingWall(x, y, CHAR_TO_DIRECTION.at(direction))) {
+    if (m_options.declareBothWallHalves && hasOpposingWall(x, y, CHAR_TO_DIRECTION.at(direction))) {
         std::pair<std::pair<int, int>, Direction> opposing = getOpposingWall(x, y, CHAR_TO_DIRECTION.at(direction));
         m_mazeGraphic->declareWall(opposing.first.first, opposing.first.second, opposing.second, wallExists); 
     }
@@ -126,27 +188,19 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
         return;
     }
 
-    if (!SimUtilities::mapContains(CHAR_TO_DIRECTION, direction)) {
+    if (!ContainerUtilities::mapContains(CHAR_TO_DIRECTION, direction)) {
         L()->warn("The character '%v' is not mapped to a valid direction.", direction);
         return;
     }
 
     m_mazeGraphic->undeclareWall(x, y, CHAR_TO_DIRECTION.at(direction));
-    if (P()->declareBothWallHalves() && hasOpposingWall(x, y, CHAR_TO_DIRECTION.at(direction))) {
+    if (m_options.declareBothWallHalves && hasOpposingWall(x, y, CHAR_TO_DIRECTION.at(direction))) {
         std::pair<std::pair<int, int>, Direction> opposing = getOpposingWall(x, y, CHAR_TO_DIRECTION.at(direction));
         m_mazeGraphic->undeclareWall(opposing.first.first, opposing.first.second, opposing.second);
     }
 }
 
 void MouseInterface::setTileFogginess(int x, int y, bool foggy) {
-
-    if (!P()->algorithmControlsTileFog()) { 
-        L()->warn(
-            "The simulation parameters indicate that the simulator should"
-            " control the tile fog, not the algorithm. Thus you may not set"
-            " the fogginess for tile in position (%v, %v).", x, y);
-        return;
-    }
 
     if (!m_maze->withinMaze(x, y)) {
         L()->warn(
@@ -167,7 +221,16 @@ void MouseInterface::declareTileDistance(int x, int y, int distance) {
         return;
     }
 
-    m_mazeGraphic->setTileText(x, y, {(0 <= distance ? std::to_string(distance) : "inf")});
+    if (m_options.setTileTextWhenDistanceDeclared) {
+        setTileText(x, y, (0 <= distance ? std::to_string(distance) : "inf"));
+    }
+
+    if (m_options.setTileBaseColorWhenDistanceDeclaredCorrectly) {
+        if (distance == m_maze->getTile(x, y)->getDistance()) {
+            setTileColor(x, y,
+                COLOR_TO_CHAR.at(STRING_TO_COLOR.at(P()->distanceCorrectTileBaseColor())));
+        }
+    }
 }
 
 void MouseInterface::undeclareTileDistance(int x, int y) {
@@ -179,7 +242,13 @@ void MouseInterface::undeclareTileDistance(int x, int y) {
         return;
     }
 
-    m_mazeGraphic->setTileText(x, y, {});
+    if (m_options.setTileTextWhenDistanceDeclared) {
+        setTileText(x, y, "");
+    }
+
+    if (m_options.setTileBaseColorWhenDistanceDeclaredCorrectly) {
+        setTileColor(x, y, COLOR_TO_CHAR.at(STRING_TO_COLOR.at(P()->tileBaseColor())));
+    }
 }
 
 void MouseInterface::resetPosition() {
@@ -317,7 +386,7 @@ double MouseInterface::readSensor(std::string name) {
 
     // Display to the user, if requested
     double readDurationSeconds = m_mouse->getSensorReadDuration(name).getSeconds();
-    if (sim::P()->printLateSensorReads() && duration > readDurationSeconds) {
+    if (P()->printLateSensorReads() && duration > readDurationSeconds) {
         L()->warn(
             "A sensor read was late by %v seconds, which is %v percent late.",
             (duration - readDurationSeconds),
@@ -325,7 +394,7 @@ double MouseInterface::readSensor(std::string name) {
     }
 
     // Sleep for the read time
-    sim::SimUtilities::sleep(sim::Seconds(std::max(0.0, 1.0 / sim::P()->frameRate() - duration)));
+    sim::SimUtilities::sleep(sim::Seconds(std::max(0.0, 1.0 / P()->frameRate() - duration)));
 
     // Return the value
     return value;
@@ -342,16 +411,16 @@ bool MouseInterface::wallFront() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    return isWall(getCurrentDiscretizedTranslation(), getCurrentDiscretizedRotation());
+    return isWall(m_mouse->getCurrentDiscretizedTranslation(), m_mouse->getCurrentDiscretizedRotation());
 }
 
 bool MouseInterface::wallRight() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    std::pair<int, int> position = getCurrentDiscretizedTranslation();
+    std::pair<int, int> position = m_mouse->getCurrentDiscretizedTranslation();
 
-    switch (getCurrentDiscretizedRotation()) {
+    switch (m_mouse->getCurrentDiscretizedRotation()) {
         case Direction::NORTH:
             return isWall(position, Direction::EAST);
         case Direction::EAST:
@@ -367,9 +436,9 @@ bool MouseInterface::wallLeft() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    std::pair<int, int> position = getCurrentDiscretizedTranslation();
+    std::pair<int, int> position = m_mouse->getCurrentDiscretizedTranslation();
 
-    switch (getCurrentDiscretizedRotation()) {
+    switch (m_mouse->getCurrentDiscretizedRotation()) {
         case Direction::NORTH:
             return isWall(position, Direction::WEST);
         case Direction::EAST:
@@ -399,9 +468,9 @@ void MouseInterface::moveForward() {
     Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
     Degrees destinationRotation = m_mouse->getCurrentRotation();
 
-    m_mouse->setWheelSpeedsForMoveForward();
+    m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
 
-    switch (getCurrentDiscretizedRotation()) {
+    switch (m_mouse->getCurrentDiscretizedRotation()) {
         case Direction::NORTH: {
             destinationTranslation += Cartesian(Meters(0), tileLength);
             while (m_mouse->getCurrentTranslation().getY() < destinationTranslation.getY()) {
@@ -443,9 +512,9 @@ void MouseInterface::turnLeft() {
     Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
     Degrees destinationRotation = m_mouse->getCurrentRotation() + Degrees(90);
 
-    m_mouse->setWheelSpeedsForTurnLeft();
+    m_mouse->setWheelSpeedsForTurnLeft(m_options.wheelSpeedFraction / 2.0);
 
-    switch (getCurrentDiscretizedRotation()) {
+    switch (m_mouse->getCurrentDiscretizedRotation()) {
         case Direction::EAST: {
             while (Degrees(180) < m_mouse->getCurrentRotation() ||
                     m_mouse->getCurrentRotation() < destinationRotation) {
@@ -479,9 +548,9 @@ void MouseInterface::turnRight() {
     Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
     Degrees destinationRotation = m_mouse->getCurrentRotation() - Degrees(90);
 
-    m_mouse->setWheelSpeedsForTurnRight();
+    m_mouse->setWheelSpeedsForTurnRight(m_options.wheelSpeedFraction / 2.0);
 
-    switch (getCurrentDiscretizedRotation()) {
+    switch (m_mouse->getCurrentDiscretizedRotation()) {
         case Direction::NORTH: {
             while (m_mouse->getCurrentRotation() < Degrees(180)) {
                 sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
@@ -517,7 +586,7 @@ void MouseInterface::turnAround() {
 }
 
 void MouseInterface::ensureDiscreteInterface(const std::string& callingFunction) const {
-    if (S()->interfaceType() != InterfaceType::DISCRETE) {
+    if (m_options.interfaceType != InterfaceType::DISCRETE) {
         L()->error(
             "You must declare the interface type to be \"%v\" to use MouseInterface::%v().",
             INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE), callingFunction);
@@ -526,7 +595,7 @@ void MouseInterface::ensureDiscreteInterface(const std::string& callingFunction)
 }
 
 void MouseInterface::ensureContinuousInterface(const std::string& callingFunction) const {
-    if (S()->interfaceType() != InterfaceType::CONTINUOUS) {
+    if (m_options.interfaceType != InterfaceType::CONTINUOUS) {
         L()->error(
             "You must declare the interface type to be \"%v\" to use MouseInterface::%v().",
             INTERFACE_TYPE_TO_STRING.at(InterfaceType::CONTINUOUS), callingFunction);
@@ -540,7 +609,7 @@ bool MouseInterface::isWall(std::pair<int, int> position, Direction direction) {
 
     bool wallExists = m_maze->getTile(position.first, position.second)->isWall(direction);
 
-    if (P()->discreteInterfaceDeclareWallOnRead()) {
+    if (m_options.declareWallOnRead) {
         declareWall(position.first, position.second, DIRECTION_TO_CHAR.at(direction), wallExists);
     }
 
@@ -572,14 +641,6 @@ std::pair<std::pair<int, int>, Direction> MouseInterface::getOpposingWall(int x,
         case Direction::WEST:
             return std::make_pair(std::make_pair(x - 1, y), Direction::EAST);
     }
-}
-
-std::pair<int, int> MouseInterface::getCurrentDiscretizedTranslation() const {
-    return m_mouse->getCurrentDiscretizedTranslation();
-}
-
-Direction MouseInterface::getCurrentDiscretizedRotation() const {
-    return m_mouse->getCurrentDiscretizedRotation();
 }
 
 } // namespace sim

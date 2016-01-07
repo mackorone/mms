@@ -3,6 +3,7 @@
 #include <map>
 #include <vector>
 
+#include "ContainerUtilities.h"
 #include "units/Degrees.h"
 
 namespace sim {
@@ -23,20 +24,6 @@ static const std::map<Direction, Degrees> DIRECTION_TO_ANGLE {
     {Direction::WEST, Degrees(180)},
 };
 
-static const std::map<Direction, char> DIRECTION_TO_CHAR {
-    {Direction::NORTH, 'n'},
-    {Direction::EAST, 'e'},
-    {Direction::SOUTH, 's'},
-    {Direction::WEST, 'w'},
-};
-
-static const std::map<char, Direction> CHAR_TO_DIRECTION {
-    {'n', Direction::NORTH},
-    {'e', Direction::EAST},
-    {'s', Direction::SOUTH},
-    {'w', Direction::WEST},
-};
-
 static const std::map<Direction, std::string> DIRECTION_TO_STRING {
     {Direction::NORTH, "NORTH"},
     {Direction::EAST, "EAST"},
@@ -44,11 +31,17 @@ static const std::map<Direction, std::string> DIRECTION_TO_STRING {
     {Direction::WEST, "WEST"},
 };
 
-static const std::map<std::string, Direction> STRING_TO_DIRECTION {
-    {"NORTH", Direction::NORTH},
-    {"EAST", Direction::EAST},
-    {"SOUTH", Direction::SOUTH},
-    {"WEST", Direction::WEST},
+static const std::map<std::string, Direction> STRING_TO_DIRECTION =
+    ContainerUtilities::inverse(DIRECTION_TO_STRING);
+
+static const std::map<Direction, char> DIRECTION_TO_CHAR {
+    {Direction::NORTH, 'n'},
+    {Direction::EAST, 'e'},
+    {Direction::SOUTH, 's'},
+    {Direction::WEST, 'w'},
 };
+
+static const std::map<char, Direction> CHAR_TO_DIRECTION =
+    ContainerUtilities::inverse(DIRECTION_TO_CHAR);
 
 } // namespace sim

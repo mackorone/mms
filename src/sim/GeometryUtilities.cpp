@@ -4,7 +4,6 @@
 
 #include "Assert.h"
 #include "CPMath.h"
-#include "CPMinMax.h"
 #include "Param.h"
 #include "units/Polar.h"
 

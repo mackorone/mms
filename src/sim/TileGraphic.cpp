@@ -1,20 +1,19 @@
 #include "TileGraphic.h"
 
 #include "Color.h"
-#include "CPMinMax.h"
-#include "GraphicUtilities.h"
+#include "ContainerUtilities.h"
 #include "Param.h"
-#include "SimUtilities.h"
 #include "State.h"
 
 namespace sim {
 
-TileGraphic::TileGraphic(const Tile* tile) : m_tile(tile), m_color(STRING_TO_COLOR.at(P()->tileBaseColor())),
-        m_foggy(true) {
+TileGraphic::TileGraphic(const Tile* tile, BufferInterface* bufferInterface) :
+        m_tile(tile), m_bufferInterface(bufferInterface),
+        m_color(STRING_TO_COLOR.at(P()->tileBaseColor())), m_foggy(true) {
 }
 
 bool TileGraphic::wallDeclared(Direction direction) const {
-    return SimUtilities::mapContains(m_declaredWalls, direction);
+    return ContainerUtilities::mapContains(m_declaredWalls, direction);
 }
 
 void TileGraphic::setColor(Color color) {
@@ -40,10 +39,6 @@ void TileGraphic::setFogginess(bool foggy) {
 void TileGraphic::setText(const std::vector<std::string>& rowsOfText) {
     m_rowsOfText = rowsOfText;
     updateText();
-    if (P()->setTileBaseColorWhenDistanceCorrect() && 0 < rowsOfText.size()
-        && std::to_string(m_tile->getDistance()) == rowsOfText.at(0)) {
-            setColor(STRING_TO_COLOR.at(P()->distanceCorrectTileBaseColor()));
-    }
 }
 
 void TileGraphic::draw() const {
@@ -53,7 +48,7 @@ void TileGraphic::draw() const {
     // *StartingIndex methods in GrahicsUtilities.h depend upon this order.
 
     // Draw the base of the tile
-    GraphicUtilities::insertIntoGraphicCpuBuffer(
+    m_bufferInterface->insertIntoGraphicCpuBuffer(
         m_tile->getFullPolygon(),
         S()->tileColorsVisible() ? m_color : STRING_TO_COLOR.at(P()->tileBaseColor()),
         1.0);
@@ -61,7 +56,7 @@ void TileGraphic::draw() const {
     // Draw each of the walls of the tile
     for (Direction direction : DIRECTIONS) {
         std::pair<Color, float> colorAndAlpha = deduceWallColorAndAlpha(direction);
-        GraphicUtilities::insertIntoGraphicCpuBuffer(
+        m_bufferInterface->insertIntoGraphicCpuBuffer(
             m_tile->getWallPolygon(direction),
             colorAndAlpha.first,
             colorAndAlpha.second);
@@ -69,24 +64,24 @@ void TileGraphic::draw() const {
 
     // Draw the corners of the tile
     for (Polygon polygon : m_tile->getCornerPolygons()) {
-        GraphicUtilities::insertIntoGraphicCpuBuffer(
+        m_bufferInterface->insertIntoGraphicCpuBuffer(
             polygon,
             STRING_TO_COLOR.at(P()->tileCornerColor()),
             1.0);
     }
 
     // Draw the fog
-    GraphicUtilities::insertIntoGraphicCpuBuffer(
+    m_bufferInterface->insertIntoGraphicCpuBuffer(
         m_tile->getFullPolygon(),
         STRING_TO_COLOR.at(P()->tileFogColor()),
         m_foggy && S()->tileFogVisible() ? P()->tileFogAlpha() : 0.0);
 
 
     // Insert all of the triangle texture objects into the buffer ...
-    std::pair<int, int> maxRowsAndCols = GraphicUtilities::getTileGraphicTextMaxSize();
+    std::pair<int, int> maxRowsAndCols = m_bufferInterface->getTileGraphicTextMaxSize();
     for (int row = 0; row < maxRowsAndCols.first; row += 1) {
         for (int col = 0; col < maxRowsAndCols.second; col += 1) {
-            GraphicUtilities::insertIntoTextureCpuBuffer();
+            m_bufferInterface->insertIntoTextureCpuBuffer();
         }
     }
     // ... and then populate those triangle texture objects with data
@@ -94,7 +89,7 @@ void TileGraphic::draw() const {
 }
 
 void TileGraphic::updateColor() const {
-    GraphicUtilities::updateTileGraphicBaseColor(m_tile->getX(), m_tile->getY(),
+    m_bufferInterface->updateTileGraphicBaseColor(m_tile->getX(), m_tile->getY(),
         S()->tileColorsVisible() ? m_color : STRING_TO_COLOR.at(P()->tileBaseColor()));
 }
 
@@ -105,7 +100,7 @@ void TileGraphic::updateWalls() const {
 }
 
 void TileGraphic::updateFog() const {
-    GraphicUtilities::updateTileGraphicFog(m_tile->getX(), m_tile->getY(),
+    m_bufferInterface->updateTileGraphicFog(m_tile->getX(), m_tile->getY(),
         m_foggy && S()->tileFogVisible() ? P()->tileFogAlpha() : 0.0);
 }
 
@@ -116,15 +111,14 @@ void TileGraphic::updateText() const {
         rows.insert(rows.begin(), (0 <= m_tile->getDistance() ? std::to_string(m_tile->getDistance()) : "inf"));
     }
 
-    std::pair<int, int> maxRowsAndCols = GraphicUtilities::getTileGraphicTextMaxSize();
+    std::pair<int, int> maxRowsAndCols = m_bufferInterface->getTileGraphicTextMaxSize();
     for (int row = 0; row < maxRowsAndCols.first; row += 1) {
         for (int col = 0; col < maxRowsAndCols.second; col += 1) {
-            GraphicUtilities::updateTileGraphicText(
-                m_tile,
+            m_bufferInterface->updateTileGraphicText(
+                m_tile->getX(),
+                m_tile->getY(),
                 std::min(static_cast<int>(rows.size()), maxRowsAndCols.first),
-                std::min(
-                    static_cast<int>((row < rows.size() ? rows.at(row).size() : 0)),
-                    maxRowsAndCols.second),
+                std::min(static_cast<int>((row < rows.size() ? rows.at(row).size() : 0)), maxRowsAndCols.second),
                 row,
                 col,
                 (S()->tileTextVisible() && row < rows.size() && col < rows.at(row).size() ? rows.at(row).at(col) : ' '));
@@ -134,8 +128,13 @@ void TileGraphic::updateText() const {
 
 void TileGraphic::updateWall(Direction direction) const {
     std::pair<Color, float> colorAndAlpha = deduceWallColorAndAlpha(direction);
-    GraphicUtilities::updateTileGraphicWallColor(m_tile->getX(), m_tile->getY(), direction,
-        colorAndAlpha.first, colorAndAlpha.second);
+    m_bufferInterface->updateTileGraphicWallColor(
+        m_tile->getX(),
+        m_tile->getY(),
+        direction,
+        colorAndAlpha.first,
+        colorAndAlpha.second
+    );
 }
 
 std::pair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction) const {

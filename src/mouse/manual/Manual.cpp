@@ -1,44 +1,30 @@
 #include "Manual.h"
 
-#include <utility>
-
-#include "../../sim/Direction.h"
 #include "../../sim/Key.h"
 #include "../../sim/State.h"
 
 namespace manual {
 
 std::string Manual::mouseFile() const {
-    return "default.xml";
+    return "megaMouse.xml";
 }
 
 std::string Manual::interfaceType() const {
     return "CONTINUOUS";
 }
 
-void Manual::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
+void Manual::solve(
+        int mazeWidth, int mazeHeight, bool isOfficialMaze,
+        char initialDirection, sim::MouseInterface* mouse) {
 
     sim::S()->setRotateZoomedMap(true);
 
-    double accelerateAmount = 5.0;
+    double accelerateAmount = 60.0;
     double decelerateAmount = 1.5;
     double leftWheelSpeed = 0.0;
     double rightWheelSpeed = 0.0;
 
-    std::map<char, sim::Direction> directionsMap;
-    directionsMap.insert(std::make_pair('n', sim::Direction::NORTH));
-    directionsMap.insert(std::make_pair('e', sim::Direction::EAST));
-    directionsMap.insert(std::make_pair('s', sim::Direction::SOUTH));
-    directionsMap.insert(std::make_pair('w', sim::Direction::WEST));
-
     while (true) {
-
-        std::pair<int, int> location = mouse->getCurrentDiscretizedTranslation();
-        mouse->setTileFogginess(location.first, location.second, false);
-        for (std::pair<char, sim::Direction> pair : directionsMap) {
-            mouse->declareWall(location.first, location.second, pair.first,
-                mouse->isWall(location, pair.second));
-        }
 
         leftWheelSpeed /= decelerateAmount;
         rightWheelSpeed /= decelerateAmount;
@@ -60,23 +46,25 @@ void Manual::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::Mo
             rightWheelSpeed += accelerateAmount / 4.0;
         }
 
-        if (leftWheelSpeed < -mouse->getWheelMaxSpeed("left")) {
-            leftWheelSpeed = -mouse->getWheelMaxSpeed("left");    
+        if (leftWheelSpeed < -mouse->getWheelMaxSpeed("left-upper")) {
+            leftWheelSpeed = -mouse->getWheelMaxSpeed("left-upper");    
         }
-        if (mouse->getWheelMaxSpeed("left") < leftWheelSpeed) {
-            leftWheelSpeed = mouse->getWheelMaxSpeed("left");
+        if (mouse->getWheelMaxSpeed("left-upper") < leftWheelSpeed) {
+            leftWheelSpeed = mouse->getWheelMaxSpeed("left-upper");
         }
-        if (rightWheelSpeed < -mouse->getWheelMaxSpeed("right")) {
-            rightWheelSpeed = -mouse->getWheelMaxSpeed("right");    
+        if (rightWheelSpeed < -mouse->getWheelMaxSpeed("right-upper")) {
+            rightWheelSpeed = -mouse->getWheelMaxSpeed("right-upper");    
         }
-        if (mouse->getWheelMaxSpeed("right") < rightWheelSpeed) {
-            rightWheelSpeed = mouse->getWheelMaxSpeed("right");
+        if (mouse->getWheelMaxSpeed("right-upper") < rightWheelSpeed) {
+            rightWheelSpeed = mouse->getWheelMaxSpeed("right-upper");
         }
 
-        mouse->setWheelSpeed("left", leftWheelSpeed);
-        mouse->setWheelSpeed("right", rightWheelSpeed);
+        mouse->setWheelSpeed("left-upper", leftWheelSpeed);
+        mouse->setWheelSpeed("left-lower", leftWheelSpeed);
+        mouse->setWheelSpeed("right-upper", rightWheelSpeed);
+        mouse->setWheelSpeed("right-lower", rightWheelSpeed);
         mouse->delay(30);
     }
 }
 
-} // namespace misc
+} // namespace manual

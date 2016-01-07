@@ -3,6 +3,8 @@
 #undef RELATIVE
 #include <map>
 
+#include "ContainerUtilities.h"
+
 namespace sim {
 
 enum class EncoderType { ABSOLUTE, RELATIVE };
@@ -12,9 +14,7 @@ static const std::map<EncoderType, std::string> ENCODER_TYPE_TO_STRING {
     {EncoderType::RELATIVE, "RELATIVE"},
 };
 
-static const std::map<std::string, EncoderType> STRING_TO_ENCODER_TYPE {
-    {"ABSOLUTE", EncoderType::ABSOLUTE},
-    {"RELATIVE", EncoderType::RELATIVE},
-};
+static const std::map<std::string, EncoderType> STRING_TO_ENCODER_TYPE  = 
+    ContainerUtilities::inverse(ENCODER_TYPE_TO_STRING);
 
 } // namespace sim

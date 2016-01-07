@@ -5,12 +5,12 @@
 #include "units/Polar.h"
 
 #include "Assert.h"
+#include "ContainerUtilities.h"
 #include "CPMath.h"
 #include "Directory.h"
 #include "GeometryUtilities.h"
 #include "MouseParser.h"
 #include "Param.h"
-#include "SimUtilities.h"
 #include "State.h"
 
 namespace sim {
@@ -18,7 +18,9 @@ namespace sim {
 Mouse::Mouse(const Maze* maze) : m_maze(maze), m_currentGyro(RadiansPerSecond(0.0)) {
 }
 
-bool Mouse::initialize(const std::string& mouseFile) {
+bool Mouse::initialize(
+        const std::string& mouseFile,
+        Direction initialDirection) {
 
     // We begin with the assumption that the initialization will succeed
     bool success = true;
@@ -28,8 +30,8 @@ bool Mouse::initialize(const std::string& mouseFile) {
     m_initialTranslation = Cartesian(halfOfTileDistance, halfOfTileDistance);
     m_currentTranslation = m_initialTranslation;
 
-    // The initial rotation of the mouse, however, is determined by the parameters
-    m_initialRotation = DIRECTION_TO_ANGLE.at(STRING_TO_DIRECTION.at(P()->mouseStartingDirection()));
+    // The initial rotation of the mouse, however, is determined by the options
+    m_initialRotation = DIRECTION_TO_ANGLE.at(initialDirection);
     m_currentRotation = m_initialRotation;
 
     // Create the mouse parser object
@@ -42,7 +44,7 @@ bool Mouse::initialize(const std::string& mouseFile) {
     // correct initial translation and rotation
     m_initialBodyPolygon = parser.getBody(m_initialTranslation, m_initialRotation, &success);
     m_wheels = parser.getWheels(m_initialTranslation, m_initialRotation, &success);
-    m_sensors = parser.getSensors(m_initialTranslation, m_initialRotation, &success);
+    m_sensors = parser.getSensors(m_initialTranslation, m_initialRotation, *m_maze, &success);
 
     // Initialize the collision polygon; this is technically not correct since
     // we should be using union, not convexHull, but it's a good approximation
@@ -158,12 +160,23 @@ std::vector<Polygon> Mouse::getCurrentSensorViewPolygons(
         const Coordinate& currentTranslation, const Angle& currentRotation) const {
     std::vector<Polygon> polygons;
     for (std::pair<std::string, Sensor> pair : m_sensors) {
-        polygons.push_back(getCurrentSensorViewPolygon(pair.second, currentTranslation, currentRotation));
+        std::pair<Cartesian, Radians> translationAndRotation =
+            getCurrentSensorPositionAndDirection(
+                pair.second,
+                currentTranslation,
+                currentRotation);
+        polygons.push_back(
+            pair.second.getCurrentViewPolygon(
+                translationAndRotation.first,
+                translationAndRotation.second,
+                *m_maze));
     }
     return polygons;
 }
 
 void Mouse::update(const Duration& elapsed) {
+
+    // NOTE: This is a *very* performance critical function
 
     m_updateMutex.lock();
 
@@ -199,22 +212,34 @@ void Mouse::update(const Duration& elapsed) {
     m_currentRotation += Radians(aveDr * elapsed);
     m_currentTranslation += Cartesian(aveDx * elapsed, aveDy * elapsed);
 
+    for (std::pair<std::string, Sensor> pair : m_sensors) {
+        std::pair<Cartesian, Radians> translationAndRotation =
+            getCurrentSensorPositionAndDirection(
+                pair.second,
+                m_currentTranslation,
+                m_currentRotation);
+        m_sensors.at(pair.first).updateReading(
+            translationAndRotation.first,
+            translationAndRotation.second,
+            *m_maze);
+    }
+
     m_updateMutex.unlock();
 }
 
 bool Mouse::hasWheel(const std::string& name) const {
-    return SimUtilities::mapContains(m_wheels, name);
+    return ContainerUtilities::mapContains(m_wheels, name);
 }
 
 RadiansPerSecond Mouse::getWheelMaxSpeed(const std::string& name) const {
-    ASSERT_TR(SimUtilities::mapContains(m_wheels, name));
+    ASSERT_TR(ContainerUtilities::mapContains(m_wheels, name));
     return m_wheels.at(name).getMaxAngularVelocityMagnitude();
 }
 
 void Mouse::setWheelSpeeds(const std::map<std::string, RadiansPerSecond>& wheelSpeeds) {
     m_updateMutex.lock();
     for (std::pair<std::string, RadiansPerSecond> pair : wheelSpeeds) {
-        ASSERT_TR(SimUtilities::mapContains(m_wheels, pair.first));
+        ASSERT_TR(ContainerUtilities::mapContains(m_wheels, pair.first));
         ASSERT_LE(
             std::abs(pair.second.getRevolutionsPerMinute()),
             getWheelMaxSpeed(pair.first).getRevolutionsPerMinute());
@@ -223,29 +248,32 @@ void Mouse::setWheelSpeeds(const std::map<std::string, RadiansPerSecond>& wheelS
     m_updateMutex.unlock();
 }
 
-void Mouse::setWheelSpeedsForMoveForward() {
+void Mouse::setWheelSpeedsForMoveForward(double fractionOfMaxSpeed) {
     std::map<std::string, RadiansPerSecond> wheelSpeeds;
     for (std::pair<std::string, Wheel> wheel : m_wheels) {
         wheelSpeeds.insert(std::make_pair(wheel.first,
-            getWheelMaxSpeed(wheel.first) * getWheelContributionFactors(wheel.first).first));
+            getWheelMaxSpeed(wheel.first) * fractionOfMaxSpeed *
+            getWheelContributionFactors(wheel.first).first));
     }
     setWheelSpeeds(wheelSpeeds);
 }
 
-void Mouse::setWheelSpeedsForTurnLeft() {
+void Mouse::setWheelSpeedsForTurnLeft(double fractionOfMaxSpeed) {
     std::map<std::string, RadiansPerSecond> wheelSpeeds;
     for (std::pair<std::string, Wheel> wheel : m_wheels) {
         wheelSpeeds.insert(std::make_pair(wheel.first,
-            getWheelMaxSpeed(wheel.first) * getWheelContributionFactors(wheel.first).second));
+            getWheelMaxSpeed(wheel.first) * fractionOfMaxSpeed *
+            getWheelContributionFactors(wheel.first).second));
     }
     setWheelSpeeds(wheelSpeeds);
 }
 
-void Mouse::setWheelSpeedsForTurnRight() {
+void Mouse::setWheelSpeedsForTurnRight(double fractionOfMaxSpeed) {
     std::map<std::string, RadiansPerSecond> wheelSpeeds;
     for (std::pair<std::string, Wheel> wheel : m_wheels) {
         wheelSpeeds.insert(std::make_pair(wheel.first,
-            getWheelMaxSpeed(wheel.first) * getWheelContributionFactors(wheel.first).second * -1));
+            getWheelMaxSpeed(wheel.first) * fractionOfMaxSpeed *
+            getWheelContributionFactors(wheel.first).second * -1));
     }
     setWheelSpeeds(wheelSpeeds);
 }
@@ -292,19 +320,16 @@ void Mouse::resetWheelRelativeEncoder(const std::string& name) {
 }
 
 bool Mouse::hasSensor(const std::string& name) const {
-    return SimUtilities::mapContains(m_sensors, name);
+    return ContainerUtilities::mapContains(m_sensors, name);
 }
 
 double Mouse::readSensor(const std::string& name) const {
     ASSERT_TR(hasSensor(name));
-    Sensor sensor = m_sensors.at(name);
-    Polygon currentView = getCurrentSensorViewPolygon(
-        sensor, getCurrentTranslation(), getCurrentRotation());
-    return 1.0 - currentView.area() / sensor.getInitialViewPolygon().area();
+    return m_sensors.at(name).read();
 }
 
 Seconds Mouse::getSensorReadDuration(const std::string& name) const {
-    ASSERT_TR(SimUtilities::mapContains(m_sensors, name));
+    ASSERT_TR(ContainerUtilities::mapContains(m_sensors, name));
     return m_sensors.at(name).getReadDuration();
 }
 
@@ -319,19 +344,21 @@ Polygon Mouse::getCurrentPolygon(const Polygon& initialPolygon,
         .rotateAroundPoint(currentRotation - getInitialRotation(), currentTranslation);
 }
 
-Polygon Mouse::getCurrentSensorViewPolygon(const Sensor& sensor,
-        const Cartesian& currentTranslation, const Radians& currentRotation) const {
+std::pair<Cartesian, Radians> Mouse::getCurrentSensorPositionAndDirection(
+        const Sensor& sensor,
+        const Cartesian& currentTranslation,
+        const Radians& currentRotation) const {
     Cartesian translationDelta = currentTranslation - getInitialTranslation();
     Radians rotationDelta = currentRotation - getInitialRotation();
-    return sensor.getCurrentViewPolygon(
+    return std::make_pair(
         GeometryUtilities::rotateVertexAroundPoint(
             GeometryUtilities::translateVertex(
                 sensor.getInitialPosition(),
                 translationDelta),
             rotationDelta,
             currentTranslation),
-        sensor.getInitialDirection() + rotationDelta,
-        *m_maze);
+        sensor.getInitialDirection() + rotationDelta
+    );
 }
 
 std::pair<double, double> Mouse::getWheelContributionFactors(const std::string& name) const {
@@ -396,7 +423,7 @@ std::pair<double, double> Mouse::getWheelContributionFactors(const std::string& 
         }
     }
     
-    ASSERT_TR(SimUtilities::mapContains(contributionFactors, name));
+    ASSERT_TR(ContainerUtilities::mapContains(contributionFactors, name));
     return contributionFactors.at(name);
 }
 

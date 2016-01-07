@@ -1,10 +1,10 @@
 #include "State.h"
 
 #include "Assert.h"
+#include "ContainerUtilities.h"
 #include "Key.h"
 #include "Logging.h"
 #include "Param.h"
-#include "SimUtilities.h"
 
 namespace sim {
 
@@ -24,8 +24,7 @@ State* State::getInstance() {
 State::State() {
     m_runId = "";
     m_crashed = false;
-    m_interfaceType; // Undefined default value
-    m_layout = STRING_TO_LAYOUT.at(P()->defaultLayout());
+    m_layoutType = STRING_TO_LAYOUT_TYPE.at(P()->defaultLayoutType());
     m_rotateZoomedMap = P()->defaultRotateZoomedMap();
     m_zoomedMapScale = P()->defaultZoomedMapScale();
     m_wallTruthVisible = P()->defaultWallTruthVisible();
@@ -48,71 +47,13 @@ std::string State::runId() {
     return m_runId;
 }
 
-bool State::crashed() {
-    return m_crashed;
-}
-
-InterfaceType State::interfaceType() {
-    return m_interfaceType;
-}
-
-Layout State::layout() {
-    return m_layout;
-}
-
-bool State::rotateZoomedMap() {
-    return m_rotateZoomedMap;
-}
-
-double State::zoomedMapScale() {
-    return m_zoomedMapScale;
-}
-
-bool State::wallTruthVisible() {
-    return m_wallTruthVisible;
-}
-
-bool State::tileColorsVisible() {
-    return m_tileColorsVisible;
-}
-
-bool State::tileFogVisible() {
-    return m_tileFogVisible;
-}
-
-bool State::tileTextVisible() {
-    return m_tileTextVisible;
-}
-
-bool State::tileDistanceVisible() {
-    return m_tileDistanceVisible;
-}
-
-bool State::wireframeMode() {
-    return m_wireframeMode;
-}
-
-bool State::paused() {
-    return m_paused;
-}
-
-double State::simSpeed() {
-    return m_simSpeed;
-}
-
-bool State::inputButtonWasPressed(int inputButton) {
-    ASSERT_TR(SimUtilities::mapContains(m_inputButtons, inputButton));
-    return m_inputButtons.at(inputButton);
-}
-
-bool State::arrowKeyIsPressed(Key key) {
-    ASSERT_TR(SimUtilities::mapContains(m_arrowKeys, key));
-    return m_arrowKeys.at(key);
-}
-
 void State::setRunId(const std::string& runId) {
     ASSERT_EQ(m_runId, "");
     m_runId = runId;
+}
+
+bool State::crashed() {
+    return m_crashed;
 }
 
 void State::setCrashed() {
@@ -120,16 +61,24 @@ void State::setCrashed() {
     L()->warn("%v", P()->crashMessage());
 }
 
-void State::setInterfaceType(InterfaceType interfaceType) {
-    m_interfaceType = interfaceType;
+LayoutType State::layoutType() {
+    return m_layoutType;
 }
 
-void State::setLayout(Layout layout) {
-    m_layout = layout;
+void State::setLayoutType(LayoutType layoutType) {
+    m_layoutType = layoutType;
+}
+
+bool State::rotateZoomedMap() {
+    return m_rotateZoomedMap;
 }
 
 void State::setRotateZoomedMap(bool rotateZoomedMap) {
     m_rotateZoomedMap = rotateZoomedMap;
+}
+
+double State::zoomedMapScale() {
+    return m_zoomedMapScale;
 }
 
 void State::setZoomedMapScale(double zoomedMapScale) {
@@ -144,32 +93,64 @@ void State::setZoomedMapScale(double zoomedMapScale) {
     }
 }
 
+bool State::wallTruthVisible() {
+    return m_wallTruthVisible;
+}
+
 void State::setWallTruthVisible(bool wallTruthVisible) {
     m_wallTruthVisible = wallTruthVisible;
+}
+
+bool State::tileColorsVisible() {
+    return m_tileColorsVisible;
 }
 
 void State::setTileColorsVisible(bool tileColorsVisible) {
     m_tileColorsVisible = tileColorsVisible;
 }
 
+bool State::tileFogVisible() {
+    return m_tileFogVisible;
+}
+
 void State::setTileFogVisible(bool tileFogVisible) {
     m_tileFogVisible = tileFogVisible;
+}
+
+bool State::tileTextVisible() {
+    return m_tileTextVisible;
 }
 
 void State::setTileTextVisible(bool tileTextVisible) {
     m_tileTextVisible = tileTextVisible;
 }
 
+bool State::tileDistanceVisible() {
+    return m_tileDistanceVisible;
+}
+
 void State::setTileDistanceVisible(bool tileDistanceVisible) {
     m_tileDistanceVisible = tileDistanceVisible;
+}
+
+bool State::wireframeMode() {
+    return m_wireframeMode;
 }
 
 void State::setWireframeMode(bool wireframeMode) {
     m_wireframeMode = wireframeMode;
 }
 
+bool State::paused() {
+    return m_paused;
+}
+
 void State::setPaused(bool paused) {
     m_paused = paused;
+}
+
+double State::simSpeed() {
+    return m_simSpeed;
 }
 
 void State::setSimSpeed(double simSpeed) {
@@ -184,13 +165,23 @@ void State::setSimSpeed(double simSpeed) {
     }
 }
 
+bool State::inputButtonWasPressed(int inputButton) {
+    ASSERT_TR(ContainerUtilities::mapContains(m_inputButtons, inputButton));
+    return m_inputButtons.at(inputButton);
+}
+
 void State::setInputButtonWasPressed(int inputButton, bool pressed) {
-    ASSERT_TR(SimUtilities::mapContains(m_inputButtons, inputButton));
+    ASSERT_TR(ContainerUtilities::mapContains(m_inputButtons, inputButton));
     m_inputButtons.at(inputButton) = pressed;
 }
 
+bool State::arrowKeyIsPressed(Key key) {
+    ASSERT_TR(ContainerUtilities::mapContains(m_arrowKeys, key));
+    return m_arrowKeys.at(key);
+}
+
 void State::setArrowKeyIsPressed(Key key, bool pressed) {
-    ASSERT_TR(SimUtilities::mapContains(m_arrowKeys, key));
+    ASSERT_TR(ContainerUtilities::mapContains(m_arrowKeys, key));
     m_arrowKeys.at(key) = pressed;
 }
 

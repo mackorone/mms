@@ -1,22 +1,32 @@
 # High Priority
 
-- Discrete mode speed...
-    - Fraction of wheel speed
-    - DiscreteInterfaceWheelSpeed parameter?
-    - Figure out how to make discrete interface wheel speed more uniform among algos...
-    - Ensure that the wheel speed is not too high in the MouseInterface (so that the mouse does not clip through walls)
-- Make a note about symmetry with discrete interface
-    - Make a formal check for symmetry
-- Remove friending in manual algo
-    - Algo params should not be runtime - just put the params in a class (could the default be runtime???)
-    - Make a note about how to do params in algos
-    - Algo specifies algo param file...
-    - Specify some options/params in the mouseAlgorithm
-- Manual mode fog breakage
-    - Automatically clear tile fog?
-    - Allow the algo to specify this?
-    - Other algo options???
+- Make a millis() function available
+- Add a way to time the algorithms
+    - How long it took to get to the center of the maze
+    - Make this faster than real time
+        - Make sure consistent at all speeds
+- Make a mechanism for easily merging the a discrete algo into a continuous one
+    - Figure out how to bring the high level logic into the control algo
+- Updates on the tile boundaries, not centers
+    - Make this an option in the algo specification
+- Make some video tutorials
+- isTileEdge is behaving incorrectly for areas outside of the maze, because it uses fmod and the value is negative
+- Improve collision detection by casting rays from every collision polygon point to the next
+- Perform collision resolution by updating the x and y values separately
+- Improve sensor readings by getting the actual complete polygon, not apporximated
+- We do not have to triangulate for sensor updates
+    - Make the triangles mutable so we can have lazy initialization in the accessor method
+- Clean up the polygon area function
+- Write some code to make sure update throughput is good
+    - 99% of updates are 1ms apart, or something like that
+- Check the sleep duration of updates to make sure that we're actually doing 1000 updates per second
+- Can we use mutable in the MouseInterface so declare wall on read is const? Make other methods in that class const?
+- Other mouse movements - curve turns, j-turns, diagonals, etc.
+    - Genericize the move forward so that we can do curve turns
 - Arbitrary tile text
+    - Make a note about how to show actual distances
+    - Make a note about text automatically wrapping (the actual tile distances do not do this)
+- Make a voluntary Delay in setTileBaseColor, text
 - Stepper motor
 - Sensor type (digital or analog)
 - Make some utility that keeps track of simulation and real elapsed time
@@ -24,25 +34,12 @@
     - Max speeds for manual algorithm
     - Add the simulation time to the logging
         - Perhaps even refactor the elapsed time in logging
-- Add the ability to start in the direction of the opening of the maze
-- Move some graphics stuff in Driver into GraphicUtilities
-- Change float to units (including in the ParamParser and Param class)
-- Type safety (in terms of units) of the parameters
-- Tile Text
-    - Fix the fact that the bitmap is initialized in driver but the string of characters is in GraphicUtilities
-    - Assert that a character exsits before we try to draw it to the tile
-    - Check that a font and image exist, print error and die if not
-    - Make a helper method in graphic utilities specifically for toggling tile text
-    - Build a cache with positions already pre-calculated
-    - Use a map instead of a string for quicker search
-    - Update text is too slow... it's optimizing time
-    - Make maxRowsAndCols a runtime parameter (make it 2 x 3 for now)
-    - Should we have text alignment be a parameter?
-    - Be able to just show actual distances
 - Put a toolbar at the top or bottom with info
+    - Check that a font exists, print error and die if not
     - Information of the wheel speeds
     - Display a clock (real and sim time)
     - Current layout
+    - Speed in the x, y, and along the hypotenuse
     - Pretty much all state information
         - zoom level (16:1, etc.)
         - sim speed
@@ -51,16 +48,12 @@
     - Set the mouse algo in State for display in the toolbar
     - Make terminal style output at bottom or right of window (GUI)
 - Make MouseInterface into an interface, and then implement the simulator interface, make a real-world interface
-- Tomasz maze-gen issues
-- Run-time parameters for the algos
+- Change float to units (including in the ParamParser and Param class)
+- Type safety (in terms of units) of the parameters
 - Look at Tomasz' maze website
-- Maze Validation (both physically valid mazes and competition valid mazes)
-    - Official maze size parameters
 - Figure out how to get rid of ifdefs in algorithm
 - Make a SimInterface and make sure it's easy to "extract" an algorithm for use on Arduino
-- Updates on the tile boundaries, not centers
 - Figure out a nice way to use a vector for tiles for the simulation, but an array for real life
-- Other mouse movements - curve turns, j-turns, diagonals, etc.
 - Sensor readings for walls other than front, left right
 - Include Arduino "types" with the MouseInterface
 - More Arduino function support
@@ -72,15 +65,27 @@
 - Make a separate process for algo, so if the algo dies the sim stays alive, and so that we can start an algo over really easily
 - Continuous performance
     - CPU with megaMouse.xml
-    - Reading the sensors is super non-performant...
     - MinSleepDuration is a little bit weird - sometimes we try to sleep less than that
+- Explain which options only work for discrete mode
+    - Make a note about how to do params in algos
+    - Talk about each of the parameters in documentation
+- Discrete mode speed...
+    - Ensure that the wheel speed is not too high in the MouseInterface (so that the mouse does not clip through walls)
+    - In discrete mode, the mouse can overturn or go too far if the sim speed
+      is to high. We need to implement some logic that checks this ahead of
+      time and then just teleports... sort of like bullets in other physics
+      simulators
+- Make a note about symmetry with discrete interface
+    - Make a formal check for symmetry
 
 # Medum Priority
 
+- Organize params in res/parameters.xml and Param.h/.cpp
 - For curve turns, see if you can figure out the arc that the mouse should go on to simulate a curve turn, use checkpoints
     - No curve turn has two line segments, each is tangent
         - first order curve turn has 3 line segments total, equally spaced, etc.
         - second order curve turn has 4 line segments total, equally spaced, etc.
+- Break up MouseInterface into DiscreteMouseInterface and ContinuousMouseInterface
 - isDiscreteInterfaceCompatible and isContinuousInterfaceCompatible
 - Enable steering the wheels and sensors during run
 - Set acceleration of all moving/rotating things
@@ -96,10 +101,7 @@
     - ave steps
     - etc.
 - Still view a maze if it fails validation, but don't let the sim continue...
-- Check megaMouse performance
-    - Better implementation of sensor view collision detection
-    - Figure out how to make sensors more efficie
-    - Make the sensor polygon model better
+- Testing for resource existence (like the shaders, font images, etc.)
 - Add manual mode high scores
 - Continuous mode improvements (overall)
 - Xorg and compiz performance...
@@ -114,9 +116,6 @@
 - New maze w/o restarting app
     - Be able to restart in the middle of a run (this is tricky with the algo thread...)
 - Fix the makefile so that if header files disappear we don't need to make clean
-- Normalize random number generation (Implement Windows random number generation) // TODO: Should be fixed...
-- Make a nice mechanism for writing our own maze generation algorithms
-- In discrete mode, the mouse can overturn or go too far if the sim speed is to high. We need to implement some logic that checks this ahead of time and then just teleports... sort of like bullets in other physics simulators
 - Add trajectory lines (see https://www.youtube.com/watch?v=kgJClVCPu3w)
 - Crash recovery semantics
 - Draw a path of where the robot has been (the history object could be used for recording as well)
@@ -126,6 +125,7 @@
 - A way to log/print only info or higher, warn or higher, etc.
 - Replace the convexHull with union in the mouse collision polygon initialization
 - XML schema/validators
+- Support multiple mice
 
 # Low Priority
 
@@ -138,8 +138,6 @@
   Param methods is the same as the type of the member variable
 - Detect STL use in maze and mouse algos, send a warning
 - Add a simple polygonFragmentShader
-- Inconsistent wall declaration colors (declared wall on one side of wall, declared no wall on other side of wall)
-- Inconsistent wall declaration colors (declared one side of wall but not the other)
 - Perhaps impose memory limits on the algorithm
 - Add a way to change the mouse color
 - Bluetooth connection to the actual mouse
@@ -149,27 +147,25 @@
 - Unit tests
 - Try to break the simulator from within the algos, make it tamper-resistant
 - Reduce include dependencies as much as possible
-- Implement perfect hashing for key input and algo selection
+- Implement perfect hashing for key input and algo selection (lulz)
 - Support more than just white fonts
 - Protect functions that shouldn't be accessed by the algo by checking thread ID
 - Change over the Makefile to use cmake
 - Rewrite/clean floodfill
 - Color palettes
+- Tile text color
 
 # Clean-Up
 
 - Rename TriangleTexture and VertexTexture
 - Write some unittests
-- Change map.count(item) != 0 to map.find(item) != map.end()
 - Add IMouseAlgorithm (and maze) to the build path so we can just do #include <IMouseAlgorithm.h> (maybe...)
 - Run the parameter consistency script, make sure values align
-- Convert primitive types to GL types
+- Convert primitive types to GL types (or vice versa)
 - Return const references instead of values (pointers???)
 - Reduce includes as much as possible
 - Rewrite the Makefile to use an "inc" directory
 - Change "bool foo(false)" to "bool foo = false" for primitive - they look like function calls
-- Handle bad values in the parameters, such as bad colors, negative values, etc.
-- Put interface in root of src directory
 - write "isDirectory(std::string path)" and enforce this where necessary
 - write getRandom() and replace old calls to rand()
 - Performance on different systems???
@@ -182,7 +178,6 @@
 - Rewrite "i++" and "++i" as "i += 1"
 - Give better explanations for the GeometryUtilities
 - Buffer the declared walls and include a quick "resetWalls()" method
-- Change the Mouse to use the technically correct position update implementation
 - Clean up / improve the coding standards
 - Fit code into 80/100 columns... use a linter for this
 - Put consts in GraphicUtilties (and other classes)
@@ -191,7 +186,6 @@
 - for each loop iterations should use const references
 - The interfaces don't need to be passed as pointers, right? Try passing as values...
 - Upgrade convert_mazes.py to Python 3
-- Move as much OpenGL code to a single file (Main.cpp) as possible
 - P() be const? S()?
 - init vs initialize
 - Write a script to ensure that ASSERTS don't hold any state
@@ -205,3 +199,4 @@
 - Take out -g makefile option
 - Reduce the number of LIBS in makefile
 - Does the makefile work for multiple platofrms???
+- Segfault on pressing x

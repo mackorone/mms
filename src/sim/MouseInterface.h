@@ -3,6 +3,7 @@
 #include "InterfaceType.h"
 #include "MazeGraphic.h"
 #include "Mouse.h"
+#include "MouseInterfaceOptions.h"
 #include "Param.h"
 
 // Windows compatibility
@@ -22,7 +23,12 @@ namespace sim {
 class MouseInterface {
 
 public:
-    MouseInterface(const Maze* maze, Mouse* mouse, MazeGraphic* mazeGraphic);
+    MouseInterface(
+        const Maze* maze,
+        Mouse* mouse,
+        MazeGraphic* mazeGraphic,
+        std::set<char> allowableTileTextCharacters,
+        MouseInterfaceOptions options);
 
     // ----- Any interface methods ----- //
 
@@ -42,6 +48,11 @@ public:
     void clearTileColor(int x, int y);
     void clearAllTileColor();
 
+    // Tile text
+    void setTileText(int x, int y, const std::string& text);
+    void clearTileText(int x, int y);
+    void clearAllTileText();
+
     // Tile walls
     void declareWall(int x, int y, char direction, bool wallExists);
     void undeclareWall(int x, int y, char direction);
@@ -49,8 +60,7 @@ public:
     // Tile fog
     void setTileFogginess(int x, int y, bool foggy);
 
-    // Tile distance
-    // NOTE: a negative distance corresponds to inf distance
+    // Tile distance, where a negative distance corresponds to inf distance
     void declareTileDistance(int x, int y, int distance);
     void undeclareTileDistance(int x, int y);
 
@@ -98,7 +108,12 @@ private:
     const Maze* m_maze;
     Mouse* m_mouse;
     MazeGraphic* m_mazeGraphic;
+    std::set<char> m_allowableTileTextCharacters;
+    MouseInterfaceOptions m_options;
+
+    // Cache of tiles, for making clearAll methods faster
     std::set<std::pair<int, int>> m_tilesWithColor;
+    std::set<std::pair<int, int>> m_tilesWithText;
 
     void ensureDiscreteInterface(const std::string& callingFunction) const;
     void ensureContinuousInterface(const std::string& callingFunction) const;
@@ -106,10 +121,6 @@ private:
     bool isWall(std::pair<int, int> position, Direction direction);
     bool hasOpposingWall(int x, int y, Direction direction) const;
     std::pair<std::pair<int, int>, Direction> getOpposingWall(int x, int y, Direction direction) const;
-
-    friend class manual::Manual;
-    std::pair<int, int> getCurrentDiscretizedTranslation() const;
-    Direction getCurrentDiscretizedRotation() const;
 };
 
 } // namespace sim

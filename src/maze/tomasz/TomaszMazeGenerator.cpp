@@ -63,20 +63,12 @@ void TomaszMazeGenerator::generateMaze(int mazeWidth, int mazeHeight) {
         
         // Keep track of the next possible movements
 
-        /*std::map<Direction, bool> choices = { // This fails with -O1 optimization flag on G++ 4.9.2
+        std::map<Direction, bool> choices = {
             {NORTH, isValidUnexploredMove(xPos, yPos, NORTH)},
             {EAST,  isValidUnexploredMove(xPos, yPos, EAST) },
             {SOUTH, isValidUnexploredMove(xPos, yPos, SOUTH)},
             {WEST,  isValidUnexploredMove(xPos, yPos, WEST) }
-        };*/
-        
-        std::map<Direction, bool> choices;
-        
-        
-        choices[NORTH] = isValidUnexploredMove(xPos, yPos, NORTH); // This approach works with -O1 flag
-        choices[EAST] = isValidUnexploredMove(xPos, yPos, EAST);
-        choices[SOUTH] = isValidUnexploredMove(xPos, yPos, SOUTH);
-        choices[WEST] = isValidUnexploredMove(xPos, yPos, WEST);
+        };
         
         int possible = 0;
         
@@ -520,6 +512,7 @@ void TomaszMazeGenerator::initializeMaze() {
             tile.walls[SOUTH] = true;
             tile.walls[WEST]  = true;
             tile.isCenter = false;
+            tile.explored = false;
             tile.distanceFromStart = -1;
             column.push_back(tile);
         }

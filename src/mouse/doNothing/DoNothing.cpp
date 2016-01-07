@@ -2,7 +2,9 @@
 
 namespace doNothing {
 
-void DoNothing::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
+void DoNothing::solve(
+        int mazeWidth, int mazeHeight, bool isOfficialMaze,
+        char initialDirection, sim::MouseInterface* mouse) {
 }
 
 } // namespace doNothing

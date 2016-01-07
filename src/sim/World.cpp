@@ -10,18 +10,37 @@
 #include "SimUtilities.h"
 #include "State.h"
 #include "units/Milliseconds.h"
-#include "CPMinMax.h"
 
 namespace sim {
 
-World::World(Maze* maze, Mouse* mouse, MazeGraphic* mazeGraphic) : m_maze(maze), m_mouse(mouse),
-        m_mazeGraphic(mazeGraphic), m_collision(false) {
+World::World(
+        const Maze* maze,
+        Mouse* mouse,
+        MazeGraphic* mazeGraphic,
+        WorldOptions options) :
+        m_maze(maze),
+        m_mouse(mouse),
+        m_mazeGraphic(mazeGraphic),
+        m_options(options) {
 }
 
 void World::simulate() {
 
     // Start a separate collision detection thread
     std::thread collisionDetector(&World::checkCollision, this);
+
+    // Uncomment to do mouse update benchmarking
+    /*
+    double start(SimUtilities::getHighResTime());
+    int limit = 1000;
+    for (int i = 0; i < limit; i += 1) {
+        m_mouse->update(Seconds(1.0 / P()->mousePositionUpdateRate()) * S()->simSpeed());
+    }
+    double end(SimUtilities::getHighResTime());
+    double duration = end - start;
+    L()->info("%v", duration);
+    SimUtilities::quit();
+    */
 
     // Use this thread to perform mouse position updates
     while (true) {
@@ -43,7 +62,7 @@ void World::simulate() {
         }
 
         // Update the position of the mouse
-        m_mouse->update(Seconds(1.0/P()->mousePositionUpdateRate()) * S()->simSpeed());
+        m_mouse->update(Seconds(1.0 / P()->mousePositionUpdateRate()) * S()->simSpeed());
 
         // Update the tile fog. Note that this is a bit of a one-off case. We
         // shouldn't really put any sort of graphics-related stuff in this
@@ -52,7 +71,7 @@ void World::simulate() {
         // just this one bit of code, this is fine for now. If we end up
         // needing more graphics functionality here, it'd be wise to make a
         // separate class.
-        if (!P()->algorithmControlsTileFog()) {
+        if (m_options.automaticallyClearFog) {
             std::pair<int, int> location = m_mouse->getCurrentDiscretizedTranslation();
             m_mazeGraphic->setTileFogginess(location.first, location.second, false);
         }
@@ -84,7 +103,7 @@ void World::checkCollision() {
     }
 
     // If the interface type is not continuous, let this thread exit
-    if (S()->interfaceType() != InterfaceType::CONTINUOUS) {
+    if (m_options.interfaceType != InterfaceType::CONTINUOUS) {
         return;
     }
 
@@ -124,7 +143,7 @@ void World::checkCollision() {
         double duration = end - start;
 
         // Notify the use of a late collision detection
-        if (P()->printLateCollisionDetections() && duration > 1.0/sim::P()->collisionDetectionRate()) {
+        if (P()->printLateCollisionDetections() && duration > 1.0 / P()->collisionDetectionRate()) {
             L()->warn(
                 "A collision detection was late by %v seconds, which is %v percent late.",
                 (duration - 1.0/P()->collisionDetectionRate()),
@@ -132,7 +151,7 @@ void World::checkCollision() {
         }
 
         // Sleep the appropriate amout of time, based on the collision detection duration
-        sim::SimUtilities::sleep(sim::Seconds(std::max(0.0, 1.0/sim::P()->collisionDetectionRate() - duration)));
+        sim::SimUtilities::sleep(sim::Seconds(std::max(0.0, 1.0 / P()->collisionDetectionRate() - duration)));
     }
 }
 

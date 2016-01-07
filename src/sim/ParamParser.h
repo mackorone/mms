@@ -6,7 +6,7 @@
 #include <pugixml/pugixml.hpp>
 
 #include "Assert.h"
-#include "SimUtilities.h"
+#include "ContainerUtilities.h"
 
 namespace sim {
 
@@ -19,18 +19,21 @@ public:
     bool hasBoolValue(const std::string& tag);
     bool hasDoubleValue(const std::string& tag);
     bool hasIntValue(const std::string& tag);
+    bool hasCharValue(const std::string& tag);
     bool hasStringValue(const std::string& tag);
 
     // Retrieve the particular value
     bool getBoolValue(const std::string& tag);
     double getDoubleValue(const std::string& tag);
     int getIntValue(const std::string& tag);
+    char getCharValue(const std::string& tag);
     std::string getStringValue(const std::string& tag);
 
     // Get a value if we can, otherwise return a default
     bool getBoolIfHasBool(const std::string& tag, bool defaultValue);
     double getDoubleIfHasDouble(const std::string& tag, double defaultValue);
     int getIntIfHasInt(const std::string& tag, int defaultValue);
+    char getCharIfHasChar(const std::string& tag, char defaultValue);
     std::string getStringIfHasString(const std::string& tag, const std::string& defaultValue);
 
     // If we can get a numeric value and it's valid then return it, else return default
@@ -44,7 +47,8 @@ public:
     // If we can get a value and it's valid/special then return it, else return default
     std::string getStringIfHasStringAndIsColor(const std::string& tag, const std::string& defaultValue);
     std::string getStringIfHasStringAndIsDirection(const std::string& tag, const std::string& defaultValue);
-    std::string getStringIfHasStringAndIsLayout(const std::string& tag, const std::string& defaultValue);
+    std::string getStringIfHasStringAndIsLayoutType(const std::string& tag, const std::string& defaultValue);
+    std::string getStringIfHasStringAndIsTileTextAlignment(const std::string& tag, const std::string& defaultValue);
 
 private:
     pugi::xml_document m_doc;
@@ -89,7 +93,7 @@ private:
             return defaultValue;
         }
         std::string value = getStringValue(tag);
-        if (!SimUtilities::mapContains(map, value)) {
+        if (!ContainerUtilities::mapContains(map, value)) {
             printNotSpecialString(type, tag, value, defaultValue);
             return defaultValue;
         }   

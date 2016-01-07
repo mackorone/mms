@@ -21,7 +21,16 @@ extern volatile bool movesDoneAndWallsSet;
 namespace mackAlgo {
 
 #if (SIMULATOR)
-void MackAlgo::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
+int MackAlgo::tileTextNumberOfRows() const {
+    return 1;
+}
+int MackAlgo::tileTextNumberOfCols() const {
+    return 5;
+}
+
+void MackAlgo::solve(
+        int mazeWidth, int mazeHeight, bool isOfficialMaze,
+        char initialDirection, sim::MouseInterface* mouse) {
     m_mouse = mouse;
     if (MAZE_WIDTH != mazeWidth || MAZE_HEIGHT != mazeHeight) {
         std::cout << "I am programmed to think the maze is " << MAZE_WIDTH << " x " << MAZE_HEIGHT
@@ -47,6 +56,7 @@ void MackAlgo::solve() {
     // Initialize the maze
     for (int x = 0; x < MAZE_WIDTH; x += 1) {
         for (int y = 0; y < MAZE_HEIGHT; y += 1) {
+            m_maze[x][y].setMouseInterface(mouse);
             m_maze[x][y].setPosition(x, y);
             m_maze[x][y].setWall(NORTH, (y == MAZE_HEIGHT - 1));
             m_maze[x][y].setWall(EAST, (x == MAZE_WIDTH - 1));
@@ -106,9 +116,11 @@ bool MackAlgo::move() {
         int y = current->getY();
 
         // We needn't explore any further
+#if (!SIMULATOR)
         if (current == getClosestDestinationCell()) {
             break;
         }
+#endif
 
         // Inspect neighbors if they're not yet examined
         // NOTE: Inspecting and examining are not the same thing!

@@ -1,6 +1,7 @@
 #include "Wheel.h"
 
 #include "CPMath.h"
+#include "GeometryUtilities.h"
 
 namespace sim {
 
@@ -25,11 +26,14 @@ Wheel::Wheel(
 
     // Create the initial wheel polygon
     std::vector<Cartesian> polygon;
-    polygon.push_back(Cartesian(Meters(m_radius) * -1, m_halfWidth * -1) + m_initialPosition);
-    polygon.push_back(Cartesian(Meters(m_radius) *  1, m_halfWidth * -1) + m_initialPosition);
-    polygon.push_back(Cartesian(Meters(m_radius) *  1, m_halfWidth *  1) + m_initialPosition);
-    polygon.push_back(Cartesian(Meters(m_radius) * -1, m_halfWidth *  1) + m_initialPosition);
-    m_initialPolygon = Polygon(polygon).rotateAroundPoint(m_initialDirection, m_initialPosition);
+    polygon.push_back(Cartesian(Meters(m_radius) * -1, m_halfWidth * -1));
+    polygon.push_back(Cartesian(Meters(m_radius) *  1, m_halfWidth * -1));
+    polygon.push_back(Cartesian(Meters(m_radius) *  1, m_halfWidth *  1));
+    polygon.push_back(Cartesian(Meters(m_radius) * -1, m_halfWidth *  1));
+    m_initialPolygon =
+        Polygon(polygon)
+            .translate(m_initialPosition)
+            .rotateAroundPoint(m_initialDirection, m_initialPosition);
 
     // Create the initial speed indicator polygon
     m_speedIndicatorPolygon = getSpeedIndicatorPolygon(getAngularVelocity());

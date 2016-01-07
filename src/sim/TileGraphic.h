@@ -1,5 +1,6 @@
 #pragma once
 
+#include "BufferInterface.h"
 #include "Color.h"
 #include "Tile.h"
 
@@ -9,7 +10,7 @@ class TileGraphic {
 
 public:
 
-    TileGraphic(const Tile* tile);
+    TileGraphic(const Tile* tile, BufferInterface* bufferInterface);
 
     bool wallDeclared(Direction direction) const;
 
@@ -27,6 +28,8 @@ public:
     
 private:
     const Tile* m_tile;
+    BufferInterface* m_bufferInterface;
+
     Color m_color;
     std::map<Direction, bool> m_declaredWalls;
     bool m_foggy;

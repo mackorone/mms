@@ -4,7 +4,17 @@
 
 namespace randomizedWallFollow {
 
-void RandomizedWallFollow::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
+bool RandomizedWallFollow::declareWallOnRead() const {
+    return true;
+}
+
+bool RandomizedWallFollow::declareBothWallHalves() const {
+    return true;
+}
+
+void RandomizedWallFollow::solve(
+        int mazeWidth, int mazeHeight, bool isOfficialMaze,
+        char initialDirection, sim::MouseInterface* mouse) {
     while (true){
         if (rand() % 2 == 0){
             rightWallFollowStep(mouse);

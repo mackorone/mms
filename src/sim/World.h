@@ -5,27 +5,27 @@
 #include "Maze.h"
 #include "MazeGraphic.h"
 #include "Mouse.h"
-#include "Polygon.h"
+#include "WorldOptions.h"
 
 namespace sim {
 
-// The world is responsible for knowing the true position of the mouse and the maze,
-// as well as carrying forth the simulation (i.e., stepping forward in time)
 class World {
 
 public:
-    World(Maze* maze, Mouse* mouse, MazeGraphic* mazeGraphic);
+    World(
+        const Maze* maze,
+        Mouse* mouse,
+        MazeGraphic* mazeGraphic,
+        WorldOptions options);
     void simulate();
 
 private:
-    Maze* m_maze;
+    const Maze* m_maze;
     Mouse* m_mouse;
     MazeGraphic* m_mazeGraphic;
+    WorldOptions m_options;
 
-    // Whether or not the mouse has collided
-    bool m_collision;
     void checkCollision();
-
 };
 
 } // namespace sim

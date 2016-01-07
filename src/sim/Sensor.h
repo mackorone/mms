@@ -21,7 +21,8 @@ public:
         const Angle& halfWidth,
         const Duration& readDuration,
         const Coordinate& position,
-        const Angle& direction);
+        const Angle& direction,
+        const Maze& maze);
 
     Seconds getReadDuration() const;
     Cartesian getInitialPosition() const;
@@ -33,6 +34,12 @@ public:
         const Radians& currentDirection,
         const Maze& maze) const;
 
+    double read() const;
+    void updateReading(
+        const Cartesian& currentPosition,
+        const Radians& currentDirection,
+        const Maze& maze);
+
 private:
     Meters m_range;
     Degrees m_halfWidth;
@@ -42,6 +49,18 @@ private:
     Radians m_initialDirection;
     Polygon m_initialPolygon;
     Polygon m_initialViewPolygon;
+
+    double m_currentReading;
+
+    Polygon getViewPolygon(
+        const Cartesian& currentPosition,
+        const Radians& currentDirection,
+        const Maze& maze) const;
+    static Cartesian castRay(
+        const Cartesian& start,
+        const Cartesian& end,
+        const Maze& maze);
+    static bool isTileEdge(const Meters& pos);
 };
 
 } // namespace sim

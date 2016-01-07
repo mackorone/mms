@@ -4,10 +4,11 @@
 #include <string>
 #include <vector>
 
+#include "ContainerUtilities.h"
 #include "Logging.h"
+#include "Maze.h"
 #include "Polygon.h"
 #include "Sensor.h"
-#include "SimUtilities.h"
 #include "units/Cartesian.h"
 #include "units/Meters.h"
 #include "Wheel.h"
@@ -23,7 +24,7 @@ public:
     std::map<std::string, Wheel> getWheels(
         const Cartesian& initialTranslation, const Radians& initialRotation, bool* success);
     std::map<std::string, Sensor> getSensors(
-        const Cartesian& initialTranslation, const Radians& initialRotation, bool* success);
+        const Cartesian& initialTranslation, const Radians& initialRotation, const Maze& maze, bool* success);
 
 private:
     pugi::xml_document m_doc;
@@ -69,7 +70,7 @@ private:
             L()->warn("No %v name specified.", type);
             *success = false;
         }
-        if (SimUtilities::mapContains(map, name)) {
+        if (ContainerUtilities::mapContains(map, name)) {
             L()->warn("Two %vs both have the name \"%v\".", type, name);
             *success = false;
         }

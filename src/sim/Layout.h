@@ -1,28 +1,40 @@
 #pragma once
 
-#include <map>
-#include <vector>
+#include "LayoutType.h"
 
 namespace sim {
 
-enum class Layout { FULL, ZOOMED, BOTH };
+class Layout {
 
-static const std::map<Layout, Layout> LAYOUT_CYCLE {
-    {Layout::FULL, Layout::ZOOMED},
-    {Layout::ZOOMED, Layout::BOTH},
-    {Layout::BOTH, Layout::FULL},
-};
+public:
 
-static const std::map<Layout, std::string> LAYOUT_TO_STRING {
-    {Layout::FULL, "FULL"},
-    {Layout::ZOOMED, "ZOOMED"},
-    {Layout::BOTH, "BOTH"},
-};
+    // This class is not constructible
+    Layout() = delete;
 
-static const std::map<std::string, Layout> STRING_TO_LAYOUT {
-    {"FULL", Layout::FULL},
-    {"ZOOMED", Layout::ZOOMED},
-    {"BOTH", Layout::BOTH},
+    // Return the positions of the full map and zoomed map, in pixels
+    static std::pair<int, int> getFullMapPosition(
+        int windowWidth,
+        int windowHeight,
+        int windowBorderWidth,
+        LayoutType layoutType);
+    static std::pair<int, int> getZoomedMapPosition(
+        int windowWidth,
+        int windowHeight,
+        int windowBorderWidth,
+        LayoutType layoutType);
+
+    // Return the width and height of the full map and zoomed map, in pixels
+    static std::pair<int, int> getFullMapSize(
+        int windowWidth,
+        int windowHeight,
+        int windowBorderWidth,
+        LayoutType layoutType);
+    static std::pair<int, int> getZoomedMapSize(
+        int windowWidth,
+        int windowHeight,
+        int windowBorderWidth,
+        LayoutType layoutType);
+
 };
 
 } // namespace sim

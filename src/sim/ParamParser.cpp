@@ -2,11 +2,10 @@
 
 #include "Assert.h"
 #include "Color.h"
-#include "Layout.h"
+#include "LayoutType.h"
 #include "Logging.h"
 #include "SimUtilities.h"
-
-#include "CPMinMax.h" // Needed for Windows compatibility
+#include "TileTextAlignment.h"
 
 namespace sim {
 
@@ -32,6 +31,10 @@ bool ParamParser::hasIntValue(const std::string& tag){
     return SimUtilities::isInt(m_doc.child(tag.c_str()).child_value());
 }
 
+bool ParamParser::hasCharValue(const std::string& tag){
+    return hasStringValue(tag) && getStringValue(tag).size() == 1;
+}
+
 bool ParamParser::hasStringValue(const std::string& tag){
     return (!std::string(m_doc.child(tag.c_str()).child_value()).empty());
 }
@@ -46,6 +49,10 @@ double ParamParser::getDoubleValue(const std::string& tag) {
 
 int ParamParser::getIntValue(const std::string& tag) {
     return SimUtilities::strToInt(m_doc.child(tag.c_str()).child_value());
+}
+
+char ParamParser::getCharValue(const std::string& tag) {
+    return std::string(m_doc.child(tag.c_str()).child_value()).at(0);
 }
 
 std::string ParamParser::getStringValue(const std::string& tag) {
@@ -74,6 +81,14 @@ int ParamParser::getIntIfHasInt(const std::string& tag, int defaultValue) {
         return defaultValue;
     }
     return getIntValue(tag);
+}
+
+char ParamParser::getCharIfHasChar(const std::string& tag, char defaultValue) {
+    if (!hasCharValue(tag)) {
+        printTagNotFound("char", tag, std::string("\"") + defaultValue + std::string("\""));
+        return defaultValue;
+    }
+    return getCharValue(tag);
 }
 
 std::string ParamParser::getStringIfHasString(const std::string& tag, const std::string& defaultValue) {
@@ -116,8 +131,12 @@ std::string ParamParser::getStringIfHasStringAndIsDirection(const std::string& t
     return getStringIfHasStringAndIsSpecial("direction", tag, defaultValue, STRING_TO_DIRECTION);
 }
 
-std::string ParamParser::getStringIfHasStringAndIsLayout(const std::string& tag, const std::string& defaultValue) {
-    return getStringIfHasStringAndIsSpecial("layout", tag, defaultValue, STRING_TO_LAYOUT);
+std::string ParamParser::getStringIfHasStringAndIsLayoutType(const std::string& tag, const std::string& defaultValue) {
+    return getStringIfHasStringAndIsSpecial("layout type", tag, defaultValue, STRING_TO_LAYOUT_TYPE);
+}
+
+std::string ParamParser::getStringIfHasStringAndIsTileTextAlignment(const std::string& tag, const std::string& defaultValue) {
+    return getStringIfHasStringAndIsSpecial("tile text alignment", tag, defaultValue, STRING_TO_TILE_TEXT_ALIGNMENT);
 }
 
 void ParamParser::printTagNotFound(const std::string& type, const std::string& tag, const std::string& defaultValue) {

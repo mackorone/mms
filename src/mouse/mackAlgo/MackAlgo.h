@@ -22,7 +22,11 @@ class MackAlgo {
 public:
 
 #if (SIMULATOR)
-    void solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse);
+    int tileTextNumberOfRows() const;
+    int tileTextNumberOfCols() const;
+    void solve(
+        int mazeWidth, int mazeHeight, bool isOfficialMaze,
+        char initialDirection, sim::MouseInterface* mouse);
 #else
     void solve();
 #endif

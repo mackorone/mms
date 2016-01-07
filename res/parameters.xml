@@ -3,7 +3,7 @@
 <!-- Graphical Parameters -->
 <default-window-width>930</default-window-width> <!-- Pixels -->
 <default-window-height>470</default-window-height> <!-- Pixels -->
-<default-layout>BOTH</default-layout> <!-- FULL, ZOOMED, BOTH -->
+<default-layout-type>BOTH</default-layout-type> <!-- FULL, ZOOMED, BOTH -->
 <window-border-width>10</window-border-width> <!-- Pixels -->
 <min-zoomed-map-scale>0.02</min-zoomed-map-scale>
 <max-zoomed-map-scale>1.0</max-zoomed-map-scale>
@@ -15,7 +15,9 @@
 <tile-wall-color>RED</tile-wall-color>
 <tile-corner-color>GRAY</tile-corner-color>
 <tile-fog-color>GRAY</tile-fog-color>
-<tile-text-color>DARK_GREEN</tile-text-color>
+<tile-text-font-image>Unispace-Bold.png</tile-text-font-image>
+<tile-text-border-fraction>.05</tile-text-border-fraction>
+<tile-text-alignment>CENTER_CENTER</tile-text-alignment>
 <tile-undeclared-wall-color>DARK_RED</tile-undeclared-wall-color>
 <tile-undeclared-no-wall-color>DARK_GRAY</tile-undeclared-no-wall-color>
 <tile-incorrectly-declared-wall-color>ORANGE</tile-incorrectly-declared-wall-color>
@@ -26,32 +28,28 @@
 <mouse-wheel-speed-indicator-color>DARK_GREEN</mouse-wheel-speed-indicator-color>
 <mouse-sensor-color>GREEN</mouse-sensor-color>
 <mouse-view-color>WHITE</mouse-view-color>
-<default-tile-colors-visible>true</default-tile-colors-visible> <!-- TODO -->
-<default-wall-truth-visible>false</default-wall-truth-visible> <!-- TODO -->
-<default-tile-fog-visible>true</default-tile-fog-visible> <!-- TODO -->
-<default-tile-text-visible>true</default-tile-text-visible> <!-- TODO -->
-<default-tile-distance-visible>false</default-tile-distance-visible> <!-- TODO -->
+<default-tile-colors-visible>true</default-tile-colors-visible>
+<default-wall-truth-visible>false</default-wall-truth-visible>
+<default-tile-fog-visible>true</default-tile-fog-visible>
+<default-tile-text-visible>true</default-tile-text-visible>
+<default-tile-distance-visible>false</default-tile-distance-visible>
 <tile-fog-alpha>0.15</tile-fog-alpha> <!-- Must be in [0.0, 1.0] -->
 <default-wireframe-mode>false</default-wireframe-mode>
-<set-tile-base-color-when-distance-correct>false</set-tile-base-color-when-distance-correct> <!-- TODO -->
 <distance-correct-tile-base-color>DARK_YELLOW</distance-correct-tile-base-color>
 
 <!-- Simulation Parameters -->
 <random-seed>12345</random-seed> <!-- The seed value for rand() -->
 <use-random-seed>false</use-random-seed> <!-- Whether or not to use the seed value -->
-<collision-detection-enabled>true</collision-detection-enabled> <!-- TODO -->
-<crash-message>Oh no! Your mouse crashed! It can't move anymore...</crash-message> <!-- TODO -->
+<collision-detection-enabled>true</collision-detection-enabled>
+<crash-message>Oh no! Your mouse crashed! It can't move anymore...</crash-message>
+<default-tile-text-character>?</default-tile-text-character>
 <glut-init-duration>0.1</glut-init-duration> <!-- Seconds -->
-<default-paused>false</default-paused> <!-- TODO -->
+<default-paused>false</default-paused>
 <min-sim-speed>0.1</min-sim-speed> <!-- Fraction/factor of actual time -->
 <max-sim-speed>10.0</max-sim-speed> <!-- Fraction/factor of actual time -->
-<default-sim-speed>1.0</default-sim-speed> <!-- Fraction/factor of actual time --> <!-- TODO -->
+<default-sim-speed>1.0</default-sim-speed> <!-- Fraction/factor of actual time -->
 <min-sleep-duration>5</min-sleep-duration> <!-- Milliseconds -->
-<discrete-interface-wheel-speed>3.0</discrete-interface-wheel-speed> <!-- rev/s --> <!-- TODO -->
-<discrete-interface-declare-wall-on-read>true</discrete-interface-declare-wall-on-read> <!-- TODO -->
-<algorithm-controls-tile-fog>false</algorithm-controls-tile-fog> <!-- TODO -->
-<declare-both-wall-halves>true</declare-both-wall-halves> <!-- TODO -->
-<mouse-position-update-rate>500</mouse-position-update-rate> <!-- Updates per second -->
+<mouse-position-update-rate>1000</mouse-position-update-rate> <!-- Updates per second -->
 <print-late-mouse-position-updates>true</print-late-mouse-position-updates>
 <collision-detection-rate>40</collision-detection-rate> <!-- Checks per second -->
 <print-late-collision-detections>true</print-late-collision-detections>
@@ -63,7 +61,6 @@
 <!-- Maze Parameters -->
 <wall-length>0.168</wall-length> <!-- meters -->
 <wall-width>0.012</wall-width> <!-- meters -->
-<enforce-official-maze-rules>false</enforce-official-maze-rules> <!-- TODO -->
 <maze-file>mazeish.maz</maze-file> <!-- relative to maze-directory -->
 <use-maze-file>true</use-maze-file> <!-- whether or not to use the maze file above -->
 <generated-maze-width>16</generated-maze-width> <!-- number of tiles -->
@@ -75,5 +72,4 @@
 <maze-rotations>0</maze-rotations> <!-- 0-3 counterclockwise rotations -->
 
 <!-- Mouse Parameters -->
-<mouse-algorithm>RightWallFollow</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
-<mouse-starting-direction>NORTH</mouse-starting-direction> <!-- NORTH, EAST, SOUTH, or WEST --> <!-- TODO -->
+<mouse-algorithm>FloodFill</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->

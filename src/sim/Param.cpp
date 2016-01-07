@@ -6,9 +6,10 @@
 #include "Color.h"
 #include "Direction.h"
 #include "Directory.h"
-#include "Layout.h"
+#include "LayoutType.h"
 #include "Logging.h"
 #include "ParamParser.h"
+#include "TileTextAlignment.h"
 
 namespace sim {
 
@@ -35,8 +36,8 @@ Param::Param() {
         "default-window-width", 930, 100);
     m_defaultWindowHeight = parser.getIntIfHasIntAndNotLessThan(
         "default-window-height", 470, 100);
-    m_defaultLayout = parser.getStringIfHasStringAndIsLayout(
-        "default-layout", LAYOUT_TO_STRING.at(Layout::BOTH));
+    m_defaultLayoutType = parser.getStringIfHasStringAndIsLayoutType(
+        "default-layout-type", LAYOUT_TYPE_TO_STRING.at(LayoutType::BOTH));
     m_windowBorderWidth = parser.getIntIfHasIntAndInRange(
         "window-border-width", 10, 0, 25);
     m_minZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange(
@@ -59,6 +60,12 @@ Param::Param() {
         "tile-corner-color", COLOR_TO_STRING.at(Color::GRAY));
     m_tileFogColor = parser.getStringIfHasStringAndIsColor(
         "tile-fog-color", COLOR_TO_STRING.at(Color::GRAY));
+    m_tileTextFontImage = parser.getStringIfHasString(
+        "tile-text-font-image", "VeraMono.png");
+    m_tileTextBorderFraction = parser.getDoubleIfHasDoubleAndInRange(
+        "tile-text-border-fraction", .05, .00, .50);
+    m_tileTextAlignment = parser.getStringIfHasStringAndIsTileTextAlignment(
+        "tile-text-alignment", TILE_TEXT_ALIGNMENT_TO_STRING.at(TileTextAlignment::CENTER_CENTER));
     m_tileUndeclaredWallColor = parser.getStringIfHasStringAndIsColor(
         "tile-undeclared-wall-color", COLOR_TO_STRING.at(Color::DARK_RED));
     m_tileUndeclaredNoWallColor = parser.getStringIfHasStringAndIsColor(
@@ -93,8 +100,6 @@ Param::Param() {
         "tile-fog-alpha", 0.15, 0.0, 1.0);
     m_defaultWireframeMode = parser.getBoolIfHasBool(
         "default-wireframe-mode", false);
-    m_setTileBaseColorWhenDistanceCorrect = parser.getBoolIfHasBool(
-        "set-tile-base-color-when-distance-correct", false);
     m_distanceCorrectTileBaseColor = parser.getStringIfHasStringAndIsColor(
         "distance-correct-tile-base-color", COLOR_TO_STRING.at(Color::DARK_YELLOW));
 
@@ -122,18 +127,12 @@ Param::Param() {
         "collision-detection-enabled", true);
     m_crashMessage = parser.getStringIfHasString(
         "crash-message", "CRASH");
+    m_defaultTileTextCharacter = parser.getCharIfHasChar(
+        "default-tile-text-character", '?');
     m_minSleepDuration = parser.getDoubleIfHasDoubleAndInRange(
         "min-sleep-duration", 5, 1, 25);
-    m_discreteInterfaceWheelSpeed = parser.getDoubleIfHasDoubleAndInRange(
-        "discrete-interface-wheel-speed", 3.0, 0.5, 10.0);
-    m_discreteInterfaceDeclareWallOnRead = parser.getBoolIfHasBool(
-        "discrete-interface-declare-wall-on-read", true);
-    m_algorithmControlsTileFog = parser.getBoolIfHasBool(
-        "algorithm-controls-tile-fog", false);
-    m_declareBothWallHalves = parser.getBoolIfHasBool(
-        "declare-both-wall-halves", true);
     m_mousePositionUpdateRate = parser.getIntIfHasIntAndInRange(
-        "mouse-position-update-rate", 500, 100, 2500);
+        "mouse-position-update-rate", 500, 1, 2000);
     m_printLateMousePostitionUpdates = parser.getBoolIfHasBool(
         "print-late-mouse-position-updates", false);
     m_collisionDetectionRate = parser.getIntIfHasIntAndInRange(
@@ -154,8 +153,6 @@ Param::Param() {
         "wall-width", 0.012, 0.006, 0.024);
     m_wallLength = parser.getDoubleIfHasDoubleAndInRange(
         "wall-length", 0.168, 0.084, 0.336);
-    m_enforceOfficialMazeRules = parser.getBoolIfHasBool(
-        "enforce-official-maze-rules", false);
     m_mazeFile = parser.getStringIfHasString(
         "maze-file", "");
     m_useMazeFile = parser.getBoolIfHasBool(
@@ -178,8 +175,6 @@ Param::Param() {
     // Mouse parameters
     m_mouseAlgorithm = parser.getStringIfHasString(
         "mouse-algorithm", "RightWallFollow");
-    m_mouseStartingDirection = parser.getStringIfHasStringAndIsDirection(
-        "mouse-starting-direction", DIRECTION_TO_STRING.at(Direction::NORTH));
 }
 
 int Param::defaultWindowWidth() {
@@ -190,8 +185,8 @@ int Param::defaultWindowHeight() {
     return m_defaultWindowHeight;
 }
 
-std::string Param::defaultLayout() {
-    return m_defaultLayout;
+std::string Param::defaultLayoutType() {
+    return m_defaultLayoutType;
 }
 
 int Param::windowBorderWidth() {
@@ -236,6 +231,18 @@ std::string Param::tileCornerColor() {
 
 std::string Param::tileFogColor() {
     return m_tileFogColor;
+}
+
+std::string Param::tileTextFontImage() {
+    return m_tileTextFontImage;
+}
+
+double Param::tileTextBorderFraction() {
+    return m_tileTextBorderFraction;
+}
+
+std::string Param::tileTextAlignment() {
+    return m_tileTextAlignment;
 }
 
 std::string Param::tileUndeclaredWallColor() {
@@ -306,10 +313,6 @@ bool Param::defaultWireframeMode() {
     return m_defaultWireframeMode;
 }
 
-bool Param::setTileBaseColorWhenDistanceCorrect() {
-    return m_setTileBaseColorWhenDistanceCorrect;
-}
-
 std::string Param::distanceCorrectTileBaseColor() {
     return m_distanceCorrectTileBaseColor;
 }
@@ -346,24 +349,12 @@ std::string Param::crashMessage() {
     return m_crashMessage;
 }
 
+char Param::defaultTileTextCharacter() {
+    return m_defaultTileTextCharacter;
+}
+
 double Param::minSleepDuration() {
     return m_minSleepDuration;
-}
-
-double Param::discreteInterfaceWheelSpeed() {
-    return m_discreteInterfaceWheelSpeed;
-}
-
-bool Param::discreteInterfaceDeclareWallOnRead() {
-    return m_discreteInterfaceDeclareWallOnRead;
-}
-
-bool Param::algorithmControlsTileFog() {
-    return m_algorithmControlsTileFog;
-}
-
-bool Param::declareBothWallHalves() {
-    return m_declareBothWallHalves;
 }
 
 int Param::mousePositionUpdateRate() {
@@ -422,10 +413,6 @@ int Param::generatedMazeHeight() {
     return m_generatedMazeHeight;
 }
 
-bool Param::enforceOfficialMazeRules() {
-    return m_enforceOfficialMazeRules;
-}
-
 std::string Param::mazeAlgorithm() {
     return m_mazeAlgorithm;
 }
@@ -448,10 +435,6 @@ int Param::mazeRotations() {
 
 std::string Param::mouseAlgorithm() {
     return m_mouseAlgorithm;
-}
-
-std::string Param::mouseStartingDirection() {
-    return m_mouseStartingDirection;
 }
 
 } // namespace sim

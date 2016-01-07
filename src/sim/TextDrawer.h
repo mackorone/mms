@@ -21,7 +21,7 @@ public:
     // the rendering loop. Commence and conclude should only be called once per
     // frame, but note that drawText may be called many times per frame.
     void commenceDrawingTextForFrame();
-    void drawText(float x, float y, const std::string& str);
+    void drawText(float x, float y, int windowWidth, int windowHeight, const std::string& str);
     void concludeDrawingTextForFrame();
 
 private:

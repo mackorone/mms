@@ -6,7 +6,9 @@
 #include "units/Cartesian.h"
 #include "units/RadiansPerSecond.h"
 
+#include "Direction.h"
 #include "EncoderType.h"
+#include "InterfaceType.h"
 #include "Maze.h"
 #include "Polygon.h"
 #include "Sensor.h"
@@ -20,7 +22,9 @@ public:
     Mouse(const Maze* maze);
 
     // Initializes the mouse (body, wheels, sensors, etc.); returns true if successful, false if not
-    bool initialize(const std::string& mouseFile);
+    bool initialize(
+        const std::string& mouseFile,
+        Direction initialDirection);
 
     // Gets the initial translation and rotation of the mouse
     Cartesian getInitialTranslation() const;
@@ -79,9 +83,9 @@ public:
 
     // Helper methods for setting many wheel speeds at once, without having to
     // know the names of each of the wheels
-    void setWheelSpeedsForMoveForward();
-    void setWheelSpeedsForTurnLeft();
-    void setWheelSpeedsForTurnRight();
+    void setWheelSpeedsForMoveForward(double fractionOfMaxSpeed);
+    void setWheelSpeedsForTurnLeft(double fractionOfMaxSpeed);
+    void setWheelSpeedsForTurnRight(double fractionOfMaxSpeed);
     void stopAllWheels();
 
     // Returns the encoder type of the wheel given by name
@@ -139,9 +143,11 @@ private:
     Polygon getCurrentPolygon(const Polygon& initialPolygon,
         const Cartesian& currentTranslation, const Radians& currentRotation) const;
 
-    // Helper function for retrieving the polygon corresponding to the view of a sensor
-    Polygon getCurrentSensorViewPolygon(const Sensor& sensor,
-        const Cartesian& currentTranslation, const Radians& currentRotation) const;
+    // Retrieve the current position/rotation of sensor based on position/rotation of mouse
+    std::pair<Cartesian, Radians> getCurrentSensorPositionAndDirection(
+        const Sensor& sensor,
+        const Cartesian& currentTranslation,
+        const Radians& currentRotation) const;
 
     // Get the forward and radial contribution factors for a wheel
     std::pair<double, double> getWheelContributionFactors(const std::string& name) const;

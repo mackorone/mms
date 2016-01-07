@@ -4,10 +4,9 @@
 #include <string>
 #include <vector>
 
-#include "units/Duration.h"
-
 #include "Direction.h"
 #include "Maze.h"
+#include "units/Duration.h"
 
 namespace sim {
 
@@ -62,16 +61,16 @@ public:
     // Remove oldest runs from the run/ directory if necessary
     static void removeExcessArchivedRuns();
 
-    // Returns whether or not a vector contains a particular item
-    template<class T>
-    static bool vectorContains(const std::vector<T>& vector, T item) {
-        return std::find(vector.begin(), vector.end(), item) != vector.end();
+    // A simple pair-comparitor function
+    template <class T>
+    static bool lessThan(const std::pair<T, T>& one, const std::pair<T, T>& two) {
+        return (one.first < two.first ? true : one.second < two.second);
     }
 
-    // Returns whether or not a map contains a particular key
-    template<class K, class V>
-    static bool mapContains(const std::map<K, V>& map, K key) {
-        return map.find(key) != map.end();
+    // A simple pair-retrieval function
+    template <class T>
+    static std::pair<T, T> min(const std::vector<std::pair<T, T>>& pairs) {
+        return *std::min_element(pairs.begin(), pairs.end(), SimUtilities::lessThan<T>);
     }
 
 };

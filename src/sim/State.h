@@ -4,7 +4,8 @@
 
 #include "InterfaceType.h"
 #include "Key.h"
-#include "Layout.h"
+#include "LayoutType.h"
+#include "TileTextAlignment.h"
 
 namespace sim {
 
@@ -19,40 +20,49 @@ public:
     // Returns a pointer to the singleton state object
     static State* getInstance();
 
-    // Accessors
     std::string runId();
-    bool crashed();
-    InterfaceType interfaceType();
-    Layout layout();
-    bool rotateZoomedMap();
-    double zoomedMapScale();
-    bool wallTruthVisible();
-    bool tileColorsVisible();
-    bool tileFogVisible();
-    bool tileTextVisible();
-    bool tileDistanceVisible();
-    bool wireframeMode();
-    bool paused();
-    double simSpeed();
-    bool inputButtonWasPressed(int inputButton);
-    bool arrowKeyIsPressed(Key key);
-
-    // Mutators
     void setRunId(const std::string& runId);
+
+    bool crashed();
     void setCrashed();
-    void setInterfaceType(InterfaceType interfaceType);
-    void setLayout(Layout layout);
+
+    LayoutType layoutType();
+    void setLayoutType(LayoutType layoutType);
+
+    bool rotateZoomedMap();
     void setRotateZoomedMap(bool rotateZoomedMap);
+
+    double zoomedMapScale();
     void setZoomedMapScale(double zoomedMapScale);
+
+    bool wallTruthVisible();
     void setWallTruthVisible(bool wallTruthVisible);
+
+    bool tileColorsVisible();
     void setTileColorsVisible(bool tileColorsVisible);
+
+    bool tileFogVisible();
     void setTileFogVisible(bool tileFogVisible);
+
+    bool tileTextVisible();
     void setTileTextVisible(bool tileTextVisible);
+
+    bool tileDistanceVisible();
     void setTileDistanceVisible(bool tileDistanceVisible);
+
+    bool wireframeMode();
     void setWireframeMode(bool wireframeMode);
+
+    bool paused();
     void setPaused(bool paused);
+
+    double simSpeed();
     void setSimSpeed(double simSpeed);
+
+    bool inputButtonWasPressed(int inputButton);
     void setInputButtonWasPressed(int inputButton, bool pressed);
+
+    bool arrowKeyIsPressed(Key key);
     void setArrowKeyIsPressed(Key key, bool pressed);
 
 private:
@@ -65,8 +75,7 @@ private:
 
     std::string m_runId;
     bool m_crashed;
-    InterfaceType m_interfaceType;
-    Layout m_layout;
+    LayoutType m_layoutType;
     bool m_rotateZoomedMap;
     double m_zoomedMapScale;
     bool m_wallTruthVisible;
