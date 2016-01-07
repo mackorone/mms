@@ -13,8 +13,9 @@
 #include "Param.h"
 #include "State.h"
 #include "SimUtilities.h"
-
 // Needs to be included last for Windows compatibility
+#undef ABSOLUTE
+#undef RELATIVE
 #include "CPMinMax.h"
 
 namespace sim {

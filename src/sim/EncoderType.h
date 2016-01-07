@@ -1,5 +1,6 @@
 #pragma once
-
+#undef ABSOLUTE
+#undef RELATIVE
 #include <map>
 
 namespace sim {
