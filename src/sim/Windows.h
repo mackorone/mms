@@ -1,7 +1,4 @@
 // This helps to consolidate some of the weird windows logic
 
+#define NOMINMAX
 #include <windows.h>
-#undef min
-#undef max
-#undef ABSOLUTE
-#undef RELATIVE
