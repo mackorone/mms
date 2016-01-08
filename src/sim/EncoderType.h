@@ -4,6 +4,7 @@
 
 #include "ContainerUtilities.h"
 
+// Windows... *sigh*
 #undef ABSOLUTE
 #undef RELATIVE
 
