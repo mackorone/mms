@@ -1,5 +1,6 @@
 # High Priority
 
+- Remove _USE_MATH_DEFINES - I don't think we need it
 - Make a millis() function available
 - Add a way to time the algorithms
     - How long it took to get to the center of the maze

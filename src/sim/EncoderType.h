@@ -4,10 +4,6 @@
 
 #include "ContainerUtilities.h"
 
-// Windows... *sigh*
-#undef ABSOLUTE
-#undef RELATIVE
-
 namespace sim {
 
 enum class EncoderType { ABSOLUTE, RELATIVE };
