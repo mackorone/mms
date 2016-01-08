@@ -209,7 +209,7 @@ bool MazeChecker::hasHollowCenter(const std::vector<std::vector<BasicTile>>& maz
 bool MazeChecker::hasWallAttachedToEachNonCenterPost(const std::vector<std::vector<BasicTile>>& maze) {
     std::vector<std::pair<int, int>> centerTiles = getCenterTiles(maze.size(), maze.at(0).size());
     auto upperRightPostIsCenterPost = [&](int x, int y) {
-        return centerTiles.size() == 4 && std::make_pair(x, y) == SimUtilities::min(centerTiles);
+        return centerTiles.size() == 4 && std::make_pair(x, y) == SimUtilities::minPair(centerTiles);
     };
     for (int x = 0; x < maze.size() - 1; x += 1) {
         for (int y = 0; y < maze.at(x).size() - 1; y += 1) {
