@@ -70,7 +70,7 @@ public:
     // A simple pair-retrieval function
     template <class T>
     static std::pair<T, T> min(const std::vector<std::pair<T, T>>& pairs) {
-        return *std::min_element(pairs.begin(), pairs.end(), SimUtilities::lessThan<T>);
+        return *std::min_element(pairs.begin(), pairs.end(), lessThan<T>);
     }
 
 };
