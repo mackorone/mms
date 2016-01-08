@@ -316,7 +316,8 @@
 #   include <sys/time.h>
 #elif ELPP_OS_WINDOWS
 #   include <direct.h>
-#   include <windows.h>
+//#   include <windows.h> @mackorone commented this line out, added the line below
+#   include "../../sim/Windows.h" 
 #   if defined(WIN32_LEAN_AND_MEAN)
 #      if defined(ELPP_WINSOCK2)
 #         include <winsock2.h>
