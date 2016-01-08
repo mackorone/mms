@@ -1,11 +1,12 @@
 #pragma once
 
-#undef ABSOLUTE
-#undef RELATIVE
-
 #include <map>
 
 #include "ContainerUtilities.h"
+
+// Windows already has these defined
+#undef ABSOLUTE
+#undef RELATIVE
 
 namespace sim {
 

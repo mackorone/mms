@@ -4,7 +4,7 @@
     #include <limits.h>
     #include <unistd.h>
 #elif _WIN32
-    #include "Windows.h"
+    #include <windows.h>
 #endif
 
 namespace sim {

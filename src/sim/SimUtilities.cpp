@@ -17,7 +17,7 @@
 #ifdef __linux
     #include <dirent.h>
 #elif _WIN32
-    #include "Windows.h"
+    #include <windows.h>
 #endif
 
 #include "Assert.h"
