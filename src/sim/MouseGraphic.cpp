@@ -51,6 +51,13 @@ void MouseGraphic::draw(const Coordinate& currentTranslation, const Angle& curre
             polygon,
             STRING_TO_COLOR.at(P()->mouseViewColor()), 1.0);
     }
+
+    // Uncomment to draw collision polygon
+    /*
+    m_bufferInterface->drawMousePolygon(
+        m_mouse->getCurrentCollisionPolygon(currentTranslation, currentRotation),
+        Color::GRAY, .5);
+    */
 }
 
 } // namespace sim

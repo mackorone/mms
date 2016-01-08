@@ -219,7 +219,7 @@ Cartesian GeometryUtilities::castRay(
     while ((*bx)(nx, end.getX()) || (*by)(ny, end.getY())) {
 
         // x collision will happen first
-        if ((nx - cx) / dx < (ny - cy) / dy) {
+        if (std::abs((nx - cx) / dx) < std::abs((ny - cy) / dy)) {
             cy = cy + (nx - cx) * (dy / dx);
             cx = nx;
             int x = sx + ox - px;
