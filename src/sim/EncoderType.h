@@ -1,6 +1,8 @@
 #pragma once
+
 #undef ABSOLUTE
 #undef RELATIVE
+
 #include <map>
 
 #include "ContainerUtilities.h"
