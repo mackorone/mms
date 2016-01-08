@@ -1,5 +1,7 @@
 #include "TransformationMatrix.h"
 
+#include <algorithm>
+
 #include "Assert.h"
 #include "CPMath.h"
 

@@ -1,6 +1,7 @@
 #include "GeometryUtilities.h"
 
 #include <algorithm>
+#include <functional>
 
 #include "Assert.h"
 #include "CPMath.h"

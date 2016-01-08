@@ -15,6 +15,10 @@
 #include "State.h"
 #include "SimUtilities.h"
 
+// Windows... *sigh*
+#undef ABSOLUTE
+#undef RELATIVE
+
 namespace sim {
 
 MouseInterface::MouseInterface(
