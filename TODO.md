@@ -10,9 +10,6 @@
 - Updates on the tile boundaries, not centers
     - Make this an option in the algo specification
 - Make some video tutorials
-- isTileEdge is behaving incorrectly for areas outside of the maze, because it uses fmod and the value is negative
-- Improve collision detection by casting rays from every collision polygon point to the next
-- Perform collision resolution by updating the x and y values separately
 - Improve sensor readings by getting the actual complete polygon, not apporximated
 - Write some code to make sure update throughput is good
     - 99% of updates are 1ms apart, or something like that

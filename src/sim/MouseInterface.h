@@ -99,10 +99,18 @@ public:
     bool wallFront();
     bool wallRight();
     bool wallLeft();
+
     void moveForward();
+    void moveForward(int count);
+
     void turnLeft();
+    void turnLeft(int count);
+
     void turnRight();
+    void turnRight(int count);
+
     void turnAround();
+    void turnAround(int count);
 
 private:
     const Maze* m_maze;

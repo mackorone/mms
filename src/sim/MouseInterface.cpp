@@ -505,6 +505,15 @@ void MouseInterface::moveForward() {
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
 
+void MouseInterface::moveForward(int count) {
+
+    ENSURE_DISCRETE_INTERFACE
+
+    for (int i = 0; i < count; i += 1) {
+        moveForward();
+    }
+}
+
 void MouseInterface::turnLeft() {
 
     ENSURE_DISCRETE_INTERFACE
@@ -539,6 +548,15 @@ void MouseInterface::turnLeft() {
 
     m_mouse->stopAllWheels();
     m_mouse->teleport(destinationTranslation, destinationRotation);
+}
+
+void MouseInterface::turnLeft(int count) {
+
+    ENSURE_DISCRETE_INTERFACE
+
+    for (int i = 0; i < count; i += 1) {
+        turnLeft();
+    }
 }
 
 void MouseInterface::turnRight() {
@@ -577,12 +595,30 @@ void MouseInterface::turnRight() {
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
 
+void MouseInterface::turnRight(int count) {
+
+    ENSURE_DISCRETE_INTERFACE
+
+    for (int i = 0; i < count; i += 1) {
+        turnRight();
+    }
+}
+
 void MouseInterface::turnAround() {
 
     ENSURE_DISCRETE_INTERFACE
 
     turnRight();
     turnRight();
+}
+
+void MouseInterface::turnAround(int count) {
+
+    ENSURE_DISCRETE_INTERFACE
+
+    for (int i = 0; i < count; i += 1) {
+        turnAround();
+    }
 }
 
 void MouseInterface::ensureDiscreteInterface(const std::string& callingFunction) const {

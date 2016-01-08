@@ -13,8 +13,6 @@
 #include "Param.h"
 #include "State.h"
 
-#include "Logging.h" // TODO: MACK
-
 namespace sim {
 
 Mouse::Mouse(const Maze* maze) : m_maze(maze), m_currentGyro(RadiansPerSecond(0.0)) {
