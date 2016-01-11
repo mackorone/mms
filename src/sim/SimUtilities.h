@@ -26,7 +26,7 @@ public:
     // Sleeps the current thread for ms milliseconds
     static void sleep(const Duration& duration);
 
-    // Like time() in <ctime> but higher resolution
+    // Like time() in <ctime> but higher resolution (returns seconds since epoch)
     static double getHighResTime();
 
     // Returns the UTC datetime formatted as YY-MM-DD_HH:MM:SS

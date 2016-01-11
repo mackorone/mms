@@ -6,7 +6,6 @@
 #include "MouseInterfaceOptions.h"
 #include "Param.h"
 
-// Windows compatibility
 #ifdef _WIN32
 #define __func__ __FUNCTION__
 #endif

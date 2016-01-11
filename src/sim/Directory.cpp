@@ -1,10 +1,10 @@
 #include "Directory.h"
 
-#ifdef __linux
+#ifdef _WIN32
+    #include "Windows.h"
+#else
     #include <limits.h>
     #include <unistd.h>
-#elif _WIN32
-    #include "Windows.h"
 #endif
 
 namespace sim {

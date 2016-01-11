@@ -14,10 +14,10 @@
 #include <thread>
 #include <random>
 
-#ifdef __linux
-    #include <dirent.h>
-#elif _WIN32
+#ifdef _WIN32
     #include "Windows.h"
+#else
+    #include <dirent.h>
 #endif
 
 #include "Assert.h"
@@ -46,22 +46,23 @@ double SimUtilities::getRandom() {
 }
 
 void SimUtilities::sleep(const Duration& duration) {
-    ASSERT_LE(0, duration.getMilliseconds());
-	std::this_thread::sleep_for(std::chrono::microseconds(static_cast<int>(duration.getMicroseconds())));
+    int microseconds = static_cast<int>(std::floor(duration.getMicroseconds()));
+    ASSERT_LE(0, microseconds);
+	std::this_thread::sleep_for(std::chrono::microseconds(microseconds));
 }
 
 double SimUtilities::getHighResTime() {
-#ifdef __linux
+#ifdef _WIN32
+    LARGE_INTEGER freq, counter;         // Keep windows queryperformance for the time being until tests can
+    QueryPerformanceFrequency(&freq);    // be done. Supposedly up until Visual Studio 2013, microsoft uses
+    QueryPerformanceCounter(&counter);   // the normal system clock for chrono high_resolution_clock which only
+    return double(counter.QuadPart) / double(freq.QuadPart); // has 1 ms accuracy.
+#else
     // chrono::high_resoltion_clock as defined by c++ 11 should use the highest resolution time source available
     // on the system.  See below for windows note.
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
     // By default a cast to duration is a cast to seconds since the default ratio is 1
     return std::chrono::duration_cast<std::chrono::duration<double>>(t1.time_since_epoch()).count();
-#elif _WIN32
-    LARGE_INTEGER freq, counter;         // Keep windows queryperformance for the time being until tests can
-    QueryPerformanceFrequency(&freq);    // be done. Supposedly up until Visual Studio 2013, microsoft uses
-    QueryPerformanceCounter(&counter);   // the normal system clock for chrono high_resolution_clock which only
-    return double(counter.QuadPart) / double(freq.QuadPart); // has 1 ms accuracy.
 #endif
 }
 
