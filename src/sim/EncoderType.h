@@ -2,7 +2,7 @@
 
 #include <map>
 
-#ifdef __WIN32
+#ifdef _WIN32
     #include "Windows.h"
 #endif
 
