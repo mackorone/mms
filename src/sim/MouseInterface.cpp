@@ -50,6 +50,10 @@ double MouseInterface::getRandom() {
     return SimUtilities::getRandom();
 }
 
+int MouseInterface::millis() {
+    return 0;
+}
+
 void MouseInterface::delay(int milliseconds) {
     sim::SimUtilities::sleep(Milliseconds(milliseconds));
 }

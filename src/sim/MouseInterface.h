@@ -39,6 +39,7 @@ public:
 
     // Misc functions
     double getRandom();
+    int millis(); // # of milliseconds of sim time (adjusted based on sim speed) that have passed
     void delay(int milliseconds);
     void quit();
 
