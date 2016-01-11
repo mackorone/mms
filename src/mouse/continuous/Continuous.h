@@ -9,9 +9,7 @@ class Continuous : public IMouseAlgorithm {
 public:
     std::string mouseFile() const;
     std::string interfaceType() const;
-    void solve(
-        int mazeWidth, int mazeHeight, bool isOfficialMaze,
-        char initialDirection, sim::MouseInterface* mouse);
+    void solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse);
 
 private:
 	//Thresholds for left and right sensors detecting side walls
@@ -83,12 +81,12 @@ private:
 	int leftTicks = 0;
 //	int rightBaseSpeed = 240;
 //	int leftBaseSpeed = 240;
-	volatile int leftSensor;
-	volatile int rightSensor;
-	volatile int rightMiddleValue;
-	volatile int leftMiddleValue;
-	volatile int leftFront;
-	volatile int rightFront;
+	int leftSensor;
+	int rightSensor;
+	int rightMiddleValue;
+	int leftMiddleValue;
+	int leftFront;
+	int rightFront;
 	int currentRightPWM = 0;
 	int currentLeftPWM = 0;
 	const int buttonPin = 24;

@@ -149,6 +149,7 @@
 - Rewrite/clean floodfill
 - Color palettes
 - Tile text color
+- Figure out why #NOGDI doesn't work on windows (1/7 - 1/8 facebook conversations)
 
 # Clean-Up
 
