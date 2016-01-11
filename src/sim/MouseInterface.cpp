@@ -51,7 +51,7 @@ double MouseInterface::getRandom() {
 }
 
 int MouseInterface::millis() {
-    return 0;
+    return m_mouse->getElapsedSimTime().getMilliseconds();
 }
 
 void MouseInterface::delay(int milliseconds) {

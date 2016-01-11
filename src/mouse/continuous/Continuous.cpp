@@ -1119,6 +1119,8 @@ float Continuous::readGyro() {
 
 
 long long Continuous::millis() {
+    return m_mouse->millis();
+/*
 #ifdef __WIN32
 	//http://gamedev.stackexchange.com/questions/26759/best-way-to-get-elapsed-time-in-miliseconds-in-windows
 	static LARGE_INTEGER s_frequency;
@@ -1134,6 +1136,7 @@ long long Continuous::millis() {
 #else
     return 0;
 #endif
+*/
 }
 
 } // namespace continuous

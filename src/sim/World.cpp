@@ -21,9 +21,7 @@ World::World(
         m_maze(maze),
         m_mouse(mouse),
         m_mazeGraphic(mazeGraphic),
-        m_options(options),
-        m_elapsedRealTime(Seconds(0)),
-        m_elapsedSimTime(Seconds(0)) {
+        m_options(options) {
 }
 
 void World::simulate() {
@@ -63,18 +61,9 @@ void World::simulate() {
             continue;
         }
 
-        // Ensure that the update of mouse and update of elapsed time are atomic
-        m_updateMutex.lock();
-
-        // Keep track of the elapsed real and sim time
-        static Seconds realTimePerUpdate = Seconds(1.0 / P()->mousePositionUpdateRate());
-        Seconds simTimePerUpdate = realTimePerUpdate * S()->simSpeed();
-        m_elapsedRealTime += realTimePerUpdate;
-        m_elapsedSimTime += simTimePerUpdate;
-
         // Update the position of the mouse
-        m_mouse->update(simTimePerUpdate);
-        m_updateMutex.unlock();
+        static Seconds realTimePerUpdate = Seconds(1.0 / P()->mousePositionUpdateRate());
+        m_mouse->update(realTimePerUpdate * S()->simSpeed());
 
         // Update the tile fog. Note that this is a bit of a one-off case. We
         // shouldn't really put any sort of graphics-related stuff in this
@@ -105,20 +94,6 @@ void World::simulate() {
         // Sleep the appropriate amout of time, based on the mouse update duration
         SimUtilities::sleep(Seconds(std::max(0.0, 1.0/P()->mousePositionUpdateRate() - duration)));
     }
-}
-
-Seconds World::getElapsedRealTime() const {
-    m_updateMutex.lock();
-    Seconds elapsedRealTime = m_elapsedRealTime;
-    m_updateMutex.unlock();
-    return elapsedRealTime;
-}
-
-Seconds World::getElapsedSimTime() const {
-    m_updateMutex.lock();
-    Seconds elapsedSimTime = m_elapsedSimTime;
-    m_updateMutex.unlock();
-    return elapsedSimTime;
 }
 
 void World::checkCollision() {

@@ -95,10 +95,10 @@ public:
     double getWheelEncoderTicksPerRevolution(const std::string& name) const;
 
     // Returns the reading of the encoder of the wheel given by name
-    int readWheelAbsoluteEncoder(const std::string& name);
+    int readWheelAbsoluteEncoder(const std::string& name) const;
 
     // Returns the reading of the encoder of the wheel given by name
-    int readWheelRelativeEncoder(const std::string& name);
+    int readWheelRelativeEncoder(const std::string& name) const;
 
     // Sets the value of the relative encoder to zero
     void resetWheelRelativeEncoder(const std::string& name);
@@ -114,6 +114,9 @@ public:
 
     // Returns the value of the gyroscope
     RadiansPerSecond readGyro() const;
+
+    // Returns the number of sim seconds that have elapsed
+    Seconds getElapsedSimTime() const;
 
 private:
     // Used for the sensor readings
@@ -136,8 +139,11 @@ private:
     Cartesian m_currentTranslation;
     Radians m_currentRotation;
 
-    // Ensures that updates happen atomically
-    std::mutex m_updateMutex; 
+    // Ensures that updates happen atomically, mutable so we can use it in const functions
+    mutable std::mutex m_updateMutex; 
+
+    // The total amount of elapsed sim time (adjusted for sim speed)
+    Seconds m_elapsedSimTime;
 
     // Helper function for polygon retrieval based on a given mouse translation and rotation
     Polygon getCurrentPolygon(const Polygon& initialPolygon,

@@ -224,6 +224,8 @@ void Mouse::update(const Duration& elapsed) {
             *m_maze);
     }
 
+    m_elapsedSimTime += elapsed;
+
     m_updateMutex.unlock();
 }
 
@@ -296,7 +298,7 @@ double Mouse::getWheelEncoderTicksPerRevolution(const std::string& name) const {
     return m_wheels.at(name).getEncoderTicksPerRevolution();
 }
 
-int Mouse::readWheelAbsoluteEncoder(const std::string& name) {
+int Mouse::readWheelAbsoluteEncoder(const std::string& name) const {
     ASSERT_TR(hasWheel(name));
     m_updateMutex.lock();
     int encoderReading = m_wheels.at(name).readAbsoluteEncoder();
@@ -304,7 +306,7 @@ int Mouse::readWheelAbsoluteEncoder(const std::string& name) {
     return encoderReading;
 }
 
-int Mouse::readWheelRelativeEncoder(const std::string& name) {
+int Mouse::readWheelRelativeEncoder(const std::string& name) const {
     ASSERT_TR(hasWheel(name));
     m_updateMutex.lock();
     int encoderReading = m_wheels.at(name).readRelativeEncoder();
@@ -335,6 +337,13 @@ Seconds Mouse::getSensorReadDuration(const std::string& name) const {
 
 RadiansPerSecond Mouse::readGyro() const {
     return m_currentGyro;
+}
+
+Seconds Mouse::getElapsedSimTime() const {
+    m_updateMutex.lock();
+    Seconds elapsedSimTime = m_elapsedSimTime;
+    m_updateMutex.unlock();
+    return elapsedSimTime;
 }
 
 Polygon Mouse::getCurrentPolygon(const Polygon& initialPolygon,
