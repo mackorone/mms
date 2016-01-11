@@ -27,72 +27,95 @@ std::string Continuous::interfaceType() const {
     return "CONTINUOUS";
 }
 
-void Continuous::solve(
-        int mazeWidth, int mazeHeight, bool isOfficialMaze,
-        char initialDirection, sim::MouseInterface* mouse) {
+void Continuous::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
 
 	m_mouse = mouse;
+	int counts = 0;
+	double angle = 0;
+		
+		//First cell: 840 (360 tpr)
+		//Once Cell: 1680
+
+		/*setSpeed(-780, 780);
+		while (counts < 10000) {
+			int leftTicks = -m_mouse->readWheelEncoder("left-lower");
+			int rightTicks = m_mouse->readWheelEncoder("right-lower");
+			counts = (leftTicks + rightTicks) / 2;
+			cout << counts;
+			cout << "\n";
+		}*/
+		//moveForward();
+
+		m_mouse->resetWheelEncoder("left-lower");
+		m_mouse->resetWheelEncoder("right-lower");
+		setSpeed(-780, 780);
+		counts = 0;
+		while (counts < 840) {
+			int leftTicks = -m_mouse->readWheelEncoder("left-lower");
+			int rightTicks = m_mouse->readWheelEncoder("right-lower");
+			counts = (leftTicks + rightTicks) / 2;
+		}
+		/*for (int i = 0; i < 14; i++) {
+			moveForward();
+		}*/
+		//curveTurnRight();
+
 
 	while (true) {
-		/*if (wallRight()) {
-			moveForward();
-		}
-		else {
-			curveTurnRight();
-		}*/
-		
+		setSpeed(0, 0);
+		m_mouse->delay(1000);
 		if (!wallRight()) {
-			//m_mouse->delay(350);
 			curveTurnRight();
+			setSpeed(0, 0);
+			while (true) {}
 		}
-		while (wallFront()) {
+		/*while (wallFront()) {
 			curveTurnLeft();
-		}
+		}*/
 		moveForward();
-		//correctErrors();
 		
 	}
 	
 
-	//read initial sensor values to determine first cell move
-	walls_global[0] = wallLeft();
-	walls_global[1] = wallFront();
-	walls_global[2] = wallRight();
+	////read initial sensor values to determine first cell move
+	//walls_global[0] = wallLeft();
+	//walls_global[1] = wallFront();
+	//walls_global[2] = wallRight();
 
-	haveSensorReading = false;
-	movesDoneAndWallsSet = true;
+	//haveSensorReading = false;
+	//movesDoneAndWallsSet = true;
 
-	/***********************************GYRO TEST**************************************************/
-	long long start = millis();
-	double angle = 0;
-	int timeConst = 1; //ms
-	setSpeed(25, 25);
-	//clock_t start;
-	//clock_t elapsed;
-	//start = clock();
-	while (true) {//void loop
-		// ....
-		long long elapsed = millis() - start;
-		//elapsed = clock() - start;
-		if (elapsed >= timeConst) {
-			//start = millis();
-			//start = clock();
-			angle += m_mouse->readGyro() * timeConst / 1000;
-			//cout << angle << "\n";
-			start = millis();
-			//correction();
-			if (angle <= -90) {
-				setSpeed(0, 0);
-				while (true);
-			}
-		}
-	}
+	///***********************************GYRO TEST**************************************************/
+	//long long start = millis();
+	//double angle = 0;
+	//int timeConst = 1; //ms
+	//setSpeed(-20, -20);
+	////clock_t start;
+	////clock_t elapsed;
+	////start = clock();
+	//while (true) {//void loop
+	//	// ....
+	//	long long elapsed = millis() - start;
+	//	//elapsed = clock() - start;
+	//	if (elapsed >= timeConst) {
+	//		//start = millis();
+	//		//start = clock();
+	//		angle += readGyro() * timeConst / 1000;
+	//		//cout << angle << "\n";
+	//		start = millis();
+	//		//correction();
+	//		if (angle <= -90) {
+	//			setSpeed(0, 0);
+	//			while (true);
+	//		}
+	//	}
+	//}
 
 }
 /***************************************END GYRO TEST**********************************************/
 
 
-//1ms timer
+//100ms timer
 void Continuous::correction() {
 	static int totalForwardCount = 0;
 	static int forwardCount = 0;
@@ -105,7 +128,7 @@ void Continuous::correction() {
 		return;
 	}
 	readSensors();
-	angle += m_mouse->readGyro() * 0.001;
+	angle += m_mouse->readGyro() * 0.1;
 	if (currentMoveDone) {
 		movedForward = false;
 		if (firstMove) {
@@ -906,15 +929,15 @@ void Continuous::wallFollow() {
 }
 
 bool Continuous::wallRight() {
-    return m_mouse->readSensor("right-side") > 0.5;
+    return rightSensor > 0.5;
 }
 
 bool Continuous::wallLeft() {
-    return m_mouse->readSensor("left-side") > 0.5;
+    return leftSensor > 0.5;
 }
 
 bool Continuous::wallFront() {
-    return m_mouse->readSensor("right-front") > 0.9;
+    return leftFront > 0.9;
 }
 
 void Continuous::turnRight() {
@@ -976,11 +999,10 @@ void Continuous::simpleTurnAround() {
 void Continuous::curveTurnRight() {
 	double error;
 	double totalError;
-	int Kp = 2;
+	double Kp = 1.3;
 	double targetAngle;
 	long long start = millis();
-	double angle = 0;
-	int timeConst = 3; //ms
+	int timeConst = 10; //ms
 	int i = 0;
 	while (true) {//void loop
 		long long elapsed = millis() - start;
@@ -991,12 +1013,12 @@ void Continuous::curveTurnRight() {
 			start = millis();
 			totalError = Kp * error;
 			//m_mouse->setSpeed(-(10*M_PI + totalError), 10*M_PI - totalError);
-			m_mouse->setWheelSpeed("left-lower", -(25 * M_PI + totalError));
-			m_mouse->setWheelSpeed("right-lower", 25 * M_PI - totalError);
-			if (angle <= -90 || i >= curveTime-1) {
+			m_mouse->setWheelSpeed("left-lower", -(78 + totalError));
+			m_mouse->setWheelSpeed("right-lower", 78 - totalError);
+			if (angle <= -89) {
 				break;
 			}
-			if (i < curveTime) {
+			if (i < curveTime-1) {
 				i++;
 			}
 			
@@ -1010,7 +1032,6 @@ void Continuous::curveTurnLeft() {
 	int Kp = 2;
 	double targetAngle;
 	long long start = millis();
-	double angle = 0;
 	int timeConst = 3; //ms
 	int i = 0;
 	while (true) {//void loop
@@ -1041,35 +1062,39 @@ void Continuous::moveForward() {
 int Kp;
     double error;
     double totalError;
-    if (wallRight() && wallLeft()) {
-        //error = m_mouse->readSensor("right-side") - m_mouse->readSensor("left-side");
-		error = m_mouse->readSensor("left-side") - m_mouse->readSensor("right-side");
-        Kp = 20;
-    }
+	m_mouse->resetWheelEncoder("left-lower");
+	m_mouse->resetWheelEncoder("right-lower");
+	int counts = 0;
+	while (counts < 1350) {
+		leftTicks = -m_mouse->readWheelEncoder("left-lower");
+		rightTicks = m_mouse->readWheelEncoder("right-lower");
+		counts = (leftTicks + rightTicks) / 2;
+		if (wallRight() && wallLeft()) {
+			double angle = 0;
+			//error = m_mouse->readSensor("right-side") - m_mouse->readSensor("left-side");
+			error = m_mouse->readSensor("left-side") - m_mouse->readSensor("right-side");
+			Kp = 250;
+		}
 
-    else if (wallRight()) {
-        error = .5 * (0.776 - m_mouse->readSensor("right-side"));
-	Kp = 5;
-    }
-    
-    else if (wallLeft()) {
-        error = .5 * (m_mouse->readSensor("left-side") - 0.825);//.776
-        Kp = 20;
-    }
+		else if (wallRight()) {
+			error = .5 * (0.776 - m_mouse->readSensor("right-side"));
+			Kp = 5;
+		}
 
-    else {
-        error = 0;
-    }
-    totalError = Kp * error;
-    //m_mouse->setSpeed(-(10*M_PI + totalError), 10*M_PI - totalError);
-	m_mouse->setWheelSpeed("left-lower", -(25 * M_PI + totalError));
-	m_mouse->setWheelSpeed("right-lower", 25 * M_PI - totalError);
-    //m_mouse->delay(1);
-    //std::cout << m_mouse->readSensor("left") << std::endl;
-    //std::cout << m_mouse->readSensor("leftMiddle") << std::endl;
-    //std::cout << std::endl;
-    //m_mouse->setWheelSpeeds(0, 0);
-    //m_mouse->delay(0);
+		else if (wallLeft()) {
+			error = .5 * (m_mouse->readSensor("left-side") - 0.825);//.776
+			Kp = 20;
+		}
+
+		else {
+			error = 0;
+		}
+		totalError = Kp * error;
+		m_mouse->setWheelSpeed("left-lower", -(700 + totalError));
+		m_mouse->setWheelSpeed("right-lower", 700 - totalError);
+	}
+	m_mouse->resetWheelEncoder("left-lower");
+	m_mouse->resetWheelEncoder("right-lower");
 }
 
 void Continuous::setSpeed(double left, double right) {
@@ -1082,7 +1107,10 @@ void Continuous::delay(int ms) {
 }
 
 void Continuous::readSensors() {
-
+	leftSensor = m_mouse->readSensor("left-side");
+	rightSensor = m_mouse->readSensor("right-side");
+	leftFront = m_mouse->readSensor("right-front");
+	//m_mouse->readSensor("right-side");
 }
 
 float Continuous::readGyro() {
@@ -1091,7 +1119,7 @@ float Continuous::readGyro() {
 
 
 long long Continuous::millis() {
-#ifdef __WIN32 // TODO: KYLE
+//#ifdef __WIN32 // TODO: KYLE
 	//http://gamedev.stackexchange.com/questions/26759/best-way-to-get-elapsed-time-in-miliseconds-in-windows
 	static LARGE_INTEGER s_frequency;
 	static BOOL s_use_qpc = QueryPerformanceFrequency(&s_frequency);
@@ -1103,9 +1131,9 @@ long long Continuous::millis() {
 	else {
 		return GetTickCount();
 	}
-#else
-    return 0;
-#endif
+//#else
+    //return 0;
+//#endif
 }
 
 } // namespace continuous

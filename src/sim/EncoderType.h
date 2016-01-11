@@ -3,7 +3,7 @@
 #include <map>
 
 #include "ContainerUtilities.h"
-
+#include "Windows.h"
 namespace sim {
 
 enum class EncoderType { ABSOLUTE, RELATIVE };
