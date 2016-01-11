@@ -1121,7 +1121,7 @@ float Continuous::readGyro() {
 long long Continuous::millis() {
     return m_mouse->millis();
 /*
-#ifdef __WIN32
+#ifdef _WIN32
 	//http://gamedev.stackexchange.com/questions/26759/best-way-to-get-elapsed-time-in-miliseconds-in-windows
 	static LARGE_INTEGER s_frequency;
 	static BOOL s_use_qpc = QueryPerformanceFrequency(&s_frequency);

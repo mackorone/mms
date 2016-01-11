@@ -12,6 +12,7 @@ public:
     virtual std::string initialDirection() const;
 
     // Runtime options
+    virtual bool allowOmniscience() const;
     virtual bool automaticallyClearFog() const;
     virtual bool declareWallOnRead() const;
     virtual bool declareBothWallHalves() const;

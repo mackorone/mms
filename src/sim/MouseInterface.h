@@ -12,6 +12,7 @@
 
 #define ENSURE_DISCRETE_INTERFACE ensureDiscreteInterface(__func__);
 #define ENSURE_CONTINUOUS_INTERFACE ensureContinuousInterface(__func__);
+#define ENSURE_ALLOW_OMNISCIENCE ensureAllowOmniscience(__func__);
 
 namespace manual {
     class Manual;
@@ -112,6 +113,16 @@ public:
     void turnAround();
     void turnAround(int count);
 
+    // ----- Omniscience methods ----- //
+
+    int currentXTile();
+    int currentYTile();
+    char currentDirection();
+
+    double currentXPosMeters();
+    double currentYPosMeters();
+    double currentRotationDegrees();
+
 private:
     const Maze* m_maze;
     Mouse* m_mouse;
@@ -125,6 +136,7 @@ private:
 
     void ensureDiscreteInterface(const std::string& callingFunction) const;
     void ensureContinuousInterface(const std::string& callingFunction) const;
+    void ensureAllowOmniscience(const std::string& callingFunction) const;
 
     bool isWall(std::pair<int, int> position, Direction direction);
     bool hasOpposingWall(int x, int y, Direction direction) const;

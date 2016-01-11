@@ -48,6 +48,7 @@ Controller::Controller(Model* model, View* view) : m_model(model), m_view(view) 
         m_view->getMazeGraphic(),
         m_view->getAllowableTileTextCharacters(),
         {
+            m_mouseAlgorithm->allowOmniscience(),
             m_mouseAlgorithm->declareWallOnRead(),
             m_mouseAlgorithm->declareBothWallHalves(),
             m_mouseAlgorithm->setTileTextWhenDistanceDeclared(),

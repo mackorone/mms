@@ -12,6 +12,10 @@ std::string IMouseAlgorithm::initialDirection() const {
     return "NORTH";
 }
 
+bool IMouseAlgorithm::allowOmniscience() const {
+    return false;
+}
+
 bool IMouseAlgorithm::automaticallyClearFog() const {
     return true;
 }

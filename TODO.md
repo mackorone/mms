@@ -1,7 +1,5 @@
 # High Priority
 
-- Make a millis() function available
-- Make mutex in Mouse mutable, make some reading functions const
 - Add a way to time the algorithms
     - How long it took to get to the center of the maze
     - Make this faster than real time

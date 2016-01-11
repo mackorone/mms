@@ -5,6 +5,7 @@
 namespace sim {
 
 struct MouseInterfaceOptions {
+    bool allowOmniscience;
     bool declareWallOnRead;
     bool declareBothWallHalves;
     bool setTileTextWhenDistanceDeclared;

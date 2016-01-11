@@ -625,6 +625,48 @@ void MouseInterface::turnAround(int count) {
     }
 }
 
+int MouseInterface::currentXTile() {
+
+    ENSURE_ALLOW_OMNISCIENCE
+
+    return m_mouse->getCurrentDiscretizedTranslation().first;
+}
+
+int MouseInterface::currentYTile() {
+
+    ENSURE_ALLOW_OMNISCIENCE
+
+    return m_mouse->getCurrentDiscretizedTranslation().second;
+}
+
+char MouseInterface::currentDirection() {
+
+    ENSURE_ALLOW_OMNISCIENCE
+
+    return DIRECTION_TO_CHAR.at(m_mouse->getCurrentDiscretizedRotation());
+}
+
+double MouseInterface::currentXPosMeters() {
+
+    ENSURE_ALLOW_OMNISCIENCE
+
+    return m_mouse->getCurrentTranslation().getX().getMeters();
+}
+
+double MouseInterface::currentYPosMeters() {
+
+    ENSURE_ALLOW_OMNISCIENCE
+
+    return m_mouse->getCurrentTranslation().getY().getMeters();
+}
+
+double MouseInterface::currentRotationDegrees() {
+
+    ENSURE_ALLOW_OMNISCIENCE
+
+    return m_mouse->getCurrentRotation().getDegreesZeroTo360();
+}
+
 void MouseInterface::ensureDiscreteInterface(const std::string& callingFunction) const {
     if (m_options.interfaceType != InterfaceType::DISCRETE) {
         L()->error(
@@ -639,6 +681,15 @@ void MouseInterface::ensureContinuousInterface(const std::string& callingFunctio
         L()->error(
             "You must declare the interface type to be \"%v\" to use MouseInterface::%v().",
             INTERFACE_TYPE_TO_STRING.at(InterfaceType::CONTINUOUS), callingFunction);
+        SimUtilities::quit();
+    }
+}
+
+void MouseInterface::ensureAllowOmniscience(const std::string& callingFunction) const {
+    if (!m_options.allowOmniscience) {
+        L()->error(
+            "You must return true from \"allowOmniscience()\" in order to use MouseInterface::%v().",
+            callingFunction);
         SimUtilities::quit();
     }
 }
