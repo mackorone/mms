@@ -27,7 +27,7 @@ std::string Continuous::interfaceType() const {
     return "CONTINUOUS";
 }
 
-void Continuous::solve(int mazeWidth, int mazeHeight, char initialDirection, sim::MouseInterface* mouse) {
+void Continuous::solve(int mazeWidth, int mazeHeight, bool isOfficialMaze, char initialDirection, sim::MouseInterface* mouse) {
 
 	m_mouse = mouse;
 	int counts = 0;
@@ -1119,7 +1119,7 @@ float Continuous::readGyro() {
 
 
 long long Continuous::millis() {
-//#ifdef __WIN32 // TODO: KYLE
+#ifdef __WIN32
 	//http://gamedev.stackexchange.com/questions/26759/best-way-to-get-elapsed-time-in-miliseconds-in-windows
 	static LARGE_INTEGER s_frequency;
 	static BOOL s_use_qpc = QueryPerformanceFrequency(&s_frequency);
@@ -1131,9 +1131,9 @@ long long Continuous::millis() {
 	else {
 		return GetTickCount();
 	}
-//#else
-    //return 0;
-//#endif
+#else
+    return 0;
+#endif
 }
 
 } // namespace continuous

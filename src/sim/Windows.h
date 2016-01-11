@@ -9,6 +9,7 @@
 
 // Now actually include <windows.h>
 #include <windows.h>
+
 // ABSOLUTE and REALTIVE are defined in wingdi.h, included in windows.h
 #undef ABSOLUTE
 #undef RELATIVE

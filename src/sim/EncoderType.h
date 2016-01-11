@@ -2,8 +2,12 @@
 
 #include <map>
 
+#ifdef __WIN32
+    #include "Windows.h"
+#endif
+
 #include "ContainerUtilities.h"
-#include "Windows.h"
+
 namespace sim {
 
 enum class EncoderType { ABSOLUTE, RELATIVE };
