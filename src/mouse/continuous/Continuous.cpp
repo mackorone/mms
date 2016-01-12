@@ -32,50 +32,15 @@ void Continuous::solve(int mazeWidth, int mazeHeight, bool isOfficialMaze, char 
 	m_mouse = mouse;
 	int counts = 0;
 	double angle = 0;
-	allowOmniscience();
 	
 		//First cell: 840 (360 tpr)
 		//Once Cell: 1680
 
-		/*setSpeed(-780, 780);
-		while (counts < 10000) {
-			int leftTicks = -m_mouse->readWheelEncoder("left-lower");
-			int rightTicks = m_mouse->readWheelEncoder("right-lower");
-			counts = (leftTicks + rightTicks) / 2;
-			cout << counts;
-			cout << "\n";
-		}*/
-		//moveForward();
-		
-		m_mouse->resetWheelEncoder("left-lower");
-		m_mouse->resetWheelEncoder("right-lower");
-		setSpeed(-780, 780);
-		counts = 0;
-		while (counts < 840) {
-			int leftTicks = -m_mouse->readWheelEncoder("left-lower");
-			int rightTicks = m_mouse->readWheelEncoder("right-lower");
-			counts = (leftTicks + rightTicks) / 2;
-		}
-		/*for (int i = 0; i < 14; i++) {
-			moveForward();
-		}*/
-		//curveTurnRight();
-
-
-	while (true) {
-		setSpeed(0, 0);
-		m_mouse->delay(1000);
-		if (!wallRight()) {
-			curveTurnRight();
-			setSpeed(0, 0);
-			while (true) {}
-		}
-		/*while (wallFront()) {
-			curveTurnLeft();
-		}*/
 		moveForward();
+		setSpeed(0, 0);
 		
-	}
+		
+	
 	
 
 	////read initial sensor values to determine first cell move
@@ -88,12 +53,14 @@ void Continuous::solve(int mazeWidth, int mazeHeight, bool isOfficialMaze, char 
 
 	///***********************************GYRO TEST**************************************************/
 	//long long start = millis();
-	//double angle = 0;
+ //   //double angle = 0;
 	//int timeConst = 1; //ms
-	//setSpeed(-20, -20);
+	//setSpeed(200, 200);
 	////clock_t start;
 	////clock_t elapsed;
 	////start = clock();
+	////angle = m_mouse->currentRotationDegrees();
+	////cout << "start" << "\n";
 	//while (true) {//void loop
 	//	// ....
 	//	long long elapsed = millis() - start;
@@ -101,11 +68,11 @@ void Continuous::solve(int mazeWidth, int mazeHeight, bool isOfficialMaze, char 
 	//	if (elapsed >= timeConst) {
 	//		//start = millis();
 	//		//start = clock();
-	//		angle += readGyro() * timeConst / 1000;
+	//	angle = m_mouse->currentRotationDegrees() - 90;
 	//		//cout << angle << "\n";
-	//		start = millis();
+	//		//start = millis();
 	//		//correction();
-	//		if (angle <= -90) {
+	//		if (angle >= 90) {
 	//			setSpeed(0, 0);
 	//			while (true);
 	//		}
@@ -116,7 +83,7 @@ void Continuous::solve(int mazeWidth, int mazeHeight, bool isOfficialMaze, char 
 /***************************************END GYRO TEST**********************************************/
 
 
-//100ms timer
+//1ms timer
 void Continuous::correction() {
 	static int totalForwardCount = 0;
 	static int forwardCount = 0;
@@ -1003,9 +970,9 @@ void Continuous::curveTurnRight() {
 	double Kp = 1.3;
 	double targetAngle;
 	long long start = millis();
-	int timeConst = 10; //ms
+	int timeConst = 1; //ms
 	int i = 0;
-	while (true) {//void loop
+	while (true) {
 		long long elapsed = millis() - start;
 		if (elapsed >= timeConst) {
 			targetAngle = -curve[i];
@@ -1013,14 +980,14 @@ void Continuous::curveTurnRight() {
 			error = angle - targetAngle;
 			start = millis();
 			totalError = Kp * error;
-			//m_mouse->setSpeed(-(10*M_PI + totalError), 10*M_PI - totalError);
 			m_mouse->setWheelSpeed("left-lower", -(78 + totalError));
 			m_mouse->setWheelSpeed("right-lower", 78 - totalError);
-			if (angle <= -89) {
-				break;
-			}
-			if (i < curveTime-1) {
+
+			if (i < curveTime) {
 				i++;
+			}
+			else {
+				break;
 			}
 			
 		}
@@ -1116,6 +1083,18 @@ void Continuous::readSensors() {
 
 float Continuous::readGyro() {
 	return .7 * m_mouse->readGyro();
+}
+
+double Continuous::getAngle() {
+	double rawAngle = m_mouse->currentRotationDegrees() - 90; //converts unit circle to mouse starting orientation
+	double correctedAngle;
+	if (rawAngle >= 180) {
+		correctedAngle = rawAngle - 360;
+	}
+	else {
+		correctedAngle = rawAngle;
+	}
+	return correctedAngle;
 }
 
 bool Continuous::allowOmniscience() const {

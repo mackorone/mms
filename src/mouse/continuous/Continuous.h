@@ -115,7 +115,7 @@ private:
 	void delay(int ms);
 	void correction();
 	bool allowOmniscience() const;
-	float getAngle(float speedLeft, float speedRight);
+	double getAngle();
     sim::MouseInterface* m_mouse;
 };
 
