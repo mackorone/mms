@@ -114,6 +114,7 @@ private:
 	float readGyro();
 	void delay(int ms);
 	void correction();
+	bool allowOmniscience() const;
 	float getAngle(float speedLeft, float speedRight);
     sim::MouseInterface* m_mouse;
 };

@@ -32,7 +32,8 @@ void Continuous::solve(int mazeWidth, int mazeHeight, bool isOfficialMaze, char 
 	m_mouse = mouse;
 	int counts = 0;
 	double angle = 0;
-		
+	allowOmniscience();
+	
 		//First cell: 840 (360 tpr)
 		//Once Cell: 1680
 
@@ -45,7 +46,7 @@ void Continuous::solve(int mazeWidth, int mazeHeight, bool isOfficialMaze, char 
 			cout << "\n";
 		}*/
 		//moveForward();
-
+		
 		m_mouse->resetWheelEncoder("left-lower");
 		m_mouse->resetWheelEncoder("right-lower");
 		setSpeed(-780, 780);
@@ -1117,6 +1118,9 @@ float Continuous::readGyro() {
 	return .7 * m_mouse->readGyro();
 }
 
+bool Continuous::allowOmniscience() const {
+	return true;
+}
 
 long long Continuous::millis() {
     return m_mouse->millis();
