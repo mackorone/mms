@@ -72,4 +72,4 @@
 <maze-rotations>0</maze-rotations> <!-- 0-3 counterclockwise rotations -->
 
 <!-- Mouse Parameters -->
-<mouse-algorithm>RightWallFollow</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
+<mouse-algorithm>FloodFill</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
