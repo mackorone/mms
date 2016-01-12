@@ -13,6 +13,7 @@
 #define ENSURE_DISCRETE_INTERFACE ensureDiscreteInterface(__func__);
 #define ENSURE_CONTINUOUS_INTERFACE ensureContinuousInterface(__func__);
 #define ENSURE_ALLOW_OMNISCIENCE ensureAllowOmniscience(__func__);
+#define ENSURE_ALLOW_SPECIAL_MOVEMENTS ensureAllowSpecialMovements(__func__);
 
 namespace manual {
     class Manual;
@@ -113,6 +114,15 @@ public:
     void turnAround();
     void turnAround(int count);
 
+    // TODO: MACK - special curve turn movements
+    // TODO: MACK - potentially rename the above methods
+    void curveTurnLeft();
+    void curveTurnRight();
+
+    // TODO: MACK - special starting case for turning right
+
+    // TODO: MACK - diagonals
+
     // ----- Omniscience methods ----- //
 
     int currentXTile();
@@ -137,6 +147,7 @@ private:
     void ensureDiscreteInterface(const std::string& callingFunction) const;
     void ensureContinuousInterface(const std::string& callingFunction) const;
     void ensureAllowOmniscience(const std::string& callingFunction) const;
+    void ensureAllowSpecialMovements(const std::string& callingFunction) const;
 
     bool isWall(std::pair<int, int> position, Direction direction);
     bool hasOpposingWall(int x, int y, Direction direction) const;

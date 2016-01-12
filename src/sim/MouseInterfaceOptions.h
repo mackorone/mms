@@ -10,6 +10,7 @@ struct MouseInterfaceOptions {
     bool declareBothWallHalves;
     bool setTileTextWhenDistanceDeclared;
     bool setTileBaseColorWhenDistanceDeclaredCorrectly;
+    bool stopOnTileEdgesAndAllowSpecialMovements;
     double wheelSpeedFraction;
     int tileTextNumberOfRows;
     int tileTextNumberOfCols;

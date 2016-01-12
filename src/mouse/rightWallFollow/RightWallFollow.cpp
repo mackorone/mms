@@ -10,6 +10,10 @@ bool RightWallFollow::declareBothWallHalves() const {
     return true;
 }
 
+bool RightWallFollow::stopOnTileEdgesAndAllowSpecialMovements() const {
+    return true;
+}
+
 void RightWallFollow::solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse) {
@@ -19,13 +23,48 @@ void RightWallFollow::solve(
 }
 
 void RightWallFollow::rightWallFollowStep(sim::MouseInterface* mouse) {
-    if (!mouse->wallRight()){
-        mouse->turnRight();
+    if (!mouse->wallRight()) {
+        turnRightAndMoveForward(mouse);
     }
-    while (mouse->wallFront()){
+    else if (!mouse->wallFront()) {
+        mouse->moveForward();
+    }
+    else if (!mouse->wallLeft()) {
+        turnLeftAndMoveForward(mouse);
+    }
+    else {
+        turnAroundAndMoveForward(mouse);
+    }
+}
+
+void RightWallFollow::turnLeftAndMoveForward(sim::MouseInterface* mouse) {
+    if (stopOnTileEdgesAndAllowSpecialMovements()) {
+        mouse->curveTurnLeft();
+    }
+    else {
         mouse->turnLeft();
+        mouse->moveForward();
     }
-    mouse->moveForward();
+}
+
+void RightWallFollow::turnRightAndMoveForward(sim::MouseInterface* mouse) {
+    if (stopOnTileEdgesAndAllowSpecialMovements()) {
+        mouse->curveTurnRight();
+    }
+    else {
+        mouse->turnRight();
+        mouse->moveForward();
+    }
+}
+
+void RightWallFollow::turnAroundAndMoveForward(sim::MouseInterface* mouse) {
+    if (stopOnTileEdgesAndAllowSpecialMovements()) {
+        mouse->turnAround();
+    }
+    else {
+        mouse->turnAround();
+        mouse->moveForward();
+    }
 }
 
 } // namespace rightWallFollow

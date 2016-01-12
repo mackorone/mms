@@ -36,6 +36,10 @@ bool IMouseAlgorithm::setTileBaseColorWhenDistanceDeclaredCorrectly() const {
     return false;
 }
 
+bool IMouseAlgorithm::stopOnTileEdgesAndAllowSpecialMovements() const {
+    return false;
+}
+
 double IMouseAlgorithm::wheelSpeedFraction() const {
     return 1.0; 
 }

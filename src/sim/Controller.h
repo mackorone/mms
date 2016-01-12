@@ -24,16 +24,13 @@ public:
 
 private:
 
-    // TODO: MACK
     Model* m_model;
     View* m_view;
 
-    // TODO: MACK - make into pair
     IMouseAlgorithm* m_mouseAlgorithm;
     MouseInterface* m_mouseInterface;
-    World* m_world; // TODO: MACK Rename this...
+    World* m_world;
 
-    // Initialize all of the simulation objects
     void validateMouseAlgorithm(const std::string& mouseAlgorithm);
     void validateMouseInterfaceType(
         const std::string& mouseAlgorithm, const std::string& interfaceType);

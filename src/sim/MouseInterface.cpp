@@ -458,6 +458,8 @@ void MouseInterface::moveForward() {
 
     ENSURE_DISCRETE_INTERFACE
 
+    // TODO: upforgrabs
+    // We're declaring a wall here if declareWallOnRead is true. We shouldn't be.
     if (wallFront()) {
         if (!S()->crashed()) {
             S()->setCrashed();
@@ -472,32 +474,62 @@ void MouseInterface::moveForward() {
     Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
     Degrees destinationRotation = m_mouse->getCurrentRotation();
 
+    // TODO: MACK - make special methods???
+    Meters halfWallWidth = Meters(P()->wallWidth() / 2.0);
+    if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+        destinationTranslation = Cartesian(
+            tileLength * m_mouse->getCurrentDiscretizedTranslation().first,
+            tileLength * m_mouse->getCurrentDiscretizedTranslation().second
+        );
+    }
+
     m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
 
     switch (m_mouse->getCurrentDiscretizedRotation()) {
         case Direction::NORTH: {
-            destinationTranslation += Cartesian(Meters(0), tileLength);
+            // TODO: MACK
+            if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+                destinationTranslation += Cartesian(tileLength / 2.0, tileLength + halfWallWidth);
+            }
+            else {
+                destinationTranslation += Cartesian(Meters(0), tileLength);
+            }
             while (m_mouse->getCurrentTranslation().getY() < destinationTranslation.getY()) {
                 sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
             break;
         }
         case Direction::EAST: {
-            destinationTranslation += Cartesian(tileLength, Meters(0));
+            if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+                destinationTranslation += Cartesian(tileLength + halfWallWidth, tileLength / 2.0);
+            }
+            else {
+                destinationTranslation += Cartesian(tileLength, Meters(0));
+            }
             while (m_mouse->getCurrentTranslation().getX() < destinationTranslation.getX()) {
                 sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
             break;
         }
         case Direction::SOUTH: {
-            destinationTranslation += Cartesian(Meters(0), tileLength * -1);
+            if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+                destinationTranslation += Cartesian(tileLength / 2.0, halfWallWidth * -1);
+            }
+            else {
+                destinationTranslation += Cartesian(Meters(0), tileLength * -1);
+            }
             while (destinationTranslation.getY() < m_mouse->getCurrentTranslation().getY()) {
                 sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
             break;
         }
         case Direction::WEST: {
-            destinationTranslation += Cartesian(tileLength * -1, Meters(0));
+            if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+                destinationTranslation += Cartesian(halfWallWidth * -1, tileLength / 2.0);
+            }
+            else {
+                destinationTranslation += Cartesian(tileLength * -1, Meters(0));
+            }
             while (destinationTranslation.getX() < m_mouse->getCurrentTranslation().getX()) {
                 sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             }
@@ -614,6 +646,11 @@ void MouseInterface::turnAround() {
 
     turnRight();
     turnRight();
+
+    // TODO: MACK
+    if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+        moveForward();
+    }
 }
 
 void MouseInterface::turnAround(int count) {
@@ -623,6 +660,100 @@ void MouseInterface::turnAround(int count) {
     for (int i = 0; i < count; i += 1) {
         turnAround();
     }
+}
+
+void MouseInterface::curveTurnLeft() {
+
+    ENSURE_ALLOW_SPECIAL_MOVEMENTS
+
+    // TODO: MACK
+    Degrees destinationRotation = m_mouse->getCurrentRotation() + Degrees(90);
+
+    // TODO: MACK - make special methods???
+    Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
+    Meters halfWallWidth = Meters(P()->wallWidth() / 2.0);
+    Cartesian destinationTranslation = Cartesian(
+        tileLength * m_mouse->getCurrentDiscretizedTranslation().first,
+        tileLength * m_mouse->getCurrentDiscretizedTranslation().second
+    );
+
+    switch (m_mouse->getCurrentDiscretizedRotation()) {
+        case Direction::NORTH: {
+            destinationTranslation += Cartesian(halfWallWidth * -1, tileLength / 2.0);
+            break;
+        }
+        case Direction::EAST: {
+            destinationTranslation += Cartesian(tileLength / 2.0, tileLength + halfWallWidth);
+            break;
+        }
+        case Direction::SOUTH: {
+            destinationTranslation += Cartesian(tileLength + halfWallWidth, tileLength / 2.0);
+            break;
+        }
+        case Direction::WEST: {
+            destinationTranslation += Cartesian(tileLength / 2.0, halfWallWidth * -1);
+            break;
+        }
+    }
+
+    for (int i = 0; i < 2; i += 1) {
+        m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
+        sim::SimUtilities::sleep(Milliseconds(120));
+        m_mouse->setWheelSpeedsForTurnLeft(m_options.wheelSpeedFraction / 2.0);
+        sim::SimUtilities::sleep(Milliseconds(120));
+    }
+    m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
+    sim::SimUtilities::sleep(Milliseconds(120));
+
+    m_mouse->teleport(destinationTranslation, destinationRotation);
+}
+
+void MouseInterface::curveTurnRight() {
+
+    ENSURE_ALLOW_SPECIAL_MOVEMENTS
+
+    // TODO: MACK
+    // TODO: MACK - polygon points
+
+    Degrees destinationRotation = m_mouse->getCurrentRotation() - Degrees(90);
+
+    // TODO: MACK - make special methods???
+    Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
+    Meters halfWallWidth = Meters(P()->wallWidth() / 2.0);
+    Cartesian destinationTranslation = Cartesian(
+        tileLength * m_mouse->getCurrentDiscretizedTranslation().first,
+        tileLength * m_mouse->getCurrentDiscretizedTranslation().second
+    );
+
+    switch (m_mouse->getCurrentDiscretizedRotation()) {
+        case Direction::NORTH: {
+            destinationTranslation += Cartesian(tileLength + halfWallWidth, tileLength / 2.0);
+            break;
+        }
+        case Direction::EAST: {
+            destinationTranslation += Cartesian(tileLength / 2.0, halfWallWidth * -1);
+            break;
+        }
+        case Direction::SOUTH: {
+            destinationTranslation += Cartesian(halfWallWidth * -1, tileLength / 2.0);
+            break;
+        }
+        case Direction::WEST: {
+            destinationTranslation += Cartesian(tileLength / 2.0, tileLength + halfWallWidth);
+            break;
+        }
+    }
+
+    for (int i = 0; i < 2; i += 1) {
+        m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
+        sim::SimUtilities::sleep(Milliseconds(120));
+        m_mouse->setWheelSpeedsForTurnRight(m_options.wheelSpeedFraction / 2.0);
+        sim::SimUtilities::sleep(Milliseconds(120));
+    }
+    m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
+    sim::SimUtilities::sleep(Milliseconds(120));
+
+    m_mouse->teleport(destinationTranslation, destinationRotation);
 }
 
 int MouseInterface::currentXTile() {
@@ -689,6 +820,15 @@ void MouseInterface::ensureAllowOmniscience(const std::string& callingFunction) 
     if (!m_options.allowOmniscience) {
         L()->error(
             "You must return true from \"allowOmniscience()\" in order to use MouseInterface::%v().",
+            callingFunction);
+        SimUtilities::quit();
+    }
+}
+
+void MouseInterface::ensureAllowSpecialMovements(const std::string& callingFunction) const {
+    if (!m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+        L()->error(
+            "You must return true from \"stopOnTileEdgesAndAllowSpecialMovements()\" in order to use MouseInterface::%v().",
             callingFunction);
         SimUtilities::quit();
     }

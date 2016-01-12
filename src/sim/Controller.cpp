@@ -1,17 +1,15 @@
 #include "Controller.h"
 
 #include "ContainerUtilities.h"
-#include "Logging.h" // TODO: MACK should we need this here?
-#include "Param.h" // TODO: MACK Shouldn't need this here, limit it to the driver...
+#include "Logging.h"
+#include "Param.h"
 #include "SimUtilities.h"
-#include "State.h" // TODO: MACK should we need this here?
+#include "State.h"
 
-#include "../mouse/MouseAlgorithms.h" // TODO: MACK
-#include "MouseChecker.h" // TODO: MACK
+#include "../mouse/MouseAlgorithms.h"
+#include "MouseChecker.h"
 
 namespace sim {
-
-// TODO: MACK - Should thee be in a different place? 
 
 // String used to specify that the mouse should start facing the opening
 static const std::string& OPENING_DIRECTION_STRING = "OPENING";
@@ -21,7 +19,6 @@ static const std::string& WALL_DIRECTION_STRING = "WALL";
 
 Controller::Controller(Model* model, View* view) : m_model(model), m_view(view) {
 
-    // TODO
     validateMouseAlgorithm(P()->mouseAlgorithm());
     m_mouseAlgorithm = MouseAlgorithms::getMouseAlgorithm(P()->mouseAlgorithm());
     validateMouseInterfaceType(P()->mouseAlgorithm(), m_mouseAlgorithm->interfaceType());
@@ -53,6 +50,7 @@ Controller::Controller(Model* model, View* view) : m_model(model), m_view(view) 
             m_mouseAlgorithm->declareBothWallHalves(),
             m_mouseAlgorithm->setTileTextWhenDistanceDeclared(),
             m_mouseAlgorithm->setTileBaseColorWhenDistanceDeclaredCorrectly(),
+            m_mouseAlgorithm->stopOnTileEdgesAndAllowSpecialMovements(),
             m_mouseAlgorithm->wheelSpeedFraction(),
             m_mouseAlgorithm->tileTextNumberOfRows(),
             m_mouseAlgorithm->tileTextNumberOfCols(),
@@ -177,7 +175,6 @@ void Controller::initAndValidateMouse(
     }
 }
 
-// TODO: MACK
 void Controller::keyPress(unsigned char key, int x, int y) {
 
     // NOTE: If you're adding or removing anything from this function, make

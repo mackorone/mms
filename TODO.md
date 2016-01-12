@@ -1,21 +1,23 @@
 # High Priority
 
-- Add a way to time the algorithms
-    - How long it took to get to the center of the maze
-    - Make this faster than real time
-        - Make sure consistent at all speeds
+- Update algos to use stopOnTileEdge, update documentation for rightWallFollow, etc.
+- Make methods in IMouseInterface such as millis(), so that they can be called without "m_mouse->"
 - Make a mechanism for easily merging the a discrete algo into a continuous one
     - Figure out how to bring the high level logic into the control algo
 - Updates on the tile boundaries, not centers
     - Make this an option in the algo specification
 - Make some video tutorials
-- Improve sensor readings by getting the actual complete polygon, not apporximated
 - Write some code to make sure update throughput is good
     - 99% of updates are 1ms apart, or something like that
 - Check the sleep duration of updates to make sure that we're actually doing 1000 updates per second
 - Can we use mutable in the MouseInterface so declare wall on read is const? Make other methods in that class const?
 - Other mouse movements - curve turns, j-turns, diagonals, etc.
     - Genericize the move forward so that we can do curve turns
+    - The base case is when polygon sides n = 4, we have regular turns
+- Add a way to time the algorithms
+    - How long it took to get to the center of the maze
+    - Make this faster than real time
+        - Make sure consistent at all speeds
 - Arbitrary tile text
     - Make a note about how to show actual distances
     - Make a note about text automatically wrapping (the actual tile distances do not do this)
@@ -74,6 +76,7 @@
 # Medum Priority
 
 - Organize params in res/parameters.xml and Param.h/.cpp
+- Improve sensor readings by getting the actual complete polygon, not apporximated
 - For curve turns, see if you can figure out the arc that the mouse should go on to simulate a curve turn, use checkpoints
     - No curve turn has two line segments, each is tangent
         - first order curve turn has 3 line segments total, equally spaced, etc.

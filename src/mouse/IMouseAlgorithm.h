@@ -18,6 +18,7 @@ public:
     virtual bool declareBothWallHalves() const;
     virtual bool setTileTextWhenDistanceDeclared() const;
     virtual bool setTileBaseColorWhenDistanceDeclaredCorrectly() const;
+    virtual bool stopOnTileEdgesAndAllowSpecialMovements() const;
     virtual double wheelSpeedFraction() const;
     virtual int tileTextNumberOfRows() const;
     virtual int tileTextNumberOfCols() const;
