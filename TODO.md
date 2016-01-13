@@ -1,5 +1,7 @@
 # High Priority
 
+- Logging is too expensive
+    - Causing freezing and crashing
 - Provide a direction to turnAround (left or right turns)
 - Update algos to use stopOnTileEdge, update documentation for rightWallFollow, etc.
 - Make methods in IMouseInterface such as millis(), so that they can be called without "m_mouse->"
