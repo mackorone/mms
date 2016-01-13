@@ -378,27 +378,28 @@ double MouseInterface::readSensor(std::string name) {
         return 0.0;
     }
 
-    // Start the timer
-    double start(sim::SimUtilities::getHighResTime());
+    //// Start the timer
+    //double start(sim::SimUtilities::getHighResTime());
 
+	//sim::SimUtilities::sleep(m_mouse->getSensorReadDuration(name));
     // Retrieve the value
     double value = m_mouse->readSensor(name);
 
-    // Stop the timer
-    double end(sim::SimUtilities::getHighResTime());
-    double duration = end - start;
+    //// Stop the timer
+    //double end(sim::SimUtilities::getHighResTime());
+    //double duration = end - start;
 
-    // Display to the user, if requested
-    double readDurationSeconds = m_mouse->getSensorReadDuration(name).getSeconds();
-    if (P()->printLateSensorReads() && duration > readDurationSeconds) {
-        L()->warn(
-            "A sensor read was late by %v seconds, which is %v percent late.",
-            (duration - readDurationSeconds),
-            (duration - readDurationSeconds) / readDurationSeconds * 100);
-    }
+    //// Display to the user, if requested
+    //double readDurationSeconds = m_mouse->getSensorReadDuration(name).getSeconds();
+    //if (P()->printLateSensorReads() && duration > readDurationSeconds) {
+    //    L()->warn(
+    //        "A sensor read was late by %v seconds, which is %v percent late.",
+    //        (duration - readDurationSeconds),
+    //        (duration - readDurationSeconds) / readDurationSeconds * 100);
+    //}
 
-    // Sleep for the read time
-    sim::SimUtilities::sleep(sim::Seconds(std::max(0.0, 1.0 / P()->frameRate() - duration)));
+    //// Sleep for the read time
+    //sim::SimUtilities::sleep(sim::Seconds(std::max(0.0, 1.0 / P()->frameRate() - duration)));
 
     // Return the value
     return value;
