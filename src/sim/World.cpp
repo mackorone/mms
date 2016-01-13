@@ -85,10 +85,11 @@ void World::simulate() {
 
         // Notify the use of a late mouse position update
         if (P()->printLateMousePositionUpdates() && duration > 1.0/P()->mousePositionUpdateRate()) {
-            L()->warn(
+			// TODO: MACK
+            /*L()->warn(
                 "A mouse position update was late by %v seconds, which is %v percent late.",
                 (duration - 1.0/P()->mousePositionUpdateRate()),
-                (duration - 1.0/P()->mousePositionUpdateRate())/(1.0/P()->mousePositionUpdateRate()) * 100);
+                (duration - 1.0/P()->mousePositionUpdateRate())/(1.0/P()->mousePositionUpdateRate()) * 100);*/
         }
 
         // Sleep the appropriate amout of time, based on the mouse update duration
