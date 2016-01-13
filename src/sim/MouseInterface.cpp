@@ -698,12 +698,12 @@ void MouseInterface::curveTurnLeft() {
 
     for (int i = 0; i < 2; i += 1) {
         m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
-        sim::SimUtilities::sleep(Milliseconds(120));
+        sim::SimUtilities::sleep(Milliseconds(125));
         m_mouse->setWheelSpeedsForTurnLeft(m_options.wheelSpeedFraction / 2.0);
-        sim::SimUtilities::sleep(Milliseconds(120));
+        sim::SimUtilities::sleep(Milliseconds(125));
     }
     m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
-    sim::SimUtilities::sleep(Milliseconds(120));
+    sim::SimUtilities::sleep(Milliseconds(150));
 
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
@@ -713,8 +713,6 @@ void MouseInterface::curveTurnRight() {
     ENSURE_ALLOW_SPECIAL_MOVEMENTS
 
     // TODO: MACK
-    // TODO: MACK - polygon points
-
     Degrees destinationRotation = m_mouse->getCurrentRotation() - Degrees(90);
 
     // TODO: MACK - make special methods???
@@ -744,14 +742,25 @@ void MouseInterface::curveTurnRight() {
         }
     }
 
+    // TODO: MACK - polygon points, excluding start and end
+    //
+    //
+    //          2   E
+    //       1
+    //
+    //       S
+    //
+    //
+    int numPoints = 2;
+
     for (int i = 0; i < 2; i += 1) {
         m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
-        sim::SimUtilities::sleep(Milliseconds(120));
+        sim::SimUtilities::sleep(Milliseconds(125));
         m_mouse->setWheelSpeedsForTurnRight(m_options.wheelSpeedFraction / 2.0);
-        sim::SimUtilities::sleep(Milliseconds(120));
+        sim::SimUtilities::sleep(Milliseconds(125));
     }
     m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
-    sim::SimUtilities::sleep(Milliseconds(120));
+    sim::SimUtilities::sleep(Milliseconds(150));
 
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
