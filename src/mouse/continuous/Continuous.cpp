@@ -975,7 +975,7 @@ void Continuous::simpleTurnAround() {
 void Continuous::curveTurnRight() {
 	double error;
 	double totalError;
-	double Kp = 35000000; //30
+	double Kp = 35; //30
 	double targetAngle;
 	long long start = millis();
 	int timeConst = 2; //ms 2
