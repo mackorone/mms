@@ -1,5 +1,6 @@
 # High Priority
 
+- Windows logging is not working on non-main threads
 - Logging is too expensive
     - Causing freezing and crashing
     - Generalize a method for counting and logging few times, 1 per second

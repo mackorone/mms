@@ -40,7 +40,7 @@
 <!-- Simulation Parameters -->
 <random-seed>12345</random-seed> <!-- The seed value for rand() -->
 <use-random-seed>false</use-random-seed> <!-- Whether or not to use the seed value -->
-<collision-detection-enabled>true</collision-detection-enabled>
+<collision-detection-enabled>false</collision-detection-enabled>
 <crash-message>Oh no! Your mouse crashed! It can't move anymore...</crash-message>
 <default-tile-text-character>?</default-tile-text-character>
 <glut-init-duration>0.1</glut-init-duration> <!-- Seconds -->
@@ -71,4 +71,4 @@
 <maze-rotations>0</maze-rotations> <!-- 0-3 counterclockwise rotations -->
 
 <!-- Mouse Parameters -->
-<mouse-algorithm>Test</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
+<mouse-algorithm>Continuous</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
