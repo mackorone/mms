@@ -139,8 +139,6 @@ Param::Param() {
         "collision-detection-rate", 40, 1, 100);
     m_printLateCollisionDetections = parser.getBoolIfHasBool(
         "print-late-collision-detections", false);
-    m_printLateSensorReads = parser.getBoolIfHasBool(
-        "print-late-sensor-reads", false);
     m_numberOfCircleApproximationPoints = parser.getIntIfHasIntAndInRange(
         "number-of-circle-approximation-points", 8, 3, 30);
     m_numberOfSensorEdgePoints = parser.getIntIfHasIntAndInRange(
@@ -371,10 +369,6 @@ int Param::collisionDetectionRate() {
 
 bool Param::printLateCollisionDetections() {
     return m_printLateCollisionDetections;
-}
-
-bool Param::printLateSensorReads() {
-    return m_printLateSensorReads;
 }
 
 int Param::numberOfCircleApproximationPoints() {
