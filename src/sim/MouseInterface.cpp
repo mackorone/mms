@@ -114,6 +114,7 @@ void MouseInterface::setTileText(int x, int y, const std::string& text) {
         return;
     }
 
+    // TODO: MACK - clean this up
     std::vector<std::string> rowsOfText;
     int row = 0;
     int index = 0;
@@ -162,6 +163,7 @@ void MouseInterface::clearAllTileText() {
     }
 }
 
+// TODO: MACK - dedup between declare and undeclare
 void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) {
 
     if (!m_maze->withinMaze(x, y)) {
@@ -313,7 +315,7 @@ void MouseInterface::setWheelSpeed(const std::string& name, double rpm) {
         return;
     }
 
-    m_mouse->setWheelSpeeds({{name, RadiansPerSecond(RevolutionsPerMinute(rpm))}});
+    m_mouse->setWheelSpeeds({{name, RevolutionsPerMinute(rpm)}});
 }
 
 double MouseInterface::getWheelEncoderTicksPerRevolution(const std::string& name) {
@@ -378,31 +380,9 @@ double MouseInterface::readSensor(std::string name) {
         return 0.0;
     }
 
-    //// Start the timer
-    //double start(sim::SimUtilities::getHighResTime());
-
-	//sim::SimUtilities::sleep(m_mouse->getSensorReadDuration(name));
-    // Retrieve the value
-    double value = m_mouse->readSensor(name);
-
-    //// Stop the timer
-    //double end(sim::SimUtilities::getHighResTime());
-    //double duration = end - start;
-
-    //// Display to the user, if requested
-    //double readDurationSeconds = m_mouse->getSensorReadDuration(name).getSeconds();
-    //if (P()->printLateSensorReads() && duration > readDurationSeconds) {
-    //    L()->warn(
-    //        "A sensor read was late by %v seconds, which is %v percent late.",
-    //        (duration - readDurationSeconds),
-    //        (duration - readDurationSeconds) / readDurationSeconds * 100);
-    //}
-
-    //// Sleep for the read time
-    //sim::SimUtilities::sleep(sim::Seconds(std::max(0.0, 1.0 / P()->frameRate() - duration)));
-
-    // Return the value
-    return value;
+    // TODO: MACK - test this
+    //sim::SimUtilities::sleep(m_mouse->getSensorReadDuration(name));
+    return m_mouse->readSensor(name);
 }
 
 double MouseInterface::readGyro() {
@@ -459,7 +439,7 @@ void MouseInterface::moveForward() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    // TODO: upforgrabs
+    // TODO: MACK
     // We're declaring a wall here if declareWallOnRead is true. We shouldn't be.
     if (wallFront()) {
         if (!S()->crashed()) {
@@ -699,12 +679,12 @@ void MouseInterface::curveTurnLeft() {
 
     for (int i = 0; i < 2; i += 1) {
         m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
-        sim::SimUtilities::sleep(Milliseconds(120));
+        sim::SimUtilities::sleep(Milliseconds(125));
         m_mouse->setWheelSpeedsForTurnLeft(m_options.wheelSpeedFraction / 2.0);
-        sim::SimUtilities::sleep(Milliseconds(120));
+        sim::SimUtilities::sleep(Milliseconds(125));
     }
     m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
-    sim::SimUtilities::sleep(Milliseconds(120));
+    sim::SimUtilities::sleep(Milliseconds(150));
 
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
@@ -714,8 +694,6 @@ void MouseInterface::curveTurnRight() {
     ENSURE_ALLOW_SPECIAL_MOVEMENTS
 
     // TODO: MACK
-    // TODO: MACK - polygon points
-
     Degrees destinationRotation = m_mouse->getCurrentRotation() - Degrees(90);
 
     // TODO: MACK - make special methods???
@@ -745,14 +723,25 @@ void MouseInterface::curveTurnRight() {
         }
     }
 
+    // TODO: MACK - polygon points, excluding start and end
+    //
+    //
+    //          2   E
+    //       1
+    //
+    //       S
+    //
+    //
+    int numPoints = 2;
+
     for (int i = 0; i < 2; i += 1) {
         m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
-        sim::SimUtilities::sleep(Milliseconds(120));
+        sim::SimUtilities::sleep(Milliseconds(125));
         m_mouse->setWheelSpeedsForTurnRight(m_options.wheelSpeedFraction / 2.0);
-        sim::SimUtilities::sleep(Milliseconds(120));
+        sim::SimUtilities::sleep(Milliseconds(125));
     }
     m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
-    sim::SimUtilities::sleep(Milliseconds(120));
+    sim::SimUtilities::sleep(Milliseconds(150));
 
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }

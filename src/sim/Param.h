@@ -67,7 +67,6 @@ public:
     bool printLateMousePositionUpdates();
     int collisionDetectionRate();
     bool printLateCollisionDetections();
-    bool printLateSensorReads();
     int numberOfCircleApproximationPoints();
     int numberOfSensorEdgePoints();
     int numberOfArchivedRuns();
@@ -148,7 +147,6 @@ private:
     bool m_printLateMousePostitionUpdates;
     int m_collisionDetectionRate;
     bool m_printLateCollisionDetections;
-    bool m_printLateSensorReads;
     int m_numberOfCircleApproximationPoints;
     int m_numberOfSensorEdgePoints;
     int m_numberOfArchivedRuns;

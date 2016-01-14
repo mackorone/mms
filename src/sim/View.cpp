@@ -101,7 +101,7 @@ void View::refresh() {
     double duration = end - start;
 
     // Notify the user of a late frame
-    if (duration > 1.0/P()->frameRate()) {
+    if (P()->printLateFrames() && duration > 1.0/P()->frameRate()) {
         L()->warn(
             "A frame was late by %v seconds, which is %v percent late.",
             duration - 1.0/P()->frameRate(),

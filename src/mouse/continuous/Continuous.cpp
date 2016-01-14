@@ -37,8 +37,8 @@ void Continuous::solve(int mazeWidth, int mazeHeight, bool isOfficialMaze, char 
 		//Once Cell: 1680
 
 
-	moveForward(840);
-	moveForward(1680);
+	//moveForward(840);
+	//moveForward(1680);
 	curveTurnRight();
 	cout << "STOP\n";
 	setSpeed(0, 0);
@@ -982,6 +982,7 @@ void Continuous::curveTurnRight() {
 	int i = 0;
 	while (true) {
 		long long elapsed = millis() - start;
+
 		if (elapsed >= timeConst) {
 			targetAngle = -curve[i];
 			angle = readGyro();
@@ -992,6 +993,15 @@ void Continuous::curveTurnRight() {
 			m_mouse->setWheelSpeed("left-lower", -(310 + totalError)); //300
 			m_mouse->setWheelSpeed("right-lower", 310 - totalError); //300
 			if (i < curveTime - 1 && angle > -90) {
+            		int leftSpeed = -(310 + totalError);
+          		int rightSpeed = (310 - totalError);
+
+           		 m_mouse->info(std::string("L: ") + std::to_string(leftSpeed));
+            		m_mouse->info(std::string("R: ") + std::to_string(rightSpeed));
+			m_mouse->setWheelSpeed("left-lower", leftSpeed);
+			m_mouse->setWheelSpeed("right-lower", rightSpeed);
+
+			if (i < curveTime || angle > -90) {
 				i++;
 			}
 			else {

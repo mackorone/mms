@@ -203,7 +203,7 @@ double MouseParser::getDoubleIfHasDouble(const pugi::xml_node& node, const std::
 double MouseParser::getDoubleIfHasDoubleAndNonNegative(
         const pugi::xml_node& node, const std::string& tag, bool* success) {
     double value = getDoubleIfHasDouble(node, tag, success);
-    if (success && value < 0.0) {
+    if (value < 0.0) {
         L()->warn(
             "The value for tag \"%v\" is %v, which is less than the minimum"
             " allowed value of %v.", tag, value, 0.0);

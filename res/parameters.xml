@@ -40,7 +40,7 @@
 <!-- Simulation Parameters -->
 <random-seed>12345</random-seed> <!-- The seed value for rand() -->
 <use-random-seed>false</use-random-seed> <!-- Whether or not to use the seed value -->
-<collision-detection-enabled>true</collision-detection-enabled>
+<collision-detection-enabled>false</collision-detection-enabled>
 <crash-message>Oh no! Your mouse crashed! It can't move anymore...</crash-message>
 <default-tile-text-character>?</default-tile-text-character>
 <glut-init-duration>0.1</glut-init-duration> <!-- Seconds -->
@@ -53,7 +53,6 @@
 <print-late-mouse-position-updates>true</print-late-mouse-position-updates>
 <collision-detection-rate>40</collision-detection-rate> <!-- Checks per second -->
 <print-late-collision-detections>true</print-late-collision-detections>
-<print-late-sensor-reads>true</print-late-sensor-reads>
 <number-of-circle-approximation-points>8</number-of-circle-approximation-points> <!-- The number of edges in a polygon for a circle -->
 <number-of-sensor-edge-points>3</number-of-sensor-edge-points> <!-- The number of points of the edge of a sensor-->
 <number-of-archived-runs>20</number-of-archived-runs> <!-- The number of runs to keep in the mms/run/ directory -->
@@ -72,4 +71,4 @@
 <maze-rotations>0</maze-rotations> <!-- 0-3 counterclockwise rotations -->
 
 <!-- Mouse Parameters -->
-<mouse-algorithm>FloodFill</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
+<mouse-algorithm>Continuous</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
