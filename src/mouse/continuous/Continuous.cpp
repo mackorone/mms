@@ -975,7 +975,7 @@ void Continuous::simpleTurnAround() {
 void Continuous::curveTurnRight() {
 	double error;
 	double totalError;
-	double Kp = 35; //30
+	double Kp = 35000000; //30
 	double targetAngle;
 	long long start = millis();
 	int timeConst = 2; //ms 2
@@ -990,14 +990,11 @@ void Continuous::curveTurnRight() {
 			error = angle - targetAngle;
 			start = millis();
 			totalError = Kp * error;
-			m_mouse->setWheelSpeed("left-lower", -(310 + totalError)); //300
-			m_mouse->setWheelSpeed("right-lower", 310 - totalError); //300
-			if (i < curveTime - 1 && angle > -90) {
-            		int leftSpeed = -(310 + totalError);
-          		int rightSpeed = (310 - totalError);
+            int leftSpeed = -(310 + totalError);
+          	int rightSpeed = (310 - totalError);
 
-           		 m_mouse->info(std::string("L: ") + std::to_string(leftSpeed));
-            		m_mouse->info(std::string("R: ") + std::to_string(rightSpeed));
+           	m_mouse->info(std::string("L: ") + std::to_string(leftSpeed));
+            m_mouse->info(std::string("R: ") + std::to_string(rightSpeed));
 			m_mouse->setWheelSpeed("left-lower", leftSpeed);
 			m_mouse->setWheelSpeed("right-lower", rightSpeed);
 
@@ -1076,8 +1073,8 @@ void Continuous::moveForward(int numCounts) {
 			error = 0;
 		}
 		totalError = Kp * error;
-		m_mouse->setWheelSpeed("left-lower", -(300 + totalError));
-		m_mouse->setWheelSpeed("right-lower", 300 - totalError);
+		m_mouse->setWheelSpeed("left-lower", -(310 + totalError));
+		m_mouse->setWheelSpeed("right-lower", 310 - totalError);
 	}
 	m_mouse->resetWheelEncoder("left-lower");
 	m_mouse->resetWheelEncoder("right-lower");
