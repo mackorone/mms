@@ -36,11 +36,19 @@ void Continuous::solve(int mazeWidth, int mazeHeight, bool isOfficialMaze, char 
 		//First cell: 840 (360 tpr)
 		//Once Cell: 1680
 
-		moveForward();
-		setSpeed(0, 0);
-		
-		
-	
+
+	moveForward(840);
+	moveForward(1680);
+	curveTurnRight();
+	cout << "STOP\n";
+	setSpeed(0, 0);
+
+	/*int start = m_mouse->millis();
+	for (int i = 0; i < 1000000; i++) {
+		m_mouse->readSensor("left-front");
+	}
+	int end = m_mouse->millis();
+	m_mouse->info(std::to_string(end - start));*/
 	
 
 	////read initial sensor values to determine first cell move
@@ -160,7 +168,7 @@ void Continuous::correction() {
 
 		if (!movedForward) {
 			movedForward = true;
-			moveForward();
+			//moveForward();	TODO
 		}
 		forwardCorrection();
 		break;
@@ -967,26 +975,30 @@ void Continuous::simpleTurnAround() {
 void Continuous::curveTurnRight() {
 	double error;
 	double totalError;
-	double Kp = 1.3;
+	double Kp = 4;
 	double targetAngle;
 	long long start = millis();
-	int timeConst = 1; //ms
+	int timeConst = 10; //ms
 	int i = 0;
 	while (true) {
 		long long elapsed = millis() - start;
+		cout << "loop" << "\n";
 		if (elapsed >= timeConst) {
 			targetAngle = -curve[i];
-			angle += readGyro() * timeConst / 1000;
+			angle = readGyro();
+			cout << angle << "\n";
 			error = angle - targetAngle;
 			start = millis();
 			totalError = Kp * error;
-			m_mouse->setWheelSpeed("left-lower", -(78 + totalError));
-			m_mouse->setWheelSpeed("right-lower", 78 - totalError);
+			m_mouse->setWheelSpeed("left-lower", -(300 + totalError));
+			m_mouse->setWheelSpeed("right-lower", 300 - totalError);
 
-			if (i < curveTime) {
+			if (i < curveTime || angle > -90) {
 				i++;
+				cout << "turn\n";
 			}
 			else {
+				cout << "break";
 				break;
 			}
 			
@@ -1024,16 +1036,16 @@ void Continuous::curveTurnLeft() {
 	}
 }
 
-void Continuous::moveForward() {
-    //m_mouse->setWheelSpeeds(-10*M_PI, 10*M_PI);
-    //m_mouse->delay(280);
-int Kp;
+void Continuous::moveForward(int numCounts) {
+	int Kp;
     double error;
     double totalError;
 	m_mouse->resetWheelEncoder("left-lower");
 	m_mouse->resetWheelEncoder("right-lower");
 	int counts = 0;
-	while (counts < 1350) {
+	while (counts < numCounts) {
+		//delay(1);
+		m_mouse->info(std::to_string(counts));
 		leftTicks = -m_mouse->readWheelEncoder("left-lower");
 		rightTicks = m_mouse->readWheelEncoder("right-lower");
 		counts = (leftTicks + rightTicks) / 2;
@@ -1058,8 +1070,8 @@ int Kp;
 			error = 0;
 		}
 		totalError = Kp * error;
-		m_mouse->setWheelSpeed("left-lower", -(700 + totalError));
-		m_mouse->setWheelSpeed("right-lower", 700 - totalError);
+		m_mouse->setWheelSpeed("left-lower", -(300 + totalError));
+		m_mouse->setWheelSpeed("right-lower", 300 - totalError);
 	}
 	m_mouse->resetWheelEncoder("left-lower");
 	m_mouse->resetWheelEncoder("right-lower");
@@ -1082,7 +1094,7 @@ void Continuous::readSensors() {
 }
 
 float Continuous::readGyro() {
-	return .7 * m_mouse->readGyro();
+	return getAngle();
 }
 
 double Continuous::getAngle() {

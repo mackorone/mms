@@ -96,7 +96,7 @@ private:
     bool wallLeft();
     void turnRight();
     void turnLeft();
-	void moveForward();
+	void moveForward(int numCounts);
 	void forwardCorrection();
 	void turnCorrection();
 	void pivotTurnRight();
