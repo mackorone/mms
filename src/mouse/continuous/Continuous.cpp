@@ -975,14 +975,13 @@ void Continuous::simpleTurnAround() {
 void Continuous::curveTurnRight() {
 	double error;
 	double totalError;
-	double Kp = 4;
+	double Kp = 35; //30
 	double targetAngle;
 	long long start = millis();
-	int timeConst = 10; //ms
+	int timeConst = 2; //ms 2
 	int i = 0;
 	while (true) {
 		long long elapsed = millis() - start;
-		cout << "loop" << "\n";
 		if (elapsed >= timeConst) {
 			targetAngle = -curve[i];
 			angle = readGyro();
@@ -990,15 +989,12 @@ void Continuous::curveTurnRight() {
 			error = angle - targetAngle;
 			start = millis();
 			totalError = Kp * error;
-			m_mouse->setWheelSpeed("left-lower", -(300 + totalError));
-			m_mouse->setWheelSpeed("right-lower", 300 - totalError);
-
-			if (i < curveTime || angle > -90) {
+			m_mouse->setWheelSpeed("left-lower", -(310 + totalError)); //300
+			m_mouse->setWheelSpeed("right-lower", 310 - totalError); //300
+			if (i < curveTime - 1 && angle > -90) {
 				i++;
-				cout << "turn\n";
 			}
 			else {
-				cout << "break";
 				break;
 			}
 			
