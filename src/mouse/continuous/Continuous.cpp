@@ -35,13 +35,20 @@ void Continuous::solve(int mazeWidth, int mazeHeight, bool isOfficialMaze, char 
 	
 		//First cell: 840 (360 tpr)
 		//Once Cell: 1680
-
-
-	//moveForward(840);
-	//moveForward(1680);
-	curveTurnRight();
-	cout << "STOP\n";
-	setSpeed(0, 0);
+	cout << m_mouse->readSensor("right-side") << "\n";
+	cout << m_mouse->readSensor("right-middle") << "\n";
+	moveForward(840);
+	while (true) {
+		if (!wallRight()) {
+			curveTurnRight();
+		}
+		else {
+			while (wallFront()) {
+				curveTurnLeft();
+			}
+			moveForward(1680);
+		}
+	}
 
 	/*int start = m_mouse->millis();
 	for (int i = 0; i < 1000000; i++) {
@@ -905,15 +912,15 @@ void Continuous::wallFollow() {
 }
 
 bool Continuous::wallRight() {
-    return rightSensor > 0.5;
+    return m_mouse->readSensor("right-side") > 0.5;
 }
 
 bool Continuous::wallLeft() {
-    return leftSensor > 0.5;
+    return m_mouse->readSensor("left-side") > 0.5;
 }
 
 bool Continuous::wallFront() {
-    return leftFront > 0.9;
+    return m_mouse->readSensor("right-front") > 0.5;
 }
 
 void Continuous::turnRight() {
@@ -975,30 +982,51 @@ void Continuous::simpleTurnAround() {
 void Continuous::curveTurnRight() {
 	double error;
 	double totalError;
-	double Kp = 35; //30
+	double turnSpeed = 1; // smaller is faster (.5, 1, 2 ,3, etc)
+	double Kp = 35/turnSpeed; //35
 	double targetAngle;
 	long long start = millis();
-	int timeConst = 2; //ms 2
+	int timeConst = 2*turnSpeed; //ms 2
 	int i = 0;
+	int offsetAngle;
+	double startAngle = m_mouse->currentRotationDegrees();
+	//cout << "START TURN" << "\n";
+	//cout << startAngle << "\n";
+	if ((startAngle >= 0 && startAngle < 45) || (startAngle > 315 && startAngle <= 350)) {
+		offsetAngle = 360;
+	}
+	else if (startAngle > 45 && startAngle < 135) {
+		offsetAngle = 90;
+	}
+	else if (startAngle > 135 && startAngle < 225) {
+		offsetAngle = 180;
+	}
+	else {
+		offsetAngle = 270;
+	}
 	while (true) {
 		long long elapsed = millis() - start;
 
 		if (elapsed >= timeConst) {
-			targetAngle = -curve[i];
-			angle = readGyro();
-			cout << angle << "\n";
+			targetAngle = offsetAngle - curve[i];
+			angle = m_mouse->currentRotationDegrees();
+			if (offsetAngle == 360 && angle < 45) {
+				angle += 360;
+			}
+			//cout << targetAngle << "\n";
+			//cout << angle << "\n";
 			error = angle - targetAngle;
 			start = millis();
 			totalError = Kp * error;
-            int leftSpeed = -(310 + totalError);
-          	int rightSpeed = (310 - totalError);
+            int leftSpeed = -(310/turnSpeed + totalError);//310
+          	int rightSpeed = (310/turnSpeed - totalError);
 
-           	m_mouse->info(std::string("L: ") + std::to_string(leftSpeed));
-            m_mouse->info(std::string("R: ") + std::to_string(rightSpeed));
+           	//m_mouse->info(std::string("L: ") + std::to_string(leftSpeed));
+            //m_mouse->info(std::string("R: ") + std::to_string(rightSpeed));
 			m_mouse->setWheelSpeed("left-lower", leftSpeed);
 			m_mouse->setWheelSpeed("right-lower", rightSpeed);
 
-			if (i < curveTime || angle > -90) {
+			if (i < curveTime-1 && angle > offsetAngle - 90) {
 				i++;
 			}
 			else {
@@ -1012,29 +1040,58 @@ void Continuous::curveTurnRight() {
 void Continuous::curveTurnLeft() {
 	double error;
 	double totalError;
-	int Kp = 2;
+	double turnSpeed = 1; // smaller is faster (.5, 1, 2 ,3, etc)
+	double Kp = 35 / turnSpeed; //35
 	double targetAngle;
 	long long start = millis();
-	int timeConst = 3; //ms
+	int timeConst = 2 * turnSpeed; //ms 2
 	int i = 0;
-	while (true) {//void loop
+	int offsetAngle;
+	double startAngle = m_mouse->currentRotationDegrees();
+	//cout << "START TURN" << "\n";
+	//cout << startAngle << "\n";
+	if ((startAngle >= 0 && startAngle < 45) || (startAngle > 315 && startAngle <= 350)) {
+		offsetAngle = 0;
+	}
+	else if (startAngle > 45 && startAngle < 135) {
+		offsetAngle = 90;
+	}
+	else if (startAngle > 135 && startAngle < 225) {
+		offsetAngle = 180;
+	}
+	else {
+		offsetAngle = 270;
+	}
+	while (true) {
 		long long elapsed = millis() - start;
+
 		if (elapsed >= timeConst) {
-			targetAngle = curve[i];
-			angle += readGyro() * timeConst / 1000;
+			targetAngle = offsetAngle + curve[i];
+			angle = m_mouse->currentRotationDegrees();
+			if (offsetAngle == 0 && angle > 315) {
+				angle -= 360;
+			}
+			//cout << targetAngle << "\n";
+			//cout << angle << "\n";
 			error = angle - targetAngle;
 			start = millis();
 			totalError = Kp * error;
-			//m_mouse->setSpeed(-(10*M_PI + totalError), 10*M_PI - totalError);
-			m_mouse->setWheelSpeed("left-lower", -(25 * M_PI + totalError));
-			m_mouse->setWheelSpeed("right-lower", 25 * M_PI - totalError);
-			if (angle >= 90 || i >= curveTime - 1) {
-				break;
-			}
-			if (i < curveTime) {
+			int leftSpeed = -(310 / turnSpeed + totalError);//310
+			int rightSpeed = (310 / turnSpeed - totalError);
+
+			//m_mouse->info(std::string("L: ") + std::to_string(leftSpeed));
+			//m_mouse->info(std::string("R: ") + std::to_string(rightSpeed));
+			m_mouse->setWheelSpeed("left-lower", leftSpeed);
+			m_mouse->setWheelSpeed("right-lower", rightSpeed);
+
+			if (i < curveTime - 1 && angle < offsetAngle + 90) {
 				i++;
 			}
-			
+			else {
+				cout << "BREAK" << "\n";
+				break;
+			}
+
 		}
 	}
 }
@@ -1048,19 +1105,30 @@ void Continuous::moveForward(int numCounts) {
 	int counts = 0;
 	while (counts < numCounts) {
 		//delay(1);
-		m_mouse->info(std::to_string(counts));
 		leftTicks = -m_mouse->readWheelEncoder("left-lower");
 		rightTicks = m_mouse->readWheelEncoder("right-lower");
 		counts = (leftTicks + rightTicks) / 2;
 		if (wallRight() && wallLeft()) {
 			double angle = 0;
+			/*if ((startAngle >= 0 && startAngle < 45) || (startAngle > 315 && startAngle <= 350)) {
+				offsetAngle = 0;
+			}
+			else if (startAngle > 45 && startAngle < 135) {
+				offsetAngle = 90;
+			}
+			else if (startAngle > 135 && startAngle < 225) {
+				offsetAngle = 180;
+			}
+			else {
+				offsetAngle = 270;
+			}*/
 			//error = m_mouse->readSensor("right-side") - m_mouse->readSensor("left-side");
 			error = m_mouse->readSensor("left-side") - m_mouse->readSensor("right-side");
 			Kp = 250;
 		}
 
 		else if (wallRight()) {
-			error = .5 * (0.776 - m_mouse->readSensor("right-side"));
+			error = .5 * (0.825 - m_mouse->readSensor("right-side"));
 			Kp = 5;
 		}
 
@@ -1093,7 +1161,6 @@ void Continuous::readSensors() {
 	leftSensor = m_mouse->readSensor("left-side");
 	rightSensor = m_mouse->readSensor("right-side");
 	leftFront = m_mouse->readSensor("right-front");
-	//m_mouse->readSensor("right-side");
 }
 
 float Continuous::readGyro() {
