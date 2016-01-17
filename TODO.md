@@ -202,3 +202,14 @@
 - Reduce the number of LIBS in makefile
 - Does the makefile work for multiple platofrms???
 - Segfault on pressing x
+
+- Virutal box controls
+- Right control and...
+    - "f" for full screen
+    - "p" for pause
+    - "q" for quit
+    - "menu" for menu
+
+- Get backups of freeglut and glew files
+    
+

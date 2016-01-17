@@ -405,7 +405,7 @@ void MackAlgo::turnRight() {
 
 void MackAlgo::turnAround() {
     turnAroundUpdateState();
-    m_mouse->turnAround();
+    m_mouse->turnAroundLeft();
 }
 #endif
 

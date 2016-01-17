@@ -58,11 +58,8 @@ void RightWallFollow::turnRightAndMoveForward(sim::MouseInterface* mouse) {
 }
 
 void RightWallFollow::turnAroundAndMoveForward(sim::MouseInterface* mouse) {
-    if (stopOnTileEdgesAndAllowSpecialMovements()) {
-        mouse->turnAround();
-    }
-    else {
-        mouse->turnAround();
+    mouse->turnAroundLeft();
+    if (!stopOnTileEdgesAndAllowSpecialMovements()) {
         mouse->moveForward();
     }
 }

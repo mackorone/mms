@@ -6,6 +6,7 @@
 #include "MouseInterfaceOptions.h"
 #include "Param.h"
 
+// TODO: MACK - I don't think this is needed anymore...
 #ifdef _WIN32
 #define __func__ __FUNCTION__
 #endif
@@ -106,13 +107,10 @@ public:
     void moveForward(int count);
 
     void turnLeft();
-    void turnLeft(int count);
-
     void turnRight();
-    void turnRight(int count);
 
-    void turnAround();
-    void turnAround(int count);
+    void turnAroundLeft();
+    void turnAroundRight();
 
     // TODO: MACK - special curve turn movements
     // TODO: MACK - potentially rename the above methods

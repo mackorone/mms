@@ -567,15 +567,6 @@ void MouseInterface::turnLeft() {
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
 
-void MouseInterface::turnLeft(int count) {
-
-    ENSURE_DISCRETE_INTERFACE
-
-    for (int i = 0; i < count; i += 1) {
-        turnLeft();
-    }
-}
-
 void MouseInterface::turnRight() {
 
     ENSURE_DISCRETE_INTERFACE
@@ -612,21 +603,13 @@ void MouseInterface::turnRight() {
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
 
-void MouseInterface::turnRight(int count) {
+void MouseInterface::turnAroundLeft() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    for (int i = 0; i < count; i += 1) {
-        turnRight();
+    for (int i = 0; i < 2; i += 1) {
+        turnLeft();
     }
-}
-
-void MouseInterface::turnAround() {
-
-    ENSURE_DISCRETE_INTERFACE
-
-    turnRight();
-    turnRight();
 
     // TODO: MACK
     if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
@@ -634,12 +617,17 @@ void MouseInterface::turnAround() {
     }
 }
 
-void MouseInterface::turnAround(int count) {
+void MouseInterface::turnAroundRight() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    for (int i = 0; i < count; i += 1) {
-        turnAround();
+    for (int i = 0; i < 2; i += 1) {
+        turnRight();
+    }
+
+    // TODO: MACK
+    if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+        moveForward();
     }
 }
 
