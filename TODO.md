@@ -4,7 +4,6 @@
 - Logging is too expensive
     - Causing freezing and crashing
     - Generalize a method for counting and logging few times, 1 per second
-- Provide a direction to turnAround (left or right turns)
 - Update algos to use stopOnTileEdge, update documentation for rightWallFollow, etc.
 - Make methods in IMouseInterface such as millis(), so that they can be called without "m_mouse->"
 - Make a mechanism for easily merging the a discrete algo into a continuous one

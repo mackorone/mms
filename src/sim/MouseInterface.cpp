@@ -441,6 +441,8 @@ void MouseInterface::moveForward() {
 
     // TODO: MACK
     // We're declaring a wall here if declareWallOnRead is true. We shouldn't be.
+    // We should make sure we're never inadvertently declaring a wall interally by
+    // calling these helper methods.
     if (wallFront()) {
         if (!S()->crashed()) {
             S()->setCrashed();
@@ -448,76 +450,17 @@ void MouseInterface::moveForward() {
         return;
     }
 
-    // Get the length of a single tile
-    Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
-
-    // We modify these values in the switch statement
-    Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
-    Degrees destinationRotation = m_mouse->getCurrentRotation();
-
-    // TODO: MACK - make special methods???
-    Meters halfWallWidth = Meters(P()->wallWidth() / 2.0);
-    if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
-        destinationTranslation = Cartesian(
-            tileLength * m_mouse->getCurrentDiscretizedTranslation().first,
-            tileLength * m_mouse->getCurrentDiscretizedTranslation().second
-        );
-    }
-
+    // TODO: MACK - use the angle 
+    Cartesian destinationTranslation = getDestinationTranslationForMoveForward();
+    Radians destinationRotation = m_mouse->getCurrentRotation();
     m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
-
-    switch (m_mouse->getCurrentDiscretizedRotation()) {
-        case Direction::NORTH: {
-            // TODO: MACK
-            if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
-                destinationTranslation += Cartesian(tileLength / 2.0, tileLength + halfWallWidth);
-            }
-            else {
-                destinationTranslation += Cartesian(Meters(0), tileLength);
-            }
-            while (m_mouse->getCurrentTranslation().getY() < destinationTranslation.getY()) {
-                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-            }
-            break;
-        }
-        case Direction::EAST: {
-            if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
-                destinationTranslation += Cartesian(tileLength + halfWallWidth, tileLength / 2.0);
-            }
-            else {
-                destinationTranslation += Cartesian(tileLength, Meters(0));
-            }
-            while (m_mouse->getCurrentTranslation().getX() < destinationTranslation.getX()) {
-                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-            }
-            break;
-        }
-        case Direction::SOUTH: {
-            if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
-                destinationTranslation += Cartesian(tileLength / 2.0, halfWallWidth * -1);
-            }
-            else {
-                destinationTranslation += Cartesian(Meters(0), tileLength * -1);
-            }
-            while (destinationTranslation.getY() < m_mouse->getCurrentTranslation().getY()) {
-                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-            }
-            break;
-        }
-        case Direction::WEST: {
-            if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
-                destinationTranslation += Cartesian(halfWallWidth * -1, tileLength / 2.0);
-            }
-            else {
-                destinationTranslation += Cartesian(tileLength * -1, Meters(0));
-            }
-            while (destinationTranslation.getX() < m_mouse->getCurrentTranslation().getX()) {
-                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-            }
-            break;
-        }
+    Degrees initialAngle = (destinationTranslation - m_mouse->getCurrentTranslation()).getTheta();
+    Degrees currentAngle = initialAngle;
+    while (std::abs((currentAngle - initialAngle).getDegreesZeroTo360()) <  90
+        || std::abs((currentAngle - initialAngle).getDegreesZeroTo360()) > 270) {
+        sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
+        currentAngle = (destinationTranslation - m_mouse->getCurrentTranslation()).getTheta();
     }
-
     m_mouse->stopAllWheels();
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
@@ -714,10 +657,10 @@ void MouseInterface::curveTurnRight() {
     // TODO: MACK - polygon points, excluding start and end
     //
     //
-    //          2   E
+    //          2   End
     //       1
     //
-    //       S
+    //       Start
     //
     //
     int numPoints = 2;
@@ -850,6 +793,68 @@ std::pair<std::pair<int, int>, Direction> MouseInterface::getOpposingWall(int x,
         case Direction::WEST:
             return std::make_pair(std::make_pair(x - 1, y), Direction::EAST);
     }
+}
+
+Cartesian MouseInterface::getDestinationTranslationForMoveForward() const {
+
+    // TODO: MACK - clean this up...
+
+    // Get the length of a single tile
+    Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
+
+    // We modify these values in the switch statement
+    Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
+    Degrees destinationRotation = m_mouse->getCurrentRotation();
+
+    // TODO: MACK - make special methods???
+    Meters halfWallWidth = Meters(P()->wallWidth() / 2.0);
+    if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+        destinationTranslation = Cartesian(
+            tileLength * m_mouse->getCurrentDiscretizedTranslation().first,
+            tileLength * m_mouse->getCurrentDiscretizedTranslation().second
+        );
+    }
+
+    switch (m_mouse->getCurrentDiscretizedRotation()) {
+        case Direction::NORTH: {
+            if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+                destinationTranslation += Cartesian(tileLength / 2.0, tileLength + halfWallWidth);
+            }
+            else {
+                destinationTranslation += Cartesian(Meters(0), tileLength);
+            }
+            break;
+        }
+        case Direction::EAST: {
+            if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+                destinationTranslation += Cartesian(tileLength + halfWallWidth, tileLength / 2.0);
+            }
+            else {
+                destinationTranslation += Cartesian(tileLength, Meters(0));
+            }
+            break;
+        }
+        case Direction::SOUTH: {
+            if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+                destinationTranslation += Cartesian(tileLength / 2.0, halfWallWidth * -1);
+            }
+            else {
+                destinationTranslation += Cartesian(Meters(0), tileLength * -1);
+            }
+            break;
+        }
+        case Direction::WEST: {
+            if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+                destinationTranslation += Cartesian(halfWallWidth * -1, tileLength / 2.0);
+            }
+            else {
+                destinationTranslation += Cartesian(tileLength * -1, Meters(0));
+            }
+            break;
+        }
+    }
+
+    return destinationTranslation;
 }
 
 } // namespace sim
