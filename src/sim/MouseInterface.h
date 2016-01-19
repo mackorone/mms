@@ -152,9 +152,12 @@ private:
     std::pair<std::pair<int, int>, Direction> getOpposingWall(int x, int y, Direction direction) const;
 
     // TODO: MACK - name these better, make a better API (turnStopAndTeleport?)
-    void turnTo(const Radians& destinationRotation, const Cartesian& destinationTranslation);
-    void moveForwardTo(const Radians& destinationRotation, const Cartesian& destinationTranslation);
+    void turnTo(const Cartesian& destinationTranslation, const Radians& destinationRotation);
+    void moveForwardTo(const Cartesian& destinationTranslation, const Radians& destinationRotation);
     Cartesian getDestinationTranslationForMoveForward() const;
+
+    // Returns the angle with not bounded values in [-180, 180)
+    Radians getRotationDelta(const Radians& from, const Radians& to) const;
 };
 
 } // namespace sim
