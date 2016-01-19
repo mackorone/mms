@@ -451,7 +451,6 @@ void MouseInterface::moveForward() {
         return;
     }
 
-    // TODO: MACK - rotateAndMoveForwardTo ?
     moveForwardTo(m_mouse->getCurrentRotation(), getDestinationTranslationForMoveForward());
 }
 
@@ -468,76 +467,14 @@ void MouseInterface::turnLeft() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
-    Degrees destinationRotation = m_mouse->getCurrentRotation() + Degrees(90);
-
-    turnTo(destinationRotation, destinationTranslation);
-
-    /*
-    m_mouse->setWheelSpeedsForTurnLeft(m_options.wheelSpeedFraction / 2.0);
-
-    switch (m_mouse->getCurrentDiscretizedRotation()) {
-        case Direction::EAST: {
-            while (Degrees(180) < m_mouse->getCurrentRotation() ||
-                    m_mouse->getCurrentRotation() < destinationRotation) {
-                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-            }
-            break;
-        }
-        case Direction::SOUTH: {
-            while (Degrees(180) < m_mouse->getCurrentRotation()) {
-                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-            }
-            break;
-        }
-        case Direction::WEST:
-        case Direction::NORTH: {
-            while (m_mouse->getCurrentRotation() < destinationRotation) {
-                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-            }
-            break;
-        }
-    }
-
-    m_mouse->stopAllWheels();
-    m_mouse->teleport(destinationTranslation, destinationRotation);
-    */
+    turnTo(m_mouse->getCurrentRotation() + Degrees(90), m_mouse->getCurrentTranslation());
 }
 
 void MouseInterface::turnRight() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
-    Degrees destinationRotation = m_mouse->getCurrentRotation() - Degrees(90);
-
-    m_mouse->setWheelSpeedsForTurnRight(m_options.wheelSpeedFraction / 2.0);
-
-    switch (m_mouse->getCurrentDiscretizedRotation()) {
-        case Direction::NORTH: {
-            while (m_mouse->getCurrentRotation() < Degrees(180)) {
-                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-            }
-            break;
-        }
-        case Direction::EAST: {
-            while (m_mouse->getCurrentRotation() < Degrees(180) ||
-                    destinationRotation < m_mouse->getCurrentRotation()) {
-                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-            }
-            break;
-        }
-        case Direction::SOUTH:
-        case Direction::WEST: {
-            while (destinationRotation < m_mouse->getCurrentRotation()) {
-                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-            }
-            break;
-        }
-    }
-
-    m_mouse->stopAllWheels();
-    m_mouse->teleport(destinationTranslation, destinationRotation);
+    turnTo(m_mouse->getCurrentRotation() - Degrees(90), m_mouse->getCurrentTranslation());
 }
 
 void MouseInterface::turnAroundLeft() {
@@ -792,7 +729,8 @@ std::pair<std::pair<int, int>, Direction> MouseInterface::getOpposingWall(int x,
 void MouseInterface::turnTo(const Radians& destinationRotation, const Cartesian& destinationTranslation) {
 
     // TODO: MACK - wheel speed fraction here???
-    // TODO: MACK: Account for 0/360 edge case
+
+    // TODO: MACK - clean this up
     Radians initialRotationDelta = Radians(
         destinationRotation.getRadiansZeroTo2pi() -
         m_mouse->getCurrentRotation().getRadiansZeroTo2pi()
@@ -814,9 +752,8 @@ void MouseInterface::turnTo(const Radians& destinationRotation, const Cartesian&
         m_mouse->setWheelSpeedsForTurnRight(m_options.wheelSpeedFraction / 2.0);
     }
     
-    L()->info("%v", initialRotationDelta.getRadiansNotBounded() * currentRotationDelta.getRadiansNotBounded());
-
     while (0 < initialRotationDelta.getRadiansNotBounded() * currentRotationDelta.getRadiansNotBounded()) {
+
         sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
         currentRotationDelta = Radians(
             destinationRotation.getRadiansZeroTo2pi() -
@@ -829,7 +766,6 @@ void MouseInterface::turnTo(const Radians& destinationRotation, const Cartesian&
         else if (Degrees(180).getRadiansNotBounded() < currentRotationDelta.getRadiansNotBounded()) {
             currentRotationDelta -= Degrees(360);
         }
-
     }
 
     m_mouse->stopAllWheels();
