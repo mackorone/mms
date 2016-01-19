@@ -151,7 +151,9 @@ private:
     bool hasOpposingWall(int x, int y, Direction direction) const;
     std::pair<std::pair<int, int>, Direction> getOpposingWall(int x, int y, Direction direction) const;
 
-    // TODO: MACK
+    // TODO: MACK - name these better, make a better API
+    void turnTo(const Radians& destinationRotation, const Cartesian& destinationTranslation);
+    void moveForwardTo(const Radians& destinationRotation, const Cartesian& destinationTranslation);
     Cartesian getDestinationTranslationForMoveForward() const;
 };
 

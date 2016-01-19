@@ -35,7 +35,7 @@ double Angle::getCos() const {
     return std::cos(getRadiansZeroTo2pi());
 }
 
-bool Angle::operator<(const Angle& angle) {
+bool Angle::operator<(const Angle& angle) const {
     return getRadiansZeroTo2pi() < angle.getRadiansZeroTo2pi();
 }
 

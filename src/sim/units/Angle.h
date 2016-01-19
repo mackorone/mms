@@ -12,7 +12,7 @@ public:
     double getDegreesNotBounded() const;
     double getSin() const;
     double getCos() const;
-    bool operator<(const Angle& angle);
+    bool operator<(const Angle& angle) const;
 
 protected:
     Angle();

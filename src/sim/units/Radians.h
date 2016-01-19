@@ -15,6 +15,7 @@ public:
     Radians operator*(double factor) const;
     Radians operator/(double factor) const;
     void operator+=(const Angle& angle);
+    void operator-=(const Angle& angle);
 
 };
 
