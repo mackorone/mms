@@ -3,6 +3,7 @@
 #include "units/Meters.h"
 #include "units/MetersPerSecond.h"
 #include "units/Milliseconds.h"
+#include "units/Polar.h"
 #include "units/RevolutionsPerMinute.h"
 #include "units/Seconds.h"
 
@@ -539,15 +540,19 @@ void MouseInterface::curveTurnLeft() {
         }
     }
 
-    for (int i = 0; i < 2; i += 1) {
-        m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
-        sim::SimUtilities::sleep(Milliseconds(125));
-        m_mouse->setWheelSpeedsForTurnLeft(m_options.wheelSpeedFraction / 2.0);
-        sim::SimUtilities::sleep(Milliseconds(125));
-    }
-    m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
-    sim::SimUtilities::sleep(Milliseconds(150));
+    int numPoints = 10; // TODO: MACK - polygon is a multiple of 8
+    Meters sideLength = sideLengthFromInradius(tileLength / 2.0, numPoints * 4);
+    Radians angle = (Degrees(180) - interiorAngleOfRegularPolygon(numPoints * 4));
 
+    moveForwardTo(m_mouse->getCurrentTranslation() + Polar(sideLength / 2.0 - halfWallWidth, m_mouse->getCurrentRotation()), m_mouse->getCurrentRotation());
+    for (int i = 0; i < numPoints - 1; i += 1) {
+        turnTo(m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation() + angle);
+        moveForwardTo(m_mouse->getCurrentTranslation() + Polar(sideLength, m_mouse->getCurrentRotation()), m_mouse->getCurrentRotation());
+    }
+    turnTo(m_mouse->getCurrentTranslation(), destinationRotation);
+    moveForwardTo(destinationTranslation, destinationRotation);
+
+    m_mouse->stopAllWheels();
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
 
@@ -594,17 +599,19 @@ void MouseInterface::curveTurnRight() {
     //       Start
     //
     //
-    int numPoints = 2;
+    int numPoints = 10; // TODO: MACK - polygon is a multiple of 8
+    Meters sideLength = sideLengthFromInradius(tileLength / 2.0, numPoints * 4);
+    Radians angle = (Degrees(180) - interiorAngleOfRegularPolygon(numPoints * 4)) * -1;
 
-    for (int i = 0; i < 2; i += 1) {
-        m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
-        sim::SimUtilities::sleep(Milliseconds(125));
-        m_mouse->setWheelSpeedsForTurnRight(m_options.wheelSpeedFraction / 2.0);
-        sim::SimUtilities::sleep(Milliseconds(125));
+    moveForwardTo(m_mouse->getCurrentTranslation() + Polar(sideLength / 2.0 - halfWallWidth, m_mouse->getCurrentRotation()), m_mouse->getCurrentRotation());
+    for (int i = 0; i < numPoints - 1; i += 1) {
+        turnTo(m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation() + angle);
+        moveForwardTo(m_mouse->getCurrentTranslation() + Polar(sideLength, m_mouse->getCurrentRotation()), m_mouse->getCurrentRotation());
     }
-    m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
-    sim::SimUtilities::sleep(Milliseconds(150));
+    turnTo(m_mouse->getCurrentTranslation(), destinationRotation);
+    moveForwardTo(destinationTranslation, destinationRotation);
 
+    m_mouse->stopAllWheels();
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
 
@@ -777,9 +784,25 @@ void MouseInterface::moveForwardTo(const Cartesian& destinationTranslation, cons
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
 
+Radians MouseInterface::getRotationDelta(const Radians& from, const Radians& to) const {
+    static const Degrees lowerBound = Degrees(-180);
+    static const Degrees upperBound = Degrees(180);
+    static const Degrees fullCircle = Degrees(360);
+    Radians delta = Radians(to.getRadiansZeroTo2pi() - from.getRadiansZeroTo2pi());
+    if (delta.getRadiansNotBounded() < lowerBound.getRadiansNotBounded()) {
+        delta += fullCircle;
+    }
+    if (upperBound.getRadiansNotBounded() <= delta.getRadiansNotBounded()) {
+        delta -= fullCircle;
+    }
+    ASSERT_LE(lowerBound.getRadiansNotBounded(), delta.getRadiansNotBounded());
+    ASSERT_LT(delta.getRadiansNotBounded(), upperBound.getRadiansNotBounded());
+    return delta;
+}
+
 Cartesian MouseInterface::getDestinationTranslationForMoveForward() const {
 
-    // TODO: MACK - clean this up...
+    // TODO: MACK - clean this up..., use polar values to help...
 
     // Get the length of a single tile
     Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
@@ -839,15 +862,14 @@ Cartesian MouseInterface::getDestinationTranslationForMoveForward() const {
     return destinationTranslation;
 }
 
-Radians MouseInterface::getRotationDelta(const Radians& from, const Radians& to) const {
-    Radians delta = Radians(to.getRadiansZeroTo2pi() - from.getRadiansZeroTo2pi());
-    if (delta.getRadiansNotBounded() < Degrees(-180).getRadiansNotBounded()) {
-        delta += Degrees(360);
-    }
-    else if (Degrees(180).getRadiansNotBounded() <= delta.getRadiansNotBounded()) {
-        delta -= Degrees(360);
-    }
-    return delta;
+Meters MouseInterface::sideLengthFromInradius(const Meters& inradius, int numSides) const {
+    // TODO: MACK - assert about num edges
+    return inradius * 2 * std::tan(M_PI / static_cast<double>(numSides));
+}
+
+Radians MouseInterface::interiorAngleOfRegularPolygon(int numSides) const {
+    // TODO: MACK - assert about num edges
+    return (Degrees(180) * (numSides - 2)) / static_cast<double>(numSides);
 }
 
 } // namespace sim

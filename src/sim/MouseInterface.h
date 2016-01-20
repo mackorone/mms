@@ -151,13 +151,18 @@ private:
     bool hasOpposingWall(int x, int y, Direction direction) const;
     std::pair<std::pair<int, int>, Direction> getOpposingWall(int x, int y, Direction direction) const;
 
-    // TODO: MACK - name these better, make a better API (turnStopAndTeleport?)
     void turnTo(const Cartesian& destinationTranslation, const Radians& destinationRotation);
     void moveForwardTo(const Cartesian& destinationTranslation, const Radians& destinationRotation);
+
+    // Returns the angle with from "from" to "to", with values in [-180, 180) degrees
+    Radians getRotationDelta(const Radians& from, const Radians& to) const;
+
     Cartesian getDestinationTranslationForMoveForward() const;
 
-    // Returns the angle with not bounded values in [-180, 180)
-    Radians getRotationDelta(const Radians& from, const Radians& to) const;
+    // TODO: MACK
+    Meters sideLengthFromInradius(const Meters& inradius, int numSides) const;
+    Radians interiorAngleOfRegularPolygon(int numSides) const;
+
 };
 
 } // namespace sim

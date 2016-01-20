@@ -29,4 +29,8 @@ Degrees Degrees::operator*(double factor) const {
     return Degrees(getDegreesNotBounded() * factor);
 }
 
+Degrees Degrees::operator/(double factor) const {
+    return Degrees(getDegreesNotBounded() / factor);
+}
+
 } // namespace sim
