@@ -540,16 +540,23 @@ void MouseInterface::curveTurnLeft() {
         }
     }
 
-    int numPoints = 10; // TODO: MACK - polygon is a multiple of 8
+    int numPoints = 16; // TODO: MACK - polygon is a multiple of 8
     Meters sideLength = sideLengthFromInradius(tileLength / 2.0, numPoints * 4);
     Radians angle = (Degrees(180) - interiorAngleOfRegularPolygon(numPoints * 4));
 
-    moveForwardTo(m_mouse->getCurrentTranslation() + Polar(sideLength / 2.0 - halfWallWidth, m_mouse->getCurrentRotation()), m_mouse->getCurrentRotation());
+    if (sideLength / 2.0 < halfWallWidth) {
+        m_mouse->teleport(m_mouse->getCurrentTranslation() + Polar(sideLength / 2.0 - halfWallWidth, m_mouse->getCurrentRotation()),
+            m_mouse->getCurrentRotation());
+    }
+    else {
+        moveForwardTo(m_mouse->getCurrentTranslation() + Polar(sideLength / 2.0 - halfWallWidth, m_mouse->getCurrentRotation()),
+            m_mouse->getCurrentRotation());
+    }
     for (int i = 0; i < numPoints - 1; i += 1) {
-        turnTo(m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation() + angle);
+        m_mouse->teleport(m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation() + angle);
         moveForwardTo(m_mouse->getCurrentTranslation() + Polar(sideLength, m_mouse->getCurrentRotation()), m_mouse->getCurrentRotation());
     }
-    turnTo(m_mouse->getCurrentTranslation(), destinationRotation);
+    m_mouse->teleport(m_mouse->getCurrentTranslation(), destinationRotation);
     moveForwardTo(destinationTranslation, destinationRotation);
 
     m_mouse->stopAllWheels();
@@ -599,16 +606,23 @@ void MouseInterface::curveTurnRight() {
     //       Start
     //
     //
-    int numPoints = 10; // TODO: MACK - polygon is a multiple of 8
+    int numPoints = 16; // TODO: MACK - polygon is a multiple of 8
     Meters sideLength = sideLengthFromInradius(tileLength / 2.0, numPoints * 4);
     Radians angle = (Degrees(180) - interiorAngleOfRegularPolygon(numPoints * 4)) * -1;
 
-    moveForwardTo(m_mouse->getCurrentTranslation() + Polar(sideLength / 2.0 - halfWallWidth, m_mouse->getCurrentRotation()), m_mouse->getCurrentRotation());
+    if (sideLength / 2.0 < halfWallWidth) {
+        m_mouse->teleport(m_mouse->getCurrentTranslation() + Polar(sideLength / 2.0 - halfWallWidth, m_mouse->getCurrentRotation()),
+            m_mouse->getCurrentRotation());
+    }
+    else {
+        moveForwardTo(m_mouse->getCurrentTranslation() + Polar(sideLength / 2.0 - halfWallWidth, m_mouse->getCurrentRotation()),
+            m_mouse->getCurrentRotation());
+    }
     for (int i = 0; i < numPoints - 1; i += 1) {
-        turnTo(m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation() + angle);
+        m_mouse->teleport(m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation() + angle);
         moveForwardTo(m_mouse->getCurrentTranslation() + Polar(sideLength, m_mouse->getCurrentRotation()), m_mouse->getCurrentRotation());
     }
-    turnTo(m_mouse->getCurrentTranslation(), destinationRotation);
+    m_mouse->teleport(m_mouse->getCurrentTranslation(), destinationRotation);
     moveForwardTo(destinationTranslation, destinationRotation);
 
     m_mouse->stopAllWheels();
