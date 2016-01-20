@@ -7,6 +7,7 @@ namespace rightWallFollow {
 class RightWallFollow : public IMouseAlgorithm {
 
 public:
+    std::string mouseFile() const;
     bool declareWallOnRead() const;
     bool declareBothWallHalves() const;
     bool stopOnTileEdgesAndAllowSpecialMovements() const;

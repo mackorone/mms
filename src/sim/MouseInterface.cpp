@@ -540,6 +540,7 @@ void MouseInterface::curveTurnLeft() {
         }
     }
 
+    /*
     int numPoints = 8; // TODO: MACK - polygon is a multiple of 8
     Meters sideLength = sideLengthFromInradius(tileLength / 2.0, numPoints * 4);
     Radians angle = (Degrees(180) - interiorAngleOfRegularPolygon(numPoints * 4));
@@ -559,6 +560,19 @@ void MouseInterface::curveTurnLeft() {
     turnTo(m_mouse->getCurrentTranslation(), destinationRotation);
     moveForwardTo(destinationTranslation, destinationRotation);
 
+    m_mouse->stopAllWheels();
+    m_mouse->teleport(destinationTranslation, destinationRotation);
+    */
+
+    Radians initialRotationDelta = getRotationDelta(m_mouse->getCurrentRotation(), destinationRotation);
+    m_mouse->setWheelSpeedsForCurveTurnLeft(1.0);
+    while (0 <
+            initialRotationDelta.getRadiansNotBounded() *
+            getRotationDelta(
+                m_mouse->getCurrentRotation(),
+                destinationRotation).getRadiansNotBounded()) {
+        sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
+    }
     m_mouse->stopAllWheels();
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
@@ -597,6 +611,7 @@ void MouseInterface::curveTurnRight() {
         }
     }
 
+    /*
     // TODO: MACK - polygon points, excluding start and end
     //
     //
@@ -624,7 +639,17 @@ void MouseInterface::curveTurnRight() {
     }
     turnTo(m_mouse->getCurrentTranslation(), destinationRotation);
     moveForwardTo(destinationTranslation, destinationRotation);
+    */
 
+    Radians initialRotationDelta = getRotationDelta(m_mouse->getCurrentRotation(), destinationRotation);
+    m_mouse->setWheelSpeedsForCurveTurnRight(1.0);
+    while (0 <
+            initialRotationDelta.getRadiansNotBounded() *
+            getRotationDelta(
+                m_mouse->getCurrentRotation(),
+                destinationRotation).getRadiansNotBounded()) {
+        sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
+    }
     m_mouse->stopAllWheels();
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
@@ -754,10 +779,10 @@ void MouseInterface::turnTo(const Cartesian& destinationTranslation, const Radia
 
     // Set the speed based on the initial rotation delta
     if (0 < initialRotationDelta.getDegreesNotBounded()) {
-        m_mouse->setWheelSpeedsForTurnLeft(m_options.wheelSpeedFraction / 2.0);
+        m_mouse->setWheelSpeedsForTurnLeft(m_options.wheelSpeedFraction);
     }
     else {
-        m_mouse->setWheelSpeedsForTurnRight(m_options.wheelSpeedFraction / 2.0);
+        m_mouse->setWheelSpeedsForTurnRight(m_options.wheelSpeedFraction);
     }
     
     // While the deltas have the same sign, sleep for a short amount of time

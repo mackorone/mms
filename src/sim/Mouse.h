@@ -86,6 +86,8 @@ public:
     void setWheelSpeedsForMoveForward(double fractionOfMaxSpeed);
     void setWheelSpeedsForTurnLeft(double fractionOfMaxSpeed);
     void setWheelSpeedsForTurnRight(double fractionOfMaxSpeed);
+    void setWheelSpeedsForCurveTurnLeft(double fractionOfMaxSpeed);
+    void setWheelSpeedsForCurveTurnRight(double fractionOfMaxSpeed);
     void stopAllWheels();
 
     // Returns the encoder type of the wheel given by name

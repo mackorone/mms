@@ -280,6 +280,30 @@ void Mouse::setWheelSpeedsForTurnRight(double fractionOfMaxSpeed) {
     setWheelSpeeds(wheelSpeeds);
 }
 
+// TODO: MACK
+void Mouse::setWheelSpeedsForCurveTurnLeft(double fractionOfMaxSpeed) {
+    std::map<std::string, RadiansPerSecond> wheelSpeeds;
+    for (std::pair<std::string, Wheel> wheel : m_wheels) {
+        wheelSpeeds.insert(std::make_pair(wheel.first,
+            getWheelMaxSpeed(wheel.first) * fractionOfMaxSpeed *
+            (0.375 * getWheelContributionFactors(wheel.first).second +
+             1.625 * getWheelContributionFactors(wheel.first).first) / 2.0));
+    }
+    setWheelSpeeds(wheelSpeeds);
+}
+
+// TODO: MACK
+void Mouse::setWheelSpeedsForCurveTurnRight(double fractionOfMaxSpeed) {
+    std::map<std::string, RadiansPerSecond> wheelSpeeds;
+    for (std::pair<std::string, Wheel> wheel : m_wheels) {
+        wheelSpeeds.insert(std::make_pair(wheel.first,
+            getWheelMaxSpeed(wheel.first) * fractionOfMaxSpeed *
+            (-0.375 * getWheelContributionFactors(wheel.first).second +
+              1.625 * getWheelContributionFactors(wheel.first).first) / 2.0));
+    }
+    setWheelSpeeds(wheelSpeeds);
+}
+
 void Mouse::stopAllWheels() {
     std::map<std::string, RadiansPerSecond> wheelSpeeds;
     for (std::pair<std::string, Wheel> wheel : m_wheels) {
