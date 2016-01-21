@@ -4,7 +4,7 @@
 - Logging is too expensive
     - Causing freezing and crashing
     - Generalize a method for counting and logging few times, 1 per second
-- Provide a direction to turnAround (left or right turns)
+- Rename min-sleep-duration to something better
 - Update algos to use stopOnTileEdge, update documentation for rightWallFollow, etc.
 - Make methods in IMouseInterface such as millis(), so that they can be called without "m_mouse->"
 - Make a mechanism for easily merging the a discrete algo into a continuous one
@@ -202,3 +202,14 @@
 - Reduce the number of LIBS in makefile
 - Does the makefile work for multiple platofrms???
 - Segfault on pressing x
+
+- Virutal box controls
+- Right control and...
+    - "f" for full screen
+    - "p" for pause
+    - "q" for quit
+    - "menu" for menu
+
+- Get backups of freeglut and glew files
+    
+

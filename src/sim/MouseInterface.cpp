@@ -3,6 +3,7 @@
 #include "units/Meters.h"
 #include "units/MetersPerSecond.h"
 #include "units/Milliseconds.h"
+#include "units/Polar.h"
 #include "units/RevolutionsPerMinute.h"
 #include "units/Seconds.h"
 
@@ -55,6 +56,7 @@ int MouseInterface::millis() {
 }
 
 void MouseInterface::delay(int milliseconds) {
+    // TODO: MACK: this is inconsistent with the millis() behavior, it should be relative to simSpeed
     sim::SimUtilities::sleep(Milliseconds(milliseconds));
 }
 
@@ -441,6 +443,8 @@ void MouseInterface::moveForward() {
 
     // TODO: MACK
     // We're declaring a wall here if declareWallOnRead is true. We shouldn't be.
+    // We should make sure we're never inadvertently declaring a wall interally by
+    // calling these helper methods.
     if (wallFront()) {
         if (!S()->crashed()) {
             S()->setCrashed();
@@ -448,78 +452,7 @@ void MouseInterface::moveForward() {
         return;
     }
 
-    // Get the length of a single tile
-    Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
-
-    // We modify these values in the switch statement
-    Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
-    Degrees destinationRotation = m_mouse->getCurrentRotation();
-
-    // TODO: MACK - make special methods???
-    Meters halfWallWidth = Meters(P()->wallWidth() / 2.0);
-    if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
-        destinationTranslation = Cartesian(
-            tileLength * m_mouse->getCurrentDiscretizedTranslation().first,
-            tileLength * m_mouse->getCurrentDiscretizedTranslation().second
-        );
-    }
-
-    m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
-
-    switch (m_mouse->getCurrentDiscretizedRotation()) {
-        case Direction::NORTH: {
-            // TODO: MACK
-            if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
-                destinationTranslation += Cartesian(tileLength / 2.0, tileLength + halfWallWidth);
-            }
-            else {
-                destinationTranslation += Cartesian(Meters(0), tileLength);
-            }
-            while (m_mouse->getCurrentTranslation().getY() < destinationTranslation.getY()) {
-                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-            }
-            break;
-        }
-        case Direction::EAST: {
-            if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
-                destinationTranslation += Cartesian(tileLength + halfWallWidth, tileLength / 2.0);
-            }
-            else {
-                destinationTranslation += Cartesian(tileLength, Meters(0));
-            }
-            while (m_mouse->getCurrentTranslation().getX() < destinationTranslation.getX()) {
-                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-            }
-            break;
-        }
-        case Direction::SOUTH: {
-            if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
-                destinationTranslation += Cartesian(tileLength / 2.0, halfWallWidth * -1);
-            }
-            else {
-                destinationTranslation += Cartesian(Meters(0), tileLength * -1);
-            }
-            while (destinationTranslation.getY() < m_mouse->getCurrentTranslation().getY()) {
-                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-            }
-            break;
-        }
-        case Direction::WEST: {
-            if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
-                destinationTranslation += Cartesian(halfWallWidth * -1, tileLength / 2.0);
-            }
-            else {
-                destinationTranslation += Cartesian(tileLength * -1, Meters(0));
-            }
-            while (destinationTranslation.getX() < m_mouse->getCurrentTranslation().getX()) {
-                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-            }
-            break;
-        }
-    }
-
-    m_mouse->stopAllWheels();
-    m_mouse->teleport(destinationTranslation, destinationRotation);
+    moveForwardTo(getDestinationTranslationForMoveForward(), m_mouse->getCurrentRotation());
 }
 
 void MouseInterface::moveForward(int count) {
@@ -535,98 +468,23 @@ void MouseInterface::turnLeft() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
-    Degrees destinationRotation = m_mouse->getCurrentRotation() + Degrees(90);
-
-    m_mouse->setWheelSpeedsForTurnLeft(m_options.wheelSpeedFraction / 2.0);
-
-    switch (m_mouse->getCurrentDiscretizedRotation()) {
-        case Direction::EAST: {
-            while (Degrees(180) < m_mouse->getCurrentRotation() ||
-                    m_mouse->getCurrentRotation() < destinationRotation) {
-                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-            }
-            break;
-        }
-        case Direction::SOUTH: {
-            while (Degrees(180) < m_mouse->getCurrentRotation()) {
-                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-            }
-            break;
-        }
-        case Direction::WEST:
-        case Direction::NORTH: {
-            while (m_mouse->getCurrentRotation() < destinationRotation) {
-                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-            }
-            break;
-        }
-    }
-
-    m_mouse->stopAllWheels();
-    m_mouse->teleport(destinationTranslation, destinationRotation);
-}
-
-void MouseInterface::turnLeft(int count) {
-
-    ENSURE_DISCRETE_INTERFACE
-
-    for (int i = 0; i < count; i += 1) {
-        turnLeft();
-    }
+    turnTo(m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation() + Degrees(90));
 }
 
 void MouseInterface::turnRight() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
-    Degrees destinationRotation = m_mouse->getCurrentRotation() - Degrees(90);
-
-    m_mouse->setWheelSpeedsForTurnRight(m_options.wheelSpeedFraction / 2.0);
-
-    switch (m_mouse->getCurrentDiscretizedRotation()) {
-        case Direction::NORTH: {
-            while (m_mouse->getCurrentRotation() < Degrees(180)) {
-                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-            }
-            break;
-        }
-        case Direction::EAST: {
-            while (m_mouse->getCurrentRotation() < Degrees(180) ||
-                    destinationRotation < m_mouse->getCurrentRotation()) {
-                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-            }
-            break;
-        }
-        case Direction::SOUTH:
-        case Direction::WEST: {
-            while (destinationRotation < m_mouse->getCurrentRotation()) {
-                sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-            }
-            break;
-        }
-    }
-
-    m_mouse->stopAllWheels();
-    m_mouse->teleport(destinationTranslation, destinationRotation);
+    turnTo(m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation() - Degrees(90));
 }
 
-void MouseInterface::turnRight(int count) {
+void MouseInterface::turnAroundLeft() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    for (int i = 0; i < count; i += 1) {
-        turnRight();
+    for (int i = 0; i < 2; i += 1) {
+        turnLeft();
     }
-}
-
-void MouseInterface::turnAround() {
-
-    ENSURE_DISCRETE_INTERFACE
-
-    turnRight();
-    turnRight();
 
     // TODO: MACK
     if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
@@ -634,12 +492,17 @@ void MouseInterface::turnAround() {
     }
 }
 
-void MouseInterface::turnAround(int count) {
+void MouseInterface::turnAroundRight() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    for (int i = 0; i < count; i += 1) {
-        turnAround();
+    for (int i = 0; i < 2; i += 1) {
+        turnRight();
+    }
+
+    // TODO: MACK
+    if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+        moveForward();
     }
 }
 
@@ -677,15 +540,19 @@ void MouseInterface::curveTurnLeft() {
         }
     }
 
-    for (int i = 0; i < 2; i += 1) {
-        m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
-        sim::SimUtilities::sleep(Milliseconds(125));
-        m_mouse->setWheelSpeedsForTurnLeft(m_options.wheelSpeedFraction / 2.0);
-        sim::SimUtilities::sleep(Milliseconds(125));
-    }
-    m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
-    sim::SimUtilities::sleep(Milliseconds(150));
+    int numPoints = 10; // TODO: MACK - polygon is a multiple of 8
+    Meters sideLength = sideLengthFromInradius(tileLength / 2.0, numPoints * 4);
+    Radians angle = (Degrees(180) - interiorAngleOfRegularPolygon(numPoints * 4));
 
+    moveForwardTo(m_mouse->getCurrentTranslation() + Polar(sideLength / 2.0 - halfWallWidth, m_mouse->getCurrentRotation()), m_mouse->getCurrentRotation());
+    for (int i = 0; i < numPoints - 1; i += 1) {
+        turnTo(m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation() + angle);
+        moveForwardTo(m_mouse->getCurrentTranslation() + Polar(sideLength, m_mouse->getCurrentRotation()), m_mouse->getCurrentRotation());
+    }
+    turnTo(m_mouse->getCurrentTranslation(), destinationRotation);
+    moveForwardTo(destinationTranslation, destinationRotation);
+
+    m_mouse->stopAllWheels();
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
 
@@ -726,23 +593,25 @@ void MouseInterface::curveTurnRight() {
     // TODO: MACK - polygon points, excluding start and end
     //
     //
-    //          2   E
+    //          2   End
     //       1
     //
-    //       S
+    //       Start
     //
     //
-    int numPoints = 2;
+    int numPoints = 10; // TODO: MACK - polygon is a multiple of 8
+    Meters sideLength = sideLengthFromInradius(tileLength / 2.0, numPoints * 4);
+    Radians angle = (Degrees(180) - interiorAngleOfRegularPolygon(numPoints * 4)) * -1;
 
-    for (int i = 0; i < 2; i += 1) {
-        m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
-        sim::SimUtilities::sleep(Milliseconds(125));
-        m_mouse->setWheelSpeedsForTurnRight(m_options.wheelSpeedFraction / 2.0);
-        sim::SimUtilities::sleep(Milliseconds(125));
+    moveForwardTo(m_mouse->getCurrentTranslation() + Polar(sideLength / 2.0 - halfWallWidth, m_mouse->getCurrentRotation()), m_mouse->getCurrentRotation());
+    for (int i = 0; i < numPoints - 1; i += 1) {
+        turnTo(m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation() + angle);
+        moveForwardTo(m_mouse->getCurrentTranslation() + Polar(sideLength, m_mouse->getCurrentRotation()), m_mouse->getCurrentRotation());
     }
-    m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
-    sim::SimUtilities::sleep(Milliseconds(150));
+    turnTo(m_mouse->getCurrentTranslation(), destinationRotation);
+    moveForwardTo(destinationTranslation, destinationRotation);
 
+    m_mouse->stopAllWheels();
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
 
@@ -862,6 +731,145 @@ std::pair<std::pair<int, int>, Direction> MouseInterface::getOpposingWall(int x,
         case Direction::WEST:
             return std::make_pair(std::make_pair(x - 1, y), Direction::EAST);
     }
+}
+
+void MouseInterface::turnTo(const Cartesian& destinationTranslation, const Radians& destinationRotation) {
+
+    // Determine the inital rotation delta in [-180, 180)
+    Radians initialRotationDelta = getRotationDelta(m_mouse->getCurrentRotation(), destinationRotation);
+
+    // Set the speed based on the initial rotation delta
+    if (0 < initialRotationDelta.getDegreesNotBounded()) {
+        m_mouse->setWheelSpeedsForTurnLeft(m_options.wheelSpeedFraction / 2.0);
+    }
+    else {
+        m_mouse->setWheelSpeedsForTurnRight(m_options.wheelSpeedFraction / 2.0);
+    }
+    
+    // While the deltas have the same sign, sleep for a short amount of time
+    while (0 <
+            initialRotationDelta.getRadiansNotBounded() *
+            getRotationDelta(
+                m_mouse->getCurrentRotation(),
+                destinationRotation).getRadiansNotBounded()) {
+        sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
+    }
+
+    // Stop the wheels and teleport to the exact destination
+    m_mouse->stopAllWheels();
+    m_mouse->teleport(destinationTranslation, destinationRotation);
+}
+
+void MouseInterface::moveForwardTo(const Cartesian& destinationTranslation, const Radians& destinationRotation) {
+
+    // This function assumes that we're already facing the correct direction,
+    // and that we simply need to move forward to reach the destination.
+
+    // Determine initial angle between the two points
+    Degrees initialAngle = (destinationTranslation - m_mouse->getCurrentTranslation()).getTheta();
+    Degrees currentAngle = initialAngle;
+
+    // Start the mouse moving forward
+    m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
+
+    // While the angle delta is not ~180 degrees, sleep for a short amout of time
+    while (std::abs((currentAngle - initialAngle).getDegreesZeroTo360()) <  90
+        || std::abs((currentAngle - initialAngle).getDegreesZeroTo360()) > 270) {
+        sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
+        currentAngle = (destinationTranslation - m_mouse->getCurrentTranslation()).getTheta();
+    }
+
+    // Stop the wheels and teleport to the exact destination
+    m_mouse->stopAllWheels();
+    m_mouse->teleport(destinationTranslation, destinationRotation);
+}
+
+Radians MouseInterface::getRotationDelta(const Radians& from, const Radians& to) const {
+    static const Degrees lowerBound = Degrees(-180);
+    static const Degrees upperBound = Degrees(180);
+    static const Degrees fullCircle = Degrees(360);
+    Radians delta = Radians(to.getRadiansZeroTo2pi() - from.getRadiansZeroTo2pi());
+    if (delta.getRadiansNotBounded() < lowerBound.getRadiansNotBounded()) {
+        delta += fullCircle;
+    }
+    if (upperBound.getRadiansNotBounded() <= delta.getRadiansNotBounded()) {
+        delta -= fullCircle;
+    }
+    ASSERT_LE(lowerBound.getRadiansNotBounded(), delta.getRadiansNotBounded());
+    ASSERT_LT(delta.getRadiansNotBounded(), upperBound.getRadiansNotBounded());
+    return delta;
+}
+
+Cartesian MouseInterface::getDestinationTranslationForMoveForward() const {
+
+    // TODO: MACK - clean this up..., use polar values to help...
+
+    // Get the length of a single tile
+    Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
+
+    // We modify these values in the switch statement
+    Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
+    Degrees destinationRotation = m_mouse->getCurrentRotation();
+
+    // TODO: MACK - make special methods???
+    Meters halfWallWidth = Meters(P()->wallWidth() / 2.0);
+    if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+        destinationTranslation = Cartesian(
+            tileLength * m_mouse->getCurrentDiscretizedTranslation().first,
+            tileLength * m_mouse->getCurrentDiscretizedTranslation().second
+        );
+    }
+
+    switch (m_mouse->getCurrentDiscretizedRotation()) {
+        case Direction::NORTH: {
+            if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+                destinationTranslation += Cartesian(tileLength / 2.0, tileLength + halfWallWidth);
+            }
+            else {
+                destinationTranslation += Cartesian(Meters(0), tileLength);
+            }
+            break;
+        }
+        case Direction::EAST: {
+            if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+                destinationTranslation += Cartesian(tileLength + halfWallWidth, tileLength / 2.0);
+            }
+            else {
+                destinationTranslation += Cartesian(tileLength, Meters(0));
+            }
+            break;
+        }
+        case Direction::SOUTH: {
+            if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+                destinationTranslation += Cartesian(tileLength / 2.0, halfWallWidth * -1);
+            }
+            else {
+                destinationTranslation += Cartesian(Meters(0), tileLength * -1);
+            }
+            break;
+        }
+        case Direction::WEST: {
+            if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+                destinationTranslation += Cartesian(halfWallWidth * -1, tileLength / 2.0);
+            }
+            else {
+                destinationTranslation += Cartesian(tileLength * -1, Meters(0));
+            }
+            break;
+        }
+    }
+
+    return destinationTranslation;
+}
+
+Meters MouseInterface::sideLengthFromInradius(const Meters& inradius, int numSides) const {
+    // TODO: MACK - assert about num edges
+    return inradius * 2 * std::tan(M_PI / static_cast<double>(numSides));
+}
+
+Radians MouseInterface::interiorAngleOfRegularPolygon(int numSides) const {
+    // TODO: MACK - assert about num edges
+    return (Degrees(180) * (numSides - 2)) / static_cast<double>(numSides);
 }
 
 } // namespace sim

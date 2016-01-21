@@ -509,7 +509,7 @@ void FloodFill::turnLeft() {
 
 void FloodFill::turnAround() {
     m_d = (m_d + 2) % 4; // Update internal representation
-    m_mouse->turnAround(); // Move the mouse
+    m_mouse->turnAroundLeft(); // Move the mouse
     m_steps += 2; // Lastly, increment the number of steps
 }
 

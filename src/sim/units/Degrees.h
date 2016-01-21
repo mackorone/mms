@@ -14,6 +14,7 @@ public:
     Degrees operator+(const Angle& angle) const;
     Degrees operator-(const Angle& angle) const;
     Degrees operator*(double factor) const;
+    Degrees operator/(double factor) const;
 
 };
 

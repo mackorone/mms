@@ -6,6 +6,7 @@
 #include "MouseInterfaceOptions.h"
 #include "Param.h"
 
+// TODO: MACK - I don't think this is needed anymore...
 #ifdef _WIN32
 #define __func__ __FUNCTION__
 #endif
@@ -106,13 +107,10 @@ public:
     void moveForward(int count);
 
     void turnLeft();
-    void turnLeft(int count);
-
     void turnRight();
-    void turnRight(int count);
 
-    void turnAround();
-    void turnAround(int count);
+    void turnAroundLeft();
+    void turnAroundRight();
 
     // TODO: MACK - special curve turn movements
     // TODO: MACK - potentially rename the above methods
@@ -152,6 +150,19 @@ private:
     bool isWall(std::pair<int, int> position, Direction direction);
     bool hasOpposingWall(int x, int y, Direction direction) const;
     std::pair<std::pair<int, int>, Direction> getOpposingWall(int x, int y, Direction direction) const;
+
+    void turnTo(const Cartesian& destinationTranslation, const Radians& destinationRotation);
+    void moveForwardTo(const Cartesian& destinationTranslation, const Radians& destinationRotation);
+
+    // Returns the angle with from "from" to "to", with values in [-180, 180) degrees
+    Radians getRotationDelta(const Radians& from, const Radians& to) const;
+
+    Cartesian getDestinationTranslationForMoveForward() const;
+
+    // TODO: MACK
+    Meters sideLengthFromInradius(const Meters& inradius, int numSides) const;
+    Radians interiorAngleOfRegularPolygon(int numSides) const;
+
 };
 
 } // namespace sim

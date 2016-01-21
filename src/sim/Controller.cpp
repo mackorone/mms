@@ -39,6 +39,7 @@ Controller::Controller(Model* model, View* view) : m_model(model), m_view(view) 
             m_mouseAlgorithm->tileTextNumberOfRows(),
             m_mouseAlgorithm->tileTextNumberOfCols()));
 
+    // TODO: MACK - separate out the mouse interface options here
     m_mouseInterface = new MouseInterface(
         m_model->getMaze(),
         m_model->getMouse(),
@@ -58,6 +59,7 @@ Controller::Controller(Model* model, View* view) : m_model(model), m_view(view) 
         }
     );
 
+    // Separate out the World options here
     m_world = new World(
         m_model->getMaze(), 
         m_model->getMouse(), m_view->getMazeGraphic(),

@@ -34,4 +34,8 @@ void Radians::operator+=(const Angle& angle) {
     m_radians += angle.getRadiansNotBounded();
 }
 
+void Radians::operator-=(const Angle& angle) {
+    m_radians -= angle.getRadiansNotBounded();
+}
+
 } // namespace sim

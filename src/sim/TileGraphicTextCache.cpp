@@ -52,7 +52,7 @@ std::map<
         double borderFraction, TileTextAlignment tileTextAlignment) {
 
     // The tile graphic text could look like either of the following, depending
-    // on the layout, board and max size
+    // on the layout, boarder, and max size
     //
     //                    col
     //     *-*---------------------------*-*    *-*---------------------------*-*

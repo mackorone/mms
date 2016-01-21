@@ -30,7 +30,7 @@
 namespace sim {
 
 void SimUtilities::quit() {
-    quick_exit(0);
+    std::quick_exit(0);
 }
 
 double SimUtilities::getRandom() {
