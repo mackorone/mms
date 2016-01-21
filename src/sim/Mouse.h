@@ -159,6 +159,12 @@ private:
 
     // Get the forward and radial contribution factors for a wheel
     std::pair<double, double> getWheelContributionFactors(const std::string& name) const;
+
+    // Get the forward and turn factors for a curve turn
+    std::pair<double, double> getCurveTurnFactors() const;
+
+    // Sets the wheel speed for a particular movement, based on the linear combo of the two factors
+    void setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardFactor, double turnFactor);
 };
 
 } // namespace sim

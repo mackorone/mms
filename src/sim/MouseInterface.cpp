@@ -573,8 +573,11 @@ void MouseInterface::curveTurnLeft() {
                 destinationRotation).getRadiansNotBounded()) {
         sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
     }
-    m_mouse->stopAllWheels();
-    m_mouse->teleport(destinationTranslation, destinationRotation);
+    moveForwardTo(destinationTranslation, destinationRotation);
+    // TODO: MACK - should stop in same tile, and just move forward one wall width into new tile
+    // Very similar to the turn around
+    //m_mouse->stopAllWheels();
+    //m_mouse->teleport(destinationTranslation, destinationRotation);
 }
 
 void MouseInterface::curveTurnRight() {
@@ -650,8 +653,9 @@ void MouseInterface::curveTurnRight() {
                 destinationRotation).getRadiansNotBounded()) {
         sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
     }
-    m_mouse->stopAllWheels();
-    m_mouse->teleport(destinationTranslation, destinationRotation);
+    moveForwardTo(destinationTranslation, destinationRotation);
+    //m_mouse->stopAllWheels();
+    //m_mouse->teleport(destinationTranslation, destinationRotation);
 }
 
 int MouseInterface::currentXTile() {
@@ -901,11 +905,13 @@ Cartesian MouseInterface::getDestinationTranslationForMoveForward() const {
     return destinationTranslation;
 }
 
+// TODO: MACK - kill
 Meters MouseInterface::sideLengthFromInradius(const Meters& inradius, int numSides) const {
     // TODO: MACK - assert about num edges
     return inradius * 2 * std::tan(M_PI / static_cast<double>(numSides));
 }
 
+// TODO: MACK - kill
 Radians MouseInterface::interiorAngleOfRegularPolygon(int numSides) const {
     // TODO: MACK - assert about num edges
     return (Degrees(180) * (numSides - 2)) / static_cast<double>(numSides);

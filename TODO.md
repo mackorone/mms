@@ -4,7 +4,10 @@
 - Logging is too expensive
     - Causing freezing and crashing
     - Generalize a method for counting and logging few times, 1 per second
+- Fix parameters no root element
+- Fix curve turn turnAround methods - it should go into the center of the tile and *then* turn around
 - Improve curve turns, set wheel speed for curve turn right (with specific diameter)
+    - Curve turn should start halfWallWidth in a tile, and end halfWallWidth in a tile, and then just move forward into new tile
     - Consolidate setWheelSpeeds into one function that takes a diameter and returns the appropriate linear combo
 - Teleport doesn't preserve triangulation
 - Rename min-sleep-duration to something better
