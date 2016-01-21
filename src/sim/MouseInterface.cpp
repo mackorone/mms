@@ -480,6 +480,12 @@ void MouseInterface::turnRight() {
 
 void MouseInterface::turnAroundLeft() {
 
+    // TODO: MACK
+    if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+        Cartesian dest = m_mouse->getCurrentTranslation() + Polar(Meters(P()->wallLength() / 2.0), m_mouse->getCurrentRotation());
+        moveForwardTo(dest, m_mouse->getCurrentRotation());
+    }
+
     ENSURE_DISCRETE_INTERFACE
 
     for (int i = 0; i < 2; i += 1) {
@@ -493,6 +499,12 @@ void MouseInterface::turnAroundLeft() {
 }
 
 void MouseInterface::turnAroundRight() {
+
+    // TODO: MACK
+    if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+        Cartesian dest = m_mouse->getCurrentTranslation() + Polar(Meters(P()->wallLength() / 2.0), m_mouse->getCurrentRotation());
+        moveForwardTo(dest, m_mouse->getCurrentRotation());
+    }
 
     ENSURE_DISCRETE_INTERFACE
 
@@ -783,10 +795,10 @@ void MouseInterface::turnTo(const Cartesian& destinationTranslation, const Radia
 
     // Set the speed based on the initial rotation delta
     if (0 < initialRotationDelta.getDegreesNotBounded()) {
-        m_mouse->setWheelSpeedsForTurnLeft(m_options.wheelSpeedFraction);
+        m_mouse->setWheelSpeedsForTurnLeft(m_options.wheelSpeedFraction / 2.0); // TODO: MACK
     }
     else {
-        m_mouse->setWheelSpeedsForTurnRight(m_options.wheelSpeedFraction);
+        m_mouse->setWheelSpeedsForTurnRight(m_options.wheelSpeedFraction / 2.0); // TODO: MACK
     }
     
     // While the deltas have the same sign, sleep for a short amount of time
