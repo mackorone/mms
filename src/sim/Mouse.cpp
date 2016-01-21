@@ -479,7 +479,7 @@ std::pair<double, double> Mouse::getCurveTurnFactors() const {
     RadiansPerSecond aveDr = sumDr / static_cast<double>(m_wheels.size());
     //L()->info("aveDy: %v, aveDr: %v", aveDy.getMetersPerSecond(), aveDr.getRadiansPerSecond());
 
-    // TODO: MACK - we should cover 1/4 of circumference of circle with radius wallLenth/2 in 90 degrees
+    // we should cover 1/4 of circumference of circle with radius wallLenth/2 in 90 degrees
     Meters distance = Meters(P()->wallLength() / 2.0) * 0.5 * M_PI;
     Degrees rotation = Degrees(90);
 

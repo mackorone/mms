@@ -3,7 +3,7 @@
 namespace rightWallFollow {
 
 std::string RightWallFollow::mouseFile() const {
-    return "default.xml";
+    return "omniMouse.xml";
 }
 
 bool RightWallFollow::declareWallOnRead() const {
