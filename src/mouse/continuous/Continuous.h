@@ -96,7 +96,7 @@ private:
     bool wallLeft();
     void turnRight();
     void turnLeft();
-	void moveForward(int numCounts);
+	void moveForward();
 	void forwardCorrection();
 	void turnCorrection();
 	void pivotTurnRight();
@@ -110,6 +110,7 @@ private:
 	void curveTurnLeft();
 	void readSensors();
     void correctErrors();
+	void gyroTest();
 	void curveTurnRight();
 	float readGyro();
 	void delay(int ms);
