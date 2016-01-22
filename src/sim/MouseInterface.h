@@ -97,11 +97,13 @@ public:
     // Returns deg/s of rotation
     double readGyro();
 
-    // ----- Discrete interface methods ----- //
+    // ----- Any discrete interface methods ----- //
 
     bool wallFront();
     bool wallRight();
     bool wallLeft();
+
+    // ----- Basic discrete interface methods ----- //
 
     void moveForward();
     void moveForward(int count);
@@ -112,14 +114,22 @@ public:
     void turnAroundLeft();
     void turnAroundRight();
 
-    // TODO: MACK - special curve turn movements
-    // TODO: MACK - potentially rename the above methods
+    // ----- Special discrete interface methods ----- //
+
+    // TODO: MACK - implement these, and check basic vs. special methods
+
+    void originMoveForwardToEdge();
+    void originTurnLeftInPlace();
+    void originTurnRightInPlace();
+
+    void moveForwardToEdge();
+    void moveForwardToEdge(int count);
+
     void curveTurnLeft();
     void curveTurnRight();
 
-    // TODO: MACK - special starting case for turning right
-
-    // TODO: MACK - diagonals
+    void turnAroundToEdgeLeft();
+    void turnAroundToEdgeRight();
 
     // ----- Omniscience methods ----- //
 

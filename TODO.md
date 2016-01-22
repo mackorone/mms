@@ -1,5 +1,6 @@
 # High Priority
 
+- Diagonals
 - Windows logging is not working on non-main threads
 - Logging is too expensive
     - Causing freezing and crashing
@@ -20,9 +21,6 @@
     - 99% of updates are 1ms apart, or something like that
 - Check the sleep duration of updates to make sure that we're actually doing 1000 updates per second
 - Can we use mutable in the MouseInterface so declare wall on read is const? Make other methods in that class const?
-- Other mouse movements - curve turns, j-turns, diagonals, etc.
-    - Genericize the move forward so that we can do curve turns
-    - The base case is when polygon sides n = 4, we have regular turns
 - Add a way to time the algorithms
     - How long it took to get to the center of the maze
     - Make this faster than real time
