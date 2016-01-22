@@ -56,8 +56,7 @@ int MouseInterface::millis() {
 }
 
 void MouseInterface::delay(int milliseconds) {
-    // TODO: MACK: this is inconsistent with the millis() behavior, it should be relative to simSpeed
-    sim::SimUtilities::sleep(Milliseconds(milliseconds));
+    sim::SimUtilities::sleep(Milliseconds(milliseconds / S()->simSpeed()));
 }
 
 void MouseInterface::quit() {

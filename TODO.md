@@ -1,5 +1,6 @@
 # High Priority
 
+- If the wheel is at the center, it should have zero turn contribution
 - Windows logging is not working on non-main threads
 - Logging is too expensive
     - Causing freezing and crashing

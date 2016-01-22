@@ -135,6 +135,15 @@ private:
     std::map<std::string, Wheel> m_wheels; // The wheels of the mouse
     std::map<std::string, Sensor> m_sensors; // The sensors on the mouse
 
+    // The fractions of a each wheel's max speed that cause the mouse to
+    // perform the move forward and turn movements, respectively, as optimally
+    // as possible (note that the fractions are in [-1.0, 1.0])
+    std::map<std::string, std::pair<double, double>> m_wheelSpeedAdjustmentFactors;
+
+    // The linear combination of the forward component and turn component
+    // that cause the mouse to perform a curve turn as optimally as possible
+    std::pair<double, double> m_curveTurnFactors;
+
     // The gyro (rate of rotation), rotation, and translation of the mouse,
     // which change throughout execution
     RadiansPerSecond m_currentGyro;
@@ -157,14 +166,22 @@ private:
         const Cartesian& currentTranslation,
         const Radians& currentRotation) const;
 
-    // Get the forward and radial contribution factors for a wheel
-    std::pair<double, double> getWheelContributionFactors(const std::string& name) const;
-
-    // Get the forward and turn factors for a curve turn
-    std::pair<double, double> getCurveTurnFactors() const;
-
     // Sets the wheel speed for a particular movement, based on the linear combo of the two factors
     void setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardFactor, double turnFactor);
+
+    // Helper method for getting wheel speed adjustment factors based on a list/map of wheels
+    static std::map<std::string, std::pair<double, double>> getWheelSpeedAdjustmentFactors(
+        const Cartesian& initialTranslation,
+        const Radians& initialRotation,
+        const std::map<std::string, Wheel>& wheels);
+
+    // Helper method for getting curve turn factors based on wheels and adjustments
+    static std::pair<double, double> getCurveTurnFactors(
+        const Cartesian& initialTranslation,
+        const Radians& initialRotation,
+        const std::map<std::string, Wheel>& wheels,
+        std::map<std::string, std::pair<double, double>> wheelSpeedAdjustmentFactors,
+        const Meters& curveTurnArcLength);
 };
 
 } // namespace sim
