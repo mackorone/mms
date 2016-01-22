@@ -170,18 +170,26 @@ private:
     void setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardFactor, double turnFactor);
 
     // Helper method for getting wheel speed adjustment factors based on a list/map of wheels
-    static std::map<std::string, std::pair<double, double>> getWheelSpeedAdjustmentFactors(
+    std::map<std::string, std::pair<double, double>> getWheelSpeedAdjustmentFactors(
         const Cartesian& initialTranslation,
         const Radians& initialRotation,
-        const std::map<std::string, Wheel>& wheels);
+        const std::map<std::string, Wheel>& wheels) const;
 
     // Helper method for getting curve turn factors based on wheels and adjustments
-    static std::pair<double, double> getCurveTurnFactors(
+    std::pair<double, double> getCurveTurnFactors(
         const Cartesian& initialTranslation,
         const Radians& initialRotation,
         const std::map<std::string, Wheel>& wheels,
         std::map<std::string, std::pair<double, double>> wheelSpeedAdjustmentFactors,
-        const Meters& curveTurnArcLength);
+        const Meters& curveTurnArcLength) const;
+
+    // Helper method for getting forward and radial rates of change due to a single wheel
+    std::pair<MetersPerSecond, RadiansPerSecond> getRatesOfChange(
+        const Cartesian& initialTranslation,
+        const Radians& initialRotation,
+        const Cartesian& wheelInitialPosition,
+        const Radians& wheelInitialDirection,
+        const MetersPerSecond& wheelLinearVelocity) const;
 };
 
 } // namespace sim

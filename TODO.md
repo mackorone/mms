@@ -1,5 +1,6 @@
 # High Priority
 
+- Make sure curve turns still work if the mouse starts facing a direction other than north
 - If the wheel is at the center, it should have zero turn contribution
 - Windows logging is not working on non-main threads
 - Logging is too expensive
