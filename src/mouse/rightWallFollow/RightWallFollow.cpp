@@ -18,6 +18,13 @@ bool RightWallFollow::stopOnTileEdgesAndAllowSpecialMovements() const {
     return true;
 }
 
+double RightWallFollow::wheelSpeedFraction() const {
+    if (mouseFile() == "megaMouse.xml") {
+        return 0.05;
+    }
+    return 1.0;
+}
+
 void RightWallFollow::solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse) {

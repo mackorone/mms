@@ -1,7 +1,5 @@
 # High Priority
 
-- Make sure curve turns still work if the mouse starts facing a direction other than north
-- If the wheel is at the center, it should have zero turn contribution
 - Windows logging is not working on non-main threads
 - Logging is too expensive
     - Causing freezing and crashing
@@ -86,6 +84,7 @@
 
 # Medum Priority
 
+- If the wheel is at the center, it should have zero turn contribution, not infinite
 - Organize params in res/parameters.xml and Param.h/.cpp
 - Improve sensor readings by getting the actual complete polygon, not apporximated
 - For curve turns, see if you can figure out the arc that the mouse should go on to simulate a curve turn, use checkpoints

@@ -413,7 +413,7 @@ void Mouse::setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardF
             std::make_pair(
                 wheel.first,
                 (
-                    getWheelMaxSpeed(wheel.first) *
+                    wheel.second.getMaxAngularVelocityMagnitude() *
                     fractionOfMaxSpeed *
                     (
                         normalizedForwardFactor * adjustmentFactors.first +

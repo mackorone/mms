@@ -554,7 +554,7 @@ void MouseInterface::curveTurnLeft() {
     }
 
     Radians initialRotationDelta = getRotationDelta(m_mouse->getCurrentRotation(), destinationRotation);
-    m_mouse->setWheelSpeedsForCurveTurnLeft(1.0);
+    m_mouse->setWheelSpeedsForCurveTurnLeft(m_options.wheelSpeedFraction);
     while (0 <
             initialRotationDelta.getRadiansNotBounded() *
             getRotationDelta(
@@ -602,7 +602,7 @@ void MouseInterface::curveTurnRight() {
     }
 
     Radians initialRotationDelta = getRotationDelta(m_mouse->getCurrentRotation(), destinationRotation);
-    m_mouse->setWheelSpeedsForCurveTurnRight(1.0);
+    m_mouse->setWheelSpeedsForCurveTurnRight(m_options.wheelSpeedFraction);
     while (0 <
             initialRotationDelta.getRadiansNotBounded() *
             getRotationDelta(
@@ -761,6 +761,8 @@ void MouseInterface::turnTo(const Cartesian& destinationTranslation, const Radia
 }
 
 void MouseInterface::moveForwardTo(const Cartesian& destinationTranslation, const Radians& destinationRotation) {
+
+    // TODO: MACK - this doesn't work well if we're already past the point
 
     // This function assumes that we're already facing the correct direction,
     // and that we simply need to move forward to reach the destination.
