@@ -56,8 +56,7 @@ int MouseInterface::millis() {
 }
 
 void MouseInterface::delay(int milliseconds) {
-    // TODO: MACK: this is inconsistent with the millis() behavior, it should be relative to simSpeed
-    sim::SimUtilities::sleep(Milliseconds(milliseconds));
+    sim::SimUtilities::sleep(Milliseconds(milliseconds / S()->simSpeed()));
 }
 
 void MouseInterface::quit() {
@@ -480,6 +479,12 @@ void MouseInterface::turnRight() {
 
 void MouseInterface::turnAroundLeft() {
 
+    // TODO: MACK
+    if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+        Cartesian dest = m_mouse->getCurrentTranslation() + Polar(Meters(P()->wallLength() / 2.0), m_mouse->getCurrentRotation());
+        moveForwardTo(dest, m_mouse->getCurrentRotation());
+    }
+
     ENSURE_DISCRETE_INTERFACE
 
     for (int i = 0; i < 2; i += 1) {
@@ -493,6 +498,12 @@ void MouseInterface::turnAroundLeft() {
 }
 
 void MouseInterface::turnAroundRight() {
+
+    // TODO: MACK
+    if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+        Cartesian dest = m_mouse->getCurrentTranslation() + Polar(Meters(P()->wallLength() / 2.0), m_mouse->getCurrentRotation());
+        moveForwardTo(dest, m_mouse->getCurrentRotation());
+    }
 
     ENSURE_DISCRETE_INTERFACE
 
@@ -509,6 +520,8 @@ void MouseInterface::turnAroundRight() {
 void MouseInterface::curveTurnLeft() {
 
     ENSURE_ALLOW_SPECIAL_MOVEMENTS
+
+    // TODO: MACK - check for crashes
 
     // TODO: MACK
     Degrees destinationRotation = m_mouse->getCurrentRotation() + Degrees(90);
@@ -540,25 +553,23 @@ void MouseInterface::curveTurnLeft() {
         }
     }
 
-    int numPoints = 10; // TODO: MACK - polygon is a multiple of 8
-    Meters sideLength = sideLengthFromInradius(tileLength / 2.0, numPoints * 4);
-    Radians angle = (Degrees(180) - interiorAngleOfRegularPolygon(numPoints * 4));
-
-    moveForwardTo(m_mouse->getCurrentTranslation() + Polar(sideLength / 2.0 - halfWallWidth, m_mouse->getCurrentRotation()), m_mouse->getCurrentRotation());
-    for (int i = 0; i < numPoints - 1; i += 1) {
-        turnTo(m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation() + angle);
-        moveForwardTo(m_mouse->getCurrentTranslation() + Polar(sideLength, m_mouse->getCurrentRotation()), m_mouse->getCurrentRotation());
+    Radians initialRotationDelta = getRotationDelta(m_mouse->getCurrentRotation(), destinationRotation);
+    m_mouse->setWheelSpeedsForCurveTurnLeft(m_options.wheelSpeedFraction);
+    while (0 <
+            initialRotationDelta.getRadiansNotBounded() *
+            getRotationDelta(
+                m_mouse->getCurrentRotation(),
+                destinationRotation).getRadiansNotBounded()) {
+        sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
     }
-    turnTo(m_mouse->getCurrentTranslation(), destinationRotation);
     moveForwardTo(destinationTranslation, destinationRotation);
-
-    m_mouse->stopAllWheels();
-    m_mouse->teleport(destinationTranslation, destinationRotation);
 }
 
 void MouseInterface::curveTurnRight() {
 
     ENSURE_ALLOW_SPECIAL_MOVEMENTS
+
+    // TODO: MACK - check for crashes
 
     // TODO: MACK
     Degrees destinationRotation = m_mouse->getCurrentRotation() - Degrees(90);
@@ -590,29 +601,17 @@ void MouseInterface::curveTurnRight() {
         }
     }
 
-    // TODO: MACK - polygon points, excluding start and end
-    //
-    //
-    //          2   End
-    //       1
-    //
-    //       Start
-    //
-    //
-    int numPoints = 10; // TODO: MACK - polygon is a multiple of 8
-    Meters sideLength = sideLengthFromInradius(tileLength / 2.0, numPoints * 4);
-    Radians angle = (Degrees(180) - interiorAngleOfRegularPolygon(numPoints * 4)) * -1;
-
-    moveForwardTo(m_mouse->getCurrentTranslation() + Polar(sideLength / 2.0 - halfWallWidth, m_mouse->getCurrentRotation()), m_mouse->getCurrentRotation());
-    for (int i = 0; i < numPoints - 1; i += 1) {
-        turnTo(m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation() + angle);
-        moveForwardTo(m_mouse->getCurrentTranslation() + Polar(sideLength, m_mouse->getCurrentRotation()), m_mouse->getCurrentRotation());
+    Radians initialRotationDelta = getRotationDelta(m_mouse->getCurrentRotation(), destinationRotation);
+    m_mouse->setWheelSpeedsForCurveTurnRight(m_options.wheelSpeedFraction);
+    while (0 <
+            initialRotationDelta.getRadiansNotBounded() *
+            getRotationDelta(
+                m_mouse->getCurrentRotation(),
+                destinationRotation
+            ).getRadiansNotBounded()) {
+        sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
     }
-    turnTo(m_mouse->getCurrentTranslation(), destinationRotation);
     moveForwardTo(destinationTranslation, destinationRotation);
-
-    m_mouse->stopAllWheels();
-    m_mouse->teleport(destinationTranslation, destinationRotation);
 }
 
 int MouseInterface::currentXTile() {
@@ -751,7 +750,8 @@ void MouseInterface::turnTo(const Cartesian& destinationTranslation, const Radia
             initialRotationDelta.getRadiansNotBounded() *
             getRotationDelta(
                 m_mouse->getCurrentRotation(),
-                destinationRotation).getRadiansNotBounded()) {
+                destinationRotation
+            ).getRadiansNotBounded()) {
         sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
     }
 
@@ -761,6 +761,8 @@ void MouseInterface::turnTo(const Cartesian& destinationTranslation, const Radia
 }
 
 void MouseInterface::moveForwardTo(const Cartesian& destinationTranslation, const Radians& destinationRotation) {
+
+    // TODO: MACK - this doesn't work well if we're already past the point
 
     // This function assumes that we're already facing the correct direction,
     // and that we simply need to move forward to reach the destination.
@@ -860,16 +862,6 @@ Cartesian MouseInterface::getDestinationTranslationForMoveForward() const {
     }
 
     return destinationTranslation;
-}
-
-Meters MouseInterface::sideLengthFromInradius(const Meters& inradius, int numSides) const {
-    // TODO: MACK - assert about num edges
-    return inradius * 2 * std::tan(M_PI / static_cast<double>(numSides));
-}
-
-Radians MouseInterface::interiorAngleOfRegularPolygon(int numSides) const {
-    // TODO: MACK - assert about num edges
-    return (Degrees(180) * (numSides - 2)) / static_cast<double>(numSides);
 }
 
 } // namespace sim

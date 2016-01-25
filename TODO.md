@@ -1,9 +1,14 @@
 # High Priority
 
+- Diagonals
 - Windows logging is not working on non-main threads
 - Logging is too expensive
     - Causing freezing and crashing
     - Generalize a method for counting and logging few times, 1 per second
+- Fix parameters no root element
+- Adjustable curve turn diameter
+- Looks like triangulation is going crazy on curve turns
+- Teleport doesn't preserve triangulation
 - Rename min-sleep-duration to something better
 - Update algos to use stopOnTileEdge, update documentation for rightWallFollow, etc.
 - Make methods in IMouseInterface such as millis(), so that they can be called without "m_mouse->"
@@ -16,9 +21,6 @@
     - 99% of updates are 1ms apart, or something like that
 - Check the sleep duration of updates to make sure that we're actually doing 1000 updates per second
 - Can we use mutable in the MouseInterface so declare wall on read is const? Make other methods in that class const?
-- Other mouse movements - curve turns, j-turns, diagonals, etc.
-    - Genericize the move forward so that we can do curve turns
-    - The base case is when polygon sides n = 4, we have regular turns
 - Add a way to time the algorithms
     - How long it took to get to the center of the maze
     - Make this faster than real time
@@ -80,6 +82,7 @@
 
 # Medum Priority
 
+- If the wheel is at the center, it should have zero turn contribution, not infinite
 - Organize params in res/parameters.xml and Param.h/.cpp
 - Improve sensor readings by getting the actual complete polygon, not apporximated
 - For curve turns, see if you can figure out the arc that the mouse should go on to simulate a curve turn, use checkpoints

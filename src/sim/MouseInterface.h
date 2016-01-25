@@ -97,11 +97,13 @@ public:
     // Returns deg/s of rotation
     double readGyro();
 
-    // ----- Discrete interface methods ----- //
+    // ----- Any discrete interface methods ----- //
 
     bool wallFront();
     bool wallRight();
     bool wallLeft();
+
+    // ----- Basic discrete interface methods ----- //
 
     void moveForward();
     void moveForward(int count);
@@ -112,14 +114,22 @@ public:
     void turnAroundLeft();
     void turnAroundRight();
 
-    // TODO: MACK - special curve turn movements
-    // TODO: MACK - potentially rename the above methods
+    // ----- Special discrete interface methods ----- //
+
+    // TODO: MACK - implement these, and check basic vs. special methods
+
+    void originMoveForwardToEdge();
+    void originTurnLeftInPlace();
+    void originTurnRightInPlace();
+
+    void moveForwardToEdge();
+    void moveForwardToEdge(int count);
+
     void curveTurnLeft();
     void curveTurnRight();
 
-    // TODO: MACK - special starting case for turning right
-
-    // TODO: MACK - diagonals
+    void turnAroundToEdgeLeft();
+    void turnAroundToEdgeRight();
 
     // ----- Omniscience methods ----- //
 
@@ -151,17 +161,15 @@ private:
     bool hasOpposingWall(int x, int y, Direction direction) const;
     std::pair<std::pair<int, int>, Direction> getOpposingWall(int x, int y, Direction direction) const;
 
+    // Some helper abstractions for mouse movements
     void turnTo(const Cartesian& destinationTranslation, const Radians& destinationRotation);
     void moveForwardTo(const Cartesian& destinationTranslation, const Radians& destinationRotation);
 
     // Returns the angle with from "from" to "to", with values in [-180, 180) degrees
     Radians getRotationDelta(const Radians& from, const Radians& to) const;
 
-    Cartesian getDestinationTranslationForMoveForward() const;
-
     // TODO: MACK
-    Meters sideLengthFromInradius(const Meters& inradius, int numSides) const;
-    Radians interiorAngleOfRegularPolygon(int numSides) const;
+    Cartesian getDestinationTranslationForMoveForward() const;
 
 };
 

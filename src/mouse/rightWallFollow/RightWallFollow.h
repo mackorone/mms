@@ -7,9 +7,11 @@ namespace rightWallFollow {
 class RightWallFollow : public IMouseAlgorithm {
 
 public:
+    std::string mouseFile() const;
     bool declareWallOnRead() const;
     bool declareBothWallHalves() const;
     bool stopOnTileEdgesAndAllowSpecialMovements() const;
+    double wheelSpeedFraction() const;
     void solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse);

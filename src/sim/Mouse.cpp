@@ -46,6 +46,20 @@ bool Mouse::initialize(
     m_wheels = parser.getWheels(m_initialTranslation, m_initialRotation, &success);
     m_sensors = parser.getSensors(m_initialTranslation, m_initialRotation, *m_maze, &success);
 
+    // Initialize the wheel speed adjustment factors based on the wheels
+    m_wheelSpeedAdjustmentFactors = getWheelSpeedAdjustmentFactors(
+        m_initialTranslation,
+        m_initialRotation,
+        m_wheels);
+
+    // Initialize the curve turn factors, based on previously determined info
+    m_curveTurnFactors = getCurveTurnFactors(
+        m_initialTranslation,
+        m_initialRotation,
+        m_wheels,
+        m_wheelSpeedAdjustmentFactors,
+        Meters(P()->wallLength() / 2.0) * 0.5 * M_PI);
+
     // Initialize the collision polygon; this is technically not correct since
     // we should be using union, not convexHull, but it's a good approximation
     std::vector<Polygon> polygons;
@@ -82,21 +96,28 @@ Radians Mouse::getCurrentRotation() const {
 }
 
 std::pair<int, int> Mouse::getCurrentDiscretizedTranslation() const {
+    static Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
     Cartesian currentTranslation = getCurrentTranslation();
-    int x = static_cast<int>(std::floor(
-        currentTranslation.getX() / Meters(P()->wallLength() + P()->wallWidth())
-    ));
-    int y = static_cast<int>(std::floor(
-        currentTranslation.getY() / Meters(P()->wallLength() + P()->wallWidth())
-    ));
+    int x = static_cast<int>(
+        std::floor(
+            currentTranslation.getX() / tileLength
+        )
+    );
+    int y = static_cast<int>(
+        std::floor(
+            currentTranslation.getY() / tileLength
+        )
+    );
     return std::make_pair(x, y);
 }
 
 Direction Mouse::getCurrentDiscretizedRotation() const {
-    int dir = static_cast<int>(std::floor(
-        (getCurrentRotation() + Degrees(45)).getRadiansZeroTo2pi() /
-        Degrees(90).getRadiansZeroTo2pi()
-    ));
+    int dir = static_cast<int>(
+        std::floor(
+            (getCurrentRotation() + Degrees(45)).getRadiansZeroTo2pi() /
+            Degrees(90).getRadiansZeroTo2pi()
+        )
+    );
     switch (dir) {
         case 0:
             return Direction::EAST;
@@ -188,20 +209,20 @@ void Mouse::update(const Duration& elapsed) {
 
         m_wheels.at(wheel.first).updateRotation(wheel.second.getAngularVelocity() * elapsed);
 
-        MetersPerSecond linearVelocity = wheel.second.getAngularVelocity() * wheel.second.getRadius();
-        MetersPerSecond dx = linearVelocity *
-            (getCurrentRotation() - getInitialRotation() + wheel.second.getInitialDirection()).getCos();
-        MetersPerSecond dy = linearVelocity *
-            (getCurrentRotation() - getInitialRotation() + wheel.second.getInitialDirection()).getSin();
+        std::pair<MetersPerSecond, RadiansPerSecond> ratesOfChange = getRatesOfChange(
+            getInitialTranslation(),
+            getInitialRotation(),
+            wheel.second.getInitialPosition(),
+            wheel.second.getInitialDirection(),
+            (
+                wheel.second.getAngularVelocity() *
+                wheel.second.getRadius()
+            )
+        );
 
-        Cartesian wheelToCenter = getInitialTranslation() - wheel.second.getInitialPosition();
-        double rotationFactor = (wheelToCenter.getTheta() - wheel.second.getInitialDirection()).getSin();
-        RadiansPerSecond dr = RadiansPerSecond(
-            linearVelocity.getMetersPerSecond() / wheelToCenter.getRho().getMeters() * rotationFactor);
-
-        sumDx += dx;
-        sumDy += dy;
-        sumDr += dr;
+        sumDx += ratesOfChange.first * getCurrentRotation().getCos();
+        sumDy += ratesOfChange.first * getCurrentRotation().getSin();
+        sumDr += ratesOfChange.second;
     }
 
     MetersPerSecond aveDx = sumDx / static_cast<double>(m_wheels.size());
@@ -251,33 +272,23 @@ void Mouse::setWheelSpeeds(const std::map<std::string, RadiansPerSecond>& wheelS
 }
 
 void Mouse::setWheelSpeedsForMoveForward(double fractionOfMaxSpeed) {
-    std::map<std::string, RadiansPerSecond> wheelSpeeds;
-    for (std::pair<std::string, Wheel> wheel : m_wheels) {
-        wheelSpeeds.insert(std::make_pair(wheel.first,
-            getWheelMaxSpeed(wheel.first) * fractionOfMaxSpeed *
-            getWheelContributionFactors(wheel.first).first));
-    }
-    setWheelSpeeds(wheelSpeeds);
+    setWheelSpeedsForMovement(fractionOfMaxSpeed, 1.0, 0.0);
 }
 
 void Mouse::setWheelSpeedsForTurnLeft(double fractionOfMaxSpeed) {
-    std::map<std::string, RadiansPerSecond> wheelSpeeds;
-    for (std::pair<std::string, Wheel> wheel : m_wheels) {
-        wheelSpeeds.insert(std::make_pair(wheel.first,
-            getWheelMaxSpeed(wheel.first) * fractionOfMaxSpeed *
-            getWheelContributionFactors(wheel.first).second));
-    }
-    setWheelSpeeds(wheelSpeeds);
+    setWheelSpeedsForMovement(fractionOfMaxSpeed, 0.0, 1.0);
 }
 
 void Mouse::setWheelSpeedsForTurnRight(double fractionOfMaxSpeed) {
-    std::map<std::string, RadiansPerSecond> wheelSpeeds;
-    for (std::pair<std::string, Wheel> wheel : m_wheels) {
-        wheelSpeeds.insert(std::make_pair(wheel.first,
-            getWheelMaxSpeed(wheel.first) * fractionOfMaxSpeed *
-            getWheelContributionFactors(wheel.first).second * -1));
-    }
-    setWheelSpeeds(wheelSpeeds);
+    setWheelSpeedsForMovement(fractionOfMaxSpeed, 0.0, -1.0);
+}
+
+void Mouse::setWheelSpeedsForCurveTurnLeft(double fractionOfMaxSpeed) {
+    setWheelSpeedsForMovement(fractionOfMaxSpeed, m_curveTurnFactors.first, m_curveTurnFactors.second);
+}
+
+void Mouse::setWheelSpeedsForCurveTurnRight(double fractionOfMaxSpeed) {
+    setWheelSpeedsForMovement(fractionOfMaxSpeed, m_curveTurnFactors.first, -1 * m_curveTurnFactors.second);
 }
 
 void Mouse::stopAllWheels() {
@@ -370,70 +381,208 @@ std::pair<Cartesian, Radians> Mouse::getCurrentSensorPositionAndDirection(
     );
 }
 
-std::pair<double, double> Mouse::getWheelContributionFactors(const std::string& name) const {
+void Mouse::setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardFactor, double turnFactor) {
 
-    // TODO: upforgrabs
-    // This function was implemented really hastily. If you've got the time and
-    // determination, it'd be really nice if this was reimplemented and
-    // deduplicated with the update() method above. This function is supposed
-    // to return a pair of doubles, each in [0.0, 1.0], that specify how much
-    // the wheel contributes the forward movement and rotation of the mouse.
-    // This information is used by the setWheelSpeedsForMoveForward and similar
-    // methods to set the appropriate wheels when a particular action is
-    // requested. That is, if we've got a wheel that's facing to the right, we
-    // don't want to turn that wheel when we're trying to move forward.
-    // Instead, we should only turn the wheels that will actually contribute to
-    // the forward movement of the mouse. I'm not yet sure if we should take
-    // wheel size and/or max angular velocity magnitude into account, but I've
-    // done so here. This can definitely be changed if you decide that it's
-    // better without them. Also, sticking the memoization in this method is
-    // sloppy. First off, it makes the funciton less readable. And second, the
-    // static map means that we can't have multiple mice in the simulator. We
-    // should fix this.
+    // We can think about setting the wheels speeds for particular movements as
+    // a linear combination of the forward movement and the turn movement. For
+    // instance, the (normalized) linear combination of the forward and turn
+    // components for moving forward is just 1.0 and 0.0, respectively. For
+    // turning left, it's 0.0 and 1.0, respectively, and for turning right it's
+    // 0.0 and -1.0, respectively. For curve turns, it's some other linear
+    // combination. Note that we normalize here since we don't know anything
+    // about the wheel speeds for a particular component. Thus, we must ensure
+    // that the sum of the magnitudes of the components is in [0.0, 1.0] so
+    // that we don't try to set any wheel speeds greater than the max.
 
-    static std::map<std::string, std::pair<double, double>> contributionFactors;
+    // First we normalize the factors so that the sum of the magnitudes is in [0.0, 1.0]
+    double factorMagnitude = std::abs(forwardFactor) + std::abs(turnFactor);
+    double normalizedForwardFactor = forwardFactor / factorMagnitude;
+    double normalizedTurnFactor = turnFactor / factorMagnitude;
 
-    if (contributionFactors.empty()) {
+    // Now we just double check that the magnitudes are where we expect them to be
+    double normalizedFactorMagnitude = std::abs(normalizedForwardFactor) + std::abs(normalizedTurnFactor);
+    ASSERT_LE(0.0, normalizedFactorMagnitude);
+    ASSERT_LE(normalizedFactorMagnitude, 1.0);
 
-        MetersPerSecond maxForwardContributionMagnitude(0);
-        RadiansPerSecond maxRadialContributionMagnitude(0);
-        std::map<std::string, std::pair<MetersPerSecond, RadiansPerSecond>> contributionPairs;
+    // Now set the wheel speeds based on the normalized factors
+    std::map<std::string, RadiansPerSecond> wheelSpeeds;
+    for (std::pair<std::string, Wheel> wheel : m_wheels) {
+        ASSERT_TR(ContainerUtilities::mapContains(m_wheelSpeedAdjustmentFactors, wheel.first));
+        std::pair<double, double> adjustmentFactors = m_wheelSpeedAdjustmentFactors.at(wheel.first);
+        wheelSpeeds.insert(
+            std::make_pair(
+                wheel.first,
+                (
+                    wheel.second.getMaxAngularVelocityMagnitude() *
+                    fractionOfMaxSpeed *
+                    (
+                        normalizedForwardFactor * adjustmentFactors.first +
+                        normalizedTurnFactor * adjustmentFactors.second
+                    )
+                )
+            )
+        );
+    }
+    setWheelSpeeds(wheelSpeeds);
+}
 
-        for (std::pair<std::string, Wheel> wheel : m_wheels) {
+std::map<std::string, std::pair<double, double>> Mouse::getWheelSpeedAdjustmentFactors(
+        const Cartesian& initialTranslation,
+        const Radians& initialRotation,
+        const std::map<std::string, Wheel>& wheels) const {
 
-            MetersPerSecond maxLinearVelocity = wheel.second.getMaxAngularVelocityMagnitude() * wheel.second.getRadius();
-            MetersPerSecond forwardContribution = maxLinearVelocity *
-                (getInitialRotation() - wheel.second.getInitialDirection()).getCos();
+    // Right now, the heueristic that we're using is that if a wheel greatly
+    // contributes to moving forward or turning, then its adjustment factors
+    // should be high for moving forward or turning, respectively. That is, if
+    // we've got a wheel that's facing to the right, we don't want to turn that
+    // wheel when we're trying to move forward. Instead, we should only turn
+    // the wheels that will actually contribute to the forward movement of the
+    // mouse. I'm not yet sure if we should take wheel size and/or max angular
+    // velocity magnitude into account, but I've done so here.
 
-            Cartesian wheelToCenter = getInitialTranslation() - wheel.second.getInitialPosition();
-            double rotationFactor = (wheelToCenter.getTheta() - wheel.second.getInitialDirection()).getSin();
-            RadiansPerSecond radialContribuition = RadiansPerSecond(
-                maxLinearVelocity.getMetersPerSecond() / wheelToCenter.getRho().getMeters() * rotationFactor);
+    // First, construct the rates of change pairs
+    std::map<std::string, std::pair<MetersPerSecond, RadiansPerSecond>> ratesOfChangePairs;
+    for (std::pair<std::string, Wheel> wheel : wheels) {
+        ratesOfChangePairs.insert(
+            std::make_pair(
+                wheel.first,
+                getRatesOfChange(
+                    initialTranslation,
+                    initialRotation,
+                    wheel.second.getInitialPosition(),
+                    wheel.second.getInitialDirection(),
+                    (
+                        wheel.second.getMaxAngularVelocityMagnitude() *
+                        wheel.second.getRadius()
+                    )
+                )
+            )
+        );
+    }
 
-            contributionPairs.insert(std::make_pair(wheel.first, std::make_pair(forwardContribution, radialContribuition)));
-
-            MetersPerSecond forwardContributionMagnitude(std::abs(forwardContribution.getMetersPerSecond()));
-            RadiansPerSecond radialContributionMagnitude(std::abs(radialContribuition.getRadiansPerSecond()));
-            if (maxForwardContributionMagnitude < forwardContributionMagnitude) {
-                maxForwardContributionMagnitude = forwardContributionMagnitude;
-            }
-            if (maxRadialContributionMagnitude < radialContributionMagnitude) {
-                maxRadialContributionMagnitude = radialContributionMagnitude;
-            }
+    // Then determine the largest magnitude
+    MetersPerSecond maxForwardRateOfChangeMagnitude(0);
+    RadiansPerSecond maxRadialRateOfChangeMagnitude(0);
+    for (const std::pair<std::string, std::pair<MetersPerSecond, RadiansPerSecond>>& pair : ratesOfChangePairs) {
+        MetersPerSecond forwardRateOfChangeMagnitude(std::abs(pair.second.first.getMetersPerSecond()));
+        RadiansPerSecond radialRateOfChangeMagnitude(std::abs(pair.second.second.getRadiansPerSecond()));
+        if (maxForwardRateOfChangeMagnitude < forwardRateOfChangeMagnitude) {
+            maxForwardRateOfChangeMagnitude = forwardRateOfChangeMagnitude;
         }
-
-        for (std::pair<std::string, std::pair<MetersPerSecond, RadiansPerSecond>> pair : contributionPairs) {
-            contributionFactors.insert(
-                std::make_pair(
-                    pair.first,
-                    std::make_pair(
-                        pair.second.first / maxForwardContributionMagnitude,
-                        pair.second.second / maxRadialContributionMagnitude)));
+        if (maxRadialRateOfChangeMagnitude < radialRateOfChangeMagnitude) {
+            maxRadialRateOfChangeMagnitude = radialRateOfChangeMagnitude;
         }
     }
+
+    // Then divide by the largest magnitude, ensuring values in [-1.0, 1.0]
+    std::map<std::string, std::pair<double, double>> adjustmentFactors;
+    for (std::pair<std::string, std::pair<MetersPerSecond, RadiansPerSecond>> pair : ratesOfChangePairs) {
+        double normalizedForwardContribution = pair.second.first / maxForwardRateOfChangeMagnitude;
+        double normalizedRadialContribution = pair.second.second / maxRadialRateOfChangeMagnitude;
+        ASSERT_LE(-1.0, normalizedForwardContribution);
+        ASSERT_LE(-1.0, normalizedRadialContribution);
+        ASSERT_LE(normalizedForwardContribution, 1.0);
+        ASSERT_LE(normalizedRadialContribution, 1.0);
+        adjustmentFactors.insert(
+            std::make_pair(
+                pair.first,
+                std::make_pair(
+                    normalizedForwardContribution,
+                    normalizedRadialContribution)));
+    }
     
-    ASSERT_TR(ContainerUtilities::mapContains(contributionFactors, name));
-    return contributionFactors.at(name);
+    return adjustmentFactors;
 }
+
+std::pair<double, double> Mouse::getCurveTurnFactors(
+        const Cartesian& initialTranslation,
+        const Radians& initialRotation,
+        const std::map<std::string, Wheel>& wheels,
+        const std::map<std::string, std::pair<double, double>> wheelSpeedAdjustmentFactors,
+        const Meters& curveTurnArcLength) const {
+
+    // Determine the total forward and turn rate of change from all wheels
+    MetersPerSecond totalForwardRateOfChange(0);
+    RadiansPerSecond totalRadialRateOfChange(0);
+    for (const std::pair<std::string, Wheel>& wheel : wheels) {
+
+        // The maximum linear velocity of the wheel
+        MetersPerSecond maxLinearVelocity =
+            wheel.second.getMaxAngularVelocityMagnitude() *
+            wheel.second.getRadius();
+
+        // For each of the wheel speed adjustment factors, calculate the wheel's
+        // contributions. Remember that each of these factors corresponds to
+        // the fraction of the max wheel speed such that the mouse performs a
+        // particular movement (moving forward or turning) most optimally.
+        ASSERT_TR(ContainerUtilities::mapContains(wheelSpeedAdjustmentFactors, wheel.first));
+        std::pair<double, double> adjustmentFactors = wheelSpeedAdjustmentFactors.at(wheel.first);
+        for (double adjustmentFactor : {adjustmentFactors.first, adjustmentFactors.second}) {
+
+            std::pair<MetersPerSecond, RadiansPerSecond> ratesOfChange = getRatesOfChange(
+                initialTranslation,
+                initialRotation,
+                wheel.second.getInitialPosition(),
+                wheel.second.getInitialDirection(),
+                maxLinearVelocity * adjustmentFactor
+            );
+
+            totalForwardRateOfChange += ratesOfChange.first;
+            totalRadialRateOfChange += ratesOfChange.second;
+        }
+    }
+
+    // The main idea here is that, for a curve turn, we want the mouse to move
+    // forward a distance equal to the length of the arc we'd like it to travel
+    Meters totalDistance = curveTurnArcLength;
+    Degrees totalRotation = Degrees(90);
+
+    // We want to return a pair of factors, A and B, such that:
+    //
+    //  totalForwardRateOfChange * A   totalDistance
+    //  ---------------------------- = -------------
+    //  totalRadialRateOfChange  * B   totalRotation
+    //
+    // That is, we'd like to return two numbers, A and B, such that they
+    // appropriately scale the forward and turn contributions of the wheels so
+    // that the mouse travels the distance of the curve turn arc in the exact
+    // same amount of time that it rotates ninty degrees. Thus we have that:
+    //
+    //      totalDistance   totalRadialRateOfChange
+    //  A = ------------- * ------------------------ * B
+    //      totalRotation   totalForwardRateOfChange
+    //
+    // Then we can just choose B = 1.0 and solve for A
+
+    double B = 1.0;
+    double A =
+        (totalDistance.getMeters() / totalRotation.getRadiansZeroTo2pi()) *
+        (totalRadialRateOfChange.getRadiansPerSecond() / totalForwardRateOfChange.getMetersPerSecond());
+
+    return std::make_pair(A, B);
+}
+
+std::pair<MetersPerSecond, RadiansPerSecond> Mouse::getRatesOfChange(
+        const Cartesian& initialTranslation,
+        const Radians& initialRotation,
+        const Cartesian& wheelInitialPosition,
+        const Radians& wheelInitialDirection,
+        const MetersPerSecond& wheelLinearVelocity) const {
+
+    MetersPerSecond forwardRateOfChange = MetersPerSecond(
+        wheelLinearVelocity.getMetersPerSecond() * 
+        (initialRotation - wheelInitialDirection).getCos()
+    );
+
+    Cartesian wheelToCenter = initialTranslation - wheelInitialPosition;
+    RadiansPerSecond radialRateOfChange = RadiansPerSecond(
+        wheelLinearVelocity.getMetersPerSecond() *
+        (wheelToCenter.getTheta() - wheelInitialDirection).getSin() *
+        (1.0 / wheelToCenter.getRho().getMeters())
+    );
+
+    return std::make_pair(forwardRateOfChange, radialRateOfChange);
+}
+    
 
 } // namespace sim
