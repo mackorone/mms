@@ -17,8 +17,8 @@ private:
 #define hasRightWall 800
 
 	//Seperate speeds for explore and solve (not currently implemented)
-	int exploreSpeed = 240;
-	int solveSpeed = 240;
+	int exploreSpeed = 620;
+	int solveSpeed = 620;
 
 	int leftBaseSpeed = exploreSpeed;
 	int rightBaseSpeed = exploreSpeed;
@@ -28,8 +28,8 @@ private:
 	const int leftWallDist = 1900;
 
 	// PID Constants
-#define straightKp 3
-#define turnKp 16
+#define straightKp 50  //TODO
+#define turnKp 16 //TODO
 #define Kd 10
 
 	/* Variables for interface between drive code and algorithm */
@@ -41,7 +41,7 @@ private:
 												/* End of variables for interface */
 
 												//Max speed for acceleration
-	const int maxSpeed = 500;
+	const int maxSpeed = 1500;
 
 	bool currentMoveDone = false;
 	bool firstMove = true;
@@ -79,18 +79,14 @@ private:
 
 	int rightTicks = 0;
 	int leftTicks = 0;
-//	int rightBaseSpeed = 240;
-//	int leftBaseSpeed = 240;
-	int leftSensor;
-	int rightSensor;
-	int rightMiddleValue;
-	int leftMiddleValue;
-	int leftFront;
-	int rightFront;
+	double leftSensor;
+	double rightSensor;
+	double rightMiddleValue;
+	double leftMiddleValue;
+	double leftFront;
+	double rightFront;
 	int currentRightPWM = 0;
 	int currentLeftPWM = 0;
-	const int buttonPin = 24;
-	const int LED = 11;
     bool wallRight();
     bool wallFront();
     bool wallLeft();

@@ -28,6 +28,7 @@ namespace continuous {
 	}
 
 	double startAngle = 90;
+	int forwardOffset = 840;
 
 	void Continuous::solve(int mazeWidth, int mazeHeight, bool isOfficialMaze, char initialDirection, sim::MouseInterface* mouse) {
 
@@ -73,27 +74,40 @@ namespace continuous {
 					walls[2] = walls_global[2];
 					movesDoneAndWallsSet = false;
 
-					//    movesBuffer[0] = 'r';
-					//    movesBuffer[1] = 'r';
-					//    movesBuffer[2] = 'f';
-					//    movesBuffer[3] = 'f';
-					//    movesBuffer[4] = 'f';
-					//    movesBuffer[5] = 'r';
+					/***************Acceleration test (longpath.maz, works up until the second turn)******************/
+					    /*movesBuffer[0] = 'f';
+					    movesBuffer[1] = 'f';
+					    movesBuffer[2] = 'f';
+					    movesBuffer[3] = 'f';
+					    movesBuffer[4] = 'f';
+						movesBuffer[5] = 'f';
+						movesBuffer[6] = 'f';
+						movesBuffer[7] = 'f';
+						movesBuffer[8] = 'f';
+						movesBuffer[9] = 'f';
+						movesBuffer[10] = 'f';
+						movesBuffer[11] = 'f';
+						movesBuffer[12] = 'f';
+						movesBuffer[13] = 'f';
+						movesBuffer[14] = 'f';
+					    movesBuffer[15] = 'r';*/
+						/***********************************************/
 
-
-					if (!walls[0]) {
-						cout << "left\n";
-						movesBuffer[0] = 'l';
+					/***************Right Wall Follow******************/
+					if (!walls[2]) {
+						cout << "right\n";
+						movesBuffer[0] = 'r';
 						movesBuffer[1] = 0;
 					}
 					else if (!walls[1]) {
 						cout << "front\n";
+						cout << leftBaseSpeed << "\n";
 						movesBuffer[0] = 'f';
 						movesBuffer[1] = 0;
 					}
-					else if (!walls[2]) {
-						cout << "right\n";
-						movesBuffer[0] = 'r';
+					else if (!walls[0]) {
+						cout << "left\n";
+						movesBuffer[0] = 'l';
 						movesBuffer[1] = 0;
 					}
 					else {
@@ -102,9 +116,11 @@ namespace continuous {
 						movesBuffer[1] = 'f';
 						movesBuffer[2] = 0;
 					}
+					/***********************************************/
 					movesReady = true;
 				}
 				correction();
+				//cout << leftBaseSpeed << "\n";
 				start = millis();
 			}
 		}
@@ -195,9 +211,9 @@ namespace continuous {
 				in_acceleration = true;
 			}
 			else {
-				// if((float)totalForwardCount / (float)(forwardCount) == totalForwardCount) {
-				if (forwardCount == 2) {
-					goalSpeed = 240;
+				//if((float)totalForwardCount / (float)(forwardCount) == totalForwardCount) {
+				if (forwardCount == 2 + (int)((totalForwardCount + (5 - 1)) / 5)) {
+					goalSpeed = 620;
 				}
 			}
 			moveType = FORWARD;
@@ -223,11 +239,11 @@ namespace continuous {
 				haveSensorReading = false;
 				return;
 			}
-			turnCorrection();
+			curveTurnRight();//TODO should be turnCorrection()
 			break;
 		case 'l': // Fall-through"
 			moveType = TURN_LEFT;
-			turnCorrection();
+			curveTurnRight();
 			break;
 		case 'a':
 			leftTicks = 0;
@@ -247,10 +263,11 @@ namespace continuous {
 		haveSensorReading = false;
 	}
 	
-	void Continuous::moveForward() {//TODO
-		if (firstCell) {//TODO fix
-			rightTicks = 840;
-			leftTicks = 840;
+	void Continuous::moveForward() {
+		if (firstCell) {
+			/*rightTicks = 840;
+			leftTicks = 840;*/
+			forwardOffset = 840;
 			firstCell = false;
 			leftBaseSpeed = 0;
 			rightBaseSpeed = 0;
@@ -260,13 +277,15 @@ namespace continuous {
 			leftBaseSpeed = 0;
 			rightBaseSpeed = 0;
 			accelerate = true;
-			rightTicks = 100;
-			leftTicks = 100;
+			/*rightTicks = 100;
+			leftTicks = 100;*/
+			forwardOffset = 840;
 			afterTurnAround = false;
 		}
 		else {
 			rightTicks = 0;
 			leftTicks = 0;
+			forwardOffset = 0;
 			m_mouse->resetWheelEncoder("left-lower");
 			m_mouse->resetWheelEncoder("right-lower");
 		}
@@ -286,8 +305,8 @@ namespace continuous {
 		int errorD;
 		int totalError;
 		bool front;
-		leftBaseSpeed = 240;
-		rightBaseSpeed = 240;
+		leftBaseSpeed = 620;
+		rightBaseSpeed = 620;
 		moveType = NO;
 		if (wallFront()) {
 			front = true;
@@ -391,8 +410,8 @@ namespace continuous {
 
 	void Continuous::forwardCorrection() {
 		const int oneCellTicks = 1680;
-		const int noWallRight = 250; // check this value (250)
-		const int noWallLeft = 450; // check this value (450)
+		const double noWallRight = .5; // check this value (250)
+		const double noWallLeft = .5; // check this value (450)
 
 		const int pegWallBack = 800; // check this value
 		const int pegNoWalls = 1000;
@@ -410,10 +429,10 @@ namespace continuous {
 		static bool nextRightValid;
 		static bool nextLeftValid;
 		static bool nextCellDecided = false;
-		int errorP;
-		int errorD;
-		int oldErrorP = 0;
-		int totalError;
+		double errorP;
+		double errorD;
+		int oldErrorP = 0;//make static to insert D term
+		double totalError;
 		static int lastTicksL;
 		static int lastTicksR;
 		static float straightAngle = 0.0;
@@ -438,8 +457,10 @@ namespace continuous {
 					rightBaseSpeed++;
 				}
 				else if (leftBaseSpeed > goalSpeed) {
-					leftBaseSpeed = goalSpeed;
-					rightBaseSpeed = goalSpeed;
+					/*leftBaseSpeed = goalSpeed;
+					rightBaseSpeed = goalSpeed;*/
+					leftBaseSpeed--;
+					rightBaseSpeed--;
 				}
 				else {
 					count = 0;
@@ -469,23 +490,23 @@ namespace continuous {
 			angle = 0.0;
 
 			// Has both wall, so error correct with both (working, just need to adjust PD constants when final mouse is built)
-			errorP = leftSensor - rightSensor - 100; // 100 is the offset between left and right sensor when mouse in the
-													 // middle of cell
+			errorP = leftSensor - rightSensor; 
 			errorD = errorP - oldErrorP;
 			//        getGres();
 			//        gz = (float)readGyroData() * gRes - gyroBias[2];
 			//        straightAngle += 2 * (gz) * 0.001;
 		}
 		else if (leftValid) {
-
 			// Only left wall
 			// errorP = 2 * (leftMiddleValue - leftSensor + 1200) + 100 * (angle - targetAngle);
-			errorP = 20 * (angle - 5) + .5 * (leftSensor - leftWallDist);
+			errorP = 20 * (angle - 5) + .5 * (leftSensor - leftWallDist);//TODO
+			errorP = 0;//TODO
 			errorD = errorP - oldErrorP;
 		}
 		else if (rightValid) {
 			// Only right wall
-			errorP = 20 * (angle)-.5 * (rightSensor - rightWallDist);
+			errorP = 20 * (angle)-.5 * (rightSensor - rightWallDist);//TODO
+			errorP = 0;//TODO 
 			errorD = errorP - oldErrorP;
 		}
 		else {
@@ -502,10 +523,11 @@ namespace continuous {
 			//      targetAngle-=2;
 			//    }
 
-			errorP = 20 * (angle - targetAngle);
+			//errorP = 20 * (angle - targetAngle);
+			errorP = 0;//TODO Gyro Correction
 
 			//    }
-			errorD = errorP - oldErrorP;
+			errorD = errorP - oldErrorP;//TODO
 		}
 
 		//Peg Correction TODO
@@ -565,7 +587,7 @@ namespace continuous {
 		}
 #endif
 
-		if ((rightTicks + leftTicks) / 2 >= oneCellTicks) {
+		if (((rightTicks + leftTicks) / 2) + forwardOffset >= oneCellTicks) {
 			endCell = true;
 		}
 		if (endCell) {
@@ -587,14 +609,9 @@ namespace continuous {
 		totalError = straightKp * errorP + Kd * errorD;
 		oldErrorP = errorP;
 
-		// Calculate PWM based on Error
-		currentLeftPWM = leftBaseSpeed + totalError / 124;
-		currentRightPWM = rightBaseSpeed - totalError / 124;
-
-		totalError = 0;
 		// Update Motor PWM values
-		m_mouse->setWheelSpeed("left-lower", -(310 + totalError));
-		m_mouse->setWheelSpeed("right-lower", 310 - totalError);
+		m_mouse->setWheelSpeed("left-lower", -(leftBaseSpeed + totalError));//TODO variable speed
+		m_mouse->setWheelSpeed("right-lower", rightBaseSpeed - totalError);
 	}
 
 	//Curve Turn
@@ -682,13 +699,13 @@ namespace continuous {
 					if ((leftFront + rightFront) / 2 >= frontStop) {
 						turn = true;
 						i = 30;
-						rightBaseSpeed = 240;
+						rightBaseSpeed = 620;
 						angle = 0;
 					}
 				}
 				else {
 					turn = true;
-					rightBaseSpeed = 240;
+					rightBaseSpeed = 620;
 					angle = 0;
 				}
 			}
@@ -930,16 +947,16 @@ namespace continuous {
 		walls[2] = walls_global[2];
 		movesDoneAndWallsSet = false;
 
-		if (!walls[0]) {
-			movesBuffer[0] = 'l';
+		if (!walls[2]) {
+			movesBuffer[0] = 'r';
 			movesBuffer[1] = 0;
 		}
 		else if (!walls[1]) {
 			movesBuffer[0] = 'f';
 			movesBuffer[1] = 0;
 		}
-		else if (!walls[2]) {
-			movesBuffer[0] = 'r';
+		else if (!walls[0]) {
+			movesBuffer[0] = 'l';
 			movesBuffer[1] = 0;
 		}
 		else {
@@ -1024,68 +1041,93 @@ namespace continuous {
 		double error;
 		double totalError;
 		double turnSpeed = 1; // smaller is faster (.5, 1, 2 ,3, etc)
-		double Kp = 35 / turnSpeed; //35
+		double Kp = 70 / turnSpeed; //35
 		double targetAngle;
-		long long start = millis();
+		//long long start = millis();
 		int timeConst = 2 * turnSpeed; //ms 2
 		static int i = 0;
 		static int offsetAngle;
-		//cout << "START TURN" << "\n";
+		bool continueTurn = true;
+		//cout << "LOOP" << "\n";
 		//cout << startAngle << "\n";
-		if (i = 0) {
-			startAngle = 90;	//TODO Local?
-		}
-		if ((startAngle >= 0 && startAngle < 45) || (startAngle > 315 && startAngle <= 350)) {
-			offsetAngle = 360;
-		}
-		else if (startAngle > 45 && startAngle < 135) {
-			offsetAngle = 90;
-		}
-		else if (startAngle > 135 && startAngle < 225) {
-			offsetAngle = 180;
-		}
-		else {
-			offsetAngle = 270;
-		}
 
-		targetAngle = offsetAngle - curve[i];
-		angle = m_mouse->currentRotationDegrees();
-		if (offsetAngle == 360 && angle < 45) {
-			angle += 360;
-		}
-		//cout << targetAngle << "\n";
-		//cout << angle << "\n";
-		error = angle - targetAngle;
-		start = millis();
-		totalError = Kp * error;
-		int leftSpeed = -(310 / turnSpeed + totalError);//310
-		int rightSpeed = (310 / turnSpeed - totalError);
+			if (i == 0) {
+				startAngle = m_mouse->currentRotationDegrees();	//TODO Local?
+			}
+			if ((startAngle >= 0 && startAngle < 45) || (startAngle > 315 && startAngle <= 350)) {
+				if (moveType == TURN_RIGHT) {//TODO Test all cases
+					offsetAngle = 360;
+				}
+				else {
+					offsetAngle = 0;
+				}
+			}
+			else if (startAngle > 45 && startAngle < 135) {
+				offsetAngle = 90;
+			}
+			else if (startAngle > 135 && startAngle < 225) {
+				offsetAngle = 180;
+			}
+			else {
+				offsetAngle = 270;
+			}
+			if (moveType == TURN_RIGHT) {
+				targetAngle = offsetAngle - curve[i];
+			}
+			else {
+				targetAngle = offsetAngle + curve[i];
+			}
+			angle = m_mouse->currentRotationDegrees();
+			if (moveType == TURN_RIGHT) {
+				if (offsetAngle == 360 && angle < 45) {
+					angle += 360;
+				}
+			}
+			else {
 
-		//m_mouse->info(std::string("L: ") + std::to_string(leftSpeed));
-		//m_mouse->info(std::string("R: ") + std::to_string(rightSpeed));
-		m_mouse->setWheelSpeed("left-lower", leftSpeed);
-		m_mouse->setWheelSpeed("right-lower", rightSpeed);
+				if (offsetAngle == 0 && angle > 315) {
+					angle -= 360;
+				}
+			}
+			//cout << targetAngle << "\n";
+			//cout << angle << "\n";
+			error = angle - targetAngle;
+			totalError = Kp * error;
+			int leftSpeed = -(620 / turnSpeed + totalError);//310
+			int rightSpeed = (620 / turnSpeed - totalError);
 
-		if (i < curveTime - 1 && angle > offsetAngle - 90) {
-			i++;
-		}
-		else {
-			i = 0;
-			angle = 0.0;
-			//oldErrorP = 0;
-			m_mouse->resetWheelEncoder("left-lower");
-			m_mouse->resetWheelEncoder("right-lower");
-			rightTicks = 0;
-			leftTicks = 0;
-			moveType = NO;
-			walls_global[0] = wallLeft();
-			walls_global[1] = wallFront();
-			walls_global[2] = wallRight();
-			currentMoveDone = true;
-			//needMove = true;
-			//straight = false;
-			//turn = false;
-		}
+			//m_mouse->info(std::string("L: ") + std::to_string(leftSpeed));
+			//m_mouse->info(std::string("R: ") + std::to_string(rightSpeed));
+			m_mouse->setWheelSpeed("left-lower", leftSpeed);
+			m_mouse->setWheelSpeed("right-lower", rightSpeed);
+			if (moveType == TURN_RIGHT) {
+				continueTurn = i < curveTime - 1 && angle > offsetAngle - 90;
+			}
+			else {
+				continueTurn = i < curveTime - 1 && angle < offsetAngle + 90;
+			}
+			if (continueTurn) {
+				i++;
+			}
+			else {
+				i = 0;
+				angle = 0.0;
+				//oldErrorP = 0;
+				m_mouse->resetWheelEncoder("left-lower");
+				m_mouse->resetWheelEncoder("right-lower");
+				rightTicks = 0;
+				leftTicks = 0;
+				moveType = NO;
+				walls_global[0] = wallLeft();
+				walls_global[1] = wallFront();
+				walls_global[2] = wallRight();
+				currentMoveDone = true;
+				//needMove = true;
+				//straight = false;
+				//turn = false;
+			}
+
+		//skip = !skip;
 	}
 
 	void Continuous::curveTurnLeft() {
@@ -1215,13 +1257,17 @@ namespace continuous {
 	}
 
 	void Continuous::readSensors() {
-		if (!haveSensorReading) {
+		//if (!haveSensorReading) {
 			leftSensor = m_mouse->readSensor("left-side");
 			rightSensor = m_mouse->readSensor("right-side");
-			leftFront = m_mouse->readSensor("right-front");
+			leftFront = m_mouse->readSensor("left-front");
+			rightFront = m_mouse->readSensor("right-front");
+			rightMiddleValue = m_mouse->readSensor("right-middle");
+			leftMiddleValue = m_mouse->readSensor("left-middle");
+
 			//TODO read the rest of them
-			haveSensorReading = true;
-		}
+			//haveSensorReading = true;
+		//}
 	}
 
 	float Continuous::readGyro() {
