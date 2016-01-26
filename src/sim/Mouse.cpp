@@ -64,16 +64,29 @@ bool Mouse::initialize(
     // we should be using union, not convexHull, but it's a good approximation
     std::vector<Polygon> polygons;
     polygons.push_back(m_initialBodyPolygon);
-    for (std::pair<std::string, Wheel> pair : m_wheels) {
+    for (const std::pair<const std::string&, const Wheel&>& pair : m_wheels) {
         polygons.push_back(pair.second.getInitialPolygon());
     }
-    for (std::pair<std::string, Sensor> pair : m_sensors) {
+    for (const std::pair<const std::string&, const Sensor&>& pair : m_sensors) {
         polygons.push_back(pair.second.getInitialPolygon());
     }
     m_initialCollisionPolygon = GeometryUtilities::convexHull(polygons);
 
     // Initialize the center of mass polygon
     m_initialCenterOfMassPolygon = GeometryUtilities::createCirclePolygon(m_initialTranslation, Meters(.005), 8);
+
+    // Force triangulation of the drawable polygons, thus ensuring
+    // that we only triangulate once, at the beginning of execution
+    m_initialBodyPolygon.getTriangles();
+    m_initialCollisionPolygon.getTriangles();
+    m_initialCenterOfMassPolygon.getTriangles();
+    for (const std::pair<const std::string&, const Wheel&>& pair : m_wheels) {
+        pair.second.getInitialPolygon().getTriangles();
+    }
+    for (const std::pair<const std::string&, const Sensor&>& pair : m_sensors) {
+        pair.second.getInitialPolygon().getTriangles();
+        pair.second.getInitialViewPolygon().getTriangles();
+    }
 
     // Return success
     return success;
@@ -153,7 +166,7 @@ Polygon Mouse::getCurrentCenterOfMassPolygon(
 std::vector<Polygon> Mouse::getCurrentWheelPolygons(
         const Coordinate& currentTranslation, const Angle& currentRotation) const {
     std::vector<Polygon> polygons;
-    for (std::pair<std::string, Wheel> pair : m_wheels) {
+    for (const std::pair<const std::string&, const Wheel&>& pair : m_wheels) {
         polygons.push_back(getCurrentPolygon(pair.second.getInitialPolygon(), currentTranslation, currentRotation));
     }
     return polygons;
@@ -162,7 +175,7 @@ std::vector<Polygon> Mouse::getCurrentWheelPolygons(
 std::vector<Polygon> Mouse::getCurrentWheelSpeedIndicatorPolygons(
         const Coordinate& currentTranslation, const Angle& currentRotation) const {
     std::vector<Polygon> polygons;
-    for (std::pair<std::string, Wheel> pair : m_wheels) {
+    for (const std::pair<const std::string&, const Wheel&>& pair : m_wheels) {
         polygons.push_back(getCurrentPolygon(pair.second.getSpeedIndicatorPolygon(), currentTranslation, currentRotation));
     }
     return polygons;
@@ -171,7 +184,7 @@ std::vector<Polygon> Mouse::getCurrentWheelSpeedIndicatorPolygons(
 std::vector<Polygon> Mouse::getCurrentSensorPolygons(
         const Coordinate& currentTranslation, const Angle& currentRotation) const {
     std::vector<Polygon> polygons;
-    for (std::pair<std::string, Sensor> pair : m_sensors) {
+    for (const std::pair<const std::string&, const Sensor&>& pair : m_sensors) {
         polygons.push_back(getCurrentPolygon(pair.second.getInitialPolygon(), currentTranslation, currentRotation));
     }
     return polygons;
@@ -180,7 +193,7 @@ std::vector<Polygon> Mouse::getCurrentSensorPolygons(
 std::vector<Polygon> Mouse::getCurrentSensorViewPolygons(
         const Coordinate& currentTranslation, const Angle& currentRotation) const {
     std::vector<Polygon> polygons;
-    for (std::pair<std::string, Sensor> pair : m_sensors) {
+    for (const std::pair<const std::string&, const Sensor&>& pair : m_sensors) {
         std::pair<Cartesian, Radians> translationAndRotation =
             getCurrentSensorPositionAndDirection(
                 pair.second,
@@ -205,18 +218,19 @@ void Mouse::update(const Duration& elapsed) {
     MetersPerSecond sumDy(0);
     RadiansPerSecond sumDr(0);
 
-    for (const std::pair<std::string, Wheel>& wheel : m_wheels) {
+    for (const std::pair<const std::string&, const Wheel&>& pair : m_wheels) {
 
-        m_wheels.at(wheel.first).updateRotation(wheel.second.getAngularVelocity() * elapsed);
+        // We can't do pair.second.updateRotation since that breaks const
+        m_wheels.at(pair.first).updateRotation(pair.second.getAngularVelocity() * elapsed);
 
         std::pair<MetersPerSecond, RadiansPerSecond> ratesOfChange = getRatesOfChange(
             getInitialTranslation(),
             getInitialRotation(),
-            wheel.second.getInitialPosition(),
-            wheel.second.getInitialDirection(),
+            pair.second.getInitialPosition(),
+            pair.second.getInitialDirection(),
             (
-                wheel.second.getAngularVelocity() *
-                wheel.second.getRadius()
+                pair.second.getAngularVelocity() *
+                pair.second.getRadius()
             )
         );
 
@@ -233,12 +247,13 @@ void Mouse::update(const Duration& elapsed) {
     m_currentRotation += Radians(aveDr * elapsed);
     m_currentTranslation += Cartesian(aveDx * elapsed, aveDy * elapsed);
 
-    for (std::pair<std::string, Sensor> pair : m_sensors) {
+    for (const std::pair<const std::string&, const Sensor&>& pair : m_sensors) {
         std::pair<Cartesian, Radians> translationAndRotation =
             getCurrentSensorPositionAndDirection(
                 pair.second,
                 m_currentTranslation,
                 m_currentRotation);
+        // We can't do pair.second.updateReading() since that breaks const
         m_sensors.at(pair.first).updateReading(
             translationAndRotation.first,
             translationAndRotation.second,
@@ -293,7 +308,7 @@ void Mouse::setWheelSpeedsForCurveTurnRight(double fractionOfMaxSpeed) {
 
 void Mouse::stopAllWheels() {
     std::map<std::string, RadiansPerSecond> wheelSpeeds;
-    for (std::pair<std::string, Wheel> wheel : m_wheels) {
+    for (const std::pair<const std::string&, const Wheel&>& wheel : m_wheels) {
         wheelSpeeds.insert(std::make_pair(wheel.first, RadiansPerSecond(0)));
     }
     setWheelSpeeds(wheelSpeeds);
@@ -406,7 +421,7 @@ void Mouse::setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardF
 
     // Now set the wheel speeds based on the normalized factors
     std::map<std::string, RadiansPerSecond> wheelSpeeds;
-    for (std::pair<std::string, Wheel> wheel : m_wheels) {
+    for (const std::pair<const std::string&, const Wheel&>& wheel : m_wheels) {
         ASSERT_TR(ContainerUtilities::mapContains(m_wheelSpeedAdjustmentFactors, wheel.first));
         std::pair<double, double> adjustmentFactors = m_wheelSpeedAdjustmentFactors.at(wheel.first);
         wheelSpeeds.insert(

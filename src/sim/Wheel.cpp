@@ -51,11 +51,11 @@ Radians Wheel::getInitialDirection() const {
     return m_initialDirection;
 }
 
-Polygon Wheel::getInitialPolygon() const {
+const Polygon& Wheel::getInitialPolygon() const {
     return m_initialPolygon;
 }
 
-Polygon Wheel::getSpeedIndicatorPolygon() const {
+const Polygon& Wheel::getSpeedIndicatorPolygon() const {
     return m_speedIndicatorPolygon;
 }
 
@@ -69,7 +69,7 @@ RadiansPerSecond Wheel::getMaxAngularVelocityMagnitude() const {
 
 void Wheel::setAngularVelocity(const AngularVelocity& angularVelocity) {
     m_angularVelocity = angularVelocity;
-    m_speedIndicatorPolygon = getSpeedIndicatorPolygon(angularVelocity);
+    // m_speedIndicatorPolygon = getSpeedIndicatorPolygon(angularVelocity); // TODO: MACK - graphics on graphics thread
 }
 
 EncoderType Wheel::getEncoderType() const {

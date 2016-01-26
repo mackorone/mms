@@ -75,7 +75,7 @@ namespace continuous {
 					movesDoneAndWallsSet = false;
 
 					/***************Acceleration test (longpath.maz, works up until the second turn)******************/
-					    /*movesBuffer[0] = 'f';
+					    movesBuffer[0] = 'f';
 					    movesBuffer[1] = 'f';
 					    movesBuffer[2] = 'f';
 					    movesBuffer[3] = 'f';
@@ -90,13 +90,14 @@ namespace continuous {
 						movesBuffer[12] = 'f';
 						movesBuffer[13] = 'f';
 						movesBuffer[14] = 'f';
-					    movesBuffer[15] = 'r';*/
+					    movesBuffer[15] = 'r';
 						/***********************************************/
 
 					/***************Right Wall Follow******************/
+                    /*
 					if (!walls[2]) {
 						cout << "right\n";
-						movesBuffer[0] = 'r';
+						rovesBuffer[0] = 'r';
 						movesBuffer[1] = 0;
 					}
 					else if (!walls[1]) {
@@ -116,6 +117,7 @@ namespace continuous {
 						movesBuffer[1] = 'f';
 						movesBuffer[2] = 0;
 					}
+                    */
 					/***********************************************/
 					movesReady = true;
 				}

@@ -1,6 +1,11 @@
 # High Priority
 
 - Diagonals
+- Fix longpath2.maz
+- Why are we triangulating in initFromBasicMaze
+- Return const references, use const references in loops and especially in map iterations..., etc.
+- Disable some copy constructors (wheels, sensors, etc.)
+- Implement a gear ratio
 - Windows logging is not working on non-main threads
 - Logging is too expensive
     - Causing freezing and crashing

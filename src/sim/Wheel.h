@@ -24,8 +24,8 @@ public:
     Meters getRadius() const;
     Cartesian getInitialPosition() const;
     Radians getInitialDirection() const;
-    Polygon getInitialPolygon() const;
-    Polygon getSpeedIndicatorPolygon() const;
+    const Polygon& getInitialPolygon() const;
+    const Polygon& getSpeedIndicatorPolygon() const;
 
     // Motor
     RadiansPerSecond getAngularVelocity() const;
