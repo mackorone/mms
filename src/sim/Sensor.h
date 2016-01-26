@@ -27,8 +27,8 @@ public:
     Seconds getReadDuration() const;
     Cartesian getInitialPosition() const;
     Radians getInitialDirection() const;
-    Polygon getInitialPolygon() const;
-    Polygon getInitialViewPolygon() const;
+    const Polygon& getInitialPolygon() const;
+    const Polygon& getInitialViewPolygon() const;
     Polygon getCurrentViewPolygon(
         const Cartesian& currentPosition,
         const Radians& currentDirection,
