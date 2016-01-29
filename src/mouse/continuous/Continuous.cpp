@@ -67,7 +67,11 @@ namespace continuous {
 			long long elapsed = millis() - start;
 			if (elapsed >= timeConst) {
 				if (movesDoneAndWallsSet) {
-
+					/*while (true) {
+						setSpeed(0, 0);
+						delay(100);
+						break;
+					}*/
 					bool walls[3];
 					walls[0] = walls_global[0];
 					walls[1] = walls_global[1];
@@ -296,8 +300,8 @@ namespace continuous {
 	}
 
 	void Continuous::turnAround() {
-		const int frontLeftStop = 1400;
-		const int frontRightStop = 1400;
+		const double frontLeftStop = .8;
+		const double frontRightStop = .8;
 		bool leftStop = false;
 		bool rightStop = false;
 		int tickCount = 180;
@@ -317,14 +321,17 @@ namespace continuous {
 		}
 		if (front) {
 			while (rightFront <= frontRightStop || leftFront <= frontLeftStop) {
+				readSensors();
+				cout << rightFront << " " << leftFront << "\n";
 				if (wallRight() && wallLeft()) {
-					errorP = leftSensor - rightSensor - 100; // 100 is the offset between left and right sensor when mouse in the
+					errorP = leftSensor - rightSensor; // 100 is the offset between left and right sensor when mouse in the
 															 // middle of cell
 				}
 				else if (wallRight()) {
 					const int wallDist = rightWallDist; //Make this bigger to move closer to the wall
 														// Only right wall
 					errorP = 20 * (angle)-.5 * (rightSensor - wallDist);
+					errorP = 0;//TODO
 					errorD = errorP;
 				}
 				else if (wallLeft()) {
@@ -333,10 +340,12 @@ namespace continuous {
 													   // errorP = 2 * (leftMiddleValue - leftSensor + 1200) + 100 * (angle - targetAngle);
 
 					errorP = 20 * (angle)+.5 * (leftSensor - wallDist);
+					errorP = 0;//TODO
 					errorD = errorP;
 				}
 				else {
 					errorP = 20 * (angle);
+					errorP = 0; //TODO
 					errorD = errorP;
 				}
 				//      errorP += 3*(rightFront - leftFront);
@@ -344,15 +353,14 @@ namespace continuous {
 				totalError = straightKp * errorP + Kd * errorD;
 
 				// Calculate PWM based on Error
-				currentLeftPWM = leftBaseSpeed + totalError / 124;
-				currentRightPWM = rightBaseSpeed - totalError / 124;
 
 				// Update Motor PWM values
-				setSpeed(currentLeftPWM, currentRightPWM);
+				m_mouse->setWheelSpeed("left-lower", -(leftBaseSpeed + totalError));//TODO variable speed
+				m_mouse->setWheelSpeed("right-lower", rightBaseSpeed - totalError);
 			}
 		}
 
-		//Turn Around with no wall in front
+		//Turn Around with no wall in front - TODO
 		else {
 			const int tickValue = 100;
 			while ((rightTicks + leftTicks) / 2 < tickValue) {
@@ -386,26 +394,26 @@ namespace continuous {
 				setSpeed(currentLeftPWM, currentRightPWM);
 			}
 		}
-		setSpeed(0, 0);
-		delay(200);
-		leftStop = false;
-		rightStop = false;
+		while (true) {
+			setSpeed(0, 0);
+			//delay(200);
+			leftStop = false;
+			rightStop = false;
 
-		pivotTurnRight();
+			pivotTurnRight();
 
-		angle = 0.0;
-		delay(200);
-		if (front) {
-			setSpeed(-150, -150);
-			delay(350);
-			firstCell = true;
+			angle = 0.0;
+			if (front) {
+				//setSpeed(-150, -150);
+				//delay(350);
+				firstCell = true;
+			}
+			else {
+				//delay(200);
+				afterTurnAround = true;
+			}
+			break;
 		}
-		else {
-			delay(200);
-			afterTurnAround = true;
-
-		}
-
 	}
 
 	void Continuous::forwardCorrection() {
@@ -819,20 +827,33 @@ namespace continuous {
 		int oldErrorP;
 		int tickCount = 190;
 		// Gyro calibrated for each speed or turning is not accurate
-		float degreesTraveled = 0;
+		double degreesTraveled = 0;
 		const int turnSpeed = 400;
-		const float targetDegrees = 137;
-		float initialZ;
-
-		//initialZ = gz; // May not be necessary
-		//count = millis();
-		setSpeed(turnSpeed, -turnSpeed);
-		//while (degreesTraveled >= -targetDegrees) {//FIX
-		//	degreesTraveled += (gz - 0) * 0.001;
-		//	//count = millis();
-		//	delay(1);
-		//}
-
+		double targetDegrees = 137;
+		double startAngle;
+		double degrees;
+		startAngle = m_mouse->currentRotationDegrees();
+		//cout << "START: " << startAngle << "\n";
+		//delay(1000);
+		if ((startAngle >= 0 && startAngle < 45) || (startAngle > 315 && startAngle <= 360)) {		
+			targetDegrees = 180;
+		}
+		else if (startAngle > 45 && startAngle < 135) {
+			targetDegrees = 270;
+		}
+		else if (startAngle > 135 && startAngle < 225) {
+			targetDegrees = 360;
+		}
+		else {
+			targetDegrees = 90;
+		}
+		setSpeed(turnSpeed, turnSpeed);
+		degrees = m_mouse->currentRotationDegrees();
+		while (abs(degrees - targetDegrees) > 2) {
+			degrees = m_mouse->currentRotationDegrees();
+			//cout << degrees << " " << targetDegrees << "\n";
+		}
+		setSpeed(0, 0);
 		// Needs to deccelerate for the motors to stop correctly
 		delay(200);
 	}
@@ -978,7 +999,7 @@ namespace continuous {
 	}
 
 	bool Continuous::wallFront() {
-		return m_mouse->readSensor("right-front") > 0.5;
+		return m_mouse->readSensor("right-front") > 0.4;
 	}
 
 	void Continuous::turnRight() {
@@ -1006,17 +1027,6 @@ namespace continuous {
 				}
 			}
 		}
-	}
-
-	void Continuous::turnLeft() {
-		m_mouse->setWheelSpeed("left-lower", 5 * M_PI);
-		m_mouse->setWheelSpeed("right-lower", 5 * M_PI);
-		m_mouse->delay(290);
-		m_mouse->setWheelSpeed("left-lower", -10 * M_PI);
-		m_mouse->setWheelSpeed("right-lower", 10 * M_PI);
-		m_mouse->delay(100);
-		m_mouse->setWheelSpeed("left-lower", 0);
-		m_mouse->setWheelSpeed("right-lower", 0);
 	}
 
 	void Continuous::simpleTurnAround() {
@@ -1054,7 +1064,8 @@ namespace continuous {
 			if (i == 0) {
 				startAngle = m_mouse->currentRotationDegrees();	//TODO Local?
 			}
-			if ((startAngle >= 0 && startAngle < 45) || (startAngle > 315 && startAngle <= 350)) {
+			//cout << startAngle << "\n";
+			if ((startAngle >= 0 && startAngle < 45) || (startAngle > 315 && startAngle <= 359)) {
 				if (moveType == TURN_RIGHT) {//TODO Test all cases
 					offsetAngle = 360;
 				}
