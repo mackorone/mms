@@ -6,6 +6,8 @@
 #include "Param.h"
 #include "State.h"
 
+#include "Logging.h"
+
 namespace sim{
 
 MouseGraphic::MouseGraphic(const Mouse* mouse, BufferInterface* bufferInterface) :
@@ -25,28 +27,32 @@ void MouseGraphic::draw(const Coordinate& currentTranslation, const Angle& curre
         STRING_TO_COLOR.at(P()->mouseCenterOfMassColor()), 1.0);
 
     // Next, we draw the wheels
-    for (Polygon wheelPolygon : m_mouse->getCurrentWheelPolygons(currentTranslation, currentRotation)) {
+    for (const Polygon& wheelPolygon :
+            m_mouse->getCurrentWheelPolygons(currentTranslation, currentRotation)) {
         m_bufferInterface->drawMousePolygon(
             wheelPolygon,
             STRING_TO_COLOR.at(P()->mouseWheelColor()), 1.0);
     }
 
     // Next, we draw the wheel speed indicators
-    for (Polygon wheelSpeedIndicatorPolygon : m_mouse->getCurrentWheelSpeedIndicatorPolygons(currentTranslation, currentRotation)) {
+    for (const Polygon& wheelSpeedIndicatorPolygon :
+            m_mouse->getCurrentWheelSpeedIndicatorPolygons(currentTranslation, currentRotation)) {
         m_bufferInterface->drawMousePolygon(
             wheelSpeedIndicatorPolygon,
             STRING_TO_COLOR.at(P()->mouseWheelSpeedIndicatorColor()), 1.0);
     }
 
     // Next, we draw the sensors
-    for (Polygon sensorPolygon : m_mouse->getCurrentSensorPolygons(currentTranslation, currentRotation)) {
+    for (const Polygon& sensorPolygon :
+            m_mouse->getCurrentSensorPolygons(currentTranslation, currentRotation)) {
         m_bufferInterface->drawMousePolygon(
             sensorPolygon,
             STRING_TO_COLOR.at(P()->mouseSensorColor()), 1.0);
     }
 
     // Lastly, we draw the sensor views
-    for (Polygon polygon : m_mouse->getCurrentSensorViewPolygons(currentTranslation, currentRotation)) {
+    for (const Polygon& polygon :
+            m_mouse->getCurrentSensorViewPolygons(currentTranslation, currentRotation)) {
         m_bufferInterface->drawMousePolygon(
             polygon,
             STRING_TO_COLOR.at(P()->mouseViewColor()), 1.0);

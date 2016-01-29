@@ -52,11 +52,11 @@ Radians Sensor::getInitialDirection() const {
     return m_initialDirection;
 }
 
-Polygon Sensor::getInitialPolygon() const {
+const Polygon& Sensor::getInitialPolygon() const {
     return m_initialPolygon;
 }
 
-Polygon Sensor::getInitialViewPolygon() const {
+const Polygon& Sensor::getInitialViewPolygon() const {
     return m_initialViewPolygon;
 }
 
@@ -90,6 +90,8 @@ Polygon Sensor::getViewPolygon(
         const Cartesian& currentPosition,
         const Radians& currentDirection,
         const Maze& maze) const {
+
+    // Calling this function causes triangulation of a polygon
 
     static Meters halfWallWidth = Meters(P()->wallWidth() / 2.0);
     static Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());

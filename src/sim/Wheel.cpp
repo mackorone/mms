@@ -17,6 +17,7 @@ Wheel::Wheel(
         m_halfWidth(Meters(width) / 2.0),
         m_initialPosition(position),
         m_initialDirection(direction),
+        m_speedIndicatorPolygonNeedsToBeUpdated(true),
         m_angularVelocity(RadiansPerSecond(0.0)),
         m_maxAngularVelocityMagnitude(maxAngularVelocityMagnitude),
         m_encoderType(encoderType),
@@ -34,9 +35,6 @@ Wheel::Wheel(
         Polygon(polygon)
             .translate(m_initialPosition)
             .rotateAroundPoint(m_initialDirection, m_initialPosition);
-
-    // Create the initial speed indicator polygon
-    m_speedIndicatorPolygon = getSpeedIndicatorPolygon(getAngularVelocity());
 }
 
 Meters Wheel::getRadius() const {
@@ -51,11 +49,15 @@ Radians Wheel::getInitialDirection() const {
     return m_initialDirection;
 }
 
-Polygon Wheel::getInitialPolygon() const {
+const Polygon& Wheel::getInitialPolygon() const {
     return m_initialPolygon;
 }
 
-Polygon Wheel::getSpeedIndicatorPolygon() const {
+const Polygon& Wheel::getSpeedIndicatorPolygon() const {
+    if (m_speedIndicatorPolygonNeedsToBeUpdated) {
+        m_speedIndicatorPolygon = getSpeedIndicatorPolygon(m_angularVelocity);
+        m_speedIndicatorPolygonNeedsToBeUpdated = false;
+    }
     return m_speedIndicatorPolygon;
 }
 
@@ -69,7 +71,7 @@ RadiansPerSecond Wheel::getMaxAngularVelocityMagnitude() const {
 
 void Wheel::setAngularVelocity(const AngularVelocity& angularVelocity) {
     m_angularVelocity = angularVelocity;
-    m_speedIndicatorPolygon = getSpeedIndicatorPolygon(angularVelocity);
+    m_speedIndicatorPolygonNeedsToBeUpdated = true;
 }
 
 EncoderType Wheel::getEncoderType() const {
@@ -101,7 +103,7 @@ void Wheel::updateRotation(const Angle& angle) {
     m_relativeRotation += angle;
 }
 
-Polygon Wheel::getSpeedIndicatorPolygon(const AngularVelocity& angularVelocity) {
+Polygon Wheel::getSpeedIndicatorPolygon(const AngularVelocity& angularVelocity) const {
     double fractionOfMaxSpeed = 0.0;
     if (0.0 < getMaxAngularVelocityMagnitude().getRadiansPerSecond()) {
         fractionOfMaxSpeed = angularVelocity / getMaxAngularVelocityMagnitude();

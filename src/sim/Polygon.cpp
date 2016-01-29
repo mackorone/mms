@@ -5,6 +5,7 @@
 #include "Assert.h"
 #include "CPMath.h"
 #include "GeometryUtilities.h"
+#include "Logging.h"
 #include "SimUtilities.h"
 #include "units/Polar.h"
 
@@ -21,6 +22,16 @@ Polygon::Polygon(const Polygon& polygon) :
     if (polygon.alreadyPerformedTriangulation()) {
         m_triangles = polygon.getTriangles();
     }
+    else {
+        // Uncomment to log untriangulated polygon copies
+        /*
+        static int i = 0;
+        i += 1;
+        if (i % 100 == 0) {
+            L()->info("Untriangulated polygon copies count: %v", i);
+        }
+        */
+    }
 }
 
 Polygon::Polygon(const std::vector<Cartesian>& vertices) :
@@ -28,6 +39,14 @@ Polygon::Polygon(const std::vector<Cartesian>& vertices) :
     // Postpone triangulation until we absolutely have to do it.
     m_triangles({}) {
     ASSERT_LE(3, m_vertices.size());
+    // If the number of vertices is three, the triangulation is trivial
+    if (m_vertices.size() == 3) {
+        m_triangles = {{
+            m_vertices.at(0),
+            m_vertices.at(1),
+            m_vertices.at(2),
+        }};
+    }
 }
 
 std::vector<Cartesian> Polygon::getVertices() const {
