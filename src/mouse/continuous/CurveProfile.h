@@ -1,7 +1,7 @@
 #pragma once
 #include "../IMouseAlgorithm.h"
 
-const int curveTime = 346;
+const int curveTime = 351;
 float curve[curveTime] = {
 	0,
 	0.025,
@@ -294,6 +294,11 @@ float curve[curveTime] = {
 	90,
 	90,
 	90,
+		90,
+		90,
+		90,
+		90,
+		90,
 		90,
 		90,
 		90,
