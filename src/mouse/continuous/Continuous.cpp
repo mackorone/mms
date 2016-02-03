@@ -450,6 +450,34 @@ namespace continuous {
 		static bool currentWallRight = true;
 		static bool ticksDecided = false;
 		static int count = 0;
+		static double targetDegrees;
+		double angle;
+		static int i = 0;
+		if (i == 0) {
+			startAngle = m_mouse->currentRotationDegrees();
+			//cout << "START: " << startAngle << "\n";
+			//delay(1000);
+			if ((startAngle >= 0 && startAngle < 45) || (startAngle > 315 && startAngle <= 360)) {
+				targetDegrees = 360;
+			}
+			else if (startAngle > 45 && startAngle < 135) {
+				targetDegrees = 90;
+			}
+			else if (startAngle > 135 && startAngle < 225) {
+				targetDegrees = 180;
+			}
+			else {
+				targetDegrees = 270;
+			}
+		}
+		i++;
+		angle = m_mouse->currentRotationDegrees();
+		if (targetDegrees == 360) {
+			if (angle <= 45) {
+				angle += 360;
+			}
+		}
+		angle -= targetDegrees;
 		leftTicks = -m_mouse->readWheelEncoder("left-lower") + forwardOffset;
 		rightTicks = m_mouse->readWheelEncoder("right-lower") + forwardOffset;
 		if (accelerate) {
@@ -508,18 +536,17 @@ namespace continuous {
 		else if (leftValid) {
 			// Only left wall
 			// errorP = 2 * (leftMiddleValue - leftSensor + 1200) + 100 * (angle - targetAngle);
-			errorP = 20 * (angle - 5) + .5 * (leftSensor - leftWallDist);//TODO
-			errorP = 0;//TODO
+			//errorP = 20 * (angle - 5) + .5 * (leftSensor - leftWallDist);//TODO
+			errorP = 1 * angle;//TODO
 			errorD = errorP - oldErrorP;
 		}
 		else if (rightValid) {
 			// Only right wall
-			errorP = 20 * (angle)-.5 * (rightSensor - rightWallDist);//TODO
-			errorP = 0;//TODO 
+			//errorP = 20 * (angle)-.5 * (rightSensor - rightWallDist);//TODO
+			errorP = 1 * angle;//TODO 
 			errorD = errorP - oldErrorP;
 		}
 		else {
-			static int targetAngle = 0;
 			// No walls, use gyro to correct
 			//    if (!wallFront) {
 			//      errorP = -20 * (leftFront - rightFront) + 20*angle;
@@ -533,8 +560,7 @@ namespace continuous {
 			//    }
 
 			//errorP = 20 * (angle - targetAngle);
-			errorP = 0;//TODO Gyro Correction
-
+			errorP = 1 * angle;//TODO Gyro Correction
 			//    }
 			errorD = errorP - oldErrorP;//TODO
 		}
@@ -612,6 +638,7 @@ namespace continuous {
 			nextCellDecided = false;
 			moveType = NO;
 			endCell = false;
+			i = 0;
 		}
 
 
@@ -1057,7 +1084,7 @@ namespace continuous {
 		}
 		if (turn == false) {
 			targetAngle = offsetAngle;
-			if ((rightFront + leftFront) / 2 >= .562) {
+			if ((rightFront + leftFront) / 2 >= .567) {//.562
 				turn = true;
 			}
 			//turn = true;
