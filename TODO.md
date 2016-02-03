@@ -1,8 +1,15 @@
 # High Priority
 
+- Don't draw sensors in discrete mode
 - Diagonals
-- Fix longpath2.maz
-- Why are we triangulating in initFromBasicMaze
+    - In a tile, the possible directions (both left and right) are 0, 45, 90, 135, 180
+    - In a diagonal, the possible directions (both left and right) are 0, 45, 90, 135
+    - https://www.youtube.com/watch?v=HPvke3fknrc
+    - Stringing together diagonal movements (with smooth turns) is difficult
+    - Use small curves to do diagonals
+- Make a class for commonly used measurements
+    - tileWidth
+    - halfWallWidth
 - Return const references, use const references in loops and especially in map iterations..., etc.
 - Disable some copy constructors (wheels, sensors, etc.)
 - Implement a gear ratio
@@ -12,8 +19,6 @@
     - Generalize a method for counting and logging few times, 1 per second
 - Fix parameters no root element
 - Adjustable curve turn diameter
-- Looks like triangulation is going crazy on curve turns
-- Teleport doesn't preserve triangulation
 - Rename min-sleep-duration to something better
 - Update algos to use stopOnTileEdge, update documentation for rightWallFollow, etc.
 - Make methods in IMouseInterface such as millis(), so that they can be called without "m_mouse->"

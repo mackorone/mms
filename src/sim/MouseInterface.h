@@ -131,6 +131,11 @@ public:
     void turnAroundToEdgeLeft();
     void turnAroundToEdgeRight();
 
+    void diagonalLeftLeft(int count);
+    void diagonalLeftRight(int count);
+    void diagonalRightLeft(int count);
+    void diagonalRightRight(int count);
+
     // ----- Omniscience methods ----- //
 
     int currentXTile();
@@ -170,6 +175,9 @@ private:
 
     // TODO: MACK
     Cartesian getDestinationTranslationForMoveForward() const;
+
+    // TODO: MACK
+    void doDiagonal(int count, bool startLeft, bool endLeft);
 
 };
 
