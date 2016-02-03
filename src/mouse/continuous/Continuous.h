@@ -28,9 +28,9 @@ private:
 	const int leftWallDist = 1900;
 
 	// PID Constants
-#define straightKp 50  //TODO
+#define straightKp 200  //TODO
 #define turnKp 16 //TODO
-#define Kd 10
+#define Kd 600
 
 	/* Variables for interface between drive code and algorithm */
 	volatile char movesBuffer[256];
@@ -90,29 +90,20 @@ private:
     bool wallRight();
     bool wallFront();
     bool wallLeft();
-    void turnRight();
-    void turnLeft();
 	void moveForward();
 	void forwardCorrection();
 	void turnCorrection();
 	void pivotTurnRight();
-	void pivotTurnLeft();
 	long long millis();
 	void pivotTurnRight90();
-	void wallFollow();
 	void setSpeed(double left, double right);
 	void turnAround();
-	void simpleTurnAround();
-	void curveTurnLeft();
 	void readSensors();
-    void correctErrors();
 	void gyroTest();
 	void curveTurnRight();
-	float readGyro();
 	void delay(int ms);
 	void correction();
 	bool allowOmniscience() const;
-	double getAngle();
     sim::MouseInterface* m_mouse;
 };
 
