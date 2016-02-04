@@ -1,5 +1,6 @@
 # High Priority
 
+- Translation mouse test
 - Don't draw sensors in discrete mode
 - Diagonals
     - In a tile, the possible directions (both left and right) are 0, 45, 90, 135, 180

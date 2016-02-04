@@ -554,7 +554,7 @@ void MouseInterface::curveTurnLeft() {
     }
 
     Radians initialRotationDelta = getRotationDelta(m_mouse->getCurrentRotation(), destinationRotation);
-    m_mouse->setWheelSpeedsForCurveTurnLeft(m_options.wheelSpeedFraction);
+    m_mouse->setWheelSpeedsForCurveLeft(m_options.wheelSpeedFraction, Meters(P()->wallLength() / 2.0));
     while (0 <
             initialRotationDelta.getRadiansNotBounded() *
             getRotationDelta(
@@ -602,7 +602,7 @@ void MouseInterface::curveTurnRight() {
     }
 
     Radians initialRotationDelta = getRotationDelta(m_mouse->getCurrentRotation(), destinationRotation);
-    m_mouse->setWheelSpeedsForCurveTurnRight(m_options.wheelSpeedFraction);
+    m_mouse->setWheelSpeedsForCurveRight(m_options.wheelSpeedFraction, Meters(P()->wallLength() / 2.0));
     while (0 <
             initialRotationDelta.getRadiansNotBounded() *
             getRotationDelta(
@@ -631,6 +631,7 @@ void MouseInterface::diagonalRightRight(int count) {
 }
 
 void MouseInterface::doDiagonal(int count, bool startLeft, bool endLeft) {
+    // TODO: MACK - special case for counts 1,2
     // TODO: MACK - limits on count?
     if (startLeft == endLeft) {
         ASSERT_EQ(count % 2, 1);

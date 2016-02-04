@@ -6,6 +6,7 @@
 #include "units/Cartesian.h"
 #include "units/RadiansPerSecond.h"
 
+#include "CurveTurnFactorCalculator.h"
 #include "Direction.h"
 #include "EncoderType.h"
 #include "InterfaceType.h"
@@ -13,6 +14,7 @@
 #include "Polygon.h"
 #include "Sensor.h"
 #include "Wheel.h"
+#include "WheelEffect.h"
 
 namespace sim {
 
@@ -86,8 +88,8 @@ public:
     void setWheelSpeedsForMoveForward(double fractionOfMaxSpeed);
     void setWheelSpeedsForTurnLeft(double fractionOfMaxSpeed);
     void setWheelSpeedsForTurnRight(double fractionOfMaxSpeed);
-    void setWheelSpeedsForCurveTurnLeft(double fractionOfMaxSpeed);
-    void setWheelSpeedsForCurveTurnRight(double fractionOfMaxSpeed);
+    void setWheelSpeedsForCurveLeft(double fractionOfMaxSpeed, const Meters& radius);
+    void setWheelSpeedsForCurveRight(double fractionOfMaxSpeed, const Meters& radius);
     void stopAllWheels();
 
     // Returns the encoder type of the wheel given by name
@@ -135,14 +137,22 @@ private:
     std::map<std::string, Wheel> m_wheels; // The wheels of the mouse
     std::map<std::string, Sensor> m_sensors; // The sensors on the mouse
 
+    // The effect that each wheel has on mouse forward, sideways, and turn movements
+    std::map<std::string, WheelEffect> m_wheelEffects;
+
     // The fractions of a each wheel's max speed that cause the mouse to
     // perform the move forward and turn movements, respectively, as optimally
-    // as possible (note that the fractions are in [-1.0, 1.0])
+    // as possible. Note that "as optimally as possible" is purposefully
+    // ambiguous, because not all mice can move forward without turning or
+    // moving sideways, and/or turn without moving forward or sideways.
+    // Also note that the fractions are in [-1.0, 1.0], so that the max wheel
+    // is never exceeded.
     std::map<std::string, std::pair<double, double>> m_wheelSpeedAdjustmentFactors;
 
-    // The linear combination of the forward component and turn component
-    // that cause the mouse to perform a curve turn as optimally as possible
-    std::pair<double, double> m_curveTurnFactors;
+    // Used to calculate the linear combination of the forward component and turn
+    // component, based on curve turn radius, that cause the mouse to perform a
+    // curve turn as optimally as possible
+    CurveTurnFactorCalculator m_curveTurnFactorCalculator;
 
     // The gyro (rate of rotation), rotation, and translation of the mouse,
     // which change throughout execution
@@ -169,27 +179,17 @@ private:
     // Sets the wheel speed for a particular movement, based on the linear combo of the two factors
     void setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardFactor, double turnFactor);
 
-    // Helper method for getting wheel speed adjustment factors based on a list/map of wheels
-    std::map<std::string, std::pair<double, double>> getWheelSpeedAdjustmentFactors(
+    // Helper method for getting forward and turn rates of change due to a single wheel
+    std::map<std::string, WheelEffect> getWheelEffects(
         const Cartesian& initialTranslation,
         const Radians& initialRotation,
         const std::map<std::string, Wheel>& wheels) const;
 
-    // Helper method for getting curve turn factors based on wheels and adjustments
-    std::pair<double, double> getCurveTurnFactors(
-        const Cartesian& initialTranslation,
-        const Radians& initialRotation,
+    // Helper method for getting wheel speed adjustment factors based on wheel effects
+    std::map<std::string, std::pair<double, double>> getWheelSpeedAdjustmentFactors(
         const std::map<std::string, Wheel>& wheels,
-        std::map<std::string, std::pair<double, double>> wheelSpeedAdjustmentFactors,
-        const Meters& curveTurnArcLength) const;
+        const std::map<std::string, WheelEffect>& wheelEffects) const;
 
-    // Helper method for getting forward and radial rates of change due to a single wheel
-    std::pair<MetersPerSecond, RadiansPerSecond> getRatesOfChange(
-        const Cartesian& initialTranslation,
-        const Radians& initialRotation,
-        const Cartesian& wheelInitialPosition,
-        const Radians& wheelInitialDirection,
-        const MetersPerSecond& wheelLinearVelocity) const;
 };
 
 } // namespace sim
