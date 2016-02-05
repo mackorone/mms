@@ -440,7 +440,7 @@ namespace continuous {
 		static bool nextCellDecided = false;
 		double errorP;
 		double errorD;
-		static int oldErrorP = 0;//make static to insert D term
+		static int oldErrorP = 0;//TODO (probably should be double)
 		double totalError;
 		static int lastTicksL;
 		static int lastTicksR;
@@ -926,7 +926,7 @@ namespace continuous {
 		degrees = m_mouse->currentRotationDegrees();
 		while (abs(degrees - targetDegrees) > 1.5) {
 			degrees = m_mouse->currentRotationDegrees();
-			cout << degrees << " " << targetDegrees << "\n";
+			//cout << degrees << " " << targetDegrees << "\n";
 		}
 		setSpeed(0, 0);
 	}
@@ -1051,7 +1051,7 @@ namespace continuous {
 		double Kp = 70 / turnSpeed; //35
 		double targetAngle;
 		//long long start = millis();
-		int timeConst = 2 * turnSpeed; //ms 2
+		//int timeConst = 2 * turnSpeed; //ms 2
 		static int i = 0;
 		static int offsetAngle;
 		bool continueTurn = true;
@@ -1084,8 +1084,11 @@ namespace continuous {
 		}
 		if (turn == false) {
 			targetAngle = offsetAngle;
-			if ((rightFront + leftFront) / 2 >= .567) {//.562
+			cout << "YES";
+			if ((rightFront + leftFront) / 2 >= .567) {//.567
 				turn = true;
+				cout << "YES\n";
+				i = 1;
 			}
 			//turn = true;
 		}
@@ -1223,7 +1226,7 @@ namespace continuous {
 				if (angle >= 270) {
 					setSpeed(0, 0);
 					readSensors();
-					cout << rightFront << " : " << leftFront << "\n";
+					//cout << rightFront << " : " << leftFront << "\n";
 					while (true);
 				}
 			}
