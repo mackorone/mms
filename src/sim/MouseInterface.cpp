@@ -554,7 +554,7 @@ void MouseInterface::curveTurnLeft() {
     }
 
     Radians initialRotationDelta = getRotationDelta(m_mouse->getCurrentRotation(), destinationRotation);
-    m_mouse->setWheelSpeedsForCurveTurnLeft(m_options.wheelSpeedFraction);
+    m_mouse->setWheelSpeedsForCurveLeft(m_options.wheelSpeedFraction, Meters(P()->wallLength() / 2.0));
     while (0 <
             initialRotationDelta.getRadiansNotBounded() *
             getRotationDelta(
@@ -602,7 +602,7 @@ void MouseInterface::curveTurnRight() {
     }
 
     Radians initialRotationDelta = getRotationDelta(m_mouse->getCurrentRotation(), destinationRotation);
-    m_mouse->setWheelSpeedsForCurveTurnRight(m_options.wheelSpeedFraction);
+    m_mouse->setWheelSpeedsForCurveRight(m_options.wheelSpeedFraction, Meters(P()->wallLength() / 2.0));
     while (0 <
             initialRotationDelta.getRadiansNotBounded() *
             getRotationDelta(
@@ -612,6 +612,57 @@ void MouseInterface::curveTurnRight() {
         sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
     }
     moveForwardTo(destinationTranslation, destinationRotation);
+}
+
+void MouseInterface::diagonalLeftLeft(int count) {
+    doDiagonal(count, true, true);
+}
+
+void MouseInterface::diagonalLeftRight(int count) {
+    doDiagonal(count, true, false);
+}
+
+void MouseInterface::diagonalRightLeft(int count) {
+    doDiagonal(count, false, true);
+}
+
+void MouseInterface::diagonalRightRight(int count) {
+    doDiagonal(count, false, false);
+}
+
+void MouseInterface::doDiagonal(int count, bool startLeft, bool endLeft) {
+    // TODO: MACK - special case for counts 1,2
+    // TODO: MACK - limits on count?
+    if (startLeft == endLeft) {
+        ASSERT_EQ(count % 2, 1);
+    }
+    else {
+        ASSERT_EQ(count % 2, 0);
+    }
+    // TODO: MACK - Clean this up
+
+    Meters halfTileWidth = Meters(P()->wallLength() + P()->wallWidth()) / 2.0;
+    Meters halfTileDiagonal = Meters(std::sqrt(2 * (halfTileWidth * halfTileWidth).getMetersSquared()));
+
+    Cartesian backALittleBit = m_mouse->getCurrentTranslation() +
+        Polar(Meters(P()->wallWidth() / 2.0), m_mouse->getCurrentRotation() + Degrees(180));
+
+    Cartesian destination = backALittleBit +
+        Polar(halfTileDiagonal * count, m_mouse->getCurrentRotation() + Degrees(45) * (startLeft ? 1 : -1));
+    Polar delta = destination - m_mouse->getCurrentTranslation();
+
+    Radians endRotation = m_mouse->getCurrentRotation();
+    if (startLeft && endLeft) {
+        endRotation += Degrees(90);
+    }
+    if (!startLeft && !endLeft) {
+        endRotation -= Degrees(90);
+    }
+    
+    turnTo(m_mouse->getCurrentTranslation(), delta.getTheta());
+    moveForwardTo(destination, m_mouse->getCurrentRotation());
+    turnTo(m_mouse->getCurrentTranslation(), endRotation);
+    moveForwardTo(destination + Polar(Meters(P()->wallWidth() / 2.0), m_mouse->getCurrentRotation()), m_mouse->getCurrentRotation());
 }
 
 int MouseInterface::currentXTile() {

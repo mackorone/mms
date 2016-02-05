@@ -28,9 +28,22 @@ double RightWallFollow::wheelSpeedFraction() const {
 void RightWallFollow::solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse) {
+    mouse->moveForward();
+    turnRightAndMoveForward(mouse);
+    turnRightAndMoveForward(mouse);
+    turnLeftAndMoveForward(mouse);
+    for (int i = 0; i < 10; i += 1) {
+        mouse->moveForward();
+    }
+    mouse->turnAroundLeft();
+    mouse->diagonalRightRight(3);
+    mouse->diagonalRightRight(5);
+    // TODO: MACK
+    /*
     while (true){
         rightWallFollowStep(mouse);
     }
+    */
 }
 
 void RightWallFollow::rightWallFollowStep(sim::MouseInterface* mouse) {
