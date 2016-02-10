@@ -15,7 +15,7 @@ bool RightWallFollow::declareBothWallHalves() const {
 }
 
 bool RightWallFollow::useTileEdgeMovements() const {
-    return false;
+    return true;
 }
 
 double RightWallFollow::wheelSpeedFraction() const {

@@ -433,7 +433,17 @@ void MouseInterface::originMoveForwardToEdge() {
     ENSURE_USE_TILE_EDGE_MOVEMENTS
     ENSURE_INSIDE_ORIGIN
 
-    moveForwardImpl(); // TODO: MACK - this should be different
+    if (wallFrontImpl(false, false)) {
+        if (!S()->crashed()) {
+            S()->setCrashed();
+        }
+        return;
+    }
+
+    std::pair<int, int> currentTile = m_mouse->getCurrentDiscretizedTranslation();
+    Cartesian centerOfCurrentTile = getCenterOfTile(currentTile.first, currentTile.second);
+    Cartesian delta = Polar(Meters(P()->wallLength() / 2.0 + P()->wallWidth()), m_mouse->getCurrentRotation());
+    moveForwardTo(centerOfCurrentTile + delta, m_mouse->getCurrentRotation());
     m_inOrigin = false;
 }
 
@@ -778,8 +788,9 @@ void MouseInterface::moveForwardImpl() {
         }
         return;
     }
-    // TODO: MACK - make this better, don't need getDestinationTranslationForMoveForward
-    moveForwardTo(getDestinationTranslationForMoveForward(), m_mouse->getCurrentRotation());
+    static Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
+    Cartesian delta = Polar(tileLength, m_mouse->getCurrentRotation());
+    moveForwardTo(m_mouse->getCurrentTranslation() + delta, m_mouse->getCurrentRotation());
 }
 
 void MouseInterface::moveForwardImpl(int count) {
@@ -829,25 +840,23 @@ void MouseInterface::turnAroundToEdgeImpl(bool turnLeft) {
 
 void MouseInterface::turnToEdgeImpl(bool turnLeft) {
 
-    if (turnLeft && wallLeftImpl(false, false)) {
-        // TODO: MACK
-    }
-    if (!turnLeft && wallRightImpl(false, false)) {
-        // TODO: MACK
+    // Check for a crash
+    if ((turnLeft && wallLeftImpl(false, false)) || (!turnLeft && wallRightImpl(false, false))) {
+        if (!S()->crashed()) {
+            S()->setCrashed();
+        }
+        return;
     }
 
     Meters halfWallLength = Meters(P()->wallLength() / 2.0);
-    Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
     std::pair<int, int> currentTile = m_mouse->getCurrentDiscretizedTranslation();
-    Cartesian centerOfCurrentTile = Cartesian(
-        tileLength * (static_cast<double>(currentTile.first) + 0.5),
-        tileLength * (static_cast<double>(currentTile.second) + 0.5)
-    );
+    Cartesian centerOfCurrentTile = getCenterOfTile(currentTile.first, currentTile.second);
 
     Degrees destinationRotation = m_mouse->getCurrentRotation() + Degrees((turnLeft ? 90 : -90));
     Cartesian intermediateDestination = centerOfCurrentTile + Polar(halfWallLength, destinationRotation);
     Cartesian finalDestination = intermediateDestination + Polar(Meters(P()->wallWidth()), destinationRotation);
 
+    // Perform the curve turn
     arcTo(intermediateDestination, destinationRotation, halfWallLength, 1.0);
     moveForwardTo(finalDestination, destinationRotation);
 }
@@ -984,75 +993,27 @@ Radians MouseInterface::getRotationDelta(const Radians& from, const Radians& to)
     return delta;
 }
 
-Cartesian MouseInterface::getDestinationTranslationForMoveForward() const {
-
-    // TODO: MACK - clean this up..., use polar values to help...
-
-    // Get the length of a single tile
-    Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
-
-    // We modify these values in the switch statement
-    Cartesian destinationTranslation = m_mouse->getCurrentTranslation();
-    Degrees destinationRotation = m_mouse->getCurrentRotation();
-
-    // TODO: MACK - make special methods???
-    Meters halfWallWidth = Meters(P()->wallWidth() / 2.0);
-    if (m_options.useTileEdgeMovements) {
-        destinationTranslation = Cartesian(
-            tileLength * m_mouse->getCurrentDiscretizedTranslation().first,
-            tileLength * m_mouse->getCurrentDiscretizedTranslation().second
-        );
-    }
-
-    switch (m_mouse->getCurrentDiscretizedRotation()) {
-        case Direction::NORTH: {
-            if (m_options.useTileEdgeMovements) {
-                destinationTranslation += Cartesian(tileLength / 2.0, tileLength + halfWallWidth);
-            }
-            else {
-                destinationTranslation += Cartesian(Meters(0), tileLength);
-            }
-            break;
-        }
-        case Direction::EAST: {
-            if (m_options.useTileEdgeMovements) {
-                destinationTranslation += Cartesian(tileLength + halfWallWidth, tileLength / 2.0);
-            }
-            else {
-                destinationTranslation += Cartesian(tileLength, Meters(0));
-            }
-            break;
-        }
-        case Direction::SOUTH: {
-            if (m_options.useTileEdgeMovements) {
-                destinationTranslation += Cartesian(tileLength / 2.0, halfWallWidth * -1);
-            }
-            else {
-                destinationTranslation += Cartesian(Meters(0), tileLength * -1);
-            }
-            break;
-        }
-        case Direction::WEST: {
-            if (m_options.useTileEdgeMovements) {
-                destinationTranslation += Cartesian(halfWallWidth * -1, tileLength / 2.0);
-            }
-            else {
-                destinationTranslation += Cartesian(tileLength * -1, Meters(0));
-            }
-            break;
-        }
-    }
-
-    return destinationTranslation;
+Cartesian MouseInterface::getCenterOfTile(int x, int y) const {
+    ASSERT_TR(m_maze->withinMaze(x, y));
+    static Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
+    Cartesian centerOfTile = Cartesian(
+        tileLength * (static_cast<double>(x) + 0.5),
+        tileLength * (static_cast<double>(y) + 0.5)
+    );
+    return centerOfTile;
 }
 
 void MouseInterface::doDiagonal(int count, bool startLeft, bool endLeft) {
     // TODO: MACK - special case for counts 1,2
     // TODO: MACK - limits on count?
     if (startLeft == endLeft) {
+        if (count % 2 != 1) {
+        }
         ASSERT_EQ(count % 2, 1);
     }
     else {
+        if (count % 2 != 0) {
+        }
         ASSERT_EQ(count % 2, 0);
     }
     // TODO: MACK - Clean this up

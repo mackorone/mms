@@ -110,8 +110,6 @@ public:
 
     // ----- Special discrete interface methods ----- //
 
-    // TODO: MACK - figure out the semantics of these methods. Are we going to
-    // allow toggling between edge and non-edge movements?
     void originMoveForwardToEdge();
     void originTurnLeftInPlace();
     void originTurnRightInPlace();
@@ -201,15 +199,11 @@ private:
     // Returns the angle with from "from" to "to", with values in [-180, 180) degrees
     Radians getRotationDelta(const Radians& from, const Radians& to) const;
 
-    // TODO: MACK
-    Cartesian getDestinationTranslationForMoveForward() const;
+    // Returns the center of a given tile
+    Cartesian getCenterOfTile(int x, int y) const;
 
     // TODO: MACK
     void doDiagonal(int count, bool startLeft, bool endLeft);
-
-    // TODO: MACK
-
-    // TODO: MACK
 
 };
 
