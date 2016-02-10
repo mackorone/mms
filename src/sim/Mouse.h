@@ -85,8 +85,6 @@ public:
     // Helper methods for setting many wheel speeds at once, without having to
     // know the names of each of the wheels
     void setWheelSpeedsForMoveForward(double fractionOfMaxSpeed);
-    void setWheelSpeedsForTurnLeft(double fractionOfMaxSpeed);
-    void setWheelSpeedsForTurnRight(double fractionOfMaxSpeed);
     void setWheelSpeedsForCurveLeft(double fractionOfMaxSpeed, const Meters& radius);
     void setWheelSpeedsForCurveRight(double fractionOfMaxSpeed, const Meters& radius);
     void stopAllWheels();

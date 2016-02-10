@@ -193,8 +193,10 @@ private:
         std::pair<std::pair<int, int>, Direction> wall) const;
 
     // Some helper abstractions for mouse movements
-    void turnTo(const Cartesian& destinationTranslation, const Radians& destinationRotation);
     void moveForwardTo(const Cartesian& destinationTranslation, const Radians& destinationRotation);
+    void arcTo(const Cartesian& destinationTranslation, const Radians& destinationRotation,
+        const Meters& radius, double extraWheelSpeedFraction);
+    void turnTo(const Cartesian& destinationTranslation, const Radians& destinationRotation);
 
     // Returns the angle with from "from" to "to", with values in [-180, 180) degrees
     Radians getRotationDelta(const Radians& from, const Radians& to) const;
@@ -206,7 +208,6 @@ private:
     void doDiagonal(int count, bool startLeft, bool endLeft);
 
     // TODO: MACK
-    void arcTo(const Cartesian& destinationTranslation, const Radians& destinationRotation, const Meters& radius);
 
     // TODO: MACK
 

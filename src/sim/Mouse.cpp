@@ -287,14 +287,6 @@ void Mouse::setWheelSpeedsForMoveForward(double fractionOfMaxSpeed) {
     setWheelSpeedsForMovement(fractionOfMaxSpeed, 1.0, 0.0);
 }
 
-void Mouse::setWheelSpeedsForTurnLeft(double fractionOfMaxSpeed) {
-    setWheelSpeedsForMovement(fractionOfMaxSpeed, 0.0, 1.0);
-}
-
-void Mouse::setWheelSpeedsForTurnRight(double fractionOfMaxSpeed) {
-    setWheelSpeedsForMovement(fractionOfMaxSpeed, 0.0, -1.0);
-}
-
 void Mouse::setWheelSpeedsForCurveLeft(double fractionOfMaxSpeed, const Meters& radius) {
     std::pair<double, double> curveTurnFactors = m_curveTurnFactorCalculator.getCurveTurnFactors(radius);
     setWheelSpeedsForMovement(fractionOfMaxSpeed, curveTurnFactors.first, curveTurnFactors.second);
