@@ -1,5 +1,6 @@
 # High Priority
 
+- Refactor MouseInterface into impl class
 - Be able to toggle useTileEdgeMovements, make all non-initialization methods togglable by just getting the return value at runtime
 - Translation mouse test
 - Don't draw sensors in discrete mode

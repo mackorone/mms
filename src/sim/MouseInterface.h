@@ -6,16 +6,13 @@
 #include "MouseInterfaceOptions.h"
 #include "Param.h"
 
-// TODO: MACK - I don't think this is needed anymore...
-#ifdef _WIN32
-#define __func__ __FUNCTION__
-#endif
-
 #define ENSURE_DISCRETE_INTERFACE ensureDiscreteInterface(__func__);
 #define ENSURE_CONTINUOUS_INTERFACE ensureContinuousInterface(__func__);
 #define ENSURE_ALLOW_OMNISCIENCE ensureAllowOmniscience(__func__);
 #define ENSURE_NOT_TILE_EDGE_MOVEMENTS ensureNotTileEdgeMovements(__func__);
 #define ENSURE_USE_TILE_EDGE_MOVEMENTS ensureUseTileEdgeMovements(__func__);
+#define ENSURE_INSIDE_ORIGIN ensureInsideOrigin(__func__);
+#define ENSURE_OUTSIDE_ORIGIN ensureOutsideOrigin(__func__);
 
 namespace sim {
 
@@ -149,6 +146,7 @@ private:
     MazeGraphic* m_mazeGraphic;
     std::set<char> m_allowableTileTextCharacters;
     MouseInterfaceOptions m_options;
+    bool m_inOrigin; // Whether or not the mouse has moved out the origin
 
     // Cache of tiles, for making clearAll methods faster
     std::set<std::pair<int, int>> m_tilesWithColor;
@@ -160,14 +158,33 @@ private:
     void ensureAllowOmniscience(const std::string& callingFunction) const;
     void ensureNotTileEdgeMovements(const std::string& callingFunction) const;
     void ensureUseTileEdgeMovements(const std::string& callingFunction) const;
+    void ensureInsideOrigin(const std::string& callingFunction) const;
+    void ensureOutsideOrigin(const std::string& callingFunction) const;
 
     // Implementation methods
-    // TODO: MACK - color, text, wall, fog, distance
-    void declareWallImpl(std::pair<std::pair<int, int>, Direction> wall, bool wallExists, bool declareBothWallHalves);
-    void undeclareWallImpl(std::pair<std::pair<int, int>, Direction> wall, bool declareBothWallHalves);
+    void setTileColorImpl(int x, int y, char color);
+    void clearTileColorImpl(int x, int y);
+    void setTileTextImpl(int x, int y, const std::string& text);
+    void clearTileTextImpl(int x, int y);
+    void declareWallImpl(
+        std::pair<std::pair<int, int>, Direction> wall, bool wallExists, bool declareBothWallHalves);
+    void undeclareWallImpl(
+        std::pair<std::pair<int, int>, Direction> wall, bool declareBothWallHalves);
+    void declareTileDistanceImpl(int x, int y, int distance,
+        bool setTileTextWhenDistanceDeclared, bool setTileBaseColorWhenDistanceDeclaredCorrectly);
+    void undeclareTileDistanceImpl(int x, int y,
+        bool setTileTextWhenDistanceDeclared, bool setTileBaseColorWhenDistanceDeclaredCorrectly);
     bool wallFrontImpl(bool declareWallOnRead, bool declareBothWallHalves);
     bool wallLeftImpl(bool declareWallOnRead, bool declareBothWallHalves);
     bool wallRightImpl(bool declareWallOnRead, bool declareBothWallHalves);
+    void moveForwardImpl();
+    void moveForwardImpl(int count);
+    void turnLeftImpl();
+    void turnRightImpl();
+    void turnAroundLeftImpl();
+    void turnAroundRightImpl();
+    void turnToEdgeImpl(bool turnLeft);
+    void turnAroundToEdgeImpl(bool turnLeft);
 
     // Helper methods for wall retrieval and declaration
     bool isWall(std::pair<std::pair<int, int>, Direction> wall, bool declareWallOnRead, bool declareBothWallHalves);
