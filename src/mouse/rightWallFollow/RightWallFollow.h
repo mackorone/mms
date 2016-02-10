@@ -10,7 +10,7 @@ public:
     std::string mouseFile() const;
     bool declareWallOnRead() const;
     bool declareBothWallHalves() const;
-    bool stopOnTileEdgesAndAllowSpecialMovements() const;
+    bool useTileEdgeMovements() const;
     double wheelSpeedFraction() const;
     void solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
@@ -18,6 +18,7 @@ public:
 
 private:
     void rightWallFollowStep(sim::MouseInterface* mouse);
+    void justMoveForward(sim::MouseInterface* mouse);
     void turnLeftAndMoveForward(sim::MouseInterface* mouse);
     void turnRightAndMoveForward(sim::MouseInterface* mouse);
     void turnAroundAndMoveForward(sim::MouseInterface* mouse);

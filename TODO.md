@@ -1,5 +1,6 @@
 # High Priority
 
+- Be able to toggle useTileEdgeMovements, make all non-initialization methods togglable by just getting the return value at runtime
 - Translation mouse test
 - Don't draw sensors in discrete mode
 - Diagonals
@@ -144,6 +145,7 @@
 
 # Low Priority
 
+- Pointers to wall polygons in each tile, save space by not breaking up walls/corners into multiple tiles
 - Get rid of as much platform dependant code as possible
 - Clean up the coding standards
 - Optimize for space in the TEXTURE_CPU_BUFFER and GRAPHIC_CPU_BUFFER - Don't repeat vertices

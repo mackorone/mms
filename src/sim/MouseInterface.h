@@ -14,11 +14,8 @@
 #define ENSURE_DISCRETE_INTERFACE ensureDiscreteInterface(__func__);
 #define ENSURE_CONTINUOUS_INTERFACE ensureContinuousInterface(__func__);
 #define ENSURE_ALLOW_OMNISCIENCE ensureAllowOmniscience(__func__);
-#define ENSURE_ALLOW_SPECIAL_MOVEMENTS ensureAllowSpecialMovements(__func__);
-
-namespace manual {
-    class Manual;
-}
+#define ENSURE_NOT_TILE_EDGE_MOVEMENTS ensureNotTileEdgeMovements(__func__);
+#define ENSURE_USE_TILE_EDGE_MOVEMENTS ensureUseTileEdgeMovements(__func__);
 
 namespace sim {
 
@@ -43,7 +40,7 @@ public:
     // Misc functions
     double getRandom();
     int millis(); // # of milliseconds of sim time (adjusted based on sim speed) that have passed
-    void delay(int milliseconds);
+    void delay(int milliseconds); // # of milliseconds of sim time (adjusted based on sim speed)
     void quit();
 
     // Tile color
@@ -116,8 +113,8 @@ public:
 
     // ----- Special discrete interface methods ----- //
 
-    // TODO: MACK - implement these, and check basic vs. special methods
-
+    // TODO: MACK - figure out the semantics of these methods. Are we going to
+    // allow toggling between edge and non-edge movements?
     void originMoveForwardToEdge();
     void originTurnLeftInPlace();
     void originTurnRightInPlace();
@@ -125,11 +122,11 @@ public:
     void moveForwardToEdge();
     void moveForwardToEdge(int count);
 
-    void curveTurnLeft();
-    void curveTurnRight();
+    void turnLeftToEdge();
+    void turnRightToEdge();
 
-    void turnAroundToEdgeLeft();
-    void turnAroundToEdgeRight();
+    void turnAroundLeftToEdge();
+    void turnAroundRightToEdge();
 
     void diagonalLeftLeft(int count);
     void diagonalLeftRight(int count);
@@ -157,14 +154,26 @@ private:
     std::set<std::pair<int, int>> m_tilesWithColor;
     std::set<std::pair<int, int>> m_tilesWithText;
 
+    // Helper methods for checking particular conditions and failing hard
     void ensureDiscreteInterface(const std::string& callingFunction) const;
     void ensureContinuousInterface(const std::string& callingFunction) const;
     void ensureAllowOmniscience(const std::string& callingFunction) const;
-    void ensureAllowSpecialMovements(const std::string& callingFunction) const;
+    void ensureNotTileEdgeMovements(const std::string& callingFunction) const;
+    void ensureUseTileEdgeMovements(const std::string& callingFunction) const;
 
-    bool isWall(std::pair<int, int> position, Direction direction);
-    bool hasOpposingWall(int x, int y, Direction direction) const;
-    std::pair<std::pair<int, int>, Direction> getOpposingWall(int x, int y, Direction direction) const;
+    // Implementation methods
+    // TODO: MACK - color, text, wall, fog, distance
+    void declareWallImpl(std::pair<std::pair<int, int>, Direction> wall, bool wallExists, bool declareBothWallHalves);
+    void undeclareWallImpl(std::pair<std::pair<int, int>, Direction> wall, bool declareBothWallHalves);
+    bool wallFrontImpl(bool declareWallOnRead, bool declareBothWallHalves);
+    bool wallLeftImpl(bool declareWallOnRead, bool declareBothWallHalves);
+    bool wallRightImpl(bool declareWallOnRead, bool declareBothWallHalves);
+
+    // Helper methods for wall retrieval and declaration
+    bool isWall(std::pair<std::pair<int, int>, Direction> wall, bool declareWallOnRead, bool declareBothWallHalves);
+    bool hasOpposingWall(std::pair<std::pair<int, int>, Direction> wall) const;
+    std::pair<std::pair<int, int>, Direction> getOpposingWall(
+        std::pair<std::pair<int, int>, Direction> wall) const;
 
     // Some helper abstractions for mouse movements
     void turnTo(const Cartesian& destinationTranslation, const Radians& destinationRotation);
@@ -178,6 +187,11 @@ private:
 
     // TODO: MACK
     void doDiagonal(int count, bool startLeft, bool endLeft);
+
+    // TODO: MACK
+    void arcTo(const Cartesian& destinationTranslation, const Radians& destinationRotation, const Meters& radius);
+
+    // TODO: MACK
 
 };
 

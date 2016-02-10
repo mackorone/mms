@@ -17,6 +17,20 @@ static const std::vector<Direction> DIRECTIONS {
     Direction::NORTH, Direction::EAST, Direction::SOUTH, Direction::WEST,
 };
 
+static const std::map<Direction, Direction> DIRECTION_ROTATE_LEFT {
+    {Direction::NORTH, Direction::WEST},
+    {Direction::EAST, Direction::NORTH},
+    {Direction::SOUTH, Direction::EAST},
+    {Direction::WEST, Direction::SOUTH},
+};
+
+static const std::map<Direction, Direction> DIRECTION_ROTATE_RIGHT {
+    {Direction::NORTH, Direction::EAST},
+    {Direction::EAST, Direction::SOUTH},
+    {Direction::SOUTH, Direction::WEST},
+    {Direction::WEST, Direction::NORTH},
+};
+
 static const std::map<Direction, Degrees> DIRECTION_TO_ANGLE {
     {Direction::NORTH, Degrees(90)},
     {Direction::EAST, Degrees(0)},

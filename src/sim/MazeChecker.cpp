@@ -273,22 +273,11 @@ std::vector<std::pair<int, int>> MazeChecker::getCenterTiles(int width, int heig
 }
 
 Direction MazeChecker::directionAfterLeftTurn(Direction direction) {
-    switch (direction) {
-        case Direction::NORTH:
-            return Direction::WEST;
-        case Direction::EAST:
-            return Direction::NORTH;
-        case Direction::SOUTH:
-            return Direction::EAST;
-        case Direction::WEST:
-            return Direction::SOUTH;
-    }
+    return DIRECTION_ROTATE_LEFT.at(direction);
 }
 
 Direction MazeChecker::directionAfterRightTurn(Direction direction) {
-    return directionAfterLeftTurn(
-           directionAfterLeftTurn(
-           directionAfterLeftTurn(direction)));
+    return DIRECTION_ROTATE_RIGHT.at(direction);
 }
 
 std::pair<int, int> MazeChecker::positionAfterMovingForward(std::pair<int, int> position, Direction direction) {

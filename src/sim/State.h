@@ -2,10 +2,8 @@
 
 #include <map>
 
-#include "InterfaceType.h"
 #include "Key.h"
 #include "LayoutType.h"
-#include "TileTextAlignment.h"
 
 namespace sim {
 

@@ -14,8 +14,8 @@ bool RightWallFollow::declareBothWallHalves() const {
     return true;
 }
 
-bool RightWallFollow::stopOnTileEdgesAndAllowSpecialMovements() const {
-    return true;
+bool RightWallFollow::useTileEdgeMovements() const {
+    return false;
 }
 
 double RightWallFollow::wheelSpeedFraction() const {
@@ -28,6 +28,7 @@ double RightWallFollow::wheelSpeedFraction() const {
 void RightWallFollow::solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse) {
+    /*
     mouse->moveForward();
     turnRightAndMoveForward(mouse);
     turnRightAndMoveForward(mouse);
@@ -38,12 +39,13 @@ void RightWallFollow::solve(
     mouse->turnAroundLeft();
     mouse->diagonalRightRight(3);
     mouse->diagonalRightRight(5);
+    */
     // TODO: MACK
-    /*
     while (true){
         rightWallFollowStep(mouse);
     }
-    */
+    // TODO: MACK - turn tile edge movements on and off
+    // TODO: MACK - display string in the algorithm
 }
 
 void RightWallFollow::rightWallFollowStep(sim::MouseInterface* mouse) {
@@ -51,7 +53,7 @@ void RightWallFollow::rightWallFollowStep(sim::MouseInterface* mouse) {
         turnRightAndMoveForward(mouse);
     }
     else if (!mouse->wallFront()) {
-        mouse->moveForward();
+        justMoveForward(mouse);
     }
     else if (!mouse->wallLeft()) {
         turnLeftAndMoveForward(mouse);
@@ -61,9 +63,26 @@ void RightWallFollow::rightWallFollowStep(sim::MouseInterface* mouse) {
     }
 }
 
+void RightWallFollow::justMoveForward(sim::MouseInterface* mouse) {
+    static bool firstMovement = true;
+    if (useTileEdgeMovements()) {
+        if (firstMovement) {
+            mouse->originMoveForwardToEdge();
+            firstMovement = false;    
+        }
+        else {
+            mouse->moveForwardToEdge();
+        }
+        
+    }
+    else {
+        mouse->moveForward();
+    }
+}
+
 void RightWallFollow::turnLeftAndMoveForward(sim::MouseInterface* mouse) {
-    if (stopOnTileEdgesAndAllowSpecialMovements()) {
-        mouse->curveTurnLeft();
+    if (useTileEdgeMovements()) {
+        mouse->turnLeftToEdge();
     }
     else {
         mouse->turnLeft();
@@ -72,8 +91,8 @@ void RightWallFollow::turnLeftAndMoveForward(sim::MouseInterface* mouse) {
 }
 
 void RightWallFollow::turnRightAndMoveForward(sim::MouseInterface* mouse) {
-    if (stopOnTileEdgesAndAllowSpecialMovements()) {
-        mouse->curveTurnRight();
+    if (useTileEdgeMovements()) {
+        mouse->turnRightToEdge();
     }
     else {
         mouse->turnRight();
@@ -82,8 +101,11 @@ void RightWallFollow::turnRightAndMoveForward(sim::MouseInterface* mouse) {
 }
 
 void RightWallFollow::turnAroundAndMoveForward(sim::MouseInterface* mouse) {
-    mouse->turnAroundLeft();
-    if (!stopOnTileEdgesAndAllowSpecialMovements()) {
+    if (useTileEdgeMovements()) {
+        mouse->turnAroundLeftToEdge();
+    }
+    else {
+        mouse->turnAroundLeft();
         mouse->moveForward();
     }
 }

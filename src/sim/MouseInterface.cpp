@@ -67,16 +67,15 @@ void MouseInterface::setTileColor(int x, int y, char color) {
 
     if (!m_maze->withinMaze(x, y)) {
         L()->warn(
-            "There is no tile at position (%v, %v) and thus you cannot set its"
-            " color.",
-            x, y);
+            "There is no tile at position (%v, %v) and"
+            " thus you cannot set its color.", x, y);
         return;
     }
 
     if (!ContainerUtilities::mapContains(CHAR_TO_COLOR, color)) {
         L()->warn(
-            "You cannot set the color of tile (%v, %v) to '%v' since '%v' is"
-            " not mapped to a color.",
+            "You cannot set the color of tile (%v, %v) to"
+            " '%v' since '%v' is not mapped to a color.",
             x, y, color, color);
         return;
     }
@@ -89,9 +88,8 @@ void MouseInterface::clearTileColor(int x, int y) {
 
     if (!m_maze->withinMaze(x, y)) {
         L()->warn(
-            "There is no tile at position (%v, %v), and thus you cannot clear its"
-            " color.",
-            x, y);
+            "There is no tile at position (%v, %v), and"
+            " thus you cannot clear its color.", x, y);
         return;
     }
 
@@ -109,9 +107,8 @@ void MouseInterface::setTileText(int x, int y, const std::string& text) {
 
     if (!m_maze->withinMaze(x, y)) {
         L()->warn(
-            "There is no tile at position (%v, %v), and thus you cannot set its"
-            " text to \"%v\".",
-            x, y, text);
+            "There is no tile at position (%v, %v), and thus"
+            " you cannot set its text to \"%v\".", x, y, text);
         return;
     }
 
@@ -148,9 +145,8 @@ void MouseInterface::clearTileText(int x, int y) {
 
     if (!m_maze->withinMaze(x, y)) {
         L()->warn(
-            "There is no tile at position (%v, %v), and thus you cannot clear its"
-            " text.",
-            x, y);
+            "There is no tile at position (%v, %v), and"
+            " thus you cannot clear its text.", x, y);
         return;
     }
 
@@ -164,13 +160,12 @@ void MouseInterface::clearAllTileText() {
     }
 }
 
-// TODO: MACK - dedup between declare and undeclare
 void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) {
 
     if (!m_maze->withinMaze(x, y)) {
         L()->warn(
-            "There is no tile at position (%v, %v), and thus you cannot declare"
-            " any of its walls.", x, y);
+            "There is no tile at position (%v, %v), and thus"
+            " you cannot declare any of its walls.", x, y);
         return;
     }
 
@@ -179,19 +174,22 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
         return;
     }
 
-    m_mazeGraphic->declareWall(x, y, CHAR_TO_DIRECTION.at(direction), wallExists); 
-    if (m_options.declareBothWallHalves && hasOpposingWall(x, y, CHAR_TO_DIRECTION.at(direction))) {
-        std::pair<std::pair<int, int>, Direction> opposing = getOpposingWall(x, y, CHAR_TO_DIRECTION.at(direction));
-        m_mazeGraphic->declareWall(opposing.first.first, opposing.first.second, opposing.second, wallExists); 
-    }
+    declareWallImpl(
+        std::make_pair(
+            std::make_pair(x, y),
+            CHAR_TO_DIRECTION.at(direction)
+        ),
+        wallExists,
+        m_options.declareBothWallHalves
+    );
 }
 
 void MouseInterface::undeclareWall(int x, int y, char direction) {
 
     if (!m_maze->withinMaze(x, y)) {
         L()->warn(
-            "There is no tile at position (%v, %v) and thus you cannot"
-            " undeclare any of its walls.", x, y);
+            "There is no tile at position (%v, %v) and thus"
+            " you cannot undeclare any of its walls.", x, y);
         return;
     }
 
@@ -200,19 +198,21 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
         return;
     }
 
-    m_mazeGraphic->undeclareWall(x, y, CHAR_TO_DIRECTION.at(direction));
-    if (m_options.declareBothWallHalves && hasOpposingWall(x, y, CHAR_TO_DIRECTION.at(direction))) {
-        std::pair<std::pair<int, int>, Direction> opposing = getOpposingWall(x, y, CHAR_TO_DIRECTION.at(direction));
-        m_mazeGraphic->undeclareWall(opposing.first.first, opposing.first.second, opposing.second);
-    }
+    undeclareWallImpl(
+        std::make_pair(
+            std::make_pair(x, y),
+            CHAR_TO_DIRECTION.at(direction)
+        ),
+        m_options.declareBothWallHalves
+    );
 }
 
 void MouseInterface::setTileFogginess(int x, int y, bool foggy) {
 
     if (!m_maze->withinMaze(x, y)) {
         L()->warn(
-            "There is no tile at position (%v, %v), and thus you cannot set"
-            " its fogginess.", x, y);
+            "There is no tile at position (%v, %v), and"
+            " thus you cannot set its fogginess.", x, y);
         return;
     }
 
@@ -223,8 +223,8 @@ void MouseInterface::declareTileDistance(int x, int y, int distance) {
 
     if (!m_maze->withinMaze(x, y)) {
         L()->warn(
-            "There is no tile at position (%v, %v), and thus you cannot set"
-            " its distance.", x, y);
+            "There is no tile at position (%v, %v), and"
+            " thus you cannot set its distance.", x, y);
         return;
     }
 
@@ -244,8 +244,8 @@ void MouseInterface::undeclareTileDistance(int x, int y) {
 
     if (!m_maze->withinMaze(x, y)) {
         L()->warn(
-            "There is no tile at position (%v, %v), and thus you cannot clear"
-            " its distance.", x, y);
+            "There is no tile at position (%v, %v), and"
+            " thus you cannot clear its distance.", x, y);
         return;
     }
 
@@ -397,66 +397,43 @@ bool MouseInterface::wallFront() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    return isWall(m_mouse->getCurrentDiscretizedTranslation(), m_mouse->getCurrentDiscretizedRotation());
+    return wallFrontImpl(m_options.declareWallOnRead, m_options.declareBothWallHalves);
 }
 
 bool MouseInterface::wallRight() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    std::pair<int, int> position = m_mouse->getCurrentDiscretizedTranslation();
-
-    switch (m_mouse->getCurrentDiscretizedRotation()) {
-        case Direction::NORTH:
-            return isWall(position, Direction::EAST);
-        case Direction::EAST:
-            return isWall(position, Direction::SOUTH);
-        case Direction::SOUTH:
-            return isWall(position, Direction::WEST);
-        case Direction::WEST:
-            return isWall(position, Direction::NORTH);
-    }
+    return wallRightImpl(m_options.declareWallOnRead, m_options.declareBothWallHalves);
 }
 
 bool MouseInterface::wallLeft() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    std::pair<int, int> position = m_mouse->getCurrentDiscretizedTranslation();
-
-    switch (m_mouse->getCurrentDiscretizedRotation()) {
-        case Direction::NORTH:
-            return isWall(position, Direction::WEST);
-        case Direction::EAST:
-            return isWall(position, Direction::NORTH);
-        case Direction::SOUTH:
-            return isWall(position, Direction::EAST);
-        case Direction::WEST:
-            return isWall(position, Direction::SOUTH);
-    }
+    return wallLeftImpl(m_options.declareWallOnRead, m_options.declareBothWallHalves);
 }
 
 void MouseInterface::moveForward() {
 
     ENSURE_DISCRETE_INTERFACE
+    ENSURE_NOT_TILE_EDGE_MOVEMENTS
 
-    // TODO: MACK
-    // We're declaring a wall here if declareWallOnRead is true. We shouldn't be.
-    // We should make sure we're never inadvertently declaring a wall interally by
-    // calling these helper methods.
-    if (wallFront()) {
+    if (wallFrontImpl(false, false)) {
         if (!S()->crashed()) {
             S()->setCrashed();
         }
         return;
     }
 
+    // TODO: MACK - make this better
     moveForwardTo(getDestinationTranslationForMoveForward(), m_mouse->getCurrentRotation());
 }
 
 void MouseInterface::moveForward(int count) {
 
     ENSURE_DISCRETE_INTERFACE
+    ENSURE_NOT_TILE_EDGE_MOVEMENTS
 
     for (int i = 0; i < count; i += 1) {
         moveForward();
@@ -466,6 +443,7 @@ void MouseInterface::moveForward(int count) {
 void MouseInterface::turnLeft() {
 
     ENSURE_DISCRETE_INTERFACE
+    ENSURE_NOT_TILE_EDGE_MOVEMENTS
 
     turnTo(m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation() + Degrees(90));
 }
@@ -473,53 +451,87 @@ void MouseInterface::turnLeft() {
 void MouseInterface::turnRight() {
 
     ENSURE_DISCRETE_INTERFACE
+    ENSURE_NOT_TILE_EDGE_MOVEMENTS
 
     turnTo(m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation() - Degrees(90));
 }
 
 void MouseInterface::turnAroundLeft() {
 
-    // TODO: MACK
-    if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
-        Cartesian dest = m_mouse->getCurrentTranslation() + Polar(Meters(P()->wallLength() / 2.0), m_mouse->getCurrentRotation());
-        moveForwardTo(dest, m_mouse->getCurrentRotation());
-    }
-
     ENSURE_DISCRETE_INTERFACE
+    ENSURE_NOT_TILE_EDGE_MOVEMENTS
 
     for (int i = 0; i < 2; i += 1) {
         turnLeft();
-    }
-
-    // TODO: MACK
-    if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
-        moveForward();
     }
 }
 
 void MouseInterface::turnAroundRight() {
 
-    // TODO: MACK
-    if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
-        Cartesian dest = m_mouse->getCurrentTranslation() + Polar(Meters(P()->wallLength() / 2.0), m_mouse->getCurrentRotation());
-        moveForwardTo(dest, m_mouse->getCurrentRotation());
-    }
-
     ENSURE_DISCRETE_INTERFACE
+    ENSURE_NOT_TILE_EDGE_MOVEMENTS
 
     for (int i = 0; i < 2; i += 1) {
         turnRight();
     }
+}
+
+void MouseInterface::originMoveForwardToEdge() {
+
+    ENSURE_DISCRETE_INTERFACE
+    ENSURE_USE_TILE_EDGE_MOVEMENTS
 
     // TODO: MACK
-    if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
-        moveForward();
+
+}
+
+void MouseInterface::originTurnLeftInPlace() {
+
+    ENSURE_DISCRETE_INTERFACE
+    ENSURE_USE_TILE_EDGE_MOVEMENTS
+
+    // TODO: MACK
+
+}
+
+void MouseInterface::originTurnRightInPlace() {
+
+    ENSURE_DISCRETE_INTERFACE
+    ENSURE_USE_TILE_EDGE_MOVEMENTS
+
+    // TODO: MACK
+}
+
+void MouseInterface::moveForwardToEdge() {
+
+    ENSURE_DISCRETE_INTERFACE
+    ENSURE_USE_TILE_EDGE_MOVEMENTS
+
+    // TODO: MACK Deduplicate here...
+    if (wallFrontImpl(false, false)) {
+        if (!S()->crashed()) {
+            S()->setCrashed();
+        }
+        return;
+    }
+
+    moveForwardTo(getDestinationTranslationForMoveForward(), m_mouse->getCurrentRotation());
+}
+
+void MouseInterface::moveForwardToEdge(int count) {
+
+    ENSURE_DISCRETE_INTERFACE
+    ENSURE_USE_TILE_EDGE_MOVEMENTS
+
+    for (int i = 0; i < count; i += 1) {
+        moveForwardToEdge();
     }
 }
 
-void MouseInterface::curveTurnLeft() {
+void MouseInterface::turnLeftToEdge() {
 
-    ENSURE_ALLOW_SPECIAL_MOVEMENTS
+    ENSURE_DISCRETE_INTERFACE
+    ENSURE_USE_TILE_EDGE_MOVEMENTS
 
     // TODO: MACK - check for crashes
 
@@ -553,21 +565,15 @@ void MouseInterface::curveTurnLeft() {
         }
     }
 
-    Radians initialRotationDelta = getRotationDelta(m_mouse->getCurrentRotation(), destinationRotation);
-    m_mouse->setWheelSpeedsForCurveLeft(m_options.wheelSpeedFraction, Meters(P()->wallLength() / 2.0));
-    while (0 <
-            initialRotationDelta.getRadiansNotBounded() *
-            getRotationDelta(
-                m_mouse->getCurrentRotation(),
-                destinationRotation).getRadiansNotBounded()) {
-        sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-    }
+    // TODO: MACK - destination translation is incorrect here
+    arcTo(destinationTranslation, destinationRotation, Meters(P()->wallLength() / 2.0));
     moveForwardTo(destinationTranslation, destinationRotation);
 }
 
-void MouseInterface::curveTurnRight() {
+void MouseInterface::turnRightToEdge() {
 
-    ENSURE_ALLOW_SPECIAL_MOVEMENTS
+    ENSURE_DISCRETE_INTERFACE
+    ENSURE_USE_TILE_EDGE_MOVEMENTS
 
     // TODO: MACK - check for crashes
 
@@ -601,32 +607,74 @@ void MouseInterface::curveTurnRight() {
         }
     }
 
-    Radians initialRotationDelta = getRotationDelta(m_mouse->getCurrentRotation(), destinationRotation);
-    m_mouse->setWheelSpeedsForCurveRight(m_options.wheelSpeedFraction, Meters(P()->wallLength() / 2.0));
-    while (0 <
-            initialRotationDelta.getRadiansNotBounded() *
-            getRotationDelta(
-                m_mouse->getCurrentRotation(),
-                destinationRotation
-            ).getRadiansNotBounded()) {
-        sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-    }
+    // TODO: MACK - destination translation is incorrect here
+    arcTo(destinationTranslation, destinationRotation, Meters(P()->wallLength() / 2.0));
     moveForwardTo(destinationTranslation, destinationRotation);
 }
 
+void MouseInterface::turnAroundLeftToEdge() {
+
+    ENSURE_DISCRETE_INTERFACE
+    ENSURE_USE_TILE_EDGE_MOVEMENTS
+
+    Cartesian dest = m_mouse->getCurrentTranslation() + Polar(Meters(P()->wallLength() / 2.0), m_mouse->getCurrentRotation());
+    moveForwardTo(dest, m_mouse->getCurrentRotation());
+
+    for (int i = 0; i < 2; i += 1) {
+        // TODO: MACK - separate out the implementation here, don't call the user method here
+        turnLeft();
+    }
+
+
+    // TODO: MACK - originMoveForward?
+    moveForwardToEdge();
+}
+
+void MouseInterface::turnAroundRightToEdge() {
+
+    ENSURE_DISCRETE_INTERFACE
+    ENSURE_USE_TILE_EDGE_MOVEMENTS
+
+    Cartesian dest = m_mouse->getCurrentTranslation() + Polar(Meters(P()->wallLength() / 2.0), m_mouse->getCurrentRotation());
+    moveForwardTo(dest, m_mouse->getCurrentRotation());
+
+    for (int i = 0; i < 2; i += 1) {
+        turnRight();
+    }
+
+    // TODO: MACK - originMoveForward?
+    moveForwardToEdge();
+}
+
 void MouseInterface::diagonalLeftLeft(int count) {
+
+    ENSURE_DISCRETE_INTERFACE
+    ENSURE_USE_TILE_EDGE_MOVEMENTS
+
     doDiagonal(count, true, true);
 }
 
 void MouseInterface::diagonalLeftRight(int count) {
+
+    ENSURE_DISCRETE_INTERFACE
+    ENSURE_USE_TILE_EDGE_MOVEMENTS
+
     doDiagonal(count, true, false);
 }
 
 void MouseInterface::diagonalRightLeft(int count) {
+
+    ENSURE_DISCRETE_INTERFACE
+    ENSURE_USE_TILE_EDGE_MOVEMENTS
+
     doDiagonal(count, false, true);
 }
 
 void MouseInterface::diagonalRightRight(int count) {
+
+    ENSURE_DISCRETE_INTERFACE
+    ENSURE_USE_TILE_EDGE_MOVEMENTS
+
     doDiagonal(count, false, false);
 }
 
@@ -663,6 +711,10 @@ void MouseInterface::doDiagonal(int count, bool startLeft, bool endLeft) {
     moveForwardTo(destination, m_mouse->getCurrentRotation());
     turnTo(m_mouse->getCurrentTranslation(), endRotation);
     moveForwardTo(destination + Polar(Meters(P()->wallWidth() / 2.0), m_mouse->getCurrentRotation()), m_mouse->getCurrentRotation());
+
+    // TODO: MACK - negative here?
+    //arcTo(m_mouse->getCurrentTranslation(), delta.getTheta() * -2, Meters(P()->wallLength() / 4));
+    // TODO: MACK
 }
 
 int MouseInterface::currentXTile() {
@@ -734,43 +786,110 @@ void MouseInterface::ensureAllowOmniscience(const std::string& callingFunction) 
     }
 }
 
-void MouseInterface::ensureAllowSpecialMovements(const std::string& callingFunction) const {
-    if (!m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+void MouseInterface::ensureNotTileEdgeMovements(const std::string& callingFunction) const {
+    if (m_options.useTileEdgeMovements) {
         L()->error(
-            "You must return true from \"stopOnTileEdgesAndAllowSpecialMovements()\" in order to use MouseInterface::%v().",
+            "You must return false from \"useTileEdgeMovements()\" in order to use MouseInterface::%v().",
             callingFunction);
         SimUtilities::quit();
     }
 }
 
-bool MouseInterface::isWall(std::pair<int, int> position, Direction direction) {
+void MouseInterface::ensureUseTileEdgeMovements(const std::string& callingFunction) const {
+    if (!m_options.useTileEdgeMovements) {
+        L()->error(
+            "You must return true from \"useTileEdgeMovements()\" in order to use MouseInterface::%v().",
+            callingFunction);
+        SimUtilities::quit();
+    }
+}
 
-    ASSERT_TR(m_maze->withinMaze(position.first, position.second));
+void MouseInterface::declareWallImpl(std::pair<std::pair<int, int>, Direction> wall, bool wallExists, bool declareBothWallHalves) {
+    m_mazeGraphic->declareWall(wall.first.first, wall.first.second, wall.second, wallExists); 
+    if (declareBothWallHalves && hasOpposingWall(wall)) {
+        declareWallImpl(getOpposingWall(wall), wallExists, false);
+    }
+}
 
-    bool wallExists = m_maze->getTile(position.first, position.second)->isWall(direction);
+void MouseInterface::undeclareWallImpl(std::pair<std::pair<int, int>, Direction> wall, bool declareBothWallHalves) {
+    m_mazeGraphic->undeclareWall(wall.first.first, wall.first.second, wall.second); 
+    if (declareBothWallHalves && hasOpposingWall(wall)) {
+        undeclareWallImpl(getOpposingWall(wall), false);
+    }
+}
 
-    if (m_options.declareWallOnRead) {
-        declareWall(position.first, position.second, DIRECTION_TO_CHAR.at(direction), wallExists);
+bool MouseInterface::wallFrontImpl(bool declareWallOnRead, bool declareBothWallHalves) {
+    return isWall(
+        std::make_pair(
+            m_mouse->getCurrentDiscretizedTranslation(),
+            m_mouse->getCurrentDiscretizedRotation()
+        ),
+        declareWallOnRead,
+        declareBothWallHalves
+    );
+}
+
+bool MouseInterface::wallLeftImpl(bool declareWallOnRead, bool declareBothWallHalves) {
+    return isWall(
+        std::make_pair(
+            m_mouse->getCurrentDiscretizedTranslation(),
+            DIRECTION_ROTATE_LEFT.at(m_mouse->getCurrentDiscretizedRotation())
+        ),
+        declareWallOnRead,
+        declareBothWallHalves
+    );
+}
+
+bool MouseInterface::wallRightImpl(bool declareWallOnRead, bool declareBothWallHalves) {
+    return isWall(
+        std::make_pair(
+            m_mouse->getCurrentDiscretizedTranslation(),
+            DIRECTION_ROTATE_RIGHT.at(m_mouse->getCurrentDiscretizedRotation())
+        ),
+        declareWallOnRead,
+        declareBothWallHalves
+    );
+}
+
+bool MouseInterface::isWall(std::pair<std::pair<int, int>, Direction> wall, bool declareWallOnRead, bool declareBothWallHalves) {
+
+    int x = wall.first.first;
+    int y = wall.first.second;
+    Direction direction = wall.second;
+
+    ASSERT_TR(m_maze->withinMaze(x, y));
+
+    bool wallExists = m_maze->getTile(x, y)->isWall(direction);
+
+    if (declareWallOnRead) {
+        declareWallImpl(wall, wallExists, declareBothWallHalves);
     }
 
     return wallExists;
 }
 
-bool MouseInterface::hasOpposingWall(int x, int y, Direction direction) const {
+bool MouseInterface::hasOpposingWall(std::pair<std::pair<int, int>, Direction> wall) const {
+    int x = wall.first.first;
+    int y = wall.first.second;
+    Direction direction = wall.second;
     switch (direction) {
         case Direction::NORTH:
             return y < m_maze->getHeight() - 1;
         case Direction::EAST:
             return x < m_maze->getWidth() - 1;
         case Direction::SOUTH:
-            return y > 0;
+            return 0 < y;
         case Direction::WEST:
-            return x > 0;
+            return 0 < x;
     }
 }
 
-std::pair<std::pair<int, int>, Direction> MouseInterface::getOpposingWall(int x, int y, Direction direction) const {
-    ASSERT_TR(hasOpposingWall(x, y, direction));
+std::pair<std::pair<int, int>, Direction> MouseInterface::getOpposingWall(
+        std::pair<std::pair<int, int>, Direction> wall) const {
+    ASSERT_TR(hasOpposingWall(wall));
+    int x = wall.first.first;
+    int y = wall.first.second;
+    Direction direction = wall.second;
     switch (direction) {
         case Direction::NORTH:
             return std::make_pair(std::make_pair(x, y + 1), Direction::SOUTH);
@@ -837,6 +956,36 @@ void MouseInterface::moveForwardTo(const Cartesian& destinationTranslation, cons
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
 
+void MouseInterface::arcTo(const Cartesian& destinationTranslation, const Radians& destinationRotation, const Meters& radius) {
+
+    // TODO: MACK - fix/test this
+
+    // Determine the inital rotation delta in [-180, 180)
+    Radians initialRotationDelta = getRotationDelta(m_mouse->getCurrentRotation(), destinationRotation);
+
+    // Set the speed based on the initial rotation delta
+    if (0 < initialRotationDelta.getDegreesNotBounded()) {
+        m_mouse->setWheelSpeedsForCurveLeft(m_options.wheelSpeedFraction, radius);
+    }
+    else {
+        m_mouse->setWheelSpeedsForCurveRight(m_options.wheelSpeedFraction, radius);
+    }
+    
+    // While the deltas have the same sign, sleep for a short amount of time
+    while (0 <
+            initialRotationDelta.getRadiansNotBounded() *
+            getRotationDelta(
+                m_mouse->getCurrentRotation(),
+                destinationRotation
+            ).getRadiansNotBounded()) {
+        sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
+    }
+
+    // Stop the wheels and teleport to the exact destination
+    m_mouse->stopAllWheels();
+    m_mouse->teleport(destinationTranslation, destinationRotation);
+}
+
 Radians MouseInterface::getRotationDelta(const Radians& from, const Radians& to) const {
     static const Degrees lowerBound = Degrees(-180);
     static const Degrees upperBound = Degrees(180);
@@ -866,7 +1015,7 @@ Cartesian MouseInterface::getDestinationTranslationForMoveForward() const {
 
     // TODO: MACK - make special methods???
     Meters halfWallWidth = Meters(P()->wallWidth() / 2.0);
-    if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+    if (m_options.useTileEdgeMovements) {
         destinationTranslation = Cartesian(
             tileLength * m_mouse->getCurrentDiscretizedTranslation().first,
             tileLength * m_mouse->getCurrentDiscretizedTranslation().second
@@ -875,7 +1024,7 @@ Cartesian MouseInterface::getDestinationTranslationForMoveForward() const {
 
     switch (m_mouse->getCurrentDiscretizedRotation()) {
         case Direction::NORTH: {
-            if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+            if (m_options.useTileEdgeMovements) {
                 destinationTranslation += Cartesian(tileLength / 2.0, tileLength + halfWallWidth);
             }
             else {
@@ -884,7 +1033,7 @@ Cartesian MouseInterface::getDestinationTranslationForMoveForward() const {
             break;
         }
         case Direction::EAST: {
-            if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+            if (m_options.useTileEdgeMovements) {
                 destinationTranslation += Cartesian(tileLength + halfWallWidth, tileLength / 2.0);
             }
             else {
@@ -893,7 +1042,7 @@ Cartesian MouseInterface::getDestinationTranslationForMoveForward() const {
             break;
         }
         case Direction::SOUTH: {
-            if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+            if (m_options.useTileEdgeMovements) {
                 destinationTranslation += Cartesian(tileLength / 2.0, halfWallWidth * -1);
             }
             else {
@@ -902,7 +1051,7 @@ Cartesian MouseInterface::getDestinationTranslationForMoveForward() const {
             break;
         }
         case Direction::WEST: {
-            if (m_options.stopOnTileEdgesAndAllowSpecialMovements) {
+            if (m_options.useTileEdgeMovements) {
                 destinationTranslation += Cartesian(halfWallWidth * -1, tileLength / 2.0);
             }
             else {

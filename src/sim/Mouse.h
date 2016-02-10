@@ -9,7 +9,6 @@
 #include "CurveTurnFactorCalculator.h"
 #include "Direction.h"
 #include "EncoderType.h"
-#include "InterfaceType.h"
 #include "Maze.h"
 #include "Polygon.h"
 #include "Sensor.h"
@@ -146,7 +145,7 @@ private:
     // ambiguous, because not all mice can move forward without turning or
     // moving sideways, and/or turn without moving forward or sideways.
     // Also note that the fractions are in [-1.0, 1.0], so that the max wheel
-    // is never exceeded.
+    // speed is never exceeded.
     std::map<std::string, std::pair<double, double>> m_wheelSpeedAdjustmentFactors;
 
     // Used to calculate the linear combination of the forward component and turn

@@ -8,6 +8,7 @@
 
 #include "../mouse/MouseAlgorithms.h"
 #include "MouseChecker.h"
+#include "MouseInterfaceOptions.h"
 
 namespace sim {
 
@@ -39,24 +40,30 @@ Controller::Controller(Model* model, View* view) : m_model(model), m_view(view) 
             m_mouseAlgorithm->tileTextNumberOfRows(),
             m_mouseAlgorithm->tileTextNumberOfCols()));
 
-    // TODO: MACK - separate out the mouse interface options here
+    // This may seem sloppy, but it's best to assign the values directly by
+    // name so that we don't accidentally mix them up (which is easy to do)
+    MouseInterfaceOptions options;
+    options.allowOmniscience = m_mouseAlgorithm->allowOmniscience();
+    options.declareWallOnRead = m_mouseAlgorithm->declareWallOnRead();
+    options.declareBothWallHalves = m_mouseAlgorithm->declareBothWallHalves();
+    options.tileTextNumberOfRows = m_mouseAlgorithm->tileTextNumberOfRows();
+    options.tileTextNumberOfCols = m_mouseAlgorithm->tileTextNumberOfCols();
+    options.setTileTextWhenDistanceDeclared =
+        m_mouseAlgorithm->setTileTextWhenDistanceDeclared();
+    options.setTileBaseColorWhenDistanceDeclaredCorrectly =
+        m_mouseAlgorithm->setTileBaseColorWhenDistanceDeclaredCorrectly();
+    options.useTileEdgeMovements = m_mouseAlgorithm->useTileEdgeMovements();
+    options.wheelSpeedFraction = m_mouseAlgorithm->wheelSpeedFraction();
+    options.interfaceType =
+        STRING_TO_INTERFACE_TYPE.at(m_mouseAlgorithm->interfaceType());
+    
+    // Initialize the mouse interface
     m_mouseInterface = new MouseInterface(
         m_model->getMaze(),
         m_model->getMouse(),
         m_view->getMazeGraphic(),
         m_view->getAllowableTileTextCharacters(),
-        {
-            m_mouseAlgorithm->allowOmniscience(),
-            m_mouseAlgorithm->declareWallOnRead(),
-            m_mouseAlgorithm->declareBothWallHalves(),
-            m_mouseAlgorithm->setTileTextWhenDistanceDeclared(),
-            m_mouseAlgorithm->setTileBaseColorWhenDistanceDeclaredCorrectly(),
-            m_mouseAlgorithm->stopOnTileEdgesAndAllowSpecialMovements(),
-            m_mouseAlgorithm->wheelSpeedFraction(),
-            m_mouseAlgorithm->tileTextNumberOfRows(),
-            m_mouseAlgorithm->tileTextNumberOfCols(),
-            STRING_TO_INTERFACE_TYPE.at(m_mouseAlgorithm->interfaceType())
-        }
+        options
     );
 
     // Separate out the World options here
