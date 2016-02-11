@@ -1,19 +1,9 @@
 #include "MouseInterface.h"
 
-#include "units/Meters.h"
-#include "units/MetersPerSecond.h"
-#include "units/Milliseconds.h"
-#include "units/Polar.h"
-#include "units/RevolutionsPerMinute.h"
-#include "units/Seconds.h"
-
-#include "Assert.h"
-#include "Color.h"
 #include "ContainerUtilities.h"
-#include "CPMath.h"
+#include "InterfaceType.h"
 #include "Logging.h"
 #include "Param.h"
-#include "State.h"
 #include "SimUtilities.h"
 
 namespace sim {
@@ -22,46 +12,52 @@ MouseInterface::MouseInterface(
         const Maze* maze,
         Mouse* mouse,
         MazeGraphic* mazeGraphic,
-        std::set<char> allowableTileTextCharacters, 
-        MouseInterfaceOptions options) :
+        MouseInterfaceOptions options,
+        std::set<char> allowableTileTextCharacters) :
         m_maze(maze),
         m_mouse(mouse),
-        m_mazeGraphic(mazeGraphic),
-        m_allowableTileTextCharacters(allowableTileTextCharacters),
+        m_impl(
+            MouseInterfaceImpl(
+                maze,
+                mouse,
+                mazeGraphic
+            )
+        ),
         m_options(options),
+        m_allowableTileTextCharacters(allowableTileTextCharacters),
         m_inOrigin(true) {
 }
 
 void MouseInterface::debug(const std::string& str) {
-    Logging::getMouseLogger()->debug(str);
+    m_impl.debug(str);
 }
 
 void MouseInterface::info(const std::string& str) {
-    Logging::getMouseLogger()->info(str);
+    m_impl.info(str);
 }
 
 void MouseInterface::warn(const std::string& str) {
-    Logging::getMouseLogger()->warn(str);
+    m_impl.warn(str);
 }
 
 void MouseInterface::error(const std::string& str) {
-    Logging::getMouseLogger()->error(str);
+    m_impl.error(str);
 }
 
 double MouseInterface::getRandom() {
-    return SimUtilities::getRandom();
+    return m_impl.getRandom();
 }
 
 int MouseInterface::millis() {
-    return m_mouse->getElapsedSimTime().getMilliseconds();
+    return m_impl.millis();
 }
 
 void MouseInterface::delay(int milliseconds) {
-    sim::SimUtilities::sleep(Milliseconds(milliseconds / S()->simSpeed()));
+    m_impl.delay(milliseconds);
 }
 
 void MouseInterface::quit() {
-    sim::SimUtilities::quit();
+    m_impl.quit();
 }
 
 void MouseInterface::setTileColor(int x, int y, char color) {
@@ -81,7 +77,7 @@ void MouseInterface::setTileColor(int x, int y, char color) {
         return;
     }
 
-    setTileColorImpl(x, y, color);
+    m_impl.setTileColor(x, y, color);
 }
 
 void MouseInterface::clearTileColor(int x, int y) {
@@ -93,16 +89,14 @@ void MouseInterface::clearTileColor(int x, int y) {
         return;
     }
 
-    clearTileColorImpl(x, y);
+    m_impl.clearTileColor(x, y);
 }
 
 void MouseInterface::clearAllTileColor() {
-    for (std::pair<int, int> position : m_tilesWithColor) {
-        clearTileColorImpl(position.first, position.second);
-    }
+    m_impl.clearAllTileColor();
 }
 
-void MouseInterface::setTileText(int x, int y, const std::string& text) {
+void MouseInterface::setTileText(int x, int y, std::string text) {
 
     if (!m_maze->withinMaze(x, y)) {
         L()->warn(
@@ -111,7 +105,23 @@ void MouseInterface::setTileText(int x, int y, const std::string& text) {
         return;
     }
 
-    setTileTextImpl(x, y, text);
+    // TODO: MACK - test this
+    for (int i = 0; i < text.size(); i += 1) {
+        char c = text.at(i);
+        if (!ContainerUtilities::setContains(m_allowableTileTextCharacters, c)) {
+            L()->warn(
+                "Unable to set the tile text for unprintable character \"%v\"."
+                " Using the character \"%v\" instead.",
+                (c == '\n' ? "\\n" :
+                (c == '\t' ? "\\t" :
+                (c == '\r' ? "\\r" :
+                std::to_string(c)))),
+                P()->defaultTileTextCharacter());
+            text[i] = P()->defaultTileTextCharacter();
+        }
+    }
+
+    m_impl.setTileText(x, y, text, m_options.tileTextNumberOfRows, m_options.tileTextNumberOfCols);
 }
 
 void MouseInterface::clearTileText(int x, int y) {
@@ -123,13 +133,11 @@ void MouseInterface::clearTileText(int x, int y) {
         return;
     }
 
-    clearTileTextImpl(x, y);
+    m_impl.clearTileText(x, y);
 }
 
 void MouseInterface::clearAllTileText() {
-    for (std::pair<int, int> position : m_tilesWithText) {
-        clearTileTextImpl(position.first, position.second);
-    }
+    m_impl.clearAllTileText();
 }
 
 void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) {
@@ -146,7 +154,7 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
         return;
     }
 
-    declareWallImpl(
+    m_impl.declareWall(
         std::make_pair(
             std::make_pair(x, y),
             CHAR_TO_DIRECTION.at(direction)
@@ -170,7 +178,7 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
         return;
     }
 
-    undeclareWallImpl(
+    m_impl.undeclareWall(
         std::make_pair(
             std::make_pair(x, y),
             CHAR_TO_DIRECTION.at(direction)
@@ -188,7 +196,7 @@ void MouseInterface::setTileFogginess(int x, int y, bool foggy) {
         return;
     }
 
-    m_mazeGraphic->setTileFogginess(x, y, foggy);
+    m_impl.setTileFogginess(x, y, foggy);
 }
 
 void MouseInterface::declareTileDistance(int x, int y, int distance) {
@@ -200,10 +208,12 @@ void MouseInterface::declareTileDistance(int x, int y, int distance) {
         return;
     }
 
-    declareTileDistanceImpl(
+    m_impl.declareTileDistance(
         x, y, distance,
         m_options.setTileTextWhenDistanceDeclared,
-        m_options.setTileBaseColorWhenDistanceDeclaredCorrectly
+        m_options.setTileBaseColorWhenDistanceDeclaredCorrectly,
+        m_options.tileTextNumberOfRows,
+        m_options.tileTextNumberOfCols
     );
 }
 
@@ -216,7 +226,7 @@ void MouseInterface::undeclareTileDistance(int x, int y) {
         return;
     }
 
-    undeclareTileDistanceImpl(
+    m_impl.undeclareTileDistance(
         x, y,
         m_options.setTileTextWhenDistanceDeclared,
         m_options.setTileBaseColorWhenDistanceDeclaredCorrectly
@@ -224,7 +234,7 @@ void MouseInterface::undeclareTileDistance(int x, int y) {
 }
 
 void MouseInterface::resetPosition() {
-    m_mouse->teleport(m_mouse->getInitialTranslation(), m_mouse->getInitialRotation());
+    m_impl.resetPosition();
 }
 
 bool MouseInterface::inputButtonPressed(int inputButton) {
@@ -236,7 +246,7 @@ bool MouseInterface::inputButtonPressed(int inputButton) {
         return false;
     }
 
-    return S()->inputButtonWasPressed(inputButton);
+    return m_impl.inputButtonPressed(inputButton);
 }
 
 void MouseInterface::acknowledgeInputButtonPressed(int inputButton) {
@@ -248,7 +258,7 @@ void MouseInterface::acknowledgeInputButtonPressed(int inputButton) {
         return;
     }
 
-    S()->setInputButtonWasPressed(inputButton, false);
+    m_impl.acknowledgeInputButtonPressed(inputButton);
     L()->info("Input button %v was acknowledged as pressed; it can now be pressed again.", inputButton);
 }
 
@@ -261,7 +271,7 @@ double MouseInterface::getWheelMaxSpeed(const std::string& name) {
         return 0.0;
     }
 
-    return m_mouse->getWheelMaxSpeed(name).getRevolutionsPerMinute();
+    return m_impl.getWheelMaxSpeed(name);
 }
 
 void MouseInterface::setWheelSpeed(const std::string& name, double rpm) {
@@ -281,7 +291,7 @@ void MouseInterface::setWheelSpeed(const std::string& name, double rpm) {
         return;
     }
 
-    m_mouse->setWheelSpeeds({{name, RevolutionsPerMinute(rpm)}});
+    m_impl.setWheelSpeed(name, rpm);
 }
 
 double MouseInterface::getWheelEncoderTicksPerRevolution(const std::string& name) {
@@ -295,7 +305,7 @@ double MouseInterface::getWheelEncoderTicksPerRevolution(const std::string& name
         return 0.0;
     }
 
-    return m_mouse->getWheelEncoderTicksPerRevolution(name);
+    return m_impl.getWheelEncoderTicksPerRevolution(name);
 }
 
 int MouseInterface::readWheelEncoder(const std::string& name) {
@@ -307,12 +317,7 @@ int MouseInterface::readWheelEncoder(const std::string& name) {
         return 0;
     }
 
-    switch (m_mouse->getWheelEncoderType(name)) {
-        case EncoderType::ABSOLUTE:
-            return m_mouse->readWheelAbsoluteEncoder(name);
-        case EncoderType::RELATIVE:
-            return m_mouse->readWheelRelativeEncoder(name);
-    }
+    return m_impl.readWheelEncoder(name);
 }
 
 void MouseInterface::resetWheelEncoder(const std::string& name) {
@@ -334,7 +339,7 @@ void MouseInterface::resetWheelEncoder(const std::string& name) {
         return;
     }
 
-    m_mouse->resetWheelRelativeEncoder(name);
+    m_impl.resetWheelEncoder(name);
 }
 
 double MouseInterface::readSensor(std::string name) {
@@ -346,37 +351,35 @@ double MouseInterface::readSensor(std::string name) {
         return 0.0;
     }
 
-    // TODO: MACK - test this
-    //sim::SimUtilities::sleep(m_mouse->getSensorReadDuration(name));
-    return m_mouse->readSensor(name);
+    return m_impl.readSensor(name);
 }
 
 double MouseInterface::readGyro() {
 
     ENSURE_CONTINUOUS_INTERFACE
 
-    return m_mouse->readGyro().getDegreesPerSecond();
+    return m_impl.readGyro();
 }
 
 bool MouseInterface::wallFront() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    return wallFrontImpl(m_options.declareWallOnRead, m_options.declareBothWallHalves);
+    return m_impl.wallFront(m_options.declareWallOnRead, m_options.declareBothWallHalves);
 }
 
 bool MouseInterface::wallRight() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    return wallRightImpl(m_options.declareWallOnRead, m_options.declareBothWallHalves);
+    return m_impl.wallRight(m_options.declareWallOnRead, m_options.declareBothWallHalves);
 }
 
 bool MouseInterface::wallLeft() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    return wallLeftImpl(m_options.declareWallOnRead, m_options.declareBothWallHalves);
+    return m_impl.wallLeft(m_options.declareWallOnRead, m_options.declareBothWallHalves);
 }
 
 void MouseInterface::moveForward() {
@@ -384,7 +387,7 @@ void MouseInterface::moveForward() {
     ENSURE_DISCRETE_INTERFACE
     ENSURE_NOT_TILE_EDGE_MOVEMENTS
 
-    moveForwardImpl();
+    m_impl.moveForward(m_options.wheelSpeedFraction);
 }
 
 void MouseInterface::moveForward(int count) {
@@ -392,7 +395,7 @@ void MouseInterface::moveForward(int count) {
     ENSURE_DISCRETE_INTERFACE
     ENSURE_NOT_TILE_EDGE_MOVEMENTS
 
-    moveForwardImpl(count);
+    m_impl.moveForward(count, m_options.wheelSpeedFraction);
 }
 
 void MouseInterface::turnLeft() {
@@ -400,7 +403,7 @@ void MouseInterface::turnLeft() {
     ENSURE_DISCRETE_INTERFACE
     ENSURE_NOT_TILE_EDGE_MOVEMENTS
 
-    turnLeftImpl();
+    m_impl.turnLeft(m_options.wheelSpeedFraction);
 }
 
 void MouseInterface::turnRight() {
@@ -408,7 +411,7 @@ void MouseInterface::turnRight() {
     ENSURE_DISCRETE_INTERFACE
     ENSURE_NOT_TILE_EDGE_MOVEMENTS
 
-    turnRightImpl();
+    m_impl.turnRight(m_options.wheelSpeedFraction);
 }
 
 void MouseInterface::turnAroundLeft() {
@@ -416,7 +419,7 @@ void MouseInterface::turnAroundLeft() {
     ENSURE_DISCRETE_INTERFACE
     ENSURE_NOT_TILE_EDGE_MOVEMENTS
 
-    turnAroundLeftImpl();
+    m_impl.turnAroundLeft(m_options.wheelSpeedFraction);
 }
 
 void MouseInterface::turnAroundRight() {
@@ -424,7 +427,7 @@ void MouseInterface::turnAroundRight() {
     ENSURE_DISCRETE_INTERFACE
     ENSURE_NOT_TILE_EDGE_MOVEMENTS
 
-    turnAroundRightImpl();
+    m_impl.turnAroundRight(m_options.wheelSpeedFraction);
 }
 
 void MouseInterface::originMoveForwardToEdge() {
@@ -433,17 +436,7 @@ void MouseInterface::originMoveForwardToEdge() {
     ENSURE_USE_TILE_EDGE_MOVEMENTS
     ENSURE_INSIDE_ORIGIN
 
-    if (wallFrontImpl(false, false)) {
-        if (!S()->crashed()) {
-            S()->setCrashed();
-        }
-        return;
-    }
-
-    std::pair<int, int> currentTile = m_mouse->getCurrentDiscretizedTranslation();
-    Cartesian centerOfCurrentTile = getCenterOfTile(currentTile.first, currentTile.second);
-    Cartesian delta = Polar(Meters(P()->wallLength() / 2.0 + P()->wallWidth()), m_mouse->getCurrentRotation());
-    moveForwardTo(centerOfCurrentTile + delta, m_mouse->getCurrentRotation());
+    m_impl.originMoveForwardToEdge(m_options.wheelSpeedFraction);
     m_inOrigin = false;
 }
 
@@ -453,7 +446,7 @@ void MouseInterface::originTurnLeftInPlace() {
     ENSURE_USE_TILE_EDGE_MOVEMENTS
     ENSURE_INSIDE_ORIGIN
 
-    turnLeftImpl();
+    m_impl.originTurnLeftInPlace(m_options.wheelSpeedFraction);
 }
 
 void MouseInterface::originTurnRightInPlace() {
@@ -462,7 +455,7 @@ void MouseInterface::originTurnRightInPlace() {
     ENSURE_USE_TILE_EDGE_MOVEMENTS
     ENSURE_INSIDE_ORIGIN
 
-    turnRightImpl();
+    m_impl.originTurnRightInPlace(m_options.wheelSpeedFraction);
 }
 
 void MouseInterface::moveForwardToEdge() {
@@ -471,7 +464,7 @@ void MouseInterface::moveForwardToEdge() {
     ENSURE_USE_TILE_EDGE_MOVEMENTS
     ENSURE_OUTSIDE_ORIGIN
 
-    moveForwardImpl();
+    m_impl.moveForwardToEdge(m_options.wheelSpeedFraction);
 }
 
 void MouseInterface::moveForwardToEdge(int count) {
@@ -480,9 +473,7 @@ void MouseInterface::moveForwardToEdge(int count) {
     ENSURE_USE_TILE_EDGE_MOVEMENTS
     ENSURE_OUTSIDE_ORIGIN
 
-    for (int i = 0; i < count; i += 1) {
-        moveForwardImpl();
-    }
+    m_impl.moveForwardToEdge(count, m_options.wheelSpeedFraction);
 }
 
 void MouseInterface::turnLeftToEdge() {
@@ -491,7 +482,7 @@ void MouseInterface::turnLeftToEdge() {
     ENSURE_USE_TILE_EDGE_MOVEMENTS
     ENSURE_OUTSIDE_ORIGIN
 
-    turnToEdgeImpl(true);
+    m_impl.turnLeftToEdge(m_options.wheelSpeedFraction);
 }
 
 void MouseInterface::turnRightToEdge() {
@@ -500,7 +491,7 @@ void MouseInterface::turnRightToEdge() {
     ENSURE_USE_TILE_EDGE_MOVEMENTS
     ENSURE_OUTSIDE_ORIGIN
 
-    turnToEdgeImpl(false);
+    m_impl.turnRightToEdge(m_options.wheelSpeedFraction);
 }
 
 void MouseInterface::turnAroundLeftToEdge() {
@@ -509,7 +500,7 @@ void MouseInterface::turnAroundLeftToEdge() {
     ENSURE_USE_TILE_EDGE_MOVEMENTS
     ENSURE_OUTSIDE_ORIGIN
 
-    turnAroundToEdgeImpl(true);
+    m_impl.turnAroundLeftToEdge(m_options.wheelSpeedFraction);
 }
 
 void MouseInterface::turnAroundRightToEdge() {
@@ -518,7 +509,7 @@ void MouseInterface::turnAroundRightToEdge() {
     ENSURE_USE_TILE_EDGE_MOVEMENTS
     ENSURE_OUTSIDE_ORIGIN
 
-    turnAroundToEdgeImpl(false);
+    m_impl.turnAroundRightToEdge(m_options.wheelSpeedFraction);
 }
 
 void MouseInterface::diagonalLeftLeft(int count) {
@@ -527,7 +518,7 @@ void MouseInterface::diagonalLeftLeft(int count) {
     ENSURE_USE_TILE_EDGE_MOVEMENTS
     ENSURE_OUTSIDE_ORIGIN
 
-    doDiagonal(count, true, true);
+    m_impl.diagonalLeftLeft(count, m_options.wheelSpeedFraction);
 }
 
 void MouseInterface::diagonalLeftRight(int count) {
@@ -536,7 +527,7 @@ void MouseInterface::diagonalLeftRight(int count) {
     ENSURE_USE_TILE_EDGE_MOVEMENTS
     ENSURE_OUTSIDE_ORIGIN
 
-    doDiagonal(count, true, false);
+    m_impl.diagonalLeftRight(count, m_options.wheelSpeedFraction);
 }
 
 void MouseInterface::diagonalRightLeft(int count) {
@@ -545,7 +536,7 @@ void MouseInterface::diagonalRightLeft(int count) {
     ENSURE_USE_TILE_EDGE_MOVEMENTS
     ENSURE_OUTSIDE_ORIGIN
 
-    doDiagonal(count, false, true);
+    m_impl.diagonalRightLeft(count, m_options.wheelSpeedFraction);
 }
 
 void MouseInterface::diagonalRightRight(int count) {
@@ -554,55 +545,55 @@ void MouseInterface::diagonalRightRight(int count) {
     ENSURE_USE_TILE_EDGE_MOVEMENTS
     ENSURE_OUTSIDE_ORIGIN
 
-    doDiagonal(count, false, false);
+    m_impl.diagonalRightRight(count, m_options.wheelSpeedFraction);
 }
 
 int MouseInterface::currentXTile() {
 
     ENSURE_ALLOW_OMNISCIENCE
 
-    return m_mouse->getCurrentDiscretizedTranslation().first;
+    return m_impl.currentXTile();
 }
 
 int MouseInterface::currentYTile() {
 
     ENSURE_ALLOW_OMNISCIENCE
 
-    return m_mouse->getCurrentDiscretizedTranslation().second;
+    return m_impl.currentYTile();
 }
 
 char MouseInterface::currentDirection() {
 
     ENSURE_ALLOW_OMNISCIENCE
 
-    return DIRECTION_TO_CHAR.at(m_mouse->getCurrentDiscretizedRotation());
+    return m_impl.currentDirection();
 }
 
 double MouseInterface::currentXPosMeters() {
 
     ENSURE_ALLOW_OMNISCIENCE
 
-    return m_mouse->getCurrentTranslation().getX().getMeters();
+    return m_impl.currentXPosMeters();
 }
 
 double MouseInterface::currentYPosMeters() {
 
     ENSURE_ALLOW_OMNISCIENCE
 
-    return m_mouse->getCurrentTranslation().getY().getMeters();
+    return m_impl.currentYPosMeters();
 }
 
 double MouseInterface::currentRotationDegrees() {
 
     ENSURE_ALLOW_OMNISCIENCE
 
-    return m_mouse->getCurrentRotation().getDegreesZeroTo360();
+    return m_impl.currentRotationDegrees();
 }
 
 void MouseInterface::ensureDiscreteInterface(const std::string& callingFunction) const {
     if (m_options.interfaceType != InterfaceType::DISCRETE) {
         L()->error(
-            "You must declare the interface type to be \"%v\" to use MouseInterface::%v().",
+            "You must declare the interface type to be \"%v\" to use \"MouseInterface::%v()\".",
             INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE), callingFunction);
         SimUtilities::quit();
     }
@@ -611,7 +602,7 @@ void MouseInterface::ensureDiscreteInterface(const std::string& callingFunction)
 void MouseInterface::ensureContinuousInterface(const std::string& callingFunction) const {
     if (m_options.interfaceType != InterfaceType::CONTINUOUS) {
         L()->error(
-            "You must declare the interface type to be \"%v\" to use MouseInterface::%v().",
+            "You must declare the interface type to be \"%v\" to use \"MouseInterface::%v()\".",
             INTERFACE_TYPE_TO_STRING.at(InterfaceType::CONTINUOUS), callingFunction);
         SimUtilities::quit();
     }
@@ -620,7 +611,7 @@ void MouseInterface::ensureContinuousInterface(const std::string& callingFunctio
 void MouseInterface::ensureAllowOmniscience(const std::string& callingFunction) const {
     if (!m_options.allowOmniscience) {
         L()->error(
-            "You must return true from \"allowOmniscience()\" in order to use MouseInterface::%v().",
+            "You must return true from \"allowOmniscience()\" in order to use \"MouseInterface::%v()\".",
             callingFunction);
         SimUtilities::quit();
     }
@@ -629,7 +620,7 @@ void MouseInterface::ensureAllowOmniscience(const std::string& callingFunction) 
 void MouseInterface::ensureNotTileEdgeMovements(const std::string& callingFunction) const {
     if (m_options.useTileEdgeMovements) {
         L()->error(
-            "You must return false from \"useTileEdgeMovements()\" in order to use MouseInterface::%v().",
+            "You must return false from \"useTileEdgeMovements()\" in order to use \"MouseInterface::%v()\".",
             callingFunction);
         SimUtilities::quit();
     }
@@ -638,7 +629,7 @@ void MouseInterface::ensureNotTileEdgeMovements(const std::string& callingFuncti
 void MouseInterface::ensureUseTileEdgeMovements(const std::string& callingFunction) const {
     if (!m_options.useTileEdgeMovements) {
         L()->error(
-            "You must return true from \"useTileEdgeMovements()\" in order to use MouseInterface::%v().",
+            "You must return true from \"useTileEdgeMovements()\" in order to use \"MouseInterface::%v()\".",
             callingFunction);
         SimUtilities::quit();
     }
@@ -647,8 +638,8 @@ void MouseInterface::ensureUseTileEdgeMovements(const std::string& callingFuncti
 void MouseInterface::ensureInsideOrigin(const std::string& callingFunction) const {
     if (!m_inOrigin) {
         L()->error(
-            "You should only call MouseInterface::%v() if you're in the"
-            " origin, i.e., you haven't moved forward at all yet.",
+            "You should only call \"MouseInterface::%v()\" if you're in"
+            " the origin, i.e., you haven't moved forward at all yet.",
             callingFunction);
         SimUtilities::quit();
     }
@@ -663,387 +654,6 @@ void MouseInterface::ensureOutsideOrigin(const std::string& callingFunction) con
             callingFunction);
         SimUtilities::quit();
     }
-}
-
-void MouseInterface::setTileColorImpl(int x, int y, char color) {
-    m_mazeGraphic->setTileColor(x, y, CHAR_TO_COLOR.at(color));
-    m_tilesWithColor.insert(std::make_pair(x, y));
-}
-
-void MouseInterface::clearTileColorImpl(int x, int y) {
-    m_mazeGraphic->setTileColor(x, y, STRING_TO_COLOR.at(P()->tileBaseColor()));
-    m_tilesWithColor.erase(std::make_pair(x, y));
-}
-
-void MouseInterface::setTileTextImpl(int x, int y, const std::string& text) {
-    std::vector<std::string> rowsOfText;
-    int row = 0;
-    int index = 0;
-    while (row < m_options.tileTextNumberOfRows && index < text.size()) {
-        std::string rowOfText;
-        while (index < (row + 1) * m_options.tileTextNumberOfCols && index < text.size()) {
-            char c = text.at(index);
-            if (!ContainerUtilities::setContains(m_allowableTileTextCharacters, c)) {
-                L()->warn(
-                    "Unable to set the tile text for unprintable character \"%v\"."
-                    " Using the character \"%v\" instead.",
-                    (c == '\n' ? "\\n" :
-                    (c == '\t' ? "\\t" :
-                    (c == '\r' ? "\\r" :
-                    std::to_string(c)))),
-                    P()->defaultTileTextCharacter());
-                c = P()->defaultTileTextCharacter();
-            }
-            rowOfText += c;
-            index += 1;
-        }
-        rowsOfText.push_back(rowOfText); 
-        row += 1;
-    }
-    m_mazeGraphic->setTileText(x, y, rowsOfText);
-    m_tilesWithText.insert(std::make_pair(x, y));
-}
-
-void MouseInterface::clearTileTextImpl(int x, int y) {
-    m_mazeGraphic->setTileText(x, y, {});
-    m_tilesWithText.erase(std::make_pair(x, y));
-}
-
-void MouseInterface::declareWallImpl(
-        std::pair<std::pair<int, int>, Direction> wall, bool wallExists, bool declareBothWallHalves) {
-    m_mazeGraphic->declareWall(wall.first.first, wall.first.second, wall.second, wallExists); 
-    if (declareBothWallHalves && hasOpposingWall(wall)) {
-        declareWallImpl(getOpposingWall(wall), wallExists, false);
-    }
-}
-
-void MouseInterface::undeclareWallImpl(
-        std::pair<std::pair<int, int>, Direction> wall, bool declareBothWallHalves) {
-    m_mazeGraphic->undeclareWall(wall.first.first, wall.first.second, wall.second); 
-    if (declareBothWallHalves && hasOpposingWall(wall)) {
-        undeclareWallImpl(getOpposingWall(wall), false);
-    }
-}
-
-void MouseInterface::declareTileDistanceImpl(int x, int y, int distance,
-        bool setTileTextWhenDistanceDeclared, bool setTileBaseColorWhenDistanceDeclaredCorrectly) {
-    if (setTileTextWhenDistanceDeclared) {
-        setTileTextImpl(x, y, (0 <= distance ? std::to_string(distance) : "inf"));
-    }
-    if (setTileBaseColorWhenDistanceDeclaredCorrectly) {
-        if (distance == m_maze->getTile(x, y)->getDistance()) {
-            setTileColorImpl(x, y,
-                COLOR_TO_CHAR.at(STRING_TO_COLOR.at(P()->distanceCorrectTileBaseColor())));
-        }
-    }
-}
-
-void MouseInterface::undeclareTileDistanceImpl(int x, int y,
-        bool setTileTextWhenDistanceDeclared, bool setTileBaseColorWhenDistanceDeclaredCorrectly) {
-    if (setTileTextWhenDistanceDeclared) {
-        clearTileTextImpl(x, y);
-    }
-    if (setTileBaseColorWhenDistanceDeclaredCorrectly) {
-        setTileColorImpl(x, y, COLOR_TO_CHAR.at(STRING_TO_COLOR.at(P()->tileBaseColor())));
-    }
-}
-
-bool MouseInterface::wallFrontImpl(bool declareWallOnRead, bool declareBothWallHalves) {
-    return isWall(
-        std::make_pair(
-            m_mouse->getCurrentDiscretizedTranslation(),
-            m_mouse->getCurrentDiscretizedRotation()
-        ),
-        declareWallOnRead,
-        declareBothWallHalves
-    );
-}
-
-bool MouseInterface::wallLeftImpl(bool declareWallOnRead, bool declareBothWallHalves) {
-    return isWall(
-        std::make_pair(
-            m_mouse->getCurrentDiscretizedTranslation(),
-            DIRECTION_ROTATE_LEFT.at(m_mouse->getCurrentDiscretizedRotation())
-        ),
-        declareWallOnRead,
-        declareBothWallHalves
-    );
-}
-
-bool MouseInterface::wallRightImpl(bool declareWallOnRead, bool declareBothWallHalves) {
-    return isWall(
-        std::make_pair(
-            m_mouse->getCurrentDiscretizedTranslation(),
-            DIRECTION_ROTATE_RIGHT.at(m_mouse->getCurrentDiscretizedRotation())
-        ),
-        declareWallOnRead,
-        declareBothWallHalves
-    );
-}
-
-void MouseInterface::moveForwardImpl() {
-    if (wallFrontImpl(false, false)) {
-        if (!S()->crashed()) {
-            S()->setCrashed();
-        }
-        return;
-    }
-    static Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
-    Cartesian delta = Polar(tileLength, m_mouse->getCurrentRotation());
-    moveForwardTo(m_mouse->getCurrentTranslation() + delta, m_mouse->getCurrentRotation());
-}
-
-void MouseInterface::moveForwardImpl(int count) {
-    for (int i = 0; i < count; i += 1) {
-        moveForwardImpl();
-    }
-}
-
-void MouseInterface::turnLeftImpl() {
-    turnTo(m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation() + Degrees(90));
-}
-
-void MouseInterface::turnRightImpl() {
-    turnTo(m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation() - Degrees(90));
-}
-
-void MouseInterface::turnAroundLeftImpl() {
-    for (int i = 0; i < 2; i += 1) {
-        turnLeftImpl();
-    }
-}
-
-void MouseInterface::turnAroundRightImpl() {
-    for (int i = 0; i < 2; i += 1) {
-        turnRightImpl();
-    }
-}
-
-void MouseInterface::turnAroundToEdgeImpl(bool turnLeft) {
-
-    // Move to the center of the tile
-    Cartesian delta = Polar(Meters(P()->wallLength() / 2.0), m_mouse->getCurrentRotation());
-    moveForwardTo(m_mouse->getCurrentTranslation() + delta, m_mouse->getCurrentRotation());
-
-    // Turn around
-    if (turnLeft) {
-        turnAroundLeftImpl();
-    }
-    else {
-        turnAroundRightImpl();
-    }
-
-    // Move forward, into the next tile
-    delta = Polar(Meters(P()->wallLength() / 2.0 + P()->wallWidth()), m_mouse->getCurrentRotation());
-    moveForwardTo(m_mouse->getCurrentTranslation() + delta, m_mouse->getCurrentRotation());
-}
-
-void MouseInterface::turnToEdgeImpl(bool turnLeft) {
-
-    // Check for a crash
-    if ((turnLeft && wallLeftImpl(false, false)) || (!turnLeft && wallRightImpl(false, false))) {
-        if (!S()->crashed()) {
-            S()->setCrashed();
-        }
-        return;
-    }
-
-    Meters halfWallLength = Meters(P()->wallLength() / 2.0);
-    std::pair<int, int> currentTile = m_mouse->getCurrentDiscretizedTranslation();
-    Cartesian centerOfCurrentTile = getCenterOfTile(currentTile.first, currentTile.second);
-
-    Degrees destinationRotation = m_mouse->getCurrentRotation() + Degrees((turnLeft ? 90 : -90));
-    Cartesian intermediateDestination = centerOfCurrentTile + Polar(halfWallLength, destinationRotation);
-    Cartesian finalDestination = intermediateDestination + Polar(Meters(P()->wallWidth()), destinationRotation);
-
-    // Perform the curve turn
-    arcTo(intermediateDestination, destinationRotation, halfWallLength, 1.0);
-    moveForwardTo(finalDestination, destinationRotation);
-}
-
-bool MouseInterface::isWall(std::pair<std::pair<int, int>, Direction> wall, bool declareWallOnRead, bool declareBothWallHalves) {
-
-    int x = wall.first.first;
-    int y = wall.first.second;
-    Direction direction = wall.second;
-
-    ASSERT_TR(m_maze->withinMaze(x, y));
-
-    bool wallExists = m_maze->getTile(x, y)->isWall(direction);
-
-    if (declareWallOnRead) {
-        declareWallImpl(wall, wallExists, declareBothWallHalves);
-    }
-
-    return wallExists;
-}
-
-bool MouseInterface::hasOpposingWall(std::pair<std::pair<int, int>, Direction> wall) const {
-    int x = wall.first.first;
-    int y = wall.first.second;
-    Direction direction = wall.second;
-    switch (direction) {
-        case Direction::NORTH:
-            return y < m_maze->getHeight() - 1;
-        case Direction::EAST:
-            return x < m_maze->getWidth() - 1;
-        case Direction::SOUTH:
-            return 0 < y;
-        case Direction::WEST:
-            return 0 < x;
-    }
-}
-
-std::pair<std::pair<int, int>, Direction> MouseInterface::getOpposingWall(
-        std::pair<std::pair<int, int>, Direction> wall) const {
-    ASSERT_TR(hasOpposingWall(wall));
-    int x = wall.first.first;
-    int y = wall.first.second;
-    Direction direction = wall.second;
-    switch (direction) {
-        case Direction::NORTH:
-            return std::make_pair(std::make_pair(x, y + 1), Direction::SOUTH);
-        case Direction::EAST:
-            return std::make_pair(std::make_pair(x + 1, y), Direction::WEST);
-        case Direction::SOUTH:
-            return std::make_pair(std::make_pair(x, y - 1), Direction::NORTH);
-        case Direction::WEST:
-            return std::make_pair(std::make_pair(x - 1, y), Direction::EAST);
-    }
-}
-
-void MouseInterface::moveForwardTo(const Cartesian& destinationTranslation, const Radians& destinationRotation) {
-
-    // This function assumes that we're already facing the correct direction,
-    // and that we simply need to move forward to reach the destination.
-
-    // Determine delta between the two points
-    Polar delta = destinationTranslation - m_mouse->getCurrentTranslation();
-    Degrees initialAngle = delta.getTheta();
-    Meters previousDistance = delta.getRho();
-
-    // Start the mouse moving forward
-    m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
-
-    // Move forward until we've reached the destination
-    do {
-        // Assert that we're actually moving closer to the destination
-        ASSERT_LE(delta.getRho().getMeters(), previousDistance.getMeters());
-        previousDistance = delta.getRho();
-        // Update the translation delta
-        sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-        delta = destinationTranslation - m_mouse->getCurrentTranslation();
-    }
-    // While the angle delta is not ~180 degrees, sleep for a short amout of time
-    while (std::abs((delta.getTheta() - initialAngle).getDegreesZeroTo360()) <  90
-        || std::abs((delta.getTheta() - initialAngle).getDegreesZeroTo360()) > 270);
-
-    // Stop the wheels and teleport to the exact destination
-    m_mouse->stopAllWheels();
-    m_mouse->teleport(destinationTranslation, destinationRotation);
-}
-
-void MouseInterface::arcTo(const Cartesian& destinationTranslation, const Radians& destinationRotation,
-        const Meters& radius, double extraWheelSpeedFraction) {
-
-    // Determine the inital rotation delta in [-180, 180)
-    Radians initialRotationDelta = getRotationDelta(m_mouse->getCurrentRotation(), destinationRotation);
-
-    // Set the speed based on the initial rotation delta
-    if (0 < initialRotationDelta.getDegreesNotBounded()) {
-        m_mouse->setWheelSpeedsForCurveLeft(m_options.wheelSpeedFraction * extraWheelSpeedFraction, radius);
-    }
-    else {
-        m_mouse->setWheelSpeedsForCurveRight(m_options.wheelSpeedFraction * extraWheelSpeedFraction, radius);
-    }
-    
-    // While the deltas have the same sign, sleep for a short amount of time
-    while (0 <
-            initialRotationDelta.getRadiansNotBounded() *
-            getRotationDelta(
-                m_mouse->getCurrentRotation(),
-                destinationRotation
-            ).getRadiansNotBounded()) {
-        sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-    }
-
-    // Stop the wheels and teleport to the exact destination
-    m_mouse->stopAllWheels();
-    m_mouse->teleport(destinationTranslation, destinationRotation);
-}
-
-void MouseInterface::turnTo(const Cartesian& destinationTranslation, const Radians& destinationRotation) {
-    // When we're turning in place, we set the wheels to half speed
-    arcTo(destinationTranslation, destinationRotation, Meters(0), 0.5);
-}
-
-Radians MouseInterface::getRotationDelta(const Radians& from, const Radians& to) const {
-    static const Degrees lowerBound = Degrees(-180);
-    static const Degrees upperBound = Degrees(180);
-    static const Degrees fullCircle = Degrees(360);
-    Radians delta = Radians(to.getRadiansZeroTo2pi() - from.getRadiansZeroTo2pi());
-    if (delta.getRadiansNotBounded() < lowerBound.getRadiansNotBounded()) {
-        delta += fullCircle;
-    }
-    if (upperBound.getRadiansNotBounded() <= delta.getRadiansNotBounded()) {
-        delta -= fullCircle;
-    }
-    ASSERT_LE(lowerBound.getRadiansNotBounded(), delta.getRadiansNotBounded());
-    ASSERT_LT(delta.getRadiansNotBounded(), upperBound.getRadiansNotBounded());
-    return delta;
-}
-
-Cartesian MouseInterface::getCenterOfTile(int x, int y) const {
-    ASSERT_TR(m_maze->withinMaze(x, y));
-    static Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
-    Cartesian centerOfTile = Cartesian(
-        tileLength * (static_cast<double>(x) + 0.5),
-        tileLength * (static_cast<double>(y) + 0.5)
-    );
-    return centerOfTile;
-}
-
-void MouseInterface::doDiagonal(int count, bool startLeft, bool endLeft) {
-    // TODO: MACK - special case for counts 1,2
-    // TODO: MACK - limits on count?
-    if (startLeft == endLeft) {
-        if (count % 2 != 1) {
-        }
-        ASSERT_EQ(count % 2, 1);
-    }
-    else {
-        if (count % 2 != 0) {
-        }
-        ASSERT_EQ(count % 2, 0);
-    }
-    // TODO: MACK - Clean this up
-
-    Meters halfTileWidth = Meters(P()->wallLength() + P()->wallWidth()) / 2.0;
-    Meters halfTileDiagonal = Meters(std::sqrt(2 * (halfTileWidth * halfTileWidth).getMetersSquared()));
-
-    Cartesian backALittleBit = m_mouse->getCurrentTranslation() +
-        Polar(Meters(P()->wallWidth() / 2.0), m_mouse->getCurrentRotation() + Degrees(180));
-
-    Cartesian destination = backALittleBit +
-        Polar(halfTileDiagonal * count, m_mouse->getCurrentRotation() + Degrees(45) * (startLeft ? 1 : -1));
-    Polar delta = destination - m_mouse->getCurrentTranslation();
-
-    Radians endRotation = m_mouse->getCurrentRotation();
-    if (startLeft && endLeft) {
-        endRotation += Degrees(90);
-    }
-    if (!startLeft && !endLeft) {
-        endRotation -= Degrees(90);
-    }
-    
-    turnTo(m_mouse->getCurrentTranslation(), delta.getTheta());
-    moveForwardTo(destination, m_mouse->getCurrentRotation());
-    turnTo(m_mouse->getCurrentTranslation(), endRotation);
-    moveForwardTo(destination + Polar(Meters(P()->wallWidth() / 2.0), m_mouse->getCurrentRotation()), m_mouse->getCurrentRotation());
-
-    // TODO: MACK - negative here?
-    //arcTo(m_mouse->getCurrentTranslation(), delta.getTheta() * -2, Meters(P()->wallLength() / 4));
-    // TODO: MACK
 }
 
 } // namespace sim

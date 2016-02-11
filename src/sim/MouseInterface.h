@@ -1,10 +1,9 @@
 #pragma once
 
-#include "InterfaceType.h"
 #include "MazeGraphic.h"
 #include "Mouse.h"
+#include "MouseInterfaceImpl.h"
 #include "MouseInterfaceOptions.h"
-#include "Param.h"
 
 #define ENSURE_DISCRETE_INTERFACE ensureDiscreteInterface(__func__);
 #define ENSURE_CONTINUOUS_INTERFACE ensureContinuousInterface(__func__);
@@ -23,8 +22,8 @@ public:
         const Maze* maze,
         Mouse* mouse,
         MazeGraphic* mazeGraphic,
-        std::set<char> allowableTileTextCharacters,
-        MouseInterfaceOptions options);
+        MouseInterfaceOptions options,
+        std::set<char> allowableTileTextCharacters);
 
     // ----- Any interface methods ----- //
 
@@ -46,7 +45,7 @@ public:
     void clearAllTileColor();
 
     // Tile text
-    void setTileText(int x, int y, const std::string& text);
+    void setTileText(int x, int y, std::string text);
     void clearTileText(int x, int y);
     void clearAllTileText();
 
@@ -108,7 +107,7 @@ public:
     void turnAroundLeft();
     void turnAroundRight();
 
-    // ----- Special discrete interface methods ----- //
+    // ----- Edge discrete interface methods ----- //
 
     void originMoveForwardToEdge();
     void originTurnLeftInPlace();
@@ -140,15 +139,11 @@ public:
 
 private:
     const Maze* m_maze;
-    Mouse* m_mouse;
-    MazeGraphic* m_mazeGraphic;
-    std::set<char> m_allowableTileTextCharacters;
+    const Mouse* m_mouse;
+    MouseInterfaceImpl m_impl;
     MouseInterfaceOptions m_options;
+    std::set<char> m_allowableTileTextCharacters;
     bool m_inOrigin; // Whether or not the mouse has moved out the origin
-
-    // Cache of tiles, for making clearAll methods faster
-    std::set<std::pair<int, int>> m_tilesWithColor;
-    std::set<std::pair<int, int>> m_tilesWithText;
 
     // Helper methods for checking particular conditions and failing hard
     void ensureDiscreteInterface(const std::string& callingFunction) const;
@@ -158,53 +153,6 @@ private:
     void ensureUseTileEdgeMovements(const std::string& callingFunction) const;
     void ensureInsideOrigin(const std::string& callingFunction) const;
     void ensureOutsideOrigin(const std::string& callingFunction) const;
-
-    // Implementation methods
-    void setTileColorImpl(int x, int y, char color);
-    void clearTileColorImpl(int x, int y);
-    void setTileTextImpl(int x, int y, const std::string& text);
-    void clearTileTextImpl(int x, int y);
-    void declareWallImpl(
-        std::pair<std::pair<int, int>, Direction> wall, bool wallExists, bool declareBothWallHalves);
-    void undeclareWallImpl(
-        std::pair<std::pair<int, int>, Direction> wall, bool declareBothWallHalves);
-    void declareTileDistanceImpl(int x, int y, int distance,
-        bool setTileTextWhenDistanceDeclared, bool setTileBaseColorWhenDistanceDeclaredCorrectly);
-    void undeclareTileDistanceImpl(int x, int y,
-        bool setTileTextWhenDistanceDeclared, bool setTileBaseColorWhenDistanceDeclaredCorrectly);
-    bool wallFrontImpl(bool declareWallOnRead, bool declareBothWallHalves);
-    bool wallLeftImpl(bool declareWallOnRead, bool declareBothWallHalves);
-    bool wallRightImpl(bool declareWallOnRead, bool declareBothWallHalves);
-    void moveForwardImpl();
-    void moveForwardImpl(int count);
-    void turnLeftImpl();
-    void turnRightImpl();
-    void turnAroundLeftImpl();
-    void turnAroundRightImpl();
-    void turnToEdgeImpl(bool turnLeft);
-    void turnAroundToEdgeImpl(bool turnLeft);
-
-    // Helper methods for wall retrieval and declaration
-    bool isWall(std::pair<std::pair<int, int>, Direction> wall, bool declareWallOnRead, bool declareBothWallHalves);
-    bool hasOpposingWall(std::pair<std::pair<int, int>, Direction> wall) const;
-    std::pair<std::pair<int, int>, Direction> getOpposingWall(
-        std::pair<std::pair<int, int>, Direction> wall) const;
-
-    // Some helper abstractions for mouse movements
-    void moveForwardTo(const Cartesian& destinationTranslation, const Radians& destinationRotation);
-    void arcTo(const Cartesian& destinationTranslation, const Radians& destinationRotation,
-        const Meters& radius, double extraWheelSpeedFraction);
-    void turnTo(const Cartesian& destinationTranslation, const Radians& destinationRotation);
-
-    // Returns the angle with from "from" to "to", with values in [-180, 180) degrees
-    Radians getRotationDelta(const Radians& from, const Radians& to) const;
-
-    // Returns the center of a given tile
-    Cartesian getCenterOfTile(int x, int y) const;
-
-    // TODO: MACK
-    void doDiagonal(int count, bool startLeft, bool endLeft);
-
 };
 
 } // namespace sim
