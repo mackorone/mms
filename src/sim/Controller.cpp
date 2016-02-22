@@ -62,8 +62,8 @@ Controller::Controller(Model* model, View* view) : m_model(model), m_view(view) 
         m_model->getMaze(),
         m_model->getMouse(),
         m_view->getMazeGraphic(),
-        options,
-        m_view->getAllowableTileTextCharacters()
+        m_view->getAllowableTileTextCharacters(),
+        options
     );
 
     // Separate out the World options here
