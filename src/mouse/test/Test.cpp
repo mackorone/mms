@@ -17,7 +17,7 @@
 namespace test {
 
 std::string Test::mouseFile() const {
-    return "megaMouse.xml";
+    return "omniMouse.xml";
 }
 
 std::string Test::interfaceType() const {
@@ -27,10 +27,10 @@ std::string Test::interfaceType() const {
 void Test::solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse) {
-    mouse->setWheelSpeed("left-lower", -100);
-    mouse->setWheelSpeed("left-upper", -100);
-    mouse->setWheelSpeed("right-lower", 100);
-    mouse->setWheelSpeed("right-upper", 100);
+    // This causes translation
+    mouse->setWheelSpeed("upper-left", -50);
+    mouse->setWheelSpeed("upper-right", -50);
+    mouse->setWheelSpeed("bottom", 100);
     while (true) {
         mouse->delay(100);
     }

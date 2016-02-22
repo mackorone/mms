@@ -20,6 +20,10 @@ bool IMouseAlgorithm::automaticallyClearFog() const {
     return true;
 }
 
+bool IMouseAlgorithm::declareBothWallHalves() const {
+    return false;
+}
+
 bool IMouseAlgorithm::setTileTextWhenDistanceDeclared() const {
     return true;
 }
@@ -37,10 +41,6 @@ int IMouseAlgorithm::tileTextNumberOfCols() const {
 }
 
 bool IMouseAlgorithm::declareWallOnRead() const {
-    return false;
-}
-
-bool IMouseAlgorithm::declareBothWallHalves() const {
     return false;
 }
 

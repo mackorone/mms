@@ -14,6 +14,7 @@ public:
     // Runtime options for both interface types
     virtual bool allowOmniscience() const;
     virtual bool automaticallyClearFog() const;
+    virtual bool declareBothWallHalves() const;
     virtual bool setTileTextWhenDistanceDeclared() const;
     virtual bool setTileBaseColorWhenDistanceDeclaredCorrectly() const;
     virtual int tileTextNumberOfRows() const;
@@ -21,7 +22,6 @@ public:
 
     // Runtime options only applicable to the DISCRETE interface
     virtual bool declareWallOnRead() const;
-    virtual bool declareBothWallHalves() const;
     virtual bool useTileEdgeMovements() const;
     virtual double wheelSpeedFraction() const;
 

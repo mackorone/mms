@@ -42,6 +42,10 @@ private:
     int m_windowWidth;
     int m_windowHeight;
 
+    // The header dimensions, in pixels
+    int m_headerHeight;
+    int m_headerTextHeight;
+
     // The number of pixels per meter of screen
     double m_screenPixelsPerMeter;
 

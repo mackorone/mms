@@ -15,7 +15,7 @@
 
 namespace sim {
 
-View::View(Model* model, int argc, char* argv[], const GlutFunctions& functions) : m_model(model) {
+View::View(Model* model, int argc, char* argv[], const GlutFunctions& functions) : m_model(model), m_headerTextHeight(10) {
 
     m_bufferInterface = new BufferInterface(
         std::make_pair(m_model->getMaze()->getWidth(), m_model->getMaze()->getHeight()),
@@ -34,7 +34,7 @@ View::View(Model* model, int argc, char* argv[], const GlutFunctions& functions)
 
     // TODO: MACK - If the font doesn't exist, we silently fail and draw no text whatsoever
     // Initialize the text drawer object // TODO: MACK - get the font from param
-    m_textDrawer = new TextDrawer("Unispace-Bold.ttf", 470.0 / 2.0);
+    m_textDrawer = new TextDrawer("Hack-Regular.ttf", m_headerTextHeight);
 }
 
 MazeGraphic* View::getMazeGraphic() {
@@ -87,7 +87,33 @@ void View::refresh() {
     // ----- Drawing the text ----- //
     // TODO: MACK - Font-stash drawing
     m_textDrawer->commenceDrawingTextForFrame();
-    //m_textDrawer->drawText(0, 0, m_windowWidth, m_windowHeight, "01234");
+    // TODO: MACK - some kind of border here
+    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 1, m_windowWidth, m_windowHeight,
+        std::string("Run ID: ") + S()->runId());
+    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 2, m_windowWidth, m_windowHeight,
+        std::string("Crashed: ") + (S()->crashed() ? "TRUE" : "FALSE"));
+    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 3, m_windowWidth, m_windowHeight,
+        std::string("Layout Type: ") + LAYOUT_TYPE_TO_STRING.at(S()->layoutType()));
+    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 4, m_windowWidth, m_windowHeight,
+        std::string("Rotate Zoomed Map: ") + (S()->rotateZoomedMap() ? "TRUE" : "FALSE"));
+    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 5, m_windowWidth, m_windowHeight,
+        std::string("Zoomed Map Scale: ") + std::to_string(S()->zoomedMapScale()));
+    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 6, m_windowWidth, m_windowHeight,
+        std::string("Wall Truth Visible: ") + (S()->wallTruthVisible() ? "TRUE" : "FALSE"));
+    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 7, m_windowWidth, m_windowHeight,
+        std::string("Tile Colors Visible: ") + (S()->tileColorsVisible() ? "TRUE" : "FALSE"));
+    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 8, m_windowWidth, m_windowHeight,
+        std::string("Tile Fog Visible: ") + (S()->tileFogVisible() ? "TRUE" : "FALSE"));
+    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 9, m_windowWidth, m_windowHeight,
+        std::string("Tile Text Visible: ") + (S()->tileTextVisible() ? "TRUE" : "FALSE"));
+    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 10, m_windowWidth, m_windowHeight,
+        std::string("Tile Distance Visible: ") + (S()->tileDistanceVisible() ? "TRUE" : "FALSE"));
+    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 11, m_windowWidth, m_windowHeight,
+        std::string("Wireframe Mode: ") + (S()->wireframeMode() ? "TRUE" : "FALSE"));
+    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 12, m_windowWidth, m_windowHeight,
+        std::string("Paused: ") + (S()->paused() ? "TRUE" : "FALSE"));
+    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 13, m_windowWidth, m_windowHeight,
+        std::string("Sim Speed: ") + std::to_string(S()->simSpeed()));
     m_textDrawer->concludeDrawingTextForFrame();
     // -------------
 
@@ -115,6 +141,9 @@ void View::refresh() {
 void View::updateWindowSize(int width, int height) {
     m_windowWidth = width;
     m_windowHeight = height;
+    // TODO: MACK - choice for sticky or not sticky header
+    //m_headerHeight = std::min(height, P()->defaultHeaderHeight());
+    m_headerHeight = std::max(0, height - (P()->defaultWindowHeight() - P()->defaultHeaderHeight()));
     glViewport(0, 0, width, height);
 }
 
@@ -270,13 +299,13 @@ void View::drawFullAndZoomedMaps(
 
     // Get the sizes and positions of each of the maps.
     std::pair<int, int> fullMapPosition = Layout::getFullMapPosition(
-        m_windowWidth, m_windowHeight, P()->windowBorderWidth(), S()->layoutType());
+        m_windowWidth, m_windowHeight, m_headerHeight, P()->windowBorderWidth(), S()->layoutType());
     std::pair<int, int> fullMapSize = Layout::getFullMapSize(
-        m_windowWidth, m_windowHeight, P()->windowBorderWidth(), S()->layoutType());
+        m_windowWidth, m_windowHeight, m_headerHeight, P()->windowBorderWidth(), S()->layoutType());
     std::pair<int, int> zoomedMapPosition = Layout::getZoomedMapPosition(
-        m_windowWidth, m_windowHeight, P()->windowBorderWidth(), S()->layoutType());
+        m_windowWidth, m_windowHeight, m_headerHeight, P()->windowBorderWidth(), S()->layoutType());
     std::pair<int, int> zoomedMapSize = Layout::getZoomedMapSize(
-        m_windowWidth, m_windowHeight, P()->windowBorderWidth(), S()->layoutType());
+        m_windowWidth, m_windowHeight, m_headerHeight, P()->windowBorderWidth(), S()->layoutType());
 
     // Get the physical size of the maze (in meters)
     double physicalMazeWidth = P()->wallWidth() + m_model->getMaze()->getWidth() * (P()->wallWidth() + P()->wallLength());

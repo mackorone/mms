@@ -1,26 +1,15 @@
 # High Priority
 
-- Refactor MouseInterface into impl class
-- Translation mouse test
-- Don't draw sensors in discrete mode
-- Diagonals
-    - https://www.youtube.com/watch?v=HPvke3fknrc
-    - Stringing together diagonal movements (with smooth turns) is difficult
-    - Use small curves to do diagonals
-- Make a class for commonly used measurements
-    - tileWidth
-    - halfWallWidth
-- Return const references, use const references in loops and especially in map iterations..., etc.
-- Disable some copy constructors (wheels, sensors, etc.)
+- Show the mouse crashes
+    - get rid of crash message, just print something custom out
 - Implement a gear ratio
+- Make header text height a param
 - Windows logging is not working on non-main threads
 - Logging is too expensive
     - Causing freezing and crashing
     - Generalize a method for counting and logging few times, 1 per second
 - Fix parameters no root element
-- Rename min-sleep-duration to something better
 - Update algos to use stopOnTileEdge, update documentation for rightWallFollow, etc.
-- Make methods in IMouseInterface such as millis(), so that they can be called without "m_mouse->"
 - Make a mechanism for easily merging the a discrete algo into a continuous one
     - Figure out how to bring the high level logic into the control algo
 - Updates on the tile boundaries, not centers
@@ -58,6 +47,7 @@
     - Check to make sure font won't be cut off, use ellipses if so (How do we deal with text being cut off in the vertical direction?)
     - Set the mouse algo in State for display in the toolbar
     - Make terminal style output at bottom or right of window (GUI)
+    - Provide some mechanism to get the status string from the mouse and display it to the user
 - Make MouseInterface into an interface, and then implement the simulator interface, make a real-world interface
 - Change float to units (including in the ParamParser and Param class)
 - Type safety (in terms of units) of the parameters
@@ -89,9 +79,20 @@
 - Make a note about symmetry with discrete interface
     - Make a formal check for symmetry
     - Any mouse that can move forward or turn in place if sufficient
+- Make smooth diagonals
+    - https://www.youtube.com/watch?v=HPvke3fknrc
+    - Stringing together diagonal movements (with smooth turns) is difficult
+    - Use small curves to do diagonals
 
 # Medum Priority
 
+- Make methods in IMouseInterface such as millis(), so that they can be called without "m_mouse->"
+- Rename min-sleep-duration to something better
+- Disable some copy constructors (wheels, sensors, etc.)
+- Return const references, use const references in loops and especially in map iterations..., etc.
+- Make a class for commonly used measurements
+    - tileWidth
+    - halfWallWidth
 - If the wheel is at the center, it should have zero turn contribution, not infinite
 - Organize params in res/parameters.xml and Param.h/.cpp
 - Improve sensor readings by getting the actual complete polygon, not apporximated
@@ -139,7 +140,8 @@
 # Low Priority
 
 - Be able to toggle useTileEdgeMovements
-    - Make all non-initialization methods togglable by just getting the return value at runtime
+    - Make all non-initialization methods togglable by just getting the return value each time
+    - Right now, it's only getting the value once so it's not togglable
 - Pointers to wall polygons in each tile, save space by not breaking up walls/corners into multiple tiles
 - Get rid of as much platform dependant code as possible
 - Clean up the coding standards

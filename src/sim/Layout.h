@@ -15,11 +15,13 @@ public:
     static std::pair<int, int> getFullMapPosition(
         int windowWidth,
         int windowHeight,
+        int headerHeight,
         int windowBorderWidth,
         LayoutType layoutType);
     static std::pair<int, int> getZoomedMapPosition(
         int windowWidth,
         int windowHeight,
+        int headerHeight,
         int windowBorderWidth,
         LayoutType layoutType);
 
@@ -27,11 +29,13 @@ public:
     static std::pair<int, int> getFullMapSize(
         int windowWidth,
         int windowHeight,
+        int headerHeight,
         int windowBorderWidth,
         LayoutType layoutType);
     static std::pair<int, int> getZoomedMapSize(
         int windowWidth,
         int windowHeight,
+        int headerHeight,
         int windowBorderWidth,
         LayoutType layoutType);
 

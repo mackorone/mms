@@ -5,6 +5,7 @@ namespace sim {
 std::pair<int, int> Layout::getFullMapPosition(
         int windowWidth,
         int windowHeight,
+        int headerHeight,
         int windowBorderWidth,
         LayoutType layoutType) {
 
@@ -14,6 +15,7 @@ std::pair<int, int> Layout::getFullMapPosition(
 std::pair<int, int> Layout::getZoomedMapPosition(
         int windowWidth,
         int windowHeight,
+        int headerHeight,
         int windowBorderWidth,
         LayoutType layoutType) {
 
@@ -26,11 +28,12 @@ std::pair<int, int> Layout::getZoomedMapPosition(
 std::pair<int, int> Layout::getFullMapSize(
         int windowWidth,
         int windowHeight,
+        int headerHeight,
         int windowBorderWidth,
         LayoutType layoutType) {
 
     int width = windowWidth - 2 * windowBorderWidth;
-    int height = windowHeight - 2 * windowBorderWidth;
+    int height = windowHeight - 2 * windowBorderWidth - headerHeight;
 
     if (layoutType == LayoutType::ZOOMED) {
         width = 0;
@@ -44,11 +47,12 @@ std::pair<int, int> Layout::getFullMapSize(
 std::pair<int, int> Layout::getZoomedMapSize(
         int windowWidth,
         int windowHeight,
+        int headerHeight,
         int windowBorderWidth,
         LayoutType layoutType) {
 
     int width = windowWidth - 2 * windowBorderWidth;
-    int height = windowHeight - 2 * windowBorderWidth;
+    int height = windowHeight - 2 * windowBorderWidth - headerHeight;
 
     if (layoutType == LayoutType::FULL) {
         width = 0;

@@ -89,7 +89,14 @@ void State::setZoomedMapScale(double zoomedMapScale) {
         m_zoomedMapScale = P()->maxZoomedMapScale();
     }
     else {
-        m_zoomedMapScale = zoomedMapScale;
+        // Anchor to the default whenever we pass by it
+        if ((m_zoomedMapScale < P()->defaultZoomedMapScale() && P()->defaultZoomedMapScale() <   zoomedMapScale) ||
+            (  zoomedMapScale < P()->defaultZoomedMapScale() && P()->defaultZoomedMapScale() < m_zoomedMapScale)) {
+            m_zoomedMapScale = P()->defaultZoomedMapScale();
+        }
+        else {
+            m_zoomedMapScale = zoomedMapScale;
+        }
     }
 }
 
@@ -161,7 +168,14 @@ void State::setSimSpeed(double simSpeed) {
         m_simSpeed = P()->maxSimSpeed();
     }
     else {
-        m_simSpeed = simSpeed;
+        // Anchor to the default whenever we pass by it
+        if ((m_simSpeed < P()->defaultSimSpeed() && P()->defaultSimSpeed() <   simSpeed) ||
+            (  simSpeed < P()->defaultSimSpeed() && P()->defaultSimSpeed() < m_simSpeed)) {
+            m_simSpeed = P()->defaultSimSpeed();
+        }
+        else {
+            m_simSpeed = simSpeed;
+        }
     }
 }
 

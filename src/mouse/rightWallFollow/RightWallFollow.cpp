@@ -29,23 +29,21 @@ void RightWallFollow::solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse) {
     /*
-    mouse->moveForward();
+    // TODO: MACK - testing diagonals
+    justMoveForward(mouse);
     turnRightAndMoveForward(mouse);
     turnRightAndMoveForward(mouse);
     turnLeftAndMoveForward(mouse);
     for (int i = 0; i < 10; i += 1) {
-        mouse->moveForward();
+        justMoveForward(mouse);
     }
-    mouse->turnAroundLeft();
+    mouse->turnAroundLeftToEdge();
     mouse->diagonalRightRight(3);
     mouse->diagonalRightRight(5);
     */
-    // TODO: MACK
     while (true){
         rightWallFollowStep(mouse);
     }
-    // TODO: MACK - turn tile edge movements on and off
-    // TODO: MACK - display string in the algorithm
 }
 
 void RightWallFollow::rightWallFollowStep(sim::MouseInterface* mouse) {
