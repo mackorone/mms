@@ -203,3 +203,5 @@ private:
     void doDiagonal(int count, bool startLeft, bool endLeft);
 
 };
+
+} // namespace sim
