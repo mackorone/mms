@@ -16,7 +16,13 @@ MouseInterface::MouseInterface(
         std::set<char> allowableTileTextCharacters) :
         m_maze(maze),
         m_mouse(mouse),
-        m_impl(maze, mouse, mazeGraphic),
+        m_impl(
+            MouseInterfaceImpl(
+                maze,
+                mouse,
+                mazeGraphic
+            )
+        ),
         m_options(options),
         m_allowableTileTextCharacters(allowableTileTextCharacters),
         m_inOrigin(true) {
@@ -99,6 +105,7 @@ void MouseInterface::setTileText(int x, int y, std::string text) {
         return;
     }
 
+    // TODO: MACK - test this
     for (int i = 0; i < text.size(); i += 1) {
         char c = text.at(i);
         if (!ContainerUtilities::setContains(m_allowableTileTextCharacters, c)) {

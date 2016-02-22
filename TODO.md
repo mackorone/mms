@@ -1,12 +1,14 @@
 # High Priority
 
-- Put MouseInterfaceOptions in MouseInterfaceImpl, get rid of all the ugly params
+- Be able to toggle useTileEdgeMovements, make all non-initialization methods togglable by just getting the return value at runtime
 - Translation mouse test
 - Don't draw sensors in discrete mode
 - Diagonals
-    - Use small curves to do diagonals
+    - In a tile, the possible directions (both left and right) are 0, 45, 90, 135, 180
+    - In a diagonal, the possible directions (both left and right) are 0, 45, 90, 135
     - https://www.youtube.com/watch?v=HPvke3fknrc
     - Stringing together diagonal movements (with smooth turns) is difficult
+    - Use small curves to do diagonals
 - Make a class for commonly used measurements
     - tileWidth
     - halfWallWidth
@@ -18,11 +20,14 @@
     - Causing freezing and crashing
     - Generalize a method for counting and logging few times, 1 per second
 - Fix parameters no root element
+- Adjustable curve turn diameter
 - Rename min-sleep-duration to something better
 - Update algos to use stopOnTileEdge, update documentation for rightWallFollow, etc.
 - Make methods in IMouseInterface such as millis(), so that they can be called without "m_mouse->"
 - Make a mechanism for easily merging the a discrete algo into a continuous one
     - Figure out how to bring the high level logic into the control algo
+- Updates on the tile boundaries, not centers
+    - Make this an option in the algo specification
 - Make some video tutorials
 - Write some code to make sure update throughput is good
     - 99% of updates are 1ms apart, or something like that
@@ -85,7 +90,6 @@
       time and then just teleports... sort of like bullets in other physics
       simulators
 - Make a note about symmetry with discrete interface
-    - Should be able to move forward and turn in place
     - Make a formal check for symmetry
 
 # Medum Priority
@@ -93,6 +97,10 @@
 - If the wheel is at the center, it should have zero turn contribution, not infinite
 - Organize params in res/parameters.xml and Param.h/.cpp
 - Improve sensor readings by getting the actual complete polygon, not apporximated
+- For curve turns, see if you can figure out the arc that the mouse should go on to simulate a curve turn, use checkpoints
+    - No curve turn has two line segments, each is tangent
+        - first order curve turn has 3 line segments total, equally spaced, etc.
+        - second order curve turn has 4 line segments total, equally spaced, etc.
 - Break up MouseInterface into DiscreteMouseInterface and ContinuousMouseInterface
 - isDiscreteInterfaceCompatible and isContinuousInterfaceCompatible
 - Enable steering the wheels and sensors during run
@@ -114,6 +122,7 @@
 - Continuous mode improvements (overall)
 - Xorg and compiz performance...
 - Kill SimUtilities...
+- Fix CPMinMax.h - order of includes matter, unforunately...
 - Shortest path graphic (phantom bot that travels along other shortest paths)
 - Randomly select a pre-defined maze
 - Write a good continuous algorithm
@@ -136,8 +145,6 @@
 
 # Low Priority
 
-- Be able to toggle useTileEdgeMovements
-    - Make all non-initialization methods togglable by just getting the return value at runtime
 - Pointers to wall polygons in each tile, save space by not breaking up walls/corners into multiple tiles
 - Get rid of as much platform dependant code as possible
 - Clean up the coding standards
@@ -220,3 +227,5 @@
     - "menu" for menu
 
 - Get backups of freeglut and glew files
+    
+
