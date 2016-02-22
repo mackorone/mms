@@ -159,7 +159,9 @@ private:
     void ensureInsideOrigin(const std::string& callingFunction) const;
     void ensureOutsideOrigin(const std::string& callingFunction) const;
 
-    // Implementation methods
+    // Implementation methods:
+    // Any functionality that is executed as part of another MouseInterface
+    // method should have an Impl method, and the Impl method should be called
     void setTileColorImpl(int x, int y, char color);
     void clearTileColorImpl(int x, int y);
     void setTileTextImpl(int x, int y, const std::string& text);
@@ -168,15 +170,10 @@ private:
         std::pair<std::pair<int, int>, Direction> wall, bool wallExists, bool declareBothWallHalves);
     void undeclareWallImpl(
         std::pair<std::pair<int, int>, Direction> wall, bool declareBothWallHalves);
-    void declareTileDistanceImpl(int x, int y, int distance,
-        bool setTileTextWhenDistanceDeclared, bool setTileBaseColorWhenDistanceDeclaredCorrectly);
-    void undeclareTileDistanceImpl(int x, int y,
-        bool setTileTextWhenDistanceDeclared, bool setTileBaseColorWhenDistanceDeclaredCorrectly);
     bool wallFrontImpl(bool declareWallOnRead, bool declareBothWallHalves);
     bool wallLeftImpl(bool declareWallOnRead, bool declareBothWallHalves);
     bool wallRightImpl(bool declareWallOnRead, bool declareBothWallHalves);
     void moveForwardImpl();
-    void moveForwardImpl(int count);
     void turnLeftImpl();
     void turnRightImpl();
     void turnAroundLeftImpl();
@@ -206,5 +203,3 @@ private:
     void doDiagonal(int count, bool startLeft, bool endLeft);
 
 };
-
-} // namespace sim

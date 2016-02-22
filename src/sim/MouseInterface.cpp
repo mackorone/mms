@@ -200,11 +200,15 @@ void MouseInterface::declareTileDistance(int x, int y, int distance) {
         return;
     }
 
-    declareTileDistanceImpl(
-        x, y, distance,
-        m_options.setTileTextWhenDistanceDeclared,
-        m_options.setTileBaseColorWhenDistanceDeclaredCorrectly
-    );
+    if (m_options.setTileTextWhenDistanceDeclared) {
+        setTileTextImpl(x, y, (0 <= distance ? std::to_string(distance) : "inf"));
+    }
+    if (m_options.setTileBaseColorWhenDistanceDeclaredCorrectly) {
+        if (distance == m_maze->getTile(x, y)->getDistance()) {
+            setTileColorImpl(x, y,
+                COLOR_TO_CHAR.at(STRING_TO_COLOR.at(P()->distanceCorrectTileBaseColor())));
+        }
+    }
 }
 
 void MouseInterface::undeclareTileDistance(int x, int y) {
@@ -216,11 +220,12 @@ void MouseInterface::undeclareTileDistance(int x, int y) {
         return;
     }
 
-    undeclareTileDistanceImpl(
-        x, y,
-        m_options.setTileTextWhenDistanceDeclared,
-        m_options.setTileBaseColorWhenDistanceDeclaredCorrectly
-    );
+    if (m_options.setTileTextWhenDistanceDeclared) {
+        clearTileTextImpl(x, y);
+    }
+    if (m_options.setTileBaseColorWhenDistanceDeclaredCorrectly) {
+        setTileColorImpl(x, y, COLOR_TO_CHAR.at(STRING_TO_COLOR.at(P()->tileBaseColor())));
+    }
 }
 
 void MouseInterface::resetPosition() {
@@ -392,7 +397,9 @@ void MouseInterface::moveForward(int count) {
     ENSURE_DISCRETE_INTERFACE
     ENSURE_NOT_TILE_EDGE_MOVEMENTS
 
-    moveForwardImpl(count);
+    for (int i = 0; i < count; i += 1) {
+        moveForwardImpl();
+    }
 }
 
 void MouseInterface::turnLeft() {
@@ -725,29 +732,6 @@ void MouseInterface::undeclareWallImpl(
     }
 }
 
-void MouseInterface::declareTileDistanceImpl(int x, int y, int distance,
-        bool setTileTextWhenDistanceDeclared, bool setTileBaseColorWhenDistanceDeclaredCorrectly) {
-    if (setTileTextWhenDistanceDeclared) {
-        setTileTextImpl(x, y, (0 <= distance ? std::to_string(distance) : "inf"));
-    }
-    if (setTileBaseColorWhenDistanceDeclaredCorrectly) {
-        if (distance == m_maze->getTile(x, y)->getDistance()) {
-            setTileColorImpl(x, y,
-                COLOR_TO_CHAR.at(STRING_TO_COLOR.at(P()->distanceCorrectTileBaseColor())));
-        }
-    }
-}
-
-void MouseInterface::undeclareTileDistanceImpl(int x, int y,
-        bool setTileTextWhenDistanceDeclared, bool setTileBaseColorWhenDistanceDeclaredCorrectly) {
-    if (setTileTextWhenDistanceDeclared) {
-        clearTileTextImpl(x, y);
-    }
-    if (setTileBaseColorWhenDistanceDeclaredCorrectly) {
-        setTileColorImpl(x, y, COLOR_TO_CHAR.at(STRING_TO_COLOR.at(P()->tileBaseColor())));
-    }
-}
-
 bool MouseInterface::wallFrontImpl(bool declareWallOnRead, bool declareBothWallHalves) {
     return isWall(
         std::make_pair(
@@ -791,12 +775,6 @@ void MouseInterface::moveForwardImpl() {
     static Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
     Cartesian delta = Polar(tileLength, m_mouse->getCurrentRotation());
     moveForwardTo(m_mouse->getCurrentTranslation() + delta, m_mouse->getCurrentRotation());
-}
-
-void MouseInterface::moveForwardImpl(int count) {
-    for (int i = 0; i < count; i += 1) {
-        moveForwardImpl();
-    }
 }
 
 void MouseInterface::turnLeftImpl() {
