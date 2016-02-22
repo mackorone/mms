@@ -86,6 +86,9 @@ private:
     double m_simSpeed;
     std::map<int, bool> m_inputButtons;
     std::map<Key, bool> m_arrowKeys;
+
+    // Returns true if defaultValue lies between current and next
+    bool crossesDefault(double current, double next, double defaultValue);
 };
 
 } // namespace sim

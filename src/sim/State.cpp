@@ -90,8 +90,7 @@ void State::setZoomedMapScale(double zoomedMapScale) {
     }
     else {
         // Anchor to the default whenever we pass by it
-        if ((m_zoomedMapScale < P()->defaultZoomedMapScale() && P()->defaultZoomedMapScale() <   zoomedMapScale) ||
-            (  zoomedMapScale < P()->defaultZoomedMapScale() && P()->defaultZoomedMapScale() < m_zoomedMapScale)) {
+        if (crossesDefault(m_zoomedMapScale, zoomedMapScale, P()->defaultZoomedMapScale())) {
             m_zoomedMapScale = P()->defaultZoomedMapScale();
         }
         else {
@@ -169,8 +168,7 @@ void State::setSimSpeed(double simSpeed) {
     }
     else {
         // Anchor to the default whenever we pass by it
-        if ((m_simSpeed < P()->defaultSimSpeed() && P()->defaultSimSpeed() <   simSpeed) ||
-            (  simSpeed < P()->defaultSimSpeed() && P()->defaultSimSpeed() < m_simSpeed)) {
+        if (crossesDefault(m_simSpeed, simSpeed, P()->defaultSimSpeed())) {
             m_simSpeed = P()->defaultSimSpeed();
         }
         else {
@@ -197,6 +195,13 @@ bool State::arrowKeyIsPressed(Key key) {
 void State::setArrowKeyIsPressed(Key key, bool pressed) {
     ASSERT_TR(ContainerUtilities::mapContains(m_arrowKeys, key));
     m_arrowKeys.at(key) = pressed;
+}
+
+bool State::crossesDefault(double current, double next, double defaultValue) {
+    return (
+        (current < defaultValue && defaultValue <    next) ||
+        (   next < defaultValue && defaultValue < current)
+    );
 }
 
 } // namespace sim

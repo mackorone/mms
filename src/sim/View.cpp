@@ -15,6 +15,7 @@
 
 namespace sim {
 
+// TODO: MACK - make the text height a parameter
 View::View(Model* model, int argc, char* argv[], const GlutFunctions& functions) : m_model(model), m_headerTextHeight(10) {
 
     m_bufferInterface = new BufferInterface(
@@ -88,6 +89,7 @@ void View::refresh() {
     // TODO: MACK - Font-stash drawing
     m_textDrawer->commenceDrawingTextForFrame();
     // TODO: MACK - some kind of border here
+    // TODO: MACK - put these in a data structure, cut of the text if necessary
     m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 1, m_windowWidth, m_windowHeight,
         std::string("Run ID: ") + S()->runId());
     m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 2, m_windowWidth, m_windowHeight,
