@@ -116,6 +116,22 @@ void View::refresh() {
         std::string("Paused: ") + (S()->paused() ? "TRUE" : "FALSE"));
     m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 13, m_windowWidth, m_windowHeight,
         std::string("Sim Speed: ") + std::to_string(S()->simSpeed()));
+
+    m_textDrawer->drawText(400, m_windowHeight - (m_headerTextHeight + 5) * 2, m_windowWidth, m_windowHeight,
+        std::string("Elapsed Sim Time: ") + SimUtilities::formatSeconds(m_model->getMouse()->getElapsedSimTime().getSeconds()));
+    m_textDrawer->drawText(400, m_windowHeight - (m_headerTextHeight + 5) * 4, m_windowWidth, m_windowHeight,
+        std::string("Current X (m): ") + std::to_string(m_model->getMouse()->getCurrentTranslation().getX().getMeters()));
+    m_textDrawer->drawText(400, m_windowHeight - (m_headerTextHeight + 5) * 5, m_windowWidth, m_windowHeight,
+        std::string("Current Y (m): ") + std::to_string(m_model->getMouse()->getCurrentTranslation().getY().getMeters()));
+    m_textDrawer->drawText(400, m_windowHeight - (m_headerTextHeight + 5) * 6, m_windowWidth, m_windowHeight,
+        std::string("Current Rotation (deg): ") + std::to_string(m_model->getMouse()->getCurrentRotation().getDegreesZeroTo360()));
+    m_textDrawer->drawText(400, m_windowHeight - (m_headerTextHeight + 5) * 8, m_windowWidth, m_windowHeight,
+        std::string("Current X tile: ") + std::to_string(m_model->getMouse()->getCurrentDiscretizedTranslation().first));
+    m_textDrawer->drawText(400, m_windowHeight - (m_headerTextHeight + 5) * 9, m_windowWidth, m_windowHeight,
+        std::string("Current Y tile: ") + std::to_string(m_model->getMouse()->getCurrentDiscretizedTranslation().second));
+    m_textDrawer->drawText(400, m_windowHeight - (m_headerTextHeight + 5) * 10, m_windowWidth, m_windowHeight,
+        std::string("Current Direction: ") + DIRECTION_TO_STRING.at(m_model->getMouse()->getCurrentDiscretizedRotation()));
+
     m_textDrawer->concludeDrawingTextForFrame();
     // -------------
 

@@ -2,6 +2,7 @@
 
 - Show the mouse crashes
     - get rid of crash message, just print something custom out
+- Add a mechanism to determine the width of the text being drawn
 - Implement a gear ratio
 - Make header text height a param
 - Windows logging is not working on non-main threads
