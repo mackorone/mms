@@ -36,15 +36,14 @@
     - Add the simulation time to the logging
         - Perhaps even refactor the elapsed time in logging
 - Put a toolbar at the top or bottom with info
+    - Unique tiles traversed
+    - Closest distance to center
+    - Best time
+    - Percentage of walls declared
     - Check that a font exists, print error and die if not
     - Information of the wheel speeds
-    - Display a clock (real and sim time)
-    - Current layout
+    - Display a clock real time clock
     - Speed in the x, y, and along the hypotenuse
-    - Pretty much all state information
-        - zoom level (16:1, etc.)
-        - sim speed
-        - Show toggle tile text, even when not visible
     - Check to make sure font won't be cut off, use ellipses if so (How do we deal with text being cut off in the vertical direction?)
     - Set the mouse algo in State for display in the toolbar
     - Make terminal style output at bottom or right of window (GUI)

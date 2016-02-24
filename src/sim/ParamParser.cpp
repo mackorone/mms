@@ -9,26 +9,30 @@
 
 namespace sim {
 
+const std::string ParamParser::PARAMETERS_TAG = "parameters";
+
 ParamParser::ParamParser(const std::string& filePath) {
-    m_fileIsReadable = m_doc.load_file(filePath.c_str());
+    pugi::xml_document doc;
+    m_fileIsReadable = doc.load_file(filePath.c_str());
     if (!m_fileIsReadable) {
         L()->warn(
             "Unable to read parameters from \"%v\": %v. "
             "Using default values for all parameters.",
             filePath, m_fileIsReadable.description());
     }
+    m_body = doc.child(PARAMETERS_TAG.c_str());
 }
 
 bool ParamParser::hasBoolValue(const std::string& tag){
-    return SimUtilities::isBool(m_doc.child(tag.c_str()).child_value());
+    return SimUtilities::isBool(m_body.child(tag.c_str()).child_value());
 }
 
 bool ParamParser::hasDoubleValue(const std::string& tag){
-    return SimUtilities::isDouble(m_doc.child(tag.c_str()).child_value());
+    return SimUtilities::isDouble(m_body.child(tag.c_str()).child_value());
 }
 
 bool ParamParser::hasIntValue(const std::string& tag){
-    return SimUtilities::isInt(m_doc.child(tag.c_str()).child_value());
+    return SimUtilities::isInt(m_body.child(tag.c_str()).child_value());
 }
 
 bool ParamParser::hasCharValue(const std::string& tag){
@@ -36,27 +40,27 @@ bool ParamParser::hasCharValue(const std::string& tag){
 }
 
 bool ParamParser::hasStringValue(const std::string& tag){
-    return (!std::string(m_doc.child(tag.c_str()).child_value()).empty());
+    return (!std::string(m_body.child(tag.c_str()).child_value()).empty());
 }
 
 bool ParamParser::getBoolValue(const std::string& tag) {
-    return SimUtilities::strToBool(m_doc.child(tag.c_str()).child_value());
+    return SimUtilities::strToBool(m_body.child(tag.c_str()).child_value());
 }
 
 double ParamParser::getDoubleValue(const std::string& tag) {
-    return SimUtilities::strToDouble(m_doc.child(tag.c_str()).child_value());
+    return SimUtilities::strToDouble(m_body.child(tag.c_str()).child_value());
 }
 
 int ParamParser::getIntValue(const std::string& tag) {
-    return SimUtilities::strToInt(m_doc.child(tag.c_str()).child_value());
+    return SimUtilities::strToInt(m_body.child(tag.c_str()).child_value());
 }
 
 char ParamParser::getCharValue(const std::string& tag) {
-    return std::string(m_doc.child(tag.c_str()).child_value()).at(0);
+    return std::string(m_body.child(tag.c_str()).child_value()).at(0);
 }
 
 std::string ParamParser::getStringValue(const std::string& tag) {
-    return std::string(m_doc.child(tag.c_str()).child_value());
+    return std::string(m_body.child(tag.c_str()).child_value());
 }
 
 bool ParamParser::getBoolIfHasBool(const std::string& tag, bool defaultValue) {

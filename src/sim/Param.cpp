@@ -63,7 +63,7 @@ Param::Param() {
     m_tileFogColor = parser.getStringIfHasStringAndIsColor(
         "tile-fog-color", COLOR_TO_STRING.at(Color::GRAY));
     m_tileTextFontImage = parser.getStringIfHasString(
-        "tile-text-font-image", "VeraMono.png");
+        "tile-text-font-image", "Unispace-Bold.png");
     m_tileTextBorderFraction = parser.getDoubleIfHasDoubleAndInRange(
         "tile-text-border-fraction", .05, .00, .50);
     m_tileTextAlignment = parser.getStringIfHasStringAndIsTileTextAlignment(

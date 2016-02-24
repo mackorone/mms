@@ -51,8 +51,10 @@ public:
     std::string getStringIfHasStringAndIsTileTextAlignment(const std::string& tag, const std::string& defaultValue);
 
 private:
-    pugi::xml_document m_doc;
+    pugi::xml_node m_body;
     pugi::xml_parse_result m_fileIsReadable;
+
+    static const std::string PARAMETERS_TAG;
 
     void printTagNotFound(const std::string& type, const std::string& tag, const std::string& defaultValue);
     void printLessThan(const std::string& type, const std::string& tag, const std::string& value,
