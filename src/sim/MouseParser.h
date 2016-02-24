@@ -27,7 +27,7 @@ public:
         const Cartesian& initialTranslation, const Radians& initialRotation, const Maze& maze, bool* success);
 
 private:
-    pugi::xml_document m_doc;
+    pugi::xml_node m_root;
     Radians m_forwardDirection;
     Cartesian m_centerOfMass;
 
@@ -41,6 +41,7 @@ private:
         const Radians& alignmentRotation, const Cartesian& rotationPoint);
 
     static const Polygon NULL_POLYGON;
+    static const std::string MOUSE_TAG;
     static const std::string FORWARD_DIRECTION_TAG;
     static const std::string CENTER_OF_MASS_TAG;
     static const std::string BODY_TAG;

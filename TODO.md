@@ -9,7 +9,6 @@
 - Logging is too expensive
     - Causing freezing and crashing
     - Generalize a method for counting and logging few times, 1 per second
-- Fix parameters no root element
 - Update algos to use stopOnTileEdge, update documentation for rightWallFollow, etc.
 - Make a mechanism for easily merging the a discrete algo into a continuous one
     - Figure out how to bring the high level logic into the control algo

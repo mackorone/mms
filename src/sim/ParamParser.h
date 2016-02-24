@@ -51,7 +51,7 @@ public:
     std::string getStringIfHasStringAndIsTileTextAlignment(const std::string& tag, const std::string& defaultValue);
 
 private:
-    pugi::xml_node m_body;
+    pugi::xml_node m_root;
     pugi::xml_parse_result m_fileIsReadable;
 
     static const std::string PARAMETERS_TAG;

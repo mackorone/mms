@@ -14,6 +14,7 @@ const Polygon MouseParser::NULL_POLYGON = Polygon({
     Cartesian(Meters(0), Meters(0)),
     Cartesian(Meters(0), Meters(0)),
 });
+const std::string MouseParser::MOUSE_TAG = "Mouse";
 const std::string MouseParser::FORWARD_DIRECTION_TAG = "Forward-Direction";
 const std::string MouseParser::CENTER_OF_MASS_TAG = "Center-Of-Mass";
 const std::string MouseParser::BODY_TAG = "Body";
@@ -38,7 +39,8 @@ const std::string MouseParser::READ_DURATION_TAG = "Read-Duration";
 MouseParser::MouseParser(const std::string& filePath, bool* success) :
         m_forwardDirection(Radians(0)),
         m_centerOfMass(Cartesian(Meters(0), Meters(0))) {
-    pugi::xml_parse_result result = m_doc.load_file(filePath.c_str());
+    pugi::xml_document doc;
+    pugi::xml_parse_result result = doc.load_file(filePath.c_str());
     if (!result) {
         L()->warn(
             "Unable to read mouse parameters in \"%v\" - %v",
@@ -46,9 +48,10 @@ MouseParser::MouseParser(const std::string& filePath, bool* success) :
         *success = false;
     }
     else {
+        m_root = doc.child(MOUSE_TAG.c_str());
         m_forwardDirection = Radians(Degrees(
-            getDoubleIfHasDouble(m_doc, FORWARD_DIRECTION_TAG, success)));
-        pugi::xml_node centerOfMassNode = getContainerNode(m_doc, CENTER_OF_MASS_TAG, success);
+            getDoubleIfHasDouble(m_root, FORWARD_DIRECTION_TAG, success)));
+        pugi::xml_node centerOfMassNode = getContainerNode(m_root, CENTER_OF_MASS_TAG, success);
         double x = getDoubleIfHasDouble(centerOfMassNode, X_TAG, success);
         double y = getDoubleIfHasDouble(centerOfMassNode, Y_TAG, success);
         m_centerOfMass = Cartesian(Meters(x), Meters(y));
@@ -61,7 +64,7 @@ Polygon MouseParser::getBody(
     Cartesian alignmentTranslation = initialTranslation - m_centerOfMass;
     Radians alignmentRotation = initialRotation - m_forwardDirection;
 
-    pugi::xml_node body = m_doc.child(BODY_TAG.c_str());
+    pugi::xml_node body = m_root.child(BODY_TAG.c_str());
     if (body.begin() == body.end()) {
         L()->warn("No \"%v\" tag found.", BODY_TAG);
         *success = false;
@@ -110,7 +113,7 @@ std::map<std::string, Wheel> MouseParser::getWheels(
     Radians alignmentRotation = initialRotation - m_forwardDirection;
 
     std::map<std::string, Wheel> wheels;
-    for (pugi::xml_node wheel : m_doc.children(WHEEL_TAG.c_str())) {
+    for (pugi::xml_node wheel : m_root.children(WHEEL_TAG.c_str())) {
 
         std::string name = getNameIfNonemptyAndUnique("wheel", wheel, wheels, success);
         double diameter = getDoubleIfHasDoubleAndNonNegative(wheel, DIAMETER_TAG, success);
@@ -154,7 +157,7 @@ std::map<std::string, Sensor> MouseParser::getSensors(
     Radians alignmentRotation = initialRotation - m_forwardDirection;
 
     std::map<std::string, Sensor> sensors;
-    for (pugi::xml_node sensor : m_doc.children(SENSOR_TAG.c_str())) {
+    for (pugi::xml_node sensor : m_root.children(SENSOR_TAG.c_str())) {
 
         std::string name = getNameIfNonemptyAndUnique("sensor", sensor, sensors, success);
         double radius = getDoubleIfHasDoubleAndNonNegative(sensor, RADIUS_TAG, success);
