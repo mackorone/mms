@@ -28,7 +28,6 @@ double RightWallFollow::wheelSpeedFraction() const {
 void RightWallFollow::solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse) {
-    /*
     // TODO: MACK - testing diagonals
     justMoveForward(mouse);
     turnRightAndMoveForward(mouse);
@@ -38,12 +37,13 @@ void RightWallFollow::solve(
         justMoveForward(mouse);
     }
     mouse->turnAroundLeftToEdge();
-    mouse->diagonalRightRight(3);
+    mouse->diagonalRightRight(2);
     mouse->diagonalRightRight(5);
-    */
+    /*
     while (true){
         rightWallFollowStep(mouse);
     }
+    */
 }
 
 void RightWallFollow::rightWallFollowStep(sim::MouseInterface* mouse) {

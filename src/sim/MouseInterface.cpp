@@ -1023,19 +1023,51 @@ std::pair<Cartesian, Degrees> MouseInterface::getCrashLocation(
 }
 
 void MouseInterface::doDiagonal(int count, bool startLeft, bool endLeft) {
-    // TODO: MACK - special case for counts 1,2
-    // TODO: MACK - limits on count?
+
+    // Don't do/print anything if the mouse has already crashed
+    if (S()->crashed()) {
+        return;
+    }
+
+    // Whether or not the mouse will crash
+    bool crash = false;
+
     if (startLeft == endLeft) {
         if (count % 2 != 1) {
+            L()->warn(
+                "Turning left or right at both the entrance and exit of a"
+                " diagonal requires that you specify and odd number of diagonal"
+                " segments to traverse. You tried turning %v twice, but"
+                " specified a segment count of %v. Your mouse will crash at the"
+                " end of the movement.",
+                (startLeft ? "left" : "right"),
+                count
+            );
+            crash = true;
         }
-        ASSERT_EQ(count % 2, 1);
     }
+
     else {
         if (count % 2 != 0) {
+            L()->warn(
+                "Turning left at the entrance and right at the exit (or vice"
+                " versa) of a diagonal requires that you specify and even"
+                " number of diagonal segments to traverse. You tried %v at the"
+                " entrance of the curve turn, and %v at the exit, but you"
+                " specified a segment count of %v. Your mouse will crash at the"
+                " end of the movement.",
+                (startLeft ? "left" : "right"),
+                (endLeft ? "left" : "right"),
+                count
+            );
+            crash = true;
         }
-        ASSERT_EQ(count % 2, 0);
     }
+
     // TODO: MACK - Clean this up
+    // TODO: MACK - Make this smooth motion
+    // TODO: MACK - special case for counts 1,2
+    // TODO: MACK - make sure that the path is actually clear
 
     Meters halfTileWidth = Meters(P()->wallLength() + P()->wallWidth()) / 2.0;
     Meters halfTileDiagonal = Meters(std::sqrt(2 * (halfTileWidth * halfTileWidth).getMetersSquared()));
@@ -1060,9 +1092,9 @@ void MouseInterface::doDiagonal(int count, bool startLeft, bool endLeft) {
     turnTo(m_mouse->getCurrentTranslation(), endRotation);
     moveForwardTo(destination + Polar(Meters(P()->wallWidth() / 2.0), m_mouse->getCurrentRotation()), m_mouse->getCurrentRotation());
 
-    // TODO: MACK - negative here?
-    //arcTo(m_mouse->getCurrentTranslation(), delta.getTheta() * -2, Meters(P()->wallLength() / 4));
-    // TODO: MACK
+    if (crash && !S()->crashed()) {
+        S()->setCrashed();
+    }
 }
 
 } // namespace sim
