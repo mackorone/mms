@@ -440,17 +440,7 @@ void MouseInterface::originMoveForwardToEdge() {
     ENSURE_USE_TILE_EDGE_MOVEMENTS
     ENSURE_INSIDE_ORIGIN
 
-    if (wallFrontImpl(false, false)) {
-        if (!S()->crashed()) {
-            S()->setCrashed();
-        }
-        return;
-    }
-
-    std::pair<int, int> currentTile = m_mouse->getCurrentDiscretizedTranslation();
-    Cartesian centerOfCurrentTile = getCenterOfTile(currentTile.first, currentTile.second);
-    Cartesian delta = Polar(Meters(P()->wallLength() / 2.0 + P()->wallWidth()), m_mouse->getCurrentRotation());
-    moveForwardTo(centerOfCurrentTile + delta, m_mouse->getCurrentRotation());
+    moveForwardImpl(true);
     m_inOrigin = false;
 }
 
@@ -765,16 +755,40 @@ bool MouseInterface::wallRightImpl(bool declareWallOnRead, bool declareBothWallH
     );
 }
 
-void MouseInterface::moveForwardImpl() {
-    if (wallFrontImpl(false, false)) {
-        if (!S()->crashed()) {
-            S()->setCrashed();
-        }
-        return;
-    }
+void MouseInterface::moveForwardImpl(bool originMoveForwardToEdge) {
+
+    static Meters halfWallLengthPlusWallWidth = Meters(P()->wallLength() / 2.0 + P()->wallWidth());
     static Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
-    Cartesian delta = Polar(tileLength, m_mouse->getCurrentRotation());
-    moveForwardTo(m_mouse->getCurrentTranslation() + delta, m_mouse->getCurrentRotation());
+    static Meters wallWidth = Meters(P()->wallWidth());
+
+    // Whether or not this movement will cause a crash
+    bool crash = wallFrontImpl(false, false);
+
+    // Get the location of the crash, if it will happen
+    std::pair<Cartesian, Degrees> crashLocation = getCrashLocation(
+        m_mouse->getCurrentDiscretizedTranslation(),
+        m_mouse->getCurrentDiscretizedRotation()
+    );
+
+    // Get the destination translation of the mouse
+    Cartesian destinationTranslation = m_mouse->getCurrentTranslation() +
+        Polar(
+            (originMoveForwardToEdge ? halfWallLengthPlusWallWidth : tileLength),
+            crashLocation.second
+        );
+
+    // Move forward to the crash location
+    moveForwardTo(crashLocation.first, crashLocation.second);
+
+    // If we didn't crash, finish the move forward
+    if (!crash) {
+        moveForwardTo(destinationTranslation, crashLocation.second);
+    }
+
+    // Otherwise, set the crashed state (if it hasn't already been set)
+    else if (!S()->crashed()) {
+        S()->setCrashed();
+    }
 }
 
 void MouseInterface::turnLeftImpl() {
@@ -818,25 +832,40 @@ void MouseInterface::turnAroundToEdgeImpl(bool turnLeft) {
 
 void MouseInterface::turnToEdgeImpl(bool turnLeft) {
 
-    // Check for a crash
-    if ((turnLeft && wallLeftImpl(false, false)) || (!turnLeft && wallRightImpl(false, false))) {
-        if (!S()->crashed()) {
-            S()->setCrashed();
-        }
-        return;
-    }
+    static Meters halfWallLength = Meters(P()->wallLength() / 2.0);
+    static Meters wallWidth = Meters(P()->wallWidth());
 
-    Meters halfWallLength = Meters(P()->wallLength() / 2.0);
-    std::pair<int, int> currentTile = m_mouse->getCurrentDiscretizedTranslation();
-    Cartesian centerOfCurrentTile = getCenterOfTile(currentTile.first, currentTile.second);
+    // Whether or not this movement will cause a crash
+    bool crash = (
+        ( turnLeft &&  wallLeftImpl(false, false)) ||
+        (!turnLeft && wallRightImpl(false, false))
+    );
 
-    Degrees destinationRotation = m_mouse->getCurrentRotation() + Degrees((turnLeft ? 90 : -90));
-    Cartesian intermediateDestination = centerOfCurrentTile + Polar(halfWallLength, destinationRotation);
-    Cartesian finalDestination = intermediateDestination + Polar(Meters(P()->wallWidth()), destinationRotation);
+    // Get the location of the crash, if it will happen
+    std::pair<Cartesian, Degrees> crashLocation = getCrashLocation(
+        m_mouse->getCurrentDiscretizedTranslation(),
+        (
+            turnLeft ?
+            DIRECTION_ROTATE_LEFT.at(m_mouse->getCurrentDiscretizedRotation()) :
+            DIRECTION_ROTATE_RIGHT.at(m_mouse->getCurrentDiscretizedRotation())
+        )
+    );
 
     // Perform the curve turn
-    arcTo(intermediateDestination, destinationRotation, halfWallLength, 1.0);
-    moveForwardTo(finalDestination, destinationRotation);
+    arcTo(crashLocation.first, crashLocation.second, halfWallLength, 1.0);
+
+    // If we didn't crash, move forward into the new tile
+    if (!crash) {
+        moveForwardTo(
+            crashLocation.first + Polar(wallWidth, crashLocation.second),
+            crashLocation.second
+        );
+    }
+
+    // Otherwise, set the crashed state (if it hasn't already been set)
+    else if (!S()->crashed()) {
+        S()->setCrashed();
+    }
 }
 
 bool MouseInterface::isWall(std::pair<std::pair<int, int>, Direction> wall, bool declareWallOnRead, bool declareBothWallHalves) {
@@ -979,6 +1008,18 @@ Cartesian MouseInterface::getCenterOfTile(int x, int y) const {
         tileLength * (static_cast<double>(y) + 0.5)
     );
     return centerOfTile;
+}
+
+std::pair<Cartesian, Degrees> MouseInterface::getCrashLocation(
+        std::pair<int, int> currentTile, Direction destinationDirection) {
+    static Meters halfWallLength = Meters(P()->wallLength() / 2.0);
+    // The crash location is on the edge of the tile inner polygon
+    Cartesian centerOfTile = getCenterOfTile(currentTile.first, currentTile.second);
+    Degrees destinationRotation = DIRECTION_TO_ANGLE.at(destinationDirection);
+    return std::make_pair(
+        centerOfTile + Polar(halfWallLength, destinationRotation),
+        destinationRotation
+    );
 }
 
 void MouseInterface::doDiagonal(int count, bool startLeft, bool endLeft) {

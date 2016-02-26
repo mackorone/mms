@@ -161,7 +161,9 @@ private:
 
     // Implementation methods:
     // Any functionality that is executed as part of another MouseInterface
-    // method should have an Impl method, and the Impl method should be called
+    // method should have an Impl method, and the Impl method should be called.
+    // As an important note, if any methods can cause a crash, it must handle
+    // the crash appropriately (see moveForwardImpl() for an example).
     void setTileColorImpl(int x, int y, char color);
     void clearTileColorImpl(int x, int y);
     void setTileTextImpl(int x, int y, const std::string& text);
@@ -173,7 +175,7 @@ private:
     bool wallFrontImpl(bool declareWallOnRead, bool declareBothWallHalves);
     bool wallLeftImpl(bool declareWallOnRead, bool declareBothWallHalves);
     bool wallRightImpl(bool declareWallOnRead, bool declareBothWallHalves);
-    void moveForwardImpl();
+    void moveForwardImpl(bool originMoveForwardToEdge = false);
     void turnLeftImpl();
     void turnRightImpl();
     void turnAroundLeftImpl();
@@ -198,6 +200,10 @@ private:
 
     // Returns the center of a given tile
     Cartesian getCenterOfTile(int x, int y) const;
+
+    // Returns the location of where the mouse should stop if it crashes
+    std::pair<Cartesian, Degrees> getCrashLocation(
+        std::pair<int, int> currentTile, Direction destinationDirection);
 
     // TODO: MACK
     void doDiagonal(int count, bool startLeft, bool endLeft);

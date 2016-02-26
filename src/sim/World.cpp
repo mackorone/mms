@@ -65,6 +65,18 @@ void World::simulate() {
         static Seconds realTimePerUpdate = Seconds(1.0 / P()->mousePositionUpdateRate());
         m_mouse->update(realTimePerUpdate * S()->simSpeed());
 
+        // Retrieve the current discretized location of the
+        // mouse, to be used by the next two code blocks
+        std::pair<int, int> location = m_mouse->getCurrentDiscretizedTranslation();
+
+        // If we're ever outside of the maze, crash
+        if (!m_maze->withinMaze(location.first, location.second)) {
+            // It would be cool to have some "out of bounds" state
+            S()->setCrashed();
+            // We continue here to make sure that we join with the other thread
+            continue;
+        }
+
         // Update the tile fog. Note that this is a bit of a one-off case. We
         // shouldn't really put any sort of graphics-related stuff in this
         // class, as it's supposed to only be responsible for progressing the
@@ -73,7 +85,6 @@ void World::simulate() {
         // needing more graphics functionality here, it'd be wise to make a
         // separate class.
         if (m_options.automaticallyClearFog) {
-            std::pair<int, int> location = m_mouse->getCurrentDiscretizedTranslation();
             m_mazeGraphic->setTileFogginess(location.first, location.second, false);
         }
 

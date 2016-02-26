@@ -21,6 +21,7 @@ void Driver::drive(int argc, char* argv[]) {
 
     // First, determine the start time of the program
     double startTime = SimUtilities::getHighResTime();
+    // TODO: MACK - consolidate these two
 
     // Then, determine the runId (just datetime, for now)
     std::string runId = SimUtilities::getDateTime();
