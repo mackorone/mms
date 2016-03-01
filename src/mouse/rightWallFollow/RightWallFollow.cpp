@@ -37,7 +37,7 @@ void RightWallFollow::solve(
         justMoveForward(mouse);
     }
     mouse->turnAroundLeftToEdge();
-    mouse->diagonalRightRight(2);
+    mouse->diagonalRightRight(3);
     mouse->diagonalRightRight(5);
     /*
     while (true){

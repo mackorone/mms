@@ -205,7 +205,7 @@ private:
     std::pair<Cartesian, Degrees> getCrashLocation(
         std::pair<int, int> currentTile, Direction destinationDirection);
 
-    // TODO: MACK
+    // TODO: MACK - rename to Impl
     void doDiagonal(int count, bool startLeft, bool endLeft);
 
 };

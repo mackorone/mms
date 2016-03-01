@@ -1,7 +1,5 @@
 # High Priority
 
-- Show the mouse crashes
-    - get rid of crash message, just print something custom out
 - Add a mechanism to determine the width of the text being drawn
 - Implement a gear ratio
 - Make header text height a param
@@ -9,15 +7,15 @@
 - Logging is too expensive
     - Causing freezing and crashing
     - Generalize a method for counting and logging few times, 1 per second
+    - Write some code to make sure update throughput is good
+        - 99% of updates are 1ms apart, or something like that
+    - Check the sleep duration of updates to make sure that we're actually
+      doing 1000 updates per second
+- Add debugging tips
+- Make some video tutorials
 - Update algos to use stopOnTileEdge, update documentation for rightWallFollow, etc.
 - Make a mechanism for easily merging the a discrete algo into a continuous one
     - Figure out how to bring the high level logic into the control algo
-- Updates on the tile boundaries, not centers
-    - Make this an option in the algo specification
-- Make some video tutorials
-- Write some code to make sure update throughput is good
-    - 99% of updates are 1ms apart, or something like that
-- Check the sleep duration of updates to make sure that we're actually doing 1000 updates per second
 - Can we use mutable in the MouseInterface so declare wall on read is const? Make other methods in that class const?
 - Add a way to time the algorithms
     - How long it took to get to the center of the maze
@@ -135,6 +133,8 @@
 - Replace the convexHull with union in the mouse collision polygon initialization
 - XML schema/validators
 - Support multiple mice
+- Make diagonals smoother
+    - make an option for smooth edge movements, including regular turns
 
 # Low Priority
 

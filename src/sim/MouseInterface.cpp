@@ -1012,7 +1012,29 @@ Cartesian MouseInterface::getCenterOfTile(int x, int y) const {
 
 std::pair<Cartesian, Degrees> MouseInterface::getCrashLocation(
         std::pair<int, int> currentTile, Direction destinationDirection) {
+
     static Meters halfWallLength = Meters(P()->wallLength() / 2.0);
+
+    // The crash locations for each destinationDirection, (N)orth, (E)ast,
+    // (S)outh, and (W)est, are as show below. Basically, they're on the edge
+    // of the tile's inner polygon. This "crash location" is used as an
+    // intermediate location for (almost) all discrete movements that could
+    // potentially cause the mouse to crash. That is, it's where the mouse
+    // stops if it does crash, so as to give the user an indication of where
+    // the mouse went wrong.
+    //
+    //                      +---+-------------+---+
+    //                      |   |             |   |
+    //                      +---+------N------+---+
+    //                      |   |             |   |
+    //                      |   |             |   |
+    //                      |   W             E   |
+    //                      |   |             |   |
+    //                      |   |             |   |
+    //                      +---+------S------+---+
+    //                      |   |             |   |
+    //                      +---+-------------+---+
+
     // The crash location is on the edge of the tile inner polygon
     Cartesian centerOfTile = getCenterOfTile(currentTile.first, currentTile.second);
     Degrees destinationRotation = DIRECTION_TO_ANGLE.at(destinationDirection);
@@ -1065,12 +1087,11 @@ void MouseInterface::doDiagonal(int count, bool startLeft, bool endLeft) {
     }
 
     // TODO: MACK - Clean this up
-    // TODO: MACK - Make this smooth motion
-    // TODO: MACK - special case for counts 1,2
     // TODO: MACK - make sure that the path is actually clear
+    // 
 
-    Meters halfTileWidth = Meters(P()->wallLength() + P()->wallWidth()) / 2.0;
-    Meters halfTileDiagonal = Meters(std::sqrt(2 * (halfTileWidth * halfTileWidth).getMetersSquared()));
+    static Meters halfTileWidth = Meters(P()->wallLength() + P()->wallWidth()) / 2.0;
+    static Meters halfTileDiagonal = Meters(std::sqrt(2 * (halfTileWidth * halfTileWidth).getMetersSquared()));
 
     Cartesian backALittleBit = m_mouse->getCurrentTranslation() +
         Polar(Meters(P()->wallWidth() / 2.0), m_mouse->getCurrentRotation() + Degrees(180));
