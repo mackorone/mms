@@ -1,7 +1,19 @@
 # High Priority
 
+- Put a toolbar at the top or bottom with info
+    - Unique tiles traversed
+    - Closest distance to center
+    - Best time
+    - Percentage of walls declared
+    - Check that a font exists, print error and die if not
+    - Information of the wheel speeds
+    - Display a clock real time clock
+    - Speed in the x, y, and along the hypotenuse
+    - Check to make sure font won't be cut off, use ellipses if so (How do we deal with text being cut off in the vertical direction?)
+    - Set the mouse algo in State for display in the toolbar
+    - Make terminal style output at bottom or right of window (GUI)
+    - Provide some mechanism to get the status string from the mouse and display it to the user
 - Add a mechanism to determine the width of the text being drawn
-- Implement a gear ratio
 - Make header text height a param
 - Windows logging is not working on non-main threads
 - Logging is too expensive
@@ -12,10 +24,8 @@
     - Check the sleep duration of updates to make sure that we're actually doing 1000 updates per second
 - Add debugging tips
 - Make some video tutorials
-- Update algos to use stopOnTileEdge, update documentation for rightWallFollow, etc.
 - Make a mechanism for easily merging the a discrete algo into a continuous one
     - Figure out how to bring the high level logic into the control algo
-- Can we use mutable in the MouseInterface so declare wall on read is const? Make other methods in that class const?
 - Add a way to time the algorithms
     - How long it took to get to the center of the maze
     - Make this faster than real time
@@ -31,22 +41,7 @@
     - Max speeds for manual algorithm
     - Add the simulation time to the logging
         - Perhaps even refactor the elapsed time in logging
-- Put a toolbar at the top or bottom with info
-    - Unique tiles traversed
-    - Closest distance to center
-    - Best time
-    - Percentage of walls declared
-    - Check that a font exists, print error and die if not
-    - Information of the wheel speeds
-    - Display a clock real time clock
-    - Speed in the x, y, and along the hypotenuse
-    - Check to make sure font won't be cut off, use ellipses if so (How do we deal with text being cut off in the vertical direction?)
-    - Set the mouse algo in State for display in the toolbar
-    - Make terminal style output at bottom or right of window (GUI)
-    - Provide some mechanism to get the status string from the mouse and display it to the user
 - Make MouseInterface into an interface, and then implement the simulator interface, make a real-world interface
-- Change float to units (including in the ParamParser and Param class)
-- Type safety (in terms of units) of the parameters
 - Look at Tomasz' maze website
 - Figure out how to get rid of ifdefs in algorithm
 - Make a SimInterface and make sure it's easy to "extract" an algorithm for use on Arduino
@@ -82,6 +77,9 @@
 
 # Medum Priority
 
+- Change float to units (including in the ParamParser and Param class)
+- Type safety (in terms of units) of the parameters
+- Can we use mutable in the MouseInterface so declare wall on read is const? Make other methods in that class const?
 - Make methods in IMouseInterface such as millis(), so that they can be called without "m_mouse->"
 - Rename min-sleep-duration to something better
 - Disable some copy constructors (wheels, sensors, etc.)
@@ -137,6 +135,7 @@
 
 # Low Priority
 
+- Add gear ratio to the wheels
 - Be able to toggle useTileEdgeMovements
     - Make all non-initialization methods togglable by just getting the return value each time
     - Right now, it's only getting the value once so it's not togglable

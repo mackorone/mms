@@ -50,8 +50,6 @@ Now run it:
 
 [Windows](https://www.github.com/mackorone/mms/wiki/Windows)
 
-[Mac](https://www.github.com/mackorone/mms/wiki/Mac)
-
 ## Writing An Algorithm
 
 #### Step 1: Create a directory for your algorithm:

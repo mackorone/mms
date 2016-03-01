@@ -1084,9 +1084,7 @@ void MouseInterface::doDiagonal(int count, bool startLeft, bool endLeft) {
         }
     }
 
-    // TODO: MACK - Clean this up
     // TODO: MACK - make sure that the path is actually clear
-    // 
 
     static Meters halfTileWidth = Meters(P()->wallLength() + P()->wallWidth()) / 2.0;
     static Meters halfTileDiagonal = Meters(std::sqrt(2 * (halfTileWidth * halfTileWidth).getMetersSquared()));
