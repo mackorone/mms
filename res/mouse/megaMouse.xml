@@ -100,7 +100,6 @@
         <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
         <Range>.20</Range> <!-- Meters -->
         <Half-Width>5</Half-Width> <!-- Degrees -->
-        <Read-Duration>.00008</Read-Duration> <!-- Seconds -->
         <Position>
             <X>.0631</X>
             <Y>.1334</Y>
@@ -112,7 +111,6 @@
         <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
         <Range>.20</Range> <!-- Meters -->
         <Half-Width>5</Half-Width> <!-- Degrees -->
-        <Read-Duration>.00008</Read-Duration> <!-- Seconds -->
         <Position>
             <X>.0685</X>
             <Y>.1484</Y>
@@ -124,7 +122,6 @@
         <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
         <Range>.20</Range> <!-- Meters -->
         <Half-Width>5</Half-Width> <!-- Degrees -->
-        <Read-Duration>.00008</Read-Duration> <!-- Seconds -->
         <Position>
             <X>.0895</X>
             <Y>.1534</Y>
@@ -136,7 +133,6 @@
         <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
         <Range>.20</Range> <!-- Meters -->
         <Half-Width>5</Half-Width> <!-- Degrees -->
-        <Read-Duration>.00008</Read-Duration> <!-- Seconds -->
         <Position>
             <X>.1169</X>
             <Y>.1334</Y>
@@ -148,7 +144,6 @@
         <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
         <Range>.20</Range> <!-- Meters -->
         <Half-Width>5</Half-Width> <!-- Degrees -->
-        <Read-Duration>.00008</Read-Duration> <!-- Seconds -->
         <Position>
             <X>.1115</X>
             <Y>.1484</Y>
@@ -160,7 +155,6 @@
         <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
         <Range>.20</Range> <!-- Meters -->
         <Half-Width>5</Half-Width> <!-- Degrees -->
-        <Read-Duration>.00008</Read-Duration> <!-- Seconds -->
         <Position>
             <X>.0905</X>
             <Y>.1534</Y>

@@ -19,12 +19,10 @@ public:
         const Distance& radius,
         const Distance& range,
         const Angle& halfWidth,
-        const Duration& readDuration,
         const Coordinate& position,
         const Angle& direction,
         const Maze& maze);
 
-    Seconds getReadDuration() const;
     Cartesian getInitialPosition() const;
     Radians getInitialDirection() const;
     const Polygon& getInitialPolygon() const;
@@ -43,7 +41,6 @@ public:
 private:
     Meters m_range;
     Degrees m_halfWidth;
-    Seconds m_readDuration;
 
     Cartesian m_initialPosition;
     Radians m_initialDirection;

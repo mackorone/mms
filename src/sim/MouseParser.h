@@ -61,7 +61,6 @@ private:
     static const std::string RADIUS_TAG;
     static const std::string RANGE_TAG;
     static const std::string HALF_WIDTH_TAG;
-    static const std::string READ_DURATION_TAG;
 
     template<class T>
     std::string getNameIfNonemptyAndUnique(const std::string& type,

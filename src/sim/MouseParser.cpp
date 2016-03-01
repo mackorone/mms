@@ -34,7 +34,6 @@ const std::string MouseParser::SENSOR_TAG = "Sensor";
 const std::string MouseParser::RADIUS_TAG = "Radius";
 const std::string MouseParser::RANGE_TAG = "Range";
 const std::string MouseParser::HALF_WIDTH_TAG = "Half-Width";
-const std::string MouseParser::READ_DURATION_TAG = "Read-Duration";
 
 MouseParser::MouseParser(const std::string& filePath, bool* success) :
         m_forwardDirection(Radians(0)),
@@ -163,7 +162,6 @@ std::map<std::string, Sensor> MouseParser::getSensors(
         double radius = getDoubleIfHasDoubleAndNonNegative(sensor, RADIUS_TAG, success);
         double range = getDoubleIfHasDoubleAndNonNegative(sensor, RANGE_TAG, success);
         double halfWidth = getDoubleIfHasDoubleAndNonNegative(sensor, HALF_WIDTH_TAG, success);
-        double readDuration = getDoubleIfHasDoubleAndNonNegative(sensor, READ_DURATION_TAG, success);
         pugi::xml_node position = getContainerNode(sensor, POSITION_TAG, success);
         double x = getDoubleIfHasDouble(position, X_TAG, success);
         double y = getDoubleIfHasDouble(position, Y_TAG, success);
@@ -177,7 +175,6 @@ std::map<std::string, Sensor> MouseParser::getSensors(
                         Meters(radius),
                         Meters(range), 
                         Degrees(halfWidth),
-                        Seconds(readDuration),
                         alignVertex(
                             Cartesian(Meters(x), Meters(y)),
                             alignmentTranslation,

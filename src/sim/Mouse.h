@@ -110,9 +110,6 @@ public:
     // Read a sensor, and returns a value from 0.0 (completely free) to 1.0 (completely blocked)
     double readSensor(const std::string& name) const;
 
-    // Get the read time of a particular sensor
-    Seconds getSensorReadDuration(const std::string& name) const;
-
     // Returns the value of the gyroscope
     RadiansPerSecond readGyro() const;
 

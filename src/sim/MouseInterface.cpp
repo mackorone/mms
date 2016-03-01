@@ -351,8 +351,6 @@ double MouseInterface::readSensor(std::string name) {
         return 0.0;
     }
 
-    // TODO: MACK - test this
-    //sim::SimUtilities::sleep(m_mouse->getSensorReadDuration(name));
     return m_mouse->readSensor(name);
 }
 

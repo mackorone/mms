@@ -14,13 +14,11 @@ Sensor::Sensor(
         const Distance& radius,
         const Distance& range,
         const Angle& halfWidth,
-        const Duration& readDuration,
         const Coordinate& position,
         const Angle& direction,
         const Maze& maze) :
         m_range(range),
         m_halfWidth(halfWidth),
-        m_readDuration(readDuration),
         m_initialPosition(position),
         m_initialDirection(direction) {
 
@@ -38,10 +36,6 @@ Sensor::Sensor(
 
     // Initialize the sensor reading
     updateReading(m_initialPosition, m_initialDirection, maze);
-}
-
-Seconds Sensor::getReadDuration() const {
-    return m_readDuration;
 }
 
 Cartesian Sensor::getInitialPosition() const {

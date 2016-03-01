@@ -347,11 +347,6 @@ double Mouse::readSensor(const std::string& name) const {
     return m_sensors.at(name).read();
 }
 
-Seconds Mouse::getSensorReadDuration(const std::string& name) const {
-    ASSERT_TR(ContainerUtilities::mapContains(m_sensors, name));
-    return m_sensors.at(name).getReadDuration();
-}
-
 RadiansPerSecond Mouse::readGyro() const {
     return m_currentGyro;
 }

@@ -9,8 +9,7 @@
     - Generalize a method for counting and logging few times, 1 per second
     - Write some code to make sure update throughput is good
         - 99% of updates are 1ms apart, or something like that
-    - Check the sleep duration of updates to make sure that we're actually
-      doing 1000 updates per second
+    - Check the sleep duration of updates to make sure that we're actually doing 1000 updates per second
 - Add debugging tips
 - Make some video tutorials
 - Update algos to use stopOnTileEdge, update documentation for rightWallFollow, etc.
