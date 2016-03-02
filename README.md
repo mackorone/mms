@@ -1,7 +1,7 @@
 # mms
 
-![](https://github.com/mackorone/mms/wiki/logo/mms.png)
-![](https://github.com/mackorone/mms/wiki/logo/mms.gif)
+![](https://github.com/mackorone/mms/wiki/imgs/mms.png)
+![](https://github.com/mackorone/mms/wiki/imgs/mms.gif)
 
 ## About
 
