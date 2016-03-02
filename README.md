@@ -48,7 +48,7 @@ Now run it:
 
 #### Other Platforms
 
-[Windows](https://www.github.com/mackorone/mms/wiki/Windows)
+[Windows](https://www.github.com/mackorone/mms/wiki/Windows\ Installation)
 
 ## Writing An Algorithm
 
