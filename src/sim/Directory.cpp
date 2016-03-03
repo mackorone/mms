@@ -59,6 +59,8 @@ std::string Directory::getProjectDirectory() {
     path = path.substr(0, path.find_last_of("\\/"));; // Remove the executable name as it is part of path
     path += "\\..\\..\\"; // Point to /mms/
     // Windows uses \ in directory
+#elif __APPLE__
+    path = "/Users/samsiegart/mms/";
 #endif
 
     return path;

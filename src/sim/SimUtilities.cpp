@@ -1,5 +1,4 @@
 #include "SimUtilities.h"
-
 #include <chrono>
 #include <cstdlib>
 #include <ctime>
@@ -30,7 +29,11 @@
 namespace sim {
 
 void SimUtilities::quit() {
+#ifdef __APPLE__
+    exit(0);
+#else
     std::quick_exit(0);
+#endif
 }
 
 double SimUtilities::getRandom() {

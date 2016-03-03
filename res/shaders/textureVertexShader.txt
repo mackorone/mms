@@ -1,9 +1,9 @@
-#version 130
+#version 410
 
-attribute vec2 coordinate;
-attribute vec2 textureCoordinate;
+in vec2 coordinate;
+in vec2 textureCoordinate;
 uniform mat4 transformationMatrix;
-varying vec2 _textureCoordinate;
+out vec2 _textureCoordinate;
 
 void main() {
     gl_Position = transformationMatrix * vec4(coordinate, 0.0, 1.0);
