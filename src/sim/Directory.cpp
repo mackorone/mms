@@ -26,7 +26,12 @@ std::string Directory::getResMouseDirectory() {
 }
 
 std::string Directory::getResShadersDirectory() {
+// XXX: Temporary workaround for OSX
+#ifdef __APPLE__
+    return getResDirectory() + "shaders/OSX/";
+#else
     return getResDirectory() + "shaders/";
+#endif
 }
 
 std::string Directory::getResImgsDirectory() {
@@ -60,6 +65,8 @@ std::string Directory::getProjectDirectory() {
     path += "\\..\\..\\"; // Point to /mms/
     // Windows uses \ in directory
 #elif __APPLE__
+    // TODO: upforgrabs
+    // Make this not hard-coded, implement an actual __APPLE__ version of this function
     path = "/Users/samsiegart/mms/";
 #endif
 

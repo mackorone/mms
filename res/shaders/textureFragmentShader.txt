@@ -1,8 +1,8 @@
-#version 410
+#version 130
 
 uniform sampler2D _texture;
-out vec2 _textureCoordinate;
-out vec4 FragColor;
+varying vec2 _textureCoordinate;
+
 void main() {
-    FragColor = texture(_texture, _textureCoordinate);
+    gl_FragColor = texture(_texture, _textureCoordinate);
 }

@@ -1,4 +1,5 @@
 #include "SimUtilities.h"
+
 #include <chrono>
 #include <cstdlib>
 #include <ctime>
@@ -30,6 +31,10 @@ namespace sim {
 
 void SimUtilities::quit() {
 #ifdef __APPLE__
+    // TODO: upforgrabs
+    // Figure out how to get std::quick_exit to work with __APPLE__. At the
+    // very least, let's make sure we're not segfaulting when we quit the
+    // simulator (which happens if we just call exit(0)).
     exit(0);
 #else
     std::quick_exit(0);
