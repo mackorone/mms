@@ -204,7 +204,9 @@ void MouseInterface::declareTileDistance(int x, int y, int distance) {
         setTileTextImpl(x, y, (0 <= distance ? std::to_string(distance) : "inf"));
     }
     if (m_options.setTileBaseColorWhenDistanceDeclaredCorrectly) {
-        if (distance == m_maze->getTile(x, y)->getDistance()) {
+        int actualDistance = m_maze->getTile(x, y)->getDistance();
+        // A negative distance is interpreted to mean infinity
+        if (distance == actualDistance || (distance < 0 && actualDistance < 0)) {
             setTileColorImpl(x, y,
                 COLOR_TO_CHAR.at(STRING_TO_COLOR.at(P()->distanceCorrectTileBaseColor())));
         }
