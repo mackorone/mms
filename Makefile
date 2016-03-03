@@ -7,7 +7,7 @@ OBJ = ./obj/
 BIN = ./bin/
 
 # Dynamically linked libraries
-LIBS = -lGLEW -lGL -lglut -lGLU -lpthread
+LIBS = -lGLEW -framework GLUT -framework OpenGL -lglut -lpthread
 
 # Any extra include paths
 INC = -I$(SRC)lib
@@ -16,7 +16,7 @@ INC = -I$(SRC)lib
 # -MMD: Automatically generate dependency files
 # -std=c++11: Use the C++11 standard
 # -g: Add debugging symbols
-FLAGS = -MMD -std=c++11 -g
+FLAGS = -MMD -std=c++11 -stdlib=libc++ -g
 
 # Recursively find all source files
 PRELIMSOURCES = $(shell find $(SRC) -name '*.cpp')
