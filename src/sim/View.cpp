@@ -208,7 +208,7 @@ void View::initGraphics(int argc, char* argv[], const GlutFunctions& functions) 
 
     // GLUT Initialization
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
+    glutInitDisplayMode(2048 | GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowPosition(0, 0);
     glutInitWindowSize(P()->defaultWindowWidth(), P()->defaultWindowHeight());
     glutCreateWindow("Micromouse Simulator");
@@ -224,11 +224,14 @@ void View::initGraphics(int argc, char* argv[], const GlutFunctions& functions) 
     glutSpecialUpFunc(functions.specialKeyRelease);
 
     // GLEW Initialization
+    glewExperimental = GL_TRUE;
     GLenum err = glewInit();
     if (GLEW_OK != err) {
         L()->error("Unable to initialize GLEW.");
         SimUtilities::quit();
     }
+
+    std::cout << glGetString(GL_VERSION) << std::endl;
 }
 
 void View::initPolygonProgram() {
