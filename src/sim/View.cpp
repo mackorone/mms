@@ -15,8 +15,7 @@
 
 namespace sim {
 
-// TODO: MACK - make the text height a parameter
-View::View(Model* model, int argc, char* argv[], const GlutFunctions& functions) : m_model(model), m_headerTextHeight(10) {
+View::View(Model* model, int argc, char* argv[], const GlutFunctions& functions) : m_model(model) {
 
     m_bufferInterface = new BufferInterface(
         std::make_pair(m_model->getMaze()->getWidth(), m_model->getMaze()->getHeight()),
@@ -33,9 +32,8 @@ View::View(Model* model, int argc, char* argv[], const GlutFunctions& functions)
     // Initialize the actual screen dimensions
     m_screenPixelsPerMeter = glutGet(GLUT_SCREEN_WIDTH) / (glutGet(GLUT_SCREEN_WIDTH_MM) / 1000.0);
 
-    // TODO: MACK - If the font doesn't exist, we silently fail and draw no text whatsoever
-    // Initialize the text drawer object // TODO: MACK - get the font from param
-    m_textDrawer = new TextDrawer("Hack-Regular.ttf", m_headerTextHeight);
+    // Initialize the window header object
+    m_header = new Header(model);
 }
 
 MazeGraphic* View::getMazeGraphic() {
@@ -85,58 +83,8 @@ void View::refresh() {
     // drawn text isn't clipped at all
     glDisable(GL_SCISSOR_TEST);
 
-    // ----- Drawing the text ----- //
-    // TODO: MACK - Font-stash drawing
-    int border = 10;
-    m_textDrawer->commenceDrawingTextForFrame();
-    // TODO: MACK - some kind of border here
-    // TODO: MACK - put these in a data structure, cut of the text if necessary
-    float width = m_textDrawer->getWidth(std::string("Run ID: ") + S()->runId());
-    L()->info("WW: %v", width);
-    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 1, m_windowWidth, m_windowHeight,
-        std::string("Run ID: ") + S()->runId());
-    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 2, m_windowWidth, m_windowHeight,
-        std::string("Crashed: ") + (S()->crashed() ? "TRUE" : "FALSE"));
-    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 3, m_windowWidth, m_windowHeight,
-        std::string("Layout Type (l): ") + LAYOUT_TYPE_TO_STRING.at(S()->layoutType()));
-    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 4, m_windowWidth, m_windowHeight,
-        std::string("Rotate Zoomed Map (r): ") + (S()->rotateZoomedMap() ? "TRUE" : "FALSE"));
-    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 5, m_windowWidth, m_windowHeight,
-        std::string("Zoomed Map Scale (i, o): ") + std::to_string(S()->zoomedMapScale()));
-    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 6, m_windowWidth, m_windowHeight,
-        std::string("Wall Truth Visible (t): ") + (S()->wallTruthVisible() ? "TRUE" : "FALSE"));
-    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 7, m_windowWidth, m_windowHeight,
-        std::string("Tile Colors Visible (c): ") + (S()->tileColorsVisible() ? "TRUE" : "FALSE"));
-    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 8, m_windowWidth, m_windowHeight,
-        std::string("Tile Fog Visible (g): ") + (S()->tileFogVisible() ? "TRUE" : "FALSE"));
-    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 9, m_windowWidth, m_windowHeight,
-        std::string("Tile Text Visible (x): ") + (S()->tileTextVisible() ? "TRUE" : "FALSE"));
-    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 10, m_windowWidth, m_windowHeight,
-        std::string("Tile Distance Visible (d): ") + (S()->tileDistanceVisible() ? "TRUE" : "FALSE"));
-    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 11, m_windowWidth, m_windowHeight,
-        std::string("Wireframe Mode (w): ") + (S()->wireframeMode() ? "TRUE" : "FALSE"));
-    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 12, m_windowWidth, m_windowHeight,
-        std::string("Paused (p): ") + (S()->paused() ? "TRUE" : "FALSE"));
-    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 13, m_windowWidth, m_windowHeight,
-        std::string("Sim Speed (f, s): ") + std::to_string(S()->simSpeed()));
-
-    m_textDrawer->drawText(600, m_windowHeight - (m_headerTextHeight + border) * 2, m_windowWidth, m_windowHeight,
-        std::string("Elapsed Sim Time: ") + SimUtilities::formatSeconds(m_model->getMouse()->getElapsedSimTime().getSeconds()));
-    m_textDrawer->drawText(600, m_windowHeight - (m_headerTextHeight + border) * 4, m_windowWidth, m_windowHeight,
-        std::string("Current X (m): ") + std::to_string(m_model->getMouse()->getCurrentTranslation().getX().getMeters()));
-    m_textDrawer->drawText(600, m_windowHeight - (m_headerTextHeight + border) * 5, m_windowWidth, m_windowHeight,
-        std::string("Current Y (m): ") + std::to_string(m_model->getMouse()->getCurrentTranslation().getY().getMeters()));
-    m_textDrawer->drawText(600, m_windowHeight - (m_headerTextHeight + border) * 6, m_windowWidth, m_windowHeight,
-        std::string("Current Rotation (deg): ") + std::to_string(m_model->getMouse()->getCurrentRotation().getDegreesZeroTo360()));
-    m_textDrawer->drawText(600, m_windowHeight - (m_headerTextHeight + border) * 8, m_windowWidth, m_windowHeight,
-        std::string("Current X tile: ") + std::to_string(m_model->getMouse()->getCurrentDiscretizedTranslation().first));
-    m_textDrawer->drawText(600, m_windowHeight - (m_headerTextHeight + border) * 9, m_windowWidth, m_windowHeight,
-        std::string("Current Y tile: ") + std::to_string(m_model->getMouse()->getCurrentDiscretizedTranslation().second));
-    m_textDrawer->drawText(600, m_windowHeight - (m_headerTextHeight + border) * 10, m_windowWidth, m_windowHeight,
-        std::string("Current Direction: ") + DIRECTION_TO_STRING.at(m_model->getMouse()->getCurrentDiscretizedRotation()));
-
-    m_textDrawer->concludeDrawingTextForFrame();
-    // -------------
+    // Draw the window header
+    m_header->draw(m_windowWidth, m_windowHeight);
 
     // Display the result
     glutSwapBuffers();
@@ -162,9 +110,10 @@ void View::refresh() {
 void View::updateWindowSize(int width, int height) {
     m_windowWidth = width;
     m_windowHeight = height;
-    // TODO: MACK - choice for sticky or not sticky header
-    //m_headerHeight = std::min(height, P()->defaultHeaderHeight());
-    m_headerHeight = std::max(0, height - (P()->defaultWindowHeight() - P()->defaultHeaderHeight()));
+    // TODO: upforgrabs
+    // Make the 1/3 a parameter so that it can be easily changed
+    // The header should never occupy more than 1/3 of the window height
+    m_header->setMaxHeight(height / 3);
     glViewport(0, 0, width, height);
 }
 
@@ -328,13 +277,13 @@ void View::drawFullAndZoomedMaps(
 
     // Get the sizes and positions of each of the maps.
     std::pair<int, int> fullMapPosition = Layout::getFullMapPosition(
-        m_windowWidth, m_windowHeight, m_headerHeight, P()->windowBorderWidth(), S()->layoutType());
+        m_windowWidth, m_windowHeight, m_header->getHeight(), P()->windowBorderWidth(), S()->layoutType());
     std::pair<int, int> fullMapSize = Layout::getFullMapSize(
-        m_windowWidth, m_windowHeight, m_headerHeight, P()->windowBorderWidth(), S()->layoutType());
+        m_windowWidth, m_windowHeight, m_header->getHeight(), P()->windowBorderWidth(), S()->layoutType());
     std::pair<int, int> zoomedMapPosition = Layout::getZoomedMapPosition(
-        m_windowWidth, m_windowHeight, m_headerHeight, P()->windowBorderWidth(), S()->layoutType());
+        m_windowWidth, m_windowHeight, m_header->getHeight(), P()->windowBorderWidth(), S()->layoutType());
     std::pair<int, int> zoomedMapSize = Layout::getZoomedMapSize(
-        m_windowWidth, m_windowHeight, m_headerHeight, P()->windowBorderWidth(), S()->layoutType());
+        m_windowWidth, m_windowHeight, m_header->getHeight(), P()->windowBorderWidth(), S()->layoutType());
 
     // Get the physical size of the maze (in meters)
     double physicalMazeWidth = P()->wallWidth() + m_model->getMaze()->getWidth() * (P()->wallWidth() + P()->wallLength());

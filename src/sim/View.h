@@ -5,10 +5,10 @@
 #include <tdogl/Texture.h>
 
 #include "GlutFunctions.h"
+#include "Header.h"
 #include "MazeGraphic.h"
 #include "Model.h"
 #include "MouseGraphic.h"
-#include "TextDrawer.h"
 #include "TriangleGraphic.h"
 #include "TriangleTexture.h"
 
@@ -42,18 +42,14 @@ private:
     int m_windowWidth;
     int m_windowHeight;
 
-    // The header dimensions, in pixels
-    int m_headerHeight;
-    int m_headerTextHeight;
-
     // The number of pixels per meter of screen
     double m_screenPixelsPerMeter;
 
     // Allowable tile text characters
     std::set<char> m_allowableTileTextCharacters;
 
-    // Text drawing object
-    TextDrawer* m_textDrawer;
+    // Window header object
+    Header* m_header;
 
     // Polygon program variables
     tdogl::Program* m_polygonProgram;
