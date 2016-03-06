@@ -87,49 +87,52 @@ void View::refresh() {
 
     // ----- Drawing the text ----- //
     // TODO: MACK - Font-stash drawing
+    int border = 10;
     m_textDrawer->commenceDrawingTextForFrame();
     // TODO: MACK - some kind of border here
     // TODO: MACK - put these in a data structure, cut of the text if necessary
-    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 1, m_windowWidth, m_windowHeight,
+    float width = m_textDrawer->getWidth(std::string("Run ID: ") + S()->runId());
+    L()->info("WW: %v", width);
+    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 1, m_windowWidth, m_windowHeight,
         std::string("Run ID: ") + S()->runId());
-    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 2, m_windowWidth, m_windowHeight,
+    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 2, m_windowWidth, m_windowHeight,
         std::string("Crashed: ") + (S()->crashed() ? "TRUE" : "FALSE"));
-    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 3, m_windowWidth, m_windowHeight,
+    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 3, m_windowWidth, m_windowHeight,
         std::string("Layout Type (l): ") + LAYOUT_TYPE_TO_STRING.at(S()->layoutType()));
-    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 4, m_windowWidth, m_windowHeight,
+    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 4, m_windowWidth, m_windowHeight,
         std::string("Rotate Zoomed Map (r): ") + (S()->rotateZoomedMap() ? "TRUE" : "FALSE"));
-    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 5, m_windowWidth, m_windowHeight,
+    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 5, m_windowWidth, m_windowHeight,
         std::string("Zoomed Map Scale (i, o): ") + std::to_string(S()->zoomedMapScale()));
-    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 6, m_windowWidth, m_windowHeight,
+    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 6, m_windowWidth, m_windowHeight,
         std::string("Wall Truth Visible (t): ") + (S()->wallTruthVisible() ? "TRUE" : "FALSE"));
-    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 7, m_windowWidth, m_windowHeight,
+    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 7, m_windowWidth, m_windowHeight,
         std::string("Tile Colors Visible (c): ") + (S()->tileColorsVisible() ? "TRUE" : "FALSE"));
-    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 8, m_windowWidth, m_windowHeight,
+    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 8, m_windowWidth, m_windowHeight,
         std::string("Tile Fog Visible (g): ") + (S()->tileFogVisible() ? "TRUE" : "FALSE"));
-    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 9, m_windowWidth, m_windowHeight,
+    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 9, m_windowWidth, m_windowHeight,
         std::string("Tile Text Visible (x): ") + (S()->tileTextVisible() ? "TRUE" : "FALSE"));
-    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 10, m_windowWidth, m_windowHeight,
+    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 10, m_windowWidth, m_windowHeight,
         std::string("Tile Distance Visible (d): ") + (S()->tileDistanceVisible() ? "TRUE" : "FALSE"));
-    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 11, m_windowWidth, m_windowHeight,
+    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 11, m_windowWidth, m_windowHeight,
         std::string("Wireframe Mode (w): ") + (S()->wireframeMode() ? "TRUE" : "FALSE"));
-    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 12, m_windowWidth, m_windowHeight,
+    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 12, m_windowWidth, m_windowHeight,
         std::string("Paused (p): ") + (S()->paused() ? "TRUE" : "FALSE"));
-    m_textDrawer->drawText(5, m_windowHeight - (m_headerTextHeight + 5) * 13, m_windowWidth, m_windowHeight,
+    m_textDrawer->drawText(border, m_windowHeight - (m_headerTextHeight + border) * 13, m_windowWidth, m_windowHeight,
         std::string("Sim Speed (f, s): ") + std::to_string(S()->simSpeed()));
 
-    m_textDrawer->drawText(600, m_windowHeight - (m_headerTextHeight + 5) * 2, m_windowWidth, m_windowHeight,
+    m_textDrawer->drawText(600, m_windowHeight - (m_headerTextHeight + border) * 2, m_windowWidth, m_windowHeight,
         std::string("Elapsed Sim Time: ") + SimUtilities::formatSeconds(m_model->getMouse()->getElapsedSimTime().getSeconds()));
-    m_textDrawer->drawText(600, m_windowHeight - (m_headerTextHeight + 5) * 4, m_windowWidth, m_windowHeight,
+    m_textDrawer->drawText(600, m_windowHeight - (m_headerTextHeight + border) * 4, m_windowWidth, m_windowHeight,
         std::string("Current X (m): ") + std::to_string(m_model->getMouse()->getCurrentTranslation().getX().getMeters()));
-    m_textDrawer->drawText(600, m_windowHeight - (m_headerTextHeight + 5) * 5, m_windowWidth, m_windowHeight,
+    m_textDrawer->drawText(600, m_windowHeight - (m_headerTextHeight + border) * 5, m_windowWidth, m_windowHeight,
         std::string("Current Y (m): ") + std::to_string(m_model->getMouse()->getCurrentTranslation().getY().getMeters()));
-    m_textDrawer->drawText(600, m_windowHeight - (m_headerTextHeight + 5) * 6, m_windowWidth, m_windowHeight,
+    m_textDrawer->drawText(600, m_windowHeight - (m_headerTextHeight + border) * 6, m_windowWidth, m_windowHeight,
         std::string("Current Rotation (deg): ") + std::to_string(m_model->getMouse()->getCurrentRotation().getDegreesZeroTo360()));
-    m_textDrawer->drawText(600, m_windowHeight - (m_headerTextHeight + 5) * 8, m_windowWidth, m_windowHeight,
+    m_textDrawer->drawText(600, m_windowHeight - (m_headerTextHeight + border) * 8, m_windowWidth, m_windowHeight,
         std::string("Current X tile: ") + std::to_string(m_model->getMouse()->getCurrentDiscretizedTranslation().first));
-    m_textDrawer->drawText(600, m_windowHeight - (m_headerTextHeight + 5) * 9, m_windowWidth, m_windowHeight,
+    m_textDrawer->drawText(600, m_windowHeight - (m_headerTextHeight + border) * 9, m_windowWidth, m_windowHeight,
         std::string("Current Y tile: ") + std::to_string(m_model->getMouse()->getCurrentDiscretizedTranslation().second));
-    m_textDrawer->drawText(600, m_windowHeight - (m_headerTextHeight + 5) * 10, m_windowWidth, m_windowHeight,
+    m_textDrawer->drawText(600, m_windowHeight - (m_headerTextHeight + border) * 10, m_windowWidth, m_windowHeight,
         std::string("Current Direction: ") + DIRECTION_TO_STRING.at(m_model->getMouse()->getCurrentDiscretizedRotation()));
 
     m_textDrawer->concludeDrawingTextForFrame();

@@ -1,9 +1,13 @@
 #include "TextDrawer.h"
 
+#include <tuple>
+
 #include "Assert.h"
 #include "Directory.h"
 
 namespace sim {
+
+const float TextDrawer::SCALE_FACTOR = 1.6;
 
 TextDrawer* TextDrawer::m_activeTextDrawer = nullptr;
 TextDrawer::TextDrawer(const std::string& font, float size) :
@@ -17,16 +21,38 @@ void TextDrawer::commenceDrawingTextForFrame() {
     m_activeTextDrawer = this;
 }
 
+float TextDrawer::getWidth(const std::string& str) {
+    ASSERT_EQ(m_activeTextDrawer, this);
+    static float minX = 0.0;
+    static float minY = 0.0;
+    static float maxX = 0.0;
+    static float maxY = 0.0;
+    sth_dim_text(
+        m_stash,
+        m_font,
+        m_size * SCALE_FACTOR,
+        str.c_str(),
+        &minX,
+        &minY,
+        &maxX,
+        &maxY
+    );
+    return maxX - minX;
+}
+
 void TextDrawer::drawText(float x, float y, int windowWidth, int windowHeight, const std::string& str) {
     ASSERT_EQ(m_activeTextDrawer, this);
     glLoadIdentity();
     glOrtho(0, windowWidth, 0, windowHeight, -1, 1);
-    // TODO: upforgrabs
-    // Right now, we use a hack to draw the text approximately "size" pixels
-    // tall: simply multiply the given value by 1.6. It'd be nice to figure out
-    // *why* we need to do this (i.e., investigate both fontstash and
-    // stb_truetype) and to supply a proper fix (as opposed to using the hack).
-    sth_draw_text(m_stash, m_font, m_size * 1.6f, x, y, str.c_str(), nullptr);
+    sth_draw_text(
+        m_stash,
+        m_font,
+        m_size * SCALE_FACTOR,
+        x,
+        y,
+        str.c_str(),
+        nullptr
+    );
 }
 
 void TextDrawer::concludeDrawingTextForFrame() {
