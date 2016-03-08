@@ -22,7 +22,6 @@ void TextDrawer::commenceDrawingTextForFrame() {
 }
 
 float TextDrawer::getWidth(const std::string& str) {
-    ASSERT_EQ(m_activeTextDrawer, this);
     static float minX = 0.0;
     static float minY = 0.0;
     static float maxX = 0.0;

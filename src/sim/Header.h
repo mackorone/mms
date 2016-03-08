@@ -19,6 +19,9 @@ private:
     int m_textHeight;
     TextDrawer* m_textDrawer;
 
+    std::vector<int> getColumnStartingPositions(
+        int windowWidth, const std::vector<std::string>& lines, int border, int columnSeparation);
+
     // TODO: MACK Store the persistent strings as constants
 
 };
