@@ -84,7 +84,7 @@ void View::refresh() {
     glDisable(GL_SCISSOR_TEST);
 
     // Draw the window header
-    m_header->draw(m_windowWidth, m_windowHeight);
+    m_header->draw();
 
     // Display the result
     glutSwapBuffers();
@@ -110,10 +110,7 @@ void View::refresh() {
 void View::updateWindowSize(int width, int height) {
     m_windowWidth = width;
     m_windowHeight = height;
-    // TODO: upforgrabs
-    // Make the 1/3 a parameter so that it can be easily changed
-    // The header should never occupy more than 1/3 of the window height
-    m_header->setMaxHeight(height / 3);
+    m_header->updateWindowSize(width, height);
     glViewport(0, 0, width, height);
 }
 

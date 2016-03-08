@@ -10,27 +10,69 @@
 namespace sim {
 
 // TODO: MACK - make the text height a parameter
-Header::Header(Model* model) : m_model(model), m_maxHeight(0), m_textHeight(10) {
+Header::Header(Model* model) : m_model(model), m_windowWidth(0), m_windowHeight(0), m_headerHeight(0), m_textHeight(10) {
     // TODO: MACK - If the font doesn't exist, we silently fail and draw no text whatsoever
     // Initialize the text drawer object // TODO: MACK - get the font from param
     m_textDrawer = new TextDrawer("Hack-Regular.ttf", m_textHeight);
 }
 
 int Header::getHeight() const {
-    // TODO: MACK Do some calculations here, do max height, kill defaultHeaderHeight
-    // return m_maxHeight;
-    return std::min(m_maxHeight, P()->defaultHeaderHeight());
+    // TODO: Kill P()->defaultheaderHeight()
+    return m_headerHeight;
 }
 
-void Header::setMaxHeight(int maxHeight) {
-    m_maxHeight = maxHeight;
+void Header::updateWindowSize(int width, int height) {
+    m_windowWidth = width;
+    m_windowHeight = height;
+    m_headerHeight = calculateHeaderHeight(width, height);
 }
 
-void Header::draw(int windowWidth, int windowHeight) {
+void Header::draw() {
 
     // TODO: MACK - it's expensive to create this vector every single frame
 
-    std::vector<std::string> lines {
+    std::vector<std::string> lines = getLines();
+
+    // TODO: MACK add the ellipses here..
+    // TODO: MACK - some kind of border here
+    // TODO: MACK - put these in a data structure, cut of the text if necessary
+    int border = 5;
+    int columnSeparation = 20;
+
+    int windowWidth = m_windowWidth;
+    int windowHeight = m_windowHeight;
+
+    std::vector<int> startingColumnPositions = getColumnStartingPositions(windowWidth, lines, border, columnSeparation);
+    int linesPerColumn = lines.size() / startingColumnPositions.size();
+
+    m_textDrawer->commenceDrawingTextForFrame();
+    for (int i = 0; i < startingColumnPositions.size(); i += 1) {
+        for (int j = 0; j < linesPerColumn && i * linesPerColumn + j < lines.size(); j += 1) {
+            m_textDrawer->drawText(
+                startingColumnPositions.at(i),
+                windowHeight - (m_textHeight + border) * (j + 1),
+                windowWidth,
+                windowHeight,
+                lines.at(i * linesPerColumn + j)
+            );
+        }
+    }
+    m_textDrawer->concludeDrawingTextForFrame();
+}
+
+int Header::calculateHeaderHeight(int windowWidth, int windowHeight) {
+    int border = 5;
+    int columnSeparation = 20;
+    std::vector<std::string> lines = getLines();
+    int rows = lines.size() / getColumnStartingPositions(windowWidth, lines, border, columnSeparation).size();
+    int size = rows * m_textHeight + (rows + 1) * border; // TODO: MACK this is a row separator
+    return size;
+}
+
+std::vector<std::string> Header::getLines() const {
+// TODO: MACK - if the lines change without the window size changing, the text state could become bad...
+
+    return {
         std::string("Run ID: ") + S()->runId(),
         std::string("Crashed: ") + (S()->crashed() ? "TRUE" : "FALSE"),
         std::string("Layout Type (l): ") + LAYOUT_TYPE_TO_STRING.at(S()->layoutType()),
@@ -52,33 +94,10 @@ void Header::draw(int windowWidth, int windowHeight) {
         std::string("Current Y tile: ") + std::to_string(m_model->getMouse()->getCurrentDiscretizedTranslation().second),
         std::string("Current Direction: ") + DIRECTION_TO_STRING.at(m_model->getMouse()->getCurrentDiscretizedRotation()),
     };
-
-    // TODO: MACK add the ellipses here..
-    // TODO: MACK - some kind of border here
-    // TODO: MACK - put these in a data structure, cut of the text if necessary
-    int border = 5;
-    int columnSeparation = 20;
-
-    std::vector<int> startingColumnPositions = getColumnStartingPositions(windowWidth, lines, border, columnSeparation);
-    int linesPerColumn = lines.size() / startingColumnPositions.size();
-
-    m_textDrawer->commenceDrawingTextForFrame();
-    for (int i = 0; i < startingColumnPositions.size(); i += 1) {
-        for (int j = 0; j < linesPerColumn && i * linesPerColumn + j < lines.size(); j += 1) {
-            m_textDrawer->drawText(
-                startingColumnPositions.at(i),
-                windowHeight - (m_textHeight + border) * (j + 1),
-                windowWidth,
-                windowHeight,
-                lines.at(i * linesPerColumn + j)
-            );
-        }
-    }
-    m_textDrawer->concludeDrawingTextForFrame();
 }
 
 std::vector<int> Header::getColumnStartingPositions(
-        int windowWidth, const std::vector<std::string>& lines, int border, int columnSeparation) {
+        int windowWidth, const std::vector<std::string>& lines, int border, int columnSeparation) const {
 
     static auto willFit = [=](const std::vector<double>& columnWidths, int windowWidth, int columnSeparation) {
         double sum = 0.0;
