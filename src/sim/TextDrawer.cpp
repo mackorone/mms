@@ -10,9 +10,9 @@ namespace sim {
 const float TextDrawer::SCALE_FACTOR = 1.6;
 
 TextDrawer* TextDrawer::m_activeTextDrawer = nullptr;
-TextDrawer::TextDrawer(const std::string& font, float size) :
+TextDrawer::TextDrawer(const std::string& fontPath, float size) :
         m_stash(sth_create(512, 512)),
-        m_font(sth_add_font(m_stash, (Directory::getResFontsDirectory() + font).c_str())),
+        m_font(sth_add_font(m_stash, fontPath.c_str())),
         m_size(size) {
 }
 

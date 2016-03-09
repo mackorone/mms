@@ -1,6 +1,8 @@
 #include "Header.h"
 
+#include "Directory.h"
 #include "Layout.h"
+#include "Logging.h"
 #include "Param.h"
 #include "SimUtilities.h"
 #include "State.h"
@@ -15,12 +17,17 @@ Header::Header(Model* model) :
         m_rowSpacing(P()->headerRowSpacing()),
         m_columnSpacing(P()->headerColumnSpacing()) {
 
-    // TODO: MACK - does row spacing work as expected???
-    // TODO: MACK - does column spacing work as expected???
+    // Check to make sure that the font file exists
+    std::string fontPath = Directory::getResFontsDirectory() + P()->headerTextFont();
+    if (!SimUtilities::isFile(fontPath)) {
+        // If the font doesn't exist, we simply draw no text whatsoever
+        L()->warn(
+            "\"%v\" is not a valid font file; it's very possible that the file"
+            " does not exist. No header will drawn.", fontPath);
+    }
 
-    // TODO: MACK - If the font doesn't exist, we silently fail and draw no
-    // text whatsoever Initialize the text drawer object
-    m_textDrawer = new TextDrawer(P()->headerTextFont(), m_textHeight);
+    // Create the text drawer object
+    m_textDrawer = new TextDrawer(fontPath, m_textHeight);
 
     // Populate the lines with initial values
     updateLines();
@@ -133,6 +140,7 @@ void Header::updateLines() {
         std::string("Wireframe Mode (w): ") + (S()->wireframeMode() ? "TRUE" : "FALSE"),
         std::string("Paused (p): ") + (S()->paused() ? "TRUE" : "FALSE"),
         std::string("Sim Speed (f, s): ") + std::to_string(S()->simSpeed()),
+        // TODO: MACK - display the continuous stuff if continuous, else display the discrete stuff
         std::string("Elapsed Sim Time: ") + SimUtilities::formatSeconds(m_model->getMouse()->getElapsedSimTime().getSeconds()),
         std::string("Current X (m): ") + std::to_string(m_model->getMouse()->getCurrentTranslation().getX().getMeters()),
         std::string("Current Y (m): ") + std::to_string(m_model->getMouse()->getCurrentTranslation().getY().getMeters()),

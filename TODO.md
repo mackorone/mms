@@ -5,16 +5,13 @@
     - Closest distance to center
     - Best time
     - Percentage of walls declared
-    - Check that a font exists, print error and die if not
     - Information of the wheel speeds
     - Display a clock real time clock
     - Speed in the x, y, and along the hypotenuse
-    - Check to make sure font won't be cut off, use ellipses if so (How do we deal with text being cut off in the vertical direction?)
-    - Set the mouse algo in State for display in the toolbar
+    - Set the mouse algo (and maze algo or file) in State for display in the toolbar
     - Make terminal style output at bottom or right of window (GUI)
     - Provide some mechanism to get the status string from the mouse and display it to the user
-- Add a mechanism to determine the width of the text being drawn
-- Make header text height a param
+- Number of unique cells traversed
 - Windows logging is not working on non-main threads
 - Logging is too expensive
     - Causing freezing and crashing
@@ -30,9 +27,6 @@
     - How long it took to get to the center of the maze
     - Make this faster than real time
         - Make sure consistent at all speeds
-- Arbitrary tile text
-    - Make a note about how to show actual distances
-    - Make a note about text automatically wrapping (the actual tile distances do not do this)
 - Make a voluntary Delay in setTileBaseColor, text
 - Stepper motor
 - Sensor type (digital or analog)
@@ -53,14 +47,10 @@
     - Variable width?
 - Buffer communication (like with the real robot)
 - Clang compiler support
-- Number of unique cells traversed
 - Make a separate process for algo, so if the algo dies the sim stays alive, and so that we can start an algo over really easily
 - Continuous performance
     - CPU with megaMouse.xml
     - MinSleepDuration is a little bit weird - sometimes we try to sleep less than that
-- Explain which options only work for discrete mode
-    - Make a note about how to do params in algos
-    - Talk about each of the parameters in documentation
 - Discrete mode speed...
     - Ensure that the wheel speed is not too high in the MouseInterface (so that the mouse does not clip through walls)
     - In discrete mode, the mouse can overturn or go too far if the sim speed

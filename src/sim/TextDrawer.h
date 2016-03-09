@@ -15,7 +15,7 @@ public:
 
     // Note that the TextDrawer may only be instantiated after
     // glutInit is called. Thus, you may not declare it statically.
-    TextDrawer(const std::string& font, float size);
+    TextDrawer(const std::string& fontPath, float size);
 
     // Using the class is as easy as calling these methods, in order, during
     // the rendering loop. Commence and conclude should only be called once per

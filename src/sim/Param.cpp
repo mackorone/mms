@@ -36,8 +36,6 @@ Param::Param() {
         "default-window-width", 930, 100);
     m_defaultWindowHeight = parser.getIntIfHasIntAndNotLessThan(
         "default-window-height", 670, 100);
-    m_defaultHeaderHeight = parser.getIntIfHasIntAndNotLessThan(
-        "default-header-height", 200, 0);
     m_defaultLayoutType = parser.getStringIfHasStringAndIsLayoutType(
         "default-layout-type", LAYOUT_TYPE_TO_STRING.at(LayoutType::BOTH));
     m_windowBorderWidth = parser.getIntIfHasIntAndInRange(
@@ -191,10 +189,6 @@ int Param::defaultWindowWidth() {
 
 int Param::defaultWindowHeight() {
     return m_defaultWindowHeight;
-}
-
-int Param::defaultHeaderHeight() {
-    return m_defaultHeaderHeight;
 }
 
 std::string Param::defaultLayoutType() {

@@ -5,13 +5,12 @@
     <!-- Graphical Parameters -->
     <default-window-width>930</default-window-width> <!-- Pixels -->
     <default-window-height>670</default-window-height> <!-- Pixels -->
-    <default-header-height>200</default-header-height> <!-- Pixels --> <!-- TODO: MACK - kill this -->
     <default-layout-type>BOTH</default-layout-type> <!-- FULL, ZOOMED, BOTH -->
     <window-border-width>10</window-border-width> <!-- Pixels -->
-    <header-text-font>Unispace-Bold.ttf</header-text-font> <!-- TODO: MACK - UPDATE WIKI, TEST -->
-    <header-text-height>10</header-text-height> <!-- TODO: MACK - UPDATE WIKI -->
-    <header-row-spacing>10</header-row-spacing> <!-- TODO: MACK - UPDATE WIKI -->
-    <header-column-spacing>20</header-column-spacing> <!-- TODO: MACK - UPDATE WIKI -->
+    <header-text-font>Unispace-Bold.ttf</header-text-font>
+    <header-text-height>10</header-text-height>
+    <header-row-spacing>10</header-row-spacing>
+    <header-column-spacing>20</header-column-spacing>
     <min-zoomed-map-scale>0.02</min-zoomed-map-scale>
     <max-zoomed-map-scale>1.0</max-zoomed-map-scale>
     <default-zoomed-map-scale>0.1</default-zoomed-map-scale>
