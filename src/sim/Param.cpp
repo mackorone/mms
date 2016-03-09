@@ -41,7 +41,15 @@ Param::Param() {
     m_defaultLayoutType = parser.getStringIfHasStringAndIsLayoutType(
         "default-layout-type", LAYOUT_TYPE_TO_STRING.at(LayoutType::BOTH));
     m_windowBorderWidth = parser.getIntIfHasIntAndInRange(
-        "window-border-width", 10, 0, 25);
+        "window-border-width", 10, 0, 30);
+    m_headerTextFont = parser.getStringIfHasString(
+        "header-text-font", "Unispace-Bold.ttf");
+    m_headerTextHeight = parser.getIntIfHasIntAndInRange(
+        "header-text-height", 10, 0, 30);
+    m_headerRowSpacing = parser.getIntIfHasIntAndInRange(
+        "header-row-spacing", 10, 0, 30);
+    m_headerColumnSpacing = parser.getIntIfHasIntAndInRange(
+        "header-column-spacing", 20, 0, 60);
     m_minZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange(
         "min-zoomed-map-scale", 0.02, 0.01, 0.04);
     m_maxZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange(
@@ -195,6 +203,22 @@ std::string Param::defaultLayoutType() {
 
 int Param::windowBorderWidth() {
     return m_windowBorderWidth;
+}
+
+std::string Param::headerTextFont() {
+    return m_headerTextFont;
+}
+
+int Param::headerTextHeight() {
+    return m_headerTextHeight;
+}
+
+int Param::headerRowSpacing() {
+    return m_headerRowSpacing;
+}
+
+int Param::headerColumnSpacing() {
+    return m_headerColumnSpacing;
 }
 
 double Param::minZoomedMapScale() {

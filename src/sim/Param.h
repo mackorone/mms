@@ -21,6 +21,10 @@ public:
     int defaultHeaderHeight();
     std::string defaultLayoutType();
     int windowBorderWidth();
+    std::string headerTextFont();
+    int headerTextHeight();
+    int headerRowSpacing();
+    int headerColumnSpacing();
     double minZoomedMapScale();
     double maxZoomedMapScale();
     double defaultZoomedMapScale();
@@ -102,6 +106,10 @@ private:
     int m_defaultHeaderHeight;
     std::string m_defaultLayoutType;
     int m_windowBorderWidth;
+    std::string m_headerTextFont;
+    int m_headerTextHeight;
+    int m_headerRowSpacing;
+    int m_headerColumnSpacing;
     double m_minZoomedMapScale;
     double m_maxZoomedMapScale;
     double m_defaultZoomedMapScale;

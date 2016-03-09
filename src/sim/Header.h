@@ -15,23 +15,23 @@ public:
 
 private:
     Model* m_model;
-    int m_windowWidth;
-    int m_windowHeight;
-    int m_headerHeight;
-    int m_textHeight;
-    TextDrawer* m_textDrawer;
+    int m_windowWidth; // The total height of the window, in pixels
+    int m_windowHeight; // The total width of the window, in pixels
+    int m_textHeight; // The height of the text, in pixels
+    int m_rowSpacing; // The space between rows, in pixels
+    int m_columnSpacing; // The space between columns, in pixels
+    std::vector<int> m_columnStartingPositions; // The starting horizontal position of each column, in pixels
+    std::vector<std::string> m_lines; // The lines of text that we're drawing in the header
+    TextDrawer* m_textDrawer; // The object used to dimension and draw the header text
 
-    // TODO: MACK
-    int calculateHeaderHeight(int windowWidth, int windowHeight);
+    // Return the column starting positions, based on member variable values
+    std::vector<int> getColumnStartingPositions() const;
 
-    // TODO: MACK - make this stateful about the window width and height, only calculate things if those change
-    std::vector<std::string> getLines() const;
+    // Return the number of rows of text that to be displayed
+    int getNumRows(int numLines, int numCols) const;
 
-    std::vector<int> getColumnStartingPositions(
-        int windowWidth, const std::vector<std::string>& lines, int border, int columnSeparation) const;
-
-    // TODO: MACK Store the persistent strings as constants
-
+    // Update the lines of text to be drawn in the header
+    void updateLines();
 };
 
 } // namespace sim
