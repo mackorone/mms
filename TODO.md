@@ -8,7 +8,6 @@
     - Information of the wheel speeds
     - Display a clock real time clock
     - Speed in the x, y, and along the hypotenuse
-    - Set the mouse algo (and maze algo or file) in State for display in the toolbar
     - Make terminal style output at bottom or right of window (GUI)
     - Provide some mechanism to get the status string from the mouse and display it to the user
 - Number of unique cells traversed

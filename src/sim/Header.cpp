@@ -127,7 +127,15 @@ int Header::getNumRows(int numLines, int numCols) const {
 void Header::updateLines() {
     m_lines = {
         std::string("Run ID: ") + S()->runId(),
-        std::string(""), // Distinguishes the Run ID and separates the simulator state from the mouse state
+        // std::string("Run Dir: ") + Directory::getRunDirectory(),
+        (
+            P()->useMazeFile() ?
+            std::string("Maze File: ") + P()->mazeFile() :
+            std::string("Maze Algo: ") + P()->mazeAlgorithm()
+        ),
+        std::string("Mouse Algo: ") + P()->mouseAlgorithm(),
+        std::string("Random Seed: ") + std::to_string(P()->randomSeed()),
+        std::string(""), // Distinguishes the above and separates the simulator state from the mouse state
         std::string("Crashed: ") + (S()->crashed() ? "TRUE" : "FALSE"),
         std::string("Layout Type (l): ") + LAYOUT_TYPE_TO_STRING.at(S()->layoutType()),
         std::string("Rotate Zoomed Map (r): ") + (S()->rotateZoomedMap() ? "TRUE" : "FALSE"),
