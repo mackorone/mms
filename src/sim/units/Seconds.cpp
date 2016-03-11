@@ -18,6 +18,10 @@ Seconds Seconds::operator+(const Duration& duration) const {
     return Seconds(getSeconds() + duration.getSeconds());
 }
 
+Seconds Seconds::operator-(const Duration& duration) const {
+    return Seconds(getSeconds() - duration.getSeconds());
+}
+
 Seconds Seconds::operator*(double factor) const {
     return Seconds(getSeconds() * factor);
 }

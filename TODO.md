@@ -1,15 +1,12 @@
 # High Priority
 
 - Put a toolbar at the top or bottom with info
-    - Unique tiles traversed
-    - Closest distance to center
-    - Best time
-    - Percentage of walls declared
     - Information of the wheel speeds
     - Display a clock real time clock
     - Speed in the x, y, and along the hypotenuse
     - Make terminal style output at bottom or right of window (GUI)
     - Provide some mechanism to get the status string from the mouse and display it to the user
+- Note about invalid algo (how to debug)
 - Number of unique cells traversed
 - Windows logging is not working on non-main threads
 - Logging is too expensive

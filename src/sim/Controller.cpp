@@ -35,6 +35,7 @@ Controller::Controller(Model* model, View* view) : m_model(model), m_view(view) 
     );
 
     // TODO: MACK - validate here (non-negative)
+    // We need to do this before we initialize the mouse interface
     m_view->initTileGraphicText(
         std::make_pair(
             m_mouseAlgorithm->tileTextNumberOfRows(),
@@ -75,6 +76,9 @@ Controller::Controller(Model* model, View* view) : m_model(model), m_view(view) 
             STRING_TO_INTERFACE_TYPE.at(m_mouseAlgorithm->interfaceType())
         }
     );
+
+    // Tell the view about the world, so we can display more info in the header
+    m_view->passWorldPointerToHeader(m_world);
 }
 
 IMouseAlgorithm* Controller::getMouseAlgorithm() {

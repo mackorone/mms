@@ -1,10 +1,12 @@
 #pragma once
 
+#include <set>
 #include <vector>
 
 #include "Maze.h"
 #include "MazeGraphic.h"
 #include "Mouse.h"
+#include "units/Seconds.h"
 #include "WorldOptions.h"
 
 namespace sim {
@@ -18,6 +20,11 @@ public:
         MazeGraphic* mazeGraphic,
         WorldOptions options);
 
+    int getNumberOfTilesTraversed() const;
+    int getClosestDistanceToCenter() const;
+    Seconds getBestTimeToCenter() const;
+    Seconds getTimeSinceOriginDeparture() const;
+
     void simulate();
 
 private:
@@ -25,6 +32,11 @@ private:
     Mouse* m_mouse;
     MazeGraphic* m_mazeGraphic;
     WorldOptions m_options;
+
+    std::set<const Tile*> m_traversedTiles;
+    int m_closestDistanceToCenter;
+    Seconds m_bestTimeToCenter;
+    Seconds m_timeOfOriginDeparture;
 
     void checkCollision();
 };

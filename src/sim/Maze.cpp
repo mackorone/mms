@@ -106,6 +106,13 @@ bool Maze::isOfficialMaze() const {
     return m_isOfficialMaze;
 }
 
+bool Maze::isCenterTile(int x, int y) const {
+    return ContainerUtilities::vectorContains(
+        MazeChecker::getCenterTiles(getWidth(), getHeight()),
+        std::make_pair(x, y)
+    );
+}
+
 std::vector<std::vector<Tile>> Maze::initializeFromBasicMaze(const std::vector<std::vector<BasicTile>>& basicMaze) {
     std::vector<std::vector<Tile>> maze;
     for (int x = 0; x < basicMaze.size(); x += 1) {

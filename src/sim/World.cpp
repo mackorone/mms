@@ -21,7 +21,30 @@ World::World(
         m_maze(maze),
         m_mouse(mouse),
         m_mazeGraphic(mazeGraphic),
-        m_options(options) {
+        m_options(options),
+        m_closestDistanceToCenter(-1),
+        m_bestTimeToCenter(Seconds(-1)),
+        m_timeOfOriginDeparture(Seconds(-1)) {
+}
+
+int World::getNumberOfTilesTraversed() const {
+    return m_traversedTiles.size();
+}
+
+int World::getClosestDistanceToCenter() const {
+    return m_closestDistanceToCenter;
+}
+
+Seconds World::getBestTimeToCenter() const {
+    return m_bestTimeToCenter;
+}
+
+Seconds World::getTimeSinceOriginDeparture() const {
+    // If we haven't left the origin yet, return -1
+    if (m_timeOfOriginDeparture < Seconds(0)) {
+        return Seconds(-1);
+    }
+    return m_mouse->getElapsedSimTime() - m_timeOfOriginDeparture;
 }
 
 void World::simulate() {
@@ -45,6 +68,8 @@ void World::simulate() {
     // Use this thread to perform mouse position updates
     while (true) {
 
+        // TODO: MACK - the world should keep track of elapsed sim time
+
         // In order to ensure we're sleeping the correct amount of time, we time
         // the mouse position update operation and take it into account when we sleep.
         double start(SimUtilities::getHighResTime());
@@ -65,15 +90,48 @@ void World::simulate() {
         static Seconds realTimePerUpdate = Seconds(1.0 / P()->mousePositionUpdateRate());
         m_mouse->update(realTimePerUpdate * S()->simSpeed());
 
-        // Retrieve the current discretized location of the
-        // mouse, to be used by the next two code blocks
+        // Retrieve the current discretized location of the mouse, and
+        // the tile at that location, for use with the next few code blocks
         std::pair<int, int> location = m_mouse->getCurrentDiscretizedTranslation();
+        const Tile* tileAtLocation = m_maze->getTile(location.first, location.second);
 
-        // If we're ever outside of the maze, crash
+        // Whether or not this is a newly traversed tile
+        bool newLocation = !ContainerUtilities::setContains(m_traversedTiles, tileAtLocation);
+
+        // Update the set of traversed tiles
+        if (newLocation) {
+            m_traversedTiles.insert(tileAtLocation);
+            if (m_closestDistanceToCenter == -1 ||
+                    tileAtLocation->getDistance() < m_closestDistanceToCenter) {
+                m_closestDistanceToCenter = tileAtLocation->getDistance(); 
+            }
+        }
+
+        // If we've returned to the origin, reset the departure time
+        if (location.first == 0 && location.second == 0) {
+            if (Seconds(0) < m_timeOfOriginDeparture) {
+                m_timeOfOriginDeparture = Seconds(-1);
+            }
+        }
+
+        // Otherwise, if we've just left the origin, update the departure time
+        else if (m_timeOfOriginDeparture < Seconds(0)) {
+            m_timeOfOriginDeparture = m_mouse->getElapsedSimTime();
+        }
+
+        // Separately, if we're in the center, update the best time to center
+        if (m_maze->isCenterTile(location.first, location.second)) {
+            Seconds timeToCenter = m_mouse->getElapsedSimTime() - m_timeOfOriginDeparture;
+            if (m_bestTimeToCenter < Seconds(0) || timeToCenter < m_bestTimeToCenter) {
+                m_bestTimeToCenter = timeToCenter;
+            }
+        }
+
+        // If we're ever outside of the maze, crash. It would be cool to have
+        // some "out of bounds" state but I haven't implemented that yet. We
+        // continue here to make sure that we join with the other thread.
         if (!m_maze->withinMaze(location.first, location.second)) {
-            // It would be cool to have some "out of bounds" state
             S()->setCrashed();
-            // We continue here to make sure that we join with the other thread
             continue;
         }
 
@@ -84,7 +142,7 @@ void World::simulate() {
         // just this one bit of code, this is fine for now. If we end up
         // needing more graphics functionality here, it'd be wise to make a
         // separate class.
-        if (m_options.automaticallyClearFog) {
+        if (m_options.automaticallyClearFog && newLocation) {
             m_mazeGraphic->setTileFogginess(location.first, location.second, false);
         }
 

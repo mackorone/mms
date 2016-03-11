@@ -19,6 +19,9 @@ public:
     // Returns true if a maze complies with the official rules, false otherwise
     static bool isOfficialMaze(const std::vector<std::vector<BasicTile>>& maze);
 
+    // Misc. helper function, used by Maze
+    static std::vector<std::pair<int, int>> getCenterTiles(int width, int height);
+
 private:
 
     // isValidMaze helper functions
@@ -36,7 +39,6 @@ private:
     static bool isUnsolvableByWallFollower(const std::vector<std::vector<BasicTile>>& maze);
 
     // Misc. helper functions
-    static std::vector<std::pair<int, int>> getCenterTiles(int width, int height);
     static Direction directionAfterLeftTurn(Direction direction);
     static Direction directionAfterRightTurn(Direction direction);
     static std::pair<int, int> positionAfterMovingForward(std::pair<int, int> position, Direction direction);

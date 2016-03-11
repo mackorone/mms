@@ -18,6 +18,7 @@ public:
     Tile* getTile(int x, int y);
     const Tile* getTile(int x, int y) const;
     bool isOfficialMaze() const;
+    bool isCenterTile(int x, int y) const;
 
 private:
     // Vector to hold all of the tiles

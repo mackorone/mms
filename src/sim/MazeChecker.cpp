@@ -133,6 +133,22 @@ bool MazeChecker::isOfficialMaze(const std::vector<std::vector<BasicTile>>& maze
     return success;
 }
 
+std::vector<std::pair<int, int>> MazeChecker::getCenterTiles(int width, int height) {
+    std::vector<std::pair<int, int>> centerTiles;
+            centerTiles.push_back(std::make_pair((width - 1) / 2, (height - 1) / 2));
+    if (width % 2 == 0) {
+            centerTiles.push_back(std::make_pair( width      / 2, (height - 1) / 2));
+        if (height % 2 == 0) {
+            centerTiles.push_back(std::make_pair((width - 1) / 2,  height      / 2));
+            centerTiles.push_back(std::make_pair( width      / 2,  height      / 2));
+        }
+    }
+    else if (height % 2 == 0) {
+            centerTiles.push_back(std::make_pair((width - 1) / 2,  height      / 2));
+    }
+    return centerTiles; 
+}
+
 bool MazeChecker::hasNoInaccessibleLocations(const std::vector<std::vector<BasicTile>>& maze) {
 
     std::set<std::pair<int, int>> explored;
@@ -254,22 +270,6 @@ bool MazeChecker::isUnsolvableByWallFollower(const std::vector<std::vector<Basic
     }
 
     return true;
-}
-
-std::vector<std::pair<int, int>> MazeChecker::getCenterTiles(int width, int height) {
-    std::vector<std::pair<int, int>> centerTiles;
-            centerTiles.push_back(std::make_pair((width - 1) / 2, (height - 1) / 2));
-    if (width % 2 == 0) {
-            centerTiles.push_back(std::make_pair( width      / 2, (height - 1) / 2));
-        if (height % 2 == 0) {
-            centerTiles.push_back(std::make_pair((width - 1) / 2,  height      / 2));
-            centerTiles.push_back(std::make_pair( width      / 2,  height      / 2));
-        }
-    }
-    else if (height % 2 == 0) {
-            centerTiles.push_back(std::make_pair((width - 1) / 2,  height      / 2));
-    }
-    return centerTiles; 
 }
 
 Direction MazeChecker::directionAfterLeftTurn(Direction direction) {

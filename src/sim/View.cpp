@@ -153,6 +153,10 @@ void View::initTileGraphicText(std::pair<int, int> tileTextMaxSize) {
         STRING_TO_TILE_TEXT_ALIGNMENT.at(P()->tileTextAlignment()));
 }
 
+void View::passWorldPointerToHeader(const World* world) {
+    m_header->setWorld(world);
+}
+
 void View::initGraphics(int argc, char* argv[], const GlutFunctions& functions) {
 
     // GLUT Initialization
