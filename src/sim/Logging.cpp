@@ -32,7 +32,7 @@ el::Logger* Logging::getMouseLogger() {
     return getLogger(m_mouseLoggerName);
 }
 
-void Logging::initialize(double startTime, const std::string& runId) {
+void Logging::initialize(double startTimestamp, const std::string& runId) {
 
     // Ensure we only initialize the loggers once
     static bool initialized = false;
@@ -69,7 +69,7 @@ void Logging::initialize(double startTime, const std::string& runId) {
     el::Loggers::addFlag(el::LoggingFlag::ColoredTerminalOutput);
     el::Helpers::installPreRollOutCallback(rolloutHandler);
     el::Helpers::installCustomFormatSpecifier(el::CustomFormatSpecifier("%time", [=](){
-        std::string timeString = SimUtilities::formatSeconds(SimUtilities::getHighResTime() - startTime);
+        std::string timeString = SimUtilities::formatSeconds(SimUtilities::getHighResTime() - startTimestamp);
         return timeString.substr(0, timeString.find(".") + 4).c_str(); // Trim to 3 decimal places
     }));
 }

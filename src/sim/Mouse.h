@@ -113,6 +113,7 @@ public:
     // Returns the value of the gyroscope
     RadiansPerSecond readGyro() const;
 
+    // TODO: MACK - kill this
     // Returns the number of sim seconds that have elapsed
     Seconds getElapsedSimTime() const;
 

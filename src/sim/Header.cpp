@@ -15,8 +15,7 @@ Header::Header(Model* model) :
         m_windowHeight(0),
         m_textHeight(P()->headerTextHeight()),
         m_rowSpacing(P()->headerRowSpacing()),
-        m_columnSpacing(P()->headerColumnSpacing()),
-        m_world(nullptr) {
+        m_columnSpacing(P()->headerColumnSpacing()) {
 
     // Check to make sure that the font file exists
     std::string fontPath = Directory::getResFontsDirectory() + P()->headerTextFont();
@@ -67,10 +66,6 @@ void Header::draw() {
         }
     }
     m_textDrawer->concludeDrawingTextForFrame();
-}
-
-void Header::setWorld(const World* world) {
-    m_world = world;
 }
 
 std::vector<int> Header::getColumnStartingPositions() const {
@@ -154,9 +149,9 @@ void Header::updateLines() {
         std::string("Paused (p): ") + (S()->paused() ? "TRUE" : "FALSE"),
         std::string("Sim Speed (f, s): ") + std::to_string(S()->simSpeed()),
         std::string(""), // Separator
-        std::string("Tiles Traversed: ") + (m_world == nullptr ? "" : std::to_string(m_world->getNumberOfTilesTraversed()))
+        std::string("Tiles Traversed: ") + std::to_string(m_model->getWorld()->getNumberOfTilesTraversed())
              + "/" + std::to_string(m_model->getMaze()->getWidth() * m_model->getMaze()->getHeight()),
-        std::string("Closest Distance to Center: ") + (m_world == nullptr ? "" : std::to_string(m_world->getClosestDistanceToCenter())),
+        std::string("Closest Distance to Center: ") + std::to_string(m_model->getWorld()->getClosestDistanceToCenter()),
         std::string("Current X (m):          ") + std::to_string(m_model->getMouse()->getCurrentTranslation().getX().getMeters()),
         std::string("Current Y (m):          ") + std::to_string(m_model->getMouse()->getCurrentTranslation().getY().getMeters()),
         std::string("Current Rotation (deg): ") + std::to_string(m_model->getMouse()->getCurrentRotation().getDegreesZeroTo360()),
@@ -165,12 +160,14 @@ void Header::updateLines() {
         std::string("Current Direction:      ") + DIRECTION_TO_STRING.at(m_model->getMouse()->getCurrentDiscretizedRotation()),
         std::string(""), // Separator
         std::string("Elapsed Sim Time:            ") + SimUtilities::formatSeconds(m_model->getMouse()->getElapsedSimTime().getSeconds()),
-        std::string("Time Since Origin Departure: ") + (m_world == nullptr ? "" :
-            (m_world->getTimeSinceOriginDeparture().getSeconds() < 0 ? "NONE" :
-                SimUtilities::formatSeconds(m_world->getTimeSinceOriginDeparture().getSeconds()))),
-        std::string("Best Time to Center:         ") + (m_world == nullptr ? "" :
-            (m_world->getBestTimeToCenter().getSeconds() < 0 ? "NONE" :
-                SimUtilities::formatSeconds(m_world->getBestTimeToCenter().getSeconds()))),
+        std::string("Time Since Origin Departure: ") + (
+            m_model->getWorld()->getSimTimeSinceOriginDeparture().getSeconds() < 0 ? "NONE" :
+            SimUtilities::formatSeconds(m_model->getWorld()->getSimTimeSinceOriginDeparture().getSeconds())
+        ),
+        std::string("Best Time to Center:         ") + (
+            m_model->getWorld()->getBestSimTimeToCenter().getSeconds() < 0 ? "NONE" :
+            SimUtilities::formatSeconds(m_model->getWorld()->getBestSimTimeToCenter().getSeconds())
+        ),
     };
 }
 

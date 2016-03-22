@@ -6,8 +6,8 @@
     - Speed in the x, y, and along the hypotenuse
     - Make terminal style output at bottom or right of window (GUI)
     - Provide some mechanism to get the status string from the mouse and display it to the user
-- Note about invalid algo (how to debug)
-- Number of unique cells traversed
+- Add debugging tips
+    - Note about what to do if the simulator says that it's an invalid algo (how to debug)
 - Windows logging is not working on non-main threads
 - Logging is too expensive
     - Causing freezing and crashing
@@ -15,14 +15,11 @@
     - Write some code to make sure update throughput is good
         - 99% of updates are 1ms apart, or something like that
     - Check the sleep duration of updates to make sure that we're actually doing 1000 updates per second
-- Add debugging tips
 - Make some video tutorials
 - Make a mechanism for easily merging the a discrete algo into a continuous one
     - Figure out how to bring the high level logic into the control algo
 - Add a way to time the algorithms
-    - How long it took to get to the center of the maze
-    - Make this faster than real time
-        - Make sure consistent at all speeds
+    - Make sure consistent at all speeds
 - Make a voluntary Delay in setTileBaseColor, text
 - Stepper motor
 - Sensor type (digital or analog)
@@ -63,6 +60,12 @@
 
 # Medum Priority
 
+- Make a system for nearly instantly checking stats on many mazes:
+    - like unit tests
+    - solved or not
+    - how many steps
+    - ave steps
+    - etc.
 - Change float to units (including in the ParamParser and Param class)
 - Type safety (in terms of units) of the parameters
 - Can we use mutable in the MouseInterface so declare wall on read is const? Make other methods in that class const?
@@ -80,17 +83,10 @@
 - isDiscreteInterfaceCompatible and isContinuousInterfaceCompatible
 - Enable steering the wheels and sensors during run
 - Set acceleration of all moving/rotating things
-- Rename Tile to Cell
 - Support reading or writing multiple file types
     - .maz (plain text), .MAZ (binary), .map (ascii map)
     - https://code.google.com/p/maze-solver/wiki/MazeFileFormats
 - Make some default Arduino implementations for some functions
-- Make a system for nearly instantly checking stats on many mazes:
-    - like unit tests
-    - solved or not
-    - how many steps
-    - ave steps
-    - etc.
 - Still view a maze if it fails validation, but don't let the sim continue...
 - Testing for resource existence (like the shaders, font images, etc.)
 - Add manual mode high scores
@@ -156,6 +152,7 @@
 # Clean-Up
 
 - Rename TriangleTexture and VertexTexture
+- Rename Tile to Cell
 - Write some unittests
 - Add IMouseAlgorithm (and maze) to the build path so we can just do #include <IMouseAlgorithm.h> (maybe...)
 - Run the parameter consistency script, make sure values align

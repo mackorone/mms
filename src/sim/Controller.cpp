@@ -18,6 +18,7 @@ static const std::string& OPENING_DIRECTION_STRING = "OPENING";
 // String used to specify that the mouse should start facing the wall
 static const std::string& WALL_DIRECTION_STRING = "WALL";
 
+// TODO: MACK - move keypresses into view, try to limit coupling between the two classes
 Controller::Controller(Model* model, View* view) : m_model(model), m_view(view) {
 
     validateMouseAlgorithm(P()->mouseAlgorithm());
@@ -41,6 +42,10 @@ Controller::Controller(Model* model, View* view) : m_model(model), m_view(view) 
             m_mouseAlgorithm->tileTextNumberOfRows(),
             m_mouseAlgorithm->tileTextNumberOfCols()));
 
+    // TODO: MACK - view needs algorithmDelcaresTileFog() option
+    // TODO: MACK - world needs to know the algorithmType()
+
+    // TODO: MACK - refactor to get rid of this
     // This may seem sloppy, but it's best to assign the values directly by
     // name so that we don't accidentally mix them up (which is easy to do)
     MouseInterfaceOptions options;
@@ -66,19 +71,6 @@ Controller::Controller(Model* model, View* view) : m_model(model), m_view(view) 
         m_view->getAllowableTileTextCharacters(),
         options
     );
-
-    // Separate out the World options here
-    m_world = new World(
-        m_model->getMaze(), 
-        m_model->getMouse(), m_view->getMazeGraphic(),
-        {
-            m_mouseAlgorithm->automaticallyClearFog(),
-            STRING_TO_INTERFACE_TYPE.at(m_mouseAlgorithm->interfaceType())
-        }
-    );
-
-    // Tell the view about the world, so we can display more info in the header
-    m_view->passWorldPointerToHeader(m_world);
 }
 
 IMouseAlgorithm* Controller::getMouseAlgorithm() {
@@ -87,10 +79,6 @@ IMouseAlgorithm* Controller::getMouseAlgorithm() {
 
 MouseInterface* Controller::getMouseInterface() {
     return m_mouseInterface;
-}
-
-World* Controller::getWorld() {
-    return m_world;
 }
 
 void Controller::validateMouseAlgorithm(const std::string& mouseAlgorithm) {

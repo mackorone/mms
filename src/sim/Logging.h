@@ -44,7 +44,7 @@ public:
     static el::Logger* getMouseLogger();
 
     // Initializes all of the loggers, should only be called once
-    static void initialize(double startTime, const std::string& runId);
+    static void initialize(double startTimestamp, const std::string& runId);
 
 private:
 

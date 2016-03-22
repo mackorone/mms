@@ -13,7 +13,6 @@ public:
     int getHeight() const;
     void updateWindowSize(int width, int height);
     void draw();
-    void setWorld(const World* world);
 
 private:
     Model* m_model;
@@ -25,7 +24,6 @@ private:
     std::vector<int> m_columnStartingPositions; // The starting horizontal position of each column, in pixels
     std::vector<std::string> m_lines; // The lines of text that we're drawing in the header
     TextDrawer* m_textDrawer; // The object used to dimension and draw the header text
-    const World* m_world; // A pointer to the world object, to display tiles traversed
 
     // Return the column starting positions, based on member variable values
     std::vector<int> getColumnStartingPositions() const;

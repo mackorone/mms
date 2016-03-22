@@ -26,7 +26,6 @@ public:
     void updateWindowSize(int width, int height);
     std::set<char> getAllowableTileTextCharacters();
     void initTileGraphicText(std::pair<int, int> tileGraphicTextMaxSize);
-    void passWorldPointerToHeader(const World* world);
 
 private:
 

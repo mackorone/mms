@@ -5,7 +5,7 @@
 
 #include "../mouse/IMouseAlgorithm.h"
 #include "MouseInterface.h"
-#include "World.h"
+#include "units/Seconds.h"
 
 namespace sim {
 
@@ -16,7 +16,6 @@ public:
 
     IMouseAlgorithm* getMouseAlgorithm();
     MouseInterface* getMouseInterface();
-    World* getWorld();
 
     void keyPress(unsigned char key, int x, int y);
     void specialKeyPress(int key, int x, int y);
@@ -29,7 +28,6 @@ private:
 
     IMouseAlgorithm* m_mouseAlgorithm;
     MouseInterface* m_mouseInterface;
-    World* m_world;
 
     void validateMouseAlgorithm(const std::string& mouseAlgorithm);
     void validateMouseInterfaceType(

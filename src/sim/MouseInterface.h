@@ -139,6 +139,7 @@ public:
     double currentRotationDegrees();
 
 private:
+    // TODO: MACK Pointer to the model and view here???
     const Maze* m_maze;
     Mouse* m_mouse;
     MazeGraphic* m_mazeGraphic;

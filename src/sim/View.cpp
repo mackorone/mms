@@ -46,6 +46,8 @@ MouseGraphic* View::getMouseGraphic() {
 
 void View::refresh() {
 
+    // TODO: MACK - update tile fog HERE
+
     // In order to ensure we're sleeping the correct amount of time, we time
     // the drawing operation and take it into account when we sleep.
     double start(SimUtilities::getHighResTime());
@@ -120,6 +122,7 @@ std::set<char> View::getAllowableTileTextCharacters() {
 
 void View::initTileGraphicText(std::pair<int, int> tileTextMaxSize) {
 
+    // TODO: MACK - this can be done in the constructor...
     // These values must perfectly reflect the font image being used, or else
     // the wrong characters will be displayed on the tiles.
     const std::string fontImageChars =
@@ -151,10 +154,6 @@ void View::initTileGraphicText(std::pair<int, int> tileTextMaxSize) {
         fontImageMap,
         P()->tileTextBorderFraction(),
         STRING_TO_TILE_TEXT_ALIGNMENT.at(P()->tileTextAlignment()));
-}
-
-void View::passWorldPointerToHeader(const World* world) {
-    m_header->setWorld(world);
 }
 
 void View::initGraphics(int argc, char* argv[], const GlutFunctions& functions) {

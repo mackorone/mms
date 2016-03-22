@@ -21,15 +21,16 @@ void Driver::drive(int argc, char* argv[]) {
     // Make sure that this function is called just once
     ONLY_EXECUTE_ONCE;
 
+    // TODO: MACK - consolidate these two (pass start timestamp to world?)
+
     // First, determine the start time of the program
-    double startTime = SimUtilities::getHighResTime();
-    // TODO: MACK - consolidate these two
+    double startTimestamp = SimUtilities::getHighResTime();
 
     // Then, determine the runId (just datetime, for now)
     std::string runId = SimUtilities::getDateTime();
 
     // Then, initiliaze logging (before calling P() or S())
-    Logging::initialize(startTime, runId);
+    Logging::initialize(startTimestamp, runId);
 
     // Initialize the State object in order to:
     // 1) Set the runId
@@ -42,6 +43,7 @@ void Driver::drive(int argc, char* argv[]) {
 
     // Initialize the model, view, and controller
     m_model = new Model();
+    // TODO: MACK - this could/should collapse
     m_view = new View(m_model, argc, argv, {
         []() {
             m_view->refresh();
@@ -68,7 +70,7 @@ void Driver::drive(int argc, char* argv[]) {
 
     // Start the physics loop
     std::thread physicsThread([]() {
-        m_controller->getWorld()->simulate();
+        m_model->getWorld()->simulate();
     });
 
     // Start the solving loop

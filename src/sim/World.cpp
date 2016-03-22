@@ -15,16 +15,25 @@ namespace sim {
 
 World::World(
         const Maze* maze,
-        Mouse* mouse,
-        MazeGraphic* mazeGraphic,
-        WorldOptions options) :
+        Mouse* mouse) :
         m_maze(maze),
         m_mouse(mouse),
-        m_mazeGraphic(mazeGraphic),
-        m_options(options),
-        m_closestDistanceToCenter(-1),
-        m_bestTimeToCenter(Seconds(-1)),
-        m_timeOfOriginDeparture(Seconds(-1)) {
+        m_elapsedSimTime(Seconds(0)),
+        m_bestSimTimeToCenter(Seconds(-1)),
+        m_simTimeOfOriginDeparture(Seconds(-1)),
+        m_closestDistanceToCenter(-1) {
+}
+
+Seconds World::getBestSimTimeToCenter() const {
+    return m_bestSimTimeToCenter;
+}
+
+Seconds World::getSimTimeSinceOriginDeparture() const {
+    // If we haven't left the origin yet, return -1
+    if (m_simTimeOfOriginDeparture < Seconds(0)) {
+        return Seconds(-1);
+    }
+    return m_elapsedSimTime - m_simTimeOfOriginDeparture;
 }
 
 int World::getNumberOfTilesTraversed() const {
@@ -33,18 +42,6 @@ int World::getNumberOfTilesTraversed() const {
 
 int World::getClosestDistanceToCenter() const {
     return m_closestDistanceToCenter;
-}
-
-Seconds World::getBestTimeToCenter() const {
-    return m_bestTimeToCenter;
-}
-
-Seconds World::getTimeSinceOriginDeparture() const {
-    // If we haven't left the origin yet, return -1
-    if (m_timeOfOriginDeparture < Seconds(0)) {
-        return Seconds(-1);
-    }
-    return m_mouse->getElapsedSimTime() - m_timeOfOriginDeparture;
 }
 
 void World::simulate() {
@@ -68,8 +65,6 @@ void World::simulate() {
     // Use this thread to perform mouse position updates
     while (true) {
 
-        // TODO: MACK - the world should keep track of elapsed sim time
-
         // In order to ensure we're sleeping the correct amount of time, we time
         // the mouse position update operation and take it into account when we sleep.
         double start(SimUtilities::getHighResTime());
@@ -86,9 +81,15 @@ void World::simulate() {
             continue;
         }
 
-        // Update the position of the mouse
+        // Calculate the amount of sim time that should pass during this iteration
         static Seconds realTimePerUpdate = Seconds(1.0 / P()->mousePositionUpdateRate());
-        m_mouse->update(realTimePerUpdate * S()->simSpeed());
+        Seconds elapsedSimTimeForThisIteration = realTimePerUpdate * S()->simSpeed();
+
+        // Update the sim time
+        m_elapsedSimTime += elapsedSimTimeForThisIteration;
+
+        // Update the position of the mouse
+        m_mouse->update(elapsedSimTimeForThisIteration);
 
         // Retrieve the current discretized location of the mouse, and
         // the tile at that location, for use with the next few code blocks
@@ -109,21 +110,21 @@ void World::simulate() {
 
         // If we've returned to the origin, reset the departure time
         if (location.first == 0 && location.second == 0) {
-            if (Seconds(0) < m_timeOfOriginDeparture) {
-                m_timeOfOriginDeparture = Seconds(-1);
+            if (Seconds(0) < m_simTimeOfOriginDeparture) {
+                m_simTimeOfOriginDeparture = Seconds(-1);
             }
         }
 
         // Otherwise, if we've just left the origin, update the departure time
-        else if (m_timeOfOriginDeparture < Seconds(0)) {
-            m_timeOfOriginDeparture = m_mouse->getElapsedSimTime();
+        else if (m_simTimeOfOriginDeparture < Seconds(0)) {
+            m_simTimeOfOriginDeparture = m_elapsedSimTime;
         }
 
         // Separately, if we're in the center, update the best time to center
         if (m_maze->isCenterTile(location.first, location.second)) {
-            Seconds timeToCenter = m_mouse->getElapsedSimTime() - m_timeOfOriginDeparture;
-            if (m_bestTimeToCenter < Seconds(0) || timeToCenter < m_bestTimeToCenter) {
-                m_bestTimeToCenter = timeToCenter;
+            Seconds timeToCenter = m_elapsedSimTime - m_simTimeOfOriginDeparture;
+            if (m_bestSimTimeToCenter < Seconds(0) || timeToCenter < m_bestSimTimeToCenter) {
+                m_bestSimTimeToCenter = timeToCenter;
             }
         }
 
@@ -133,17 +134,6 @@ void World::simulate() {
         if (!m_maze->withinMaze(location.first, location.second)) {
             S()->setCrashed();
             continue;
-        }
-
-        // Update the tile fog. Note that this is a bit of a one-off case. We
-        // shouldn't really put any sort of graphics-related stuff in this
-        // class, as it's supposed to only be responsible for progressing the
-        // simulation. However, since it'd be a bit much to create a class for
-        // just this one bit of code, this is fine for now. If we end up
-        // needing more graphics functionality here, it'd be wise to make a
-        // separate class.
-        if (m_options.automaticallyClearFog && newLocation) {
-            m_mazeGraphic->setTileFogginess(location.first, location.second, false);
         }
 
         // Get the duration of the mouse position update, in seconds. Note that this duration
@@ -174,9 +164,13 @@ void World::checkCollision() {
     }
 
     // If the interface type is not continuous, let this thread exit
+    // TODO: MACK - fix collision detection
+    return;
+    /*
     if (m_options.interfaceType != InterfaceType::CONTINUOUS) {
         return;
     }
+    */
 
     while (true) {
 

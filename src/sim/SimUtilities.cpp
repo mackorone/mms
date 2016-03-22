@@ -98,7 +98,8 @@ std::string SimUtilities::formatSeconds(double seconds) {
     if (minutesString.size() < 2) {
         minutesString.insert(0, 1, '0');
     }
-    return minutesString + ":" + secondsString;
+    // We limit this to millisecond resolution
+    return minutesString + ":" + secondsString.substr(0, 6);
 }
 
 bool SimUtilities::isBool(const std::string& str) {
