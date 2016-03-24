@@ -17,13 +17,9 @@ public:
     IMouseAlgorithm* getMouseAlgorithm();
     MouseInterface* getMouseInterface();
 
-    void keyPress(unsigned char key, int x, int y);
-    void specialKeyPress(int key, int x, int y);
-    void specialKeyRelease(int key, int x, int y);
-
 private:
 
-    Model* m_model;
+    Model* m_model; // TODO: MACK - don't need this..
     View* m_view;
 
     IMouseAlgorithm* m_mouseAlgorithm;

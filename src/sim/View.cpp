@@ -20,7 +20,8 @@ View::View(Model* model, int argc, char* argv[], const GlutFunctions& functions)
     m_bufferInterface = new BufferInterface(
         std::make_pair(m_model->getMaze()->getWidth(), m_model->getMaze()->getHeight()),
         &m_graphicCpuBuffer,
-        &m_textureCpuBuffer);
+        &m_textureCpuBuffer
+    );
 
     m_mazeGraphic = new MazeGraphic(model->getMaze(), m_bufferInterface);
     m_mouseGraphic = new MouseGraphic(model->getMouse(), m_bufferInterface);
@@ -29,10 +30,8 @@ View::View(Model* model, int argc, char* argv[], const GlutFunctions& functions)
     initPolygonProgram();
     initTextureProgram();
 
-    // Initialize the actual screen dimensions
     m_screenPixelsPerMeter = glutGet(GLUT_SCREEN_WIDTH) / (glutGet(GLUT_SCREEN_WIDTH_MM) / 1000.0);
-
-    // Initialize the window header object
+    m_fontImageMap = getFontImageMap();
     m_header = new Header(model);
 }
 
@@ -44,13 +43,28 @@ MouseGraphic* View::getMouseGraphic() {
     return m_mouseGraphic;
 }
 
-void View::refresh() {
+void View::setAutomaticallyClearFog(bool automaticallyClearFog) {
+    // We have a special method to perform the assignment of this variable
+    // because the value is not known until the mouse algorithm is
+    // instantiated, which is after the View object is instantiated
+    m_automaticallyClearFog = automaticallyClearFog;
+}
 
-    // TODO: MACK - update tile fog HERE
+void View::refresh() {
 
     // In order to ensure we're sleeping the correct amount of time, we time
     // the drawing operation and take it into account when we sleep.
     double start(SimUtilities::getHighResTime());
+
+    // First, clear fog as necessary
+    if (m_automaticallyClearFog) {
+        // TODO: upforgrabs
+        // This won't work if the mouse is traveling too quickly and travels more
+        // than one tile per frame. Figure out a way that will work in that case.
+        std::pair<int, int> currentPosition =
+            m_model->getMouse()->getCurrentDiscretizedTranslation();
+        m_mazeGraphic->setTileFogginess(currentPosition.first, currentPosition.second, false);
+    }
 
     // Determine the starting index of the mouse
     static const int mouseTrianglesStartingIndex = m_graphicCpuBuffer.size();
@@ -117,43 +131,139 @@ void View::updateWindowSize(int width, int height) {
 }
 
 std::set<char> View::getAllowableTileTextCharacters() {
-    return m_allowableTileTextCharacters;
+    return ContainerUtilities::keys(m_fontImageMap);
 }
 
 void View::initTileGraphicText(std::pair<int, int> tileTextMaxSize) {
-
-    // TODO: MACK - this can be done in the constructor...
-    // These values must perfectly reflect the font image being used, or else
-    // the wrong characters will be displayed on the tiles.
-    const std::string fontImageChars =
-        " !\"#$%&'()*+,-./0123456789:;<=>?"
-        "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
-        "`abcdefghijklmnopqrstuvwxyz{|}~";
-
-    // Get a map of the font image characters (allowable tile text characters)
-    // to their position in the png image (a fraction from 0.0 to 1.0)
-    std::map<char, std::pair<double, double>> fontImageMap;
-    for (int i = 0; i < fontImageChars.size(); i += 1) {
-        fontImageMap.insert(
-            std::make_pair(
-                fontImageChars.at(i),
-                std::make_pair(
-                    static_cast<double>(i + 0) / static_cast<double>(fontImageChars.size()),
-                    static_cast<double>(i + 1) / static_cast<double>(fontImageChars.size())
-                )
-            )
-        );
-    }
-    m_allowableTileTextCharacters = ContainerUtilities::keys(fontImageMap);
-
     // Initialze the tile text in the buffer class, do caching for speed improvement
     m_bufferInterface->initTileGraphicText(
         Meters(P()->wallLength()),
         Meters(P()->wallWidth()),
         tileTextMaxSize,
-        fontImageMap,
+        m_fontImageMap,
         P()->tileTextBorderFraction(),
         STRING_TO_TILE_TEXT_ALIGNMENT.at(P()->tileTextAlignment()));
+}
+
+void View::keyPress(unsigned char key, int x, int y) {
+
+    // NOTE: If you're adding or removing anything from this function, make
+    // sure to update wiki/Keys.md
+
+    if (key == 'p') {
+        // Toggle pause (only in discrete mode)
+        if (m_model->getWorld()->getInterfaceType() == InterfaceType::DISCRETE) {
+            S()->setPaused(!S()->paused());
+        }
+        else {
+            L()->warn(
+                "Pausing the simulator is only allowed in %v mode.",
+                INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE));
+        }
+    }
+    else if (key == 'f') {
+        // Faster (only in discrete mode)
+        if (m_model->getWorld()->getInterfaceType() == InterfaceType::DISCRETE) {
+            S()->setSimSpeed(S()->simSpeed() * 1.5);
+        }
+        else {
+            L()->warn(
+                "Increasing the simulator speed is only allowed in %v mode.",
+                INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE));
+        }
+    }
+    else if (key == 's') {
+        // Slower (only in discrete mode)
+        if (m_model->getWorld()->getInterfaceType() == InterfaceType::DISCRETE) {
+            S()->setSimSpeed(S()->simSpeed() / 1.5);
+        }
+        else {
+            L()->warn(
+                "Decreasing the simulator speed is only allowed in %v mode.",
+                INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE));
+        }
+    }
+    else if (key == 'l') {
+        // Cycle through the available layouts
+        S()->setLayoutType(LAYOUT_TYPE_CYCLE.at(S()->layoutType()));
+    }
+    else if (key == 'r') {
+        // Toggle rotate zoomed map
+        S()->setRotateZoomedMap(!S()->rotateZoomedMap());
+    }
+    else if (key == 'i') {
+        // Zoom in
+        S()->setZoomedMapScale(S()->zoomedMapScale() * 1.5);
+    }
+    else if (key == 'o') {
+        // Zoom out
+        S()->setZoomedMapScale(S()->zoomedMapScale() / 1.5);
+    }
+    else if (key == 't') {
+        // Toggle wall truth visibility
+        S()->setWallTruthVisible(!S()->wallTruthVisible());
+        m_mazeGraphic->updateWalls();
+    }
+    else if (key == 'c') {
+        // Toggle tile colors
+        S()->setTileColorsVisible(!S()->tileColorsVisible());
+        m_mazeGraphic->updateColor();
+    }
+    else if (key == 'g') {
+        // Toggle tile fog
+        S()->setTileFogVisible(!S()->tileFogVisible());
+        m_mazeGraphic->updateFog();
+    }
+    else if (key == 'x') {
+        // Toggle tile text
+        S()->setTileTextVisible(!S()->tileTextVisible());
+        m_mazeGraphic->updateText();
+    }
+    else if (key == 'd') {
+        // Toggle tile distance visibility
+        S()->setTileDistanceVisible(!S()->tileDistanceVisible());
+        m_mazeGraphic->updateText();
+    }
+    else if (key == 'w') {
+        // Toggle wireframe mode
+        S()->setWireframeMode(!S()->wireframeMode());
+        glPolygonMode(GL_FRONT_AND_BACK, S()->wireframeMode() ? GL_LINE : GL_FILL);
+    }
+    else if (key == 'q') {
+        // Quit
+        SimUtilities::quit();
+    }
+    else if (std::string("0123456789").find(key) != std::string::npos) {
+        // Press an input button
+        int inputButton = std::string("0123456789").find(key);
+        if (!S()->inputButtonWasPressed(inputButton)) {
+            S()->setInputButtonWasPressed(inputButton, true);
+            L()->info("Input button %v was pressed.", inputButton);
+        }
+        else {
+            L()->warn(
+                "Input button %v has not yet been acknowledged as pressed; pressing it has no effect.",
+                inputButton);
+        }
+    }
+}
+
+void View::specialKeyPress(int key, int x, int y) {
+    if (!ContainerUtilities::mapContains(INT_TO_KEY, key)) {
+        return;
+    }
+    if (ContainerUtilities::vectorContains(ARROW_KEYS, INT_TO_KEY.at(key))) {
+        S()->setArrowKeyIsPressed(INT_TO_KEY.at(key), true);
+    }
+}
+
+void View::specialKeyRelease(int key, int x, int y) {
+    if (!ContainerUtilities::mapContains(INT_TO_KEY, key)) {
+        return;
+    }
+    if (ContainerUtilities::vectorContains(ARROW_KEYS, INT_TO_KEY.at(key))) {
+        S()->setArrowKeyIsPressed(INT_TO_KEY.at(key), false);
+    }
 }
 
 void View::initGraphics(int argc, char* argv[], const GlutFunctions& functions) {
@@ -252,6 +362,34 @@ void View::initTextureProgram() {
     // Unbind the vertex array object and vertex buffer object
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+}
+
+std::map<char, std::pair<double, double>> View::getFontImageMap() {
+
+    // These values must perfectly reflect the font image being used, or else
+    // the wrong characters will be displayed on the tiles.
+    const std::string fontImageChars =
+        " !\"#$%&'()*+,-./0123456789:;<=>?"
+        "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
+        "`abcdefghijklmnopqrstuvwxyz{|}~";
+
+    // Get a map of the font image characters (allowable tile text characters)
+    // to their position in the png image (a fraction from 0.0 to 1.0)
+    std::map<char, std::pair<double, double>> fontImageMap;
+    for (int i = 0; i < fontImageChars.size(); i += 1) {
+        fontImageMap.insert(
+            std::make_pair(
+                fontImageChars.at(i),
+                std::make_pair(
+                    static_cast<double>(i + 0) / static_cast<double>(fontImageChars.size()),
+                    static_cast<double>(i + 1) / static_cast<double>(fontImageChars.size())
+                )
+            )
+        );
+    }
+
+    // Return the map
+    return fontImageMap;
 }
 
 void View::repopulateVertexBufferObjects() {

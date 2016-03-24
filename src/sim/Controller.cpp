@@ -4,7 +4,6 @@
 #include "Logging.h"
 #include "Param.h"
 #include "SimUtilities.h"
-#include "State.h"
 
 #include "../mouse/MouseAlgorithms.h"
 #include "MouseChecker.h"
@@ -18,7 +17,6 @@ static const std::string& OPENING_DIRECTION_STRING = "OPENING";
 // String used to specify that the mouse should start facing the wall
 static const std::string& WALL_DIRECTION_STRING = "WALL";
 
-// TODO: MACK - move keypresses into view, try to limit coupling between the two classes
 Controller::Controller(Model* model, View* view) : m_model(model), m_view(view) {
 
     validateMouseAlgorithm(P()->mouseAlgorithm());
@@ -26,6 +24,7 @@ Controller::Controller(Model* model, View* view) : m_model(model), m_view(view) 
     validateMouseInterfaceType(P()->mouseAlgorithm(), m_mouseAlgorithm->interfaceType());
     validateMouseInitialDirection(P()->mouseAlgorithm(), m_mouseAlgorithm->initialDirection());
     validateMouseWheelSpeedFraction(P()->mouseAlgorithm(), m_mouseAlgorithm->wheelSpeedFraction());
+    // TODO: MACK - validate tileTextArgs
 
     initAndValidateMouse(
         P()->mouseAlgorithm(),
@@ -35,41 +34,23 @@ Controller::Controller(Model* model, View* view) : m_model(model), m_view(view) 
         m_model->getMouse()
     );
 
-    // TODO: MACK - validate here (non-negative)
-    // We need to do this before we initialize the mouse interface
-    m_view->initTileGraphicText(
-        std::make_pair(
-            m_mouseAlgorithm->tileTextNumberOfRows(),
-            m_mouseAlgorithm->tileTextNumberOfCols()));
-
-    // TODO: MACK - view needs algorithmDelcaresTileFog() option
-    // TODO: MACK - world needs to know the algorithmType()
-
-    // TODO: MACK - refactor to get rid of this
-    // This may seem sloppy, but it's best to assign the values directly by
-    // name so that we don't accidentally mix them up (which is easy to do)
-    MouseInterfaceOptions options;
-    options.allowOmniscience = m_mouseAlgorithm->allowOmniscience();
-    options.declareWallOnRead = m_mouseAlgorithm->declareWallOnRead();
-    options.declareBothWallHalves = m_mouseAlgorithm->declareBothWallHalves();
-    options.tileTextNumberOfRows = m_mouseAlgorithm->tileTextNumberOfRows();
-    options.tileTextNumberOfCols = m_mouseAlgorithm->tileTextNumberOfCols();
-    options.setTileTextWhenDistanceDeclared =
-        m_mouseAlgorithm->setTileTextWhenDistanceDeclared();
-    options.setTileBaseColorWhenDistanceDeclaredCorrectly =
-        m_mouseAlgorithm->setTileBaseColorWhenDistanceDeclaredCorrectly();
-    options.useTileEdgeMovements = m_mouseAlgorithm->useTileEdgeMovements();
-    options.wheelSpeedFraction = m_mouseAlgorithm->wheelSpeedFraction();
-    options.interfaceType =
-        STRING_TO_INTERFACE_TYPE.at(m_mouseAlgorithm->interfaceType());
-    
-    // Initialize the mouse interface
     m_mouseInterface = new MouseInterface(
         m_model->getMaze(),
         m_model->getMouse(),
         m_view->getMazeGraphic(),
         m_view->getAllowableTileTextCharacters(),
-        options
+        {
+            m_mouseAlgorithm->allowOmniscience(),
+            m_mouseAlgorithm->setTileTextWhenDistanceDeclared(),
+            m_mouseAlgorithm->setTileBaseColorWhenDistanceDeclaredCorrectly(),
+            m_mouseAlgorithm->tileTextNumberOfRows(),
+            m_mouseAlgorithm->tileTextNumberOfCols(),
+            m_mouseAlgorithm->declareWallOnRead(),
+            m_mouseAlgorithm->declareBothWallHalves(),
+            m_mouseAlgorithm->useTileEdgeMovements(),
+            m_mouseAlgorithm->wheelSpeedFraction(),
+            STRING_TO_INTERFACE_TYPE.at(m_mouseAlgorithm->interfaceType()),
+        }
     );
 }
 
@@ -175,127 +156,5 @@ void Controller::initAndValidateMouse(
         }
     }
 }
-
-void Controller::keyPress(unsigned char key, int x, int y) {
-
-    // NOTE: If you're adding or removing anything from this function, make
-    // sure to update wiki/Keys.md
-
-    if (key == 'p') {
-        // Toggle pause (only in discrete mode)
-        if (STRING_TO_INTERFACE_TYPE.at(getMouseAlgorithm()->interfaceType()) == InterfaceType::DISCRETE) {
-            S()->setPaused(!S()->paused());
-        }
-        else {
-            L()->warn(
-                "Pausing the simulator is only allowed in %v mode.",
-                INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE));
-        }
-    }
-    else if (key == 'f') {
-        // Faster (only in discrete mode)
-        if (STRING_TO_INTERFACE_TYPE.at(getMouseAlgorithm()->interfaceType()) == InterfaceType::DISCRETE) {
-            S()->setSimSpeed(S()->simSpeed() * 1.5);
-        }
-        else {
-            L()->warn(
-                "Increasing the simulator speed is only allowed in %v mode.",
-                INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE));
-        }
-    }
-    else if (key == 's') {
-        // Slower (only in discrete mode)
-        if (STRING_TO_INTERFACE_TYPE.at(getMouseAlgorithm()->interfaceType()) == InterfaceType::DISCRETE) {
-            S()->setSimSpeed(S()->simSpeed() / 1.5);
-        }
-        else {
-            L()->warn(
-                "Decreasing the simulator speed is only allowed in %v mode.",
-                INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE));
-        }
-    }
-    else if (key == 'l') {
-        // Cycle through the available layouts
-        S()->setLayoutType(LAYOUT_TYPE_CYCLE.at(S()->layoutType()));
-    }
-    else if (key == 'r') {
-        // Toggle rotate zoomed map
-        S()->setRotateZoomedMap(!S()->rotateZoomedMap());
-    }
-    else if (key == 'i') {
-        // Zoom in
-        S()->setZoomedMapScale(S()->zoomedMapScale() * 1.5);
-    }
-    else if (key == 'o') {
-        // Zoom out
-        S()->setZoomedMapScale(S()->zoomedMapScale() / 1.5);
-    }
-    else if (key == 't') {
-        // Toggle wall truth visibility
-        S()->setWallTruthVisible(!S()->wallTruthVisible());
-        m_view->getMazeGraphic()->updateWalls();
-    }
-    else if (key == 'c') {
-        // Toggle tile colors
-        S()->setTileColorsVisible(!S()->tileColorsVisible());
-        m_view->getMazeGraphic()->updateColor();
-    }
-    else if (key == 'g') {
-        // Toggle tile fog
-        S()->setTileFogVisible(!S()->tileFogVisible());
-        m_view->getMazeGraphic()->updateFog();
-    }
-    else if (key == 'x') {
-        // Toggle tile text
-        S()->setTileTextVisible(!S()->tileTextVisible());
-        m_view->getMazeGraphic()->updateText();
-    }
-    else if (key == 'd') {
-        // Toggle tile distance visibility
-        S()->setTileDistanceVisible(!S()->tileDistanceVisible());
-        m_view->getMazeGraphic()->updateText();
-    }
-    else if (key == 'w') {
-        // Toggle wireframe mode
-        S()->setWireframeMode(!S()->wireframeMode());
-        glPolygonMode(GL_FRONT_AND_BACK, S()->wireframeMode() ? GL_LINE : GL_FILL);
-    }
-    else if (key == 'q') {
-        // Quit
-        SimUtilities::quit();
-    }
-    else if (std::string("0123456789").find(key) != std::string::npos) {
-        // Press an input button
-        int inputButton = std::string("0123456789").find(key);
-        if (!S()->inputButtonWasPressed(inputButton)) {
-            S()->setInputButtonWasPressed(inputButton, true);
-            L()->info("Input button %v was pressed.", inputButton);
-        }
-        else {
-            L()->warn(
-                "Input button %v has not yet been acknowledged as pressed; pressing it has no effect.",
-                inputButton);
-        }
-    }
-}
-
-void Controller::specialKeyPress(int key, int x, int y) {
-    if (!ContainerUtilities::mapContains(INT_TO_KEY, key)) {
-        return;
-    }
-    if (ContainerUtilities::vectorContains(ARROW_KEYS, INT_TO_KEY.at(key))) {
-        S()->setArrowKeyIsPressed(INT_TO_KEY.at(key), true);
-    }
-}
-
-void Controller::specialKeyRelease(int key, int x, int y) {
-    if (!ContainerUtilities::mapContains(INT_TO_KEY, key)) {
-        return;
-    }
-    if (ContainerUtilities::vectorContains(ARROW_KEYS, INT_TO_KEY.at(key))) {
-        S()->setArrowKeyIsPressed(INT_TO_KEY.at(key), false);
-    }
-}
-
 
 } // namespace sim

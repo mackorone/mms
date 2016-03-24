@@ -2,6 +2,7 @@
 
 #include <set>
 
+#include "InterfaceType.h"
 #include "Maze.h"
 #include "Mouse.h"
 #include "units/Seconds.h"
@@ -19,17 +20,22 @@ public:
     int getNumberOfTilesTraversed() const;
     int getClosestDistanceToCenter() const;
 
+    void setInterfaceType(InterfaceType interfaceType);
+    InterfaceType getInterfaceType() const;
+
     void simulate();
 
 private:
     const Maze* m_maze;
     Mouse* m_mouse;
+
+    InterfaceType m_interfaceType;
     
     Seconds m_elapsedSimTime;
     Seconds m_bestSimTimeToCenter;
     Seconds m_simTimeOfOriginDeparture;
 
-    std::set<const Tile*> m_traversedTiles;
+    std::set<std::pair<int, int>> m_traversedTileLocations;
     int m_closestDistanceToCenter;
 
     void checkCollision();

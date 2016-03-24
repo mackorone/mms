@@ -11,7 +11,6 @@
 #include "MouseGraphic.h"
 #include "TriangleGraphic.h"
 #include "TriangleTexture.h"
-#include "World.h"
 
 namespace sim {
 
@@ -19,25 +18,33 @@ class View {
 
 public:
     View(Model* model, int argc, char* argv[], const GlutFunctions& functions);
+
     MazeGraphic* getMazeGraphic();
     MouseGraphic* getMouseGraphic();
 
+    void setAutomaticallyClearFog(bool automaticallyClearFog);
+
     void refresh();
     void updateWindowSize(int width, int height);
+
     std::set<char> getAllowableTileTextCharacters();
     void initTileGraphicText(std::pair<int, int> tileGraphicTextMaxSize);
 
-private:
+    void keyPress(unsigned char key, int x, int y);
+    void specialKeyPress(int key, int x, int y);
+    void specialKeyRelease(int key, int x, int y);
 
-    // The model and graphic objects
-    Model* m_model;
-    MazeGraphic* m_mazeGraphic;
-    MouseGraphic* m_mouseGraphic;
+private:
 
     // CPU-side buffers, and interface
     std::vector<TriangleGraphic> m_graphicCpuBuffer;
     std::vector<TriangleTexture> m_textureCpuBuffer;
     BufferInterface* m_bufferInterface;
+
+    // The model and graphic objects
+    Model* m_model;
+    MazeGraphic* m_mazeGraphic;
+    MouseGraphic* m_mouseGraphic;
 
     // The window size, in pixels
     int m_windowWidth;
@@ -46,11 +53,15 @@ private:
     // The number of pixels per meter of screen
     double m_screenPixelsPerMeter;
 
-    // Allowable tile text characters
-    std::set<char> m_allowableTileTextCharacters;
+    // A map from char to x and y location in the font image
+    std::map<char, std::pair<double, double>> m_fontImageMap;
+    std::map<char, std::pair<double, double>> getFontImageMap();
 
     // Window header object
     Header* m_header;
+
+    // Whether or not we should automatically clear the fog
+    bool m_automaticallyClearFog;
 
     // Polygon program variables
     tdogl::Program* m_polygonProgram;

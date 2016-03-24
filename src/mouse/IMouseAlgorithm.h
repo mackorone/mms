@@ -17,6 +17,7 @@ public:
     virtual bool declareBothWallHalves() const;
     virtual bool setTileTextWhenDistanceDeclared() const;
     virtual bool setTileBaseColorWhenDistanceDeclaredCorrectly() const;
+    // TODO: MACK - move these to initialization options, everything else can be changed on the fly
     virtual int tileTextNumberOfRows() const;
     virtual int tileTextNumberOfCols() const;
 

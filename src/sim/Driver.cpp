@@ -2,7 +2,6 @@
 
 #include <thread>
 
-#include "Assert.h"
 #include "Logging.h"
 #include "OnlyExecuteOnce.h"
 #include "Param.h"
@@ -41,10 +40,8 @@ void Driver::drive(int argc, char* argv[]) {
     // Remove any excessive archived runs
     SimUtilities::removeExcessArchivedRuns();
 
-    // Initialize the model, view, and controller
-    m_model = new Model();
-    // TODO: MACK - this could/should collapse
-    m_view = new View(m_model, argc, argv, {
+    // Generate the glut functions in a static context
+    GlutFunctions functions = {
         []() {
             m_view->refresh();
         },
@@ -52,20 +49,39 @@ void Driver::drive(int argc, char* argv[]) {
             m_view->updateWindowSize(width, height);
         },
         [](unsigned char key, int x, int y) {
-            m_controller->keyPress(key, x, y);
+            m_view->keyPress(key, x, y);
         },
         [](int key, int x, int y) {
-            m_controller->specialKeyPress(key, x, y);
+            m_view->specialKeyPress(key, x, y);
         },
         [](int key, int x, int y) {
-            m_controller->specialKeyRelease(key, x, y);
+            m_view->specialKeyRelease(key, x, y);
         }
-    });
+    };
+
+    // Initialize the model, view, and controller
+    m_model = new Model();
+    m_view = new View(m_model, argc, argv, functions);
     m_controller = new Controller(m_model, m_view);
 
+    // Initialize mouse algorithm values in the model and view
+    m_model->getWorld()->setInterfaceType(
+        STRING_TO_INTERFACE_TYPE.at(
+            m_controller->getMouseAlgorithm()->interfaceType()
+        )
+    );
+    m_view->setAutomaticallyClearFog(
+        m_controller->getMouseAlgorithm()->automaticallyClearFog()
+    );
+    m_view->initTileGraphicText(
+        std::make_pair(
+            m_controller->getMouseAlgorithm()->tileTextNumberOfRows(),
+            m_controller->getMouseAlgorithm()->tileTextNumberOfCols()
+        )
+    );
+
     // Lastly, we need to populate the graphics buffers with maze information,
-    // but only after we've initialized the controller, since the controller
-    // initializes tile text
+    // but only after we've initialized the tile graphic text
     m_view->getMazeGraphic()->draw();
 
     // Start the physics loop

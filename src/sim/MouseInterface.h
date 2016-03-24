@@ -143,7 +143,7 @@ private:
     const Maze* m_maze;
     Mouse* m_mouse;
     MazeGraphic* m_mazeGraphic;
-    std::set<char> m_allowableTileTextCharacters;
+    std::set<char> m_allowableTileTextCharacters; // TODO: MACK - dedup with View (maybe pass a function instead???)
     MouseInterfaceOptions m_options;
     bool m_inOrigin; // Whether or not the mouse has moved out the origin
 

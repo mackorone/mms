@@ -37,11 +37,22 @@ Seconds World::getSimTimeSinceOriginDeparture() const {
 }
 
 int World::getNumberOfTilesTraversed() const {
-    return m_traversedTiles.size();
+    return m_traversedTileLocations.size();
 }
 
 int World::getClosestDistanceToCenter() const {
     return m_closestDistanceToCenter;
+}
+
+void World::setInterfaceType(InterfaceType interfaceType) {
+    // We have a special method to initialize the interface type because we
+    // don't know the value when the World object is constructed - we have to
+    // wait until the mouse algorithm is instantiated to retrieve the value
+    m_interfaceType = interfaceType;
+}
+
+InterfaceType World::getInterfaceType() const {
+    return m_interfaceType;
 }
 
 void World::simulate() {
@@ -97,11 +108,11 @@ void World::simulate() {
         const Tile* tileAtLocation = m_maze->getTile(location.first, location.second);
 
         // Whether or not this is a newly traversed tile
-        bool newLocation = !ContainerUtilities::setContains(m_traversedTiles, tileAtLocation);
+        bool newLocation = !ContainerUtilities::setContains(m_traversedTileLocations, location);
 
         // Update the set of traversed tiles
         if (newLocation) {
-            m_traversedTiles.insert(tileAtLocation);
+            m_traversedTileLocations.insert(location);
             if (m_closestDistanceToCenter == -1 ||
                     tileAtLocation->getDistance() < m_closestDistanceToCenter) {
                 m_closestDistanceToCenter = tileAtLocation->getDistance(); 
@@ -163,14 +174,10 @@ void World::checkCollision() {
         return;
     }
 
-    // If the interface type is not continuous, let this thread exit
-    // TODO: MACK - fix collision detection
-    return;
-    /*
-    if (m_options.interfaceType != InterfaceType::CONTINUOUS) {
+    // If the interface type is DISCRETE, let this thread exit
+    if (m_interfaceType == InterfaceType::DISCRETE) {
         return;
     }
-    */
 
     while (true) {
 
