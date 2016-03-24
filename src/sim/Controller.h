@@ -33,6 +33,9 @@ private:
     Direction getInitialDirection(const std::string& initialDirectionString);
     void validateMouseWheelSpeedFraction(
         const std::string& mouseAlgorithm, double wheelSpeedFraction);
+    void validateTileTextRowsAndCols(
+        const std::string& mouseAlgorithm,
+        int tileTextNumberOfRows, int tileTextNumberOfCols);
     void initAndValidateMouse(
         const std::string& mouseAlgorithm, const std::string& mouseFile,
         InterfaceType interfaceType, Direction initialDirection, Mouse* mouse);

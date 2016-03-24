@@ -160,7 +160,7 @@ git submodule init
 git submodule update
 ```
 
-## Facebook Page
+## Facebook
 
 See the [Facebook page](https://www.facebook.com/mackorone.mms) for pictures,
 video demos, and other media related to the simulator.

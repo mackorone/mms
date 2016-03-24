@@ -24,7 +24,9 @@ Controller::Controller(Model* model, View* view) : m_model(model), m_view(view) 
     validateMouseInterfaceType(P()->mouseAlgorithm(), m_mouseAlgorithm->interfaceType());
     validateMouseInitialDirection(P()->mouseAlgorithm(), m_mouseAlgorithm->initialDirection());
     validateMouseWheelSpeedFraction(P()->mouseAlgorithm(), m_mouseAlgorithm->wheelSpeedFraction());
-    // TODO: MACK - validate tileTextArgs
+    validateTileTextRowsAndCols(P()->mouseAlgorithm(),
+        m_mouseAlgorithm->tileTextNumberOfRows(), m_mouseAlgorithm->tileTextNumberOfCols()
+    );
 
     initAndValidateMouse(
         P()->mouseAlgorithm(),
@@ -127,6 +129,22 @@ void Controller::validateMouseWheelSpeedFraction(
     }
 }
 
+void Controller::validateTileTextRowsAndCols(
+    const std::string& mouseAlgorithm,
+    int tileTextNumberOfRows, int tileTextNumberOfCols) {
+    if (tileTextNumberOfRows < 0 || tileTextNumberOfCols < 0) {
+        L()->error(
+            "Both tileTextNumberOfRows() and tileTextNumberOfCols() must return"
+            " non-negative integers. Since they return \"%v\" and \"%v\","
+            " respectively, the tile text dimensions of the mouse algorithm"
+            " \"%v\" are invalid.",
+            tileTextNumberOfRows, 
+            tileTextNumberOfCols,
+            mouseAlgorithm);
+        SimUtilities::quit();
+    }
+}
+
 void Controller::initAndValidateMouse(
         const std::string& mouseAlgorithm, const std::string& mouseFile,
         InterfaceType interfaceType, Direction initialDirection, Mouse* mouse) {
@@ -135,8 +153,8 @@ void Controller::initAndValidateMouse(
     bool success = mouse->initialize(mouseFile, initialDirection);
     if (!success) {
         L()->error(
-            "Unable to successfully initialize the mouse in the algorithm "
-            "\"%v\" from \"%v\".",
+            "Unable to successfully initialize the mouse in the algorithm"
+            " \"%v\" from \"%v\".",
             mouseAlgorithm,
             mouseFile);
         SimUtilities::quit();
