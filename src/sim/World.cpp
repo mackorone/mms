@@ -62,12 +62,12 @@ void World::simulate() {
 
     // Uncomment to do mouse update benchmarking
     /*
-    double start(SimUtilities::getHighResTime());
+    double start(SimUtilities::getHighResTimestamp());
     int limit = 1000;
     for (int i = 0; i < limit; i += 1) {
         m_mouse->update(Seconds(1.0 / P()->mousePositionUpdateRate()) * S()->simSpeed());
     }
-    double end(SimUtilities::getHighResTime());
+    double end(SimUtilities::getHighResTimestamp());
     double duration = end - start;
     L()->info("%v", duration);
     SimUtilities::quit();
@@ -78,7 +78,7 @@ void World::simulate() {
 
         // In order to ensure we're sleeping the correct amount of time, we time
         // the mouse position update operation and take it into account when we sleep.
-        double start(SimUtilities::getHighResTime());
+        double start(SimUtilities::getHighResTimestamp());
 
         // If we've crashed, let this thread exit
         if (S()->crashed()) {
@@ -150,7 +150,7 @@ void World::simulate() {
         // Get the duration of the mouse position update, in seconds. Note that this duration
         // is simply the total number of real seconds that have passed, which is exactly
         // what we want (since the framerate is perceived in real-time and not CPU time).
-        double end(SimUtilities::getHighResTime());
+        double end(SimUtilities::getHighResTimestamp());
         double duration = end - start;
 
         // Notify the use of a late mouse position update
@@ -183,7 +183,7 @@ void World::checkCollision() {
 
         // In order to ensure we're sleeping the correct amount of time, we time
         // the collision detection operation and take it into account when we sleep.
-        double start(sim::SimUtilities::getHighResTime());
+        double start(sim::SimUtilities::getHighResTimestamp());
 
         // We declare these statically since we only need one copy of them
         static const Meters halfWallWidth = Meters(P()->wallWidth() / 2.0);
@@ -207,7 +207,7 @@ void World::checkCollision() {
         }
 
         // Get the duration of the collision detection, in seconds
-        double end(sim::SimUtilities::getHighResTime());
+        double end(sim::SimUtilities::getHighResTimestamp());
         double duration = end - start;
 
         // Notify the use of a late collision detection

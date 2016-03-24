@@ -54,7 +54,7 @@ void View::refresh() {
 
     // In order to ensure we're sleeping the correct amount of time, we time
     // the drawing operation and take it into account when we sleep.
-    double start(SimUtilities::getHighResTime());
+    double start(SimUtilities::getHighResTimestamp());
 
     // First, clear fog as necessary
     if (m_automaticallyClearFog) {
@@ -108,7 +108,7 @@ void View::refresh() {
     // Get the duration of the drawing operation, in seconds. Note that this duration
     // is simply the total number of real seconds that have passed, which is exactly
     // what we want (since the frame-rate is perceived in real-time and not CPU time).
-    double end(SimUtilities::getHighResTime());
+    double end(SimUtilities::getHighResTimestamp());
     double duration = end - start;
 
     // Notify the user of a late frame

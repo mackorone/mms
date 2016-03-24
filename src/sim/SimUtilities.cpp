@@ -59,7 +59,7 @@ void SimUtilities::sleep(const Duration& duration) {
 	std::this_thread::sleep_for(std::chrono::microseconds(microseconds));
 }
 
-double SimUtilities::getHighResTime() {
+double SimUtilities::getHighResTimestamp() {
 #ifdef _WIN32
     LARGE_INTEGER freq, counter;         // Keep windows queryperformance for the time being until tests can
     QueryPerformanceFrequency(&freq);    // be done. Supposedly up until Visual Studio 2013, microsoft uses

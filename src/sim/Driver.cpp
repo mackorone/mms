@@ -23,7 +23,7 @@ void Driver::drive(int argc, char* argv[]) {
     // TODO: MACK - consolidate these two (pass start timestamp to world?)
 
     // First, determine the start time of the program
-    double startTimestamp = SimUtilities::getHighResTime();
+    double startTimestamp = SimUtilities::getHighResTimestamp();
 
     // Then, determine the runId (just datetime, for now)
     std::string runId = SimUtilities::getDateTime();

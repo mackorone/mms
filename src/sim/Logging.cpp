@@ -69,7 +69,7 @@ void Logging::initialize(double startTimestamp, const std::string& runId) {
     el::Loggers::addFlag(el::LoggingFlag::ColoredTerminalOutput);
     el::Helpers::installPreRollOutCallback(rolloutHandler);
     el::Helpers::installCustomFormatSpecifier(el::CustomFormatSpecifier("%time", [=](){
-        std::string timeString = SimUtilities::formatSeconds(SimUtilities::getHighResTime() - startTimestamp);
+        std::string timeString = SimUtilities::formatSeconds(SimUtilities::getHighResTimestamp() - startTimestamp);
         return timeString.substr(0, timeString.find(".") + 4).c_str(); // Trim to 3 decimal places
     }));
 }
