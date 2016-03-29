@@ -1,10 +1,5 @@
 # High Priority
 
-- Put a toolbar at the top or bottom with info
-    - Display a clock real time clock
-    - Speed in the x, y, and along the hypotenuse
-    - Make terminal style output at bottom or right of window (GUI)
-    - Provide some mechanism to get the status string from the mouse and display it to the user
 - Add debugging tips
     - Note about what to do if the simulator says that it's an invalid algo (how to debug)
 - Windows logging is not working on non-main threads
@@ -22,11 +17,6 @@
 - Make a voluntary Delay in setTileBaseColor, text
 - Stepper motor
 - Sensor type (digital or analog)
-- Make some utility that keeps track of simulation and real elapsed time
-    - Actually keep track of the elapsed simulation time
-    - Max speeds for manual algorithm
-    - Add the simulation time to the logging
-        - Perhaps even refactor the elapsed time in logging
 - Make MouseInterface into an interface, and then implement the simulator interface, make a real-world interface
 - Look at Tomasz' maze website
 - Figure out how to get rid of ifdefs in algorithm
@@ -48,10 +38,8 @@
     - In discrete mode, the mouse can overturn or go too far if the sim speed
       is to high. We need to implement some logic that checks this ahead of
       time and then just teleports... sort of like bullets in other physics
-      simulators
-- Make a note about symmetry with discrete interface
-    - Make a formal check for symmetry
-    - Any mouse that can move forward or turn in place if sufficient
+      simulators (note that the elapsed sim time should only be updated as much
+      as necessary to get the mouse to its destination)
 - Make smooth diagonals
     - https://www.youtube.com/watch?v=HPvke3fknrc
     - Stringing together diagonal movements (with smooth turns) is difficult
@@ -193,14 +181,5 @@
 - -pedantic-errors: Flag even the most pedantic of errors
 - Take out -g makefile option
 - Reduce the number of LIBS in makefile
-- Does the makefile work for multiple platofrms???
-- Segfault on pressing x
-
-- Virutal box controls
-- Right control and...
-    - "f" for full screen
-    - "p" for pause
-    - "q" for quit
-    - "menu" for menu
-
+- Does the makefile work for multiple platforms?
 - Get backups of freeglut and glew files
