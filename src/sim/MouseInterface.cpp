@@ -15,6 +15,7 @@
 #include "Param.h"
 #include "State.h"
 #include "SimUtilities.h"
+#include "Time.h"
 
 namespace sim {
 
@@ -53,7 +54,7 @@ double MouseInterface::getRandom() {
 }
 
 int MouseInterface::millis() {
-    return m_mouse->getElapsedSimTime().getMilliseconds();
+    return T()->elapsedSimTime().getMilliseconds();
 }
 
 void MouseInterface::delay(int milliseconds) {

@@ -13,9 +13,9 @@ State* S() {
 }
 
 // Definition of the variable for linking
-State* State::INSTANCE = NULL;
+State* State::INSTANCE = nullptr;
 State* State::getInstance() {
-    if (NULL == INSTANCE) {
+    if (nullptr == INSTANCE) {
         INSTANCE = new State();
     }
     return INSTANCE;

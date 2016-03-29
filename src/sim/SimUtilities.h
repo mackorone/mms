@@ -30,7 +30,7 @@ public:
     static double getHighResTimestamp();
 
     // Returns the UTC datetime formatted as YY-MM-DD_HH:MM:SS
-    static std::string getDateTime();
+    static std::string timestampToDatetimeString(const Duration& timestamp);
 
     // Converts seconds to mm:ss.ssss... string
     static std::string formatSeconds(double seconds);

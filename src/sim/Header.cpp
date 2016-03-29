@@ -6,6 +6,7 @@
 #include "Param.h"
 #include "SimUtilities.h"
 #include "State.h"
+#include "Time.h"
 
 namespace sim {
 
@@ -158,15 +159,15 @@ void Header::updateLines() {
         std::string("Current X tile:         ") + std::to_string(m_model->getMouse()->getCurrentDiscretizedTranslation().first),
         std::string("Current Y tile:         ") + std::to_string(m_model->getMouse()->getCurrentDiscretizedTranslation().second),
         std::string("Current Direction:      ") + DIRECTION_TO_STRING.at(m_model->getMouse()->getCurrentDiscretizedRotation()),
-        std::string(""), // Separator
-        std::string("Elapsed Sim Time:            ") + SimUtilities::formatSeconds(m_model->getMouse()->getElapsedSimTime().getSeconds()),
+        std::string("Elapsed Real Time:           ") + SimUtilities::formatSeconds(T()->elapsedRealTime().getSeconds()),
+        std::string("Elapsed Sim Time:            ") + SimUtilities::formatSeconds(T()->elapsedSimTime().getSeconds()),
         std::string("Time Since Origin Departure: ") + (
-            m_model->getWorld()->getSimTimeSinceOriginDeparture().getSeconds() < 0 ? "NONE" :
-            SimUtilities::formatSeconds(m_model->getWorld()->getSimTimeSinceOriginDeparture().getSeconds())
+            m_model->getWorld()->getTimeSinceOriginDeparture().getSeconds() < 0 ? "NONE" :
+            SimUtilities::formatSeconds(m_model->getWorld()->getTimeSinceOriginDeparture().getSeconds())
         ),
         std::string("Best Time to Center:         ") + (
-            m_model->getWorld()->getBestSimTimeToCenter().getSeconds() < 0 ? "NONE" :
-            SimUtilities::formatSeconds(m_model->getWorld()->getBestSimTimeToCenter().getSeconds())
+            m_model->getWorld()->getBestTimeToCenter().getSeconds() < 0 ? "NONE" :
+            SimUtilities::formatSeconds(m_model->getWorld()->getBestTimeToCenter().getSeconds())
         ),
     };
 }

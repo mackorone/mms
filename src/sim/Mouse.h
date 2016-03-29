@@ -113,10 +113,6 @@ public:
     // Returns the value of the gyroscope
     RadiansPerSecond readGyro() const;
 
-    // TODO: MACK - kill this
-    // Returns the number of sim seconds that have elapsed
-    Seconds getElapsedSimTime() const;
-
 private:
     // Used for the sensor readings
     const Maze* m_maze;
@@ -157,9 +153,6 @@ private:
 
     // Ensures that updates happen atomically, mutable so we can use it in const functions
     mutable std::mutex m_updateMutex; 
-
-    // The total amount of elapsed sim time (adjusted for sim speed)
-    Seconds m_elapsedSimTime;
 
     // Helper function for polygon retrieval based on a given mouse translation and rotation
     Polygon getCurrentPolygon(const Polygon& initialPolygon,

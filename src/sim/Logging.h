@@ -18,8 +18,8 @@
 // multiline logging statements as follows:
 //
 // Logging::mouseLogger()->debug(
-//     "Message %v %v %v. This is really long and really should be on "
-//     "at least two lines because it wouldn't fit on just a single line.",
+//     "Message %v %v %v. This is really long and really should be on"
+//     " at least two lines because it wouldn't fit on just a single line.",
 //     'c', "foo", 4);
 //
 // The valid methods on the logger are debug, info, warn, and error. There are
@@ -44,7 +44,7 @@ public:
     static el::Logger* getMouseLogger();
 
     // Initializes all of the loggers, should only be called once
-    static void initialize(double startTimestamp, const std::string& runId);
+    static void initialize(const std::string& runId);
 
 private:
 

@@ -257,8 +257,6 @@ void Mouse::update(const Duration& elapsed) {
             *m_maze);
     }
 
-    m_elapsedSimTime += elapsed;
-
     m_updateMutex.unlock();
 }
 
@@ -349,13 +347,6 @@ double Mouse::readSensor(const std::string& name) const {
 
 RadiansPerSecond Mouse::readGyro() const {
     return m_currentGyro;
-}
-
-Seconds Mouse::getElapsedSimTime() const {
-    m_updateMutex.lock();
-    Seconds elapsedSimTime = m_elapsedSimTime;
-    m_updateMutex.unlock();
-    return elapsedSimTime;
 }
 
 Polygon Mouse::getCurrentPolygon(const Polygon& initialPolygon,

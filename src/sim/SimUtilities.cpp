@@ -74,12 +74,11 @@ double SimUtilities::getHighResTimestamp() {
 #endif
 }
 
-std::string SimUtilities::getDateTime() {
-    // Taken from http://stackoverflow.com/a/10467633
-    time_t now = time(0);
-    struct tm tstruct;
-    char buf[80];
+std::string SimUtilities::timestampToDatetimeString(const Duration& timestamp) {
+    time_t now = timestamp.getSeconds();
+    struct tm tstruct = {0};
     tstruct = *gmtime(&now);
+    char buf[80];
     strftime(buf, sizeof(buf), "%Y-%m-%d %X", &tstruct);
     return buf;
 }

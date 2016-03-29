@@ -7,6 +7,7 @@
 #include "Param.h"
 #include "SimUtilities.h"
 #include "State.h"
+#include "Time.h"
 
 namespace sim {
 
@@ -20,16 +21,16 @@ void Driver::drive(int argc, char* argv[]) {
     // Make sure that this function is called just once
     ONLY_EXECUTE_ONCE;
 
-    // TODO: MACK - consolidate these two (pass start timestamp to world?)
+    // Before anything else, create the Time object
+    T();
 
-    // First, determine the start time of the program
-    double startTimestamp = SimUtilities::getHighResTimestamp();
-
-    // Then, determine the runId (just datetime, for now)
-    std::string runId = SimUtilities::getDateTime();
+    // Then, determine the runId (just datetime for now)
+    std::string runId = SimUtilities::timestampToDatetimeString(
+        T()->startTimestamp()
+    );
 
     // Then, initiliaze logging (before calling P() or S())
-    Logging::initialize(startTimestamp, runId);
+    Logging::initialize(runId);
 
     // Initialize the State object in order to:
     // 1) Set the runId

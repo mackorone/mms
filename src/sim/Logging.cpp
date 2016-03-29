@@ -4,6 +4,7 @@
 #include "ContainerUtilities.h"
 #include "Directory.h"
 #include "SimUtilities.h"
+#include "Time.h"
 
 INITIALIZE_EASYLOGGINGPP
 
@@ -32,7 +33,7 @@ el::Logger* Logging::getMouseLogger() {
     return getLogger(m_mouseLoggerName);
 }
 
-void Logging::initialize(double startTimestamp, const std::string& runId) {
+void Logging::initialize(const std::string& runId) {
 
     // Ensure we only initialize the loggers once
     static bool initialized = false;
@@ -60,7 +61,7 @@ void Logging::initialize(double startTimestamp, const std::string& runId) {
             std::to_string(10 * 1024 * 1024)); // 10 MiB, ~10,000 lines
         loggerConfig.setGlobally(el::ConfigurationType::MillisecondsWidth, "3");
         loggerConfig.setGlobally(el::ConfigurationType::Format,
-            "[ %time | %level | %logger ] - %msg");
+            "[ %real_time | %sim_time | %level | %logger ] - %msg");
         el::Loggers::reconfigureLogger(logger, loggerConfig);
     }
 
@@ -68,9 +69,17 @@ void Logging::initialize(double startTimestamp, const std::string& runId) {
     el::Loggers::addFlag(el::LoggingFlag::StrictLogFileSizeCheck);
     el::Loggers::addFlag(el::LoggingFlag::ColoredTerminalOutput);
     el::Helpers::installPreRollOutCallback(rolloutHandler);
-    el::Helpers::installCustomFormatSpecifier(el::CustomFormatSpecifier("%time", [=](){
-        std::string timeString = SimUtilities::formatSeconds(SimUtilities::getHighResTimestamp() - startTimestamp);
-        return timeString.substr(0, timeString.find(".") + 4).c_str(); // Trim to 3 decimal places
+
+    el::Helpers::installCustomFormatSpecifier(el::CustomFormatSpecifier("%real_time", [](){
+        double seconds = T()->elapsedRealTime().getSeconds();
+        std::string secondsString = SimUtilities::formatSeconds(seconds);
+        return secondsString.substr(0, secondsString.find(".") + 4).c_str(); // Trim to 3 decimal places
+    }));
+
+    el::Helpers::installCustomFormatSpecifier(el::CustomFormatSpecifier("%sim_time", [](){
+        double seconds = T()->elapsedSimTime().getSeconds();
+        std::string secondsString = SimUtilities::formatSeconds(seconds);
+        return secondsString.substr(0, secondsString.find(".") + 4).c_str(); // Trim to 3 decimal places
     }));
 }
 

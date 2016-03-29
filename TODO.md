@@ -1,7 +1,6 @@
 # High Priority
 
 - Put a toolbar at the top or bottom with info
-    - Information of the wheel speeds
     - Display a clock real time clock
     - Speed in the x, y, and along the hypotenuse
     - Make terminal style output at bottom or right of window (GUI)
@@ -60,6 +59,7 @@
 
 # Medum Priority
 
+- Should the interface type really be stored in world? Seems like it'd go well in state
 - Make a system for nearly instantly checking stats on many mazes:
     - like unit tests
     - solved or not

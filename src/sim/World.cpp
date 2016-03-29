@@ -9,6 +9,7 @@
 #include "Param.h"
 #include "SimUtilities.h"
 #include "State.h"
+#include "Time.h"
 #include "units/Milliseconds.h"
 
 namespace sim {
@@ -18,22 +19,21 @@ World::World(
         Mouse* mouse) :
         m_maze(maze),
         m_mouse(mouse),
-        m_elapsedSimTime(Seconds(0)),
-        m_bestSimTimeToCenter(Seconds(-1)),
-        m_simTimeOfOriginDeparture(Seconds(-1)),
+        m_bestTimeToCenter(Seconds(-1)),
+        m_timeOfOriginDeparture(Seconds(-1)),
         m_closestDistanceToCenter(-1) {
 }
 
-Seconds World::getBestSimTimeToCenter() const {
-    return m_bestSimTimeToCenter;
+Seconds World::getBestTimeToCenter() const {
+    return m_bestTimeToCenter;
 }
 
-Seconds World::getSimTimeSinceOriginDeparture() const {
+Seconds World::getTimeSinceOriginDeparture() const {
     // If we haven't left the origin yet, return -1
-    if (m_simTimeOfOriginDeparture < Seconds(0)) {
+    if (m_timeOfOriginDeparture < Seconds(0)) {
         return Seconds(-1);
     }
-    return m_elapsedSimTime - m_simTimeOfOriginDeparture;
+    return T()->elapsedSimTime() - m_timeOfOriginDeparture;
 }
 
 int World::getNumberOfTilesTraversed() const {
@@ -97,7 +97,7 @@ void World::simulate() {
         Seconds elapsedSimTimeForThisIteration = realTimePerUpdate * S()->simSpeed();
 
         // Update the sim time
-        m_elapsedSimTime += elapsedSimTimeForThisIteration;
+        T()->incrementElapsedSimTime(elapsedSimTimeForThisIteration);
 
         // Update the position of the mouse
         m_mouse->update(elapsedSimTimeForThisIteration);
@@ -121,21 +121,21 @@ void World::simulate() {
 
         // If we've returned to the origin, reset the departure time
         if (location.first == 0 && location.second == 0) {
-            if (Seconds(0) < m_simTimeOfOriginDeparture) {
-                m_simTimeOfOriginDeparture = Seconds(-1);
+            if (Seconds(0) < m_timeOfOriginDeparture) {
+                m_timeOfOriginDeparture = Seconds(-1);
             }
         }
 
         // Otherwise, if we've just left the origin, update the departure time
-        else if (m_simTimeOfOriginDeparture < Seconds(0)) {
-            m_simTimeOfOriginDeparture = m_elapsedSimTime;
+        else if (m_timeOfOriginDeparture < Seconds(0)) {
+            m_timeOfOriginDeparture = T()->elapsedSimTime();
         }
 
         // Separately, if we're in the center, update the best time to center
         if (m_maze->isCenterTile(location.first, location.second)) {
-            Seconds timeToCenter = m_elapsedSimTime - m_simTimeOfOriginDeparture;
-            if (m_bestSimTimeToCenter < Seconds(0) || timeToCenter < m_bestSimTimeToCenter) {
-                m_bestSimTimeToCenter = timeToCenter;
+            Seconds timeToCenter = T()->elapsedSimTime() - m_timeOfOriginDeparture;
+            if (m_bestTimeToCenter < Seconds(0) || timeToCenter < m_bestTimeToCenter) {
+                m_bestTimeToCenter = timeToCenter;
             }
         }
 
@@ -163,6 +163,7 @@ void World::simulate() {
         }
 
         // Sleep the appropriate amout of time, based on the mouse update duration
+        // TODO: MACK - This seems to sleep for longer than intended :/
         SimUtilities::sleep(Seconds(std::max(0.0, 1.0/P()->mousePositionUpdateRate() - duration)));
     }
 }
