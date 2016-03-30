@@ -43,13 +43,17 @@ MouseGraphic* View::getMouseGraphic() {
     return m_mouseGraphic;
 }
 
-void View::registerAutomaticallyClearFogCallback(
-        IMouseAlgorithm* mouseAlgorithm,
-        bool (IMouseAlgorithm::*automaticallyClearFog)(void) const) {
-    // We have a special method to perform the assignment of these variables
-    // because their values are not known until the mouse algorithm is
-    // instantiated, which is after the View object is instantiated
+void View::setMouseAlgorithm(IMouseAlgorithm* mouseAlgorithm) {
     m_mouseAlgorithm = mouseAlgorithm;
+    // Pass the algorithm to the Header object, too
+    m_header->setMouseAlgorithm(mouseAlgorithm);
+}
+
+void View::registerAutomaticallyClearFogCallback(
+        bool (IMouseAlgorithm::*automaticallyClearFog)(void) const) {
+    // We have a special method to perform the assignment of this variable
+    // because its value is not known until the mouse algorithm is
+    // instantiated, which is after the View object is instantiated
     m_automaticallyClearFog = automaticallyClearFog;
 }
 

@@ -1,5 +1,8 @@
 # High Priority
 
+- Is the header model (of column starting positions) optimal?
+- Zoomed map still shows when header should occupy the full screen
+- I don't need pointer to member... I can just call the functions directly - update code comments
 - Make mouse Algorithm option values visible in the header
 - Sim time is lagging a little bit
 - Discrete mode speed...

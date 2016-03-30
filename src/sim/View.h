@@ -24,8 +24,8 @@ public:
     MazeGraphic* getMazeGraphic();
     MouseGraphic* getMouseGraphic();
 
+    void setMouseAlgorithm(IMouseAlgorithm* mouseAlgorithm);
     void registerAutomaticallyClearFogCallback(
-        IMouseAlgorithm* mouseAlgorithm,
         bool (IMouseAlgorithm::*m_automaticallyClearFog)(void) const);
 
     void refresh();

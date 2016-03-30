@@ -71,8 +71,10 @@ void Driver::drive(int argc, char* argv[]) {
             m_controller->getMouseAlgorithm()->interfaceType()
         )
     );
+    m_view->setMouseAlgorithm(
+        m_controller->getMouseAlgorithm()
+    );
     m_view->registerAutomaticallyClearFogCallback(
-        m_controller->getMouseAlgorithm(),
         &IMouseAlgorithm::automaticallyClearFog
     );
     m_view->initTileGraphicText(
