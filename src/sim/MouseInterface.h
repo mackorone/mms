@@ -14,6 +14,10 @@
 #define ENSURE_INSIDE_ORIGIN ensureInsideOrigin(__func__);
 #define ENSURE_OUTSIDE_ORIGIN ensureOutsideOrigin(__func__);
 
+// We have to forward declare the class (as opposed to including it) so as to
+// avoid a circular dependency; IMouseAlgorithm.h already includes this file
+class IMouseAlgorithm;
+
 namespace sim {
 
 class MouseInterface {
@@ -23,6 +27,7 @@ public:
         const Maze* maze,
         Mouse* mouse,
         MazeGraphic* mazeGraphic,
+        IMouseAlgorithm* mouseAlgorithm,
         std::set<char> allowableTileTextCharacters,
         MouseInterfaceOptions options);
 
@@ -139,11 +144,11 @@ public:
     double currentRotationDegrees();
 
 private:
-    // TODO: MACK Pointer to the model and view here???
     const Maze* m_maze;
     Mouse* m_mouse;
     MazeGraphic* m_mazeGraphic;
-    std::set<char> m_allowableTileTextCharacters; // TODO: MACK - dedup with View (maybe pass a function instead???)
+    IMouseAlgorithm* m_mouseAlgorithm;
+    std::set<char> m_allowableTileTextCharacters;
     MouseInterfaceOptions m_options;
     bool m_inOrigin; // Whether or not the mouse has moved out the origin
 

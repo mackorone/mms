@@ -7,6 +7,7 @@
 #include "units/RevolutionsPerMinute.h"
 #include "units/Seconds.h"
 
+#include "../mouse/IMouseAlgorithm.h"
 #include "Assert.h"
 #include "Color.h"
 #include "ContainerUtilities.h"
@@ -23,11 +24,13 @@ MouseInterface::MouseInterface(
         const Maze* maze,
         Mouse* mouse,
         MazeGraphic* mazeGraphic,
+        IMouseAlgorithm* mouseAlgorithm,
         std::set<char> allowableTileTextCharacters, 
         MouseInterfaceOptions options) :
         m_maze(maze),
         m_mouse(mouse),
         m_mazeGraphic(mazeGraphic),
+        m_mouseAlgorithm(mouseAlgorithm),
         m_allowableTileTextCharacters(allowableTileTextCharacters),
         m_options(options),
         m_inOrigin(true) {
@@ -153,7 +156,7 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
             CHAR_TO_DIRECTION.at(direction)
         ),
         wallExists,
-        m_options.declareBothWallHalves
+        (m_mouseAlgorithm->*m_options.declareBothWallHalves)()
     );
 }
 
@@ -176,7 +179,7 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
             std::make_pair(x, y),
             CHAR_TO_DIRECTION.at(direction)
         ),
-        m_options.declareBothWallHalves
+        (m_mouseAlgorithm->*m_options.declareBothWallHalves)()
     );
 }
 
@@ -201,10 +204,10 @@ void MouseInterface::declareTileDistance(int x, int y, int distance) {
         return;
     }
 
-    if (m_options.setTileTextWhenDistanceDeclared) {
+    if ((m_mouseAlgorithm->*m_options.setTileTextWhenDistanceDeclared)()) {
         setTileTextImpl(x, y, (0 <= distance ? std::to_string(distance) : "inf"));
     }
-    if (m_options.setTileBaseColorWhenDistanceDeclaredCorrectly) {
+    if ((m_mouseAlgorithm->*m_options.setTileBaseColorWhenDistanceDeclaredCorrectly)()) {
         int actualDistance = m_maze->getTile(x, y)->getDistance();
         // A negative distance is interpreted to mean infinity
         if (distance == actualDistance || (distance < 0 && actualDistance < 0)) {
@@ -223,10 +226,10 @@ void MouseInterface::undeclareTileDistance(int x, int y) {
         return;
     }
 
-    if (m_options.setTileTextWhenDistanceDeclared) {
+    if ((m_mouseAlgorithm->*m_options.setTileTextWhenDistanceDeclared)()) {
         clearTileTextImpl(x, y);
     }
-    if (m_options.setTileBaseColorWhenDistanceDeclaredCorrectly) {
+    if ((m_mouseAlgorithm->*m_options.setTileBaseColorWhenDistanceDeclaredCorrectly)()) {
         setTileColorImpl(x, y, COLOR_TO_CHAR.at(STRING_TO_COLOR.at(P()->tileBaseColor())));
     }
 }
@@ -368,21 +371,30 @@ bool MouseInterface::wallFront() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    return wallFrontImpl(m_options.declareWallOnRead, m_options.declareBothWallHalves);
+    return wallFrontImpl(
+        (m_mouseAlgorithm->*m_options.declareWallOnRead)(),
+        (m_mouseAlgorithm->*m_options.declareBothWallHalves)()
+    );
 }
 
 bool MouseInterface::wallRight() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    return wallRightImpl(m_options.declareWallOnRead, m_options.declareBothWallHalves);
+    return wallRightImpl(
+        (m_mouseAlgorithm->*m_options.declareWallOnRead)(),
+        (m_mouseAlgorithm->*m_options.declareBothWallHalves)()
+    );
 }
 
 bool MouseInterface::wallLeft() {
 
     ENSURE_DISCRETE_INTERFACE
 
-    return wallLeftImpl(m_options.declareWallOnRead, m_options.declareBothWallHalves);
+    return wallLeftImpl(
+        (m_mouseAlgorithm->*m_options.declareWallOnRead)(),
+        (m_mouseAlgorithm->*m_options.declareBothWallHalves)()
+    );
 }
 
 void MouseInterface::moveForward() {
@@ -616,7 +628,7 @@ void MouseInterface::ensureContinuousInterface(const std::string& callingFunctio
 }
 
 void MouseInterface::ensureAllowOmniscience(const std::string& callingFunction) const {
-    if (!m_options.allowOmniscience) {
+    if (!(m_mouseAlgorithm->*m_options.allowOmniscience)()) {
         L()->error(
             "You must return true from \"allowOmniscience()\" in order to use MouseInterface::%v().",
             callingFunction);
@@ -625,7 +637,7 @@ void MouseInterface::ensureAllowOmniscience(const std::string& callingFunction) 
 }
 
 void MouseInterface::ensureNotTileEdgeMovements(const std::string& callingFunction) const {
-    if (m_options.useTileEdgeMovements) {
+    if ((m_mouseAlgorithm->*m_options.useTileEdgeMovements)()) {
         L()->error(
             "You must return false from \"useTileEdgeMovements()\" in order to use MouseInterface::%v().",
             callingFunction);
@@ -634,7 +646,7 @@ void MouseInterface::ensureNotTileEdgeMovements(const std::string& callingFuncti
 }
 
 void MouseInterface::ensureUseTileEdgeMovements(const std::string& callingFunction) const {
-    if (!m_options.useTileEdgeMovements) {
+    if (!(m_mouseAlgorithm->*m_options.useTileEdgeMovements)()) {
         L()->error(
             "You must return true from \"useTileEdgeMovements()\" in order to use MouseInterface::%v().",
             callingFunction);
@@ -931,7 +943,7 @@ void MouseInterface::moveForwardTo(const Cartesian& destinationTranslation, cons
     Meters previousDistance = delta.getRho();
 
     // Start the mouse moving forward
-    m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
+    m_mouse->setWheelSpeedsForMoveForward((m_mouseAlgorithm->*m_options.wheelSpeedFraction)());
 
     // Move forward until we've reached the destination
     do {
@@ -959,10 +971,12 @@ void MouseInterface::arcTo(const Cartesian& destinationTranslation, const Radian
 
     // Set the speed based on the initial rotation delta
     if (0 < initialRotationDelta.getDegreesNotBounded()) {
-        m_mouse->setWheelSpeedsForCurveLeft(m_options.wheelSpeedFraction * extraWheelSpeedFraction, radius);
+        m_mouse->setWheelSpeedsForCurveLeft(
+            (m_mouseAlgorithm->*m_options.wheelSpeedFraction)() * extraWheelSpeedFraction, radius);
     }
     else {
-        m_mouse->setWheelSpeedsForCurveRight(m_options.wheelSpeedFraction * extraWheelSpeedFraction, radius);
+        m_mouse->setWheelSpeedsForCurveRight(
+            (m_mouseAlgorithm->*m_options.wheelSpeedFraction)() * extraWheelSpeedFraction, radius);
     }
     
     // While the deltas have the same sign, sleep for a short amount of time

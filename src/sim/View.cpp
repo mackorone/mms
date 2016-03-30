@@ -43,10 +43,13 @@ MouseGraphic* View::getMouseGraphic() {
     return m_mouseGraphic;
 }
 
-void View::setAutomaticallyClearFog(bool automaticallyClearFog) {
-    // We have a special method to perform the assignment of this variable
-    // because the value is not known until the mouse algorithm is
+void View::registerAutomaticallyClearFogCallback(
+        IMouseAlgorithm* mouseAlgorithm,
+        bool (IMouseAlgorithm::*automaticallyClearFog)(void) const) {
+    // We have a special method to perform the assignment of these variables
+    // because their values are not known until the mouse algorithm is
     // instantiated, which is after the View object is instantiated
+    m_mouseAlgorithm = mouseAlgorithm;
     m_automaticallyClearFog = automaticallyClearFog;
 }
 
@@ -57,7 +60,7 @@ void View::refresh() {
     double start(SimUtilities::getHighResTimestamp());
 
     // First, clear fog as necessary
-    if (m_automaticallyClearFog) {
+    if ((m_mouseAlgorithm->*m_automaticallyClearFog)()) {
         // TODO: upforgrabs
         // This won't work if the mouse is traveling too quickly and travels more
         // than one tile per frame. Figure out a way that will work in that case.

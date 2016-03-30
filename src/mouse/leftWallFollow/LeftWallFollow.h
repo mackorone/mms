@@ -7,6 +7,7 @@ namespace leftWallFollow {
 class LeftWallFollow : public IMouseAlgorithm {
 
 public:
+    bool automaticallyClearFog() const;
     bool declareWallOnRead() const;
     bool declareBothWallHalves() const;
     void solve(
@@ -14,7 +15,8 @@ public:
         char initialDirection, sim::MouseInterface* mouse);
 
 private:
-    void leftWallFollowStep(sim::MouseInterface* mouse);
+    sim::MouseInterface* m_mouse;
+    void leftWallFollowStep();
 };
 
 } // namespace leftWallFollow

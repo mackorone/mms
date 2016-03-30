@@ -12,6 +12,14 @@ std::string IMouseAlgorithm::initialDirection() const {
     return "NORTH";
 }
 
+int IMouseAlgorithm::tileTextNumberOfRows() const {
+    return 2;
+}
+
+int IMouseAlgorithm::tileTextNumberOfCols() const {
+    return 3;
+}
+
 bool IMouseAlgorithm::allowOmniscience() const {
     return false;
 }
@@ -30,14 +38,6 @@ bool IMouseAlgorithm::setTileTextWhenDistanceDeclared() const {
 
 bool IMouseAlgorithm::setTileBaseColorWhenDistanceDeclaredCorrectly() const {
     return false;
-}
-
-int IMouseAlgorithm::tileTextNumberOfRows() const {
-    return 2;
-}
-
-int IMouseAlgorithm::tileTextNumberOfCols() const {
-    return 3;
 }
 
 bool IMouseAlgorithm::declareWallOnRead() const {

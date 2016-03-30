@@ -71,8 +71,9 @@ void Driver::drive(int argc, char* argv[]) {
             m_controller->getMouseAlgorithm()->interfaceType()
         )
     );
-    m_view->setAutomaticallyClearFog(
-        m_controller->getMouseAlgorithm()->automaticallyClearFog()
+    m_view->registerAutomaticallyClearFogCallback(
+        m_controller->getMouseAlgorithm(),
+        &IMouseAlgorithm::automaticallyClearFog
     );
     m_view->initTileGraphicText(
         std::make_pair(

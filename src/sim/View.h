@@ -12,6 +12,8 @@
 #include "TriangleGraphic.h"
 #include "TriangleTexture.h"
 
+class IMouseAlgorithm;
+
 namespace sim {
 
 class View {
@@ -22,7 +24,9 @@ public:
     MazeGraphic* getMazeGraphic();
     MouseGraphic* getMouseGraphic();
 
-    void setAutomaticallyClearFog(bool automaticallyClearFog);
+    void registerAutomaticallyClearFogCallback(
+        IMouseAlgorithm* mouseAlgorithm,
+        bool (IMouseAlgorithm::*m_automaticallyClearFog)(void) const);
 
     void refresh();
     void updateWindowSize(int width, int height);
@@ -61,7 +65,8 @@ private:
     Header* m_header;
 
     // Whether or not we should automatically clear the fog
-    bool m_automaticallyClearFog;
+    IMouseAlgorithm* m_mouseAlgorithm;
+    bool (IMouseAlgorithm::*m_automaticallyClearFog)(void) const;
 
     // Polygon program variables
     tdogl::Program* m_polygonProgram;

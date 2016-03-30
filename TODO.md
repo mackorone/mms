@@ -1,8 +1,6 @@
 # High Priority
 
-- Be able to toggle useTileEdgeMovements
-    - Make all non-initialization methods togglable by just getting the return value each time
-    - Right now, it's only getting the value once so it's not togglable
+- Make mouse Algorithm option values visible in the header
 - Sim time is lagging a little bit
 - Discrete mode speed...
     - Ensure that the wheel speed is not too high in the MouseInterface (so that the mouse does not clip through walls)
