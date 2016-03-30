@@ -8,8 +8,8 @@
     <default-layout-type>BOTH</default-layout-type> <!-- FULL, ZOOMED, BOTH -->
     <window-border-width>10</window-border-width> <!-- Pixels -->
     <header-text-font>Unispace-Bold.ttf</header-text-font>
-    <header-text-height>10</header-text-height>
-    <header-row-spacing>10</header-row-spacing>
+    <header-text-height>9</header-text-height>
+    <header-row-spacing>6</header-row-spacing>
     <header-column-spacing>20</header-column-spacing>
     <min-zoomed-map-scale>0.02</min-zoomed-map-scale>
     <max-zoomed-map-scale>1.0</max-zoomed-map-scale>

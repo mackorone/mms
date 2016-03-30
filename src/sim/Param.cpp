@@ -43,9 +43,9 @@ Param::Param() {
     m_headerTextFont = parser.getStringIfHasString(
         "header-text-font", "Unispace-Bold.ttf");
     m_headerTextHeight = parser.getIntIfHasIntAndInRange(
-        "header-text-height", 10, 0, 30);
+        "header-text-height", 9, 0, 30);
     m_headerRowSpacing = parser.getIntIfHasIntAndInRange(
-        "header-row-spacing", 10, 0, 30);
+        "header-row-spacing", 6, 0, 30);
     m_headerColumnSpacing = parser.getIntIfHasIntAndInRange(
         "header-column-spacing", 20, 0, 60);
     m_minZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange(
