@@ -1,5 +1,18 @@
 # High Priority
 
+- Be able to toggle useTileEdgeMovements
+    - Make all non-initialization methods togglable by just getting the return value each time
+    - Right now, it's only getting the value once so it's not togglable
+- Sim time is lagging a little bit
+- Discrete mode speed...
+    - Ensure that the wheel speed is not too high in the MouseInterface (so that the mouse does not clip through walls)
+    - In discrete mode, the mouse can overturn or go too far if the sim speed
+      is to high. We need to implement some logic that checks this ahead of
+      time and then just teleports... sort of like bullets in other physics
+      simulators (note that the elapsed sim time should only be updated as much
+      as necessary to get the mouse to its destination)
+- Add a way to time the algorithms
+    - Make sure consistent at all speeds
 - Add debugging tips
     - Note about what to do if the simulator says that it's an invalid algo (how to debug)
 - Windows logging is not working on non-main threads
@@ -12,8 +25,6 @@
 - Make some video tutorials
 - Make a mechanism for easily merging the a discrete algo into a continuous one
     - Figure out how to bring the high level logic into the control algo
-- Add a way to time the algorithms
-    - Make sure consistent at all speeds
 - Make a voluntary Delay in setTileBaseColor, text
 - Stepper motor
 - Sensor type (digital or analog)
@@ -27,19 +38,13 @@
 - More Arduino function support
 - Add gridlines (see https://www.youtube.com/watch?v=LGRutv9cGBA and https://www.youtube.com/watch?v=gtnTBf5ItEc)
     - Variable width?
+    - Add trajectory lines (see https://www.youtube.com/watch?v=kgJClVCPu3w)
 - Buffer communication (like with the real robot)
 - Clang compiler support
 - Make a separate process for algo, so if the algo dies the sim stays alive, and so that we can start an algo over really easily
 - Continuous performance
     - CPU with megaMouse.xml
     - MinSleepDuration is a little bit weird - sometimes we try to sleep less than that
-- Discrete mode speed...
-    - Ensure that the wheel speed is not too high in the MouseInterface (so that the mouse does not clip through walls)
-    - In discrete mode, the mouse can overturn or go too far if the sim speed
-      is to high. We need to implement some logic that checks this ahead of
-      time and then just teleports... sort of like bullets in other physics
-      simulators (note that the elapsed sim time should only be updated as much
-      as necessary to get the mouse to its destination)
 - Make smooth diagonals
     - https://www.youtube.com/watch?v=HPvke3fknrc
     - Stringing together diagonal movements (with smooth turns) is difficult
@@ -77,11 +82,10 @@
 - Make some default Arduino implementations for some functions
 - Still view a maze if it fails validation, but don't let the sim continue...
 - Testing for resource existence (like the shaders, font images, etc.)
-- Add manual mode high scores
 - Continuous mode improvements (overall)
 - Xorg and compiz performance...
 - Kill SimUtilities...
-- Shortest path graphic (phantom bot that travels along other shortest paths)
+- Shortest path graphic (display the shortest path)
 - Randomly select a pre-defined maze
 - Write a good continuous algorithm
 - Data recording for pause, rewind, fast forward
@@ -90,8 +94,8 @@
 - New maze w/o restarting app
     - Be able to restart in the middle of a run (this is tricky with the algo thread...)
 - Fix the makefile so that if header files disappear we don't need to make clean
-- Add trajectory lines (see https://www.youtube.com/watch?v=kgJClVCPu3w)
 - Crash recovery semantics
+    - Set a flag, let the algo check the flag
 - Draw a path of where the robot has been (the history object could be used for recording as well)
 - Perhaps use a separate process entirely for the mouse (so we can restart it easily)
 - Write scripts we can execute (like unit tests) to make sure that our docs are in sync with the code
@@ -106,9 +110,6 @@
 # Low Priority
 
 - Add gear ratio to the wheels
-- Be able to toggle useTileEdgeMovements
-    - Make all non-initialization methods togglable by just getting the return value each time
-    - Right now, it's only getting the value once so it's not togglable
 - Pointers to wall polygons in each tile, save space by not breaking up walls/corners into multiple tiles
 - Get rid of as much platform dependant code as possible
 - Clean up the coding standards

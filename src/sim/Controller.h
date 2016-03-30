@@ -19,7 +19,6 @@ public:
 
 private:
 
-    Model* m_model; // TODO: MACK - don't need this..
     View* m_view;
 
     IMouseAlgorithm* m_mouseAlgorithm;
@@ -30,7 +29,7 @@ private:
         const std::string& mouseAlgorithm, const std::string& interfaceType);
     void validateMouseInitialDirection(
         const std::string& mouseAlgorithm, const std::string& initialDirection);
-    Direction getInitialDirection(const std::string& initialDirectionString);
+    Direction getInitialDirection(Model* model, const std::string& initialDirectionString);
     void validateMouseWheelSpeedFraction(
         const std::string& mouseAlgorithm, double wheelSpeedFraction);
     void validateTileTextRowsAndCols(

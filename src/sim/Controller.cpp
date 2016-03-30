@@ -17,7 +17,7 @@ static const std::string& OPENING_DIRECTION_STRING = "OPENING";
 // String used to specify that the mouse should start facing the wall
 static const std::string& WALL_DIRECTION_STRING = "WALL";
 
-Controller::Controller(Model* model, View* view) : m_model(model), m_view(view) {
+Controller::Controller(Model* model, View* view) : m_view(view) {
 
     validateMouseAlgorithm(P()->mouseAlgorithm());
     m_mouseAlgorithm = MouseAlgorithms::getMouseAlgorithm(P()->mouseAlgorithm());
@@ -32,13 +32,13 @@ Controller::Controller(Model* model, View* view) : m_model(model), m_view(view) 
         P()->mouseAlgorithm(),
         m_mouseAlgorithm->mouseFile(),
         STRING_TO_INTERFACE_TYPE.at(m_mouseAlgorithm->interfaceType()),
-        getInitialDirection(m_mouseAlgorithm->initialDirection()),
-        m_model->getMouse()
+        getInitialDirection(model, m_mouseAlgorithm->initialDirection()),
+        model->getMouse()
     );
 
     m_mouseInterface = new MouseInterface(
-        m_model->getMaze(),
-        m_model->getMouse(),
+        model->getMaze(),
+        model->getMouse(),
         m_view->getMazeGraphic(),
         m_view->getAllowableTileTextCharacters(),
         {
@@ -107,12 +107,12 @@ void Controller::validateMouseInitialDirection(
     }
 }
 
-Direction Controller::getInitialDirection(const std::string& initialDirectionString) {
+Direction Controller::getInitialDirection(Model* model, const std::string& initialDirectionString) {
     if (initialDirectionString == OPENING_DIRECTION_STRING) {
-        return (m_model->getMaze()->getTile(0, 0)->isWall(Direction::EAST) ? Direction::NORTH : Direction::EAST);
+        return (model->getMaze()->getTile(0, 0)->isWall(Direction::EAST) ? Direction::NORTH : Direction::EAST);
     }
     if (initialDirectionString == WALL_DIRECTION_STRING) {
-        return (m_model->getMaze()->getTile(0, 0)->isWall(Direction::NORTH) ? Direction::NORTH : Direction::EAST);
+        return (model->getMaze()->getTile(0, 0)->isWall(Direction::NORTH) ? Direction::NORTH : Direction::EAST);
     }
     return STRING_TO_DIRECTION.at(initialDirectionString);
 }
