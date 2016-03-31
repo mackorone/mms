@@ -19,7 +19,7 @@ public:
 
 private:
     Model* m_model;
-    IMouseAlgorithm* m_mouseAlgorithm; 
+    IMouseAlgorithm* m_mouseAlgorithm; // Used to get Mouse Interface Options
     int m_windowWidth; // The total height of the window, in pixels
     int m_windowHeight; // The total width of the window, in pixels
     int m_textHeight; // The height of the text, in pixels

@@ -25,8 +25,6 @@ public:
     MouseGraphic* getMouseGraphic();
 
     void setMouseAlgorithm(IMouseAlgorithm* mouseAlgorithm);
-    void registerAutomaticallyClearFogCallback(
-        bool (IMouseAlgorithm::*m_automaticallyClearFog)(void) const);
 
     void refresh();
     void updateWindowSize(int width, int height);
@@ -64,9 +62,8 @@ private:
     // Window header object
     Header* m_header;
 
-    // Whether or not we should automatically clear the fog
+    // Used to determine whether or not to automatically clear fog
     IMouseAlgorithm* m_mouseAlgorithm;
-    bool (IMouseAlgorithm::*m_automaticallyClearFog)(void) const;
 
     // Polygon program variables
     tdogl::Program* m_polygonProgram;

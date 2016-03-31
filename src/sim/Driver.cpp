@@ -74,9 +74,6 @@ void Driver::drive(int argc, char* argv[]) {
     m_view->setMouseAlgorithm(
         m_controller->getMouseAlgorithm()
     );
-    m_view->registerAutomaticallyClearFogCallback(
-        &IMouseAlgorithm::automaticallyClearFog
-    );
     m_view->initTileGraphicText(
         std::make_pair(
             m_controller->getMouseAlgorithm()->tileTextNumberOfRows(),

@@ -3,6 +3,7 @@
 #include <tdogl/Bitmap.h>
 #include <tdogl/Shader.h>
 
+#include "../mouse/IMouseAlgorithm.h"
 #include "BufferInterface.h"
 #include "Directory.h"
 #include "Layout.h"
@@ -49,14 +50,6 @@ void View::setMouseAlgorithm(IMouseAlgorithm* mouseAlgorithm) {
     m_header->setMouseAlgorithm(mouseAlgorithm);
 }
 
-void View::registerAutomaticallyClearFogCallback(
-        bool (IMouseAlgorithm::*automaticallyClearFog)(void) const) {
-    // We have a special method to perform the assignment of this variable
-    // because its value is not known until the mouse algorithm is
-    // instantiated, which is after the View object is instantiated
-    m_automaticallyClearFog = automaticallyClearFog;
-}
-
 void View::refresh() {
 
     // In order to ensure we're sleeping the correct amount of time, we time
@@ -64,7 +57,7 @@ void View::refresh() {
     double start(SimUtilities::getHighResTimestamp());
 
     // First, clear fog as necessary
-    if ((m_mouseAlgorithm->*m_automaticallyClearFog)()) {
+    if (m_mouseAlgorithm->automaticallyClearFog()) {
         // TODO: upforgrabs
         // This won't work if the mouse is traveling too quickly and travels more
         // than one tile per frame. Figure out a way that will work in that case.

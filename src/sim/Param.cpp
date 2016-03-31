@@ -33,7 +33,7 @@ Param::Param() {
 
     // Graphical Parameters
     m_defaultWindowWidth = parser.getIntIfHasIntAndNotLessThan(
-        "default-window-width", 1150, 100);
+        "default-window-width", 990, 100);
     m_defaultWindowHeight = parser.getIntIfHasIntAndNotLessThan(
         "default-window-height", 700, 100);
     m_defaultLayoutType = parser.getStringIfHasStringAndIsLayoutType(

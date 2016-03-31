@@ -27,8 +27,8 @@ public:
         const Maze* maze,
         Mouse* mouse,
         MazeGraphic* mazeGraphic,
-        IMouseAlgorithm* mouseAlgorithm,
         std::set<char> allowableTileTextCharacters,
+        IMouseAlgorithm* mouseAlgorithm,
         MouseInterfaceOptions options);
 
     // ----- Any interface methods ----- //
@@ -144,11 +144,12 @@ public:
     double currentRotationDegrees();
 
 private:
+    // TODO: MACK - model and view objects here???
     const Maze* m_maze;
     Mouse* m_mouse;
     MazeGraphic* m_mazeGraphic;
-    IMouseAlgorithm* m_mouseAlgorithm;
     std::set<char> m_allowableTileTextCharacters;
+    IMouseAlgorithm* m_mouseAlgorithm;
     MouseInterfaceOptions m_options;
     bool m_inOrigin; // Whether or not the mouse has moved out the origin
 

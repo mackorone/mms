@@ -40,18 +40,12 @@ Controller::Controller(Model* model, View* view) : m_view(view) {
         model->getMaze(),
         model->getMouse(),
         m_view->getMazeGraphic(),
-        m_mouseAlgorithm,
         m_view->getAllowableTileTextCharacters(),
+        m_mouseAlgorithm,
+        // TODO: MACK - rename these to static mouse options, or just pass all as separate args
         {
             m_mouseAlgorithm->tileTextNumberOfRows(),
             m_mouseAlgorithm->tileTextNumberOfCols(),
-            &IMouseAlgorithm::allowOmniscience,
-            &IMouseAlgorithm::declareBothWallHalves,
-            &IMouseAlgorithm::setTileTextWhenDistanceDeclared,
-            &IMouseAlgorithm::setTileBaseColorWhenDistanceDeclaredCorrectly,
-            &IMouseAlgorithm::declareWallOnRead,
-            &IMouseAlgorithm::useTileEdgeMovements,
-            &IMouseAlgorithm::wheelSpeedFraction,
             STRING_TO_INTERFACE_TYPE.at(m_mouseAlgorithm->interfaceType()),
         }
     );
