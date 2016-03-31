@@ -40,14 +40,14 @@ bool IMouseAlgorithm::setTileBaseColorWhenDistanceDeclaredCorrectly() const {
     return false;
 }
 
+double IMouseAlgorithm::wheelSpeedFraction() const {
+    return 1.0; 
+}
+
 bool IMouseAlgorithm::declareWallOnRead() const {
     return false;
 }
 
 bool IMouseAlgorithm::useTileEdgeMovements() const {
     return false;
-}
-
-double IMouseAlgorithm::wheelSpeedFraction() const {
-    return 1.0; 
 }

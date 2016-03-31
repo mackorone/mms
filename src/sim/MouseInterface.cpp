@@ -24,15 +24,21 @@ MouseInterface::MouseInterface(
         const Maze* maze,
         Mouse* mouse,
         MazeGraphic* mazeGraphic,
-        std::set<char> allowableTileTextCharacters, 
         IMouseAlgorithm* mouseAlgorithm,
-        MouseInterfaceOptions options) :
+        std::set<char> allowableTileTextCharacters,
+        std::string interfaceType,
+        int tileTextNumberOfRows,
+        int tileTextNumberOfCols,
+        double wheelSpeedFraction) :
         m_maze(maze),
         m_mouse(mouse),
         m_mazeGraphic(mazeGraphic),
-        m_allowableTileTextCharacters(allowableTileTextCharacters),
         m_mouseAlgorithm(mouseAlgorithm),
-        m_options(options),
+        m_allowableTileTextCharacters(allowableTileTextCharacters),
+        m_interfaceType(interfaceType),
+        m_tileTextNumberOfRows(tileTextNumberOfRows),
+        m_tileTextNumberOfCols(tileTextNumberOfCols),
+        m_wheelSpeedFraction(wheelSpeedFraction),
         m_inOrigin(true) {
 }
 
@@ -610,7 +616,7 @@ double MouseInterface::currentRotationDegrees() {
 }
 
 void MouseInterface::ensureDiscreteInterface(const std::string& callingFunction) const {
-    if (m_options.interfaceType != InterfaceType::DISCRETE) {
+    if (STRING_TO_INTERFACE_TYPE.at(m_interfaceType) != InterfaceType::DISCRETE) {
         L()->error(
             "You must declare the interface type to be \"%v\" to use MouseInterface::%v().",
             INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE), callingFunction);
@@ -619,7 +625,7 @@ void MouseInterface::ensureDiscreteInterface(const std::string& callingFunction)
 }
 
 void MouseInterface::ensureContinuousInterface(const std::string& callingFunction) const {
-    if (m_options.interfaceType != InterfaceType::CONTINUOUS) {
+    if (STRING_TO_INTERFACE_TYPE.at(m_interfaceType) != InterfaceType::CONTINUOUS) {
         L()->error(
             "You must declare the interface type to be \"%v\" to use MouseInterface::%v().",
             INTERFACE_TYPE_TO_STRING.at(InterfaceType::CONTINUOUS), callingFunction);
@@ -689,9 +695,9 @@ void MouseInterface::setTileTextImpl(int x, int y, const std::string& text) {
     std::vector<std::string> rowsOfText;
     int row = 0;
     int index = 0;
-    while (row < m_options.tileTextNumberOfRows && index < text.size()) {
+    while (row < m_tileTextNumberOfRows && index < text.size()) {
         std::string rowOfText;
-        while (index < (row + 1) * m_options.tileTextNumberOfCols && index < text.size()) {
+        while (index < (row + 1) * m_tileTextNumberOfCols && index < text.size()) {
             char c = text.at(index);
             if (!ContainerUtilities::setContains(m_allowableTileTextCharacters, c)) {
                 L()->warn(
@@ -943,7 +949,7 @@ void MouseInterface::moveForwardTo(const Cartesian& destinationTranslation, cons
     Meters previousDistance = delta.getRho();
 
     // Start the mouse moving forward
-    m_mouse->setWheelSpeedsForMoveForward(m_mouseAlgorithm->wheelSpeedFraction());
+    m_mouse->setWheelSpeedsForMoveForward(m_wheelSpeedFraction);
 
     // Move forward until we've reached the destination
     do {
@@ -972,11 +978,11 @@ void MouseInterface::arcTo(const Cartesian& destinationTranslation, const Radian
     // Set the speed based on the initial rotation delta
     if (0 < initialRotationDelta.getDegreesNotBounded()) {
         m_mouse->setWheelSpeedsForCurveLeft(
-            m_mouseAlgorithm->wheelSpeedFraction() * extraWheelSpeedFraction, radius);
+            m_wheelSpeedFraction * extraWheelSpeedFraction, radius);
     }
     else {
         m_mouse->setWheelSpeedsForCurveRight(
-            m_mouseAlgorithm->wheelSpeedFraction() * extraWheelSpeedFraction, radius);
+            m_wheelSpeedFraction * extraWheelSpeedFraction, radius);
     }
     
     // While the deltas have the same sign, sleep for a short amount of time

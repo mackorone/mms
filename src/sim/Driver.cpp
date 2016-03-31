@@ -68,16 +68,17 @@ void Driver::drive(int argc, char* argv[]) {
     // Initialize mouse algorithm values in the model and view
     m_model->getWorld()->setInterfaceType(
         STRING_TO_INTERFACE_TYPE.at(
-            m_controller->getMouseAlgorithm()->interfaceType()
+            m_controller->getOptions().interfaceType
         )
     );
-    m_view->setMouseAlgorithm(
-        m_controller->getMouseAlgorithm()
+    m_view->setMouseAlgorithmAndOptions(
+        m_controller->getMouseAlgorithm(),
+        m_controller->getOptions()
     );
     m_view->initTileGraphicText(
         std::make_pair(
-            m_controller->getMouseAlgorithm()->tileTextNumberOfRows(),
-            m_controller->getMouseAlgorithm()->tileTextNumberOfCols()
+            m_controller->getOptions().tileTextNumberOfRows,
+            m_controller->getOptions().tileTextNumberOfCols
         )
     );
 

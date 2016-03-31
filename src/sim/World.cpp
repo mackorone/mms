@@ -24,6 +24,13 @@ World::World(
         m_closestDistanceToCenter(-1) {
 }
 
+void World::setInterfaceType(InterfaceType interfaceType) {
+    // We have a special method to initialize the interface type because we
+    // don't know the value when the World object is constructed - we have to
+    // wait until the mouse algorithm is instantiated to retrieve the value
+    m_interfaceType = interfaceType;
+}
+
 Seconds World::getBestTimeToCenter() const {
     return m_bestTimeToCenter;
 }
@@ -42,17 +49,6 @@ int World::getNumberOfTilesTraversed() const {
 
 int World::getClosestDistanceToCenter() const {
     return m_closestDistanceToCenter;
-}
-
-void World::setInterfaceType(InterfaceType interfaceType) {
-    // We have a special method to initialize the interface type because we
-    // don't know the value when the World object is constructed - we have to
-    // wait until the mouse algorithm is instantiated to retrieve the value
-    m_interfaceType = interfaceType;
-}
-
-InterfaceType World::getInterfaceType() const {
-    return m_interfaceType;
 }
 
 void World::simulate() {

@@ -44,10 +44,12 @@ MouseGraphic* View::getMouseGraphic() {
     return m_mouseGraphic;
 }
 
-void View::setMouseAlgorithm(IMouseAlgorithm* mouseAlgorithm) {
+void View::setMouseAlgorithmAndOptions(
+        IMouseAlgorithm* mouseAlgorithm,
+        StaticMouseAlgorithmOptions options) {
     m_mouseAlgorithm = mouseAlgorithm;
-    // Pass the algorithm to the Header object, too
-    m_header->setMouseAlgorithm(mouseAlgorithm);
+    m_options = options;
+    m_header->setMouseAlgorithmAndOptions(mouseAlgorithm, options);
 }
 
 void View::refresh() {
@@ -152,7 +154,7 @@ void View::keyPress(unsigned char key, int x, int y) {
 
     if (key == 'p') {
         // Toggle pause (only in discrete mode)
-        if (m_model->getWorld()->getInterfaceType() == InterfaceType::DISCRETE) {
+        if (STRING_TO_INTERFACE_TYPE.at(m_options.interfaceType) == InterfaceType::DISCRETE) {
             S()->setPaused(!S()->paused());
         }
         else {
@@ -163,7 +165,7 @@ void View::keyPress(unsigned char key, int x, int y) {
     }
     else if (key == 'f') {
         // Faster (only in discrete mode)
-        if (m_model->getWorld()->getInterfaceType() == InterfaceType::DISCRETE) {
+        if (STRING_TO_INTERFACE_TYPE.at(m_options.interfaceType) == InterfaceType::DISCRETE) {
             S()->setSimSpeed(S()->simSpeed() * 1.5);
         }
         else {
@@ -174,7 +176,7 @@ void View::keyPress(unsigned char key, int x, int y) {
     }
     else if (key == 's') {
         // Slower (only in discrete mode)
-        if (m_model->getWorld()->getInterfaceType() == InterfaceType::DISCRETE) {
+        if (STRING_TO_INTERFACE_TYPE.at(m_options.interfaceType) == InterfaceType::DISCRETE) {
             S()->setSimSpeed(S()->simSpeed() / 1.5);
         }
         else {

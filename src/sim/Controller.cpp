@@ -7,48 +7,70 @@
 
 #include "../mouse/MouseAlgorithms.h"
 #include "MouseChecker.h"
-#include "MouseInterfaceOptions.h"
 
 namespace sim {
 
-// String used to specify that the mouse should start facing the opening
 static const std::string& OPENING_DIRECTION_STRING = "OPENING";
-
-// String used to specify that the mouse should start facing the wall
 static const std::string& WALL_DIRECTION_STRING = "WALL";
 
-Controller::Controller(Model* model, View* view) : m_view(view) {
+Controller::Controller(Model* model, View* view) {
 
+    // Validate and initialize the mouse algorithm
     validateMouseAlgorithm(P()->mouseAlgorithm());
     m_mouseAlgorithm = MouseAlgorithms::getMouseAlgorithm(P()->mouseAlgorithm());
-    validateMouseInterfaceType(P()->mouseAlgorithm(), m_mouseAlgorithm->interfaceType());
-    validateMouseInitialDirection(P()->mouseAlgorithm(), m_mouseAlgorithm->initialDirection());
-    validateMouseWheelSpeedFraction(P()->mouseAlgorithm(), m_mouseAlgorithm->wheelSpeedFraction());
-    validateTileTextRowsAndCols(P()->mouseAlgorithm(),
-        m_mouseAlgorithm->tileTextNumberOfRows(), m_mouseAlgorithm->tileTextNumberOfCols()
+
+    // Read the static mouse algo options - only do this once
+    m_options.mouseFile = m_mouseAlgorithm->mouseFile();
+    m_options.interfaceType = m_mouseAlgorithm->interfaceType();
+    m_options.initialDirection = m_mouseAlgorithm->initialDirection();
+    m_options.tileTextNumberOfRows = m_mouseAlgorithm->tileTextNumberOfRows();
+    m_options.tileTextNumberOfCols = m_mouseAlgorithm->tileTextNumberOfCols();
+    m_options.wheelSpeedFraction = m_mouseAlgorithm->wheelSpeedFraction();
+
+    // Validate all of the static options except for mouseFile,
+    // which is validated in the mouse init method
+    validateMouseInterfaceType(
+        P()->mouseAlgorithm(),
+        m_options.interfaceType
+    );
+    validateMouseInitialDirection(
+        P()->mouseAlgorithm(),
+        m_options.initialDirection
+    );
+    validateTileTextRowsAndCols(
+        P()->mouseAlgorithm(),
+        m_options.tileTextNumberOfRows,
+        m_options.tileTextNumberOfCols
+    );
+    validateMouseWheelSpeedFraction(
+        P()->mouseAlgorithm(),
+        m_options.wheelSpeedFraction
     );
 
     initAndValidateMouse(
         P()->mouseAlgorithm(),
-        m_mouseAlgorithm->mouseFile(),
-        STRING_TO_INTERFACE_TYPE.at(m_mouseAlgorithm->interfaceType()),
-        getInitialDirection(model, m_mouseAlgorithm->initialDirection()),
-        model->getMouse()
+        m_options.mouseFile,
+        m_options.interfaceType,
+        m_options.initialDirection,
+        model
     );
 
     m_mouseInterface = new MouseInterface(
         model->getMaze(),
         model->getMouse(),
-        m_view->getMazeGraphic(),
-        m_view->getAllowableTileTextCharacters(),
+        view->getMazeGraphic(),
         m_mouseAlgorithm,
-        // TODO: MACK - rename these to static mouse options, or just pass all as separate args
-        {
-            m_mouseAlgorithm->tileTextNumberOfRows(),
-            m_mouseAlgorithm->tileTextNumberOfCols(),
-            STRING_TO_INTERFACE_TYPE.at(m_mouseAlgorithm->interfaceType()),
-        }
+        view->getAllowableTileTextCharacters(),
+        m_options.interfaceType,
+        m_options.tileTextNumberOfRows,
+        m_options.tileTextNumberOfCols,
+        m_options.wheelSpeedFraction
     );
+}
+
+StaticMouseAlgorithmOptions Controller::getOptions() {
+    // The Controller object is the source of truth for the static options
+    return m_options;
 }
 
 IMouseAlgorithm* Controller::getMouseAlgorithm() {
@@ -83,9 +105,11 @@ void Controller::validateMouseInterfaceType(
 
 void Controller::validateMouseInitialDirection(
         const std::string& mouseAlgorithm, const std::string& initialDirection) {
-    if (!(ContainerUtilities::mapContains(STRING_TO_DIRECTION, initialDirection)
-            || initialDirection == OPENING_DIRECTION_STRING
-            || initialDirection == WALL_DIRECTION_STRING)) {
+    if (!(
+        ContainerUtilities::mapContains(STRING_TO_DIRECTION, initialDirection)
+        || initialDirection == OPENING_DIRECTION_STRING
+        || initialDirection == WALL_DIRECTION_STRING
+    )) {
         L()->error(
             "\"%v\" is not a valid initial direction. You must declare the"
             " initial direction of the mouse algorithm \"%v\" to be one of"
@@ -98,28 +122,6 @@ void Controller::validateMouseInitialDirection(
             DIRECTION_TO_STRING.at(Direction::WEST),
             OPENING_DIRECTION_STRING,
             WALL_DIRECTION_STRING);
-        SimUtilities::quit();
-    }
-}
-
-Direction Controller::getInitialDirection(Model* model, const std::string& initialDirectionString) {
-    if (initialDirectionString == OPENING_DIRECTION_STRING) {
-        return (model->getMaze()->getTile(0, 0)->isWall(Direction::EAST) ? Direction::NORTH : Direction::EAST);
-    }
-    if (initialDirectionString == WALL_DIRECTION_STRING) {
-        return (model->getMaze()->getTile(0, 0)->isWall(Direction::NORTH) ? Direction::NORTH : Direction::EAST);
-    }
-    return STRING_TO_DIRECTION.at(initialDirectionString);
-}
-
-void Controller::validateMouseWheelSpeedFraction(
-    const std::string& mouseAlgorithm, double wheelSpeedFraction) {
-    if (!(0.0 <= wheelSpeedFraction && wheelSpeedFraction <= 1.0)) {
-        L()->error(
-            "\"%v\" is not a valid wheel speed fraction. The wheel speed"
-            " fraction of the mouse algorithm \"%v\" has to be in [0.0, 1.0].",
-            wheelSpeedFraction, 
-            mouseAlgorithm);
         SimUtilities::quit();
     }
 }
@@ -140,12 +142,28 @@ void Controller::validateTileTextRowsAndCols(
     }
 }
 
+void Controller::validateMouseWheelSpeedFraction(
+    const std::string& mouseAlgorithm, double wheelSpeedFraction) {
+    if (!(0.0 <= wheelSpeedFraction && wheelSpeedFraction <= 1.0)) {
+        L()->error(
+            "\"%v\" is not a valid wheel speed fraction. The wheel speed"
+            " fraction of the mouse algorithm \"%v\" has to be in [0.0, 1.0].",
+            wheelSpeedFraction, 
+            mouseAlgorithm);
+        SimUtilities::quit();
+    }
+}
+
 void Controller::initAndValidateMouse(
-        const std::string& mouseAlgorithm, const std::string& mouseFile,
-        InterfaceType interfaceType, Direction initialDirection, Mouse* mouse) {
+        const std::string& mouseAlgorithm,
+        const std::string& mouseFile,
+        const std::string& interfaceType,
+        const std::string& initialDirection,
+        Model* model) {
 
     // Initialize the mouse with the file provided
-    bool success = mouse->initialize(mouseFile, initialDirection);
+    Direction direction = getInitialDirection(initialDirection, model);
+    bool success = model->getMouse()->initialize(mouseFile, direction);
     if (!success) {
         L()->error(
             "Unable to successfully initialize the mouse in the algorithm"
@@ -156,18 +174,28 @@ void Controller::initAndValidateMouse(
     }
 
     // Validate the mouse
-    if (interfaceType == InterfaceType::DISCRETE) {
-        if (!MouseChecker::isDiscreteInterfaceCompatible(*mouse)) {
+    if (STRING_TO_INTERFACE_TYPE.at(interfaceType) == InterfaceType::DISCRETE) {
+        if (!MouseChecker::isDiscreteInterfaceCompatible(*model->getMouse())) {
             L()->error("The mouse file \"%v\" is not discrete interface compatible.", mouseFile);
             SimUtilities::quit();
         }
     }
     else { // InterfaceType::CONTINUOUS
-        if (!MouseChecker::isContinuousInterfaceCompatible(*mouse)) {
+        if (!MouseChecker::isContinuousInterfaceCompatible(*model->getMouse())) {
             L()->error("The mouse file \"%v\" is not continuous interface compatible.", mouseFile);
             SimUtilities::quit();
         }
     }
+}
+
+Direction Controller::getInitialDirection(const std::string& initialDirection, Model* model) {
+    if (initialDirection == OPENING_DIRECTION_STRING) {
+        return (model->getMaze()->getTile(0, 0)->isWall(Direction::EAST) ? Direction::NORTH : Direction::EAST);
+    }
+    if (initialDirection == WALL_DIRECTION_STRING) {
+        return (model->getMaze()->getTile(0, 0)->isWall(Direction::NORTH) ? Direction::NORTH : Direction::EAST);
+    }
+    return STRING_TO_DIRECTION.at(initialDirection);
 }
 
 } // namespace sim

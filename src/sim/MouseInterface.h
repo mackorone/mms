@@ -3,7 +3,7 @@
 #include "InterfaceType.h"
 #include "MazeGraphic.h"
 #include "Mouse.h"
-#include "MouseInterfaceOptions.h"
+#include "StaticMouseAlgorithmOptions.h"
 #include "Param.h"
 
 #define ENSURE_DISCRETE_INTERFACE ensureDiscreteInterface(__func__);
@@ -27,9 +27,12 @@ public:
         const Maze* maze,
         Mouse* mouse,
         MazeGraphic* mazeGraphic,
-        std::set<char> allowableTileTextCharacters,
         IMouseAlgorithm* mouseAlgorithm,
-        MouseInterfaceOptions options);
+        std::set<char> allowableTileTextCharacters,
+        std::string interfaceType,
+        int tileTextNumberOfRows,
+        int tileTextNumberOfCols,
+        double wheelSpeedFraction);
 
     // ----- Any interface methods ----- //
 
@@ -144,14 +147,24 @@ public:
     double currentRotationDegrees();
 
 private:
-    // TODO: MACK - model and view objects here???
+
+    // Pointers to other objects
     const Maze* m_maze;
     Mouse* m_mouse;
     MazeGraphic* m_mazeGraphic;
-    std::set<char> m_allowableTileTextCharacters;
     IMouseAlgorithm* m_mouseAlgorithm;
-    MouseInterfaceOptions m_options;
-    bool m_inOrigin; // Whether or not the mouse has moved out the origin
+
+    // From the View object
+    std::set<char> m_allowableTileTextCharacters;
+
+    // Mouse algorithm options
+    std::string m_interfaceType;
+    int m_tileTextNumberOfRows;
+    int m_tileTextNumberOfCols;
+    double m_wheelSpeedFraction;
+
+    // Whether or not the mouse has moved out the origin
+    bool m_inOrigin;
 
     // Cache of tiles, for making clearAll methods faster
     std::set<std::pair<int, int>> m_tilesWithColor;

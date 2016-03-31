@@ -41,10 +41,13 @@ int Header::getHeight() const {
     return P()->windowBorderWidth() + numRows * m_textHeight + (numRows - 1) * m_rowSpacing;
 }
 
-void Header::setMouseAlgorithm(IMouseAlgorithm* mouseAlgorithm) {
-    // We have a special method to perform the assignment of this variable
-    // because its value is not known until after the Header is instantiated
+void Header::setMouseAlgorithmAndOptions(
+        IMouseAlgorithm* mouseAlgorithm,
+        StaticMouseAlgorithmOptions options) {
+    // We have a special method to perform the assignment of these variables
+    // because their values are not known until after the Header is instantiated
     m_mouseAlgorithm = mouseAlgorithm;
+    m_options = options;
 }
 
 void Header::updateWindowSize(int width, int height) {
@@ -135,28 +138,30 @@ int Header::getNumRows(int numLines, int numCols) const {
 }
 
 void Header::updateLines() {
+
     m_lines = {
 
         // Run info
         std::string("Run ID:                      ") + S()->runId(),
         std::string("Random Seed:                 ") + std::to_string(P()->randomSeed()),
-        (P()->useMazeFile() ?
-        std::string("Maze File:                   ") + P()->mazeFile() :
-        std::string("Maze Algo:                   ") + P()->mazeAlgorithm()
+        (
+            P()->useMazeFile() ?
+            std::string("Maze File:                   ") + P()->mazeFile() :
+            std::string("Maze Algo:                   ") + P()->mazeAlgorithm()
         ),
         std::string("Mouse Algo:                  ") + P()->mouseAlgorithm(),
 
         // Mouse Options
         std::string("Mouse File:                  ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-            m_mouseAlgorithm->mouseFile()),
+            m_options.mouseFile),
         std::string("Interface Type:              ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-            m_mouseAlgorithm->interfaceType()),
+            m_options.interfaceType),
         std::string("Initial Direction:           ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-            m_mouseAlgorithm->initialDirection()),
+            m_options.initialDirection),
         std::string("Tile Text Num Rows:          ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-            std::to_string(m_mouseAlgorithm->tileTextNumberOfRows())),
+            std::to_string(m_options.tileTextNumberOfRows)),
         std::string("Tile Text Num Cols:          ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-            std::to_string(m_mouseAlgorithm->tileTextNumberOfCols())),
+            std::to_string(m_options.tileTextNumberOfCols)),
         std::string("Allow Omniscience:           ") + (m_mouseAlgorithm == nullptr ? "NONE" :
             (m_mouseAlgorithm->allowOmniscience() ? "TRUE" : "FALSE")),
         std::string("Auto Clear Fog:              ") + (m_mouseAlgorithm == nullptr ? "NONE" :
@@ -167,22 +172,23 @@ void Header::updateLines() {
             (m_mouseAlgorithm->setTileTextWhenDistanceDeclared() ? "TRUE" : "FALSE")),
         std::string("Auto Set Tile Base Color:    ") + (m_mouseAlgorithm == nullptr ? "NONE" :
             (m_mouseAlgorithm->setTileBaseColorWhenDistanceDeclaredCorrectly() ? "TRUE" : "FALSE")),
-        std::string("Declare Wall On Read:        ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-            (!ContainerUtilities::mapContains(STRING_TO_INTERFACE_TYPE, m_mouseAlgorithm->interfaceType()) ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.at(m_mouseAlgorithm->interfaceType()) != InterfaceType::DISCRETE ? "N/A" :
-            (m_mouseAlgorithm->setTileBaseColorWhenDistanceDeclaredCorrectly() ? "TRUE" : "FALSE")))),
-        std::string("Use Tile Edge Movements:     ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-            (!ContainerUtilities::mapContains(STRING_TO_INTERFACE_TYPE, m_mouseAlgorithm->interfaceType()) ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.at(m_mouseAlgorithm->interfaceType()) != InterfaceType::DISCRETE ? "N/A" :
-            (m_mouseAlgorithm->useTileEdgeMovements() ? "TRUE" : "FALSE")))),
-        std::string("Wheel Speed Fraction:        ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-            (!ContainerUtilities::mapContains(STRING_TO_INTERFACE_TYPE, m_mouseAlgorithm->interfaceType()) ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.at(m_mouseAlgorithm->interfaceType()) != InterfaceType::DISCRETE ? "N/A" :
-            std::to_string(m_mouseAlgorithm->wheelSpeedFraction())))),
+        std::string("Wheel Speed Fraction:        ") +
+            (!ContainerUtilities::mapContains(STRING_TO_INTERFACE_TYPE, m_options.interfaceType) ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE.at(m_options.interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            std::to_string(m_options.wheelSpeedFraction))),
+        std::string("Declare Wall On Read:        ") +
+            (m_mouseAlgorithm == nullptr ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE.at(m_options.interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            (m_mouseAlgorithm->declareWallOnRead() ? "TRUE" : "FALSE"))),
+        std::string("Use Tile Edge Movements:     ") +
+            (m_mouseAlgorithm == nullptr ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE.at(m_options.interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            (m_mouseAlgorithm->useTileEdgeMovements() ? "TRUE" : "FALSE"))),
 
         // Mouse progress
-        std::string("Tiles Traversed:             ") + std::to_string(m_model->getWorld()->getNumberOfTilesTraversed())
-             + "/" + std::to_string(m_model->getMaze()->getWidth() * m_model->getMaze()->getHeight()),
+        std::string("Tiles Traversed:             ") +
+            std::to_string(m_model->getWorld()->getNumberOfTilesTraversed()) +
+            "/" + std::to_string(m_model->getMaze()->getWidth() * m_model->getMaze()->getHeight()),
         std::string("Closest Distance to Center:  ") + std::to_string(m_model->getWorld()->getClosestDistanceToCenter()),
         std::string("Current X (m):               ") + std::to_string(m_model->getMouse()->getCurrentTranslation().getX().getMeters()),
         std::string("Current Y (m):               ") + std::to_string(m_model->getMouse()->getCurrentTranslation().getY().getMeters()),

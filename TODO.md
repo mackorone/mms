@@ -1,9 +1,5 @@
 # High Priority
 
-- The static info in the header should actually be static - right now it changes based on what's returned
-    - Make sure the static methods are actually only ever called once
-- Zoomed map still shows when header should occupy the full screen
-- I don't need pointer to member... I can just call the functions directly - update code comments
 - Sim time is lagging a little bit
 - Discrete mode speed...
     - Ensure that the wheel speed is not too high in the MouseInterface (so that the mouse does not clip through walls)

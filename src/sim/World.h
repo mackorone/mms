@@ -13,6 +13,7 @@ class World {
 
 public:
     World(const Maze* maze, Mouse* mouse);
+    void setInterfaceType(InterfaceType interfaceType);
 
     Seconds getBestTimeToCenter() const;
     Seconds getTimeSinceOriginDeparture() const;
@@ -20,15 +21,11 @@ public:
     int getNumberOfTilesTraversed() const;
     int getClosestDistanceToCenter() const;
 
-    void setInterfaceType(InterfaceType interfaceType);
-    InterfaceType getInterfaceType() const;
-
     void simulate();
 
 private:
     const Maze* m_maze;
     Mouse* m_mouse;
-
     InterfaceType m_interfaceType;
     
     Seconds m_bestTimeToCenter;
