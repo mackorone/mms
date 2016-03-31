@@ -8,6 +8,10 @@
       time and then just teleports... sort of like bullets in other physics
       simulators (note that the elapsed sim time should only be updated as much
       as necessary to get the mouse to its destination)
+- Make an algo that can switch between tile edge movements and not
+    - Proof of concept
+- Stepper motor
+- Sensor type (digital or analog)
 - Add a way to time the algorithms
     - Make sure consistent at all speeds
 - Add debugging tips
@@ -22,9 +26,6 @@
 - Make some video tutorials
 - Make a mechanism for easily merging the a discrete algo into a continuous one
     - Figure out how to bring the high level logic into the control algo
-- Make a voluntary Delay in setTileBaseColor, text
-- Stepper motor
-- Sensor type (digital or analog)
 - Make MouseInterface into an interface, and then implement the simulator interface, make a real-world interface
 - Look at Tomasz' maze website
 - Figure out how to get rid of ifdefs in algorithm
@@ -42,14 +43,9 @@
 - Continuous performance
     - CPU with megaMouse.xml
     - MinSleepDuration is a little bit weird - sometimes we try to sleep less than that
-- Make smooth diagonals
-    - https://www.youtube.com/watch?v=HPvke3fknrc
-    - Stringing together diagonal movements (with smooth turns) is difficult
-    - Use small curves to do diagonals
 
 # Medum Priority
 
-- Should the interface type really be stored in world? Seems like it'd go well in state
 - Make a system for nearly instantly checking stats on many mazes:
     - like unit tests
     - solved or not
@@ -68,7 +64,7 @@
     - halfWallWidth
 - If the wheel is at the center, it should have zero turn contribution, not infinite
 - Organize params in res/parameters.xml and Param.h/.cpp
-- Improve sensor readings by getting the actual complete polygon, not apporximated
+- Improve sensor readings by getting the actual complete polygon, not approximated
 - Break up MouseInterface into DiscreteMouseInterface and ContinuousMouseInterface
 - isDiscreteInterfaceCompatible and isContinuousInterfaceCompatible
 - Enable steering the wheels and sensors during run
@@ -103,6 +99,9 @@
 - Support multiple mice
 - Make diagonals smoother
     - make an option for smooth edge movements, including regular turns
+    - https://www.youtube.com/watch?v=HPvke3fknrc
+    - Stringing together diagonal movements (with smooth turns) is difficult
+    - Use small curves to do diagonals
 
 # Low Priority
 
@@ -145,7 +144,6 @@
 - Convert primitive types to GL types (or vice versa)
 - Return const references instead of values (pointers???)
 - Reduce includes as much as possible
-- Rewrite the Makefile to use an "inc" directory
 - Change "bool foo(false)" to "bool foo = false" for primitive - they look like function calls
 - write "isDirectory(std::string path)" and enforce this where necessary
 - write getRandom() and replace old calls to rand()

@@ -48,6 +48,9 @@ public:
     bool tileDistanceVisible();
     void setTileDistanceVisible(bool tileDistanceVisible);
 
+    bool headerVisible();
+    void setHeaderVisible(bool headerVisible);
+
     bool wireframeMode();
     void setWireframeMode(bool wireframeMode);
 
@@ -81,6 +84,7 @@ private:
     bool m_tileFogVisible;
     bool m_tileTextVisible;
     bool m_tileDistanceVisible;
+    bool m_headerVisible;
     bool m_wireframeMode;
     bool m_paused;
     double m_simSpeed;

@@ -18,6 +18,7 @@ public:
         IMouseAlgorithm* mouseAlgorithm,
         StaticMouseAlgorithmOptions options);
     void updateWindowSize(int width, int height);
+    void updateLinesAndColumnStartingPositions();
     void draw();
 
 private:
@@ -33,14 +34,15 @@ private:
     std::vector<std::string> m_lines; // The lines of text that we're drawing in the header
     TextDrawer* m_textDrawer; // The object used to dimension and draw the header text
 
-    // Return the column starting positions, based on member variable values
-    std::vector<int> getColumnStartingPositions() const;
-
     // Return the number of rows of text that to be displayed
     int getNumRows(int numLines, int numCols) const;
 
     // Update the lines of text to be drawn in the header
     void updateLines();
+
+    // Update the column starting positions
+    void updateColumnStartingPositions();
+
 };
 
 } // namespace sim

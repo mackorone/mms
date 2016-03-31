@@ -226,6 +226,11 @@ void View::keyPress(unsigned char key, int x, int y) {
         S()->setTileDistanceVisible(!S()->tileDistanceVisible());
         m_mazeGraphic->updateText();
     }
+    else if (key == 'h') {
+        // Toggle header visibility
+        S()->setHeaderVisible(!S()->headerVisible());
+        m_header->updateLinesAndColumnStartingPositions();
+    }
     else if (key == 'w') {
         // Toggle wireframe mode
         S()->setWireframeMode(!S()->wireframeMode());

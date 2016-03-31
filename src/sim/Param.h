@@ -52,6 +52,7 @@ public:
     bool defaultTileFogVisible();
     bool defaultTileTextVisible();
     bool defaultTileDistanceVisible();
+    bool defaultHeaderVisible();
     double tileFogAlpha();
     bool defaultWireframeMode();
     std::string distanceCorrectTileBaseColor();
@@ -136,6 +137,7 @@ private:
     bool m_defaultTileFogVisible;
     bool m_defaultTileTextVisible;
     bool m_defaultTileDistanceVisible;
+    bool m_defaultHeaderVisible;
     double m_tileFogAlpha;
     bool m_defaultWireframeMode;
     std::string m_distanceCorrectTileBaseColor;

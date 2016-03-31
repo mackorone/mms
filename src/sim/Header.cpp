@@ -53,7 +53,12 @@ void Header::setMouseAlgorithmAndOptions(
 void Header::updateWindowSize(int width, int height) {
     m_windowWidth = width;
     m_windowHeight = height;
-    m_columnStartingPositions = getColumnStartingPositions();
+    updateColumnStartingPositions();
+}
+
+void Header::updateLinesAndColumnStartingPositions() {
+    updateLines();
+    updateColumnStartingPositions();
 }
 
 void Header::draw() {
@@ -81,77 +86,35 @@ void Header::draw() {
     m_textDrawer->concludeDrawingTextForFrame();
 }
 
-std::vector<int> Header::getColumnStartingPositions() const {
-
-    // This uses:
-    // - m_windowWidth
-    // - m_lines
-    // - m_columnSpacing
-
-    static auto willFit = [&](const std::vector<double>& columnWidths) {
-        double sum = 0.0;
-        for (double width : columnWidths) {
-            sum += width;
-        }
-        sum += 2 * P()->windowBorderWidth();
-        sum += (columnWidths.size() - 1) * m_columnSpacing;
-        return sum <= m_windowWidth;
-    };
-
-    static auto getColumnWidths = [&](int numCols) {
-        std::vector<double> columnWidths;
-        int numRows = getNumRows(m_lines.size(), numCols);
-        for (int i = 0; i < numCols; i += 1) {
-            double maxLineWidth = 0.0;
-            for (int j = 0; j < numRows && i * numRows + j < m_lines.size(); j += 1) {
-                double lineWidth = m_textDrawer->getWidth(m_lines.at(i * numRows + j));
-                if (maxLineWidth < lineWidth) {
-                    maxLineWidth = lineWidth;
-                }
-            }
-            columnWidths.push_back(maxLineWidth);
-        }
-        return columnWidths;
-    };
-
-    // Determine the optimal column widths
-    std::vector<double> columnWidths;
-    int numCols = 1;
-    do {
-        columnWidths = getColumnWidths(numCols);
-        numCols += 1;
-    }
-    while (willFit(getColumnWidths(numCols)));
-
-    // Calculate the starting positions based on the column widths
-    std::vector<int> columnStartingPositions;
-    int currentColumnStart = P()->windowBorderWidth();
-    for (int i = 0; i < columnWidths.size(); i += 1) {
-        columnStartingPositions.push_back(currentColumnStart);
-        currentColumnStart += columnWidths.at(i) + m_columnSpacing;
-    }
-    return columnStartingPositions;
-}
-
 int Header::getNumRows(int numLines, int numCols) const {
     return numLines / numCols + (numLines % numCols == 0 ? 0 : 1);
 }
 
 void Header::updateLines() {
 
+    if (!S()->headerVisible()) {
+        m_lines = {};
+        return;
+    }
+
     m_lines = {
 
         // Run info
         std::string("Run ID:                      ") + S()->runId(),
         std::string("Random Seed:                 ") + std::to_string(P()->randomSeed()),
+
+        // Maze info
         (
             P()->useMazeFile() ?
             std::string("Maze File:                   ") + P()->mazeFile() :
             std::string("Maze Algo:                   ") + P()->mazeAlgorithm()
         ),
-        std::string("Mouse Algo:                  ") + P()->mouseAlgorithm(),
+        std::string("Maze Width:                  ") + std::to_string(m_model->getMaze()->getWidth()),
+        std::string("Maze Height:                 ") + std::to_string(m_model->getMaze()->getHeight()),
+        std::string("Maze Is Official:            ") + (m_model->getMaze()->isOfficialMaze() ? "TRUE" : "FALSE"),
 
-        // Mouse Options
+        // Mouse Info
+        std::string("Mouse Algo:                  ") + P()->mouseAlgorithm(),
         std::string("Mouse File:                  ") + (m_mouseAlgorithm == nullptr ? "NONE" :
             m_options.mouseFile),
         std::string("Interface Type:              ") + (m_mouseAlgorithm == nullptr ? "NONE" :
@@ -217,10 +180,65 @@ void Header::updateLines() {
         std::string("Tile Fog Visible (g):        ") + (S()->tileFogVisible() ? "TRUE" : "FALSE"),
         std::string("Tile Text Visible (x):       ") + (S()->tileTextVisible() ? "TRUE" : "FALSE"),
         std::string("Tile Distance Visible (d):   ") + (S()->tileDistanceVisible() ? "TRUE" : "FALSE"),
+        std::string("Header Visible (h):          ") + (S()->headerVisible() ? "TRUE" : "FALSE"),
         std::string("Wireframe Mode (w):          ") + (S()->wireframeMode() ? "TRUE" : "FALSE"),
         std::string("Paused (p):                  ") + (S()->paused() ? "TRUE" : "FALSE"),
         std::string("Sim Speed (f, s):            ") + std::to_string(S()->simSpeed()),
     };
+}
+
+void Header::updateColumnStartingPositions() {
+
+    // This uses:
+    // - m_windowWidth
+    // - m_lines
+    // - m_columnSpacing
+
+    static auto willFit = [&](const std::vector<double>& columnWidths) {
+        double sum = 0.0;
+        for (double width : columnWidths) {
+            sum += width;
+        }
+        sum += 2 * P()->windowBorderWidth();
+        sum += (columnWidths.size() - 1) * m_columnSpacing;
+        return sum <= m_windowWidth;
+    };
+
+    static auto getColumnWidths = [&](int numCols) {
+        std::vector<double> columnWidths;
+        int numRows = getNumRows(m_lines.size(), numCols);
+        for (int i = 0; i < numCols; i += 1) {
+            double maxLineWidth = 0.0;
+            for (int j = 0; j < numRows && i * numRows + j < m_lines.size(); j += 1) {
+                double lineWidth = m_textDrawer->getWidth(m_lines.at(i * numRows + j));
+                if (maxLineWidth < lineWidth) {
+                    maxLineWidth = lineWidth;
+                }
+            }
+            columnWidths.push_back(maxLineWidth);
+        }
+        return columnWidths;
+    };
+
+    // Determine the optimal column widths
+    std::vector<double> columnWidths;
+    int numCols = 1;
+    do {
+        columnWidths = getColumnWidths(numCols);
+        numCols += 1;
+    }
+    while (willFit(getColumnWidths(numCols)));
+
+    // Calculate the starting positions based on the column widths
+    std::vector<int> columnStartingPositions;
+    int currentColumnStart = P()->windowBorderWidth();
+    for (int i = 0; i < columnWidths.size(); i += 1) {
+        columnStartingPositions.push_back(currentColumnStart);
+        currentColumnStart += columnWidths.at(i) + m_columnSpacing;
+    }
+
+    // Actually update the member variable
+    m_columnStartingPositions = columnStartingPositions;
 }
 
 } // namespace sim

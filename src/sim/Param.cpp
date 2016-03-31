@@ -104,6 +104,8 @@ Param::Param() {
         "default-tile-text-visible", true);
     m_defaultTileDistanceVisible = parser.getBoolIfHasBool(
         "default-tile-distance-visible", true);
+    m_defaultHeaderVisible = parser.getBoolIfHasBool(
+        "default-header-visible", true);
     m_tileFogAlpha = parser.getDoubleIfHasDoubleAndInRange(
         "tile-fog-alpha", 0.15, 0.0, 1.0);
     m_defaultWireframeMode = parser.getBoolIfHasBool(
@@ -325,6 +327,10 @@ bool Param::defaultTileTextVisible() {
 
 bool Param::defaultTileDistanceVisible() {
     return m_defaultTileDistanceVisible;
+}
+
+bool Param::defaultHeaderVisible() {
+    return m_defaultHeaderVisible;
 }
 
 double Param::tileFogAlpha() {
