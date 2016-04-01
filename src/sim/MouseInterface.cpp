@@ -26,7 +26,7 @@ MouseInterface::MouseInterface(
         MazeGraphic* mazeGraphic,
         IMouseAlgorithm* mouseAlgorithm,
         std::set<char> allowableTileTextCharacters,
-        MouseInterfaceOptions options) :
+        StaticMouseAlgorithmOptions options) :
         m_maze(maze),
         m_mouse(mouse),
         m_mazeGraphic(mazeGraphic),

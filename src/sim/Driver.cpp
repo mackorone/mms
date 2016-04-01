@@ -66,26 +66,12 @@ void Driver::drive(int argc, char* argv[]) {
     m_controller = new Controller(m_model, m_view);
 
     // Initialize mouse algorithm values in the model and view
-    m_model->getWorld()->setWorldOptions(
-        {
-            m_controller->getOptions().interfaceType
-        }
+    m_model->getWorld()->setOptions(
+        m_controller->getOptions()
     );
     m_view->setMouseAlgorithmAndOptions(
         m_controller->getMouseAlgorithm(),
-        {
-            m_controller->getOptions().interfaceType,
-            m_controller->getOptions().tileTextNumberOfRows,
-            m_controller->getOptions().tileTextNumberOfCols
-        },
-        {
-            m_controller->getOptions().mouseFile,
-            m_controller->getOptions().interfaceType,
-            m_controller->getOptions().initialDirection,
-            m_controller->getOptions().tileTextNumberOfRows,
-            m_controller->getOptions().tileTextNumberOfCols,
-            m_controller->getOptions().wheelSpeedFraction
-        }
+        m_controller->getOptions()
     );
 
     // Initialize the tile text, now that the options have been set

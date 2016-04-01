@@ -24,7 +24,7 @@ World::World(
         m_closestDistanceToCenter(-1) {
 }
 
-void World::setWorldOptions(WorldOptions options) {
+void World::setOptions(StaticMouseAlgorithmOptions options) {
     m_options = options;
 }
 

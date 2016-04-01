@@ -3,7 +3,7 @@
 #include "InterfaceType.h"
 #include "MazeGraphic.h"
 #include "Mouse.h"
-#include "Options.h"
+#include "StaticMouseAlgorithmOptions.h"
 #include "Param.h"
 
 #define ENSURE_DISCRETE_INTERFACE ensureDiscreteInterface(__func__);
@@ -29,7 +29,7 @@ public:
         MazeGraphic* mazeGraphic,
         IMouseAlgorithm* mouseAlgorithm,
         std::set<char> allowableTileTextCharacters,
-        MouseInterfaceOptions options);
+        StaticMouseAlgorithmOptions options);
 
     // ----- Any interface methods ----- //
 
@@ -149,7 +149,7 @@ private:
     MazeGraphic* m_mazeGraphic;
     IMouseAlgorithm* m_mouseAlgorithm;
     std::set<char> m_allowableTileTextCharacters;
-    MouseInterfaceOptions m_options;
+    StaticMouseAlgorithmOptions m_options;
 
     // Whether or not the mouse has moved out the origin
     bool m_inOrigin;

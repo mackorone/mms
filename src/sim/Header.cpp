@@ -43,7 +43,7 @@ int Header::getHeight() const {
 
 void Header::setMouseAlgorithmAndOptions(
         IMouseAlgorithm* mouseAlgorithm,
-        HeaderOptions options) {
+        StaticMouseAlgorithmOptions options) {
     m_mouseAlgorithm = mouseAlgorithm;
     m_options = options;
 }

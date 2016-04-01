@@ -46,11 +46,10 @@ MouseGraphic* View::getMouseGraphic() {
 
 void View::setMouseAlgorithmAndOptions(
         IMouseAlgorithm* mouseAlgorithm,
-        ViewOptions viewOptions,
-        HeaderOptions headerOptions) {
+        StaticMouseAlgorithmOptions options) {
     m_mouseAlgorithm = mouseAlgorithm;
-    m_options = viewOptions;
-    m_header->setMouseAlgorithmAndOptions(mouseAlgorithm, headerOptions);
+    m_options = options;
+    m_header->setMouseAlgorithmAndOptions(mouseAlgorithm, options);
 }
 
 void View::refresh() {

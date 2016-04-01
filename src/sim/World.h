@@ -5,7 +5,7 @@
 #include "InterfaceType.h"
 #include "Maze.h"
 #include "Mouse.h"
-#include "Options.h"
+#include "StaticMouseAlgorithmOptions.h"
 #include "units/Seconds.h"
 
 namespace sim {
@@ -14,7 +14,7 @@ class World {
 
 public:
     World(const Maze* maze, Mouse* mouse);
-    void setWorldOptions(WorldOptions options);
+    void setOptions(StaticMouseAlgorithmOptions options);
 
     Seconds getBestTimeToCenter() const;
     Seconds getTimeSinceOriginDeparture() const;
@@ -27,7 +27,7 @@ public:
 private:
     const Maze* m_maze;
     Mouse* m_mouse;
-    WorldOptions m_options;
+    StaticMouseAlgorithmOptions m_options;
     
     Seconds m_bestTimeToCenter;
     Seconds m_timeOfOriginDeparture;

@@ -9,7 +9,7 @@
 #include "MazeGraphic.h"
 #include "Model.h"
 #include "MouseGraphic.h"
-#include "Options.h"
+#include "StaticMouseAlgorithmOptions.h"
 #include "TriangleGraphic.h"
 #include "TriangleTexture.h"
 
@@ -27,8 +27,7 @@ public:
 
     void setMouseAlgorithmAndOptions(
         IMouseAlgorithm* mouseAlgorithm,
-        ViewOptions viewOptions,
-        HeaderOptions headerOptions);
+        StaticMouseAlgorithmOptions options);
 
     void refresh();
     void updateWindowSize(int width, int height);
@@ -68,7 +67,7 @@ private:
 
     // Used to determine whether or not to automatically clear fog
     IMouseAlgorithm* m_mouseAlgorithm;
-    ViewOptions m_options;
+    StaticMouseAlgorithmOptions m_options;
 
     // Polygon program variables
     tdogl::Program* m_polygonProgram;

@@ -61,12 +61,7 @@ Controller::Controller(Model* model, View* view) {
         view->getMazeGraphic(),
         m_mouseAlgorithm,
         view->getAllowableTileTextCharacters(),
-        {
-            m_options.interfaceType,
-            m_options.tileTextNumberOfRows,
-            m_options.tileTextNumberOfCols,
-            m_options.wheelSpeedFraction
-        }
+        m_options
     );
 }
 
