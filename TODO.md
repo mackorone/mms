@@ -1,5 +1,9 @@
 # High Priority
 
+- Current rotation jumps between 0 and 360 on megaMouse right wall follow
+- Make MouseInterfaceOptions, WorldOptions, ViewOptions, so it's easier to understand
+    - Make a note of where the MouseAlgoOption methods are being called
+    - Make a note of all things that have a MouseAlgo pointer
 - Sim time is lagging a little bit
 - Discrete mode speed...
     - Ensure that the wheel speed is not too high in the MouseInterface (so that the mouse does not clip through walls)

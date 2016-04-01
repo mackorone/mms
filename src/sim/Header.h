@@ -23,7 +23,7 @@ public:
 
 private:
     Model* m_model;
-    IMouseAlgorithm* m_mouseAlgorithm; // Used to get Mouse Interface Options
+    IMouseAlgorithm* m_mouseAlgorithm; // Used to retrieve dynamic mouse algo options
     StaticMouseAlgorithmOptions m_options; // The options whose values don't change
     int m_windowWidth; // The total height of the window, in pixels
     int m_windowHeight; // The total width of the window, in pixels
