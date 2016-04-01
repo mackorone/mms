@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Model.h"
-#include "StaticMouseAlgorithmOptions.h"
+#include "Options.h"
 #include "TextDrawer.h"
 #include "World.h"
 
@@ -16,7 +16,7 @@ public:
     int getHeight() const;
     void setMouseAlgorithmAndOptions(
         IMouseAlgorithm* mouseAlgorithm,
-        StaticMouseAlgorithmOptions options);
+        HeaderOptions options);
     void updateWindowSize(int width, int height);
     void updateLinesAndColumnStartingPositions();
     void draw();
@@ -24,7 +24,7 @@ public:
 private:
     Model* m_model;
     IMouseAlgorithm* m_mouseAlgorithm; // Used to retrieve dynamic mouse algo options
-    StaticMouseAlgorithmOptions m_options; // The options whose values don't change
+    HeaderOptions m_options; // The options whose values don't change
     int m_windowWidth; // The total height of the window, in pixels
     int m_windowHeight; // The total width of the window, in pixels
     int m_textHeight; // The height of the text, in pixels

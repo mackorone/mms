@@ -46,10 +46,11 @@ MouseGraphic* View::getMouseGraphic() {
 
 void View::setMouseAlgorithmAndOptions(
         IMouseAlgorithm* mouseAlgorithm,
-        StaticMouseAlgorithmOptions options) {
+        ViewOptions viewOptions,
+        HeaderOptions headerOptions) {
     m_mouseAlgorithm = mouseAlgorithm;
-    m_options = options;
-    m_header->setMouseAlgorithmAndOptions(mouseAlgorithm, options);
+    m_options = viewOptions;
+    m_header->setMouseAlgorithmAndOptions(mouseAlgorithm, headerOptions);
 }
 
 void View::refresh() {
@@ -136,12 +137,15 @@ std::set<char> View::getAllowableTileTextCharacters() {
     return ContainerUtilities::keys(m_fontImageMap);
 }
 
-void View::initTileGraphicText(std::pair<int, int> tileTextMaxSize) {
+void View::initTileGraphicText() {
     // Initialze the tile text in the buffer class, do caching for speed improvement
     m_bufferInterface->initTileGraphicText(
         Meters(P()->wallLength()),
         Meters(P()->wallWidth()),
-        tileTextMaxSize,
+        std::make_pair(
+            m_options.tileTextNumberOfRows,
+            m_options.tileTextNumberOfCols
+        ),
         m_fontImageMap,
         P()->tileTextBorderFraction(),
         STRING_TO_TILE_TEXT_ALIGNMENT.at(P()->tileTextAlignment()));

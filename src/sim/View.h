@@ -9,7 +9,7 @@
 #include "MazeGraphic.h"
 #include "Model.h"
 #include "MouseGraphic.h"
-#include "StaticMouseAlgorithmOptions.h"
+#include "Options.h"
 #include "TriangleGraphic.h"
 #include "TriangleTexture.h"
 
@@ -27,13 +27,14 @@ public:
 
     void setMouseAlgorithmAndOptions(
         IMouseAlgorithm* mouseAlgorithm,
-        StaticMouseAlgorithmOptions options);
+        ViewOptions viewOptions,
+        HeaderOptions headerOptions);
 
     void refresh();
     void updateWindowSize(int width, int height);
 
     std::set<char> getAllowableTileTextCharacters();
-    void initTileGraphicText(std::pair<int, int> tileGraphicTextMaxSize);
+    void initTileGraphicText();
 
     void keyPress(unsigned char key, int x, int y);
     void specialKeyPress(int key, int x, int y);
@@ -67,7 +68,7 @@ private:
 
     // Used to determine whether or not to automatically clear fog
     IMouseAlgorithm* m_mouseAlgorithm;
-    StaticMouseAlgorithmOptions m_options;
+    ViewOptions m_options;
 
     // Polygon program variables
     tdogl::Program* m_polygonProgram;

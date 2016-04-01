@@ -43,9 +43,7 @@ int Header::getHeight() const {
 
 void Header::setMouseAlgorithmAndOptions(
         IMouseAlgorithm* mouseAlgorithm,
-        StaticMouseAlgorithmOptions options) {
-    // We have a special method to perform the assignment of these variables
-    // because their values are not known until after the Header is instantiated
+        HeaderOptions options) {
     m_mouseAlgorithm = mouseAlgorithm;
     m_options = options;
 }

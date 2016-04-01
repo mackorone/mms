@@ -66,21 +66,30 @@ void Driver::drive(int argc, char* argv[]) {
     m_controller = new Controller(m_model, m_view);
 
     // Initialize mouse algorithm values in the model and view
-    m_model->getWorld()->setInterfaceType(
-        STRING_TO_INTERFACE_TYPE.at(
+    m_model->getWorld()->setWorldOptions(
+        {
             m_controller->getOptions().interfaceType
-        )
+        }
     );
     m_view->setMouseAlgorithmAndOptions(
         m_controller->getMouseAlgorithm(),
-        m_controller->getOptions()
-    );
-    m_view->initTileGraphicText(
-        std::make_pair(
+        {
+            m_controller->getOptions().interfaceType,
             m_controller->getOptions().tileTextNumberOfRows,
             m_controller->getOptions().tileTextNumberOfCols
-        )
+        },
+        {
+            m_controller->getOptions().mouseFile,
+            m_controller->getOptions().interfaceType,
+            m_controller->getOptions().initialDirection,
+            m_controller->getOptions().tileTextNumberOfRows,
+            m_controller->getOptions().tileTextNumberOfCols,
+            m_controller->getOptions().wheelSpeedFraction
+        }
     );
+
+    // Initialize the tile text, now that the options have been set
+    m_view->initTileGraphicText();
 
     // Lastly, we need to populate the graphics buffers with maze information,
     // but only after we've initialized the tile graphic text

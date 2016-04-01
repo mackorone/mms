@@ -3,7 +3,7 @@
 #include "InterfaceType.h"
 #include "MazeGraphic.h"
 #include "Mouse.h"
-#include "StaticMouseAlgorithmOptions.h"
+#include "Options.h"
 #include "Param.h"
 
 #define ENSURE_DISCRETE_INTERFACE ensureDiscreteInterface(__func__);
@@ -29,10 +29,7 @@ public:
         MazeGraphic* mazeGraphic,
         IMouseAlgorithm* mouseAlgorithm,
         std::set<char> allowableTileTextCharacters,
-        std::string interfaceType,
-        int tileTextNumberOfRows,
-        int tileTextNumberOfCols,
-        double wheelSpeedFraction);
+        MouseInterfaceOptions options);
 
     // ----- Any interface methods ----- //
 
@@ -147,21 +144,12 @@ public:
     double currentRotationDegrees();
 
 private:
-
-    // Pointers to other objects
     const Maze* m_maze;
     Mouse* m_mouse;
     MazeGraphic* m_mazeGraphic;
     IMouseAlgorithm* m_mouseAlgorithm;
-
-    // From the View object
     std::set<char> m_allowableTileTextCharacters;
-
-    // Mouse algorithm options
-    std::string m_interfaceType;
-    int m_tileTextNumberOfRows;
-    int m_tileTextNumberOfCols;
-    double m_wheelSpeedFraction;
+    MouseInterfaceOptions m_options;
 
     // Whether or not the mouse has moved out the origin
     bool m_inOrigin;

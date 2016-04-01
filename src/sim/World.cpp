@@ -24,11 +24,8 @@ World::World(
         m_closestDistanceToCenter(-1) {
 }
 
-void World::setInterfaceType(InterfaceType interfaceType) {
-    // We have a special method to initialize the interface type because we
-    // don't know the value when the World object is constructed - we have to
-    // wait until the mouse algorithm is instantiated to retrieve the value
-    m_interfaceType = interfaceType;
+void World::setWorldOptions(WorldOptions options) {
+    m_options = options;
 }
 
 Seconds World::getBestTimeToCenter() const {
@@ -172,7 +169,7 @@ void World::checkCollision() {
     }
 
     // If the interface type is DISCRETE, let this thread exit
-    if (m_interfaceType == InterfaceType::DISCRETE) {
+    if (STRING_TO_INTERFACE_TYPE.at(m_options.interfaceType) == InterfaceType::DISCRETE) {
         return;
     }
 

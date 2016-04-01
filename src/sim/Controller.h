@@ -5,7 +5,7 @@
 
 #include "../mouse/IMouseAlgorithm.h"
 #include "MouseInterface.h"
-#include "StaticMouseAlgorithmOptions.h"
+#include "Options.h"
 
 namespace sim {
 

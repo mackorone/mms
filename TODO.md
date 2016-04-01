@@ -1,6 +1,6 @@
 # High Priority
 
-- Current rotation jumps between 0 and 360 on megaMouse right wall follow
+- Find all files that include "Options.h"
 - Make MouseInterfaceOptions, WorldOptions, ViewOptions, so it's easier to understand
     - Make a note of where the MouseAlgoOption methods are being called
     - Make a note of all things that have a MouseAlgo pointer
@@ -110,6 +110,7 @@
 # Low Priority
 
 - Add gear ratio to the wheels
+- Current rotation jumps between 0 and 360 on megaMouse right wall follow
 - Pointers to wall polygons in each tile, save space by not breaking up walls/corners into multiple tiles
 - Get rid of as much platform dependant code as possible
 - Clean up the coding standards
