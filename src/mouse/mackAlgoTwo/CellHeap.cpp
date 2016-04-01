@@ -1,7 +1,5 @@
 #include "CellHeap.h"
 
-#include <cstdlib>
-
 #include "Assert.h"
 #include "Cell.h"
 
@@ -62,14 +60,33 @@ int CellHeap::getRightChildIndex(int index) {
     return (index + 1) * 2;
 }
 
-void CellHeap::swap(int indexOne, int indexTwo) {
-    ASSERT_LE(0, indexOne);
-    ASSERT_LE(0, indexTwo);
-    ASSERT_LT(indexOne, m_size);
-    ASSERT_LT(indexTwo, m_size);
-    Cell* temp = m_data[indexOne];
-    m_data[indexOne] = m_data[indexTwo];
-    m_data[indexTwo] = temp;
+Cell* CellHeap::getLeftChildOrNull(int index) {
+    return (
+        getLeftChildIndex(index) < m_size ?
+        m_data[getLeftChildIndex(index)] : NULL
+    );
+}
+
+Cell* CellHeap::getRightChildOrNull(int index) {
+    return (
+        getRightChildIndex(index) < m_size ?
+        m_data[getRightChildIndex(index)] : NULL
+    );
+}
+
+int CellHeap::getMinChildIndex(int index) {
+    Cell* leftChild = getLeftChildOrNull(index);
+    Cell* rightChild = getRightChildOrNull(index);
+    if (leftChild == NULL) {
+        return -1;
+    }
+    if (rightChild == NULL) {
+        return getLeftChildIndex(index);
+    } 
+    return (
+        leftChild->getDistance() < rightChild->getDistance() ?
+        getLeftChildIndex(index) : getRightChildIndex(index)
+    );
 }
 
 void CellHeap::heapifyUp(int index) {
@@ -83,39 +100,23 @@ void CellHeap::heapifyUp(int index) {
 }
 
 void CellHeap::heapifyDown(int index) {
-    Cell*  leftChild = getChild(index, true);
-    Cell* rightChild = getChild(index, false);
     while (
-        ( leftChild != NULL &&  leftChild->getDistance() < m_data[index]->getDistance()) ||
-        (rightChild != NULL && rightChild->getDistance() < m_data[index]->getDistance())
+        0 <= getMinChildIndex(index) &&
+        m_data[getMinChildIndex(index)]->getDistance() < m_data[index]->getDistance()
     ) {
-        int minChildIndex = getLeftChildIndex(index);
-        if (
-            rightChild != NULL &&
-            rightChild->getDistance() < m_data[minChildIndex]->getDistance()
-        ) {
-            minChildIndex = getRightChildIndex(index);
-        }
-        swap(index, minChildIndex);
-        index = minChildIndex;
-        leftChild = getChild(index, true);
-        rightChild = getChild(index, false);
+        swap(index, getMinChildIndex(index));
+        index = getMinChildIndex(index);
     }
 }
 
-Cell* CellHeap::getChild(int index, bool left) {
-    Cell* child = NULL;
-    if (left) {
-        if (getLeftChildIndex(index) < m_size) {
-            child = m_data[getLeftChildIndex(index)];
-        }
-    }
-    else {
-        if (getRightChildIndex(index) < m_size) {
-            child = m_data[getRightChildIndex(index)];
-        }
-    }
-    return child;
+void CellHeap::swap(int indexOne, int indexTwo) {
+    ASSERT_LE(0, indexOne);
+    ASSERT_LE(0, indexTwo);
+    ASSERT_LT(indexOne, m_size);
+    ASSERT_LT(indexTwo, m_size);
+    Cell* temp = m_data[indexOne];
+    m_data[indexOne] = m_data[indexTwo];
+    m_data[indexTwo] = temp;
 }
 
 } // namespace mackAlgoTwo

@@ -27,10 +27,13 @@ private:
     int getLeftChildIndex(int index); 
     int getRightChildIndex(int index); 
 
-    void swap(int indexOne, int indexTwo);
+    Cell* getLeftChildOrNull(int index);
+    Cell* getRightChildOrNull(int index);
+    int getMinChildIndex(int index);
+
     void heapifyUp(int index);
     void heapifyDown(int index);
-    Cell* getChild(int index, bool left);
+    void swap(int indexOne, int indexTwo);
 };
 
 } // namespace mackAlgoTwo
