@@ -9,6 +9,7 @@
 #include "forward/Forward.h"
 #include "leftWallFollow/LeftWallFollow.h"
 #include "mackAlgo/MackAlgo.h"
+#include "mackAlgoTwo/MackAlgoTwo.h"
 #include "manual/Manual.h"
 #include "randomizedWallFollow/RandomizedWallFollow.h"
 #include "rightWallFollow/RightWallFollow.h"
@@ -37,6 +38,7 @@ std::pair<bool, IMouseAlgorithm*> MouseAlgorithms::helper(const std::string& str
     ALGO("Forward", new forward::Forward());
     ALGO("LeftWallFollow", new leftWallFollow::LeftWallFollow());
     ALGO("MackAlgo", new mackAlgo::MackAlgo());
+    ALGO("MackAlgoTwo", new mackAlgoTwo::MackAlgoTwo());
     ALGO("Manual", new manual::Manual());
     ALGO("RandomizedWallFollow", new randomizedWallFollow::RandomizedWallFollow());
     ALGO("RightWallFollow", new rightWallFollow::RightWallFollow());

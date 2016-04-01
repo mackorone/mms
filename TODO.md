@@ -1,5 +1,6 @@
 # High Priority
 
+- Draw dots on edges
 - Sim time is lagging a little bit
 - Discrete mode speed...
     - Ensure that the wheel speed is not too high in the MouseInterface (so that the mouse does not clip through walls)
