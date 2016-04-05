@@ -39,6 +39,10 @@ void CellHeap::push(Cell* cell) {
 Cell* CellHeap::pop() {
 
     ASSERT_LT(0, m_size);
+    for (int i = 1; i < m_size; i += 1) {
+        // TODO: MACK - this fails... this is bad
+        ASSERT_LE(m_data[0]->getDistance(), m_data[i]->getDistance());
+    }
 
     Cell* cell = m_data[0];
 
@@ -56,9 +60,8 @@ Cell* CellHeap::pop() {
 void CellHeap::heapify(int index) {
     ASSERT_LE(0, index);
     ASSERT_LT(index, m_size);
-
     // TODO: MACK
-    heapifyUp(index);
+    heapifyDown(heapifyUp(index));
 }
 
 void CellHeap::increaseCapacity() {
@@ -72,6 +75,9 @@ void CellHeap::increaseCapacity() {
 }
 
 int CellHeap::getParentIndex(int index) {
+    if (index < 0) {
+        return -1;
+    }
     return (index - 1) / 2;
 }
 
@@ -119,8 +125,9 @@ int CellHeap::heapifyUp(int index) {
         0 <= getParentIndex(index) &&
         m_data[index]->getDistance() < m_data[getParentIndex(index)]->getDistance()
     ) {
-        swap(index, getParentIndex(index));
-        index = getParentIndex(index);
+        int parentIndex = getParentIndex(index);
+        swap(index, parentIndex);
+        index = parentIndex;
     }
     return index;
 }
@@ -132,8 +139,9 @@ int CellHeap::heapifyDown(int index) {
         0 <= getMinChildIndex(index) &&
         m_data[getMinChildIndex(index)]->getDistance() < m_data[index]->getDistance()
     ) {
-        swap(index, getMinChildIndex(index));
-        index = getMinChildIndex(index);
+        int minChildIndex = getMinChildIndex(index);
+        swap(index, minChildIndex);
+        index = minChildIndex;
     }
     return index;
 }
@@ -146,6 +154,7 @@ void CellHeap::swap(int indexOne, int indexTwo) {
     Cell* temp = m_data[indexOne];
     m_data[indexOne] = m_data[indexTwo];
     m_data[indexTwo] = temp;
+    // TODO: MACK - update the heap indexes
     m_data[indexOne]->setHeapIndex(indexOne);
     m_data[indexTwo]->setHeapIndex(indexTwo);
 }

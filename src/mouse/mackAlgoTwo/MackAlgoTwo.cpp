@@ -245,8 +245,8 @@ bool MackAlgoTwo::inspectNeighbor(Cell* current, Cell* neighbor, int direction, 
     if (neighbor->getSequenceNumber() != current->getSequenceNumber() || costToNeighbor < neighbor->getDistance()) {
         if (neighbor->getSequenceNumber() != current->getSequenceNumber()) {
             neighbor->setSequenceNumber(current->getSequenceNumber());
-            pushToHeap = true;
             neighbor->setExamined(false);
+            pushToHeap = true;
         }
         neighbor->setParent(current);
         neighbor->setDistance(costToNeighbor);
