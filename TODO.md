@@ -1,5 +1,6 @@
 # High Priority
 
+- Check paused in other mouse interface methods other than movements
 - Draw dots on edges
 - Sim time is lagging a little bit
 - Discrete mode speed...
