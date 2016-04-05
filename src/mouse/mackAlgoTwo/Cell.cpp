@@ -10,7 +10,6 @@ Cell::Cell() :
         m_parent(0),
         m_sourceDirection(0),
         m_distance(0),
-        m_examined(false),
         m_heapIndex(-1) {
 
     for (int i = 0; i < 4; i += 1) {
@@ -95,14 +94,6 @@ float Cell::getDistance() const {
 void Cell::setDistance(float distance) {
     m_distance = distance;
     m_mouse->setTileText(m_x, m_y, std::to_string(distance));
-}
-
-bool Cell::getExamined() const {
-    return m_examined;
-}
-
-void Cell::setExamined(bool examined) {
-    m_examined = examined;
 }
 
 int Cell::getHeapIndex() const {

@@ -20,48 +20,34 @@ bool CellHeap::empty() const {
 }
 
 void CellHeap::push(Cell* cell) {
-
     if (m_size == m_capacity) {
         increaseCapacity();
     }
-
     ASSERT_LT(m_size, m_capacity);
-
     m_data[m_size] = cell;
     m_data[m_size]->setHeapIndex(m_size);
     m_size += 1;
-
     if (1 < m_size) {
         heapifyUp(m_size - 1);
     }
 }
 
 Cell* CellHeap::pop() {
-
     ASSERT_LT(0, m_size);
-    for (int i = 1; i < m_size; i += 1) {
-        // TODO: MACK - this fails... this is bad
-        ASSERT_LE(m_data[0]->getDistance(), m_data[i]->getDistance());
-    }
-
     Cell* cell = m_data[0];
-
     m_data[0] = m_data[m_size - 1];
     m_data[0]->setHeapIndex(0);
     m_size -= 1;
-
     if (1 < m_size) {
         heapifyDown(0);
     }
-
     return cell;
 }
 
 void CellHeap::heapify(int index) {
     ASSERT_LE(0, index);
     ASSERT_LT(index, m_size);
-    // TODO: MACK
-    heapifyDown(heapifyUp(index));
+    heapifyUp(index);
 }
 
 void CellHeap::increaseCapacity() {
@@ -118,32 +104,32 @@ int CellHeap::getMinChildIndex(int index) {
     );
 }
 
-int CellHeap::heapifyUp(int index) {
+void CellHeap::heapifyUp(int index) {
     ASSERT_LE(0, index);
     ASSERT_LT(index, m_size);
+    int parentIndex = getParentIndex(index);
     while (
-        0 <= getParentIndex(index) &&
-        m_data[index]->getDistance() < m_data[getParentIndex(index)]->getDistance()
+        0 <= parentIndex &&
+        m_data[index]->getDistance() < m_data[parentIndex]->getDistance()
     ) {
-        int parentIndex = getParentIndex(index);
         swap(index, parentIndex);
         index = parentIndex;
+        parentIndex = getParentIndex(index);
     }
-    return index;
 }
 
-int CellHeap::heapifyDown(int index) {
+void CellHeap::heapifyDown(int index) {
     ASSERT_LE(0, index);
     ASSERT_LT(index, m_size);
+    int minChildIndex = getMinChildIndex(index);
     while (
-        0 <= getMinChildIndex(index) &&
-        m_data[getMinChildIndex(index)]->getDistance() < m_data[index]->getDistance()
+        0 <= minChildIndex &&
+        m_data[minChildIndex]->getDistance() < m_data[index]->getDistance()
     ) {
-        int minChildIndex = getMinChildIndex(index);
         swap(index, minChildIndex);
         index = minChildIndex;
+        minChildIndex = getMinChildIndex(index);
     }
-    return index;
 }
 
 void CellHeap::swap(int indexOne, int indexTwo) {
@@ -154,7 +140,6 @@ void CellHeap::swap(int indexOne, int indexTwo) {
     Cell* temp = m_data[indexOne];
     m_data[indexOne] = m_data[indexTwo];
     m_data[indexTwo] = temp;
-    // TODO: MACK - update the heap indexes
     m_data[indexOne]->setHeapIndex(indexOne);
     m_data[indexTwo]->setHeapIndex(indexTwo);
 }

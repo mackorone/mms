@@ -39,9 +39,6 @@ public:
     float getDistance() const;
     void setDistance(float distance);
 
-    bool getExamined() const;
-    void setExamined(bool examined);
-
     int getHeapIndex() const;
     void setHeapIndex(int index);
 
@@ -58,7 +55,6 @@ private:
     int m_sourceDirection;
     int m_straightAwayLength;
     float m_distance;
-    bool m_examined;
 
     // TODO: MACK
     int m_heapIndex;

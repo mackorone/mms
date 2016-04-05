@@ -113,7 +113,6 @@ bool MackAlgoTwo::move() {
     while (!heap.empty()) {
 
         Cell* current = heap.pop();
-        current->setExamined(true);
         int x = current->getX();
         int y = current->getY();
 
@@ -125,7 +124,7 @@ bool MackAlgoTwo::move() {
         }
         */
 
-        // Inspect neighbors if they're not yet examined
+        // Inspect neighbors if they're not yet visited
         // NOTE: Inspecting and examining are not the same thing!
         for (int direction = 0; direction < 4; direction += 1) {
             if (!current->isWall(direction)) {
@@ -144,22 +143,7 @@ bool MackAlgoTwo::move() {
                         neighbor = &m_maze[x-1][y];
                         break;
                 }
-                // TODO: MACK - edge numbers are different lengths, 
-                // TODO: MACK - just check the distance here..., no need for examined...
-                if (neighbor->getSequenceNumber() != current->getSequenceNumber() || !neighbor->getExamined()) {
-                    // TODO: MACK - rename this
-                    if (inspectNeighbor(current, neighbor, direction, &heap)) {
-                        //heap.push(neighbor);
-                        /*
-                        m_mouse->setTileColor(neighbor->getX(), neighbor->getY(), 'r');
-                        while (!m_mouse->inputButtonPressed(0)) {
-                            m_mouse->delay(100);
-                        }
-                        m_mouse->acknowledgeInputButtonPressed(0);
-                        m_mouse->clearTileColor(neighbor->getX(), neighbor->getY());
-                        */
-                    }
-                }
+                inspectNeighbor(current, neighbor, direction, &heap);
             }
         }
     }
@@ -245,7 +229,6 @@ bool MackAlgoTwo::inspectNeighbor(Cell* current, Cell* neighbor, int direction, 
     if (neighbor->getSequenceNumber() != current->getSequenceNumber() || costToNeighbor < neighbor->getDistance()) {
         if (neighbor->getSequenceNumber() != current->getSequenceNumber()) {
             neighbor->setSequenceNumber(current->getSequenceNumber());
-            neighbor->setExamined(false);
             pushToHeap = true;
         }
         neighbor->setParent(current);

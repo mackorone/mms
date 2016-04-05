@@ -35,8 +35,8 @@ private:
     int getMinChildIndex(int index);
 
     // TODO: MACK - returns the new index in the heap
-    int heapifyUp(int index);
-    int heapifyDown(int index);
+    void heapifyUp(int index);
+    void heapifyDown(int index);
     void swap(int indexOne, int indexTwo);
 };
 
