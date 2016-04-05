@@ -112,8 +112,9 @@ bool MackAlgoTwo::move() {
     heap.push(source);
     while (!heap.empty()) {
 
-        // "Visit" the next closest node
         Cell* current = heap.pop();
+        int x = current->getX();
+        int y = current->getY();
 
         // TODO: MACK - make an option for this
         /*
@@ -123,10 +124,26 @@ bool MackAlgoTwo::move() {
         }
         */
 
+        // Inspect neighbors if they're not yet visited
+        // NOTE: Inspecting and examining are not the same thing!
         for (int direction = 0; direction < 4; direction += 1) {
             if (!current->isWall(direction)) {
-                Cell* neighbor = getCell(current->getX(), current->getY(), direction);
-                checkNeighbor(current, neighbor, direction, &heap);
+                Cell* neighbor = NULL;
+                switch (direction) {
+                    case NORTH:
+                        neighbor = &m_maze[x][y+1];
+                        break;
+                    case EAST:
+                        neighbor = &m_maze[x+1][y];
+                        break;
+                    case SOUTH:
+                        neighbor = &m_maze[x][y-1];
+                        break;
+                    case WEST:
+                        neighbor = &m_maze[x-1][y];
+                        break;
+                }
+                inspectNeighbor(current, neighbor, direction, &heap);
             }
         }
     }
@@ -195,7 +212,9 @@ float MackAlgoTwo::getStraightAwayCost(int length) {
     return 1.0 / length;
 }
 
-void MackAlgoTwo::checkNeighbor(Cell* current, Cell* neighbor, int direction, CellHeap* heap) {
+bool MackAlgoTwo::inspectNeighbor(Cell* current, Cell* neighbor, int direction, CellHeap* heap) {
+
+    bool pushToHeap = false;
 
     // Determine the cost if routed through the currect node
     float costToNeighbor = current->getDistance();
@@ -208,7 +227,6 @@ void MackAlgoTwo::checkNeighbor(Cell* current, Cell* neighbor, int direction, Ce
 
     // Make updates to the node
     if (neighbor->getSequenceNumber() != current->getSequenceNumber() || costToNeighbor < neighbor->getDistance()) {
-        bool pushToHeap = false;
         if (neighbor->getSequenceNumber() != current->getSequenceNumber()) {
             neighbor->setSequenceNumber(current->getSequenceNumber());
             pushToHeap = true;
@@ -226,9 +244,11 @@ void MackAlgoTwo::checkNeighbor(Cell* current, Cell* neighbor, int direction, Ce
             heap->push(neighbor);
         }
         else {
-            heap->update(neighbor);
+            heap->heapify(neighbor->getHeapIndex());
         }
     }
+
+    return pushToHeap;
 }
 
 // TODO: MACK - dedup these ugle methods
@@ -485,19 +505,6 @@ Cell* MackAlgoTwo::getRearCell() {
             return &m_maze[m_x][m_y+1];
         case WEST:
             return &m_maze[m_x+1][m_y];
-    }
-}
-
-Cell* MackAlgoTwo::getCell(int x, int y, int direction) {
-    switch (direction) {
-        case NORTH:
-            return &m_maze[x][y+1];
-        case EAST:
-            return &m_maze[x+1][y];
-        case SOUTH:
-            return &m_maze[x][y-1];
-        case WEST:
-            return &m_maze[x-1][y];
     }
 }
 

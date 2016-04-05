@@ -9,7 +9,8 @@ Cell::Cell() :
         m_sequenceNumber(0),
         m_parent(0),
         m_sourceDirection(0),
-        m_distance(0) {
+        m_distance(0),
+        m_heapIndex(-1) {
 
     for (int i = 0; i < 4; i += 1) {
         m_walls[i] = false;
@@ -93,6 +94,14 @@ float Cell::getDistance() const {
 void Cell::setDistance(float distance) {
     m_distance = distance;
     m_mouse->setTileText(m_x, m_y, std::to_string(distance));
+}
+
+int Cell::getHeapIndex() const {
+    return m_heapIndex;
+}
+
+void Cell::setHeapIndex(int index) {
+    m_heapIndex = index;
 }
 
 } // namespace mackAlgoTwo

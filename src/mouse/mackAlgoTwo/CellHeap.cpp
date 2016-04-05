@@ -25,20 +25,18 @@ void CellHeap::push(Cell* cell) {
     }
     ASSERT_LT(m_size, m_capacity);
     m_data[m_size] = cell;
+    m_data[m_size]->setHeapIndex(m_size);
     m_size += 1;
     if (1 < m_size) {
         heapifyUp(m_size - 1);
     }
 }
 
-void CellHeap::update(Cell* cell) {
-    heapifyUp(index(cell));
-}
-
 Cell* CellHeap::pop() {
     ASSERT_LT(0, m_size);
     Cell* cell = m_data[0];
     m_data[0] = m_data[m_size - 1];
+    m_data[0]->setHeapIndex(0);
     m_size -= 1;
     if (1 < m_size) {
         heapifyDown(0);
@@ -46,13 +44,10 @@ Cell* CellHeap::pop() {
     return cell;
 }
 
-int CellHeap::index(Cell* cell) {
-    for (int i = 0; i < m_size; i += 1) {
-        if (m_data[i] == cell) {
-            return i;
-        }
-    }
-    return -1;
+void CellHeap::heapify(int index) {
+    ASSERT_LE(0, index);
+    ASSERT_LT(index, m_size);
+    heapifyUp(index);
 }
 
 void CellHeap::increaseCapacity() {
@@ -145,6 +140,8 @@ void CellHeap::swap(int indexOne, int indexTwo) {
     Cell* temp = m_data[indexOne];
     m_data[indexOne] = m_data[indexTwo];
     m_data[indexTwo] = temp;
+    m_data[indexOne]->setHeapIndex(indexOne);
+    m_data[indexTwo]->setHeapIndex(indexTwo);
 }
 
 } // namespace mackAlgoTwo
