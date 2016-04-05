@@ -2,6 +2,7 @@
 
 #include "../IMouseAlgorithm.h"
 #include "Cell.h"
+#include "CellHeap.h"
 
 namespace mackAlgoTwo {
 
@@ -31,7 +32,7 @@ private:
     bool move();
     float getTurnCost();
     float getStraightAwayCost(int length);
-    bool inspectNeighbor(Cell* current, Cell* neighbor, int direction);
+    bool inspectNeighbor(Cell* current, Cell* neighbor, int direction, CellHeap* heap);
 
     void initializeDestinationDistance();
     Cell* getClosestDestinationCell();

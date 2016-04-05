@@ -10,7 +10,8 @@ Cell::Cell() :
         m_parent(0),
         m_sourceDirection(0),
         m_distance(0),
-        m_examined(false) {
+        m_examined(false),
+        m_heapIndex(-1) {
 
     for (int i = 0; i < 4; i += 1) {
         m_walls[i] = false;
@@ -102,6 +103,14 @@ bool Cell::getExamined() const {
 
 void Cell::setExamined(bool examined) {
     m_examined = examined;
+}
+
+int Cell::getHeapIndex() const {
+    return m_heapIndex;
+}
+
+void Cell::setHeapIndex(int index) {
+    m_heapIndex = index;
 }
 
 } // namespace mackAlgoTwo

@@ -16,6 +16,9 @@ public:
     void push(Cell* cell);
     Cell* pop();
 
+    // TODO: MACK
+    void heapify(int index);
+
 private:
     int m_size;
     int m_capacity;
@@ -31,8 +34,9 @@ private:
     Cell* getRightChildOrNull(int index);
     int getMinChildIndex(int index);
 
-    void heapifyUp(int index);
-    void heapifyDown(int index);
+    // TODO: MACK - returns the new index in the heap
+    int heapifyUp(int index);
+    int heapifyDown(int index);
     void swap(int indexOne, int indexTwo);
 };
 

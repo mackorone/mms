@@ -4,6 +4,7 @@
 
 namespace mackAlgoTwo {
 
+// TODO: MACK - turn this into a struct
 class Cell {
 
 public:
@@ -41,11 +42,14 @@ public:
     bool getExamined() const;
     void setExamined(bool examined);
 
+    int getHeapIndex() const;
+    void setHeapIndex(int index);
+
 private:
     sim::MouseInterface* m_mouse;
-    int m_x;
+    int m_x; // TODO: MACK - turn these into chars
     int m_y;
-    bool m_walls[4];
+    bool m_walls[4]; // TODO: MACK - turn these into bytes
     bool m_known[4];
 
     // Used for Dijkstra's
@@ -55,6 +59,9 @@ private:
     int m_straightAwayLength;
     float m_distance;
     bool m_examined;
+
+    // TODO: MACK
+    int m_heapIndex;
 
 };
 

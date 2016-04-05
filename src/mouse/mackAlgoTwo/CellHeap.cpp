@@ -20,22 +20,45 @@ bool CellHeap::empty() const {
 }
 
 void CellHeap::push(Cell* cell) {
+
     if (m_size == m_capacity) {
         increaseCapacity();
     }
+
     ASSERT_LT(m_size, m_capacity);
+
     m_data[m_size] = cell;
+    m_data[m_size]->setHeapIndex(m_size);
     m_size += 1;
-    heapifyUp(m_size - 1);
+
+    if (1 < m_size) {
+        heapifyUp(m_size - 1);
+    }
 }
 
 Cell* CellHeap::pop() {
+
     ASSERT_LT(0, m_size);
-    Cell* value = m_data[0];
+
+    Cell* cell = m_data[0];
+
+    m_data[0] = m_data[m_size - 1];
+    m_data[0]->setHeapIndex(0);
     m_size -= 1;
-    m_data[0] = m_data[m_size];
-    heapifyDown(0);
-    return value;
+
+    if (1 < m_size) {
+        heapifyDown(0);
+    }
+
+    return cell;
+}
+
+void CellHeap::heapify(int index) {
+    ASSERT_LE(0, index);
+    ASSERT_LT(index, m_size);
+
+    // TODO: MACK
+    heapifyUp(index);
 }
 
 void CellHeap::increaseCapacity() {
@@ -89,7 +112,9 @@ int CellHeap::getMinChildIndex(int index) {
     );
 }
 
-void CellHeap::heapifyUp(int index) {
+int CellHeap::heapifyUp(int index) {
+    ASSERT_LE(0, index);
+    ASSERT_LT(index, m_size);
     while (
         0 <= getParentIndex(index) &&
         m_data[index]->getDistance() < m_data[getParentIndex(index)]->getDistance()
@@ -97,9 +122,12 @@ void CellHeap::heapifyUp(int index) {
         swap(index, getParentIndex(index));
         index = getParentIndex(index);
     }
+    return index;
 }
 
-void CellHeap::heapifyDown(int index) {
+int CellHeap::heapifyDown(int index) {
+    ASSERT_LE(0, index);
+    ASSERT_LT(index, m_size);
     while (
         0 <= getMinChildIndex(index) &&
         m_data[getMinChildIndex(index)]->getDistance() < m_data[index]->getDistance()
@@ -107,6 +135,7 @@ void CellHeap::heapifyDown(int index) {
         swap(index, getMinChildIndex(index));
         index = getMinChildIndex(index);
     }
+    return index;
 }
 
 void CellHeap::swap(int indexOne, int indexTwo) {
@@ -117,6 +146,8 @@ void CellHeap::swap(int indexOne, int indexTwo) {
     Cell* temp = m_data[indexOne];
     m_data[indexOne] = m_data[indexTwo];
     m_data[indexTwo] = temp;
+    m_data[indexOne]->setHeapIndex(indexOne);
+    m_data[indexTwo]->setHeapIndex(indexTwo);
 }
 
 } // namespace mackAlgoTwo

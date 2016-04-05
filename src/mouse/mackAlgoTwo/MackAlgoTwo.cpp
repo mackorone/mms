@@ -2,8 +2,6 @@
 
 #include <limits>
 
-#include "CellHeap.h"
-
 /*
 #if (!SIMULATOR)
 extern char movesBuffer[256];
@@ -12,6 +10,9 @@ extern volatile bool movesReady;
 extern volatile bool movesDoneAndWallsSet;
 #endif
 */
+
+// TODO: MACK - this is actually broken right now, as we don't know the cost to
+// get to a tile until all the neighboring costs have been calculated
 
 namespace mackAlgoTwo {
 
@@ -52,6 +53,7 @@ void MackAlgoTwo::solve(
     m_onWayToCenter = true;
 
     // Initialize the maze
+    // TODO: MACK - init method here
     for (int x = 0; x < MAZE_WIDTH; x += 1) {
         for (int y = 0; y < MAZE_HEIGHT; y += 1) {
             m_maze[x][y].setMouseInterface(mouse);
@@ -115,14 +117,13 @@ bool MackAlgoTwo::move() {
         int x = current->getX();
         int y = current->getY();
 
-/*
+        // TODO: MACK - make an option for this
+        /*
         // We needn't explore any further
-#if (!SIMULATOR)
         if (current == getClosestDestinationCell()) {
             break;
         }
-#endif
-*/
+        */
 
         // Inspect neighbors if they're not yet examined
         // NOTE: Inspecting and examining are not the same thing!
@@ -143,9 +144,20 @@ bool MackAlgoTwo::move() {
                         neighbor = &m_maze[x-1][y];
                         break;
                 }
+                // TODO: MACK - edge numbers are different lengths, 
+                // TODO: MACK - just check the distance here..., no need for examined...
                 if (neighbor->getSequenceNumber() != current->getSequenceNumber() || !neighbor->getExamined()) {
-                    if (inspectNeighbor(current, neighbor, direction)) {
-                        heap.push(neighbor);
+                    // TODO: MACK - rename this
+                    if (inspectNeighbor(current, neighbor, direction, &heap)) {
+                        //heap.push(neighbor);
+                        /*
+                        m_mouse->setTileColor(neighbor->getX(), neighbor->getY(), 'r');
+                        while (!m_mouse->inputButtonPressed(0)) {
+                            m_mouse->delay(100);
+                        }
+                        m_mouse->acknowledgeInputButtonPressed(0);
+                        m_mouse->clearTileColor(neighbor->getX(), neighbor->getY());
+                        */
                     }
                 }
             }
@@ -216,7 +228,7 @@ float MackAlgoTwo::getStraightAwayCost(int length) {
     return 1.0 / length;
 }
 
-bool MackAlgoTwo::inspectNeighbor(Cell* current, Cell* neighbor, int direction) {
+bool MackAlgoTwo::inspectNeighbor(Cell* current, Cell* neighbor, int direction, CellHeap* heap) {
 
     bool pushToHeap = false;
 
@@ -245,11 +257,18 @@ bool MackAlgoTwo::inspectNeighbor(Cell* current, Cell* neighbor, int direction) 
         else {
             neighbor->setStraightAwayLength(1);
         }
+        if (pushToHeap) {
+            heap->push(neighbor);
+        }
+        else {
+            heap->heapify(neighbor->getHeapIndex());
+        }
     }
 
     return pushToHeap;
 }
 
+// TODO: MACK - dedup these ugle methods
 void MackAlgoTwo::initializeDestinationDistance() {
     float maxFloatValue = std::numeric_limits<float>::max();
     if (m_onWayToCenter) {
