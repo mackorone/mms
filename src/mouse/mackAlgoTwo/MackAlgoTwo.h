@@ -32,7 +32,7 @@ private:
     bool move();
     float getTurnCost();
     float getStraightAwayCost(int length);
-    bool inspectNeighbor(Cell* current, Cell* neighbor, int direction, CellHeap* heap);
+    void checkNeighbor(Cell* current, Cell* neighbor, int direction, CellHeap* heap);
 
     void initializeDestinationDistance();
     Cell* getClosestDestinationCell();
@@ -59,6 +59,8 @@ private:
     Cell* getLeftCell();
     Cell* getRightCell();
     Cell* getRearCell();
+    // TODO: MACK - const, rename to getNeighbor or something
+    Cell* getCell(int x, int y, int direction);
 
     bool spaceFront();
     bool spaceLeft();
