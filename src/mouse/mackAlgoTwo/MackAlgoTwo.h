@@ -34,9 +34,13 @@ private:
     float getStraightAwayCost(int length);
     void checkNeighbor(Cell* current, Cell* neighbor, int direction, CellHeap* heap);
 
-    void initializeDestinationDistance();
-    Cell* getClosestDestinationCell();
+    Center getCenter();
     Cell* cellMin(Cell* one, Cell* two);
+    Cell* getClosestDestinationCell();
+    Cell* getNeighboringCell(int x, int y, int direction);
+
+    bool isOneCellAway(Cell* target);
+    void moveOneCell(Cell* target);
 
     void readWalls();
     bool readWall(int direction);
@@ -56,17 +60,9 @@ private:
     void rightAndForward();
     void aroundAndForward();
 
-    bool neighboringCellExists(int x, int y, int direction);
-    Cell* getNeighboringCell(int x, int y, int direction);
-
-    bool isOneCellAway(Cell* target);
-    void moveOneCell(Cell* target);
-
     void setColor(int x, int y, char color);
     void resetColors();
     void colorCenter(char color);
-
-    Center getCenter();
 };
 
 } // namespace mackAlgoTwo

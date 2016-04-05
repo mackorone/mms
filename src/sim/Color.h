@@ -21,7 +21,9 @@ enum class Color {
     DARK_CYAN,
     DARK_GRAY,
     DARK_GREEN,
+    DARK_ORANGE,
     DARK_RED,
+    DARK_VIOLET,
     DARK_YELLOW,
 };
 
@@ -39,8 +41,10 @@ static const std::map<Color, std::tuple<double, double, double>> COLOR_TO_RGB {
     {Color::DARK_CYAN  , std::make_tuple(0.0, 0.2, 0.2)},
     {Color::DARK_GRAY  , std::make_tuple(0.1, 0.1, 0.1)},
     {Color::DARK_GREEN , std::make_tuple(0.0, 0.3, 0.0)},
+    {Color::DARK_ORANGE, std::make_tuple(0.2, 0.1, 0.0)},
     {Color::DARK_RED   , std::make_tuple(0.3, 0.0, 0.0)},
-    {Color::DARK_YELLOW, std::make_tuple(0.1, 0.1, 0.0)},
+    {Color::DARK_VIOLET, std::make_tuple(0.2, 0.0, 0.2)},
+    {Color::DARK_YELLOW, std::make_tuple(0.2, 0.2, 0.0)},
 };
 
 static const std::map<Color, std::string> COLOR_TO_STRING {
@@ -57,7 +61,9 @@ static const std::map<Color, std::string> COLOR_TO_STRING {
     {Color::DARK_CYAN  , "DARK_CYAN"  },
     {Color::DARK_GRAY  , "DARK_GRAY"  },
     {Color::DARK_GREEN , "DARK_GREEN" },
+    {Color::DARK_ORANGE, "DARK_ORANGE"},
     {Color::DARK_RED   , "DARK_RED"   },
+    {Color::DARK_VIOLET, "DARK_VIOLET"},
     {Color::DARK_YELLOW, "DARK_YELLOW"},
 };
 
@@ -78,7 +84,9 @@ static const std::map<Color, char> COLOR_TO_CHAR {
     {Color::DARK_CYAN  , 'C'},
     {Color::DARK_GRAY  , 'A'},
     {Color::DARK_GREEN , 'G'},
+    {Color::DARK_ORANGE, 'O'},
     {Color::DARK_RED   , 'R'},
+    {Color::DARK_VIOLET, 'V'},
     {Color::DARK_YELLOW, 'Y'},
 };
 

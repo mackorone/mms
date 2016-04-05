@@ -43,18 +43,18 @@ void MackAlgoTwo::solve(
         return;
     }
 
-    // Initialize the mouse
-    m_x = 0;
-    m_y = 0;
-    m_d = NORTH;
-    m_onWayToCenter = true;
-
     // Initialize the (perimeter of the) maze
     for (int x = 0; x < MAZE_WIDTH; x += 1) {
         for (int y = 0; y < MAZE_HEIGHT; y += 1) {
             m_maze[x][y].init(m_mouse, x, y, MAZE_WIDTH, MAZE_HEIGHT);
         }
     }
+
+    // Initialize the mouse
+    m_x = 0;
+    m_y = 0;
+    m_d = NORTH;
+    m_onWayToCenter = true;
 
     // Go the center, the the start, forever
     while (true) {
@@ -98,7 +98,9 @@ bool MackAlgoTwo::move() {
     source->setSourceDirection(m_d);
     // Purposefully don't set straightAwayLength
     source->setDistance(0);
-    initializeDestinationDistance();
+
+    // Clear all tile color
+    m_mouse->clearAllTileColor();
 
     CellHeap heap;
     heap.push(source);
@@ -108,13 +110,14 @@ bool MackAlgoTwo::move() {
         int x = current->getX();
         int y = current->getY();
 
-        // TODO: MACK - make an option for this
-        /*
-        // We needn't explore any further
-        if (current == getClosestDestinationCell()) {
-            break;
+        // TODO: MACK - make this an option
+        if (false) {
+            setColor(x, y, 'Y');
+            // We needn't explore any further
+            if (current == getClosestDestinationCell()) {
+                break;
+            }
         }
-        */
 
         // Inspect neighbors if they're not yet visited
         // NOTE: Inspecting and examining are not the same thing!
@@ -126,7 +129,6 @@ bool MackAlgoTwo::move() {
         }
     }
 
-    m_mouse->clearAllTileColor();
     colorCenter('G');
 
     // If there's no path to the destination, the maze is unsolvable
@@ -153,8 +155,9 @@ bool MackAlgoTwo::move() {
     // Displays the color buffer
     Cell* colorCurrent = current;
     Cell* colorNext = next;
+    setColor(colorCurrent->getX(), colorCurrent->getY(), 'V');
     while (colorNext != NULL && colorCurrent->isKnown(colorNext->getSourceDirection())) {
-        setColor(colorNext->getX(), colorNext->getY(), 'Y');
+        setColor(colorNext->getX(), colorNext->getY(), 'V');
         colorCurrent = colorNext;
         colorNext = colorNext->getParent();
     }
@@ -226,19 +229,33 @@ void MackAlgoTwo::checkNeighbor(Cell* current, Cell* neighbor, int direction, Ce
     }
 }
 
-void MackAlgoTwo::initializeDestinationDistance() {
-    float maxFloatValue = std::numeric_limits<float>::max();
-    if (m_onWayToCenter) {
-        Center center = getCenter();
-        for (int i = 0; i < 4; i += 1) {
-            if (center.cells[i] != nullptr) {
-                center.cells[i]->setDistance(maxFloatValue);
-            }
+Center MackAlgoTwo::getCenter() {
+
+    Center center;
+    for (int i = 0; i < 4; i += 1) {
+        center.cells[i] = nullptr;
+    }
+
+            center.cells[0] = &m_maze[(MAZE_WIDTH - 1) / 2][(MAZE_HEIGHT - 1) / 2];
+    if (MAZE_WIDTH % 2 == 0) {
+            center.cells[1] = &m_maze[ MAZE_WIDTH      / 2][(MAZE_HEIGHT - 1) / 2];
+        if (MAZE_HEIGHT % 2 == 0) {
+            center.cells[2] = &m_maze[(MAZE_WIDTH - 1) / 2][ MAZE_HEIGHT      / 2];
+            center.cells[3] = &m_maze[ MAZE_WIDTH      / 2][ MAZE_HEIGHT      / 2];
         }
     }
-    else {
-        m_maze[0][0].setDistance(maxFloatValue);
+    else if (MAZE_HEIGHT % 2 == 0) {
+            center.cells[2] = &m_maze[(MAZE_WIDTH - 1) / 2][ MAZE_HEIGHT      / 2];
     }
+
+    return center;
+}
+
+Cell* MackAlgoTwo::cellMin(Cell* one, Cell* two) {
+    if (one == NULL) {
+        return two;
+    }
+    return (one->getDistance() < two->getDistance() ? one : two);
 }
 
 Cell* MackAlgoTwo::getClosestDestinationCell() {
@@ -257,26 +274,101 @@ Cell* MackAlgoTwo::getClosestDestinationCell() {
     return closest;
 }
 
-Cell* MackAlgoTwo::cellMin(Cell* one, Cell* two) {
-    if (one == NULL) {
-        return two;
+Cell* MackAlgoTwo::getNeighboringCell(int x, int y, int direction) {
+    switch (direction) {
+        case NORTH:
+            y += 1;
+            break;
+        case EAST:
+            x += 1;
+            break;
+        case SOUTH:
+            y -= 1;
+            break;
+        case WEST:
+            x -= 1;
+            break;
     }
-    return (one->getDistance() < two->getDistance() ? one : two);
+    bool neighboringCellExists = (
+        0 <= x &&
+        0 <= y &&
+        x < MAZE_WIDTH &&
+        y < MAZE_HEIGHT
+    );
+    return (neighboringCellExists ? &m_maze[x][y] : nullptr);
+}
+
+bool MackAlgoTwo::isOneCellAway(Cell* target) {
+
+    int x = target->getX();
+    int y = target->getY();
+    
+    if ((m_x == x) && (m_y + 1 == y) && !m_maze[m_x][m_y].isWall(NORTH)) {
+        return true;
+    }
+    else if ((m_x == x) && (m_y - 1 == y) && !m_maze[m_x][m_y].isWall(SOUTH)) {
+        return true;
+    }
+    else if ((m_x + 1 == x) && (m_y == y) && !m_maze[m_x][m_y].isWall(EAST)) {
+        return true;
+    }
+    else if ((m_x - 1 == x) && (m_y == y) && !m_maze[m_x][m_y].isWall(WEST)) {
+        return true;
+    }
+    
+    return false;
+}
+
+void MackAlgoTwo::moveOneCell(Cell* target) {
+
+    ASSERT_TR(isOneCellAway(target));
+
+    int x = target->getX();
+    int y = target->getY();
+    
+    int moveDirection = NORTH;
+    if (x > m_x) {
+        moveDirection = EAST;
+    }
+    else if (y < m_y) {
+        moveDirection = SOUTH;
+    }
+    else if (x < m_x) {
+        moveDirection = WEST;
+    }
+
+    if (moveDirection == m_d) {
+        moveForward();
+    }
+    else if (moveDirection == (m_d + 1) % 4) {
+        rightAndForward();
+    }
+    else if (moveDirection == (m_d + 2) % 4) {
+        aroundAndForward();
+    }
+    else if (moveDirection == (m_d + 3) % 4) {
+        leftAndForward();
+    }
 }
 
 void MackAlgoTwo::readWalls() {
+
     // For each of [left, front, right]
     for (int i = -1; i <= 1; i += 1) {
         int direction = (m_d + i + 4) % 4;
+
         // If the wall is not already known
         if (!m_maze[m_x][m_y].isKnown(direction)) {
+
             // Read and update the wall value
             bool isWall = readWall(direction);
             m_maze[m_x][m_y].setWall(direction, isWall);
+
             // If a neighboring cell exists, set the neighbor's wall too
-            if (neighboringCellExists(m_x, m_y, direction)) {
+            Cell* neighboringCell = getNeighboringCell(m_x, m_y, direction);
+            if (neighboringCell != nullptr) {
                 int oppositeDirection = (direction + 2) % 4;
-                getNeighboringCell(m_x, m_y, direction)->setWall(oppositeDirection, isWall);
+                neighboringCell->setWall(oppositeDirection, isWall);
             }
         }
     }
@@ -320,20 +412,8 @@ void MackAlgoTwo::turnAroundUpdateState() {
 }
 
 void MackAlgoTwo::moveForwardUpdateState() {
-    switch (m_d){
-        case NORTH:
-            m_y += 1;
-            break;
-        case EAST:
-            m_x += 1;
-            break;
-        case SOUTH:
-            m_y -= 1;
-            break;
-        case WEST:
-            m_x -= 1;
-            break;
-    }
+    m_x += (m_d == EAST  ? 1 : (m_d == WEST  ? -1 : 0));
+    m_y += (m_d == NORTH ? 1 : (m_d == SOUTH ? -1 : 0));
 }
 
 void MackAlgoTwo::turnLeft() {
@@ -352,157 +432,23 @@ void MackAlgoTwo::turnAround() {
 }
 
 void MackAlgoTwo::moveForward() {
-    m_mouse->moveForward();
-/*
-#else
-    movesBuffer[m_moveBufferIndex] = 'f';
-    m_moveBufferIndex += 1;
-#endif
-*/
     moveForwardUpdateState();
+    m_mouse->moveForward();
 }
 
 void MackAlgoTwo::leftAndForward() {
     turnLeft();
     moveForward();
-/*
-#else
-    movesBuffer[m_moveBufferIndex] = 'l';
-    m_moveBufferIndex += 1;
-    turnLeftUpdateState();
-    moveForwardUpdateState();
-#endif
-*/
 }
 
 void MackAlgoTwo::rightAndForward() {
     turnRight();
     moveForward();
-/*
-#else
-    movesBuffer[m_moveBufferIndex] = 'r';
-    m_moveBufferIndex += 1;
-    turnRightUpdateState();
-    moveForwardUpdateState();
-#endif
-*/
 }
 
 void MackAlgoTwo::aroundAndForward() {
     turnAround();
     moveForward();
-/*
-#else
-    movesBuffer[m_moveBufferIndex] = 'a';
-    m_moveBufferIndex += 1;
-    movesBuffer[m_moveBufferIndex] = 'f';
-    m_moveBufferIndex += 1;
-    turnAroundUpdateState();
-    moveForwardUpdateState();
-#endif
-*/
-}
-
-// TODO: MACK - refactor this and the following into a single method that just returns nullptr
-bool MackAlgoTwo::neighboringCellExists(int x, int y, int direction) {
-    switch (direction) {
-        case NORTH:
-            y += 1;
-            break;
-        case EAST:
-            x += 1;
-            break;
-        case SOUTH:
-            y -= 1;
-            break;
-        case WEST:
-            x -= 1;
-            break;
-    }
-    return (
-        0 <= x &&
-        0 <= y &&
-        x <= MAZE_WIDTH &&
-        y <= MAZE_HEIGHT
-    );
-}
-
-Cell* MackAlgoTwo::getNeighboringCell(int x, int y, int direction) {
-    switch (direction) {
-        case NORTH:
-            return &m_maze[x][y+1];
-        case EAST:
-            return &m_maze[x+1][y];
-        case SOUTH:
-            return &m_maze[x][y-1];
-        case WEST:
-            return &m_maze[x-1][y];
-    }
-}
-
-bool MackAlgoTwo::isOneCellAway(Cell* target) {
-
-    int x = target->getX();
-    int y = target->getY();
-    
-    if ((m_x == x) && (m_y + 1 == y) && !m_maze[m_x][m_y].isWall(NORTH)) {
-        return true;
-    }
-    else if ((m_x == x) && (m_y - 1 == y) && !m_maze[m_x][m_y].isWall(SOUTH)) {
-        return true;
-    }
-    else if ((m_x + 1 == x) && (m_y == y) && !m_maze[m_x][m_y].isWall(EAST)) {
-        return true;
-    }
-    else if ((m_x - 1 == x) && (m_y == y) && !m_maze[m_x][m_y].isWall(WEST)) {
-        return true;
-    }
-    
-    return false;
-}
-
-void MackAlgoTwo::moveOneCell(Cell* target) {
-
-    if (isOneCellAway(target)) {
-
-        int x = target->getX();
-        int y = target->getY();
-        
-        int moveDirection = NORTH;
-        if (x > m_x) {
-            moveDirection = EAST;
-        }
-        else if (y < m_y) {
-            moveDirection = SOUTH;
-        }
-        else if (x < m_x) {
-            moveDirection = WEST;
-        }
-
-        // Finally, turn and move
-        if (moveDirection == m_d) {
-            moveForward();
-        }
-        else if (moveDirection == (m_d + 1) % 4) {
-            rightAndForward();
-        }
-        else if (moveDirection == (m_d + 2) % 4) {
-            aroundAndForward();
-        }
-        else if (moveDirection == (m_d + 3) % 4) {
-            leftAndForward();
-        }
-    }
-    else {
-/*
-#if (SIMULATOR)
-        // TODO: MACK
-        std::cout << "Error: Tried to move to cell (" << target->getX() << ","
-        << target->getY() << ") but it's not one space away from (" << m_x << ","
-        << m_y << ")" << std::endl;
-#endif
-*/
-    }
 }
 
 void MackAlgoTwo::setColor(int x, int y, char color) {
@@ -520,27 +466,6 @@ void MackAlgoTwo::colorCenter(char color) {
             setColor(center.cells[i]->getX(), center.cells[i]->getY(), color);
         }
     }
-}
-
-Center MackAlgoTwo::getCenter() {
-
-    Center center;
-    for (int i = 0; i < 4; i += 1) {
-        center.cells[i] = nullptr;
-    }
-            center.cells[0] = &m_maze[(MAZE_WIDTH - 1) / 2][(MAZE_HEIGHT - 1) / 2];
-    if (MAZE_WIDTH % 2 == 0) {
-            center.cells[1] = &m_maze[ MAZE_WIDTH      / 2][(MAZE_HEIGHT - 1) / 2];
-        if (MAZE_HEIGHT % 2 == 0) {
-            center.cells[2] = &m_maze[(MAZE_WIDTH - 1) / 2][ MAZE_HEIGHT      / 2];
-            center.cells[3] = &m_maze[ MAZE_WIDTH      / 2][ MAZE_HEIGHT      / 2];
-        }
-    }
-    else if (MAZE_HEIGHT % 2 == 0) {
-            center.cells[2] = &m_maze[(MAZE_WIDTH - 1) / 2][ MAZE_HEIGHT      / 2];
-    }
-
-    return center;
 }
 
 } // namespace mackAlgoTwo

@@ -49,6 +49,9 @@ public:
     int getHeapIndex() const;
     void setHeapIndex(int index);
 
+    char getColor() const;
+    void setColor(char color);
+
 private:
     sim::MouseInterface* m_mouse;
     int m_x;
@@ -63,6 +66,9 @@ private:
     int m_straightAwayLength;
     float m_distance;
     int m_heapIndex;
+
+    // TODO: MACK
+    char m_color;
 };
 
 } // namespace mackAlgoTwo
