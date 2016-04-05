@@ -35,6 +35,7 @@ private:
     void checkNeighbor(Cell* current, Cell* neighbor, int direction, CellHeap* heap);
 
     Center getCenter();
+    void resetDestinationCellDistances();
     Cell* cellMin(Cell* one, Cell* two);
     Cell* getClosestDestinationCell();
     Cell* getNeighboringCell(int x, int y, int direction);

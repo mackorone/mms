@@ -99,6 +99,9 @@ bool MackAlgoTwo::move() {
     // Purposefully don't set straightAwayLength
     source->setDistance(0);
 
+    // TODO:
+    resetDestinationCellDistances();
+
     // Clear all tile color
     m_mouse->clearAllTileColor();
 
@@ -110,8 +113,15 @@ bool MackAlgoTwo::move() {
         int x = current->getX();
         int y = current->getY();
 
+        // TODO: MACK - why don't we short circuit the first time around?
+        // I think I need to reset the dest distances
+
         // TODO: MACK - make this an option
-        if (false) {
+        if (true) {
+            // TODO: MACK - make this an option
+            if (true) {
+                m_mouse->delay(10);
+            }
             setColor(x, y, 'Y');
             // We needn't explore any further
             if (current == getClosestDestinationCell()) {
@@ -249,6 +259,21 @@ Center MackAlgoTwo::getCenter() {
     }
 
     return center;
+}
+
+void MackAlgoTwo::resetDestinationCellDistances() {
+    float maxDistance = std::numeric_limits<float>::max();
+    if (m_onWayToCenter) {
+        Center center = getCenter();
+        for (int i = 0; i < 4; i += 1) {
+            if (center.cells[i] != nullptr) {
+                center.cells[i]->setDistance(maxDistance);
+            }
+        }
+    }
+    else {
+        m_maze[0][0].setDistance(maxDistance);
+    }
 }
 
 Cell* MackAlgoTwo::cellMin(Cell* one, Cell* two) {
