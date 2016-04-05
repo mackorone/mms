@@ -104,7 +104,7 @@ int CellHeap::getMinChildIndex(int index) {
         return getLeftChildIndex(index);
     } 
     return (
-        leftChild->getDistance() < rightChild->getDistance() ?
+        leftChild->distance < rightChild->distance ?
         getLeftChildIndex(index) : getRightChildIndex(index)
     );
 }
@@ -115,7 +115,7 @@ void CellHeap::heapifyUp(int index) {
     int parentIndex = getParentIndex(index);
     while (
         0 <= parentIndex &&
-        m_data[index]->getDistance() < m_data[parentIndex]->getDistance()
+        m_data[index]->distance < m_data[parentIndex]->distance
     ) {
         swap(index, parentIndex);
         index = parentIndex;
@@ -129,7 +129,7 @@ void CellHeap::heapifyDown(int index) {
     int minChildIndex = getMinChildIndex(index);
     while (
         0 <= minChildIndex &&
-        m_data[minChildIndex]->getDistance() < m_data[index]->getDistance()
+        m_data[minChildIndex]->distance < m_data[index]->distance
     ) {
         swap(index, minChildIndex);
         index = minChildIndex;
