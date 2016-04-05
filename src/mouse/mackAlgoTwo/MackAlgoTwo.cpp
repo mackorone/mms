@@ -283,13 +283,13 @@ void MackAlgoTwo::readWalls() {
 }
 
 bool MackAlgoTwo::readWall(int direction) {
-    switch (direction - m_d) {
-        case -1:
-            return m_mouse->wallLeft();
+    switch ((direction - m_d + 4) % 4) {
         case 0:
             return m_mouse->wallFront();
         case 1:
             return m_mouse->wallRight();
+        case 3:
+            return m_mouse->wallLeft();
     }
     // We should never get here
     ASSERT_TR(false);
