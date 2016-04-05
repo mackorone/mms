@@ -3,4 +3,4 @@
     - 1 byte for the cell location
     - 1 byte for the cell walls
     - Other optimizations
-    - Put heap index in cell object
+
