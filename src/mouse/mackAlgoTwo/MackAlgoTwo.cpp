@@ -11,9 +11,6 @@ extern volatile bool movesDoneAndWallsSet;
 #endif
 */
 
-// TODO: MACK - this is actually broken right now, as we don't know the cost to
-// get to a tile until all the neighboring costs have been calculated
-
 namespace mackAlgoTwo {
 
 int MackAlgoTwo::tileTextNumberOfRows() const {
@@ -52,16 +49,10 @@ void MackAlgoTwo::solve(
     m_d = NORTH;
     m_onWayToCenter = true;
 
-    // Initialize the maze
-    // TODO: MACK - init method here
+    // Initialize the (perimeter of the) maze
     for (int x = 0; x < MAZE_WIDTH; x += 1) {
         for (int y = 0; y < MAZE_HEIGHT; y += 1) {
-            m_maze[x][y].setMouseInterface(mouse);
-            m_maze[x][y].setPosition(x, y);
-            m_maze[x][y].setWall(NORTH, (y == MAZE_HEIGHT - 1));
-            m_maze[x][y].setWall(EAST, (x == MAZE_WIDTH - 1));
-            m_maze[x][y].setWall(SOUTH, (y == 0));
-            m_maze[x][y].setWall(WEST, (x == 0));
+            m_maze[x][y].init(m_mouse, x, y, MAZE_WIDTH, MAZE_HEIGHT);
         }
     }
 
@@ -103,8 +94,9 @@ bool MackAlgoTwo::move() {
     // Initialize the source cell
     Cell* source = &m_maze[m_x][m_y];
     source->setSequenceNumber(sequenceNumber);
-    source->setSourceDirection(m_d);
     source->setParent(NULL);
+    source->setSourceDirection(m_d);
+    // Purposefully don't set straightAwayLength
     source->setDistance(0);
     initializeDestinationDistance();
 
@@ -128,22 +120,8 @@ bool MackAlgoTwo::move() {
         // NOTE: Inspecting and examining are not the same thing!
         for (int direction = 0; direction < 4; direction += 1) {
             if (!current->isWall(direction)) {
-                Cell* neighbor = NULL;
-                switch (direction) {
-                    case NORTH:
-                        neighbor = &m_maze[x][y+1];
-                        break;
-                    case EAST:
-                        neighbor = &m_maze[x+1][y];
-                        break;
-                    case SOUTH:
-                        neighbor = &m_maze[x][y-1];
-                        break;
-                    case WEST:
-                        neighbor = &m_maze[x-1][y];
-                        break;
-                }
-                inspectNeighbor(current, neighbor, direction, &heap);
+                Cell* neighbor = getNeighboringCell(current->getX(), current->getY(), direction);
+                checkNeighbor(current, neighbor, direction, &heap);
             }
         }
     }
@@ -212,7 +190,7 @@ float MackAlgoTwo::getStraightAwayCost(int length) {
     return 1.0 / length;
 }
 
-bool MackAlgoTwo::inspectNeighbor(Cell* current, Cell* neighbor, int direction, CellHeap* heap) {
+bool MackAlgoTwo::checkNeighbor(Cell* current, Cell* neighbor, int direction, CellHeap* heap) {
 
     bool pushToHeap = false;
 
@@ -244,7 +222,7 @@ bool MackAlgoTwo::inspectNeighbor(Cell* current, Cell* neighbor, int direction, 
             heap->push(neighbor);
         }
         else {
-            heap->heapify(neighbor->getHeapIndex());
+            heap->update(neighbor);
         }
     }
 
@@ -313,32 +291,22 @@ void MackAlgoTwo::readWalls() {
     movesDoneAndWallsSet = false;
 #endif
 */
-
-    if (!m_maze[m_x][m_y].isKnown(m_d)) {
-        m_maze[m_x][m_y].setWall(m_d, wallFront);
-        m_maze[m_x][m_y].setKnown(m_d, true);
-        if (spaceFront()) {
-            getFrontCell()->setWall((m_d+2)%4, wallFront);
-            getFrontCell()->setKnown((m_d+2)%4, true);
+    // TODO: MACK - refactor this a bit...
+    for (int i = -1; i <= 1; i += 1) {
+        int direction = (m_d + i + 4) % 4;
+        if (!m_maze[m_x][m_y].isKnown(direction)) {
+            bool isWall = (
+                i < 0 ? m_mouse->wallLeft() : (
+                i > 0 ? m_mouse->wallRight() : m_mouse->wallFront())); 
+            m_maze[m_x][m_y].setWall(direction, isWall);
+            bool isSpace = (
+                i < 0 ? spaceLeft() : (
+                i > 0 ? spaceRight() : spaceFront())); 
+            if (isSpace) {
+                getNeighboringCell(m_x, m_y, direction)->setWall((direction+2)%4, isWall);
+            }
         }
-    }
 
-    if (!m_maze[m_x][m_y].isKnown((m_d+1)%4)) {
-        m_maze[m_x][m_y].setWall((m_d+1)%4, wallRight);
-        m_maze[m_x][m_y].setKnown((m_d+1)%4, true);
-        if (spaceRight()) {
-            getRightCell()->setWall((m_d+3)%4, wallRight);
-            getRightCell()->setKnown((m_d+3)%4, true);
-        }
-    }
-
-    if (!m_maze[m_x][m_y].isKnown((m_d+3)%4)) {
-        m_maze[m_x][m_y].setWall((m_d+3)%4, wallLeft);
-        m_maze[m_x][m_y].setKnown((m_d+3)%4, true);
-        if (spaceLeft()) {
-            getLeftCell()->setWall((m_d+1)%4, wallLeft);
-            getLeftCell()->setKnown((m_d+1)%4, true);
-        }
     }
 }
 
@@ -456,55 +424,16 @@ void MackAlgoTwo::aroundAndForward() {
 */
 }
 
-Cell* MackAlgoTwo::getFrontCell() {
-    switch (m_d) {
+Cell* MackAlgoTwo::getNeighboringCell(int x, int y, int direction) {
+    switch (direction) {
         case NORTH:
-            return &m_maze[m_x][m_y+1];
+            return &m_maze[x][y+1];
         case EAST:
-            return &m_maze[m_x+1][m_y];
+            return &m_maze[x+1][y];
         case SOUTH:
-            return &m_maze[m_x][m_y-1];
+            return &m_maze[x][y-1];
         case WEST:
-            return &m_maze[m_x-1][m_y];
-    }
-}
-
-Cell* MackAlgoTwo::getLeftCell() {
-    switch (m_d) {
-        case NORTH:
-            return &m_maze[m_x-1][m_y];
-        case EAST:
-            return &m_maze[m_x][m_y+1];
-        case SOUTH:
-            return &m_maze[m_x+1][m_y];
-        case WEST:
-            return &m_maze[m_x][m_y-1];
-    }
-}
-
-Cell* MackAlgoTwo::getRightCell() {
-    switch (m_d) {
-        case NORTH:
-            return &m_maze[m_x+1][m_y];
-        case EAST:
-            return &m_maze[m_x][m_y-1];
-        case SOUTH:
-            return &m_maze[m_x-1][m_y];
-        case WEST:
-            return &m_maze[m_x][m_y+1];
-    }
-}
-
-Cell* MackAlgoTwo::getRearCell() {
-    switch (m_d) {
-        case NORTH:
-            return &m_maze[m_x][m_y-1];
-        case EAST:
-            return &m_maze[m_x-1][m_y];
-        case SOUTH:
-            return &m_maze[m_x][m_y+1];
-        case WEST:
-            return &m_maze[m_x+1][m_y];
+            return &m_maze[x-1][y];
     }
 }
 

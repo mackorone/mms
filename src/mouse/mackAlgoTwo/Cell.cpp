@@ -6,20 +6,39 @@ Cell::Cell() :
         m_mouse(nullptr),
         m_x(-1),
         m_y(-1),
-        m_sequenceNumber(0),
-        m_parent(0),
-        m_sourceDirection(0),
-        m_distance(0),
+        m_sequenceNumber(-1),
+        m_parent(nullptr),
+        m_sourceDirection(-1),
+        m_straightAwayLength(0),
+        m_distance(-1),
         m_heapIndex(-1) {
-
     for (int i = 0; i < 4; i += 1) {
         m_walls[i] = false;
         m_known[i] = false;
     }
 }
 
-void Cell::setMouseInterface(sim::MouseInterface* mouse) {
+void Cell::init(
+        sim::MouseInterface* mouse,
+        int x,
+        int y,
+        int mazeWidth,
+        int mazeHeight) {
     m_mouse = mouse;
+    m_x = x;
+    m_y = y;
+    if (x == 0) {
+        setWall(WEST, true);
+    }
+    if (y == 0) {
+        setWall(SOUTH, true);
+    }
+    if (x == mazeWidth - 1) {
+        setWall(EAST, true);
+    }
+    if (y == mazeHeight - 1) {
+        setWall(NORTH, true);
+    }
 }
 
 int Cell::getX() const {
@@ -30,9 +49,8 @@ int Cell::getY() const {
     return m_y;
 }
 
-void Cell::setPosition(int x, int y) {
-    m_x = x;
-    m_y = y;
+bool Cell::isKnown(int direction) const {
+    return m_known[direction];
 }
 
 bool Cell::isWall(int direction) const {
@@ -40,19 +58,10 @@ bool Cell::isWall(int direction) const {
 }
 
 void Cell::setWall(int direction, bool isWall) {
+    static char directionChars[] = {'n', 'e', 's', 'w'};
     m_walls[direction] = isWall;
-}
-
-bool Cell::isKnown(int direction) const {
-    return m_known[direction];
-}
-
-void Cell::setKnown(int direction, bool isKnown) {
-    m_known[direction] = isKnown;
-    if (isKnown) {
-        static char directionChars[] = {'n', 'e', 's', 'w'};
-        m_mouse->declareWall(m_x, m_y, directionChars[direction], m_walls[direction]);
-    }
+    m_known[direction] = true;
+    m_mouse->declareWall(m_x, m_y, directionChars[direction], isWall);
 }
 
 int Cell::getSequenceNumber() const {

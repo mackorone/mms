@@ -4,23 +4,30 @@
 
 namespace mackAlgoTwo {
 
-// TODO: MACK - turn this into a struct
+enum {
+    NORTH = 0,
+    EAST  = 1,
+    SOUTH = 2,
+    WEST  = 3,
+};
+
 class Cell {
 
 public:
     Cell();
-
-    void setMouseInterface(sim::MouseInterface* mouse);
+    void init(
+        sim::MouseInterface* mouse,
+        int x,
+        int y,
+        int mazeWidth,
+        int mazeHeight);
 
     int getX() const;
     int getY() const;
-    void setPosition(int x, int y);
-
-    bool isWall(int direction) const;
-    void setWall(int direction, bool isWall);
 
     bool isKnown(int direction) const;
-    void setKnown(int direction, bool isKnown);
+    bool isWall(int direction) const;
+    void setWall(int direction, bool isWall);
 
     // ----- Used for Dijkstra's ----- //
 
@@ -44,9 +51,9 @@ public:
 
 private:
     sim::MouseInterface* m_mouse;
-    int m_x; // TODO: MACK - turn these into chars
+    int m_x;
     int m_y;
-    bool m_walls[4]; // TODO: MACK - turn these into bytes
+    bool m_walls[4];
     bool m_known[4];
 
     // Used for Dijkstra's
@@ -55,10 +62,7 @@ private:
     int m_sourceDirection;
     int m_straightAwayLength;
     float m_distance;
-
-    // TODO: MACK
     int m_heapIndex;
-
 };
 
 } // namespace mackAlgoTwo

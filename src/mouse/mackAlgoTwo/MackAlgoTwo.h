@@ -8,7 +8,6 @@ namespace mackAlgoTwo {
 
 static const int MAZE_WIDTH = 16;  // XXX
 static const int MAZE_HEIGHT = 16; // XXX
-enum {NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3};
 
 class MackAlgoTwo : public IMouseAlgorithm {
 
@@ -32,7 +31,7 @@ private:
     bool move();
     float getTurnCost();
     float getStraightAwayCost(int length);
-    bool inspectNeighbor(Cell* current, Cell* neighbor, int direction, CellHeap* heap);
+    bool checkNeighbor(Cell* current, Cell* neighbor, int direction, CellHeap* heap);
 
     void initializeDestinationDistance();
     Cell* getClosestDestinationCell();
@@ -55,10 +54,7 @@ private:
     void rightAndForward();
     void aroundAndForward();
 
-    Cell* getFrontCell();
-    Cell* getLeftCell();
-    Cell* getRightCell();
-    Cell* getRearCell();
+    Cell* getNeighboringCell(int x, int y, int direction);
 
     bool spaceFront();
     bool spaceLeft();

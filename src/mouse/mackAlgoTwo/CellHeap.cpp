@@ -32,9 +32,15 @@ void CellHeap::push(Cell* cell) {
     }
 }
 
+void CellHeap::update(Cell* cell) {
+    ASSERT_LE(0, cell->getHeapIndex());
+    heapifyUp(cell->getHeapIndex());
+}
+
 Cell* CellHeap::pop() {
     ASSERT_LT(0, m_size);
     Cell* cell = m_data[0];
+    cell->setHeapIndex(-1);
     m_data[0] = m_data[m_size - 1];
     m_data[0]->setHeapIndex(0);
     m_size -= 1;
@@ -42,12 +48,6 @@ Cell* CellHeap::pop() {
         heapifyDown(0);
     }
     return cell;
-}
-
-void CellHeap::heapify(int index) {
-    ASSERT_LE(0, index);
-    ASSERT_LT(index, m_size);
-    heapifyUp(index);
 }
 
 void CellHeap::increaseCapacity() {
