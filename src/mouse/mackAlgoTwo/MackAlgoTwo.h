@@ -3,6 +3,7 @@
 #include "../IMouseAlgorithm.h"
 #include "Cell.h"
 #include "CellHeap.h"
+#include "Center.h"
 
 namespace mackAlgoTwo {
 
@@ -31,13 +32,14 @@ private:
     bool move();
     float getTurnCost();
     float getStraightAwayCost(int length);
-    bool checkNeighbor(Cell* current, Cell* neighbor, int direction, CellHeap* heap);
+    void checkNeighbor(Cell* current, Cell* neighbor, int direction, CellHeap* heap);
 
     void initializeDestinationDistance();
     Cell* getClosestDestinationCell();
     Cell* cellMin(Cell* one, Cell* two);
 
     void readWalls();
+    bool readWall(int direction);
     bool inGoal(int x, int y);
 
     void turnLeftUpdateState();
@@ -54,11 +56,8 @@ private:
     void rightAndForward();
     void aroundAndForward();
 
+    bool neighboringCellExists(int x, int y, int direction);
     Cell* getNeighboringCell(int x, int y, int direction);
-
-    bool spaceFront();
-    bool spaceLeft();
-    bool spaceRight();
 
     bool isOneCellAway(Cell* target);
     void moveOneCell(Cell* target);
@@ -67,6 +66,7 @@ private:
     void resetColors();
     void colorCenter(char color);
 
+    Center getCenter();
 };
 
 } // namespace mackAlgoTwo

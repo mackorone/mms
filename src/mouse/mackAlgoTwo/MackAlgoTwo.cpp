@@ -190,9 +190,7 @@ float MackAlgoTwo::getStraightAwayCost(int length) {
     return 1.0 / length;
 }
 
-bool MackAlgoTwo::checkNeighbor(Cell* current, Cell* neighbor, int direction, CellHeap* heap) {
-
-    bool pushToHeap = false;
+void MackAlgoTwo::checkNeighbor(Cell* current, Cell* neighbor, int direction, CellHeap* heap) {
 
     // Determine the cost if routed through the currect node
     float costToNeighbor = current->getDistance();
@@ -203,8 +201,9 @@ bool MackAlgoTwo::checkNeighbor(Cell* current, Cell* neighbor, int direction, Ce
         costToNeighbor += getTurnCost();
     }
 
-    // Make updates to the node
+    // Make updates to the neighbor node if necessary
     if (neighbor->getSequenceNumber() != current->getSequenceNumber() || costToNeighbor < neighbor->getDistance()) {
+        bool pushToHeap = false;
         if (neighbor->getSequenceNumber() != current->getSequenceNumber()) {
             neighbor->setSequenceNumber(current->getSequenceNumber());
             pushToHeap = true;
@@ -225,24 +224,16 @@ bool MackAlgoTwo::checkNeighbor(Cell* current, Cell* neighbor, int direction, Ce
             heap->update(neighbor);
         }
     }
-
-    return pushToHeap;
 }
 
-// TODO: MACK - dedup these ugle methods
 void MackAlgoTwo::initializeDestinationDistance() {
     float maxFloatValue = std::numeric_limits<float>::max();
     if (m_onWayToCenter) {
-                m_maze[(MAZE_WIDTH - 1) / 2][(MAZE_HEIGHT - 1) / 2].setDistance(maxFloatValue);
-        if (MAZE_WIDTH % 2 == 0) {
-                m_maze[(MAZE_WIDTH    ) / 2][(MAZE_HEIGHT - 1) / 2].setDistance(maxFloatValue);
-            if (MAZE_HEIGHT % 2 == 0) {
-                m_maze[(MAZE_WIDTH - 1) / 2][ MAZE_HEIGHT      / 2].setDistance(maxFloatValue);
-                m_maze[ MAZE_WIDTH      / 2][ MAZE_HEIGHT      / 2].setDistance(maxFloatValue);
+        Center center = getCenter();
+        for (int i = 0; i < 4; i += 1) {
+            if (center.cells[i] != nullptr) {
+                center.cells[i]->setDistance(maxFloatValue);
             }
-        }
-        else if (MAZE_HEIGHT % 2 == 0) {
-                m_maze[(MAZE_WIDTH - 1) / 2][ MAZE_HEIGHT      / 2].setDistance(maxFloatValue);
         }
     }
     else {
@@ -253,16 +244,11 @@ void MackAlgoTwo::initializeDestinationDistance() {
 Cell* MackAlgoTwo::getClosestDestinationCell() {
     Cell* closest = NULL;
     if (m_onWayToCenter) {
-                closest = cellMin(closest, &m_maze[(MAZE_WIDTH - 1) / 2][(MAZE_HEIGHT - 1) / 2]);
-        if (MAZE_WIDTH % 2 == 0) {
-                closest = cellMin(closest, &m_maze[ MAZE_WIDTH      / 2][(MAZE_HEIGHT - 1) / 2]);
-            if (MAZE_HEIGHT % 2 == 0) {
-                closest = cellMin(closest, &m_maze[(MAZE_WIDTH - 1) / 2][ MAZE_HEIGHT      / 2]);
-                closest = cellMin(closest, &m_maze[ MAZE_WIDTH      / 2][ MAZE_HEIGHT      / 2]);
+        Center center = getCenter();
+        for (int i = 0; i < 4; i += 1) {
+            if (center.cells[i] != nullptr) {
+                closest = cellMin(closest, center.cells[i]);
             }
-        }
-        else if (MAZE_HEIGHT % 2 == 0) {
-                closest = cellMin(closest, &m_maze[(MAZE_WIDTH - 1) / 2][ MAZE_HEIGHT      / 2]);
         }
     }
     else {
@@ -279,53 +265,46 @@ Cell* MackAlgoTwo::cellMin(Cell* one, Cell* two) {
 }
 
 void MackAlgoTwo::readWalls() {
-
-    bool wallFront = m_mouse->wallFront();
-    bool wallRight = m_mouse->wallRight();
-    bool wallLeft = m_mouse->wallLeft();
-/*
-#else
-    bool wallLeft = walls_global[0];
-    bool wallFront = walls_global[1];
-    bool wallRight = walls_global[2];
-    movesDoneAndWallsSet = false;
-#endif
-*/
-    // TODO: MACK - refactor this a bit...
+    // For each of [left, front, right]
     for (int i = -1; i <= 1; i += 1) {
         int direction = (m_d + i + 4) % 4;
+        // If the wall is not already known
         if (!m_maze[m_x][m_y].isKnown(direction)) {
-            bool isWall = (
-                i < 0 ? m_mouse->wallLeft() : (
-                i > 0 ? m_mouse->wallRight() : m_mouse->wallFront())); 
+            // Read and update the wall value
+            bool isWall = readWall(direction);
             m_maze[m_x][m_y].setWall(direction, isWall);
-            bool isSpace = (
-                i < 0 ? spaceLeft() : (
-                i > 0 ? spaceRight() : spaceFront())); 
-            if (isSpace) {
-                getNeighboringCell(m_x, m_y, direction)->setWall((direction+2)%4, isWall);
+            // If a neighboring cell exists, set the neighbor's wall too
+            if (neighboringCellExists(m_x, m_y, direction)) {
+                int oppositeDirection = (direction + 2) % 4;
+                getNeighboringCell(m_x, m_y, direction)->setWall(oppositeDirection, isWall);
             }
         }
-
     }
 }
 
+bool MackAlgoTwo::readWall(int direction) {
+    switch (direction - m_d) {
+        case -1:
+            return m_mouse->wallLeft();
+        case 0:
+            return m_mouse->wallFront();
+        case 1:
+            return m_mouse->wallRight();
+    }
+    // We should never get here
+    ASSERT_TR(false);
+}
+
 bool MackAlgoTwo::inGoal(int x, int y) {
-
-    // The goal is defined to be the center of the maze 
-    // This means that it's 4 squares of length if even, 1 if odd
-    
-    bool horizontal = (MAZE_WIDTH - 1) / 2 == x;
-    if (MAZE_WIDTH % 2 == 0) {
-        horizontal = horizontal || (MAZE_WIDTH) / 2 == x;
+    Center center = getCenter();
+    for (int i = 0; i < 4; i += 1) {
+        if (center.cells[i] != nullptr) {
+            if (center.cells[i]->getX() == x && center.cells[i]->getY() == y) {
+                return true;
+            }
+        }
     }
-
-    bool vertical = (MAZE_HEIGHT - 1) / 2 == y;
-    if (MAZE_HEIGHT % 2 == 0) {
-        vertical = vertical || (MAZE_HEIGHT) / 2 == y;
-    }
-
-    return horizontal && vertical;
+    return false;
 }
 
 void MackAlgoTwo::turnLeftUpdateState() {
@@ -424,6 +403,30 @@ void MackAlgoTwo::aroundAndForward() {
 */
 }
 
+// TODO: MACK - refactor this and the following into a single method that just returns nullptr
+bool MackAlgoTwo::neighboringCellExists(int x, int y, int direction) {
+    switch (direction) {
+        case NORTH:
+            y += 1;
+            break;
+        case EAST:
+            x += 1;
+            break;
+        case SOUTH:
+            y -= 1;
+            break;
+        case WEST:
+            x -= 1;
+            break;
+    }
+    return (
+        0 <= x &&
+        0 <= y &&
+        x <= MAZE_WIDTH &&
+        y <= MAZE_HEIGHT
+    );
+}
+
 Cell* MackAlgoTwo::getNeighboringCell(int x, int y, int direction) {
     switch (direction) {
         case NORTH:
@@ -434,45 +437,6 @@ Cell* MackAlgoTwo::getNeighboringCell(int x, int y, int direction) {
             return &m_maze[x][y-1];
         case WEST:
             return &m_maze[x-1][y];
-    }
-}
-
-bool MackAlgoTwo::spaceFront() {
-    switch (m_d) {
-        case NORTH:
-            return m_y+1 < MAZE_HEIGHT;
-        case EAST:
-            return m_x+1 < MAZE_WIDTH;
-        case SOUTH:
-            return m_y > 0;
-        case WEST:
-            return m_x > 0;
-    }
-}
-
-bool MackAlgoTwo::spaceLeft() {
-    switch (m_d) {
-        case NORTH:
-            return m_x > 0;
-        case EAST:
-            return m_y+1 < MAZE_HEIGHT;
-        case SOUTH:
-            return m_x+1 < MAZE_WIDTH;
-        case WEST:
-            return m_y > 0;
-    }
-}
-
-bool MackAlgoTwo::spaceRight() {
-    switch (m_d) {
-        case NORTH:
-            return m_x+1 < MAZE_WIDTH;
-        case EAST:
-            return m_y > 0;
-        case SOUTH:
-            return m_x > 0;
-        case WEST:
-            return m_y+1 < MAZE_HEIGHT;
     }
 }
 
@@ -550,17 +514,33 @@ void MackAlgoTwo::resetColors() {
 }
 
 void MackAlgoTwo::colorCenter(char color) {
-            setColor((MAZE_WIDTH - 1) / 2, (MAZE_HEIGHT - 1) / 2, color);
+    Center center = getCenter();
+    for (int i = 0; i < 4; i += 1) {
+        if (center.cells[i] != nullptr) {
+            setColor(center.cells[i]->getX(), center.cells[i]->getY(), color);
+        }
+    }
+}
+
+Center MackAlgoTwo::getCenter() {
+
+    Center center;
+    for (int i = 0; i < 4; i += 1) {
+        center.cells[i] = nullptr;
+    }
+            center.cells[0] = &m_maze[(MAZE_WIDTH - 1) / 2][(MAZE_HEIGHT - 1) / 2];
     if (MAZE_WIDTH % 2 == 0) {
-            setColor( MAZE_WIDTH      / 2, (MAZE_HEIGHT - 1) / 2, color);
+            center.cells[1] = &m_maze[ MAZE_WIDTH      / 2][(MAZE_HEIGHT - 1) / 2];
         if (MAZE_HEIGHT % 2 == 0) {
-            setColor((MAZE_WIDTH - 1) / 2,  MAZE_HEIGHT      / 2, color);
-            setColor( MAZE_WIDTH      / 2,  MAZE_HEIGHT      / 2, color);
+            center.cells[2] = &m_maze[(MAZE_WIDTH - 1) / 2][ MAZE_HEIGHT      / 2];
+            center.cells[3] = &m_maze[ MAZE_WIDTH      / 2][ MAZE_HEIGHT      / 2];
         }
     }
     else if (MAZE_HEIGHT % 2 == 0) {
-            setColor((MAZE_WIDTH - 1) / 2,  MAZE_HEIGHT      / 2, color);
+            center.cells[2] = &m_maze[(MAZE_WIDTH - 1) / 2][ MAZE_HEIGHT      / 2];
     }
+
+    return center;
 }
 
 } // namespace mackAlgoTwo
