@@ -20,9 +20,22 @@ void Cell::init(
         int y,
         int mazeWidth,
         int mazeHeight) {
-    // TODO: MACK - only works for 16 by 16
+
+    // First, perform a sanity check on all values
+    int values[] = {x, y, mazeWidth, mazeHeight};
+    for (int i = 0; i < 4; i += 1) {
+        ASSERT_LE(0, values[i]);
+        ASSERT_LT(values[i], 16);
+    }
+
+    // Assign 
     m_mouse = mouse;
+
+    // 0000xxxx << 4 = xxxx0000
+    // xxxx0000 | 0000yyyy = xxxxyyyy
     m_position = x << 4 | y;
+
+    // If the cell is on a maze bou
     if (x == 0) {
         setWall(WEST, true);
     }
@@ -38,31 +51,50 @@ void Cell::init(
 }
 
 int Cell::getX() const {
+    // xxxxyyyy >> 4 = 0000xxxx
     return m_position >> 4;
 }
 
 int Cell::getY() const {
+    // xxxxyyyy & 00001111 = 0000yyyy
     return m_position & 15;
 }
 
 bool Cell::isKnown(int direction) const {
-    // TODO: MACK +4 make a note of this
+    // Suppose: direction = 2 (south)
+    // Then: wsenwsen >> 2 + 4 = 000000ws
+    // And: 000000ws & 00000001 = 0000000s
     return (m_walls >> direction + 4) & 1;
 }
 
 bool Cell::isWall(int direction) const {
+    // Suppose: direction = 2 (south)
+    // Then: wsenwsen >> 2 = 00wsenws
+    // And: 00wsenws & 00000001 = 0000000s
     return (m_walls >> direction) & 1;
 }
 
 void Cell::setWall(int direction, bool isWall) {
-    static char directionChars[] = {'n', 'e', 's', 'w'};
+
+    // First, update the wall "known" state
+    // Suppose: direction = 2 (south)
+    // Then: wsenwsen | 01000000 = w1enwsen
+    m_walls |= 1 << direction + 4;
+
+    // Then update the wall value
     if (isWall) {
+        // Suppose: direction = 2 (south)
+        // Then: wsenwsen | 00000100 = wsenw1en
         m_walls |=  (1 << direction);
     }
     else {
+        // Suppose: direction = 2 (south)
+        // Then: wsenwsen & 11111011 = wsenw0en
         m_walls &= ~(1 << direction);
     }
-    m_walls |= 1 << direction + 4;
+
+    // Lastly, declare the wall (for simulator visualization)
+    static char directionChars[] = {'n', 'e', 's', 'w'};
     m_mouse->declareWall(getX(), getY(), directionChars[direction], isWall);
 }
 

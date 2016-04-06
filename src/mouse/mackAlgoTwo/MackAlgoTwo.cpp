@@ -33,6 +33,7 @@ void MackAlgoTwo::solve(
     // Initialize the MouseInterface pointer
     m_mouse = mouse;
 
+    // TODO: MACK maze has to be less than or equal to 16 x 16
     // We expect a certain maze size and initial direction
     if (MAZE_WIDTH != mazeWidth || MAZE_HEIGHT != mazeHeight) {
         m_mouse->warn("Incompatible maze sizes. I'm giving up.");

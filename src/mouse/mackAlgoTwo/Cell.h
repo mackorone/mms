@@ -50,6 +50,8 @@ public:
     void setHeapIndex(int index);
 
 private:
+
+    // The interface through which we control the mouse
     sim::MouseInterface* m_mouse;
 
     // Four bits for each of x and y
