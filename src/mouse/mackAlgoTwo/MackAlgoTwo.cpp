@@ -2,6 +2,8 @@
 
 #include <limits>
 
+#include "Position.h"
+
 /*
 #if (!SIMULATOR)
 extern char movesBuffer[256];
@@ -96,6 +98,7 @@ bool MackAlgoTwo::move() {
     Cell* source = &m_maze[m_x][m_y];
     source->info.sequenceNumber = sequenceNumber;
     source->info.parent = NULL;
+    source->info.parentPosition = source->getPosition();
     source->info.sourceDirection = m_d;
     // Purposefully don't set straightAwayLength
     setCellDistance(source, 0);
@@ -132,7 +135,7 @@ bool MackAlgoTwo::move() {
 
         // Inspect neighbors if they're not yet visited
         // NOTE: Inspecting and examining are not the same thing!
-        for (Direction direction = 0; direction < 4; direction += 1) {
+        for (unsigned char direction = 0; direction < 4; direction += 1) {
             if (!current->isWall(direction)) {
                 Cell* neighbor = getNeighboringCell(current->getX(), current->getY(), direction);
                 checkNeighbor(current, neighbor, direction, &heap);
@@ -143,6 +146,7 @@ bool MackAlgoTwo::move() {
     colorCenter('G');
 
     // If there's no path to the destination, the maze is unsolvable
+    // TODO: MACK - parent position here? parent is the own position
     if (getClosestDestinationCell()->info.parent == NULL) {
         m_mouse->warn("Unsolvable maze detected. I'm giving up...");
         return false;
@@ -150,11 +154,18 @@ bool MackAlgoTwo::move() {
 
     // WARNING: Ugly hack to reverse the "list" of parents to a "list" of children.
     // We need this so that we can buffer the moves for the drive code.
+
     Cell* next = getClosestDestinationCell();
     setColor(next->getX(), next->getY(), 'B');
+
+    // TODO: MACK
     Cell* current = next->info.parent;
     Cell* prev = current->info.parent;
     next->info.parent = NULL;
+    // Cell* current = &m_maze[mackAlgoTwo::getX(next->info.parentPosition)][mackAlgoTwo::getY(next->info.parentPosition)];
+    // Cell* prev = &m_maze[mackAlgoTwo::getX(current->info.parentPosition)][mackAlgoTwo::getY(current->info.parentPosition)];;
+    // next->info.parentPosition = next->getPosition();
+
     while (prev != NULL) {
         setColor(current->getX(), current->getY(), 'B');
         current->info.parent = next;
@@ -207,7 +218,7 @@ float MackAlgoTwo::getStraightAwayCost(unsigned char length) {
 void MackAlgoTwo::checkNeighbor(
         Cell* current,
         Cell* neighbor,
-        Direction direction,
+        unsigned char direction,
         CellHeap* heap) {
 
     // Determine the cost if routed through the currect node
@@ -227,6 +238,7 @@ void MackAlgoTwo::checkNeighbor(
             pushToHeap = true;
         }
         neighbor->info.parent = current;
+        neighbor->info.parentPosition = current->getPosition();
         setCellDistance(neighbor, costToNeighbor);
         neighbor->info.sourceDirection = direction;
         if (current->info.sourceDirection == direction) {
@@ -307,7 +319,7 @@ Cell* MackAlgoTwo::getClosestDestinationCell() {
 Cell* MackAlgoTwo::getNeighboringCell(
         unsigned char x,
         unsigned char y,
-        Direction direction) {
+        unsigned char direction) {
 
     switch (direction) {
         case NORTH:
@@ -362,7 +374,7 @@ void MackAlgoTwo::moveOneCell(Cell* target) {
     unsigned char x = target->getX();
     unsigned char y = target->getY();
     
-    Direction moveDirection = NORTH;
+    unsigned char moveDirection = NORTH;
     if (x > m_x) {
         moveDirection = EAST;
     }
@@ -391,7 +403,7 @@ void MackAlgoTwo::readWalls() {
 
     // For each of [left, front, right]
     for (int i = -1; i <= 1; i += 1) {
-        Direction direction = (m_d + i + 4) % 4;
+        unsigned char direction = (m_d + i + 4) % 4;
 
         // If the wall is not already known
         if (!m_maze[m_x][m_y].isKnown(direction)) {
@@ -403,14 +415,14 @@ void MackAlgoTwo::readWalls() {
             // If a neighboring cell exists, set the neighbor's wall too
             Cell* neighboringCell = getNeighboringCell(m_x, m_y, direction);
             if (neighboringCell != nullptr) {
-                Direction oppositeDirection = (direction + 2) % 4;
+                unsigned char oppositeDirection= (direction + 2) % 4;
                 setCellWall(neighboringCell, oppositeDirection, isWall);
             }
         }
     }
 }
 
-bool MackAlgoTwo::readWall(Direction direction) {
+bool MackAlgoTwo::readWall(unsigned char direction) {
     switch ((direction - m_d + 4) % 4) {
         case 0:
             return m_mouse->wallFront();
@@ -509,7 +521,7 @@ void MackAlgoTwo::setCellDistance(Cell* cell, float distance) {
     m_mouse->setTileText(cell->getX(), cell->getY(), std::to_string(distance));
 }
 
-void MackAlgoTwo::setCellWall(Cell* cell, Direction direction, bool isWall) {
+void MackAlgoTwo::setCellWall(Cell* cell, unsigned char direction, bool isWall) {
     cell->setWall(direction, isWall);
     static char directionChars[] = {'n', 'e', 's', 'w'};
     m_mouse->declareWall(cell->getX(), cell->getY(), directionChars[direction], isWall);

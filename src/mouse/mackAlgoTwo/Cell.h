@@ -19,10 +19,11 @@ public:
 
     unsigned char getX() const;
     unsigned char getY() const;
+    unsigned char getPosition() const;
 
-    bool isKnown(Direction direction) const;
-    bool isWall(Direction direction) const;
-    void setWall(Direction direction, bool isWall);
+    bool isKnown(unsigned char direction) const;
+    bool isWall(unsigned char direction) const;
+    void setWall(unsigned char direction, bool isWall);
 
     // Any extra temporary info needed by Dijkstra's
     Info info;

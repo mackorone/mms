@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Cell.h"
-
 namespace mackAlgoTwo {
+
+class Cell;
 
 struct Center {
     Cell* cells[4];

@@ -26,7 +26,7 @@ private:
     Cell m_maze[MAZE_WIDTH][MAZE_HEIGHT];
     unsigned char m_x;
     unsigned char m_y;
-    Direction m_d;
+    unsigned char m_d;
     bool m_onWayToCenter;
     unsigned char m_moveBufferIndex;
 
@@ -36,7 +36,7 @@ private:
     void checkNeighbor(
         Cell* current,
         Cell* neighbor,
-        Direction direction,
+        unsigned char direction,
         CellHeap* heap);
 
     Center getCenter();
@@ -46,13 +46,13 @@ private:
     Cell* getNeighboringCell(
         unsigned char x,
         unsigned char y,
-        Direction direction);
+        unsigned char direction);
 
     bool isOneCellAway(Cell* target);
     void moveOneCell(Cell* target);
 
     void readWalls();
-    bool readWall(Direction direction);
+    bool readWall(unsigned char direction);
     bool inGoal(unsigned char x, unsigned char y);
 
     void turnLeftUpdateState();
@@ -75,7 +75,7 @@ private:
 
     // TODO: MACK - we don't have mouseInterface in cell.h, so we need helpers here
     void setCellDistance(Cell* cell, float distance);
-    void setCellWall(Cell* cell, Direction direction, bool isWall);
+    void setCellWall(Cell* cell, unsigned char direction, bool isWall);
 };
 
 } // namespace mackAlgoTwo

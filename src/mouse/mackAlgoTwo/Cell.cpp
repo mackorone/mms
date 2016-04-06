@@ -1,6 +1,7 @@
 #include "Cell.h"
 
 #include "Assert.h"
+#include "Position.h"
 
 namespace mackAlgoTwo {
 
@@ -21,9 +22,8 @@ void Cell::init(
     ASSERT_LT(x, 16);
     ASSERT_LT(y, 16);
 
-    // 0000xxxx << 4 = xxxx0000
-    // xxxx0000 | 0000yyyy = xxxxyyyy
-    m_position = x << 4 | y;
+    // Initialize the cell position
+    m_position = mackAlgoTwo::getPosition(x, y);
 
     // Set the appropriate wall if
     // the cell is on a maze boundary
@@ -42,30 +42,32 @@ void Cell::init(
 }
 
 unsigned char Cell::getX() const {
-    // xxxxyyyy >> 4 = 0000xxxx
-    return m_position >> 4;
+    return mackAlgoTwo::getX(m_position);
 }
 
 unsigned char Cell::getY() const {
-    // xxxxyyyy & 00001111 = 0000yyyy
-    return m_position & 15;
+    return mackAlgoTwo::getY(m_position);
 }
 
-bool Cell::isKnown(Direction direction) const {
+unsigned char Cell::getPosition() const {
+    return m_position;
+}
+
+bool Cell::isKnown(unsigned char direction) const {
     // Suppose: direction = 2 (south)
     // Then: wsenwsen >> 2 + 4 = 000000ws
     // And: 000000ws & 00000001 = 0000000s
     return (m_walls >> direction + 4) & 1;
 }
 
-bool Cell::isWall(Direction direction) const {
+bool Cell::isWall(unsigned char direction) const {
     // Suppose: direction = 2 (south)
     // Then: wsenwsen >> 2 = 00wsenws
     // And: 00wsenws & 00000001 = 0000000s
     return (m_walls >> direction) & 1;
 }
 
-void Cell::setWall(Direction direction, bool isWall) {
+void Cell::setWall(unsigned char direction, bool isWall) {
 
     // First, update the wall "known" state
     // Suppose: direction = 2 (south)
