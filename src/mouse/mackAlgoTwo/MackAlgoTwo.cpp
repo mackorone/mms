@@ -159,12 +159,12 @@ bool MackAlgoTwo::move() {
     setColor(next->getX(), next->getY(), 'B');
 
     // TODO: MACK
-    Cell* current = next->info.parent;
+    Cell* current = &m_maze[mackAlgoTwo::getX(next->info.parentPosition)][mackAlgoTwo::getY(next->info.parentPosition)];
     Cell* prev = current->info.parent;
+    // TODO: This isn't going to be null, it's just going to be it's own parent
+    Cell* prev2 = &m_maze[mackAlgoTwo::getX(current->info.parentPosition)][mackAlgoTwo::getY(current->info.parentPosition)];;
     next->info.parent = NULL;
-    // Cell* current = &m_maze[mackAlgoTwo::getX(next->info.parentPosition)][mackAlgoTwo::getY(next->info.parentPosition)];
-    // Cell* prev = &m_maze[mackAlgoTwo::getX(current->info.parentPosition)][mackAlgoTwo::getY(current->info.parentPosition)];;
-    // next->info.parentPosition = next->getPosition();
+    next->info.parentPosition = next->getPosition();
 
     while (prev != NULL) {
         setColor(current->getX(), current->getY(), 'B');
