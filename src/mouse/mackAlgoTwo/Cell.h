@@ -51,12 +51,31 @@ public:
 
 private:
     sim::MouseInterface* m_mouse;
-    int m_x;
-    int m_y;
-    bool m_walls[4];
-    bool m_known[4];
+
+    // Four bits for each of x and y
+    //
+    //   axes |    x    |    y    |
+    //        |---------|---------|
+    // values |  00-15  |  00-15  |
+    //        |---------|---------|
+    //   bits | 7 6 5 4 | 3 2 1 0 |
+    //
+    unsigned char m_position;
+
+    // Four bits for whether we know
+    // the value of the wall, and four
+    // bits for the value of the wall
+    //
+    //   info |  known  |  walls  |
+    //        |---------|---------|
+    //    dir | w s e n | w s e n |
+    //        |---------|---------|
+    //   bits | 7 6 5 4 | 3 2 1 0 |
+    //
+    unsigned char m_walls;
 
     // Used for Dijkstra's
+    // TODO: MACK - separate struct for this
     int m_sequenceNumber;
     Cell* m_parent;
     int m_sourceDirection;
