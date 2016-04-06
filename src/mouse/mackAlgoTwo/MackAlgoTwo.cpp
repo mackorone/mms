@@ -117,7 +117,7 @@ bool MackAlgoTwo::move() {
         // I think I need to reset the dest distances
 
         // TODO: MACK - make this an option
-        if (true) {
+        if (false) {
             // TODO: MACK - make this an option
             if (true) {
                 m_mouse->delay(10);
@@ -200,8 +200,7 @@ float MackAlgoTwo::getTurnCost() {
 }
 
 float MackAlgoTwo::getStraightAwayCost(int length) {
-    // return 1.0 / length;
-    return 1.0;
+    return 1.0 / length;
 }
 
 void MackAlgoTwo::checkNeighbor(Cell* current, Cell* neighbor, int direction, CellHeap* heap) {

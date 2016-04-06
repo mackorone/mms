@@ -11,8 +11,7 @@ Cell::Cell() :
         m_sourceDirection(-1),
         m_straightAwayLength(0),
         m_distance(-1),
-        m_heapIndex(-1),
-        m_color('r') {
+        m_heapIndex(-1) {
     for (int i = 0; i < 4; i += 1) {
         m_walls[i] = false;
         m_known[i] = false;
@@ -112,14 +111,6 @@ int Cell::getHeapIndex() const {
 
 void Cell::setHeapIndex(int index) {
     m_heapIndex = index;
-}
-
-char Cell::getColor() const {
-    return m_color;
-}
-
-void Cell::setColor(char color) {
-    m_color = color;
 }
 
 } // namespace mackAlgoTwo
