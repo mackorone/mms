@@ -4,11 +4,12 @@
 #include "Cell.h"
 #include "CellHeap.h"
 #include "Center.h"
+#include "Direction.h"
 
 namespace mackAlgoTwo {
 
-static const int MAZE_WIDTH = 16;  // XXX
-static const int MAZE_HEIGHT = 16; // XXX
+static const unsigned char MAZE_WIDTH = 16;  // XXX
+static const unsigned char MAZE_HEIGHT = 16; // XXX
 
 class MackAlgoTwo : public IMouseAlgorithm {
 
@@ -23,29 +24,36 @@ public:
 private:
     sim::MouseInterface* m_mouse;
     Cell m_maze[MAZE_WIDTH][MAZE_HEIGHT];
-    int m_x;
-    int m_y;
-    int m_d;
+    unsigned char m_x;
+    unsigned char m_y;
+    Direction m_d;
     bool m_onWayToCenter;
-    int m_moveBufferIndex;
+    unsigned char m_moveBufferIndex;
 
     bool move();
     float getTurnCost();
-    float getStraightAwayCost(int length);
-    void checkNeighbor(Cell* current, Cell* neighbor, int direction, CellHeap* heap);
+    float getStraightAwayCost(unsigned char length);
+    void checkNeighbor(
+        Cell* current,
+        Cell* neighbor,
+        Direction direction,
+        CellHeap* heap);
 
     Center getCenter();
     void resetDestinationCellDistances();
     Cell* cellMin(Cell* one, Cell* two);
     Cell* getClosestDestinationCell();
-    Cell* getNeighboringCell(int x, int y, int direction);
+    Cell* getNeighboringCell(
+        unsigned char x,
+        unsigned char y,
+        Direction direction);
 
     bool isOneCellAway(Cell* target);
     void moveOneCell(Cell* target);
 
     void readWalls();
-    bool readWall(int direction);
-    bool inGoal(int x, int y);
+    bool readWall(Direction direction);
+    bool inGoal(unsigned char x, unsigned char y);
 
     void turnLeftUpdateState();
     void turnRightUpdateState();
@@ -61,13 +69,13 @@ private:
     void rightAndForward();
     void aroundAndForward();
 
-    void setColor(int x, int y, char color);
+    void setColor(unsigned char x, unsigned char y, char color);
     void resetColors();
     void colorCenter(char color);
 
     // TODO: MACK - we don't have mouseInterface in cell.h, so we need helpers here
     void setCellDistance(Cell* cell, float distance);
-    void setCellWall(Cell* cell, int direction, bool isWall);
+    void setCellWall(Cell* cell, Direction direction, bool isWall);
 };
 
 } // namespace mackAlgoTwo

@@ -1,35 +1,34 @@
 #pragma once
 
+#include "Direction.h"
 #include "Info.h"
 
 namespace mackAlgoTwo {
 
-// TODO: MACK - move this to it's own file
-enum {
-    NORTH = 0,
-    EAST  = 1,
-    SOUTH = 2,
-    WEST  = 3,
-};
-
 class Cell {
 
 public:
+
     Cell();
 
-    void init(int x, int y, int mazeWidth, int mazeHeight);
+    void init(
+        unsigned char x,
+        unsigned char y,
+        unsigned char mazeWidth,
+        unsigned char mazeHeight);
 
-    int getX() const;
-    int getY() const;
+    unsigned char getX() const;
+    unsigned char getY() const;
 
-    bool isKnown(int direction) const;
-    bool isWall(int direction) const;
-    void setWall(int direction, bool isWall);
+    bool isKnown(Direction direction) const;
+    bool isWall(Direction direction) const;
+    void setWall(Direction direction, bool isWall);
 
     // Any extra temporary info needed by Dijkstra's
     Info info;
 
 private:
+
     // Four bits for each of x and y
     //
     //   axes |    x    |    y    |

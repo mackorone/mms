@@ -1,24 +1,18 @@
 #pragma once
 
+#include "Direction.h"
+
 namespace mackAlgoTwo {
 
 class Cell;
 
 struct Info {
-    int sequenceNumber;
-    Cell* parent;
-    int sourceDirection;
-    int straightAwayLength;
-    float distance;
-    int heapIndex;
-    /* // TODO: MACK
     unsigned char sequenceNumber;
     float         distance;
-    Cell*         parent;
-    unsigned char sourceDirection; // 2 bits
+    Cell*         parent; // TODO: MACK - write this as a position for one byte
+    Direction     sourceDirection; // 2 bits // TODO: MACK - don't need
     unsigned char straightAwayLength; // 4 bits
     unsigned char heapIndex;
-    */
 };
 
 } // namespace mackAlgoTwo
