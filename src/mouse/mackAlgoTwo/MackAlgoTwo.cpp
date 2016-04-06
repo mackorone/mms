@@ -47,7 +47,7 @@ void MackAlgoTwo::solve(
     // Initialize the (perimeter of the) maze
     for (int x = 0; x < MAZE_WIDTH; x += 1) {
         for (int y = 0; y < MAZE_HEIGHT; y += 1) {
-            m_maze[x][y].init(m_mouse, x, y, MAZE_WIDTH, MAZE_HEIGHT);
+            m_maze[x][y].init(x, y, MAZE_WIDTH, MAZE_HEIGHT);
         }
     }
 
@@ -98,7 +98,7 @@ bool MackAlgoTwo::move() {
     source->setParent(NULL);
     source->setSourceDirection(m_d);
     // Purposefully don't set straightAwayLength
-    source->setDistance(0);
+    setCellDistance(source, 0);
 
     // TODO:
     resetDestinationCellDistances();
@@ -223,7 +223,7 @@ void MackAlgoTwo::checkNeighbor(Cell* current, Cell* neighbor, int direction, Ce
             pushToHeap = true;
         }
         neighbor->setParent(current);
-        neighbor->setDistance(costToNeighbor);
+        setCellDistance(neighbor, costToNeighbor);
         neighbor->setSourceDirection(direction);
         if (current->getSourceDirection() == direction) {
             neighbor->setStraightAwayLength(current->getStraightAwayLength() + 1);
@@ -268,12 +268,12 @@ void MackAlgoTwo::resetDestinationCellDistances() {
         Center center = getCenter();
         for (int i = 0; i < 4; i += 1) {
             if (center.cells[i] != nullptr) {
-                center.cells[i]->setDistance(maxDistance);
+                setCellDistance(center.cells[i], maxDistance);
             }
         }
     }
     else {
-        m_maze[0][0].setDistance(maxDistance);
+        setCellDistance(&m_maze[0][0], maxDistance);
     }
 }
 
@@ -388,13 +388,13 @@ void MackAlgoTwo::readWalls() {
 
             // Read and update the wall value
             bool isWall = readWall(direction);
-            m_maze[m_x][m_y].setWall(direction, isWall);
+            setCellWall(&m_maze[m_x][m_y], direction, isWall);
 
             // If a neighboring cell exists, set the neighbor's wall too
             Cell* neighboringCell = getNeighboringCell(m_x, m_y, direction);
             if (neighboringCell != nullptr) {
                 int oppositeDirection = (direction + 2) % 4;
-                neighboringCell->setWall(oppositeDirection, isWall);
+                setCellWall(neighboringCell, oppositeDirection, isWall);
             }
         }
     }
@@ -492,6 +492,17 @@ void MackAlgoTwo::colorCenter(char color) {
             setColor(center.cells[i]->getX(), center.cells[i]->getY(), color);
         }
     }
+}
+
+void MackAlgoTwo::setCellDistance(Cell* cell, float distance) {
+    cell->setDistance(distance);
+    m_mouse->setTileText(cell->getX(), cell->getY(), std::to_string(distance));
+}
+
+void MackAlgoTwo::setCellWall(Cell* cell, int direction, bool isWall) {
+    cell->setWall(direction, isWall);
+    static char directionChars[] = {'n', 'e', 's', 'w'};
+    m_mouse->declareWall(cell->getX(), cell->getY(), directionChars[direction], isWall);
 }
 
 } // namespace mackAlgoTwo

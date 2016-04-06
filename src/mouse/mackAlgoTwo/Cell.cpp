@@ -3,7 +3,6 @@
 namespace mackAlgoTwo {
 
 Cell::Cell() :
-        m_mouse(nullptr),
         m_position(0),
         m_walls(0),
         m_sequenceNumber(-1),
@@ -15,27 +14,23 @@ Cell::Cell() :
 }
 
 void Cell::init(
-        sim::MouseInterface* mouse,
         int x,
         int y,
         int mazeWidth,
         int mazeHeight) {
 
-    // First, perform a sanity check on all values
-    int values[] = {x, y, mazeWidth, mazeHeight};
-    for (int i = 0; i < 4; i += 1) {
-        ASSERT_LE(0, values[i]);
-        ASSERT_LT(values[i], 16);
-    }
-
-    // Assign 
-    m_mouse = mouse;
+    // Sanity check
+    ASSERT_LE(0, x);
+    ASSERT_LE(0, y);
+    ASSERT_LT(x, 16);
+    ASSERT_LT(y, 16);
 
     // 0000xxxx << 4 = xxxx0000
     // xxxx0000 | 0000yyyy = xxxxyyyy
     m_position = x << 4 | y;
 
-    // If the cell is on a maze bou
+    // Set the appropriate wall if
+    // the cell is on a maze boundary
     if (x == 0) {
         setWall(WEST, true);
     }
@@ -92,10 +87,6 @@ void Cell::setWall(int direction, bool isWall) {
         // Then: wsenwsen & 11111011 = wsenw0en
         m_walls &= ~(1 << direction);
     }
-
-    // Lastly, declare the wall (for simulator visualization)
-    static char directionChars[] = {'n', 'e', 's', 'w'};
-    m_mouse->declareWall(getX(), getY(), directionChars[direction], isWall);
 }
 
 int Cell::getSequenceNumber() const {
@@ -136,7 +127,6 @@ float Cell::getDistance() const {
 
 void Cell::setDistance(float distance) {
     m_distance = distance;
-    m_mouse->setTileText(getX(), getY(), std::to_string(distance));
 }
 
 int Cell::getHeapIndex() const {

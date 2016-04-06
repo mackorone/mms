@@ -64,6 +64,10 @@ private:
     void setColor(int x, int y, char color);
     void resetColors();
     void colorCenter(char color);
+
+    // TODO: MACK - we don't have mouseInterface in cell.h, so we need helpers here
+    void setCellDistance(Cell* cell, float distance);
+    void setCellWall(Cell* cell, int direction, bool isWall);
 };
 
 } // namespace mackAlgoTwo

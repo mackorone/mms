@@ -16,7 +16,6 @@ class Cell {
 public:
     Cell();
     void init(
-        sim::MouseInterface* mouse,
         int x,
         int y,
         int mazeWidth,
@@ -50,10 +49,6 @@ public:
     void setHeapIndex(int index);
 
 private:
-
-    // The interface through which we control the mouse
-    sim::MouseInterface* m_mouse;
-
     // Four bits for each of x and y
     //
     //   axes |    x    |    y    |
