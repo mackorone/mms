@@ -1,23 +1,15 @@
 #include "Cell.h"
 
+#include "Assert.h"
+
 namespace mackAlgoTwo {
 
 Cell::Cell() :
-        m_position(0),
-        m_walls(0),
-        m_sequenceNumber(-1),
-        m_parent(nullptr),
-        m_sourceDirection(-1),
-        m_straightAwayLength(0),
-        m_distance(-1),
-        m_heapIndex(-1) {
+    m_position(0),
+    m_walls(0) {
 }
 
-void Cell::init(
-        int x,
-        int y,
-        int mazeWidth,
-        int mazeHeight) {
+void Cell::init(int x, int y, int mazeWidth, int mazeHeight) {
 
     // Sanity check
     ASSERT_LE(0, x);
@@ -87,54 +79,6 @@ void Cell::setWall(int direction, bool isWall) {
         // Then: wsenwsen & 11111011 = wsenw0en
         m_walls &= ~(1 << direction);
     }
-}
-
-int Cell::getSequenceNumber() const {
-    return m_sequenceNumber;
-}
-
-void Cell::setSequenceNumber(int sequenceNumber) {
-    m_sequenceNumber = sequenceNumber;
-}
-
-Cell* Cell::getParent() const {
-    return m_parent;
-}
-
-void Cell::setParent(Cell* parent) {
-    m_parent = parent;
-}
-
-int Cell::getSourceDirection() const {
-    return m_sourceDirection;
-}
-
-void Cell::setSourceDirection(int sourceDirection) {
-    m_sourceDirection = sourceDirection;
-}
-
-int Cell::getStraightAwayLength() const {
-    return m_straightAwayLength;
-}
-
-void Cell::setStraightAwayLength(int straightAwayLength) {
-    m_straightAwayLength = straightAwayLength;
-}
-
-float Cell::getDistance() const {
-    return m_distance;
-}
-
-void Cell::setDistance(float distance) {
-    m_distance = distance;
-}
-
-int Cell::getHeapIndex() const {
-    return m_heapIndex;
-}
-
-void Cell::setHeapIndex(int index) {
-    m_heapIndex = index;
 }
 
 } // namespace mackAlgoTwo

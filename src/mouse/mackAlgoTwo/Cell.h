@@ -1,9 +1,10 @@
 #pragma once
 
-#include "../IMouseAlgorithm.h"
+#include "Info.h"
 
 namespace mackAlgoTwo {
 
+// TODO: MACK - move this to it's own file
 enum {
     NORTH = 0,
     EAST  = 1,
@@ -15,11 +16,8 @@ class Cell {
 
 public:
     Cell();
-    void init(
-        int x,
-        int y,
-        int mazeWidth,
-        int mazeHeight);
+
+    void init(int x, int y, int mazeWidth, int mazeHeight);
 
     int getX() const;
     int getY() const;
@@ -28,25 +26,8 @@ public:
     bool isWall(int direction) const;
     void setWall(int direction, bool isWall);
 
-    // ----- Used for Dijkstra's ----- //
-
-    int getSequenceNumber() const;
-    void setSequenceNumber(int sequenceNumber);
-    
-    Cell* getParent() const;
-    void setParent(Cell* parent);
-
-    int getSourceDirection() const;
-    void setSourceDirection(int sourceDirection);
-
-    int getStraightAwayLength() const;
-    void setStraightAwayLength(int straightAwayLength);
-
-    float getDistance() const;
-    void setDistance(float distance);
-
-    int getHeapIndex() const;
-    void setHeapIndex(int index);
+    // Any extra temporary info needed by Dijkstra's
+    Info info;
 
 private:
     // Four bits for each of x and y
@@ -70,15 +51,6 @@ private:
     //   bits | 7 6 5 4 | 3 2 1 0 |
     //
     unsigned char m_walls;
-
-    // Used for Dijkstra's
-    // TODO: MACK - separate struct for this
-    int m_sequenceNumber;
-    Cell* m_parent;
-    int m_sourceDirection;
-    int m_straightAwayLength;
-    float m_distance;
-    int m_heapIndex;
 };
 
 } // namespace mackAlgoTwo

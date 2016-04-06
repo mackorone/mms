@@ -94,9 +94,9 @@ bool MackAlgoTwo::move() {
 
     // Initialize the source cell
     Cell* source = &m_maze[m_x][m_y];
-    source->setSequenceNumber(sequenceNumber);
-    source->setParent(NULL);
-    source->setSourceDirection(m_d);
+    source->info.sequenceNumber = sequenceNumber;
+    source->info.parent = NULL;
+    source->info.sourceDirection = m_d;
     // Purposefully don't set straightAwayLength
     setCellDistance(source, 0);
 
@@ -143,7 +143,7 @@ bool MackAlgoTwo::move() {
     colorCenter('G');
 
     // If there's no path to the destination, the maze is unsolvable
-    if (getClosestDestinationCell()->getParent() == NULL) {
+    if (getClosestDestinationCell()->info.parent == NULL) {
         m_mouse->warn("Unsolvable maze detected. I'm giving up...");
         return false;
     }
@@ -152,25 +152,25 @@ bool MackAlgoTwo::move() {
     // We need this so that we can buffer the moves for the drive code.
     Cell* next = getClosestDestinationCell();
     setColor(next->getX(), next->getY(), 'B');
-    Cell* current = next->getParent();
-    Cell* prev = current->getParent();
-    next->setParent(NULL);
+    Cell* current = next->info.parent;
+    Cell* prev = current->info.parent;
+    next->info.parent = NULL;
     while (prev != NULL) {
         setColor(current->getX(), current->getY(), 'B');
-        current->setParent(next);
+        current->info.parent = next;
         next = current;
         current = prev;
-        prev = current->getParent();
+        prev = current->info.parent;
     }
 
     // Displays the color buffer
     Cell* colorCurrent = current;
     Cell* colorNext = next;
     setColor(colorCurrent->getX(), colorCurrent->getY(), 'V');
-    while (colorNext != NULL && colorCurrent->isKnown(colorNext->getSourceDirection())) {
+    while (colorNext != NULL && colorCurrent->isKnown(colorNext->info.sourceDirection)) {
         setColor(colorNext->getX(), colorNext->getY(), 'V');
         colorCurrent = colorNext;
-        colorNext = colorNext->getParent();
+        colorNext = colorNext->info.parent;
     }
 
     // First, make sure that we reset the move buffer index
@@ -178,10 +178,10 @@ bool MackAlgoTwo::move() {
 
     // WARNING: As a result of the ugly hack to reverse the list, we have to use
     // the parent field of the cells, though its really a child pointer at this point
-    while (next != NULL && current->isKnown(next->getSourceDirection())) {
+    while (next != NULL && current->isKnown(next->info.sourceDirection)) {
         moveOneCell(next);
         current = next;
-        next = next->getParent();
+        next = next->info.parent;
     }
 
 /*
@@ -207,29 +207,29 @@ float MackAlgoTwo::getStraightAwayCost(int length) {
 void MackAlgoTwo::checkNeighbor(Cell* current, Cell* neighbor, int direction, CellHeap* heap) {
 
     // Determine the cost if routed through the currect node
-    float costToNeighbor = current->getDistance();
-    if (current->getSourceDirection() == direction) {
-        costToNeighbor += getStraightAwayCost(current->getStraightAwayLength() + 1);
+    float costToNeighbor = current->info.distance;
+    if (current->info.sourceDirection == direction) {
+        costToNeighbor += getStraightAwayCost(current->info.straightAwayLength + 1);
     }
     else {
         costToNeighbor += getTurnCost();
     }
 
     // Make updates to the neighbor node if necessary
-    if (neighbor->getSequenceNumber() != current->getSequenceNumber() || costToNeighbor < neighbor->getDistance()) {
+    if (neighbor->info.sequenceNumber != current->info.sequenceNumber || costToNeighbor < neighbor->info.distance) {
         bool pushToHeap = false;
-        if (neighbor->getSequenceNumber() != current->getSequenceNumber()) {
-            neighbor->setSequenceNumber(current->getSequenceNumber());
+        if (neighbor->info.sequenceNumber != current->info.sequenceNumber) {
+            neighbor->info.sequenceNumber = current->info.sequenceNumber;
             pushToHeap = true;
         }
-        neighbor->setParent(current);
+        neighbor->info.parent = current;
         setCellDistance(neighbor, costToNeighbor);
-        neighbor->setSourceDirection(direction);
-        if (current->getSourceDirection() == direction) {
-            neighbor->setStraightAwayLength(current->getStraightAwayLength() + 1);
+        neighbor->info.sourceDirection = direction;
+        if (current->info.sourceDirection == direction) {
+            neighbor->info.straightAwayLength = current->info.straightAwayLength + 1;
         }
         else {
-            neighbor->setStraightAwayLength(1);
+            neighbor->info.straightAwayLength = 1;
         }
         if (pushToHeap) {
             heap->push(neighbor);
@@ -281,7 +281,7 @@ Cell* MackAlgoTwo::cellMin(Cell* one, Cell* two) {
     if (one == NULL) {
         return two;
     }
-    return (one->getDistance() < two->getDistance() ? one : two);
+    return (one->info.distance < two->info.distance ? one : two);
 }
 
 Cell* MackAlgoTwo::getClosestDestinationCell() {
@@ -495,7 +495,7 @@ void MackAlgoTwo::colorCenter(char color) {
 }
 
 void MackAlgoTwo::setCellDistance(Cell* cell, float distance) {
-    cell->setDistance(distance);
+    cell->info.distance = distance;
     m_mouse->setTileText(cell->getX(), cell->getY(), std::to_string(distance));
 }
 
