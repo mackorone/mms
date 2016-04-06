@@ -61,7 +61,10 @@ int MouseInterface::millis() {
 }
 
 void MouseInterface::delay(int milliseconds) {
-    sim::SimUtilities::sleep(Milliseconds(milliseconds / S()->simSpeed()));
+    Seconds start = T()->elapsedSimTime();
+    while (T()->elapsedSimTime() < start + Milliseconds(milliseconds)) {
+        sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
+    }
 }
 
 void MouseInterface::quit() {

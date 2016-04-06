@@ -200,7 +200,8 @@ float MackAlgoTwo::getTurnCost() {
 }
 
 float MackAlgoTwo::getStraightAwayCost(int length) {
-    return 1.0 / length;
+    // return 1.0 / length;
+    return 1.0;
 }
 
 void MackAlgoTwo::checkNeighbor(Cell* current, Cell* neighbor, int direction, CellHeap* heap) {
