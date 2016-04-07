@@ -1,10 +1,16 @@
 #pragma once
 
+#include "Byte.h"
+
 namespace mackAlgoTwo {
 
-static const unsigned char NORTH = 0;
-static const unsigned char EAST  = 1;
-static const unsigned char SOUTH = 2;
-static const unsigned char WEST  = 3;
+struct Direction {
+
+    static const byte NORTH = 0;
+    static const byte EAST  = 1;
+    static const byte SOUTH = 2;
+    static const byte WEST  = 3;
+
+};
 
 } // namespace mackAlgoTwo

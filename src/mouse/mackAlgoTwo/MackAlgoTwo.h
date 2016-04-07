@@ -1,15 +1,14 @@
 #pragma once
 
 #include "../IMouseAlgorithm.h"
+#include "Byte.h"
 #include "Cell.h"
 #include "CellHeap.h"
 #include "Center.h"
 #include "Direction.h"
+#include "Maze.h"
 
 namespace mackAlgoTwo {
-
-static const unsigned char MAZE_WIDTH = 16;  // XXX
-static const unsigned char MAZE_HEIGHT = 16; // XXX
 
 class MackAlgoTwo : public IMouseAlgorithm {
 
@@ -23,7 +22,7 @@ public:
 
 private:
     sim::MouseInterface* m_mouse;
-    Cell m_maze[MAZE_WIDTH][MAZE_HEIGHT];
+    Cell m_maze[Maze::WIDTH][Maze::HEIGHT];
     unsigned char m_x;
     unsigned char m_y;
     unsigned char m_d;

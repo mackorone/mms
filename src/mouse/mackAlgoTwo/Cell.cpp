@@ -28,16 +28,16 @@ void Cell::init(
     // Set the appropriate wall if
     // the cell is on a maze boundary
     if (x == 0) {
-        setWall(WEST, true);
+        setWall(Direction::WEST, true);
     }
     if (y == 0) {
-        setWall(SOUTH, true);
+        setWall(Direction::SOUTH, true);
     }
     if (x == mazeWidth - 1) {
-        setWall(EAST, true);
+        setWall(Direction::EAST, true);
     }
     if (y == mazeHeight - 1) {
-        setWall(NORTH, true);
+        setWall(Direction::NORTH, true);
     }
 }
 

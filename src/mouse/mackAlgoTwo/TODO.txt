@@ -3,3 +3,5 @@
     - 1 byte for the cell location
     - 1 byte for the cell walls
     - Other optimizations
+- Kill unused imports
+- Turn asserts off
