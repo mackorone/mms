@@ -11,10 +11,10 @@ Cell::Cell() :
 }
 
 void Cell::init(
-        unsigned char x,
-        unsigned char y,
-        unsigned char mazeWidth,
-        unsigned char mazeHeight) {
+        byte x,
+        byte y,
+        byte mazeWidth,
+        byte mazeHeight) {
 
     // Sanity check
     ASSERT_LE(0, x);
@@ -41,33 +41,33 @@ void Cell::init(
     }
 }
 
-unsigned char Cell::getX() const {
+byte Cell::getX() const {
     return Maze::getX(m_position);
 }
 
-unsigned char Cell::getY() const {
+byte Cell::getY() const {
     return Maze::getY(m_position);
 }
 
-unsigned char Cell::getPosition() const {
+byte Cell::getPosition() const {
     return m_position;
 }
 
-bool Cell::isKnown(unsigned char direction) const {
+bool Cell::isKnown(byte direction) const {
     // Suppose: direction = 2 (south)
     // Then: wsenwsen >> 2 + 4 = 000000ws
     // And: 000000ws & 00000001 = 0000000s
     return (m_walls >> direction + 4) & 1;
 }
 
-bool Cell::isWall(unsigned char direction) const {
+bool Cell::isWall(byte direction) const {
     // Suppose: direction = 2 (south)
     // Then: wsenwsen >> 2 = 00wsenws
     // And: 00wsenws & 00000001 = 0000000s
     return (m_walls >> direction) & 1;
 }
 
-void Cell::setWall(unsigned char direction, bool isWall) {
+void Cell::setWall(byte direction, bool isWall) {
 
     // First, update the wall "known" state
     // Suppose: direction = 2 (south)

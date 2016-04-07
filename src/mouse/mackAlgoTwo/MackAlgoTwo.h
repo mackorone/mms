@@ -23,35 +23,35 @@ private:
     sim::MouseInterface* m_mouse;
     Cell m_maze[Maze::WIDTH][Maze::HEIGHT]; // TODO: MACK
     Info m_info[Maze::WIDTH][Maze::HEIGHT]; // TODO: MACK
-    unsigned char m_x;
-    unsigned char m_y;
-    unsigned char m_d;
+    byte m_x;
+    byte m_y;
+    byte m_d;
     bool m_onWayToCenter;
-    unsigned char m_moveBufferIndex;
+    byte m_moveBufferIndex;
 
     bool move();
     float getTurnCost();
-    float getStraightAwayCost(unsigned char length);
+    float getStraightAwayCost(byte length);
     void checkNeighbor(
         Cell* current,
         Cell* neighbor,
-        unsigned char direction,
+        byte direction,
         CellHeap* heap);
 
     void resetDestinationCellDistances();
     Cell* cellMin(Cell* one, Cell* two);
     Cell* getClosestDestinationCell();
     Cell* getNeighboringCell(
-        unsigned char x,
-        unsigned char y,
-        unsigned char direction);
+        byte x,
+        byte y,
+        byte direction);
 
     bool isOneCellAway(Cell* target);
     void moveOneCell(Cell* target);
 
     void readWalls();
-    bool readWall(unsigned char direction);
-    bool inGoal(unsigned char x, unsigned char y);
+    bool readWall(byte direction);
+    bool inGoal(byte x, byte y);
 
     void turnLeftUpdateState();
     void turnRightUpdateState();
@@ -68,11 +68,11 @@ private:
     void aroundAndForward();
 
     void colorCenter(char color);
-    void colorTile(unsigned char x, unsigned char y, char color);
+    void colorTile(byte x, byte y, char color);
 
     // TODO: MACK - we don't have mouseInterface in cell.h, so we need helpers here
     void setCellDistance(Cell* cell, float distance);
-    void setCellWall(Cell* cell, unsigned char direction, bool isWall);
+    void setCellWall(Cell* cell, byte direction, bool isWall);
 };
 
 } // namespace mackAlgoTwo

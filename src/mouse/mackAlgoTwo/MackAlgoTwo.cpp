@@ -98,7 +98,7 @@ bool MackAlgoTwo::move() {
     // Use Dijkstra's algo to determine the next best move
 
     // Increment the sequence number so that we know that old cell data is stale
-    static unsigned char sequenceNumber = 0;
+    static byte sequenceNumber = 0;
     sequenceNumber += 1;
 
     // TODO: MACK - convince myself we won't run out
@@ -137,8 +137,8 @@ bool MackAlgoTwo::move() {
     while (!heap.empty()) {
 
         Cell* current = heap.pop();
-        unsigned char x = current->getX();
-        unsigned char y = current->getY();
+        byte x = current->getX();
+        byte y = current->getY();
 
         // TODO: MACK - why don't we short circuit the first time around?
         // I think I need to reset the dest distances
@@ -158,7 +158,7 @@ bool MackAlgoTwo::move() {
 
         // Inspect neighbors if they're not yet visited
         // NOTE: Inspecting and examining are not the same thing!
-        for (unsigned char direction = 0; direction < 4; direction += 1) {
+        for (byte direction = 0; direction < 4; direction += 1) {
             if (!current->isWall(direction)) {
                 Cell* neighbor = getNeighboringCell(current->getX(), current->getY(), direction);
                 checkNeighbor(current, neighbor, direction, &heap);
@@ -246,14 +246,14 @@ float MackAlgoTwo::getTurnCost() {
     return 1.0;
 }
 
-float MackAlgoTwo::getStraightAwayCost(unsigned char length) {
+float MackAlgoTwo::getStraightAwayCost(byte length) {
     return 1.0 / length;
 }
 
 void MackAlgoTwo::checkNeighbor(
         Cell* current,
         Cell* neighbor,
-        unsigned char direction,
+        byte direction,
         CellHeap* heap) {
 
     // Determine the cost if routed through the currect node
@@ -328,9 +328,9 @@ Cell* MackAlgoTwo::getClosestDestinationCell() {
 }
 
 Cell* MackAlgoTwo::getNeighboringCell(
-        unsigned char x,
-        unsigned char y,
-        unsigned char direction) {
+        byte x,
+        byte y,
+        byte direction) {
 
     switch (direction) {
         case Direction::NORTH:
@@ -359,8 +359,8 @@ Cell* MackAlgoTwo::getNeighboringCell(
 
 bool MackAlgoTwo::isOneCellAway(Cell* target) {
 
-    unsigned char x = target->getX();
-    unsigned char y = target->getY();
+    byte x = target->getX();
+    byte y = target->getY();
     
     if ((m_x == x) && (m_y + 1 == y) && !m_maze[m_x][m_y].isWall(Direction::NORTH)) {
         return true;
@@ -382,10 +382,10 @@ void MackAlgoTwo::moveOneCell(Cell* target) {
 
     ASSERT_TR(isOneCellAway(target));
 
-    unsigned char x = target->getX();
-    unsigned char y = target->getY();
+    byte x = target->getX();
+    byte y = target->getY();
     
-    unsigned char moveDirection = Direction::NORTH;
+    byte moveDirection = Direction::NORTH;
     if (x > m_x) {
         moveDirection = Direction::EAST;
     }
@@ -414,7 +414,7 @@ void MackAlgoTwo::readWalls() {
 
     // For each of [left, front, right]
     for (int i = -1; i <= 1; i += 1) {
-        unsigned char direction = (m_d + i + 4) % 4;
+        byte direction = (m_d + i + 4) % 4;
 
         // If the wall is not already known
         if (!m_maze[m_x][m_y].isKnown(direction)) {
@@ -426,14 +426,14 @@ void MackAlgoTwo::readWalls() {
             // If a neighboring cell exists, set the neighbor's wall too
             Cell* neighboringCell = getNeighboringCell(m_x, m_y, direction);
             if (neighboringCell != nullptr) {
-                unsigned char oppositeDirection= (direction + 2) % 4;
+                byte oppositeDirection= (direction + 2) % 4;
                 setCellWall(neighboringCell, oppositeDirection, isWall);
             }
         }
     }
 }
 
-bool MackAlgoTwo::readWall(unsigned char direction) {
+bool MackAlgoTwo::readWall(byte direction) {
     switch ((direction - m_d + 4) % 4) {
         case 0:
             return m_mouse->wallFront();
@@ -446,7 +446,7 @@ bool MackAlgoTwo::readWall(unsigned char direction) {
     ASSERT_TR(false);
 }
 
-bool MackAlgoTwo::inGoal(unsigned char x, unsigned char y) {
+bool MackAlgoTwo::inGoal(byte x, byte y) {
     for (byte x2 = Maze::CLLX; x2 <= Maze::CURX; x2 += 1) {
         for (byte y2 = Maze::CLLY; y2 <= Maze::CURY; y2 += 1) {
             if (x == x2 && y == y2) {
@@ -517,7 +517,7 @@ void MackAlgoTwo::colorCenter(char color) {
     }
 }
 
-void MackAlgoTwo::colorTile(unsigned char x, unsigned char y, char color) {
+void MackAlgoTwo::colorTile(byte x, byte y, char color) {
     m_mouse->setTileColor(x, y, color);
 }
 
@@ -526,7 +526,7 @@ void MackAlgoTwo::setCellDistance(Cell* cell, float distance) {
     m_mouse->setTileText(cell->getX(), cell->getY(), std::to_string(distance));
 }
 
-void MackAlgoTwo::setCellWall(Cell* cell, unsigned char direction, bool isWall) {
+void MackAlgoTwo::setCellWall(Cell* cell, byte direction, bool isWall) {
     cell->setWall(direction, isWall);
     static char directionChars[] = {'n', 'e', 's', 'w'};
     m_mouse->declareWall(cell->getX(), cell->getY(), directionChars[direction], isWall);

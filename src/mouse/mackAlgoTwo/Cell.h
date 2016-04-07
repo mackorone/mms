@@ -12,18 +12,18 @@ public:
     Cell();
 
     void init(
-        unsigned char x,
-        unsigned char y,
-        unsigned char mazeWidth,
-        unsigned char mazeHeight);
+        byte x,
+        byte y,
+        byte mazeWidth,
+        byte mazeHeight);
 
-    unsigned char getX() const;
-    unsigned char getY() const;
-    unsigned char getPosition() const;
+    byte getX() const;
+    byte getY() const;
+    byte getPosition() const;
 
-    bool isKnown(unsigned char direction) const;
-    bool isWall(unsigned char direction) const;
-    void setWall(unsigned char direction, bool isWall);
+    bool isKnown(byte direction) const;
+    bool isWall(byte direction) const;
+    void setWall(byte direction, bool isWall);
 
     // Any extra temporary info needed by Dijkstra's
     Info info;
@@ -38,7 +38,7 @@ private:
     //        |---------|---------|
     //   bits | 7 6 5 4 | 3 2 1 0 |
     //
-    unsigned char m_position;
+    byte m_position;
 
     // Four bits for whether we know
     // the value of the wall, and four
@@ -50,7 +50,7 @@ private:
     //        |---------|---------|
     //   bits | 7 6 5 4 | 3 2 1 0 |
     //
-    unsigned char m_walls;
+    byte m_walls;
 };
 
 } // namespace mackAlgoTwo
