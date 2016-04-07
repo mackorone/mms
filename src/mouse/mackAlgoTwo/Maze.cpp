@@ -46,16 +46,4 @@ void Maze::setWall(byte x, byte y, byte direction, bool isWall) {
     setWall(getIndex(x, y), direction, isWall);
 }
 
-byte Maze::getCenterLowerLeftIndex() {
-    byte x = (WIDTH - 1) / 2;
-    byte y = (HEIGHT - 1) / 2;
-    return getIndex(x, y);
-}
-
-byte Maze::getCenterUpperRightIndex() {
-    byte x = WIDTH / 2;
-    byte y = HEIGHT / 2;
-    return getIndex(x, y);
-}
-
 } // namespace mackAlgoTwo

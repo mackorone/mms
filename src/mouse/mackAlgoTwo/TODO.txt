@@ -5,3 +5,4 @@
     - Other optimizations
 - Kill unused imports
 - Turn asserts off
+- Convert everything to byte

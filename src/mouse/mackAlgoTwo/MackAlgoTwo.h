@@ -4,7 +4,6 @@
 #include "Byte.h"
 #include "Cell.h"
 #include "CellHeap.h"
-#include "Center.h"
 #include "Direction.h"
 #include "Maze.h"
 
@@ -38,7 +37,6 @@ private:
         unsigned char direction,
         CellHeap* heap);
 
-    Center getCenter();
     void resetDestinationCellDistances();
     Cell* cellMin(Cell* one, Cell* two);
     Cell* getClosestDestinationCell();
@@ -68,9 +66,8 @@ private:
     void rightAndForward();
     void aroundAndForward();
 
-    void setColor(unsigned char x, unsigned char y, char color);
-    void resetColors();
     void colorCenter(char color);
+    void colorTile(unsigned char x, unsigned char y, char color);
 
     // TODO: MACK - we don't have mouseInterface in cell.h, so we need helpers here
     void setCellDistance(Cell* cell, float distance);

@@ -1,7 +1,7 @@
 #include "Cell.h"
 
 #include "Assert.h"
-#include "Position.h"
+#include "Maze.h"
 
 namespace mackAlgoTwo {
 
@@ -23,7 +23,7 @@ void Cell::init(
     ASSERT_LT(y, 16);
 
     // Initialize the cell position
-    m_position = mackAlgoTwo::getPosition(x, y);
+    m_position = Maze::getIndex(x, y);
 
     // Set the appropriate wall if
     // the cell is on a maze boundary
@@ -42,11 +42,11 @@ void Cell::init(
 }
 
 unsigned char Cell::getX() const {
-    return mackAlgoTwo::getX(m_position);
+    return Maze::getX(m_position);
 }
 
 unsigned char Cell::getY() const {
-    return mackAlgoTwo::getY(m_position);
+    return Maze::getY(m_position);
 }
 
 unsigned char Cell::getPosition() const {

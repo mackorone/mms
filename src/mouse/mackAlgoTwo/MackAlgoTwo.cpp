@@ -3,16 +3,6 @@
 #include <limits>
 
 #include "Maze.h"
-#include "Position.h"
-
-/*
-#if (!SIMULATOR)
-extern char movesBuffer[256];
-extern bool walls_global[3];
-extern volatile bool movesReady;
-extern volatile bool movesDoneAndWallsSet;
-#endif
-*/
 
 namespace mackAlgoTwo {
 
@@ -147,7 +137,7 @@ bool MackAlgoTwo::move() {
             if (true) {
                 m_mouse->delay(10);
             }
-            setColor(x, y, 'Y');
+            colorTile(x, y, 'Y');
             // We needn't explore any further
             if (current == getClosestDestinationCell()) {
                 break;
@@ -182,31 +172,31 @@ bool MackAlgoTwo::move() {
     // We need this so that we can buffer the moves for the drive code.
 
     Cell* next = getClosestDestinationCell();
-    setColor(next->getX(), next->getY(), 'B');
+    colorTile(next->getX(), next->getY(), 'B');
 
     // TODO: MACK
-    Cell* current = &m_maze[mackAlgoTwo::getX(next->info.parentPosition)][mackAlgoTwo::getY(next->info.parentPosition)];
-    Cell* prev = &m_maze[mackAlgoTwo::getX(current->info.parentPosition)][mackAlgoTwo::getY(current->info.parentPosition)];
+    Cell* current = &m_maze[Maze::getX(next->info.parentPosition)][Maze::getY(next->info.parentPosition)];
+    Cell* prev = &m_maze[Maze::getX(current->info.parentPosition)][Maze::getY(current->info.parentPosition)];
 
     next->info.parent = NULL;
     next->info.parentPosition = next->getPosition();
 
     while (prev != current) {
-        setColor(current->getX(), current->getY(), 'B');
+        colorTile(current->getX(), current->getY(), 'B');
         current->info.parent = next;
         current->info.parentPosition = next->getPosition();
         next = current;
         current = prev;
-        prev = &m_maze[mackAlgoTwo::getX(current->info.parentPosition)][mackAlgoTwo::getY(current->info.parentPosition)];
+        prev = &m_maze[Maze::getX(current->info.parentPosition)][Maze::getY(current->info.parentPosition)];
     }
 
     // Displays the color buffer
     /*
     Cell* colorCurrent = current;
     Cell* colorNext = next;
-    setColor(colorCurrent->getX(), colorCurrent->getY(), 'V');
+    colorTile(colorCurrent->getX(), colorCurrent->getY(), 'V');
     while (colorNext != NULL && colorCurrent->isKnown(colorNext->info.sourceDirection)) {
-        setColor(colorNext->getX(), colorNext->getY(), 'V');
+        colorTile(colorNext->getX(), colorNext->getY(), 'V');
         colorCurrent = colorNext;
         colorNext = colorNext->info.parent;
     }
@@ -224,7 +214,7 @@ bool MackAlgoTwo::move() {
         moveOneCell(next);
         current = next;
         // TODO: MACK - this isn't quite right...
-        //next = &m_maze[mackAlgoTwo::getX(next->info.parentPosition)][mackAlgoTwo::getY(next->info.parentPosition)];
+        //next = &m_maze[Maze::getX(next->info.parentPosition)][Maze::getY(next->info.parentPosition)];
         next = next->info.parent;
     }
 
@@ -289,35 +279,12 @@ void MackAlgoTwo::checkNeighbor(
     }
 }
 
-Center MackAlgoTwo::getCenter() {
-
-    Center center;
-    for (int i = 0; i < 4; i += 1) {
-        center.cells[i] = nullptr;
-    }
-
-            center.cells[0] = &m_maze[(Maze::WIDTH - 1) / 2][(Maze::HEIGHT - 1) / 2];
-    if (Maze::WIDTH % 2 == 0) {
-            center.cells[1] = &m_maze[ Maze::WIDTH      / 2][(Maze::HEIGHT - 1) / 2];
-        if (Maze::HEIGHT % 2 == 0) {
-            center.cells[2] = &m_maze[(Maze::WIDTH - 1) / 2][ Maze::HEIGHT      / 2];
-            center.cells[3] = &m_maze[ Maze::WIDTH      / 2][ Maze::HEIGHT      / 2];
-        }
-    }
-    else if (Maze::HEIGHT % 2 == 0) {
-            center.cells[2] = &m_maze[(Maze::WIDTH - 1) / 2][ Maze::HEIGHT      / 2];
-    }
-
-    return center;
-}
-
 void MackAlgoTwo::resetDestinationCellDistances() {
-    float maxDistance = std::numeric_limits<float>::max();
+    static float maxDistance = std::numeric_limits<float>::max();
     if (m_onWayToCenter) {
-        Center center = getCenter();
-        for (int i = 0; i < 4; i += 1) {
-            if (center.cells[i] != nullptr) {
-                setCellDistance(center.cells[i], maxDistance);
+        for (byte x = Maze::CLLX; x <= Maze::CURX; x += 1) {
+            for (byte y = Maze::CLLY; y <= Maze::CURY; y += 1) {
+                setCellDistance(&m_maze[x][y], maxDistance);
             }
         }
     }
@@ -336,10 +303,9 @@ Cell* MackAlgoTwo::cellMin(Cell* one, Cell* two) {
 Cell* MackAlgoTwo::getClosestDestinationCell() {
     Cell* closest = NULL;
     if (m_onWayToCenter) {
-        Center center = getCenter();
-        for (int i = 0; i < 4; i += 1) {
-            if (center.cells[i] != nullptr) {
-                closest = cellMin(closest, center.cells[i]);
+        for (byte x = Maze::CLLX; x <= Maze::CURX; x += 1) {
+            for (byte y = Maze::CLLY; y <= Maze::CURY; y += 1) {
+                closest = cellMin(closest, &m_maze[x][y]);
             }
         }
     }
@@ -469,10 +435,9 @@ bool MackAlgoTwo::readWall(unsigned char direction) {
 }
 
 bool MackAlgoTwo::inGoal(unsigned char x, unsigned char y) {
-    Center center = getCenter();
-    for (int i = 0; i < 4; i += 1) {
-        if (center.cells[i] != nullptr) {
-            if (center.cells[i]->getX() == x && center.cells[i]->getY() == y) {
+    for (byte x2 = Maze::CLLX; x2 <= Maze::CURX; x2 += 1) {
+        for (byte y2 = Maze::CLLY; y2 <= Maze::CURY; y2 += 1) {
+            if (x == x2 && y == y2) {
                 return true;
             }
         }
@@ -532,21 +497,16 @@ void MackAlgoTwo::aroundAndForward() {
     moveForward();
 }
 
-void MackAlgoTwo::setColor(unsigned char x, unsigned char y, char color) {
-    m_mouse->setTileColor(x, y, color);
-}
-
-void MackAlgoTwo::resetColors() {
-    m_mouse->clearAllTileColor();
-}
-
 void MackAlgoTwo::colorCenter(char color) {
-    Center center = getCenter();
-    for (int i = 0; i < 4; i += 1) {
-        if (center.cells[i] != nullptr) {
-            setColor(center.cells[i]->getX(), center.cells[i]->getY(), color);
+    for (byte x = Maze::CLLX; x <= Maze::CURX; x += 1) {
+        for (byte y = Maze::CLLY; y <= Maze::CURY; y += 1) {
+            colorTile(x, y, color);
         }
     }
+}
+
+void MackAlgoTwo::colorTile(unsigned char x, unsigned char y, char color) {
+    m_mouse->setTileColor(x, y, color);
 }
 
 void MackAlgoTwo::setCellDistance(Cell* cell, float distance) {
