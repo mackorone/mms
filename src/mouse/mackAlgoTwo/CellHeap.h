@@ -17,6 +17,9 @@ public:
     void update(Cell* cell);
     Cell* pop();
 
+    // TODO: MACK
+    int size() const;
+
 private:
     int m_size;
     int m_capacity;

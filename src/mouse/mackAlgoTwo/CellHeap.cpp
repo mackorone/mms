@@ -50,6 +50,10 @@ Cell* CellHeap::pop() {
     return cell;
 }
 
+int CellHeap::size() const {
+    return m_size;
+}
+
 void CellHeap::increaseCapacity() {
     m_capacity *= 2;
     Cell** data = new Cell*[m_capacity];

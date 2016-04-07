@@ -94,6 +94,9 @@ bool MackAlgoTwo::move() {
     static unsigned char sequenceNumber = 0;
     sequenceNumber += 1;
 
+    // TODO: MACK - convince myself we won't run out
+    // m_mouse->info(std::to_string(sequenceNumber));
+
     // Initialize the source cell
     Cell* source = &m_maze[m_x][m_y];
     source->info.sequenceNumber = sequenceNumber;
@@ -111,6 +114,7 @@ bool MackAlgoTwo::move() {
 
     CellHeap heap;
     heap.push(source);
+    int maxSize = 1;
     while (!heap.empty()) {
 
         Cell* current = heap.pop();
@@ -141,7 +145,12 @@ bool MackAlgoTwo::move() {
                 checkNeighbor(current, neighbor, direction, &heap);
             }
         }
+        if (heap.size() > maxSize) {
+            maxSize = heap.size();
+        }
     }
+    // TODO: MACK
+    m_mouse->info(std::to_string(maxSize));
 
     colorCenter('G');
 
@@ -160,21 +169,22 @@ bool MackAlgoTwo::move() {
 
     // TODO: MACK
     Cell* current = &m_maze[mackAlgoTwo::getX(next->info.parentPosition)][mackAlgoTwo::getY(next->info.parentPosition)];
-    Cell* prev = current->info.parent;
-    // TODO: This isn't going to be null, it's just going to be it's own parent
-    Cell* prev2 = &m_maze[mackAlgoTwo::getX(current->info.parentPosition)][mackAlgoTwo::getY(current->info.parentPosition)];;
+    Cell* prev = &m_maze[mackAlgoTwo::getX(current->info.parentPosition)][mackAlgoTwo::getY(current->info.parentPosition)];
+
     next->info.parent = NULL;
     next->info.parentPosition = next->getPosition();
 
-    while (prev != NULL) {
+    while (prev != current) {
         setColor(current->getX(), current->getY(), 'B');
         current->info.parent = next;
+        current->info.parentPosition = next->getPosition();
         next = current;
         current = prev;
-        prev = current->info.parent;
+        prev = &m_maze[mackAlgoTwo::getX(current->info.parentPosition)][mackAlgoTwo::getY(current->info.parentPosition)];
     }
 
     // Displays the color buffer
+    /*
     Cell* colorCurrent = current;
     Cell* colorNext = next;
     setColor(colorCurrent->getX(), colorCurrent->getY(), 'V');
@@ -186,12 +196,18 @@ bool MackAlgoTwo::move() {
 
     // First, make sure that we reset the move buffer index
     m_moveBufferIndex = 0;
+    */
 
     // WARNING: As a result of the ugly hack to reverse the list, we have to use
     // the parent field of the cells, though its really a child pointer at this point
+
+    // TODO: MACK - this isn't quite right...
+    //while (next->getPosition() != next->info.parentPosition && current->isKnown(next->info.sourceDirection)) {
     while (next != NULL && current->isKnown(next->info.sourceDirection)) {
         moveOneCell(next);
         current = next;
+        // TODO: MACK - this isn't quite right...
+        //next = &m_maze[mackAlgoTwo::getX(next->info.parentPosition)][mackAlgoTwo::getY(next->info.parentPosition)];
         next = next->info.parent;
     }
 
