@@ -6,3 +6,4 @@
 - Kill unused imports
 - Turn asserts off
 - Convert everything to byte
+- Test multiple maze sizes

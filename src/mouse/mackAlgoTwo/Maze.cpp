@@ -5,15 +5,27 @@ namespace mackAlgoTwo {
 byte Maze::data[];
 
 byte Maze::getX(byte index) {
-    return index >> 4;
+    return index / HEIGHT;
 }
 
 byte Maze::getY(byte index) {
-    return index & 15;
+    return index % HEIGHT;
 }
 
 byte Maze::getIndex(byte x, byte y) {
-    return x << 4 | y;
+    return x * HEIGHT + y;
+}
+
+bool Maze::isKnown(byte x, byte y, byte direction) {
+    return isKnown(getIndex(x, y), direction);
+}
+
+bool Maze::isWall(byte x, byte y, byte direction) {
+    return isWall(getIndex(x, y), direction);
+}
+
+void Maze::setWall(byte x, byte y, byte direction, bool isWall) {
+    setWall(getIndex(x, y), direction, isWall);
 }
 
 bool Maze::isKnown(byte index, byte direction) {
@@ -32,18 +44,6 @@ void Maze::setWall(byte index, byte direction, bool isWall) {
         data[index] &= ~(1 << direction);
     }
     data[index] |= 1 << direction + 4;
-}
-
-bool Maze::isKnown(byte x, byte y, byte direction) {
-    return isKnown(getIndex(x, y), direction);
-}
-
-bool Maze::isWall(byte x, byte y, byte direction) {
-    return isWall(getIndex(x, y), direction);
-}
-
-void Maze::setWall(byte x, byte y, byte direction, bool isWall) {
-    setWall(getIndex(x, y), direction, isWall);
 }
 
 } // namespace mackAlgoTwo

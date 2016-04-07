@@ -21,7 +21,8 @@ public:
 
 private:
     sim::MouseInterface* m_mouse;
-    Cell m_maze[Maze::WIDTH][Maze::HEIGHT];
+    Cell m_maze[Maze::WIDTH][Maze::HEIGHT]; // TODO: MACK
+    Info m_info[Maze::WIDTH][Maze::HEIGHT]; // TODO: MACK
     unsigned char m_x;
     unsigned char m_y;
     unsigned char m_d;

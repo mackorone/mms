@@ -113,6 +113,18 @@ bool MackAlgoTwo::move() {
     // Purposefully don't set straightAwayLength
     setCellDistance(source, 0);
 
+    // TODO: MACK - once the parentPosition is working, rename to parentIndex
+    // and then use this. Then refactor to reduce the size of Info
+    //byte sourceIndex = Maze::getIndex(m_x, m_y);
+    //m_info[sourceIndex].sequenceNumber = sequenceNumber;
+    /*
+    source->info.parent = NULL;
+    source->info.parentPosition = source->getPosition();
+    source->info.sourceDirection = m_d;
+    // Purposefully don't set straightAwayLength
+    setCellDistance(source, 0);
+    */
+
     // TODO:
     resetDestinationCellDistances();
 
