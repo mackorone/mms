@@ -4,10 +4,6 @@
 
 namespace mackAlgoTwo {
 
-class Cell;
-
-// TODO: MACK - kill direction typedef
-
 struct Info {
     byte  sequenceNumber;
     byte  parentIndex;

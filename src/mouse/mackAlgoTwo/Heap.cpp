@@ -15,6 +15,10 @@ Heap::~Heap() {
     delete[] m_data;
 }
 
+byte Heap::size() {
+    return m_size;
+}
+
 bool Heap::empty() {
     return m_size == 0;
 }
@@ -40,7 +44,7 @@ void Heap::update(byte mazeIndex) {
 byte Heap::pop() {
     ASSERT_LT(0, m_size);
     byte mazeIndex = m_data[0];
-    Maze::info[mazeIndex].heapIndex = 255;
+    Maze::info[mazeIndex].heapIndex = SENTINEL;
     m_data[0] = m_data[m_size - 1];
     Maze::info[m_data[0]].heapIndex = 0;
     m_size -= 1;
@@ -50,12 +54,15 @@ byte Heap::pop() {
     return mazeIndex;
 }
 
-byte Heap::size() {
-    return m_size;
-}
-
 void Heap::increaseCapacity() {
-    m_capacity *= 2;
+
+    // The possible capacity values should be as follows:
+    // 0 -> 1 -> 3 -> 7 -> 15 -> 31 -> 63 -> 127 -> 255
+    m_capacity += m_capacity + 1;
+    ASSERT_LE(m_capacity, MAXIMUM_CAPACITY);
+
+    // Create a new data array, copy the
+    // data over, and delete the old one
     byte* data = new byte[m_capacity];
     for (byte i = 0; i < m_size; i += 1) {
         data[i] = m_data[i];
@@ -66,21 +73,25 @@ void Heap::increaseCapacity() {
 
 byte Heap::getParentIndex(byte heapIndex) {
     if (heapIndex == 0) {
-        return 255;
+        return SENTINEL;
     }
     return (heapIndex - 1) / 2;
 }
 
 byte Heap::getLeftChildIndex(byte heapIndex) {
-    if (126 < heapIndex) {
-        return 255;
+    // If the heap index is larger than the largest
+    // possible parent index, just return the SENTINEL
+    if (getParentIndex(MAXIMUM_CAPACITY - 1) < heapIndex) {
+        return SENTINEL;
     }
     return (heapIndex * 2) + 1;
 }
 
 byte Heap::getRightChildIndex(byte heapIndex) {
-    if (126 < heapIndex) {
-        return 255;
+    // If the heap index is larger than the largest
+    // possible parent index, just return the SENTINEL
+    if (getParentIndex(MAXIMUM_CAPACITY - 1) < heapIndex) {
+        return SENTINEL;
     }
     return (heapIndex + 1) * 2;
 }
@@ -91,43 +102,41 @@ byte Heap::getMinChildIndex(byte heapIndex) {
     byte right = getRightChildIndex(heapIndex);
 
     if (m_size <= left) {
-        return 255;
+        return SENTINEL;
     }
+
     if (m_size <= right) {
         return left;
     }
 
-    return (
-        Maze::info[m_data[left]].distance < Maze::info[m_data[right]].distance ?
-        left : right
-    );
+    return (Maze::info[m_data[left]].distance < Maze::info[m_data[right]].distance ?  left : right);
 }
 
 void Heap::heapifyUp(byte heapIndex) {
     ASSERT_LE(0, heapIndex);
     ASSERT_LT(heapIndex, m_size);
-    byte parentIndex = getParentIndex(heapIndex);
+    byte parentHeapIndex = getParentIndex(heapIndex);
     while (
-        255 != parentIndex &&
-        Maze::info[m_data[heapIndex]].distance < Maze::info[m_data[parentIndex]].distance
+        parentHeapIndex != SENTINEL &&
+        Maze::info[m_data[heapIndex]].distance < Maze::info[m_data[parentHeapIndex]].distance
     ) {
-        swap(heapIndex, parentIndex);
-        heapIndex = parentIndex;
-        parentIndex = getParentIndex(heapIndex);
+        swap(heapIndex, parentHeapIndex);
+        heapIndex = parentHeapIndex;
+        parentHeapIndex = getParentIndex(heapIndex);
     }
 }
 
 void Heap::heapifyDown(byte heapIndex) {
     ASSERT_LE(0, heapIndex);
     ASSERT_LT(heapIndex, m_size);
-    byte minChildIndex = getMinChildIndex(heapIndex);
+    byte minChildHeapIndex = getMinChildIndex(heapIndex);
     while (
-        255 != minChildIndex &&
-        Maze::info[m_data[minChildIndex]].distance < Maze::info[m_data[heapIndex]].distance
+        minChildHeapIndex != SENTINEL &&
+        Maze::info[m_data[minChildHeapIndex]].distance < Maze::info[m_data[heapIndex]].distance
     ) {
-        swap(heapIndex, minChildIndex);
-        heapIndex = minChildIndex;
-        minChildIndex = getMinChildIndex(heapIndex);
+        swap(heapIndex, minChildHeapIndex);
+        heapIndex = minChildHeapIndex;
+        minChildHeapIndex = getMinChildIndex(heapIndex);
     }
 }
 

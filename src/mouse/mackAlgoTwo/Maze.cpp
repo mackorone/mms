@@ -2,7 +2,7 @@
 
 namespace mackAlgoTwo {
 
-byte Maze::data[];
+byte Maze::m_data[];
 Info Maze::info[];
 
 byte Maze::getX(byte mazeIndex) {
@@ -30,21 +30,21 @@ void Maze::setWall(byte x, byte y, byte direction, bool isWall) {
 }
 
 bool Maze::isKnown(byte mazeIndex, byte direction) {
-    return (data[mazeIndex] >> direction + 4) & 1;
+    return (m_data[mazeIndex] >> direction + 4) & 1;
 }
 
 bool Maze::isWall(byte mazeIndex, byte direction) {
-    return (data[mazeIndex] >> direction) & 1;
+    return (m_data[mazeIndex] >> direction) & 1;
 }
 
 void Maze::setWall(byte mazeIndex, byte direction, bool isWall) {
     if (isWall) {
-        data[mazeIndex] |= (1 << direction);
+        m_data[mazeIndex] |= (1 << direction);
     }
     else {
-        data[mazeIndex] &= ~(1 << direction);
+        m_data[mazeIndex] &= ~(1 << direction);
     }
-    data[mazeIndex] |= 1 << direction + 4;
+    m_data[mazeIndex] |= 1 << direction + 4;
 }
 
 } // namespace mackAlgoTwo
