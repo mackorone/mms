@@ -2,7 +2,6 @@
 
 #include "../IMouseAlgorithm.h"
 #include "Byte.h"
-#include "Cell.h"
 #include "Direction.h"
 #include "Heap.h"
 #include "Maze.h"
