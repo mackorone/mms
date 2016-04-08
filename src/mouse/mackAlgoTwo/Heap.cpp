@@ -1,5 +1,7 @@
 #include "Heap.h"
 
+#include <iostream> // TODO: MACK
+
 #include "Assert.h"
 #include "Maze.h"
 
@@ -25,7 +27,7 @@ void Heap::push(byte mazeIndex) {
     }
     ASSERT_LT(m_size, m_capacity);
     m_data[m_size] = mazeIndex;
-    Maze::info[m_data[m_size]].heapIndex = m_size;
+    Maze::info[mazeIndex].heapIndex = m_size;
     m_size += 1;
     if (1 < m_size) {
         heapifyUp(m_size - 1);
@@ -33,14 +35,25 @@ void Heap::push(byte mazeIndex) {
 }
 
 void Heap::update(byte mazeIndex) {
+    // TODO: MACK - we're updating incorrectly here...
+    std::cout << "---HEAP---" << std::endl;
+    for (int i = 0; i < m_size; i += 1) {
+        std::cout << std::string("Index: ") + std::to_string(m_data[i]) +
+        std::string("  Heap Index: ") + std::to_string(Maze::info[m_data[i]].heapIndex) << std::endl;
+    }
+    std::cout << "---CUR---" << std::endl;
+    std::cout << std::string("Index: ") + std::to_string(mazeIndex) + 
+        std::string("  Heap Index: ") + std::to_string(Maze::info[mazeIndex].heapIndex) << std::endl;
+    std::cout << std::endl;
     ASSERT_LE(0, Maze::info[mazeIndex].heapIndex);
+    ASSERT_LE(Maze::info[mazeIndex].heapIndex, 63); // TODO: MACK
     heapifyUp(Maze::info[mazeIndex].heapIndex);
 }
 
 byte Heap::pop() {
     ASSERT_LT(0, m_size);
     byte mazeIndex = m_data[0];
-    Maze::info[mazeIndex].heapIndex = 255;
+    Maze::info[mazeIndex].heapIndex = 255; // TODO: MACK - hmmm
     m_data[0] = m_data[m_size - 1];
     Maze::info[m_data[0]].heapIndex = 0;
     m_size -= 1;
@@ -103,15 +116,20 @@ byte Heap::getRightChildOrNull(byte heapIndex) {
 byte Heap::getMinChildIndex(byte heapIndex) {
     byte leftChildMazeIndex = getLeftChildOrNull(heapIndex);
     byte rightChildMazeIndex = getRightChildOrNull(heapIndex);
-    if (leftChildMazeIndex == 255) {
+
+    byte left = getLeftChildIndex(heapIndex);
+    byte right = getRightChildIndex(heapIndex);
+
+    if (m_size <= left) {
         return 255;
     }
-    if (rightChildMazeIndex == 255) {
-        return getLeftChildIndex(heapIndex);
-    } 
+    if (m_size <= right) {
+        return left;
+    }
+
     return (
-        Maze::info[leftChildMazeIndex].distance < Maze::info[rightChildMazeIndex].distance ?
-        getLeftChildIndex(heapIndex) : getRightChildIndex(heapIndex)
+        Maze::info[m_data[left]].distance < Maze::info[m_data[right]].distance ?
+        left : right
     );
 }
 
@@ -148,6 +166,7 @@ void Heap::swap(byte heapIndexOne, byte heapIndexTwo) {
     ASSERT_LE(0, heapIndexTwo);
     ASSERT_LT(heapIndexOne, m_size);
     ASSERT_LT(heapIndexTwo, m_size);
+    ASSERT_NE(heapIndexOne, heapIndexTwo);
     byte temp = m_data[heapIndexOne];
     m_data[heapIndexOne] = m_data[heapIndexTwo];
     m_data[heapIndexTwo] = temp;

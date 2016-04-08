@@ -273,11 +273,14 @@ void MackAlgoTwo::checkNeighbor(
             heap->push(neighbor);
         }
         else {
+            /*
             m_mouse->info(
                 std::string("PI: ") + std::to_string(Maze::info[neighbor].parentIndex) +
                 std::string(",  PX: ") + std::to_string(Maze::getX(Maze::info[neighbor].parentIndex)) +
                 std::string(",  PY: ") + std::to_string(Maze::getY(Maze::info[neighbor].parentIndex))
             );
+            */
+            m_mouse->info(std::string("SEQ NUM: ") + std::to_string(Maze::info[current].sequenceNumber));
             heap->update(neighbor);
         }
     }
