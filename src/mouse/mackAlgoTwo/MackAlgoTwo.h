@@ -21,8 +21,6 @@ public:
 
 private:
     sim::MouseInterface* m_mouse;
-    Cell m_maze[Maze::WIDTH][Maze::HEIGHT]; // TODO: MACK
-    //Info m_info[Maze::WIDTH][Maze::HEIGHT]; // TODO: MACK
     byte m_x;
     byte m_y;
     byte m_d;

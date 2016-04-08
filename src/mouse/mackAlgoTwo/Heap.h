@@ -28,13 +28,9 @@ private:
 
     void increaseCapacity();
 
-    // TODO: MACK - confusing
     byte getParentIndex(byte heapIndex); 
     byte getLeftChildIndex(byte heapIndex); 
     byte getRightChildIndex(byte heapIndex); 
-
-    byte getLeftChildOrNull(byte heapIndex);
-    byte getRightChildOrNull(byte heapIndex);
     byte getMinChildIndex(byte heapIndex);
 
     void heapifyUp(byte heapIndex);

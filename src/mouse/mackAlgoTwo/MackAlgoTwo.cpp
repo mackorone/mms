@@ -43,19 +43,17 @@ void MackAlgoTwo::solve(
     // Initialize the (perimeter of the) maze
     for (byte x = 0; x < Maze::WIDTH; x += 1) {
         for (byte y = 0; y < Maze::HEIGHT; y += 1) {
-            // TODO: MACK - kill this
-            m_maze[x][y].init(x, y, Maze::WIDTH, Maze::HEIGHT);
             if (x == 0) { 
-                Maze::setWall(x, y, Direction::WEST, true);
+                setCellWall(Maze::getIndex(x, y), Direction::WEST, true);
             }
             if (y == 0) {
-                Maze::setWall(x, y, Direction::SOUTH, true);
+                setCellWall(Maze::getIndex(x, y), Direction::SOUTH, true);
             }
             if (x == Maze::WIDTH - 1) {
-                Maze::setWall(x, y, Direction::EAST, true);
+                setCellWall(Maze::getIndex(x, y), Direction::EAST, true);
             }
             if (y == Maze::HEIGHT - 1) {
-                Maze::setWall(x, y, Direction::NORTH, true);
+                setCellWall(Maze::getIndex(x, y), Direction::NORTH, true);
             }
         }
     }
@@ -105,7 +103,6 @@ bool MackAlgoTwo::move() {
     // m_mouse->info(std::to_string(sequenceNumber));
 
     // Initialize the source cell
-    //Cell* source = &m_maze[m_x][m_y];
     byte sourceMazeIndex = Maze::getIndex(m_x, m_y);
     Maze::info[sourceMazeIndex].sequenceNumber = sequenceNumber;
     Maze::info[sourceMazeIndex].parentIndex = sourceMazeIndex;
@@ -273,14 +270,6 @@ void MackAlgoTwo::checkNeighbor(
             heap->push(neighbor);
         }
         else {
-            /*
-            m_mouse->info(
-                std::string("PI: ") + std::to_string(Maze::info[neighbor].parentIndex) +
-                std::string(",  PX: ") + std::to_string(Maze::getX(Maze::info[neighbor].parentIndex)) +
-                std::string(",  PY: ") + std::to_string(Maze::getY(Maze::info[neighbor].parentIndex))
-            );
-            */
-            m_mouse->info(std::string("SEQ NUM: ") + std::to_string(Maze::info[current].sequenceNumber));
             heap->update(neighbor);
         }
     }
@@ -444,7 +433,7 @@ void MackAlgoTwo::readWalls() {
         byte direction = (m_d + i + 4) % 4;
 
         // If the wall is not already known
-        if (!m_maze[m_x][m_y].isKnown(direction)) {
+        if (!Maze::isKnown(m_x, m_y, direction)) {
 
             // Read and update the wall value
             bool isWall = readWall(direction);
