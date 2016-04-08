@@ -2,6 +2,9 @@
 
 #include "Byte.h"
 
+// TODO: MACK
+#include "Info.h"
+
 namespace mackAlgoTwo {
 
 struct Maze {
@@ -29,21 +32,25 @@ struct Maze {
     // Furthermore, each cell can be indexed by just eight bits: at most
     // four bits for the x position, and at most four bits for the y position
     //      
+    // TODO: MACK - can this be private?
     static byte data[WIDTH * HEIGHT];
 
+    // TODO: MACK
+    static Info info[WIDTH * HEIGHT];
+
     // Helper methods for converting between xy coordinates
-    // and the index of the cell in the data array
-    static byte getX(byte index);
-    static byte getY(byte index);
+    // and the maze index of the cell in the data array
+    static byte getX(byte mazeIndex);
+    static byte getY(byte mazeIndex);
     static byte getIndex(byte x, byte y);
 
     // Helper methods for querying and updating maze data
     static bool isKnown(byte x, byte y, byte direction);
     static bool isWall(byte x, byte y, byte direction);
     static void setWall(byte x, byte y, byte direction, bool isWall);
-    static bool isKnown(byte index, byte direction);
-    static bool isWall(byte index, byte direction);
-    static void setWall(byte index, byte direction, bool isWall);
+    static bool isKnown(byte mazeIndex, byte direction);
+    static bool isWall(byte mazeIndex, byte direction);
+    static void setWall(byte mazeIndex, byte direction, bool isWall);
 
 };
 

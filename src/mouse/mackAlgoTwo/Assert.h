@@ -31,8 +31,8 @@ if (!((lhs) == (rhs))) {\
               << "FILE: " <<  __FILE__  << std::endl\
               << "LINE: " <<  __LINE__  << std::endl\
               << "COND: " << #lhs << " == " << #rhs << std::endl\
-              << "LHS: " << lhs << std::endl\
-              << "RHS: " << rhs << std::endl\
+              << "LHS: " << std::to_string(lhs) << std::endl\
+              << "RHS: " << std::to_string(rhs) << std::endl\
               << CLOSING << std::endl;\
     exit(1);\
 }
@@ -43,8 +43,8 @@ if (!((lhs) != (rhs))) {\
               << "FILE: " <<  __FILE__  << std::endl\
               << "LINE: " <<  __LINE__  << std::endl\
               << "COND: " << #lhs << " != " << #rhs << std::endl\
-              << "LHS: " << lhs << std::endl\
-              << "RHS: " << rhs << std::endl\
+              << "LHS: " << std::to_string(lhs) << std::endl\
+              << "RHS: " << std::to_string(rhs) << std::endl\
               << CLOSING << std::endl;\
     exit(1);\
 }
@@ -55,8 +55,8 @@ if (!((lhs) < (rhs))) {\
               << "FILE: " <<  __FILE__  << std::endl\
               << "LINE: " <<  __LINE__  << std::endl\
               << "COND: " << #lhs << " < " << #rhs << std::endl\
-              << "LHS: " << lhs << std::endl\
-              << "RHS: " << rhs << std::endl\
+              << "LHS: " << std::to_string(lhs) << std::endl\
+              << "RHS: " << std::to_string(rhs) << std::endl\
               << CLOSING << std::endl;\
     exit(1);\
 }
@@ -67,8 +67,8 @@ if (!((lhs) <= (rhs))) {\
               << "FILE: " <<  __FILE__  << std::endl\
               << "LINE: " <<  __LINE__  << std::endl\
               << "COND: " << #lhs << " <= " << #rhs << std::endl\
-              << "LHS: " << lhs << std::endl\
-              << "RHS: " << rhs << std::endl\
+              << "LHS: " << std::to_string(lhs) << std::endl\
+              << "RHS: " << std::to_string(rhs) << std::endl\
               << CLOSING << std::endl;\
     exit(1);\
 }

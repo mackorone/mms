@@ -26,9 +26,9 @@ void MackAlgoTwo::solve(
     // Initialize the MouseInterface pointer
     m_mouse = mouse;
 
-    // Assert our maze size is sane
-    ASSERT_LT(0, Maze::WIDTH);
-    ASSERT_LT(0, Maze::HEIGHT);
+    // Assert that the maze size is sane
+    ASSERT_LE(1, Maze::WIDTH);
+    ASSERT_LE(1, Maze::HEIGHT);
     ASSERT_LE(Maze::WIDTH, 16);
     ASSERT_LE(Maze::HEIGHT, 16);
     ASSERT_EQ(Maze::WIDTH, mazeWidth);
@@ -105,25 +105,13 @@ bool MackAlgoTwo::move() {
     // m_mouse->info(std::to_string(sequenceNumber));
 
     // Initialize the source cell
-    Cell* source = &m_maze[m_x][m_y];
-    source->info.sequenceNumber = sequenceNumber;
-    source->info.parent = NULL;
-    source->info.parentPosition = source->getPosition();
-    source->info.sourceDirection = m_d;
+    //Cell* source = &m_maze[m_x][m_y];
+    byte sourceMazeIndex = Maze::getIndex(m_x, m_y);
+    Maze::info[sourceMazeIndex].sequenceNumber = sequenceNumber;
+    Maze::info[sourceMazeIndex].parentIndex = sourceMazeIndex;
+    Maze::info[sourceMazeIndex].sourceDirection = m_d;
     // Purposefully don't set straightAwayLength
-    setCellDistance(source, 0);
-
-    // TODO: MACK - once the parentPosition is working, rename to parentIndex
-    // and then use this. Then refactor to reduce the size of Info
-    //byte sourceIndex = Maze::getIndex(m_x, m_y);
-    //m_info[sourceIndex].sequenceNumber = sequenceNumber;
-    /*
-    source->info.parent = NULL;
-    source->info.parentPosition = source->getPosition();
-    source->info.sourceDirection = m_d;
-    // Purposefully don't set straightAwayLength
-    setCellDistance(source, 0);
-    */
+    setCellDistance(sourceMazeIndex, 0);
 
     // TODO:
     resetDestinationCellDistances();
@@ -131,27 +119,25 @@ bool MackAlgoTwo::move() {
     // Clear all tile color
     m_mouse->clearAllTileColor();
 
-    CellHeap heap;
-    heap.push(source);
+    Heap heap;
+    heap.push(sourceMazeIndex);
     int maxSize = 1;
     while (!heap.empty()) {
 
-        Cell* current = heap.pop();
-        byte x = current->getX();
-        byte y = current->getY();
+        byte currentMazeIndex = heap.pop();
+        byte x = Maze::getX(currentMazeIndex);
+        byte y = Maze::getY(currentMazeIndex);
 
-        // TODO: MACK - why don't we short circuit the first time around?
-        // I think I need to reset the dest distances
-
-        // TODO: MACK - make this an option
+        // TODO: MACK - make these an option
         if (false) {
-            // TODO: MACK - make this an option
+            /*
             if (true) {
                 m_mouse->delay(10);
             }
+            */
             colorTile(x, y, 'Y');
             // We needn't explore any further
-            if (current == getClosestDestinationCell()) {
+            if (currentMazeIndex == getClosestDestinationCell()) {
                 break;
             }
         }
@@ -159,9 +145,9 @@ bool MackAlgoTwo::move() {
         // Inspect neighbors if they're not yet visited
         // NOTE: Inspecting and examining are not the same thing!
         for (byte direction = 0; direction < 4; direction += 1) {
-            if (!current->isWall(direction)) {
-                Cell* neighbor = getNeighboringCell(current->getX(), current->getY(), direction);
-                checkNeighbor(current, neighbor, direction, &heap);
+            if (!Maze::isWall(currentMazeIndex, direction)) {
+                byte neighborMazeIndex = getNeighboringCell(Maze::getX(currentMazeIndex), Maze::getY(currentMazeIndex), direction);
+                checkNeighbor(currentMazeIndex, neighborMazeIndex, direction, &heap);
             }
         }
         if (heap.size() > maxSize) {
@@ -169,13 +155,12 @@ bool MackAlgoTwo::move() {
         }
     }
     // TODO: MACK
-    m_mouse->info(std::to_string(maxSize));
+    //m_mouse->info(std::to_string(maxSize));
 
     colorCenter('G');
 
     // If there's no path to the destination, the maze is unsolvable
-    // TODO: MACK - parent position here? parent is the own position
-    if (getClosestDestinationCell()->info.parent == NULL) {
+    if (Maze::info[getClosestDestinationCell()].parentIndex == getClosestDestinationCell()) {
         m_mouse->warn("Unsolvable maze detected. I'm giving up...");
         return false;
     }
@@ -183,24 +168,20 @@ bool MackAlgoTwo::move() {
     // WARNING: Ugly hack to reverse the "list" of parents to a "list" of children.
     // We need this so that we can buffer the moves for the drive code.
 
-    Cell* next = getClosestDestinationCell();
-    colorTile(next->getX(), next->getY(), 'B');
-
-    // TODO: MACK
-    Cell* current = &m_maze[Maze::getX(next->info.parentPosition)][Maze::getY(next->info.parentPosition)];
-    Cell* prev = &m_maze[Maze::getX(current->info.parentPosition)][Maze::getY(current->info.parentPosition)];
-
-    next->info.parent = NULL;
-    next->info.parentPosition = next->getPosition();
+    byte next = getClosestDestinationCell();
+    colorTile(Maze::getX(next), Maze::getY(next), 'B');
+    byte current = Maze::info[next].parentIndex;
+    byte prev = Maze::info[current].parentIndex;
+    Maze::info[next].parentIndex = next;
 
     while (prev != current) {
-        colorTile(current->getX(), current->getY(), 'B');
-        current->info.parent = next;
-        current->info.parentPosition = next->getPosition();
+        colorTile(Maze::getX(current), Maze::getY(current), 'B');
+        Maze::info[current].parentIndex = next;
         next = current;
         current = prev;
-        prev = &m_maze[Maze::getX(current->info.parentPosition)][Maze::getY(current->info.parentPosition)];
+        prev = Maze::info[current].parentIndex;
     }
+    Maze::info[current].parentIndex = next;
 
     // Displays the color buffer
     /*
@@ -217,26 +198,33 @@ bool MackAlgoTwo::move() {
     m_moveBufferIndex = 0;
     */
 
+    /*
+    m_mouse->info(std::string("C: (") +
+        std::to_string(current->getX()) + ", " +
+        std::to_string(current->getY()) + ")"
+    );
+    m_mouse->info(std::string("N: (") +
+        std::to_string(next->getX()) + ", " +
+        std::to_string(next->getY()) + ")"
+    );
+    m_mouse->info(std::string("CP: (") +
+        std::to_string(Maze::getX(current->info.parentIndex)) + ", " +
+        std::to_string(Maze::getY(current->info.parentIndex)) + ")"
+    );
+    m_mouse->info(std::string("NP: (") +
+        std::to_string(Maze::getX(next->info.parentIndex)) + ", " +
+        std::to_string(Maze::getY(next->info.parentIndex)) + ")"
+    );
+    */
+
     // WARNING: As a result of the ugly hack to reverse the list, we have to use
     // the parent field of the cells, though its really a child pointer at this point
 
-    // TODO: MACK - this isn't quite right...
-    //while (next->getPosition() != next->info.parentPosition && current->isKnown(next->info.sourceDirection)) {
-    while (next != NULL && current->isKnown(next->info.sourceDirection)) {
+    while (current != Maze::info[current].parentIndex && Maze::isKnown(current, Maze::info[next].sourceDirection)) {
         moveOneCell(next);
         current = next;
-        // TODO: MACK - this isn't quite right...
-        //next = &m_maze[Maze::getX(next->info.parentPosition)][Maze::getY(next->info.parentPosition)];
-        next = next->info.parent;
+        next = Maze::info[next].parentIndex;
     }
-
-/*
-    // Terminate the buffer index and tell the control code the moves are ready
-#if (!SIMULATOR)
-    movesBuffer[m_moveBufferIndex] = '\0';
-    movesReady = true;
-#endif
-*/
 
     // Successful move
     return true;
@@ -251,41 +239,45 @@ float MackAlgoTwo::getStraightAwayCost(byte length) {
 }
 
 void MackAlgoTwo::checkNeighbor(
-        Cell* current,
-        Cell* neighbor,
+        byte current,
+        byte neighbor,
         byte direction,
-        CellHeap* heap) {
+        Heap* heap) {
 
     // Determine the cost if routed through the currect node
-    float costToNeighbor = current->info.distance;
-    if (current->info.sourceDirection == direction) {
-        costToNeighbor += getStraightAwayCost(current->info.straightAwayLength + 1);
+    float costToNeighbor = Maze::info[current].distance;
+    if (Maze::info[current].sourceDirection == direction) {
+        costToNeighbor += getStraightAwayCost(Maze::info[current].straightAwayLength + 1);
     }
     else {
         costToNeighbor += getTurnCost();
     }
 
     // Make updates to the neighbor node if necessary
-    if (neighbor->info.sequenceNumber != current->info.sequenceNumber || costToNeighbor < neighbor->info.distance) {
+    if (Maze::info[neighbor].sequenceNumber != Maze::info[current].sequenceNumber || costToNeighbor < Maze::info[neighbor].distance) {
         bool pushToHeap = false;
-        if (neighbor->info.sequenceNumber != current->info.sequenceNumber) {
-            neighbor->info.sequenceNumber = current->info.sequenceNumber;
+        if (Maze::info[neighbor].sequenceNumber != Maze::info[current].sequenceNumber) {
+            Maze::info[neighbor].sequenceNumber = Maze::info[current].sequenceNumber;
             pushToHeap = true;
         }
-        neighbor->info.parent = current;
-        neighbor->info.parentPosition = current->getPosition();
+        Maze::info[neighbor].parentIndex = current;
         setCellDistance(neighbor, costToNeighbor);
-        neighbor->info.sourceDirection = direction;
-        if (current->info.sourceDirection == direction) {
-            neighbor->info.straightAwayLength = current->info.straightAwayLength + 1;
+        Maze::info[neighbor].sourceDirection = direction;
+        if (Maze::info[current].sourceDirection == direction) {
+            Maze::info[neighbor].straightAwayLength = Maze::info[current].straightAwayLength + 1;
         }
         else {
-            neighbor->info.straightAwayLength = 1;
+            Maze::info[neighbor].straightAwayLength = 1;
         }
         if (pushToHeap) {
             heap->push(neighbor);
         }
         else {
+            m_mouse->info(
+                std::string("PI: ") + std::to_string(Maze::info[neighbor].parentIndex) +
+                std::string(",  PX: ") + std::to_string(Maze::getX(Maze::info[neighbor].parentIndex)) +
+                std::string(",  PY: ") + std::to_string(Maze::getY(Maze::info[neighbor].parentIndex))
+            );
             heap->update(neighbor);
         }
     }
@@ -296,38 +288,38 @@ void MackAlgoTwo::resetDestinationCellDistances() {
     if (m_onWayToCenter) {
         for (byte x = Maze::CLLX; x <= Maze::CURX; x += 1) {
             for (byte y = Maze::CLLY; y <= Maze::CURY; y += 1) {
-                setCellDistance(&m_maze[x][y], maxDistance);
+                setCellDistance(Maze::getIndex(x, y), maxDistance);
             }
         }
     }
     else {
-        setCellDistance(&m_maze[0][0], maxDistance);
+        setCellDistance(Maze::getIndex(0, 0), maxDistance);
     }
 }
 
-Cell* MackAlgoTwo::cellMin(Cell* one, Cell* two) {
-    if (one == NULL) {
+byte MackAlgoTwo::cellMin(byte one, byte two) {
+    if (one == 255) {
         return two;
     }
-    return (one->info.distance < two->info.distance ? one : two);
+    return (Maze::info[one].distance < Maze::info[two].distance ? one : two);
 }
 
-Cell* MackAlgoTwo::getClosestDestinationCell() {
-    Cell* closest = NULL;
+byte MackAlgoTwo::getClosestDestinationCell() {
+    byte closest = 255;
     if (m_onWayToCenter) {
         for (byte x = Maze::CLLX; x <= Maze::CURX; x += 1) {
             for (byte y = Maze::CLLY; y <= Maze::CURY; y += 1) {
-                closest = cellMin(closest, &m_maze[x][y]);
+                closest = cellMin(closest, Maze::getIndex(x, y));
             }
         }
     }
     else {
-        closest = &m_maze[0][0];
+        closest = Maze::getIndex(0, 0);
     }
     return closest;
 }
 
-Cell* MackAlgoTwo::getNeighboringCell(
+bool MackAlgoTwo::hasNeighboringCell(
         byte x,
         byte y,
         byte direction) {
@@ -354,36 +346,68 @@ Cell* MackAlgoTwo::getNeighboringCell(
         y < Maze::HEIGHT
     );
 
-    return (neighboringCellExists ? &m_maze[x][y] : nullptr);
+    return neighboringCellExists;
 }
 
-bool MackAlgoTwo::isOneCellAway(Cell* target) {
+byte MackAlgoTwo::getNeighboringCell(
+        byte x,
+        byte y,
+        byte direction) {
 
-    byte x = target->getX();
-    byte y = target->getY();
+    ASSERT_TR(hasNeighboringCell(x, y, direction));
+
+    switch (direction) {
+        case Direction::NORTH:
+            y += 1;
+            break;
+        case Direction::EAST:
+            x += 1;
+            break;
+        case Direction::SOUTH:
+            y -= 1;
+            break;
+        case Direction::WEST:
+            x -= 1;
+            break;
+    }
+
+    bool neighboringCellExists = (
+        0 <= x &&
+        0 <= y &&
+        x < Maze::WIDTH &&
+        y < Maze::HEIGHT
+    );
+
+    return Maze::getIndex(x, y);
+}
+
+bool MackAlgoTwo::isOneCellAway(byte target) {
+
+    byte x = Maze::getX(target);
+    byte y = Maze::getY(target);
     
-    if ((m_x == x) && (m_y + 1 == y) && !m_maze[m_x][m_y].isWall(Direction::NORTH)) {
+    if ((m_x == x) && (m_y + 1 == y) && !Maze::isWall(m_x, m_y, Direction::NORTH)) {
         return true;
     }
-    else if ((m_x == x) && (m_y - 1 == y) && !m_maze[m_x][m_y].isWall(Direction::SOUTH)) {
+    else if ((m_x == x) && (m_y - 1 == y) && !Maze::isWall(m_x, m_y, Direction::SOUTH)) {
         return true;
     }
-    else if ((m_x + 1 == x) && (m_y == y) && !m_maze[m_x][m_y].isWall(Direction::EAST)) {
+    else if ((m_x + 1 == x) && (m_y == y) && !Maze::isWall(m_x, m_y, Direction::EAST)) {
         return true;
     }
-    else if ((m_x - 1 == x) && (m_y == y) && !m_maze[m_x][m_y].isWall(Direction::WEST)) {
+    else if ((m_x - 1 == x) && (m_y == y) && !Maze::isWall(m_x, m_y, Direction::WEST)) {
         return true;
     }
     
     return false;
 }
 
-void MackAlgoTwo::moveOneCell(Cell* target) {
+void MackAlgoTwo::moveOneCell(byte target) {
 
     ASSERT_TR(isOneCellAway(target));
 
-    byte x = target->getX();
-    byte y = target->getY();
+    byte x = Maze::getX(target);
+    byte y = Maze::getY(target);
     
     byte moveDirection = Direction::NORTH;
     if (x > m_x) {
@@ -421,11 +445,11 @@ void MackAlgoTwo::readWalls() {
 
             // Read and update the wall value
             bool isWall = readWall(direction);
-            setCellWall(&m_maze[m_x][m_y], direction, isWall);
+            setCellWall(Maze::getIndex(m_x, m_y), direction, isWall);
 
             // If a neighboring cell exists, set the neighbor's wall too
-            Cell* neighboringCell = getNeighboringCell(m_x, m_y, direction);
-            if (neighboringCell != nullptr) {
+            if (hasNeighboringCell(m_x, m_y, direction)) {
+                byte neighboringCell = getNeighboringCell(m_x, m_y, direction);
                 byte oppositeDirection= (direction + 2) % 4;
                 setCellWall(neighboringCell, oppositeDirection, isWall);
             }
@@ -521,15 +545,15 @@ void MackAlgoTwo::colorTile(byte x, byte y, char color) {
     m_mouse->setTileColor(x, y, color);
 }
 
-void MackAlgoTwo::setCellDistance(Cell* cell, float distance) {
-    cell->info.distance = distance;
-    m_mouse->setTileText(cell->getX(), cell->getY(), std::to_string(distance));
+void MackAlgoTwo::setCellDistance(byte mazeIndex, float distance) {
+    Maze::info[mazeIndex].distance = distance;
+    m_mouse->setTileText(Maze::getX(mazeIndex), Maze::getY(mazeIndex), std::to_string(distance));
 }
 
-void MackAlgoTwo::setCellWall(Cell* cell, byte direction, bool isWall) {
-    cell->setWall(direction, isWall);
+void MackAlgoTwo::setCellWall(byte cell, byte direction, bool isWall) {
+    Maze::setWall(cell, direction, isWall);
     static char directionChars[] = {'n', 'e', 's', 'w'};
-    m_mouse->declareWall(cell->getX(), cell->getY(), directionChars[direction], isWall);
+    m_mouse->declareWall(Maze::getX(cell), Maze::getY(cell), directionChars[direction], isWall);
 }
 
 } // namespace mackAlgoTwo

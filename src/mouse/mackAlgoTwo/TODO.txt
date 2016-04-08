@@ -6,3 +6,7 @@
 - Kill unused imports
 - Turn asserts off
 - Test multiple maze sizes
+- Const correctness
+
+- mazeindex and heapIndex types
+- Separate type for Direction too, all different types of byte values, make sure types can't mix...

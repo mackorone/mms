@@ -3,8 +3,8 @@
 #include "../IMouseAlgorithm.h"
 #include "Byte.h"
 #include "Cell.h"
-#include "CellHeap.h"
 #include "Direction.h"
+#include "Heap.h"
 #include "Maze.h"
 
 namespace mackAlgoTwo {
@@ -22,7 +22,7 @@ public:
 private:
     sim::MouseInterface* m_mouse;
     Cell m_maze[Maze::WIDTH][Maze::HEIGHT]; // TODO: MACK
-    Info m_info[Maze::WIDTH][Maze::HEIGHT]; // TODO: MACK
+    //Info m_info[Maze::WIDTH][Maze::HEIGHT]; // TODO: MACK
     byte m_x;
     byte m_y;
     byte m_d;
@@ -33,21 +33,25 @@ private:
     float getTurnCost();
     float getStraightAwayCost(byte length);
     void checkNeighbor(
-        Cell* current,
-        Cell* neighbor,
+        byte current,
+        byte neighbor,
         byte direction,
-        CellHeap* heap);
+        Heap* heap);
 
     void resetDestinationCellDistances();
-    Cell* cellMin(Cell* one, Cell* two);
-    Cell* getClosestDestinationCell();
-    Cell* getNeighboringCell(
+    byte cellMin(byte one, byte two);
+    byte getClosestDestinationCell();
+    bool hasNeighboringCell(
+        byte x,
+        byte y,
+        byte direction);
+    byte getNeighboringCell(
         byte x,
         byte y,
         byte direction);
 
-    bool isOneCellAway(Cell* target);
-    void moveOneCell(Cell* target);
+    bool isOneCellAway(byte target);
+    void moveOneCell(byte target);
 
     void readWalls();
     bool readWall(byte direction);
@@ -71,8 +75,8 @@ private:
     void colorTile(byte x, byte y, char color);
 
     // TODO: MACK - we don't have mouseInterface in cell.h, so we need helpers here
-    void setCellDistance(Cell* cell, float distance);
-    void setCellWall(Cell* cell, byte direction, bool isWall);
+    void setCellDistance(byte mazeIndex, float distance);
+    void setCellWall(byte cell, byte direction, bool isWall);
 };
 
 } // namespace mackAlgoTwo
