@@ -67,20 +67,13 @@ void MackAlgoTwo::solve(
     // Go the center, the the start, forever
     while (true) {
 
-/*
-#if (!SIMULATOR)
-        while (!movesDoneAndWallsSet) {
-            // Wait for the walls to be ready
-        }
-#endif
-*/
-
         // Read the walls if not known
         readWalls();
 
         // Move as far as possible
         if (!move()) {
             // If we've detected an unsolvable maze, just die
+            m_mouse->warn("Unsolvable maze detected. I'm giving up...");
             return;
         }
 
@@ -126,12 +119,10 @@ bool MackAlgoTwo::move() {
         byte y = Maze::getY(currentMazeIndex);
 
         // TODO: MACK - make these an option
-        if (false) {
-            /*
+        if (true) {
             if (true) {
                 m_mouse->delay(10);
             }
-            */
             colorTile(x, y, 'Y');
             // We needn't explore any further
             if (currentMazeIndex == getClosestDestinationCell()) {
@@ -158,7 +149,6 @@ bool MackAlgoTwo::move() {
 
     // If there's no path to the destination, the maze is unsolvable
     if (Maze::info[getClosestDestinationCell()].parentIndex == getClosestDestinationCell()) {
-        m_mouse->warn("Unsolvable maze detected. I'm giving up...");
         return false;
     }
 
@@ -193,25 +183,6 @@ bool MackAlgoTwo::move() {
 
     // First, make sure that we reset the move buffer index
     m_moveBufferIndex = 0;
-    */
-
-    /*
-    m_mouse->info(std::string("C: (") +
-        std::to_string(current->getX()) + ", " +
-        std::to_string(current->getY()) + ")"
-    );
-    m_mouse->info(std::string("N: (") +
-        std::to_string(next->getX()) + ", " +
-        std::to_string(next->getY()) + ")"
-    );
-    m_mouse->info(std::string("CP: (") +
-        std::to_string(Maze::getX(current->info.parentIndex)) + ", " +
-        std::to_string(Maze::getY(current->info.parentIndex)) + ")"
-    );
-    m_mouse->info(std::string("NP: (") +
-        std::to_string(Maze::getX(next->info.parentIndex)) + ", " +
-        std::to_string(Maze::getY(next->info.parentIndex)) + ")"
-    );
     */
 
     // WARNING: As a result of the ugly hack to reverse the list, we have to use
