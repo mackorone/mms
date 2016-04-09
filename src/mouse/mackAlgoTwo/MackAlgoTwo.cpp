@@ -111,21 +111,20 @@ bool MackAlgoTwo::move() {
     // Clear all tile color
     m_mouse->clearAllTileColor();
 
-    Heap heap;
-    heap.push(sourceMazeIndex);
+    Heap::push(sourceMazeIndex);
     int maxSize = 1;
-    while (0 < heap.size()) {
+    while (0 < Heap::size()) {
 
         // TODO: Draw the heap here
         /*
         m_mouse->clearAllTileColor();
-        for (byte i = 0; i < heap.size(); i += 1) {
-            colorTile(heap.m_data[i], 'Y');
+        for (byte i = 0; i < Heap::size(); i += 1) {
+            colorTile(Heap::m_data[i], 'Y');
         }
         m_mouse->delay(10);
         */
 
-        byte currentMazeIndex = heap.pop();
+        byte currentMazeIndex = Heap::pop();
         byte x = Maze::getX(currentMazeIndex);
         byte y = Maze::getY(currentMazeIndex);
 
@@ -146,11 +145,11 @@ bool MackAlgoTwo::move() {
         for (byte direction = 0; direction < 4; direction += 1) {
             if (!Maze::isWall(currentMazeIndex, direction)) {
                 byte neighborMazeIndex = getNeighboringCell(Maze::getX(currentMazeIndex), Maze::getY(currentMazeIndex), direction);
-                checkNeighbor(currentMazeIndex, neighborMazeIndex, direction, &heap);
+                checkNeighbor(currentMazeIndex, neighborMazeIndex, direction);
             }
         }
-        if (heap.size() > maxSize) {
-            maxSize = heap.size();
+        if (Heap::size() > maxSize) {
+            maxSize = Heap::size();
         }
     }
 
@@ -220,8 +219,7 @@ float MackAlgoTwo::getStraightAwayCost(byte length) {
 void MackAlgoTwo::checkNeighbor(
         byte current,
         byte neighbor,
-        byte direction,
-        Heap* heap) {
+        byte direction) {
 
     // Determine the cost if routed through the currect node
     float costToNeighbor = Maze::info[current].distance;
@@ -249,10 +247,10 @@ void MackAlgoTwo::checkNeighbor(
             Maze::info[neighbor].straightAwayLength = 1;
         }
         if (pushToHeap) {
-            heap->push(neighbor);
+            Heap::push(neighbor);
         }
         else {
-            heap->update(neighbor);
+            Heap::update(neighbor);
         }
     }
 }

@@ -32,8 +32,7 @@ private:
     void checkNeighbor(
         byte current,
         byte neighbor,
-        byte direction,
-        Heap* heap);
+        byte direction);
 
     void resetDestinationCellDistances();
     byte cellMin(byte one, byte two);

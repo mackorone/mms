@@ -5,8 +5,8 @@
 
 namespace mackAlgoTwo {
 
-Heap::Heap() : m_size(0) {
-}
+byte Heap::m_size = 0;
+byte Heap::m_data[];
 
 byte Heap::size() {
     return m_size;
@@ -105,17 +105,17 @@ void Heap::heapifyDown(byte index) {
     }
 }
 
-void Heap::swap(byte index1, byte index2) {
-    ASSERT_LE(0, index1);
-    ASSERT_LE(0, index2);
-    ASSERT_LT(index1, m_size);
-    ASSERT_LT(index2, m_size);
-    ASSERT_NE(index1, index2);
-    byte temp = m_data[index1];
-    m_data[index1] = m_data[index2];
-    m_data[index2] = temp;
-    Maze::info[m_data[index1]].heapIndex = index1;
-    Maze::info[m_data[index2]].heapIndex = index2;
+void Heap::swap(byte indexOne, byte indexTwo) {
+    ASSERT_LE(0, indexOne);
+    ASSERT_LE(0, indexTwo);
+    ASSERT_LT(indexOne, m_size);
+    ASSERT_LT(indexTwo, m_size);
+    ASSERT_NE(indexOne, indexTwo);
+    byte temp = m_data[indexOne];
+    m_data[indexOne] = m_data[indexTwo];
+    m_data[indexTwo] = temp;
+    Maze::info[m_data[indexOne]].heapIndex = indexOne;
+    Maze::info[m_data[indexTwo]].heapIndex = indexTwo;
 }
 
 } // namespace mackAlgoTwo
