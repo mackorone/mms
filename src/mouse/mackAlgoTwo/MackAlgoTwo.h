@@ -26,8 +26,8 @@ private:
     byte m_d;
     bool m_onWayToCenter;
 
-    float getTurnCost();
-    float getStraightAwayCost(byte length);
+    twobyte getTurnCost();
+    twobyte getStraightAwayCost(byte length);
 
     bool inCenter();
 
@@ -63,7 +63,7 @@ private:
     void colorCenter(char color);
     void colorCell(byte cell, char color);
 
-    void setCellDistance(byte mazeIndex, float distance);
+    void setCellDistance(byte mazeIndex, twobyte distance);
     void setCellWall(byte cell, byte direction, bool isWall);
 };
 

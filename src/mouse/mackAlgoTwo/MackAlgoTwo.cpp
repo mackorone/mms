@@ -94,13 +94,12 @@ void MackAlgoTwo::solve(
     }
 }
 
-// TODO: MACK - probably don't need to be float here
-float MackAlgoTwo::getTurnCost() {
-    return 1.0;
+twobyte MackAlgoTwo::getTurnCost() {
+    return 32;
 }
 
-float MackAlgoTwo::getStraightAwayCost(byte length) {
-    return 1.0 / length;
+twobyte MackAlgoTwo::getStraightAwayCost(byte length) {
+    return 16 - length;
 }
 
 bool MackAlgoTwo::inCenter() {
@@ -139,8 +138,9 @@ bool MackAlgoTwo::move() {
     // distance values
     resetDestinationCellDistances();
 
-    // Clear all tile color
+    // Clear all tile color, and color the center
     m_mouse->clearAllTileColor();
+    colorCenter('G');
 
     // Dijkstra's algo
     Heap::push(sourceMazeIndex);
@@ -156,16 +156,17 @@ bool MackAlgoTwo::move() {
             colorCell(cell, 'Y');
         }
         // TODO: MACK - this makes it hard for the sequence number situation :/
+        /*
         if (cell == getClosestDestinationCell()) {
             while (0 < Heap::size()) {
                 Heap::pop();
             }
             break;
         }
+        */
     }
 
     // TODO: MACK
-    colorCenter('G');
 
     // If there's no path to the destination, the maze is unsolvable
     if (Maze::info[getClosestDestinationCell()].parentIndex == getClosestDestinationCell()) {
@@ -216,7 +217,7 @@ void MackAlgoTwo::checkNeighbor(byte cell, byte direction) {
     byte neighbor = getNeighboringCell(cell, direction);
 
     // Determine the cost if routed through the currect node
-    float costToNeighbor = Maze::info[cell].distance;
+    twobyte costToNeighbor = Maze::info[cell].distance;
     if (Maze::info[cell].sourceDirection == direction) {
         costToNeighbor += getStraightAwayCost(Maze::info[cell].straightAwayLength + 1);
     }
@@ -250,7 +251,7 @@ void MackAlgoTwo::checkNeighbor(byte cell, byte direction) {
 }
 
 void MackAlgoTwo::resetDestinationCellDistances() {
-    static float maxDistance = std::numeric_limits<float>::max();
+    static twobyte maxDistance = std::numeric_limits<twobyte>::max();
     if (m_onWayToCenter) {
         for (byte x = Maze::CLLX; x <= Maze::CURX; x += 1) {
             for (byte y = Maze::CLLY; y <= Maze::CURY; y += 1) {
@@ -470,7 +471,7 @@ void MackAlgoTwo::colorCell(byte cell, char color) {
     m_mouse->setTileColor(Maze::getX(cell), Maze::getY(cell), color);
 }
 
-void MackAlgoTwo::setCellDistance(byte mazeIndex, float distance) {
+void MackAlgoTwo::setCellDistance(byte mazeIndex, twobyte distance) {
     Maze::info[mazeIndex].distance = distance;
     m_mouse->setTileText(Maze::getX(mazeIndex), Maze::getY(mazeIndex), std::to_string(distance));
 }
