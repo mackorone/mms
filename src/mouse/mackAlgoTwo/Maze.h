@@ -7,7 +7,6 @@ namespace mackAlgoTwo {
 
 struct Info {
     twobyte distance;
-
     byte parentIndex; // TODO: MACK - don't need
 
     // bit 0 is the sequence bit

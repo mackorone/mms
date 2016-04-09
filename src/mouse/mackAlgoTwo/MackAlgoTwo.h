@@ -65,6 +65,9 @@ private:
 
     void setCellDistance(byte mazeIndex, twobyte distance);
     void setCellWall(byte cell, byte direction, bool isWall);
+
+    // TODO: MACK
+    byte getParentIndex(byte cell);
 };
 
 } // namespace mackAlgoTwo
