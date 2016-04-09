@@ -15,7 +15,6 @@ byte Heap::size() {
 void Heap::push(byte cell) {
     ASSERT_LT(m_size, CAPACITY);
     m_data[m_size] = cell;
-    Maze::info[cell].heapIndex = m_size;
     m_size += 1;
     if (1 < m_size) {
         heapifyUp(m_size - 1);
@@ -23,16 +22,21 @@ void Heap::push(byte cell) {
 }
 
 void Heap::update(byte cell) {
-    ASSERT_LE(0, Maze::info[cell].heapIndex);
-    heapifyUp(Maze::info[cell].heapIndex);
+    byte index = SENTINEL;
+    for (byte i = 0; i < m_size; i += 1) {
+        if (m_data[i] == cell) {
+            index = i;
+            break;
+        }
+    }
+    ASSERT_NE(index, SENTINEL);
+    heapifyUp(index);
 }
 
 byte Heap::pop() {
     ASSERT_LT(0, m_size);
     byte cell = m_data[0];
-    Maze::info[cell].heapIndex = SENTINEL;
     m_data[0] = m_data[m_size - 1];
-    Maze::info[m_data[0]].heapIndex = 0;
     m_size -= 1;
     if (1 < m_size) {
         heapifyDown(0);
@@ -114,8 +118,6 @@ void Heap::swap(byte indexOne, byte indexTwo) {
     byte temp = m_data[indexOne];
     m_data[indexOne] = m_data[indexTwo];
     m_data[indexTwo] = temp;
-    Maze::info[m_data[indexOne]].heapIndex = indexOne;
-    Maze::info[m_data[indexTwo]].heapIndex = indexTwo;
 }
 
 } // namespace mackAlgoTwo

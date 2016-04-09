@@ -166,8 +166,6 @@ bool MackAlgoTwo::move() {
         */
     }
 
-    // TODO: MACK
-
     // If there's no path to the destination, the maze is unsolvable
     if (Maze::info[getClosestDestinationCell()].parentIndex == getClosestDestinationCell()) {
         return false;
