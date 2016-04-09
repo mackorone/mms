@@ -67,8 +67,8 @@
     <!-- Maze Parameters -->
     <wall-length>0.168</wall-length> <!-- meters -->
     <wall-width>0.012</wall-width> <!-- meters -->
-    <maze-file>mazeish.maz</maze-file> <!-- relative to maze-directory -->
-    <use-maze-file>false</use-maze-file> <!-- whether or not to use the maze file above -->
+    <maze-file>loop.maz</maze-file> <!-- relative to maze-directory -->
+    <use-maze-file>true</use-maze-file> <!-- whether or not to use the maze file above -->
     <generated-maze-width>16</generated-maze-width> <!-- number of tiles -->
     <generated-maze-height>16</generated-maze-height> <!-- number of tiles -->
     <maze-algorithm>Tomasz</maze-algorithm> <!-- The name as specified in src/maze/MazeAlgorithms.cpp -->

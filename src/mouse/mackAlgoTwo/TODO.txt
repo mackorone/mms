@@ -7,7 +7,7 @@
 - Turn asserts off
 - Test multiple maze sizes
 - Const correctness
-mazeIndex -> cell
+- mazeIndex -> cell
 - ColorTile -> colorCell
 
 - Clear up confusion between mazeindex and heapindex

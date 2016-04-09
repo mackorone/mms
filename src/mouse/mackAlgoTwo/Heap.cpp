@@ -6,7 +6,7 @@
 namespace mackAlgoTwo {
 
 byte Heap::m_size = 0;
-byte Heap::m_data[];
+byte Heap::m_data[] = {0};
 
 byte Heap::size() {
     return m_size;
@@ -78,34 +78,34 @@ byte Heap::getMinChildIndex(byte index) {
         return left;
     }
 
-    return (Maze::info[m_data[left]].distance < Maze::info[m_data[right]].distance ?  left : right);
+    return (Maze::getDistance(m_data[left]) < Maze::getDistance(m_data[right]) ?  left : right);
 }
 
 void Heap::heapifyUp(byte index) {
     ASSERT_LE(0, index);
     ASSERT_LT(index, m_size);
-    byte parentHeapIndex = getParentIndex(index);
+    byte parentIndex = getParentIndex(index);
     while (
-        parentHeapIndex != SENTINEL &&
-        Maze::info[m_data[index]].distance < Maze::info[m_data[parentHeapIndex]].distance
+        parentIndex != SENTINEL &&
+        Maze::getDistance(m_data[index]) < Maze::getDistance(m_data[parentIndex])
     ) {
-        swap(index, parentHeapIndex);
-        index = parentHeapIndex;
-        parentHeapIndex = getParentIndex(index);
+        swap(index, parentIndex);
+        index = parentIndex;
+        parentIndex = getParentIndex(index);
     }
 }
 
 void Heap::heapifyDown(byte index) {
     ASSERT_LE(0, index);
     ASSERT_LT(index, m_size);
-    byte minChildHeapIndex = getMinChildIndex(index);
+    byte minChildIndex = getMinChildIndex(index);
     while (
-        minChildHeapIndex != SENTINEL &&
-        Maze::info[m_data[minChildHeapIndex]].distance < Maze::info[m_data[index]].distance
+        minChildIndex != SENTINEL &&
+        Maze::getDistance(m_data[minChildIndex]) < Maze::getDistance(m_data[index])
     ) {
-        swap(index, minChildHeapIndex);
-        index = minChildHeapIndex;
-        minChildHeapIndex = getMinChildIndex(index);
+        swap(index, minChildIndex);
+        index = minChildIndex;
+        minChildIndex = getMinChildIndex(index);
     }
 }
 
