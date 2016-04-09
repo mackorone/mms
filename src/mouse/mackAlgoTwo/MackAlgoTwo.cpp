@@ -100,10 +100,12 @@ bool MackAlgoTwo::move() {
     Maze::info[sourceMazeIndex].sequenceNumber = sequenceNumber;
     Maze::info[sourceMazeIndex].parentIndex = sourceMazeIndex;
     Maze::info[sourceMazeIndex].sourceDirection = m_d;
-    // Purposefully don't set straightAwayLength
+    // Purposefully don't (re)set straightAwayLength
     setCellDistance(sourceMazeIndex, 0);
 
-    // TODO:
+    // Set the destination tiles to have max distance so that
+    // getClosestDestinationCell() isn't dependent on previous iterations'
+    // distance values
     resetDestinationCellDistances();
 
     // Clear all tile color
@@ -112,18 +114,27 @@ bool MackAlgoTwo::move() {
     Heap heap;
     heap.push(sourceMazeIndex);
     int maxSize = 1;
-    while (!heap.empty()) {
+    while (0 < heap.size()) {
+
+        // TODO: Draw the heap here
+        /*
+        m_mouse->clearAllTileColor();
+        for (byte i = 0; i < heap.size(); i += 1) {
+            colorTile(heap.m_data[i], 'Y');
+        }
+        m_mouse->delay(10);
+        */
 
         byte currentMazeIndex = heap.pop();
         byte x = Maze::getX(currentMazeIndex);
         byte y = Maze::getY(currentMazeIndex);
 
         // TODO: MACK - make these an option
-        if (true) {
+        if (false) {
             if (true) {
                 m_mouse->delay(10);
             }
-            colorTile(x, y, 'Y');
+            colorTile(Maze::getIndex(x, y), 'Y');
             // We needn't explore any further
             if (currentMazeIndex == getClosestDestinationCell()) {
                 break;
@@ -142,8 +153,8 @@ bool MackAlgoTwo::move() {
             maxSize = heap.size();
         }
     }
-    // TODO: MACK
-    //m_mouse->info(std::to_string(maxSize));
+
+    m_mouse->info(std::to_string(maxSize));
 
     colorCenter('G');
 
@@ -156,13 +167,13 @@ bool MackAlgoTwo::move() {
     // We need this so that we can buffer the moves for the drive code.
 
     byte next = getClosestDestinationCell();
-    colorTile(Maze::getX(next), Maze::getY(next), 'B');
+    colorTile(next, 'B');
     byte current = Maze::info[next].parentIndex;
     byte prev = Maze::info[current].parentIndex;
     Maze::info[next].parentIndex = next;
 
     while (prev != current) {
-        colorTile(Maze::getX(current), Maze::getY(current), 'B');
+        colorTile(current, 'B');
         Maze::info[current].parentIndex = next;
         next = current;
         current = prev;
@@ -282,10 +293,7 @@ byte MackAlgoTwo::getClosestDestinationCell() {
     return closest;
 }
 
-bool MackAlgoTwo::hasNeighboringCell(
-        byte x,
-        byte y,
-        byte direction) {
+bool MackAlgoTwo::hasNeighboringCell(byte x, byte y, byte direction) {
 
     switch (direction) {
         case Direction::NORTH:
@@ -312,10 +320,7 @@ bool MackAlgoTwo::hasNeighboringCell(
     return neighboringCellExists;
 }
 
-byte MackAlgoTwo::getNeighboringCell(
-        byte x,
-        byte y,
-        byte direction) {
+byte MackAlgoTwo::getNeighboringCell(byte x, byte y, byte direction) {
 
     ASSERT_TR(hasNeighboringCell(x, y, direction));
 
@@ -499,13 +504,13 @@ void MackAlgoTwo::aroundAndForward() {
 void MackAlgoTwo::colorCenter(char color) {
     for (byte x = Maze::CLLX; x <= Maze::CURX; x += 1) {
         for (byte y = Maze::CLLY; y <= Maze::CURY; y += 1) {
-            colorTile(x, y, color);
+            colorTile(Maze::getIndex(x, y), color);
         }
     }
 }
 
-void MackAlgoTwo::colorTile(byte x, byte y, char color) {
-    m_mouse->setTileColor(x, y, color);
+void MackAlgoTwo::colorTile(byte cell, char color) {
+    m_mouse->setTileColor(Maze::getX(cell), Maze::getY(cell), color);
 }
 
 void MackAlgoTwo::setCellDistance(byte mazeIndex, float distance) {

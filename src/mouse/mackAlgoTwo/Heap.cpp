@@ -5,101 +5,66 @@
 
 namespace mackAlgoTwo {
 
-Heap::Heap() :
-    m_size(0),
-    m_capacity(DEFAULT_CAPACITY),
-    m_data(new byte[DEFAULT_CAPACITY]) {
-}
-
-Heap::~Heap() {
-    delete[] m_data;
+Heap::Heap() : m_size(0) {
 }
 
 byte Heap::size() {
     return m_size;
 }
 
-bool Heap::empty() {
-    return m_size == 0;
-}
-
-void Heap::push(byte mazeIndex) {
-    if (m_size == m_capacity) {
-        increaseCapacity();
-    }
-    ASSERT_LT(m_size, m_capacity);
-    m_data[m_size] = mazeIndex;
-    Maze::info[mazeIndex].heapIndex = m_size;
+void Heap::push(byte cell) {
+    ASSERT_LT(m_size, CAPACITY);
+    m_data[m_size] = cell;
+    Maze::info[cell].heapIndex = m_size;
     m_size += 1;
     if (1 < m_size) {
         heapifyUp(m_size - 1);
     }
 }
 
-void Heap::update(byte mazeIndex) {
-    ASSERT_LE(0, Maze::info[mazeIndex].heapIndex);
-    heapifyUp(Maze::info[mazeIndex].heapIndex);
+void Heap::update(byte cell) {
+    ASSERT_LE(0, Maze::info[cell].heapIndex);
+    heapifyUp(Maze::info[cell].heapIndex);
 }
 
 byte Heap::pop() {
     ASSERT_LT(0, m_size);
-    byte mazeIndex = m_data[0];
-    Maze::info[mazeIndex].heapIndex = SENTINEL;
+    byte cell = m_data[0];
+    Maze::info[cell].heapIndex = SENTINEL;
     m_data[0] = m_data[m_size - 1];
     Maze::info[m_data[0]].heapIndex = 0;
     m_size -= 1;
     if (1 < m_size) {
         heapifyDown(0);
     }
-    return mazeIndex;
+    return cell;
 }
 
-void Heap::increaseCapacity() {
-
-    // The possible capacity values should be as follows:
-    // 0 -> 1 -> 3 -> 7 -> 15 -> 31 -> 63 -> 127 -> 255
-    m_capacity += m_capacity + 1;
-    ASSERT_LE(m_capacity, MAXIMUM_CAPACITY);
-
-    // Create a new data array, copy the
-    // data over, and delete the old one
-    byte* data = new byte[m_capacity];
-    for (byte i = 0; i < m_size; i += 1) {
-        data[i] = m_data[i];
-    }
-    delete[] m_data;
-    m_data = data;
-}
-
-byte Heap::getParentIndex(byte heapIndex) {
-    if (heapIndex == 0) {
+byte Heap::getParentIndex(byte index) {
+    if (index == 0) {
         return SENTINEL;
     }
-    return (heapIndex - 1) / 2;
+    return (index - 1) / 2;
 }
 
-byte Heap::getLeftChildIndex(byte heapIndex) {
-    // If the heap index is larger than the largest
-    // possible parent index, just return the SENTINEL
-    if (getParentIndex(MAXIMUM_CAPACITY - 1) < heapIndex) {
+byte Heap::getLeftChildIndex(byte index) {
+    if (getParentIndex(CAPACITY - 1) < index) {
         return SENTINEL;
     }
-    return (heapIndex * 2) + 1;
+    return (index * 2) + 1;
 }
 
-byte Heap::getRightChildIndex(byte heapIndex) {
-    // If the heap index is larger than the largest
-    // possible parent index, just return the SENTINEL
-    if (getParentIndex(MAXIMUM_CAPACITY - 1) < heapIndex) {
+byte Heap::getRightChildIndex(byte index) {
+    if (getParentIndex(CAPACITY - 1) < index) {
         return SENTINEL;
     }
-    return (heapIndex + 1) * 2;
+    return (index + 1) * 2;
 }
 
-byte Heap::getMinChildIndex(byte heapIndex) {
+byte Heap::getMinChildIndex(byte index) {
 
-    byte left = getLeftChildIndex(heapIndex);
-    byte right = getRightChildIndex(heapIndex);
+    byte left = getLeftChildIndex(index);
+    byte right = getRightChildIndex(index);
 
     if (m_size <= left) {
         return SENTINEL;
@@ -112,45 +77,45 @@ byte Heap::getMinChildIndex(byte heapIndex) {
     return (Maze::info[m_data[left]].distance < Maze::info[m_data[right]].distance ?  left : right);
 }
 
-void Heap::heapifyUp(byte heapIndex) {
-    ASSERT_LE(0, heapIndex);
-    ASSERT_LT(heapIndex, m_size);
-    byte parentHeapIndex = getParentIndex(heapIndex);
+void Heap::heapifyUp(byte index) {
+    ASSERT_LE(0, index);
+    ASSERT_LT(index, m_size);
+    byte parentHeapIndex = getParentIndex(index);
     while (
         parentHeapIndex != SENTINEL &&
-        Maze::info[m_data[heapIndex]].distance < Maze::info[m_data[parentHeapIndex]].distance
+        Maze::info[m_data[index]].distance < Maze::info[m_data[parentHeapIndex]].distance
     ) {
-        swap(heapIndex, parentHeapIndex);
-        heapIndex = parentHeapIndex;
-        parentHeapIndex = getParentIndex(heapIndex);
+        swap(index, parentHeapIndex);
+        index = parentHeapIndex;
+        parentHeapIndex = getParentIndex(index);
     }
 }
 
-void Heap::heapifyDown(byte heapIndex) {
-    ASSERT_LE(0, heapIndex);
-    ASSERT_LT(heapIndex, m_size);
-    byte minChildHeapIndex = getMinChildIndex(heapIndex);
+void Heap::heapifyDown(byte index) {
+    ASSERT_LE(0, index);
+    ASSERT_LT(index, m_size);
+    byte minChildHeapIndex = getMinChildIndex(index);
     while (
         minChildHeapIndex != SENTINEL &&
-        Maze::info[m_data[minChildHeapIndex]].distance < Maze::info[m_data[heapIndex]].distance
+        Maze::info[m_data[minChildHeapIndex]].distance < Maze::info[m_data[index]].distance
     ) {
-        swap(heapIndex, minChildHeapIndex);
-        heapIndex = minChildHeapIndex;
-        minChildHeapIndex = getMinChildIndex(heapIndex);
+        swap(index, minChildHeapIndex);
+        index = minChildHeapIndex;
+        minChildHeapIndex = getMinChildIndex(index);
     }
 }
 
-void Heap::swap(byte heapIndexOne, byte heapIndexTwo) {
-    ASSERT_LE(0, heapIndexOne);
-    ASSERT_LE(0, heapIndexTwo);
-    ASSERT_LT(heapIndexOne, m_size);
-    ASSERT_LT(heapIndexTwo, m_size);
-    ASSERT_NE(heapIndexOne, heapIndexTwo);
-    byte temp = m_data[heapIndexOne];
-    m_data[heapIndexOne] = m_data[heapIndexTwo];
-    m_data[heapIndexTwo] = temp;
-    Maze::info[m_data[heapIndexOne]].heapIndex = heapIndexOne;
-    Maze::info[m_data[heapIndexTwo]].heapIndex = heapIndexTwo;
+void Heap::swap(byte index1, byte index2) {
+    ASSERT_LE(0, index1);
+    ASSERT_LE(0, index2);
+    ASSERT_LT(index1, m_size);
+    ASSERT_LT(index2, m_size);
+    ASSERT_NE(index1, index2);
+    byte temp = m_data[index1];
+    m_data[index1] = m_data[index2];
+    m_data[index2] = temp;
+    Maze::info[m_data[index1]].heapIndex = index1;
+    Maze::info[m_data[index2]].heapIndex = index2;
 }
 
 } // namespace mackAlgoTwo

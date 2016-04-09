@@ -38,14 +38,8 @@ private:
     void resetDestinationCellDistances();
     byte cellMin(byte one, byte two);
     byte getClosestDestinationCell();
-    bool hasNeighboringCell(
-        byte x,
-        byte y,
-        byte direction);
-    byte getNeighboringCell(
-        byte x,
-        byte y,
-        byte direction);
+    bool hasNeighboringCell(byte x, byte y, byte direction);
+    byte getNeighboringCell(byte x, byte y, byte direction);
 
     bool isOneCellAway(byte target);
     void moveOneCell(byte target);
@@ -69,7 +63,7 @@ private:
     void aroundAndForward();
 
     void colorCenter(char color);
-    void colorTile(byte x, byte y, char color);
+    void colorTile(byte cell, char color);
 
     // TODO: MACK - we don't have mouseInterface in cell.h, so we need helpers here
     void setCellDistance(byte mazeIndex, float distance);

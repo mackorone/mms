@@ -11,40 +11,28 @@ class Heap {
 public:
 
     Heap();
-    ~Heap();
 
     byte size();
-    bool empty();
-    void push(byte mazeIndex);
-    void update(byte mazeIndex);
+    void push(byte cell);
+    void update(byte cell);
     byte pop();
 
 private:
 
-    // We should rarely exceed the default capacity, which is six levels deep.
-    // However, if necessary, we can increase capacity up to eight levels deep.
-    static const byte DEFAULT_CAPACITY = 63;
-    static const byte MAXIMUM_CAPACITY = 255;
-
-    // A maximum capacity of 255 means that the max index in the m_data array
-    // will be 254. This leaves 255 available as a sentinel value, which is
-    // nothing more than a way to represent NULL in byte form.
-    static const byte SENTINEL = MAXIMUM_CAPACITY;
+    static const byte CAPACITY = 127;
+    static const byte SENTINEL = 255;
 
     byte m_size;
-    byte m_capacity;
-    byte* m_data;
+    byte m_data[CAPACITY];
 
-    void increaseCapacity();
+    byte getParentIndex(byte index); 
+    byte getLeftChildIndex(byte index); 
+    byte getRightChildIndex(byte index); 
+    byte getMinChildIndex(byte index);
 
-    byte getParentIndex(byte heapIndex); 
-    byte getLeftChildIndex(byte heapIndex); 
-    byte getRightChildIndex(byte heapIndex); 
-    byte getMinChildIndex(byte heapIndex);
-
-    void heapifyUp(byte heapIndex);
-    void heapifyDown(byte heapIndex);
-    void swap(byte heapIndexOne, byte heapIndexTwo);
+    void heapifyUp(byte index);
+    void heapifyDown(byte index);
+    void swap(byte index1, byte index2);
 };
 
 } // namespace mackAlgoTwo
