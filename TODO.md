@@ -1,7 +1,6 @@
 # High Priority
 
-- Tile color should be the whole tile...
-- Make a clear color
+- Make a clear color for the tile
 - Check paused in other mouse interface methods other than movements
 - Draw dots on edges
 - Sim time is lagging a little bit

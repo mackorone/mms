@@ -5,9 +5,9 @@
 namespace mackAlgoTwo {
 
 struct Info {
+    float distance;
     byte  sequenceNumber;
     byte  parentIndex;
-    float distance;
     byte  sourceDirection; // 2 bits // TODO: MACK - don't need
     byte  straightAwayLength; // 4 bits
     byte  heapIndex;

@@ -4,9 +4,7 @@
 
 namespace mackAlgoTwo {
 
-class Direction {
-
-public:
+struct Direction {
 
     static const byte NORTH = 0;
     static const byte EAST  = 1;
