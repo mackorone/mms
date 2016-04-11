@@ -118,7 +118,6 @@ bool MackAlgoTwo::move() {
     // Initialize the source cell
     byte sourceMazeIndex = Maze::getCell(m_x, m_y);
     Maze::flipSequenceBit(sourceMazeIndex);
-    Maze::setParentIndex(sourceMazeIndex, sourceMazeIndex);
     Maze::setHasParent(sourceMazeIndex, false); // TODO: MACK
     Maze::setSourceDirection(sourceMazeIndex, m_d); // TODO: MACK - is this necessay here?
     // Purposefully don't (re)set straightAwayLength
@@ -149,6 +148,7 @@ bool MackAlgoTwo::move() {
         // TODO: MACK - this makes it hard for the sequence number situation :/
         /*
         if (cell == getClosestDestinationCell()) {
+            // TODO: MACK - let's introduce Heap.clear here
             while (0 < Heap::size()) {
                 Heap::pop();
             }
@@ -158,7 +158,8 @@ bool MackAlgoTwo::move() {
     }
 
     // If there's no path to the destination, the maze is unsolvable
-    if (Maze::getParentIndex(getClosestDestinationCell()) == getClosestDestinationCell()) {
+    // TODO: MACK - test this
+    if (!Maze::getHasParent(getClosestDestinationCell())) {
         return false;
     }
 
@@ -168,10 +169,9 @@ bool MackAlgoTwo::move() {
     byte next = getClosestDestinationCell();
 
     //colorCell(next, 'B');
-    byte current = Maze::getParentIndex(next);
-    byte prev = Maze::getParentIndex(current);
+    byte current = getParentIndex(next);
+    byte prev = (Maze::getHasParent(current) ? getParentIndex(current) : current);
 
-    Maze::setParentIndex(next, next);
     Maze::setHasParent(next, false); // TODO: MACK
 
     byte oldSourceDir = Maze::getSourceDirection(next);
@@ -180,7 +180,6 @@ bool MackAlgoTwo::move() {
 
         colorCell(current, 'B');
 
-        Maze::setParentIndex(current, next);
         Maze::setHasParent(current, true); // TODO: MACK
 
         byte temp = oldSourceDir;
@@ -189,9 +188,8 @@ bool MackAlgoTwo::move() {
 
         next = current;
         current = prev;
-        prev = Maze::getParentIndex(current);
+        prev = (Maze::getHasParent(current) ? getParentIndex(current) : current);
     }
-    Maze::setParentIndex(current, next);
     Maze::setHasParent(current, true); // TODO: MACK
     Maze::setSourceDirection(current, oldSourceDir); // TODO: MACK
 
@@ -207,15 +205,16 @@ bool MackAlgoTwo::move() {
     }
     */
 
+    // TODO: MACK - document this
     // WARNING: As a result of the ugly hack to reverse the list, we have to use
     // the parent field of the cells, though its really a child pointer at this point
 
-    // TODO: MACK - the problem is the source direction here
-    //while (current != Maze::getParentIndex(current) && Maze::isKnown(current, Maze::getSourceDirection(next))) {
-    while (current != Maze::getParentIndex(current) && Maze::isKnown(current, Maze::getSourceDirection(current))) {
+    while (Maze::getHasParent(current) && Maze::isKnown(current, Maze::getSourceDirection(current))) {
         moveOneCell(next);
         current = next;
-        next = Maze::getParentIndex(next);
+        if (hasNeighboringCell(current, Maze::getSourceDirection(next))) {
+            next = getNeighboringCell(current, Maze::getSourceDirection(next));
+        }
     }
 
     // Successful move
@@ -241,7 +240,6 @@ void MackAlgoTwo::checkNeighbor(byte cell, byte direction) {
             Maze::flipSequenceBit(neighbor);
             pushToHeap = true;
         }
-        Maze::setParentIndex(neighbor, cell);
         Maze::setHasParent(neighbor, true); // TODO: MACK
         setCellDistance(neighbor, costToNeighbor);
         Maze::setSourceDirection(neighbor, direction);
@@ -494,6 +492,7 @@ void MackAlgoTwo::setCellWall(byte cell, byte direction, bool isWall) {
     m_mouse->declareWall(Maze::getX(cell), Maze::getY(cell), directionChars[direction], isWall);
 }
 
+// TODO: MACK - is his necessary
 byte MackAlgoTwo::getParentIndex(byte cell) {
     ASSERT_TR(Maze::getHasParent(cell));
     switch (Maze::getSourceDirection(cell)) {

@@ -83,12 +83,4 @@ void Maze::setStraightAwayLength(byte cell, byte straightAwayLength) {
     m_info[cell].data = (m_info[cell].data & 15) | (straightAwayLength << 4);
 }
 
-byte Maze::getParentIndex(byte cell) {
-    return m_info[cell].parentIndex;
-}
-
-void Maze::setParentIndex(byte cell, byte parentIndex) {
-    m_info[cell].parentIndex = parentIndex;
-}
-
 } // namespace mackAlgoTwo

@@ -66,7 +66,7 @@ private:
     void setCellDistance(byte mazeIndex, twobyte distance);
     void setCellWall(byte cell, byte direction, bool isWall);
 
-    // TODO: MACK
+    // TODO: MACK - rename this
     byte getParentIndex(byte cell);
 };
 
