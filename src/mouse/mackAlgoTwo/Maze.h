@@ -7,8 +7,9 @@ namespace mackAlgoTwo {
 
 struct Info {
     twobyte distance;
-    byte parentIndex; // TODO: MACK - don't need
+    byte parentIndex; // TODO: MACK - don't need, kill this
 
+    // TODO: MACK - rename to something other than source direction or something
     // bit 0 is the sequence bit
     // bit 1 is whether or not the cell has a parent
     // bits 2 - 3 are the source direction
@@ -29,6 +30,8 @@ struct Maze {
     static const byte CURX = (WIDTH     ) / 2;
     static const byte CURY = (HEIGHT    ) / 2;
 
+    // TODO: MACK - we can make this less data, deduplicate wall info
+    //
     // For each cell, we store only eight bits of information: four bits for
     // whether we know the value of a wall, and four bits for the actual value
     //
@@ -53,6 +56,7 @@ struct Maze {
     static bool isKnown(byte x, byte y, byte direction);
     static bool isWall(byte x, byte y, byte direction);
     static void setWall(byte x, byte y, byte direction, bool isWall);
+
     static bool isKnown(byte cell, byte direction);
     static bool isWall(byte cell, byte direction);
     static void setWall(byte cell, byte direction, bool isWall);
@@ -64,7 +68,6 @@ struct Maze {
     static twobyte getDistance(byte cell);
     static void setDistance(byte cell, twobyte distance);
 
-    // TODO: MACK -- bool
     static bool getSequenceBit(byte cell);
     static void flipSequenceBit(byte cell);
 

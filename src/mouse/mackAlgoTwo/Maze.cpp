@@ -38,13 +38,9 @@ bool Maze::isWall(byte cell, byte direction) {
 }
 
 void Maze::setWall(byte cell, byte direction, bool isWall) {
-    if (isWall) {
-        m_data[cell] |= (1 << direction);
-    }
-    else {
-        m_data[cell] &= ~(1 << direction);
-    }
     m_data[cell] |= 1 << direction + 4;
+    m_data[cell] =
+        (m_data[cell] & ~(1 << direction)) | (isWall ? 1 << direction : 0);
 }
 
 twobyte Maze::getDistance(byte cell) {

@@ -66,19 +66,18 @@ byte Heap::getRightChildIndex(byte index) {
 }
 
 byte Heap::getMinChildIndex(byte index) {
-
     byte left = getLeftChildIndex(index);
     byte right = getRightChildIndex(index);
-
     if (m_size <= left) {
         return SENTINEL;
     }
-
     if (m_size <= right) {
         return left;
     }
-
-    return (Maze::getDistance(m_data[left]) < Maze::getDistance(m_data[right]) ?  left : right);
+    return (
+        Maze::getDistance(m_data[left]) < Maze::getDistance(m_data[right]) ?
+        left : right
+    );
 }
 
 void Heap::heapifyUp(byte index) {

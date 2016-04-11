@@ -120,7 +120,7 @@ bool MackAlgoTwo::move() {
     Maze::flipSequenceBit(sourceMazeIndex);
     Maze::setParentIndex(sourceMazeIndex, sourceMazeIndex);
     Maze::setHasParent(sourceMazeIndex, false); // TODO: MACK
-    Maze::setSourceDirection(sourceMazeIndex, m_d);
+    Maze::setSourceDirection(sourceMazeIndex, m_d); // TODO: MACK - is this necessay here?
     // Purposefully don't (re)set straightAwayLength
     setCellDistance(sourceMazeIndex, 0);
 
@@ -166,24 +166,34 @@ bool MackAlgoTwo::move() {
     // We need this so that we can buffer the moves for the drive code.
 
     byte next = getClosestDestinationCell();
-    colorCell(next, 'B');
+
+    //colorCell(next, 'B');
     byte current = Maze::getParentIndex(next);
     byte prev = Maze::getParentIndex(current);
+
     Maze::setParentIndex(next, next);
     Maze::setHasParent(next, false); // TODO: MACK
 
+    byte oldSourceDir = Maze::getSourceDirection(next);
+
     while (prev != current) {
+
         colorCell(current, 'B');
+
         Maze::setParentIndex(current, next);
         Maze::setHasParent(current, true); // TODO: MACK
-        //Maze::setSourceDirection(current, (Maze::getSourceDirection(next) + 2) % 4); // TODO: MACK
+
+        byte temp = oldSourceDir;
+        oldSourceDir = Maze::getSourceDirection(current);
+        Maze::setSourceDirection(current, temp); // TODO: MACK
+
         next = current;
         current = prev;
         prev = Maze::getParentIndex(current);
     }
     Maze::setParentIndex(current, next);
     Maze::setHasParent(current, true); // TODO: MACK
-    //Maze::setSourceDirection(current, (Maze::getSourceDirection(next) + 2) % 4); // TODO: MACK
+    Maze::setSourceDirection(current, oldSourceDir); // TODO: MACK
 
     // Displays the color buffer
     /*
@@ -201,7 +211,8 @@ bool MackAlgoTwo::move() {
     // the parent field of the cells, though its really a child pointer at this point
 
     // TODO: MACK - the problem is the source direction here
-    while (current != Maze::getParentIndex(current) && Maze::isKnown(current, Maze::getSourceDirection(next))) {
+    //while (current != Maze::getParentIndex(current) && Maze::isKnown(current, Maze::getSourceDirection(next))) {
+    while (current != Maze::getParentIndex(current) && Maze::isKnown(current, Maze::getSourceDirection(current))) {
         moveOneCell(next);
         current = next;
         next = Maze::getParentIndex(next);
@@ -214,7 +225,7 @@ bool MackAlgoTwo::move() {
 void MackAlgoTwo::checkNeighbor(byte cell, byte direction) {
     byte neighbor = getNeighboringCell(cell, direction);
 
-    // Determine the cost if routed through the currect node
+    // Determine the cost if routed through the current node
     twobyte costToNeighbor = Maze::getDistance(cell);
     if (Maze::getSourceDirection(cell) == direction) {
         costToNeighbor += getStraightAwayCost(Maze::getStraightAwayLength(cell) + 1);
@@ -299,6 +310,8 @@ bool MackAlgoTwo::hasNeighboringCell(byte cell, byte direction) {
 }
 
 byte MackAlgoTwo::getNeighboringCell(byte cell, byte direction) {
+
+    // TODO: MACK - dedup with getsourcedirection
 
     ASSERT_TR(hasNeighboringCell(cell, direction));
 

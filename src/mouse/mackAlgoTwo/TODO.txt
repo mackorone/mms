@@ -1,8 +1,5 @@
 - Add a history/reset button
 - Optimization
-    - 1 byte for the cell location
-    - 1 byte for the cell walls
-    - Other optimizations
 - Kill unused imports
 - Turn asserts off
 - Test multiple maze sizes
@@ -12,4 +9,3 @@
 
 - Clear up confusion between mazeindex and heapindex
 - mazeindex and heapIndex types
-- Separate type for Direction too, all different types of byte values, make sure types can't mix...
