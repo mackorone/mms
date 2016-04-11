@@ -9,3 +9,4 @@
 
 - Clear up confusion between mazeindex and heapindex
 - mazeindex and heapIndex types
+- Diagonals

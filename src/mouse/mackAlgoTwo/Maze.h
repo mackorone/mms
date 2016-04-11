@@ -6,13 +6,13 @@
 namespace mackAlgoTwo {
 
 struct Info {
+    // The distance of the cell from the source (no units)
     twobyte distance;
-    // TODO: MACK - rename to something other than source direction or something
-    // bit 0 is the sequence bit
-    // bit 1 is whether or not the cell has a parent
-    // bits 2 - 3 are the source direction
-    // bits 4 - 7 are the straight away length
-    byte data;
+    // bit 0 is whether or not the cell has been discovered
+    // bit 1 is whether or not the cell has a "next" cell
+    // bits 2 - 3 are the direction of the "next" cell
+    // bits 4 - 7 are the straight away length // TODO: MACK
+    byte misc;
 };
 
 struct Maze {
@@ -28,7 +28,7 @@ struct Maze {
     static const byte CURX = (WIDTH     ) / 2;
     static const byte CURY = (HEIGHT    ) / 2;
 
-    // TODO: MACK - we can make this less data, deduplicate wall info
+    // TODO: MACK - we can make this less data, deduplicate wall info, save 136 bytes
     //
     // For each cell, we store only eight bits of information: four bits for
     // whether we know the value of a wall, and four bits for the actual value
@@ -66,16 +66,14 @@ struct Maze {
     static twobyte getDistance(byte cell);
     static void setDistance(byte cell, twobyte distance);
 
-    // TODO: MACK - just do set sequence bit, optimize for destination, Heap.clear method
-    static bool getSequenceBit(byte cell);
-    static void flipSequenceBit(byte cell);
+    static bool getDiscovered(byte cell);
+    static void setDiscovered(byte cell, bool discovered);
 
-    // TODO: MACK - rename to has parent
-    static bool getHasParent(byte cell);
-    static void setHasParent(byte cell, bool hasParent);
+    static bool hasNext(byte cell);
+    static void setHasNext(byte cell, bool hasNext);
 
-    static byte getSourceDirection(byte cell);
-    static void setSourceDirection(byte cell, byte sourceDirection);
+    static byte getNextDirection(byte cell);
+    static void setNextDirection(byte cell, byte nextDirection);
 
     static byte getStraightAwayLength(byte cell);
     static void setStraightAwayLength(byte cell, byte straightAwayLength);

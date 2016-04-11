@@ -44,6 +44,10 @@ byte Heap::pop() {
     return cell;
 }
 
+void Heap::clear() {
+    m_size = 0;
+}
+
 byte Heap::getParentIndex(byte index) {
     if (index == 0) {
         return SENTINEL;

@@ -12,6 +12,7 @@ public:
     static void push(byte cell);
     static void update(byte cell);
     static byte pop();
+    static void clear();
 
 private:
 

@@ -29,11 +29,11 @@ private:
     twobyte getTurnCost();
     twobyte getStraightAwayCost(byte length);
 
-    bool inCenter();
-
     bool move();
     void checkNeighbor(byte cell, byte direction);
 
+    bool inCenter();
+    void colorCenter(char color);
     void resetDestinationCellDistances();
     byte getClosestDestinationCell();
 
@@ -60,14 +60,9 @@ private:
     void rightAndForward();
     void aroundAndForward();
 
-    void colorCenter(char color);
-    void colorCell(byte cell, char color);
-
-    void setCellDistance(byte mazeIndex, twobyte distance);
+    void setCellDistance(byte cell, twobyte distance);
     void setCellWall(byte cell, byte direction, bool isWall);
 
-    // TODO: MACK - rename this
-    byte getParentIndex(byte cell);
 };
 
 } // namespace mackAlgoTwo

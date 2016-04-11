@@ -51,36 +51,36 @@ void Maze::setDistance(byte cell, twobyte distance) {
     m_info[cell].distance = distance;
 }
 
-bool Maze::getSequenceBit(byte cell) {
-    return m_info[cell].data & 1;
+bool Maze::getDiscovered(byte cell) {
+    return m_info[cell].misc & 1;
 }
 
-void Maze::flipSequenceBit(byte cell) {
-    m_info[cell].data ^= 1;
+void Maze::setDiscovered(byte cell, bool discovered) {
+    m_info[cell].misc = (m_info[cell].misc & ~1) | (discovered ? 1 : 0);
 }
 
-bool Maze::getHasParent(byte cell) {
-    return m_info[cell].data & 2;
+bool Maze::hasNext(byte cell) {
+    return m_info[cell].misc & 2;
 }
 
-void Maze::setHasParent(byte cell, bool hasParent) {
-    m_info[cell].data = (m_info[cell].data & ~2) | (hasParent ? 2 : 0);
+void Maze::setHasNext(byte cell, bool hasNext) {
+    m_info[cell].misc = (m_info[cell].misc & ~2) | (hasNext ? 2 : 0);
 }
 
-byte Maze::getSourceDirection(byte cell) {
-    return m_info[cell].data >> 2 & 3;
+byte Maze::getNextDirection(byte cell) {
+    return m_info[cell].misc >> 2 & 3;
 }
 
-void Maze::setSourceDirection(byte cell, byte sourceDirection) {
-    m_info[cell].data = (m_info[cell].data & ~12) | (sourceDirection << 2);
+void Maze::setNextDirection(byte cell, byte nextDirection) {
+    m_info[cell].misc = (m_info[cell].misc & ~12) | (nextDirection << 2);
 }
 
 byte Maze::getStraightAwayLength(byte cell) {
-    return m_info[cell].data >> 4 & 15;
+    return m_info[cell].misc >> 4 & 15;
 }
 
 void Maze::setStraightAwayLength(byte cell, byte straightAwayLength) {
-    m_info[cell].data = (m_info[cell].data & 15) | (straightAwayLength << 4);
+    m_info[cell].misc = (m_info[cell].misc & 15) | (straightAwayLength << 4);
 }
 
 } // namespace mackAlgoTwo
