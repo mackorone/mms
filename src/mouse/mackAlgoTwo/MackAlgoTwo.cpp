@@ -19,7 +19,6 @@ int MackAlgoTwo::tileTextNumberOfCols() const {
 }
 
 bool MackAlgoTwo::useTileEdgeMovements() const {
-    // TODO: MACK
     return false;
 }
 
@@ -112,11 +111,13 @@ byte MackAlgoTwo::colorVisitedCellsDelayMs() const {
 }
 
 twobyte MackAlgoTwo::getTurnCost() {
-    return 32;
+    return 256;
 }
 
 twobyte MackAlgoTwo::getStraightAwayCost(byte length) {
-    return 16 - length;
+    ASSERT_LT(0, length);
+    ASSERT_LT(length, 16);
+    return 256 / length;
 }
 
 bool MackAlgoTwo::move() {
@@ -168,7 +169,6 @@ bool MackAlgoTwo::move() {
     }
 
     // If there's no path to the destination, the maze is unsolvable
-    // TODO: MACK - is this actually correct? Where do we reset here?
     if (!Maze::hasNext(getClosestDestinationCell())) {
         return false;
     }
@@ -249,21 +249,22 @@ byte MackAlgoTwo::reverseLinkedList(byte cell) {
 }
 
 void MackAlgoTwo::drawPath(byte cell) {
-    byte current = cell;
-    byte next = getNeighboringCell(current, Maze::getNextDirection(current));
-    bool allMovesKnown = true;
-    while (Maze::hasNext(current)) {
-        if (Maze::isKnown(current, Maze::getNextDirection(current)) && allMovesKnown) {
-            m_mouse->setTileColor(Maze::getX(next), Maze::getY(next), 'V');
-        }
-        else {
-            m_mouse->setTileColor(Maze::getX(next), Maze::getY(next), 'B');
-            if (allMovesKnown) {
-                allMovesKnown = false;
+    for (byte i = 0; i < 2; i += 1) {
+        while (Maze::hasNext(cell)) {
+            byte next = getNeighboringCell(cell, Maze::getNextDirection(cell));
+            // Draw the "known" moves
+            if (i == 0) {
+                if (!Maze::isKnown(cell, Maze::getNextDirection(cell))) {
+                    break;
+                }
+                m_mouse->setTileColor(Maze::getX(next), Maze::getY(next), 'V');
             }
+            // Draw the "intended" moves
+            else {
+                m_mouse->setTileColor(Maze::getX(next), Maze::getY(next), 'B');
+            }
+            cell = next;
         }
-        current = next;
-        next = getNeighboringCell(current, Maze::getNextDirection(next));
     }
 }
 

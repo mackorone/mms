@@ -1,7 +1,5 @@
 #include "Maze.h"
 
-#include "Assert.h"
-
 namespace mackAlgoTwo {
 
 byte Maze::m_data[] = {0};

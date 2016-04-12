@@ -11,7 +11,7 @@ struct Info {
     // bit 0 is whether or not the cell has been discovered
     // bit 1 is whether or not the cell has a "next" cell
     // bits 2 - 3 are the direction of the "next" cell
-    // bits 4 - 7 are the straight away length // TODO: MACK
+    // bits 4 - 7 are the straightaway length
     byte misc;
 };
 
@@ -28,8 +28,6 @@ struct Maze {
     static const byte CURX = (WIDTH     ) / 2;
     static const byte CURY = (HEIGHT    ) / 2;
 
-    // TODO: MACK - we can make this less data, deduplicate wall info, save 136 bytes
-    //
     // For each cell, we store only eight bits of information: four bits for
     // whether we know the value of a wall, and four bits for the actual value
     //
@@ -54,27 +52,22 @@ struct Maze {
     static bool isKnown(byte x, byte y, byte direction);
     static bool isWall(byte x, byte y, byte direction);
     static void setWall(byte x, byte y, byte direction, bool isWall);
-
     static bool isKnown(byte cell, byte direction);
     static bool isWall(byte cell, byte direction);
     static void setWall(byte cell, byte direction, bool isWall);
 
-    // -------------
-
+    // Information used only by Dijkstra's algo to determine the fastest path
     static Info m_info[WIDTH * HEIGHT];
 
+    // Helper methods for accessing and modifying m_info
     static twobyte getDistance(byte cell);
     static void setDistance(byte cell, twobyte distance);
-
     static bool getDiscovered(byte cell);
     static void setDiscovered(byte cell, bool discovered);
-
     static bool hasNext(byte cell);
     static void clearNext(byte cell);
-
     static byte getNextDirection(byte cell);
     static void setNextDirection(byte cell, byte nextDirection);
-
     static byte getStraightAwayLength(byte cell);
     static void setStraightAwayLength(byte cell, byte straightAwayLength);
 

@@ -10,3 +10,4 @@
 - Clear up confusion between mazeindex and heapindex
 - mazeindex and heapIndex types
 - Diagonals
+- Save 136 bytes for the walls
