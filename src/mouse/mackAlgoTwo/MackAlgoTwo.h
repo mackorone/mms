@@ -26,17 +26,23 @@ private:
     byte m_d;
     bool m_onWayToCenter;
 
+    bool shouldColorVisitedCells() const;
+    byte colorVisitedCellsDelayMs() const;
+
     twobyte getTurnCost();
     twobyte getStraightAwayCost(byte length);
 
     bool move();
     void checkNeighbor(byte cell, byte direction);
+    byte reverseLinkedList(byte cell);
+    void drawPath(byte cell);
 
     bool inCenter();
     void colorCenter(char color);
     void resetDestinationCellDistances();
     byte getClosestDestinationCell();
 
+    byte getOppositeDirection(byte direction);
     bool hasNeighboringCell(byte cell, byte direction);
     byte getNeighboringCell(byte cell, byte direction);
 

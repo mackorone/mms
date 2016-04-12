@@ -1,5 +1,7 @@
 #include "Maze.h"
 
+#include "Assert.h"
+
 namespace mackAlgoTwo {
 
 byte Maze::m_data[] = {0};
@@ -63,8 +65,8 @@ bool Maze::hasNext(byte cell) {
     return m_info[cell].misc & 2;
 }
 
-void Maze::setHasNext(byte cell, bool hasNext) {
-    m_info[cell].misc = (m_info[cell].misc & ~2) | (hasNext ? 2 : 0);
+void Maze::clearNext(byte cell) {
+    m_info[cell].misc &= ~2;
 }
 
 byte Maze::getNextDirection(byte cell) {
@@ -72,6 +74,7 @@ byte Maze::getNextDirection(byte cell) {
 }
 
 void Maze::setNextDirection(byte cell, byte nextDirection) {
+    m_info[cell].misc |= 2;
     m_info[cell].misc = (m_info[cell].misc & ~12) | (nextDirection << 2);
 }
 

@@ -70,7 +70,7 @@ struct Maze {
     static void setDiscovered(byte cell, bool discovered);
 
     static bool hasNext(byte cell);
-    static void setHasNext(byte cell, bool hasNext);
+    static void clearNext(byte cell);
 
     static byte getNextDirection(byte cell);
     static void setNextDirection(byte cell, byte nextDirection);
