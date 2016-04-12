@@ -75,6 +75,16 @@ void MackAlgoTwo::solve(
     // Go the center, the the start, forever
     while (true) {
 
+        // TODO: MACK - reset button could go here?
+        if (m_mouse->inputButtonPressed(2)) {
+            m_mouse->acknowledgeInputButtonPressed(2);
+            m_x = 0;
+            m_y = 0;
+            m_d = Direction::NORTH;
+            m_onWayToCenter = true;
+            m_mouse->resetPosition();
+        }
+
         // Read the walls if not known
         readWalls();
 
