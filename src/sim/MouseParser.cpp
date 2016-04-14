@@ -38,8 +38,7 @@ const std::string MouseParser::HALF_WIDTH_TAG = "Half-Width";
 MouseParser::MouseParser(const std::string& filePath, bool* success) :
         m_forwardDirection(Radians(0)),
         m_centerOfMass(Cartesian(Meters(0), Meters(0))) {
-    pugi::xml_document doc;
-    pugi::xml_parse_result result = doc.load_file(filePath.c_str());
+    pugi::xml_parse_result result = m_doc.load_file(filePath.c_str());
     if (!result) {
         L()->warn(
             "Unable to read mouse parameters in \"%v\" - %v",
@@ -47,7 +46,7 @@ MouseParser::MouseParser(const std::string& filePath, bool* success) :
         *success = false;
     }
     else {
-        m_root = doc.child(MOUSE_TAG.c_str());
+        m_root = m_doc.child(MOUSE_TAG.c_str());
         m_forwardDirection = Radians(Degrees(
             getDoubleIfHasDouble(m_root, FORWARD_DIRECTION_TAG, success)));
         pugi::xml_node centerOfMassNode = getContainerNode(m_root, CENTER_OF_MASS_TAG, success);

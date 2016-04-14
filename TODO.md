@@ -1,7 +1,9 @@
 # High Priority
 
 - Make a clear color for the tile
-- Check paused in other mouse interface methods other than movements
+    - Still working on this
+- Make a way to ensure that the algorithm has no memory leaks
+    - We need a simple test harness, no graphics, discrete only
 - Draw dots on edges
 - Sim time is lagging a little bit
 - Discrete mode speed...

@@ -7,3 +7,4 @@
 - Save 136 bytes for the walls
 - Diagonals
 - Explore vs solve
+- Multiple solving options

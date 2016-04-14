@@ -51,6 +51,8 @@ public:
     std::string getStringIfHasStringAndIsTileTextAlignment(const std::string& tag, const std::string& defaultValue);
 
 private:
+    // We have to keep m_doc around so valgrind doesn't complain
+    pugi::xml_document m_doc;
     pugi::xml_node m_root;
     pugi::xml_parse_result m_fileIsReadable;
 

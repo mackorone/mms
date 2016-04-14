@@ -12,15 +12,14 @@ namespace sim {
 const std::string ParamParser::PARAMETERS_TAG = "parameters";
 
 ParamParser::ParamParser(const std::string& filePath) {
-    pugi::xml_document doc;
-    m_fileIsReadable = doc.load_file(filePath.c_str());
+    m_fileIsReadable = m_doc.load_file(filePath.c_str());
     if (!m_fileIsReadable) {
         L()->warn(
             "Unable to read parameters from \"%v\": %v. "
             "Using default values for all parameters.",
             filePath, m_fileIsReadable.description());
     }
-    m_root = doc.child(PARAMETERS_TAG.c_str());
+    m_root = m_doc.child(PARAMETERS_TAG.c_str());
 }
 
 bool ParamParser::hasBoolValue(const std::string& tag){
