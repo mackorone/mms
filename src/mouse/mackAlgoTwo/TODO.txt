@@ -6,5 +6,10 @@
 - Const correctness
 - Save 136 bytes for the walls
 - Diagonals
-- Explore vs solve
 - Multiple solving options
+- Add an "explore" method
+    - First try to get to the center
+    - Then try to get to:
+        - The closest cell to you on the fastest path from the beginning to the center
+        - The cell with the furthest distance from the start on the fastest path
+        - Something else?

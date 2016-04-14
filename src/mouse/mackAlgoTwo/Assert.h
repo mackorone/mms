@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <iostream>
+#include <string>
 
 #define OPENING "---------- Assertion failed! ----------"
 #define CLOSING "---------------------------------------"
