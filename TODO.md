@@ -1,5 +1,9 @@
 # High Priority
 
+- Bluetooth communication?
+- Support reading or writing multiple file types
+    - .maz (plain text), .MAZ (binary), .map (ascii map)
+    - https://code.google.com/p/maze-solver/wiki/MazeFileFormats
 - Add computer vision to make it easy to import mazes
     - Repurpose "mousee" project for this
 - Make a clear color for the tile
@@ -76,9 +80,6 @@
 - isDiscreteInterfaceCompatible and isContinuousInterfaceCompatible
 - Enable steering the wheels and sensors during run
 - Set acceleration of all moving/rotating things
-- Support reading or writing multiple file types
-    - .maz (plain text), .MAZ (binary), .map (ascii map)
-    - https://code.google.com/p/maze-solver/wiki/MazeFileFormats
 - Make some default Arduino implementations for some functions
 - Still view a maze if it fails validation, but don't let the sim continue...
 - Testing for resource existence (like the shaders, font images, etc.)
