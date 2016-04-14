@@ -10,7 +10,6 @@ namespace sim {
 enum class Color {
     BLACK,
     BLUE,
-    CLEAR, // TODO: MACK
     CYAN,
     GRAY,
     GREEN,
@@ -31,7 +30,6 @@ enum class Color {
 static const std::map<Color, std::tuple<double, double, double>> COLOR_TO_RGB {
     {Color::BLACK      , std::make_tuple(0.0, 0.0, 0.0)},
     {Color::BLUE       , std::make_tuple(0.0, 0.0, 0.7)},
-    // Purposefully exclude CLEAR here
     {Color::CYAN       , std::make_tuple(0.0, 0.4, 0.4)},
     {Color::GRAY       , std::make_tuple(0.7, 0.7, 0.7)},
     {Color::GREEN      , std::make_tuple(0.0, 0.7, 0.0)},
@@ -52,7 +50,6 @@ static const std::map<Color, std::tuple<double, double, double>> COLOR_TO_RGB {
 static const std::map<Color, std::string> COLOR_TO_STRING {
     {Color::BLACK      , "BLACK"      },
     {Color::BLUE       , "BLUE"       },
-    {Color::CLEAR      , "CLEAR"      },
     {Color::CYAN       , "CYAN"       },
     {Color::GRAY       , "GRAY"       },
     {Color::GREEN      , "GREEN"      },
@@ -76,7 +73,6 @@ static const std::map<std::string, Color> STRING_TO_COLOR =
 static const std::map<Color, char> COLOR_TO_CHAR {
     {Color::BLACK      , 'k'},
     {Color::BLUE       , 'b'},
-    {Color::CLEAR      , ' '},
     {Color::GRAY       , 'a'},
     {Color::CYAN       , 'c'},
     {Color::GREEN      , 'g'},

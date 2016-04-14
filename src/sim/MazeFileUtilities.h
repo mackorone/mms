@@ -11,15 +11,15 @@ class MazeFileUtilities {
 
 public:
 
-    // The MazeFileUtilities class is not constructible
     MazeFileUtilities() = delete;
 
-    // Returns whether or not the contents of the file have the proper format
     static bool isMazeFile(const std::string& mazeFilePath);
-
-    // Functions for saving and loading the maze
     static void saveMaze(const std::vector<std::vector<BasicTile>>& maze, const std::string& mazeFilePath);
     static std::vector<std::vector<BasicTile>> loadMaze(const std::string& mazeFilePath);
+
+    static bool isMapFile(const std::string& mapFilePath);
+    static void saveMap(const std::vector<std::vector<BasicTile>>& maze, const std::string& mapFilePath);
+    static std::vector<std::vector<BasicTile>> loadMap(const std::string& mapFilePath);
 
 };
 

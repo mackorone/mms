@@ -185,6 +185,12 @@ std::pair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction
             }
         }
     }
+    
+    // If the wall color is the same as the default tile base color,
+    // we interpret that to mean that the walls should be transparent
+    if (wallColor == STRING_TO_COLOR.at(P()->tileBaseColor())) {
+        wallAlpha = 0.0;
+    }
 
     return std::make_pair(wallColor, wallAlpha);
 }

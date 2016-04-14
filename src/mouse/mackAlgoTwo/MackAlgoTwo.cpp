@@ -78,11 +78,13 @@ void MackAlgoTwo::solve(
         // TODO: MACK - reset button could go here?
         if (m_mouse->inputButtonPressed(2)) {
             m_mouse->acknowledgeInputButtonPressed(2);
+            /*
             m_x = 0;
             m_y = 0;
             m_d = Direction::NORTH;
             m_onWayToCenter = true;
             m_mouse->resetPosition();
+            */
         }
 
         // Read the walls if not known
@@ -112,6 +114,9 @@ bool MackAlgoTwo::shouldColorVisitedCells() const {
             return false;
         }
         return true;
+    }
+    if (m_mouse->inputButtonPressed(0)) {
+        m_mouse->acknowledgeInputButtonPressed(0);
     }
     return false;
 }

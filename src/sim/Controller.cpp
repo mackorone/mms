@@ -186,11 +186,16 @@ void Controller::initAndValidateMouse(
 }
 
 Direction Controller::getInitialDirection(const std::string& initialDirection, Model* model) {
+    bool wallNorth = model->getMaze()->getTile(0, 0)->isWall(Direction::NORTH);
+    bool wallEast = model->getMaze()->getTile(0, 0)->isWall(Direction::EAST);
+    if (!ContainerUtilities::mapContains(STRING_TO_DIRECTION, initialDirection) && wallNorth == wallEast) {
+        return Direction::NORTH;
+    }
     if (initialDirection == OPENING_DIRECTION_STRING) {
-        return (model->getMaze()->getTile(0, 0)->isWall(Direction::EAST) ? Direction::NORTH : Direction::EAST);
+        return (wallNorth ? Direction::EAST : Direction::NORTH);
     }
     if (initialDirection == WALL_DIRECTION_STRING) {
-        return (model->getMaze()->getTile(0, 0)->isWall(Direction::NORTH) ? Direction::NORTH : Direction::EAST);
+        return (wallNorth ? Direction::NORTH : Direction::EAST);
     }
     return STRING_TO_DIRECTION.at(initialDirection);
 }

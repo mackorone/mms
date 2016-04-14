@@ -151,23 +151,24 @@ std::vector<std::pair<int, int>> MazeChecker::getCenterTiles(int width, int heig
 
 bool MazeChecker::hasNoInaccessibleLocations(const std::vector<std::vector<BasicTile>>& maze) {
 
-    std::set<std::pair<int, int>> explored;
+    std::set<std::pair<int, int>> discovered;
     std::queue<std::pair<int, int>> queue;
 
     for (std::pair<int, int> tile : getCenterTiles(maze.size(), maze.at(0).size())) {
+        discovered.insert(tile);
         queue.push(tile);
     }
 
     while (!queue.empty()) {
         std::pair<int, int> tile = queue.front();
         queue.pop();
-        explored.insert(tile);
         for (Direction direction : DIRECTIONS) {
             if (maze.at(tile.first).at(tile.second).walls.at(direction)) {
                 continue;
             }
             std::pair<int, int> neighbor = positionAfterMovingForward(tile, direction);
-            if (!ContainerUtilities::setContains(explored, neighbor)) {
+            if (!ContainerUtilities::setContains(discovered, neighbor)) {
+                discovered.insert(neighbor);
                 queue.push(neighbor);
             }
         }
@@ -175,7 +176,7 @@ bool MazeChecker::hasNoInaccessibleLocations(const std::vector<std::vector<Basic
     
     for (int x = 0; x < maze.size(); x += 1) {
         for (int y = 0; y < maze.at(x).size(); y += 1) {
-            if (!ContainerUtilities::setContains(explored, std::make_pair(x, y))) {
+            if (!ContainerUtilities::setContains(discovered, std::make_pair(x, y))) {
                 return false;
             }
         }
@@ -252,12 +253,16 @@ bool MazeChecker::isUnsolvableByWallFollower(const std::vector<std::vector<Basic
     Direction direction = Direction::NORTH;
 
     while (!ContainerUtilities::setContains(reachableByWallFollower, position)) {
+        Direction oldDirection = direction;
         Direction newDirection = directionAfterRightTurn(direction);
         if (!maze.at(position.first).at(position.second).walls.at(newDirection)) {
             direction = newDirection;
         }
         while (maze.at(position.first).at(position.second).walls.at(direction)) {
             direction = directionAfterLeftTurn(direction);
+            if (direction == oldDirection) {
+                break;
+            }
         }
         position = positionAfterMovingForward(position, direction);
         reachableByWallFollower.insert(position);

@@ -1,15 +1,24 @@
 # High Priority
 
-- Bluetooth communication?
+- Add a MazeChecker check to ensure that all wall values are populated
+- Still view a maze if it fails validation, but don't let the sim continue...
+    - Write a function to print the maze out
+- Bluetooth communication
 - Support reading or writing multiple file types
     - .maz (plain text), .MAZ (binary), .map (ascii map)
     - https://code.google.com/p/maze-solver/wiki/MazeFileFormats
 - Add computer vision to make it easy to import mazes
     - Repurpose "mousee" project for this
-- Make a clear color for the tile
-    - Still working on this
 - Make a way to ensure that the algorithm has no memory leaks
     - We need a simple test harness, no graphics, discrete only
+- Windows logging is not working
+    - Not printing out on non-main threads?
+- Logging is too expensive
+    - Causing freezing and crashing
+    - Generalize a method for counting and logging few times, 1 per second
+    - Write some code to make sure update throughput is good
+        - 99% of updates are 1ms apart, or something like that
+    - Check the sleep duration of updates to make sure that we're actually doing 1000 updates per second
 - Draw dots on edges
 - Sim time is lagging a little bit
 - Discrete mode speed...
@@ -27,13 +36,6 @@
     - Make sure consistent at all speeds
 - Add debugging tips
     - Note about what to do if the simulator says that it's an invalid algo (how to debug)
-- Windows logging is not working on non-main threads
-- Logging is too expensive
-    - Causing freezing and crashing
-    - Generalize a method for counting and logging few times, 1 per second
-    - Write some code to make sure update throughput is good
-        - 99% of updates are 1ms apart, or something like that
-    - Check the sleep duration of updates to make sure that we're actually doing 1000 updates per second
 - Make some video tutorials
 - Make a mechanism for easily merging the a discrete algo into a continuous one
     - Figure out how to bring the high level logic into the control algo
@@ -81,7 +83,6 @@
 - Enable steering the wheels and sensors during run
 - Set acceleration of all moving/rotating things
 - Make some default Arduino implementations for some functions
-- Still view a maze if it fails validation, but don't let the sim continue...
 - Testing for resource existence (like the shaders, font images, etc.)
 - Continuous mode improvements (overall)
 - Xorg and compiz performance...
@@ -127,7 +128,6 @@
 - Add a simple polygonFragmentShader
 - Perhaps impose memory limits on the algorithm
 - Add a way to change the mouse color
-- Bluetooth connection to the actual mouse
 - Change FreeGLUT to GLFW
 - 3D
 - Crash animation for both modes

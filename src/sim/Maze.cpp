@@ -25,12 +25,20 @@ Maze::Maze() {
     if (P()->useMazeFile()) {
 
         std::string mazeFilePath = Directory::getResMazeDirectory() + P()->mazeFile();
-        if (!MazeFileUtilities::isMazeFile(mazeFilePath)) {
+
+        // TODO: MACK - this shouldn't print any errors if it's a valid map file
+        if (!MazeFileUtilities::isMazeFile(mazeFilePath) && !MazeFileUtilities::isMapFile(mazeFilePath)) {
             L()->error("Unable to initialize maze from file \"%v\".", mazeFilePath);
             SimUtilities::quit();
         }
 
-        basicMaze = MazeFileUtilities::loadMaze(mazeFilePath);
+        // TODO: MACK - clean up the distinction between map/maze
+        if (MazeFileUtilities::isMazeFile(mazeFilePath)) {
+            basicMaze = MazeFileUtilities::loadMaze(mazeFilePath);
+        }
+        else if (MazeFileUtilities::isMapFile(mazeFilePath)) {
+            basicMaze = MazeFileUtilities::loadMap(mazeFilePath);
+        }
     }
     else {
 
