@@ -1,5 +1,7 @@
 # High Priority
 
+- Add computer vision to make it easy to import mazes
+    - Repurpose "mousee" project for this
 - Make a clear color for the tile
     - Still working on this
 - Make a way to ensure that the algorithm has no memory leaks
