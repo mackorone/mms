@@ -68,6 +68,7 @@ private:
 
     void setCellDistance(byte cell, twobyte distance);
     void setCellWall(byte cell, byte direction, bool isWall);
+    void unsetCellWall(byte cell, byte direction);
 
 };
 

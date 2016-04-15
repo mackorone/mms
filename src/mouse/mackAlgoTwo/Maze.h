@@ -52,9 +52,11 @@ struct Maze {
     static bool isKnown(byte x, byte y, byte direction);
     static bool isWall(byte x, byte y, byte direction);
     static void setWall(byte x, byte y, byte direction, bool isWall);
+    static void unsetWall(byte x, byte y, byte direction);
     static bool isKnown(byte cell, byte direction);
     static bool isWall(byte cell, byte direction);
     static void setWall(byte cell, byte direction, bool isWall);
+    static void unsetWall(byte cell, byte direction);
 
     // Information used only by Dijkstra's algo to determine the fastest path
     static Info m_info[WIDTH * HEIGHT];

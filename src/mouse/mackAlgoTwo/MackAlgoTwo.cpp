@@ -3,6 +3,7 @@
 #include <limits>
 
 #include "Assert.h"
+#include "History.h"
 #include "Maze.h"
 
 namespace mackAlgoTwo {
@@ -84,6 +85,38 @@ void MackAlgoTwo::solve(
             m_d = Direction::NORTH;
             m_onWayToCenter = true;
             m_mouse->resetPosition();
+            // TODO: MACK
+            Maze::setStraightAwayLength(Maze::getCell(0, 0), 0);
+            while (0 < History::size()) {
+                twobyte cellAndData = History::pop(); // TODO: MACK
+                byte cell = History::cell(cellAndData);
+                byte data = History::data(cellAndData);
+                for (byte direction = 0; direction < 4; direction += 1) {
+                    if (data >> direction + 4 & 1) {
+                        unsetCellWall(cell, direction);
+                        // If a neighboring cell exists, set the neighbor's wall too
+                        if (hasNeighboringCell(cell, direction)) {
+                            byte neighboringCell = getNeighboringCell(cell, direction);
+                            unsetCellWall(neighboringCell, getOppositeDirection(direction));
+                        }
+                    }
+                }
+                // TODO: MACK
+                /*
+                m_mouse->info(
+                    std::string("X: ") + std::to_string(Maze::getX(cell)) + ", " +
+                    std::string("Y: ") + std::to_string(Maze::getY(cell)) + ", " +
+                    std::string("D: ") +
+                        (data >> 4 & 1 ? "1" : "0") +
+                        (data >> 5 & 1 ? "1" : "0") +
+                        (data >> 6 & 1 ? "1" : "0") +
+                        (data >> 7 & 1 ? "1" : "0") +
+                        (data >> 0 & 1 ? "1" : "0") +
+                        (data >> 1 & 1 ? "1" : "0") +
+                        (data >> 2 & 1 ? "1" : "0") +
+                        (data >> 3 & 1 ? "1" : "0"));
+                */
+            }
         }
 
         // Read the walls if not known
@@ -129,7 +162,6 @@ twobyte MackAlgoTwo::getTurnCost() {
 }
 
 twobyte MackAlgoTwo::getStraightAwayCost(byte length) {
-    m_mouse->info(std::to_string(length));
     ASSERT_LT(0, length);
     ASSERT_LT(length, 16);
     return 256 / length;
@@ -165,6 +197,7 @@ bool MackAlgoTwo::move() {
     colorCenter('G');
 
     // Dijkstra's algo
+    ASSERT_EQ(Heap::size(), 0);
     Heap::push(source);
     while (0 < Heap::size()) {
         byte cell = Heap::pop();
@@ -203,6 +236,8 @@ bool MackAlgoTwo::move() {
         byte next = getNeighboringCell(current, Maze::getNextDirection(current));
         moveOneCell(next);
         current = next;
+        // TODO: MACK - push to history here
+        History::move();
     }
 
     // Successful move
@@ -440,6 +475,10 @@ void MackAlgoTwo::moveOneCell(byte target) {
 
 void MackAlgoTwo::readWalls() {
 
+    // TODO: MACK
+    byte cell = Maze::getCell(m_x, m_y);
+    byte data = 0;
+
     // For each of [left, front, right]
     for (int i = -1; i <= 1; i += 1) {
         byte direction = (m_d + i + 4) % 4;
@@ -451,6 +490,12 @@ void MackAlgoTwo::readWalls() {
             bool isWall = readWall(direction);
             setCellWall(Maze::getCell(m_x, m_y), direction, isWall);
 
+            // TODO: MACK
+            data |= 1 << direction + 4;
+            if (isWall) {
+                data |= 1 << direction;
+            }
+
             // If a neighboring cell exists, set the neighbor's wall too
             if (hasNeighboringCell(Maze::getCell(m_x, m_y), direction)) {
                 byte neighboringCell = getNeighboringCell(Maze::getCell(m_x, m_y), direction);
@@ -458,6 +503,9 @@ void MackAlgoTwo::readWalls() {
             }
         }
     }
+
+    // TODO: MACK
+    History::add(cell, data);
 }
 
 bool MackAlgoTwo::readWall(byte direction) {
@@ -534,6 +582,12 @@ void MackAlgoTwo::setCellWall(byte cell, byte direction, bool isWall) {
     Maze::setWall(cell, direction, isWall);
     static char directionChars[] = {'n', 'e', 's', 'w'};
     m_mouse->declareWall(Maze::getX(cell), Maze::getY(cell), directionChars[direction], isWall);
+}
+
+void MackAlgoTwo::unsetCellWall(byte cell, byte direction) {
+    Maze::unsetWall(cell, direction);
+    static char directionChars[] = {'n', 'e', 's', 'w'};
+    m_mouse->undeclareWall(Maze::getX(cell), Maze::getY(cell), directionChars[direction]);
 }
 
 } // namespace mackAlgoTwo
