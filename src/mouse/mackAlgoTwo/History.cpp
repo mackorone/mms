@@ -1,7 +1,6 @@
 #include "History.h"
 
 #include "Assert.h"
-#include "Maze.h"
 
 namespace mackAlgoTwo {
 

@@ -24,8 +24,8 @@
     <tile-text-font-image>Unispace-Bold.png</tile-text-font-image>
     <tile-text-border-fraction>.05</tile-text-border-fraction>
     <tile-text-alignment>CENTER_CENTER</tile-text-alignment>
-    <tile-undeclared-wall-color>DARK_RED</tile-undeclared-wall-color>
-    <tile-undeclared-no-wall-color>DARK_GRAY</tile-undeclared-no-wall-color>
+    <tile-undeclared-wall-color>BLACK</tile-undeclared-wall-color>
+    <tile-undeclared-no-wall-color>BLACK</tile-undeclared-no-wall-color>
     <tile-incorrectly-declared-wall-color>ORANGE</tile-incorrectly-declared-wall-color>
     <tile-incorrectly-declared-no-wall-color>DARK_CYAN</tile-incorrectly-declared-no-wall-color>
     <mouse-body-color>BLUE</mouse-body-color>
@@ -36,7 +36,7 @@
     <mouse-view-color>WHITE</mouse-view-color>
     <default-tile-colors-visible>true</default-tile-colors-visible>
     <default-wall-truth-visible>false</default-wall-truth-visible>
-    <default-tile-fog-visible>true</default-tile-fog-visible>
+    <default-tile-fog-visible>false</default-tile-fog-visible>
     <default-tile-text-visible>true</default-tile-text-visible>
     <default-tile-distance-visible>false</default-tile-distance-visible>
     <default-header-visible>true</default-header-visible>
@@ -67,7 +67,7 @@
     <!-- Maze Parameters -->
     <wall-length>0.168</wall-length> <!-- meters -->
     <wall-width>0.012</wall-width> <!-- meters -->
-    <maze-file>mazeish.maz</maze-file> <!-- relative to maze-directory -->
+    <maze-file>kyle_maze.maz</maze-file> <!-- relative to maze-directory -->
     <use-maze-file>true</use-maze-file> <!-- whether or not to use the maze file above -->
     <generated-maze-width>16</generated-maze-width> <!-- number of tiles -->
     <generated-maze-height>16</generated-maze-height> <!-- number of tiles -->
@@ -78,6 +78,6 @@
     <maze-rotations>0</maze-rotations> <!-- 0-3 counterclockwise rotations -->
 
     <!-- Mouse Parameters -->
-    <mouse-algorithm>LeftWallFollow</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
+    <mouse-algorithm>MackAlgoTwo</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
 
 </parameters>

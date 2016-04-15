@@ -77,49 +77,12 @@ void MackAlgoTwo::solve(
     // Go the center, the the start, forever
     while (true) {
 
-        // TODO: MACK - reset button could go here?
-        if (m_mouse->inputButtonPressed(2)) {
-            m_mouse->acknowledgeInputButtonPressed(2);
-            m_x = 0;
-            m_y = 0;
-            m_d = Direction::NORTH;
-            m_onWayToCenter = true;
-            m_mouse->resetPosition();
-            // TODO: MACK
-            Maze::setStraightAwayLength(Maze::getCell(0, 0), 0);
-            while (0 < History::size()) {
-                twobyte cellAndData = History::pop(); // TODO: MACK
-                byte cell = History::cell(cellAndData);
-                byte data = History::data(cellAndData);
-                for (byte direction = 0; direction < 4; direction += 1) {
-                    if (data >> direction + 4 & 1) {
-                        unsetCellWall(cell, direction);
-                        // If a neighboring cell exists, set the neighbor's wall too
-                        if (hasNeighboringCell(cell, direction)) {
-                            byte neighboringCell = getNeighboringCell(cell, direction);
-                            unsetCellWall(neighboringCell, getOppositeDirection(direction));
-                        }
-                    }
-                }
-                // TODO: MACK
-                /*
-                m_mouse->info(
-                    std::string("X: ") + std::to_string(Maze::getX(cell)) + ", " +
-                    std::string("Y: ") + std::to_string(Maze::getY(cell)) + ", " +
-                    std::string("D: ") +
-                        (data >> 4 & 1 ? "1" : "0") +
-                        (data >> 5 & 1 ? "1" : "0") +
-                        (data >> 6 & 1 ? "1" : "0") +
-                        (data >> 7 & 1 ? "1" : "0") +
-                        (data >> 0 & 1 ? "1" : "0") +
-                        (data >> 1 & 1 ? "1" : "0") +
-                        (data >> 2 & 1 ? "1" : "0") +
-                        (data >> 3 & 1 ? "1" : "0"));
-                */
-            }
+        // If requested, reset the mouse state and undo cell wall info
+        if (resetButtonPressed()) {
+            reset();
         }
 
-        // Read the walls if not known
+        // Read the walls (if not known)
         readWalls();
 
         // Move as far as possible
@@ -155,6 +118,14 @@ bool MackAlgoTwo::shouldColorVisitedCells() const {
 
 byte MackAlgoTwo::colorVisitedCellsDelayMs() const {
     return 10;
+}
+
+bool MackAlgoTwo::resetButtonPressed() {
+    return m_mouse->inputButtonPressed(2);
+}
+
+void MackAlgoTwo::acknowledgeResetButtonPressed() {
+    m_mouse->acknowledgeInputButtonPressed(2);
 }
 
 twobyte MackAlgoTwo::getTurnCost() {
@@ -233,11 +204,19 @@ bool MackAlgoTwo::move() {
 
     // Lastly, move forward as long as we know we won't collide with a wall
     while (Maze::hasNext(current) && Maze::isKnown(current, Maze::getNextDirection(current))) {
+
+        // Move to the next cell and advance our pointers
         byte next = getNeighboringCell(current, Maze::getNextDirection(current));
         moveOneCell(next);
         current = next;
-        // TODO: MACK - push to history here
+
+        // Inform the History class that the mouse has moved a cell
         History::move();
+
+        // If the reset button was pressed, we should stop moving and reset
+        if (resetButtonPressed()) {
+            break;
+        }
     }
 
     // Successful move
@@ -299,6 +278,7 @@ byte MackAlgoTwo::reverseLinkedList(byte cell) {
 }
 
 void MackAlgoTwo::drawPath(byte cell) {
+    // This is probably a little two cutesy for it's own good. Oh well...
     for (byte i = 0; i < 2; i += 1) {
         while (Maze::hasNext(cell)) {
             byte next = getNeighboringCell(cell, Maze::getNextDirection(cell));
@@ -315,6 +295,50 @@ void MackAlgoTwo::drawPath(byte cell) {
             }
             cell = next;
         }
+    }
+}
+
+void MackAlgoTwo::reset() {
+
+    // First, reset the position in the simulator
+    m_mouse->resetPosition();
+
+    // Then acknowledge that the button was pressed (and potentially sleep)
+    acknowledgeResetButtonPressed();
+
+    // Reset some state
+    m_x = 0;
+    m_y = 0;
+    m_d = Direction::NORTH;
+    m_onWayToCenter = true;
+    Maze::setStraightAwayLength(Maze::getCell(0, 0), 0);
+
+    // Roll back some cell wall info
+    while (0 < History::size()) {
+        twobyte cellAndData = History::pop();
+        byte cell = History::cell(cellAndData);
+        byte data = History::data(cellAndData);
+        for (byte direction = 0; direction < 4; direction += 1) {
+            if (data >> direction + 4 & 1) {
+                unsetCellWall(cell, direction, true);
+            }
+        }
+        // Used for debugging only
+        /*
+        m_mouse->info(
+            std::string("X: ") + std::to_string(Maze::getX(cell)) + ", " +
+            std::string("Y: ") + std::to_string(Maze::getY(cell)) + ", " +
+            std::string("D: ") +
+                (data >> 4 & 1 ? "1" : "0") +
+                (data >> 5 & 1 ? "1" : "0") +
+                (data >> 6 & 1 ? "1" : "0") +
+                (data >> 7 & 1 ? "1" : "0") +
+                (data >> 0 & 1 ? "1" : "0") +
+                (data >> 1 & 1 ? "1" : "0") +
+                (data >> 2 & 1 ? "1" : "0") +
+                (data >> 3 & 1 ? "1" : "0")
+        );
+        */
     }
 }
 
@@ -475,7 +499,7 @@ void MackAlgoTwo::moveOneCell(byte target) {
 
 void MackAlgoTwo::readWalls() {
 
-    // TODO: MACK
+    // Record the cell and wall data for the History
     byte cell = Maze::getCell(m_x, m_y);
     byte data = 0;
 
@@ -490,21 +514,15 @@ void MackAlgoTwo::readWalls() {
             bool isWall = readWall(direction);
             setCellWall(Maze::getCell(m_x, m_y), direction, isWall);
 
-            // TODO: MACK
+            // Set the "learned" bit, as well as "walls" bit
             data |= 1 << direction + 4;
             if (isWall) {
                 data |= 1 << direction;
             }
-
-            // If a neighboring cell exists, set the neighbor's wall too
-            if (hasNeighboringCell(Maze::getCell(m_x, m_y), direction)) {
-                byte neighboringCell = getNeighboringCell(Maze::getCell(m_x, m_y), direction);
-                setCellWall(neighboringCell, getOppositeDirection(direction), isWall);
-            }
         }
     }
 
-    // TODO: MACK
+    // Actually add the learned cell walls to the History
     History::add(cell, data);
 }
 
@@ -578,16 +596,24 @@ void MackAlgoTwo::setCellDistance(byte cell, twobyte distance) {
     m_mouse->setTileText(Maze::getX(cell), Maze::getY(cell), std::to_string(distance));
 }
 
-void MackAlgoTwo::setCellWall(byte cell, byte direction, bool isWall) {
+void MackAlgoTwo::setCellWall(byte cell, byte direction, bool isWall, bool bothSides) {
     Maze::setWall(cell, direction, isWall);
     static char directionChars[] = {'n', 'e', 's', 'w'};
     m_mouse->declareWall(Maze::getX(cell), Maze::getY(cell), directionChars[direction], isWall);
+    if (bothSides && hasNeighboringCell(cell, direction)) {
+        byte neighboringCell = getNeighboringCell(cell, direction);
+        setCellWall(neighboringCell, getOppositeDirection(direction), isWall, false);
+    }
 }
 
-void MackAlgoTwo::unsetCellWall(byte cell, byte direction) {
+void MackAlgoTwo::unsetCellWall(byte cell, byte direction, bool bothSides) {
     Maze::unsetWall(cell, direction);
     static char directionChars[] = {'n', 'e', 's', 'w'};
     m_mouse->undeclareWall(Maze::getX(cell), Maze::getY(cell), directionChars[direction]);
+    if (bothSides && hasNeighboringCell(cell, direction)) {
+        byte neighboringCell = getNeighboringCell(cell, direction);
+        unsetCellWall(neighboringCell, getOppositeDirection(direction), false);
+    }
 }
 
 } // namespace mackAlgoTwo

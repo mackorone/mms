@@ -29,6 +29,9 @@ private:
     bool shouldColorVisitedCells() const;
     byte colorVisitedCellsDelayMs() const;
 
+    bool resetButtonPressed();
+    void acknowledgeResetButtonPressed();
+
     twobyte getTurnCost();
     twobyte getStraightAwayCost(byte length);
 
@@ -36,6 +39,7 @@ private:
     void checkNeighbor(byte cell, byte direction);
     byte reverseLinkedList(byte cell);
     void drawPath(byte cell);
+    void reset();
 
     bool inCenter();
     void colorCenter(char color);
@@ -67,8 +71,8 @@ private:
     void aroundAndForward();
 
     void setCellDistance(byte cell, twobyte distance);
-    void setCellWall(byte cell, byte direction, bool isWall);
-    void unsetCellWall(byte cell, byte direction);
+    void setCellWall(byte cell, byte direction, bool isWall, bool bothSides = true);
+    void unsetCellWall(byte cell, byte direction, bool bothSides = true);
 
 };
 
