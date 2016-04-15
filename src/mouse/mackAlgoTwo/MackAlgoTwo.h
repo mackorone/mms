@@ -42,7 +42,7 @@ private:
     void returnToOriginStep();
     void solveStep();
 
-    byte generatePath(byte start, bool reversed = false);
+    byte generatePath(byte start, byte destination = 0, bool reversed = false);
     void drawPath(byte start);
     void followPath(byte start);
 
@@ -51,8 +51,8 @@ private:
 
     bool inCenter();
     void colorCenter(char color);
-    void resetDestinationCellDistances(bool destinationCell = 0);
-    byte getClosestDestinationCell(bool destinationCell = 0);
+    void resetDestinationCellDistances(byte destination = 0);
+    byte getClosestDestinationCell(byte destination = 0);
 
     byte getOppositeDirection(byte direction);
     bool hasNeighboringCell(byte cell, byte direction);

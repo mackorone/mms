@@ -207,6 +207,9 @@ void MackAlgoTwo::getToCenterStep() {
         return;
     }
 
+    // Draw the path from the current position to the center
+    drawPath(start);
+
     // Move as far as possible
     followPath(start);
 
@@ -218,36 +221,46 @@ void MackAlgoTwo::getToCenterStep() {
 
 void MackAlgoTwo::exploreStep() {
 
+    static byte origin = Maze::getCell(0, 0);
+
     // Read the walls (if not known)
     readWalls();
 
     // We pretend that we're at the origin and solving to
     // determine the fastest potential path to the center
-    m_mode = Mode::SOLVE;
-    byte destination = generatePath(Maze::getCell(0, 0), true);
-    // TODO: MACK
-    drawPath(destination);
+    m_mode = Mode::SOLVE; // TODO: MACK is this pretending necessary?
+    byte destination = generatePath(origin, origin, true);
+    drawPath(destination); // TODO: MACK - why didn't this work?
     m_mode = Mode::EXPLORE;
 
-    // Find the cell along the fastest potential path that's closest to the center
+    // Find the cell along the fastest potential path with unknown wall values
+    // that's closest to the center
+    // TODO: MACK - it should really be the closest cell on the path that has unknown wall values
     byte current = destination;
     while (Maze::hasNext(current) && Maze::isKnown(current, Maze::getNextDirection(current))) {
         byte next = getNeighboringCell(current, Maze::getNextDirection(current));
         current = next;
     }
 
+    if (current == origin) {
+        m_mode = Mode::RETURN_TO_ORIGIN;
+        return;
+    }
+
     // TODO: MACK
+    /*
     m_mouse->info(
         std::string("X: ") + std::to_string(Maze::getX(current)) + ", " + 
         std::string("Y: ") + std::to_string(Maze::getY(current)));
-
-    // Generate a path between the current position and the aforementioned cell
-
-    while (true) {
-        m_mouse->delay(1000 * 60 * 10);
-    }
+    */
     
-    //m_mode = Mode::RETURN_TO_ORIGIN;
+    // Generate a path between the current position and the aforementioned cell
+    byte start = generatePath(Maze::getCell(m_x, m_y), current, false);
+    //drawPath(start);
+    //m_mouse->delay(1000);
+
+    // Move as far as possible
+    followPath(start);
 }
 
 void MackAlgoTwo::returnToOriginStep() {
@@ -257,6 +270,9 @@ void MackAlgoTwo::returnToOriginStep() {
 
     // Generate a path from the current cell to the origin
     byte start = generatePath(Maze::getCell(m_x, m_y));
+
+    // Draw the path from the current position to the origin
+    drawPath(start);
 
     // Move as far as possible
     followPath(start);
@@ -272,6 +288,9 @@ void MackAlgoTwo::solveStep() {
     // Generate a path from the current cell to the center
     byte start = generatePath(Maze::getCell(m_x, m_y));
 
+    // Draw the path from the current position to the center
+    drawPath(start);
+
     // Move as far as possible
     followPath(start);
 
@@ -281,12 +300,13 @@ void MackAlgoTwo::solveStep() {
     }
 }
 
-byte MackAlgoTwo::generatePath(byte start, bool reversed) {
+byte MackAlgoTwo::generatePath(byte start, byte destination, bool reversed) {
 
     // Reset the sequence bit of all cells
     for (byte x = 0; x < Maze::WIDTH; x += 1) {
         for (byte y = 0; y < Maze::HEIGHT; y += 1) {
             Maze::setDiscovered(Maze::getCell(x, y), false);
+            Maze::setStraightAwayLength(Maze::getCell(x, y), 0); // TODO: MACK
         }
     }
 
@@ -303,11 +323,7 @@ byte MackAlgoTwo::generatePath(byte start, bool reversed) {
     Maze::clearNext(start);
 
     // Reset the destination cell distances
-    resetDestinationCellDistances();
-
-    // Clear all tile color, and color the center
-    m_mouse->clearAllTileColor();
-    colorCenter('G');
+    resetDestinationCellDistances(destination);
 
     // Dijkstra's algo
     ASSERT_EQ(Heap::size(), 0);
@@ -323,31 +339,37 @@ byte MackAlgoTwo::generatePath(byte start, bool reversed) {
             m_mouse->delay(colorVisitedCellsDelayMs());
             m_mouse->setTileColor(Maze::getX(cell), Maze::getY(cell), 'Y');
         }
-        if (cell == getClosestDestinationCell()) {
+        if (cell == getClosestDestinationCell(destination)) {
             Heap::clear();
             break;
         }
     }
 
     // If there's no path to the destination, the maze is unsolvable
-    if (!Maze::hasNext(getClosestDestinationCell())) {
+    if (!Maze::hasNext(getClosestDestinationCell(destination))) {
         m_mode = Mode::GIVE_UP;
     }
 
     // If reversed is true, we return the path that starts
     // at the destination and ends at the staring cell
     if (reversed) {
-        return getClosestDestinationCell();
+        return getClosestDestinationCell(destination);
     }
 
     // Reverse the linked list from the destination to the start (which we
     // built during our execution of Dijkstra's algo) into a linked list from
     // the start to the destination (which we use to instruct the robot's
     // movements).
-    return reverseLinkedList(getClosestDestinationCell());
+    return reverseLinkedList(getClosestDestinationCell(destination));
 }
 
 void MackAlgoTwo::drawPath(byte start) {
+
+    // TODO: MACK - this doesn't look right
+    // Clear all tile color, and color the center
+    m_mouse->clearAllTileColor();
+    colorCenter('G');
+
     // This is probably a little two cutesy for it's own good. Oh well...
     byte current = start;
     for (byte i = 0; i < 2; i += 1) {
@@ -371,11 +393,7 @@ void MackAlgoTwo::drawPath(byte start) {
 
 void MackAlgoTwo::followPath(byte start) {
 
-    // Displays the intended path and buffer of moves, starting
-    // from the source cell and ending at the destination cell
-    drawPath(start);
-
-    // Lastly, move forward as long as we know we won't collide with a wall
+    // Move forward as long as we know we won't collide with a wall
     byte current = start;
     while (Maze::hasNext(current) && Maze::isKnown(current, Maze::getNextDirection(current))) {
 
@@ -467,7 +485,7 @@ void MackAlgoTwo::colorCenter(char color) {
     }
 }
 
-void MackAlgoTwo::resetDestinationCellDistances(bool destinationCell) {
+void MackAlgoTwo::resetDestinationCellDistances(byte destination) {
     static twobyte maxDistance = std::numeric_limits<twobyte>::max();
     if (m_mode == Mode::GET_TO_CENTER || m_mode == Mode::SOLVE) {
         for (byte x = Maze::CLLX; x <= Maze::CURX; x += 1) {
@@ -477,11 +495,11 @@ void MackAlgoTwo::resetDestinationCellDistances(bool destinationCell) {
         }
     }
     else {
-        setCellDistance(destinationCell, maxDistance);
+        setCellDistance(destination, maxDistance);
     }
 }
 
-byte MackAlgoTwo::getClosestDestinationCell(bool destinationCell) {
+byte MackAlgoTwo::getClosestDestinationCell(byte destination) {
     byte closest = Maze::getCell(Maze::CLLX, Maze::CLLY);
     if (m_mode == Mode::GET_TO_CENTER || m_mode == Mode::SOLVE) {
         for (byte x = Maze::CLLX; x <= Maze::CURX; x += 1) {
@@ -494,7 +512,7 @@ byte MackAlgoTwo::getClosestDestinationCell(bool destinationCell) {
         }
     }
     else {
-        closest = destinationCell;
+        closest = destination;
     }
     return closest;
 }
