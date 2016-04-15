@@ -1,15 +1,14 @@
-- Add a history/reset button
-- Optimization
-- Kill unused imports
-- Turn asserts off
-- Test multiple maze sizes
-- Const correctness
-- Save 136 bytes for the walls
-- Diagonals
-- Multiple solving options
 - Add an "explore" method
-    - First try to get to the center
-    - Then try to get to:
+    - On each reset, just try to get to the center
+    - Then after getting to center, potentially try:
         - The closest cell to you on the fastest path from the beginning to the center
         - The cell with the furthest distance from the start on the fastest path
         - Something else?
+- Test multiple maze sizes
+- Optimization
+    - Const correctness
+    - Kill unused imports
+    - Turn asserts off
+    - Save 136 bytes for the walls
+- Multiple solving options
+- Diagonals

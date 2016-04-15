@@ -5,6 +5,7 @@
 #include "Assert.h"
 #include "History.h"
 #include "Maze.h"
+#include "Mode.h"
 
 namespace mackAlgoTwo {
 
@@ -57,6 +58,7 @@ void MackAlgoTwo::solve(
         }
     }
 
+    // TODO: MACK - dedup with reset function
     // Initialize the mouse
     m_x = 0;
     m_y = 0;
@@ -72,9 +74,9 @@ void MackAlgoTwo::solve(
                 "Cannot start facing south or west. I'm giving up...");
             return;
     }
-    m_onWayToCenter = true;
+    m_mode = Mode::GET_TO_CENTER;
 
-    // Go the center, the the start, forever
+    // Perform a series of strategical steps ad infinitum
     while (true) {
 
         // If requested, reset the mouse state and undo cell wall info
@@ -82,20 +84,26 @@ void MackAlgoTwo::solve(
             reset();
         }
 
-        // Read the walls (if not known)
-        readWalls();
-
-        // Move as far as possible
-        if (!move()) {
-
-            // If we've detected an unsolvable maze, just die
-            m_mouse->warn("Unsolvable maze detected. I'm giving up...");
-            return;
-        }
-
-        // Change the destination
-        if (m_onWayToCenter ? inCenter() : m_x == 0 && m_y == 0) {
-            m_onWayToCenter = !m_onWayToCenter;
+        // Now, depending on the mode, perform a movement that will take us
+        // closer to one of four goals
+        switch (m_mode) {
+            case Mode::GET_TO_CENTER:
+                getToCenterStep();
+                break;
+            case Mode::EXPLORE:
+                exploreStep();
+                break;
+            case Mode::RETURN_TO_START:
+                returnToStartStep();
+                break;
+            case Mode::SOLVE:
+                solveStep();
+                break;
+            case Mode::GIVE_UP:
+                m_mouse->warn("Unsolvable maze detected. I'm giving up...");
+                return;
+            default:
+                ASSERT_TR(false);
         }
     }
 }
@@ -129,13 +137,53 @@ void MackAlgoTwo::acknowledgeResetButtonPressed() {
 }
 
 twobyte MackAlgoTwo::getTurnCost() {
+    if (m_mode == Mode::GET_TO_CENTER) {
+        return 2;
+    }
     return 256;
 }
 
 twobyte MackAlgoTwo::getStraightAwayCost(byte length) {
     ASSERT_LT(0, length);
     ASSERT_LT(length, 16);
+    if (m_mode == Mode::GET_TO_CENTER) {
+        return 3;
+    }
     return 256 / length;
+}
+
+void MackAlgoTwo::getToCenterStep() {
+
+    // Read the walls (if not known)
+    readWalls();
+
+    // Move as far as possible
+    bool success = move();
+
+    // If we've detected an unsolvable maze, give up
+    if (!success) {
+        m_mode = Mode::GIVE_UP;
+        return;
+    }
+
+    // If we get to the center, break out of the loop
+    if (inCenter()) {
+        m_mode = Mode::EXPLORE;
+        return;
+    }
+}
+
+void MackAlgoTwo::exploreStep() {
+    // TODO: MACK
+    while (true) {
+        m_mouse->delay(1000 * 60 * 10);
+    }
+}
+
+void MackAlgoTwo::returnToStartStep() {
+}
+
+void MackAlgoTwo::solveStep() {
 }
 
 bool MackAlgoTwo::move() {
@@ -148,7 +196,7 @@ bool MackAlgoTwo::move() {
     }
 
     // Initialize the source cell
-    byte source = Maze::getCell(m_x, m_y);
+    byte source = Maze::getCell(m_x, m_y); // TODO: MACK - doesn't necessarily have to be the current pos
     Maze::setDiscovered(source, true);
     setCellDistance(source, 0);
 
@@ -310,7 +358,7 @@ void MackAlgoTwo::reset() {
     m_x = 0;
     m_y = 0;
     m_d = Direction::NORTH;
-    m_onWayToCenter = true;
+    m_mode = Mode::GET_TO_CENTER;
     Maze::setStraightAwayLength(Maze::getCell(0, 0), 0);
 
     // Roll back some cell wall data
@@ -345,9 +393,9 @@ void MackAlgoTwo::colorCenter(char color) {
     }
 }
 
-void MackAlgoTwo::resetDestinationCellDistances() {
+void MackAlgoTwo::resetDestinationCellDistances(bool destinationCell) {
     static twobyte maxDistance = std::numeric_limits<twobyte>::max();
-    if (m_onWayToCenter) {
+    if (m_mode == Mode::GET_TO_CENTER || m_mode == Mode::SOLVE) {
         for (byte x = Maze::CLLX; x <= Maze::CURX; x += 1) {
             for (byte y = Maze::CLLY; y <= Maze::CURY; y += 1) {
                 setCellDistance(Maze::getCell(x, y), maxDistance);
@@ -355,13 +403,13 @@ void MackAlgoTwo::resetDestinationCellDistances() {
         }
     }
     else {
-        setCellDistance(Maze::getCell(0, 0), maxDistance);
+        setCellDistance(destinationCell, maxDistance);
     }
 }
 
-byte MackAlgoTwo::getClosestDestinationCell() {
+byte MackAlgoTwo::getClosestDestinationCell(bool destinationCell) {
     byte closest = Maze::getCell(Maze::CLLX, Maze::CLLY);
-    if (m_onWayToCenter) {
+    if (m_mode == Mode::GET_TO_CENTER || m_mode == Mode::SOLVE) {
         for (byte x = Maze::CLLX; x <= Maze::CURX; x += 1) {
             for (byte y = Maze::CLLY; y <= Maze::CURY; y += 1) {
                 byte other = Maze::getCell(x, y);
@@ -372,7 +420,7 @@ byte MackAlgoTwo::getClosestDestinationCell() {
         }
     }
     else {
-        closest = Maze::getCell(0, 0);
+        closest = destinationCell;
     }
     return closest;
 }

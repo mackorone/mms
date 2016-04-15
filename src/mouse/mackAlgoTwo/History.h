@@ -6,13 +6,15 @@ namespace mackAlgoTwo {
 
 class History {
 
-    // The proper way to use the History class is to call add() whenever new
-    // wall info has been learned, and to call move() whenever the mouse moves
-    // from one cell to the next. However, you should call add() at most once
-    // between calls to move(), and you should call move() at least once
-    // between calls to add(). This is because the History class assumes that,
-    // for every cell that the mouse travels, at most one cell's worth of wall
-    // information can be learned.
+    // The History class is a circular stack that remembers the previous
+    // CAPACITY moves, and allows you to retrieve the wall information learned
+    // by those moves. The proper way to use the History class is to call add()
+    // whenever new wall info has been learned, and to call move() whenever the
+    // mouse moves from one cell to the next. However, you should call add() at
+    // most once between calls to move(), and you should call move() at least
+    // once between calls to add(). This is because the History class assumes
+    // that, for every cell that the mouse travels, at most one cell's worth of
+    // wall information can be learned.
 
 public:
 
@@ -26,7 +28,7 @@ public:
 private:
 
     // The maximum number of moves/cells remembered by the History class
-    static const byte CAPACITY = 8;
+    static const byte CAPACITY = 16;
 
     // The total number of moves currently remembered by the History class.
     // It's value is essentially max(CAPACITY, count(move()) - count(pop())).

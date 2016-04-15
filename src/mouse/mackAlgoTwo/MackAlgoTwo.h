@@ -21,10 +21,10 @@ public:
 
 private:
     sim::MouseInterface* m_mouse;
-    byte m_x;
-    byte m_y;
-    byte m_d;
-    bool m_onWayToCenter;
+    byte m_x; // X position of the mouse
+    byte m_y; // Y position of the mouse
+    byte m_d; // Direction of the mouse
+    byte m_mode;
 
     bool shouldColorVisitedCells() const;
     byte colorVisitedCellsDelayMs() const;
@@ -35,6 +35,11 @@ private:
     twobyte getTurnCost();
     twobyte getStraightAwayCost(byte length);
 
+    void getToCenterStep();
+    void exploreStep();
+    void returnToStartStep();
+    void solveStep();
+
     bool move();
     void checkNeighbor(byte cell, byte direction);
     byte reverseLinkedList(byte cell);
@@ -43,8 +48,8 @@ private:
 
     bool inCenter();
     void colorCenter(char color);
-    void resetDestinationCellDistances();
-    byte getClosestDestinationCell();
+    void resetDestinationCellDistances(bool destinationCell = 0);
+    byte getClosestDestinationCell(bool destinationCell = 0);
 
     byte getOppositeDirection(byte direction);
     bool hasNeighboringCell(byte cell, byte direction);
