@@ -24,7 +24,7 @@ private:
     byte m_x; // X position of the mouse
     byte m_y; // Y position of the mouse
     byte m_d; // Direction of the mouse
-    byte m_mode;
+    byte m_mode; // Modus operandi of the mouse
 
     bool shouldColorVisitedCells() const;
     byte colorVisitedCellsDelayMs() const;
@@ -35,16 +35,19 @@ private:
     twobyte getTurnCost();
     twobyte getStraightAwayCost(byte length);
 
+    void reset();
+
     void getToCenterStep();
     void exploreStep();
-    void returnToStartStep();
+    void returnToOriginStep();
     void solveStep();
 
-    bool move();
+    byte generatePath(byte start, bool reversed = false);
+    void drawPath(byte start);
+    void followPath(byte start);
+
     void checkNeighbor(byte cell, byte direction);
     byte reverseLinkedList(byte cell);
-    void drawPath(byte cell);
-    void reset();
 
     bool inCenter();
     void colorCenter(char color);
