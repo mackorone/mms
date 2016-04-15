@@ -101,12 +101,12 @@ bool Maze::withinMaze(int x, int y) const {
 }
 
 Tile* Maze::getTile(int x, int y) {
-    ASSERT_TR(withinMaze(x, y));
+    SIM_ASSERT_TR(withinMaze(x, y));
     return &m_maze.at(x).at(y);
 }
 
 const Tile* Maze::getTile(int x, int y) const {
-    ASSERT_TR(withinMaze(x, y));
+    SIM_ASSERT_TR(withinMaze(x, y));
     return &m_maze.at(x).at(y);
 }
 

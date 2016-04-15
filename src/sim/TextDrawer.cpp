@@ -40,7 +40,7 @@ float TextDrawer::getWidth(const std::string& str) {
 }
 
 void TextDrawer::drawText(float x, float y, int windowWidth, int windowHeight, const std::string& str) {
-    ASSERT_EQ(m_activeTextDrawer, this);
+    SIM_ASSERT_EQ(m_activeTextDrawer, this);
     glLoadIdentity();
     glOrtho(0, windowWidth, 0, windowHeight, -1, 1);
     sth_draw_text(

@@ -163,7 +163,7 @@ void MazeFileUtilities::saveMaze(const std::vector<std::vector<BasicTile>>& maze
 std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMaze(const std::string& mazeFilePath) {
 
     // This should only be called on files that are actually maze files
-    ASSERT_TR(MazeFileUtilities::isMazeFile(mazeFilePath));
+    SIM_ASSERT_TR(MazeFileUtilities::isMazeFile(mazeFilePath));
 
     // The maze to be returned
     std::vector<std::vector<BasicTile>> maze;
@@ -269,7 +269,7 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMap(const std::string
     // TODO: MACK - clean this up, make it resilient to any amount of horizontal space
 
     // This should only be called on files that are actually maze files
-    ASSERT_TR(MazeFileUtilities::isMapFile(mapFilePath));
+    SIM_ASSERT_TR(MazeFileUtilities::isMapFile(mapFilePath));
 
     // The maze to be returned
     std::vector<std::vector<BasicTile>> upsideDownMaze;

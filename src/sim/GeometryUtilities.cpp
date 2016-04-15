@@ -30,7 +30,7 @@ Cartesian GeometryUtilities::rotateVertexAroundPoint(const Cartesian& vertex, co
 }
 
 Polygon GeometryUtilities::createCirclePolygon(const Cartesian& position, const Distance& radius, int numberOfEdges) {
-    ASSERT_LE(3, numberOfEdges);
+    SIM_ASSERT_LE(3, numberOfEdges);
     std::vector<Cartesian> vertices;
     for (int i = 0; i < numberOfEdges; i += 1) {
         vertices.push_back(Polar(radius, Radians(i * M_TWOPI / numberOfEdges)) + position);

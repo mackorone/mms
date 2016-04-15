@@ -2,6 +2,7 @@
 
 - Add a MazeChecker check to ensure that all wall values are populated
 - Still view a maze if it fails validation, but don't let the sim continue...
+    - Return a vector of errors from the MazeChecker functions to avoid printing things involuntarily
     - Write a function to print the maze out
 - Bluetooth communication
 - Support reading or writing multiple file types

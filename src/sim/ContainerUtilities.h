@@ -50,7 +50,7 @@ public:
         std::set<V> values;
         std::map<V, K> inverted;
         for (auto it = map.begin(); it != map.end(); it++) {
-            ASSERT_FA(setContains(values, it->second));
+            SIM_ASSERT_FA(setContains(values, it->second));
             inverted.insert(std::make_pair(it->second, it->first));
             values.insert(it->second);
         }

@@ -20,7 +20,7 @@ bool MouseAlgorithms::isMouseAlgorithm(const std::string& str) {
 }
 
 IMouseAlgorithm* MouseAlgorithms::getMouseAlgorithm(const std::string& str) {
-    ASSERT_TR(isMouseAlgorithm(str));
+    SIM_ASSERT_TR(isMouseAlgorithm(str));
     return helper(str, false).second;
 }
 

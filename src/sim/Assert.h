@@ -10,7 +10,7 @@
 #define OPENING "---------- Assertion failed! ----------"
 #define CLOSING "---------------------------------------"
 
-#define ASSERT_TR(condition)\
+#define SIM_ASSERT_TR(condition)\
 if (!(condition)) {\
     std::cerr << OPENING << std::endl\
               << "FILE: " <<  __FILE__  << std::endl\
@@ -20,7 +20,7 @@ if (!(condition)) {\
     exit(1);\
 }
 
-#define ASSERT_FA(condition)\
+#define SIM_ASSERT_FA(condition)\
 if (condition) {\
     std::cerr << OPENING << std::endl\
               << "FILE: " <<  __FILE__  << std::endl\
@@ -30,7 +30,7 @@ if (condition) {\
     exit(1);\
 }
 
-#define ASSERT_EQ(lhs, rhs)\
+#define SIM_ASSERT_EQ(lhs, rhs)\
 if (!((lhs) == (rhs))) {\
     std::cerr << OPENING << std::endl\
               << "FILE: " <<  __FILE__  << std::endl\
@@ -42,7 +42,7 @@ if (!((lhs) == (rhs))) {\
     exit(1);\
 }
 
-#define ASSERT_NE(lhs, rhs)\
+#define SIM_ASSERT_NE(lhs, rhs)\
 if (!((lhs) != (rhs))) {\
     std::cerr << OPENING << std::endl\
               << "FILE: " <<  __FILE__  << std::endl\
@@ -54,7 +54,7 @@ if (!((lhs) != (rhs))) {\
     exit(1);\
 }
 
-#define ASSERT_LT(lhs, rhs)\
+#define SIM_ASSERT_LT(lhs, rhs)\
 if (!((lhs) < (rhs))) {\
     std::cerr << OPENING << std::endl\
               << "FILE: " <<  __FILE__  << std::endl\
@@ -66,7 +66,7 @@ if (!((lhs) < (rhs))) {\
     exit(1);\
 }
 
-#define ASSERT_LE(lhs, rhs)\
+#define SIM_ASSERT_LE(lhs, rhs)\
 if (!((lhs) <= (rhs))) {\
     std::cerr << OPENING << std::endl\
               << "FILE: " <<  __FILE__  << std::endl\

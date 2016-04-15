@@ -2,6 +2,6 @@
 
 #define ONLY_EXECUTE_ONCE {\
     static bool alreadyExecuted = false;\
-    ASSERT_FA(alreadyExecuted);\
+    SIM_ASSERT_FA(alreadyExecuted);\
     alreadyExecuted = true;\
 }

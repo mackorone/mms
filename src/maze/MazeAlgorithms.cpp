@@ -10,7 +10,7 @@ bool MazeAlgorithms::isMazeAlgorithm(const std::string& str) {
 }
 
 IMazeAlgorithm* MazeAlgorithms::getMazeAlgorithm(const std::string& str) {
-    ASSERT_TR(isMazeAlgorithm(str));
+    SIM_ASSERT_TR(isMazeAlgorithm(str));
     return helper(str, false).second;
 }
 

@@ -49,7 +49,7 @@ std::string State::runId() {
 }
 
 void State::setRunId(const std::string& runId) {
-    ASSERT_EQ(m_runId, "");
+    SIM_ASSERT_EQ(m_runId, "");
     m_runId = runId;
 }
 
@@ -187,22 +187,22 @@ void State::setSimSpeed(double simSpeed) {
 }
 
 bool State::inputButtonWasPressed(int inputButton) {
-    ASSERT_TR(ContainerUtilities::mapContains(m_inputButtons, inputButton));
+    SIM_ASSERT_TR(ContainerUtilities::mapContains(m_inputButtons, inputButton));
     return m_inputButtons.at(inputButton);
 }
 
 void State::setInputButtonWasPressed(int inputButton, bool pressed) {
-    ASSERT_TR(ContainerUtilities::mapContains(m_inputButtons, inputButton));
+    SIM_ASSERT_TR(ContainerUtilities::mapContains(m_inputButtons, inputButton));
     m_inputButtons.at(inputButton) = pressed;
 }
 
 bool State::arrowKeyIsPressed(Key key) {
-    ASSERT_TR(ContainerUtilities::mapContains(m_arrowKeys, key));
+    SIM_ASSERT_TR(ContainerUtilities::mapContains(m_arrowKeys, key));
     return m_arrowKeys.at(key);
 }
 
 void State::setArrowKeyIsPressed(Key key, bool pressed) {
-    ASSERT_TR(ContainerUtilities::mapContains(m_arrowKeys, key));
+    SIM_ASSERT_TR(ContainerUtilities::mapContains(m_arrowKeys, key));
     m_arrowKeys.at(key) = pressed;
 }
 

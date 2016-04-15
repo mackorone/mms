@@ -30,7 +30,7 @@ CurveTurnFactorCalculator::CurveTurnFactorCalculator(
         // contributions. Remember that each of these factors corresponds to
         // the fraction of the max wheel speed such that the mouse performs a
         // particular movement (moving forward or turning) most optimally.
-        ASSERT_TR(ContainerUtilities::mapContains(wheelSpeedAdjustmentFactors, wheel.first));
+        SIM_ASSERT_TR(ContainerUtilities::mapContains(wheelSpeedAdjustmentFactors, wheel.first));
         std::pair<double, double> adjustmentFactors = wheelSpeedAdjustmentFactors.at(wheel.first);
         for (double adjustmentFactor : {adjustmentFactors.first, adjustmentFactors.second}) {
 

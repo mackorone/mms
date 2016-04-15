@@ -239,8 +239,8 @@ std::pair<double, double> TransformationMatrix::mapPixelCoordinateToOpenGlCoordi
 std::vector<float> TransformationMatrix::multiply4x4Matrices(
         std::vector<float> left,
         std::vector<float> right) {
-    ASSERT_EQ(left.size(), 16);
-    ASSERT_EQ(right.size(), 16);
+    SIM_ASSERT_EQ(left.size(), 16);
+    SIM_ASSERT_EQ(right.size(), 16);
     std::vector<float> result;
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
@@ -251,7 +251,7 @@ std::vector<float> TransformationMatrix::multiply4x4Matrices(
             result.push_back(value);
         }
     }
-    ASSERT_EQ(result.size(), 16);
+    SIM_ASSERT_EQ(result.size(), 16);
     return result;
 }
 

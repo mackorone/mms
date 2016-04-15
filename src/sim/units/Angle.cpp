@@ -49,8 +49,8 @@ double Angle::getRadians(bool zeroTo2pi) const {
         if (M_TWOPI <= radians) {
             radians -= M_TWOPI;
         }
-        ASSERT_LE(0, radians);
-        ASSERT_LT(radians, M_TWOPI);
+        SIM_ASSERT_LE(0, radians);
+        SIM_ASSERT_LT(radians, M_TWOPI);
     }
     return radians;
 }

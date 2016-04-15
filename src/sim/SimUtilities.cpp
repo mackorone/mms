@@ -55,7 +55,7 @@ double SimUtilities::getRandom() {
 
 void SimUtilities::sleep(const Duration& duration) {
     int microseconds = static_cast<int>(std::floor(duration.getMicroseconds()));
-    ASSERT_LE(0, microseconds);
+    SIM_ASSERT_LE(0, microseconds);
 	std::this_thread::sleep_for(std::chrono::microseconds(microseconds));
 }
 
@@ -126,17 +126,17 @@ bool SimUtilities::isDouble(const std::string& str) {
 }
 
 bool SimUtilities::strToBool(const std::string& str) {
-    ASSERT_TR(isBool(str));
+    SIM_ASSERT_TR(isBool(str));
     return 0 == str.compare("true");
 }
 
 int SimUtilities::strToInt(const std::string& str) {
-    ASSERT_TR(isInt(str));
+    SIM_ASSERT_TR(isInt(str));
     return std::stoi(str.c_str());
 }
 
 double SimUtilities::strToDouble(const std::string& str) {
-    ASSERT_TR(isDouble(str));
+    SIM_ASSERT_TR(isDouble(str));
     return std::stod(str);
 }
 

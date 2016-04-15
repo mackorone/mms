@@ -2,6 +2,7 @@
 
 #include <limits>
 
+#include "Assert.h"
 #include "Maze.h"
 
 namespace mackAlgoTwo {
@@ -78,13 +79,11 @@ void MackAlgoTwo::solve(
         // TODO: MACK - reset button could go here?
         if (m_mouse->inputButtonPressed(2)) {
             m_mouse->acknowledgeInputButtonPressed(2);
-            /*
             m_x = 0;
             m_y = 0;
             m_d = Direction::NORTH;
             m_onWayToCenter = true;
             m_mouse->resetPosition();
-            */
         }
 
         // Read the walls if not known
@@ -130,6 +129,7 @@ twobyte MackAlgoTwo::getTurnCost() {
 }
 
 twobyte MackAlgoTwo::getStraightAwayCost(byte length) {
+    m_mouse->info(std::to_string(length));
     ASSERT_LT(0, length);
     ASSERT_LT(length, 16);
     return 256 / length;

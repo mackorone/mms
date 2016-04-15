@@ -66,7 +66,7 @@ bool MazeChecker::isEnclosed(const std::vector<std::vector<BasicTile>>& maze) {
 }
 
 bool MazeChecker::hasConsistentWalls(const std::vector<std::vector<BasicTile>>& maze) {
-    ASSERT_TR(isEnclosed(maze));
+    SIM_ASSERT_TR(isEnclosed(maze));
     for (int x = 0; x < maze.size(); x += 1) {
         for (int y = 0; y < maze.at(x).size(); y += 1) {
             if (0 < x) {
@@ -96,7 +96,7 @@ bool MazeChecker::hasConsistentWalls(const std::vector<std::vector<BasicTile>>& 
 
 bool MazeChecker::isOfficialMaze(const std::vector<std::vector<BasicTile>>& maze) {
 
-    ASSERT_TR(isValidMaze(maze));
+    SIM_ASSERT_TR(isValidMaze(maze));
 
     bool success = true;
 

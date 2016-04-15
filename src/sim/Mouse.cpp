@@ -265,15 +265,15 @@ bool Mouse::hasWheel(const std::string& name) const {
 }
 
 RadiansPerSecond Mouse::getWheelMaxSpeed(const std::string& name) const {
-    ASSERT_TR(ContainerUtilities::mapContains(m_wheels, name));
+    SIM_ASSERT_TR(ContainerUtilities::mapContains(m_wheels, name));
     return m_wheels.at(name).getMaxAngularVelocityMagnitude();
 }
 
 void Mouse::setWheelSpeeds(const std::map<std::string, RadiansPerSecond>& wheelSpeeds) {
     m_updateMutex.lock();
     for (std::pair<std::string, RadiansPerSecond> pair : wheelSpeeds) {
-        ASSERT_TR(ContainerUtilities::mapContains(m_wheels, pair.first));
-        ASSERT_LE(
+        SIM_ASSERT_TR(ContainerUtilities::mapContains(m_wheels, pair.first));
+        SIM_ASSERT_LE(
             std::abs(pair.second.getRevolutionsPerMinute()),
             getWheelMaxSpeed(pair.first).getRevolutionsPerMinute());
         m_wheels.at(pair.first).setAngularVelocity(pair.second);
@@ -304,17 +304,17 @@ void Mouse::stopAllWheels() {
 }
 
 EncoderType Mouse::getWheelEncoderType(const std::string& name) const {
-    ASSERT_TR(hasWheel(name));
+    SIM_ASSERT_TR(hasWheel(name));
     return m_wheels.at(name).getEncoderType();
 }
 
 double Mouse::getWheelEncoderTicksPerRevolution(const std::string& name) const {
-    ASSERT_TR(hasWheel(name));
+    SIM_ASSERT_TR(hasWheel(name));
     return m_wheels.at(name).getEncoderTicksPerRevolution();
 }
 
 int Mouse::readWheelAbsoluteEncoder(const std::string& name) const {
-    ASSERT_TR(hasWheel(name));
+    SIM_ASSERT_TR(hasWheel(name));
     m_updateMutex.lock();
     int encoderReading = m_wheels.at(name).readAbsoluteEncoder();
     m_updateMutex.unlock();
@@ -322,7 +322,7 @@ int Mouse::readWheelAbsoluteEncoder(const std::string& name) const {
 }
 
 int Mouse::readWheelRelativeEncoder(const std::string& name) const {
-    ASSERT_TR(hasWheel(name));
+    SIM_ASSERT_TR(hasWheel(name));
     m_updateMutex.lock();
     int encoderReading = m_wheels.at(name).readRelativeEncoder();
     m_updateMutex.unlock();
@@ -330,7 +330,7 @@ int Mouse::readWheelRelativeEncoder(const std::string& name) const {
 }
 
 void Mouse::resetWheelRelativeEncoder(const std::string& name) {
-    ASSERT_TR(hasWheel(name));
+    SIM_ASSERT_TR(hasWheel(name));
     m_updateMutex.lock();
     m_wheels.at(name).resetRelativeEncoder();
     m_updateMutex.unlock();
@@ -341,7 +341,7 @@ bool Mouse::hasSensor(const std::string& name) const {
 }
 
 double Mouse::readSensor(const std::string& name) const {
-    ASSERT_TR(hasSensor(name));
+    SIM_ASSERT_TR(hasSensor(name));
     return m_sensors.at(name).read();
 }
 
@@ -393,13 +393,13 @@ void Mouse::setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardF
 
     // Now we just double check that the magnitudes are where we expect them to be
     double normalizedFactorMagnitude = std::abs(normalizedForwardFactor) + std::abs(normalizedTurnFactor);
-    ASSERT_LE(0.0, normalizedFactorMagnitude);
-    ASSERT_LE(normalizedFactorMagnitude, 1.0);
+    SIM_ASSERT_LE(0.0, normalizedFactorMagnitude);
+    SIM_ASSERT_LE(normalizedFactorMagnitude, 1.0);
 
     // Now set the wheel speeds based on the normalized factors
     std::map<std::string, RadiansPerSecond> wheelSpeeds;
     for (const std::pair<const std::string&, const Wheel&>& wheel : m_wheels) {
-        ASSERT_TR(ContainerUtilities::mapContains(m_wheelSpeedAdjustmentFactors, wheel.first));
+        SIM_ASSERT_TR(ContainerUtilities::mapContains(m_wheelSpeedAdjustmentFactors, wheel.first));
         std::pair<double, double> adjustmentFactors = m_wheelSpeedAdjustmentFactors.at(wheel.first);
         wheelSpeeds.insert(
             std::make_pair(
@@ -489,10 +489,10 @@ std::map<std::string, std::pair<double, double>> Mouse::getWheelSpeedAdjustmentF
     for (std::pair<std::string, std::pair<MetersPerSecond, RadiansPerSecond>> pair : ratesOfChangePairs) {
         double normalizedForwardContribution = pair.second.first / maxForwardRateOfChangeMagnitude;
         double normalizedRadialContribution = pair.second.second / maxRadialRateOfChangeMagnitude;
-        ASSERT_LE(-1.0, normalizedForwardContribution);
-        ASSERT_LE(-1.0, normalizedRadialContribution);
-        ASSERT_LE(normalizedForwardContribution, 1.0);
-        ASSERT_LE(normalizedRadialContribution, 1.0);
+        SIM_ASSERT_LE(-1.0, normalizedForwardContribution);
+        SIM_ASSERT_LE(-1.0, normalizedRadialContribution);
+        SIM_ASSERT_LE(normalizedForwardContribution, 1.0);
+        SIM_ASSERT_LE(normalizedRadialContribution, 1.0);
         adjustmentFactors.insert(
             std::make_pair(
                 pair.first,

@@ -22,7 +22,7 @@ std::pair<int, int> TileGraphicTextCache::getTileGraphicTextMaxSize() const {
 }
 
 std::pair<double, double> TileGraphicTextCache::getFontImageCharacterPosition(char c) const {
-    ASSERT_TR(ContainerUtilities::mapContains(m_fontImageMap, c));
+    SIM_ASSERT_TR(ContainerUtilities::mapContains(m_fontImageMap, c));
     return m_fontImageMap.at(c);
 }
 

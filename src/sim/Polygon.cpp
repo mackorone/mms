@@ -38,7 +38,7 @@ Polygon::Polygon(const std::vector<Cartesian>& vertices) :
     m_vertices(vertices),
     // Postpone triangulation until we absolutely have to do it.
     m_triangles({}) {
-    ASSERT_LE(3, m_vertices.size());
+    SIM_ASSERT_LE(3, m_vertices.size());
     // If the number of vertices is three, the triangulation is trivial
     if (m_vertices.size() == 3) {
         m_triangles = {{

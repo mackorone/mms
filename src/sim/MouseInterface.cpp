@@ -890,7 +890,7 @@ bool MouseInterface::isWall(std::pair<std::pair<int, int>, Direction> wall, bool
     int y = wall.first.second;
     Direction direction = wall.second;
 
-    ASSERT_TR(m_maze->withinMaze(x, y));
+    SIM_ASSERT_TR(m_maze->withinMaze(x, y));
 
     bool wallExists = m_maze->getTile(x, y)->isWall(direction);
 
@@ -919,7 +919,7 @@ bool MouseInterface::hasOpposingWall(std::pair<std::pair<int, int>, Direction> w
 
 std::pair<std::pair<int, int>, Direction> MouseInterface::getOpposingWall(
         std::pair<std::pair<int, int>, Direction> wall) const {
-    ASSERT_TR(hasOpposingWall(wall));
+    SIM_ASSERT_TR(hasOpposingWall(wall));
     int x = wall.first.first;
     int y = wall.first.second;
     Direction direction = wall.second;
@@ -951,7 +951,7 @@ void MouseInterface::moveForwardTo(const Cartesian& destinationTranslation, cons
     // Move forward until we've reached the destination
     do {
         // Assert that we're actually moving closer to the destination
-        ASSERT_LE(delta.getRho().getMeters(), previousDistance.getMeters());
+        SIM_ASSERT_LE(delta.getRho().getMeters(), previousDistance.getMeters());
         previousDistance = delta.getRho();
         // Update the translation delta
         sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
@@ -1013,13 +1013,13 @@ Radians MouseInterface::getRotationDelta(const Radians& from, const Radians& to)
     if (upperBound.getRadiansNotBounded() <= delta.getRadiansNotBounded()) {
         delta -= fullCircle;
     }
-    ASSERT_LE(lowerBound.getRadiansNotBounded(), delta.getRadiansNotBounded());
-    ASSERT_LT(delta.getRadiansNotBounded(), upperBound.getRadiansNotBounded());
+    SIM_ASSERT_LE(lowerBound.getRadiansNotBounded(), delta.getRadiansNotBounded());
+    SIM_ASSERT_LT(delta.getRadiansNotBounded(), upperBound.getRadiansNotBounded());
     return delta;
 }
 
 Cartesian MouseInterface::getCenterOfTile(int x, int y) const {
-    ASSERT_TR(m_maze->withinMaze(x, y));
+    SIM_ASSERT_TR(m_maze->withinMaze(x, y));
     static Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
     Cartesian centerOfTile = Cartesian(
         tileLength * (static_cast<double>(x) + 0.5),

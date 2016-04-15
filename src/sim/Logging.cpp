@@ -37,7 +37,7 @@ void Logging::initialize(const std::string& runId) {
 
     // Ensure we only initialize the loggers once
     static bool initialized = false;
-    ASSERT_FA(initialized);
+    SIM_ASSERT_FA(initialized);
     initialized = true;
 
     // Set the runId
@@ -84,7 +84,7 @@ void Logging::initialize(const std::string& runId) {
 }
 
 el::Logger* Logging::getLogger(const std::string& loggerName) {
-    ASSERT_TR(ContainerUtilities::mapContains(m_info, loggerName));
+    SIM_ASSERT_TR(ContainerUtilities::mapContains(m_info, loggerName));
     return el::Loggers::getLogger(loggerName);
 }
 
@@ -99,13 +99,13 @@ std::string Logging::getNextFileName(const char* filename) {
             m_info.at(loggerName) = std::make_pair(loggerPath, numLogFiles + 1);
         }
     }
-    ASSERT_NE(path, "");
+    SIM_ASSERT_NE(path, "");
     return Directory::getRunDirectory() + m_runId + path;
 }
 
 void Logging::rolloutHandler(const char* filename, std::size_t size) {
     int value = std::rename(filename, getNextFileName(filename).c_str());
-    ASSERT_EQ(value, 0);
+    SIM_ASSERT_EQ(value, 0);
 }
 
 } // namespace sim

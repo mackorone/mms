@@ -13,32 +13,32 @@ MazeGraphic::MazeGraphic(const Maze* maze, BufferInterface* bufferInterface) {
         }
         m_tileGraphics.push_back(column);
     }
-    ASSERT_EQ(getWidth(), maze->getWidth());
-    ASSERT_EQ(getHeight(), maze->getHeight());
+    SIM_ASSERT_EQ(getWidth(), maze->getWidth());
+    SIM_ASSERT_EQ(getHeight(), maze->getHeight());
 }
 
 void MazeGraphic::setTileColor(int x, int y, Color color) {
-    ASSERT_TR(withinMaze(x, y));
+    SIM_ASSERT_TR(withinMaze(x, y));
     m_tileGraphics.at(x).at(y).setColor(color);
 }
 
 void MazeGraphic::declareWall(int x, int y, Direction direction, bool isWall) {
-    ASSERT_TR(withinMaze(x, y));
+    SIM_ASSERT_TR(withinMaze(x, y));
     m_tileGraphics.at(x).at(y).declareWall(direction, isWall);
 }
 
 void MazeGraphic::undeclareWall(int x, int y, Direction direction) {
-    ASSERT_TR(withinMaze(x, y));
+    SIM_ASSERT_TR(withinMaze(x, y));
     m_tileGraphics.at(x).at(y).undeclareWall(direction);
 }
 
 void MazeGraphic::setTileFogginess(int x, int y, bool foggy) {
-    ASSERT_TR(withinMaze(x, y));
+    SIM_ASSERT_TR(withinMaze(x, y));
     m_tileGraphics.at(x).at(y).setFogginess(foggy);
 }
 
 void MazeGraphic::setTileText(int x, int y, const std::vector<std::string>& rowsOfText) {
-    ASSERT_TR(withinMaze(x, y));
+    SIM_ASSERT_TR(withinMaze(x, y));
     m_tileGraphics.at(x).at(y).setText(rowsOfText);
 }
 
