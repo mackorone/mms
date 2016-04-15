@@ -13,8 +13,8 @@ public:
 
 private:
 	//Thresholds for left and right sensors detecting side walls
-#define hasLeftWall 800
-#define hasRightWall 800
+#define hasLeftWall .5
+#define hasRightWall .5
 
 	//Seperate speeds for explore and solve (not currently implemented)
 	int exploreSpeed = 620;
@@ -24,8 +24,8 @@ private:
 	int rightBaseSpeed = exploreSpeed;
 
 	//Setpoint for left and right sensors detecting side walls
-	const int rightWallDist = 2000;
-	const int leftWallDist = 1900;
+	const float rightWallDist = .825;
+	const float leftWallDist = .825;
 
 	// PID Constants
 #define straightKp 200  //TODO

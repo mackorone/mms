@@ -418,22 +418,14 @@ namespace continuous {
 	}
 
 	void Continuous::forwardCorrection() {
-		const int oneCellTicks = 1680;
+		const int oneCellTicks = int(327 * 5.1376);
 		const double noWallRight = .5; // check this value (250)
 		const double noWallLeft = .5; // check this value (450)
 
-		const int pegWallBack = 800; // check this value
-		const int pegNoWalls = 1000;
-		const int pegWallFront = 1000;
-
-		const int wallBackTicks = 232;
-		const int noWallTicks = 209;
-		const int frontWallTicks = 204;
-
 		// encoder tick value when we check walls a cell ahead
-		const int readingTicks = 842;
+		const int readingTicks = int(215*5.1376);
 		// encoder tick value when we switch to next cell's values
-		const int newSideTicks = 1183;
+		const int newSideTicks = int(260*5.1376);
 
 		static bool nextRightValid;
 		static bool nextLeftValid;
