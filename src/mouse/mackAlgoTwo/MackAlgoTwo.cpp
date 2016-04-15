@@ -313,7 +313,7 @@ void MackAlgoTwo::reset() {
     m_onWayToCenter = true;
     Maze::setStraightAwayLength(Maze::getCell(0, 0), 0);
 
-    // Roll back some cell wall info
+    // Roll back some cell wall data
     while (0 < History::size()) {
         twobyte cellAndData = History::pop();
         byte cell = History::cell(cellAndData);
@@ -323,22 +323,6 @@ void MackAlgoTwo::reset() {
                 unsetCellWall(cell, direction, true);
             }
         }
-        // Used for debugging only
-        /*
-        m_mouse->info(
-            std::string("X: ") + std::to_string(Maze::getX(cell)) + ", " +
-            std::string("Y: ") + std::to_string(Maze::getY(cell)) + ", " +
-            std::string("D: ") +
-                (data >> 4 & 1 ? "1" : "0") +
-                (data >> 5 & 1 ? "1" : "0") +
-                (data >> 6 & 1 ? "1" : "0") +
-                (data >> 7 & 1 ? "1" : "0") +
-                (data >> 0 & 1 ? "1" : "0") +
-                (data >> 1 & 1 ? "1" : "0") +
-                (data >> 2 & 1 ? "1" : "0") +
-                (data >> 3 & 1 ? "1" : "0")
-        );
-        */
     }
 }
 
