@@ -73,7 +73,7 @@ void MackAlgoTwo::solve(
             return;
     }
     m_d = m_initialDirection;
-    m_mode = Mode::EXPLORE_TO_CENTER;
+    m_mode = Mode::CENTER;
 
     // Perform a series of strategical steps ad infinitum
     while (true) {
@@ -88,21 +88,14 @@ void MackAlgoTwo::solve(
             reset();
         }
 
-        // Take pre-emptive actions, if necessary
-        switch (m_mode) {
-            case Mode::EXPLORE_TO_CENTER:
-                if (m_x == 0 && m_y == 0) {
-                    // TODO: Set mode to SOLVE_TO_CENTER potentially
-                }
-                break;
-            case Mode::GIVE_UP:
-                m_mouse->warn("Unsolvable maze detected. I'm giving up...");
-                return;
-        }
-
-        // Now, depending on the mode, perform a movement
-        // that will take us closer to one of four goals
+        // Perform a movement that will take us closer to the destination 
         step();
+
+        // If the maze is unsolvable, give up
+        if (m_mode == Mode::GIVEUP) {
+            m_mouse->warn("Unsolvable maze detected. I'm giving up...");
+            break;
+        }
     }
 }
 
@@ -135,31 +128,11 @@ void MackAlgoTwo::acknowledgeResetButtonPressed() {
 }
 
 twobyte MackAlgoTwo::getTurnCost() {
-    switch (m_mode) {
-        case Mode::EXPLORE_TO_CENTER:
-        case Mode::EXPLORE_TO_ORIGIN:
-            return 2;
-        case Mode::SOLVE_TO_CENTER:
-        case Mode::SOLVE_TO_ORIGIN:
-            return 256;
-        default:
-            ASSERT_TR(false);
-    }
+    return (FAST_STRAIGHT_AWAYS ? 256 : 2);
 }
 
 twobyte MackAlgoTwo::getStraightAwayCost(byte length) {
-    ASSERT_LT(0, length);
-    ASSERT_LT(length, 16);
-    switch (m_mode) {
-        case Mode::EXPLORE_TO_CENTER:
-        case Mode::EXPLORE_TO_ORIGIN:
-            return 3;
-        case Mode::SOLVE_TO_CENTER:
-        case Mode::SOLVE_TO_ORIGIN:
-            return 256 / length;
-        default:
-            ASSERT_TR(false);
-    }
+    return (FAST_STRAIGHT_AWAYS ? 256 / length : 3);
 }
 
 void MackAlgoTwo::reset() {
@@ -174,7 +147,7 @@ void MackAlgoTwo::reset() {
     m_x = 0;
     m_y = 0;
     m_d = m_initialDirection;
-    m_mode = Mode::EXPLORE_TO_CENTER;
+    m_mode = Mode::CENTER;
     Maze::setStraightAwayLength(Maze::getCell(0, 0), 0);
 
     // Roll back some cell wall data
@@ -192,12 +165,8 @@ void MackAlgoTwo::reset() {
 
 void MackAlgoTwo::step() {
 
-    // If exploring, read the walls
-    switch (m_mode) {
-        case Mode::EXPLORE_TO_CENTER:
-        case Mode::EXPLORE_TO_ORIGIN:
-            readWalls();
-    }
+    // Read the walls if unknown
+    readWalls();
 
     // Get the current cell
     byte current = Maze::getCell(m_x, m_y);
@@ -207,39 +176,8 @@ void MackAlgoTwo::step() {
 
     // Invalid path, maze not solvable
     if (start != current) {
-        m_mode = Mode::GIVE_UP;
+        m_mode = Mode::GIVEUP;
         return;
-    }
-
-    byte unknown = getFirstUnknown(start);
-    if (m_mode == Mode::EXPLORE_TO_CENTER &&
-        inCenter(Maze::getX(unknown), Maze::getY(unknown))) {
-
-        // TODO: MACK - fastest path to first unknown cell in 
-        m_mouse->info(
-            std::string("First unknown") +
-            std::string("X: ") + std::to_string(Maze::getX(unknown)) + ", " +
-            std::string("Y: ") + std::to_string(Maze::getY(unknown)));
-
-        m_mode = Mode::SOLVE_TO_ORIGIN;
-        byte origin = generatePath(Maze::getCell(0, 0));
-        drawPath(origin);
-        m_mouse->delay(1000);
-        m_mode = Mode::SOLVE_TO_CENTER;
-        byte unknown2 = getFirstUnknown(origin);
-
-        while (Maze::getCell(m_x, m_y) != unknown2) {
-            readWalls();
-        }
-    }
-    if (m_mode == Mode::EXPLORE_TO_ORIGIN &&
-        inOrigin(Maze::getX(unknown), Maze::getY(unknown))) {
-        
-        m_mouse->info(
-            std::string("First unknown") +
-            std::string("X: ") + std::to_string(Maze::getX(unknown)) + ", " +
-            std::string("Y: ") + std::to_string(Maze::getY(unknown)));
-
     }
 
     // Draw the path from the current position to the destination
@@ -249,11 +187,11 @@ void MackAlgoTwo::step() {
     followPath(start);
 
     // Update the mode if we've reached the destination
-    if (m_mode == Mode::EXPLORE_TO_CENTER && inCenter(m_x, m_y)) {
-        m_mode = Mode::EXPLORE_TO_ORIGIN;
+    if (m_mode == Mode::CENTER && inCenter(m_x, m_y)) {
+        m_mode = Mode::ORIGIN;
     }
-    if (m_mode == Mode::EXPLORE_TO_ORIGIN && inOrigin(m_x, m_y)) {
-        m_mode = Mode::EXPLORE_TO_CENTER;
+    if (m_mode == Mode::ORIGIN && inOrigin(m_x, m_y)) {
+        m_mode = Mode::CENTER;
     }
 }
 
@@ -300,14 +238,6 @@ byte MackAlgoTwo::generatePath(byte start) {
             break;
         }
     }
-
-    // TODO: MACK
-    /*
-    // If there's no path to the destination, the maze is unsolvable
-    if (!Maze::hasNext(getClosestDestinationCell())) {
-        m_mode = Mode::GIVE_UP;
-    }
-    */
 
     // Reverse the linked list from the destination to the start (which we
     // built during our execution of Dijkstra's algo) into a linked list from
@@ -448,7 +378,7 @@ void MackAlgoTwo::colorCenter(char color) {
 
 void MackAlgoTwo::resetDestinationCellDistances() {
     static twobyte maxDistance = std::numeric_limits<twobyte>::max();
-    if (m_mode == Mode::EXPLORE_TO_CENTER || m_mode == Mode::SOLVE_TO_CENTER) {
+    if (m_mode == Mode::CENTER) {
         for (byte x = Maze::CLLX; x <= Maze::CURX; x += 1) {
             for (byte y = Maze::CLLY; y <= Maze::CURY; y += 1) {
                 setCellDistance(Maze::getCell(x, y), maxDistance);
@@ -462,7 +392,7 @@ void MackAlgoTwo::resetDestinationCellDistances() {
 
 byte MackAlgoTwo::getClosestDestinationCell() {
     byte closest = Maze::getCell(Maze::CLLX, Maze::CLLY);
-    if (m_mode == Mode::EXPLORE_TO_CENTER || m_mode == Mode::SOLVE_TO_CENTER) {
+    if (m_mode == Mode::CENTER) {
         for (byte x = Maze::CLLX; x <= Maze::CURX; x += 1) {
             for (byte y = Maze::CLLY; y <= Maze::CURY; y += 1) {
                 byte other = Maze::getCell(x, y);

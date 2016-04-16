@@ -20,6 +20,9 @@ public:
         char initialDirection, sim::MouseInterface* mouse);
 
 private:
+
+    static const bool FAST_STRAIGHT_AWAYS = false;
+
     sim::MouseInterface* m_mouse;
     byte m_x; // X position of the mouse
     byte m_y; // Y position of the mouse
