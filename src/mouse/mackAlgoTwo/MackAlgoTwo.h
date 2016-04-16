@@ -1,6 +1,11 @@
 #pragma once
 
-#include "../IMouseAlgorithm.h"
+#include "Options.h"
+
+#if (SIMULATOR)
+    #include "../IMouseAlgorithm.h"
+#endif
+
 #include "Byte.h"
 #include "Direction.h"
 #include "Heap.h"
@@ -8,22 +13,34 @@
 
 namespace mackAlgoTwo {
 
+#if (SIMULATOR)
 class MackAlgoTwo : public IMouseAlgorithm {
+#else
+class MackAlgoTwo {
+#endif
 
 public:
     std::string initialDirection() const;
     int tileTextNumberOfRows() const;
     int tileTextNumberOfCols() const;
     bool useTileEdgeMovements() const;
+#if (SIMULATOR)
     void solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse);
+#else
+    void solve();
+#endif
 
 private:
 
     static const bool FAST_STRAIGHT_AWAYS = false;
 
+#if (SIMULATOR)
     sim::MouseInterface* m_mouse;
+#else
+    byte m_moveBufferIndex;
+#endif
     byte m_x; // X position of the mouse
     byte m_y; // Y position of the mouse
     byte m_d; // Direction of the mouse

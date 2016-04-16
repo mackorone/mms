@@ -6,6 +6,15 @@
 #include "History.h"
 #include "Maze.h"
 #include "Mode.h"
+#include "Options.h"
+
+#if (!SIMULATOR) 
+extern char movesBuffer[256];
+extern bool walls_global[3];
+extern volatile bool movesReady;
+extern volatile bool movesDoneAndWallsSet;
+extern volatile bool buttonPressed;
+#endif
 
 namespace mackAlgoTwo {
 
@@ -25,12 +34,19 @@ bool MackAlgoTwo::useTileEdgeMovements() const {
     return false;
 }
 
+#if (SIMULATOR)
 void MackAlgoTwo::solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse) {
 
     // Initialize the MouseInterface pointer
     m_mouse = mouse;
+
+#else
+
+void MackAlgoTwo::solve() {
+
+#endif
 
     // Assert that the maze size is sane
     ASSERT_LE(1, Maze::WIDTH);
@@ -69,7 +85,9 @@ void MackAlgoTwo::solve(
             m_initialDirection = Direction::EAST;
             break;
         default:
+#if (SIMULATOR)
             m_mouse->warn("Can't start facing south or west. I'm giving up...");
+#endif
             return;
     }
     m_d = m_initialDirection;
@@ -78,10 +96,16 @@ void MackAlgoTwo::solve(
     // Perform a series of strategical steps ad infinitum
     while (true) {
 
+#if (SIMULATOR)
         // Clear all tile color, and color the center
         m_mouse->clearAllTileColor();
         m_mouse->setTileColor(0, 0, 'G');
         colorCenter('G');
+#else
+        while (!movesDoneAndWallsSet) {
+            // Wait for the walls to be ready
+        }
+#endif
 
         // If requested, reset the mouse state and undo cell wall info
         if (resetButtonPressed()) {
@@ -93,13 +117,16 @@ void MackAlgoTwo::solve(
 
         // If the maze is unsolvable, give up
         if (m_mode == Mode::GIVEUP) {
+#if (SIMULATOR)
             m_mouse->warn("Unsolvable maze detected. I'm giving up...");
+#endif
             break;
         }
     }
 }
 
 bool MackAlgoTwo::shouldColorVisitedCells() const {
+#if (SIMULATOR)
     // 1 to enable, 0 to disable
     if (m_mouse->inputButtonPressed(1)) {
         if (m_mouse->inputButtonPressed(0)) {
@@ -112,6 +139,7 @@ bool MackAlgoTwo::shouldColorVisitedCells() const {
     if (m_mouse->inputButtonPressed(0)) {
         m_mouse->acknowledgeInputButtonPressed(0);
     }
+#endif
     return false;
 }
 
@@ -120,11 +148,19 @@ byte MackAlgoTwo::colorVisitedCellsDelayMs() const {
 }
 
 bool MackAlgoTwo::resetButtonPressed() {
+#if (SIMULATOR)
     return m_mouse->inputButtonPressed(2);
+#else
+    return buttonPressed;
+#endif
 }
 
 void MackAlgoTwo::acknowledgeResetButtonPressed() {
+#if (SIMULATOR)
     m_mouse->acknowledgeInputButtonPressed(2);
+#else
+    buttonPressed = true;
+#endif
 }
 
 twobyte MackAlgoTwo::getTurnCost() {
@@ -137,11 +173,23 @@ twobyte MackAlgoTwo::getStraightAwayCost(byte length) {
 
 void MackAlgoTwo::reset() {
 
+#if (SIMULATOR)
     // First, reset the position in the simulator
     m_mouse->resetPosition();
+#endif
 
     // Then acknowledge that the button was pressed (and potentially sleep)
     acknowledgeResetButtonPressed();
+
+#if (!SIMULATOR)
+    delay(3000);
+    while (!resetButtonPressed()) {
+        // Wait until the button is pressed again to
+        // signify that we're ready to start moving again
+    }
+    delay(3000);
+    acknowledgeResetButtonPressed();
+#endif
 
     // Reset some state
     m_x = 0;
@@ -168,6 +216,10 @@ void MackAlgoTwo::step() {
     // Read the walls if unknown
     readWalls();
 
+#if (!SIMULATOR)
+    movesDoneAndWallsSet = false;
+#endif
+
     // Get the current cell
     byte current = Maze::getCell(m_x, m_y);
 
@@ -183,8 +235,17 @@ void MackAlgoTwo::step() {
     // Draw the path from the current position to the destination
     drawPath(start);
 
+#if (!SIMULATOR)
+    m_moveBufferIndex = 0;
+#endif
+
     // Move along the path as far as possible
     followPath(start);
+
+#if (!SIMULATOR)
+    movesBuffer[m_moveBufferIndex] = '\0';
+    movesReady = true;
+#endif
 
     // Update the mode if we've reached the destination
     if (m_mode == Mode::CENTER && inCenter(m_x, m_y)) {
@@ -230,8 +291,10 @@ byte MackAlgoTwo::generatePath(byte start) {
             }
         }
         if (shouldColorVisitedCells()) {
+#if (SIMULATOR)
             m_mouse->delay(colorVisitedCellsDelayMs());
             m_mouse->setTileColor(Maze::getX(cell), Maze::getY(cell), 'Y');
+#endif
         }
         if (cell == getClosestDestinationCell()) {
             Heap::clear();
@@ -247,7 +310,7 @@ byte MackAlgoTwo::generatePath(byte start) {
 }
 
 void MackAlgoTwo::drawPath(byte start) {
-
+#if (SIMULATOR)
     // This is probably a little two cutesy for it's own good. Oh well...
     byte current = start;
     for (byte i = 0; i < 2; i += 1) {
@@ -267,6 +330,7 @@ void MackAlgoTwo::drawPath(byte start) {
             current = next;
         }
     }
+#endif
 }
 
 void MackAlgoTwo::followPath(byte start) {
@@ -369,11 +433,13 @@ bool MackAlgoTwo::inOrigin(byte x, byte y) {
 }
 
 void MackAlgoTwo::colorCenter(char color) {
+#if (SIMULATOR)
     for (byte x = Maze::CLLX; x <= Maze::CURX; x += 1) {
         for (byte y = Maze::CLLY; y <= Maze::CURY; y += 1) {
             m_mouse->setTileColor(x, y, color);
         }
     }
+#endif
 }
 
 void MackAlgoTwo::resetDestinationCellDistances() {
@@ -543,12 +609,21 @@ void MackAlgoTwo::readWalls() {
 
 bool MackAlgoTwo::readWall(byte direction) {
     switch ((direction - m_d + 4) % 4) {
+#if (SIMULATOR)
         case 0:
             return m_mouse->wallFront();
         case 1:
             return m_mouse->wallRight();
         case 3:
             return m_mouse->wallLeft();
+#else
+        case 0:
+            return walls_global[1];
+        case 1:
+            return walls_global[2];
+        case 3:
+            return walls_global[0];
+#endif
     }
     // We should never get here
     ASSERT_TR(false);
@@ -573,48 +648,92 @@ void MackAlgoTwo::moveForwardUpdateState() {
 
 void MackAlgoTwo::turnLeft() {
     turnLeftUpdateState();
+#if (SIMULATOR)
     m_mouse->turnLeft();
+#else
+    // UNIMPLEMENTED
+#endif
 }
 
 void MackAlgoTwo::turnRight() {
     turnRightUpdateState();
+#if (SIMULATOR)
     m_mouse->turnRight();
+#else
+    // UNIMPLEMENTED
+#endif
 }
 
 void MackAlgoTwo::turnAround() {
     turnAroundUpdateState();
+#if (SIMULATOR)
     m_mouse->turnAroundLeft();
+#else
+    // UNIMPLEMENTED
+#endif
 }
 
 void MackAlgoTwo::moveForward() {
-    moveForwardUpdateState();
+#if (SIMULATOR)
     m_mouse->moveForward();
+#else
+    movesBuffer[m_moveBufferIndex] = 'f';
+    m_moveBufferIndex += 1;
+#endif
+    moveForwardUpdateState();
 }
 
 void MackAlgoTwo::leftAndForward() {
+#if (SIMULATOR)
     turnLeft();
     moveForward();
+#else
+    movesBuffer[m_moveBufferIndex] = 'l';
+    m_moveBufferIndex += 1;
+    turnLeftUpdateState();
+    moveForwardUpdateState();
+#endif
 }
 
 void MackAlgoTwo::rightAndForward() {
+#if (SIMULATOR)
     turnRight();
     moveForward();
+#else
+    movesBuffer[m_moveBufferIndex] = 'r';
+    m_moveBufferIndex += 1;
+    turnRightUpdateState();
+    moveForwardUpdateState();
+#endif
 }
 
 void MackAlgoTwo::aroundAndForward() {
+#if (SIMULATOR)
     turnAround();
     moveForward();
+#else
+    movesBuffer[m_moveBufferIndex] = 'a';
+    m_moveBufferIndex += 1;
+    movesBuffer[m_moveBufferIndex] = 'f';
+    m_moveBufferIndex += 1;
+    turnAroundUpdateState();
+    moveForwardUpdateState();
+#endif
 }
 
 void MackAlgoTwo::setCellDistance(byte cell, twobyte distance) {
     Maze::setDistance(cell, distance);
+#if (SIMULATOR)
     m_mouse->setTileText(Maze::getX(cell), Maze::getY(cell), std::to_string(distance));
+#endif
 }
 
 void MackAlgoTwo::setCellWall(byte cell, byte direction, bool isWall, bool bothSides) {
     Maze::setWall(cell, direction, isWall);
     static char directionChars[] = {'n', 'e', 's', 'w'};
+#if (SIMULATOR)
     m_mouse->declareWall(Maze::getX(cell), Maze::getY(cell), directionChars[direction], isWall);
+#endif
     if (bothSides && hasNeighboringCell(cell, direction)) {
         byte neighboringCell = getNeighboringCell(cell, direction);
         setCellWall(neighboringCell, getOppositeDirection(direction), isWall, false);
@@ -624,7 +743,9 @@ void MackAlgoTwo::setCellWall(byte cell, byte direction, bool isWall, bool bothS
 void MackAlgoTwo::unsetCellWall(byte cell, byte direction, bool bothSides) {
     Maze::unsetWall(cell, direction);
     static char directionChars[] = {'n', 'e', 's', 'w'};
+#if (SIMULATOR)
     m_mouse->undeclareWall(Maze::getX(cell), Maze::getY(cell), directionChars[direction]);
+#endif
     if (bothSides && hasNeighboringCell(cell, direction)) {
         byte neighboringCell = getNeighboringCell(cell, direction);
         unsetCellWall(neighboringCell, getOppositeDirection(direction), false);
