@@ -6,11 +6,12 @@ namespace mackAlgoTwo {
 
 struct Mode {
 
-    static const byte GET_TO_CENTER    = 0;
-    static const byte EXPLORE          = 1;
-    static const byte RETURN_TO_ORIGIN = 2;
-    static const byte SOLVE            = 3;
-    static const byte GIVE_UP          = 4;
+    // TODO: MACK - I can probs refactor these out
+    static const byte EXPLORE_TO_CENTER = 0;
+    static const byte EXPLORE_TO_ORIGIN = 1;
+    static const byte SOLVE_TO_CENTER   = 2;
+    static const byte SOLVE_TO_ORIGIN   = 3;
+    static const byte GIVE_UP           = 4;
 
 };
 
