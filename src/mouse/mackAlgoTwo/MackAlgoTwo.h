@@ -39,15 +39,16 @@ private:
     void reset();
     void step();
 
-    byte generatePath();
+    byte generatePath(byte start);
     void drawPath(byte start);
     void followPath(byte start);
+    byte getFirstUnknown(byte start);
 
     void checkNeighbor(byte cell, byte direction);
     byte reverseLinkedList(byte cell);
 
-    bool inCenter();
-    bool inOrigin();
+    bool inCenter(byte x, byte y);
+    bool inOrigin(byte x, byte y);
 
     void colorCenter(char color);
     void resetDestinationCellDistances();

@@ -58,24 +58,22 @@ void MackAlgoTwo::solve(
         }
     }
 
-    // TODO: MACK - dedup with reset function
     // Initialize the mouse
     m_x = 0;
     m_y = 0;
     switch (initialDirection) {
         case 'n':
-            m_d = Direction::NORTH;
+            m_initialDirection = Direction::NORTH;
             break;
         case 'e':
-            m_d = Direction::EAST;
+            m_initialDirection = Direction::EAST;
             break;
         default:
-            m_mouse->warn(
-                "Cannot start facing south or west. I'm giving up...");
+            m_mouse->warn("Can't start facing south or west. I'm giving up...");
             return;
     }
+    m_d = m_initialDirection;
     m_mode = Mode::EXPLORE_TO_CENTER;
-    m_initialDirection = m_d;
 
     // Perform a series of strategical steps ad infinitum
     while (true) {
@@ -201,12 +199,47 @@ void MackAlgoTwo::step() {
             readWalls();
     }
 
-    // Generate a path from the current cell to the destination
-    byte start = generatePath();
+    // Get the current cell
+    byte current = Maze::getCell(m_x, m_y);
 
-    // If we've detected an unsolvable maze, give up
-    if (m_mode == Mode::GIVE_UP) {
+    // Generate a path from the current cell to the destination
+    byte start = generatePath(current);
+
+    // Invalid path, maze not solvable
+    if (start != current) {
+        m_mode = Mode::GIVE_UP;
         return;
+    }
+
+    byte unknown = getFirstUnknown(start);
+    if (m_mode == Mode::EXPLORE_TO_CENTER &&
+        inCenter(Maze::getX(unknown), Maze::getY(unknown))) {
+
+        // TODO: MACK - fastest path to first unknown cell in 
+        m_mouse->info(
+            std::string("First unknown") +
+            std::string("X: ") + std::to_string(Maze::getX(unknown)) + ", " +
+            std::string("Y: ") + std::to_string(Maze::getY(unknown)));
+
+        m_mode = Mode::SOLVE_TO_ORIGIN;
+        byte origin = generatePath(Maze::getCell(0, 0));
+        drawPath(origin);
+        m_mouse->delay(1000);
+        m_mode = Mode::SOLVE_TO_CENTER;
+        byte unknown2 = getFirstUnknown(origin);
+
+        while (Maze::getCell(m_x, m_y) != unknown2) {
+            readWalls();
+        }
+    }
+    if (m_mode == Mode::EXPLORE_TO_ORIGIN &&
+        inOrigin(Maze::getX(unknown), Maze::getY(unknown))) {
+        
+        m_mouse->info(
+            std::string("First unknown") +
+            std::string("X: ") + std::to_string(Maze::getX(unknown)) + ", " +
+            std::string("Y: ") + std::to_string(Maze::getY(unknown)));
+
     }
 
     // Draw the path from the current position to the destination
@@ -216,15 +249,15 @@ void MackAlgoTwo::step() {
     followPath(start);
 
     // Update the mode if we've reached the destination
-    if (m_mode == Mode::EXPLORE_TO_CENTER && inCenter()) {
+    if (m_mode == Mode::EXPLORE_TO_CENTER && inCenter(m_x, m_y)) {
         m_mode = Mode::EXPLORE_TO_ORIGIN;
     }
-    if (m_mode == Mode::EXPLORE_TO_ORIGIN && inOrigin()) {
+    if (m_mode == Mode::EXPLORE_TO_ORIGIN && inOrigin(m_x, m_y)) {
         m_mode = Mode::EXPLORE_TO_CENTER;
     }
 }
 
-byte MackAlgoTwo::generatePath() {
+byte MackAlgoTwo::generatePath(byte start) {
 
     // Reset the sequence bit of all cells
     for (byte x = 0; x < Maze::WIDTH; x += 1) {
@@ -234,7 +267,6 @@ byte MackAlgoTwo::generatePath() {
     }
 
     // Initialize the starting cell
-    byte start = Maze::getCell(m_x, m_y);
     Maze::setDiscovered(start, true);
     setCellDistance(start, 0);
 
@@ -269,10 +301,13 @@ byte MackAlgoTwo::generatePath() {
         }
     }
 
+    // TODO: MACK
+    /*
     // If there's no path to the destination, the maze is unsolvable
     if (!Maze::hasNext(getClosestDestinationCell())) {
         m_mode = Mode::GIVE_UP;
     }
+    */
 
     // Reverse the linked list from the destination to the start (which we
     // built during our execution of Dijkstra's algo) into a linked list from
@@ -323,6 +358,15 @@ void MackAlgoTwo::followPath(byte start) {
             break;
         }
     }
+}
+
+byte MackAlgoTwo::getFirstUnknown(byte start) {
+    byte current = start;
+    while (Maze::hasNext(current) &&
+           Maze::isKnown(current, Maze::getNextDirection(current))) {
+        current = getNeighboringCell(current, Maze::getNextDirection(current));
+    }
+    return current;
 }
 
 void MackAlgoTwo::checkNeighbor(byte cell, byte direction) {
@@ -379,10 +423,10 @@ byte MackAlgoTwo::reverseLinkedList(byte cell) {
     return current;
 }
 
-bool MackAlgoTwo::inCenter() {
-    for (byte x = Maze::CLLX; x <= Maze::CURX; x += 1) {
-        for (byte y = Maze::CLLY; y <= Maze::CURY; y += 1) {
-            if (m_x == x && m_y == y) {
+bool MackAlgoTwo::inCenter(byte x, byte y) {
+    for (byte xx = Maze::CLLX; xx <= Maze::CURX; xx += 1) {
+        for (byte yy = Maze::CLLY; yy <= Maze::CURY; yy += 1) {
+            if (x == xx && y == yy) {
                 return true;
             }
         }
@@ -390,8 +434,8 @@ bool MackAlgoTwo::inCenter() {
     return false;
 }
 
-bool MackAlgoTwo::inOrigin() {
-    return m_x == 0 && m_y == 0;
+bool MackAlgoTwo::inOrigin(byte x, byte y) {
+    return x == 0 && y == 0;
 }
 
 void MackAlgoTwo::colorCenter(char color) {
