@@ -79,12 +79,19 @@ void MackAlgoTwo::solve(
     // Perform a series of strategical steps ad infinitum
     while (true) {
 
+        // TODO: MACK - this doesn't look right because the generatePath actually draws
+        // Clear all tile color, and color the center
+        m_mouse->clearAllTileColor();
+        colorCenter('G');
+
         // If requested, reset the mouse state and undo cell wall info
         if (resetButtonPressed()) {
             reset();
         }
 
-        // TODO: MACK - check if GET_TO_CENTER but already has the fastest path here, if so, jump to SOLVE
+        // TODO: MACK - check if GET_TO_CENTER but already has the fastest path
+        // here, if so, jump to SOLVE, lest the turn and straightaway costs be
+        // incorrect
 
         // Now, depending on the mode, perform a movement that will take us
         // closer to one of four goals
@@ -221,46 +228,94 @@ void MackAlgoTwo::getToCenterStep() {
 
 void MackAlgoTwo::exploreStep() {
 
-    static byte origin = Maze::getCell(0, 0);
-
     // Read the walls (if not known)
     readWalls();
 
     // We pretend that we're at the origin and solving to
     // determine the fastest potential path to the center
-    m_mode = Mode::SOLVE; // TODO: MACK is this pretending necessary?
-    byte destination = generatePath(origin, origin, true);
-    drawPath(destination); // TODO: MACK - why didn't this work?
+    m_mode = Mode::SOLVE;
+    byte origin = generatePath(Maze::getCell(0, 0)); // TODO: MACK - unnecessary "true" arg/param, unnecessary arg to generate path
+    drawPath(origin);
     m_mode = Mode::EXPLORE;
 
-    // Find the cell along the fastest potential path with unknown wall values
-    // that's closest to the center
-    // TODO: MACK - it should really be the closest cell on the path that has unknown wall values
-    byte current = destination;
-    while (Maze::hasNext(current) && Maze::isKnown(current, Maze::getNextDirection(current))) {
-        byte next = getNeighboringCell(current, Maze::getNextDirection(current));
-        current = next;
+    // Calculate the total path length
+    byte pathLength = 0;
+    byte runner = origin;
+    while (Maze::hasNext(runner)) {
+        runner = getNeighboringCell(runner, Maze::getNextDirection(runner));
+        pathLength += 1;
     }
 
-    if (current == origin) {
+    m_mouse->info(std::string("Length: ") + std::to_string(pathLength));
+
+    // TODO: MACK - this is incorrect - is should commit to a cell and then get to it
+
+    // Pick a random cell along the potential fastest path
+    byte random = pathLength * m_mouse->getRandom();
+    runner = random;
+    while (Maze::hasNext(runner) &&
+           Maze::isKnown(runner, Maze::getNextDirection(runner))) {
+        runner = getNeighboringCell(runner, Maze::getNextDirection(runner));
+    }
+
+    m_mouse->info(
+        std::string("Random: ") +
+        std::string("X: ") + std::to_string(Maze::getX(runner)) + ", " +
+        std::string("Y: ") + std::to_string(Maze::getY(runner)));
+
+    // If we've come upon a cell with unknown wall values
+    byte target = 0;
+    if (!Maze::hasNext(runner)
+        && runner != Maze::getCell(7, 7)
+        && runner != Maze::getCell(7, 8)
+        && runner != Maze::getCell(8, 7)
+        && runner != Maze::getCell(8, 8)
+    ) {
+        target = runner;
+    }
+    else {
+        // TODO: MACK - is this working
+        m_mouse->info("Not a good cell");
+        byte destination = reverseLinkedList(origin);
+        runner = destination;
+        while (Maze::hasNext(runner) &&
+               Maze::isKnown(runner, Maze::getNextDirection(runner))) {
+            runner = getNeighboringCell(runner, Maze::getNextDirection(runner));
+        }
+        m_mouse->info(
+            std::string("Better cell: ") +
+            std::string("X: ") + std::to_string(Maze::getX(runner)) + ", " +
+            std::string("Y: ") + std::to_string(Maze::getY(runner)));
+
+        target = runner;
+    }
+
+    // We're done exploring
+    if (target == origin) {
         m_mode = Mode::RETURN_TO_ORIGIN;
         return;
     }
 
-    // TODO: MACK
+    while (Maze::getCell(m_x, m_y) != target) {
+        /*
+        m_mouse->info(
+            std::string("X: ") + std::to_string(Maze::getX(target)) + ", " + 
+            std::string("Y: ") + std::to_string(Maze::getY(target)));
+        */
+
+        readWalls();
+        byte start = generatePath(Maze::getCell(m_x, m_y), target);
+        //drawPath(start);
+        followPath(start);
+    }
+
     /*
-    m_mouse->info(
-        std::string("X: ") + std::to_string(Maze::getX(current)) + ", " + 
-        std::string("Y: ") + std::to_string(Maze::getY(current)));
-    */
-    
     // Generate a path between the current position and the aforementioned cell
-    byte start = generatePath(Maze::getCell(m_x, m_y), current, false);
-    //drawPath(start);
-    //m_mouse->delay(1000);
+    byte start = generatePath(Maze::getCell(m_x, m_y), target, false);
 
     // Move as far as possible
     followPath(start);
+    */
 }
 
 void MackAlgoTwo::returnToOriginStep() {
@@ -295,7 +350,7 @@ void MackAlgoTwo::solveStep() {
     followPath(start);
 
     // If we get to the center, return to the origin
-    if (inCenter()) {
+    if (inCenter()) { // TODO: MACK - is this redundant?
         m_mode = Mode::RETURN_TO_ORIGIN;
     }
 }
@@ -306,7 +361,7 @@ byte MackAlgoTwo::generatePath(byte start, byte destination, bool reversed) {
     for (byte x = 0; x < Maze::WIDTH; x += 1) {
         for (byte y = 0; y < Maze::HEIGHT; y += 1) {
             Maze::setDiscovered(Maze::getCell(x, y), false);
-            Maze::setStraightAwayLength(Maze::getCell(x, y), 0); // TODO: MACK
+            Maze::setStraightAwayLength(Maze::getCell(x, y), 0); // TODO: MACK - bad hack
         }
     }
 
@@ -364,11 +419,6 @@ byte MackAlgoTwo::generatePath(byte start, byte destination, bool reversed) {
 }
 
 void MackAlgoTwo::drawPath(byte start) {
-
-    // TODO: MACK - this doesn't look right
-    // Clear all tile color, and color the center
-    m_mouse->clearAllTileColor();
-    colorCenter('G');
 
     // This is probably a little two cutesy for it's own good. Oh well...
     byte current = start;

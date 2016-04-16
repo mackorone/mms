@@ -46,7 +46,7 @@
 
     <!-- Simulation Parameters -->
     <random-seed>12345</random-seed> <!-- The seed value for rand() -->
-    <use-random-seed>false</use-random-seed> <!-- Whether or not to use the seed value -->
+    <use-random-seed>true</use-random-seed> <!-- Whether or not to use the seed value -->
     <collision-detection-enabled>true</collision-detection-enabled>
     <crash-message>Oh no! Your mouse crashed! It can't move anymore...</crash-message>
     <default-tile-text-character>?</default-tile-text-character>
@@ -67,7 +67,7 @@
     <!-- Maze Parameters -->
     <wall-length>0.168</wall-length> <!-- meters -->
     <wall-width>0.012</wall-width> <!-- meters -->
-    <maze-file>mazeish.maz</maze-file> <!-- relative to maze-directory -->
+    <maze-file>kyle_maze.maz</maze-file> <!-- relative to maze-directory -->
     <use-maze-file>true</use-maze-file> <!-- whether or not to use the maze file above -->
     <generated-maze-width>16</generated-maze-width> <!-- number of tiles -->
     <generated-maze-height>16</generated-maze-height> <!-- number of tiles -->
@@ -78,6 +78,6 @@
     <maze-rotations>0</maze-rotations> <!-- 0-3 counterclockwise rotations -->
 
     <!-- Mouse Parameters -->
-    <mouse-algorithm>LeftWallFollow</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
+    <mouse-algorithm>MackAlgoTwo</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
 
 </parameters>
