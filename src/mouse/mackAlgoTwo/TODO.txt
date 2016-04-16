@@ -1,9 +1,3 @@
-- Add an "explore" method
-    - On each reset, just try to get to the center
-    - Then after getting to center, potentially try:
-        - The closest cell to you on the fastest path from the beginning to the center
-        - The cell with the furthest distance from the start on the fastest path
-        - Something else?
 - Test multiple maze sizes
 - Optimization
     - Const correctness
@@ -12,3 +6,4 @@
     - Save 136 bytes for the walls
 - Multiple solving options
 - Diagonals
+- Figure out which direction it's facing

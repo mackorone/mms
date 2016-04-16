@@ -1,7 +1,5 @@
 #include "MackAlgoTwo.h"
 
-#include <limits>
-
 #include "Assert.h"
 #include "History.h"
 #include "Maze.h"
@@ -17,6 +15,8 @@ extern volatile bool buttonPressed;
 #endif
 
 namespace mackAlgoTwo {
+
+#if (SIMULATOR)
 
 std::string MackAlgoTwo::initialDirection() const {
     return "OPENING";
@@ -34,7 +34,6 @@ bool MackAlgoTwo::useTileEdgeMovements() const {
     return false;
 }
 
-#if (SIMULATOR)
 void MackAlgoTwo::solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse) {
@@ -159,7 +158,7 @@ void MackAlgoTwo::acknowledgeResetButtonPressed() {
 #if (SIMULATOR)
     m_mouse->acknowledgeInputButtonPressed(2);
 #else
-    buttonPressed = true;
+    buttonPressed = false;
 #endif
 }
 
@@ -182,13 +181,13 @@ void MackAlgoTwo::reset() {
     acknowledgeResetButtonPressed();
 
 #if (!SIMULATOR)
-    delay(3000);
+    delay(300);
     while (!resetButtonPressed()) {
         // Wait until the button is pressed again to
         // signify that we're ready to start moving again
     }
-    delay(3000);
     acknowledgeResetButtonPressed();
+    delay(300);
 #endif
 
     // Reset some state
@@ -249,6 +248,10 @@ void MackAlgoTwo::step() {
 
     // Update the mode if we've reached the destination
     if (m_mode == Mode::CENTER && inCenter(m_x, m_y)) {
+#if (!SIMULATOR)
+        readWalls();
+        moveForward();
+#endif
         m_mode = Mode::ORIGIN;
     }
     if (m_mode == Mode::ORIGIN && inOrigin(m_x, m_y)) {
@@ -443,7 +446,7 @@ void MackAlgoTwo::colorCenter(char color) {
 }
 
 void MackAlgoTwo::resetDestinationCellDistances() {
-    static twobyte maxDistance = std::numeric_limits<twobyte>::max();
+    static twobyte maxDistance = 65535;
     if (m_mode == Mode::CENTER) {
         for (byte x = Maze::CLLX; x <= Maze::CURX; x += 1) {
             for (byte y = Maze::CLLY; y <= Maze::CURY; y += 1) {

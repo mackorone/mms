@@ -3,7 +3,7 @@
 #include "Options.h"
 
 #if (SIMULATOR)
-    #include "../IMouseAlgorithm.h"
+#include "../IMouseAlgorithm.h"
 #endif
 
 #include "Byte.h"
@@ -20,11 +20,11 @@ class MackAlgoTwo {
 #endif
 
 public:
+#if (SIMULATOR)
     std::string initialDirection() const;
     int tileTextNumberOfRows() const;
     int tileTextNumberOfCols() const;
     bool useTileEdgeMovements() const;
-#if (SIMULATOR)
     void solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
         char initialDirection, sim::MouseInterface* mouse);
