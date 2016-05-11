@@ -19,8 +19,8 @@ struct Maze {
 
     // The width and height of the maze, as understood
     // by the algorithm, both of which must be in [1, 16]
-    static const byte WIDTH  = 16;
-    static const byte HEIGHT = 16;
+    static const byte WIDTH  = 32;
+    static const byte HEIGHT = 32;
 
     // The x and y positions of the lower left and upper right center cells
     static const byte CLLX = (WIDTH  - 1) / 2;

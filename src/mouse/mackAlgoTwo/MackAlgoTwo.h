@@ -34,7 +34,7 @@ public:
 
 private:
 
-    static const bool FAST_STRAIGHT_AWAYS = false;
+    static const bool FAST_STRAIGHT_AWAYS = true;
 
 #if (SIMULATOR)
     sim::MouseInterface* m_mouse;

@@ -10,6 +10,55 @@
 namespace sim {
 
 bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
+    return (
+        isMazeFileBinType(mazeFilePath) ||
+        isMazeFileMapType(mazeFilePath) ||
+        isMazeFileNumType(mazeFilePath)
+    );
+}
+
+void MazeFileUtilities::saveMaze(
+        const std::vector<std::vector<BasicTile>>& maze,
+        const std::string& mazeFilePath,
+        MazeFileType mazeFileType) {
+    switch (mazeFileType) {
+        case MazeFileType::BIN:
+            saveMazeFileBinType(maze, mazeFilePath);
+            break;
+        case MazeFileType::MAP:
+            saveMazeFileMapType(maze, mazeFilePath);
+            break;
+        case MazeFileType::NUM:
+            saveMazeFileNumType(maze, mazeFilePath);
+            break;
+        default:
+            SIM_ASSERT_TR(false);
+    }
+}
+
+std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMaze(
+        const std::string& mazeFilePath) {
+    if (isMazeFileBinType(mazeFilePath)) {
+        return loadMazeFileBinType(mazeFilePath);
+    }
+    if (isMazeFileMapType(mazeFilePath)) {
+        return loadMazeFileMapType(mazeFilePath);
+    }
+    if (isMazeFileNumType(mazeFilePath)) {
+        return loadMazeFileNumType(mazeFilePath);
+    }
+    SIM_ASSERT_TR(false);
+}
+
+bool MazeFileUtilities::isMazeFileBinType(const std::string& mazeFilePath) {
+    return false;
+}
+
+bool MazeFileUtilities::isMazeFileMapType(const std::string& mazeFilePath) {
+    return false;
+}
+
+bool MazeFileUtilities::isMazeFileNumType(const std::string& mazeFilePath) {
 
     // Definitions:
     //  X-value - The first integer value in a particular line
@@ -132,10 +181,28 @@ bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
         }
     }
 
+    // TODO: MACK - close the file here...
+
     return true;
 }
 
-void MazeFileUtilities::saveMaze(const std::vector<std::vector<BasicTile>>& maze, const std::string& mazeFilePath) {
+void MazeFileUtilities::saveMazeFileBinType(
+        const std::vector<std::vector<BasicTile>>& maze,
+        const std::string& mazeFilePath) {
+    // TODO: MACK
+    SIM_ASSERT_TR(false);
+}
+
+void MazeFileUtilities::saveMazeFileMapType(
+        const std::vector<std::vector<BasicTile>>& maze,
+        const std::string& mazeFilePath) {
+    // TODO: MACK
+    SIM_ASSERT_TR(false);
+}
+
+void MazeFileUtilities::saveMazeFileNumType(
+        const std::vector<std::vector<BasicTile>>& maze,
+        const std::string& mazeFilePath) {
 
     // Create the stream
     std::ofstream file(mazeFilePath.c_str());
@@ -157,119 +224,23 @@ void MazeFileUtilities::saveMaze(const std::vector<std::vector<BasicTile>>& maze
         }
     }
 
+    // Make sure to close the file
     file.close();
 }
 
-std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMaze(const std::string& mazeFilePath) {
-
-    // This should only be called on files that are actually maze files
-    SIM_ASSERT_TR(MazeFileUtilities::isMazeFile(mazeFilePath));
-
-    // The maze to be returned
-    std::vector<std::vector<BasicTile>> maze;
-
-    // The column to be appended
-    std::vector<BasicTile> column;
-
-    // Read the file and populate the wall values
-    std::ifstream file(mazeFilePath.c_str());
-    std::string line("");
-    while (getline(file, line)) {
-
-        // Put the tokens in a vector
-        std::vector<std::string> tokens = SimUtilities::tokenize(line);
-
-        // Fill the BasicTile object with the values
-        BasicTile tile;
-        for (Direction direction : DIRECTIONS) {
-            tile.walls.insert(std::make_pair(direction,
-                (1 == SimUtilities::strToInt(tokens.at(2 + SimUtilities::getDirectionIndex(direction))))));
-        }
-
-        // If the tile belongs to a new column, append the current column and then empty it
-        if (maze.size() < SimUtilities::strToInt(tokens.at(0))) {
-            maze.push_back(column);
-            column.clear();
-        }
-
-        // Always append the current tile to the current column
-        column.push_back(tile);
-    }
-
-    // Make sure to append the last column
-    maze.push_back(column);
-
-    // Remember to close the file
-    file.close();
-  
-    return maze;
+std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileBinType(
+        const std::string& mazeFilePath) {
+    // TODO: MACK
+    SIM_ASSERT_TR(false);
 }
 
-bool MazeFileUtilities::isMapFile(const std::string& mapFilePath) {
-
-    // TODO: MACK - implement the rest of this
-
-    // First, make sure we've been given a file
-    if (!SimUtilities::isFile(mapFilePath)) {
-        L()->warn("\"%v\" is not a file.", mapFilePath);
-        return false;
-    }
-
-    // Create the file object
-    std::ifstream file(mapFilePath.c_str());
-
-    // Error opening file
-    if (!file.is_open()) {
-        L()->warn("Could not open \"%v\" for maze validation.", mapFilePath);
-        return false;
-    }
-
-    // Empty file
-    if (file.peek() == std::ifstream::traits_type::eof()) {
-        L()->warn("\"%v\" is empty.", mapFilePath);
-        return false;
-    }
-
-    return true;
-}
-
-void MazeFileUtilities::saveMap(const std::vector<std::vector<BasicTile>>& maze, const std::string& mapFilePath) {
-
-    // TODO: MACK - make a parameter for type of file we should save (or both) - sanity check the suffix
-    L()->warn("Unable to save maze to \"%v\".", mapFilePath);
-    return;
-
-    // Create the stream
-    std::ofstream file(mapFilePath.c_str());
-
-    // Make sure the file is open
-    if (!file.is_open()) {
-        L()->warn("Unable to save maze to \"%v\".", mapFilePath);
-        return;
-    }
-
-    /* // TODO: MACK
-    // Write to the file
-    for (int x = 0; x < maze.size(); x += 1) {
-        for (int y = 0; y < maze.at(x).size(); y += 1) {
-            file << x << " " << y;
-            for (Direction direction : DIRECTIONS) {
-                file << " " << (maze.at(x).at(y).walls.at(direction) ? 1 : 0);
-            }
-            file << std::endl;
-        }
-    }
-    */
-
-    file.close();
-}
-
-std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMap(const std::string& mapFilePath) {
+std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMapType(
+        const std::string& mazeFilePath) {
 
     // TODO: MACK - clean this up, make it resilient to any amount of horizontal space
 
     // This should only be called on files that are actually maze files
-    SIM_ASSERT_TR(MazeFileUtilities::isMapFile(mapFilePath));
+    SIM_ASSERT_TR(MazeFileUtilities::isMazeFileMapType(mazeFilePath));
 
     // The maze to be returned
     std::vector<std::vector<BasicTile>> upsideDownMaze;
@@ -278,7 +249,7 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMap(const std::string
     int rowsFromTop = 0;
 
     // Read the file and populate the wall values
-    std::ifstream file(mapFilePath.c_str());
+    std::ifstream file(mazeFilePath.c_str());
     std::string line("");
     while (getline(file, line)) {
 
@@ -340,6 +311,52 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMap(const std::string
     }
 
     return rightSideUpMaze;
+}
+
+std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileNumType(
+        const std::string& mazeFilePath) {
+
+    // This should only be called on files that are actually maze files
+    SIM_ASSERT_TR(MazeFileUtilities::isMazeFileNumType(mazeFilePath));
+
+    // The maze to be returned
+    std::vector<std::vector<BasicTile>> maze;
+
+    // The column to be appended
+    std::vector<BasicTile> column;
+
+    // Read the file and populate the wall values
+    std::ifstream file(mazeFilePath.c_str());
+    std::string line("");
+    while (getline(file, line)) {
+
+        // Put the tokens in a vector
+        std::vector<std::string> tokens = SimUtilities::tokenize(line);
+
+        // Fill the BasicTile object with the values
+        BasicTile tile;
+        for (Direction direction : DIRECTIONS) {
+            tile.walls.insert(std::make_pair(direction,
+                (1 == SimUtilities::strToInt(tokens.at(2 + SimUtilities::getDirectionIndex(direction))))));
+        }
+
+        // If the tile belongs to a new column, append the current column and then empty it
+        if (maze.size() < SimUtilities::strToInt(tokens.at(0))) {
+            maze.push_back(column);
+            column.clear();
+        }
+
+        // Always append the current tile to the current column
+        column.push_back(tile);
+    }
+
+    // Make sure to append the last column
+    maze.push_back(column);
+
+    // Remember to close the file
+    file.close();
+  
+    return maze;
 }
 
 } //namespace sim

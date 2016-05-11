@@ -56,9 +56,9 @@ void FloodFill::solve(
     }
 
     // Otherwise, pick one
-    //justFloodFill();
+    justFloodFill();
     //simpleSolve();
-    extensiveSolve();
+    //extensiveSolve();
 }
 
 void FloodFill::justFloodFill() {

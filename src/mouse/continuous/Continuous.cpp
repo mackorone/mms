@@ -652,7 +652,7 @@ namespace continuous {
 		static int i = 0;
 		static bool turn = false;
 		static bool straight = 0;
-		const int targetTicks = 140 * 5.1;
+		const int targetTicks = 170 * 5.1;
 		const int frontOffset = 0; // difference between left and right front sensors when lined up with the wall
 
 		if (!straight) {

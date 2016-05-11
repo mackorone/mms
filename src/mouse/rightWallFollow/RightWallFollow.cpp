@@ -7,7 +7,7 @@ std::string RightWallFollow::mouseFile() const {
     // - "default.xml"
     // - "megaMouse.xml"
     // - "omniMouse.xml"
-    return "default.xml";
+    return "omniMouse.xml";
 }
 
 bool RightWallFollow::declareWallOnRead() const {
