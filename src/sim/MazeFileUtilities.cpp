@@ -9,12 +9,13 @@
 
 namespace sim {
 
-bool MazeFileUtilities::isMazeFile(const std::string& mazeFilePath) {
-    return (
-        isMazeFileBinType(mazeFilePath) ||
-        isMazeFileMapType(mazeFilePath) ||
-        isMazeFileNumType(mazeFilePath)
-    );
+std::map<MazeFileType, std::vector<std::string>> MazeFileUtilities::checkMazeFile(
+        const std::string& mazeFilePath) {
+    return {
+        {MazeFileType::BIN, checkMazeFileBinType(mazeFilePath)},
+        {MazeFileType::MAP, checkMazeFileMapType(mazeFilePath)},
+        {MazeFileType::NUM, checkMazeFileNumType(mazeFilePath)},
+    };
 }
 
 void MazeFileUtilities::saveMaze(
@@ -38,27 +39,33 @@ void MazeFileUtilities::saveMaze(
 
 std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMaze(
         const std::string& mazeFilePath) {
-    if (isMazeFileBinType(mazeFilePath)) {
+    if (checkMazeFileBinType(mazeFilePath).empty()) {
         return loadMazeFileBinType(mazeFilePath);
     }
-    if (isMazeFileMapType(mazeFilePath)) {
+    if (checkMazeFileMapType(mazeFilePath).empty()) {
         return loadMazeFileMapType(mazeFilePath);
     }
-    if (isMazeFileNumType(mazeFilePath)) {
+    if (checkMazeFileNumType(mazeFilePath).empty()) {
         return loadMazeFileNumType(mazeFilePath);
     }
     SIM_ASSERT_TR(false);
 }
 
-bool MazeFileUtilities::isMazeFileBinType(const std::string& mazeFilePath) {
-    return false;
+std::vector<std::string> MazeFileUtilities::checkMazeFileBinType(
+        const std::string& mazeFilePath) {
+    return {"ERROR"};
 }
 
-bool MazeFileUtilities::isMazeFileMapType(const std::string& mazeFilePath) {
-    return false;
+std::vector<std::string> MazeFileUtilities::checkMazeFileMapType(
+        const std::string& mazeFilePath) {
+    return {"ERROR"};
 }
 
-bool MazeFileUtilities::isMazeFileNumType(const std::string& mazeFilePath) {
+std::vector<std::string> MazeFileUtilities::checkMazeFileNumType(
+        const std::string& mazeFilePath) {
+
+    // List of errors to return
+    std::vector<std::string> errors;
 
     // Definitions:
     //  X-value - The first integer value in a particular line
@@ -82,10 +89,16 @@ bool MazeFileUtilities::isMazeFileNumType(const std::string& mazeFilePath) {
     //
     // Note that the maze does not have to be rectangular to be considered a maze file.
 
+    // TODO: MACK - use QString for string formatting
+
     // First, make sure we've been given a file
     if (!SimUtilities::isFile(mazeFilePath)) {
-        L()->warn("\"%v\" is not a file.", mazeFilePath);
-        return false;
+        errors.push_back(
+            std::string("\"") +
+            mazeFilePath +
+            "\" is not a file."
+        );
+        return errors;
     }
 
     // Create the file object
@@ -93,14 +106,22 @@ bool MazeFileUtilities::isMazeFileNumType(const std::string& mazeFilePath) {
 
     // Error opening file
     if (!file.is_open()) {
-        L()->warn("Could not open \"%v\" for maze validation.", mazeFilePath);
-        return false;
+        errors.push_back(
+            std::string("Could not open \"") +
+            mazeFilePath +
+            "\" for maze validation."
+        );
+        return errors;
     }
 
     // Empty file
     if (file.peek() == std::ifstream::traits_type::eof()) {
-        L()->warn("\"%v\" is empty.", mazeFilePath);
-        return false;
+        errors.push_back(
+            std::string("\"") +
+            mazeFilePath +
+            "\" is empty."
+        );
+        return errors;
     }
 
     std::string line("");
@@ -118,26 +139,34 @@ bool MazeFileUtilities::isMazeFileNumType(const std::string& mazeFilePath) {
 
         // Check to see that there are exactly six entries...
         if (6 != tokens.size()) {
-            L()->warn(
-                "\"%v\" does not contain six entries on each line: line %v contains %v entries.",
-                mazeFilePath,
-                std::to_string(lineNum),
-                std::to_string(tokens.size()));
-            return false;
+            errors.push_back(
+                std::string("\"") +
+                mazeFilePath +
+                "\" does not contain six entries on each line: line " + 
+                std::to_string(lineNum) +
+                " contains " +
+                std::to_string(tokens.size()) +
+                " entries."
+            );
+            return errors;
         }
 
         // ... all of which are numeric
         std::vector<int> values;
         for (int i = 0; i < tokens.size(); i += 1) {
             if (!SimUtilities::isInt(tokens.at(i))) {
-                L()->warn(
-                    "\"%v\" contains non-numeric entries: the entry"
-                    " \"%v\" on line %v in position %v is not numeric.",
-                    mazeFilePath,
-                    tokens.at(i),
-                    std::to_string(lineNum),
-                    std::to_string(i + 1));
-                return false;
+                errors.push_back(
+                    std::string("\"") +
+                    mazeFilePath +
+                    "\" contains non-numeric entries: the entry" +
+                    tokens.at(i) +
+                    " on line " +
+                    std::to_string(lineNum) +
+                    " in position " +
+                    std::to_string(i + 1) +
+                    " is not numeric."
+                );
+                return errors;
             }
             else {
                 values.push_back(SimUtilities::strToInt(tokens.at(i)));
@@ -156,34 +185,43 @@ bool MazeFileUtilities::isMazeFileNumType(const std::string& mazeFilePath) {
             expectedY = 1;
         }
         else {
-            L()->warn(
-                "\"%v\" contains unexpected x and y values of %v and %v on line %v.",
-                mazeFilePath,
-                std::to_string(values.at(0)),
-                std::to_string(values.at(1)),
-                std::to_string(lineNum));
-            return false;
+            errors.push_back(
+                std::string("\"") +
+                mazeFilePath +
+                "\" contains unexpected x and y values of " +
+                std::to_string(values.at(0)) +
+                " and " +
+                std::to_string(values.at(1)) +
+                " on line " +
+                std::to_string(lineNum) +
+                "."
+            );
+            return errors;
         }
 
         // Check the wall values to ensure that they're either 0 or 1
         for (int i = 0; i < 4; i += 1) {
             int value = values.at(2 + i);
             if (!(value == 0 || value == 1)) {
-                L()->warn(
-                    "\"%v\" contains an invalid value of %v in position %v on"
-                    " line %v. All wall values must be either \"0\" or \"1\".",
-                    mazeFilePath,
-                    std::to_string(value),
-                    std::to_string(2 + i + 1),
-                    std::to_string(lineNum));
-                return false;
+                errors.push_back(
+                    std::string("\"") +
+                    mazeFilePath +
+                    "\" contains an invalid value of " +
+                    std::to_string(value) +
+                    " in position " +
+                    std::to_string(2 + i + 1) +
+                    " on line " +
+                    std::to_string(lineNum) +
+                    ". All wall values must be either \"0\" or \"1\"."
+                );
+                return errors;
             }
         }
     }
 
     // TODO: MACK - close the file here...
 
-    return true;
+    return {};
 }
 
 void MazeFileUtilities::saveMazeFileBinType(
@@ -240,7 +278,7 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMapType(
     // TODO: MACK - clean this up, make it resilient to any amount of horizontal space
 
     // This should only be called on files that are actually maze files
-    SIM_ASSERT_TR(MazeFileUtilities::isMazeFileMapType(mazeFilePath));
+    SIM_ASSERT_TR(MazeFileUtilities::checkMazeFileMapType(mazeFilePath).empty());
 
     // The maze to be returned
     std::vector<std::vector<BasicTile>> upsideDownMaze;
@@ -317,7 +355,7 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileNumType(
         const std::string& mazeFilePath) {
 
     // This should only be called on files that are actually maze files
-    SIM_ASSERT_TR(MazeFileUtilities::isMazeFileNumType(mazeFilePath));
+    SIM_ASSERT_TR(MazeFileUtilities::checkMazeFileNumType(mazeFilePath).empty());
 
     // The maze to be returned
     std::vector<std::vector<BasicTile>> maze;
