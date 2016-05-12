@@ -24,35 +24,20 @@ Maze::Maze() {
     std::vector<std::vector<BasicTile>> basicMaze;
 
     if (P()->useMazeFile()) {
-
         std::string mazeFilePath = Directory::getResMazeDirectory() + P()->mazeFile();
-
-        std::set<std::vector<std::string>> errors = ContainerUtilities::values(
-            MazeFileUtilities::checkMazeFile(mazeFilePath)
-        );
-
-        bool isValid = std::any_of(
-            errors.begin(),
-            errors.end(),
-            [](std::vector<std::string> list){
-                return list.empty();
-            }
-        );
-
-        if (!isValid) {
+        try {
+            basicMaze = MazeFileUtilities::loadMaze(mazeFilePath);
+        }
+        catch (...) {
             L()->error("Unable to initialize maze from file \"%v\".", mazeFilePath);
             SimUtilities::quit();
         }
-
-        basicMaze = MazeFileUtilities::loadMaze(mazeFilePath);
     }
     else {
-
         if (!MazeAlgorithms::isMazeAlgorithm(P()->mazeAlgorithm())) {
             L()->error("\"%v\" is not a valid maze algorithm.", P()->mazeAlgorithm());
             SimUtilities::quit();
         }
-
         basicMaze = getBlankBasicMaze(P()->generatedMazeWidth(), P()->generatedMazeHeight());
         MazeInterface mazeInterface(&basicMaze);
         MazeAlgorithms::getMazeAlgorithm(P()->mazeAlgorithm())->generate(
