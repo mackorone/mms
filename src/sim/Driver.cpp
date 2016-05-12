@@ -2,8 +2,8 @@
 
 #include <thread>
 
+#include "Assert.h"
 #include "Logging.h"
-#include "OnlyExecuteOnce.h"
 #include "Param.h"
 #include "SimUtilities.h"
 #include "State.h"
@@ -19,7 +19,7 @@ Controller* Driver::m_controller;
 void Driver::drive(int argc, char* argv[]) {
 
     // Make sure that this function is called just once
-    ONLY_EXECUTE_ONCE;
+    SIM_ASSERT_RUNS_JUST_ONCE();
 
     // Before anything else, create the Time object
     T();

@@ -33,32 +33,35 @@ void MazeFileUtilities::saveMaze(
             saveMazeFileNumType(maze, mazeFilePath);
             break;
         default:
-            SIM_ASSERT_TR(false);
+            SIM_ASSERT_NEVER_RUNS();
     }
 }
 
 std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMaze(
         const std::string& mazeFilePath) {
+    // TODO: MACK - move this lower, once all of the functions are implemented
+    if (checkMazeFileNumType(mazeFilePath).empty()) {
+        return loadMazeFileNumType(mazeFilePath);
+    }
     if (checkMazeFileBinType(mazeFilePath).empty()) {
         return loadMazeFileBinType(mazeFilePath);
     }
     if (checkMazeFileMapType(mazeFilePath).empty()) {
         return loadMazeFileMapType(mazeFilePath);
     }
-    if (checkMazeFileNumType(mazeFilePath).empty()) {
-        return loadMazeFileNumType(mazeFilePath);
-    }
-    SIM_ASSERT_TR(false);
+    SIM_ASSERT_NEVER_RUNS();
 }
 
 std::vector<std::string> MazeFileUtilities::checkMazeFileBinType(
         const std::string& mazeFilePath) {
+    // TODO: MACK
     return {"ERROR"};
 }
 
 std::vector<std::string> MazeFileUtilities::checkMazeFileMapType(
         const std::string& mazeFilePath) {
-    return {"ERROR"};
+    // TODO: MACK
+    return {};
 }
 
 std::vector<std::string> MazeFileUtilities::checkMazeFileNumType(
@@ -228,14 +231,14 @@ void MazeFileUtilities::saveMazeFileBinType(
         const std::vector<std::vector<BasicTile>>& maze,
         const std::string& mazeFilePath) {
     // TODO: MACK
-    SIM_ASSERT_TR(false);
+    SIM_ASSERT_NEVER_RUNS();
 }
 
 void MazeFileUtilities::saveMazeFileMapType(
         const std::vector<std::vector<BasicTile>>& maze,
         const std::string& mazeFilePath) {
     // TODO: MACK
-    SIM_ASSERT_TR(false);
+    SIM_ASSERT_NEVER_RUNS();
 }
 
 void MazeFileUtilities::saveMazeFileNumType(
@@ -269,7 +272,7 @@ void MazeFileUtilities::saveMazeFileNumType(
 std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileBinType(
         const std::string& mazeFilePath) {
     // TODO: MACK
-    SIM_ASSERT_TR(false);
+    SIM_ASSERT_NEVER_RUNS();
 }
 
 std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMapType(

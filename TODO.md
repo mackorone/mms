@@ -1,5 +1,6 @@
 # High Priority
 
+- Change the suffixes of the maze files to .bin, .map, .num
 - Replace SIM_ASSERT_TR(false) (and the converse) with ASSERT_NEVER_EXECUTED, merge only_executed_once
 - Clean up map files
 - Add a MazeChecker check to ensure that all wall values are populated (NESW, all the time)

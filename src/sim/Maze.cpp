@@ -27,13 +27,22 @@ Maze::Maze() {
 
         std::string mazeFilePath = Directory::getResMazeDirectory() + P()->mazeFile();
 
-        // TODO: MACK - this shouldn't print any errors if it's a valid map file
-        /*
-        if (!MazeFileUtilities::checkMazeFile(mazeFilePath)) {
+        std::set<std::vector<std::string>> errors = ContainerUtilities::values(
+            MazeFileUtilities::checkMazeFile(mazeFilePath)
+        );
+
+        bool isValid = std::any_of(
+            errors.begin(),
+            errors.end(),
+            [](std::vector<std::string> list){
+                return list.empty();
+            }
+        );
+
+        if (!isValid) {
             L()->error("Unable to initialize maze from file \"%v\".", mazeFilePath);
             SimUtilities::quit();
         }
-        */
 
         basicMaze = MazeFileUtilities::loadMaze(mazeFilePath);
     }

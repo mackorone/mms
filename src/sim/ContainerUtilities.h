@@ -37,11 +37,13 @@ public:
     // Returns the keys of a map
     template<class K, class V>
     static std::set<K> keys(const std::map<K, V>& map) {
-        std::set<K> keys;
-        for (auto it = map.begin(); it != map.end(); it++) {
-            keys.insert(it->first);
-        }
-        return keys;
+        return kvs(map).first;
+    }
+
+    // Returns the values of a map
+    template<class K, class V>
+    static std::set<V> values(const std::map<K, V>& map) {
+        return kvs(map).second;
     }
 
     // Returns the inverse of a map, fails if there are dupliate values
@@ -55,6 +57,20 @@ public:
             values.insert(it->second);
         }
         return inverted;
+    }
+
+private:
+
+    // Returns the keys and values of a map
+    template<class K, class V>
+    static std::pair<std::set<K>, std::set<V>> kvs(const std::map<K, V>& map) {
+        std::set<K> keys;
+        std::set<V> values;
+        for (auto it = map.begin(); it != map.end(); it++) {
+            keys.insert(it->first);
+            values.insert(it->second);
+        }
+        return std::make_pair(keys, values);
     }
 
 };
