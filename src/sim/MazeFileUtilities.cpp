@@ -18,7 +18,6 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMaze(
     }\
     catch (...) { }
 
-    TRY(return loadMazeFileBinType(mazeFilePath));
     TRY(return loadMazeFileMapType(mazeFilePath));
     TRY(return loadMazeFileNumType(mazeFilePath));
     throw std::exception();
@@ -29,9 +28,6 @@ void MazeFileUtilities::saveMaze(
         const std::string& mazeFilePath,
         MazeFileType mazeFileType) {
     switch (mazeFileType) {
-        case MazeFileType::BIN:
-            saveMazeFileBinType(maze, mazeFilePath);
-            break;
         case MazeFileType::MAP:
             saveMazeFileMapType(maze, mazeFilePath);
             break;
@@ -41,69 +37,89 @@ void MazeFileUtilities::saveMaze(
     }
 }
 
-std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileBinType(
-        const std::string& mazeFilePath) {
-    // TODO: MACK
-    throw std::exception();
-}
-
 std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMapType(
         const std::string& mazeFilePath) {
 
-    // TODO: MACK - clean this up, make it resilient to any amount of horizontal space
+    // First, read the entirety of the file
+    std::vector<std::string> lines;
+    std::ifstream file(mazeFilePath.c_str());
+    std::string line("");
+    while (getline(file, line)) {
+        lines.push_back(line);
+    }
+    file.close();
 
     // The maze to be returned
     std::vector<std::vector<BasicTile>> upsideDownMaze;
 
-    // Keep track of what row we're reading in
-    int rowsFromTop = 0;
+    // The character representing a maze post
+    char delimiter = '\0';
 
-    // Read the file and populate the wall values
-    std::ifstream file(mazeFilePath.c_str());
-    std::string line("");
-    while (getline(file, line)) {
+    // The number of horizontal spaces between columns
+    std::vector<int> spaces;
 
-        // Put the tokens in a vector
-        std::vector<std::string> tokens = SimUtilities::tokenize(line, '+');
+    // Keep track of what row of the maze we're reading
+    int rowsFromTopOfMaze = 0;
 
-        // If the maze is empty, this is the first line
-        if (upsideDownMaze.empty()) {
-            for (int i = 0; i < tokens.size(); i += 1) {
+    // Iterate over all of the lines
+    for (int i = 0; i < lines.size(); i += 1) {
+        std::string line = lines.at(i);
+
+        // Special case for the first line of the file
+        if (i == 0) {
+
+            // The delimiter is taken to be the first character in the file
+            delimiter = line.at(0);
+
+            // Tokenize the first line based on the delimiter
+            std::vector<std::string> tokens = SimUtilities::tokenize(line, delimiter);
+            for (int j = 0; j < tokens.size(); j += 1) {
+
+                // Initialize the columns of the maze
                 std::vector<BasicTile> column;
                 upsideDownMaze.push_back(column);
+
+                // Keep track of the space between columns
+                spaces.push_back(tokens.at(j).size());
             }
         }
 
-        // Extract horizontal wall info, tiles don't already exist
-        if (tokens.size() == upsideDownMaze.size()) {
-            for (int j = 2; j < line.size(); j += 4) {
+        // Extract horizontal wall info, tiles structs don't already exist
+        if (line.at(0) == delimiter) {
+            int position = 1 + (spaces.at(0) - 1) / 2; // Center of the wall
+            for (int j = 0; j < spaces.size(); j += 1) {
                 BasicTile tile;
-                bool isWall = line.at(j) != ' ';
-                tile.walls.insert(std::make_pair(Direction::NORTH, isWall));
-                upsideDownMaze.at((j - 2) / 4).push_back(tile);
-                if (0 < rowsFromTop) {
-                    upsideDownMaze.at((j - 2) / 4).at(rowsFromTop - 1).walls.insert(std::make_pair(Direction::SOUTH, isWall));
+                bool isWall = line.at(position) != ' ';
+                tile.walls.at(Direction::NORTH) = isWall;
+                upsideDownMaze.at(j).push_back(tile);
+                if (0 < rowsFromTopOfMaze) {
+                    upsideDownMaze.at(j).at(rowsFromTopOfMaze - 1).walls.at(Direction::SOUTH) = isWall;
+                }
+                if (j < spaces.size() - 1) {
+                    position += 1 + spaces.at(j) / 2; // Position of the next corner
+                    position += 1 + (spaces.at(j + 1) - 1) / 2; // Center of the wall
                 }
             }
         }
 
-        // Extract vertical wall info, tiles already exist
-        else {
-            for (int j = 0; j < line.size(); j += 4) {
-                bool isWall = line.at(j) != ' ';
-                if (0 < j) {
-                    upsideDownMaze.at((j - 4) / 4).at(rowsFromTop).walls.insert(std::make_pair(Direction::EAST, isWall));
+        // Extract vertical wall info, tiles structs already exist
+        else if (lines.at(i - 1).at(0) == delimiter) {
+            int position = 0;
+            for (int j = 0; j <= spaces.size(); j += 1) {
+                bool isWall = line.at(position) != ' ';
+                if (0 < position) {
+                    upsideDownMaze.at(j - 1).at(rowsFromTopOfMaze).walls.at(Direction::EAST) = isWall;
                 }
-                if (j < line.size() - 1) {
-                    upsideDownMaze.at(j / 4).at(rowsFromTop).walls.insert(std::make_pair(Direction::WEST, isWall));
+                if (position < line.size() - 1) {
+                    upsideDownMaze.at(j).at(rowsFromTopOfMaze).walls.at(Direction::WEST) = isWall;
+                }
+                if (j < spaces.size()) {
+                    position += spaces.at(j) + 1;
                 }
             }
-            rowsFromTop += 1;
+            rowsFromTopOfMaze += 1;
         }
     }
-
-    // Remember to close the file
-    file.close();
 
     // Strip off of the last extraneous row
     for (int i = 0; i < upsideDownMaze.size(); i += 1) {
@@ -132,10 +148,17 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileNumType(
     // The column to be appended
     std::vector<BasicTile> column;
 
-    // Read the file and populate the wall values
+    // First, read the entirety of the file
+    std::vector<std::string> lines;
     std::ifstream file(mazeFilePath.c_str());
     std::string line("");
     while (getline(file, line)) {
+        lines.push_back(line);
+    }
+    file.close();
+
+    // Iterate over all of the lines
+    for (std::string line : lines) {
 
         // Put the tokens in a vector
         std::vector<std::string> tokens = SimUtilities::tokenize(line);
@@ -143,8 +166,8 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileNumType(
         // Fill the BasicTile object with the values
         BasicTile tile;
         for (Direction direction : DIRECTIONS) {
-            tile.walls.insert(std::make_pair(direction,
-                (1 == SimUtilities::strToInt(tokens.at(2 + SimUtilities::getDirectionIndex(direction))))));
+            tile.walls.at(direction) =
+                (1 == SimUtilities::strToInt(tokens.at(2 + SimUtilities::getDirectionIndex(direction))));
         }
 
         // If the tile belongs to a new column, append the current column and then empty it
@@ -160,24 +183,13 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileNumType(
     // Make sure to append the last column
     maze.push_back(column);
 
-    // Remember to close the file
-    file.close();
-  
     return maze;
-}
-
-void MazeFileUtilities::saveMazeFileBinType(
-        const std::vector<std::vector<BasicTile>>& maze,
-        const std::string& mazeFilePath) {
-    // TODO: MACK
-    SIM_ASSERT_NEVER_RUNS();
 }
 
 void MazeFileUtilities::saveMazeFileMapType(
         const std::vector<std::vector<BasicTile>>& maze,
         const std::string& mazeFilePath) {
-    // TODO: MACK
-    SIM_ASSERT_NEVER_RUNS();
+    // TODO: MACK - not implemented yet
 }
 
 void MazeFileUtilities::saveMazeFileNumType(

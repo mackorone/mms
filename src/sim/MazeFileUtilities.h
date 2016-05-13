@@ -1,6 +1,5 @@
 #pragma once
 
-#include <map>
 #include <string>
 #include <vector>
 
@@ -25,16 +24,11 @@ public:
 
 private:
 
-    static std::vector<std::vector<BasicTile>> loadMazeFileBinType(
-        const std::string& mazeFilePath);
     static std::vector<std::vector<BasicTile>> loadMazeFileMapType(
         const std::string& mazeFilePath);
     static std::vector<std::vector<BasicTile>> loadMazeFileNumType(
         const std::string& mazeFilePath);
 
-    static void saveMazeFileBinType(
-        const std::vector<std::vector<BasicTile>>& maze,
-        const std::string& mapFilePath);
     static void saveMazeFileMapType(
         const std::vector<std::vector<BasicTile>>& maze,
         const std::string& mapFilePath);

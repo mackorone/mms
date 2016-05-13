@@ -1,16 +1,16 @@
 # High Priority
 
+- Kill make_pair(), use .at() instead
+- Support reading or writing multiple file types
+    - Clean up map files
+    - .num, .bin, .MAZ, .mz2, .map
+    - https://code.google.com/p/maze-solver/wiki/MazeFileFormats
 - Change the suffixes of the maze files to .bin, .map, .num
-- Replace SIM_ASSERT_TR(false) (and the converse) with ASSERT_NEVER_EXECUTED, merge only_executed_once
-- Clean up map files
 - Add a MazeChecker check to ensure that all wall values are populated (NESW, all the time)
 - Still view a maze if it fails validation, but don't let the sim continue...
     - Return a vector of errors from the MazeChecker functions to avoid printing things involuntarily
     - Write a function to print the maze out
 - Bluetooth communication
-- Support reading or writing multiple file types
-    - .maz (plain text), .MAZ (binary), .map (ascii map)
-    - https://code.google.com/p/maze-solver/wiki/MazeFileFormats
 - Add computer vision to make it easy to import mazes
     - Repurpose "mousee" project for this
 - Make a way to ensure that the algorithm has no memory leaks
