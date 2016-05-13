@@ -17,6 +17,7 @@ public:
     bool withinMaze(int x, int y) const;
     Tile* getTile(int x, int y);
     const Tile* getTile(int x, int y) const;
+    bool isValidMaze() const;
     bool isOfficialMaze() const;
     bool isCenterTile(int x, int y) const;
 
@@ -24,7 +25,8 @@ private:
     // Vector to hold all of the tiles
     std::vector<std::vector<Tile>> m_maze;
 
-    // Used for memoizing MazeChecker::isOfficialMaze()
+    // Used for memoizing MazeChecker functions
+    bool m_isValidMaze;
     bool m_isOfficialMaze;
 
     // Initializes all of the tiles of the basic maze

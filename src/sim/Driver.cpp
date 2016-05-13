@@ -89,6 +89,11 @@ void Driver::drive(int argc, char* argv[]) {
     // Start the solving loop
     std::thread solvingThread([]() {
 
+        // If the maze is invalid, don't let the algo do anything
+        if (!m_model->getMaze()->isValidMaze()) {
+            return;
+        }
+
         // Wait for the window to appear
         SimUtilities::sleep(Seconds(P()->glutInitDuration()));
 

@@ -45,7 +45,10 @@ public:
 
     // Tokenizes a string on whitespace
     static std::vector<std::string> tokenize(
-        const std::string& str, char delimiter = ' ', bool respectQuotes = false);
+        const std::string& str,
+        char delimiter = ' ',
+        bool ignoreEmpties = false,
+        bool respectQuotes = false);
 
     // Returns the string str with the leading and trailing spaces removed
     static std::string trim(const std::string& str);

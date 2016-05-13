@@ -141,7 +141,10 @@ double SimUtilities::strToDouble(const std::string& str) {
 }
 
 std::vector<std::string> SimUtilities::tokenize(
-        const std::string& str, char delimiter, bool respectQuotes) {
+        const std::string& str,
+        char delimiter,
+        bool ignoreEmpties,
+        bool respectQuotes) {
 
     std::vector<std::string> tokens;
     std::string word = "";
@@ -154,7 +157,7 @@ std::vector<std::string> SimUtilities::tokenize(
             } while (i < str.size() && str.at(i) != '\"');
         }
         if (str.at(i) == delimiter) {
-            if (!word.empty()) {
+            if (!word.empty() || (0 < i && !ignoreEmpties)) {
                 tokens.push_back(word);
                 word = "";
             }

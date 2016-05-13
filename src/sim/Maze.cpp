@@ -51,9 +51,9 @@ Maze::Maze() {
     }
 
     // Check to see if it's a valid maze
-    if (!MazeChecker::isValidMaze(basicMaze)) {
-        L()->error("Failed maze validation.");
-        SimUtilities::quit();
+    m_isValidMaze = MazeChecker::isValidMaze(basicMaze);
+    if (!m_isValidMaze) {
+        L()->warn("The maze failed validation. The mouse algorithm will not execute.");
     }
 
     // Optionally save the maze
@@ -77,12 +77,12 @@ Maze::Maze() {
     }
     for (int i = 0; i < P()->mazeRotations(); i += 1) {
         basicMaze = rotateCounterClockwise(basicMaze);
-        L()->info("Rotating the maze counter-clockwise (%v).", i + 1);
+        L()->info("Rotating the maze counter-clockwise (%vx).", i + 1);
     }
 
     // Then, store whether or not the maze is an official maze
-    m_isOfficialMaze = MazeChecker::isOfficialMaze(basicMaze);
-    if (!m_isOfficialMaze) {
+    m_isOfficialMaze = m_isValidMaze && MazeChecker::isOfficialMaze(basicMaze);
+    if (m_isValidMaze && !m_isOfficialMaze) {
         L()->warn("The maze did not pass the \"is official maze\" tests.");
     }
 
@@ -110,6 +110,10 @@ Tile* Maze::getTile(int x, int y) {
 const Tile* Maze::getTile(int x, int y) const {
     SIM_ASSERT_TR(withinMaze(x, y));
     return &m_maze.at(x).at(y);
+}
+
+bool Maze::isValidMaze() const {
+    return m_isOfficialMaze;
 }
 
 bool Maze::isOfficialMaze() const {

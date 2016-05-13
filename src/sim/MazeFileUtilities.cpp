@@ -1,10 +1,7 @@
 #include "MazeFileUtilities.h"
 
 #include <fstream>
-#include <iterator>
 
-#include "Assert.h"
-#include "Logging.h"
 #include "SimUtilities.h"
 
 namespace sim {
@@ -22,8 +19,9 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMaze(
     }\
     catch (...) { }
 
-    TRY(return loadMazeFileMapType(mazeFilePath));
+    // NUM is a little stricter, so we try that first
     TRY(return loadMazeFileNumType(mazeFilePath));
+    TRY(return loadMazeFileMapType(mazeFilePath));
     throw std::exception();
 }
 
@@ -42,12 +40,14 @@ bool MazeFileUtilities::saveMaze(
 std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMapType(
         const std::string& mazeFilePath) {
 
-    // First, read the entirety of the file
+    // First, read all of the non-empty lines
     std::vector<std::string> lines;
     std::ifstream file(mazeFilePath.c_str());
     std::string line("");
     while (getline(file, line)) {
-        lines.push_back(line);
+        if (0 < SimUtilities::trim(line).size()) {
+            lines.push_back(line);
+        }
     }
     file.close();
 
@@ -61,7 +61,7 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMapType(
     std::vector<int> spaces;
 
     // Keep track of what row of the maze we're reading
-    int rowsFromTopOfMaze = 0;
+    int rowsFromTopOfMaze = -1;
 
     // Iterate over all of the lines
     for (int i = 0; i < lines.size(); i += 1) {
@@ -69,45 +69,46 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMapType(
 
         // Special case for the first line of the file
         if (i == 0) {
-
-            // The delimiter is taken to be the first character in the file
             delimiter = line.at(0);
-
-            // Tokenize the first line based on the delimiter
-            std::vector<std::string> tokens = SimUtilities::tokenize(line, delimiter);
+            std::vector<std::string> tokens = SimUtilities::tokenize(line, delimiter, false, false);
             for (int j = 0; j < tokens.size(); j += 1) {
-
-                // Initialize the columns of the maze
                 std::vector<BasicTile> column;
                 upsideDownMaze.push_back(column);
-
-                // Keep track of the space between columns
                 spaces.push_back(tokens.at(j).size());
             }
         }
 
         // Extract horizontal wall info, tiles structs don't already exist
-        if (line.at(0) == delimiter) {
-            int position = 1 + (spaces.at(0) - 1) / 2; // Center of the wall
+        if (0 < line.size() && line.at(0) == delimiter) {
+            rowsFromTopOfMaze += 1;
+            int position = (spaces.at(0) + 1) / 2; // Center of the wall
             for (int j = 0; j < spaces.size(); j += 1) {
                 BasicTile tile;
-                bool isWall = line.at(position) != ' ';
-                tile.walls.at(Direction::NORTH) = isWall;
+                for (Direction direction : DIRECTIONS) {
+                    tile.walls.insert(std::make_pair(direction, false));
+                }
                 upsideDownMaze.at(j).push_back(tile);
-                if (0 < rowsFromTopOfMaze) {
-                    upsideDownMaze.at(j).at(rowsFromTopOfMaze - 1).walls.at(Direction::SOUTH) = isWall;
+                if (0 < spaces.at(j)) {
+                    bool isWall = line.at(position) != ' ';
+                    upsideDownMaze.at(j).at(rowsFromTopOfMaze).walls.at(Direction::NORTH) = isWall;
+                    if (0 < rowsFromTopOfMaze) {
+                        upsideDownMaze.at(j).at(rowsFromTopOfMaze - 1).walls.at(Direction::SOUTH) = isWall;
+                    }
                 }
                 if (j < spaces.size() - 1) {
                     position += 1 + spaces.at(j) / 2; // Position of the next corner
-                    position += 1 + (spaces.at(j + 1) - 1) / 2; // Center of the wall
+                    position += (spaces.at(j + 1) + 1) / 2; // Center of the wall
                 }
             }
         }
 
         // Extract vertical wall info, tiles structs already exist
-        else if (lines.at(i - 1).at(0) == delimiter) {
+        else if (0 < lines.at(i - 1).size() && lines.at(i - 1).at(0) == delimiter) {
             int position = 0;
             for (int j = 0; j <= spaces.size(); j += 1) {
+                if (line.size() <= position) {
+                    break;
+                }
                 bool isWall = line.at(position) != ' ';
                 if (0 < position) {
                     upsideDownMaze.at(j - 1).at(rowsFromTopOfMaze).walls.at(Direction::EAST) = isWall;
@@ -119,7 +120,6 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMapType(
                     position += spaces.at(j) + 1;
                 }
             }
-            rowsFromTopOfMaze += 1;
         }
     }
 
@@ -163,13 +163,14 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileNumType(
     for (std::string line : lines) {
 
         // Put the tokens in a vector
-        std::vector<std::string> tokens = SimUtilities::tokenize(line);
+        std::vector<std::string> tokens = SimUtilities::tokenize(line, ' ', true, false);
 
         // Fill the BasicTile object with the values
         BasicTile tile;
         for (Direction direction : DIRECTIONS) {
-            tile.walls.at(direction) =
-                (1 == SimUtilities::strToInt(tokens.at(2 + SimUtilities::getDirectionIndex(direction))));
+            tile.walls.insert(std::make_pair(direction,
+                (1 == SimUtilities::strToInt(tokens.at(2 + SimUtilities::getDirectionIndex(direction))))
+            ));
         }
 
         // If the tile belongs to a new column, append the current column and then empty it
