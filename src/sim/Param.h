@@ -86,6 +86,7 @@ public:
     std::string mazeAlgorithm();
     bool saveGeneratedMaze();
     std::string generatedMazeFile();
+    std::string generatedMazeType();
     bool mazeMirrored();
     int mazeRotations();
 
@@ -171,6 +172,7 @@ private:
     std::string m_mazeAlgorithm;
     bool m_saveGeneratedMaze;
     std::string m_generatedMazeFile;
+    std::string m_generatedMazeType;
     bool m_mazeMirrored;
     int m_mazeRotations;
 

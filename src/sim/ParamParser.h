@@ -48,6 +48,7 @@ public:
     std::string getStringIfHasStringAndIsColor(const std::string& tag, const std::string& defaultValue);
     std::string getStringIfHasStringAndIsDirection(const std::string& tag, const std::string& defaultValue);
     std::string getStringIfHasStringAndIsLayoutType(const std::string& tag, const std::string& defaultValue);
+    std::string getStringIfHasStringAndIsMazeFileType(const std::string& tag, const std::string& defaultValue);
     std::string getStringIfHasStringAndIsTileTextAlignment(const std::string& tag, const std::string& defaultValue);
 
 private:

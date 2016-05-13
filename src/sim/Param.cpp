@@ -8,6 +8,7 @@
 #include "Directory.h"
 #include "LayoutType.h"
 #include "Logging.h"
+#include "MazeFileType.h"
 #include "ParamParser.h"
 #include "TileTextAlignment.h"
 
@@ -174,7 +175,9 @@ Param::Param() {
     m_saveGeneratedMaze = parser.getBoolIfHasBool(
         "save-generated-maze", true);
     m_generatedMazeFile = parser.getStringIfHasString(
-        "generated-maze-file", "auto_generated_maze.maz");
+        "generated-maze-file", "auto_generated_maze");
+    m_generatedMazeType = parser.getStringIfHasStringAndIsMazeFileType(
+        "generated-maze-type", MAZE_FILE_TYPE_TO_STRING.at(MazeFileType::MAP));
     m_mazeMirrored = parser.getBoolIfHasBool(
         "maze-mirrored", false);
     m_mazeRotations = parser.getIntIfHasIntAndInRange(
@@ -447,6 +450,10 @@ bool Param::saveGeneratedMaze() {
 
 std::string Param::generatedMazeFile() {
     return m_generatedMazeFile;
+}
+
+std::string Param::generatedMazeType() {
+    return m_generatedMazeType;
 }
 
 bool Param::mazeMirrored() {

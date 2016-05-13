@@ -12,6 +12,10 @@ namespace sim {
 std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMaze(
         const std::string& mazeFilePath) {
 
+    // Since we don't know anything about the file type ahead of time, we
+    // simply brute force try each of the file types until either one succeeds
+    // or they all fail
+
     #define TRY(statement)\
     try {\
         statement;\
@@ -23,17 +27,15 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMaze(
     throw std::exception();
 }
 
-void MazeFileUtilities::saveMaze(
+bool MazeFileUtilities::saveMaze(
         const std::vector<std::vector<BasicTile>>& maze,
         const std::string& mazeFilePath,
         MazeFileType mazeFileType) {
     switch (mazeFileType) {
         case MazeFileType::MAP:
-            saveMazeFileMapType(maze, mazeFilePath);
-            break;
+            return saveMazeFileMapType(maze, mazeFilePath);
         case MazeFileType::NUM:
-            saveMazeFileNumType(maze, mazeFilePath);
-            break;
+            return saveMazeFileNumType(maze, mazeFilePath);
     }
 }
 
@@ -186,13 +188,29 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileNumType(
     return maze;
 }
 
-void MazeFileUtilities::saveMazeFileMapType(
+bool MazeFileUtilities::saveMazeFileMapType(
         const std::vector<std::vector<BasicTile>>& maze,
         const std::string& mazeFilePath) {
-    // TODO: MACK - not implemented yet
+
+    // TODO: upforgrabs
+    //
+    // Write a function that saves the current maze
+    // to mazeFilePath in the map format, like:
+    //
+    //            +---+---+---+---+
+    //            |   |           |
+    //            +   +---+   +   +
+    //            |   |       |   |
+    //            +   +   +   +   +
+    //            |   |       |   |
+    //            +   +---+---+   +
+    //            |               |
+    //            +---+---+---+---+
+
+    return false;
 }
 
-void MazeFileUtilities::saveMazeFileNumType(
+bool MazeFileUtilities::saveMazeFileNumType(
         const std::vector<std::vector<BasicTile>>& maze,
         const std::string& mazeFilePath) {
 
@@ -201,8 +219,7 @@ void MazeFileUtilities::saveMazeFileNumType(
 
     // Make sure the file is open
     if (!file.is_open()) {
-        L()->warn("Unable to save maze to \"%v\".", mazeFilePath);
-        return;
+        return false;
     }
 
     // Write to the file
@@ -218,6 +235,9 @@ void MazeFileUtilities::saveMazeFileNumType(
 
     // Make sure to close the file
     file.close();
+
+    // Return success
+    return true;
 }
 
 } //namespace sim

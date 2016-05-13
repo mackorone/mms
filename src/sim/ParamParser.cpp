@@ -4,6 +4,7 @@
 #include "Color.h"
 #include "LayoutType.h"
 #include "Logging.h"
+#include "MazeFileType.h"
 #include "SimUtilities.h"
 #include "TileTextAlignment.h"
 
@@ -136,6 +137,10 @@ std::string ParamParser::getStringIfHasStringAndIsDirection(const std::string& t
 
 std::string ParamParser::getStringIfHasStringAndIsLayoutType(const std::string& tag, const std::string& defaultValue) {
     return getStringIfHasStringAndIsSpecial("layout type", tag, defaultValue, STRING_TO_LAYOUT_TYPE);
+}
+
+std::string ParamParser::getStringIfHasStringAndIsMazeFileType(const std::string& tag, const std::string& defaultValue) {
+    return getStringIfHasStringAndIsSpecial("maze file type", tag, defaultValue, STRING_TO_MAZE_FILE_TYPE);
 }
 
 std::string ParamParser::getStringIfHasStringAndIsTileTextAlignment(const std::string& tag, const std::string& defaultValue) {

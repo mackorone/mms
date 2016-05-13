@@ -73,7 +73,8 @@
     <generated-maze-height>16</generated-maze-height> <!-- number of tiles -->
     <maze-algorithm>Tomasz</maze-algorithm> <!-- The name as specified in src/maze/MazeAlgorithms.cpp -->
     <save-generated-maze>true</save-generated-maze> <!-- Whether or not to save a random maze -->
-    <generated-maze-file>auto_generated_maze.maz</generated-maze-file> <!-- The name of the file of the generated maze, if saved -->
+    <generated-maze-file>auto_generated_maze</generated-maze-file> <!-- File name of the generated maze, if saved, no suffix -->
+    <generated-maze-type>NUM</generated-maze-type> <!-- The format of the saved maze, either NUM or MAP -->
     <maze-mirrored>false</maze-mirrored> <!-- Mirrored across the vertical, before the rotation -->
     <maze-rotations>0</maze-rotations> <!-- 0-3 counterclockwise rotations -->
 
