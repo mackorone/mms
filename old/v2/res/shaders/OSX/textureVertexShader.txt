@@ -1,0 +1,11 @@
+#version 410
+
+in vec2 coordinate;
+in vec2 textureCoordinate;
+uniform mat4 transformationMatrix;
+out vec2 _textureCoordinate;
+
+void main() {
+    gl_Position = transformationMatrix * vec4(coordinate, 0.0, 1.0);
+    _textureCoordinate = textureCoordinate;
+}

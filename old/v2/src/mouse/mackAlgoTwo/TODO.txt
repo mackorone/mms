@@ -1,0 +1,9 @@
+- Test multiple maze sizes
+- Optimization
+    - Const correctness
+    - Kill unused imports
+    - Turn asserts off
+    - Save 136 bytes for the walls
+- Multiple solving options
+- Diagonals
+- Figure out which direction it's facing

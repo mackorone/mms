@@ -1,0 +1,10 @@
+#version 410
+
+in vec2 coordinate;
+uniform mat4 transformationMatrix;
+out vec4 FrontColor;
+
+void main(void) {
+    gl_Position = transformationMatrix * vec4(coordinate, 0.0, 1.0);
+    FrontColor = vec4(1.0,0.0,0.0,1.0);
+}

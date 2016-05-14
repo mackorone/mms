@@ -1,0 +1,8 @@
+#version 130
+
+uniform sampler2D _texture;
+varying vec2 _textureCoordinate;
+
+void main() {
+    gl_FragColor = texture(_texture, _textureCoordinate);
+}

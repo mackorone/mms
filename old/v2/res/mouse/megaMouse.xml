@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Mouse>
+    <Forward-Direction>90</Forward-Direction>
+    <Center-Of-Mass>
+        <X>.09</X> 
+        <Y>.09</Y>
+    </Center-Of-Mass>
+    <Body>
+        <Vertex>
+            <X>.065</X> 
+            <Y>.0604</Y>
+        </Vertex>
+        <Vertex>
+            <X>.065</X> 
+            <Y>.1204</Y>
+        </Vertex>
+        <Vertex>
+            <X>.0535</X> 
+            <Y>.1204</Y>
+        </Vertex>
+        <Vertex>
+            <X>.065</X> 
+            <Y>.150</Y>
+        </Vertex>
+        <Vertex>
+            <X>.09</X> 
+            <Y>.1574</Y>
+        </Vertex>
+        <Vertex>
+            <X>.115</X> 
+            <Y>.150</Y>
+        </Vertex>
+        <Vertex>
+            <X>.1265</X> 
+            <Y>.1204</Y>
+        </Vertex>
+        <Vertex>
+            <X>.115</X> 
+            <Y>.1204</Y>
+        </Vertex>
+        <Vertex>
+            <X>.115</X> 
+            <Y>.0604</Y>
+        </Vertex>
+    </Body>
+    <Wheel>
+        <Name>left-lower</Name>
+        <Diameter>.0245</Diameter>
+        <Width>.0077</Width>
+        <Position>
+            <X>.0574</X>
+            <Y>.07615</Y>
+        </Position>
+        <Direction>270</Direction> <!-- positive angular velocity causes the wheel to travel forward -->
+        <Max-Speed>6000</Max-Speed> <!-- rpm -->
+        <Encoder-Type>RELATIVE</Encoder-Type> <!-- ABSOLUTE or RELATIVE -->
+        <Encoder-Ticks-Per-Revolution>360</Encoder-Ticks-Per-Revolution> <!-- per revolution -->
+    </Wheel>
+    <Wheel>
+        <Name>left-upper</Name>
+        <Diameter>.0245</Diameter>
+        <Width>.0077</Width>
+        <Position>
+            <X>.0574</X>
+            <Y>.1044</Y>
+        </Position>
+        <Direction>270</Direction> <!-- positive angular velocity causes the wheel to travel forward -->
+        <Max-Speed>6000</Max-Speed> <!-- rpm -->
+        <Encoder-Type>RELATIVE</Encoder-Type> <!-- ABSOLUTE or RELATIVE -->
+        <Encoder-Ticks-Per-Revolution>360</Encoder-Ticks-Per-Revolution> <!-- per revolution -->
+    </Wheel>
+    <Wheel>
+        <Name>right-lower</Name>
+        <Diameter>.0245</Diameter>
+        <Width>.0077</Width>
+        <Position>
+            <X>.1226</X>
+            <Y>.07615</Y>
+        </Position>
+        <Direction>90</Direction> <!-- positive angular velocity causes the wheel to travel forward -->
+        <Max-Speed>6000</Max-Speed> <!-- rpm -->
+        <Encoder-Type>RELATIVE</Encoder-Type> <!-- ABSOLUTE or RELATIVE -->
+        <Encoder-Ticks-Per-Revolution>360</Encoder-Ticks-Per-Revolution> <!-- per revolution -->
+    </Wheel>
+    <Wheel>
+        <Name>right-upper</Name>
+        <Diameter>.0245</Diameter>
+        <Width>.0077</Width>
+        <Position>
+            <X>.1226</X>
+            <Y>.1044</Y>
+        </Position>
+        <Direction>90</Direction> <!-- positive angular velocity causes the wheel to travel forward -->
+        <Max-Speed>6000</Max-Speed> <!-- rpm -->
+        <Encoder-Type>RELATIVE</Encoder-Type> <!-- ABSOLUTE or RELATIVE -->
+        <Encoder-Ticks-Per-Revolution>360</Encoder-Ticks-Per-Revolution> <!-- per revolution -->
+    </Wheel>
+    <Sensor>
+        <Name>left-front</Name>
+        <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
+        <Range>.20</Range> <!-- Meters -->
+        <Half-Width>5</Half-Width> <!-- Degrees -->
+        <Position>
+            <X>.0631</X>
+            <Y>.1334</Y>
+        </Position>
+        <Direction>90</Direction> <!-- Degrees from the positive x axis -->
+    </Sensor>
+    <Sensor>
+        <Name>left-middle</Name>
+        <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
+        <Range>.20</Range> <!-- Meters -->
+        <Half-Width>5</Half-Width> <!-- Degrees -->
+        <Position>
+            <X>.0685</X>
+            <Y>.1484</Y>
+        </Position>
+        <Direction>135</Direction> <!-- Degrees -->
+    </Sensor>
+    <Sensor>
+        <Name>left-side</Name>
+        <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
+        <Range>.20</Range> <!-- Meters -->
+        <Half-Width>5</Half-Width> <!-- Degrees -->
+        <Position>
+            <X>.0895</X>
+            <Y>.1534</Y>
+        </Position>
+        <Direction>180</Direction> <!-- Degrees -->
+    </Sensor>
+    <Sensor>
+        <Name>right-front</Name>
+        <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
+        <Range>.20</Range> <!-- Meters -->
+        <Half-Width>5</Half-Width> <!-- Degrees -->
+        <Position>
+            <X>.1169</X>
+            <Y>.1334</Y>
+        </Position>
+        <Direction>90</Direction> <!-- Degrees -->
+    </Sensor>
+    <Sensor>
+        <Name>right-middle</Name>
+        <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
+        <Range>.20</Range> <!-- Meters -->
+        <Half-Width>5</Half-Width> <!-- Degrees -->
+        <Position>
+            <X>.1115</X>
+            <Y>.1484</Y>
+        </Position>
+        <Direction>45</Direction> <!-- Degrees -->
+    </Sensor>
+    <Sensor>
+        <Name>right-side</Name>
+        <Radius>.005</Radius> <!-- Size of the sensor body, Meters -->
+        <Range>.20</Range> <!-- Meters -->
+        <Half-Width>5</Half-Width> <!-- Degrees -->
+        <Position>
+            <X>.0905</X>
+            <Y>.1534</Y>
+        </Position>
+        <Direction>0</Direction> <!-- Degrees -->
+    </Sensor>
+</Mouse>

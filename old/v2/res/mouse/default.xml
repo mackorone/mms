@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Mouse>
+    <Forward-Direction>90</Forward-Direction> <!-- Degrees -->
+    <Center-Of-Mass>
+        <X>.03</X> <!-- Meters -->
+        <Y>.03</Y> <!-- Meters -->
+    </Center-Of-Mass>
+    <Body>
+        <Vertex>
+            <X>.00</X> <!-- Meters -->
+            <Y>.00</Y> <!-- Meters -->
+        </Vertex>
+        <Vertex>
+            <X>.00</X> <!-- Meters -->
+            <Y>.06</Y> <!-- Meters -->
+        </Vertex>
+        <Vertex>
+            <X>.03</X> <!-- Meters -->
+            <Y>.09</Y> <!-- Meters -->
+        </Vertex>
+        <Vertex>
+            <X>.06</X> <!-- Meters -->
+            <Y>.06</Y> <!-- Meters -->
+        </Vertex>
+        <Vertex>
+            <X>.06</X> <!-- Meters -->
+            <Y>.00</Y> <!-- Meters -->
+        </Vertex>
+    </Body>
+    <Wheel>
+        <Name>left</Name>
+        <Diameter>.04</Diameter> <!-- Meters -->
+        <Width>.01</Width> <!-- Meters -->
+        <Position>
+            <X>.00</X> <!-- Meters -->
+            <Y>.03</Y> <!-- Meters -->
+        </Position>
+        <Direction>270</Direction> <!-- Degrees, positive angular velocity causes the wheel to travel forward -->
+        <Max-Speed>200</Max-Speed> <!-- RPM -->
+        <Encoder-Type>RELATIVE</Encoder-Type> <!-- ABSOLUTE or RELATIVE -->
+        <Encoder-Ticks-Per-Revolution>360</Encoder-Ticks-Per-Revolution>
+    </Wheel>
+    <Wheel>
+        <Name>right</Name>
+        <Diameter>.04</Diameter> <!-- Meters -->
+        <Width>.01</Width> <!-- Meters -->
+        <Position>
+            <X>.06</X> <!-- Meters -->
+            <Y>.03</Y> <!-- Meters -->
+        </Position>
+        <Direction>90</Direction> <!-- Degrees, positive angular velocity causes the wheel to travel forward -->
+        <Max-Speed>200</Max-Speed> <!-- RPM -->
+        <Encoder-Type>RELATIVE</Encoder-Type> <!-- ABSOLUTE or RELATIVE -->
+        <Encoder-Ticks-Per-Revolution>360</Encoder-Ticks-Per-Revolution>
+    </Wheel>
+</Mouse>

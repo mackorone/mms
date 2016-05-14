@@ -1,0 +1,12 @@
+turn in the direction where there is more room to turn (read side sensors first)
+Diagonals  'L4F' 45 to the left for 4 cells, ends with a forward
+Ability to change speed
+Mack's algo
+Speed run stuff
+180 degree turns
+Mess with PD parameters
+setWall(x,y,d) {
+	m_mouse->declareWall(x,y,d);
+	declareWall(x,y,d);
+	update array
+}

@@ -1,0 +1,10 @@
+#version 130
+
+attribute vec2 coordinate;
+attribute vec4 color;
+uniform mat4 transformationMatrix;
+
+void main(void) {
+    gl_Position = transformationMatrix * vec4(coordinate, 0.0, 1.0);
+    gl_FrontColor = color;
+}

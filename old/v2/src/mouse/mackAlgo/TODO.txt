@@ -1,0 +1,5 @@
+- Add a history/reset button
+- Optimization
+    - 1 byte for the cell location
+    - 1 byte for the cell walls
+    - Other optimizations
