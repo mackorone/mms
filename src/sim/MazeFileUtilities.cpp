@@ -1,6 +1,7 @@
 #include "MazeFileUtilities.h"
 
 #include <fstream>
+#include <iostream> // TODO: MACK - remove this
 
 #include "SimUtilities.h"
 
@@ -193,22 +194,80 @@ bool MazeFileUtilities::saveMazeFileMapType(
         const std::vector<std::vector<BasicTile>>& maze,
         const std::string& mazeFilePath) {
 
-    // TODO: upforgrabs
-    //
-    // Write a function that saves the current maze
-    // to mazeFilePath in the map format, like:
-    //
-    //            +---+---+---+---+
-    //            |   |           |
-    //            +   +---+   +   +
-    //            |   |       |   |
-    //            +   +   +   +   +
-    //            |   |       |   |
-    //            +   +---+---+   +
-    //            |               |
-    //            +---+---+---+---+
+    // The characters to use in the file
+    char post = '+';
+    char space = ' ';
+    char vertical = '|';
+    char horizontal = '-';
 
-    return false;
+    // A blank line, and a list of all lines to be written
+    std::string blankLine(4 * maze.size() + 1, space);
+    std::vector<std::string> upsideDownLines {blankLine};
+
+    // For all tiles in the maze
+    for (int i = 0; i < maze.size(); i += 1) {
+        for (int j = 0; j < maze.at(i).size(); j += 1) {
+
+            // Insert more lines if necessary
+            if (upsideDownLines.size() <= 2 * j + 1) {
+                upsideDownLines.push_back(blankLine);
+                upsideDownLines.push_back(blankLine);
+            }
+
+            // Insert posts at the boundaries
+            int left = 4 * i;
+            int right = 4 * (i + 1);
+            int up = 2 * (j + 1);
+            int down = 2 * j;
+            upsideDownLines.at(down).at(left) = post;
+            upsideDownLines.at(down).at(right) = post;
+            upsideDownLines.at(up).at(left) = post;
+            upsideDownLines.at(up).at(right) = post;
+
+            // Insert walls if they exist
+            if (maze.at(i).at(j).walls.at(Direction::NORTH)) {
+                for (int k = 0; k < 3; k += 1) {
+                    upsideDownLines.at(up).at(left + 1 + k) = horizontal;
+                }
+            }
+            if (maze.at(i).at(j).walls.at(Direction::SOUTH)) {
+                for (int k = 0; k < 3; k += 1) {
+                    upsideDownLines.at(down).at(left + 1 + k) = horizontal;
+                }
+            }
+            if (maze.at(i).at(j).walls.at(Direction::EAST)) {
+                upsideDownLines.at(down + 1).at(right) = vertical;
+            }
+            if (maze.at(i).at(j).walls.at(Direction::WEST)) {
+                upsideDownLines.at(down + 1).at(left) = vertical;
+            }
+        }
+    }
+
+    // Flip the lines so that they're right side up
+    std::vector<std::string> rightSideUpLines;
+    for (int i = upsideDownLines.size() - 1; i >= 0; i -= 1) {
+        rightSideUpLines.push_back(upsideDownLines.at(i));
+    }
+
+    // Create the stream
+    std::ofstream file(mazeFilePath.c_str());
+
+    // Make sure the file is open
+    if (!file.is_open()) {
+        return false;
+    }
+
+    // Write to the file
+    for (std::string line : rightSideUpLines) {
+        file << line << std::endl;
+    }
+
+    // Make sure to close the file
+    file.close();
+
+    // Return success
+    return true;
 }
 
 bool MazeFileUtilities::saveMazeFileNumType(
