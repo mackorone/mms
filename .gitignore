@@ -2,6 +2,9 @@ bin/
 obj/
 run/
 zip/
+qmake_bin/
+qmake_obj/
+qmake_moc/
 
 .fuse_hidden*
 *.swp
