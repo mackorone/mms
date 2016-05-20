@@ -5,7 +5,7 @@ zip/
 
 .fuse_hidden*
 *.swp
-auto_generated_maze.maz
+auto_generated_maze.*
 mm.jar
 
 

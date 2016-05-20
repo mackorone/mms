@@ -1,5 +1,6 @@
 # High Priority
 
+- Run algorithms as separate process
 - Bluetooth communication
 - Support reading or writing more file types
     - .MAZ, .mz2
@@ -8,7 +9,7 @@
     - Repurpose "mousee" project for this
 - Make a way to ensure that the algorithm has no memory leaks
     - We need a simple test harness, no graphics, discrete only
-- Windows logging is not working
+- Windows logging is not working (Use QT logging)
     - Not printing out on non-main threads?
 - Logging is too expensive
     - Causing freezing and crashing
@@ -146,7 +147,7 @@
 
 - Rename TriangleTexture and VertexTexture
 - Rename Tile to Cell
-- Write some unittests
+- Write some unittests (QT Unit test)
 - Add IMouseAlgorithm (and maze) to the build path so we can just do #include <IMouseAlgorithm.h> (maybe...)
 - Run the parameter consistency script, make sure values align
 - Convert primitive types to GL types (or vice versa)

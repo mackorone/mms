@@ -1,7 +1,6 @@
 #include "MazeFileUtilities.h"
 
 #include <fstream>
-#include <iostream> // TODO: MACK - remove this
 
 #include "SimUtilities.h"
 
@@ -20,9 +19,11 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMaze(
     }\
     catch (...) { }
 
-    // NUM is a little stricter, so we try that first
+    // We try these in order of increasing permissiveness
     TRY(return loadMazeFileNumType(mazeFilePath));
+    TRY(return loadMazeFileMz2Type(mazeFilePath));
     TRY(return loadMazeFileMapType(mazeFilePath));
+    TRY(return loadMazeFileMazType(mazeFilePath));
     throw std::exception();
 }
 
@@ -33,6 +34,10 @@ bool MazeFileUtilities::saveMaze(
     switch (mazeFileType) {
         case MazeFileType::MAP:
             return saveMazeFileMapType(maze, mazeFilePath);
+        case MazeFileType::MAZ:
+            return saveMazeFileMazType(maze, mazeFilePath);
+        case MazeFileType::MZ2:
+            return saveMazeFileMz2Type(maze, mazeFilePath);
         case MazeFileType::NUM:
             return saveMazeFileNumType(maze, mazeFilePath);
     }
@@ -140,6 +145,20 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMapType(
     }
 
     return rightSideUpMaze;
+}
+
+std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMazType(
+        const std::string& mazeFilePath) {
+    // TODO: upforgrabs
+    // Implement this
+    throw std::exception();
+}
+
+std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMz2Type(
+        const std::string& mazeFilePath) {
+    // TODO: upforgrabs
+    // Implement this
+    throw std::exception();
 }
 
 std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileNumType(
@@ -268,6 +287,22 @@ bool MazeFileUtilities::saveMazeFileMapType(
 
     // Return success
     return true;
+}
+
+bool MazeFileUtilities::saveMazeFileMazType(
+        const std::vector<std::vector<BasicTile>>& maze,
+        const std::string& mazeFilePath) {
+    // TODO: upforgrabs
+    // Implement this
+    throw std::exception();
+}
+
+bool MazeFileUtilities::saveMazeFileMz2Type(
+        const std::vector<std::vector<BasicTile>>& maze,
+        const std::string& mazeFilePath) {
+    // TODO: upforgrabs
+    // Implement this
+    throw std::exception();
 }
 
 bool MazeFileUtilities::saveMazeFileNumType(

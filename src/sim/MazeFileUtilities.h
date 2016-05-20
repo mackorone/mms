@@ -26,10 +26,20 @@ private:
 
     static std::vector<std::vector<BasicTile>> loadMazeFileMapType(
         const std::string& mazeFilePath);
+    static std::vector<std::vector<BasicTile>> loadMazeFileMazType(
+        const std::string& mazeFilePath);
+    static std::vector<std::vector<BasicTile>> loadMazeFileMz2Type(
+        const std::string& mazeFilePath);
     static std::vector<std::vector<BasicTile>> loadMazeFileNumType(
         const std::string& mazeFilePath);
 
     static bool saveMazeFileMapType(
+        const std::vector<std::vector<BasicTile>>& maze,
+        const std::string& mapFilePath);
+    static bool saveMazeFileMazType(
+        const std::vector<std::vector<BasicTile>>& maze,
+        const std::string& mapFilePath);
+    static bool saveMazeFileMz2Type(
         const std::vector<std::vector<BasicTile>>& maze,
         const std::string& mapFilePath);
     static bool saveMazeFileNumType(
