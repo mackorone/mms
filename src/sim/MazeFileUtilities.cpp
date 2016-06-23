@@ -3,6 +3,7 @@
 #include <fstream>
 
 #include "SimUtilities.h"
+#include "MazeChecker.h"
 
 namespace sim {
 
@@ -24,6 +25,15 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMaze(
     TRY(return loadMazeFileMz2Type(mazeFilePath));
     TRY(return loadMazeFileMapType(mazeFilePath));
     TRY(return loadMazeFileMazType(mazeFilePath));
+
+    // Interesting order dependance. The MapType loader somehow manages to wrongly decode the
+    // MAZ filetype. This also produced an interesting issue. MAZ which causes the program 
+    // to crash.
+    //
+    // I have moved maze file validation into the load routine so that the above issue won't happen
+    // anymore. This makes sense becuase the load routine should succesfully load a valid maze
+    // before it returns. This would prevent any decoder from incorrectly decoding the file.
+
     throw std::exception();
 }
 
@@ -144,14 +154,50 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMapType(
         rightSideUpMaze.push_back(column);
     }
 
+    if (!MazeChecker::isValidMaze(rightSideUpMaze)) {
+        throw std::exception(); // The load produced an incorrect maze
+    }
+
     return rightSideUpMaze;
 }
 
 std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMazType(
         const std::string& mazeFilePath) {
-    // TODO: upforgrabs
-    // Implement this
-    throw std::exception();
+	
+    std::vector<char> characters;
+    std::ifstream file(mazeFilePath.c_str());
+    char character = ' ';
+    while (file.get(character)) {
+        characters.push_back(character);
+    }
+    file.close();
+
+    // The maze to be returned
+    std::vector<std::vector<BasicTile>> maze;
+
+    // This maze file format is written to only accomodate 16x16 mazes
+    // We can hardcode this becuase all the load functions run in try blocks
+    for (int x = 0; x < 16; x += 1) {
+        std::vector<BasicTile> column;
+        for (int y = 0; y < 16; y += 1) {
+            int walls = characters.at(x * 16 + y);
+            BasicTile tile;
+            //Each byte reprsents the walls like this: 'X X X X W S E N'
+            tile.walls[Direction::WEST] = (walls & 1 << 3) != 0;
+            tile.walls[Direction::SOUTH] = (walls & 1 << 2) != 0;
+            tile.walls[Direction::EAST] = (walls & 1 << 1) != 0;
+            tile.walls[Direction::NORTH] = (walls & 1 << 0) != 0;
+            column.push_back(tile);
+        }
+        maze.push_back(column);
+    }
+
+    if (!MazeChecker::isValidMaze(maze)) {
+        throw std::exception(); // The load produced an incorrect maze
+    }
+
+    return maze;
+
 }
 
 std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMz2Type(
@@ -205,6 +251,10 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileNumType(
 
     // Make sure to append the last column
     maze.push_back(column);
+
+    if (!MazeChecker::isValidMaze(maze)) {
+        throw std::exception(); // The load produced an incorrect maze
+    }
 
     return maze;
 }
@@ -292,9 +342,52 @@ bool MazeFileUtilities::saveMazeFileMapType(
 bool MazeFileUtilities::saveMazeFileMazType(
         const std::vector<std::vector<BasicTile>>& maze,
         const std::string& mazeFilePath) {
-    // TODO: upforgrabs
-    // Implement this
-    throw std::exception();
+
+    std::vector<char> valsToWrite;
+
+    if (maze.size() != 16) {
+        return false; // We only support 16x16 mazes
+    }
+
+    for (auto i : maze) {
+        if (i.size() != 16) {
+            return false; // We only support 16x16 mazes
+        }
+    }
+
+    // We hardcode values becuase we specifically checked that the maze
+    // was 16x16 above.
+    for (auto x = 0; x < 16; x++) {
+        for (auto y = 0; y < 16; y++) {
+            BasicTile tile = maze.at(x).at(y);
+            //Each byte reprsents the walls like this: 'X X X X W S E N'
+            int representation = (tile.walls[Direction::WEST]  << 3) +
+                                 (tile.walls[Direction::SOUTH] << 2) +
+                                 (tile.walls[Direction::EAST]  << 1) +
+                                 (tile.walls[Direction::NORTH] << 0);
+
+            valsToWrite.push_back(representation);
+        }
+    }
+
+    // Create the stream
+    std::ofstream file(mazeFilePath.c_str());
+
+    // Make sure the file is open
+    if (!file.is_open()) {
+        return false;
+    }
+
+    // Write to the file
+    for (char character : valsToWrite) {
+        file << character;
+    }
+
+    // Make sure to close the file
+    file.close();
+
+    // Return success
+    return true;
 }
 
 bool MazeFileUtilities::saveMazeFileMz2Type(
