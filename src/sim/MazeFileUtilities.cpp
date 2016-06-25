@@ -1,6 +1,7 @@
 #include "MazeFileUtilities.h"
 
 #include <fstream>
+#include <cstdint>
 
 #include "SimUtilities.h"
 #include "MazeChecker.h"
@@ -19,6 +20,8 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMaze(
         statement;\
     }\
     catch (...) { }
+
+    int hi = sizeof(0);
 
     // We try these in order of increasing permissiveness
     TRY(return loadMazeFileNumType(mazeFilePath));
@@ -320,7 +323,7 @@ bool MazeFileUtilities::saveMazeFileMapType(
     }
 
     // Create the stream
-    std::ofstream file(mazeFilePath.c_str());
+    std::ofstream file(mazeFilePath.c_str(), std::ios::trunc);
 
     // Make sure the file is open
     if (!file.is_open()) {
@@ -329,7 +332,7 @@ bool MazeFileUtilities::saveMazeFileMapType(
 
     // Write to the file
     for (std::string line : rightSideUpLines) {
-        file << line << std::endl;
+        file << line << '\n'; // std::endl flushes the buffer everytime its called
     }
 
     // Make sure to close the file
@@ -343,16 +346,23 @@ bool MazeFileUtilities::saveMazeFileMazType(
         const std::vector<std::vector<BasicTile>>& maze,
         const std::string& mazeFilePath) {
 
-    std::vector<char> valsToWrite;
-
     if (maze.size() != 16) {
         return false; // We only support 16x16 mazes
     }
 
-    for (auto i : maze) {
-        if (i.size() != 16) {
-            return false; // We only support 16x16 mazes
-        }
+    if (maze.at(0).size() != 16) {
+        // Lets assume the maze is at least rectangular. I don't know if it cannot be
+
+        return false; // We only support 16x16 mazes
+    }
+
+    // Create the stream
+    std::ofstream file(mazeFilePath.c_str(), std::ios::trunc | std::ios::binary);
+    file.imbue(std::locale::classic());
+
+    // Make sure the file is open
+    if (!file.is_open()) {
+        return false;
     }
 
     // We hardcode values becuase we specifically checked that the maze
@@ -366,21 +376,8 @@ bool MazeFileUtilities::saveMazeFileMazType(
                                  (tile.walls[Direction::EAST]  << 1) +
                                  (tile.walls[Direction::NORTH] << 0);
 
-            valsToWrite.push_back(representation);
+            file.put(representation);
         }
-    }
-
-    // Create the stream
-    std::ofstream file(mazeFilePath.c_str());
-
-    // Make sure the file is open
-    if (!file.is_open()) {
-        return false;
-    }
-
-    // Write to the file
-    for (char character : valsToWrite) {
-        file << character;
     }
 
     // Make sure to close the file
@@ -393,9 +390,108 @@ bool MazeFileUtilities::saveMazeFileMazType(
 bool MazeFileUtilities::saveMazeFileMz2Type(
         const std::vector<std::vector<BasicTile>>& maze,
         const std::string& mazeFilePath) {
-    // TODO: upforgrabs
-    // Implement this
-    throw std::exception();
+
+    // Create the stream
+    std::ofstream file(mazeFilePath.c_str(), std::ios::trunc | std::ios::binary);
+    file.imbue(std::locale::classic());
+
+    // Make sure the file is open
+    if (!file.is_open()) {
+        return false;
+    }
+
+    file.put(0);  // Hardcoded name is: 'Auto Generated Maze' (length: 19)
+    file.put(19); // I am assuming that the length is encoded in 16 bits.
+                  // The spec is unclear
+    
+    file << "Auto Generated Maze";
+
+    uint32_t width = maze.size();
+    uint32_t height = 0;
+
+    if (maze.size() > 0) {
+        height = maze.at(0).size();
+        if (height == 0)
+            return false; // I don't think this should be allowed?
+    }
+    else
+        return false; // I don't think this should be allowed?
+
+    file.put(width >> 24); // width
+    file.put(width >> 16);
+    file.put(width >> 8);
+    file.put(width);
+
+    file.put(height >> 24); // height
+    file.put(height >> 16);
+    file.put(height >> 8);
+    file.put(height);
+
+    int numberOfBits = 0;
+    int numberOfBytes = 0;
+    unsigned char toWrite = 0;
+
+    for (auto y = 0; y < height - 1; y++) {
+        for (auto x = 0; x < width; x++) {
+            BasicTile tile = maze.at(x).at(height - 1 - y);
+
+            toWrite >>= 1;
+            if (tile.walls[Direction::SOUTH] == true) {
+                toWrite |= 1 << 7; // Set the MSB bit as one
+            }
+            numberOfBits = (numberOfBits + 1) % 8;
+
+            if (numberOfBits == 0) {
+                file.put(toWrite); // Write the byte when it is full
+                numberOfBytes = (numberOfBytes + 1) % 8; // Add one to the number of bytes
+            }
+        }
+    }
+
+    if (numberOfBits != 0) {
+        file.put(toWrite >> (8 - numberOfBits));
+        numberOfBits = 0; // Write the last byte out 
+    }
+    
+    if (numberOfBytes != 0) {
+        for (auto i = 0; i < (7 - numberOfBytes); i++) {
+            file.put(0); // Padding so the number of bytes is a muliple of 8
+        }
+        numberOfBytes = 0;
+    }
+
+    for (auto x = 0; x < width - 1; x++) {
+        for (auto y = 0; y < height; y++) {
+            BasicTile tile = maze.at(x).at(height - 1 - y);
+
+            toWrite >>= 1;
+            if (tile.walls[Direction::EAST] == true) {
+                toWrite |= 1 << 7; // Set the MSB bit as one
+            }
+            numberOfBits = (numberOfBits + 1) % 8;
+
+            if (numberOfBits == 0) {
+                file.put(toWrite); // Write the byte when it is full
+                numberOfBytes = (numberOfBytes + 1) % 8; // Add one to the number of bytes
+            }
+        }
+    }
+
+    if (numberOfBits != 0) {
+        file.put(toWrite >> (8 - numberOfBits));
+    }
+
+    if (numberOfBytes != 0) {
+        for (auto i = 0; i < (7 - numberOfBytes); i++) {
+            file.put(0); // Padding so the number of bytes is a muliple of 8
+        }
+    }
+
+    // Make sure to close the file
+    file.close();
+
+    // Return success
+    return true;
 }
 
 bool MazeFileUtilities::saveMazeFileNumType(
@@ -403,7 +499,7 @@ bool MazeFileUtilities::saveMazeFileNumType(
         const std::string& mazeFilePath) {
 
     // Create the stream
-    std::ofstream file(mazeFilePath.c_str());
+    std::ofstream file(mazeFilePath.c_str(), std::ios::trunc);
 
     // Make sure the file is open
     if (!file.is_open()) {
@@ -417,7 +513,7 @@ bool MazeFileUtilities::saveMazeFileNumType(
             for (Direction direction : DIRECTIONS) {
                 file << " " << (maze.at(x).at(y).walls.at(direction) ? 1 : 0);
             }
-            file << std::endl;
+            file << "\n"; // std::endl flushes the buffer everytime its called
         }
     }
 
