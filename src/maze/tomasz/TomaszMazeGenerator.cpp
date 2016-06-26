@@ -51,7 +51,7 @@ void TomaszMazeGenerator::generateMaze(int mazeWidth, int mazeHeight) {
     TomMazeGenTile* t = getTile(0,0);
     m_stack.push(t);
                         
-    const float deadEndBreak = tomDeadEndBreakChance;
+    const double deadEndBreak = tomDeadEndBreakChance;
     
     // Continue to DFS until we've explored every Tile
     while (m_stack.empty() == false) {
@@ -96,16 +96,16 @@ void TomaszMazeGenerator::generateMaze(int mazeWidth, int mazeHeight) {
             m_direction = UNDEFINED; // Once we start backtracing there is no last move
         } else {
                     
-            const float xCenterDistance = (abs(xPos - m_width / 2.0) * 2.0) / (m_width-1); //ratios of how far you are from the center
-            const float yCenterDistance = (abs(yPos - m_height / 2.0) * 2.0) / (m_height-1);
+            const double xCenterDistance = (abs(xPos - m_width / 2.0) * 2.0) / (m_width-1); //ratios of how far you are from the center
+            const double yCenterDistance = (abs(yPos - m_height / 2.0) * 2.0) / (m_height-1);
             
-            const static float straightFactor = tomStraightFactor;
+            const static double straightFactor = tomStraightFactor;
 
             // the chance the algorithm will continue same direction of tavel
             // if zero the maze will always turn. if 1 maze will be longest possible
             // Currently proprtional to distance from center <see below>
 
-            const float moveConst = straightFactor * std::max(xCenterDistance, yCenterDistance);
+            const double moveConst = straightFactor * std::max(xCenterDistance, yCenterDistance);
             
             Direction directionToMove = getDirectionToMove(moveConst, choices);
             
@@ -128,8 +128,8 @@ void TomaszMazeGenerator::pathIntoCenter() {
     
     Direction directions[4] = {NORTH, EAST, SOUTH, WEST};
     
-    int xCenter = std::round(static_cast<double>(m_width) / 2.0) - 1; // 0 based vector
-    int yCenter = std::round(static_cast<double>(m_height) / 2.0) - 1;
+    int xCenter = static_cast<int>(std::round(static_cast<double>(m_width) / 2.0) - 1); // 0 based vector
+    int yCenter = static_cast<int>(std::round(static_cast<double>(m_height) / 2.0) - 1);
     
     int greatestGradient = 0;
     int xPosOfGreatest = xCenter;
@@ -391,7 +391,7 @@ void TomaszMazeGenerator::breakGradientWall(int xPos, int yPos) {
     int currentCellDist = getTile(xPos, yPos)->distanceFromStart;
     int biggestDifference = 0;
     Direction cellToBreak = UNDEFINED;
-    const static float breakThreshold = tomDeadEndBreakThreshold;
+    const static double breakThreshold = tomDeadEndBreakThreshold;
         
     // If cell to the North is valid and explored
     if (isValidExploredTile(xPos, yPos, NORTH)) {
@@ -529,8 +529,8 @@ void TomaszMazeGenerator::makeCenter(){
     // this rounded will result in middle.  Middle square of 3 is 2.
     // 3 / 2 = 1.5 -> 2         4 / 2 = 2 -> 2 
     
-    int xCenter = std::round(static_cast<double>(m_width) / 2.0) - 1; // 0 based vector
-    int yCenter = std::round(static_cast<double>(m_height) / 2.0) - 1;
+    int xCenter = static_cast<int>(std::round(static_cast<double>(m_width) / 2.0) - 1); // 0 based vector
+    int yCenter = static_cast<int>(std::round(static_cast<double>(m_height) / 2.0) - 1);
     
     getTile(xCenter, yCenter)->isCenter = true; // This is always the middle
     
