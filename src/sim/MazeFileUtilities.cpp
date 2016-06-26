@@ -77,7 +77,7 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMapType(
     int rowsFromTopOfMaze = -1;
 
     // Iterate over all of the lines
-    for (int i = 0; i < lines.size(); i += 1) {
+    for (auto i = 0; i < lines.size(); i += 1) {
         std::string line = lines.at(i);
 
         // Special case for the first line of the file
@@ -247,6 +247,11 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMz2Type(
                       (getPopBack(&characters) << 8) +
                       (getPopBack(&characters));
     
+    // Let's make sure we do not read a massive size and go on forerver
+    if (width > 256 || height > 256) {
+        throw std::exception();
+    }
+
     std::vector<std::vector<BasicTile>> maze;
 
     for (auto x = 0; x < width; x++) {
