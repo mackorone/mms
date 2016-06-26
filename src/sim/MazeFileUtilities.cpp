@@ -29,10 +29,6 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMaze(
     TRY(return loadMazeFileMapType(mazeFilePath));
     TRY(return loadMazeFileMazType(mazeFilePath));
 
-    // Interesting order dependance. The MapType loader somehow manages to wrongly decode the
-    // MAZ filetype. This also produced an interesting issue. MAZ which causes the program 
-    // to crash.
-    //
     // I have moved maze file validation into the load routine so that the above issue won't happen
     // anymore. This makes sense becuase the load routine should succesfully load a valid maze
     // before it returns. This would prevent any decoder from incorrectly decoding the file.
@@ -68,7 +64,7 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMapType(
             lines.push_back(line);
         }
     }
-    file.close();
+    file.close(); // The file should be read and closed up here since we might error out
 
     // The maze to be returned
     std::vector<std::vector<BasicTile>> upsideDownMaze;
@@ -173,7 +169,7 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMazType(
     while (file.get(character)) {
         characters.push_back(character);
     }
-    file.close();
+    file.close(); // The file should be read and closed up here since we might error out
 
     // The maze to be returned
     std::vector<std::vector<BasicTile>> maze;
@@ -186,9 +182,9 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMazType(
             int walls = characters.at(x * 16 + y);
             BasicTile tile;
             //Each byte reprsents the walls like this: 'X X X X W S E N'
-            tile.walls[Direction::WEST] = (walls & 1 << 3) != 0;
+            tile.walls[Direction::WEST]  = (walls & 1 << 3) != 0;
             tile.walls[Direction::SOUTH] = (walls & 1 << 2) != 0;
-            tile.walls[Direction::EAST] = (walls & 1 << 1) != 0;
+            tile.walls[Direction::EAST]  = (walls & 1 << 1) != 0;
             tile.walls[Direction::NORTH] = (walls & 1 << 0) != 0;
             column.push_back(tile);
         }
@@ -205,9 +201,114 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMazType(
 
 std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMz2Type(
         const std::string& mazeFilePath) {
-    // TODO: upforgrabs
-    // Implement this
-    throw std::exception();
+
+    std::vector<char> characters;
+    std::ifstream file(mazeFilePath.c_str());
+    char character = ' ';
+    while (file.get(character)) {
+        characters.push_back(character);
+    }
+    file.close(); // The file should be read and closed up here since we might error out
+
+    auto vectorIterator = characters.begin();
+
+    uint32_t stringLength = (*vectorIterator++ << 4) + *vectorIterator++;
+
+    std::string mazeName; // The title is not used, but here if needed
+                          // It is a UTF-8 formatted sring
+
+    if (stringLength != 0) {
+        while (stringLength != 0) {
+            unsigned char character = *vectorIterator++;
+            mazeName += character;
+            if (character >> 7 == 0 ||
+                character >> 6 == 3) { // 11 in binary
+                // This is a utf-8 formated string.  Only decrement the counter
+                // if it is the first character of a sequence.
+                stringLength--;
+            }
+        }
+    }
+
+    uint32_t width = (*vectorIterator++ << 24) +
+                     (*vectorIterator++ << 16) +
+                     (*vectorIterator++ << 8) +
+                     (*vectorIterator++);
+
+    uint32_t height = (*vectorIterator++ << 24) +
+                      (*vectorIterator++ << 16) +
+                      (*vectorIterator++ << 8) +
+                      (*vectorIterator++);
+    
+    std::vector<std::vector<BasicTile>> maze;
+
+    for (auto x = 0; x < width; x++) {
+        std::vector<BasicTile> column;
+        for (auto y = 0; y < height; y++) {
+            BasicTile tile;
+            for (Direction direction : DIRECTIONS) {
+                // Make a filled maze so we get the maze border for free
+                // and don't need any special logic to make it happen
+                tile.walls.insert(std::make_pair(direction, true));
+            }
+            column.push_back(tile);
+        }
+        maze.push_back(column);
+    }
+
+    int numberOfBits = 0;
+    int numberOfBytes = 0;
+    unsigned char byte = *vectorIterator++;
+
+    for (auto y = 0; y < height - 1; y++) {
+        for (auto x = 0; x < width; x++) {
+            bool wallExists = (byte & 1) == 1;
+            byte >>= 1;
+
+            maze.at(x).at(height - 1 - y).walls[Direction::SOUTH] = wallExists;
+            maze.at(x).at(height - 1 - y - 1).walls[Direction::NORTH] = wallExists;
+
+            numberOfBits = (numberOfBits + 1) % 8;
+
+            if (numberOfBits == 0) {
+                byte = *vectorIterator++;
+                numberOfBytes = (numberOfBytes + 1) % 8; // Add one to the number of bytes
+            }
+        }
+    }
+
+    if (numberOfBytes != 0) {
+        for (auto i = 0; i < (7 - numberOfBytes); i++) {
+            *vectorIterator++; // Padding so the number of bytes is a muliple of 8
+        }
+        numberOfBytes = 0;
+    }
+    numberOfBits = 0;
+
+    byte = *vectorIterator++;
+
+    for (auto x = 0; x < width - 1; x++) {
+        for (auto y = 0; y < height; y++) {
+            bool wallExists = (byte & 1) == 1;
+            byte >>= 1;
+
+            maze.at(x).at(height - 1 - y).walls[Direction::EAST] = wallExists;
+            maze.at(x + 1).at(height - 1 - y).walls[Direction::WEST] = wallExists;
+            
+            numberOfBits = (numberOfBits + 1) % 8;
+
+            if (numberOfBits == 0) {
+                byte = *vectorIterator++;
+                numberOfBytes = (numberOfBytes + 1) % 8; // Add one to the number of bytes
+            }
+        }
+    }
+
+    if (!MazeChecker::isValidMaze(maze)) {
+        throw std::exception(); // The load produced an incorrect maze
+    }
+
+    return maze;
 }
 
 std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileNumType(
@@ -226,7 +327,7 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileNumType(
     while (getline(file, line)) {
         lines.push_back(line);
     }
-    file.close();
+    file.close(); // The file should be read and closed up here since we might error out
 
     // Iterate over all of the lines
     for (std::string line : lines) {
@@ -238,12 +339,17 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileNumType(
         BasicTile tile;
         for (Direction direction : DIRECTIONS) {
             tile.walls.insert(std::make_pair(direction,
-                (1 == SimUtilities::strToInt(tokens.at(2 + SimUtilities::getDirectionIndex(direction))))
+                (1 == std::stoi(tokens.at(2 + SimUtilities::getDirectionIndex(direction))))
+                // We can't use the sim utilities string to into becuase we have to throw an
+                // exception if we fail. The sim utilities throw an assert.
+                //
+                // We might want to rethink throwing the assert. Why not use the std c++ way
+                // of dealing with the error
             ));
         }
 
         // If the tile belongs to a new column, append the current column and then empty it
-        if (maze.size() < SimUtilities::strToInt(tokens.at(0))) {
+        if (maze.size() < std::stoi(tokens.at(0))) {
             maze.push_back(column);
             column.clear();
         }
