@@ -21,8 +21,6 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMaze(
     }\
     catch (...) { }
 
-    int hi = sizeof(0);
-
     // We try these in order of increasing permissiveness
     TRY(return loadMazeFileNumType(mazeFilePath));
     TRY(return loadMazeFileMz2Type(mazeFilePath));
@@ -210,16 +208,25 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMz2Type(
     }
     file.close(); // The file should be read and closed up here since we might error out
 
-    auto vectorIterator = characters.begin();
+    // Reverse the vector order so we can pop back for the next character
+    std::reverse(characters.begin(), characters.end());
 
-    uint32_t stringLength = (*vectorIterator++ << 4) + *vectorIterator++;
+    // Why oh why can't cant iterators throw exceptions when derefrencing to invalid locations
+    // Pop back and get popped element
+    auto getPopBack = [](std::vector<char>* v) {if(v->size()==0){throw std::exception();}
+                                                      auto e = v->back();
+                                                      v->pop_back();
+                                                      return e;};
+
+    uint32_t stringLength = (getPopBack(&characters) << 4) +
+                             getPopBack(&characters);
 
     std::string mazeName; // The title is not used, but here if needed
                           // It is a UTF-8 formatted sring
 
     if (stringLength != 0) {
         while (stringLength != 0) {
-            unsigned char character = *vectorIterator++;
+            unsigned char character = getPopBack(&characters);
             mazeName += character;
             if (character >> 7 == 0 ||
                 character >> 6 == 3) { // 11 in binary
@@ -230,15 +237,15 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMz2Type(
         }
     }
 
-    uint32_t width = (*vectorIterator++ << 24) +
-                     (*vectorIterator++ << 16) +
-                     (*vectorIterator++ << 8) +
-                     (*vectorIterator++);
+    uint32_t width = (getPopBack(&characters) << 24) +
+                     (getPopBack(&characters) << 16) +
+                     (getPopBack(&characters) << 8) +
+                     (getPopBack(&characters));
 
-    uint32_t height = (*vectorIterator++ << 24) +
-                      (*vectorIterator++ << 16) +
-                      (*vectorIterator++ << 8) +
-                      (*vectorIterator++);
+    uint32_t height = (getPopBack(&characters) << 24) +
+                      (getPopBack(&characters) << 16) +
+                      (getPopBack(&characters) << 8) +
+                      (getPopBack(&characters));
     
     std::vector<std::vector<BasicTile>> maze;
 
@@ -258,7 +265,7 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMz2Type(
 
     int numberOfBits = 0;
     int numberOfBytes = 0;
-    unsigned char byte = *vectorIterator++;
+    unsigned char byte = getPopBack(&characters);
 
     for (auto y = 0; y < height - 1; y++) {
         for (auto x = 0; x < width; x++) {
@@ -271,7 +278,7 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMz2Type(
             numberOfBits = (numberOfBits + 1) % 8;
 
             if (numberOfBits == 0) {
-                byte = *vectorIterator++;
+                byte = getPopBack(&characters);
                 numberOfBytes = (numberOfBytes + 1) % 8; // Add one to the number of bytes
             }
         }
@@ -279,13 +286,13 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMz2Type(
 
     if (numberOfBytes != 0) {
         for (auto i = 0; i < (7 - numberOfBytes); i++) {
-            *vectorIterator++; // Padding so the number of bytes is a muliple of 8
+            getPopBack(&characters); // Padding so the number of bytes is a muliple of 8
         }
         numberOfBytes = 0;
     }
     numberOfBits = 0;
 
-    byte = *vectorIterator++;
+    byte = getPopBack(&characters);
 
     for (auto x = 0; x < width - 1; x++) {
         for (auto y = 0; y < height; y++) {
@@ -298,7 +305,7 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMz2Type(
             numberOfBits = (numberOfBits + 1) % 8;
 
             if (numberOfBits == 0) {
-                byte = *vectorIterator++;
+                byte = getPopBack(&characters);
                 numberOfBytes = (numberOfBytes + 1) % 8; // Add one to the number of bytes
             }
         }
