@@ -4,8 +4,8 @@
 #include <set>
 #include <vector>
 
-#include "../maze/IMazeAlgorithm.h"
-#include "../maze/MazeAlgorithms.h"
+// #include "../maze/IMazeAlgorithm.h" // TODO: MACK
+// #include "../maze/MazeAlgorithms.h" // TODO: MACK
 #include "Assert.h"
 #include "Directory.h"
 #include "Logging.h"
@@ -39,16 +39,17 @@ Maze::Maze() {
             SimUtilities::quit();
         }
     }
-    else {
-        if (!MazeAlgorithms::isMazeAlgorithm(P()->mazeAlgorithm())) {
-            L()->error("\"%v\" is not a valid maze algorithm.", P()->mazeAlgorithm());
-            SimUtilities::quit();
-        }
-        basicMaze = getBlankBasicMaze(P()->generatedMazeWidth(), P()->generatedMazeHeight());
-        MazeInterface mazeInterface(&basicMaze);
-        MazeAlgorithms::getMazeAlgorithm(P()->mazeAlgorithm())->generate(
-            P()->generatedMazeWidth(), P()->generatedMazeHeight(), &mazeInterface);
-    }
+    // TODO: MACK
+    // else {
+    //     if (!MazeAlgorithms::isMazeAlgorithm(P()->mazeAlgorithm())) {
+    //         L()->error("\"%v\" is not a valid maze algorithm.", P()->mazeAlgorithm());
+    //         SimUtilities::quit();
+    //     }
+    //     basicMaze = getBlankBasicMaze(P()->generatedMazeWidth(), P()->generatedMazeHeight());
+    //     MazeInterface mazeInterface(&basicMaze);
+    //     MazeAlgorithms::getMazeAlgorithm(P()->mazeAlgorithm())->generate(
+    //         P()->generatedMazeWidth(), P()->generatedMazeHeight(), &mazeInterface);
+    // }
 
     // Check to see if it's a valid maze
     m_isValidMaze = MazeChecker::isValidMaze(basicMaze);

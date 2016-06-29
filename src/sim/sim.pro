@@ -1,15 +1,13 @@
 CONFIG += qt
 CONFIG += object_parallel_to_source
 
-SOURCES += $$files(sim/*.cpp, true)
-SOURCES += $$files(lib/*.cpp, true)
-SOURCES += $$files(maze/*.cpp, true)
+SOURCES += $$files(*.cpp, true)
+SOURCES += $$files(../lib/*.cpp, true) # TODO: Remove this
 
-HEADERS += $$files(sim/*.h, true)
-HEADERS += $$files(lib/*.h, true)
-HEADERS += $$files(maze/*.h, true)
+HEADERS += $$files(*.h, true)
+HEADERS += $$files(../lib/*.h, true) # TODO: Remove this
 
-INCLUDEPATH += lib
+INCLUDEPATH += ../lib
 
 # TODO: MACK - are all of these necessary?
 LIBS += -lGLEW
@@ -18,10 +16,11 @@ LIBS += -lglut
 LIBS += -lGLU
 LIBS += -lpthread
 
-DESTDIR = ../bin
-MOC_DIR = ../moc
-OBJECTS_DIR = ../obj
-RCC_DIR = ../rcc
+# TODO: MACK - make this some sort of variable
+DESTDIR     = ../../bin
+MOC_DIR     = ../../build/moc/sim
+OBJECTS_DIR = ../../build/obj/sim
+RCC_DIR     = ../../build/rcc/sim
 
 # TODO: MACK multiple targets, for tests and for app
 # http://dragly.org/2013/04/19/setting-up-unittest-with-qt-creator/

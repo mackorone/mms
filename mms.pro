@@ -1,5 +1,5 @@
 TEMPLATE=subdirs
-SUBDIRS=src
+SUBDIRS=src/sim src/test
 CONFIG+=ordered
 
 
