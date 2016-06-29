@@ -1,6 +1,9 @@
 #include "Driver.h"
 
+#include <QProcess>
 #include <thread>
+
+#include <iostream> // TODO: MACK
 
 #include "Assert.h"
 #include "Logging.h"
@@ -97,13 +100,23 @@ void Driver::drive(int argc, char* argv[]) {
         // Wait for the window to appear
         SimUtilities::sleep(Seconds(P()->glutInitDuration()));
 
+        /*
+        QProcess process; // TODO: MACK - pass in parent here
+        process.start("ls", QStringList() << ".");
+        process.waitForFinished();
+        QByteArray result = process.readAll();
+        std::cout << QString(result).toStdString() << std::endl;
+        */
+        
         // Begin execution of the mouse algorithm
+        /*
         m_controller->getMouseAlgorithm()->solve(
             m_model->getMaze()->getWidth(),
             m_model->getMaze()->getHeight(),
             m_model->getMaze()->isOfficialMaze(),
             DIRECTION_TO_CHAR.at(m_model->getMouse()->getCurrentDiscretizedRotation()),
             m_controller->getMouseInterface());
+        */
     });
 
     // Start the graphics loop

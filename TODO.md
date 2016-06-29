@@ -1,6 +1,14 @@
 # High Priority
 
+- Fix timestep
+    - Make renderer and physics on same thread
+        - Maybe even collision detection too
 - Run algorithms as separate process
+    - http://doc.qt.io/qt-5/qprocess.html
+- Use Qt XML support
+    - Get rid of other lib/ dependencies
+- QT-ify everything
+- Make GUI
 - Bluetooth communication
 - Support reading or writing more file types
     - .MAZ, .mz2
@@ -65,6 +73,11 @@
     - how many steps
     - ave steps
     - etc.
+- Debugging tips
+- Sensor read duration investigation
+- Locking for sensor reads?
+- How is wheelAdjustmentFactor working for default.xml?
+    - Why do we have to use both contributions in both iterations?
 - Change float to units (including in the ParamParser and Param class)
 - Type safety (in terms of units) of the parameters
 - Can we use mutable in the MouseInterface so declare wall on read is const? Make other methods in that class const?

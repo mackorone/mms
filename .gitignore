@@ -1,10 +1,10 @@
+Makefile
 bin/
+moc/
 obj/
+rcc/
 run/
 zip/
-qmake_bin/
-qmake_obj/
-qmake_moc/
 
 .fuse_hidden*
 *.swp

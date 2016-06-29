@@ -59,6 +59,8 @@ void View::refresh() {
     double start(SimUtilities::getHighResTimestamp());
 
     // First, clear fog as necessary
+    // TODO: MACK
+    /*
     if (m_mouseAlgorithm->automaticallyClearFog()) {
         // TODO: upforgrabs
         // This won't work if the mouse is traveling too quickly and travels more
@@ -67,6 +69,7 @@ void View::refresh() {
             m_model->getMouse()->getCurrentDiscretizedTranslation();
         m_mazeGraphic->setTileFogginess(currentPosition.first, currentPosition.second, false);
     }
+    */
 
     // Determine the starting index of the mouse
     static const int mouseTrianglesStartingIndex = m_graphicCpuBuffer.size();
@@ -102,7 +105,8 @@ void View::refresh() {
     glDisable(GL_SCISSOR_TEST);
 
     // Draw the window header
-    m_header->draw();
+    // TODO: MACK
+    // m_header->draw();
 
     // Display the result
     glutSwapBuffers();

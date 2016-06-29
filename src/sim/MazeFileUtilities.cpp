@@ -85,7 +85,7 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMapType(
         }
 
         // Extract horizontal wall info, tiles structs don't already exist
-        if (0 < line.size() && line.at(0) == delimiter) {
+        if (line.at(0) == delimiter) {
             rowsFromTopOfMaze += 1;
             int position = (spaces.at(0) + 1) / 2; // Center of the wall
             for (int j = 0; j < spaces.size(); j += 1) {
@@ -109,7 +109,7 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMapType(
         }
 
         // Extract vertical wall info, tiles structs already exist
-        else if (0 < lines.at(i - 1).size() && lines.at(i - 1).at(0) == delimiter) {
+        else if (lines.at(i - 1).at(0) == delimiter) {
             int position = 0;
             for (int j = 0; j <= spaces.size(); j += 1) {
                 if (line.size() <= position) {

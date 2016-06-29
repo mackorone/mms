@@ -15,6 +15,14 @@ static const std::string& WALL_DIRECTION_STRING = "WALL";
 
 Controller::Controller(Model* model, View* view) {
 
+    // TODO: MACK
+    m_options.mouseFile = "default.xml";
+    m_options.interfaceType = "DISCRETE";
+    m_options.initialDirection = "NORTH";
+    m_options.tileTextNumberOfRows = 2;
+    m_options.tileTextNumberOfCols = 3;
+    m_options.wheelSpeedFraction = 1.0;
+    /*
     // Validate and initialize the mouse algorithm
     validateMouseAlgorithm(P()->mouseAlgorithm());
     m_mouseAlgorithm = MouseAlgorithms::getMouseAlgorithm(P()->mouseAlgorithm());
@@ -63,6 +71,7 @@ Controller::Controller(Model* model, View* view) {
         view->getAllowableTileTextCharacters(),
         m_options
     );
+    */
 }
 
 StaticMouseAlgorithmOptions Controller::getOptions() {
@@ -79,10 +88,13 @@ MouseInterface* Controller::getMouseInterface() {
 }
 
 void Controller::validateMouseAlgorithm(const std::string& mouseAlgorithm) {
+    // TODO: MACK
+    /*
     if (!MouseAlgorithms::isMouseAlgorithm(mouseAlgorithm)) {
         L()->error("\"%v\" is not a valid mouse algorithm.", mouseAlgorithm);
         SimUtilities::quit();
     }
+    */
 }
 
 void Controller::validateMouseInterfaceType(

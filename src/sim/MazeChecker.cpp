@@ -287,16 +287,21 @@ Direction MazeChecker::directionAfterRightTurn(Direction direction) {
 
 std::pair<int, int> MazeChecker::positionAfterMovingForward(std::pair<int, int> position, Direction direction) {
     return {
+        // X coordinate
         (direction == Direction::EAST ?
             position.first + 1 :
         (direction == Direction::WEST ?
             position.first - 1 :
-        position.first)),
+        // direction == NORTH or SOUTH
+            position.first)),
+
+        // Y coordinate
         (direction == Direction::NORTH ?
             position.second + 1 :
         (direction == Direction::SOUTH ?
             position.second - 1 :
-        position.second))
+        // direction == EAST or WEST
+            position.second))
     };
 }
 

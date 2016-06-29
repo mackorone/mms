@@ -146,6 +146,9 @@ std::vector<std::string> SimUtilities::tokenize(
         bool ignoreEmpties,
         bool respectQuotes) {
 
+    // TODO: upforgrabs
+    // Replace this with some QT function
+
     std::vector<std::string> tokens;
     std::string word = "";
 
