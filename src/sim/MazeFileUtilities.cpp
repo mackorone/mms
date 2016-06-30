@@ -1,13 +1,28 @@
 #include "MazeFileUtilities.h"
 
+#include <QFile>
+#include <QString>
 #include <fstream>
+
+#include "Logging.h" // TODO: MACK
+#include <iostream> // TODO: MACK
 
 #include "SimUtilities.h"
 
 namespace sim {
 
-std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMaze(
-        const std::string& mazeFilePath) {
+QVector<QVector<BasicTile>> MazeFileUtilities::loadFromFile(
+        const QString& mazeFilePath) {
+
+    QFile file(mazeFilePath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        throw std::exception();
+    }
+    return loadFromBytes(file.readAll());
+}
+
+QVector<QVector<BasicTile>> MazeFileUtilities::loadFromBytes(
+        const QByteArray& bytes) {
 
     // Since we don't know anything about the file type ahead of time, we
     // simply brute force try each of the file types until either one succeeds
@@ -20,65 +35,66 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMaze(
     catch (...) { }
 
     // We try these in order of increasing permissiveness
-    TRY(return loadMazeFileNumType(mazeFilePath));
-    TRY(return loadMazeFileMz2Type(mazeFilePath));
-    TRY(return loadMazeFileMapType(mazeFilePath));
-    TRY(return loadMazeFileMazType(mazeFilePath));
+    TRY(return deserializeNumType(bytes));
+    TRY(return deserializeMz2Type(bytes));
+    TRY(return deserializeMapType(bytes));
+    TRY(return deserializeMazType(bytes));
     throw std::exception();
 }
 
 bool MazeFileUtilities::saveMaze(
-        const std::vector<std::vector<BasicTile>>& maze,
-        const std::string& mazeFilePath,
+        const QVector<QVector<BasicTile>>& maze,
+        const QString& mazeFilePath,
         MazeFileType mazeFileType) {
+    // TODO: MACK
+    QByteArray bytes;
     switch (mazeFileType) {
         case MazeFileType::MAP:
-            return saveMazeFileMapType(maze, mazeFilePath);
+            bytes = serializeMapType(maze);
         case MazeFileType::MAZ:
-            return saveMazeFileMazType(maze, mazeFilePath);
+            bytes = serializeMazType(maze);
         case MazeFileType::MZ2:
-            return saveMazeFileMz2Type(maze, mazeFilePath);
+            bytes = serializeMz2Type(maze);
         case MazeFileType::NUM:
-            return saveMazeFileNumType(maze, mazeFilePath);
+            bytes = serializeNumType(maze);
+        default:
+            // TODO: MACK
+            SimUtilities::quit();
     }
+    // TODO: MACK - write to file
+    return false;
 }
 
-std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMapType(
-        const std::string& mazeFilePath) {
+QVector<QVector<BasicTile>> MazeFileUtilities::deserializeMapType(
+        const QByteArray& bytes) {
 
-    // First, read all of the non-empty lines
-    std::vector<std::string> lines;
-    std::ifstream file(mazeFilePath.c_str());
-    std::string line("");
-    while (getline(file, line)) {
-        if (0 < SimUtilities::trim(line).size()) {
-            lines.push_back(line);
-        }
-    }
-    file.close();
+    // First, convert the bytes to lines
+    QStringList lines = QString(bytes).trimmed().split("\n");
 
     // The maze to be returned
-    std::vector<std::vector<BasicTile>> upsideDownMaze;
+    QVector<QVector<BasicTile>> upsideDownMaze;
 
     // The character representing a maze post
     char delimiter = '\0';
 
     // The number of horizontal spaces between columns
-    std::vector<int> spaces;
+    QVector<int> spaces;
 
     // Keep track of what row of the maze we're reading
     int rowsFromTopOfMaze = -1;
 
     // Iterate over all of the lines
     for (int i = 0; i < lines.size(); i += 1) {
-        std::string line = lines.at(i);
+        QString line = lines.at(i);
 
         // Special case for the first line of the file
         if (i == 0) {
-            delimiter = line.at(0);
-            std::vector<std::string> tokens = SimUtilities::tokenize(line, delimiter, false, false);
+            // TODO: MACK - clean this up
+            delimiter = line.at(0).toLatin1();
+            // QVector<QString> tokens = SimUtilities::tokenize(line.toStdString(), delimiter, false, false);
+            QStringList tokens = line.split(delimiter, QString::SkipEmptyParts);
             for (int j = 0; j < tokens.size(); j += 1) {
-                std::vector<BasicTile> column;
+                QVector<BasicTile> column;
                 upsideDownMaze.push_back(column);
                 spaces.push_back(tokens.at(j).size());
             }
@@ -93,12 +109,12 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMapType(
                 for (Direction direction : DIRECTIONS) {
                     tile.walls.insert(std::make_pair(direction, false));
                 }
-                upsideDownMaze.at(j).push_back(tile);
+                upsideDownMaze[j].push_back(tile);
                 if (0 < spaces.at(j)) {
                     bool isWall = line.at(position) != ' ';
-                    upsideDownMaze.at(j).at(rowsFromTopOfMaze).walls.at(Direction::NORTH) = isWall;
+                    upsideDownMaze[j][rowsFromTopOfMaze].walls.at(Direction::NORTH) = isWall;
                     if (0 < rowsFromTopOfMaze) {
-                        upsideDownMaze.at(j).at(rowsFromTopOfMaze - 1).walls.at(Direction::SOUTH) = isWall;
+                        upsideDownMaze[j][rowsFromTopOfMaze - 1].walls.at(Direction::SOUTH) = isWall;
                     }
                 }
                 if (j < spaces.size() - 1) {
@@ -117,10 +133,10 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMapType(
                 }
                 bool isWall = line.at(position) != ' ';
                 if (0 < position) {
-                    upsideDownMaze.at(j - 1).at(rowsFromTopOfMaze).walls.at(Direction::EAST) = isWall;
+                    upsideDownMaze[j - 1][rowsFromTopOfMaze].walls.at(Direction::EAST) = isWall;
                 }
                 if (position < line.size() - 1) {
-                    upsideDownMaze.at(j).at(rowsFromTopOfMaze).walls.at(Direction::WEST) = isWall;
+                    upsideDownMaze[j][rowsFromTopOfMaze].walls.at(Direction::WEST) = isWall;
                 }
                 if (j < spaces.size()) {
                     position += spaces.at(j) + 1;
@@ -131,13 +147,13 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMapType(
 
     // Strip off of the last extraneous row
     for (int i = 0; i < upsideDownMaze.size(); i += 1) {
-        upsideDownMaze.at(i).pop_back();
+        upsideDownMaze[i].pop_back();
     }
 
     // Flip the maze so that it's right side up
-    std::vector<std::vector<BasicTile>> rightSideUpMaze;
+    QVector<QVector<BasicTile>> rightSideUpMaze;
     for (int i = 0; i < upsideDownMaze.size(); i += 1) {
-        std::vector<BasicTile> column;
+        QVector<BasicTile> column;
         for (int j = upsideDownMaze.at(i).size() - 1; j >= 0; j -= 1) {
             column.push_back(upsideDownMaze.at(i).at(j));
         }
@@ -147,43 +163,44 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMapType(
     return rightSideUpMaze;
 }
 
-std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMazType(
-        const std::string& mazeFilePath) {
+QVector<QVector<BasicTile>> MazeFileUtilities::deserializeMazType(
+        const QByteArray& bytes) {
     // TODO: upforgrabs
     // Implement this
     throw std::exception();
 }
 
-std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileMz2Type(
-        const std::string& mazeFilePath) {
+QVector<QVector<BasicTile>> MazeFileUtilities::deserializeMz2Type(
+        const QByteArray& bytes) {
     // TODO: upforgrabs
     // Implement this
     throw std::exception();
 }
 
-std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileNumType(
-        const std::string& mazeFilePath) {
+QVector<QVector<BasicTile>> MazeFileUtilities::deserializeNumType(
+        const QByteArray& bytes) {
 
+    /*
     // The maze to be returned
-    std::vector<std::vector<BasicTile>> maze;
+    QVector<QVector<BasicTile>> maze;
 
     // The column to be appended
-    std::vector<BasicTile> column;
+    QVector<BasicTile> column;
 
     // First, read the entirety of the file
-    std::vector<std::string> lines;
+    QVector<QString> lines;
     std::ifstream file(mazeFilePath.c_str());
-    std::string line("");
+    QString line("");
     while (getline(file, line)) {
         lines.push_back(line);
     }
     file.close();
 
     // Iterate over all of the lines
-    for (std::string line : lines) {
+    for (QString line : lines) {
 
         // Put the tokens in a vector
-        std::vector<std::string> tokens = SimUtilities::tokenize(line, ' ', true, false);
+        QVector<QString> tokens = SimUtilities::tokenize(line, ' ', true, false);
 
         // Fill the BasicTile object with the values
         BasicTile tile;
@@ -207,12 +224,14 @@ std::vector<std::vector<BasicTile>> MazeFileUtilities::loadMazeFileNumType(
     maze.push_back(column);
 
     return maze;
+    */
+    throw std::exception();
 }
 
-bool MazeFileUtilities::saveMazeFileMapType(
-        const std::vector<std::vector<BasicTile>>& maze,
-        const std::string& mazeFilePath) {
+QByteArray MazeFileUtilities::serializeMapType(
+        const QVector<QVector<BasicTile>>& maze) {
 
+    /*
     // The characters to use in the file
     char post = '+';
     char space = ' ';
@@ -220,8 +239,8 @@ bool MazeFileUtilities::saveMazeFileMapType(
     char horizontal = '-';
 
     // A blank line, and a list of all lines to be written
-    std::string blankLine(4 * maze.size() + 1, space);
-    std::vector<std::string> upsideDownLines {blankLine};
+    QString blankLine(4 * maze.size() + 1, space);
+    QVector<QString> upsideDownLines {blankLine};
 
     // For all tiles in the maze
     for (int i = 0; i < maze.size(); i += 1) {
@@ -264,7 +283,7 @@ bool MazeFileUtilities::saveMazeFileMapType(
     }
 
     // Flip the lines so that they're right side up
-    std::vector<std::string> rightSideUpLines;
+    QVector<QString> rightSideUpLines;
     for (int i = upsideDownLines.size() - 1; i >= 0; i -= 1) {
         rightSideUpLines.push_back(upsideDownLines.at(i));
     }
@@ -278,7 +297,7 @@ bool MazeFileUtilities::saveMazeFileMapType(
     }
 
     // Write to the file
-    for (std::string line : rightSideUpLines) {
+    for (QString line : rightSideUpLines) {
         file << line << std::endl;
     }
 
@@ -287,28 +306,28 @@ bool MazeFileUtilities::saveMazeFileMapType(
 
     // Return success
     return true;
+    */
+    throw std::exception();
 }
 
-bool MazeFileUtilities::saveMazeFileMazType(
-        const std::vector<std::vector<BasicTile>>& maze,
-        const std::string& mazeFilePath) {
+QByteArray MazeFileUtilities::serializeMazType(
+        const QVector<QVector<BasicTile>>& maze) {
     // TODO: upforgrabs
     // Implement this
     throw std::exception();
 }
 
-bool MazeFileUtilities::saveMazeFileMz2Type(
-        const std::vector<std::vector<BasicTile>>& maze,
-        const std::string& mazeFilePath) {
+QByteArray MazeFileUtilities::serializeMz2Type(
+        const QVector<QVector<BasicTile>>& maze) {
     // TODO: upforgrabs
     // Implement this
     throw std::exception();
 }
 
-bool MazeFileUtilities::saveMazeFileNumType(
-        const std::vector<std::vector<BasicTile>>& maze,
-        const std::string& mazeFilePath) {
+QByteArray MazeFileUtilities::serializeNumType(
+        const QVector<QVector<BasicTile>>& maze) {
 
+    /*
     // Create the stream
     std::ofstream file(mazeFilePath.c_str());
 
@@ -333,6 +352,8 @@ bool MazeFileUtilities::saveMazeFileNumType(
 
     // Return success
     return true;
+    */
+    throw std::exception();
 }
 
 } //namespace sim

@@ -1,5 +1,9 @@
 #include "Maze.h"
 
+// TODO: MACK
+#include <QProcess>
+#include <QString>
+
 #include <queue>
 #include <set>
 #include <vector>
@@ -21,14 +25,15 @@ namespace sim {
 
 Maze::Maze() {
     
-    std::vector<std::vector<BasicTile>> basicMaze;
+    QVector<QVector<BasicTile>> basicMaze;
 
     if (P()->useMazeFile()) {
         std::string mazeFilePath = Directory::getResMazeDirectory() + P()->mazeFile();
         try {
-            basicMaze = MazeFileUtilities::loadMaze(mazeFilePath);
+            basicMaze = MazeFileUtilities::loadFromFile(QString(mazeFilePath.c_str()));
         }
         catch (...) {
+            // TODO: MACK - clean this up
             std::string reason = (
                 SimUtilities::isFile(mazeFilePath) ?
                 "invalid format" : "file doesn't exist");
@@ -38,6 +43,13 @@ Maze::Maze() {
                 reason);
             SimUtilities::quit();
         }
+    }
+    else {
+        QProcess process; // TODO: MACK - pass in parent here
+        process.start("python", QStringList() << "/home/mack/Desktop/test.py");
+        process.waitForFinished();
+        QByteArray bytes = process.readAll();
+        basicMaze = MazeFileUtilities::loadFromBytes(bytes);
     }
     // TODO: MACK
     // else {
@@ -62,7 +74,8 @@ Maze::Maze() {
         MazeFileType type = STRING_TO_MAZE_FILE_TYPE.at(P()->generatedMazeType());
         std::string mazeFilePath = Directory::getResMazeDirectory() +
             P()->generatedMazeFile() + MAZE_FILE_TYPE_TO_SUFFIX.at(type);
-        bool success = MazeFileUtilities::saveMaze(basicMaze, mazeFilePath, type);
+        // TODO: MACK
+        bool success = false; // MazeFileUtilities::saveMaze(basicMaze, mazeFilePath, type);
         if (success) {
             L()->info("Maze saved to \"%v\".", mazeFilePath);
         }
@@ -71,21 +84,22 @@ Maze::Maze() {
         }
     }
 
+    // TODO: MACK - get to work with QVector
     // Mirror and rotate the maze
-    if (P()->mazeMirrored()) {
-        basicMaze = mirrorAcrossVertical(basicMaze);
-        L()->info("Mirroring the maze across the vertical.");
-    }
-    for (int i = 0; i < P()->mazeRotations(); i += 1) {
-        basicMaze = rotateCounterClockwise(basicMaze);
-        L()->info("Rotating the maze counter-clockwise (%vx).", i + 1);
-    }
+    // if (P()->mazeMirrored()) {
+    //     basicMaze = mirrorAcrossVertical(basicMaze);
+    //     L()->info("Mirroring the maze across the vertical.");
+    // }
+    // for (int i = 0; i < P()->mazeRotations(); i += 1) {
+    //     basicMaze = rotateCounterClockwise(basicMaze);
+    //     L()->info("Rotating the maze counter-clockwise (%vx).", i + 1);
+    // }
 
-    // Then, store whether or not the maze is an official maze
-    m_isOfficialMaze = m_isValidMaze && MazeChecker::isOfficialMaze(basicMaze);
-    if (m_isValidMaze && !m_isOfficialMaze) {
-        L()->warn("The maze did not pass the \"is official maze\" tests.");
-    }
+    // // Then, store whether or not the maze is an official maze
+    // m_isOfficialMaze = m_isValidMaze && MazeChecker::isOfficialMaze(basicMaze);
+    // if (m_isValidMaze && !m_isOfficialMaze) {
+    //     L()->warn("The maze did not pass the \"is official maze\" tests.");
+    // }
 
     // Load the maze given by the maze generation algorithm
     m_maze = initializeFromBasicMaze(basicMaze);
@@ -122,13 +136,14 @@ bool Maze::isOfficialMaze() const {
 }
 
 bool Maze::isCenterTile(int x, int y) const {
-    return ContainerUtilities::vectorContains(
-        MazeChecker::getCenterTiles(getWidth(), getHeight()),
+    return MazeChecker::getCenterTiles(
+        getWidth(), getHeight()
+    ).contains(
         std::make_pair(x, y)
     );
 }
 
-std::vector<std::vector<Tile>> Maze::initializeFromBasicMaze(const std::vector<std::vector<BasicTile>>& basicMaze) {
+std::vector<std::vector<Tile>> Maze::initializeFromBasicMaze(const QVector<QVector<BasicTile>>& basicMaze) {
     std::vector<std::vector<Tile>> maze;
     for (int x = 0; x < basicMaze.size(); x += 1) {
         std::vector<Tile> column;

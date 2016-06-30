@@ -26,6 +26,7 @@
         - 99% of updates are 1ms apart, or something like that
     - Check the sleep duration of updates to make sure that we're actually doing 1000 updates per second
 - Draw dots on edges
+- Make sure QVector<QString> is QStringList
 - Sim time is lagging a little bit
 - Discrete mode speed...
     - Ensure that the wheel speed is not too high in the MouseInterface (so that the mouse does not clip through walls)

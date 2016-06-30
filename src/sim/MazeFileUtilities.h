@@ -1,7 +1,8 @@
 #pragma once
 
-#include <string>
-#include <vector>
+#include <QByteArray>
+#include <QString>
+#include <QVector>
 
 #include "BasicTile.h"
 #include "MazeFileType.h"
@@ -14,38 +15,38 @@ public:
 
     MazeFileUtilities() = delete;
 
-    static std::vector<std::vector<BasicTile>> loadMaze(
-        const std::string& mazeFilePath);
+    // TODO: MACK - clean this API up
+    static QVector<QVector<BasicTile>> loadFromFile(
+        const QString& mazeFilePath);
 
-    static bool saveMaze(
-        const std::vector<std::vector<BasicTile>>& maze,
-        const std::string& mazeFilePath,
+    static QVector<QVector<BasicTile>> loadFromBytes(
+        const QByteArray& bytes);
+
+    static bool saveMaze( // TODO: MACK
+        const QVector<QVector<BasicTile>>& maze,
+        const QString& mazeFilePath,
         MazeFileType mazeFileType);
 
 private:
 
-    static std::vector<std::vector<BasicTile>> loadMazeFileMapType(
-        const std::string& mazeFilePath);
-    static std::vector<std::vector<BasicTile>> loadMazeFileMazType(
-        const std::string& mazeFilePath);
-    static std::vector<std::vector<BasicTile>> loadMazeFileMz2Type(
-        const std::string& mazeFilePath);
-    static std::vector<std::vector<BasicTile>> loadMazeFileNumType(
-        const std::string& mazeFilePath);
+    // TODO: MACK - define a struct for a basic maze
+    static QVector<QVector<BasicTile>> deserializeMapType(
+        const QByteArray& bytes);
+    static QVector<QVector<BasicTile>> deserializeMazType(
+        const QByteArray& bytes);
+    static QVector<QVector<BasicTile>> deserializeMz2Type(
+        const QByteArray& bytes);
+    static QVector<QVector<BasicTile>> deserializeNumType(
+        const QByteArray& bytes);
 
-    static bool saveMazeFileMapType(
-        const std::vector<std::vector<BasicTile>>& maze,
-        const std::string& mapFilePath);
-    static bool saveMazeFileMazType(
-        const std::vector<std::vector<BasicTile>>& maze,
-        const std::string& mapFilePath);
-    static bool saveMazeFileMz2Type(
-        const std::vector<std::vector<BasicTile>>& maze,
-        const std::string& mapFilePath);
-    static bool saveMazeFileNumType(
-        const std::vector<std::vector<BasicTile>>& maze,
-        const std::string& mapFilePath);
-
+    static QByteArray serializeMapType(
+        const QVector<QVector<BasicTile>>& maze);
+    static QByteArray serializeMazType(
+        const QVector<QVector<BasicTile>>& maze);
+    static QByteArray serializeMz2Type(
+        const QVector<QVector<BasicTile>>& maze);
+    static QByteArray serializeNumType(
+        const QVector<QVector<BasicTile>>& maze);
 };
 
 } // namespace sim

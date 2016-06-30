@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QVector>
+
 #include <string>
 #include <vector>
 
@@ -30,7 +32,7 @@ private:
     bool m_isOfficialMaze;
 
     // Initializes all of the tiles of the basic maze
-    static std::vector<std::vector<Tile>> initializeFromBasicMaze(const std::vector<std::vector<BasicTile>>& basicMaze);
+    static std::vector<std::vector<Tile>> initializeFromBasicMaze(const QVector<QVector<BasicTile>>& basicMaze);
 
     // Returns a basic maze of a particular width and height
     static std::vector<std::vector<BasicTile>> getBlankBasicMaze(int mazeWidth, int mazeHeight);

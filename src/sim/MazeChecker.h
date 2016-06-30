@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include <QVector>
 
 #include "BasicTile.h"
 
@@ -14,29 +14,29 @@ public:
     MazeChecker() = delete;
 
     // Returns true is a maze is valid (usable by the simulator), false otherwise
-    static bool isValidMaze(const std::vector<std::vector<BasicTile>>& maze);
+    static bool isValidMaze(const QVector<QVector<BasicTile>>& maze);
 
     // Returns true if a maze complies with the official rules, false otherwise
-    static bool isOfficialMaze(const std::vector<std::vector<BasicTile>>& maze);
+    static bool isOfficialMaze(const QVector<QVector<BasicTile>>& maze);
 
     // Misc. helper function, used by Maze
-    static std::vector<std::pair<int, int>> getCenterTiles(int width, int height);
+    static QVector<std::pair<int, int>> getCenterTiles(int width, int height);
 
 private:
 
     // isValidMaze helper functions
-    static bool isNonempty(const std::vector<std::vector<BasicTile>>& maze);
-    static bool isRectangular(const std::vector<std::vector<BasicTile>>& maze);
-    static bool isEnclosed(const std::vector<std::vector<BasicTile>>& maze);
-    static bool hasConsistentWalls(const std::vector<std::vector<BasicTile>>& maze);
+    static bool isNonempty(const QVector<QVector<BasicTile>>& maze);
+    static bool isRectangular(const QVector<QVector<BasicTile>>& maze);
+    static bool isEnclosed(const QVector<QVector<BasicTile>>& maze);
+    static bool hasConsistentWalls(const QVector<QVector<BasicTile>>& maze);
 
     // isOfficialMaze helper functions
-    static bool hasNoInaccessibleLocations(const std::vector<std::vector<BasicTile>>& maze);
-    static bool hasThreeStartingWalls(const std::vector<std::vector<BasicTile>>& maze);
-    static bool hasOneEntranceToCenter(const std::vector<std::vector<BasicTile>>& maze);
-    static bool hasHollowCenter(const std::vector<std::vector<BasicTile>>& maze);
-    static bool hasWallAttachedToEachNonCenterPost(const std::vector<std::vector<BasicTile>>& maze);
-    static bool isUnsolvableByWallFollower(const std::vector<std::vector<BasicTile>>& maze);
+    static bool hasNoInaccessibleLocations(const QVector<QVector<BasicTile>>& maze);
+    static bool hasThreeStartingWalls(const QVector<QVector<BasicTile>>& maze);
+    static bool hasOneEntranceToCenter(const QVector<QVector<BasicTile>>& maze);
+    static bool hasHollowCenter(const QVector<QVector<BasicTile>>& maze);
+    static bool hasWallAttachedToEachNonCenterPost(const QVector<QVector<BasicTile>>& maze);
+    static bool isUnsolvableByWallFollower(const QVector<QVector<BasicTile>>& maze);
 
     // Misc. helper functions
     static Direction directionAfterLeftTurn(Direction direction);
