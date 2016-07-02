@@ -1,11 +1,10 @@
 #pragma once
 
-#include <QVector>
-
+// TODO: MACK - convert to QT
 #include <string>
 #include <vector>
 
-#include "BasicTile.h"
+#include "BasicMaze.h"
 #include "Tile.h"
 
 namespace sim {
@@ -32,14 +31,11 @@ private:
     bool m_isOfficialMaze;
 
     // Initializes all of the tiles of the basic maze
-    static std::vector<std::vector<Tile>> initializeFromBasicMaze(const QVector<QVector<BasicTile>>& basicMaze);
-
-    // Returns a basic maze of a particular width and height
-    static std::vector<std::vector<BasicTile>> getBlankBasicMaze(int mazeWidth, int mazeHeight);
+    static std::vector<std::vector<Tile>> initializeFromBasicMaze(const BasicMaze& basicMaze);
 
     // Basic maze geometric transformations
-    static std::vector<std::vector<BasicTile>> mirrorAcrossVertical(const std::vector<std::vector<BasicTile>>& basicMaze);
-    static std::vector<std::vector<BasicTile>> rotateCounterClockwise(const std::vector<std::vector<BasicTile>>& basicMaze);
+    static BasicMaze mirrorAcrossVertical(const BasicMaze& basicMaze);
+    static BasicMaze rotateCounterClockwise(const BasicMaze& basicMaze);
 
     // (Re)set the distance values for the tiles in maze that are reachable from the center
     static std::vector<std::vector<Tile>> setTileDistances(std::vector<std::vector<Tile>> maze);

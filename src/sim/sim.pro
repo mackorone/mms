@@ -1,5 +1,6 @@
 CONFIG += qt
 CONFIG += object_parallel_to_source
+CONFIG += warn_off # TODO: Turn these on
 
 SOURCES += $$files(*.cpp, true)
 SOURCES += $$files(../lib/*.cpp, true) # TODO: Remove this

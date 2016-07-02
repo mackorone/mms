@@ -7,7 +7,7 @@ namespace randomize {
 class Randomize : public IMazeAlgorithm {
 
 public:
-    void generate(int mazeWidth, int mazeHeight, sim::MazeInterface* maze);
+    void generate(int mazeWidth, int mazeHeight, MazeInterface* maze);
 
 };
 

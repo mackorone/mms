@@ -7,6 +7,7 @@
 namespace sim {
 
 struct BasicTile {
+    // TODO: MACK - QMap
     std::map<Direction, bool> walls;
 };
 

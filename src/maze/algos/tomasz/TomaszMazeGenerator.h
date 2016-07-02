@@ -2,6 +2,7 @@
 
 #include "../IMazeAlgorithm.h"
 
+#include <map>
 #include <vector>
 #include <stack>
 
@@ -14,10 +15,10 @@ class TomaszMazeGenerator : public IMazeAlgorithm {
 
 public:
 
-    void generate(int mazeWidth, int mazeHeight, sim::MazeInterface* maze);
+    void generate(int mazeWidth, int mazeHeight, MazeInterface* maze);
 
     // TODO: probably rename this...
-    void convertToBasicMaze(sim::MazeInterface* maze);
+    void convertToBasicMaze(MazeInterface* maze);
     
 private:
 
@@ -133,7 +134,7 @@ private:
     Direction m_direction;
 
     // Interface for the maze algorithm
-    sim::MazeInterface* m_mazeInterface;
+    MazeInterface* m_mazeInterface;
 
 };
 

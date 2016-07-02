@@ -1,15 +1,15 @@
 #include "Maze.h"
 
-// TODO: MACK
+#include <QDir>
+#include <QDirIterator>
 #include <QProcess>
 #include <QString>
 
+// TODO: MACK - convert to Qt
 #include <queue>
 #include <set>
 #include <vector>
 
-// #include "../maze/IMazeAlgorithm.h" // TODO: MACK
-// #include "../maze/MazeAlgorithms.h" // TODO: MACK
 #include "Assert.h"
 #include "Directory.h"
 #include "Logging.h"
@@ -25,15 +25,15 @@ namespace sim {
 
 Maze::Maze() {
     
-    QVector<QVector<BasicTile>> basicMaze;
+    BasicMaze basicMaze;
 
     if (P()->useMazeFile()) {
+        // TODO: MACK - clean this up (the file existence check should be in the utility class)
         std::string mazeFilePath = Directory::getResMazeDirectory() + P()->mazeFile();
         try {
             basicMaze = MazeFileUtilities::loadFromFile(QString(mazeFilePath.c_str()));
         }
         catch (...) {
-            // TODO: MACK - clean this up
             std::string reason = (
                 SimUtilities::isFile(mazeFilePath) ?
                 "invalid format" : "file doesn't exist");
@@ -45,23 +45,60 @@ Maze::Maze() {
         }
     }
     else {
+        // TODO: MACK - refactor this logic elsewhere
+        QDir mazeAlgosDir(Directory::getSrcMazeAlgosDirectory().c_str());
+        mazeAlgosDir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
+        mazeAlgosDir.setSorting(QDir::Name | QDir::QDir::IgnoreCase);
+        QStringList algos = mazeAlgosDir.entryList();
+
+        // Check to see if there is some directory with the given name
+        QString selectedMazeAlgo(P()->mazeAlgorithm().c_str());
+        if (!algos.contains(selectedMazeAlgo)) {
+             L()->error("\"%v\" is not a valid maze algorithm.", P()->mazeAlgorithm());
+             SimUtilities::quit();
+        }
+
+        // Get all files in the directory, recursively
+        QDir selectedMazeAlgoDir(mazeAlgosDir);
+        selectedMazeAlgoDir.cd(selectedMazeAlgo);
+        selectedMazeAlgoDir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
+        QDirIterator iterator(selectedMazeAlgoDir, QDirIterator::Subdirectories);
+        QStringList relativePaths;
+        QStringList absolutePaths;
+        while (iterator.hasNext()) {
+            iterator.next();
+            relativePaths << iterator.fileName();
+            absolutePaths << iterator.filePath();
+        }
+
+        // Deduce whether or not it's a C++ or Python algo
+        QStringList args;
+        if (relativePaths.contains(QString("Main.cpp"))) {
+            // TODO: MACK args
+            SimUtilities::quit();
+        }
+        else if (relativePaths.contains(QString("Main.py"))) {
+            args << selectedMazeAlgoDir.absolutePath() + QString("/Main.py");
+            args << QString::number(P()->generatedMazeWidth());
+            args << QString::number(P()->generatedMazeHeight());
+            for (int i = 0; i < args.size(); i += 1) {
+                L()->info("%v", args.at(i).toStdString());
+            }
+        }
+        else {
+            L()->error(
+                "No \"Main.{py,cpp}\" found in \"%v\"",
+                selectedMazeAlgoDir.absolutePath().toStdString()
+            );
+            SimUtilities::quit();
+        }
+
         QProcess process; // TODO: MACK - pass in parent here
-        process.start("python", QStringList() << "/home/mack/Desktop/test.py");
+        process.start("python", args);
         process.waitForFinished();
         QByteArray bytes = process.readAll();
         basicMaze = MazeFileUtilities::loadFromBytes(bytes);
     }
-    // TODO: MACK
-    // else {
-    //     if (!MazeAlgorithms::isMazeAlgorithm(P()->mazeAlgorithm())) {
-    //         L()->error("\"%v\" is not a valid maze algorithm.", P()->mazeAlgorithm());
-    //         SimUtilities::quit();
-    //     }
-    //     basicMaze = getBlankBasicMaze(P()->generatedMazeWidth(), P()->generatedMazeHeight());
-    //     MazeInterface mazeInterface(&basicMaze);
-    //     MazeAlgorithms::getMazeAlgorithm(P()->mazeAlgorithm())->generate(
-    //         P()->generatedMazeWidth(), P()->generatedMazeHeight(), &mazeInterface);
-    // }
 
     // Check to see if it's a valid maze
     m_isValidMaze = MazeChecker::isValidMaze(basicMaze);
@@ -84,22 +121,21 @@ Maze::Maze() {
         }
     }
 
-    // TODO: MACK - get to work with QVector
     // Mirror and rotate the maze
-    // if (P()->mazeMirrored()) {
-    //     basicMaze = mirrorAcrossVertical(basicMaze);
-    //     L()->info("Mirroring the maze across the vertical.");
-    // }
-    // for (int i = 0; i < P()->mazeRotations(); i += 1) {
-    //     basicMaze = rotateCounterClockwise(basicMaze);
-    //     L()->info("Rotating the maze counter-clockwise (%vx).", i + 1);
-    // }
+    if (P()->mazeMirrored()) {
+        basicMaze = mirrorAcrossVertical(basicMaze);
+        L()->info("Mirroring the maze across the vertical.");
+    }
+    for (int i = 0; i < P()->mazeRotations(); i += 1) {
+        basicMaze = rotateCounterClockwise(basicMaze);
+        L()->info("Rotating the maze counter-clockwise (%vx).", i + 1);
+    }
 
-    // // Then, store whether or not the maze is an official maze
-    // m_isOfficialMaze = m_isValidMaze && MazeChecker::isOfficialMaze(basicMaze);
-    // if (m_isValidMaze && !m_isOfficialMaze) {
-    //     L()->warn("The maze did not pass the \"is official maze\" tests.");
-    // }
+    // Then, store whether or not the maze is an official maze
+    m_isOfficialMaze = m_isValidMaze && MazeChecker::isOfficialMaze(basicMaze);
+    if (m_isValidMaze && !m_isOfficialMaze) {
+        L()->warn("The maze did not pass the \"is official maze\" tests.");
+    }
 
     // Load the maze given by the maze generation algorithm
     m_maze = initializeFromBasicMaze(basicMaze);
@@ -143,7 +179,7 @@ bool Maze::isCenterTile(int x, int y) const {
     );
 }
 
-std::vector<std::vector<Tile>> Maze::initializeFromBasicMaze(const QVector<QVector<BasicTile>>& basicMaze) {
+std::vector<std::vector<Tile>> Maze::initializeFromBasicMaze(const BasicMaze& basicMaze) {
     std::vector<std::vector<Tile>> maze;
     for (int x = 0; x < basicMaze.size(); x += 1) {
         std::vector<Tile> column;
@@ -162,26 +198,10 @@ std::vector<std::vector<Tile>> Maze::initializeFromBasicMaze(const QVector<QVect
     return maze;
 }
 
-std::vector<std::vector<BasicTile>> Maze::getBlankBasicMaze(int mazeWidth, int mazeHeight) {
-    std::vector<std::vector<BasicTile>> blankMaze;
-    for (int x = 0; x < mazeWidth; x += 1) {
-        std::vector<BasicTile> column;
-        for (int y = 0; y < mazeHeight; y += 1) {
-            BasicTile tile;
-            for (Direction direction : DIRECTIONS) {
-                tile.walls.insert(std::make_pair(direction, false));
-            }
-            column.push_back(tile);
-        }
-        blankMaze.push_back(column);
-    }
-    return blankMaze;
-}
-
-std::vector<std::vector<BasicTile>> Maze::mirrorAcrossVertical(const std::vector<std::vector<BasicTile>>& basicMaze) {
-    std::vector<std::vector<BasicTile>> mirrored;
+BasicMaze Maze::mirrorAcrossVertical(const BasicMaze& basicMaze) {
+    BasicMaze mirrored;
     for (int x = 0; x < basicMaze.size(); x += 1) {
-        std::vector<BasicTile> column;
+        QVector<BasicTile> column;
         for (int y = 0; y < basicMaze.at(x).size(); y += 1) {
             BasicTile tile;
             tile.walls.insert(std::make_pair(Direction::NORTH,
@@ -199,10 +219,10 @@ std::vector<std::vector<BasicTile>> Maze::mirrorAcrossVertical(const std::vector
     return mirrored; 
 }
 
-std::vector<std::vector<BasicTile>> Maze::rotateCounterClockwise(const std::vector<std::vector<BasicTile>>& basicMaze) {
-    std::vector<std::vector<BasicTile>> rotated;
+BasicMaze Maze::rotateCounterClockwise(const BasicMaze& basicMaze) {
+    BasicMaze rotated;
     for (int x = 0; x < basicMaze.size(); x += 1) {
-        std::vector<BasicTile> row;
+        QVector<BasicTile> row;
         for (int y = basicMaze.at(x).size() - 1; y >= 0; y -= 1) {
             BasicTile tile;
             int rotatedTileX = basicMaze.at(x).size() - 1 - y;
@@ -214,7 +234,7 @@ std::vector<std::vector<BasicTile>> Maze::rotateCounterClockwise(const std::vect
                 rotated.push_back({tile});
             }
             else {
-                rotated.at(rotatedTileX).push_back(tile);
+                rotated[rotatedTileX].push_back(tile);
             }
         }
     }

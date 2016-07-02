@@ -9,6 +9,10 @@
 
 namespace sim {
 
+std::string Directory::getSrcMazeAlgosDirectory() {
+    return getProjectDirectory() + "src/maze/algos/";
+}
+
 std::string Directory::getResDirectory() {
     return getProjectDirectory() + "res/";
 }

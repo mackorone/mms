@@ -1,5 +1,7 @@
 # maze
 
+TODO: MACK - THIS IS OUTDATED
+
 This directory contains all code relevant to user-created maze-generation
 algorithms. Some things to note:
 

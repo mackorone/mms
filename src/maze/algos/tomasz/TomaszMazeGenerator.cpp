@@ -7,13 +7,13 @@
 
 namespace tomasz {
 
-void TomaszMazeGenerator::generate(int mazeWidth, int mazeHeight, sim::MazeInterface* mazeInterface) {
+void TomaszMazeGenerator::generate(int mazeWidth, int mazeHeight, MazeInterface* mazeInterface) {
     m_mazeInterface = mazeInterface;
     generateMaze(mazeWidth, mazeHeight);
     convertToBasicMaze(mazeInterface);
 }
 
-void TomaszMazeGenerator::convertToBasicMaze(sim::MazeInterface* mazeInterface) {
+void TomaszMazeGenerator::convertToBasicMaze(MazeInterface* mazeInterface) {
     for (int x = 0; x < m_width; x += 1) {
         for (int y = 0; y < m_height; y += 1) {
             for (char c : {'n', 'e', 's', 'w'}) {

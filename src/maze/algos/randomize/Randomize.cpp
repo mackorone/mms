@@ -1,8 +1,10 @@
 #include "Randomize.h"
 
+#include <initializer_list>
+
 namespace randomize {
 
-void Randomize::generate(int mazeWidth, int mazeHeight, sim::MazeInterface* maze) {
+void Randomize::generate(int mazeWidth, int mazeHeight, MazeInterface* maze) {
 
     // Percentage chance any one wall will exist
     double wallProb = 0.40;

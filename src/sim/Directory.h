@@ -11,6 +11,9 @@ public:
     // The Directory class is not constructible
     Directory() = delete;
 
+    // mms/maze/algos
+    static std::string getSrcMazeAlgosDirectory();
+
     // mms/res
     static std::string getResDirectory();
 
