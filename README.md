@@ -3,6 +3,11 @@
 ![](https://github.com/mackorone/mms/wiki/imgs/mms.png)
 ![](https://github.com/mackorone/mms/wiki/imgs/mms.gif)
 
+## WARNING
+
+`mms` is broken right now. We're working on porting it over to Qt. If you want
+to use the old version of the simulator, check out `mms/old/v2/`.
+
 ## About
 
 *mms* is a Micromouse simulator. It allows programmers to write and test
