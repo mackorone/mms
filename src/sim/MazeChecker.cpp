@@ -19,6 +19,7 @@ bool MazeChecker::isValidMaze(const QVector<QVector<BasicTile>>& maze) {
         return false;
     }
 
+    // TODO: MACK - these two are more lenient
     if (!isEnclosed(maze)) {
         L()->warn("The maze is not enclosed by walls.");
         return false;

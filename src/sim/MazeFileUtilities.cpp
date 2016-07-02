@@ -1,5 +1,6 @@
 #include "MazeFileUtilities.h"
 
+#include <QChar>
 #include <QFile>
 #include <QString>
 #include <fstream>
@@ -74,6 +75,13 @@ bool MazeFileUtilities::saveMaze(
 QVector<QVector<BasicTile>> MazeFileUtilities::deserializeMapType(
         const QByteArray& bytes) {
 
+    // TODO: MACK
+    // +++
+    // |
+    // +++
+    // +++
+    // Doesn't load
+
     // First, convert the bytes to lines
     QStringList lines = QString(bytes).trimmed().split("\n");
 
@@ -81,7 +89,7 @@ QVector<QVector<BasicTile>> MazeFileUtilities::deserializeMapType(
     QVector<QVector<BasicTile>> upsideDownMaze;
 
     // The character representing a maze post
-    char delimiter = '\0';
+    QChar delimiter('\0');
 
     // The number of horizontal spaces between columns
     QVector<int> spaces;
@@ -95,9 +103,7 @@ QVector<QVector<BasicTile>> MazeFileUtilities::deserializeMapType(
 
         // Special case for the first line of the file
         if (i == 0) {
-            // TODO: MACK - clean this up
-            delimiter = line.at(0).toLatin1();
-            // QVector<QString> tokens = SimUtilities::tokenize(line.toStdString(), delimiter, false, false);
+            delimiter = line.at(0);
             QStringList tokens = line.split(delimiter, QString::SkipEmptyParts);
             for (int j = 0; j < tokens.size(); j += 1) {
                 QVector<BasicTile> column;
@@ -111,6 +117,9 @@ QVector<QVector<BasicTile>> MazeFileUtilities::deserializeMapType(
             rowsFromTopOfMaze += 1;
             int position = (spaces.at(0) + 1) / 2; // Center of the wall
             for (int j = 0; j < spaces.size(); j += 1) {
+                if (line.size() <= position) {
+                    break;
+                }
                 BasicTile tile;
                 for (Direction direction : DIRECTIONS) {
                     tile.walls.insert(std::make_pair(direction, false));
@@ -138,13 +147,11 @@ QVector<QVector<BasicTile>> MazeFileUtilities::deserializeMapType(
                     break;
                 }
                 bool isWall = line.at(position) != ' ';
-                if (0 < position) {
+                if (0 < j) {
                     upsideDownMaze[j - 1][rowsFromTopOfMaze].walls.at(Direction::EAST) = isWall;
                 }
-                if (position < line.size() - 1) {
-                    upsideDownMaze[j][rowsFromTopOfMaze].walls.at(Direction::WEST) = isWall;
-                }
                 if (j < spaces.size()) {
+                    upsideDownMaze[j][rowsFromTopOfMaze].walls.at(Direction::WEST) = isWall;
                     position += spaces.at(j) + 1;
                 }
             }
