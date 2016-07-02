@@ -3,11 +3,13 @@
 #include <QFile>
 #include <QString>
 #include <fstream>
+#include <cstdint>
 
 #include "Logging.h" // TODO: MACK
 #include <iostream> // TODO: MACK
 
 #include "SimUtilities.h"
+#include "MazeChecker.h"
 
 namespace sim {
 
@@ -28,17 +30,21 @@ QVector<QVector<BasicTile>> MazeFileUtilities::loadFromBytes(
     // simply brute force try each of the file types until either one succeeds
     // or they all fail
 
-    #define TRY(statement)\
+    #define TRY(expression, validate)\
     try {\
-        statement;\
+        BasicMaze maze = expression;\
+        if (validate && !MazeChecker::isValidMaze(maze)) {\
+            throw std::exception();\
+        }\
+        return maze;\
     }\
     catch (...) { }
 
-    // We try these in order of increasing permissiveness
-    TRY(return deserializeNumType(bytes));
-    TRY(return deserializeMz2Type(bytes));
-    TRY(return deserializeMapType(bytes));
-    TRY(return deserializeMazType(bytes));
+    // TODO: MACK - We shouldn't print out warning messages here, I don't think
+    TRY(deserializeMazType(bytes), true);
+    TRY(deserializeMz2Type(bytes), true);
+    TRY(deserializeNumType(bytes), true);
+    TRY(deserializeMapType(bytes), false);
     throw std::exception();
 }
 
@@ -165,16 +171,148 @@ QVector<QVector<BasicTile>> MazeFileUtilities::deserializeMapType(
 
 QVector<QVector<BasicTile>> MazeFileUtilities::deserializeMazType(
         const QByteArray& bytes) {
-    // TODO: upforgrabs
-    // Implement this
-    throw std::exception();
+
+    // TODO: Convert this to use Qt
+    std::vector<char> characters(bytes.begin(), bytes.end());
+	
+    // The maze to be returned
+    BasicMaze maze;
+
+    // This maze file format is written to only accomodate 16x16 mazes
+    // We can hardcode this becuase all the load functions run in try blocks
+    for (int x = 0; x < 16; x += 1) {
+        QVector<BasicTile> column;
+        for (int y = 0; y < 16; y += 1) {
+            int walls = characters.at(x * 16 + y);
+            BasicTile tile;
+            //Each byte reprsents the walls like this: 'X X X X W S E N'
+            tile.walls[Direction::WEST]  = (walls & 1 << 3) != 0;
+            tile.walls[Direction::SOUTH] = (walls & 1 << 2) != 0;
+            tile.walls[Direction::EAST]  = (walls & 1 << 1) != 0;
+            tile.walls[Direction::NORTH] = (walls & 1 << 0) != 0;
+            column.push_back(tile);
+        }
+        maze.push_back(column);
+    }
+
+    return maze;
 }
 
 QVector<QVector<BasicTile>> MazeFileUtilities::deserializeMz2Type(
         const QByteArray& bytes) {
-    // TODO: upforgrabs
-    // Implement this
-    throw std::exception();
+
+    // TODO: Convert this to use Qt
+    std::vector<char> characters(bytes.begin(), bytes.end());
+
+    // Reverse the vector order so we can pop back for the next character
+    std::reverse(characters.begin(), characters.end());
+
+    // Why oh why can't cant iterators throw exceptions when derefrencing to invalid locations
+    // Pop back and get popped element
+    auto getPopBack = [](std::vector<char>* v) {if(v->size()==0){throw std::exception();}
+                                                      auto e = v->back();
+                                                      v->pop_back();
+                                                      return e;};
+
+    uint32_t stringLength = (getPopBack(&characters) << 4) +
+                             getPopBack(&characters);
+
+    std::string mazeName; // The title is not used, but here if needed
+                          // It is a UTF-8 formatted sring
+
+    if (stringLength != 0) {
+        while (stringLength != 0) {
+            unsigned char character = getPopBack(&characters);
+            mazeName += character;
+            if (character >> 7 == 0 ||
+                character >> 6 == 3) { // 11 in binary
+                // This is a utf-8 formated string.  Only decrement the counter
+                // if it is the first character of a sequence.
+                stringLength--;
+            }
+        }
+    }
+
+    uint32_t width = (getPopBack(&characters) << 24) +
+                     (getPopBack(&characters) << 16) +
+                     (getPopBack(&characters) << 8) +
+                     (getPopBack(&characters));
+
+    uint32_t height = (getPopBack(&characters) << 24) +
+                      (getPopBack(&characters) << 16) +
+                      (getPopBack(&characters) << 8) +
+                      (getPopBack(&characters));
+    
+    // Let's make sure we do not read a massive size and go on forerver
+    if (width > 256 || height > 256) {
+        throw std::exception();
+    }
+
+    BasicMaze maze;
+
+    for (auto x = 0; x < width; x++) {
+        QVector<BasicTile> column;
+        for (auto y = 0; y < height; y++) {
+            BasicTile tile;
+            for (Direction direction : DIRECTIONS) {
+                // Make a filled maze so we get the maze border for free
+                // and don't need any special logic to make it happen
+                tile.walls.insert(std::make_pair(direction, true));
+            }
+            column.push_back(tile);
+        }
+        maze.push_back(column);
+    }
+
+    int numberOfBits = 0;
+    int numberOfBytes = 0;
+    unsigned char byte = getPopBack(&characters);
+
+    for (auto y = 0; y < height - 1; y++) {
+        for (auto x = 0; x < width; x++) {
+            bool wallExists = (byte & 1) == 1;
+            byte >>= 1;
+
+            maze[x][height - 1 - y].walls[Direction::SOUTH] = wallExists;
+            maze[x][height - 1 - y - 1].walls[Direction::NORTH] = wallExists;
+
+            numberOfBits = (numberOfBits + 1) % 8;
+
+            if (numberOfBits == 0) {
+                byte = getPopBack(&characters);
+                numberOfBytes = (numberOfBytes + 1) % 8; // Add one to the number of bytes
+            }
+        }
+    }
+
+    if (numberOfBytes != 0) {
+        for (auto i = 0; i < (7 - numberOfBytes); i++) {
+            getPopBack(&characters); // Padding so the number of bytes is a muliple of 8
+        }
+        numberOfBytes = 0;
+    }
+    numberOfBits = 0;
+
+    byte = getPopBack(&characters);
+
+    for (auto x = 0; x < width - 1; x++) {
+        for (auto y = 0; y < height; y++) {
+            bool wallExists = (byte & 1) == 1;
+            byte >>= 1;
+
+            maze[x][height - 1 - y].walls[Direction::EAST] = wallExists;
+            maze[x + 1][height - 1 - y].walls[Direction::WEST] = wallExists;
+            
+            numberOfBits = (numberOfBits + 1) % 8;
+
+            if (numberOfBits == 0) {
+                byte = getPopBack(&characters);
+                numberOfBytes = (numberOfBytes + 1) % 8; // Add one to the number of bytes
+            }
+        }
+    }
+
+    return maze;
 }
 
 QVector<QVector<BasicTile>> MazeFileUtilities::deserializeNumType(
@@ -194,7 +332,7 @@ QVector<QVector<BasicTile>> MazeFileUtilities::deserializeNumType(
     while (getline(file, line)) {
         lines.push_back(line);
     }
-    file.close();
+    file.close(); // The file should be read and closed up here since we might error out
 
     // Iterate over all of the lines
     for (QString line : lines) {
@@ -206,12 +344,17 @@ QVector<QVector<BasicTile>> MazeFileUtilities::deserializeNumType(
         BasicTile tile;
         for (Direction direction : DIRECTIONS) {
             tile.walls.insert(std::make_pair(direction,
-                (1 == SimUtilities::strToInt(tokens.at(2 + SimUtilities::getDirectionIndex(direction))))
+                (1 == std::stoi(tokens.at(2 + SimUtilities::getDirectionIndex(direction))))
+                // We can't use the sim utilities string to into becuase we have to throw an
+                // exception if we fail. The sim utilities throw an assert.
+                //
+                // We might want to rethink throwing the assert. Why not use the std c++ way
+                // of dealing with the error
             ));
         }
 
         // If the tile belongs to a new column, append the current column and then empty it
-        if (maze.size() < SimUtilities::strToInt(tokens.at(0))) {
+        if (maze.size() < std::stoi(tokens.at(0))) {
             maze.push_back(column);
             column.clear();
         }
@@ -222,6 +365,10 @@ QVector<QVector<BasicTile>> MazeFileUtilities::deserializeNumType(
 
     // Make sure to append the last column
     maze.push_back(column);
+
+    if (!MazeChecker::isValidMaze(maze)) {
+        throw std::exception(); // The load produced an incorrect maze
+    }
 
     return maze;
     */
@@ -289,7 +436,7 @@ QByteArray MazeFileUtilities::serializeMapType(
     }
 
     // Create the stream
-    std::ofstream file(mazeFilePath.c_str());
+    std::ofstream file(mazeFilePath.c_str(), std::ios::trunc);
 
     // Make sure the file is open
     if (!file.is_open()) {
@@ -298,7 +445,7 @@ QByteArray MazeFileUtilities::serializeMapType(
 
     // Write to the file
     for (QString line : rightSideUpLines) {
-        file << line << std::endl;
+        file << line << '\n'; // std::endl flushes the buffer everytime its called
     }
 
     // Make sure to close the file
@@ -312,15 +459,157 @@ QByteArray MazeFileUtilities::serializeMapType(
 
 QByteArray MazeFileUtilities::serializeMazType(
         const QVector<QVector<BasicTile>>& maze) {
-    // TODO: upforgrabs
-    // Implement this
+
+    /*
+    if (maze.size() != 16) {
+        return false; // We only support 16x16 mazes
+    }
+
+    if (maze.at(0).size() != 16) {
+        // Lets assume the maze is at least rectangular. I don't know if it cannot be
+
+        return false; // We only support 16x16 mazes
+    }
+
+    // Create the stream
+    std::ofstream file(mazeFilePath.c_str(), std::ios::trunc | std::ios::binary);
+    file.imbue(std::locale::classic());
+
+    // Make sure the file is open
+    if (!file.is_open()) {
+        return false;
+    }
+
+    // We hardcode values becuase we specifically checked that the maze
+    // was 16x16 above.
+    for (auto x = 0; x < 16; x++) {
+        for (auto y = 0; y < 16; y++) {
+            BasicTile tile = maze.at(x).at(y);
+            //Each byte reprsents the walls like this: 'X X X X W S E N'
+            int representation = (tile.walls[Direction::WEST]  << 3) +
+                                 (tile.walls[Direction::SOUTH] << 2) +
+                                 (tile.walls[Direction::EAST]  << 1) +
+                                 (tile.walls[Direction::NORTH] << 0);
+
+            file.put(representation);
+        }
+    }
+
+    // Make sure to close the file
+    file.close();
+
+    // Return success
+    return true;
+    */
     throw std::exception();
 }
 
 QByteArray MazeFileUtilities::serializeMz2Type(
         const QVector<QVector<BasicTile>>& maze) {
-    // TODO: upforgrabs
-    // Implement this
+
+    /*
+    // Create the stream
+    std::ofstream file(mazeFilePath.c_str(), std::ios::trunc | std::ios::binary);
+    file.imbue(std::locale::classic());
+
+    // Make sure the file is open
+    if (!file.is_open()) {
+        return false;
+    }
+
+    file.put(0);  // Hardcoded name is: 'Auto Generated Maze' (length: 19)
+    file.put(19); // I am assuming that the length is encoded in 16 bits.
+                  // The spec is unclear
+    
+    file << "Auto Generated Maze";
+
+    uint32_t width = maze.size();
+    uint32_t height = 0;
+
+    if (maze.size() > 0) {
+        height = maze.at(0).size();
+        if (height == 0)
+            return false; // I don't think this should be allowed?
+    }
+    else
+        return false; // I don't think this should be allowed?
+
+    file.put(width >> 24); // width
+    file.put(width >> 16);
+    file.put(width >> 8);
+    file.put(width);
+
+    file.put(height >> 24); // height
+    file.put(height >> 16);
+    file.put(height >> 8);
+    file.put(height);
+
+    int numberOfBits = 0;
+    int numberOfBytes = 0;
+    unsigned char toWrite = 0;
+
+    for (auto y = 0; y < height - 1; y++) {
+        for (auto x = 0; x < width; x++) {
+            BasicTile tile = maze.at(x).at(height - 1 - y);
+
+            toWrite >>= 1;
+            if (tile.walls[Direction::SOUTH] == true) {
+                toWrite |= 1 << 7; // Set the MSB bit as one
+            }
+            numberOfBits = (numberOfBits + 1) % 8;
+
+            if (numberOfBits == 0) {
+                file.put(toWrite); // Write the byte when it is full
+                numberOfBytes = (numberOfBytes + 1) % 8; // Add one to the number of bytes
+            }
+        }
+    }
+
+    if (numberOfBits != 0) {
+        file.put(toWrite >> (8 - numberOfBits));
+        numberOfBits = 0; // Write the last byte out 
+    }
+    
+    if (numberOfBytes != 0) {
+        for (auto i = 0; i < (7 - numberOfBytes); i++) {
+            file.put(0); // Padding so the number of bytes is a muliple of 8
+        }
+        numberOfBytes = 0;
+    }
+
+    for (auto x = 0; x < width - 1; x++) {
+        for (auto y = 0; y < height; y++) {
+            BasicTile tile = maze.at(x).at(height - 1 - y);
+
+            toWrite >>= 1;
+            if (tile.walls[Direction::EAST] == true) {
+                toWrite |= 1 << 7; // Set the MSB bit as one
+            }
+            numberOfBits = (numberOfBits + 1) % 8;
+
+            if (numberOfBits == 0) {
+                file.put(toWrite); // Write the byte when it is full
+                numberOfBytes = (numberOfBytes + 1) % 8; // Add one to the number of bytes
+            }
+        }
+    }
+
+    if (numberOfBits != 0) {
+        file.put(toWrite >> (8 - numberOfBits));
+    }
+
+    if (numberOfBytes != 0) {
+        for (auto i = 0; i < (7 - numberOfBytes); i++) {
+            file.put(0); // Padding so the number of bytes is a muliple of 8
+        }
+    }
+
+    // Make sure to close the file
+    file.close();
+
+    // Return success
+    return true;
+    */
     throw std::exception();
 }
 
@@ -329,7 +618,7 @@ QByteArray MazeFileUtilities::serializeNumType(
 
     /*
     // Create the stream
-    std::ofstream file(mazeFilePath.c_str());
+    std::ofstream file(mazeFilePath.c_str(), std::ios::trunc);
 
     // Make sure the file is open
     if (!file.is_open()) {
@@ -343,7 +632,7 @@ QByteArray MazeFileUtilities::serializeNumType(
             for (Direction direction : DIRECTIONS) {
                 file << " " << (maze.at(x).at(y).walls.at(direction) ? 1 : 0);
             }
-            file << std::endl;
+            file << "\n"; // std::endl flushes the buffer everytime its called
         }
     }
 

@@ -104,6 +104,7 @@ Maze::Maze() {
     m_isValidMaze = MazeChecker::isValidMaze(basicMaze);
     if (!m_isValidMaze) {
         L()->warn("The maze failed validation. The mouse algorithm will not execute.");
+        SimUtilities::quit(); // If we tell the user we give up, we should probably give up?
     }
 
     // Optionally save the maze

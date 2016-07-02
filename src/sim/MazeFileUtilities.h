@@ -11,6 +11,7 @@ namespace sim {
 
 class MazeFileUtilities {
 
+// TODO: MACK - use BasicMaze class
 public:
 
     MazeFileUtilities() = delete;
