@@ -4,11 +4,7 @@
 #include <QDirIterator>
 #include <QProcess>
 #include <QString>
-
-// TODO: MACK - convert to Qt
-#include <queue>
-#include <set>
-#include <vector>
+#include <QQueue>
 
 #include "Assert.h"
 #include "Directory.h"
@@ -31,7 +27,7 @@ Maze::Maze() {
         // TODO: MACK - clean this up (the file existence check should be in the utility class)
         std::string mazeFilePath = Directory::getResMazeDirectory() + P()->mazeFile();
         try {
-            basicMaze = MazeFileUtilities::loadFromFile(QString(mazeFilePath.c_str()));
+            basicMaze = MazeFileUtilities::load(QString(mazeFilePath.c_str()));
         }
         catch (...) {
             std::string reason = (
@@ -97,11 +93,11 @@ Maze::Maze() {
         process.start("python", args);
         process.waitForFinished();
         QByteArray bytes = process.readAll();
-        basicMaze = MazeFileUtilities::loadFromBytes(bytes);
+        basicMaze = MazeFileUtilities::loadBytes(bytes);
     }
 
     // Check to see if it's a valid maze
-    m_isValidMaze = MazeChecker::isValidMaze(basicMaze);
+    m_isValidMaze = MazeChecker::isValidMaze(basicMaze).first;
     if (!m_isValidMaze) {
         L()->warn("The maze failed validation. The mouse algorithm will not execute.");
     }
@@ -112,7 +108,7 @@ Maze::Maze() {
         std::string mazeFilePath = Directory::getResMazeDirectory() +
             P()->generatedMazeFile() + MAZE_FILE_TYPE_TO_SUFFIX.at(type);
         // TODO: MACK
-        bool success = false; // MazeFileUtilities::saveMaze(basicMaze, mazeFilePath, type);
+        bool success = false; // MazeFileUtilities::save(basicMaze, mazeFilePath, type);
         if (success) {
             L()->info("Maze saved to \"%v\".", mazeFilePath);
         }
@@ -132,7 +128,7 @@ Maze::Maze() {
     }
 
     // Then, store whether or not the maze is an official maze
-    m_isOfficialMaze = m_isValidMaze && MazeChecker::isOfficialMaze(basicMaze);
+    m_isOfficialMaze = m_isValidMaze && MazeChecker::isOfficialMaze(basicMaze).first;
     if (m_isValidMaze && !m_isOfficialMaze) {
         L()->warn("The maze did not pass the \"is official maze\" tests.");
     }
@@ -155,7 +151,7 @@ bool Maze::withinMaze(int x, int y) const {
 
 Tile* Maze::getTile(int x, int y) {
     SIM_ASSERT_TR(withinMaze(x, y));
-    return &m_maze.at(x).at(y);
+    return &m_maze[x][y];
 }
 
 const Tile* Maze::getTile(int x, int y) const {
@@ -164,7 +160,7 @@ const Tile* Maze::getTile(int x, int y) const {
 }
 
 bool Maze::isValidMaze() const {
-    return m_isValidMaze;
+    return m_isOfficialMaze;
 }
 
 bool Maze::isOfficialMaze() const {
@@ -172,17 +168,14 @@ bool Maze::isOfficialMaze() const {
 }
 
 bool Maze::isCenterTile(int x, int y) const {
-    return MazeChecker::getCenterTiles(
-        getWidth(), getHeight()
-    ).contains(
-        std::make_pair(x, y)
-    );
+    return MazeChecker::getCenterTiles(getWidth(), getHeight()).contains({x, y});
 }
 
-std::vector<std::vector<Tile>> Maze::initializeFromBasicMaze(const BasicMaze& basicMaze) {
-    std::vector<std::vector<Tile>> maze;
+QVector<QVector<Tile>> Maze::initializeFromBasicMaze(const BasicMaze& basicMaze) {
+    // TODO: MACK - assert valid here
+    QVector<QVector<Tile>> maze;
     for (int x = 0; x < basicMaze.size(); x += 1) {
-        std::vector<Tile> column;
+        QVector<Tile> column;
         for (int y = 0; y < basicMaze.at(x).size(); y += 1) {
             Tile tile;
             tile.setPos(x, y);
@@ -194,9 +187,7 @@ std::vector<std::vector<Tile>> Maze::initializeFromBasicMaze(const BasicMaze& ba
         }
         maze.push_back(column);
     }
-    if (MazeChecker::isValidMaze(basicMaze)) {
-        maze = setTileDistances(maze);
-    }
+    maze = setTileDistances(maze);
     return maze;
 }
 
@@ -243,7 +234,7 @@ BasicMaze Maze::rotateCounterClockwise(const BasicMaze& basicMaze) {
     return rotated;
 }
 
-std::vector<std::vector<Tile>> Maze::setTileDistances(std::vector<std::vector<Tile>> maze) {
+QVector<QVector<Tile>> Maze::setTileDistances(QVector<QVector<Tile>> maze) {
 
     // The maze is guarenteed to be nonempty and rectangular
     int width = maze.size();
@@ -253,49 +244,50 @@ std::vector<std::vector<Tile>> Maze::setTileDistances(std::vector<std::vector<Ti
     auto getNeighbor = [&maze, &width, &height](int x, int y, Direction direction) {
         switch (direction) {
             case Direction::NORTH:
-                return (y < height - 1 ? &maze.at(x).at(y + 1) : nullptr);
+                return (y < height - 1 ? &maze[x][y + 1] : nullptr);
             case Direction::EAST:
-                return (x < width - 1 ? &maze.at(x + 1).at(y) : nullptr);
+                return (x < width - 1 ? &maze[x + 1][y] : nullptr);
             case Direction::SOUTH:
-                return (0 < y ? &maze.at(x).at(y - 1) : nullptr);
+                return (0 < y ? &maze[x][y - 1] : nullptr);
             case Direction::WEST:
-                return (0 < x ? &maze.at(x - 1).at(y) : nullptr);
+                return (0 < x ? &maze[x - 1][y] : nullptr);
         }
     };
 
     // Determine all of the center tiles
-    std::vector<Tile*> centerTiles;
-            centerTiles.push_back(&maze.at((width - 1) / 2).at((height - 1) / 2));
+    // TODO: MACK - use the maze checker function for this
+    QVector<Tile*> centerTiles;
+            centerTiles.push_back(&maze[(width - 1) / 2][(height - 1) / 2]);
     if (width % 2 == 0) {
-            centerTiles.push_back(&maze.at( width      / 2).at((height - 1) / 2));
+            centerTiles.push_back(&maze[ width      / 2][(height - 1) / 2]);
         if (height % 2 == 0) {
-            centerTiles.push_back(&maze.at((width - 1) / 2).at( height      / 2));
-            centerTiles.push_back(&maze.at( width      / 2).at( height      / 2));
+            centerTiles.push_back(&maze[(width - 1) / 2][ height      / 2]);
+            centerTiles.push_back(&maze[ width      / 2][ height      / 2]);
         }
     }
     else if (height % 2 == 0) {
-            centerTiles.push_back(&maze.at((width - 1) / 2).at( height      / 2));
+            centerTiles.push_back(&maze[(width - 1) / 2][ height      / 2]);
     }
 
     // The queue for the BFS
-    std::queue<Tile*> discovered;
+    QQueue<Tile*> discovered;
 
     // Set the distances of the center tiles and push them to the queue
     for (Tile* tile : centerTiles) {
         tile->setDistance(0); 
-        discovered.push(tile);
+        discovered.push_back(tile);
     }
 
     // Now do a BFS
     while (!discovered.empty()){
         Tile* tile = discovered.front();
-        discovered.pop(); // Removes the element
+        discovered.pop_front(); // Removes the element
         for (Direction direction : DIRECTIONS) {
             if (!tile->isWall(direction)) {
                 Tile* neighbor = getNeighbor(tile->getX(), tile->getY(), direction);
                 if (neighbor != nullptr && neighbor->getDistance() == -1) {
                     neighbor->setDistance(tile->getDistance() + 1);
-                    discovered.push(neighbor);
+                    discovered.push_back(neighbor);
                 }
             }
         }

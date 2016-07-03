@@ -3,38 +3,37 @@
 #include <QChar>
 #include <QFile>
 #include <QString>
+
+// TODO: MACK - convert to Qt after Tomasz is done fixing
 #include <fstream>
 #include <cstdint>
-
-#include "Logging.h" // TODO: MACK
-#include <iostream> // TODO: MACK
-
+#include "Logging.h"
 #include "SimUtilities.h"
+
 #include "MazeChecker.h"
 
 namespace sim {
 
-QVector<QVector<BasicTile>> MazeFileUtilities::loadFromFile(
-        const QString& mazeFilePath) {
-
-    QFile file(mazeFilePath);
+BasicMaze MazeFileUtilities::load(const QString& path) {
+    QFile file(path);
     if (!file.open(QIODevice::ReadOnly)) {
+        // TODO: MACK - document what this throws
         throw std::exception();
     }
-    return loadFromBytes(file.readAll());
+    return loadBytes(file.readAll());
 }
 
-QVector<QVector<BasicTile>> MazeFileUtilities::loadFromBytes(
-        const QByteArray& bytes) {
+BasicMaze MazeFileUtilities::loadBytes(const QByteArray& bytes) {
 
     // Since we don't know anything about the file type ahead of time, we
     // simply brute force try each of the file types until either one succeeds
     // or they all fail
 
+    // TODO: MACK - what should be validated here?
     #define TRY(expression, validate)\
     try {\
         BasicMaze maze = expression;\
-        if (validate && !MazeChecker::isValidMaze(maze)) {\
+        if (validate && !MazeChecker::isValidMaze(maze).first) {\
             throw std::exception();\
         }\
         return maze;\
@@ -49,13 +48,14 @@ QVector<QVector<BasicTile>> MazeFileUtilities::loadFromBytes(
     throw std::exception();
 }
 
-bool MazeFileUtilities::saveMaze(
-        const QVector<QVector<BasicTile>>& maze,
-        const QString& mazeFilePath,
-        MazeFileType mazeFileType) {
-    // TODO: MACK
+void MazeFileUtilities::save(
+    const BasicMaze& maze,
+    const QString& path,
+    MazeFileType type) {
+
+    // TODO: MACK - should throw exception
     QByteArray bytes;
-    switch (mazeFileType) {
+    switch (type) {
         case MazeFileType::MAP:
             bytes = serializeMapType(maze);
         case MazeFileType::MAZ:
@@ -69,11 +69,9 @@ bool MazeFileUtilities::saveMaze(
             SimUtilities::quit();
     }
     // TODO: MACK - write to file
-    return false;
 }
 
-QVector<QVector<BasicTile>> MazeFileUtilities::deserializeMapType(
-        const QByteArray& bytes) {
+BasicMaze MazeFileUtilities::deserializeMapType(const QByteArray& bytes) {
 
     // TODO: MACK
     // +++
@@ -86,7 +84,7 @@ QVector<QVector<BasicTile>> MazeFileUtilities::deserializeMapType(
     QStringList lines = QString(bytes).trimmed().split("\n");
 
     // The maze to be returned
-    QVector<QVector<BasicTile>> upsideDownMaze;
+    BasicMaze upsideDownMaze;
 
     // The character representing a maze post
     QChar delimiter('\0');
@@ -164,7 +162,7 @@ QVector<QVector<BasicTile>> MazeFileUtilities::deserializeMapType(
     }
 
     // Flip the maze so that it's right side up
-    QVector<QVector<BasicTile>> rightSideUpMaze;
+    BasicMaze rightSideUpMaze;
     for (int i = 0; i < upsideDownMaze.size(); i += 1) {
         QVector<BasicTile> column;
         for (int j = upsideDownMaze.at(i).size() - 1; j >= 0; j -= 1) {
@@ -176,8 +174,7 @@ QVector<QVector<BasicTile>> MazeFileUtilities::deserializeMapType(
     return rightSideUpMaze;
 }
 
-QVector<QVector<BasicTile>> MazeFileUtilities::deserializeMazType(
-        const QByteArray& bytes) {
+BasicMaze MazeFileUtilities::deserializeMazType(const QByteArray& bytes) {
 
     // TODO: Convert this to use Qt
     std::vector<char> characters(bytes.begin(), bytes.end());
@@ -205,8 +202,7 @@ QVector<QVector<BasicTile>> MazeFileUtilities::deserializeMazType(
     return maze;
 }
 
-QVector<QVector<BasicTile>> MazeFileUtilities::deserializeMz2Type(
-        const QByteArray& bytes) {
+BasicMaze MazeFileUtilities::deserializeMz2Type(const QByteArray& bytes) {
 
     // TODO: Convert this to use Qt
     std::vector<char> characters(bytes.begin(), bytes.end());
@@ -322,12 +318,11 @@ QVector<QVector<BasicTile>> MazeFileUtilities::deserializeMz2Type(
     return maze;
 }
 
-QVector<QVector<BasicTile>> MazeFileUtilities::deserializeNumType(
-        const QByteArray& bytes) {
+BasicMaze MazeFileUtilities::deserializeNumType(const QByteArray& bytes) {
 
     /*
     // The maze to be returned
-    QVector<QVector<BasicTile>> maze;
+    BasicMaze maze;
 
     // The column to be appended
     QVector<BasicTile> column;
@@ -382,8 +377,7 @@ QVector<QVector<BasicTile>> MazeFileUtilities::deserializeNumType(
     throw std::exception();
 }
 
-QByteArray MazeFileUtilities::serializeMapType(
-        const QVector<QVector<BasicTile>>& maze) {
+QByteArray MazeFileUtilities::serializeMapType(const BasicMaze& maze) {
 
     /*
     // The characters to use in the file
@@ -464,8 +458,7 @@ QByteArray MazeFileUtilities::serializeMapType(
     throw std::exception();
 }
 
-QByteArray MazeFileUtilities::serializeMazType(
-        const QVector<QVector<BasicTile>>& maze) {
+QByteArray MazeFileUtilities::serializeMazType(const BasicMaze& maze) {
 
     /*
     if (maze.size() != 16) {
@@ -511,8 +504,7 @@ QByteArray MazeFileUtilities::serializeMazType(
     throw std::exception();
 }
 
-QByteArray MazeFileUtilities::serializeMz2Type(
-        const QVector<QVector<BasicTile>>& maze) {
+QByteArray MazeFileUtilities::serializeMz2Type(const BasicMaze& maze) {
 
     /*
     // Create the stream
@@ -620,8 +612,7 @@ QByteArray MazeFileUtilities::serializeMz2Type(
     throw std::exception();
 }
 
-QByteArray MazeFileUtilities::serializeNumType(
-        const QVector<QVector<BasicTile>>& maze) {
+QByteArray MazeFileUtilities::serializeNumType(const BasicMaze& maze) {
 
     /*
     // Create the stream

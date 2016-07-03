@@ -25,6 +25,7 @@
     - Write some code to make sure update throughput is good
         - 99% of updates are 1ms apart, or something like that
     - Check the sleep duration of updates to make sure that we're actually doing 1000 updates per second
+- Some script that tells you whether or not the headers are used
 - Draw dots on edges
 - Make sure QVector<QString> is QStringList
 - command line args to the algos

@@ -1,8 +1,11 @@
 #pragma once
 
+#include <QPair>
+#include <QSet>
+#include <QString>
 #include <QVector>
 
-#include "BasicTile.h"
+#include "BasicMaze.h"
 
 namespace sim {
 
@@ -13,36 +16,38 @@ public:
     // The MazeChecker class is not constructible
     MazeChecker() = delete;
 
-    // Returns true is a maze is valid (usable by the simulator), false otherwise
-    static bool isValidMaze(const QVector<QVector<BasicTile>>& maze);
+    // Whether or not the maze is:
+    // - Drawable: can be rendered without crashing
+    // - Valid: a valid maze model, consistent and enclosed
+    // - Official: complies with the official competition rules
+    // Returns success and a list of errors/failures
+    static QPair<bool, QVector<QString>> isDrawableMaze(const BasicMaze& maze);
+    static QPair<bool, QVector<QString>> isValidMaze(const BasicMaze& maze);
+    static QPair<bool, QVector<QString>> isOfficialMaze(const BasicMaze& maze);
 
-    // Returns true if a maze complies with the official rules, false otherwise
-    static bool isOfficialMaze(const QVector<QVector<BasicTile>>& maze);
-
+    // TODO: MACK - this should do somewhere else
     // Misc. helper function, used by Maze
-    static QVector<std::pair<int, int>> getCenterTiles(int width, int height);
+    static QSet<QPair<int, int>> getCenterTiles(int width, int height);
 
 private:
 
-    // isValidMaze helper functions
-    static bool isNonempty(const QVector<QVector<BasicTile>>& maze);
-    static bool isRectangular(const QVector<QVector<BasicTile>>& maze);
-    static bool isEnclosed(const QVector<QVector<BasicTile>>& maze);
-    static bool hasConsistentWalls(const QVector<QVector<BasicTile>>& maze);
+    // These helper functions just return a list of errors - empty means success
+    static QVector<QString> isNonempty(const BasicMaze& maze);
+    static QVector<QString> isRectangular(const BasicMaze& maze);
+    static QVector<QString> isEnclosed(const BasicMaze& maze);
+    static QVector<QString> hasConsistentWalls(const BasicMaze& maze);
+    static QVector<QString> hasNoInaccessibleLocations(const BasicMaze& maze);
+    static QVector<QString> hasThreeStartingWalls(const BasicMaze& maze);
+    static QVector<QString> hasOneEntranceToCenter(const BasicMaze& maze);
+    static QVector<QString> hasHollowCenter(const BasicMaze& maze);
+    static QVector<QString> hasWallAttachedToEachNonCenterPost(const BasicMaze& maze);
+    static QVector<QString> isUnsolvableByWallFollower(const BasicMaze& maze);
 
-    // isOfficialMaze helper functions
-    static bool hasNoInaccessibleLocations(const QVector<QVector<BasicTile>>& maze);
-    static bool hasThreeStartingWalls(const QVector<QVector<BasicTile>>& maze);
-    static bool hasOneEntranceToCenter(const QVector<QVector<BasicTile>>& maze);
-    static bool hasHollowCenter(const QVector<QVector<BasicTile>>& maze);
-    static bool hasWallAttachedToEachNonCenterPost(const QVector<QVector<BasicTile>>& maze);
-    static bool isUnsolvableByWallFollower(const QVector<QVector<BasicTile>>& maze);
-
-    // Misc. helper functions
     static Direction directionAfterLeftTurn(Direction direction);
     static Direction directionAfterRightTurn(Direction direction);
-    static std::pair<int, int> positionAfterMovingForward(std::pair<int, int> position, Direction direction);
-
+    static QPair<int, int> positionAfterMovingForward(
+        QPair<int, int> position,
+        Direction direction);
 };
 
 } // namespace sim

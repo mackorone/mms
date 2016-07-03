@@ -1,75 +1,134 @@
 #include "MazeChecker.h"
 
+#include <functional>
+
 #include "Assert.h"
-#include "ContainerUtilities.h"
 #include "Logging.h"
 #include "SimUtilities.h"
 
 namespace sim {
 
-bool MazeChecker::isValidMaze(const QVector<QVector<BasicTile>>& maze) {
+QPair<bool, QVector<QString>> MazeChecker::isDrawableMaze(const BasicMaze& maze) {
+    QVector<QString> errors;
+    errors += isNonempty(maze);
+    errors += isRectangular(maze);
+    return {errors.empty(), errors};
+}
 
-    if (!isNonempty(maze)) {
-        L()->warn("The maze is empty.");
-        return false;
-    }
+QPair<bool, QVector<QString>> MazeChecker::isValidMaze(const BasicMaze& maze) {
+    SIM_ASSERT_TR(isDrawableMaze(maze).first);
+    QVector<QString> errors;
+    errors += isEnclosed(maze);
+    errors += hasConsistentWalls(maze);
+    return {errors.empty(), errors};
+}
 
-    if (!isRectangular(maze)) {
-        L()->warn("The maze is not rectangular.");
-        return false;
-    }
+QPair<bool, QVector<QString>> MazeChecker::isOfficialMaze(const BasicMaze& maze) {
+    SIM_ASSERT_TR(isValidMaze(maze).first);
+    QVector<QString> errors;
+    errors += hasNoInaccessibleLocations(maze);
+    errors += hasHollowCenter(maze);
+    errors += hasOneEntranceToCenter(maze);
+    errors += hasWallAttachedToEachNonCenterPost(maze);
+    errors += hasThreeStartingWalls(maze);
+    errors += isUnsolvableByWallFollower(maze);
+    return {errors.empty(), errors};
 
-    // TODO: MACK - these two are more lenient
+    /*
     if (!isEnclosed(maze)) {
-        L()->warn("The maze is not enclosed by walls.");
-        return false;
-    }
-
     if (!hasConsistentWalls(maze)) {
-        L()->warn("The maze does not have consistent walls.");
-        return false;
+    if (!hasNoInaccessibleLocations(maze)) {
+        L()->warn("There are inaccessible locations in the maze.");
+    if (!hasHollowCenter(maze)) {
+        L()->warn("The maze does not have a hollow center.");
+    if (!hasOneEntranceToCenter(maze)) {
+        L()->warn("The center of the maze has more than one entrance.");
+    if (!hasWallAttachedToEachNonCenterPost(maze)) {
+        L()->warn("There is at least one non-center post with no walls connected to it.");
+    if (!hasThreeStartingWalls(maze)) {
+        L()->warn("There are not exactly three starting walls.");
+    if (!isUnsolvableByWallFollower(maze)) {
+        L()->warn("The maze is solvable by a maze-following robot.");
+    return success;
+    */
+}
+
+QSet<QPair<int, int>> MazeChecker::getCenterTiles(int width, int height) {
+    QSet<QPair<int, int>> centerTiles;
+            centerTiles.insert({(width - 1) / 2, (height - 1) / 2});
+    if (width % 2 == 0) {
+            centerTiles.insert({ width      / 2, (height - 1) / 2});
+        if (height % 2 == 0) {
+            centerTiles.insert({(width - 1) / 2,  height      / 2});
+            centerTiles.insert({ width      / 2,  height      / 2});
+        }
     }
-
-    return true;
+    else if (height % 2 == 0) {
+            centerTiles.insert({(width - 1) / 2,  height      / 2});
+    }
+    return centerTiles; 
 }
 
-bool MazeChecker::isNonempty(const QVector<QVector<BasicTile>>& maze) {
-    return (maze.size() == 0 ? false : 0 < maze.at(0).size());
+QVector<QString> MazeChecker::isNonempty(const BasicMaze& maze) {
+    for (int i = 0; i < maze.size(); i += 1) {
+        if (0 < maze.at(i).size()) {
+            return {};
+        }
+    }
+    return {"The maze is empty."};
 }
 
-bool MazeChecker::isRectangular(const QVector<QVector<BasicTile>>& maze) {
+QVector<QString> MazeChecker::isRectangular(const BasicMaze& maze) {
     for (int i = 0; i < maze.size() - 1; i += 1) {
         if (maze.at(i).size() != maze.at(i + 1).size()) {
-            return false;
+            return {QString(
+                "The maze is not rectangular: column %1 has %2 tiles but column"
+                " %3 has %4 tiles.")
+                .arg(i)
+                .arg(maze.at(i).size())
+                .arg(i + 1)
+                .arg(maze.at(i + 1).size()
+            )};
         }
     }
-    return true;
+    return {};
 }
 
-bool MazeChecker::isEnclosed(const QVector<QVector<BasicTile>>& maze) {
+QVector<QString> MazeChecker::isEnclosed(const BasicMaze& maze) {
+    static QVector<QPair<std::function<bool(int, int)>, Direction>> requirements {
+        {[&maze](int x, int y){return x ==               0;}, Direction::WEST},
+        {[&maze](int x, int y){return y ==               0;}, Direction::SOUTH},
+        {[&maze](int x, int y){return x == maze.size() - 1;}, Direction::EAST},
+        {[&maze](int x, int y){return y == maze.size() - 1;}, Direction::NORTH},
+    };
+    QVector<QString> errors;
     for (int x = 0; x < maze.size(); x += 1) {
         for (int y = 0; y < maze.at(x).size(); y += 1) {
-            if (x == 0 && !maze.at(x).at(y).walls.at(Direction::WEST)) {
-                return false; 
-            }
-            if (y == 0 && !maze.at(x).at(y).walls.at(Direction::SOUTH)) {
-                return false; 
-            }
-            if (x == maze.size() - 1 && !maze.at(x).at(y).walls.at(Direction::EAST)) {
-                return false; 
-            }
-            if (y == maze.at(x).size() - 1 && !maze.at(x).at(y).walls.at(Direction::NORTH)) {
-                return false; 
+            for (auto pair : requirements) {
+                if (pair.first(x, y) && !maze.at(x).at(y).walls.at(pair.second)) {
+                    errors.push_back(QString(
+                        "The maze is not enclosed by walls: tile (%1, %2) has"
+                        " no %3 wall.")
+                        .arg(x)
+                        .arg(y)
+                        .arg(DIRECTION_TO_STRING.at(pair.second).c_str())
+                    );
+                }
             }
         }
     }
-    return true;
+    return errors;
 }
 
-bool MazeChecker::hasConsistentWalls(const QVector<QVector<BasicTile>>& maze) {
-    SIM_ASSERT_TR(isEnclosed(maze));
+QVector<QString> MazeChecker::hasConsistentWalls(const BasicMaze& maze) {
+    QVector<QString> errors;
+    /*
     for (int x = 0; x < maze.size(); x += 1) {
         for (int y = 0; y < maze.at(x).size(); y += 1) {
+            QString errorString(
+                "The maze does not have consistent walls: tile (%1, %2)")
+                .arg(x)
+                .arg(y);
             if (0 < x) {
                 if (maze.at(x).at(y).walls.at(Direction::WEST) != maze.at(x - 1).at(y).walls.at(Direction::EAST)) {
                     return false;
@@ -92,65 +151,12 @@ bool MazeChecker::hasConsistentWalls(const QVector<QVector<BasicTile>>& maze) {
             }
         }
     }
-    return true;
+    */
+    return errors;
 }
 
-bool MazeChecker::isOfficialMaze(const QVector<QVector<BasicTile>>& maze) {
-
-    SIM_ASSERT_TR(isValidMaze(maze));
-
-    bool success = true;
-
-    if (!hasNoInaccessibleLocations(maze)) {
-        L()->warn("There are inaccessible locations in the maze.");
-        success = false;
-    }
-
-    if (!hasHollowCenter(maze)) {
-        L()->warn("The maze does not have a hollow center.");
-        success = false;
-    }
-
-    if (!hasOneEntranceToCenter(maze)) {
-        L()->warn("The center of the maze has more than one entrance.");
-        success = false;
-    }
-
-    if (!hasWallAttachedToEachNonCenterPost(maze)) {
-        L()->warn("There is at least one non-center post with no walls connected to it.");
-        success = false;
-    }
-    
-    if (!hasThreeStartingWalls(maze)) {
-        L()->warn("There are not exactly three starting walls.");
-        success = false;
-    }
-
-    if (!isUnsolvableByWallFollower(maze)) {
-        L()->warn("The maze is solvable by a maze-following robot.");
-        success = false;
-    }
-
-    return success;
-}
-
-QVector<std::pair<int, int>> MazeChecker::getCenterTiles(int width, int height) {
-    QVector<std::pair<int, int>> centerTiles;
-            centerTiles.push_back(std::make_pair((width - 1) / 2, (height - 1) / 2));
-    if (width % 2 == 0) {
-            centerTiles.push_back(std::make_pair( width      / 2, (height - 1) / 2));
-        if (height % 2 == 0) {
-            centerTiles.push_back(std::make_pair((width - 1) / 2,  height      / 2));
-            centerTiles.push_back(std::make_pair( width      / 2,  height      / 2));
-        }
-    }
-    else if (height % 2 == 0) {
-            centerTiles.push_back(std::make_pair((width - 1) / 2,  height      / 2));
-    }
-    return centerTiles; 
-}
-
-bool MazeChecker::hasNoInaccessibleLocations(const QVector<QVector<BasicTile>>& maze) {
+QVector<QString> MazeChecker::hasNoInaccessibleLocations(const BasicMaze& maze) {
+    /*
 
     std::set<std::pair<int, int>> discovered;
     std::queue<std::pair<int, int>> queue;
@@ -184,14 +190,19 @@ bool MazeChecker::hasNoInaccessibleLocations(const QVector<QVector<BasicTile>>& 
     }
 
     return true;
+    */
+    return {};
 }
 
-bool MazeChecker::hasThreeStartingWalls(const QVector<QVector<BasicTile>>& maze) {
+QVector<QString> MazeChecker::hasThreeStartingWalls(const BasicMaze& maze) {
+    /*
     std::map<Direction, bool> walls = maze.at(0).at(0).walls;
     return walls.at(Direction::NORTH) != walls.at(Direction::EAST);
+    */
+    return {};
 }
 
-bool MazeChecker::hasOneEntranceToCenter(const QVector<QVector<BasicTile>>& maze) {
+QVector<QString> MazeChecker::hasOneEntranceToCenter(const BasicMaze& maze) {
     // TODO: MACK - fix this to work with QVector
     /*
     QVector<std::pair<int, int>> centerTiles = getCenterTiles(maze.size(), maze.at(0).size()); 
@@ -208,10 +219,11 @@ bool MazeChecker::hasOneEntranceToCenter(const QVector<QVector<BasicTile>>& maze
     }
     return numberOfEntrances == 1;
     */
-    return true;
+    return {};
 }
 
-bool MazeChecker::hasHollowCenter(const QVector<QVector<BasicTile>>& maze) {
+QVector<QString> MazeChecker::hasHollowCenter(const BasicMaze& maze) {
+    /*
     QVector<std::pair<int, int>> centerTiles = getCenterTiles(maze.size(), maze.at(0).size()); 
     for (std::pair<int, int> tile : centerTiles) {
         for (std::pair<int, int> otherTile : centerTiles) {
@@ -226,9 +238,11 @@ bool MazeChecker::hasHollowCenter(const QVector<QVector<BasicTile>>& maze) {
         }
     }
     return true;
+    */
+    return {};
 }
 
-bool MazeChecker::hasWallAttachedToEachNonCenterPost(const QVector<QVector<BasicTile>>& maze) {
+QVector<QString> MazeChecker::hasWallAttachedToEachNonCenterPost(const BasicMaze& maze) {
     // TODO: MACK - fix this to work with QVector
     /*
     QVector<std::pair<int, int>> centerTiles = getCenterTiles(maze.size(), maze.at(0).size());
@@ -251,11 +265,12 @@ bool MazeChecker::hasWallAttachedToEachNonCenterPost(const QVector<QVector<Basic
     }
     return true;
     */
-    return true;
+    return {};
 }
 
-bool MazeChecker::isUnsolvableByWallFollower(const QVector<QVector<BasicTile>>& maze) {
+QVector<QString> MazeChecker::isUnsolvableByWallFollower(const BasicMaze& maze) {
 
+    /*
     std::set<std::pair<int, int>> reachableByWallFollower;
 
     std::pair<int, int> position = std::make_pair(0, 0);
@@ -284,6 +299,8 @@ bool MazeChecker::isUnsolvableByWallFollower(const QVector<QVector<BasicTile>>& 
     }
 
     return true;
+    */
+    return {};
 }
 
 Direction MazeChecker::directionAfterLeftTurn(Direction direction) {
@@ -294,23 +311,18 @@ Direction MazeChecker::directionAfterRightTurn(Direction direction) {
     return DIRECTION_ROTATE_RIGHT.at(direction);
 }
 
-std::pair<int, int> MazeChecker::positionAfterMovingForward(std::pair<int, int> position, Direction direction) {
+QPair<int, int> MazeChecker::positionAfterMovingForward(
+        QPair<int, int> position,
+        Direction direction) {
     return {
         // X coordinate
-        (direction == Direction::EAST ?
-            position.first + 1 :
-        (direction == Direction::WEST ?
-            position.first - 1 :
-        // direction == NORTH or SOUTH
-            position.first)),
-
+        (direction == Direction::EAST ?  position.first + 1 :
+        (direction == Direction::WEST ?  position.first - 1 :
+        position.first)),
         // Y coordinate
-        (direction == Direction::NORTH ?
-            position.second + 1 :
-        (direction == Direction::SOUTH ?
-            position.second - 1 :
-        // direction == EAST or WEST
-            position.second))
+        (direction == Direction::NORTH ?  position.second + 1 :
+        (direction == Direction::SOUTH ?  position.second - 1 :
+        position.second))
     };
 }
 

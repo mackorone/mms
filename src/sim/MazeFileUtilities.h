@@ -2,52 +2,37 @@
 
 #include <QByteArray>
 #include <QString>
-#include <QVector>
 
-#include "BasicTile.h"
+#include "BasicMaze.h"
 #include "MazeFileType.h"
 
 namespace sim {
 
 class MazeFileUtilities {
 
-// TODO: MACK - use BasicMaze class
 public:
 
     MazeFileUtilities() = delete;
 
-    // TODO: MACK - clean this API up
-    static QVector<QVector<BasicTile>> loadFromFile(
-        const QString& mazeFilePath);
+    static BasicMaze load(const QString& path);
+    static BasicMaze loadBytes(const QByteArray& bytes);
 
-    static QVector<QVector<BasicTile>> loadFromBytes(
-        const QByteArray& bytes);
-
-    static bool saveMaze( // TODO: MACK
-        const QVector<QVector<BasicTile>>& maze,
-        const QString& mazeFilePath,
-        MazeFileType mazeFileType);
+    static void save(
+        const BasicMaze& maze,
+        const QString& path,
+        MazeFileType type);
 
 private:
 
-    // TODO: MACK - define a struct for a basic maze
-    static QVector<QVector<BasicTile>> deserializeMapType(
-        const QByteArray& bytes);
-    static QVector<QVector<BasicTile>> deserializeMazType(
-        const QByteArray& bytes);
-    static QVector<QVector<BasicTile>> deserializeMz2Type(
-        const QByteArray& bytes);
-    static QVector<QVector<BasicTile>> deserializeNumType(
-        const QByteArray& bytes);
+    static BasicMaze deserializeMapType(const QByteArray& bytes);
+    static BasicMaze deserializeMazType(const QByteArray& bytes);
+    static BasicMaze deserializeMz2Type(const QByteArray& bytes);
+    static BasicMaze deserializeNumType(const QByteArray& bytes);
 
-    static QByteArray serializeMapType(
-        const QVector<QVector<BasicTile>>& maze);
-    static QByteArray serializeMazType(
-        const QVector<QVector<BasicTile>>& maze);
-    static QByteArray serializeMz2Type(
-        const QVector<QVector<BasicTile>>& maze);
-    static QByteArray serializeNumType(
-        const QVector<QVector<BasicTile>>& maze);
+    static QByteArray serializeMapType(const BasicMaze& maze);
+    static QByteArray serializeMazType(const BasicMaze& maze);
+    static QByteArray serializeMz2Type(const BasicMaze& maze);
+    static QByteArray serializeNumType(const BasicMaze& maze);
 };
 
 } // namespace sim
