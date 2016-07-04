@@ -120,14 +120,14 @@ BasicMaze MazeFileUtilities::deserializeMapType(const QByteArray& bytes) {
                 }
                 BasicTile tile;
                 for (Direction direction : DIRECTIONS) {
-                    tile.walls.insert(std::make_pair(direction, false));
+                    tile.insert(direction, false);
                 }
                 upsideDownMaze[j].push_back(tile);
                 if (0 < spaces.at(j)) {
                     bool isWall = line.at(position) != ' ';
-                    upsideDownMaze[j][rowsFromTopOfMaze].walls.at(Direction::NORTH) = isWall;
+                    upsideDownMaze[j][rowsFromTopOfMaze][Direction::NORTH] = isWall;
                     if (0 < rowsFromTopOfMaze) {
-                        upsideDownMaze[j][rowsFromTopOfMaze - 1].walls.at(Direction::SOUTH) = isWall;
+                        upsideDownMaze[j][rowsFromTopOfMaze - 1][Direction::SOUTH] = isWall;
                     }
                 }
                 if (j < spaces.size() - 1) {
@@ -146,10 +146,10 @@ BasicMaze MazeFileUtilities::deserializeMapType(const QByteArray& bytes) {
                 }
                 bool isWall = line.at(position) != ' ';
                 if (0 < j) {
-                    upsideDownMaze[j - 1][rowsFromTopOfMaze].walls.at(Direction::EAST) = isWall;
+                    upsideDownMaze[j - 1][rowsFromTopOfMaze][Direction::EAST] = isWall;
                 }
                 if (j < spaces.size()) {
-                    upsideDownMaze[j][rowsFromTopOfMaze].walls.at(Direction::WEST) = isWall;
+                    upsideDownMaze[j][rowsFromTopOfMaze][Direction::WEST] = isWall;
                     position += spaces.at(j) + 1;
                 }
             }
@@ -190,10 +190,10 @@ BasicMaze MazeFileUtilities::deserializeMazType(const QByteArray& bytes) {
             int walls = characters.at(x * 16 + y);
             BasicTile tile;
             //Each byte reprsents the walls like this: 'X X X X W S E N'
-            tile.walls[Direction::WEST]  = (walls & 1 << 3) != 0;
-            tile.walls[Direction::SOUTH] = (walls & 1 << 2) != 0;
-            tile.walls[Direction::EAST]  = (walls & 1 << 1) != 0;
-            tile.walls[Direction::NORTH] = (walls & 1 << 0) != 0;
+            tile[Direction::WEST]  = (walls & 1 << 3) != 0;
+            tile[Direction::SOUTH] = (walls & 1 << 2) != 0;
+            tile[Direction::EAST]  = (walls & 1 << 1) != 0;
+            tile[Direction::NORTH] = (walls & 1 << 0) != 0;
             column.push_back(tile);
         }
         maze.push_back(column);
@@ -260,7 +260,7 @@ BasicMaze MazeFileUtilities::deserializeMz2Type(const QByteArray& bytes) {
             for (Direction direction : DIRECTIONS) {
                 // Make a filled maze so we get the maze border for free
                 // and don't need any special logic to make it happen
-                tile.walls.insert(std::make_pair(direction, true));
+                tile.insert(direction, true);
             }
             column.push_back(tile);
         }
@@ -276,8 +276,8 @@ BasicMaze MazeFileUtilities::deserializeMz2Type(const QByteArray& bytes) {
             bool wallExists = (byte & 1) == 1;
             byte >>= 1;
 
-            maze[x][height - 1 - y].walls[Direction::SOUTH] = wallExists;
-            maze[x][height - 1 - y - 1].walls[Direction::NORTH] = wallExists;
+            maze[x][height - 1 - y][Direction::SOUTH] = wallExists;
+            maze[x][height - 1 - y - 1][Direction::NORTH] = wallExists;
 
             numberOfBits = (numberOfBits + 1) % 8;
 
@@ -303,8 +303,8 @@ BasicMaze MazeFileUtilities::deserializeMz2Type(const QByteArray& bytes) {
             bool wallExists = (byte & 1) == 1;
             byte >>= 1;
 
-            maze[x][height - 1 - y].walls[Direction::EAST] = wallExists;
-            maze[x + 1][height - 1 - y].walls[Direction::WEST] = wallExists;
+            maze[x][height - 1 - y][Direction::EAST] = wallExists;
+            maze[x + 1][height - 1 - y][Direction::WEST] = wallExists;
             
             numberOfBits = (numberOfBits + 1) % 8;
 
@@ -345,7 +345,7 @@ BasicMaze MazeFileUtilities::deserializeNumType(const QByteArray& bytes) {
         // Fill the BasicTile object with the values
         BasicTile tile;
         for (Direction direction : DIRECTIONS) {
-            tile.walls.insert(std::make_pair(direction,
+            tile.insert(std::make_pair(direction,
                 (1 == std::stoi(tokens.at(2 + SimUtilities::getDirectionIndex(direction))))
                 // We can't use the sim utilities string to into becuase we have to throw an
                 // exception if we fail. The sim utilities throw an assert.
@@ -411,20 +411,20 @@ QByteArray MazeFileUtilities::serializeMapType(const BasicMaze& maze) {
             upsideDownLines.at(up).at(right) = post;
 
             // Insert walls if they exist
-            if (maze.at(i).at(j).walls.at(Direction::NORTH)) {
+            if (maze.at(i).at(j).at(Direction::NORTH)) {
                 for (int k = 0; k < 3; k += 1) {
                     upsideDownLines.at(up).at(left + 1 + k) = horizontal;
                 }
             }
-            if (maze.at(i).at(j).walls.at(Direction::SOUTH)) {
+            if (maze.at(i).at(j).at(Direction::SOUTH)) {
                 for (int k = 0; k < 3; k += 1) {
                     upsideDownLines.at(down).at(left + 1 + k) = horizontal;
                 }
             }
-            if (maze.at(i).at(j).walls.at(Direction::EAST)) {
+            if (maze.at(i).at(j).at(Direction::EAST)) {
                 upsideDownLines.at(down + 1).at(right) = vertical;
             }
-            if (maze.at(i).at(j).walls.at(Direction::WEST)) {
+            if (maze.at(i).at(j).at(Direction::WEST)) {
                 upsideDownLines.at(down + 1).at(left) = vertical;
             }
         }
@@ -486,10 +486,10 @@ QByteArray MazeFileUtilities::serializeMazType(const BasicMaze& maze) {
         for (auto y = 0; y < 16; y++) {
             BasicTile tile = maze.at(x).at(y);
             //Each byte reprsents the walls like this: 'X X X X W S E N'
-            int representation = (tile.walls[Direction::WEST]  << 3) +
-                                 (tile.walls[Direction::SOUTH] << 2) +
-                                 (tile.walls[Direction::EAST]  << 1) +
-                                 (tile.walls[Direction::NORTH] << 0);
+            int representation = (tile[Direction::WEST]  << 3) +
+                                 (tile[Direction::SOUTH] << 2) +
+                                 (tile[Direction::EAST]  << 1) +
+                                 (tile[Direction::NORTH] << 0);
 
             file.put(representation);
         }
@@ -552,7 +552,7 @@ QByteArray MazeFileUtilities::serializeMz2Type(const BasicMaze& maze) {
             BasicTile tile = maze.at(x).at(height - 1 - y);
 
             toWrite >>= 1;
-            if (tile.walls[Direction::SOUTH] == true) {
+            if (tile[Direction::SOUTH] == true) {
                 toWrite |= 1 << 7; // Set the MSB bit as one
             }
             numberOfBits = (numberOfBits + 1) % 8;
@@ -581,7 +581,7 @@ QByteArray MazeFileUtilities::serializeMz2Type(const BasicMaze& maze) {
             BasicTile tile = maze.at(x).at(height - 1 - y);
 
             toWrite >>= 1;
-            if (tile.walls[Direction::EAST] == true) {
+            if (tile[Direction::EAST] == true) {
                 toWrite |= 1 << 7; // Set the MSB bit as one
             }
             numberOfBits = (numberOfBits + 1) % 8;
@@ -628,7 +628,7 @@ QByteArray MazeFileUtilities::serializeNumType(const BasicMaze& maze) {
         for (int y = 0; y < maze.at(x).size(); y += 1) {
             file << x << " " << y;
             for (Direction direction : DIRECTIONS) {
-                file << " " << (maze.at(x).at(y).walls.at(direction) ? 1 : 0);
+                file << " " << (maze.at(x).at(y).at(direction) ? 1 : 0);
             }
             file << "\n"; // std::endl flushes the buffer everytime its called
         }

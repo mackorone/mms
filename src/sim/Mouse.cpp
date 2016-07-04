@@ -16,7 +16,9 @@
 
 namespace sim {
 
-Mouse::Mouse(const Maze* maze) : m_maze(maze), m_currentGyro(RadiansPerSecond(0.0)) {
+Mouse::Mouse(const Maze* maze) :
+    m_maze(maze),
+    m_currentGyro(RadiansPerSecond(0.0)) {
 }
 
 bool Mouse::initialize(
@@ -215,7 +217,7 @@ void Mouse::update(const Duration& elapsed) {
     MetersPerSecond sumDy(0);
     RadiansPerSecond sumDr(0);
 
-    // TODO: MACK - check the performance of this - is this making duplicates?
+    // TODO: MACK - check the performance of this - can/should I use ContainerUtilities::items here?
     QMapIterator<QString, Wheel> wheelIterator(m_wheels);
     while (wheelIterator.hasNext()) {
         auto pair = wheelIterator.next();
@@ -248,7 +250,7 @@ void Mouse::update(const Duration& elapsed) {
     m_currentRotation += Radians(aveDr * elapsed);
     m_currentTranslation += Cartesian(aveDx * elapsed, aveDy * elapsed);
 
-    // TODO: MACK - check the performance of this - is this making duplicates?
+    // TODO: MACK - check the performance of this - can/should I use ContainerUtilities::items here?
     QMapIterator<QString, Sensor> sensorIterator(m_sensors);
     while (sensorIterator.hasNext()) {
         auto pair = sensorIterator.next();
@@ -305,10 +307,8 @@ void Mouse::setWheelSpeedsForCurveRight(double fractionOfMaxSpeed, const Meters&
 
 void Mouse::stopAllWheels() {
     std::map<std::string, RadiansPerSecond> wheelSpeeds;
-    // TODO: MACK - is this making duplicates?
-    QMapIterator<QString, Wheel> iterator(m_wheels);
-    while (iterator.hasNext()) {
-        wheelSpeeds.insert(std::make_pair(iterator.key().toStdString(), RadiansPerSecond(0)));
+    for (const auto& pair : ContainerUtilities::items(m_wheels)) {
+        wheelSpeeds.insert(std::make_pair(pair.first.toStdString(), RadiansPerSecond(0)));
     }
     setWheelSpeeds(wheelSpeeds);
 }
@@ -408,20 +408,14 @@ void Mouse::setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardF
 
     // Now set the wheel speeds based on the normalized factors
     std::map<std::string, RadiansPerSecond> wheelSpeeds;
-
-    // TODO: MACK - check the performance of this - is this making duplicates?
-    QMapIterator<QString, Wheel> wheelIterator(m_wheels);
-    while (wheelIterator.hasNext()) {
-        auto pair = wheelIterator.next();
-        auto wheelName = pair.key();
-        auto wheel = pair.value();
-        SIM_ASSERT_TR(m_wheelSpeedAdjustmentFactors.contains(wheelName));
-        std::pair<double, double> adjustmentFactors = m_wheelSpeedAdjustmentFactors.value(wheelName);
+    for (const auto& pair : ContainerUtilities::items(m_wheels)) {
+        SIM_ASSERT_TR(m_wheelSpeedAdjustmentFactors.contains(pair.first));
+        std::pair<double, double> adjustmentFactors = m_wheelSpeedAdjustmentFactors.value(pair.first);
         wheelSpeeds.insert(
             std::make_pair(
-                wheelName.toStdString(),
+                pair.first.toStdString(),
                 (
-                    wheel.getMaxAngularVelocityMagnitude() *
+                    pair.second.getMaxAngularVelocityMagnitude() *
                     fractionOfMaxSpeed *
                     (
                         normalizedForwardFactor * adjustmentFactors.first +
@@ -441,18 +435,13 @@ QMap<QString, WheelEffect> Mouse::getWheelEffects(
 
     QMap<QString, WheelEffect> wheelEffects;
 
-    // TODO: MACK - check the performance of this - is this making duplicates?
-    QMapIterator<QString, Wheel> wheelIterator(m_wheels);
-    while (wheelIterator.hasNext()) {
-        auto pair = wheelIterator.next();
-        auto wheelName = pair.key();
-        auto wheel = pair.value();
+    for (const auto& pair : ContainerUtilities::items(m_wheels)) {
         wheelEffects.insert(
-            wheelName,
+            pair.first,
             WheelEffect(
                 initialTranslation,
                 initialRotation,
-                wheel
+                pair.second
             )
         );
     }
@@ -475,17 +464,12 @@ QMap<QString, std::pair<double, double>> Mouse::getWheelSpeedAdjustmentFactors(
 
     // First, construct the rates of change pairs
     std::map<std::string, std::pair<MetersPerSecond, RadiansPerSecond>> ratesOfChangePairs;
-    // TODO: MACK - check the performance of this - is this making duplicates?
-    QMapIterator<QString, WheelEffect> wheelIterator(wheelEffects);
-    while (wheelIterator.hasNext()) {
-        auto pair = wheelIterator.next();
-        auto wheelName = pair.key();
-        auto wheelEffect = pair.value();
+    for (const auto& pair : ContainerUtilities::items(wheelEffects)) {
         std::tuple<MetersPerSecond, MetersPerSecond, RadiansPerSecond> effects =
-            wheelEffect.getEffects(m_wheels.value(wheelName).getMaxAngularVelocityMagnitude());
+            pair.second.getEffects(m_wheels.value(pair.first).getMaxAngularVelocityMagnitude());
         ratesOfChangePairs.insert(
             std::make_pair(
-                wheelName.toStdString(),
+                pair.first.toStdString(),
                 std::make_pair(
                     std::get<0>(effects),
                     std::get<2>(effects)

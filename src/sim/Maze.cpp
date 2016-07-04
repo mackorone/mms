@@ -179,7 +179,7 @@ QVector<QVector<Tile>> Maze::initializeFromBasicMaze(const BasicMaze& basicMaze)
             Tile tile;
             tile.setPos(x, y);
             for (Direction direction : DIRECTIONS) {
-                tile.setWall(direction, basicMaze.at(x).at(y).walls.at(direction));
+                tile.setWall(direction, basicMaze.at(x).at(y).value(direction));
             }
             tile.initPolygons(basicMaze.size(), basicMaze.at(x).size());
             column.push_back(tile);
@@ -191,19 +191,27 @@ QVector<QVector<Tile>> Maze::initializeFromBasicMaze(const BasicMaze& basicMaze)
 }
 
 BasicMaze Maze::mirrorAcrossVertical(const BasicMaze& basicMaze) {
+    static QMap<Direction, Direction> verticalOpposites {
+        {Direction::NORTH, Direction::NORTH},
+        {Direction::EAST, Direction::WEST},
+        {Direction::SOUTH, Direction::SOUTH},
+        {Direction::WEST, Direction::EAST},
+    };
+    // TODO: MACK - test this
     BasicMaze mirrored;
     for (int x = 0; x < basicMaze.size(); x += 1) {
         QVector<BasicTile> column;
         for (int y = 0; y < basicMaze.at(x).size(); y += 1) {
             BasicTile tile;
-            tile.walls.insert(std::make_pair(Direction::NORTH,
-                basicMaze.at(basicMaze.size() - 1 - x).at(y).walls.at(Direction::NORTH)));
-            tile.walls.insert(std::make_pair(Direction::EAST,
-                basicMaze.at(basicMaze.size() - 1 - x).at(y).walls.at(Direction::WEST)));
-            tile.walls.insert(std::make_pair(Direction::SOUTH,
-                basicMaze.at(basicMaze.size() - 1 - x).at(y).walls.at(Direction::SOUTH)));
-            tile.walls.insert(std::make_pair(Direction::WEST,
-                basicMaze.at(basicMaze.size() - 1 - x).at(y).walls.at(Direction::EAST)));
+            for (Direction direction : DIRECTIONS) {
+                tile.insert(
+                    direction,
+                    basicMaze
+                        .at(basicMaze.size() - 1 - x)
+                        .at(y)
+                        .value(verticalOpposites.value(direction))
+                );
+            }
             column.push_back(tile);
         }
         mirrored.push_back(column);
@@ -218,10 +226,10 @@ BasicMaze Maze::rotateCounterClockwise(const BasicMaze& basicMaze) {
         for (int y = basicMaze.at(x).size() - 1; y >= 0; y -= 1) {
             BasicTile tile;
             int rotatedTileX = basicMaze.at(x).size() - 1 - y;
-            tile.walls.insert(std::make_pair(Direction::NORTH, basicMaze.at(x).at(y).walls.at(Direction::EAST)));
-            tile.walls.insert(std::make_pair(Direction::EAST, basicMaze.at(x).at(y).walls.at(Direction::SOUTH)));
-            tile.walls.insert(std::make_pair(Direction::SOUTH, basicMaze.at(x).at(y).walls.at(Direction::WEST)));
-            tile.walls.insert(std::make_pair(Direction::WEST, basicMaze.at(x).at(y).walls.at(Direction::NORTH)));
+            tile.insert(Direction::NORTH, basicMaze.at(x).at(y).value(Direction::EAST));
+            tile.insert(Direction::EAST, basicMaze.at(x).at(y).value(Direction::SOUTH));
+            tile.insert(Direction::SOUTH, basicMaze.at(x).at(y).value(Direction::WEST));
+            tile.insert(Direction::WEST, basicMaze.at(x).at(y).value(Direction::NORTH));
             if (rotated.size() <= rotatedTileX) {
                 rotated.push_back({tile});
             }

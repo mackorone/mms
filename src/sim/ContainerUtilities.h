@@ -1,14 +1,14 @@
 #pragma once
 
+#include <QList>
 #include <QMap>
 #include <QMapIterator>
-#include <QSet>
+#include <QPair>
 
 #include "Assert.h"
 
 namespace sim {
 
-// TODO: MACK - use key() here
 class ContainerUtilities {
 
 public:
@@ -16,17 +16,27 @@ public:
     // The ContainerUtilities class is not constructible
     ContainerUtilities() = delete;
 
+    // Returns pairs of items in a map
+    template<class K, class V>
+    static QList<QPair<K, V>> items(const QMap<K, V>& map) {
+        QList<QPair<K, V>> items;
+        QMapIterator<K, V> iterator(map);
+        while (iterator.hasNext()) {
+            auto pair = iterator.next();
+            items.append({pair.key(), pair.value()});
+        }
+        return items;
+    }
+
     // Returns the inverse of a map, fails if there are dupliate values
     template<class K, class V>
     static QMap<V, K> inverse(const QMap<K, V>& map) {
-        QSet<V> values;
         QMap<V, K> inverted;
         QMapIterator<K, V> iterator(map);
         while (iterator.hasNext()) {
             auto pair = iterator.next();
-            SIM_ASSERT_FA(values.contains(pair.value()));
+            SIM_ASSERT_FA(inverted.contains(pair.value()));
             inverted.insert(pair.value(), pair.key());
-            values.insert(pair.value());
         }
         return inverted;
     }

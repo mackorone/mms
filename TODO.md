@@ -18,6 +18,8 @@
 - Replace libs with native Qt functions
 - char to QChar
     - Should I replace any other primitives
+- QList to QVector?
+- push_back to append?
 - Figure out a cleaner way to iterator over maps
   - QMapIterator<std::string, Wheel> iterator(wheels);
     while (iterator.hasNext()) {

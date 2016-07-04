@@ -1,7 +1,5 @@
 #include "Logging.h"
 
-#include <QMapIterator>
-
 #include "Assert.h"
 #include "Directory.h"
 #include "SimUtilities.h"
@@ -91,12 +89,10 @@ el::Logger* Logging::getLogger(const std::string& loggerName) {
 
 std::string Logging::getNextFileName(const char* filename) {
     std::string path = "";
-    QMapIterator<std::string, std::pair<std::string, int>> iterator(m_info);
-    while (iterator.hasNext()) {
-        auto pair = iterator.next();
-        std::string loggerName = pair.key();
-        std::string loggerPath = pair.value().first;
-        int numLogFiles = pair.value().second;
+    for (const auto& pair : ContainerUtilities::items(m_info)) {
+        std::string loggerName = pair.first;
+        std::string loggerPath = pair.second.first;
+        int numLogFiles = pair.second.second;
         if (std::string(filename) == loggerPath) {
             path = "/logs/" + loggerName + "/" + std::to_string(numLogFiles) + ".txt";
             m_info[loggerName.c_str()] = std::make_pair(loggerPath, numLogFiles + 1);

@@ -1,7 +1,5 @@
 #include "CurveTurnFactorCalculator.h"
 
-#include <QMapIterator>
-
 namespace sim {
 
 CurveTurnFactorCalculator::CurveTurnFactorCalculator() :
@@ -26,26 +24,21 @@ CurveTurnFactorCalculator::CurveTurnFactorCalculator(
     // Determine the total forward and turn rate of change from all wheels
     MetersPerSecond totalForwardRateOfChange(0);
     RadiansPerSecond totalRadialRateOfChange(0);
-
-    QMapIterator<QString, Wheel> iterator(wheels);    
-    while (iterator.hasNext()) {
-        auto pair = iterator.next();
-        auto wheelName = pair.key();
-        auto wheel = pair.value();
+    for (const auto& pair : ContainerUtilities::items(wheels)) {
 
         // For each of the wheel speed adjustment factors, calculate the wheel's
         // contributions. Remember that each of these factors corresponds to
         // the fraction of the max wheel speed such that the mouse performs a
         // particular movement (moving forward or turning) most optimally.
-        SIM_ASSERT_TR(wheelSpeedAdjustmentFactors.contains(wheelName));
+        SIM_ASSERT_TR(wheelSpeedAdjustmentFactors.contains(pair.first));
         std::pair<double, double> adjustmentFactors =
-            wheelSpeedAdjustmentFactors.value(wheelName);
+            wheelSpeedAdjustmentFactors.value(pair.first);
 
         for (double adjustmentFactor : {adjustmentFactors.first, adjustmentFactors.second}) {
 
             std::tuple<MetersPerSecond, MetersPerSecond, RadiansPerSecond> effects =
-                wheelEffects.value(wheelName).getEffects(
-                    wheel.getMaxAngularVelocityMagnitude() * adjustmentFactor);
+                wheelEffects.value(pair.first).getEffects(
+                    pair.second.getMaxAngularVelocityMagnitude() * adjustmentFactor);
 
             totalForwardRateOfChange += std::get<0>(effects);
             totalRadialRateOfChange += std::get<2>(effects);

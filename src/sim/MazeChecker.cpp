@@ -90,7 +90,7 @@ QVector<QString> MazeChecker::isEnclosed(const BasicMaze& maze) {
     for (int x = 0; x < maze.size(); x += 1) {
         for (int y = 0; y < maze.at(x).size(); y += 1) {
             for (auto pair : requirements) {
-                if (pair.first(x, y) && !maze.at(x).at(y).walls.at(pair.second)) {
+                if (pair.first(x, y) && !maze.at(x).at(y).value(pair.second)) {
                     errors.push_back(QString(
                         "The maze is not enclosed by walls: tile (%1, %2) has"
                         " no %3 wall.")
@@ -117,10 +117,10 @@ QVector<QString> MazeChecker::hasConsistentWalls(const BasicMaze& maze) {
     for (int x = 0; x < maze.size(); x += 1) {
         for (int y = 0; y < maze.at(x).size(); y += 1) {
             for (auto pair : requirements) {
-                if (pair.first(x, y) && maze.at(x).at(y).walls.at(pair.second)) {
+                if (pair.first(x, y) && maze.at(x).at(y).value(pair.second)) {
                     QPair<int, int> other = positionAfterMovingForward({x, y}, pair.second);
                     Direction opposite = DIRECTION_OPPOSITE.value(pair.second);
-                    if (!maze.at(other.first).at(other.second).walls.at(opposite)) {
+                    if (!maze.at(other.first).at(other.second).value(opposite)) {
                         errors.push_back(QString(
                             "The maze does not have consistent walls: tile"
                             " (%1, %2) has a %3 wall but tile (%4, %5) has no"
@@ -157,7 +157,7 @@ QVector<QString> MazeChecker::hasNoInaccessibleLocations(const BasicMaze& maze) 
     while (!queue.isEmpty()) {
         QPair<int, int> tile = queue.dequeue();
         for (Direction direction : DIRECTIONS) {
-            if (maze.at(tile.first).at(tile.second).walls.at(direction)) {
+            if (maze.at(tile.first).at(tile.second).value(direction)) {
                 continue;
             }
             QPair<int, int> neighbor = positionAfterMovingForward(tile, direction);
