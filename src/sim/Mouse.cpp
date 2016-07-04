@@ -280,9 +280,9 @@ RadiansPerSecond Mouse::getWheelMaxSpeed(const std::string& name) const {
     return m_wheels.value(name.c_str()).getMaxAngularVelocityMagnitude();
 }
 
-void Mouse::setWheelSpeeds(const std::map<std::string, RadiansPerSecond>& wheelSpeeds) {
+void Mouse::setWheelSpeeds(const QMap<std::string, RadiansPerSecond>& wheelSpeeds) {
     m_updateMutex.lock();
-    for (std::pair<std::string, RadiansPerSecond> pair : wheelSpeeds) {
+    for (const auto& pair : ContainerUtilities::items(wheelSpeeds)) {
         SIM_ASSERT_TR(m_wheels.contains(pair.first.c_str()));
         SIM_ASSERT_LE(
             std::abs(pair.second.getRevolutionsPerMinute()),
@@ -307,9 +307,9 @@ void Mouse::setWheelSpeedsForCurveRight(double fractionOfMaxSpeed, const Meters&
 }
 
 void Mouse::stopAllWheels() {
-    std::map<std::string, RadiansPerSecond> wheelSpeeds;
+    QMap<std::string, RadiansPerSecond> wheelSpeeds;
     for (const auto& pair : ContainerUtilities::items(m_wheels)) {
-        wheelSpeeds.insert(std::make_pair(pair.first.toStdString(), RadiansPerSecond(0)));
+        wheelSpeeds.insert(pair.first.toStdString(), RadiansPerSecond(0));
     }
     setWheelSpeeds(wheelSpeeds);
 }
@@ -408,20 +408,18 @@ void Mouse::setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardF
     SIM_ASSERT_LE(normalizedFactorMagnitude, 1.0);
 
     // Now set the wheel speeds based on the normalized factors
-    std::map<std::string, RadiansPerSecond> wheelSpeeds;
+    QMap<std::string, RadiansPerSecond> wheelSpeeds;
     for (const auto& pair : ContainerUtilities::items(m_wheels)) {
         SIM_ASSERT_TR(m_wheelSpeedAdjustmentFactors.contains(pair.first));
         std::pair<double, double> adjustmentFactors = m_wheelSpeedAdjustmentFactors.value(pair.first);
         wheelSpeeds.insert(
-            std::make_pair(
-                pair.first.toStdString(),
+            pair.first.toStdString(),
+            (
+                pair.second.getMaxAngularVelocityMagnitude() *
+                fractionOfMaxSpeed *
                 (
-                    pair.second.getMaxAngularVelocityMagnitude() *
-                    fractionOfMaxSpeed *
-                    (
-                        normalizedForwardFactor * adjustmentFactors.first +
-                        normalizedTurnFactor * adjustmentFactors.second
-                    )
+                    normalizedForwardFactor * adjustmentFactors.first +
+                    normalizedTurnFactor * adjustmentFactors.second
                 )
             )
         );
@@ -464,17 +462,15 @@ QMap<QString, std::pair<double, double>> Mouse::getWheelSpeedAdjustmentFactors(
     // velocity magnitude into account, but I've done so here.
 
     // First, construct the rates of change pairs
-    std::map<std::string, std::pair<MetersPerSecond, RadiansPerSecond>> ratesOfChangePairs;
+    QMap<std::string, std::pair<MetersPerSecond, RadiansPerSecond>> ratesOfChangePairs;
     for (const auto& pair : ContainerUtilities::items(wheelEffects)) {
         std::tuple<MetersPerSecond, MetersPerSecond, RadiansPerSecond> effects =
             pair.second.getEffects(m_wheels.value(pair.first).getMaxAngularVelocityMagnitude());
         ratesOfChangePairs.insert(
+            pair.first.toStdString(),
             std::make_pair(
-                pair.first.toStdString(),
-                std::make_pair(
-                    std::get<0>(effects),
-                    std::get<2>(effects)
-                )
+                std::get<0>(effects),
+                std::get<2>(effects)
             )
         );
     }
@@ -482,7 +478,7 @@ QMap<QString, std::pair<double, double>> Mouse::getWheelSpeedAdjustmentFactors(
     // Then determine the largest magnitude
     MetersPerSecond maxForwardRateOfChangeMagnitude(0);
     RadiansPerSecond maxRadialRateOfChangeMagnitude(0);
-    for (const std::pair<std::string, std::pair<MetersPerSecond, RadiansPerSecond>>& pair : ratesOfChangePairs) {
+    for (const auto& pair : ContainerUtilities::items(ratesOfChangePairs)) {
         MetersPerSecond forwardRateOfChangeMagnitude(std::abs(pair.second.first.getMetersPerSecond()));
         RadiansPerSecond radialRateOfChangeMagnitude(std::abs(pair.second.second.getRadiansPerSecond()));
         if (maxForwardRateOfChangeMagnitude < forwardRateOfChangeMagnitude) {
@@ -495,7 +491,7 @@ QMap<QString, std::pair<double, double>> Mouse::getWheelSpeedAdjustmentFactors(
 
     // Then divide by the largest magnitude, ensuring values in [-1.0, 1.0]
     QMap<QString, std::pair<double, double>> adjustmentFactors;
-    for (std::pair<std::string, std::pair<MetersPerSecond, RadiansPerSecond>> pair : ratesOfChangePairs) {
+    for (const auto& pair : ContainerUtilities::items(ratesOfChangePairs)) {
         double normalizedForwardContribution = pair.second.first / maxForwardRateOfChangeMagnitude;
         double normalizedRadialContribution = pair.second.second / maxRadialRateOfChangeMagnitude;
         SIM_ASSERT_LE(-1.0, normalizedForwardContribution);

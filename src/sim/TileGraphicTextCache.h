@@ -45,12 +45,12 @@ private:
 
     // A map of the number of rows/cols to be displayed and the current row/col
     // to the LL/UR text coordinates for the starting tile, namely tile (0, 0)
-    std::map<
+    QMap<
         std::pair<std::pair<int, int>, std::pair<int, int>>,
         std::pair<Cartesian, Cartesian>> m_tileGraphicTextPositions;
 
     // Just a helper method for building the text position cache
-    std::map<
+    QMap<
         std::pair<std::pair<int, int>, std::pair<int, int>>,
         std::pair<Cartesian, Cartesian>> buildPositionCache(
             double borderFraction,

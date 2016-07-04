@@ -83,7 +83,7 @@ public:
     RadiansPerSecond getWheelMaxSpeed(const std::string& name) const;
 
     // An atomic interface for setting the wheel speeds
-    void setWheelSpeeds(const std::map<std::string, RadiansPerSecond>& wheelSpeeds);
+    void setWheelSpeeds(const QMap<std::string, RadiansPerSecond>& wheelSpeeds);
 
     // Helper methods for setting many wheel speeds at once, without having to
     // know the names of each of the wheels

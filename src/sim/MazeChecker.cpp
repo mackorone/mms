@@ -191,7 +191,7 @@ QVector<QString> MazeChecker::hasNoInaccessibleLocations(const BasicMaze& maze) 
 QVector<QString> MazeChecker::hasThreeStartingWalls(const BasicMaze& maze) {
     /*
         L()->warn("There are not exactly three starting walls.");
-    std::map<Direction, bool> walls = maze.at(0).at(0).walls;
+    QMap<Direction, bool> walls = maze.at(0).at(0);
     return walls.at(Direction::NORTH) != walls.at(Direction::EAST);
     */
     return {};

@@ -22,7 +22,7 @@ std::pair<int, int> TileGraphicTextCache::getTileGraphicTextMaxSize() const {
 }
 
 std::pair<double, double> TileGraphicTextCache::getFontImageCharacterPosition(char c) const {
-    SIM_ASSERT_TR(m_fontImageMap.find(c) != m_fontImageMap.end()); // TODO: MACK
+    SIM_ASSERT_TR(m_fontImageMap.contains(c));
     return m_fontImageMap.value(c);
 }
 
@@ -30,7 +30,7 @@ std::pair<Cartesian, Cartesian> TileGraphicTextCache::getTileGraphicTextPosition
         int x, int y, int numRows, int numCols, int row, int col) const {
 
     // Get the character position in the maze for the starting tile
-    std::pair<Cartesian, Cartesian> textPosition = m_tileGraphicTextPositions.at(
+    std::pair<Cartesian, Cartesian> textPosition = m_tileGraphicTextPositions.value(
         std::make_pair(
             std::make_pair(numRows, numCols),
             std::make_pair(row, col)
@@ -46,7 +46,7 @@ std::pair<Cartesian, Cartesian> TileGraphicTextCache::getTileGraphicTextPosition
     return std::make_pair(LL, UR);
 }
 
-std::map<
+QMap<
     std::pair<std::pair<int, int>, std::pair<int, int>>,
     std::pair<Cartesian, Cartesian>> TileGraphicTextCache::buildPositionCache(
         double borderFraction, TileTextAlignment tileTextAlignment) {
@@ -72,7 +72,7 @@ std::map<
     //     *[A]--------------------------*-*    *[A]--------------------------*-*
     //     *-*---------------------------*-*    *-*---------------------------*-*
 
-    std::map<
+    QMap<
         std::pair<std::pair<int, int>, std::pair<int, int>>,
         std::pair<Cartesian, Cartesian>> positionCache;
 
@@ -146,15 +146,13 @@ std::map<
 
                     positionCache.insert(
                         std::make_pair(
-                            std::make_pair(
-                                // The number of rows/cols to be drawn
-                                std::make_pair(numRows, numCols),
-                                // The row and col of the current character
-                                std::make_pair(row, col)
-                            ),
-                            // The lower left and upper right texture coordinate
-                            std::make_pair(LL, UR)
-                        )
+                            // The number of rows/cols to be drawn
+                            std::make_pair(numRows, numCols),
+                            // The row and col of the current character
+                            std::make_pair(row, col)
+                        ),
+                        // The lower left and upper right texture coordinate
+                        std::make_pair(LL, UR)
                     );
                 }
             }
