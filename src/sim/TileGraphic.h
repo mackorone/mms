@@ -12,6 +12,7 @@ class TileGraphic {
 
 public:
 
+    TileGraphic();
     TileGraphic(const Tile* tile, BufferInterface* bufferInterface);
 
     bool wallDeclared(Direction direction) const;
@@ -20,7 +21,7 @@ public:
     void declareWall(Direction direction, bool isWall);
     void undeclareWall(Direction direction);
     void setFogginess(bool foggy);
-    void setText(const std::vector<std::string>& rowsOfText);
+    void setText(const QVector<std::string>& rowsOfText);
 
     void draw() const;
     void updateColor() const;
@@ -35,7 +36,7 @@ private:
     Color m_color;
     QMap<Direction, bool> m_declaredWalls;
     bool m_foggy;
-    std::vector<std::string> m_rowsOfText;
+    QVector<std::string> m_rowsOfText;
 
     void updateWall(Direction direction) const;
     std::pair<Color, float> deduceWallColorAndAlpha(Direction direction) const;

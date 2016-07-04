@@ -193,7 +193,7 @@ void Header::updateColumnStartingPositions() {
     // - m_lines
     // - m_columnSpacing
 
-    static auto willFit = [&](const std::vector<double>& columnWidths) {
+    static auto willFit = [&](const QVector<double>& columnWidths) {
         double sum = 0.0;
         for (double width : columnWidths) {
             sum += width;
@@ -204,7 +204,7 @@ void Header::updateColumnStartingPositions() {
     };
 
     static auto getColumnWidths = [&](int numCols) {
-        std::vector<double> columnWidths;
+        QVector<double> columnWidths;
         int numRows = getNumRows(m_lines.size(), numCols);
         for (int i = 0; i < numCols; i += 1) {
             double maxLineWidth = 0.0;
@@ -220,7 +220,7 @@ void Header::updateColumnStartingPositions() {
     };
 
     // Determine the optimal column widths
-    std::vector<double> columnWidths;
+    QVector<double> columnWidths;
     int numCols = 1;
     do {
         columnWidths = getColumnWidths(numCols);
@@ -229,7 +229,7 @@ void Header::updateColumnStartingPositions() {
     while (willFit(getColumnWidths(numCols)));
 
     // Calculate the starting positions based on the column widths
-    std::vector<int> columnStartingPositions;
+    QVector<int> columnStartingPositions;
     int currentColumnStart = P()->windowBorderWidth();
     for (int i = 0; i < columnWidths.size(); i += 1) {
         columnStartingPositions.push_back(currentColumnStart);

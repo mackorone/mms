@@ -45,8 +45,8 @@ public:
 private:
 
     // CPU-side buffers, and interface
-    std::vector<TriangleGraphic> m_graphicCpuBuffer;
-    std::vector<TriangleTexture> m_textureCpuBuffer;
+    QVector<TriangleGraphic> m_graphicCpuBuffer;
+    QVector<TriangleTexture> m_textureCpuBuffer;
     BufferInterface* m_bufferInterface;
 
     // The model and graphic objects

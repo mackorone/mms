@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include <QVector>
 
 #include "units/Cartesian.h"
 #include "units/Degrees.h"
@@ -15,7 +15,7 @@ public:
     TransformationMatrix() = delete;
 
     // Retrieve the 4x4 transformation matrix for the full map
-    static std::vector<float> getFullMapTransformationMatrix(
+    static QVector<float> getFullMapTransformationMatrix(
         const Distance& wallWidth,
         std::pair<double, double> physicalMazeSize,
         std::pair<int, int> fullMapPosition,
@@ -23,7 +23,7 @@ public:
         std::pair<int, int> windowSize);
 
     // Retrieve the 4x4 transformation matrices for zoomed map
-    static std::vector<float> getZoomedMapTransformationMatrix(
+    static QVector<float> getZoomedMapTransformationMatrix(
         std::pair<double, double> physicalMazeSize,
         std::pair<int, int> zoomedMapPosition,
         std::pair<int, int> zoomedMapSize,
@@ -44,9 +44,9 @@ private:
         std::pair<int, int> windowSize);
 
     // Multiplies two 4x4 matrices together
-    static std::vector<float> multiply4x4Matrices(
-        std::vector<float> left,
-        std::vector<float> right);
+    static QVector<float> multiply4x4Matrices(
+        QVector<float> left,
+        QVector<float> right);
 
 };
 

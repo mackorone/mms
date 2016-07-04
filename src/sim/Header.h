@@ -30,8 +30,8 @@ private:
     int m_textHeight; // The height of the text, in pixels
     int m_rowSpacing; // The space between rows, in pixels
     int m_columnSpacing; // The space between columns, in pixels
-    std::vector<int> m_columnStartingPositions; // The starting horizontal position of each column, in pixels
-    std::vector<std::string> m_lines; // The lines of text that we're drawing in the header
+    QVector<int> m_columnStartingPositions; // The starting horizontal position of each column, in pixels
+    QVector<std::string> m_lines; // The lines of text that we're drawing in the header
     TextDrawer* m_textDrawer; // The object used to dimension and draw the header text
 
     // Return the number of rows of text that to be displayed

@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include <string>
-#include <vector>
+#include <QVector>
 
 #include "Direction.h"
 #include "Maze.h"
@@ -44,7 +44,7 @@ public:
     static double strToDouble(const std::string& str);
 
     // Tokenizes a string on whitespace
-    static std::vector<std::string> tokenize(
+    static QVector<std::string> tokenize(
         const std::string& str,
         char delimiter = ' ',
         bool ignoreEmpties = false,
@@ -60,7 +60,7 @@ public:
     static int getDirectionIndex(Direction direction);
 
     // Returns a vector of strings of paths of the given directory's contents
-    static std::vector<std::string> getDirectoryContents(const std::string& path);
+    static QVector<std::string> getDirectoryContents(const std::string& path);
 
     // Remove oldest runs from the run/ directory if necessary
     static void removeExcessArchivedRuns();
@@ -73,7 +73,7 @@ public:
 
     // A simple pair-retrieval function
     template <class T>
-    static std::pair<T, T> min(const std::vector<std::pair<T, T>>& pairs) {
+    static std::pair<T, T> min(const QVector<std::pair<T, T>>& pairs) {
         return *std::min_element(pairs.begin(), pairs.end(), lessThan<T>);
     }
 

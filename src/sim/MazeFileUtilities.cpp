@@ -176,8 +176,11 @@ BasicMaze MazeFileUtilities::deserializeMapType(const QByteArray& bytes) {
 
 BasicMaze MazeFileUtilities::deserializeMazType(const QByteArray& bytes) {
 
-    // TODO: Convert this to use Qt
-    std::vector<char> characters(bytes.begin(), bytes.end());
+    // TODO: MACK Convert this to use Qt
+    QVector<char> characters;
+    for (int i = 0; i < bytes.size(); i += 1) {
+        characters.push_back(bytes.at(i));
+    }
 	
     // The maze to be returned
     BasicMaze maze;
@@ -205,14 +208,17 @@ BasicMaze MazeFileUtilities::deserializeMazType(const QByteArray& bytes) {
 BasicMaze MazeFileUtilities::deserializeMz2Type(const QByteArray& bytes) {
 
     // TODO: Convert this to use Qt
-    std::vector<char> characters(bytes.begin(), bytes.end());
+    QVector<char> characters;
+    for (int i = 0; i < bytes.size(); i += 1) {
+        characters.push_back(bytes.at(i));
+    }
 
     // Reverse the vector order so we can pop back for the next character
     std::reverse(characters.begin(), characters.end());
 
     // Why oh why can't cant iterators throw exceptions when derefrencing to invalid locations
     // Pop back and get popped element
-    auto getPopBack = [](std::vector<char>* v) {if(v->size()==0){throw std::exception();}
+    auto getPopBack = [](QVector<char>* v) {if(v->size()==0){throw std::exception();}
                                                       auto e = v->back();
                                                       v->pop_back();
                                                       return e;};

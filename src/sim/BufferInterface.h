@@ -17,8 +17,8 @@ class BufferInterface {
 public:
     BufferInterface(
         std::pair<int, int> mazeSize,
-        std::vector<TriangleGraphic>* graphicCpuBuffer,
-        std::vector<TriangleTexture>* textureCpuBuffer);
+        QVector<TriangleGraphic>* graphicCpuBuffer,
+        QVector<TriangleTexture>* textureCpuBuffer);
 
     // Initializes and caches all possible tile text positions. We need this
     // extra initialization function since the max size is from the algorithm.
@@ -52,14 +52,14 @@ private:
     std::pair<int, int> m_mazeSize;
 
     // CPU-side buffers
-    std::vector<TriangleGraphic>* m_graphicCpuBuffer;
-    std::vector<TriangleTexture>* m_textureCpuBuffer;
+    QVector<TriangleGraphic>* m_graphicCpuBuffer;
+    QVector<TriangleTexture>* m_textureCpuBuffer;
 
     // A cache for tile graphic text information
     TileGraphicTextCache m_tileGraphicTextCache;
 
     // Converts a polygon to a vector of triangle graphics or triangle textures
-    std::vector<TriangleGraphic> polygonToTriangleGraphics(const Polygon& polygon, Color color, double alpha);
+    QVector<TriangleGraphic> polygonToTriangleGraphics(const Polygon& polygon, Color color, double alpha);
 
     // Retrieve the indices into the graphic cpu buffer for each specific type of Tile triangle
     int trianglesPerTile();

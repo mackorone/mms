@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include <QVector>
 
 #include "BufferInterface.h"
 #include "Color.h"
@@ -18,7 +18,7 @@ public:
     void declareWall(int x, int y, Direction direction, bool isWall);
     void undeclareWall(int x, int y, Direction direction);
     void setTileFogginess(int x, int y, bool foggy);
-    void setTileText(int x, int y, const std::vector<std::string>& rowsOfText);
+    void setTileText(int x, int y, const QVector<std::string>& rowsOfText);
 
     void draw() const;
     void updateColor() const;
@@ -27,7 +27,7 @@ public:
     void updateText() const;
 
 private:
-    std::vector<std::vector<TileGraphic>> m_tileGraphics;
+    QVector<QVector<TileGraphic>> m_tileGraphics;
 
     int getWidth() const;
     int getHeight() const;

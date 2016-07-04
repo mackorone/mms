@@ -688,7 +688,7 @@ void MouseInterface::clearTileColorImpl(int x, int y) {
 }
 
 void MouseInterface::setTileTextImpl(int x, int y, const std::string& text) {
-    std::vector<std::string> rowsOfText;
+    QVector<std::string> rowsOfText;
     int row = 0;
     int index = 0;
     while (row < m_options.tileTextNumberOfRows && index < text.size()) {

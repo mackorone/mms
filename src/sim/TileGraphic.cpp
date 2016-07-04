@@ -6,9 +6,18 @@
 
 namespace sim {
 
+TileGraphic::TileGraphic() :
+    m_tile(nullptr),
+    m_bufferInterface(nullptr),
+    m_color(Color::BLACK),
+    m_foggy(false) {
+}
+
 TileGraphic::TileGraphic(const Tile* tile, BufferInterface* bufferInterface) :
-        m_tile(tile), m_bufferInterface(bufferInterface),
-        m_color(STRING_TO_COLOR.value(P()->tileBaseColor().c_str())), m_foggy(true) {
+        m_tile(tile),
+        m_bufferInterface(bufferInterface),
+        m_color(STRING_TO_COLOR.value(P()->tileBaseColor().c_str())),
+        m_foggy(true) {
 }
 
 bool TileGraphic::wallDeclared(Direction direction) const {
@@ -35,7 +44,7 @@ void TileGraphic::setFogginess(bool foggy) {
     updateFog();
 }
 
-void TileGraphic::setText(const std::vector<std::string>& rowsOfText) {
+void TileGraphic::setText(const QVector<std::string>& rowsOfText) {
     m_rowsOfText = rowsOfText;
     updateText();
 }
@@ -105,7 +114,7 @@ void TileGraphic::updateFog() const {
 
 void TileGraphic::updateText() const {
 
-    std::vector<std::string> rows = m_rowsOfText;
+    QVector<std::string> rows = m_rowsOfText;
     if (S()->tileDistanceVisible()) {
         rows.insert(rows.begin(), (0 <= m_tile->getDistance() ? std::to_string(m_tile->getDistance()) : "inf"));
     }

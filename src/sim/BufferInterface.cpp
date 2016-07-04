@@ -10,8 +10,8 @@ namespace sim {
 
 BufferInterface::BufferInterface(
         std::pair<int, int> mazeSize,
-        std::vector<TriangleGraphic>* graphicCpuBuffer,
-        std::vector<TriangleTexture>* textureCpuBuffer) :
+        QVector<TriangleGraphic>* graphicCpuBuffer,
+        QVector<TriangleTexture>* textureCpuBuffer) :
         m_mazeSize(mazeSize),
         m_graphicCpuBuffer(graphicCpuBuffer),
         m_textureCpuBuffer(textureCpuBuffer) {
@@ -40,7 +40,7 @@ std::pair<int, int> BufferInterface::getTileGraphicTextMaxSize() {
 }
 
 void BufferInterface::insertIntoGraphicCpuBuffer(const Polygon& polygon, Color color, double alpha) {
-    std::vector<TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, alpha);
+    QVector<TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, alpha);
     for (int i = 0; i < tgs.size(); i += 1) {
         m_graphicCpuBuffer->push_back(tgs.at(i));
     }
@@ -70,7 +70,7 @@ void BufferInterface::updateTileGraphicBaseColor(int x, int y, Color color) {
     int index = getTileGraphicBaseStartingIndex(x, y);
     std::tuple<double, double, double> colorValues = COLOR_TO_RGB.value(color);
     for (int i = 0; i < 2; i += 1) {
-        TriangleGraphic* triangleGraphic = &m_graphicCpuBuffer->at(index + i);
+        TriangleGraphic* triangleGraphic = &(*m_graphicCpuBuffer)[index + i];
         triangleGraphic->p1.r = std::get<0>(colorValues);
         triangleGraphic->p1.g = std::get<1>(colorValues);
         triangleGraphic->p1.b = std::get<2>(colorValues);
@@ -87,7 +87,7 @@ void BufferInterface::updateTileGraphicWallColor(int x, int y, Direction directi
     int index = getTileGraphicWallStartingIndex(x, y, direction);
     std::tuple<double, double, double> colorValues = COLOR_TO_RGB.value(color);
     for (int i = 0; i < 2; i += 1) {
-        TriangleGraphic* triangleGraphic = &m_graphicCpuBuffer->at(index + i);
+        TriangleGraphic* triangleGraphic = &(*m_graphicCpuBuffer)[index + i];
         triangleGraphic->p1.r = std::get<0>(colorValues);
         triangleGraphic->p1.g = std::get<1>(colorValues);
         triangleGraphic->p1.b = std::get<2>(colorValues);
@@ -106,7 +106,7 @@ void BufferInterface::updateTileGraphicWallColor(int x, int y, Direction directi
 void BufferInterface::updateTileGraphicFog(int x, int y, double alpha) {
     int index = getTileGraphicFogStartingIndex(x, y);
     for (int i = 0; i < 2; i += 1) {
-        TriangleGraphic* triangleGraphic = &m_graphicCpuBuffer->at(index + i);
+        TriangleGraphic* triangleGraphic = &(*m_graphicCpuBuffer)[index + i];
         triangleGraphic->p1.a = alpha;
         triangleGraphic->p2.a = alpha;
         triangleGraphic->p3.a = alpha;
@@ -130,8 +130,8 @@ void BufferInterface::updateTileGraphicText(int x, int y, int numRows, int numCo
         m_tileGraphicTextCache.getTileGraphicTextPosition(x, y, numRows, numCols, row, col);
 
     int triangleTextureIndex = getTileGraphicTextStartingIndex(x, y, row, col);
-    TriangleTexture* t1 = &m_textureCpuBuffer->at(triangleTextureIndex);
-    TriangleTexture* t2 = &m_textureCpuBuffer->at(triangleTextureIndex + 1);
+    TriangleTexture* t1 = &(*m_textureCpuBuffer)[triangleTextureIndex];
+    TriangleTexture* t2 = &(*m_textureCpuBuffer)[triangleTextureIndex + 1];
 
     t1->p1.x = LL_UR.first.getX().getMeters();
     t1->p1.y = LL_UR.first.getY().getMeters();
@@ -155,13 +155,12 @@ void BufferInterface::updateTileGraphicText(int x, int y, int numRows, int numCo
 }
 
 void BufferInterface::drawMousePolygon(const Polygon& polygon, Color color, double sensorAlpha) {
-    std::vector<TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, sensorAlpha);
-    m_graphicCpuBuffer->insert(m_graphicCpuBuffer->end(), tgs.begin(), tgs.end());
+    m_graphicCpuBuffer->append(polygonToTriangleGraphics(polygon, color, sensorAlpha));
 }
 
-std::vector<TriangleGraphic> BufferInterface::polygonToTriangleGraphics(const Polygon& polygon, Color color, double alpha) {
+QVector<TriangleGraphic> BufferInterface::polygonToTriangleGraphics(const Polygon& polygon, Color color, double alpha) {
     QVector<Triangle> triangles = polygon.getTriangles();
-    std::vector<TriangleGraphic> triangleGraphics;
+    QVector<TriangleGraphic> triangleGraphics;
     std::tuple<double, double, double> colorValues = COLOR_TO_RGB.value(color);
     for (Triangle triangle : triangles) {
         triangleGraphics.push_back({

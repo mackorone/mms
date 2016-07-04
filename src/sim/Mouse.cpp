@@ -163,36 +163,36 @@ Polygon Mouse::getCurrentCenterOfMassPolygon(
     return getCurrentPolygon(m_initialCenterOfMassPolygon, currentTranslation, currentRotation);
 }
 
-std::vector<Polygon> Mouse::getCurrentWheelPolygons(
+QVector<Polygon> Mouse::getCurrentWheelPolygons(
         const Coordinate& currentTranslation, const Angle& currentRotation) const {
-    std::vector<Polygon> polygons;
+    QVector<Polygon> polygons;
     for (const Wheel& wheel : m_wheels) {
         polygons.push_back(getCurrentPolygon(wheel.getInitialPolygon(), currentTranslation, currentRotation));
     }
     return polygons;
 }
 
-std::vector<Polygon> Mouse::getCurrentWheelSpeedIndicatorPolygons(
+QVector<Polygon> Mouse::getCurrentWheelSpeedIndicatorPolygons(
         const Coordinate& currentTranslation, const Angle& currentRotation) const {
-    std::vector<Polygon> polygons;
+    QVector<Polygon> polygons;
     for (const Wheel& wheel : m_wheels) {
         polygons.push_back(getCurrentPolygon(wheel.getSpeedIndicatorPolygon(), currentTranslation, currentRotation));
     }
     return polygons;
 }
 
-std::vector<Polygon> Mouse::getCurrentSensorPolygons(
+QVector<Polygon> Mouse::getCurrentSensorPolygons(
         const Coordinate& currentTranslation, const Angle& currentRotation) const {
-    std::vector<Polygon> polygons;
+    QVector<Polygon> polygons;
     for (const Sensor& sensor : m_sensors) {
         polygons.push_back(getCurrentPolygon(sensor.getInitialPolygon(), currentTranslation, currentRotation));
     }
     return polygons;
 }
 
-std::vector<Polygon> Mouse::getCurrentSensorViewPolygons(
+QVector<Polygon> Mouse::getCurrentSensorViewPolygons(
         const Coordinate& currentTranslation, const Angle& currentRotation) const {
-    std::vector<Polygon> polygons;
+    QVector<Polygon> polygons;
     for (const Sensor& sensor : m_sensors) {
         std::pair<Cartesian, Radians> translationAndRotation =
             getCurrentSensorPositionAndDirection(

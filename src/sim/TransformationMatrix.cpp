@@ -7,7 +7,7 @@
 
 namespace sim {
 
-std::vector<float> TransformationMatrix::getFullMapTransformationMatrix(
+QVector<float> TransformationMatrix::getFullMapTransformationMatrix(
         const Distance& wallWidth,
         std::pair<double, double> physicalMazeSize,
         std::pair<int, int> fullMapPosition,
@@ -40,7 +40,7 @@ std::vector<float> TransformationMatrix::getFullMapTransformationMatrix(
     //                                 |       |
     //                                 X-------+---
     //
-    std::vector<float> initialTranslationMatrix = {
+    QVector<float> initialTranslationMatrix = {
         1.0, 0.0, 0.0, static_cast<float>(0.5 * wallWidth.getMeters()),
         0.0, 1.0, 0.0, static_cast<float>(0.5 * wallWidth.getMeters()),
         0.0, 0.0, 1.0,                                             0.0,
@@ -68,7 +68,7 @@ std::vector<float> TransformationMatrix::getFullMapTransformationMatrix(
     double horizontalScaling = openGlWidth / physicalWidth;
     double verticalScaling = openGlHeight / physicalHeight;
 
-    std::vector<float> scalingMatrix = {
+    QVector<float> scalingMatrix = {
         static_cast<float>(horizontalScaling),                                 0.0, 0.0, 0.0,
                                           0.0, static_cast<float>(verticalScaling), 0.0, 0.0,
                                           0.0,                                 0.0, 1.0, 0.0,
@@ -81,7 +81,7 @@ std::vector<float> TransformationMatrix::getFullMapTransformationMatrix(
     double pixelLowerLeftCornerY = fullMapPosition.second + 0.5 * (fullMapSize.second - pixelHeight);
     std::pair<double, double> openGlLowerLeftCorner =
         mapPixelCoordinateToOpenGlCoordinate(std::make_pair(pixelLowerLeftCornerX, pixelLowerLeftCornerY), windowSize);
-    std::vector<float> translationMatrix = {
+    QVector<float> translationMatrix = {
         1.0, 0.0, 0.0,  static_cast<float>(openGlLowerLeftCorner.first),
         0.0, 1.0, 0.0, static_cast<float>(openGlLowerLeftCorner.second),
         0.0, 0.0, 1.0,                                              0.0,
@@ -89,14 +89,14 @@ std::vector<float> TransformationMatrix::getFullMapTransformationMatrix(
     };
 
     // Step 4: Compose the matrices
-    std::vector<float> transformationMatrix =
+    QVector<float> transformationMatrix =
         multiply4x4Matrices(translationMatrix,
         multiply4x4Matrices(scalingMatrix,
                             initialTranslationMatrix));
     return transformationMatrix;
 }
 
-std::vector<float> TransformationMatrix::getZoomedMapTransformationMatrix(
+QVector<float> TransformationMatrix::getZoomedMapTransformationMatrix(
     std::pair<double, double> physicalMazeSize,
     std::pair<int, int> zoomedMapPosition,
     std::pair<int, int> zoomedMapSize,
@@ -135,7 +135,7 @@ std::vector<float> TransformationMatrix::getZoomedMapTransformationMatrix(
     double horizontalScaling = openGlWidth / physicalWidth;
     double verticalScaling = openGlHeight / physicalHeight;
 
-    std::vector<float> scalingMatrix = {
+    QVector<float> scalingMatrix = {
         static_cast<float>(horizontalScaling),                                 0.0, 0.0, 0.0,
                                           0.0, static_cast<float>(verticalScaling), 0.0, 0.0,
                                           0.0,                                 0.0, 1.0, 0.0,
@@ -168,7 +168,7 @@ std::vector<float> TransformationMatrix::getZoomedMapTransformationMatrix(
     // Combine the transalations and form the translation matrix
     double horizontalTranslation = staticTranslation.first -  dynamicTranslation.first + openGlOrigin.first;
     double verticalTranslation = staticTranslation.second - dynamicTranslation.second + openGlOrigin.second;
-    std::vector<float> translationMatrix = {
+    QVector<float> translationMatrix = {
         1.0, 0.0, 0.0, static_cast<float>(horizontalTranslation), 
         0.0, 1.0, 0.0,   static_cast<float>(verticalTranslation),
         0.0, 0.0, 1.0,                                       0.0,
@@ -183,14 +183,14 @@ std::vector<float> TransformationMatrix::getZoomedMapTransformationMatrix(
 
     // We subtract Degrees(90) here since we want forward to face NORTH
     double theta = (Degrees(currentMouseRotation) - Degrees(90)).getRadiansZeroTo2pi();
-    std::vector<float> rotationMatrix = {
+    QVector<float> rotationMatrix = {
         static_cast<float>( std::cos(theta)), static_cast<float>(std::sin(theta)), 0.0, 0.0,
         static_cast<float>(-std::sin(theta)), static_cast<float>(std::cos(theta)), 0.0, 0.0,
                                     0.0,                            0.0, 1.0, 0.0,
                                     0.0,                            0.0, 0.0, 1.0,
     };
 
-    std::vector<float> inverseScalingMatrix = {
+    QVector<float> inverseScalingMatrix = {
         static_cast<float>(1.0/horizontalScaling),                                     0.0, 0.0, 0.0,
                                               0.0, static_cast<float>(1.0/verticalScaling), 0.0, 0.0,
                                               0.0,                                     0.0, 1.0, 0.0,
@@ -200,21 +200,21 @@ std::vector<float> TransformationMatrix::getZoomedMapTransformationMatrix(
     std::pair<double, double> zoomedMapCenterOpenGl =
         mapPixelCoordinateToOpenGlCoordinate(std::make_pair(zoomedMapCenterXPixels, zoomedMapCenterYPixels), windowSize);
 
-    std::vector<float> translateToOriginMatrix = {
+    QVector<float> translateToOriginMatrix = {
         1.0, 0.0, 0.0,  static_cast<float>(zoomedMapCenterOpenGl.first),
         0.0, 1.0, 0.0, static_cast<float>(zoomedMapCenterOpenGl.second),
         0.0, 0.0, 1.0,                                              0.0,
         0.0, 0.0, 0.0,                                              1.0,
     };
 
-    std::vector<float> inverseTranslateToOriginMatrix = {
+    QVector<float> inverseTranslateToOriginMatrix = {
         1.0, 0.0, 0.0,  static_cast<float>(-zoomedMapCenterOpenGl.first),
         0.0, 1.0, 0.0, static_cast<float>(-zoomedMapCenterOpenGl.second),
         0.0, 0.0, 1.0,                                               0.0,
         0.0, 0.0, 0.0,                                               1.0,
     };
 
-    std::vector<float> zoomedMapCameraMatrix = multiply4x4Matrices(translationMatrix, scalingMatrix);
+    QVector<float> zoomedMapCameraMatrix = multiply4x4Matrices(translationMatrix, scalingMatrix);
     if (rotateZoomedMap) {
         zoomedMapCameraMatrix =
             multiply4x4Matrices(translateToOriginMatrix,
@@ -236,12 +236,12 @@ std::pair<double, double> TransformationMatrix::mapPixelCoordinateToOpenGlCoordi
         2 * coordinate.second / windowSize.second - 1);
 }
 
-std::vector<float> TransformationMatrix::multiply4x4Matrices(
-        std::vector<float> left,
-        std::vector<float> right) {
+QVector<float> TransformationMatrix::multiply4x4Matrices(
+        QVector<float> left,
+        QVector<float> right) {
     SIM_ASSERT_EQ(left.size(), 16);
     SIM_ASSERT_EQ(right.size(), 16);
-    std::vector<float> result;
+    QVector<float> result;
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             double value = 0.0;

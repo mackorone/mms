@@ -6,7 +6,7 @@ namespace sim {
 
 MazeGraphic::MazeGraphic(const Maze* maze, BufferInterface* bufferInterface) {
     for (int x = 0; x < maze->getWidth(); x += 1) {
-        std::vector<TileGraphic> column;
+        QVector<TileGraphic> column;
         for (int y = 0; y < maze->getHeight(); y += 1) {
             column.push_back(TileGraphic(maze->getTile(x, y), bufferInterface));
         }
@@ -18,27 +18,27 @@ MazeGraphic::MazeGraphic(const Maze* maze, BufferInterface* bufferInterface) {
 
 void MazeGraphic::setTileColor(int x, int y, Color color) {
     SIM_ASSERT_TR(withinMaze(x, y));
-    m_tileGraphics.at(x).at(y).setColor(color);
+    m_tileGraphics[x][y].setColor(color);
 }
 
 void MazeGraphic::declareWall(int x, int y, Direction direction, bool isWall) {
     SIM_ASSERT_TR(withinMaze(x, y));
-    m_tileGraphics.at(x).at(y).declareWall(direction, isWall);
+    m_tileGraphics[x][y].declareWall(direction, isWall);
 }
 
 void MazeGraphic::undeclareWall(int x, int y, Direction direction) {
     SIM_ASSERT_TR(withinMaze(x, y));
-    m_tileGraphics.at(x).at(y).undeclareWall(direction);
+    m_tileGraphics[x][y].undeclareWall(direction);
 }
 
 void MazeGraphic::setTileFogginess(int x, int y, bool foggy) {
     SIM_ASSERT_TR(withinMaze(x, y));
-    m_tileGraphics.at(x).at(y).setFogginess(foggy);
+    m_tileGraphics[x][y].setFogginess(foggy);
 }
 
-void MazeGraphic::setTileText(int x, int y, const std::vector<std::string>& rowsOfText) {
+void MazeGraphic::setTileText(int x, int y, const QVector<std::string>& rowsOfText) {
     SIM_ASSERT_TR(withinMaze(x, y));
-    m_tileGraphics.at(x).at(y).setText(rowsOfText);
+    m_tileGraphics[x][y].setText(rowsOfText);
 }
 
 void MazeGraphic::draw() const {

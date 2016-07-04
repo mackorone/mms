@@ -140,7 +140,7 @@ double SimUtilities::strToDouble(const std::string& str) {
     return std::stod(str);
 }
 
-std::vector<std::string> SimUtilities::tokenize(
+QVector<std::string> SimUtilities::tokenize(
         const std::string& str,
         char delimiter,
         bool ignoreEmpties,
@@ -149,7 +149,7 @@ std::vector<std::string> SimUtilities::tokenize(
     // TODO: upforgrabs
     // Replace this with some QT function
 
-    std::vector<std::string> tokens;
+    QVector<std::string> tokens;
     std::string word = "";
 
     for (int i = 0; i < str.size(); i += 1) {
@@ -195,9 +195,9 @@ int SimUtilities::getDirectionIndex(Direction direction) {
     return std::find(DIRECTIONS.begin(), DIRECTIONS.end(), direction) - DIRECTIONS.begin();
 }
 
-std::vector<std::string> SimUtilities::getDirectoryContents(const std::string& path) {
+QVector<std::string> SimUtilities::getDirectoryContents(const std::string& path) {
 
-    std::vector<std::string> contents;
+    QVector<std::string> contents;
 
 #ifdef _WIN32
     // TODO: upforgrabs
@@ -221,7 +221,7 @@ void SimUtilities::removeExcessArchivedRuns() {
     // Information about each run is stored in the run/ directory. As it turns
     // out, this information can pile up pretty quickly. We should remove the
     // oldest stuff so that the run/ directory doesn't get too full.
-    std::vector<std::string> contents = getDirectoryContents(Directory::getRunDirectory());
+    QVector<std::string> contents = getDirectoryContents(Directory::getRunDirectory());
     std::sort(contents.begin(), contents.end());
     for (int i = 2; i < static_cast<int>(contents.size()) - P()->numberOfArchivedRuns(); i += 1) {
 #ifdef _WIN32

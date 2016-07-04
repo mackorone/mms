@@ -5,7 +5,7 @@
 
 #include <pugixml/pugixml.hpp>
 #include <string>
-#include <vector>
+#include <QVector>
 
 #include "Logging.h"
 #include "Maze.h"

@@ -4,7 +4,7 @@
 #include <QString>
 
 #include <mutex>
-#include <vector>
+#include <QVector>
 
 #include "units/Cartesian.h"
 #include "units/RadiansPerSecond.h"
@@ -58,19 +58,19 @@ public:
         const Coordinate& currentTranslation, const Angle& currentRotation) const;
 
     // Retrieves the polygons of the wheels of the robot
-    std::vector<Polygon> getCurrentWheelPolygons(
+    QVector<Polygon> getCurrentWheelPolygons(
         const Coordinate& currentTranslation, const Angle& currentRotation) const;
 
     // Retrieves the speed indicator polygons of the wheels of the robot
-    std::vector<Polygon> getCurrentWheelSpeedIndicatorPolygons(
+    QVector<Polygon> getCurrentWheelSpeedIndicatorPolygons(
         const Coordinate& currentTranslation, const Angle& currentRotation) const;
 
     // Retrieves the polygons of the sensors of the robot
-    std::vector<Polygon> getCurrentSensorPolygons(
+    QVector<Polygon> getCurrentSensorPolygons(
         const Coordinate& currentTranslation, const Angle& currentRotation) const;
 
     // Retrieve the polygons corresponding to the views of the sensors
-    std::vector<Polygon> getCurrentSensorViewPolygons(
+    QVector<Polygon> getCurrentSensorViewPolygons(
         const Coordinate& currentTranslation, const Angle& currentRotation) const;
 
     // Instruct the mouse to update its own position based on how much simulation time has elapsed
