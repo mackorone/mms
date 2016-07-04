@@ -1,12 +1,11 @@
 #pragma once
 
+#include "Maze.h"
+#include "Polygon.h"
 #include "units/Angle.h"
 #include "units/Cartesian.h"
 #include "units/Distance.h"
 #include "units/MetersSquared.h"
-
-#include "Maze.h"
-#include "Polygon.h"
 
 namespace sim {
 
@@ -30,7 +29,7 @@ public:
     static MetersSquared crossProduct(const Cartesian& Z, const Cartesian& A, const Cartesian& B);
 
     // Returns the convex hull of all of the points of all of the polygons
-    static Polygon convexHull(const std::vector<Polygon>& polygons);
+    static Polygon convexHull(const QVector<Polygon>& polygons);
 
     // Attempts to cast a ray from start to end and returns the first point of
     // intersection with walls or corners, as given by maze, or end if none

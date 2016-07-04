@@ -136,8 +136,8 @@ void View::updateWindowSize(int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-QList<char> View::getAllowableTileTextCharacters() {
-    return m_fontImageMap.keys();
+QVector<char> View::getAllowableTileTextCharacters() {
+    return m_fontImageMap.keys().toVector();
 }
 
 void View::initTileGraphicText() {

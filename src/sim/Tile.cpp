@@ -6,7 +6,7 @@ namespace sim{
 
 Tile::Tile() : m_x(-1), m_y(-1), m_distance(-1) {
     for (Direction direction : DIRECTIONS) {
-        m_walls.insert(std::make_pair(direction, false));
+        m_walls.insert(direction, false);
     }
 }
 
@@ -24,11 +24,11 @@ void Tile::setPos(int x, int y) {
 }
 
 bool Tile::isWall(Direction direction) const {
-    return m_walls.at(direction);
+    return m_walls.value(direction);
 }
 
 void Tile::setWall(Direction direction, bool isWall) {
-    m_walls.at(direction) = isWall;
+    m_walls[direction] = isWall;
 }
 
 int Tile::getDistance() const {
@@ -48,10 +48,10 @@ Polygon Tile::getInteriorPolygon() const {
 }
 
 Polygon Tile::getWallPolygon(Direction direction) const {
-    return m_wallPolygons.at(direction);
+    return m_wallPolygons.value(direction);
 }
 
-std::vector<Polygon> Tile::getCornerPolygons() const {
+QVector<Polygon> Tile::getCornerPolygons() const {
     return m_cornerPolygons;
 }
 
@@ -137,33 +137,33 @@ void Tile::initWallPolygons(int mazeWidth, int mazeHeight) {
     Cartesian innerUpperRightPoint = m_interiorPolygon.getVertices().at(2);
     Cartesian innerLowerRightPoint = m_interiorPolygon.getVertices().at(3);
 
-    std::vector<Cartesian> northWall;
+    QVector<Cartesian> northWall;
     northWall.push_back(innerUpperLeftPoint);
     northWall.push_back(Cartesian(innerUpperLeftPoint.getX(), outerUpperLeftPoint.getY()));
     northWall.push_back(Cartesian(innerUpperRightPoint.getX(), outerUpperRightPoint.getY()));
     northWall.push_back(innerUpperRightPoint);
-    m_wallPolygons.insert(std::make_pair(Direction::NORTH, Polygon(northWall)));
+    m_wallPolygons.insert(Direction::NORTH, Polygon(northWall));
 
-    std::vector<Cartesian> eastWall;
+    QVector<Cartesian> eastWall;
     eastWall.push_back(innerLowerRightPoint);
     eastWall.push_back(innerUpperRightPoint);
     eastWall.push_back(Cartesian(outerUpperRightPoint.getX(), innerUpperRightPoint.getY()));
     eastWall.push_back(Cartesian(outerLowerRightPoint.getX(), innerLowerRightPoint.getY()));
-    m_wallPolygons.insert(std::make_pair(Direction::EAST, Polygon(eastWall)));
+    m_wallPolygons.insert(Direction::EAST, Polygon(eastWall));
 
-    std::vector<Cartesian> southWall;
+    QVector<Cartesian> southWall;
     southWall.push_back(Cartesian(innerLowerLeftPoint.getX(), outerLowerLeftPoint.getY()));
     southWall.push_back(innerLowerLeftPoint);
     southWall.push_back(innerLowerRightPoint);
     southWall.push_back(Cartesian(innerLowerRightPoint.getX(), outerLowerRightPoint.getY()));
-    m_wallPolygons.insert(std::make_pair(Direction::SOUTH, Polygon(southWall)));
+    m_wallPolygons.insert(Direction::SOUTH, Polygon(southWall));
 
-    std::vector<Cartesian> westWall;
+    QVector<Cartesian> westWall;
     westWall.push_back(Cartesian(outerLowerLeftPoint.getX(), innerLowerLeftPoint.getY()));
     westWall.push_back(Cartesian(outerUpperLeftPoint.getX(), innerUpperLeftPoint.getY()));
     westWall.push_back(innerUpperLeftPoint);
     westWall.push_back(innerLowerLeftPoint);
-    m_wallPolygons.insert(std::make_pair(Direction::WEST, Polygon(westWall)));
+    m_wallPolygons.insert(Direction::WEST, Polygon(westWall));
 }
 
 void Tile::initCornerPolygons(int mazeWidth, int mazeHeight) {
@@ -178,28 +178,28 @@ void Tile::initCornerPolygons(int mazeWidth, int mazeHeight) {
     Cartesian innerUpperRightPoint = m_interiorPolygon.getVertices().at(2);
     Cartesian innerLowerRightPoint = m_interiorPolygon.getVertices().at(3);
 
-    std::vector<Cartesian> lowerLeftCorner;
+    QVector<Cartesian> lowerLeftCorner;
     lowerLeftCorner.push_back(outerLowerLeftPoint);
     lowerLeftCorner.push_back(Cartesian(outerLowerLeftPoint.getX(), innerLowerLeftPoint.getY()));
     lowerLeftCorner.push_back(innerLowerLeftPoint);
     lowerLeftCorner.push_back(Cartesian(innerLowerLeftPoint.getX(), outerLowerLeftPoint.getY()));
     m_cornerPolygons.push_back(Polygon(lowerLeftCorner));
 
-    std::vector<Cartesian> upperLeftCorner;
+    QVector<Cartesian> upperLeftCorner;
     upperLeftCorner.push_back(Cartesian(outerUpperLeftPoint.getX(), innerUpperLeftPoint.getY()));
     upperLeftCorner.push_back(outerUpperLeftPoint);
     upperLeftCorner.push_back(Cartesian(innerUpperLeftPoint.getX(), outerUpperLeftPoint.getY()));
     upperLeftCorner.push_back(innerUpperLeftPoint);
     m_cornerPolygons.push_back(Polygon(upperLeftCorner));
 
-    std::vector<Cartesian> upperRightCorner;
+    QVector<Cartesian> upperRightCorner;
     upperRightCorner.push_back(innerUpperRightPoint);
     upperRightCorner.push_back(Cartesian(innerUpperRightPoint.getX(), outerUpperRightPoint.getY()));
     upperRightCorner.push_back(outerUpperRightPoint);
     upperRightCorner.push_back(Cartesian(outerUpperRightPoint.getX(), innerUpperRightPoint.getY()));
     m_cornerPolygons.push_back(Polygon(upperRightCorner));
 
-    std::vector<Cartesian> lowerRightCorner;
+    QVector<Cartesian> lowerRightCorner;
     lowerRightCorner.push_back(Cartesian(innerLowerRightPoint.getX(), outerLowerRightPoint.getY()));
     lowerRightCorner.push_back(innerLowerRightPoint);
     lowerRightCorner.push_back(Cartesian(outerLowerRightPoint.getX(), innerLowerRightPoint.getY()));

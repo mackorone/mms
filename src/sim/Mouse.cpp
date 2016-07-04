@@ -1,6 +1,7 @@
 #include "Mouse.h"
 
 #include <QMapIterator>
+#include <QVector>
 
 #include "units/Meters.h"
 #include "units/MetersPerSecond.h"
@@ -61,7 +62,7 @@ bool Mouse::initialize(
 
     // Initialize the collision polygon; this is technically not correct since
     // we should be using union, not convexHull, but it's a good approximation
-    std::vector<Polygon> polygons;
+    QVector<Polygon> polygons;
     polygons.push_back(m_initialBodyPolygon);
     for (const Wheel& wheel : m_wheels) {
         polygons.push_back(wheel.getInitialPolygon());

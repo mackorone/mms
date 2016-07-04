@@ -1,10 +1,10 @@
 #pragma once
 
-#include <map>
-#include <vector>
+#include <QMap>
+#include <QVector>
 
-#include "Polygon.h"
 #include "Direction.h"
+#include "Polygon.h"
 
 namespace sim {
 
@@ -26,20 +26,20 @@ public:
     Polygon getFullPolygon() const;
     Polygon getInteriorPolygon() const;
     Polygon getWallPolygon(Direction direction) const;
-    std::vector<Polygon> getCornerPolygons() const;
+    QVector<Polygon> getCornerPolygons() const;
 
     void initPolygons(int mazeWidth, int mazeHeight);
 
 private:
     int m_x;
     int m_y;
-    std::map<Direction, bool> m_walls;
+    QMap<Direction, bool> m_walls;
     int m_distance;
 
     Polygon m_fullPolygon;
     Polygon m_interiorPolygon;
-    std::map<Direction, Polygon> m_wallPolygons;
-    std::vector<Polygon> m_cornerPolygons;
+    QMap<Direction, Polygon> m_wallPolygons;
+    QVector<Polygon> m_cornerPolygons;
 
     void initFullPolygon(int mazeWidth, int mazeHeight);
     void initInteriorPolygon(int mazeWidth, int mazeHeight);

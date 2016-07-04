@@ -31,7 +31,7 @@ Cartesian GeometryUtilities::rotateVertexAroundPoint(const Cartesian& vertex, co
 
 Polygon GeometryUtilities::createCirclePolygon(const Cartesian& position, const Distance& radius, int numberOfEdges) {
     SIM_ASSERT_LE(3, numberOfEdges);
-    std::vector<Cartesian> vertices;
+    QVector<Cartesian> vertices;
     for (int i = 0; i < numberOfEdges; i += 1) {
         vertices.push_back(Polar(radius, Radians(i * M_TWOPI / numberOfEdges)) + position);
     }
@@ -50,7 +50,7 @@ MetersSquared GeometryUtilities::crossProduct(const Cartesian& Z, const Cartesia
     return (A.getX() - Z.getX()) * (B.getY() - Z.getY()) - (A.getY() - Z.getY()) * (B.getX() - Z.getX());
 }
 
-Polygon GeometryUtilities::convexHull(const std::vector<Polygon>& polygons) {
+Polygon GeometryUtilities::convexHull(const QVector<Polygon>& polygons) {
 
     // TODO: Explain/Clean this functionality
 
@@ -60,7 +60,7 @@ Polygon GeometryUtilities::convexHull(const std::vector<Polygon>& polygons) {
     // Note: the last point in the returned list is the same as the first one.
 
     // First, get a list of all of the points
-    std::vector<Cartesian> points;
+    QVector<Cartesian> points;
     for (Polygon polygon : polygons) {
         for (Cartesian point : polygon.getVertices()) {
             points.push_back(point);
@@ -69,7 +69,7 @@ Polygon GeometryUtilities::convexHull(const std::vector<Polygon>& polygons) {
 
     int n = points.size();
     int k = 0;
-    std::vector<Cartesian> hull(2*n);
+    QVector<Cartesian> hull(2*n);
 
     // Sort points lexicographically
     std::sort(points.begin(), points.end());

@@ -1,5 +1,7 @@
 #include "BufferInterface.h"
 
+#include <QVector>
+
 #include "Assert.h"
 #include "Logging.h"
 #include "SimUtilities.h"
@@ -158,7 +160,7 @@ void BufferInterface::drawMousePolygon(const Polygon& polygon, Color color, doub
 }
 
 std::vector<TriangleGraphic> BufferInterface::polygonToTriangleGraphics(const Polygon& polygon, Color color, double alpha) {
-    std::vector<Triangle> triangles = polygon.getTriangles();
+    QVector<Triangle> triangles = polygon.getTriangles();
     std::vector<TriangleGraphic> triangleGraphics;
     std::tuple<double, double, double> colorValues = COLOR_TO_RGB.value(color);
     for (Triangle triangle : triangles) {

@@ -34,7 +34,7 @@ Polygon::Polygon(const Polygon& polygon) :
     }
 }
 
-Polygon::Polygon(const std::vector<Cartesian>& vertices) :
+Polygon::Polygon(const QVector<Cartesian>& vertices) :
     m_vertices(vertices),
     // Postpone triangulation until we absolutely have to do it.
     m_triangles({}) {
@@ -49,11 +49,11 @@ Polygon::Polygon(const std::vector<Cartesian>& vertices) :
     }
 }
 
-std::vector<Cartesian> Polygon::getVertices() const {
+QVector<Cartesian> Polygon::getVertices() const {
     return m_vertices;
 }
 
-std::vector<Triangle> Polygon::getTriangles() const {
+QVector<Triangle> Polygon::getTriangles() const {
     // Lazy initialization here
     if (m_triangles.size() == 0) {
         m_triangles = triangulate(m_vertices);
@@ -94,12 +94,12 @@ Cartesian Polygon::centroid() const {
 
 Polygon Polygon::translate(const Coordinate& translation) const {
 
-    std::vector<Cartesian> vertices;
+    QVector<Cartesian> vertices;
     for (Cartesian vertex : m_vertices) {
         vertices.push_back(GeometryUtilities::translateVertex(vertex, translation));
     }
 
-    std::vector<Triangle> triangles;
+    QVector<Triangle> triangles;
     for (Triangle triangle : m_triangles) {
         triangles.push_back({
             GeometryUtilities::translateVertex(triangle.p1, translation),
@@ -113,12 +113,12 @@ Polygon Polygon::translate(const Coordinate& translation) const {
 
 Polygon Polygon::rotateAroundPoint(const Angle& angle, const Coordinate& point) const {
 
-    std::vector<Cartesian> vertices;
+    QVector<Cartesian> vertices;
     for (Cartesian vertex : m_vertices) {
         vertices.push_back(GeometryUtilities::rotateVertexAroundPoint(vertex, angle, point));
     }
 
-    std::vector<Triangle> triangles;
+    QVector<Triangle> triangles;
     for (Triangle triangle : m_triangles) {
         triangles.push_back({
             GeometryUtilities::rotateVertexAroundPoint(triangle.p1, angle, point),
@@ -130,7 +130,7 @@ Polygon Polygon::rotateAroundPoint(const Angle& angle, const Coordinate& point) 
     return Polygon(vertices, triangles);
 }
 
-Polygon::Polygon(const std::vector<Cartesian>& vertices, const std::vector<Triangle>& triangles) :
+Polygon::Polygon(const QVector<Cartesian>& vertices, const QVector<Triangle>& triangles) :
     m_vertices(vertices),
     m_triangles(triangles) {
 }
@@ -139,7 +139,7 @@ bool Polygon::alreadyPerformedTriangulation() const {
     return 0 < m_triangles.size();
 }
 
-std::vector<Triangle> Polygon::triangulate(const std::vector<Cartesian>& vertices) {
+QVector<Triangle> Polygon::triangulate(const QVector<Cartesian>& vertices) {
 
     // Populate the TPPLPoly
     TPPLPoly tpplPoly;
@@ -156,7 +156,7 @@ std::vector<Triangle> Polygon::triangulate(const std::vector<Cartesian>& vertice
     triangulator.Triangulate_EC(&tpplPoly, &result);
 
     // Populate the output vector
-    std::vector<Triangle> triangles;
+    QVector<Triangle> triangles;
     for (auto it = result.begin(); it != result.end(); it++) {
         triangles.push_back({
             Cartesian(Meters((*it)[0].x), Meters((*it)[0].y)),

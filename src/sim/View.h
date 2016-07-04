@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QList>
 #include <QMap>
+#include <QVector>
 
 #include <glut/glut.h>
 #include <tdogl/Program.h>
@@ -35,7 +35,7 @@ public:
     void refresh();
     void updateWindowSize(int width, int height);
 
-    QList<char> getAllowableTileTextCharacters();
+    QVector<char> getAllowableTileTextCharacters();
     void initTileGraphicText();
 
     void keyPress(unsigned char key, int x, int y);

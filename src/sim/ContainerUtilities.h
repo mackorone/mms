@@ -1,9 +1,9 @@
 #pragma once
 
-#include <QList>
 #include <QMap>
 #include <QMapIterator>
 #include <QPair>
+#include <QVector>
 
 #include "Assert.h"
 
@@ -18,8 +18,8 @@ public:
 
     // Returns pairs of items in a map
     template<class K, class V>
-    static QList<QPair<K, V>> items(const QMap<K, V>& map) {
-        QList<QPair<K, V>> items;
+    static QVector<QPair<K, V>> items(const QMap<K, V>& map) {
+        QVector<QPair<K, V>> items;
         QMapIterator<K, V> iterator(map);
         while (iterator.hasNext()) {
             auto pair = iterator.next();

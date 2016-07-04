@@ -187,7 +187,7 @@ void World::checkCollision() {
         static const Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
 
         // Retrieve the current collision polygon
-        std::vector<Cartesian> currentCollisionPolygonVertices =
+        QVector<Cartesian> currentCollisionPolygonVertices =
             m_mouse->getCurrentCollisionPolygon(
                 m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation()).getVertices();
 

@@ -1,5 +1,7 @@
 #include "MouseParser.h"
 
+#include <QVector>
+
 #include "Assert.h"
 #include "EncoderType.h"
 #include "GeometryUtilities.h"
@@ -67,7 +69,7 @@ Polygon MouseParser::getBody(
         *success = false;
     }
 
-    std::vector<Cartesian> vertices;
+    QVector<Cartesian> vertices;
     for (pugi::xml_node vertex : body.children(VERTEX_TAG.c_str())) {
         double x = getDoubleIfHasDouble(vertex, X_TAG, success);
         double y = getDoubleIfHasDouble(vertex, Y_TAG, success);

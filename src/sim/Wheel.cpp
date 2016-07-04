@@ -1,5 +1,7 @@
 #include "Wheel.h"
 
+#include <QVector>
+
 #include "CPMath.h"
 #include "GeometryUtilities.h"
 
@@ -40,7 +42,7 @@ Wheel::Wheel(
         m_relativeRotation(Radians(0)) {
 
     // Create the initial wheel polygon
-    std::vector<Cartesian> polygon;
+    QVector<Cartesian> polygon;
     polygon.push_back(Cartesian(Meters(m_radius) * -1, m_halfWidth * -1));
     polygon.push_back(Cartesian(Meters(m_radius) *  1, m_halfWidth * -1));
     polygon.push_back(Cartesian(Meters(m_radius) *  1, m_halfWidth *  1));

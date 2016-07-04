@@ -1,12 +1,12 @@
 #include "Sensor.h"
 
 #include <algorithm>
-
-#include "units/Polar.h"
+#include <QVector>
 
 #include "CPMath.h"
 #include "GeometryUtilities.h"
 #include "Param.h"
+#include "units/Polar.h"
 
 namespace sim {
 
@@ -34,7 +34,7 @@ Sensor::Sensor(
         position, radius, P()->numberOfCircleApproximationPoints());
 
     // Create the polygon for the view of the sensor
-    std::vector<Cartesian> view;
+    QVector<Cartesian> view;
     view.push_back(position);
     for (double i = -1; i <= 1; i += 2.0 / (P()->numberOfSensorEdgePoints() - 1)) {
         view.push_back(Polar(range, (Radians(halfWidth) * i) + direction) + position);
@@ -97,7 +97,7 @@ Polygon Sensor::getViewPolygon(
     static Meters halfWallWidth = Meters(P()->wallWidth() / 2.0);
     static Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
 
-    std::vector<Cartesian> polygon {currentPosition};
+    QVector<Cartesian> polygon {currentPosition};
 
     for (double i = -1; i <= 1; i += 2.0 / (P()->numberOfSensorEdgePoints() - 1)) {
         polygon.push_back(
