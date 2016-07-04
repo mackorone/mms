@@ -1,7 +1,6 @@
 #include "MouseParser.h"
 
 #include "Assert.h"
-#include "ContainerUtilities.h"
 #include "EncoderType.h"
 #include "GeometryUtilities.h"
 #include "SimUtilities.h"
@@ -104,13 +103,15 @@ Polygon MouseParser::getBody(
     return bodyPolygon;
 }
 
-std::map<std::string, Wheel> MouseParser::getWheels(
-        const Cartesian& initialTranslation, const Radians& initialRotation, bool* success) {
+QMap<QString, Wheel> MouseParser::getWheels(
+        const Cartesian& initialTranslation,
+        const Radians& initialRotation,
+        bool* success) {
 
     Cartesian alignmentTranslation = initialTranslation - m_centerOfMass;
     Radians alignmentRotation = initialRotation - m_forwardDirection;
 
-    std::map<std::string, Wheel> wheels;
+    QMap<QString, Wheel> wheels;
     for (pugi::xml_node wheel : m_root.children(WHEEL_TAG.c_str())) {
 
         std::string name = getNameIfNonemptyAndUnique("wheel", wheel, wheels, success);
@@ -128,33 +129,35 @@ std::map<std::string, Wheel> MouseParser::getWheels(
 
         if (success) {
             wheels.insert(
-                std::make_pair(
-                    name,
-                    Wheel(
-                        Meters(diameter),
-                        Meters(width),
-                        alignVertex(
-                            Cartesian(Meters(x), Meters(y)),
-                            alignmentTranslation,
-                            alignmentRotation,
-                            initialTranslation),
-                        Degrees(direction) + alignmentRotation,
-                        RevolutionsPerMinute(maxAngularVelocityMagnitude),
-                        encoderType, 
-                        encoderTicksPerRevolution)));
+                name.c_str(),
+                Wheel(
+                    Meters(diameter),
+                    Meters(width),
+                    alignVertex(
+                        Cartesian(Meters(x), Meters(y)),
+                        alignmentTranslation,
+                        alignmentRotation,
+                        initialTranslation),
+                    Degrees(direction) + alignmentRotation,
+                    RevolutionsPerMinute(maxAngularVelocityMagnitude),
+                    encoderType, 
+                    encoderTicksPerRevolution));
         }
     }
 
     return wheels;
 }
 
-std::map<std::string, Sensor> MouseParser::getSensors(
-        const Cartesian& initialTranslation, const Radians& initialRotation, const Maze& maze, bool* success) {
+QMap<QString, Sensor> MouseParser::getSensors(
+        const Cartesian& initialTranslation,
+        const Radians& initialRotation,
+        const Maze& maze,
+        bool* success) {
 
     Cartesian alignmentTranslation = initialTranslation - m_centerOfMass;
     Radians alignmentRotation = initialRotation - m_forwardDirection;
 
-    std::map<std::string, Sensor> sensors;
+    QMap<QString, Sensor> sensors;
     for (pugi::xml_node sensor : m_root.children(SENSOR_TAG.c_str())) {
 
         std::string name = getNameIfNonemptyAndUnique("sensor", sensor, sensors, success);
@@ -168,19 +171,18 @@ std::map<std::string, Sensor> MouseParser::getSensors(
 
         if (success) {
             sensors.insert(
-                std::make_pair(
-                    name,
-                    Sensor(
-                        Meters(radius),
-                        Meters(range), 
-                        Degrees(halfWidth),
-                        alignVertex(
-                            Cartesian(Meters(x), Meters(y)),
-                            alignmentTranslation,
-                            alignmentRotation,
-                            initialTranslation),
-                        Degrees(direction) + alignmentRotation,
-                        maze)));
+                name.c_str(),
+                Sensor(
+                    Meters(radius),
+                    Meters(range), 
+                    Degrees(halfWidth),
+                    alignVertex(
+                        Cartesian(Meters(x), Meters(y)),
+                        alignmentTranslation,
+                        alignmentRotation,
+                        initialTranslation),
+                    Degrees(direction) + alignmentRotation,
+                    maze));
         }
     }
 
@@ -227,16 +229,16 @@ pugi::xml_node MouseParser::getContainerNode(const pugi::xml_node& node, const s
 EncoderType MouseParser::getEncoderTypeIfValid(const pugi::xml_node& node, bool* success) {
     EncoderType encoderType;
     std::string encoderTypeString = node.child(ENCODER_TYPE_TAG.c_str()).child_value();
-    if (ContainerUtilities::mapContains(STRING_TO_ENCODER_TYPE, encoderTypeString)) {
-        encoderType = STRING_TO_ENCODER_TYPE.at(encoderTypeString);
+    if (STRING_TO_ENCODER_TYPE.contains(encoderTypeString.c_str())) {
+        encoderType = STRING_TO_ENCODER_TYPE.value(encoderTypeString.c_str());
     }
     else {
         L()->warn(
             "The encoder type \"%v\" is not valid. The only valid encoder"
             " types are \"%v\" and \"%v\".",
             encoderTypeString, 
-            ENCODER_TYPE_TO_STRING.at(EncoderType::ABSOLUTE),
-            ENCODER_TYPE_TO_STRING.at(EncoderType::RELATIVE));
+            ENCODER_TYPE_TO_STRING.value(EncoderType::ABSOLUTE).toStdString(),
+            ENCODER_TYPE_TO_STRING.value(EncoderType::RELATIVE).toStdString());
         *success = false;
     }
     return encoderType;

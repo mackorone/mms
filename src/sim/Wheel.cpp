@@ -5,6 +5,20 @@
 
 namespace sim {
 
+Wheel::Wheel() :
+    m_radius(Meters(0)),
+    m_halfWidth(Meters(0)),
+    m_initialPosition(Cartesian(Meters(0), Meters(0))),
+    m_initialDirection(Radians(0)),
+    m_speedIndicatorPolygonNeedsToBeUpdated(false),
+    m_angularVelocity(RadiansPerSecond(0.0)),
+    m_maxAngularVelocityMagnitude(RadiansPerSecond(0)),
+    m_encoderType(EncoderType::ABSOLUTE),
+    m_encoderTicksPerRevolution(0),
+    m_absoluteRotation(Radians(0)),
+    m_relativeRotation(Radians(0)) {
+}
+
 Wheel::Wheel(
         const Distance& diameter,
         const Distance& width,

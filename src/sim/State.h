@@ -1,6 +1,6 @@
 #pragma once
 
-#include <map>
+#include <QMap>
 
 #include "Key.h"
 #include "LayoutType.h"
@@ -88,8 +88,8 @@ private:
     bool m_wireframeMode;
     bool m_paused;
     double m_simSpeed;
-    std::map<int, bool> m_inputButtons;
-    std::map<Key, bool> m_arrowKeys;
+    QMap<int, bool> m_inputButtons;
+    QMap<Key, bool> m_arrowKeys;
 
     // Returns true if defaultValue lies between current and next
     bool crossesDefault(double current, double next, double defaultValue);

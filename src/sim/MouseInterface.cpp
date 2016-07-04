@@ -10,7 +10,6 @@
 #include "../mouse/IMouseAlgorithm.h"
 #include "Assert.h"
 #include "Color.h"
-#include "ContainerUtilities.h"
 #include "CPMath.h"
 #include "Logging.h"
 #include "Param.h"
@@ -80,7 +79,7 @@ void MouseInterface::setTileColor(int x, int y, char color) {
         return;
     }
 
-    if (!ContainerUtilities::mapContains(CHAR_TO_COLOR, color)) {
+    if (!CHAR_TO_COLOR.contains(color)) {
         L()->warn(
             "You cannot set the color of tile (%v, %v) to"
             " '%v' since '%v' is not mapped to a color.",
@@ -148,7 +147,7 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
         return;
     }
 
-    if (!ContainerUtilities::mapContains(CHAR_TO_DIRECTION, direction)) {
+    if (!CHAR_TO_DIRECTION.contains(direction)) {
         L()->warn("The character '%v' is not mapped to a valid direction.", direction);
         return;
     }
@@ -156,7 +155,7 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
     declareWallImpl(
         std::make_pair(
             std::make_pair(x, y),
-            CHAR_TO_DIRECTION.at(direction)
+            CHAR_TO_DIRECTION.value(direction)
         ),
         wallExists,
         m_mouseAlgorithm->declareBothWallHalves()
@@ -172,7 +171,7 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
         return;
     }
 
-    if (!ContainerUtilities::mapContains(CHAR_TO_DIRECTION, direction)) {
+    if (!CHAR_TO_DIRECTION.contains(direction)) {
         L()->warn("The character '%v' is not mapped to a valid direction.", direction);
         return;
     }
@@ -180,7 +179,7 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
     undeclareWallImpl(
         std::make_pair(
             std::make_pair(x, y),
-            CHAR_TO_DIRECTION.at(direction)
+            CHAR_TO_DIRECTION.value(direction)
         ),
         m_mouseAlgorithm->declareBothWallHalves()
     );
@@ -215,7 +214,7 @@ void MouseInterface::declareTileDistance(int x, int y, int distance) {
         // A negative distance is interpreted to mean infinity
         if (distance == actualDistance || (distance < 0 && actualDistance < 0)) {
             setTileColorImpl(x, y,
-                COLOR_TO_CHAR.at(STRING_TO_COLOR.at(P()->distanceCorrectTileBaseColor())));
+                COLOR_TO_CHAR.value(STRING_TO_COLOR.value(P()->distanceCorrectTileBaseColor().c_str())));
         }
     }
 }
@@ -233,7 +232,7 @@ void MouseInterface::undeclareTileDistance(int x, int y) {
         clearTileTextImpl(x, y);
     }
     if (m_mouseAlgorithm->setTileBaseColorWhenDistanceDeclaredCorrectly()) {
-        setTileColorImpl(x, y, COLOR_TO_CHAR.at(STRING_TO_COLOR.at(P()->tileBaseColor())));
+        setTileColorImpl(x, y, COLOR_TO_CHAR.value(STRING_TO_COLOR.value(P()->tileBaseColor().c_str())));
     }
 }
 
@@ -343,8 +342,8 @@ void MouseInterface::resetWheelEncoder(const std::string& name) {
             "The encoder type of the wheel \"%v\" is \"%v\". However, you may"
             " only reset the wheel encoder if the encoder type is \"%v\".",
             name,
-            ENCODER_TYPE_TO_STRING.at(m_mouse->getWheelEncoderType(name)),
-            ENCODER_TYPE_TO_STRING.at(EncoderType::RELATIVE));
+            ENCODER_TYPE_TO_STRING.value(m_mouse->getWheelEncoderType(name)).toStdString(),
+            ENCODER_TYPE_TO_STRING.value(EncoderType::RELATIVE).toStdString());
         return;
     }
 
@@ -588,7 +587,7 @@ char MouseInterface::currentDirection() {
 
     ENSURE_ALLOW_OMNISCIENCE
 
-    return DIRECTION_TO_CHAR.at(m_mouse->getCurrentDiscretizedRotation());
+    return DIRECTION_TO_CHAR.value(m_mouse->getCurrentDiscretizedRotation()).toLatin1();
 }
 
 double MouseInterface::currentXPosMeters() {
@@ -613,19 +612,19 @@ double MouseInterface::currentRotationDegrees() {
 }
 
 void MouseInterface::ensureDiscreteInterface(const std::string& callingFunction) const {
-    if (STRING_TO_INTERFACE_TYPE.at(m_options.interfaceType) != InterfaceType::DISCRETE) {
+    if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType.c_str()) != InterfaceType::DISCRETE) {
         L()->error(
             "You must declare the interface type to be \"%v\" to use MouseInterface::%v().",
-            INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE), callingFunction);
+            INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE).toStdString(), callingFunction);
         SimUtilities::quit();
     }
 }
 
 void MouseInterface::ensureContinuousInterface(const std::string& callingFunction) const {
-    if (STRING_TO_INTERFACE_TYPE.at(m_options.interfaceType) != InterfaceType::CONTINUOUS) {
+    if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType.c_str()) != InterfaceType::CONTINUOUS) {
         L()->error(
             "You must declare the interface type to be \"%v\" to use MouseInterface::%v().",
-            INTERFACE_TYPE_TO_STRING.at(InterfaceType::CONTINUOUS), callingFunction);
+            INTERFACE_TYPE_TO_STRING.value(InterfaceType::CONTINUOUS).toStdString(), callingFunction);
         SimUtilities::quit();
     }
 }
@@ -679,12 +678,12 @@ void MouseInterface::ensureOutsideOrigin(const std::string& callingFunction) con
 }
 
 void MouseInterface::setTileColorImpl(int x, int y, char color) {
-    m_mazeGraphic->setTileColor(x, y, CHAR_TO_COLOR.at(color));
+    m_mazeGraphic->setTileColor(x, y, CHAR_TO_COLOR.value(color));
     m_tilesWithColor.insert(std::make_pair(x, y));
 }
 
 void MouseInterface::clearTileColorImpl(int x, int y) {
-    m_mazeGraphic->setTileColor(x, y, STRING_TO_COLOR.at(P()->tileBaseColor()));
+    m_mazeGraphic->setTileColor(x, y, STRING_TO_COLOR.value(P()->tileBaseColor().c_str()));
     m_tilesWithColor.erase(std::make_pair(x, y));
 }
 
@@ -696,7 +695,7 @@ void MouseInterface::setTileTextImpl(int x, int y, const std::string& text) {
         std::string rowOfText;
         while (index < (row + 1) * m_options.tileTextNumberOfCols && index < text.size()) {
             char c = text.at(index);
-            if (!ContainerUtilities::setContains(m_allowableTileTextCharacters, c)) {
+            if (m_allowableTileTextCharacters.find(c) != m_allowableTileTextCharacters.end()) { // TODO: MACK
                 L()->warn(
                     "Unable to set the tile text for unprintable character \"%v\"."
                     " Using the character \"%v\" instead.",
@@ -753,7 +752,7 @@ bool MouseInterface::wallLeftImpl(bool declareWallOnRead, bool declareBothWallHa
     return isWall(
         std::make_pair(
             m_mouse->getCurrentDiscretizedTranslation(),
-            DIRECTION_ROTATE_LEFT.at(m_mouse->getCurrentDiscretizedRotation())
+            DIRECTION_ROTATE_LEFT.value(m_mouse->getCurrentDiscretizedRotation())
         ),
         declareWallOnRead,
         declareBothWallHalves
@@ -764,7 +763,7 @@ bool MouseInterface::wallRightImpl(bool declareWallOnRead, bool declareBothWallH
     return isWall(
         std::make_pair(
             m_mouse->getCurrentDiscretizedTranslation(),
-            DIRECTION_ROTATE_RIGHT.at(m_mouse->getCurrentDiscretizedRotation())
+            DIRECTION_ROTATE_RIGHT.value(m_mouse->getCurrentDiscretizedRotation())
         ),
         declareWallOnRead,
         declareBothWallHalves
@@ -862,8 +861,8 @@ void MouseInterface::turnToEdgeImpl(bool turnLeft) {
         m_mouse->getCurrentDiscretizedTranslation(),
         (
             turnLeft ?
-            DIRECTION_ROTATE_LEFT.at(m_mouse->getCurrentDiscretizedRotation()) :
-            DIRECTION_ROTATE_RIGHT.at(m_mouse->getCurrentDiscretizedRotation())
+            DIRECTION_ROTATE_LEFT.value(m_mouse->getCurrentDiscretizedRotation()) :
+            DIRECTION_ROTATE_RIGHT.value(m_mouse->getCurrentDiscretizedRotation())
         )
     );
 
@@ -1055,7 +1054,7 @@ std::pair<Cartesian, Degrees> MouseInterface::getCrashLocation(
 
     // The crash location is on the edge of the tile inner polygon
     Cartesian centerOfTile = getCenterOfTile(currentTile.first, currentTile.second);
-    Degrees destinationRotation = DIRECTION_TO_ANGLE.at(destinationDirection);
+    Degrees destinationRotation = DIRECTION_TO_ANGLE.value(destinationDirection);
     return std::make_pair(
         centerOfTile + Polar(halfWallLength, destinationRotation),
         destinationRotation

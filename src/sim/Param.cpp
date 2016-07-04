@@ -38,7 +38,7 @@ Param::Param() {
     m_defaultWindowHeight = parser.getIntIfHasIntAndNotLessThan(
         "default-window-height", 700, 100);
     m_defaultLayoutType = parser.getStringIfHasStringAndIsLayoutType(
-        "default-layout-type", LAYOUT_TYPE_TO_STRING.at(LayoutType::BOTH));
+        "default-layout-type", LAYOUT_TYPE_TO_STRING.value(LayoutType::BOTH).toStdString());
     m_windowBorderWidth = parser.getIntIfHasIntAndInRange(
         "window-border-width", 10, 0, 30);
     m_headerTextFont = parser.getStringIfHasString(
@@ -62,39 +62,39 @@ Param::Param() {
     m_printLateFrames = parser.getBoolIfHasBool(
         "print-late-frames", false);
     m_tileBaseColor = parser.getStringIfHasStringAndIsColor(
-        "tile-base-color", COLOR_TO_STRING.at(Color::BLACK));
+        "tile-base-color", COLOR_TO_STRING.value(Color::BLACK).toStdString());
     m_tileWallColor = parser.getStringIfHasStringAndIsColor(
-        "tile-wall-color", COLOR_TO_STRING.at(Color::RED));
+        "tile-wall-color", COLOR_TO_STRING.value(Color::RED).toStdString());
     m_tileCornerColor = parser.getStringIfHasStringAndIsColor(
-        "tile-corner-color", COLOR_TO_STRING.at(Color::GRAY));
+        "tile-corner-color", COLOR_TO_STRING.value(Color::GRAY).toStdString());
     m_tileFogColor = parser.getStringIfHasStringAndIsColor(
-        "tile-fog-color", COLOR_TO_STRING.at(Color::GRAY));
+        "tile-fog-color", COLOR_TO_STRING.value(Color::GRAY).toStdString());
     m_tileTextFontImage = parser.getStringIfHasString(
         "tile-text-font-image", "Unispace-Bold.png");
     m_tileTextBorderFraction = parser.getDoubleIfHasDoubleAndInRange(
         "tile-text-border-fraction", .05, .00, .50);
     m_tileTextAlignment = parser.getStringIfHasStringAndIsTileTextAlignment(
-        "tile-text-alignment", TILE_TEXT_ALIGNMENT_TO_STRING.at(TileTextAlignment::CENTER_CENTER));
+        "tile-text-alignment", TILE_TEXT_ALIGNMENT_TO_STRING.value(TileTextAlignment::CENTER_CENTER).toStdString());
     m_tileUndeclaredWallColor = parser.getStringIfHasStringAndIsColor(
-        "tile-undeclared-wall-color", COLOR_TO_STRING.at(Color::DARK_RED));
+        "tile-undeclared-wall-color", COLOR_TO_STRING.value(Color::DARK_RED).toStdString());
     m_tileUndeclaredNoWallColor = parser.getStringIfHasStringAndIsColor(
-        "tile-undeclared-no-wall-color", COLOR_TO_STRING.at(Color::DARK_GRAY));
+        "tile-undeclared-no-wall-color", COLOR_TO_STRING.value(Color::DARK_GRAY).toStdString());
     m_tileIncorrectlyDeclaredWallColor = parser.getStringIfHasStringAndIsColor(
-        "tile-incorrectly-declared-wall-color", COLOR_TO_STRING.at(Color::ORANGE));
+        "tile-incorrectly-declared-wall-color", COLOR_TO_STRING.value(Color::ORANGE).toStdString());
     m_tileIncorrectlyDeclaredNoWallColor = parser.getStringIfHasStringAndIsColor(
-        "tile-incorrectly-declared-no-wall-color", COLOR_TO_STRING.at(Color::DARK_CYAN));
+        "tile-incorrectly-declared-no-wall-color", COLOR_TO_STRING.value(Color::DARK_CYAN).toStdString());
     m_mouseBodyColor = parser.getStringIfHasStringAndIsColor(
-        "mouse-body-color", COLOR_TO_STRING.at(Color::BLUE));
+        "mouse-body-color", COLOR_TO_STRING.value(Color::BLUE).toStdString());
     m_mouseCenterOfMassColor = parser.getStringIfHasStringAndIsColor(
-        "mouse-center-of-mass-color", COLOR_TO_STRING.at(Color::ORANGE));
+        "mouse-center-of-mass-color", COLOR_TO_STRING.value(Color::ORANGE).toStdString());
     m_mouseWheelColor = parser.getStringIfHasStringAndIsColor(
-        "mouse-wheel-color", COLOR_TO_STRING.at(Color::GREEN));
+        "mouse-wheel-color", COLOR_TO_STRING.value(Color::GREEN).toStdString());
     m_mouseWheelSpeedIndicatorColor = parser.getStringIfHasStringAndIsColor(
-        "mouse-wheel-speed-indicator-color", COLOR_TO_STRING.at(Color::DARK_GREEN));
+        "mouse-wheel-speed-indicator-color", COLOR_TO_STRING.value(Color::DARK_GREEN).toStdString());
     m_mouseSensorColor = parser.getStringIfHasStringAndIsColor(
-        "mouse-sensor-color", COLOR_TO_STRING.at(Color::GREEN));
+        "mouse-sensor-color", COLOR_TO_STRING.value(Color::GREEN).toStdString());
     m_mouseViewColor = parser.getStringIfHasStringAndIsColor(
-        "mouse-view-color", COLOR_TO_STRING.at(Color::WHITE));
+        "mouse-view-color", COLOR_TO_STRING.value(Color::WHITE).toStdString());
     m_defaultWallTruthVisible = parser.getBoolIfHasBool(
         "default-wall-truth-visible", false);
     m_defaultTileColorsVisible = parser.getBoolIfHasBool(
@@ -112,7 +112,7 @@ Param::Param() {
     m_defaultWireframeMode = parser.getBoolIfHasBool(
         "default-wireframe-mode", false);
     m_distanceCorrectTileBaseColor = parser.getStringIfHasStringAndIsColor(
-        "distance-correct-tile-base-color", COLOR_TO_STRING.at(Color::DARK_YELLOW));
+        "distance-correct-tile-base-color", COLOR_TO_STRING.value(Color::DARK_YELLOW).toStdString());
 
     // Simulation Parameters
     bool useRandomSeed = parser.getBoolIfHasBool(
@@ -177,7 +177,7 @@ Param::Param() {
     m_generatedMazeFile = parser.getStringIfHasString(
         "generated-maze-file", "auto_generated_maze");
     m_generatedMazeType = parser.getStringIfHasStringAndIsMazeFileType(
-        "generated-maze-type", MAZE_FILE_TYPE_TO_STRING.at(MazeFileType::MAP));
+        "generated-maze-type", MAZE_FILE_TYPE_TO_STRING.value(MazeFileType::MAP).toStdString());
     m_mazeMirrored = parser.getBoolIfHasBool(
         "maze-mirrored", false);
     m_mazeRotations = parser.getIntIfHasIntAndInRange(

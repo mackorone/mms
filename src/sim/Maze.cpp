@@ -12,7 +12,6 @@
 #include "MazeChecker.h"
 #include "MazeFileType.h"
 #include "MazeFileUtilities.h"
-#include "MazeInterface.h"
 #include "Param.h"
 #include "SimUtilities.h"
 #include "Tile.h"
@@ -104,9 +103,9 @@ Maze::Maze() {
 
     // Optionally save the maze
     if (!P()->useMazeFile() && P()->saveGeneratedMaze()) {
-        MazeFileType type = STRING_TO_MAZE_FILE_TYPE.at(P()->generatedMazeType());
+        MazeFileType type = STRING_TO_MAZE_FILE_TYPE.value(P()->generatedMazeType().c_str());
         std::string mazeFilePath = Directory::getResMazeDirectory() +
-            P()->generatedMazeFile() + MAZE_FILE_TYPE_TO_SUFFIX.at(type);
+            P()->generatedMazeFile() + MAZE_FILE_TYPE_TO_SUFFIX.value(type).toStdString();
         // TODO: MACK
         bool success = false; // MazeFileUtilities::save(basicMaze, mazeFilePath, type);
         if (success) {
@@ -236,11 +235,14 @@ BasicMaze Maze::rotateCounterClockwise(const BasicMaze& basicMaze) {
 
 QVector<QVector<Tile>> Maze::setTileDistances(QVector<QVector<Tile>> maze) {
 
+    // TODO: MACK - dedup some of this with hasNoInaccessibleLocations
+
     // The maze is guarenteed to be nonempty and rectangular
     int width = maze.size();
     int height = maze.at(0).size();
 
     // Helper lambda for retrieving and adjacent tile if one exists, nullptr if not
+    // TODO: MACK - this should be in maze utilities too
     auto getNeighbor = [&maze, &width, &height](int x, int y, Direction direction) {
         switch (direction) {
             case Direction::NORTH:
@@ -275,19 +277,18 @@ QVector<QVector<Tile>> Maze::setTileDistances(QVector<QVector<Tile>> maze) {
     // Set the distances of the center tiles and push them to the queue
     for (Tile* tile : centerTiles) {
         tile->setDistance(0); 
-        discovered.push_back(tile);
+        discovered.enqueue(tile);
     }
 
     // Now do a BFS
     while (!discovered.empty()){
-        Tile* tile = discovered.front();
-        discovered.pop_front(); // Removes the element
+        Tile* tile = discovered.dequeue();
         for (Direction direction : DIRECTIONS) {
             if (!tile->isWall(direction)) {
                 Tile* neighbor = getNeighbor(tile->getX(), tile->getY(), direction);
                 if (neighbor != nullptr && neighbor->getDistance() == -1) {
                     neighbor->setDistance(tile->getDistance() + 1);
-                    discovered.push_back(neighbor);
+                    discovered.enqueue(neighbor);
                 }
             }
         }

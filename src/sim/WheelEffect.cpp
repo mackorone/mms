@@ -2,6 +2,12 @@
 
 namespace sim {
 
+WheelEffect::WheelEffect() :
+    m_unitForwardEffect(MetersPerSecond(0)),
+    m_unitSidewaysEffect(MetersPerSecond(0)),
+    m_unitTurnEffect(RadiansPerSecond(0)) {
+}
+
 WheelEffect::WheelEffect(
         const Cartesian& initialTranslation,
         const Radians& initialRotation,

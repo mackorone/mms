@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QMap>
+
 #include "Color.h"
 #include "Direction.h"
 #include "Polygon.h"
@@ -24,7 +26,7 @@ public:
         const Distance& wallLength,
         const Distance& wallWidth,
         std::pair<int, int> tileGraphicTextMaxSize,
-        const std::map<char, std::pair<double, double>>& fontImageMap,
+        const QMap<char, std::pair<double, double>>& fontImageMap,
         double borderFraction,
         TileTextAlignment tileTextAlignment);
 

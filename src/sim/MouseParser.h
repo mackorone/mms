@@ -1,10 +1,12 @@
 #pragma once
 
+#include <QMap>
+#include <QString>
+
 #include <pugixml/pugixml.hpp>
 #include <string>
 #include <vector>
 
-#include "ContainerUtilities.h"
 #include "Logging.h"
 #include "Maze.h"
 #include "Polygon.h"
@@ -18,13 +20,24 @@ namespace sim {
 class MouseParser {
 
 public:
+
     MouseParser(const std::string& filePath, bool* success);
+
     Polygon getBody(
-        const Cartesian& initialTranslation, const Radians& initialRotation, bool* success);
-    std::map<std::string, Wheel> getWheels(
-        const Cartesian& initialTranslation, const Radians& initialRotation, bool* success);
-    std::map<std::string, Sensor> getSensors(
-        const Cartesian& initialTranslation, const Radians& initialRotation, const Maze& maze, bool* success);
+        const Cartesian& initialTranslation,
+        const Radians& initialRotation,
+        bool* success);
+
+    QMap<QString, Wheel> getWheels(
+        const Cartesian& initialTranslation,
+        const Radians& initialRotation,
+        bool* success);
+
+    QMap<QString, Sensor> getSensors(
+        const Cartesian& initialTranslation,
+        const Radians& initialRotation,
+        const Maze& maze,
+        bool* success);
 
 private:
     // We have to keep m_doc around so valgrind doesn't complain
@@ -66,13 +79,13 @@ private:
 
     template<class T>
     std::string getNameIfNonemptyAndUnique(const std::string& type,
-            const pugi::xml_node& node, const std::map<std::string, T>& map, bool* success) {
+            const pugi::xml_node& node, const QMap<QString, T>& map, bool* success) {
         std::string name = node.child(NAME_TAG.c_str()).child_value();
         if (name.empty()) {
             L()->warn("No %v name specified.", type);
             *success = false;
         }
-        if (ContainerUtilities::mapContains(map, name)) {
+        if (map.contains(name.c_str())) {
             L()->warn("Two %vs both have the name \"%v\".", type, name);
             *success = false;
         }

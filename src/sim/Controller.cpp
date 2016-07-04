@@ -1,6 +1,5 @@
 #include "Controller.h"
 
-#include "ContainerUtilities.h"
 #include "Logging.h"
 #include "Param.h"
 #include "SimUtilities.h"
@@ -99,15 +98,15 @@ void Controller::validateMouseAlgorithm(const std::string& mouseAlgorithm) {
 
 void Controller::validateMouseInterfaceType(
         const std::string& mouseAlgorithm, const std::string& interfaceType) {
-    if (!ContainerUtilities::mapContains(STRING_TO_INTERFACE_TYPE, interfaceType)) {
+    if (!STRING_TO_INTERFACE_TYPE.contains(interfaceType.c_str())) {
         L()->error(
             "\"%v\" is not a valid interface type. You must declare the "
             "interface type of the mouse algorithm \"%v\" to be either \"%v\" "
             "or \"%v\".",
             interfaceType,
             mouseAlgorithm,
-            INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE),
-            INTERFACE_TYPE_TO_STRING.at(InterfaceType::CONTINUOUS));
+            INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE).toStdString(),
+            INTERFACE_TYPE_TO_STRING.value(InterfaceType::CONTINUOUS).toStdString());
         SimUtilities::quit();
     }
 }
@@ -115,7 +114,7 @@ void Controller::validateMouseInterfaceType(
 void Controller::validateMouseInitialDirection(
         const std::string& mouseAlgorithm, const std::string& initialDirection) {
     if (!(
-        ContainerUtilities::mapContains(STRING_TO_DIRECTION, initialDirection)
+        STRING_TO_DIRECTION.contains(initialDirection.c_str())
         || initialDirection == OPENING_DIRECTION_STRING
         || initialDirection == WALL_DIRECTION_STRING
     )) {
@@ -125,10 +124,10 @@ void Controller::validateMouseInitialDirection(
             " \"%v\", \"%v\", \"%v\", \"%v\", \"%v\", or \"%v\".",
             initialDirection,
             mouseAlgorithm,
-            DIRECTION_TO_STRING.at(Direction::NORTH),
-            DIRECTION_TO_STRING.at(Direction::EAST),
-            DIRECTION_TO_STRING.at(Direction::SOUTH),
-            DIRECTION_TO_STRING.at(Direction::WEST),
+            DIRECTION_TO_STRING.value(Direction::NORTH).toStdString(),
+            DIRECTION_TO_STRING.value(Direction::EAST).toStdString(),
+            DIRECTION_TO_STRING.value(Direction::SOUTH).toStdString(),
+            DIRECTION_TO_STRING.value(Direction::WEST).toStdString(),
             OPENING_DIRECTION_STRING,
             WALL_DIRECTION_STRING);
         SimUtilities::quit();
@@ -183,7 +182,7 @@ void Controller::initAndValidateMouse(
     }
 
     // Validate the mouse
-    if (STRING_TO_INTERFACE_TYPE.at(interfaceType) == InterfaceType::DISCRETE) {
+    if (STRING_TO_INTERFACE_TYPE.value(interfaceType.c_str()) == InterfaceType::DISCRETE) {
         if (!MouseChecker::isDiscreteInterfaceCompatible(*model->getMouse())) {
             L()->error("The mouse file \"%v\" is not discrete interface compatible.", mouseFile);
             SimUtilities::quit();
@@ -200,7 +199,7 @@ void Controller::initAndValidateMouse(
 Direction Controller::getInitialDirection(const std::string& initialDirection, Model* model) {
     bool wallNorth = model->getMaze()->getTile(0, 0)->isWall(Direction::NORTH);
     bool wallEast = model->getMaze()->getTile(0, 0)->isWall(Direction::EAST);
-    if (!ContainerUtilities::mapContains(STRING_TO_DIRECTION, initialDirection) && wallNorth == wallEast) {
+    if (!STRING_TO_DIRECTION.contains(initialDirection.c_str()) && wallNorth == wallEast) {
         return Direction::NORTH;
     }
     if (initialDirection == OPENING_DIRECTION_STRING) {
@@ -209,7 +208,7 @@ Direction Controller::getInitialDirection(const std::string& initialDirection, M
     if (initialDirection == WALL_DIRECTION_STRING) {
         return (wallNorth ? Direction::NORTH : Direction::EAST);
     }
-    return STRING_TO_DIRECTION.at(initialDirection);
+    return STRING_TO_DIRECTION.value(initialDirection.c_str());
 }
 
 } // namespace sim

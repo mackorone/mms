@@ -6,7 +6,7 @@ void TileGraphicTextCache::init(
         const Distance& wallLength,
         const Distance& wallWidth,
         std::pair<int, int> tileGraphicTextMaxSize,
-        const std::map<char, std::pair<double, double>>& fontImageMap,
+        const QMap<char, std::pair<double, double>>& fontImageMap,
         double borderFraction,
         TileTextAlignment tileTextAlignment) {
 
@@ -22,8 +22,8 @@ std::pair<int, int> TileGraphicTextCache::getTileGraphicTextMaxSize() const {
 }
 
 std::pair<double, double> TileGraphicTextCache::getFontImageCharacterPosition(char c) const {
-    SIM_ASSERT_TR(ContainerUtilities::mapContains(m_fontImageMap, c));
-    return m_fontImageMap.at(c);
+    SIM_ASSERT_TR(m_fontImageMap.find(c) != m_fontImageMap.end()); // TODO: MACK
+    return m_fontImageMap.value(c);
 }
 
 std::pair<Cartesian, Cartesian> TileGraphicTextCache::getTileGraphicTextPosition(
@@ -119,18 +119,18 @@ std::map<
                     if (row < numRows && col < numCols) {
 
                         double rowOffset = 0.0;
-                        if (ContainerUtilities::setContains(CENTER_STAR_ALIGNMENTS, tileTextAlignment)) {
+                        if (CENTER_STAR_ALIGNMENTS.contains(tileTextAlignment)) {
                             rowOffset = static_cast<double>(maxRows - numRows) / 2.0;
                         }
-                        else if (ContainerUtilities::setContains(UPPER_STAR_ALIGNMENTS, tileTextAlignment)) {
+                        else if (UPPER_STAR_ALIGNMENTS.contains(tileTextAlignment)) {
                             rowOffset = static_cast<double>(maxRows - numRows);
                         }
 
                         double colOffset = 0.0;
-                        if (ContainerUtilities::setContains(STAR_CENTER_ALIGNMENTS, tileTextAlignment)) {
+                        if (STAR_CENTER_ALIGNMENTS.contains(tileTextAlignment)) {
                             colOffset = static_cast<double>(maxCols - numCols) / 2.0;
                         }
-                        else if (ContainerUtilities::setContains(STAR_RIGHT_ALIGNMENTS, tileTextAlignment)) {
+                        else if (STAR_RIGHT_ALIGNMENTS.contains(tileTextAlignment)) {
                             colOffset = static_cast<double>(maxCols - numCols);
                         }
 

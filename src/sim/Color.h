@@ -1,6 +1,9 @@
 #pragma once
 
-#include <map>
+#include <QMap>
+#include <QString>
+
+// TODO: MACK
 #include <tuple>
 
 #include "ContainerUtilities.h"
@@ -27,7 +30,7 @@ enum class Color {
     DARK_YELLOW,
 };
 
-static const std::map<Color, std::tuple<double, double, double>> COLOR_TO_RGB {
+static const QMap<Color, std::tuple<double, double, double>> COLOR_TO_RGB {
     {Color::BLACK      , std::make_tuple(0.0, 0.0, 0.0)},
     {Color::BLUE       , std::make_tuple(0.0, 0.0, 0.7)},
     {Color::CYAN       , std::make_tuple(0.0, 0.4, 0.4)},
@@ -47,7 +50,7 @@ static const std::map<Color, std::tuple<double, double, double>> COLOR_TO_RGB {
     {Color::DARK_YELLOW, std::make_tuple(0.2, 0.2, 0.0)},
 };
 
-static const std::map<Color, std::string> COLOR_TO_STRING {
+static const QMap<Color, QString> COLOR_TO_STRING {
     {Color::BLACK      , "BLACK"      },
     {Color::BLUE       , "BLUE"       },
     {Color::CYAN       , "CYAN"       },
@@ -67,10 +70,10 @@ static const std::map<Color, std::string> COLOR_TO_STRING {
     {Color::DARK_YELLOW, "DARK_YELLOW"},
 };
 
-static const std::map<std::string, Color> STRING_TO_COLOR =
+static const QMap<QString, Color> STRING_TO_COLOR =
     ContainerUtilities::inverse(COLOR_TO_STRING);
 
-static const std::map<Color, char> COLOR_TO_CHAR {
+static const QMap<Color, char> COLOR_TO_CHAR {
     {Color::BLACK      , 'k'},
     {Color::BLUE       , 'b'},
     {Color::GRAY       , 'a'},
@@ -90,7 +93,7 @@ static const std::map<Color, char> COLOR_TO_CHAR {
     {Color::DARK_YELLOW, 'Y'},
 };
 
-static const std::map<char, Color> CHAR_TO_COLOR =
+static const QMap<char, Color> CHAR_TO_COLOR =
     ContainerUtilities::inverse(COLOR_TO_CHAR);
 
 } // namespace sim

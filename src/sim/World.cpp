@@ -103,7 +103,7 @@ void World::simulate() {
         const Tile* tileAtLocation = m_maze->getTile(location.first, location.second);
 
         // Whether or not this is a newly traversed tile
-        bool newLocation = !ContainerUtilities::setContains(m_traversedTileLocations, location);
+        bool newLocation = !m_traversedTileLocations.contains(location);
 
         // Update the set of traversed tiles
         if (newLocation) {
@@ -172,7 +172,7 @@ void World::checkCollision() {
     }
 
     // If the interface type is DISCRETE, let this thread exit
-    if (STRING_TO_INTERFACE_TYPE.at(m_options.interfaceType) == InterfaceType::DISCRETE) {
+    if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType.c_str()) == InterfaceType::DISCRETE) {
         return;
     }
 

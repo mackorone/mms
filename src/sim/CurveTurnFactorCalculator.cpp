@@ -1,5 +1,7 @@
 #include "CurveTurnFactorCalculator.h"
 
+#include <QMapIterator>
+
 namespace sim {
 
 CurveTurnFactorCalculator::CurveTurnFactorCalculator() :
@@ -8,9 +10,9 @@ CurveTurnFactorCalculator::CurveTurnFactorCalculator() :
 }
 
 CurveTurnFactorCalculator::CurveTurnFactorCalculator(
-        const std::map<std::string, Wheel>& wheels,
-        const std::map<std::string, WheelEffect>& wheelEffects,
-        const std::map<std::string, std::pair<double, double>>& wheelSpeedAdjustmentFactors) {
+        const QMap<QString, Wheel>& wheels,
+        const QMap<QString, WheelEffect>& wheelEffects,
+        const QMap<QString, std::pair<double, double>>& wheelSpeedAdjustmentFactors) {
 
     // TODO: upforgrabs
     // Currently, this logic assumes that when the mouse has its wheel
@@ -24,19 +26,26 @@ CurveTurnFactorCalculator::CurveTurnFactorCalculator(
     // Determine the total forward and turn rate of change from all wheels
     MetersPerSecond totalForwardRateOfChange(0);
     RadiansPerSecond totalRadialRateOfChange(0);
-    for (const std::pair<std::string, Wheel>& wheel : wheels) {
+
+    QMapIterator<QString, Wheel> iterator(wheels);    
+    while (iterator.hasNext()) {
+        auto pair = iterator.next();
+        auto wheelName = pair.key();
+        auto wheel = pair.value();
 
         // For each of the wheel speed adjustment factors, calculate the wheel's
         // contributions. Remember that each of these factors corresponds to
         // the fraction of the max wheel speed such that the mouse performs a
         // particular movement (moving forward or turning) most optimally.
-        SIM_ASSERT_TR(ContainerUtilities::mapContains(wheelSpeedAdjustmentFactors, wheel.first));
-        std::pair<double, double> adjustmentFactors = wheelSpeedAdjustmentFactors.at(wheel.first);
+        SIM_ASSERT_TR(wheelSpeedAdjustmentFactors.contains(wheelName));
+        std::pair<double, double> adjustmentFactors =
+            wheelSpeedAdjustmentFactors.value(wheelName);
+
         for (double adjustmentFactor : {adjustmentFactors.first, adjustmentFactors.second}) {
 
             std::tuple<MetersPerSecond, MetersPerSecond, RadiansPerSecond> effects =
-                wheelEffects.at(wheel.first).getEffects(
-                    wheel.second.getMaxAngularVelocityMagnitude() * adjustmentFactor);
+                wheelEffects.value(wheelName).getEffects(
+                    wheel.getMaxAngularVelocityMagnitude() * adjustmentFactor);
 
             totalForwardRateOfChange += std::get<0>(effects);
             totalRadialRateOfChange += std::get<2>(effects);

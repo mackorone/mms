@@ -1,5 +1,6 @@
 # High Priority
 
+- Renamespace sim to mms
 - Fix timestep
     - Make renderer and physics on same thread
         - Maybe even collision detection too
@@ -8,7 +9,20 @@
 - Use Qt XML support
     - Get rid of other lib/ dependencies
 - QT-ify everything
+- QHash instead of QMap
+    - QSet instead of QVector
 - Make GUI
+- Get rid of all c_str() calls
+- Get rid of all of the toStdString() calls
+- Format to 80 cols
+- Replace libs with native Qt functions
+- char to QChar
+    - Should I replace any other primitives
+- Figure out a cleaner way to iterator over maps
+  - QMapIterator<std::string, Wheel> iterator(wheels);
+    while (iterator.hasNext()) {
+        auto wheel = iterator.next();
+- auto vs const auto&
 - Bluetooth communication
 - Support reading or writing more file types
     - .MAZ, .mz2

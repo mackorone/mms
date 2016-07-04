@@ -1,5 +1,8 @@
 #pragma once
 
+#include <QMap>
+#include <QString>
+
 #include "Wheel.h"
 #include "WheelEffect.h"
 
@@ -10,9 +13,9 @@ class CurveTurnFactorCalculator {
 public:
     CurveTurnFactorCalculator();
     CurveTurnFactorCalculator(
-        const std::map<std::string, Wheel>& wheels,
-        const std::map<std::string, WheelEffect>& wheelEffects,
-        const std::map<std::string, std::pair<double, double>>& wheelSpeedAdjustmentFactors);
+        const QMap<QString, Wheel>& wheels,
+        const QMap<QString, WheelEffect>& wheelEffects,
+        const QMap<QString, std::pair<double, double>>& wheelSpeedAdjustmentFactors);
 
     // Returns a linear combination of forward and turn movement components
     // such that the mouse turns along the arc with the given radius. Note that

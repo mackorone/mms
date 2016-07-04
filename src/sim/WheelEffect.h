@@ -9,6 +9,7 @@ namespace sim {
 class WheelEffect {
 
 public:
+    WheelEffect();
     WheelEffect(
         const Cartesian& initialTranslation,
         const Radians& initialRotation,

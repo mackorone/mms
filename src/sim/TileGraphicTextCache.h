@@ -1,6 +1,6 @@
 #pragma once
 
-#include <map>
+#include <QMap>
 
 #include "TileTextAlignment.h"
 #include "units/Cartesian.h"
@@ -16,7 +16,7 @@ public:
         const Distance& wallLength,
         const Distance& wallWidth,
         std::pair<int, int> tileGraphicTextMaxSize,
-        const std::map<char, std::pair<double, double>>& fontImageMap,
+        const QMap<char, std::pair<double, double>>& fontImageMap,
         double borderFraction,
         TileTextAlignment tiletextAlignment);
 
@@ -41,7 +41,7 @@ private:
 
     // A map of char to the starting and ending horizontal positions (fraction
     // from 0.0 to 1.0) in the font image
-    std::map<char, std::pair<double, double>> m_fontImageMap;
+    QMap<char, std::pair<double, double>> m_fontImageMap;
 
     // A map of the number of rows/cols to be displayed and the current row/col
     // to the LL/UR text coordinates for the starting tile, namely tile (0, 0)

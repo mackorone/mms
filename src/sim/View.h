@@ -1,5 +1,8 @@
 #pragma once
 
+#include <QList>
+#include <QMap>
+
 #include <glut/glut.h>
 #include <tdogl/Program.h>
 #include <tdogl/Texture.h>
@@ -32,7 +35,7 @@ public:
     void refresh();
     void updateWindowSize(int width, int height);
 
-    std::set<char> getAllowableTileTextCharacters();
+    QList<char> getAllowableTileTextCharacters();
     void initTileGraphicText();
 
     void keyPress(unsigned char key, int x, int y);
@@ -59,8 +62,8 @@ private:
     double m_screenPixelsPerMeter;
 
     // A map from char to x and y location in the font image
-    std::map<char, std::pair<double, double>> m_fontImageMap;
-    std::map<char, std::pair<double, double>> getFontImageMap();
+    QMap<char, std::pair<double, double>> m_fontImageMap;
+    QMap<char, std::pair<double, double>> getFontImageMap();
 
     // Window header object
     Header* m_header;

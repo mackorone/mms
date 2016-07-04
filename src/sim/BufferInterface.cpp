@@ -1,7 +1,6 @@
 #include "BufferInterface.h"
 
 #include "Assert.h"
-#include "ContainerUtilities.h"
 #include "Logging.h"
 #include "SimUtilities.h"
 
@@ -20,7 +19,7 @@ void BufferInterface::initTileGraphicText(
         const Distance& wallLength,
         const Distance& wallWidth,
         std::pair<int, int> tileGraphicTextMaxSize,
-        const std::map<char, std::pair<double, double>>& fontImageMap,
+        const QMap<char, std::pair<double, double>>& fontImageMap,
         double borderFraction,
         TileTextAlignment tileTextAlignment) {
 
@@ -67,7 +66,7 @@ void BufferInterface::insertIntoTextureCpuBuffer() {
 
 void BufferInterface::updateTileGraphicBaseColor(int x, int y, Color color) {
     int index = getTileGraphicBaseStartingIndex(x, y);
-    std::tuple<double, double, double> colorValues = COLOR_TO_RGB.at(color);
+    std::tuple<double, double, double> colorValues = COLOR_TO_RGB.value(color);
     for (int i = 0; i < 2; i += 1) {
         TriangleGraphic* triangleGraphic = &m_graphicCpuBuffer->at(index + i);
         triangleGraphic->p1.r = std::get<0>(colorValues);
@@ -84,7 +83,7 @@ void BufferInterface::updateTileGraphicBaseColor(int x, int y, Color color) {
 
 void BufferInterface::updateTileGraphicWallColor(int x, int y, Direction direction, Color color, double alpha) {
     int index = getTileGraphicWallStartingIndex(x, y, direction);
-    std::tuple<double, double, double> colorValues = COLOR_TO_RGB.at(color);
+    std::tuple<double, double, double> colorValues = COLOR_TO_RGB.value(color);
     for (int i = 0; i < 2; i += 1) {
         TriangleGraphic* triangleGraphic = &m_graphicCpuBuffer->at(index + i);
         triangleGraphic->p1.r = std::get<0>(colorValues);
@@ -161,7 +160,7 @@ void BufferInterface::drawMousePolygon(const Polygon& polygon, Color color, doub
 std::vector<TriangleGraphic> BufferInterface::polygonToTriangleGraphics(const Polygon& polygon, Color color, double alpha) {
     std::vector<Triangle> triangles = polygon.getTriangles();
     std::vector<TriangleGraphic> triangleGraphics;
-    std::tuple<double, double, double> colorValues = COLOR_TO_RGB.at(color);
+    std::tuple<double, double, double> colorValues = COLOR_TO_RGB.value(color);
     for (Triangle triangle : triangles) {
         triangleGraphics.push_back({
             {triangle.p1.getX().getMeters(), triangle.p1.getY().getMeters(),

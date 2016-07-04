@@ -1,6 +1,7 @@
 #pragma once
 
-#include <map>
+#include <QMap>
+#include <QString>
 
 #ifdef _WIN32
     #include "Windows.h"
@@ -10,14 +11,17 @@
 
 namespace sim {
 
-enum class EncoderType { ABSOLUTE, RELATIVE };
+enum class EncoderType {
+    ABSOLUTE,
+    RELATIVE,
+};
 
-static const std::map<EncoderType, std::string> ENCODER_TYPE_TO_STRING {
+static const QMap<EncoderType, QString> ENCODER_TYPE_TO_STRING {
     {EncoderType::ABSOLUTE, "ABSOLUTE"},
     {EncoderType::RELATIVE, "RELATIVE"},
 };
 
-static const std::map<std::string, EncoderType> STRING_TO_ENCODER_TYPE = 
+static const QMap<QString, EncoderType> STRING_TO_ENCODER_TYPE = 
     ContainerUtilities::inverse(ENCODER_TYPE_TO_STRING);
 
 } // namespace sim

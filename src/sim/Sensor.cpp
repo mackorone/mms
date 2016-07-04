@@ -10,6 +10,13 @@
 
 namespace sim {
 
+Sensor::Sensor() :
+    m_range(Meters(0)),
+    m_halfWidth(Radians(0)),
+    m_initialPosition(Cartesian(Meters(0), Meters(0))),
+    m_initialDirection(Radians(0)) {
+}
+
 Sensor::Sensor(
         const Distance& radius,
         const Distance& range,

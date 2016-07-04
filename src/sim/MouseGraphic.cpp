@@ -19,19 +19,19 @@ void MouseGraphic::draw(const Coordinate& currentTranslation, const Angle& curre
     // First, we draw the body
     m_bufferInterface->drawMousePolygon(
         m_mouse->getCurrentBodyPolygon(currentTranslation, currentRotation),
-        STRING_TO_COLOR.at(P()->mouseBodyColor()), 1.0);
+        STRING_TO_COLOR.value(P()->mouseBodyColor().c_str()), 1.0);
 
     // Next, draw the center of mass
     m_bufferInterface->drawMousePolygon(
         m_mouse->getCurrentCenterOfMassPolygon(currentTranslation, currentRotation),
-        STRING_TO_COLOR.at(P()->mouseCenterOfMassColor()), 1.0);
+        STRING_TO_COLOR.value(P()->mouseCenterOfMassColor().c_str()), 1.0);
 
     // Next, we draw the wheels
     for (const Polygon& wheelPolygon :
             m_mouse->getCurrentWheelPolygons(currentTranslation, currentRotation)) {
         m_bufferInterface->drawMousePolygon(
             wheelPolygon,
-            STRING_TO_COLOR.at(P()->mouseWheelColor()), 1.0);
+            STRING_TO_COLOR.value(P()->mouseWheelColor().c_str()), 1.0);
     }
 
     // Next, we draw the wheel speed indicators
@@ -39,7 +39,7 @@ void MouseGraphic::draw(const Coordinate& currentTranslation, const Angle& curre
             m_mouse->getCurrentWheelSpeedIndicatorPolygons(currentTranslation, currentRotation)) {
         m_bufferInterface->drawMousePolygon(
             wheelSpeedIndicatorPolygon,
-            STRING_TO_COLOR.at(P()->mouseWheelSpeedIndicatorColor()), 1.0);
+            STRING_TO_COLOR.value(P()->mouseWheelSpeedIndicatorColor().c_str()), 1.0);
     }
 
     // Next, we draw the sensors
@@ -47,7 +47,7 @@ void MouseGraphic::draw(const Coordinate& currentTranslation, const Angle& curre
             m_mouse->getCurrentSensorPolygons(currentTranslation, currentRotation)) {
         m_bufferInterface->drawMousePolygon(
             sensorPolygon,
-            STRING_TO_COLOR.at(P()->mouseSensorColor()), 1.0);
+            STRING_TO_COLOR.value(P()->mouseSensorColor().c_str()), 1.0);
     }
 
     // Lastly, we draw the sensor views
@@ -55,7 +55,7 @@ void MouseGraphic::draw(const Coordinate& currentTranslation, const Angle& curre
             m_mouse->getCurrentSensorViewPolygons(currentTranslation, currentRotation)) {
         m_bufferInterface->drawMousePolygon(
             polygon,
-            STRING_TO_COLOR.at(P()->mouseViewColor()), 1.0);
+            STRING_TO_COLOR.value(P()->mouseViewColor().c_str()), 1.0);
     }
 
     // Uncomment to draw collision polygon

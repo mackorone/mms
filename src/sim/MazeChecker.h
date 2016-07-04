@@ -31,7 +31,7 @@ public:
 
 private:
 
-    // These helper functions just return a list of errors - empty means success
+    // These return a list of errors - empty means success
     static QVector<QString> isNonempty(const BasicMaze& maze);
     static QVector<QString> isRectangular(const BasicMaze& maze);
     static QVector<QString> isEnclosed(const BasicMaze& maze);
@@ -43,8 +43,8 @@ private:
     static QVector<QString> hasWallAttachedToEachNonCenterPost(const BasicMaze& maze);
     static QVector<QString> isUnsolvableByWallFollower(const BasicMaze& maze);
 
-    static Direction directionAfterLeftTurn(Direction direction);
-    static Direction directionAfterRightTurn(Direction direction);
+    // TODO: MACK - this should go somewhere else too - MazeUtilities.h
+    // Misc. helper function
     static QPair<int, int> positionAfterMovingForward(
         QPair<int, int> position,
         Direction direction);

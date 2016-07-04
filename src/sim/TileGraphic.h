@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QMap>
+
 #include "BufferInterface.h"
 #include "Color.h"
 #include "Tile.h"
@@ -31,7 +33,7 @@ private:
     BufferInterface* m_bufferInterface;
 
     Color m_color;
-    std::map<Direction, bool> m_declaredWalls;
+    QMap<Direction, bool> m_declaredWalls;
     bool m_foggy;
     std::vector<std::string> m_rowsOfText;
 

@@ -15,6 +15,7 @@ namespace sim {
 class Sensor {
 
 public:
+    Sensor();
     Sensor(
         const Distance& radius,
         const Distance& range,

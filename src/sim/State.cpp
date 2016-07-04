@@ -1,7 +1,6 @@
 #include "State.h"
 
 #include "Assert.h"
-#include "ContainerUtilities.h"
 #include "Key.h"
 #include "Logging.h"
 #include "Param.h"
@@ -24,7 +23,7 @@ State* State::getInstance() {
 State::State() {
     m_runId = "";
     m_crashed = false;
-    m_layoutType = STRING_TO_LAYOUT_TYPE.at(P()->defaultLayoutType());
+    m_layoutType = STRING_TO_LAYOUT_TYPE.value(P()->defaultLayoutType().c_str());
     m_rotateZoomedMap = P()->defaultRotateZoomedMap();
     m_zoomedMapScale = P()->defaultZoomedMapScale();
     m_wallTruthVisible = P()->defaultWallTruthVisible();
@@ -37,10 +36,10 @@ State::State() {
     m_paused = P()->defaultPaused();
     m_simSpeed = P()->defaultSimSpeed();
     for (int i = 0; i < 10; i += 1) {
-        m_inputButtons.insert(std::make_pair(i, false));
+        m_inputButtons.insert(i, false);
     }
     for (Key key : ARROW_KEYS) {
-        m_arrowKeys.insert(std::make_pair(key, false));
+        m_arrowKeys.insert(key, false);
     }
 }
 
@@ -187,23 +186,23 @@ void State::setSimSpeed(double simSpeed) {
 }
 
 bool State::inputButtonWasPressed(int inputButton) {
-    SIM_ASSERT_TR(ContainerUtilities::mapContains(m_inputButtons, inputButton));
-    return m_inputButtons.at(inputButton);
+    SIM_ASSERT_TR(m_inputButtons.contains(inputButton));
+    return m_inputButtons.value(inputButton);
 }
 
 void State::setInputButtonWasPressed(int inputButton, bool pressed) {
-    SIM_ASSERT_TR(ContainerUtilities::mapContains(m_inputButtons, inputButton));
-    m_inputButtons.at(inputButton) = pressed;
+    SIM_ASSERT_TR(m_inputButtons.contains(inputButton));
+    m_inputButtons[inputButton] = pressed;
 }
 
 bool State::arrowKeyIsPressed(Key key) {
-    SIM_ASSERT_TR(ContainerUtilities::mapContains(m_arrowKeys, key));
-    return m_arrowKeys.at(key);
+    SIM_ASSERT_TR(m_arrowKeys.contains(key));
+    return m_arrowKeys.value(key);
 }
 
 void State::setArrowKeyIsPressed(Key key, bool pressed) {
-    SIM_ASSERT_TR(ContainerUtilities::mapContains(m_arrowKeys, key));
-    m_arrowKeys.at(key) = pressed;
+    SIM_ASSERT_TR(m_arrowKeys.contains(key));
+    m_arrowKeys[key] = pressed;
 }
 
 bool State::crossesDefault(double current, double next, double defaultValue) {

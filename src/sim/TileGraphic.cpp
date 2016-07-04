@@ -1,7 +1,6 @@
 #include "TileGraphic.h"
 
 #include "Color.h"
-#include "ContainerUtilities.h"
 #include "Param.h"
 #include "State.h"
 
@@ -9,11 +8,11 @@ namespace sim {
 
 TileGraphic::TileGraphic(const Tile* tile, BufferInterface* bufferInterface) :
         m_tile(tile), m_bufferInterface(bufferInterface),
-        m_color(STRING_TO_COLOR.at(P()->tileBaseColor())), m_foggy(true) {
+        m_color(STRING_TO_COLOR.value(P()->tileBaseColor().c_str())), m_foggy(true) {
 }
 
 bool TileGraphic::wallDeclared(Direction direction) const {
-    return ContainerUtilities::mapContains(m_declaredWalls, direction);
+    return m_declaredWalls.contains(direction);
 }
 
 void TileGraphic::setColor(Color color) {
@@ -27,7 +26,7 @@ void TileGraphic::declareWall(Direction direction, bool isWall) {
 }
 
 void TileGraphic::undeclareWall(Direction direction) {
-    m_declaredWalls.erase(direction);
+    m_declaredWalls.remove(direction);
     updateWall(direction);
 }
 
@@ -50,7 +49,7 @@ void TileGraphic::draw() const {
     // Draw the base of the tile
     m_bufferInterface->insertIntoGraphicCpuBuffer(
         m_tile->getFullPolygon(),
-        S()->tileColorsVisible() ? m_color : STRING_TO_COLOR.at(P()->tileBaseColor()),
+        S()->tileColorsVisible() ? m_color : STRING_TO_COLOR.value(P()->tileBaseColor().c_str()),
         1.0);
 
     // Draw each of the walls of the tile
@@ -66,14 +65,14 @@ void TileGraphic::draw() const {
     for (Polygon polygon : m_tile->getCornerPolygons()) {
         m_bufferInterface->insertIntoGraphicCpuBuffer(
             polygon,
-            STRING_TO_COLOR.at(P()->tileCornerColor()),
+            STRING_TO_COLOR.value(P()->tileCornerColor().c_str()),
             1.0);
     }
 
     // Draw the fog
     m_bufferInterface->insertIntoGraphicCpuBuffer(
         m_tile->getFullPolygon(),
-        STRING_TO_COLOR.at(P()->tileFogColor()),
+        STRING_TO_COLOR.value(P()->tileFogColor().c_str()),
         m_foggy && S()->tileFogVisible() ? P()->tileFogAlpha() : 0.0);
 
 
@@ -90,7 +89,7 @@ void TileGraphic::draw() const {
 
 void TileGraphic::updateColor() const {
     m_bufferInterface->updateTileGraphicBaseColor(m_tile->getX(), m_tile->getY(),
-        S()->tileColorsVisible() ? m_color : STRING_TO_COLOR.at(P()->tileBaseColor()));
+        S()->tileColorsVisible() ? m_color : STRING_TO_COLOR.value(P()->tileBaseColor().c_str()));
 }
 
 void TileGraphic::updateWalls() const {
@@ -140,7 +139,7 @@ void TileGraphic::updateWall(Direction direction) const {
 std::pair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction) const {
 
     // Declare the wall color and alpha, assign defaults
-    Color wallColor = STRING_TO_COLOR.at(P()->tileWallColor());
+    Color wallColor = STRING_TO_COLOR.value(P()->tileWallColor().c_str());
     float wallAlpha = 1.0;
 
     // Either draw the true walls of the tile ...
@@ -153,20 +152,20 @@ std::pair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction
 
         // If the wall was declared, use the wall color and tile base color ...
         if (wallDeclared(direction)) {
-            if (m_declaredWalls.at(direction)) {
+            if (m_declaredWalls.value(direction)) {
                 // Correct declaration
                 if (m_tile->isWall(direction)) {
-                    wallColor = STRING_TO_COLOR.at(P()->tileWallColor());
+                    wallColor = STRING_TO_COLOR.value(P()->tileWallColor().c_str());
                 }
                 // Incorrect declaration
                 else {
-                    wallColor = STRING_TO_COLOR.at(P()->tileIncorrectlyDeclaredWallColor());
+                    wallColor = STRING_TO_COLOR.value(P()->tileIncorrectlyDeclaredWallColor().c_str());
                 }
             }
             else {
                 // Incorrect declaration
                 if (m_tile->isWall(direction)) {
-                    wallColor = STRING_TO_COLOR.at(P()->tileIncorrectlyDeclaredNoWallColor());
+                    wallColor = STRING_TO_COLOR.value(P()->tileIncorrectlyDeclaredNoWallColor().c_str());
                 }
                 // Correct declaration
                 else {
@@ -178,17 +177,17 @@ std::pair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction
         // ... otherwise, use the undeclared walls colors
         else {
             if (m_tile->isWall(direction)) {
-                wallColor = STRING_TO_COLOR.at(P()->tileUndeclaredWallColor());
+                wallColor = STRING_TO_COLOR.value(P()->tileUndeclaredWallColor().c_str());
             }
             else {
-                wallColor = STRING_TO_COLOR.at(P()->tileUndeclaredNoWallColor());
+                wallColor = STRING_TO_COLOR.value(P()->tileUndeclaredNoWallColor().c_str());
             }
         }
     }
     
     // If the wall color is the same as the default tile base color,
     // we interpret that to mean that the walls should be transparent
-    if (wallColor == STRING_TO_COLOR.at(P()->tileBaseColor())) {
+    if (wallColor == STRING_TO_COLOR.value(P()->tileBaseColor().c_str())) {
         wallAlpha = 0.0;
     }
 

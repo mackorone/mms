@@ -1,12 +1,11 @@
 #pragma once
 
-#include <map>
+#include <QMap>
 #include <string>
 
 #include <pugixml/pugixml.hpp>
 
 #include "Assert.h"
-#include "ContainerUtilities.h"
 
 namespace sim {
 
@@ -91,14 +90,18 @@ private:
 
     // Generic helper method for getting string values of a special type
     template<class T>
-    std::string getStringIfHasStringAndIsSpecial(const std::string& type, const std::string& tag,
-        const std::string& defaultValue, const std::map<std::string, T>& map) {
+    std::string getStringIfHasStringAndIsSpecial(
+            const std::string& type,
+            const std::string& tag,
+            const std::string& defaultValue,
+            const QMap<QString, T>& map) {
+
         if (!hasStringValue(tag)) {
             printTagNotFound("string", tag, defaultValue);
             return defaultValue;
         }
         std::string value = getStringValue(tag);
-        if (!ContainerUtilities::mapContains(map, value)) {
+        if (!map.contains(value.c_str())) {
             printNotSpecialString(type, tag, value, defaultValue);
             return defaultValue;
         }   

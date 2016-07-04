@@ -134,16 +134,16 @@ void Header::updateLines() {
         std::string("Auto Set Tile Base Color:    ") + (m_mouseAlgorithm == nullptr ? "NONE" :
             (m_mouseAlgorithm->setTileBaseColorWhenDistanceDeclaredCorrectly() ? "TRUE" : "FALSE")),
         std::string("Wheel Speed Fraction:        ") +
-            (!ContainerUtilities::mapContains(STRING_TO_INTERFACE_TYPE, m_options.interfaceType) ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.at(m_options.interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            (!STRING_TO_INTERFACE_TYPE.contains(m_options.interfaceType.c_str()) ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType.c_str()) != InterfaceType::DISCRETE ? "N/A" :
             std::to_string(m_options.wheelSpeedFraction))),
         std::string("Declare Wall On Read:        ") +
             (m_mouseAlgorithm == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.at(m_options.interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType.c_str()) != InterfaceType::DISCRETE ? "N/A" :
             (m_mouseAlgorithm->declareWallOnRead() ? "TRUE" : "FALSE"))),
         std::string("Use Tile Edge Movements:     ") +
             (m_mouseAlgorithm == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.at(m_options.interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType.c_str()) != InterfaceType::DISCRETE ? "N/A" :
             (m_mouseAlgorithm->useTileEdgeMovements() ? "TRUE" : "FALSE"))),
 
         // Mouse progress
@@ -156,7 +156,8 @@ void Header::updateLines() {
         std::string("Current Rotation (deg):      ") + std::to_string(m_model->getMouse()->getCurrentRotation().getDegreesZeroTo360()),
         std::string("Current X tile:              ") + std::to_string(m_model->getMouse()->getCurrentDiscretizedTranslation().first),
         std::string("Current Y tile:              ") + std::to_string(m_model->getMouse()->getCurrentDiscretizedTranslation().second),
-        std::string("Current Direction:           ") + DIRECTION_TO_STRING.at(m_model->getMouse()->getCurrentDiscretizedRotation()),
+        std::string("Current Direction:           ") + 
+            DIRECTION_TO_STRING.value(m_model->getMouse()->getCurrentDiscretizedRotation()).toStdString(),
         std::string("Elapsed Real Time:           ") + SimUtilities::formatSeconds(T()->elapsedRealTime().getSeconds()),
         std::string("Elapsed Sim Time:            ") + SimUtilities::formatSeconds(T()->elapsedSimTime().getSeconds()),
         std::string("Time Since Origin Departure: ") + (
@@ -170,7 +171,7 @@ void Header::updateLines() {
 
         // Sim state
         std::string("Crashed:                     ") + (S()->crashed() ? "TRUE" : "FALSE"),
-        std::string("Layout Type (l):             ") + LAYOUT_TYPE_TO_STRING.at(S()->layoutType()),
+        std::string("Layout Type (l):             ") + LAYOUT_TYPE_TO_STRING.value(S()->layoutType()).toStdString(),
         std::string("Rotate Zoomed Map (r):       ") + (S()->rotateZoomedMap() ? "TRUE" : "FALSE"),
         std::string("Zoomed Map Scale (i, o):     ") + std::to_string(S()->zoomedMapScale()),
         std::string("Wall Truth Visible (t):      ") + (S()->wallTruthVisible() ? "TRUE" : "FALSE"),

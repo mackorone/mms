@@ -136,8 +136,8 @@ void View::updateWindowSize(int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-std::set<char> View::getAllowableTileTextCharacters() {
-    return ContainerUtilities::keys(m_fontImageMap);
+QList<char> View::getAllowableTileTextCharacters() {
+    return m_fontImageMap.keys();
 }
 
 void View::initTileGraphicText() {
@@ -151,7 +151,7 @@ void View::initTileGraphicText() {
         ),
         m_fontImageMap,
         P()->tileTextBorderFraction(),
-        STRING_TO_TILE_TEXT_ALIGNMENT.at(P()->tileTextAlignment()));
+        STRING_TO_TILE_TEXT_ALIGNMENT.value(P()->tileTextAlignment().c_str()));
 }
 
 void View::keyPress(unsigned char key, int x, int y) {
@@ -161,40 +161,40 @@ void View::keyPress(unsigned char key, int x, int y) {
 
     if (key == 'p') {
         // Toggle pause (only in discrete mode)
-        if (STRING_TO_INTERFACE_TYPE.at(m_options.interfaceType) == InterfaceType::DISCRETE) {
+        if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType.c_str()) == InterfaceType::DISCRETE) {
             S()->setPaused(!S()->paused());
         }
         else {
             L()->warn(
                 "Pausing the simulator is only allowed in %v mode.",
-                INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE));
+                INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE).toStdString());
         }
     }
     else if (key == 'f') {
         // Faster (only in discrete mode)
-        if (STRING_TO_INTERFACE_TYPE.at(m_options.interfaceType) == InterfaceType::DISCRETE) {
+        if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType.c_str()) == InterfaceType::DISCRETE) {
             S()->setSimSpeed(S()->simSpeed() * 1.5);
         }
         else {
             L()->warn(
                 "Increasing the simulator speed is only allowed in %v mode.",
-                INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE));
+                INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE).toStdString());
         }
     }
     else if (key == 's') {
         // Slower (only in discrete mode)
-        if (STRING_TO_INTERFACE_TYPE.at(m_options.interfaceType) == InterfaceType::DISCRETE) {
+        if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType.c_str()) == InterfaceType::DISCRETE) {
             S()->setSimSpeed(S()->simSpeed() / 1.5);
         }
         else {
             L()->warn(
                 "Decreasing the simulator speed is only allowed in %v mode.",
-                INTERFACE_TYPE_TO_STRING.at(InterfaceType::DISCRETE));
+                INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE).toStdString());
         }
     }
     else if (key == 'l') {
         // Cycle through the available layouts
-        S()->setLayoutType(LAYOUT_TYPE_CYCLE.at(S()->layoutType()));
+        S()->setLayoutType(LAYOUT_TYPE_CYCLE.value(S()->layoutType()));
     }
     else if (key == 'r') {
         // Toggle rotate zoomed map
@@ -263,20 +263,20 @@ void View::keyPress(unsigned char key, int x, int y) {
 }
 
 void View::specialKeyPress(int key, int x, int y) {
-    if (!ContainerUtilities::mapContains(INT_TO_KEY, key)) {
+    if (!INT_TO_KEY.contains(key)) {
         return;
     }
-    if (ContainerUtilities::vectorContains(ARROW_KEYS, INT_TO_KEY.at(key))) {
-        S()->setArrowKeyIsPressed(INT_TO_KEY.at(key), true);
+    if (ARROW_KEYS.contains(INT_TO_KEY.value(key))) {
+        S()->setArrowKeyIsPressed(INT_TO_KEY.value(key), true);
     }
 }
 
 void View::specialKeyRelease(int key, int x, int y) {
-    if (!ContainerUtilities::mapContains(INT_TO_KEY, key)) {
+    if (!INT_TO_KEY.contains(key)) {
         return;
     }
-    if (ContainerUtilities::vectorContains(ARROW_KEYS, INT_TO_KEY.at(key))) {
-        S()->setArrowKeyIsPressed(INT_TO_KEY.at(key), false);
+    if (ARROW_KEYS.contains(INT_TO_KEY.value(key))) {
+        S()->setArrowKeyIsPressed(INT_TO_KEY.value(key), false);
     }
 }
 
@@ -378,7 +378,7 @@ void View::initTextureProgram() {
     glBindVertexArray(0);
 }
 
-std::map<char, std::pair<double, double>> View::getFontImageMap() {
+QMap<char, std::pair<double, double>> View::getFontImageMap() {
 
     // These values must perfectly reflect the font image being used, or else
     // the wrong characters will be displayed on the tiles.
@@ -389,15 +389,13 @@ std::map<char, std::pair<double, double>> View::getFontImageMap() {
 
     // Get a map of the font image characters (allowable tile text characters)
     // to their position in the png image (a fraction from 0.0 to 1.0)
-    std::map<char, std::pair<double, double>> fontImageMap;
+    QMap<char, std::pair<double, double>> fontImageMap;
     for (int i = 0; i < fontImageChars.size(); i += 1) {
         fontImageMap.insert(
+            fontImageChars.at(i),
             std::make_pair(
-                fontImageChars.at(i),
-                std::make_pair(
-                    static_cast<double>(i + 0) / static_cast<double>(fontImageChars.size()),
-                    static_cast<double>(i + 1) / static_cast<double>(fontImageChars.size())
-                )
+                static_cast<double>(i + 0) / static_cast<double>(fontImageChars.size()),
+                static_cast<double>(i + 1) / static_cast<double>(fontImageChars.size())
             )
         );
     }

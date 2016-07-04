@@ -1,5 +1,8 @@
 #pragma once
 
+#include <QMap>
+#include <QString>
+
 #include <mutex>
 #include <vector>
 
@@ -125,11 +128,11 @@ private:
     Polygon m_initialBodyPolygon; // The polygon of strictly the body of the mouse
     Polygon m_initialCollisionPolygon; // The polygon containing all collidable parts of the mouse
     Polygon m_initialCenterOfMassPolygon; // The polygon overlaying the center of mass of the mouse
-    std::map<std::string, Wheel> m_wheels; // The wheels of the mouse
-    std::map<std::string, Sensor> m_sensors; // The sensors on the mouse
+    QMap<QString, Wheel> m_wheels; // The wheels of the mouse
+    QMap<QString, Sensor> m_sensors; // The sensors on the mouse
 
     // The effect that each wheel has on mouse forward, sideways, and turn movements
-    std::map<std::string, WheelEffect> m_wheelEffects;
+    QMap<QString, WheelEffect> m_wheelEffects;
 
     // The fractions of a each wheel's max speed that cause the mouse to
     // perform the move forward and turn movements, respectively, as optimally
@@ -138,7 +141,7 @@ private:
     // moving sideways, and/or turn without moving forward or sideways.
     // Also note that the fractions are in [-1.0, 1.0], so that the max wheel
     // speed is never exceeded.
-    std::map<std::string, std::pair<double, double>> m_wheelSpeedAdjustmentFactors;
+    QMap<QString, std::pair<double, double>> m_wheelSpeedAdjustmentFactors;
 
     // Used to calculate the linear combination of the forward component and turn
     // component, based on curve turn radius, that cause the mouse to perform a
@@ -168,15 +171,15 @@ private:
     void setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardFactor, double turnFactor);
 
     // Helper method for getting forward and turn rates of change due to a single wheel
-    std::map<std::string, WheelEffect> getWheelEffects(
+    QMap<QString, WheelEffect> getWheelEffects(
         const Cartesian& initialTranslation,
         const Radians& initialRotation,
-        const std::map<std::string, Wheel>& wheels) const;
+        const QMap<QString, Wheel>& wheels) const;
 
     // Helper method for getting wheel speed adjustment factors based on wheel effects
-    std::map<std::string, std::pair<double, double>> getWheelSpeedAdjustmentFactors(
-        const std::map<std::string, Wheel>& wheels,
-        const std::map<std::string, WheelEffect>& wheelEffects) const;
+    QMap<QString, std::pair<double, double>> getWheelSpeedAdjustmentFactors(
+        const QMap<QString, Wheel>& wheels,
+        const QMap<QString, WheelEffect>& wheelEffects) const;
 
 };
 

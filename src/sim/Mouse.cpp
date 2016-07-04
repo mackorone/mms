@@ -1,11 +1,12 @@
 #include "Mouse.h"
 
+#include <QMapIterator>
+
 #include "units/Meters.h"
 #include "units/MetersPerSecond.h"
 #include "units/Polar.h"
 
 #include "Assert.h"
-#include "ContainerUtilities.h"
 #include "CPMath.h"
 #include "Directory.h"
 #include "GeometryUtilities.h"
@@ -31,7 +32,7 @@ bool Mouse::initialize(
     m_currentTranslation = m_initialTranslation;
 
     // The initial rotation of the mouse, however, is determined by the options
-    m_initialRotation = DIRECTION_TO_ANGLE.at(initialDirection);
+    m_initialRotation = DIRECTION_TO_ANGLE.value(initialDirection);
     m_currentRotation = m_initialRotation;
 
     // Create the mouse parser object
@@ -60,11 +61,11 @@ bool Mouse::initialize(
     // we should be using union, not convexHull, but it's a good approximation
     std::vector<Polygon> polygons;
     polygons.push_back(m_initialBodyPolygon);
-    for (const std::pair<const std::string&, const Wheel&>& pair : m_wheels) {
-        polygons.push_back(pair.second.getInitialPolygon());
+    for (const Wheel& wheel : m_wheels) {
+        polygons.push_back(wheel.getInitialPolygon());
     }
-    for (const std::pair<const std::string&, const Sensor&>& pair : m_sensors) {
-        polygons.push_back(pair.second.getInitialPolygon());
+    for (const Sensor& sensor : m_sensors) {
+        polygons.push_back(sensor.getInitialPolygon());
     }
     m_initialCollisionPolygon = GeometryUtilities::convexHull(polygons);
 
@@ -76,12 +77,12 @@ bool Mouse::initialize(
     m_initialBodyPolygon.getTriangles();
     m_initialCollisionPolygon.getTriangles();
     m_initialCenterOfMassPolygon.getTriangles();
-    for (const std::pair<const std::string&, const Wheel&>& pair : m_wheels) {
-        pair.second.getInitialPolygon().getTriangles();
+    for (const Wheel& wheel : m_wheels) {
+        wheel.getInitialPolygon().getTriangles();
     }
-    for (const std::pair<const std::string&, const Sensor&>& pair : m_sensors) {
-        pair.second.getInitialPolygon().getTriangles();
-        pair.second.getInitialViewPolygon().getTriangles();
+    for (const Sensor& sensor : m_sensors) {
+        sensor.getInitialPolygon().getTriangles();
+        sensor.getInitialViewPolygon().getTriangles();
     }
 
     // Return success
@@ -162,8 +163,8 @@ Polygon Mouse::getCurrentCenterOfMassPolygon(
 std::vector<Polygon> Mouse::getCurrentWheelPolygons(
         const Coordinate& currentTranslation, const Angle& currentRotation) const {
     std::vector<Polygon> polygons;
-    for (const std::pair<const std::string&, const Wheel&>& pair : m_wheels) {
-        polygons.push_back(getCurrentPolygon(pair.second.getInitialPolygon(), currentTranslation, currentRotation));
+    for (const Wheel& wheel : m_wheels) {
+        polygons.push_back(getCurrentPolygon(wheel.getInitialPolygon(), currentTranslation, currentRotation));
     }
     return polygons;
 }
@@ -171,8 +172,8 @@ std::vector<Polygon> Mouse::getCurrentWheelPolygons(
 std::vector<Polygon> Mouse::getCurrentWheelSpeedIndicatorPolygons(
         const Coordinate& currentTranslation, const Angle& currentRotation) const {
     std::vector<Polygon> polygons;
-    for (const std::pair<const std::string&, const Wheel&>& pair : m_wheels) {
-        polygons.push_back(getCurrentPolygon(pair.second.getSpeedIndicatorPolygon(), currentTranslation, currentRotation));
+    for (const Wheel& wheel : m_wheels) {
+        polygons.push_back(getCurrentPolygon(wheel.getSpeedIndicatorPolygon(), currentTranslation, currentRotation));
     }
     return polygons;
 }
@@ -180,8 +181,8 @@ std::vector<Polygon> Mouse::getCurrentWheelSpeedIndicatorPolygons(
 std::vector<Polygon> Mouse::getCurrentSensorPolygons(
         const Coordinate& currentTranslation, const Angle& currentRotation) const {
     std::vector<Polygon> polygons;
-    for (const std::pair<const std::string&, const Sensor&>& pair : m_sensors) {
-        polygons.push_back(getCurrentPolygon(pair.second.getInitialPolygon(), currentTranslation, currentRotation));
+    for (const Sensor& sensor : m_sensors) {
+        polygons.push_back(getCurrentPolygon(sensor.getInitialPolygon(), currentTranslation, currentRotation));
     }
     return polygons;
 }
@@ -189,14 +190,14 @@ std::vector<Polygon> Mouse::getCurrentSensorPolygons(
 std::vector<Polygon> Mouse::getCurrentSensorViewPolygons(
         const Coordinate& currentTranslation, const Angle& currentRotation) const {
     std::vector<Polygon> polygons;
-    for (const std::pair<const std::string&, const Sensor&>& pair : m_sensors) {
+    for (const Sensor& sensor : m_sensors) {
         std::pair<Cartesian, Radians> translationAndRotation =
             getCurrentSensorPositionAndDirection(
-                pair.second,
+                sensor,
                 currentTranslation,
                 currentRotation);
         polygons.push_back(
-            pair.second.getCurrentViewPolygon(
+            sensor.getCurrentViewPolygon(
                 translationAndRotation.first,
                 translationAndRotation.second,
                 *m_maze));
@@ -214,15 +215,18 @@ void Mouse::update(const Duration& elapsed) {
     MetersPerSecond sumDy(0);
     RadiansPerSecond sumDr(0);
 
-    for (const std::pair<const std::string&, const Wheel&>& pair : m_wheels) {
+    // TODO: MACK - check the performance of this - is this making duplicates?
+    QMapIterator<QString, Wheel> wheelIterator(m_wheels);
+    while (wheelIterator.hasNext()) {
+        auto pair = wheelIterator.next();
 
         // We can't do pair.second.updateRotation() since that breaks const
-        m_wheels.at(pair.first).updateRotation(pair.second.getAngularVelocity() * elapsed);
+        m_wheels[pair.key()].updateRotation(pair.value().getAngularVelocity() * elapsed);
 
         // Get the effects on the rate of change of translation, both forward
         // and sideways, and rotation of the mouse due to this particular wheel
         std::tuple<MetersPerSecond, MetersPerSecond, RadiansPerSecond> effects =
-            m_wheelEffects.at(pair.first).getEffects(pair.second.getAngularVelocity());
+            m_wheelEffects.value(pair.key()).getEffects(pair.value().getAngularVelocity());
 
         // The effect of the forward component
         sumDx += std::get<0>(effects) * getCurrentRotation().getCos();
@@ -244,14 +248,18 @@ void Mouse::update(const Duration& elapsed) {
     m_currentRotation += Radians(aveDr * elapsed);
     m_currentTranslation += Cartesian(aveDx * elapsed, aveDy * elapsed);
 
-    for (const std::pair<const std::string&, const Sensor&>& pair : m_sensors) {
+    // TODO: MACK - check the performance of this - is this making duplicates?
+    QMapIterator<QString, Sensor> sensorIterator(m_sensors);
+    while (sensorIterator.hasNext()) {
+        auto pair = sensorIterator.next();
+
         std::pair<Cartesian, Radians> translationAndRotation =
             getCurrentSensorPositionAndDirection(
-                pair.second,
+                pair.value(),
                 m_currentTranslation,
                 m_currentRotation);
-        // We can't do pair.second.updateReading() since that breaks const
-        m_sensors.at(pair.first).updateReading(
+        // We can't do pair.value().updateReading() since that breaks const
+        m_sensors[pair.key()].updateReading(
             translationAndRotation.first,
             translationAndRotation.second,
             *m_maze);
@@ -261,22 +269,22 @@ void Mouse::update(const Duration& elapsed) {
 }
 
 bool Mouse::hasWheel(const std::string& name) const {
-    return ContainerUtilities::mapContains(m_wheels, name);
+    return m_wheels.contains(name.c_str());
 }
 
 RadiansPerSecond Mouse::getWheelMaxSpeed(const std::string& name) const {
-    SIM_ASSERT_TR(ContainerUtilities::mapContains(m_wheels, name));
-    return m_wheels.at(name).getMaxAngularVelocityMagnitude();
+    SIM_ASSERT_TR(m_wheels.contains(name.c_str()));
+    return m_wheels.value(name.c_str()).getMaxAngularVelocityMagnitude();
 }
 
 void Mouse::setWheelSpeeds(const std::map<std::string, RadiansPerSecond>& wheelSpeeds) {
     m_updateMutex.lock();
     for (std::pair<std::string, RadiansPerSecond> pair : wheelSpeeds) {
-        SIM_ASSERT_TR(ContainerUtilities::mapContains(m_wheels, pair.first));
+        SIM_ASSERT_TR(m_wheels.contains(pair.first.c_str()));
         SIM_ASSERT_LE(
             std::abs(pair.second.getRevolutionsPerMinute()),
-            getWheelMaxSpeed(pair.first).getRevolutionsPerMinute());
-        m_wheels.at(pair.first).setAngularVelocity(pair.second);
+            getWheelMaxSpeed(pair.first.c_str()).getRevolutionsPerMinute());
+        m_wheels[pair.first.c_str()].setAngularVelocity(pair.second);
     }
     m_updateMutex.unlock();
 }
@@ -297,26 +305,28 @@ void Mouse::setWheelSpeedsForCurveRight(double fractionOfMaxSpeed, const Meters&
 
 void Mouse::stopAllWheels() {
     std::map<std::string, RadiansPerSecond> wheelSpeeds;
-    for (const std::pair<const std::string&, const Wheel&>& wheel : m_wheels) {
-        wheelSpeeds.insert(std::make_pair(wheel.first, RadiansPerSecond(0)));
+    // TODO: MACK - is this making duplicates?
+    QMapIterator<QString, Wheel> iterator(m_wheels);
+    while (iterator.hasNext()) {
+        wheelSpeeds.insert(std::make_pair(iterator.key().toStdString(), RadiansPerSecond(0)));
     }
     setWheelSpeeds(wheelSpeeds);
 }
 
 EncoderType Mouse::getWheelEncoderType(const std::string& name) const {
     SIM_ASSERT_TR(hasWheel(name));
-    return m_wheels.at(name).getEncoderType();
+    return m_wheels.value(name.c_str()).getEncoderType();
 }
 
 double Mouse::getWheelEncoderTicksPerRevolution(const std::string& name) const {
     SIM_ASSERT_TR(hasWheel(name));
-    return m_wheels.at(name).getEncoderTicksPerRevolution();
+    return m_wheels.value(name.c_str()).getEncoderTicksPerRevolution();
 }
 
 int Mouse::readWheelAbsoluteEncoder(const std::string& name) const {
     SIM_ASSERT_TR(hasWheel(name));
     m_updateMutex.lock();
-    int encoderReading = m_wheels.at(name).readAbsoluteEncoder();
+    int encoderReading = m_wheels.value(name.c_str()).readAbsoluteEncoder();
     m_updateMutex.unlock();
     return encoderReading;
 }
@@ -324,7 +334,7 @@ int Mouse::readWheelAbsoluteEncoder(const std::string& name) const {
 int Mouse::readWheelRelativeEncoder(const std::string& name) const {
     SIM_ASSERT_TR(hasWheel(name));
     m_updateMutex.lock();
-    int encoderReading = m_wheels.at(name).readRelativeEncoder();
+    int encoderReading = m_wheels.value(name.c_str()).readRelativeEncoder();
     m_updateMutex.unlock();
     return encoderReading;
 }
@@ -332,17 +342,17 @@ int Mouse::readWheelRelativeEncoder(const std::string& name) const {
 void Mouse::resetWheelRelativeEncoder(const std::string& name) {
     SIM_ASSERT_TR(hasWheel(name));
     m_updateMutex.lock();
-    m_wheels.at(name).resetRelativeEncoder();
+    m_wheels[name.c_str()].resetRelativeEncoder();
     m_updateMutex.unlock();
 }
 
 bool Mouse::hasSensor(const std::string& name) const {
-    return ContainerUtilities::mapContains(m_sensors, name);
+    return m_sensors.contains(name.c_str());
 }
 
 double Mouse::readSensor(const std::string& name) const {
     SIM_ASSERT_TR(hasSensor(name));
-    return m_sensors.at(name).read();
+    return m_sensors.value(name.c_str()).read();
 }
 
 RadiansPerSecond Mouse::readGyro() const {
@@ -398,14 +408,20 @@ void Mouse::setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardF
 
     // Now set the wheel speeds based on the normalized factors
     std::map<std::string, RadiansPerSecond> wheelSpeeds;
-    for (const std::pair<const std::string&, const Wheel&>& wheel : m_wheels) {
-        SIM_ASSERT_TR(ContainerUtilities::mapContains(m_wheelSpeedAdjustmentFactors, wheel.first));
-        std::pair<double, double> adjustmentFactors = m_wheelSpeedAdjustmentFactors.at(wheel.first);
+
+    // TODO: MACK - check the performance of this - is this making duplicates?
+    QMapIterator<QString, Wheel> wheelIterator(m_wheels);
+    while (wheelIterator.hasNext()) {
+        auto pair = wheelIterator.next();
+        auto wheelName = pair.key();
+        auto wheel = pair.value();
+        SIM_ASSERT_TR(m_wheelSpeedAdjustmentFactors.contains(wheelName));
+        std::pair<double, double> adjustmentFactors = m_wheelSpeedAdjustmentFactors.value(wheelName);
         wheelSpeeds.insert(
             std::make_pair(
-                wheel.first,
+                wheelName.toStdString(),
                 (
-                    wheel.second.getMaxAngularVelocityMagnitude() *
+                    wheel.getMaxAngularVelocityMagnitude() *
                     fractionOfMaxSpeed *
                     (
                         normalizedForwardFactor * adjustmentFactors.first +
@@ -418,22 +434,25 @@ void Mouse::setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardF
     setWheelSpeeds(wheelSpeeds);
 }
 
-std::map<std::string, WheelEffect> Mouse::getWheelEffects(
+QMap<QString, WheelEffect> Mouse::getWheelEffects(
         const Cartesian& initialTranslation,
         const Radians& initialRotation,
-        const std::map<std::string, Wheel>& wheels) const {
+        const QMap<QString, Wheel>& wheels) const {
 
-    std::map<std::string, WheelEffect> wheelEffects;
+    QMap<QString, WheelEffect> wheelEffects;
 
-    for (const std::pair<const std::string&, const Wheel&>& wheel : wheels) {
+    // TODO: MACK - check the performance of this - is this making duplicates?
+    QMapIterator<QString, Wheel> wheelIterator(m_wheels);
+    while (wheelIterator.hasNext()) {
+        auto pair = wheelIterator.next();
+        auto wheelName = pair.key();
+        auto wheel = pair.value();
         wheelEffects.insert(
-            std::make_pair(
-                wheel.first,
-                WheelEffect(
-                    initialTranslation,
-                    initialRotation,
-                    wheel.second
-                )
+            wheelName,
+            WheelEffect(
+                initialTranslation,
+                initialRotation,
+                wheel
             )
         );
     }
@@ -441,9 +460,9 @@ std::map<std::string, WheelEffect> Mouse::getWheelEffects(
     return wheelEffects;
 }
 
-std::map<std::string, std::pair<double, double>> Mouse::getWheelSpeedAdjustmentFactors(
-        const std::map<std::string, Wheel>& wheels,
-        const std::map<std::string, WheelEffect>& wheelEffects) const {
+QMap<QString, std::pair<double, double>> Mouse::getWheelSpeedAdjustmentFactors(
+        const QMap<QString, Wheel>& wheels,
+        const QMap<QString, WheelEffect>& wheelEffects) const {
 
     // Right now, the heueristic that we're using is that if a wheel greatly
     // contributes to moving forward or turning, then its adjustment factors
@@ -456,12 +475,17 @@ std::map<std::string, std::pair<double, double>> Mouse::getWheelSpeedAdjustmentF
 
     // First, construct the rates of change pairs
     std::map<std::string, std::pair<MetersPerSecond, RadiansPerSecond>> ratesOfChangePairs;
-    for (const std::pair<const std::string&, const WheelEffect&>& pair : wheelEffects) {
+    // TODO: MACK - check the performance of this - is this making duplicates?
+    QMapIterator<QString, WheelEffect> wheelIterator(wheelEffects);
+    while (wheelIterator.hasNext()) {
+        auto pair = wheelIterator.next();
+        auto wheelName = pair.key();
+        auto wheelEffect = pair.value();
         std::tuple<MetersPerSecond, MetersPerSecond, RadiansPerSecond> effects =
-            pair.second.getEffects(m_wheels.at(pair.first).getMaxAngularVelocityMagnitude());
+            wheelEffect.getEffects(m_wheels.value(wheelName).getMaxAngularVelocityMagnitude());
         ratesOfChangePairs.insert(
             std::make_pair(
-                pair.first,
+                wheelName.toStdString(),
                 std::make_pair(
                     std::get<0>(effects),
                     std::get<2>(effects)
@@ -485,7 +509,7 @@ std::map<std::string, std::pair<double, double>> Mouse::getWheelSpeedAdjustmentF
     }
 
     // Then divide by the largest magnitude, ensuring values in [-1.0, 1.0]
-    std::map<std::string, std::pair<double, double>> adjustmentFactors;
+    QMap<QString, std::pair<double, double>> adjustmentFactors;
     for (std::pair<std::string, std::pair<MetersPerSecond, RadiansPerSecond>> pair : ratesOfChangePairs) {
         double normalizedForwardContribution = pair.second.first / maxForwardRateOfChangeMagnitude;
         double normalizedRadialContribution = pair.second.second / maxRadialRateOfChangeMagnitude;
@@ -494,11 +518,10 @@ std::map<std::string, std::pair<double, double>> Mouse::getWheelSpeedAdjustmentF
         SIM_ASSERT_LE(normalizedForwardContribution, 1.0);
         SIM_ASSERT_LE(normalizedRadialContribution, 1.0);
         adjustmentFactors.insert(
+            pair.first.c_str(),
             std::make_pair(
-                pair.first,
-                std::make_pair(
-                    normalizedForwardContribution,
-                    normalizedRadialContribution)));
+                normalizedForwardContribution,
+                normalizedRadialContribution));
     }
     
     return adjustmentFactors;

@@ -11,6 +11,7 @@ namespace sim {
 class Wheel {
 
 public:
+    Wheel();
     Wheel(
         const Distance& diameter,
         const Distance& width,
