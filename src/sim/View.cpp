@@ -2,6 +2,7 @@
 
 #include <tdogl/Bitmap.h>
 #include <tdogl/Shader.h>
+#include <QPair>
 
 #include "../mouse/IMouseAlgorithm.h"
 #include "BufferInterface.h"
@@ -19,7 +20,7 @@ namespace sim {
 View::View(Model* model, int argc, char* argv[], const GlutFunctions& functions) : m_model(model) {
 
     m_bufferInterface = new BufferInterface(
-        std::make_pair(m_model->getMaze()->getWidth(), m_model->getMaze()->getHeight()),
+        {m_model->getMaze()->getWidth(), m_model->getMaze()->getHeight()},
         &m_graphicCpuBuffer,
         &m_textureCpuBuffer
     );
@@ -65,7 +66,7 @@ void View::refresh() {
         // TODO: upforgrabs
         // This won't work if the mouse is traveling too quickly and travels more
         // than one tile per frame. Figure out a way that will work in that case.
-        std::pair<int, int> currentPosition =
+        QPair<int, int> currentPosition =
             m_model->getMouse()->getCurrentDiscretizedTranslation();
         m_mazeGraphic->setTileFogginess(currentPosition.first, currentPosition.second, false);
     }
@@ -145,10 +146,10 @@ void View::initTileGraphicText() {
     m_bufferInterface->initTileGraphicText(
         Meters(P()->wallLength()),
         Meters(P()->wallWidth()),
-        std::make_pair(
+        {
             m_options.tileTextNumberOfRows,
             m_options.tileTextNumberOfCols
-        ),
+        },
         m_fontImageMap,
         P()->tileTextBorderFraction(),
         STRING_TO_TILE_TEXT_ALIGNMENT.value(P()->tileTextAlignment().c_str()));
@@ -378,7 +379,7 @@ void View::initTextureProgram() {
     glBindVertexArray(0);
 }
 
-QMap<char, std::pair<double, double>> View::getFontImageMap() {
+QMap<char, QPair<double, double>> View::getFontImageMap() {
 
     // These values must perfectly reflect the font image being used, or else
     // the wrong characters will be displayed on the tiles.
@@ -389,14 +390,14 @@ QMap<char, std::pair<double, double>> View::getFontImageMap() {
 
     // Get a map of the font image characters (allowable tile text characters)
     // to their position in the png image (a fraction from 0.0 to 1.0)
-    QMap<char, std::pair<double, double>> fontImageMap;
+    QMap<char, QPair<double, double>> fontImageMap;
     for (int i = 0; i < fontImageChars.size(); i += 1) {
         fontImageMap.insert(
             fontImageChars.at(i),
-            std::make_pair(
+            {
                 static_cast<double>(i + 0) / static_cast<double>(fontImageChars.size()),
                 static_cast<double>(i + 1) / static_cast<double>(fontImageChars.size())
-            )
+            }
         );
     }
 
@@ -426,19 +427,19 @@ void View::drawFullAndZoomedMaps(
         tdogl::Program* program, int vaoId, int vboStartingIndex, int vboEndingIndex) {
 
     // Get the sizes and positions of each of the maps.
-    std::pair<int, int> fullMapPosition = Layout::getFullMapPosition(
+    QPair<int, int> fullMapPosition = Layout::getFullMapPosition(
         m_windowWidth, m_windowHeight, m_header->getHeight(), P()->windowBorderWidth(), S()->layoutType());
-    std::pair<int, int> fullMapSize = Layout::getFullMapSize(
+    QPair<int, int> fullMapSize = Layout::getFullMapSize(
         m_windowWidth, m_windowHeight, m_header->getHeight(), P()->windowBorderWidth(), S()->layoutType());
-    std::pair<int, int> zoomedMapPosition = Layout::getZoomedMapPosition(
+    QPair<int, int> zoomedMapPosition = Layout::getZoomedMapPosition(
         m_windowWidth, m_windowHeight, m_header->getHeight(), P()->windowBorderWidth(), S()->layoutType());
-    std::pair<int, int> zoomedMapSize = Layout::getZoomedMapSize(
+    QPair<int, int> zoomedMapSize = Layout::getZoomedMapSize(
         m_windowWidth, m_windowHeight, m_header->getHeight(), P()->windowBorderWidth(), S()->layoutType());
 
     // Get the physical size of the maze (in meters)
     double physicalMazeWidth = P()->wallWidth() + m_model->getMaze()->getWidth() * (P()->wallWidth() + P()->wallLength());
     double physicalMazeHeight = P()->wallWidth() + m_model->getMaze()->getHeight() * (P()->wallWidth() + P()->wallLength());
-    std::pair<double, double> physicalMazeSize = std::make_pair(physicalMazeWidth, physicalMazeHeight);
+    QPair<double, double> physicalMazeSize = {physicalMazeWidth, physicalMazeHeight};
 
     // Start using the program and vertex array object
     program->use();
@@ -459,7 +460,7 @@ void View::drawFullAndZoomedMaps(
             physicalMazeSize,
             fullMapPosition,
             fullMapSize,
-            std::make_pair(m_windowWidth, m_windowHeight)).front(), 1, GL_TRUE);
+            {m_windowWidth, m_windowHeight}).front(), 1, GL_TRUE);
     glDrawArrays(GL_TRIANGLES, vboStartingIndex, vboEndingIndex);
 
     // Render the zoomed map
@@ -469,7 +470,7 @@ void View::drawFullAndZoomedMaps(
             physicalMazeSize,
             zoomedMapPosition,
             zoomedMapSize,
-            std::make_pair(m_windowWidth, m_windowHeight),
+            {m_windowWidth, m_windowHeight},
             m_screenPixelsPerMeter,
             S()->zoomedMapScale(),
             S()->rotateZoomedMap(),

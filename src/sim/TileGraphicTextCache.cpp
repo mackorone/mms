@@ -1,12 +1,14 @@
 #include "TileGraphicTextCache.h"
 
+#include <QPair>
+
 namespace sim {
 
 void TileGraphicTextCache::init(
         const Distance& wallLength,
         const Distance& wallWidth,
-        std::pair<int, int> tileGraphicTextMaxSize,
-        const QMap<char, std::pair<double, double>>& fontImageMap,
+        QPair<int, int> tileGraphicTextMaxSize,
+        const QMap<char, QPair<double, double>>& fontImageMap,
         double borderFraction,
         TileTextAlignment tileTextAlignment) {
 
@@ -17,24 +19,24 @@ void TileGraphicTextCache::init(
     m_tileGraphicTextPositions = buildPositionCache(borderFraction, tileTextAlignment);
 }
 
-std::pair<int, int> TileGraphicTextCache::getTileGraphicTextMaxSize() const {
+QPair<int, int> TileGraphicTextCache::getTileGraphicTextMaxSize() const {
     return m_tileGraphicTextMaxSize;
 }
 
-std::pair<double, double> TileGraphicTextCache::getFontImageCharacterPosition(char c) const {
+QPair<double, double> TileGraphicTextCache::getFontImageCharacterPosition(char c) const {
     SIM_ASSERT_TR(m_fontImageMap.contains(c));
     return m_fontImageMap.value(c);
 }
 
-std::pair<Cartesian, Cartesian> TileGraphicTextCache::getTileGraphicTextPosition(
+QPair<Cartesian, Cartesian> TileGraphicTextCache::getTileGraphicTextPosition(
         int x, int y, int numRows, int numCols, int row, int col) const {
 
     // Get the character position in the maze for the starting tile
-    std::pair<Cartesian, Cartesian> textPosition = m_tileGraphicTextPositions.value(
-        std::make_pair(
-            std::make_pair(numRows, numCols),
-            std::make_pair(row, col)
-        )
+    QPair<Cartesian, Cartesian> textPosition = m_tileGraphicTextPositions.value(
+        {
+            {numRows, numCols},
+            {row, col}
+        }
     );
 
     // Now get the character position in the maze for *this* tile
@@ -43,12 +45,12 @@ std::pair<Cartesian, Cartesian> TileGraphicTextCache::getTileGraphicTextPosition
     Cartesian LL = textPosition.first + offset;
     Cartesian UR = textPosition.second + offset;
 
-    return std::make_pair(LL, UR);
+    return {LL, UR};
 }
 
 QMap<
-    std::pair<std::pair<int, int>, std::pair<int, int>>,
-    std::pair<Cartesian, Cartesian>> TileGraphicTextCache::buildPositionCache(
+    QPair<QPair<int, int>, QPair<int, int>>,
+    QPair<Cartesian, Cartesian>> TileGraphicTextCache::buildPositionCache(
         double borderFraction, TileTextAlignment tileTextAlignment) {
 
     // The tile graphic text could look like either of the following, depending
@@ -73,8 +75,8 @@ QMap<
     //     *-*---------------------------*-*    *-*---------------------------*-*
 
     QMap<
-        std::pair<std::pair<int, int>, std::pair<int, int>>,
-        std::pair<Cartesian, Cartesian>> positionCache;
+        QPair<QPair<int, int>, QPair<int, int>>,
+        QPair<Cartesian, Cartesian>> positionCache;
 
     int maxRows = m_tileGraphicTextMaxSize.first;
     int maxCols = m_tileGraphicTextMaxSize.second;
@@ -145,14 +147,14 @@ QMap<
                     }
 
                     positionCache.insert(
-                        std::make_pair(
+                        {
                             // The number of rows/cols to be drawn
-                            std::make_pair(numRows, numCols),
+                            {numRows, numCols},
                             // The row and col of the current character
-                            std::make_pair(row, col)
-                        ),
+                            {row, col}
+                        },
                         // The lower left and upper right texture coordinate
-                        std::make_pair(LL, UR)
+                        {LL, UR}
                     );
                 }
             }

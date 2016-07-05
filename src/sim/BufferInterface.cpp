@@ -1,5 +1,6 @@
 #include "BufferInterface.h"
 
+#include <QPair>
 #include <QVector>
 
 #include "Assert.h"
@@ -9,7 +10,7 @@
 namespace sim {
 
 BufferInterface::BufferInterface(
-        std::pair<int, int> mazeSize,
+        QPair<int, int> mazeSize,
         QVector<TriangleGraphic>* graphicCpuBuffer,
         QVector<TriangleTexture>* textureCpuBuffer) :
         m_mazeSize(mazeSize),
@@ -20,8 +21,8 @@ BufferInterface::BufferInterface(
 void BufferInterface::initTileGraphicText(
         const Distance& wallLength,
         const Distance& wallWidth,
-        std::pair<int, int> tileGraphicTextMaxSize,
-        const QMap<char, std::pair<double, double>>& fontImageMap,
+        QPair<int, int> tileGraphicTextMaxSize,
+        const QMap<char, QPair<double, double>>& fontImageMap,
         double borderFraction,
         TileTextAlignment tileTextAlignment) {
 
@@ -35,7 +36,7 @@ void BufferInterface::initTileGraphicText(
     );
 }
 
-std::pair<int, int> BufferInterface::getTileGraphicTextMaxSize() {
+QPair<int, int> BufferInterface::getTileGraphicTextMaxSize() {
     return m_tileGraphicTextCache.getTileGraphicTextMaxSize();
 }
 
@@ -123,10 +124,10 @@ void BufferInterface::updateTileGraphicText(int x, int y, int numRows, int numCo
     //    | /         |    | /       /         |
     //   [LL]---------+   [p1]     [p1]------[p3]
 
-    std::pair<double, double> fontImageCharacterPosition =
+    QPair<double, double> fontImageCharacterPosition =
         m_tileGraphicTextCache.getFontImageCharacterPosition(c);
 
-    std::pair<Cartesian, Cartesian> LL_UR =
+    QPair<Cartesian, Cartesian> LL_UR =
         m_tileGraphicTextCache.getTileGraphicTextPosition(x, y, numRows, numCols, row, col);
 
     int triangleTextureIndex = getTileGraphicTextStartingIndex(x, y, row, col);
@@ -202,7 +203,7 @@ int BufferInterface::getTileGraphicFogStartingIndex(int x, int y) {
 }
 
 int BufferInterface::getTileGraphicTextStartingIndex(int x, int y, int row, int col) {
-    static std::pair<int, int> maxRowsAndCols = getTileGraphicTextMaxSize();
+    static QPair<int, int> maxRowsAndCols = getTileGraphicTextMaxSize();
     static int triangleTexturesPerTile = 2 * maxRowsAndCols.first * maxRowsAndCols.second;
     return triangleTexturesPerTile * (m_mazeSize.second * x + y) + 2 * (row * maxRowsAndCols.second + col);
 }

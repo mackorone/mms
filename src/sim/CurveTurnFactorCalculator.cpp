@@ -1,5 +1,7 @@
 #include "CurveTurnFactorCalculator.h"
 
+#include <QPair>
+
 namespace sim {
 
 CurveTurnFactorCalculator::CurveTurnFactorCalculator() :
@@ -10,7 +12,7 @@ CurveTurnFactorCalculator::CurveTurnFactorCalculator() :
 CurveTurnFactorCalculator::CurveTurnFactorCalculator(
         const QMap<QString, Wheel>& wheels,
         const QMap<QString, WheelEffect>& wheelEffects,
-        const QMap<QString, std::pair<double, double>>& wheelSpeedAdjustmentFactors) {
+        const QMap<QString, QPair<double, double>>& wheelSpeedAdjustmentFactors) {
 
     // TODO: upforgrabs
     // Currently, this logic assumes that when the mouse has its wheel
@@ -31,7 +33,7 @@ CurveTurnFactorCalculator::CurveTurnFactorCalculator(
         // the fraction of the max wheel speed such that the mouse performs a
         // particular movement (moving forward or turning) most optimally.
         SIM_ASSERT_TR(wheelSpeedAdjustmentFactors.contains(pair.first));
-        std::pair<double, double> adjustmentFactors =
+        QPair<double, double> adjustmentFactors =
             wheelSpeedAdjustmentFactors.value(pair.first);
 
         for (double adjustmentFactor : {adjustmentFactors.first, adjustmentFactors.second}) {
@@ -77,8 +79,8 @@ CurveTurnFactorCalculator::CurveTurnFactorCalculator(
     m_unitTurnComponent = B;
 }
 
-std::pair<double, double> CurveTurnFactorCalculator::getCurveTurnFactors(const Meters& radius) {
-    return std::make_pair(m_unitForwardComponent * radius.getMeters(), m_unitTurnComponent);
+QPair<double, double> CurveTurnFactorCalculator::getCurveTurnFactors(const Meters& radius) {
+    return {m_unitForwardComponent * radius.getMeters(), m_unitTurnComponent};
 }
 
 } // namespace sim

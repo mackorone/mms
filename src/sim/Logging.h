@@ -8,6 +8,7 @@
 
 #include <easyloggingpp/easylogging++.h>
 #include <QMap>
+#include <QPair>
 
 // To print and log something, simply provide the level and use printf-like syntax:
 //
@@ -58,7 +59,7 @@ private:
     static std::string m_mouseLoggerName;
 
     // A map of (loggerName) -> (path, numLogFiles)
-    static QMap<std::string, std::pair<std::string, int>> m_info;
+    static QMap<std::string, QPair<std::string, int>> m_info;
 
     // Helper method for retrieving a particular logger
     static el::Logger* getLogger(const std::string& loggerName);

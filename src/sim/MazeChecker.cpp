@@ -1,6 +1,7 @@
 #include "MazeChecker.h"
 
 #include <functional>
+#include <QPair>
 
 #include "Assert.h"
 #include "Logging.h"
@@ -201,9 +202,9 @@ QVector<QString> MazeChecker::hasOneEntranceToCenter(const BasicMaze& maze) {
     // TODO: MACK - fix this to work with QVector
     /*
         L()->warn("The center of the maze has more than one entrance.");
-    QVector<std::pair<int, int>> centerTiles = getCenterTiles(maze.size(), maze.at(0).size()); 
+    QVector<QPair<int, int>> centerTiles = getCenterTiles(maze.size(), maze.at(0).size()); 
     int numberOfEntrances = 0;
-    for (std::pair<int, int> tile : centerTiles) {
+    for (QPair<int, int> tile : centerTiles) {
         for (Direction direction : DIRECTIONS) {
             if (ContainerUtilities::vectorContains(centerTiles, positionAfterMovingForward(tile, direction))) {
                 continue;
@@ -222,9 +223,9 @@ QVector<QString> MazeChecker::hasHollowCenter(const BasicMaze& maze) {
     /*
         L()->warn("The maze does not have a hollow center.");
 
-    QVector<std::pair<int, int>> centerTiles = getCenterTiles(maze.size(), maze.at(0).size()); 
-    for (std::pair<int, int> tile : centerTiles) {
-        for (std::pair<int, int> otherTile : centerTiles) {
+    QVector<QPair<int, int>> centerTiles = getCenterTiles(maze.size(), maze.at(0).size()); 
+    for (QPair<int, int> tile : centerTiles) {
+        for (QPair<int, int> otherTile : centerTiles) {
             for (Direction direction : DIRECTIONS) {
                 if (positionAfterMovingForward(tile, direction) != otherTile) {
                     continue;
@@ -244,9 +245,9 @@ QVector<QString> MazeChecker::hasWallAttachedToEachNonCenterPost(const BasicMaze
     // TODO: MACK - fix this to work with QVector
     /*
         L()->warn("There is at least one non-center post with no walls connected to it.");
-    QVector<std::pair<int, int>> centerTiles = getCenterTiles(maze.size(), maze.at(0).size());
+    QVector<QPair<int, int>> centerTiles = getCenterTiles(maze.size(), maze.at(0).size());
     auto upperRightPostIsCenterPost = [&](int x, int y) {
-        return centerTiles.size() == 4 && std::make_pair(x, y) == SimUtilities::min(centerTiles);
+        return centerTiles.size() == 4 && {x, y} == SimUtilities::min(centerTiles);
     };
     for (int x = 0; x < maze.size() - 1; x += 1) {
         for (int y = 0; y < maze.at(x).size() - 1; y += 1) {
@@ -271,9 +272,9 @@ QVector<QString> MazeChecker::isUnsolvableByWallFollower(const BasicMaze& maze) 
 
     /*
         L()->warn("The maze is solvable by a maze-following robot.");
-    std::set<std::pair<int, int>> reachableByWallFollower;
+    std::set<QPair<int, int>> reachableByWallFollower;
 
-    std::pair<int, int> position = std::make_pair(0, 0);
+    QPair<int, int> position = {0, 0};
     Direction direction = Direction::NORTH;
 
     while (!ContainerUtilities::setContains(reachableByWallFollower, position)) {
@@ -292,7 +293,7 @@ QVector<QString> MazeChecker::isUnsolvableByWallFollower(const BasicMaze& maze) 
         reachableByWallFollower.insert(position);
     }
     
-    for (std::pair<int, int> tile : getCenterTiles(maze.size(), maze.at(0).size())) {
+    for (QPair<int, int> tile : getCenterTiles(maze.size(), maze.at(0).size())) {
         if (ContainerUtilities::setContains(reachableByWallFollower, tile)) {
             return false;
         }

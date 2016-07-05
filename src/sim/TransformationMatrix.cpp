@@ -1,6 +1,7 @@
 #include "TransformationMatrix.h"
 
 #include <algorithm>
+#include <QPair>
 
 #include "Assert.h"
 #include "CPMath.h"
@@ -9,10 +10,10 @@ namespace sim {
 
 QVector<float> TransformationMatrix::getFullMapTransformationMatrix(
         const Distance& wallWidth,
-        std::pair<double, double> physicalMazeSize,
-        std::pair<int, int> fullMapPosition,
-        std::pair<int, int> fullMapSize,
-        std::pair<int, int> windowSize) {
+        QPair<double, double> physicalMazeSize,
+        QPair<int, int> fullMapPosition,
+        QPair<int, int> fullMapSize,
+        QPair<int, int> windowSize) {
 
     // The purpose of this function is to produce a 4x4 matrix which, when
     // applied to the physical coordinate within the vertex shader, transforms
@@ -57,10 +58,10 @@ QVector<float> TransformationMatrix::getFullMapTransformationMatrix(
     double pixelWidth = pixelsPerMeter * physicalWidth;
     double pixelHeight = pixelsPerMeter * physicalHeight;
 
-    std::pair<double, double> openGlOrigin =
-        mapPixelCoordinateToOpenGlCoordinate(std::make_pair(0, 0), windowSize);
-    std::pair<double, double> openGlMazeSize =
-        mapPixelCoordinateToOpenGlCoordinate(std::make_pair(pixelWidth, pixelHeight), windowSize);
+    QPair<double, double> openGlOrigin =
+        mapPixelCoordinateToOpenGlCoordinate({0, 0}, windowSize);
+    QPair<double, double> openGlMazeSize =
+        mapPixelCoordinateToOpenGlCoordinate({pixelWidth, pixelHeight}, windowSize);
 
     double openGlWidth = openGlMazeSize.first - openGlOrigin.first;
     double openGlHeight = openGlMazeSize.second - openGlOrigin.second;
@@ -79,8 +80,8 @@ QVector<float> TransformationMatrix::getFullMapTransformationMatrix(
     // the maze is centered within the map boundaries.
     double pixelLowerLeftCornerX = fullMapPosition.first + 0.5 * (fullMapSize.first - pixelWidth);
     double pixelLowerLeftCornerY = fullMapPosition.second + 0.5 * (fullMapSize.second - pixelHeight);
-    std::pair<double, double> openGlLowerLeftCorner =
-        mapPixelCoordinateToOpenGlCoordinate(std::make_pair(pixelLowerLeftCornerX, pixelLowerLeftCornerY), windowSize);
+    QPair<double, double> openGlLowerLeftCorner =
+        mapPixelCoordinateToOpenGlCoordinate({pixelLowerLeftCornerX, pixelLowerLeftCornerY}, windowSize);
     QVector<float> translationMatrix = {
         1.0, 0.0, 0.0,  static_cast<float>(openGlLowerLeftCorner.first),
         0.0, 1.0, 0.0, static_cast<float>(openGlLowerLeftCorner.second),
@@ -97,10 +98,10 @@ QVector<float> TransformationMatrix::getFullMapTransformationMatrix(
 }
 
 QVector<float> TransformationMatrix::getZoomedMapTransformationMatrix(
-    std::pair<double, double> physicalMazeSize,
-    std::pair<int, int> zoomedMapPosition,
-    std::pair<int, int> zoomedMapSize,
-    std::pair<int, int> windowSize,
+    QPair<double, double> physicalMazeSize,
+    QPair<int, int> zoomedMapPosition,
+    QPair<int, int> zoomedMapSize,
+    QPair<int, int> windowSize,
     double screenPixelsPerMeter,
     double zoomedMapScale,
     bool rotateZoomedMap,
@@ -124,10 +125,10 @@ QVector<float> TransformationMatrix::getZoomedMapTransformationMatrix(
     double pixelWidth = pixelsPerMeter * physicalWidth;
     double pixelHeight = pixelsPerMeter * physicalHeight;
 
-    std::pair<double, double> openGlOrigin =
-        mapPixelCoordinateToOpenGlCoordinate(std::make_pair(0, 0), windowSize);
-    std::pair<double, double> openGlMazeSize =
-        mapPixelCoordinateToOpenGlCoordinate(std::make_pair(pixelWidth, pixelHeight), windowSize);
+    QPair<double, double> openGlOrigin =
+        mapPixelCoordinateToOpenGlCoordinate({0, 0}, windowSize);
+    QPair<double, double> openGlMazeSize =
+        mapPixelCoordinateToOpenGlCoordinate({pixelWidth, pixelHeight}, windowSize);
 
     double openGlWidth = openGlMazeSize.first - openGlOrigin.first;
     double openGlHeight = openGlMazeSize.second - openGlOrigin.second;
@@ -155,15 +156,15 @@ QVector<float> TransformationMatrix::getZoomedMapTransformationMatrix(
     double zoomedMapCenterYPixels = zoomedMapPosition.second + 0.5 * zoomedMapSize.second;
     double staticTranslationXPixels = zoomedMapCenterXPixels - centerXPixels;
     double staticTranslationYPixels = zoomedMapCenterYPixels - centerYPixels;
-    std::pair<double, double> staticTranslation =
-        mapPixelCoordinateToOpenGlCoordinate(std::make_pair(staticTranslationXPixels, staticTranslationYPixels), windowSize);
+    QPair<double, double> staticTranslation =
+        mapPixelCoordinateToOpenGlCoordinate({staticTranslationXPixels, staticTranslationYPixels}, windowSize);
 
     // Part B: Find the dynamic translation, i.e., the current translation of the mouse.
     Cartesian mouseTranslationDelta = Cartesian(currentMouseTranslation) - initialMouseTranslation;
     double dynamicTranslationXPixels = mouseTranslationDelta.getX().getMeters() * pixelsPerMeter;
     double dynamicTranslationYPixels = mouseTranslationDelta.getY().getMeters() * pixelsPerMeter;
-    std::pair<double, double> dynamicTranslation =
-        mapPixelCoordinateToOpenGlCoordinate(std::make_pair(dynamicTranslationXPixels, dynamicTranslationYPixels), windowSize);
+    QPair<double, double> dynamicTranslation =
+        mapPixelCoordinateToOpenGlCoordinate({dynamicTranslationXPixels, dynamicTranslationYPixels}, windowSize);
 
     // Combine the transalations and form the translation matrix
     double horizontalTranslation = staticTranslation.first -  dynamicTranslation.first + openGlOrigin.first;
@@ -197,8 +198,8 @@ QVector<float> TransformationMatrix::getZoomedMapTransformationMatrix(
                                               0.0,                                     0.0, 0.0, 1.0,
     };
 
-    std::pair<double, double> zoomedMapCenterOpenGl =
-        mapPixelCoordinateToOpenGlCoordinate(std::make_pair(zoomedMapCenterXPixels, zoomedMapCenterYPixels), windowSize);
+    QPair<double, double> zoomedMapCenterOpenGl =
+        mapPixelCoordinateToOpenGlCoordinate({zoomedMapCenterXPixels, zoomedMapCenterYPixels}, windowSize);
 
     QVector<float> translateToOriginMatrix = {
         1.0, 0.0, 0.0,  static_cast<float>(zoomedMapCenterOpenGl.first),
@@ -228,12 +229,13 @@ QVector<float> TransformationMatrix::getZoomedMapTransformationMatrix(
     return zoomedMapCameraMatrix;
 }
 
-std::pair<double, double> TransformationMatrix::mapPixelCoordinateToOpenGlCoordinate(
-        std::pair<double, double> coordinate,
-        std::pair<int, int> windowSize) {
-    return std::make_pair(
+QPair<double, double> TransformationMatrix::mapPixelCoordinateToOpenGlCoordinate(
+        QPair<double, double> coordinate,
+        QPair<int, int> windowSize) {
+    return {
         2 * coordinate.first / windowSize.first - 1,
-        2 * coordinate.second / windowSize.second - 1);
+        2 * coordinate.second / windowSize.second - 1
+    };
 }
 
 QVector<float> TransformationMatrix::multiply4x4Matrices(

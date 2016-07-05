@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QPair>
+
 #include <algorithm>
 #include <string>
 #include <QVector>
@@ -67,13 +69,13 @@ public:
 
     // A simple pair-comparitor function
     template <class T>
-    static bool lessThan(const std::pair<T, T>& one, const std::pair<T, T>& two) {
+    static bool lessThan(const QPair<T, T>& one, const QPair<T, T>& two) {
         return (one.first < two.first ? true : one.second < two.second);
     }
 
     // A simple pair-retrieval function
     template <class T>
-    static std::pair<T, T> min(const QVector<std::pair<T, T>>& pairs) {
+    static QPair<T, T> min(const QVector<QPair<T, T>>& pairs) {
         return *std::min_element(pairs.begin(), pairs.end(), lessThan<T>);
     }
 

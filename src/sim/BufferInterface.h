@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QMap>
+#include <QPair>
 
 #include "Color.h"
 #include "Direction.h"
@@ -16,7 +17,7 @@ class BufferInterface {
 
 public:
     BufferInterface(
-        std::pair<int, int> mazeSize,
+        QPair<int, int> mazeSize,
         QVector<TriangleGraphic>* graphicCpuBuffer,
         QVector<TriangleTexture>* textureCpuBuffer);
 
@@ -25,13 +26,13 @@ public:
     void initTileGraphicText(
         const Distance& wallLength,
         const Distance& wallWidth,
-        std::pair<int, int> tileGraphicTextMaxSize,
-        const QMap<char, std::pair<double, double>>& fontImageMap,
+        QPair<int, int> tileGraphicTextMaxSize,
+        const QMap<char, QPair<double, double>>& fontImageMap,
         double borderFraction,
         TileTextAlignment tileTextAlignment);
 
     // Returns the maximum number of rows and columns of text in a tile graphic
-    std::pair<int, int> getTileGraphicTextMaxSize();
+    QPair<int, int> getTileGraphicTextMaxSize();
 
     // Fills the graphic cpu buffer and texture cpu buffer
     void insertIntoGraphicCpuBuffer(const Polygon& polygon, Color color, double alpha);
@@ -49,7 +50,7 @@ public:
 private:
 
     // The width and height of the maze
-    std::pair<int, int> m_mazeSize;
+    QPair<int, int> m_mazeSize;
 
     // CPU-side buffers
     QVector<TriangleGraphic>* m_graphicCpuBuffer;

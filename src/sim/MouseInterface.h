@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QPair>
+
 #include "InterfaceType.h"
 #include "MazeGraphic.h"
 #include "Mouse.h"
@@ -155,8 +157,8 @@ private:
     bool m_inOrigin;
 
     // Cache of tiles, for making clearAll methods faster
-    std::set<std::pair<int, int>> m_tilesWithColor;
-    std::set<std::pair<int, int>> m_tilesWithText;
+    std::set<QPair<int, int>> m_tilesWithColor;
+    std::set<QPair<int, int>> m_tilesWithText;
 
     // Helper methods for checking particular conditions and failing hard
     void ensureDiscreteInterface(const std::string& callingFunction) const;
@@ -177,9 +179,9 @@ private:
     void setTileTextImpl(int x, int y, const std::string& text);
     void clearTileTextImpl(int x, int y);
     void declareWallImpl(
-        std::pair<std::pair<int, int>, Direction> wall, bool wallExists, bool declareBothWallHalves);
+        QPair<QPair<int, int>, Direction> wall, bool wallExists, bool declareBothWallHalves);
     void undeclareWallImpl(
-        std::pair<std::pair<int, int>, Direction> wall, bool declareBothWallHalves);
+        QPair<QPair<int, int>, Direction> wall, bool declareBothWallHalves);
     bool wallFrontImpl(bool declareWallOnRead, bool declareBothWallHalves);
     bool wallLeftImpl(bool declareWallOnRead, bool declareBothWallHalves);
     bool wallRightImpl(bool declareWallOnRead, bool declareBothWallHalves);
@@ -192,10 +194,10 @@ private:
     void turnAroundToEdgeImpl(bool turnLeft);
 
     // Helper methods for wall retrieval and declaration
-    bool isWall(std::pair<std::pair<int, int>, Direction> wall, bool declareWallOnRead, bool declareBothWallHalves);
-    bool hasOpposingWall(std::pair<std::pair<int, int>, Direction> wall) const;
-    std::pair<std::pair<int, int>, Direction> getOpposingWall(
-        std::pair<std::pair<int, int>, Direction> wall) const;
+    bool isWall(QPair<QPair<int, int>, Direction> wall, bool declareWallOnRead, bool declareBothWallHalves);
+    bool hasOpposingWall(QPair<QPair<int, int>, Direction> wall) const;
+    QPair<QPair<int, int>, Direction> getOpposingWall(
+        QPair<QPair<int, int>, Direction> wall) const;
 
     // Some helper abstractions for mouse movements
     void moveForwardTo(const Cartesian& destinationTranslation, const Radians& destinationRotation);
@@ -210,8 +212,8 @@ private:
     Cartesian getCenterOfTile(int x, int y) const;
 
     // Returns the location of where the mouse should stop if it crashes
-    std::pair<Cartesian, Degrees> getCrashLocation(
-        std::pair<int, int> currentTile, Direction destinationDirection);
+    QPair<Cartesian, Degrees> getCrashLocation(
+        QPair<int, int> currentTile, Direction destinationDirection);
 
     // TODO: MACK - rename to Impl
     void doDiagonal(int count, bool startLeft, bool endLeft);

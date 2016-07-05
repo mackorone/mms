@@ -1,5 +1,6 @@
 #include "World.h"
 
+#include <QPair>
 #include <thread>
 
 #include "CPMath.h"
@@ -99,7 +100,7 @@ void World::simulate() {
 
         // Retrieve the current discretized location of the mouse, and
         // the tile at that location, for use with the next few code blocks
-        std::pair<int, int> location = m_mouse->getCurrentDiscretizedTranslation();
+        QPair<int, int> location = m_mouse->getCurrentDiscretizedTranslation();
         const Tile* tileAtLocation = m_maze->getTile(location.first, location.second);
 
         // Whether or not this is a newly traversed tile

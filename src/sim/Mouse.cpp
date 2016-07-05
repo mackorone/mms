@@ -1,6 +1,7 @@
 #include "Mouse.h"
 
 #include <QMapIterator>
+#include <QPair>
 #include <QVector>
 
 #include "units/Meters.h"
@@ -108,7 +109,7 @@ Radians Mouse::getCurrentRotation() const {
     return m_currentRotation;
 }
 
-std::pair<int, int> Mouse::getCurrentDiscretizedTranslation() const {
+QPair<int, int> Mouse::getCurrentDiscretizedTranslation() const {
     static Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
     Cartesian currentTranslation = getCurrentTranslation();
     int x = static_cast<int>(
@@ -121,7 +122,7 @@ std::pair<int, int> Mouse::getCurrentDiscretizedTranslation() const {
             currentTranslation.getY() / tileLength
         )
     );
-    return std::make_pair(x, y);
+    return {x, y};
 }
 
 Direction Mouse::getCurrentDiscretizedRotation() const {
@@ -194,7 +195,7 @@ QVector<Polygon> Mouse::getCurrentSensorViewPolygons(
         const Coordinate& currentTranslation, const Angle& currentRotation) const {
     QVector<Polygon> polygons;
     for (const Sensor& sensor : m_sensors) {
-        std::pair<Cartesian, Radians> translationAndRotation =
+        QPair<Cartesian, Radians> translationAndRotation =
             getCurrentSensorPositionAndDirection(
                 sensor,
                 currentTranslation,
@@ -256,7 +257,7 @@ void Mouse::update(const Duration& elapsed) {
     while (sensorIterator.hasNext()) {
         auto pair = sensorIterator.next();
 
-        std::pair<Cartesian, Radians> translationAndRotation =
+        QPair<Cartesian, Radians> translationAndRotation =
             getCurrentSensorPositionAndDirection(
                 pair.value(),
                 m_currentTranslation,
@@ -297,12 +298,12 @@ void Mouse::setWheelSpeedsForMoveForward(double fractionOfMaxSpeed) {
 }
 
 void Mouse::setWheelSpeedsForCurveLeft(double fractionOfMaxSpeed, const Meters& radius) {
-    std::pair<double, double> curveTurnFactors = m_curveTurnFactorCalculator.getCurveTurnFactors(radius);
+    QPair<double, double> curveTurnFactors = m_curveTurnFactorCalculator.getCurveTurnFactors(radius);
     setWheelSpeedsForMovement(fractionOfMaxSpeed, curveTurnFactors.first, curveTurnFactors.second);
 }
 
 void Mouse::setWheelSpeedsForCurveRight(double fractionOfMaxSpeed, const Meters& radius) {
-    std::pair<double, double> curveTurnFactors = m_curveTurnFactorCalculator.getCurveTurnFactors(radius);
+    QPair<double, double> curveTurnFactors = m_curveTurnFactorCalculator.getCurveTurnFactors(radius);
     setWheelSpeedsForMovement(fractionOfMaxSpeed, curveTurnFactors.first, -1 * curveTurnFactors.second);
 }
 
@@ -367,13 +368,13 @@ Polygon Mouse::getCurrentPolygon(const Polygon& initialPolygon,
         .rotateAroundPoint(currentRotation - getInitialRotation(), currentTranslation);
 }
 
-std::pair<Cartesian, Radians> Mouse::getCurrentSensorPositionAndDirection(
+QPair<Cartesian, Radians> Mouse::getCurrentSensorPositionAndDirection(
         const Sensor& sensor,
         const Cartesian& currentTranslation,
         const Radians& currentRotation) const {
     Cartesian translationDelta = currentTranslation - getInitialTranslation();
     Radians rotationDelta = currentRotation - getInitialRotation();
-    return std::make_pair(
+    return {
         GeometryUtilities::rotateVertexAroundPoint(
             GeometryUtilities::translateVertex(
                 sensor.getInitialPosition(),
@@ -381,7 +382,7 @@ std::pair<Cartesian, Radians> Mouse::getCurrentSensorPositionAndDirection(
             rotationDelta,
             currentTranslation),
         sensor.getInitialDirection() + rotationDelta
-    );
+    };
 }
 
 void Mouse::setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardFactor, double turnFactor) {
@@ -411,7 +412,7 @@ void Mouse::setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardF
     QMap<std::string, RadiansPerSecond> wheelSpeeds;
     for (const auto& pair : ContainerUtilities::items(m_wheels)) {
         SIM_ASSERT_TR(m_wheelSpeedAdjustmentFactors.contains(pair.first));
-        std::pair<double, double> adjustmentFactors = m_wheelSpeedAdjustmentFactors.value(pair.first);
+        QPair<double, double> adjustmentFactors = m_wheelSpeedAdjustmentFactors.value(pair.first);
         wheelSpeeds.insert(
             pair.first.toStdString(),
             (
@@ -448,7 +449,7 @@ QMap<QString, WheelEffect> Mouse::getWheelEffects(
     return wheelEffects;
 }
 
-QMap<QString, std::pair<double, double>> Mouse::getWheelSpeedAdjustmentFactors(
+QMap<QString, QPair<double, double>> Mouse::getWheelSpeedAdjustmentFactors(
         const QMap<QString, Wheel>& wheels,
         const QMap<QString, WheelEffect>& wheelEffects) const {
 
@@ -462,16 +463,16 @@ QMap<QString, std::pair<double, double>> Mouse::getWheelSpeedAdjustmentFactors(
     // velocity magnitude into account, but I've done so here.
 
     // First, construct the rates of change pairs
-    QMap<std::string, std::pair<MetersPerSecond, RadiansPerSecond>> ratesOfChangePairs;
+    QMap<std::string, QPair<MetersPerSecond, RadiansPerSecond>> ratesOfChangePairs;
     for (const auto& pair : ContainerUtilities::items(wheelEffects)) {
         std::tuple<MetersPerSecond, MetersPerSecond, RadiansPerSecond> effects =
             pair.second.getEffects(m_wheels.value(pair.first).getMaxAngularVelocityMagnitude());
         ratesOfChangePairs.insert(
             pair.first.toStdString(),
-            std::make_pair(
+            {
                 std::get<0>(effects),
                 std::get<2>(effects)
-            )
+            }
         );
     }
 
@@ -490,7 +491,7 @@ QMap<QString, std::pair<double, double>> Mouse::getWheelSpeedAdjustmentFactors(
     }
 
     // Then divide by the largest magnitude, ensuring values in [-1.0, 1.0]
-    QMap<QString, std::pair<double, double>> adjustmentFactors;
+    QMap<QString, QPair<double, double>> adjustmentFactors;
     for (const auto& pair : ContainerUtilities::items(ratesOfChangePairs)) {
         double normalizedForwardContribution = pair.second.first / maxForwardRateOfChangeMagnitude;
         double normalizedRadialContribution = pair.second.second / maxRadialRateOfChangeMagnitude;
@@ -500,9 +501,11 @@ QMap<QString, std::pair<double, double>> Mouse::getWheelSpeedAdjustmentFactors(
         SIM_ASSERT_LE(normalizedRadialContribution, 1.0);
         adjustmentFactors.insert(
             pair.first.c_str(),
-            std::make_pair(
+            {
                 normalizedForwardContribution,
-                normalizedRadialContribution));
+                normalizedRadialContribution
+            }
+        );
     }
     
     return adjustmentFactors;

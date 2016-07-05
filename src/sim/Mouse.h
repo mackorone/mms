@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QMap>
+#include <QPair>
 #include <QString>
 
 #include <mutex>
@@ -39,7 +40,7 @@ public:
     Radians getCurrentRotation() const;
 
     // Gets the current discretized translation and rotation of the mouse
-    std::pair<int, int> getCurrentDiscretizedTranslation() const;
+    QPair<int, int> getCurrentDiscretizedTranslation() const;
     Direction getCurrentDiscretizedRotation() const;
 
     // Sets the current translation and rotation of the mouse
@@ -141,7 +142,7 @@ private:
     // moving sideways, and/or turn without moving forward or sideways.
     // Also note that the fractions are in [-1.0, 1.0], so that the max wheel
     // speed is never exceeded.
-    QMap<QString, std::pair<double, double>> m_wheelSpeedAdjustmentFactors;
+    QMap<QString, QPair<double, double>> m_wheelSpeedAdjustmentFactors;
 
     // Used to calculate the linear combination of the forward component and turn
     // component, based on curve turn radius, that cause the mouse to perform a
@@ -162,7 +163,7 @@ private:
         const Cartesian& currentTranslation, const Radians& currentRotation) const;
 
     // Retrieve the current position/rotation of sensor based on position/rotation of mouse
-    std::pair<Cartesian, Radians> getCurrentSensorPositionAndDirection(
+    QPair<Cartesian, Radians> getCurrentSensorPositionAndDirection(
         const Sensor& sensor,
         const Cartesian& currentTranslation,
         const Radians& currentRotation) const;
@@ -177,7 +178,7 @@ private:
         const QMap<QString, Wheel>& wheels) const;
 
     // Helper method for getting wheel speed adjustment factors based on wheel effects
-    QMap<QString, std::pair<double, double>> getWheelSpeedAdjustmentFactors(
+    QMap<QString, QPair<double, double>> getWheelSpeedAdjustmentFactors(
         const QMap<QString, Wheel>& wheels,
         const QMap<QString, WheelEffect>& wheelEffects) const;
 

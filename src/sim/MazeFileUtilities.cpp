@@ -351,14 +351,14 @@ BasicMaze MazeFileUtilities::deserializeNumType(const QByteArray& bytes) {
         // Fill the BasicTile object with the values
         BasicTile tile;
         for (Direction direction : DIRECTIONS) {
-            tile.insert(std::make_pair(direction,
+            tile.insert({direction,
                 (1 == std::stoi(tokens.at(2 + SimUtilities::getDirectionIndex(direction))))
                 // We can't use the sim utilities string to into becuase we have to throw an
                 // exception if we fail. The sim utilities throw an assert.
                 //
                 // We might want to rethink throwing the assert. Why not use the std c++ way
                 // of dealing with the error
-            ));
+            });
         }
 
         // If the tile belongs to a new column, append the current column and then empty it

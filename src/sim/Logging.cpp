@@ -1,5 +1,7 @@
 #include "Logging.h"
 
+#include <QPair>
+
 #include "Assert.h"
 #include "Directory.h"
 #include "SimUtilities.h"
@@ -14,7 +16,7 @@ std::string Logging::m_runId = "";
 std::string Logging::m_simLoggerName = "sim";
 std::string Logging::m_mazeLoggerName = "maze";
 std::string Logging::m_mouseLoggerName = "mouse";
-QMap<std::string, std::pair<std::string, int>> Logging::m_info;
+QMap<std::string, QPair<std::string, int>> Logging::m_info;
 
 el::Logger* L() {
     return Logging::getSimLogger();
@@ -47,7 +49,7 @@ void Logging::initialize(const std::string& runId) {
         
         // ... create the logger info ...
         std::string loggerPath = Directory::getRunDirectory() + m_runId + "/logs/" + loggerName + "/default.txt";
-        m_info.insert(loggerName, std::make_pair(loggerPath, 1));
+        m_info.insert(loggerName, {loggerPath, 1});
 
         // ... and then create the logger ...
         el::Logger* logger = el::Loggers::getLogger(loggerName);
@@ -95,7 +97,7 @@ std::string Logging::getNextFileName(const char* filename) {
         int numLogFiles = pair.second.second;
         if (std::string(filename) == loggerPath) {
             path = "/logs/" + loggerName + "/" + std::to_string(numLogFiles) + ".txt";
-            m_info[loggerName.c_str()] = std::make_pair(loggerPath, numLogFiles + 1);
+            m_info[loggerName.c_str()] = {loggerPath, numLogFiles + 1};
         }
     }
     SIM_ASSERT_NE(path, "");

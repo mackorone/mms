@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QPair>
 #include <set>
 
 #include "InterfaceType.h"
@@ -32,7 +33,7 @@ private:
     Seconds m_bestTimeToCenter;
     Seconds m_timeOfOriginDeparture;
 
-    std::set<std::pair<int, int>> m_traversedTileLocations;
+    std::set<QPair<int, int>> m_traversedTileLocations;
     int m_closestDistanceToCenter;
 
     void checkCollision();

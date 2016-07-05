@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QPair>
+
 #include "LayoutType.h"
 
 namespace sim {
@@ -12,13 +14,13 @@ public:
     Layout() = delete;
 
     // Return the positions of the full map and zoomed map, in pixels
-    static std::pair<int, int> getFullMapPosition(
+    static QPair<int, int> getFullMapPosition(
         int windowWidth,
         int windowHeight,
         int headerHeight,
         int windowBorderWidth,
         LayoutType layoutType);
-    static std::pair<int, int> getZoomedMapPosition(
+    static QPair<int, int> getZoomedMapPosition(
         int windowWidth,
         int windowHeight,
         int headerHeight,
@@ -26,13 +28,13 @@ public:
         LayoutType layoutType);
 
     // Return the width and height of the full map and zoomed map, in pixels
-    static std::pair<int, int> getFullMapSize(
+    static QPair<int, int> getFullMapSize(
         int windowWidth,
         int windowHeight,
         int headerHeight,
         int windowBorderWidth,
         LayoutType layoutType);
-    static std::pair<int, int> getZoomedMapSize(
+    static QPair<int, int> getZoomedMapSize(
         int windowWidth,
         int windowHeight,
         int headerHeight,

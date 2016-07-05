@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QMap>
+#include <QPair>
 #include <QVector>
 
 #include <glut/glut.h>
@@ -62,8 +63,8 @@ private:
     double m_screenPixelsPerMeter;
 
     // A map from char to x and y location in the font image
-    QMap<char, std::pair<double, double>> m_fontImageMap;
-    QMap<char, std::pair<double, double>> getFontImageMap();
+    QMap<char, QPair<double, double>> m_fontImageMap;
+    QMap<char, QPair<double, double>> getFontImageMap();
 
     // Window header object
     Header* m_header;

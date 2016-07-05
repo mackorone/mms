@@ -1,5 +1,7 @@
 #include "MouseInterface.h"
 
+#include <QPair>
+
 #include "units/Meters.h"
 #include "units/MetersPerSecond.h"
 #include "units/Milliseconds.h"
@@ -103,7 +105,7 @@ void MouseInterface::clearTileColor(int x, int y) {
 }
 
 void MouseInterface::clearAllTileColor() {
-    for (std::pair<int, int> position : m_tilesWithColor) {
+    for (QPair<int, int> position : m_tilesWithColor) {
         clearTileColorImpl(position.first, position.second);
     }
 }
@@ -133,7 +135,7 @@ void MouseInterface::clearTileText(int x, int y) {
 }
 
 void MouseInterface::clearAllTileText() {
-    for (std::pair<int, int> position : m_tilesWithText) {
+    for (QPair<int, int> position : m_tilesWithText) {
         clearTileTextImpl(position.first, position.second);
     }
 }
@@ -153,10 +155,10 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
     }
 
     declareWallImpl(
-        std::make_pair(
-            std::make_pair(x, y),
+        {
+            {x, y},
             CHAR_TO_DIRECTION.value(direction)
-        ),
+        },
         wallExists,
         m_mouseAlgorithm->declareBothWallHalves()
     );
@@ -177,10 +179,10 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
     }
 
     undeclareWallImpl(
-        std::make_pair(
-            std::make_pair(x, y),
+        {
+            {x, y},
             CHAR_TO_DIRECTION.value(direction)
-        ),
+        },
         m_mouseAlgorithm->declareBothWallHalves()
     );
 }
@@ -679,12 +681,12 @@ void MouseInterface::ensureOutsideOrigin(const std::string& callingFunction) con
 
 void MouseInterface::setTileColorImpl(int x, int y, char color) {
     m_mazeGraphic->setTileColor(x, y, CHAR_TO_COLOR.value(color));
-    m_tilesWithColor.insert(std::make_pair(x, y));
+    m_tilesWithColor.insert({x, y});
 }
 
 void MouseInterface::clearTileColorImpl(int x, int y) {
     m_mazeGraphic->setTileColor(x, y, STRING_TO_COLOR.value(P()->tileBaseColor().c_str()));
-    m_tilesWithColor.erase(std::make_pair(x, y));
+    m_tilesWithColor.erase({x, y});
 }
 
 void MouseInterface::setTileTextImpl(int x, int y, const std::string& text) {
@@ -713,16 +715,16 @@ void MouseInterface::setTileTextImpl(int x, int y, const std::string& text) {
         row += 1;
     }
     m_mazeGraphic->setTileText(x, y, rowsOfText);
-    m_tilesWithText.insert(std::make_pair(x, y));
+    m_tilesWithText.insert({x, y});
 }
 
 void MouseInterface::clearTileTextImpl(int x, int y) {
     m_mazeGraphic->setTileText(x, y, {});
-    m_tilesWithText.erase(std::make_pair(x, y));
+    m_tilesWithText.erase({x, y});
 }
 
 void MouseInterface::declareWallImpl(
-        std::pair<std::pair<int, int>, Direction> wall, bool wallExists, bool declareBothWallHalves) {
+        QPair<QPair<int, int>, Direction> wall, bool wallExists, bool declareBothWallHalves) {
     m_mazeGraphic->declareWall(wall.first.first, wall.first.second, wall.second, wallExists); 
     if (declareBothWallHalves && hasOpposingWall(wall)) {
         declareWallImpl(getOpposingWall(wall), wallExists, false);
@@ -730,7 +732,7 @@ void MouseInterface::declareWallImpl(
 }
 
 void MouseInterface::undeclareWallImpl(
-        std::pair<std::pair<int, int>, Direction> wall, bool declareBothWallHalves) {
+        QPair<QPair<int, int>, Direction> wall, bool declareBothWallHalves) {
     m_mazeGraphic->undeclareWall(wall.first.first, wall.first.second, wall.second); 
     if (declareBothWallHalves && hasOpposingWall(wall)) {
         undeclareWallImpl(getOpposingWall(wall), false);
@@ -739,10 +741,10 @@ void MouseInterface::undeclareWallImpl(
 
 bool MouseInterface::wallFrontImpl(bool declareWallOnRead, bool declareBothWallHalves) {
     return isWall(
-        std::make_pair(
+        {
             m_mouse->getCurrentDiscretizedTranslation(),
             m_mouse->getCurrentDiscretizedRotation()
-        ),
+        },
         declareWallOnRead,
         declareBothWallHalves
     );
@@ -750,10 +752,10 @@ bool MouseInterface::wallFrontImpl(bool declareWallOnRead, bool declareBothWallH
 
 bool MouseInterface::wallLeftImpl(bool declareWallOnRead, bool declareBothWallHalves) {
     return isWall(
-        std::make_pair(
+        {
             m_mouse->getCurrentDiscretizedTranslation(),
             DIRECTION_ROTATE_LEFT.value(m_mouse->getCurrentDiscretizedRotation())
-        ),
+        },
         declareWallOnRead,
         declareBothWallHalves
     );
@@ -761,10 +763,10 @@ bool MouseInterface::wallLeftImpl(bool declareWallOnRead, bool declareBothWallHa
 
 bool MouseInterface::wallRightImpl(bool declareWallOnRead, bool declareBothWallHalves) {
     return isWall(
-        std::make_pair(
+        {
             m_mouse->getCurrentDiscretizedTranslation(),
             DIRECTION_ROTATE_RIGHT.value(m_mouse->getCurrentDiscretizedRotation())
-        ),
+        },
         declareWallOnRead,
         declareBothWallHalves
     );
@@ -780,7 +782,7 @@ void MouseInterface::moveForwardImpl(bool originMoveForwardToEdge) {
     bool crash = wallFrontImpl(false, false);
 
     // Get the location of the crash, if it will happen
-    std::pair<Cartesian, Degrees> crashLocation = getCrashLocation(
+    QPair<Cartesian, Degrees> crashLocation = getCrashLocation(
         m_mouse->getCurrentDiscretizedTranslation(),
         m_mouse->getCurrentDiscretizedRotation()
     );
@@ -857,7 +859,7 @@ void MouseInterface::turnToEdgeImpl(bool turnLeft) {
     );
 
     // Get the location of the crash, if it will happen
-    std::pair<Cartesian, Degrees> crashLocation = getCrashLocation(
+    QPair<Cartesian, Degrees> crashLocation = getCrashLocation(
         m_mouse->getCurrentDiscretizedTranslation(),
         (
             turnLeft ?
@@ -883,7 +885,7 @@ void MouseInterface::turnToEdgeImpl(bool turnLeft) {
     }
 }
 
-bool MouseInterface::isWall(std::pair<std::pair<int, int>, Direction> wall, bool declareWallOnRead, bool declareBothWallHalves) {
+bool MouseInterface::isWall(QPair<QPair<int, int>, Direction> wall, bool declareWallOnRead, bool declareBothWallHalves) {
 
     int x = wall.first.first;
     int y = wall.first.second;
@@ -900,7 +902,7 @@ bool MouseInterface::isWall(std::pair<std::pair<int, int>, Direction> wall, bool
     return wallExists;
 }
 
-bool MouseInterface::hasOpposingWall(std::pair<std::pair<int, int>, Direction> wall) const {
+bool MouseInterface::hasOpposingWall(QPair<QPair<int, int>, Direction> wall) const {
     int x = wall.first.first;
     int y = wall.first.second;
     Direction direction = wall.second;
@@ -916,21 +918,21 @@ bool MouseInterface::hasOpposingWall(std::pair<std::pair<int, int>, Direction> w
     }
 }
 
-std::pair<std::pair<int, int>, Direction> MouseInterface::getOpposingWall(
-        std::pair<std::pair<int, int>, Direction> wall) const {
+QPair<QPair<int, int>, Direction> MouseInterface::getOpposingWall(
+        QPair<QPair<int, int>, Direction> wall) const {
     SIM_ASSERT_TR(hasOpposingWall(wall));
     int x = wall.first.first;
     int y = wall.first.second;
     Direction direction = wall.second;
     switch (direction) {
         case Direction::NORTH:
-            return std::make_pair(std::make_pair(x, y + 1), Direction::SOUTH);
+            return {{x, y + 1}, Direction::SOUTH};
         case Direction::EAST:
-            return std::make_pair(std::make_pair(x + 1, y), Direction::WEST);
+            return {{x + 1, y}, Direction::WEST};
         case Direction::SOUTH:
-            return std::make_pair(std::make_pair(x, y - 1), Direction::NORTH);
+            return {{x, y - 1}, Direction::NORTH};
         case Direction::WEST:
-            return std::make_pair(std::make_pair(x - 1, y), Direction::EAST);
+            return {{x - 1, y}, Direction::EAST};
     }
 }
 
@@ -1027,8 +1029,8 @@ Cartesian MouseInterface::getCenterOfTile(int x, int y) const {
     return centerOfTile;
 }
 
-std::pair<Cartesian, Degrees> MouseInterface::getCrashLocation(
-        std::pair<int, int> currentTile, Direction destinationDirection) {
+QPair<Cartesian, Degrees> MouseInterface::getCrashLocation(
+        QPair<int, int> currentTile, Direction destinationDirection) {
 
     static Meters halfWallLength = Meters(P()->wallLength() / 2.0);
 
@@ -1055,10 +1057,10 @@ std::pair<Cartesian, Degrees> MouseInterface::getCrashLocation(
     // The crash location is on the edge of the tile inner polygon
     Cartesian centerOfTile = getCenterOfTile(currentTile.first, currentTile.second);
     Degrees destinationRotation = DIRECTION_TO_ANGLE.value(destinationDirection);
-    return std::make_pair(
+    return {
         centerOfTile + Polar(halfWallLength, destinationRotation),
         destinationRotation
-    );
+    };
 }
 
 void MouseInterface::doDiagonal(int count, bool startLeft, bool endLeft) {

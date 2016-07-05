@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QMap>
+#include <QPair>
 
 #include "BufferInterface.h"
 #include "Color.h"
@@ -39,7 +40,7 @@ private:
     QVector<std::string> m_rowsOfText;
 
     void updateWall(Direction direction) const;
-    std::pair<Color, float> deduceWallColorAndAlpha(Direction direction) const;
+    QPair<Color, float> deduceWallColorAndAlpha(Direction direction) const;
 };
 
 } // namespace sim

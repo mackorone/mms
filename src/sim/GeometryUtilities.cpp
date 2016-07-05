@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <QPair>
 
 #include "Assert.h"
 #include "CPMath.h"
@@ -110,10 +111,10 @@ Cartesian GeometryUtilities::castRay(
     Meters dy = end.getY() - start.getY();
 
     // Determine the direction of the ray
-    std::pair<int, int> direction = std::make_pair(
+    QPair<int, int> direction = {
         (0 < dx.getMeters() ? 1 : -1),
         (0 < dy.getMeters() ? 1 : -1)
-    );
+    };
 
     //  Logical Tiles
     //  =============

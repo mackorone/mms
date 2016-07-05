@@ -1,5 +1,7 @@
 #include "TileGraphic.h"
 
+#include <QPair>
+
 #include "Color.h"
 #include "Param.h"
 #include "State.h"
@@ -63,7 +65,7 @@ void TileGraphic::draw() const {
 
     // Draw each of the walls of the tile
     for (Direction direction : DIRECTIONS) {
-        std::pair<Color, float> colorAndAlpha = deduceWallColorAndAlpha(direction);
+        QPair<Color, float> colorAndAlpha = deduceWallColorAndAlpha(direction);
         m_bufferInterface->insertIntoGraphicCpuBuffer(
             m_tile->getWallPolygon(direction),
             colorAndAlpha.first,
@@ -86,7 +88,7 @@ void TileGraphic::draw() const {
 
 
     // Insert all of the triangle texture objects into the buffer ...
-    std::pair<int, int> maxRowsAndCols = m_bufferInterface->getTileGraphicTextMaxSize();
+    QPair<int, int> maxRowsAndCols = m_bufferInterface->getTileGraphicTextMaxSize();
     for (int row = 0; row < maxRowsAndCols.first; row += 1) {
         for (int col = 0; col < maxRowsAndCols.second; col += 1) {
             m_bufferInterface->insertIntoTextureCpuBuffer();
@@ -119,7 +121,7 @@ void TileGraphic::updateText() const {
         rows.insert(rows.begin(), (0 <= m_tile->getDistance() ? std::to_string(m_tile->getDistance()) : "inf"));
     }
 
-    std::pair<int, int> maxRowsAndCols = m_bufferInterface->getTileGraphicTextMaxSize();
+    QPair<int, int> maxRowsAndCols = m_bufferInterface->getTileGraphicTextMaxSize();
     for (int row = 0; row < maxRowsAndCols.first; row += 1) {
         for (int col = 0; col < maxRowsAndCols.second; col += 1) {
             m_bufferInterface->updateTileGraphicText(
@@ -135,7 +137,7 @@ void TileGraphic::updateText() const {
 }
 
 void TileGraphic::updateWall(Direction direction) const {
-    std::pair<Color, float> colorAndAlpha = deduceWallColorAndAlpha(direction);
+    QPair<Color, float> colorAndAlpha = deduceWallColorAndAlpha(direction);
     m_bufferInterface->updateTileGraphicWallColor(
         m_tile->getX(),
         m_tile->getY(),
@@ -145,7 +147,7 @@ void TileGraphic::updateWall(Direction direction) const {
     );
 }
 
-std::pair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction) const {
+QPair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction) const {
 
     // Declare the wall color and alpha, assign defaults
     Color wallColor = STRING_TO_COLOR.value(P()->tileWallColor().c_str());
@@ -200,7 +202,7 @@ std::pair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction
         wallAlpha = 0.0;
     }
 
-    return std::make_pair(wallColor, wallAlpha);
+    return {wallColor, wallAlpha};
 }
 
 } // namespace sim
