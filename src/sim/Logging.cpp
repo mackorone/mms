@@ -12,11 +12,11 @@ INITIALIZE_EASYLOGGINGPP
 namespace sim {
 
 // Create and initialize the static variables
-std::string Logging::m_runId = "";
-std::string Logging::m_simLoggerName = "sim";
-std::string Logging::m_mazeLoggerName = "maze";
-std::string Logging::m_mouseLoggerName = "mouse";
-QMap<std::string, QPair<std::string, int>> Logging::m_info;
+QString Logging::m_runId = "";
+QString Logging::m_simLoggerName = "sim";
+QString Logging::m_mazeLoggerName = "maze";
+QString Logging::m_mouseLoggerName = "mouse";
+QMap<QString, QPair<QString, int>> Logging::m_info;
 
 el::Logger* L() {
     return Logging::getSimLogger();
@@ -34,7 +34,7 @@ el::Logger* Logging::getMouseLogger() {
     return getLogger(m_mouseLoggerName);
 }
 
-void Logging::initialize(const std::string& runId) {
+void Logging::initialize(const QString& runId) {
 
     // Ensure we only initialize the loggers once
     static bool initialized = false;
@@ -45,21 +45,21 @@ void Logging::initialize(const std::string& runId) {
     m_runId = runId;
 
     // For each of the logger names ...
-    for (std::string loggerName : {m_simLoggerName, m_mazeLoggerName, m_mouseLoggerName}) {
+    for (QString loggerName : {m_simLoggerName, m_mazeLoggerName, m_mouseLoggerName}) {
         
         // ... create the logger info ...
-        std::string loggerPath = Directory::getRunDirectory() + m_runId + "/logs/" + loggerName + "/default.txt";
+        QString loggerPath = Directory::getRunDirectory() + m_runId + "/logs/" + loggerName + "/default.txt";
         m_info.insert(loggerName, {loggerPath, 1});
 
         // ... and then create the logger ...
-        el::Logger* logger = el::Loggers::getLogger(loggerName);
+        el::Logger* logger = el::Loggers::getLogger(loggerName.toStdString());
 
         // ... and then configure it
         el::Configurations loggerConfig;
-        loggerConfig.setGlobally(el::ConfigurationType::Filename, loggerPath);
+        loggerConfig.setGlobally(el::ConfigurationType::Filename, loggerPath.toStdString());
         loggerConfig.setGlobally(el::ConfigurationType::ToStandardOutput, "true");
         loggerConfig.setGlobally(el::ConfigurationType::MaxLogFileSize,
-            std::to_string(10 * 1024 * 1024)); // 10 MiB, ~10,000 lines
+            QString::number(10 * 1024 * 1024).toStdString()); // 10 MiB, ~10,000 lines
         loggerConfig.setGlobally(el::ConfigurationType::MillisecondsWidth, "3");
         loggerConfig.setGlobally(el::ConfigurationType::Format,
             "[ %real_time | %sim_time | %level | %logger ] - %msg");
@@ -73,39 +73,41 @@ void Logging::initialize(const std::string& runId) {
 
     el::Helpers::installCustomFormatSpecifier(el::CustomFormatSpecifier("%real_time", [](){
         double seconds = T()->elapsedRealTime().getSeconds();
-        std::string secondsString = SimUtilities::formatSeconds(seconds);
-        return secondsString.substr(0, secondsString.find(".") + 4).c_str(); // Trim to 3 decimal places
+        QString secondsString = SimUtilities::formatSeconds(seconds);
+        secondsString.truncate(secondsString.indexOf(".") + 4); // Trim to 3 decimal places
+        return secondsString.toStdString().c_str();
     }));
 
     el::Helpers::installCustomFormatSpecifier(el::CustomFormatSpecifier("%sim_time", [](){
         double seconds = T()->elapsedSimTime().getSeconds();
-        std::string secondsString = SimUtilities::formatSeconds(seconds);
-        return secondsString.substr(0, secondsString.find(".") + 4).c_str(); // Trim to 3 decimal places
+        QString secondsString = SimUtilities::formatSeconds(seconds);
+        secondsString.truncate(secondsString.indexOf(".") + 4); // Trim to 3 decimal places
+        return secondsString.toStdString().c_str();
     }));
 }
 
-el::Logger* Logging::getLogger(const std::string& loggerName) {
-    SIM_ASSERT_TR(m_info.contains(loggerName.c_str()));
-    return el::Loggers::getLogger(loggerName);
+el::Logger* Logging::getLogger(const QString& loggerName) {
+    SIM_ASSERT_TR(m_info.contains(loggerName));
+    return el::Loggers::getLogger(loggerName.toStdString());
 }
 
-std::string Logging::getNextFileName(const char* filename) {
-    std::string path = "";
+QString Logging::getNextFileName(const char* filename) {
+    QString path = "";
     for (const auto& pair : ContainerUtilities::items(m_info)) {
-        std::string loggerName = pair.first;
-        std::string loggerPath = pair.second.first;
+        QString loggerName = pair.first;
+        QString loggerPath = pair.second.first;
         int numLogFiles = pair.second.second;
-        if (std::string(filename) == loggerPath) {
-            path = "/logs/" + loggerName + "/" + std::to_string(numLogFiles) + ".txt";
-            m_info[loggerName.c_str()] = {loggerPath, numLogFiles + 1};
+        if (QString(filename) == loggerPath) {
+            path = "/logs/" + loggerName + "/" + QString::number(numLogFiles) + ".txt";
+            m_info[loggerName] = {loggerPath, numLogFiles + 1};
         }
     }
-    SIM_ASSERT_NE(path, "");
+    SIM_ASSERT_NE(path.toStdString().c_str(), "");
     return Directory::getRunDirectory() + m_runId + path;
 }
 
 void Logging::rolloutHandler(const char* filename, std::size_t size) {
-    int value = std::rename(filename, getNextFileName(filename).c_str());
+    int value = std::rename(filename, getNextFileName(filename).toStdString().c_str());
     SIM_ASSERT_EQ(value, 0);
 }
 

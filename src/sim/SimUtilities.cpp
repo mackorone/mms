@@ -9,7 +9,7 @@
 #include <iostream>
 #include <iterator>
 #include <sstream>
-#include <string>
+#include <QString>
 #include <sys/stat.h>
 #include <thread>
 #include <random>
@@ -74,7 +74,7 @@ double SimUtilities::getHighResTimestamp() {
 #endif
 }
 
-std::string SimUtilities::timestampToDatetimeString(const Duration& timestamp) {
+QString SimUtilities::timestampToDatetimeString(const Duration& timestamp) {
     time_t now = timestamp.getSeconds();
     struct tm tstruct = {0};
     tstruct = *gmtime(&now);
@@ -83,31 +83,31 @@ std::string SimUtilities::timestampToDatetimeString(const Duration& timestamp) {
     return buf;
 }
 
-std::string SimUtilities::formatSeconds(double seconds) {
+QString SimUtilities::formatSeconds(double seconds) {
     int minutes = 0;
     while (seconds >= 60) {
         minutes += 1;
         seconds -= 60;
     }
-    std::string secondsString = std::to_string(seconds);
-    if (secondsString.find(".") < 2) {
-        secondsString.insert(0, 1, '0');
+    QString secondsString = QString::number(seconds);
+    if (secondsString.indexOf(".") < 2) {
+        secondsString.insert(0, "0");
     }
-    std::string minutesString = std::to_string(minutes);
+    QString minutesString = QString::number(minutes);
     if (minutesString.size() < 2) {
-        minutesString.insert(0, 1, '0');
+        minutesString.insert(0, "0");
     }
     // We limit this to millisecond resolution
-    return minutesString + ":" + secondsString.substr(0, 6);
+    return minutesString + ":" + secondsString.left(6);
 }
 
-bool SimUtilities::isBool(const std::string& str) {
+bool SimUtilities::isBool(const QString& str) {
     return 0 == str.compare("true") || 0 == str.compare("false");
 }
 
-bool SimUtilities::isInt(const std::string& str) {
+bool SimUtilities::isInt(const QString& str) {
     try {
-        std::stoi(str);
+        std::stoi(str.toStdString());
     }
     catch (...) {
         return false;
@@ -115,9 +115,9 @@ bool SimUtilities::isInt(const std::string& str) {
     return true;
 }
 
-bool SimUtilities::isDouble(const std::string& str) {
+bool SimUtilities::isDouble(const QString& str) {
     try {
-        std::stod(str);
+        std::stod(str.toStdString());
     }
     catch (...) {
         return false;
@@ -125,23 +125,23 @@ bool SimUtilities::isDouble(const std::string& str) {
     return true;
 }
 
-bool SimUtilities::strToBool(const std::string& str) {
+bool SimUtilities::strToBool(const QString& str) {
     SIM_ASSERT_TR(isBool(str));
     return 0 == str.compare("true");
 }
 
-int SimUtilities::strToInt(const std::string& str) {
+int SimUtilities::strToInt(const QString& str) {
     SIM_ASSERT_TR(isInt(str));
-    return std::stoi(str.c_str());
+    return std::stoi(str.toStdString());
 }
 
-double SimUtilities::strToDouble(const std::string& str) {
+double SimUtilities::strToDouble(const QString& str) {
     SIM_ASSERT_TR(isDouble(str));
-    return std::stod(str);
+    return std::stod(str.toStdString());
 }
 
-QVector<std::string> SimUtilities::tokenize(
-        const std::string& str,
+QVector<QString> SimUtilities::tokenize(
+        const QString& str,
         char delimiter,
         bool ignoreEmpties,
         bool respectQuotes) {
@@ -149,8 +149,8 @@ QVector<std::string> SimUtilities::tokenize(
     // TODO: upforgrabs
     // Replace this with some QT function
 
-    QVector<std::string> tokens;
-    std::string word = "";
+    QVector<QString> tokens;
+    QString word = "";
 
     for (int i = 0; i < str.size(); i += 1) {
         if (respectQuotes && str.at(i) == '\"') {
@@ -160,7 +160,7 @@ QVector<std::string> SimUtilities::tokenize(
             } while (i < str.size() && str.at(i) != '\"');
         }
         if (str.at(i) == delimiter) {
-            if (!word.empty() || (0 < i && !ignoreEmpties)) {
+            if (!word.isEmpty() || (0 < i && !ignoreEmpties)) {
                 tokens.push_back(word);
                 word = "";
             }
@@ -169,7 +169,7 @@ QVector<std::string> SimUtilities::tokenize(
             word += str.at(i);
         }
     }
-    if (!word.empty()) {
+    if (!word.isEmpty()) {
         tokens.push_back(word);
         word = "";
     }
@@ -177,17 +177,12 @@ QVector<std::string> SimUtilities::tokenize(
     return tokens;
 }
 
-std::string SimUtilities::trim(const std::string& str) {
-    std::size_t first = str.find_first_not_of(' ');
-    if (first == std::string::npos) {
-        return "";
-    }
-    std::size_t last = str.find_last_not_of(' ');
-    return str.substr(first, last - first + 1);
+QString SimUtilities::trim(const QString& str) {
+    return str.trimmed();
 }
 
-bool SimUtilities::isFile(const std::string& path) {
-    std::ifstream infile(path);
+bool SimUtilities::isFile(const QString& path) {
+    std::ifstream infile(path.toStdString());
     return infile.good();
 }
 
@@ -195,20 +190,20 @@ int SimUtilities::getDirectionIndex(Direction direction) {
     return std::find(DIRECTIONS.begin(), DIRECTIONS.end(), direction) - DIRECTIONS.begin();
 }
 
-QVector<std::string> SimUtilities::getDirectoryContents(const std::string& path) {
+QVector<QString> SimUtilities::getDirectoryContents(const QString& path) {
 
-    QVector<std::string> contents;
+    QVector<QString> contents;
 
 #ifdef _WIN32
     // TODO: upforgrabs
     // Implement a windows version of getDirectoryContents
 #else
     // Taken from http://stackoverflow.com/a/612176/3176152
-    DIR *dir = opendir(path.c_str());
+    DIR *dir = opendir(path.toStdString().c_str());
     if (dir != NULL) {
         struct dirent *ent;
         while ((ent = readdir(dir)) != NULL) {
-            contents.push_back(path + std::string(ent->d_name));
+            contents.push_back(path + QString(ent->d_name));
         }
         closedir(dir);
     }
@@ -221,14 +216,14 @@ void SimUtilities::removeExcessArchivedRuns() {
     // Information about each run is stored in the run/ directory. As it turns
     // out, this information can pile up pretty quickly. We should remove the
     // oldest stuff so that the run/ directory doesn't get too full.
-    QVector<std::string> contents = getDirectoryContents(Directory::getRunDirectory());
+    QVector<QString> contents = getDirectoryContents(Directory::getRunDirectory());
     std::sort(contents.begin(), contents.end());
     for (int i = 2; i < static_cast<int>(contents.size()) - P()->numberOfArchivedRuns(); i += 1) {
 #ifdef _WIN32
         // TODO: upforgrabs
         // Implement a windows version of directory removal
 #else
-        system((std::string("rm -rf \"") + contents.at(i) + std::string("\"")).c_str());
+        system((QString("rm -rf \"") + contents.at(i) + QString("\"")).toStdString().c_str());
 #endif
     }
 }

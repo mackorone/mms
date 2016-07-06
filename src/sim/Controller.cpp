@@ -9,8 +9,8 @@
 
 namespace sim {
 
-static const std::string& OPENING_DIRECTION_STRING = "OPENING";
-static const std::string& WALL_DIRECTION_STRING = "WALL";
+static const QString& OPENING_DIRECTION_STRING = "OPENING";
+static const QString& WALL_DIRECTION_STRING = "WALL";
 
 Controller::Controller(Model* model, View* view) {
 
@@ -86,7 +86,7 @@ MouseInterface* Controller::getMouseInterface() {
     return m_mouseInterface;
 }
 
-void Controller::validateMouseAlgorithm(const std::string& mouseAlgorithm) {
+void Controller::validateMouseAlgorithm(const QString& mouseAlgorithm) {
     // TODO: MACK
     /*
     if (!MouseAlgorithms::isMouseAlgorithm(mouseAlgorithm)) {
@@ -97,14 +97,14 @@ void Controller::validateMouseAlgorithm(const std::string& mouseAlgorithm) {
 }
 
 void Controller::validateMouseInterfaceType(
-        const std::string& mouseAlgorithm, const std::string& interfaceType) {
-    if (!STRING_TO_INTERFACE_TYPE.contains(interfaceType.c_str())) {
+        const QString& mouseAlgorithm, const QString& interfaceType) {
+    if (!STRING_TO_INTERFACE_TYPE.contains(interfaceType)) {
         L()->error(
             "\"%v\" is not a valid interface type. You must declare the "
             "interface type of the mouse algorithm \"%v\" to be either \"%v\" "
             "or \"%v\".",
-            interfaceType,
-            mouseAlgorithm,
+            interfaceType.toStdString(),
+            mouseAlgorithm.toStdString(),
             INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE).toStdString(),
             INTERFACE_TYPE_TO_STRING.value(InterfaceType::CONTINUOUS).toStdString());
         SimUtilities::quit();
@@ -112,9 +112,9 @@ void Controller::validateMouseInterfaceType(
 }
 
 void Controller::validateMouseInitialDirection(
-        const std::string& mouseAlgorithm, const std::string& initialDirection) {
+        const QString& mouseAlgorithm, const QString& initialDirection) {
     if (!(
-        STRING_TO_DIRECTION.contains(initialDirection.c_str())
+        STRING_TO_DIRECTION.contains(initialDirection)
         || initialDirection == OPENING_DIRECTION_STRING
         || initialDirection == WALL_DIRECTION_STRING
     )) {
@@ -122,20 +122,20 @@ void Controller::validateMouseInitialDirection(
             "\"%v\" is not a valid initial direction. You must declare the"
             " initial direction of the mouse algorithm \"%v\" to be one of"
             " \"%v\", \"%v\", \"%v\", \"%v\", \"%v\", or \"%v\".",
-            initialDirection,
-            mouseAlgorithm,
+            initialDirection.toStdString(),
+            mouseAlgorithm.toStdString(),
             DIRECTION_TO_STRING.value(Direction::NORTH).toStdString(),
             DIRECTION_TO_STRING.value(Direction::EAST).toStdString(),
             DIRECTION_TO_STRING.value(Direction::SOUTH).toStdString(),
             DIRECTION_TO_STRING.value(Direction::WEST).toStdString(),
-            OPENING_DIRECTION_STRING,
-            WALL_DIRECTION_STRING);
+            OPENING_DIRECTION_STRING.toStdString(),
+            WALL_DIRECTION_STRING.toStdString());
         SimUtilities::quit();
     }
 }
 
 void Controller::validateTileTextRowsAndCols(
-    const std::string& mouseAlgorithm,
+    const QString& mouseAlgorithm,
     int tileTextNumberOfRows, int tileTextNumberOfCols) {
     if (tileTextNumberOfRows < 0 || tileTextNumberOfCols < 0) {
         L()->error(
@@ -145,28 +145,28 @@ void Controller::validateTileTextRowsAndCols(
             " \"%v\" are invalid.",
             tileTextNumberOfRows, 
             tileTextNumberOfCols,
-            mouseAlgorithm);
+            mouseAlgorithm.toStdString());
         SimUtilities::quit();
     }
 }
 
 void Controller::validateMouseWheelSpeedFraction(
-    const std::string& mouseAlgorithm, double wheelSpeedFraction) {
+    const QString& mouseAlgorithm, double wheelSpeedFraction) {
     if (!(0.0 <= wheelSpeedFraction && wheelSpeedFraction <= 1.0)) {
         L()->error(
             "\"%v\" is not a valid wheel speed fraction. The wheel speed"
             " fraction of the mouse algorithm \"%v\" has to be in [0.0, 1.0].",
             wheelSpeedFraction, 
-            mouseAlgorithm);
+            mouseAlgorithm.toStdString());
         SimUtilities::quit();
     }
 }
 
 void Controller::initAndValidateMouse(
-        const std::string& mouseAlgorithm,
-        const std::string& mouseFile,
-        const std::string& interfaceType,
-        const std::string& initialDirection,
+        const QString& mouseAlgorithm,
+        const QString& mouseFile,
+        const QString& interfaceType,
+        const QString& initialDirection,
         Model* model) {
 
     // Initialize the mouse with the file provided
@@ -176,30 +176,30 @@ void Controller::initAndValidateMouse(
         L()->error(
             "Unable to successfully initialize the mouse in the algorithm"
             " \"%v\" from \"%v\".",
-            mouseAlgorithm,
-            mouseFile);
+            mouseAlgorithm.toStdString(),
+            mouseFile.toStdString());
         SimUtilities::quit();
     }
 
     // Validate the mouse
-    if (STRING_TO_INTERFACE_TYPE.value(interfaceType.c_str()) == InterfaceType::DISCRETE) {
+    if (STRING_TO_INTERFACE_TYPE.value(interfaceType) == InterfaceType::DISCRETE) {
         if (!MouseChecker::isDiscreteInterfaceCompatible(*model->getMouse())) {
-            L()->error("The mouse file \"%v\" is not discrete interface compatible.", mouseFile);
+            L()->error("The mouse file \"%v\" is not discrete interface compatible.", mouseFile.toStdString());
             SimUtilities::quit();
         }
     }
     else { // InterfaceType::CONTINUOUS
         if (!MouseChecker::isContinuousInterfaceCompatible(*model->getMouse())) {
-            L()->error("The mouse file \"%v\" is not continuous interface compatible.", mouseFile);
+            L()->error("The mouse file \"%v\" is not continuous interface compatible.", mouseFile.toStdString());
             SimUtilities::quit();
         }
     }
 }
 
-Direction Controller::getInitialDirection(const std::string& initialDirection, Model* model) {
+Direction Controller::getInitialDirection(const QString& initialDirection, Model* model) {
     bool wallNorth = model->getMaze()->getTile(0, 0)->isWall(Direction::NORTH);
     bool wallEast = model->getMaze()->getTile(0, 0)->isWall(Direction::EAST);
-    if (!STRING_TO_DIRECTION.contains(initialDirection.c_str()) && wallNorth == wallEast) {
+    if (!STRING_TO_DIRECTION.contains(initialDirection) && wallNorth == wallEast) {
         return Direction::NORTH;
     }
     if (initialDirection == OPENING_DIRECTION_STRING) {
@@ -208,7 +208,7 @@ Direction Controller::getInitialDirection(const std::string& initialDirection, M
     if (initialDirection == WALL_DIRECTION_STRING) {
         return (wallNorth ? Direction::NORTH : Direction::EAST);
     }
-    return STRING_TO_DIRECTION.value(initialDirection.c_str());
+    return STRING_TO_DIRECTION.value(initialDirection);
 }
 
 } // namespace sim

@@ -36,7 +36,7 @@ void MazeGraphic::setTileFogginess(int x, int y, bool foggy) {
     m_tileGraphics[x][y].setFogginess(foggy);
 }
 
-void MazeGraphic::setTileText(int x, int y, const QVector<std::string>& rowsOfText) {
+void MazeGraphic::setTileText(int x, int y, const QVector<QString>& rowsOfText) {
     SIM_ASSERT_TR(withinMaze(x, y));
     m_tileGraphics[x][y].setText(rowsOfText);
 }

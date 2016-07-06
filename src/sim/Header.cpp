@@ -21,12 +21,12 @@ Header::Header(Model* model) :
         m_columnSpacing(P()->headerColumnSpacing()) {
 
     // Check to make sure that the font file exists
-    std::string fontPath = Directory::getResFontsDirectory() + P()->headerTextFont();
+    QString fontPath = Directory::getResFontsDirectory() + P()->headerTextFont();
     if (!SimUtilities::isFile(fontPath)) {
         // If the font doesn't exist, we simply draw no text whatsoever
         L()->warn(
             "\"%v\" is not a valid font file; it's very possible that the file"
-            " does not exist. No header will drawn.", fontPath);
+            " does not exist. No header will drawn.", fontPath.toStdString());
     }
 
     // Create the text drawer object
@@ -77,7 +77,7 @@ void Header::draw() {
                 m_windowWidth,
                 m_windowHeight,
                 // Prepend a column separator if not the first column
-                std::string((0 < i ? "| " : "")) + m_lines.at(i * numRows + j)
+                QString((0 < i ? "| " : "")) + m_lines.at(i * numRows + j)
             );
         }
     }
@@ -98,91 +98,91 @@ void Header::updateLines() {
     m_lines = {
 
         // Run info
-        std::string("Run ID:                      ") + S()->runId(),
-        std::string("Random Seed:                 ") + std::to_string(P()->randomSeed()),
+        QString("Run ID:                      ") + S()->runId(),
+        QString("Random Seed:                 ") + QString::number(P()->randomSeed()),
 
         // Maze info
         (
             P()->useMazeFile() ?
-            std::string("Maze File:                   ") + P()->mazeFile() :
-            std::string("Maze Algo:                   ") + P()->mazeAlgorithm()
+            QString("Maze File:                   ") + P()->mazeFile() :
+            QString("Maze Algo:                   ") + P()->mazeAlgorithm()
         ),
-        std::string("Maze Width:                  ") + std::to_string(m_model->getMaze()->getWidth()),
-        std::string("Maze Height:                 ") + std::to_string(m_model->getMaze()->getHeight()),
-        std::string("Maze Is Official:            ") + (m_model->getMaze()->isOfficialMaze() ? "TRUE" : "FALSE"),
+        QString("Maze Width:                  ") + QString::number(m_model->getMaze()->getWidth()),
+        QString("Maze Height:                 ") + QString::number(m_model->getMaze()->getHeight()),
+        QString("Maze Is Official:            ") + (m_model->getMaze()->isOfficialMaze() ? "TRUE" : "FALSE"),
 
         // Mouse Info
-        std::string("Mouse Algo:                  ") + P()->mouseAlgorithm(),
-        std::string("Mouse File:                  ") + (m_mouseAlgorithm == nullptr ? "NONE" :
+        QString("Mouse Algo:                  ") + P()->mouseAlgorithm(),
+        QString("Mouse File:                  ") + (m_mouseAlgorithm == nullptr ? "NONE" :
             m_options.mouseFile),
-        std::string("Interface Type:              ") + (m_mouseAlgorithm == nullptr ? "NONE" :
+        QString("Interface Type:              ") + (m_mouseAlgorithm == nullptr ? "NONE" :
             m_options.interfaceType),
-        std::string("Initial Direction:           ") + (m_mouseAlgorithm == nullptr ? "NONE" :
+        QString("Initial Direction:           ") + (m_mouseAlgorithm == nullptr ? "NONE" :
             m_options.initialDirection),
-        std::string("Tile Text Num Rows:          ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-            std::to_string(m_options.tileTextNumberOfRows)),
-        std::string("Tile Text Num Cols:          ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-            std::to_string(m_options.tileTextNumberOfCols)),
-        std::string("Allow Omniscience:           ") + (m_mouseAlgorithm == nullptr ? "NONE" :
+        QString("Tile Text Num Rows:          ") + (m_mouseAlgorithm == nullptr ? "NONE" :
+            QString::number(m_options.tileTextNumberOfRows)),
+        QString("Tile Text Num Cols:          ") + (m_mouseAlgorithm == nullptr ? "NONE" :
+            QString::number(m_options.tileTextNumberOfCols)),
+        QString("Allow Omniscience:           ") + (m_mouseAlgorithm == nullptr ? "NONE" :
             (m_mouseAlgorithm->allowOmniscience() ? "TRUE" : "FALSE")),
-        std::string("Auto Clear Fog:              ") + (m_mouseAlgorithm == nullptr ? "NONE" :
+        QString("Auto Clear Fog:              ") + (m_mouseAlgorithm == nullptr ? "NONE" :
             (m_mouseAlgorithm->automaticallyClearFog() ? "TRUE" : "FALSE")),
-        std::string("Declare Both Wall Halves:    ") + (m_mouseAlgorithm == nullptr ? "NONE" :
+        QString("Declare Both Wall Halves:    ") + (m_mouseAlgorithm == nullptr ? "NONE" :
             (m_mouseAlgorithm->declareBothWallHalves() ? "TRUE" : "FALSE")),
-        std::string("Auto Set Tile Text:          ") + (m_mouseAlgorithm == nullptr ? "NONE" :
+        QString("Auto Set Tile Text:          ") + (m_mouseAlgorithm == nullptr ? "NONE" :
             (m_mouseAlgorithm->setTileTextWhenDistanceDeclared() ? "TRUE" : "FALSE")),
-        std::string("Auto Set Tile Base Color:    ") + (m_mouseAlgorithm == nullptr ? "NONE" :
+        QString("Auto Set Tile Base Color:    ") + (m_mouseAlgorithm == nullptr ? "NONE" :
             (m_mouseAlgorithm->setTileBaseColorWhenDistanceDeclaredCorrectly() ? "TRUE" : "FALSE")),
-        std::string("Wheel Speed Fraction:        ") +
-            (!STRING_TO_INTERFACE_TYPE.contains(m_options.interfaceType.c_str()) ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType.c_str()) != InterfaceType::DISCRETE ? "N/A" :
-            std::to_string(m_options.wheelSpeedFraction))),
-        std::string("Declare Wall On Read:        ") +
+        QString("Wheel Speed Fraction:        ") +
+            (!STRING_TO_INTERFACE_TYPE.contains(m_options.interfaceType) ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            QString::number(m_options.wheelSpeedFraction))),
+        QString("Declare Wall On Read:        ") +
             (m_mouseAlgorithm == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType.c_str()) != InterfaceType::DISCRETE ? "N/A" :
+            (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) != InterfaceType::DISCRETE ? "N/A" :
             (m_mouseAlgorithm->declareWallOnRead() ? "TRUE" : "FALSE"))),
-        std::string("Use Tile Edge Movements:     ") +
+        QString("Use Tile Edge Movements:     ") +
             (m_mouseAlgorithm == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType.c_str()) != InterfaceType::DISCRETE ? "N/A" :
+            (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) != InterfaceType::DISCRETE ? "N/A" :
             (m_mouseAlgorithm->useTileEdgeMovements() ? "TRUE" : "FALSE"))),
 
         // Mouse progress
-        std::string("Tiles Traversed:             ") +
-            std::to_string(m_model->getWorld()->getNumberOfTilesTraversed()) +
-            "/" + std::to_string(m_model->getMaze()->getWidth() * m_model->getMaze()->getHeight()),
-        std::string("Closest Distance to Center:  ") + std::to_string(m_model->getWorld()->getClosestDistanceToCenter()),
-        std::string("Current X (m):               ") + std::to_string(m_model->getMouse()->getCurrentTranslation().getX().getMeters()),
-        std::string("Current Y (m):               ") + std::to_string(m_model->getMouse()->getCurrentTranslation().getY().getMeters()),
-        std::string("Current Rotation (deg):      ") + std::to_string(m_model->getMouse()->getCurrentRotation().getDegreesZeroTo360()),
-        std::string("Current X tile:              ") + std::to_string(m_model->getMouse()->getCurrentDiscretizedTranslation().first),
-        std::string("Current Y tile:              ") + std::to_string(m_model->getMouse()->getCurrentDiscretizedTranslation().second),
-        std::string("Current Direction:           ") + 
-            DIRECTION_TO_STRING.value(m_model->getMouse()->getCurrentDiscretizedRotation()).toStdString(),
-        std::string("Elapsed Real Time:           ") + SimUtilities::formatSeconds(T()->elapsedRealTime().getSeconds()),
-        std::string("Elapsed Sim Time:            ") + SimUtilities::formatSeconds(T()->elapsedSimTime().getSeconds()),
-        std::string("Time Since Origin Departure: ") + (
+        QString("Tiles Traversed:             ") +
+            QString::number(m_model->getWorld()->getNumberOfTilesTraversed()) +
+            "/" + QString::number(m_model->getMaze()->getWidth() * m_model->getMaze()->getHeight()),
+        QString("Closest Distance to Center:  ") + QString::number(m_model->getWorld()->getClosestDistanceToCenter()),
+        QString("Current X (m):               ") + QString::number(m_model->getMouse()->getCurrentTranslation().getX().getMeters()),
+        QString("Current Y (m):               ") + QString::number(m_model->getMouse()->getCurrentTranslation().getY().getMeters()),
+        QString("Current Rotation (deg):      ") + QString::number(m_model->getMouse()->getCurrentRotation().getDegreesZeroTo360()),
+        QString("Current X tile:              ") + QString::number(m_model->getMouse()->getCurrentDiscretizedTranslation().first),
+        QString("Current Y tile:              ") + QString::number(m_model->getMouse()->getCurrentDiscretizedTranslation().second),
+        QString("Current Direction:           ") + 
+            DIRECTION_TO_STRING.value(m_model->getMouse()->getCurrentDiscretizedRotation()),
+        QString("Elapsed Real Time:           ") + SimUtilities::formatSeconds(T()->elapsedRealTime().getSeconds()),
+        QString("Elapsed Sim Time:            ") + SimUtilities::formatSeconds(T()->elapsedSimTime().getSeconds()),
+        QString("Time Since Origin Departure: ") + (
             m_model->getWorld()->getTimeSinceOriginDeparture().getSeconds() < 0 ? "NONE" :
             SimUtilities::formatSeconds(m_model->getWorld()->getTimeSinceOriginDeparture().getSeconds())
         ),
-        std::string("Best Time to Center:         ") + (
+        QString("Best Time to Center:         ") + (
             m_model->getWorld()->getBestTimeToCenter().getSeconds() < 0 ? "NONE" :
             SimUtilities::formatSeconds(m_model->getWorld()->getBestTimeToCenter().getSeconds())
         ),
 
         // Sim state
-        std::string("Crashed:                     ") + (S()->crashed() ? "TRUE" : "FALSE"),
-        std::string("Layout Type (l):             ") + LAYOUT_TYPE_TO_STRING.value(S()->layoutType()).toStdString(),
-        std::string("Rotate Zoomed Map (r):       ") + (S()->rotateZoomedMap() ? "TRUE" : "FALSE"),
-        std::string("Zoomed Map Scale (i, o):     ") + std::to_string(S()->zoomedMapScale()),
-        std::string("Wall Truth Visible (t):      ") + (S()->wallTruthVisible() ? "TRUE" : "FALSE"),
-        std::string("Tile Colors Visible (c):     ") + (S()->tileColorsVisible() ? "TRUE" : "FALSE"),
-        std::string("Tile Fog Visible (g):        ") + (S()->tileFogVisible() ? "TRUE" : "FALSE"),
-        std::string("Tile Text Visible (x):       ") + (S()->tileTextVisible() ? "TRUE" : "FALSE"),
-        std::string("Tile Distance Visible (d):   ") + (S()->tileDistanceVisible() ? "TRUE" : "FALSE"),
-        std::string("Header Visible (h):          ") + (S()->headerVisible() ? "TRUE" : "FALSE"),
-        std::string("Wireframe Mode (w):          ") + (S()->wireframeMode() ? "TRUE" : "FALSE"),
-        std::string("Paused (p):                  ") + (S()->paused() ? "TRUE" : "FALSE"),
-        std::string("Sim Speed (f, s):            ") + std::to_string(S()->simSpeed()),
+        QString("Crashed:                     ") + (S()->crashed() ? "TRUE" : "FALSE"),
+        QString("Layout Type (l):             ") + LAYOUT_TYPE_TO_STRING.value(S()->layoutType()),
+        QString("Rotate Zoomed Map (r):       ") + (S()->rotateZoomedMap() ? "TRUE" : "FALSE"),
+        QString("Zoomed Map Scale (i, o):     ") + QString::number(S()->zoomedMapScale()),
+        QString("Wall Truth Visible (t):      ") + (S()->wallTruthVisible() ? "TRUE" : "FALSE"),
+        QString("Tile Colors Visible (c):     ") + (S()->tileColorsVisible() ? "TRUE" : "FALSE"),
+        QString("Tile Fog Visible (g):        ") + (S()->tileFogVisible() ? "TRUE" : "FALSE"),
+        QString("Tile Text Visible (x):       ") + (S()->tileTextVisible() ? "TRUE" : "FALSE"),
+        QString("Tile Distance Visible (d):   ") + (S()->tileDistanceVisible() ? "TRUE" : "FALSE"),
+        QString("Header Visible (h):          ") + (S()->headerVisible() ? "TRUE" : "FALSE"),
+        QString("Wireframe Mode (w):          ") + (S()->wireframeMode() ? "TRUE" : "FALSE"),
+        QString("Paused (p):                  ") + (S()->paused() ? "TRUE" : "FALSE"),
+        QString("Sim Speed (f, s):            ") + QString::number(S()->simSpeed()),
     };
 }
 

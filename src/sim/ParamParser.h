@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QMap>
-#include <string>
+#include <QString>
 
 #include <pugixml/pugixml.hpp>
 
@@ -12,43 +12,43 @@ namespace sim {
 class ParamParser {
 
 public:
-    ParamParser(const std::string& filePath);
+    ParamParser(const QString& filePath);
 
     // Check the existence and type of a value
-    bool hasBoolValue(const std::string& tag);
-    bool hasDoubleValue(const std::string& tag);
-    bool hasIntValue(const std::string& tag);
-    bool hasCharValue(const std::string& tag);
-    bool hasStringValue(const std::string& tag);
+    bool hasBoolValue(const QString& tag);
+    bool hasDoubleValue(const QString& tag);
+    bool hasIntValue(const QString& tag);
+    bool hasCharValue(const QString& tag);
+    bool hasStringValue(const QString& tag);
 
     // Retrieve the particular value
-    bool getBoolValue(const std::string& tag);
-    double getDoubleValue(const std::string& tag);
-    int getIntValue(const std::string& tag);
-    char getCharValue(const std::string& tag);
-    std::string getStringValue(const std::string& tag);
+    bool getBoolValue(const QString& tag);
+    double getDoubleValue(const QString& tag);
+    int getIntValue(const QString& tag);
+    char getCharValue(const QString& tag);
+    QString getStringValue(const QString& tag);
 
     // Get a value if we can, otherwise return a default
-    bool getBoolIfHasBool(const std::string& tag, bool defaultValue);
-    double getDoubleIfHasDouble(const std::string& tag, double defaultValue);
-    int getIntIfHasInt(const std::string& tag, int defaultValue);
-    char getCharIfHasChar(const std::string& tag, char defaultValue);
-    std::string getStringIfHasString(const std::string& tag, const std::string& defaultValue);
+    bool getBoolIfHasBool(const QString& tag, bool defaultValue);
+    double getDoubleIfHasDouble(const QString& tag, double defaultValue);
+    int getIntIfHasInt(const QString& tag, int defaultValue);
+    char getCharIfHasChar(const QString& tag, char defaultValue);
+    QString getStringIfHasString(const QString& tag, const QString& defaultValue);
 
     // If we can get a numeric value and it's valid then return it, else return default
-    double getDoubleIfHasDoubleAndNotLessThan(const std::string& tag, double defaultValue, double min);
-    double getDoubleIfHasDoubleAndNotGreaterThan(const std::string& tag, double defaultValue, double max);
-    double getDoubleIfHasDoubleAndInRange(const std::string& tag, double defaultValue, double min, double max);
-    int getIntIfHasIntAndNotLessThan(const std::string& tag, int defaultValue, int min);
-    int getIntIfHasIntAndNotGreaterThan(const std::string& tag, int defaultValue, int max);
-    int getIntIfHasIntAndInRange(const std::string& tag, int defaultValue, int min, int max);
+    double getDoubleIfHasDoubleAndNotLessThan(const QString& tag, double defaultValue, double min);
+    double getDoubleIfHasDoubleAndNotGreaterThan(const QString& tag, double defaultValue, double max);
+    double getDoubleIfHasDoubleAndInRange(const QString& tag, double defaultValue, double min, double max);
+    int getIntIfHasIntAndNotLessThan(const QString& tag, int defaultValue, int min);
+    int getIntIfHasIntAndNotGreaterThan(const QString& tag, int defaultValue, int max);
+    int getIntIfHasIntAndInRange(const QString& tag, int defaultValue, int min, int max);
 
     // If we can get a value and it's valid/special then return it, else return default
-    std::string getStringIfHasStringAndIsColor(const std::string& tag, const std::string& defaultValue);
-    std::string getStringIfHasStringAndIsDirection(const std::string& tag, const std::string& defaultValue);
-    std::string getStringIfHasStringAndIsLayoutType(const std::string& tag, const std::string& defaultValue);
-    std::string getStringIfHasStringAndIsMazeFileType(const std::string& tag, const std::string& defaultValue);
-    std::string getStringIfHasStringAndIsTileTextAlignment(const std::string& tag, const std::string& defaultValue);
+    QString getStringIfHasStringAndIsColor(const QString& tag, const QString& defaultValue);
+    QString getStringIfHasStringAndIsDirection(const QString& tag, const QString& defaultValue);
+    QString getStringIfHasStringAndIsLayoutType(const QString& tag, const QString& defaultValue);
+    QString getStringIfHasStringAndIsMazeFileType(const QString& tag, const QString& defaultValue);
+    QString getStringIfHasStringAndIsTileTextAlignment(const QString& tag, const QString& defaultValue);
 
 private:
     // We have to keep m_doc around so valgrind doesn't complain
@@ -56,33 +56,33 @@ private:
     pugi::xml_node m_root;
     pugi::xml_parse_result m_fileIsReadable;
 
-    static const std::string PARAMETERS_TAG;
+    static const QString PARAMETERS_TAG;
 
-    void printTagNotFound(const std::string& type, const std::string& tag, const std::string& defaultValue);
-    void printLessThan(const std::string& type, const std::string& tag, const std::string& value,
-        const std::string& defaultValue, const std::string& min);
-    void printGreaterThan(const std::string& type, const std::string& tag, const std::string& value,
-        const std::string& defaultValue, const std::string& max);
-    void printNotSpecialString(const std::string& type, const std::string& tag,
-        const std::string& value, const std::string& defaultValue);
+    void printTagNotFound(const QString& type, const QString& tag, const QString& defaultValue);
+    void printLessThan(const QString& type, const QString& tag, const QString& value,
+        const QString& defaultValue, const QString& min);
+    void printGreaterThan(const QString& type, const QString& tag, const QString& value,
+        const QString& defaultValue, const QString& max);
+    void printNotSpecialString(const QString& type, const QString& tag,
+        const QString& value, const QString& defaultValue);
 
     // Generic helper method for getting numeric values within a specific range
     template<class T>
-    T getNumIfHasNumAndInRange(const std::string& type, const std::string& tag, T defaultValue, T min, T max) {
+    T getNumIfHasNumAndInRange(const QString& type, const QString& tag, T defaultValue, T min, T max) {
         SIM_ASSERT_TR(type == "int" || type == "double");
         SIM_ASSERT_LE(min, defaultValue);
         SIM_ASSERT_LE(defaultValue, max);
         if (!((type == "int" && hasIntValue(tag)) || (type == "double" && hasDoubleValue(tag)))) {
-            printTagNotFound(type, tag, std::to_string(defaultValue));
+            printTagNotFound(type, tag, QString::number(defaultValue));
             return defaultValue;
         }
         T value = static_cast<T>(getDoubleValue(tag));
         if (value < min) {
-            printLessThan(type, tag, std::to_string(value), std::to_string(defaultValue), std::to_string(min));
+            printLessThan(type, tag, QString::number(value), QString::number(defaultValue), QString::number(min));
             return defaultValue;
         }
         else if (max < value) {
-            printGreaterThan(type, tag, std::to_string(value), std::to_string(defaultValue), std::to_string(max));
+            printGreaterThan(type, tag, QString::number(value), QString::number(defaultValue), QString::number(max));
             return defaultValue;
         }
         return value;
@@ -90,18 +90,18 @@ private:
 
     // Generic helper method for getting string values of a special type
     template<class T>
-    std::string getStringIfHasStringAndIsSpecial(
-            const std::string& type,
-            const std::string& tag,
-            const std::string& defaultValue,
+    QString getStringIfHasStringAndIsSpecial(
+            const QString& type,
+            const QString& tag,
+            const QString& defaultValue,
             const QMap<QString, T>& map) {
 
         if (!hasStringValue(tag)) {
             printTagNotFound("string", tag, defaultValue);
             return defaultValue;
         }
-        std::string value = getStringValue(tag);
-        if (!map.contains(value.c_str())) {
+        QString value = getStringValue(tag);
+        if (!map.contains(value)) {
             printNotSpecialString(type, tag, value, defaultValue);
             return defaultValue;
         }   

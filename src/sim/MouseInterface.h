@@ -36,10 +36,10 @@ public:
     // ----- Any interface methods ----- //
 
     // Logging functions
-    void debug(const std::string& str);
-    void info(const std::string& str);
-    void warn(const std::string& str);
-    void error(const std::string& str);
+    void debug(const QString& str);
+    void info(const QString& str);
+    void warn(const QString& str);
+    void error(const QString& str);
 
     // Misc functions
     double getRandom();
@@ -53,7 +53,7 @@ public:
     void clearAllTileColor();
 
     // Tile text
-    void setTileText(int x, int y, const std::string& text);
+    void setTileText(int x, int y, const QString& text);
     void clearTileText(int x, int y);
     void clearAllTileText();
 
@@ -78,22 +78,22 @@ public:
     // ----- Continuous interface methods ----- //
 
     // Get the magnitude of the max speed of any one wheel in rpm
-    double getWheelMaxSpeed(const std::string& name);
+    double getWheelMaxSpeed(const QString& name);
 
     // Set the speed of any one wheel
-    void setWheelSpeed(const std::string& name, double rpm);
+    void setWheelSpeed(const QString& name, double rpm);
 
     // Get the number of encoder ticks per revolution for a wheel
-    double getWheelEncoderTicksPerRevolution(const std::string& name);
+    double getWheelEncoderTicksPerRevolution(const QString& name);
 
     // Read the encoder for a particular wheel
-    int readWheelEncoder(const std::string& name);
+    int readWheelEncoder(const QString& name);
 
     // Reset the encoder for a particular wheel to zero, but only if the encoder type is relative
-    void resetWheelEncoder(const std::string& name);
+    void resetWheelEncoder(const QString& name);
 
     // Returns a value in [0.0, 1.0]
-    double readSensor(std::string name);
+    double readSensor(QString name);
 
     // Returns deg/s of rotation
     double readGyro();
@@ -161,13 +161,13 @@ private:
     std::set<QPair<int, int>> m_tilesWithText;
 
     // Helper methods for checking particular conditions and failing hard
-    void ensureDiscreteInterface(const std::string& callingFunction) const;
-    void ensureContinuousInterface(const std::string& callingFunction) const;
-    void ensureAllowOmniscience(const std::string& callingFunction) const;
-    void ensureNotTileEdgeMovements(const std::string& callingFunction) const;
-    void ensureUseTileEdgeMovements(const std::string& callingFunction) const;
-    void ensureInsideOrigin(const std::string& callingFunction) const;
-    void ensureOutsideOrigin(const std::string& callingFunction) const;
+    void ensureDiscreteInterface(const QString& callingFunction) const;
+    void ensureContinuousInterface(const QString& callingFunction) const;
+    void ensureAllowOmniscience(const QString& callingFunction) const;
+    void ensureNotTileEdgeMovements(const QString& callingFunction) const;
+    void ensureUseTileEdgeMovements(const QString& callingFunction) const;
+    void ensureInsideOrigin(const QString& callingFunction) const;
+    void ensureOutsideOrigin(const QString& callingFunction) const;
 
     // Implementation methods:
     // Any functionality that is executed as part of another MouseInterface
@@ -176,7 +176,7 @@ private:
     // the crash appropriately (see moveForwardImpl() for an example).
     void setTileColorImpl(int x, int y, char color);
     void clearTileColorImpl(int x, int y);
-    void setTileTextImpl(int x, int y, const std::string& text);
+    void setTileTextImpl(int x, int y, const QString& text);
     void clearTileTextImpl(int x, int y);
     void declareWallImpl(
         QPair<QPair<int, int>, Direction> wall, bool wallExists, bool declareBothWallHalves);

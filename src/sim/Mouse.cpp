@@ -24,7 +24,7 @@ Mouse::Mouse(const Maze* maze) :
 }
 
 bool Mouse::initialize(
-        const std::string& mouseFile,
+        const QString& mouseFile,
         Direction initialDirection) {
 
     // We begin with the assumption that the initialization will succeed
@@ -272,23 +272,23 @@ void Mouse::update(const Duration& elapsed) {
     m_updateMutex.unlock();
 }
 
-bool Mouse::hasWheel(const std::string& name) const {
-    return m_wheels.contains(name.c_str());
+bool Mouse::hasWheel(const QString& name) const {
+    return m_wheels.contains(name);
 }
 
-RadiansPerSecond Mouse::getWheelMaxSpeed(const std::string& name) const {
-    SIM_ASSERT_TR(m_wheels.contains(name.c_str()));
-    return m_wheels.value(name.c_str()).getMaxAngularVelocityMagnitude();
+RadiansPerSecond Mouse::getWheelMaxSpeed(const QString& name) const {
+    SIM_ASSERT_TR(m_wheels.contains(name));
+    return m_wheels.value(name).getMaxAngularVelocityMagnitude();
 }
 
-void Mouse::setWheelSpeeds(const QMap<std::string, RadiansPerSecond>& wheelSpeeds) {
+void Mouse::setWheelSpeeds(const QMap<QString, RadiansPerSecond>& wheelSpeeds) {
     m_updateMutex.lock();
     for (const auto& pair : ContainerUtilities::items(wheelSpeeds)) {
-        SIM_ASSERT_TR(m_wheels.contains(pair.first.c_str()));
+        SIM_ASSERT_TR(m_wheels.contains(pair.first));
         SIM_ASSERT_LE(
             std::abs(pair.second.getRevolutionsPerMinute()),
-            getWheelMaxSpeed(pair.first.c_str()).getRevolutionsPerMinute());
-        m_wheels[pair.first.c_str()].setAngularVelocity(pair.second);
+            getWheelMaxSpeed(pair.first).getRevolutionsPerMinute());
+        m_wheels[pair.first].setAngularVelocity(pair.second);
     }
     m_updateMutex.unlock();
 }
@@ -308,53 +308,53 @@ void Mouse::setWheelSpeedsForCurveRight(double fractionOfMaxSpeed, const Meters&
 }
 
 void Mouse::stopAllWheels() {
-    QMap<std::string, RadiansPerSecond> wheelSpeeds;
+    QMap<QString, RadiansPerSecond> wheelSpeeds;
     for (const auto& pair : ContainerUtilities::items(m_wheels)) {
-        wheelSpeeds.insert(pair.first.toStdString(), RadiansPerSecond(0));
+        wheelSpeeds.insert(pair.first, RadiansPerSecond(0));
     }
     setWheelSpeeds(wheelSpeeds);
 }
 
-EncoderType Mouse::getWheelEncoderType(const std::string& name) const {
+EncoderType Mouse::getWheelEncoderType(const QString& name) const {
     SIM_ASSERT_TR(hasWheel(name));
-    return m_wheels.value(name.c_str()).getEncoderType();
+    return m_wheels.value(name).getEncoderType();
 }
 
-double Mouse::getWheelEncoderTicksPerRevolution(const std::string& name) const {
+double Mouse::getWheelEncoderTicksPerRevolution(const QString& name) const {
     SIM_ASSERT_TR(hasWheel(name));
-    return m_wheels.value(name.c_str()).getEncoderTicksPerRevolution();
+    return m_wheels.value(name).getEncoderTicksPerRevolution();
 }
 
-int Mouse::readWheelAbsoluteEncoder(const std::string& name) const {
+int Mouse::readWheelAbsoluteEncoder(const QString& name) const {
     SIM_ASSERT_TR(hasWheel(name));
     m_updateMutex.lock();
-    int encoderReading = m_wheels.value(name.c_str()).readAbsoluteEncoder();
+    int encoderReading = m_wheels.value(name).readAbsoluteEncoder();
     m_updateMutex.unlock();
     return encoderReading;
 }
 
-int Mouse::readWheelRelativeEncoder(const std::string& name) const {
+int Mouse::readWheelRelativeEncoder(const QString& name) const {
     SIM_ASSERT_TR(hasWheel(name));
     m_updateMutex.lock();
-    int encoderReading = m_wheels.value(name.c_str()).readRelativeEncoder();
+    int encoderReading = m_wheels.value(name).readRelativeEncoder();
     m_updateMutex.unlock();
     return encoderReading;
 }
 
-void Mouse::resetWheelRelativeEncoder(const std::string& name) {
+void Mouse::resetWheelRelativeEncoder(const QString& name) {
     SIM_ASSERT_TR(hasWheel(name));
     m_updateMutex.lock();
-    m_wheels[name.c_str()].resetRelativeEncoder();
+    m_wheels[name].resetRelativeEncoder();
     m_updateMutex.unlock();
 }
 
-bool Mouse::hasSensor(const std::string& name) const {
-    return m_sensors.contains(name.c_str());
+bool Mouse::hasSensor(const QString& name) const {
+    return m_sensors.contains(name);
 }
 
-double Mouse::readSensor(const std::string& name) const {
+double Mouse::readSensor(const QString& name) const {
     SIM_ASSERT_TR(hasSensor(name));
-    return m_sensors.value(name.c_str()).read();
+    return m_sensors.value(name).read();
 }
 
 RadiansPerSecond Mouse::readGyro() const {
@@ -409,12 +409,12 @@ void Mouse::setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardF
     SIM_ASSERT_LE(normalizedFactorMagnitude, 1.0);
 
     // Now set the wheel speeds based on the normalized factors
-    QMap<std::string, RadiansPerSecond> wheelSpeeds;
+    QMap<QString, RadiansPerSecond> wheelSpeeds;
     for (const auto& pair : ContainerUtilities::items(m_wheels)) {
         SIM_ASSERT_TR(m_wheelSpeedAdjustmentFactors.contains(pair.first));
         QPair<double, double> adjustmentFactors = m_wheelSpeedAdjustmentFactors.value(pair.first);
         wheelSpeeds.insert(
-            pair.first.toStdString(),
+            pair.first,
             (
                 pair.second.getMaxAngularVelocityMagnitude() *
                 fractionOfMaxSpeed *
@@ -463,12 +463,12 @@ QMap<QString, QPair<double, double>> Mouse::getWheelSpeedAdjustmentFactors(
     // velocity magnitude into account, but I've done so here.
 
     // First, construct the rates of change pairs
-    QMap<std::string, QPair<MetersPerSecond, RadiansPerSecond>> ratesOfChangePairs;
+    QMap<QString, QPair<MetersPerSecond, RadiansPerSecond>> ratesOfChangePairs;
     for (const auto& pair : ContainerUtilities::items(wheelEffects)) {
         std::tuple<MetersPerSecond, MetersPerSecond, RadiansPerSecond> effects =
             pair.second.getEffects(m_wheels.value(pair.first).getMaxAngularVelocityMagnitude());
         ratesOfChangePairs.insert(
-            pair.first.toStdString(),
+            pair.first,
             {
                 std::get<0>(effects),
                 std::get<2>(effects)
@@ -500,7 +500,7 @@ QMap<QString, QPair<double, double>> Mouse::getWheelSpeedAdjustmentFactors(
         SIM_ASSERT_LE(normalizedForwardContribution, 1.0);
         SIM_ASSERT_LE(normalizedRadialContribution, 1.0);
         adjustmentFactors.insert(
-            pair.first.c_str(),
+            pair.first,
             {
                 normalizedForwardContribution,
                 normalizedRadialContribution

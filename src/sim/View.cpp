@@ -152,7 +152,7 @@ void View::initTileGraphicText() {
         },
         m_fontImageMap,
         P()->tileTextBorderFraction(),
-        STRING_TO_TILE_TEXT_ALIGNMENT.value(P()->tileTextAlignment().c_str()));
+        STRING_TO_TILE_TEXT_ALIGNMENT.value(P()->tileTextAlignment()));
 }
 
 void View::keyPress(unsigned char key, int x, int y) {
@@ -162,7 +162,7 @@ void View::keyPress(unsigned char key, int x, int y) {
 
     if (key == 'p') {
         // Toggle pause (only in discrete mode)
-        if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType.c_str()) == InterfaceType::DISCRETE) {
+        if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) == InterfaceType::DISCRETE) {
             S()->setPaused(!S()->paused());
         }
         else {
@@ -173,7 +173,7 @@ void View::keyPress(unsigned char key, int x, int y) {
     }
     else if (key == 'f') {
         // Faster (only in discrete mode)
-        if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType.c_str()) == InterfaceType::DISCRETE) {
+        if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) == InterfaceType::DISCRETE) {
             S()->setSimSpeed(S()->simSpeed() * 1.5);
         }
         else {
@@ -184,7 +184,7 @@ void View::keyPress(unsigned char key, int x, int y) {
     }
     else if (key == 's') {
         // Slower (only in discrete mode)
-        if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType.c_str()) == InterfaceType::DISCRETE) {
+        if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) == InterfaceType::DISCRETE) {
             S()->setSimSpeed(S()->simSpeed() / 1.5);
         }
         else {
@@ -248,9 +248,9 @@ void View::keyPress(unsigned char key, int x, int y) {
         // Quit
         SimUtilities::quit();
     }
-    else if (std::string("0123456789").find(key) != std::string::npos) {
+    else if (QString("0123456789").indexOf(key) != -1) {
         // Press an input button
-        int inputButton = std::string("0123456789").find(key);
+        int inputButton = QString("0123456789").indexOf(key);
         if (!S()->inputButtonWasPressed(inputButton)) {
             S()->setInputButtonWasPressed(inputButton, true);
             L()->info("Input button %v was pressed.", inputButton);
@@ -326,7 +326,7 @@ void View::initPolygonProgram() {
 
     // Set up the program and attribute pointers
     m_polygonProgram = new tdogl::Program({tdogl::Shader::shaderFromFile(
-        Directory::getResShadersDirectory() + "polygonVertexShader.txt", GL_VERTEX_SHADER)});
+        Directory::getResShadersDirectory().toStdString() + "polygonVertexShader.txt", GL_VERTEX_SHADER)});
     glEnableVertexAttribArray(m_polygonProgram->attrib("coordinate"));
     glVertexAttribPointer(m_polygonProgram->attrib("coordinate"),
         2, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), 0);
@@ -350,9 +350,9 @@ void View::initTextureProgram() {
     // Set up the program and attribute pointers
     std::vector<tdogl::Shader> shaders;
     shaders.push_back(tdogl::Shader::shaderFromFile(
-        Directory::getResShadersDirectory() + "textureVertexShader.txt", GL_VERTEX_SHADER));
+        Directory::getResShadersDirectory().toStdString() + "textureVertexShader.txt", GL_VERTEX_SHADER));
     shaders.push_back(tdogl::Shader::shaderFromFile(
-        Directory::getResShadersDirectory() + "textureFragmentShader.txt", GL_FRAGMENT_SHADER));
+        Directory::getResShadersDirectory().toStdString() + "textureFragmentShader.txt", GL_FRAGMENT_SHADER));
     m_textureProgram = new tdogl::Program(shaders);
     glEnableVertexAttribArray(m_textureProgram->attrib("coordinate"));
     glVertexAttribPointer(m_textureProgram->attrib("coordinate"),
@@ -362,15 +362,15 @@ void View::initTextureProgram() {
         2, GL_DOUBLE, GL_TRUE, 4 * sizeof(double), (char*) NULL + 2 * sizeof(double));
 
     // Load the bitmap texture into the texture atlas
-    std::string tileTextFontImagePath = Directory::getResImgsDirectory() + P()->tileTextFontImage();
+    QString tileTextFontImagePath = Directory::getResImgsDirectory() + P()->tileTextFontImage();
     if (!SimUtilities::isFile(tileTextFontImagePath)) {
         L()->error(
             "Could not find font image file \"%v\" in \"%v\".",
-            P()->tileTextFontImage(),
-            Directory::getResImgsDirectory());
+            P()->tileTextFontImage().toStdString(),
+            Directory::getResImgsDirectory().toStdString());
         SimUtilities::quit();
     }
-    tdogl::Bitmap bmp = tdogl::Bitmap::bitmapFromFile(tileTextFontImagePath);
+    tdogl::Bitmap bmp = tdogl::Bitmap::bitmapFromFile(tileTextFontImagePath.toStdString());
     bmp.flipVertically();
     m_textureAtlas = new tdogl::Texture(bmp);
 
@@ -383,7 +383,7 @@ QMap<char, QPair<double, double>> View::getFontImageMap() {
 
     // These values must perfectly reflect the font image being used, or else
     // the wrong characters will be displayed on the tiles.
-    const std::string fontImageChars =
+    const QString fontImageChars =
         " !\"#$%&'()*+,-./0123456789:;<=>?"
         "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
         "`abcdefghijklmnopqrstuvwxyz{|}~";
@@ -393,7 +393,7 @@ QMap<char, QPair<double, double>> View::getFontImageMap() {
     QMap<char, QPair<double, double>> fontImageMap;
     for (int i = 0; i < fontImageChars.size(); i += 1) {
         fontImageMap.insert(
-            fontImageChars.at(i),
+            fontImageChars.at(i).toLatin1(),
             {
                 static_cast<double>(i + 0) / static_cast<double>(fontImageChars.size()),
                 static_cast<double>(i + 1) / static_cast<double>(fontImageChars.size())

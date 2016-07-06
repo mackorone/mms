@@ -37,20 +37,20 @@ MouseInterface::MouseInterface(
         m_inOrigin(true) {
 }
 
-void MouseInterface::debug(const std::string& str) {
-    Logging::getMouseLogger()->debug(str);
+void MouseInterface::debug(const QString& str) {
+    Logging::getMouseLogger()->debug(str.toStdString());
 }
 
-void MouseInterface::info(const std::string& str) {
-    Logging::getMouseLogger()->info(str);
+void MouseInterface::info(const QString& str) {
+    Logging::getMouseLogger()->info(str.toStdString());
 }
 
-void MouseInterface::warn(const std::string& str) {
-    Logging::getMouseLogger()->warn(str);
+void MouseInterface::warn(const QString& str) {
+    Logging::getMouseLogger()->warn(str.toStdString());
 }
 
-void MouseInterface::error(const std::string& str) {
-    Logging::getMouseLogger()->error(str);
+void MouseInterface::error(const QString& str) {
+    Logging::getMouseLogger()->error(str.toStdString());
 }
 
 double MouseInterface::getRandom() {
@@ -110,12 +110,12 @@ void MouseInterface::clearAllTileColor() {
     }
 }
 
-void MouseInterface::setTileText(int x, int y, const std::string& text) {
+void MouseInterface::setTileText(int x, int y, const QString& text) {
 
     if (!m_maze->withinMaze(x, y)) {
         L()->warn(
             "There is no tile at position (%v, %v), and thus"
-            " you cannot set its text to \"%v\".", x, y, text);
+            " you cannot set its text to \"%v\".", x, y, text.toStdString());
         return;
     }
 
@@ -209,14 +209,14 @@ void MouseInterface::declareTileDistance(int x, int y, int distance) {
     }
 
     if (m_mouseAlgorithm->setTileTextWhenDistanceDeclared()) {
-        setTileTextImpl(x, y, (0 <= distance ? std::to_string(distance) : "inf"));
+        setTileTextImpl(x, y, (0 <= distance ? QString::number(distance) : "inf"));
     }
     if (m_mouseAlgorithm->setTileBaseColorWhenDistanceDeclaredCorrectly()) {
         int actualDistance = m_maze->getTile(x, y)->getDistance();
         // A negative distance is interpreted to mean infinity
         if (distance == actualDistance || (distance < 0 && actualDistance < 0)) {
             setTileColorImpl(x, y,
-                COLOR_TO_CHAR.value(STRING_TO_COLOR.value(P()->distanceCorrectTileBaseColor().c_str())));
+                COLOR_TO_CHAR.value(STRING_TO_COLOR.value(P()->distanceCorrectTileBaseColor())));
         }
     }
 }
@@ -234,7 +234,7 @@ void MouseInterface::undeclareTileDistance(int x, int y) {
         clearTileTextImpl(x, y);
     }
     if (m_mouseAlgorithm->setTileBaseColorWhenDistanceDeclaredCorrectly()) {
-        setTileColorImpl(x, y, COLOR_TO_CHAR.value(STRING_TO_COLOR.value(P()->tileBaseColor().c_str())));
+        setTileColorImpl(x, y, COLOR_TO_CHAR.value(STRING_TO_COLOR.value(P()->tileBaseColor())));
     }
 }
 
@@ -267,24 +267,24 @@ void MouseInterface::acknowledgeInputButtonPressed(int inputButton) {
     L()->info("Input button %v was acknowledged as pressed; it can now be pressed again.", inputButton);
 }
 
-double MouseInterface::getWheelMaxSpeed(const std::string& name) {
+double MouseInterface::getWheelMaxSpeed(const QString& name) {
 
     ENSURE_CONTINUOUS_INTERFACE
 
     if (!m_mouse->hasWheel(name)) {
-        L()->warn("There is no wheel called \"%v\" and thus you cannot get its max speed.", name);
+        L()->warn("There is no wheel called \"%v\" and thus you cannot get its max speed.", name.toStdString());
         return 0.0;
     }
 
     return m_mouse->getWheelMaxSpeed(name).getRevolutionsPerMinute();
 }
 
-void MouseInterface::setWheelSpeed(const std::string& name, double rpm) {
+void MouseInterface::setWheelSpeed(const QString& name, double rpm) {
 
     ENSURE_CONTINUOUS_INTERFACE
 
     if (!m_mouse->hasWheel(name)) {
-        L()->warn("There is no wheel called \"%v\" and thus you cannot set its speed.", name);
+        L()->warn("There is no wheel called \"%v\" and thus you cannot set its speed.", name.toStdString());
         return;
     }
 
@@ -292,33 +292,33 @@ void MouseInterface::setWheelSpeed(const std::string& name, double rpm) {
         L()->warn(
             "You're attempting to set the speed of wheel \"%v\" to %v rpm,"
             " which has magnitude greater than the max speed of %v rpm. Thus,"
-            " the wheel speed was not set.", name, rpm, getWheelMaxSpeed(name));
+            " the wheel speed was not set.", name.toStdString(), rpm, getWheelMaxSpeed(name));
         return;
     }
 
     m_mouse->setWheelSpeeds({{name, RevolutionsPerMinute(rpm)}});
 }
 
-double MouseInterface::getWheelEncoderTicksPerRevolution(const std::string& name) {
+double MouseInterface::getWheelEncoderTicksPerRevolution(const QString& name) {
 
     ENSURE_CONTINUOUS_INTERFACE
 
     if (!m_mouse->hasWheel(name)) {
         L()->warn(
             "There is no wheel called \"%v\" and thus you cannot get its number"
-            " of encoder ticks per revolution.", name);
+            " of encoder ticks per revolution.", name.toStdString());
         return 0.0;
     }
 
     return m_mouse->getWheelEncoderTicksPerRevolution(name);
 }
 
-int MouseInterface::readWheelEncoder(const std::string& name) {
+int MouseInterface::readWheelEncoder(const QString& name) {
 
     ENSURE_CONTINUOUS_INTERFACE
 
     if (!m_mouse->hasWheel(name)) {
-        L()->warn("There is no wheel called \"%v\" and thus you cannot read its encoder.", name);
+        L()->warn("There is no wheel called \"%v\" and thus you cannot read its encoder.", name.toStdString());
         return 0;
     }
 
@@ -330,12 +330,12 @@ int MouseInterface::readWheelEncoder(const std::string& name) {
     }
 }
 
-void MouseInterface::resetWheelEncoder(const std::string& name) {
+void MouseInterface::resetWheelEncoder(const QString& name) {
 
     ENSURE_CONTINUOUS_INTERFACE
 
     if (!m_mouse->hasWheel(name)) {
-        L()->warn("There is no wheel called \"%v\" and thus you cannot reset its encoder.", name);
+        L()->warn("There is no wheel called \"%v\" and thus you cannot reset its encoder.", name.toStdString());
         return;
     }
 
@@ -343,7 +343,7 @@ void MouseInterface::resetWheelEncoder(const std::string& name) {
         L()->warn(
             "The encoder type of the wheel \"%v\" is \"%v\". However, you may"
             " only reset the wheel encoder if the encoder type is \"%v\".",
-            name,
+            name.toStdString(),
             ENCODER_TYPE_TO_STRING.value(m_mouse->getWheelEncoderType(name)).toStdString(),
             ENCODER_TYPE_TO_STRING.value(EncoderType::RELATIVE).toStdString());
         return;
@@ -352,12 +352,12 @@ void MouseInterface::resetWheelEncoder(const std::string& name) {
     m_mouse->resetWheelRelativeEncoder(name);
 }
 
-double MouseInterface::readSensor(std::string name) {
+double MouseInterface::readSensor(QString name) {
 
     ENSURE_CONTINUOUS_INTERFACE
 
     if (!m_mouse->hasSensor(name)) {
-        L()->warn("There is no sensor called \"%v\" and thus you cannot read its value.", name);
+        L()->warn("There is no sensor called \"%v\" and thus you cannot read its value.", name.toStdString());
         return 0.0;
     }
 
@@ -613,68 +613,68 @@ double MouseInterface::currentRotationDegrees() {
     return m_mouse->getCurrentRotation().getDegreesZeroTo360();
 }
 
-void MouseInterface::ensureDiscreteInterface(const std::string& callingFunction) const {
-    if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType.c_str()) != InterfaceType::DISCRETE) {
+void MouseInterface::ensureDiscreteInterface(const QString& callingFunction) const {
+    if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) != InterfaceType::DISCRETE) {
         L()->error(
             "You must declare the interface type to be \"%v\" to use MouseInterface::%v().",
-            INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE).toStdString(), callingFunction);
+            INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE).toStdString(), callingFunction.toStdString());
         SimUtilities::quit();
     }
 }
 
-void MouseInterface::ensureContinuousInterface(const std::string& callingFunction) const {
-    if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType.c_str()) != InterfaceType::CONTINUOUS) {
+void MouseInterface::ensureContinuousInterface(const QString& callingFunction) const {
+    if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) != InterfaceType::CONTINUOUS) {
         L()->error(
             "You must declare the interface type to be \"%v\" to use MouseInterface::%v().",
-            INTERFACE_TYPE_TO_STRING.value(InterfaceType::CONTINUOUS).toStdString(), callingFunction);
+            INTERFACE_TYPE_TO_STRING.value(InterfaceType::CONTINUOUS).toStdString(), callingFunction.toStdString());
         SimUtilities::quit();
     }
 }
 
-void MouseInterface::ensureAllowOmniscience(const std::string& callingFunction) const {
+void MouseInterface::ensureAllowOmniscience(const QString& callingFunction) const {
     if (!m_mouseAlgorithm->allowOmniscience()) {
         L()->error(
             "You must return true from \"allowOmniscience()\" in order to use MouseInterface::%v().",
-            callingFunction);
+            callingFunction.toStdString());
         SimUtilities::quit();
     }
 }
 
-void MouseInterface::ensureNotTileEdgeMovements(const std::string& callingFunction) const {
+void MouseInterface::ensureNotTileEdgeMovements(const QString& callingFunction) const {
     if (m_mouseAlgorithm->useTileEdgeMovements()) {
         L()->error(
             "You must return false from \"useTileEdgeMovements()\" in order to use MouseInterface::%v().",
-            callingFunction);
+            callingFunction.toStdString());
         SimUtilities::quit();
     }
 }
 
-void MouseInterface::ensureUseTileEdgeMovements(const std::string& callingFunction) const {
+void MouseInterface::ensureUseTileEdgeMovements(const QString& callingFunction) const {
     if (!m_mouseAlgorithm->useTileEdgeMovements()) {
         L()->error(
             "You must return true from \"useTileEdgeMovements()\" in order to use MouseInterface::%v().",
-            callingFunction);
+            callingFunction.toStdString());
         SimUtilities::quit();
     }
 }
 
-void MouseInterface::ensureInsideOrigin(const std::string& callingFunction) const {
+void MouseInterface::ensureInsideOrigin(const QString& callingFunction) const {
     if (!m_inOrigin) {
         L()->error(
             "You should only call MouseInterface::%v() if you're in the"
             " origin, i.e., you haven't moved forward at all yet.",
-            callingFunction);
+            callingFunction.toStdString());
         SimUtilities::quit();
     }
 }
 
-void MouseInterface::ensureOutsideOrigin(const std::string& callingFunction) const {
+void MouseInterface::ensureOutsideOrigin(const QString& callingFunction) const {
     if (m_inOrigin) {
         L()->error(
             "You should only call \"MouseInterface::%v()\" if you're"
             " outside of the origin, i.e., you've already called"
             " \"MouseInterface::originMoveForwardToEdge()\".",
-            callingFunction);
+            callingFunction.toStdString());
         SimUtilities::quit();
     }
 }
@@ -685,18 +685,18 @@ void MouseInterface::setTileColorImpl(int x, int y, char color) {
 }
 
 void MouseInterface::clearTileColorImpl(int x, int y) {
-    m_mazeGraphic->setTileColor(x, y, STRING_TO_COLOR.value(P()->tileBaseColor().c_str()));
+    m_mazeGraphic->setTileColor(x, y, STRING_TO_COLOR.value(P()->tileBaseColor()));
     m_tilesWithColor.erase({x, y});
 }
 
-void MouseInterface::setTileTextImpl(int x, int y, const std::string& text) {
-    QVector<std::string> rowsOfText;
+void MouseInterface::setTileTextImpl(int x, int y, const QString& text) {
+    QVector<QString> rowsOfText;
     int row = 0;
     int index = 0;
     while (row < m_options.tileTextNumberOfRows && index < text.size()) {
-        std::string rowOfText;
+        QString rowOfText;
         while (index < (row + 1) * m_options.tileTextNumberOfCols && index < text.size()) {
-            char c = text.at(index);
+            char c = text.at(index).toLatin1();
             if (m_allowableTileTextCharacters.find(c) != m_allowableTileTextCharacters.end()) { // TODO: MACK
                 L()->warn(
                     "Unable to set the tile text for unprintable character \"%v\"."
@@ -704,7 +704,7 @@ void MouseInterface::setTileTextImpl(int x, int y, const std::string& text) {
                     (c == '\n' ? "\\n" :
                     (c == '\t' ? "\\t" :
                     (c == '\r' ? "\\r" :
-                    std::to_string(c)))),
+                    QString::number(c).toStdString()))),
                     P()->defaultTileTextCharacter());
                 c = P()->defaultTileTextCharacter();
             }

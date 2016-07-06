@@ -1,7 +1,7 @@
 #pragma once
 
 #include <fontstash/fontstash.h>
-#include <string>
+#include <QString>
 
 namespace sim {
 
@@ -15,15 +15,15 @@ public:
 
     // Note that the TextDrawer may only be instantiated after
     // glutInit is called. Thus, you may not declare it statically.
-    TextDrawer(const std::string& fontPath, float size);
+    TextDrawer(const QString& fontPath, float size);
 
     // Using the class is as easy as calling these methods, in order, during
     // the rendering loop. Commence and conclude should only be called once per
     // frame, but note that drawText and getWidth may be called many times per
     // frame.
     void commenceDrawingTextForFrame();
-    float getWidth(const std::string& str);
-    void drawText(float x, float y, int windowWidth, int windowHeight, const std::string& str);
+    float getWidth(const QString& str);
+    void drawText(float x, float y, int windowWidth, int windowHeight, const QString& str);
     void concludeDrawingTextForFrame();
 
 private:

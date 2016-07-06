@@ -16,7 +16,7 @@
 // Logging::mazeLogger()->warn("Message %v %v %v", 'c', "foo", 4);
 //
 // Note that we you should use %v for arguments of all types, and that the
-// string must a string literal (no std::strings are allowed). You can write
+// string must a string literal (no QStrings are allowed). You can write
 // multiline logging statements as follows:
 //
 // Logging::mouseLogger()->debug(
@@ -46,26 +46,26 @@ public:
     static el::Logger* getMouseLogger();
 
     // Initializes all of the loggers, should only be called once
-    static void initialize(const std::string& runId);
+    static void initialize(const QString& runId);
 
 private:
 
     // Used to determine part of the log file paths
-    static std::string m_runId;
+    static QString m_runId;
 
     // The names of each of our loggers
-    static std::string m_simLoggerName;
-    static std::string m_mazeLoggerName;
-    static std::string m_mouseLoggerName;
+    static QString m_simLoggerName;
+    static QString m_mazeLoggerName;
+    static QString m_mouseLoggerName;
 
     // A map of (loggerName) -> (path, numLogFiles)
-    static QMap<std::string, QPair<std::string, int>> m_info;
+    static QMap<QString, QPair<QString, int>> m_info;
 
     // Helper method for retrieving a particular logger
-    static el::Logger* getLogger(const std::string& loggerName);
+    static el::Logger* getLogger(const QString& loggerName);
 
     // Easy function for getting the next available log file name
-    static std::string getNextFileName(const char* filename);
+    static QString getNextFileName(const char* filename);
 
     // Perform an action when files get too large
     static void rolloutHandler(const char* filename, std::size_t size);

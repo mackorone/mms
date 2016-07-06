@@ -24,32 +24,32 @@ Maze::Maze() {
 
     if (P()->useMazeFile()) {
         // TODO: MACK - clean this up (the file existence check should be in the utility class)
-        std::string mazeFilePath = Directory::getResMazeDirectory() + P()->mazeFile();
+        QString mazeFilePath = Directory::getResMazeDirectory() + P()->mazeFile();
         try {
-            basicMaze = MazeFileUtilities::load(QString(mazeFilePath.c_str()));
+            basicMaze = MazeFileUtilities::load(mazeFilePath);
         }
         catch (...) {
-            std::string reason = (
+            QString reason = (
                 SimUtilities::isFile(mazeFilePath) ?
                 "invalid format" : "file doesn't exist");
             L()->error(
                 "Unable to initialize maze from file \"%v\": %v.",
-                mazeFilePath,
-                reason);
+                mazeFilePath.toStdString(),
+                reason.toStdString());
             SimUtilities::quit();
         }
     }
     else {
         // TODO: MACK - refactor this logic elsewhere
-        QDir mazeAlgosDir(Directory::getSrcMazeAlgosDirectory().c_str());
+        QDir mazeAlgosDir(Directory::getSrcMazeAlgosDirectory());
         mazeAlgosDir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
         mazeAlgosDir.setSorting(QDir::Name | QDir::QDir::IgnoreCase);
         QStringList algos = mazeAlgosDir.entryList();
 
         // Check to see if there is some directory with the given name
-        QString selectedMazeAlgo(P()->mazeAlgorithm().c_str());
+        QString selectedMazeAlgo(P()->mazeAlgorithm());
         if (!algos.contains(selectedMazeAlgo)) {
-             L()->error("\"%v\" is not a valid maze algorithm.", P()->mazeAlgorithm());
+             L()->error("\"%v\" is not a valid maze algorithm.", P()->mazeAlgorithm().toStdString());
              SimUtilities::quit();
         }
 
@@ -103,16 +103,16 @@ Maze::Maze() {
 
     // Optionally save the maze
     if (!P()->useMazeFile() && P()->saveGeneratedMaze()) {
-        MazeFileType type = STRING_TO_MAZE_FILE_TYPE.value(P()->generatedMazeType().c_str());
-        std::string mazeFilePath = Directory::getResMazeDirectory() +
-            P()->generatedMazeFile() + MAZE_FILE_TYPE_TO_SUFFIX.value(type).toStdString();
+        MazeFileType type = STRING_TO_MAZE_FILE_TYPE.value(P()->generatedMazeType());
+        QString mazeFilePath = Directory::getResMazeDirectory() +
+            P()->generatedMazeFile() + MAZE_FILE_TYPE_TO_SUFFIX.value(type);
         // TODO: MACK
         bool success = false; // MazeFileUtilities::save(basicMaze, mazeFilePath, type);
         if (success) {
-            L()->info("Maze saved to \"%v\".", mazeFilePath);
+            L()->info("Maze saved to \"%v\".", mazeFilePath.toStdString());
         }
         else {
-            L()->warn("Unable to save maze to \"%v\".", mazeFilePath);
+            L()->warn("Unable to save maze to \"%v\".", mazeFilePath.toStdString());
         }
     }
 

@@ -28,7 +28,7 @@ public:
 
     // Initializes the mouse (body, wheels, sensors, etc.); returns true if successful, false if not
     bool initialize(
-        const std::string& mouseFile,
+        const QString& mouseFile,
         Direction initialDirection);
 
     // Gets the initial translation and rotation of the mouse
@@ -78,13 +78,13 @@ public:
     void update(const Duration& elapsed);
 
     // Returns whether or not the mouse has a wheel by a particular name
-    bool hasWheel(const std::string& name) const;
+    bool hasWheel(const QString& name) const;
 
     // Returns the magnitde of the max angular velocity of the wheel
-    RadiansPerSecond getWheelMaxSpeed(const std::string& name) const;
+    RadiansPerSecond getWheelMaxSpeed(const QString& name) const;
 
     // An atomic interface for setting the wheel speeds
-    void setWheelSpeeds(const QMap<std::string, RadiansPerSecond>& wheelSpeeds);
+    void setWheelSpeeds(const QMap<QString, RadiansPerSecond>& wheelSpeeds);
 
     // Helper methods for setting many wheel speeds at once, without having to
     // know the names of each of the wheels
@@ -94,25 +94,25 @@ public:
     void stopAllWheels();
 
     // Returns the encoder type of the wheel given by name
-    EncoderType getWheelEncoderType(const std::string& name) const;
+    EncoderType getWheelEncoderType(const QString& name) const;
 
     // Returns the number of encoder ticks per revolution for a particular wheel given by name
-    double getWheelEncoderTicksPerRevolution(const std::string& name) const;
+    double getWheelEncoderTicksPerRevolution(const QString& name) const;
 
     // Returns the reading of the encoder of the wheel given by name
-    int readWheelAbsoluteEncoder(const std::string& name) const;
+    int readWheelAbsoluteEncoder(const QString& name) const;
 
     // Returns the reading of the encoder of the wheel given by name
-    int readWheelRelativeEncoder(const std::string& name) const;
+    int readWheelRelativeEncoder(const QString& name) const;
 
     // Sets the value of the relative encoder to zero
-    void resetWheelRelativeEncoder(const std::string& name);
+    void resetWheelRelativeEncoder(const QString& name);
 
     // Returns whether or not the mouse has a sensor by a particular name
-    bool hasSensor(const std::string& name) const;
+    bool hasSensor(const QString& name) const;
 
     // Read a sensor, and returns a value from 0.0 (completely free) to 1.0 (completely blocked)
-    double readSensor(const std::string& name) const;
+    double readSensor(const QString& name) const;
 
     // Returns the value of the gyroscope
     RadiansPerSecond readGyro() const;

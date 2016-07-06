@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include <QString>
 
 namespace sim {
 
@@ -18,9 +18,9 @@ public:
     // Graphics parameters
     int defaultWindowWidth();
     int defaultWindowHeight();
-    std::string defaultLayoutType();
+    QString defaultLayoutType();
     int windowBorderWidth();
-    std::string headerTextFont();
+    QString headerTextFont();
     int headerTextHeight();
     int headerRowSpacing();
     int headerColumnSpacing();
@@ -30,23 +30,23 @@ public:
     bool defaultRotateZoomedMap();
     int frameRate();
     bool printLateFrames();
-    std::string tileBaseColor();
-    std::string tileWallColor();
-    std::string tileCornerColor();
-    std::string tileFogColor();
-    std::string tileTextFontImage();
+    QString tileBaseColor();
+    QString tileWallColor();
+    QString tileCornerColor();
+    QString tileFogColor();
+    QString tileTextFontImage();
     double tileTextBorderFraction();
-    std::string tileTextAlignment();
-    std::string tileUndeclaredWallColor();
-    std::string tileUndeclaredNoWallColor();
-    std::string tileIncorrectlyDeclaredWallColor();
-    std::string tileIncorrectlyDeclaredNoWallColor();
-    std::string mouseBodyColor();
-    std::string mouseCenterOfMassColor();
-    std::string mouseWheelColor();
-    std::string mouseWheelSpeedIndicatorColor();
-    std::string mouseSensorColor();
-    std::string mouseViewColor();
+    QString tileTextAlignment();
+    QString tileUndeclaredWallColor();
+    QString tileUndeclaredNoWallColor();
+    QString tileIncorrectlyDeclaredWallColor();
+    QString tileIncorrectlyDeclaredNoWallColor();
+    QString mouseBodyColor();
+    QString mouseCenterOfMassColor();
+    QString mouseWheelColor();
+    QString mouseWheelSpeedIndicatorColor();
+    QString mouseSensorColor();
+    QString mouseViewColor();
     bool defaultWallTruthVisible();
     bool defaultTileColorsVisible();
     bool defaultTileFogVisible();
@@ -55,7 +55,7 @@ public:
     bool defaultHeaderVisible();
     double tileFogAlpha();
     bool defaultWireframeMode();
-    std::string distanceCorrectTileBaseColor();
+    QString distanceCorrectTileBaseColor();
 
     // Simulation parameters
     int randomSeed();
@@ -65,7 +65,7 @@ public:
     double maxSimSpeed();
     double defaultSimSpeed();
     bool collisionDetectionEnabled();
-    std::string crashMessage();
+    QString crashMessage();
     char defaultTileTextCharacter();
     double minSleepDuration();
     int mousePositionUpdateRate();
@@ -79,19 +79,19 @@ public:
     // Maze parameters
     double wallWidth();
     double wallLength();
-    std::string mazeFile();
+    QString mazeFile();
     bool useMazeFile();
     int generatedMazeWidth();
     int generatedMazeHeight();
-    std::string mazeAlgorithm();
+    QString mazeAlgorithm();
     bool saveGeneratedMaze();
-    std::string generatedMazeFile();
-    std::string generatedMazeType();
+    QString generatedMazeFile();
+    QString generatedMazeType();
     bool mazeMirrored();
     int mazeRotations();
 
     // Mouse parameters
-    std::string mouseAlgorithm();
+    QString mouseAlgorithm();
 
 private:
 
@@ -104,9 +104,9 @@ private:
     // Graphics parameters
     int m_defaultWindowWidth;
     int m_defaultWindowHeight;
-    std::string m_defaultLayoutType;
+    QString m_defaultLayoutType;
     int m_windowBorderWidth;
-    std::string m_headerTextFont;
+    QString m_headerTextFont;
     int m_headerTextHeight;
     int m_headerRowSpacing;
     int m_headerColumnSpacing;
@@ -116,23 +116,23 @@ private:
     bool m_defaultRotateZoomedMap;
     int m_frameRate;
     bool m_printLateFrames;
-    std::string m_tileBaseColor;
-    std::string m_tileWallColor;
-    std::string m_tileCornerColor;
-    std::string m_tileFogColor;
-    std::string m_tileTextFontImage;
+    QString m_tileBaseColor;
+    QString m_tileWallColor;
+    QString m_tileCornerColor;
+    QString m_tileFogColor;
+    QString m_tileTextFontImage;
     double m_tileTextBorderFraction;
-    std::string m_tileTextAlignment;
-    std::string m_tileUndeclaredWallColor;
-    std::string m_tileUndeclaredNoWallColor;
-    std::string m_tileIncorrectlyDeclaredWallColor;
-    std::string m_tileIncorrectlyDeclaredNoWallColor;
-    std::string m_mouseBodyColor;
-    std::string m_mouseCenterOfMassColor;
-    std::string m_mouseWheelColor;
-    std::string m_mouseWheelSpeedIndicatorColor;
-    std::string m_mouseSensorColor;
-    std::string m_mouseViewColor;
+    QString m_tileTextAlignment;
+    QString m_tileUndeclaredWallColor;
+    QString m_tileUndeclaredNoWallColor;
+    QString m_tileIncorrectlyDeclaredWallColor;
+    QString m_tileIncorrectlyDeclaredNoWallColor;
+    QString m_mouseBodyColor;
+    QString m_mouseCenterOfMassColor;
+    QString m_mouseWheelColor;
+    QString m_mouseWheelSpeedIndicatorColor;
+    QString m_mouseSensorColor;
+    QString m_mouseViewColor;
     bool m_defaultWallTruthVisible;
     bool m_defaultTileColorsVisible;
     bool m_defaultTileFogVisible;
@@ -141,7 +141,7 @@ private:
     bool m_defaultHeaderVisible;
     double m_tileFogAlpha;
     bool m_defaultWireframeMode;
-    std::string m_distanceCorrectTileBaseColor;
+    QString m_distanceCorrectTileBaseColor;
 
     // Simulation parameters
     int m_randomSeed;
@@ -151,7 +151,7 @@ private:
     double m_maxSimSpeed;
     double m_defaultSimSpeed;
     bool m_collisionDetectionEnabled;
-    std::string m_crashMessage;
+    QString m_crashMessage;
     char m_defaultTileTextCharacter;
     double m_minSleepDuration;
     int m_mousePositionUpdateRate;
@@ -165,19 +165,19 @@ private:
     // Maze parameters
     double m_wallWidth;
     double m_wallLength;
-    std::string m_mazeFile;
+    QString m_mazeFile;
     bool m_useMazeFile;
     int m_generatedMazeWidth;
     int m_generatedMazeHeight;
-    std::string m_mazeAlgorithm;
+    QString m_mazeAlgorithm;
     bool m_saveGeneratedMaze;
-    std::string m_generatedMazeFile;
-    std::string m_generatedMazeType;
+    QString m_generatedMazeFile;
+    QString m_generatedMazeType;
     bool m_mazeMirrored;
     int m_mazeRotations;
 
     // Mouse parameters
-    std::string m_mouseAlgorithm;
+    QString m_mouseAlgorithm;
 };
 
 } // namespace sim

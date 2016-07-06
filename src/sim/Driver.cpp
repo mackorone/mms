@@ -1,11 +1,13 @@
 #include "Driver.h"
 
+#include <QCoreApplication>
 #include <QProcess>
 #include <thread>
 
 #include <iostream> // TODO: MACK
 
 #include "Assert.h"
+#include "Directory.h"
 #include "Logging.h"
 #include "Param.h"
 #include "SimUtilities.h"
@@ -24,11 +26,16 @@ void Driver::drive(int argc, char* argv[]) {
     // Make sure that this function is called just once
     SIM_ASSERT_RUNS_JUST_ONCE();
 
+    // TODO: MACK
+    QCoreApplication app(argc, argv);
+    Directory::setBinPath(app.applicationFilePath());
+
+
     // Before anything else, create the Time object
     T();
 
     // Then, determine the runId (just datetime for now)
-    std::string runId = SimUtilities::timestampToDatetimeString(
+    QString runId = SimUtilities::timestampToDatetimeString(
         T()->startTimestamp()
     );
 

@@ -3,9 +3,9 @@
 namespace sim {
 
 struct StaticMouseAlgorithmOptions {
-    std::string mouseFile;
-    std::string interfaceType;
-    std::string initialDirection;
+    QString mouseFile;
+    QString interfaceType;
+    QString initialDirection;
     int tileTextNumberOfRows;
     int tileTextNumberOfCols;
     double wheelSpeedFraction;

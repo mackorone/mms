@@ -22,7 +22,7 @@ public:
     void declareWall(Direction direction, bool isWall);
     void undeclareWall(Direction direction);
     void setFogginess(bool foggy);
-    void setText(const QVector<std::string>& rowsOfText);
+    void setText(const QVector<QString>& rowsOfText);
 
     void draw() const;
     void updateColor() const;
@@ -37,7 +37,7 @@ private:
     Color m_color;
     QMap<Direction, bool> m_declaredWalls;
     bool m_foggy;
-    QVector<std::string> m_rowsOfText;
+    QVector<QString> m_rowsOfText;
 
     void updateWall(Direction direction) const;
     QPair<Color, float> deduceWallColorAndAlpha(Direction direction) const;

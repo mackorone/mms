@@ -18,8 +18,8 @@ public:
     // Returns a pointer to the singleton state object
     static State* getInstance();
 
-    std::string runId();
-    void setRunId(const std::string& runId);
+    QString runId();
+    void setRunId(const QString& runId);
 
     bool crashed();
     void setCrashed();
@@ -74,7 +74,7 @@ private:
     // A pointer to the actual instance of the class
     static State* INSTANCE;
 
-    std::string m_runId;
+    QString m_runId;
     bool m_crashed;
     LayoutType m_layoutType;
     bool m_rotateZoomedMap;

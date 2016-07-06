@@ -25,34 +25,34 @@ private:
     MouseInterface* m_mouseInterface;
 
     void validateMouseAlgorithm(
-        const std::string& mouseAlgorithm);
+        const QString& mouseAlgorithm);
 
     void validateMouseInterfaceType(
-        const std::string& mouseAlgorithm,
-        const std::string& interfaceType);
+        const QString& mouseAlgorithm,
+        const QString& interfaceType);
 
     void validateMouseInitialDirection(
-        const std::string& mouseAlgorithm,
-        const std::string& initialDirection);
+        const QString& mouseAlgorithm,
+        const QString& initialDirection);
 
     void validateTileTextRowsAndCols(
-        const std::string& mouseAlgorithm,
+        const QString& mouseAlgorithm,
         int tileTextNumberOfRows,
         int tileTextNumberOfCols);
 
     void validateMouseWheelSpeedFraction(
-        const std::string& mouseAlgorithm,
+        const QString& mouseAlgorithm,
         double wheelSpeedFraction);
 
     void initAndValidateMouse(
-        const std::string& mouseAlgorithm,
-        const std::string& mouseFile,
-        const std::string& interfaceType,
-        const std::string& initialDirection,
+        const QString& mouseAlgorithm,
+        const QString& mouseFile,
+        const QString& interfaceType,
+        const QString& initialDirection,
         Model* model);
 
     Direction getInitialDirection(
-        const std::string& initialDirection,
+        const QString& initialDirection,
         Model* model);
 
 };

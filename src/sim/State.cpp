@@ -23,7 +23,7 @@ State* State::getInstance() {
 State::State() {
     m_runId = "";
     m_crashed = false;
-    m_layoutType = STRING_TO_LAYOUT_TYPE.value(P()->defaultLayoutType().c_str());
+    m_layoutType = STRING_TO_LAYOUT_TYPE.value(P()->defaultLayoutType());
     m_rotateZoomedMap = P()->defaultRotateZoomedMap();
     m_zoomedMapScale = P()->defaultZoomedMapScale();
     m_wallTruthVisible = P()->defaultWallTruthVisible();
@@ -43,12 +43,12 @@ State::State() {
     }
 }
 
-std::string State::runId() {
+QString State::runId() {
     return m_runId;
 }
 
-void State::setRunId(const std::string& runId) {
-    SIM_ASSERT_EQ(m_runId, "");
+void State::setRunId(const QString& runId) {
+    SIM_ASSERT_TR(m_runId.isEmpty());
     m_runId = runId;
 }
 
@@ -58,7 +58,7 @@ bool State::crashed() {
 
 void State::setCrashed() {
     m_crashed = true;
-    L()->warn("%v", P()->crashMessage());
+    L()->warn("%v", P()->crashMessage().toStdString());
 }
 
 LayoutType State::layoutType() {

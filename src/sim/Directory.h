@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include <QString>
 
 namespace sim {
 
@@ -12,33 +12,37 @@ public:
     Directory() = delete;
 
     // mms/maze/algos
-    static std::string getSrcMazeAlgosDirectory();
+    static QString getSrcMazeAlgosDirectory();
 
     // mms/res
-    static std::string getResDirectory();
+    static QString getResDirectory();
 
     // mms/res/fonts
-    static std::string getResFontsDirectory();
+    static QString getResFontsDirectory();
 
     // mms/res/maze
-    static std::string getResMazeDirectory();
+    static QString getResMazeDirectory();
 
     // mms/res/mouse
-    static std::string getResMouseDirectory();
+    static QString getResMouseDirectory();
 
     // mms/res/shaders
-    static std::string getResShadersDirectory();
+    static QString getResShadersDirectory();
 
     // mms/res/imgs
-    static std::string getResImgsDirectory();
+    static QString getResImgsDirectory();
 
     // mms/run
-    static std::string getRunDirectory();
+    static QString getRunDirectory();
+
+    // TODO: MACK
+    static void setBinPath(const QString& path);
 
 private:
+    static QString m_binPath; // TODO: MACK
 
     // mms
-    static std::string getProjectDirectory();
+    static QString getProjectDirectory();
 
 };
 

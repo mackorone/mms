@@ -3,7 +3,7 @@
 #include <QPair>
 
 #include <algorithm>
-#include <string>
+#include <QString>
 #include <QVector>
 
 #include "Direction.h"
@@ -32,37 +32,37 @@ public:
     static double getHighResTimestamp();
 
     // Returns the UTC datetime formatted as YY-MM-DD_HH:MM:SS
-    static std::string timestampToDatetimeString(const Duration& timestamp);
+    static QString timestampToDatetimeString(const Duration& timestamp);
 
     // Converts seconds to mm:ss.ssss... string
-    static std::string formatSeconds(double seconds);
+    static QString formatSeconds(double seconds);
 
     // Convert between types
-    static bool isBool(const std::string& str);
-    static bool isInt(const std::string& str);
-    static bool isDouble(const std::string& str);
-    static bool strToBool(const std::string& str);
-    static int strToInt(const std::string& str);
-    static double strToDouble(const std::string& str);
+    static bool isBool(const QString& str);
+    static bool isInt(const QString& str);
+    static bool isDouble(const QString& str);
+    static bool strToBool(const QString& str);
+    static int strToInt(const QString& str);
+    static double strToDouble(const QString& str);
 
     // Tokenizes a string on whitespace
-    static QVector<std::string> tokenize(
-        const std::string& str,
+    static QVector<QString> tokenize(
+        const QString& str,
         char delimiter = ' ',
         bool ignoreEmpties = false,
         bool respectQuotes = false);
 
     // Returns the string str with the leading and trailing spaces removed
-    static std::string trim(const std::string& str);
+    static QString trim(const QString& str);
 
     // True if path is a path to a file, false otherwise
-    static bool isFile(const std::string& path);
+    static bool isFile(const QString& path);
 
     // Returns the index of the direction in DIRECTIONS
     static int getDirectionIndex(Direction direction);
 
     // Returns a vector of strings of paths of the given directory's contents
-    static QVector<std::string> getDirectoryContents(const std::string& path);
+    static QVector<QString> getDirectoryContents(const QString& path);
 
     // Remove oldest runs from the run/ directory if necessary
     static void removeExcessArchivedRuns();

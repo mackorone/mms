@@ -226,7 +226,7 @@ BasicMaze MazeFileUtilities::deserializeMz2Type(const QByteArray& bytes) {
     uint32_t stringLength = (getPopBack(&characters) << 4) +
                              getPopBack(&characters);
 
-    std::string mazeName; // The title is not used, but here if needed
+    QString mazeName; // The title is not used, but here if needed
                           // It is a UTF-8 formatted sring
 
     if (stringLength != 0) {
@@ -335,7 +335,7 @@ BasicMaze MazeFileUtilities::deserializeNumType(const QByteArray& bytes) {
 
     // First, read the entirety of the file
     QVector<QString> lines;
-    std::ifstream file(mazeFilePath.c_str());
+    std::ifstream file(mazeFilePath.toStdString());
     QString line("");
     while (getline(file, line)) {
         lines.push_back(line);
@@ -443,7 +443,7 @@ QByteArray MazeFileUtilities::serializeMapType(const BasicMaze& maze) {
     }
 
     // Create the stream
-    std::ofstream file(mazeFilePath.c_str(), std::ios::trunc);
+    std::ofstream file(mazeFilePath.toStdString(), std::ios::trunc);
 
     // Make sure the file is open
     if (!file.is_open()) {
@@ -478,7 +478,7 @@ QByteArray MazeFileUtilities::serializeMazType(const BasicMaze& maze) {
     }
 
     // Create the stream
-    std::ofstream file(mazeFilePath.c_str(), std::ios::trunc | std::ios::binary);
+    std::ofstream file(mazeFilePath.toStdString(), std::ios::trunc | std::ios::binary);
     file.imbue(std::locale::classic());
 
     // Make sure the file is open
@@ -514,7 +514,7 @@ QByteArray MazeFileUtilities::serializeMz2Type(const BasicMaze& maze) {
 
     /*
     // Create the stream
-    std::ofstream file(mazeFilePath.c_str(), std::ios::trunc | std::ios::binary);
+    std::ofstream file(mazeFilePath.toStdString(), std::ios::trunc | std::ios::binary);
     file.imbue(std::locale::classic());
 
     // Make sure the file is open
@@ -622,7 +622,7 @@ QByteArray MazeFileUtilities::serializeNumType(const BasicMaze& maze) {
 
     /*
     // Create the stream
-    std::ofstream file(mazeFilePath.c_str(), std::ios::trunc);
+    std::ofstream file(mazeFilePath.toStdString(), std::ios::trunc);
 
     // Make sure the file is open
     if (!file.is_open()) {

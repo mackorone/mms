@@ -15,39 +15,39 @@ const Polygon MouseParser::NULL_POLYGON = Polygon({
     Cartesian(Meters(0), Meters(0)),
     Cartesian(Meters(0), Meters(0)),
 });
-const std::string MouseParser::MOUSE_TAG = "Mouse";
-const std::string MouseParser::FORWARD_DIRECTION_TAG = "Forward-Direction";
-const std::string MouseParser::CENTER_OF_MASS_TAG = "Center-Of-Mass";
-const std::string MouseParser::BODY_TAG = "Body";
-const std::string MouseParser::VERTEX_TAG = "Vertex";
-const std::string MouseParser::X_TAG = "X";
-const std::string MouseParser::Y_TAG = "Y";
-const std::string MouseParser::WHEEL_TAG = "Wheel";
-const std::string MouseParser::NAME_TAG = "Name";
-const std::string MouseParser::DIAMETER_TAG = "Diameter";
-const std::string MouseParser::WIDTH_TAG = "Width";
-const std::string MouseParser::POSITION_TAG = "Position";
-const std::string MouseParser::DIRECTION_TAG = "Direction";
-const std::string MouseParser::MAX_SPEED_TAG = "Max-Speed";
-const std::string MouseParser::ENCODER_TYPE_TAG = "Encoder-Type";
-const std::string MouseParser::ENCODER_TICKS_PER_REVOLUTION_TAG = "Encoder-Ticks-Per-Revolution";
-const std::string MouseParser::SENSOR_TAG = "Sensor";
-const std::string MouseParser::RADIUS_TAG = "Radius";
-const std::string MouseParser::RANGE_TAG = "Range";
-const std::string MouseParser::HALF_WIDTH_TAG = "Half-Width";
+const QString MouseParser::MOUSE_TAG = "Mouse";
+const QString MouseParser::FORWARD_DIRECTION_TAG = "Forward-Direction";
+const QString MouseParser::CENTER_OF_MASS_TAG = "Center-Of-Mass";
+const QString MouseParser::BODY_TAG = "Body";
+const QString MouseParser::VERTEX_TAG = "Vertex";
+const QString MouseParser::X_TAG = "X";
+const QString MouseParser::Y_TAG = "Y";
+const QString MouseParser::WHEEL_TAG = "Wheel";
+const QString MouseParser::NAME_TAG = "Name";
+const QString MouseParser::DIAMETER_TAG = "Diameter";
+const QString MouseParser::WIDTH_TAG = "Width";
+const QString MouseParser::POSITION_TAG = "Position";
+const QString MouseParser::DIRECTION_TAG = "Direction";
+const QString MouseParser::MAX_SPEED_TAG = "Max-Speed";
+const QString MouseParser::ENCODER_TYPE_TAG = "Encoder-Type";
+const QString MouseParser::ENCODER_TICKS_PER_REVOLUTION_TAG = "Encoder-Ticks-Per-Revolution";
+const QString MouseParser::SENSOR_TAG = "Sensor";
+const QString MouseParser::RADIUS_TAG = "Radius";
+const QString MouseParser::RANGE_TAG = "Range";
+const QString MouseParser::HALF_WIDTH_TAG = "Half-Width";
 
-MouseParser::MouseParser(const std::string& filePath, bool* success) :
+MouseParser::MouseParser(const QString& filePath, bool* success) :
         m_forwardDirection(Radians(0)),
         m_centerOfMass(Cartesian(Meters(0), Meters(0))) {
-    pugi::xml_parse_result result = m_doc.load_file(filePath.c_str());
+    pugi::xml_parse_result result = m_doc.load_file(filePath.toStdString().c_str());
     if (!result) {
         L()->warn(
             "Unable to read mouse parameters in \"%v\" - %v",
-            filePath, result.description());
+            filePath.toStdString(), result.description());
         *success = false;
     }
     else {
-        m_root = m_doc.child(MOUSE_TAG.c_str());
+        m_root = m_doc.child(MOUSE_TAG.toStdString().c_str());
         m_forwardDirection = Radians(Degrees(
             getDoubleIfHasDouble(m_root, FORWARD_DIRECTION_TAG, success)));
         pugi::xml_node centerOfMassNode = getContainerNode(m_root, CENTER_OF_MASS_TAG, success);
@@ -63,14 +63,14 @@ Polygon MouseParser::getBody(
     Cartesian alignmentTranslation = initialTranslation - m_centerOfMass;
     Radians alignmentRotation = initialRotation - m_forwardDirection;
 
-    pugi::xml_node body = m_root.child(BODY_TAG.c_str());
+    pugi::xml_node body = m_root.child(BODY_TAG.toStdString().c_str());
     if (body.begin() == body.end()) {
-        L()->warn("No \"%v\" tag found.", BODY_TAG);
+        L()->warn("No \"%v\" tag found.", BODY_TAG.toStdString());
         *success = false;
     }
 
     QVector<Cartesian> vertices;
-    for (pugi::xml_node vertex : body.children(VERTEX_TAG.c_str())) {
+    for (pugi::xml_node vertex : body.children(VERTEX_TAG.toStdString().c_str())) {
         double x = getDoubleIfHasDouble(vertex, X_TAG, success);
         double y = getDoubleIfHasDouble(vertex, Y_TAG, success);
         vertices.push_back(
@@ -84,7 +84,7 @@ Polygon MouseParser::getBody(
     if (vertices.size() < 3) {
         L()->warn(
             "Invalid mouse \"%v\" - less than three valid vertices were specified.",
-            BODY_TAG);
+            BODY_TAG.toStdString());
         *success = false;
     }
 
@@ -94,7 +94,7 @@ Polygon MouseParser::getBody(
         if (bodyPolygon.getTriangles().size() == 0) {
             L()->warn(
                 "Invalid mouse \"%v\" - the vertices specified do not"
-                " constitute a simple polygon.", BODY_TAG);
+                " constitute a simple polygon.", BODY_TAG.toStdString());
             *success = false;
         }
     }
@@ -114,9 +114,9 @@ QMap<QString, Wheel> MouseParser::getWheels(
     Radians alignmentRotation = initialRotation - m_forwardDirection;
 
     QMap<QString, Wheel> wheels;
-    for (pugi::xml_node wheel : m_root.children(WHEEL_TAG.c_str())) {
+    for (pugi::xml_node wheel : m_root.children(WHEEL_TAG.toStdString().c_str())) {
 
-        std::string name = getNameIfNonemptyAndUnique("wheel", wheel, wheels, success);
+        QString name = getNameIfNonemptyAndUnique("wheel", wheel, wheels, success);
         double diameter = getDoubleIfHasDoubleAndNonNegative(wheel, DIAMETER_TAG, success);
         double width = getDoubleIfHasDoubleAndNonNegative(wheel, WIDTH_TAG, success);
         pugi::xml_node position = getContainerNode(wheel, POSITION_TAG, success);
@@ -131,7 +131,7 @@ QMap<QString, Wheel> MouseParser::getWheels(
 
         if (success) {
             wheels.insert(
-                name.c_str(),
+                name,
                 Wheel(
                     Meters(diameter),
                     Meters(width),
@@ -160,9 +160,9 @@ QMap<QString, Sensor> MouseParser::getSensors(
     Radians alignmentRotation = initialRotation - m_forwardDirection;
 
     QMap<QString, Sensor> sensors;
-    for (pugi::xml_node sensor : m_root.children(SENSOR_TAG.c_str())) {
+    for (pugi::xml_node sensor : m_root.children(SENSOR_TAG.toStdString().c_str())) {
 
-        std::string name = getNameIfNonemptyAndUnique("sensor", sensor, sensors, success);
+        QString name = getNameIfNonemptyAndUnique("sensor", sensor, sensors, success);
         double radius = getDoubleIfHasDoubleAndNonNegative(sensor, RADIUS_TAG, success);
         double range = getDoubleIfHasDoubleAndNonNegative(sensor, RANGE_TAG, success);
         double halfWidth = getDoubleIfHasDoubleAndNonNegative(sensor, HALF_WIDTH_TAG, success);
@@ -173,7 +173,7 @@ QMap<QString, Sensor> MouseParser::getSensors(
 
         if (success) {
             sensors.insert(
-                name.c_str(),
+                name,
                 Sensor(
                     Meters(radius),
                     Meters(range), 
@@ -191,12 +191,12 @@ QMap<QString, Sensor> MouseParser::getSensors(
     return sensors;
 }
 
-double MouseParser::getDoubleIfHasDouble(const pugi::xml_node& node, const std::string& tag, bool* success) {
-    std::string valueString = node.child(tag.c_str()).child_value();
+double MouseParser::getDoubleIfHasDouble(const pugi::xml_node& node, const QString& tag, bool* success) {
+    QString valueString = node.child(tag.toStdString().c_str()).child_value();
     if (!SimUtilities::isDouble(valueString)) {
         L()->warn(
             "Invalid value for tag \"%v\" - the tag is either missing entirely,"
-            " or its value isn't a valid floating point number.", tag);
+            " or its value isn't a valid floating point number.", tag.toStdString());
         *success = false;
         return 0.0;
     }
@@ -204,25 +204,25 @@ double MouseParser::getDoubleIfHasDouble(const pugi::xml_node& node, const std::
 }
 
 double MouseParser::getDoubleIfHasDoubleAndNonNegative(
-        const pugi::xml_node& node, const std::string& tag, bool* success) {
+        const pugi::xml_node& node, const QString& tag, bool* success) {
     double value = getDoubleIfHasDouble(node, tag, success);
     if (value < 0.0) {
         L()->warn(
             "The value for tag \"%v\" is %v, which is less than the minimum"
-            " allowed value of %v.", tag, value, 0.0);
+            " allowed value of %v.", tag.toStdString(), value, 0.0);
         *success = false;
         return 0.0;
     }
     return value;
 }
 
-pugi::xml_node MouseParser::getContainerNode(const pugi::xml_node& node, const std::string& tag, bool* success) {
-    pugi::xml_node containerNode = node.child(tag.c_str());
+pugi::xml_node MouseParser::getContainerNode(const pugi::xml_node& node, const QString& tag, bool* success) {
+    pugi::xml_node containerNode = node.child(tag.toStdString().c_str());
     if (!containerNode) {
         L()->warn(
             "No wheel \"%v\" tag found. This means that the \"%v\" and"
             " \"%v\" tags won't be found either.",
-            tag, X_TAG, Y_TAG);
+            tag.toStdString(), X_TAG.toStdString(), Y_TAG.toStdString());
         *success = false;
     }
     return containerNode;
@@ -230,15 +230,15 @@ pugi::xml_node MouseParser::getContainerNode(const pugi::xml_node& node, const s
 
 EncoderType MouseParser::getEncoderTypeIfValid(const pugi::xml_node& node, bool* success) {
     EncoderType encoderType;
-    std::string encoderTypeString = node.child(ENCODER_TYPE_TAG.c_str()).child_value();
-    if (STRING_TO_ENCODER_TYPE.contains(encoderTypeString.c_str())) {
-        encoderType = STRING_TO_ENCODER_TYPE.value(encoderTypeString.c_str());
+    QString encoderTypeString = node.child(ENCODER_TYPE_TAG.toStdString().c_str()).child_value();
+    if (STRING_TO_ENCODER_TYPE.contains(encoderTypeString)) {
+        encoderType = STRING_TO_ENCODER_TYPE.value(encoderTypeString);
     }
     else {
         L()->warn(
             "The encoder type \"%v\" is not valid. The only valid encoder"
             " types are \"%v\" and \"%v\".",
-            encoderTypeString, 
+            encoderTypeString.toStdString(),
             ENCODER_TYPE_TO_STRING.value(EncoderType::ABSOLUTE).toStdString(),
             ENCODER_TYPE_TO_STRING.value(EncoderType::RELATIVE).toStdString());
         *success = false;

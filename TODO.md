@@ -12,7 +12,12 @@
 - QHash instead of QMap
     - QSet instead of QVector
 - Make GUI
+- Kill toStdString
+- Kill SimUtilities, other platform dependent code
+- Kill directory.cpp
+- Get rid of unnecesary QString wrapping, like QString(<some qstring>)
 - Get rid of all c_str() calls
+- Kill toLatin1() calls
 - Get rid of all of the toStdString() calls
 - Format to 80 cols
 - Replace libs with native Qt functions

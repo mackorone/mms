@@ -173,7 +173,7 @@ void World::checkCollision() {
     }
 
     // If the interface type is DISCRETE, let this thread exit
-    if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType.c_str()) == InterfaceType::DISCRETE) {
+    if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) == InterfaceType::DISCRETE) {
         return;
     }
 

@@ -18,7 +18,7 @@ public:
     void declareWall(int x, int y, Direction direction, bool isWall);
     void undeclareWall(int x, int y, Direction direction);
     void setTileFogginess(int x, int y, bool foggy);
-    void setTileText(int x, int y, const QVector<std::string>& rowsOfText);
+    void setTileText(int x, int y, const QVector<QString>& rowsOfText);
 
     void draw() const;
     void updateColor() const;
