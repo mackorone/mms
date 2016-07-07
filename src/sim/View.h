@@ -2,6 +2,7 @@
 
 #include <QMap>
 #include <QPair>
+#include <QSet>
 #include <QVector>
 
 #include <glut/glut.h>
@@ -36,7 +37,7 @@ public:
     void refresh();
     void updateWindowSize(int width, int height);
 
-    QVector<char> getAllowableTileTextCharacters();
+    QSet<QChar> getAllowableTileTextCharacters();
     void initTileGraphicText();
 
     void keyPress(unsigned char key, int x, int y);
@@ -63,8 +64,8 @@ private:
     double m_screenPixelsPerMeter;
 
     // A map from char to x and y location in the font image
-    QMap<char, QPair<double, double>> m_fontImageMap;
-    QMap<char, QPair<double, double>> getFontImageMap();
+    QMap<QChar, QPair<double, double>> m_fontImageMap;
+    QMap<QChar, QPair<double, double>> getFontImageMap();
 
     // Window header object
     Header* m_header;

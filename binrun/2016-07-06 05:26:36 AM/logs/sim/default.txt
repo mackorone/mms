@@ -1,2 +1,0 @@
-[ 00:00.000 | 00: | WARN  | sim ] - Unable to read parameters from "/home/mack/Documents/github/mms/binres/parameters.xml": File was not found. Using default values for all parameters.
-[ 00:00.001 | 00: | ERROR | sim ] - "Tomasz" is not a valid maze algorithm.

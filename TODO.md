@@ -22,9 +22,9 @@
 - Format to 80 cols
 - Replace libs with native Qt functions
 - char to QChar
-    - Should I replace any other primitives
+- Replace QPair with structs
 - QList to QVector?
-- push_back to append?
+- append should replace push_back
 - Figure out a cleaner way to iterator over maps
   - QMapIterator<std::string, Wheel> iterator(wheels);
     while (iterator.hasNext()) {

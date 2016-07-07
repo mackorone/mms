@@ -1,10 +1,8 @@
 #include "BufferInterface.h"
 
-#include <QPair>
-#include <QVector>
+#include "RGB.h"
 
-#include "Assert.h"
-#include "Logging.h"
+// TODO: MACK - kill this
 #include "SimUtilities.h"
 
 namespace sim {
@@ -22,7 +20,7 @@ void BufferInterface::initTileGraphicText(
         const Distance& wallLength,
         const Distance& wallWidth,
         QPair<int, int> tileGraphicTextMaxSize,
-        const QMap<char, QPair<double, double>>& fontImageMap,
+        const QMap<QChar, QPair<double, double>>& fontImageMap,
         double borderFraction,
         TileTextAlignment tileTextAlignment) {
 
@@ -69,37 +67,25 @@ void BufferInterface::insertIntoTextureCpuBuffer() {
 
 void BufferInterface::updateTileGraphicBaseColor(int x, int y, Color color) {
     int index = getTileGraphicBaseStartingIndex(x, y);
-    std::tuple<double, double, double> colorValues = COLOR_TO_RGB.value(color);
+    RGB rgb = COLOR_TO_RGB.value(color);
     for (int i = 0; i < 2; i += 1) {
         TriangleGraphic* triangleGraphic = &(*m_graphicCpuBuffer)[index + i];
-        triangleGraphic->p1.r = std::get<0>(colorValues);
-        triangleGraphic->p1.g = std::get<1>(colorValues);
-        triangleGraphic->p1.b = std::get<2>(colorValues);
-        triangleGraphic->p2.r = std::get<0>(colorValues);
-        triangleGraphic->p2.g = std::get<1>(colorValues);
-        triangleGraphic->p2.b = std::get<2>(colorValues);
-        triangleGraphic->p3.r = std::get<0>(colorValues);
-        triangleGraphic->p3.g = std::get<1>(colorValues);
-        triangleGraphic->p3.b = std::get<2>(colorValues);
+        triangleGraphic->p1.rgb = rgb;
+        triangleGraphic->p2.rgb = rgb;
+        triangleGraphic->p3.rgb = rgb;
     }
 }
 
 void BufferInterface::updateTileGraphicWallColor(int x, int y, Direction direction, Color color, double alpha) {
     int index = getTileGraphicWallStartingIndex(x, y, direction);
-    std::tuple<double, double, double> colorValues = COLOR_TO_RGB.value(color);
+    RGB rgb = COLOR_TO_RGB.value(color);
     for (int i = 0; i < 2; i += 1) {
         TriangleGraphic* triangleGraphic = &(*m_graphicCpuBuffer)[index + i];
-        triangleGraphic->p1.r = std::get<0>(colorValues);
-        triangleGraphic->p1.g = std::get<1>(colorValues);
-        triangleGraphic->p1.b = std::get<2>(colorValues);
+        triangleGraphic->p1.rgb = rgb;
+        triangleGraphic->p2.rgb = rgb;
+        triangleGraphic->p3.rgb = rgb;
         triangleGraphic->p1.a = alpha;
-        triangleGraphic->p2.r = std::get<0>(colorValues);
-        triangleGraphic->p2.g = std::get<1>(colorValues);
-        triangleGraphic->p2.b = std::get<2>(colorValues);
         triangleGraphic->p2.a = alpha;
-        triangleGraphic->p3.r = std::get<0>(colorValues);
-        triangleGraphic->p3.g = std::get<1>(colorValues);
-        triangleGraphic->p3.b = std::get<2>(colorValues);
         triangleGraphic->p3.a = alpha;
     }
 }
@@ -114,7 +100,7 @@ void BufferInterface::updateTileGraphicFog(int x, int y, double alpha) {
     }
 }
 
-void BufferInterface::updateTileGraphicText(int x, int y, int numRows, int numCols, int row, int col, char c) {
+void BufferInterface::updateTileGraphicText(int x, int y, int numRows, int numCols, int row, int col, QChar c) {
 
     //    +---------[UR]  [p2]-------[p3]    [p2]
     //    |         / |    |         /       / |
@@ -162,15 +148,13 @@ void BufferInterface::drawMousePolygon(const Polygon& polygon, Color color, doub
 QVector<TriangleGraphic> BufferInterface::polygonToTriangleGraphics(const Polygon& polygon, Color color, double alpha) {
     QVector<Triangle> triangles = polygon.getTriangles();
     QVector<TriangleGraphic> triangleGraphics;
-    std::tuple<double, double, double> colorValues = COLOR_TO_RGB.value(color);
+    RGB colorValues = COLOR_TO_RGB.value(color);
     for (Triangle triangle : triangles) {
         triangleGraphics.push_back({
-            {triangle.p1.getX().getMeters(), triangle.p1.getY().getMeters(),
-                std::get<0>(colorValues), std::get<1>(colorValues), std::get<2>(colorValues), alpha},
-            {triangle.p2.getX().getMeters(), triangle.p2.getY().getMeters(),
-                std::get<0>(colorValues), std::get<1>(colorValues), std::get<2>(colorValues), alpha},
-            {triangle.p3.getX().getMeters(), triangle.p3.getY().getMeters(),
-                std::get<0>(colorValues), std::get<1>(colorValues), std::get<2>(colorValues), alpha}});
+            {triangle.p1.getX().getMeters(), triangle.p1.getY().getMeters(), colorValues, alpha},
+            {triangle.p2.getX().getMeters(), triangle.p2.getY().getMeters(), colorValues, alpha},
+            {triangle.p3.getX().getMeters(), triangle.p3.getY().getMeters(), colorValues, alpha}
+        });
     }
     return triangleGraphics;
 }

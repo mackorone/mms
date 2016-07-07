@@ -2,13 +2,20 @@
 
 // Asserts are a simple, development-time condition-checking mechanism. They are
 // meant to be used by authors of mms code and, as such, simply print to
-// std::cerr. If, for some reason, this is insufficient for you, you're probably
+// stderr. If, for some reason, this is insufficient for you, you're probably
 // using them incorrectly. 
 
 #include <iostream>
 
 #define OPENING "---------- Assertion failed! ----------"
 #define CLOSING "---------------------------------------"
+
+// TODO: upforgrabs
+// Rename SIM_ASSERT_TR to just ASSERT_TR (and likewise for the other
+// functions), since algo code no longer shares code with sim code.
+
+// TODO: upforgrabs
+// Refactor these to deduplicate the OPENING, FILE, and LINE printouts.
 
 #define SIM_ASSERT_TR(condition)\
 if (!(condition)) {\

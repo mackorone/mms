@@ -1,14 +1,12 @@
 #include "TileGraphicTextCache.h"
 
-#include <QPair>
-
 namespace sim {
 
 void TileGraphicTextCache::init(
         const Distance& wallLength,
         const Distance& wallWidth,
         QPair<int, int> tileGraphicTextMaxSize,
-        const QMap<char, QPair<double, double>>& fontImageMap,
+        const QMap<QChar, QPair<double, double>>& fontImageMap,
         double borderFraction,
         TileTextAlignment tileTextAlignment) {
 
@@ -23,7 +21,7 @@ QPair<int, int> TileGraphicTextCache::getTileGraphicTextMaxSize() const {
     return m_tileGraphicTextMaxSize;
 }
 
-QPair<double, double> TileGraphicTextCache::getFontImageCharacterPosition(char c) const {
+QPair<double, double> TileGraphicTextCache::getFontImageCharacterPosition(QChar c) const {
     SIM_ASSERT_TR(m_fontImageMap.contains(c));
     return m_fontImageMap.value(c);
 }

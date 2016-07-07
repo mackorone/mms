@@ -1,7 +1,9 @@
 #pragma once
 
+#include <QChar>
 #include <QMap>
 #include <QPair>
+#include <QVector>
 
 #include "Color.h"
 #include "Direction.h"
@@ -27,7 +29,7 @@ public:
         const Distance& wallLength,
         const Distance& wallWidth,
         QPair<int, int> tileGraphicTextMaxSize,
-        const QMap<char, QPair<double, double>>& fontImageMap,
+        const QMap<QChar, QPair<double, double>>& fontImageMap,
         double borderFraction,
         TileTextAlignment tileTextAlignment);
 
@@ -42,7 +44,7 @@ public:
     void updateTileGraphicBaseColor(int x, int y, Color color);
     void updateTileGraphicWallColor(int x, int y, Direction direction, Color color, double alpha);
     void updateTileGraphicFog(int x, int y, double alpha);
-    void updateTileGraphicText(int x, int y, int numRows, int numCols, int row, int col, char c);
+    void updateTileGraphicText(int x, int y, int numRows, int numCols, int row, int col, QChar c);
 
     // Appends a mouse polygon to the graphic cpu buffer
     void drawMousePolygon(const Polygon& polygon, Color color, double sensorAlpha);

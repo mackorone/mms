@@ -3,10 +3,8 @@
 #include <QMap>
 #include <QString>
 
-// TODO: MACK
-#include <tuple>
-
 #include "ContainerUtilities.h"
+#include "RGB.h"
 
 namespace sim {
 
@@ -30,24 +28,24 @@ enum class Color {
     DARK_YELLOW,
 };
 
-static const QMap<Color, std::tuple<double, double, double>> COLOR_TO_RGB {
-    {Color::BLACK      , std::make_tuple(0.0, 0.0, 0.0)},
-    {Color::BLUE       , std::make_tuple(0.0, 0.0, 0.7)},
-    {Color::CYAN       , std::make_tuple(0.0, 0.4, 0.4)},
-    {Color::GRAY       , std::make_tuple(0.7, 0.7, 0.7)},
-    {Color::GREEN      , std::make_tuple(0.0, 0.7, 0.0)},
-    {Color::ORANGE     , std::make_tuple(0.7, 0.4, 0.0)},
-    {Color::RED        , std::make_tuple(0.8, 0.0, 0.0)},
-    {Color::WHITE      , std::make_tuple(1.0, 1.0, 1.0)},
-    {Color::YELLOW     , std::make_tuple(0.7, 0.7, 0.0)},
-    {Color::DARK_BLUE  , std::make_tuple(0.0, 0.0, 0.2)},
-    {Color::DARK_CYAN  , std::make_tuple(0.0, 0.2, 0.2)},
-    {Color::DARK_GRAY  , std::make_tuple(0.1, 0.1, 0.1)},
-    {Color::DARK_GREEN , std::make_tuple(0.0, 0.3, 0.0)},
-    {Color::DARK_ORANGE, std::make_tuple(0.2, 0.1, 0.0)},
-    {Color::DARK_RED   , std::make_tuple(0.3, 0.0, 0.0)},
-    {Color::DARK_VIOLET, std::make_tuple(0.2, 0.0, 0.2)},
-    {Color::DARK_YELLOW, std::make_tuple(0.2, 0.2, 0.0)},
+static const QMap<Color, RGB> COLOR_TO_RGB {
+    {Color::BLACK      , {0.0, 0.0, 0.0}},
+    {Color::BLUE       , {0.0, 0.0, 0.7}},
+    {Color::CYAN       , {0.0, 0.4, 0.4}},
+    {Color::GRAY       , {0.7, 0.7, 0.7}},
+    {Color::GREEN      , {0.0, 0.7, 0.0}},
+    {Color::ORANGE     , {0.7, 0.4, 0.0}},
+    {Color::RED        , {0.8, 0.0, 0.0}},
+    {Color::WHITE      , {1.0, 1.0, 1.0}},
+    {Color::YELLOW     , {0.7, 0.7, 0.0}},
+    {Color::DARK_BLUE  , {0.0, 0.0, 0.2}},
+    {Color::DARK_CYAN  , {0.0, 0.2, 0.2}},
+    {Color::DARK_GRAY  , {0.1, 0.1, 0.1}},
+    {Color::DARK_GREEN , {0.0, 0.3, 0.0}},
+    {Color::DARK_ORANGE, {0.2, 0.1, 0.0}},
+    {Color::DARK_RED   , {0.3, 0.0, 0.0}},
+    {Color::DARK_VIOLET, {0.2, 0.0, 0.2}},
+    {Color::DARK_YELLOW, {0.2, 0.2, 0.0}},
 };
 
 static const QMap<Color, QString> COLOR_TO_STRING {

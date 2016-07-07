@@ -137,8 +137,8 @@ void View::updateWindowSize(int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-QVector<char> View::getAllowableTileTextCharacters() {
-    return m_fontImageMap.keys().toVector();
+QSet<QChar> View::getAllowableTileTextCharacters() {
+    return QSet<QChar>::fromList(m_fontImageMap.keys());
 }
 
 void View::initTileGraphicText() {
@@ -379,21 +379,21 @@ void View::initTextureProgram() {
     glBindVertexArray(0);
 }
 
-QMap<char, QPair<double, double>> View::getFontImageMap() {
+QMap<QChar, QPair<double, double>> View::getFontImageMap() {
 
     // These values must perfectly reflect the font image being used, or else
     // the wrong characters will be displayed on the tiles.
-    const QString fontImageChars =
+    QString fontImageChars =
         " !\"#$%&'()*+,-./0123456789:;<=>?"
         "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
         "`abcdefghijklmnopqrstuvwxyz{|}~";
 
     // Get a map of the font image characters (allowable tile text characters)
     // to their position in the png image (a fraction from 0.0 to 1.0)
-    QMap<char, QPair<double, double>> fontImageMap;
+    QMap<QChar, QPair<double, double>> fontImageMap;
     for (int i = 0; i < fontImageChars.size(); i += 1) {
         fontImageMap.insert(
-            fontImageChars.at(i).toLatin1(),
+            fontImageChars.at(i),
             {
                 static_cast<double>(i + 0) / static_cast<double>(fontImageChars.size()),
                 static_cast<double>(i + 1) / static_cast<double>(fontImageChars.size())
