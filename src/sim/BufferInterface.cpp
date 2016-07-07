@@ -2,9 +2,6 @@
 
 #include "RGB.h"
 
-// TODO: MACK - kill this
-#include "SimUtilities.h"
-
 namespace sim {
 
 BufferInterface::BufferInterface(
@@ -175,7 +172,7 @@ int BufferInterface::getTileGraphicBaseStartingIndex(int x, int y) {
 }
 
 int BufferInterface::getTileGraphicWallStartingIndex(int x, int y, Direction direction) {
-    return  2 + trianglesPerTile() * (m_mazeSize.second * x + y) + (2 * SimUtilities::getDirectionIndex(direction));
+    return  2 + trianglesPerTile() * (m_mazeSize.second * x + y) + (2 * DIRECTIONS.indexOf(direction));
 }
 
 int BufferInterface::getTileGraphicCornerStartingIndex(int x, int y, int cornerNumber) {

@@ -181,10 +181,6 @@ bool SimUtilities::isFile(const QString& path) {
     return infile.good();
 }
 
-int SimUtilities::getDirectionIndex(Direction direction) {
-    return std::find(DIRECTIONS.begin(), DIRECTIONS.end(), direction) - DIRECTIONS.begin();
-}
-
 QVector<QString> SimUtilities::getDirectoryContents(const QString& path) {
 
     QVector<QString> contents;

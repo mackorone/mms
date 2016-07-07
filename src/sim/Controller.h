@@ -1,11 +1,15 @@
 #pragma once
 
-#include "Model.h"
-#include "View.h"
+#include <QString>
 
-#include "../mouse/IMouseAlgorithm.h"
+// TODO: MACK - come back to cleaning this up
+
+#include "../mouse/IMouseAlgorithm.h" // TODO: MACK - kill this
+#include "Direction.h"
+#include "Model.h"
 #include "MouseInterface.h"
 #include "StaticMouseAlgorithmOptions.h"
+#include "View.h"
 
 namespace sim {
 

@@ -58,9 +58,6 @@ public:
     // True if path is a path to a file, false otherwise
     static bool isFile(const QString& path);
 
-    // Returns the index of the direction in DIRECTIONS
-    static int getDirectionIndex(Direction direction);
-
     // Returns a vector of strings of paths of the given directory's contents
     static QVector<QString> getDirectoryContents(const QString& path);
 

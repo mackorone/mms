@@ -16,9 +16,10 @@ enum class Direction {
     WEST,
 };
 
-// This vector serves two functions:
+// This vector serves a few functions:
 // 1) A convenient way to enumerate through all of the directions
 // 2) Determines the order of wall information in .NUM maze files
+// 3) Determines the location of wall information in the vertex buffer
 static const QVector<Direction> DIRECTIONS {
     Direction::NORTH,
     Direction::EAST,

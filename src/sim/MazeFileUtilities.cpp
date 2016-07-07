@@ -352,7 +352,7 @@ BasicMaze MazeFileUtilities::deserializeNumType(const QByteArray& bytes) {
         BasicTile tile;
         for (Direction direction : DIRECTIONS) {
             tile.insert({direction,
-                (1 == std::stoi(tokens.at(2 + SimUtilities::getDirectionIndex(direction))))
+                (1 == std::stoi(tokens.at(2 + DIRECTIONS.indexOf(direction))))
                 // We can't use the sim utilities string to into becuase we have to throw an
                 // exception if we fail. The sim utilities throw an assert.
                 //

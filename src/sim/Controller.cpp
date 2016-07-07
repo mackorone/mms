@@ -1,11 +1,10 @@
 #include "Controller.h"
 
+// #include "../mouse/MouseAlgorithms.h" // TODO: MACK
 #include "Logging.h"
+#include "MouseChecker.h"
 #include "Param.h"
 #include "SimUtilities.h"
-
-// #include "../mouse/MouseAlgorithms.h" // TODO: MACK
-#include "MouseChecker.h"
 
 namespace sim {
 
