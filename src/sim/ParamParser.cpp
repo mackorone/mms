@@ -15,7 +15,7 @@ const QString ParamParser::PARAMETERS_TAG = "parameters";
 ParamParser::ParamParser(const QString& filePath) {
     m_fileIsReadable = m_doc.load_file(filePath.toStdString().c_str());
     if (!m_fileIsReadable) {
-        L()->warn(
+        Logging::get()->warn(
             "Unable to read parameters from \"%v\": %v. "
             "Using default values for all parameters.",
             filePath.toStdString(), m_fileIsReadable.description());
@@ -149,7 +149,7 @@ QString ParamParser::getStringIfHasStringAndIsTileTextAlignment(const QString& t
 
 void ParamParser::printTagNotFound(const QString& type, const QString& tag, const QString& defaultValue) {
     if (m_fileIsReadable) {
-        L()->warn(
+        Logging::get()->warn(
             "Could not find %v parameter \"%v\". Using default value of %v.",
             type.toStdString(), tag.toStdString(), defaultValue.toStdString());
     }
@@ -157,7 +157,7 @@ void ParamParser::printTagNotFound(const QString& type, const QString& tag, cons
 
 void ParamParser::printLessThan(const QString& type, const QString& tag, const QString& value,
     const QString& defaultValue, const QString& min) {
-    L()->warn(
+    Logging::get()->warn(
         "The value of the %v parameter \"%v\" is %v and is less than "
         "the minimum allowed value of %v. Using default value of %v.",
         type.toStdString(), tag.toStdString(), value.toStdString(), min.toStdString(), defaultValue.toStdString());
@@ -165,7 +165,7 @@ void ParamParser::printLessThan(const QString& type, const QString& tag, const Q
 
 void ParamParser::printGreaterThan(const QString& type, const QString& tag, const QString& value,
     const QString& defaultValue, const QString& max) {
-    L()->warn(
+    Logging::get()->warn(
         "The value of the %v parameter \"%v\" is %v and is greater than "
         "the maximum allowed value of %v. Using default value of %v.",
         type.toStdString(), tag.toStdString(), value.toStdString(), max.toStdString(), defaultValue.toStdString());	
@@ -176,7 +176,7 @@ void ParamParser::printNotSpecialString(
         const QString& tag,
         const QString& value,
         const QString& defaultValue) {
-    L()->warn(
+    Logging::get()->warn(
         "The value of string parameter \"%v\" is \"%v\" and is "
         "not a valid %v. Using default value of \"%v\".",
         tag.toStdString(), value.toStdString(), type.toStdString(), defaultValue.toStdString());

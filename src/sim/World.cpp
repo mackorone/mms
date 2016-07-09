@@ -64,7 +64,7 @@ void World::simulate() {
     }
     double end(SimUtilities::getHighResTimestamp());
     double duration = end - start;
-    L()->info("%v", duration);
+    Logging::get()->info("%v", duration);
     SimUtilities::quit();
     */
 
@@ -152,7 +152,7 @@ void World::simulate() {
         // Notify the use of a late mouse position update
         if (P()->printLateMousePositionUpdates() && duration > 1.0/P()->mousePositionUpdateRate()) {
 			// TODO: MACK
-            // L()->warn(
+            // Logging::get()->warn(
             //     "A mouse position update was late by %v seconds, which is %v percent late.",
             //     (duration - 1.0/P()->mousePositionUpdateRate()),
             //     (duration - 1.0/P()->mousePositionUpdateRate())/(1.0/P()->mousePositionUpdateRate()) * 100);
@@ -210,7 +210,7 @@ void World::checkCollision() {
 
         // Notify the use of a late collision detection
         if (P()->printLateCollisionDetections() && duration > 1.0 / P()->collisionDetectionRate()) {
-            L()->warn(
+            Logging::get()->warn(
                 "A collision detection was late by %v seconds, which is %v percent late.",
                 (duration - 1.0/P()->collisionDetectionRate()),
                 (duration - 1.0/P()->collisionDetectionRate())/(1.0/P()->collisionDetectionRate()) * 100);

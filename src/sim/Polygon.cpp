@@ -28,7 +28,7 @@ Polygon::Polygon(const Polygon& polygon) :
         static int i = 0;
         i += 1;
         if (i % 100 == 0) {
-            L()->info("Untriangulated polygon copies count: %v", i);
+            Logging::get()->info("Untriangulated polygon copies count: %v", i);
         }
         */
     }

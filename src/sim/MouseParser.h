@@ -82,11 +82,11 @@ private:
             const pugi::xml_node& node, const QMap<QString, T>& map, bool* success) {
         QString name = node.child(NAME_TAG.toStdString().c_str()).child_value();
         if (name.isEmpty()) {
-            L()->warn("No %v name specified.", type.toStdString());
+            Logging::get()->warn("No %v name specified.", type.toStdString());
             *success = false;
         }
         if (map.contains(name)) {
-            L()->warn("Two %vs both have the name \"%v\".", type.toStdString(), name.toStdString());
+            Logging::get()->warn("Two %vs both have the name \"%v\".", type.toStdString(), name.toStdString());
             *success = false;
         }
         return name;

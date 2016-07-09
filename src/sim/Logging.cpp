@@ -11,38 +11,29 @@ INITIALIZE_EASYLOGGINGPP
 
 namespace sim {
 
-// Create and initialize the static variables
-QString Logging::m_runId = "";
-QString Logging::m_simLoggerName = "sim";
-QString Logging::m_mazeLoggerName = "maze";
-QString Logging::m_mouseLoggerName = "mouse";
-QMap<QString, QPair<QString, int>> Logging::m_info;
+Logging* Logging::INSTANCE = nullptr;
 
-el::Logger* L() {
-    return Logging::getSimLogger();
+void Logging::init(const QString& runId) {
+    SIM_ASSERT_TR(INSTANCE == nullptr);
+    INSTANCE = new Logging(runId);
 }
 
-el::Logger* Logging::getSimLogger() {
-    return getLogger(m_simLoggerName);
+el::Logger* Logging::get() {
+    SIM_ASSERT_FA(INSTANCE == nullptr);
+    return INSTANCE->getLogger("sim"); // TODO: MACK
 }
 
-el::Logger* Logging::getMazeLogger() {
-    return getLogger(m_mazeLoggerName);
+// TODO: MACK
+Logging* Logging::getLogging() {
+    SIM_ASSERT_FA(INSTANCE == nullptr);
+    return INSTANCE;
 }
 
-el::Logger* Logging::getMouseLogger() {
-    return getLogger(m_mouseLoggerName);
-}
-
-void Logging::initialize(const QString& runId) {
-
-    // Ensure we only initialize the loggers once
-    static bool initialized = false;
-    SIM_ASSERT_FA(initialized);
-    initialized = true;
-
-    // Set the runId
-    m_runId = runId;
+Logging::Logging(const QString& runId) :
+    m_runId(runId),
+    m_simLoggerName("sim"),
+    m_mazeLoggerName("maze"),
+    m_mouseLoggerName("mouse") {
 
     // For each of the logger names ...
     for (QString loggerName : {m_simLoggerName, m_mazeLoggerName, m_mouseLoggerName}) {
@@ -107,7 +98,7 @@ QString Logging::getNextFileName(const char* filename) {
 }
 
 void Logging::rolloutHandler(const char* filename, std::size_t size) {
-    int value = std::rename(filename, getNextFileName(filename).toStdString().c_str());
+    int value = std::rename(filename, Logging::getLogging()->getNextFileName(filename).toStdString().c_str());
     SIM_ASSERT_EQ(value, 0);
 }
 

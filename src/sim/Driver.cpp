@@ -2,9 +2,9 @@
 
 #include <QCoreApplication>
 #include <QProcess>
-#include <thread>
 
-#include <iostream> // TODO: MACK
+// TODO: MACK - replace this with QThread
+#include <thread>
 
 #include "Assert.h"
 #include "Directory.h"
@@ -29,20 +29,21 @@ void Driver::drive(int argc, char* argv[]) {
     // Before anything else, initialize the Time object
     Time::init();
 
-    // Retreive and set the path to the mms root directory
+    // Then, initialize the Directory object
     QCoreApplication app(argc, argv);
     QString path = app.applicationFilePath(); // .../mms/sim/bin
     path = path.left(path.lastIndexOf("/")); // Strips off /bin
     path = path.left(path.lastIndexOf("/")); // Strips off /sim
-    Directory::init(path + "/"); // Initialize Directory object
+    Directory::init(path + "/");
 
+    // TODO: MACK - Replace this with Qt functionality
     // Then, determine the runId (just datetime for now)
     QString runId = SimUtilities::timestampToDatetimeString(
         Time::get()->startTimestamp()
     );
 
-    // Then, initiliaze logging (before calling P() or S())
-    Logging::initialize(runId);
+    // Then, initiliaze logging (before initializing Param or State)
+    Logging::init(runId);
 
     // Initialize the State object in order to:
     // 1) Set the runId
@@ -109,14 +110,7 @@ void Driver::drive(int argc, char* argv[]) {
         // Wait for the window to appear
         SimUtilities::sleep(Seconds(P()->glutInitDuration()));
 
-        /*
-        QProcess process; // TODO: MACK - pass in parent here
-        process.start("ls", QStringList() << ".");
-        process.waitForFinished();
-        QByteArray result = process.readAll();
-        std::cout << QString(result).toStdString() << std::endl;
-        */
-        
+        // TODO: MACK
         // Begin execution of the mouse algorithm
         /*
         m_controller->getMouseAlgorithm()->solve(

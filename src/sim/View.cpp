@@ -120,7 +120,7 @@ void View::refresh() {
 
     // Notify the user of a late frame
     if (P()->printLateFrames() && duration > 1.0/P()->frameRate()) {
-        L()->warn(
+        Logging::get()->warn(
             "A frame was late by %v seconds, which is %v percent late.",
             duration - 1.0/P()->frameRate(),
             (duration - 1.0/P()->frameRate())/(1.0/P()->frameRate()) * 100);
@@ -166,7 +166,7 @@ void View::keyPress(unsigned char key, int x, int y) {
             S()->setPaused(!S()->paused());
         }
         else {
-            L()->warn(
+            Logging::get()->warn(
                 "Pausing the simulator is only allowed in %v mode.",
                 INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE).toStdString());
         }
@@ -177,7 +177,7 @@ void View::keyPress(unsigned char key, int x, int y) {
             S()->setSimSpeed(S()->simSpeed() * 1.5);
         }
         else {
-            L()->warn(
+            Logging::get()->warn(
                 "Increasing the simulator speed is only allowed in %v mode.",
                 INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE).toStdString());
         }
@@ -188,7 +188,7 @@ void View::keyPress(unsigned char key, int x, int y) {
             S()->setSimSpeed(S()->simSpeed() / 1.5);
         }
         else {
-            L()->warn(
+            Logging::get()->warn(
                 "Decreasing the simulator speed is only allowed in %v mode.",
                 INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE).toStdString());
         }
@@ -253,10 +253,10 @@ void View::keyPress(unsigned char key, int x, int y) {
         int inputButton = QString("0123456789").indexOf(key);
         if (!S()->inputButtonWasPressed(inputButton)) {
             S()->setInputButtonWasPressed(inputButton, true);
-            L()->info("Input button %v was pressed.", inputButton);
+            Logging::get()->info("Input button %v was pressed.", inputButton);
         }
         else {
-            L()->warn(
+            Logging::get()->warn(
                 "Input button %v has not yet been acknowledged as pressed; pressing it has no effect.",
                 inputButton);
         }
@@ -308,7 +308,7 @@ void View::initGraphics(int argc, char* argv[], const GlutFunctions& functions) 
     // GLEW Initialization
     GLenum err = glewInit();
     if (GLEW_OK != err) {
-        L()->error("Unable to initialize GLEW.");
+        Logging::get()->error("Unable to initialize GLEW.");
         SimUtilities::quit();
     }
 
@@ -364,7 +364,7 @@ void View::initTextureProgram() {
     // Load the bitmap texture into the texture atlas
     QString tileTextFontImagePath = Directory::get()->getResImgsDirectory() + P()->tileTextFontImage();
     if (!SimUtilities::isFile(tileTextFontImagePath)) {
-        L()->error(
+        Logging::get()->error(
             "Could not find font image file \"%v\" in \"%v\".",
             P()->tileTextFontImage().toStdString(),
             Directory::get()->getResImgsDirectory().toStdString());

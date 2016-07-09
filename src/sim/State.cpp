@@ -58,7 +58,7 @@ bool State::crashed() {
 
 void State::setCrashed() {
     m_crashed = true;
-    L()->warn("%v", P()->crashMessage().toStdString());
+    Logging::get()->warn("%v", P()->crashMessage().toStdString());
 }
 
 LayoutType State::layoutType() {
