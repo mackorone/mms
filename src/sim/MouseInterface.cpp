@@ -58,12 +58,12 @@ double MouseInterface::getRandom() {
 }
 
 int MouseInterface::millis() {
-    return T()->elapsedSimTime().getMilliseconds();
+    return Time::get()->elapsedSimTime().getMilliseconds();
 }
 
 void MouseInterface::delay(int milliseconds) {
-    Seconds start = T()->elapsedSimTime();
-    while (T()->elapsedSimTime() < start + Milliseconds(milliseconds)) {
+    Seconds start = Time::get()->elapsedSimTime();
+    while (Time::get()->elapsedSimTime() < start + Milliseconds(milliseconds)) {
         sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
     }
 }

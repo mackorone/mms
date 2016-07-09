@@ -9,6 +9,7 @@ namespace sim {
 class Driver {
 
 public:
+    // TODO: MACK - should probably be a singleton
     Driver() = delete;
     static void drive(int argc, char* argv[]);
 

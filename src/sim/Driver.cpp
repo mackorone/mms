@@ -26,17 +26,19 @@ void Driver::drive(int argc, char* argv[]) {
     // Make sure that this function is called just once
     SIM_ASSERT_RUNS_JUST_ONCE();
 
-    // TODO: MACK
+    // Before anything else, initialize the Time object
+    Time::init();
+
+    // Retreive and set the path to the mms root directory
     QCoreApplication app(argc, argv);
-    Directory::setBinPath(app.applicationFilePath());
-
-
-    // Before anything else, create the Time object
-    T();
+    QString path = app.applicationFilePath(); // .../mms/sim/bin
+    path = path.left(path.lastIndexOf("/")); // Strips off /bin
+    path = path.left(path.lastIndexOf("/")); // Strips off /sim
+    Directory::init(path + "/"); // Initialize Directory object
 
     // Then, determine the runId (just datetime for now)
     QString runId = SimUtilities::timestampToDatetimeString(
-        T()->startTimestamp()
+        Time::get()->startTimestamp()
     );
 
     // Then, initiliaze logging (before calling P() or S())

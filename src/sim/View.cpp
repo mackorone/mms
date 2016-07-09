@@ -326,7 +326,7 @@ void View::initPolygonProgram() {
 
     // Set up the program and attribute pointers
     m_polygonProgram = new tdogl::Program({tdogl::Shader::shaderFromFile(
-        Directory::getResShadersDirectory().toStdString() + "polygonVertexShader.txt", GL_VERTEX_SHADER)});
+        Directory::get()->getResShadersDirectory().toStdString() + "polygonVertexShader.txt", GL_VERTEX_SHADER)});
     glEnableVertexAttribArray(m_polygonProgram->attrib("coordinate"));
     glVertexAttribPointer(m_polygonProgram->attrib("coordinate"),
         2, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), 0);
@@ -350,9 +350,9 @@ void View::initTextureProgram() {
     // Set up the program and attribute pointers
     std::vector<tdogl::Shader> shaders;
     shaders.push_back(tdogl::Shader::shaderFromFile(
-        Directory::getResShadersDirectory().toStdString() + "textureVertexShader.txt", GL_VERTEX_SHADER));
+        Directory::get()->getResShadersDirectory().toStdString() + "textureVertexShader.txt", GL_VERTEX_SHADER));
     shaders.push_back(tdogl::Shader::shaderFromFile(
-        Directory::getResShadersDirectory().toStdString() + "textureFragmentShader.txt", GL_FRAGMENT_SHADER));
+        Directory::get()->getResShadersDirectory().toStdString() + "textureFragmentShader.txt", GL_FRAGMENT_SHADER));
     m_textureProgram = new tdogl::Program(shaders);
     glEnableVertexAttribArray(m_textureProgram->attrib("coordinate"));
     glVertexAttribPointer(m_textureProgram->attrib("coordinate"),
@@ -362,12 +362,12 @@ void View::initTextureProgram() {
         2, GL_DOUBLE, GL_TRUE, 4 * sizeof(double), (char*) NULL + 2 * sizeof(double));
 
     // Load the bitmap texture into the texture atlas
-    QString tileTextFontImagePath = Directory::getResImgsDirectory() + P()->tileTextFontImage();
+    QString tileTextFontImagePath = Directory::get()->getResImgsDirectory() + P()->tileTextFontImage();
     if (!SimUtilities::isFile(tileTextFontImagePath)) {
         L()->error(
             "Could not find font image file \"%v\" in \"%v\".",
             P()->tileTextFontImage().toStdString(),
-            Directory::getResImgsDirectory().toStdString());
+            Directory::get()->getResImgsDirectory().toStdString());
         SimUtilities::quit();
     }
     tdogl::Bitmap bmp = tdogl::Bitmap::bitmapFromFile(tileTextFontImagePath.toStdString());

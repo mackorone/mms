@@ -8,41 +8,48 @@ class Directory {
 
 public:
 
-    // The Directory class is not constructible
-    Directory() = delete;
+    // Initialize the Directory singleton by passing in
+    // the absolute path to the project root directory
+    static void init(const QString& root);
+
+    // Retrieve the Directory singleton
+    static Directory* get();
 
     // mms/maze/algos
-    static QString getSrcMazeAlgosDirectory();
+    QString getSrcMazeAlgosDirectory();
 
     // mms/res
-    static QString getResDirectory();
+    QString getResDirectory();
 
     // mms/res/fonts
-    static QString getResFontsDirectory();
-
-    // mms/res/maze
-    static QString getResMazeDirectory();
-
-    // mms/res/mouse
-    static QString getResMouseDirectory();
-
-    // mms/res/shaders
-    static QString getResShadersDirectory();
+    QString getResFontsDirectory();
 
     // mms/res/imgs
-    static QString getResImgsDirectory();
+    QString getResImgsDirectory();
+
+    // mms/res/maze
+    QString getResMazeDirectory();
+
+    // mms/res/mouse
+    QString getResMouseDirectory();
+
+    // mms/res/shaders
+    QString getResShadersDirectory();
 
     // mms/run
-    static QString getRunDirectory();
-
-    // TODO: MACK
-    static void setBinPath(const QString& path);
+    QString getRunDirectory();
 
 private:
-    static QString m_binPath; // TODO: MACK
+
+    // A private constructor is used to ensure
+    // only one instance of this class exists
+    Directory(const QString& root);
+
+    // A pointer to the actual instance of the class
+    static Directory* INSTANCE;
 
     // mms
-    static QString getProjectDirectory();
+    QString m_root;
 
 };
 

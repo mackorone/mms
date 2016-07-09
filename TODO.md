@@ -1,5 +1,8 @@
 # High Priority
 
+- Rule of thumb - if it has state, make it a singleton instead of a static class
+    - Rewrite singleton access patterns to be a little more readable (kill T(), P(), etc.)
+    - All singletons should have an init function
 - Renamespace sim to mms
 - Fix timestep
     - Make renderer and physics on same thread
@@ -10,7 +13,7 @@
     - Get rid of other lib/ dependencies
 - QT-ify everything
 - QHash instead of QMap
-    - QSet instead of QVector
+    - QSet instead of QVector in some places
 - Make GUI
 - Kill toStdString
 - Kill SimUtilities, other platform dependent code
@@ -25,11 +28,9 @@
 - Replace QPair with structs
 - QList to QVector?
 - append should replace push_back
-- Figure out a cleaner way to iterator over maps
-  - QMapIterator<std::string, Wheel> iterator(wheels);
-    while (iterator.hasNext()) {
-        auto wheel = iterator.next();
+- Rename the namespace from sim to mms
 - auto vs const auto&
+    - Use const auto&
 - Bluetooth communication
 - Support reading or writing more file types
     - .MAZ, .mz2

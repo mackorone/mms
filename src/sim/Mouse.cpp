@@ -40,7 +40,7 @@ bool Mouse::initialize(
     m_currentRotation = m_initialRotation;
 
     // Create the mouse parser object
-    MouseParser parser(Directory::getResMouseDirectory() + mouseFile, &success);
+    MouseParser parser(Directory::get()->getResMouseDirectory() + mouseFile, &success);
     if (!success) { // A checkpoint so that we can fail faster
         return false;
     }

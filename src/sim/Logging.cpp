@@ -48,7 +48,7 @@ void Logging::initialize(const QString& runId) {
     for (QString loggerName : {m_simLoggerName, m_mazeLoggerName, m_mouseLoggerName}) {
         
         // ... create the logger info ...
-        QString loggerPath = Directory::getRunDirectory() + m_runId + "/logs/" + loggerName + "/default.txt";
+        QString loggerPath = Directory::get()->getRunDirectory() + m_runId + "/logs/" + loggerName + "/default.txt";
         m_info.insert(loggerName, {loggerPath, 1});
 
         // ... and then create the logger ...
@@ -72,14 +72,14 @@ void Logging::initialize(const QString& runId) {
     el::Helpers::installPreRollOutCallback(rolloutHandler);
 
     el::Helpers::installCustomFormatSpecifier(el::CustomFormatSpecifier("%real_time", [](){
-        double seconds = T()->elapsedRealTime().getSeconds();
+        double seconds = Time::get()->elapsedRealTime().getSeconds();
         QString secondsString = SimUtilities::formatSeconds(seconds);
         secondsString.truncate(secondsString.indexOf(".") + 4); // Trim to 3 decimal places
         return secondsString.toStdString().c_str();
     }));
 
     el::Helpers::installCustomFormatSpecifier(el::CustomFormatSpecifier("%sim_time", [](){
-        double seconds = T()->elapsedSimTime().getSeconds();
+        double seconds = Time::get()->elapsedSimTime().getSeconds();
         QString secondsString = SimUtilities::formatSeconds(seconds);
         secondsString.truncate(secondsString.indexOf(".") + 4); // Trim to 3 decimal places
         return secondsString.toStdString().c_str();
@@ -103,7 +103,7 @@ QString Logging::getNextFileName(const char* filename) {
         }
     }
     SIM_ASSERT_NE(path.toStdString().c_str(), "");
-    return Directory::getRunDirectory() + m_runId + path;
+    return Directory::get()->getRunDirectory() + m_runId + path;
 }
 
 void Logging::rolloutHandler(const char* filename, std::size_t size) {

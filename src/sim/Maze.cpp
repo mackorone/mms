@@ -24,7 +24,7 @@ Maze::Maze() {
 
     if (P()->useMazeFile()) {
         // TODO: MACK - clean this up (the file existence check should be in the utility class)
-        QString mazeFilePath = Directory::getResMazeDirectory() + P()->mazeFile();
+        QString mazeFilePath = Directory::get()->getResMazeDirectory() + P()->mazeFile();
         try {
             basicMaze = MazeFileUtilities::load(mazeFilePath);
         }
@@ -41,7 +41,7 @@ Maze::Maze() {
     }
     else {
         // TODO: MACK - refactor this logic elsewhere
-        QDir mazeAlgosDir(Directory::getSrcMazeAlgosDirectory());
+        QDir mazeAlgosDir(Directory::get()->getSrcMazeAlgosDirectory());
         mazeAlgosDir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
         mazeAlgosDir.setSorting(QDir::Name | QDir::QDir::IgnoreCase);
         QStringList algos = mazeAlgosDir.entryList();
@@ -104,7 +104,7 @@ Maze::Maze() {
     // Optionally save the maze
     if (!P()->useMazeFile() && P()->saveGeneratedMaze()) {
         MazeFileType type = STRING_TO_MAZE_FILE_TYPE.value(P()->generatedMazeType());
-        QString mazeFilePath = Directory::getResMazeDirectory() +
+        QString mazeFilePath = Directory::get()->getResMazeDirectory() +
             P()->generatedMazeFile() + MAZE_FILE_TYPE_TO_SUFFIX.value(type);
         // TODO: MACK
         bool success = false; // MazeFileUtilities::save(basicMaze, mazeFilePath, type);

@@ -207,7 +207,7 @@ void SimUtilities::removeExcessArchivedRuns() {
     // Information about each run is stored in the run/ directory. As it turns
     // out, this information can pile up pretty quickly. We should remove the
     // oldest stuff so that the run/ directory doesn't get too full.
-    QVector<QString> contents = getDirectoryContents(Directory::getRunDirectory());
+    QVector<QString> contents = getDirectoryContents(Directory::get()->getRunDirectory());
     std::sort(contents.begin(), contents.end());
     for (int i = 2; i < static_cast<int>(contents.size()) - P()->numberOfArchivedRuns(); i += 1) {
 #ifdef _WIN32

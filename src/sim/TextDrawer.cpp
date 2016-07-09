@@ -1,9 +1,6 @@
 #include "TextDrawer.h"
 
-#include <tuple>
-
 #include "Assert.h"
-#include "Directory.h"
 
 namespace sim {
 

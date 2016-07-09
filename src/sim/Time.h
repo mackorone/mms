@@ -4,16 +4,12 @@
 
 namespace sim {
 
-// Wrapper for the static call to Time::getInstance();
-class Time;
-Time* T();
-
 class Time {
 
 public:
 
-    // Returns a pointer to the singleton Time object
-    static Time* getInstance();
+    static void init();
+    static Time* get();
 
     Seconds startTimestamp();
     Seconds elapsedRealTime();
@@ -23,7 +19,8 @@ public:
 
 private:
 
-    // A private constructor is used to ensure only one instance of this class exists
+    // A private constructor is used to ensure
+    // only one instance of this class exists
     Time();
 
     // A pointer to the actual instance of the class

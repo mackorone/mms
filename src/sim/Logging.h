@@ -37,6 +37,8 @@ class Logging {
 
 public:
 
+    // TODO: MACK - should probably be a singleton
+
     // The logging class is not constructible
     Logging() = delete;
 

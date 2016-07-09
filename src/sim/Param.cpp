@@ -30,7 +30,7 @@ Param* Param::getInstance() {
 Param::Param() {
 
     // Create the parameter parser object
-    ParamParser parser(Directory::getResDirectory() + "parameters.xml");
+    ParamParser parser(Directory::get()->getResDirectory() + "parameters.xml");
 
     // Graphical Parameters
     m_defaultWindowWidth = parser.getIntIfHasIntAndNotLessThan(

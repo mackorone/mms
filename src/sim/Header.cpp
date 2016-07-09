@@ -21,7 +21,7 @@ Header::Header(Model* model) :
         m_columnSpacing(P()->headerColumnSpacing()) {
 
     // Check to make sure that the font file exists
-    QString fontPath = Directory::getResFontsDirectory() + P()->headerTextFont();
+    QString fontPath = Directory::get()->getResFontsDirectory() + P()->headerTextFont();
     if (!SimUtilities::isFile(fontPath)) {
         // If the font doesn't exist, we simply draw no text whatsoever
         L()->warn(
@@ -158,8 +158,8 @@ void Header::updateLines() {
         QString("Current Y tile:              ") + QString::number(m_model->getMouse()->getCurrentDiscretizedTranslation().second),
         QString("Current Direction:           ") + 
             DIRECTION_TO_STRING.value(m_model->getMouse()->getCurrentDiscretizedRotation()),
-        QString("Elapsed Real Time:           ") + SimUtilities::formatSeconds(T()->elapsedRealTime().getSeconds()),
-        QString("Elapsed Sim Time:            ") + SimUtilities::formatSeconds(T()->elapsedSimTime().getSeconds()),
+        QString("Elapsed Real Time:           ") + SimUtilities::formatSeconds(Time::get()->elapsedRealTime().getSeconds()),
+        QString("Elapsed Sim Time:            ") + SimUtilities::formatSeconds(Time::get()->elapsedSimTime().getSeconds()),
         QString("Time Since Origin Departure: ") + (
             m_model->getWorld()->getTimeSinceOriginDeparture().getSeconds() < 0 ? "NONE" :
             SimUtilities::formatSeconds(m_model->getWorld()->getTimeSinceOriginDeparture().getSeconds())

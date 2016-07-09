@@ -38,7 +38,7 @@ Seconds World::getTimeSinceOriginDeparture() const {
     if (m_timeOfOriginDeparture < Seconds(0)) {
         return Seconds(-1);
     }
-    return T()->elapsedSimTime() - m_timeOfOriginDeparture;
+    return Time::get()->elapsedSimTime() - m_timeOfOriginDeparture;
 }
 
 int World::getNumberOfTilesTraversed() const {
@@ -93,7 +93,7 @@ void World::simulate() {
         Seconds elapsedSimTimeForThisIteration = realTimePerUpdate * S()->simSpeed();
 
         // Update the sim time
-        T()->incrementElapsedSimTime(elapsedSimTimeForThisIteration);
+        Time::get()->incrementElapsedSimTime(elapsedSimTimeForThisIteration);
 
         // Update the position of the mouse
         m_mouse->update(elapsedSimTimeForThisIteration);
@@ -124,12 +124,12 @@ void World::simulate() {
 
         // Otherwise, if we've just left the origin, update the departure time
         else if (m_timeOfOriginDeparture < Seconds(0)) {
-            m_timeOfOriginDeparture = T()->elapsedSimTime();
+            m_timeOfOriginDeparture = Time::get()->elapsedSimTime();
         }
 
         // Separately, if we're in the center, update the best time to center
         if (m_maze->isCenterTile(location.first, location.second)) {
-            Seconds timeToCenter = T()->elapsedSimTime() - m_timeOfOriginDeparture;
+            Seconds timeToCenter = Time::get()->elapsedSimTime() - m_timeOfOriginDeparture;
             if (m_bestTimeToCenter < Seconds(0) || timeToCenter < m_bestTimeToCenter) {
                 m_bestTimeToCenter = timeToCenter;
             }

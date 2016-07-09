@@ -1,25 +1,20 @@
 #include "Time.h"
 
+#include "Assert.h"
 #include "SimUtilities.h"
 
 namespace sim {
 
-Time* T() {
-    return Time::getInstance();
-}
-
-// Definition of the variable for linking
 Time* Time::INSTANCE = nullptr;
-Time* Time::getInstance() {
-    if (nullptr == INSTANCE) {
-        INSTANCE = new Time();
-    }
-    return INSTANCE;
+
+void Time::init() {
+    SIM_ASSERT_TR(INSTANCE == nullptr);
+    INSTANCE = new Time();
 }
 
-Time::Time() :
-    m_startTimestamp(Seconds(SimUtilities::getHighResTimestamp())),
-    m_elapsedSimTime(Seconds(0)) {
+Time* Time::get() {
+    SIM_ASSERT_FA(INSTANCE == nullptr);
+    return INSTANCE;
 }
 
 Seconds Time::startTimestamp() {
@@ -36,6 +31,11 @@ Seconds Time::elapsedSimTime() {
 
 void Time::incrementElapsedSimTime(const Duration& duration) {
     m_elapsedSimTime += duration;
+}
+
+Time::Time() :
+    m_startTimestamp(Seconds(SimUtilities::getHighResTimestamp())),
+    m_elapsedSimTime(Seconds(0)) {
 }
 
 } // namespace sim
