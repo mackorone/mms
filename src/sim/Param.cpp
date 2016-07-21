@@ -1,5 +1,7 @@
 #include "Param.h"
 
+#include <QDebug>
+
 #include <limits>
 #include <random>
 
@@ -118,9 +120,9 @@ Param::Param() {
     bool useRandomSeed = parser.getBoolIfHasBool(
         "use-random-seed", false);
     if (useRandomSeed && !parser.hasIntValue("random-seed")) {
-        Logging::get()->warn(
-            "The value of use-random-seed is true but no valid random-seed "
-            "value was provided. Setting \"use-random-seed\" to false.");
+        qWarning()
+            << "The value of use-random-seed is true but no valid random-seed"
+            << " value was provided. Setting \"use-random-seed\" to false.";
         useRandomSeed = false;
     }
     m_randomSeed = (useRandomSeed ? parser.getIntValue("random-seed") : std::random_device()());

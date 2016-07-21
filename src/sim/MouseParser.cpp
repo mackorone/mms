@@ -1,5 +1,6 @@
 #include "MouseParser.h"
 
+#include <QDebug>
 #include <QVector>
 
 #include "Assert.h"
@@ -41,9 +42,9 @@ MouseParser::MouseParser(const QString& filePath, bool* success) :
         m_centerOfMass(Cartesian(Meters(0), Meters(0))) {
     pugi::xml_parse_result result = m_doc.load_file(filePath.toStdString().c_str());
     if (!result) {
-        Logging::get()->warn(
-            "Unable to read mouse parameters in \"%v\" - %v",
-            filePath.toStdString(), result.description());
+        qWarning()
+            << "Unable to read mouse parameters in \"" << filePath << "\" - "
+            << result.description();
         *success = false;
     }
     else {
@@ -65,7 +66,7 @@ Polygon MouseParser::getBody(
 
     pugi::xml_node body = m_root.child(BODY_TAG.toStdString().c_str());
     if (body.begin() == body.end()) {
-        Logging::get()->warn("No \"%v\" tag found.", BODY_TAG.toStdString());
+        qWarning() << "No \"" << BODY_TAG << "\" tag found.";
         *success = false;
     }
 
@@ -82,9 +83,9 @@ Polygon MouseParser::getBody(
     }
 
     if (vertices.size() < 3) {
-        Logging::get()->warn(
-            "Invalid mouse \"%v\" - less than three valid vertices were specified.",
-            BODY_TAG.toStdString());
+        qWarning()
+            << "Invalid mouse \"" << BODY_TAG << "\" - less than three valid"
+            << " vertices were specified.";
         *success = false;
     }
 
@@ -92,9 +93,9 @@ Polygon MouseParser::getBody(
     if (success) {
         bodyPolygon = Polygon(vertices);
         if (bodyPolygon.getTriangles().size() == 0) {
-            Logging::get()->warn(
-                "Invalid mouse \"%v\" - the vertices specified do not"
-                " constitute a simple polygon.", BODY_TAG.toStdString());
+            qWarning()
+                << "Invalid mouse \"" << BODY_TAG << "\" - the vertices"
+                << " specified do not constitute a simple polygon.";
             *success = false;
         }
     }
@@ -194,9 +195,10 @@ QMap<QString, Sensor> MouseParser::getSensors(
 double MouseParser::getDoubleIfHasDouble(const pugi::xml_node& node, const QString& tag, bool* success) {
     QString valueString = node.child(tag.toStdString().c_str()).child_value();
     if (!SimUtilities::isDouble(valueString)) {
-        Logging::get()->warn(
-            "Invalid value for tag \"%v\" - the tag is either missing entirely,"
-            " or its value isn't a valid floating point number.", tag.toStdString());
+        qWarning()
+            << "Invalid value for tag \"" << tag << "\" - the tag is either"
+            << " missing entirely, or its value isn't a valid floating point"
+            << " number.";
         *success = false;
         return 0.0;
     }
@@ -207,9 +209,9 @@ double MouseParser::getDoubleIfHasDoubleAndNonNegative(
         const pugi::xml_node& node, const QString& tag, bool* success) {
     double value = getDoubleIfHasDouble(node, tag, success);
     if (value < 0.0) {
-        Logging::get()->warn(
-            "The value for tag \"%v\" is %v, which is less than the minimum"
-            " allowed value of %v.", tag.toStdString(), value, 0.0);
+        qWarning()
+            << "The value for tag \"" << tag << "\" is " << value << ", which"
+            << " is less than the minimum allowed value of " << 0.0 << ".";
         *success = false;
         return 0.0;
     }
@@ -219,10 +221,10 @@ double MouseParser::getDoubleIfHasDoubleAndNonNegative(
 pugi::xml_node MouseParser::getContainerNode(const pugi::xml_node& node, const QString& tag, bool* success) {
     pugi::xml_node containerNode = node.child(tag.toStdString().c_str());
     if (!containerNode) {
-        Logging::get()->warn(
-            "No wheel \"%v\" tag found. This means that the \"%v\" and"
-            " \"%v\" tags won't be found either.",
-            tag.toStdString(), X_TAG.toStdString(), Y_TAG.toStdString());
+        qWarning()
+            << "No wheel \"" << tag << "\" tag found. This means that the \""
+            << X_TAG << "\" and \"" << Y_TAG << "\" tags won't be found"
+            << " either.";
         *success = false;
     }
     return containerNode;
@@ -235,12 +237,12 @@ EncoderType MouseParser::getEncoderTypeIfValid(const pugi::xml_node& node, bool*
         encoderType = STRING_TO_ENCODER_TYPE.value(encoderTypeString);
     }
     else {
-        Logging::get()->warn(
-            "The encoder type \"%v\" is not valid. The only valid encoder"
-            " types are \"%v\" and \"%v\".",
-            encoderTypeString.toStdString(),
-            ENCODER_TYPE_TO_STRING.value(EncoderType::ABSOLUTE).toStdString(),
-            ENCODER_TYPE_TO_STRING.value(EncoderType::RELATIVE).toStdString());
+        qWarning()
+            << "The encoder type \"" << encoderTypeString << "\" is not valid."
+            << " The only valid encoder types are \""
+            << ENCODER_TYPE_TO_STRING.value(EncoderType::ABSOLUTE)
+            << "\" and \""
+            << ENCODER_TYPE_TO_STRING.value(EncoderType::RELATIVE) << "\".";
         *success = false;
     }
     return encoderType;

@@ -1,5 +1,6 @@
 #include "World.h"
 
+#include <QDebug>
 #include <QPair>
 #include <thread>
 
@@ -64,7 +65,7 @@ void World::simulate() {
     }
     double end(SimUtilities::getHighResTimestamp());
     double duration = end - start;
-    Logging::get()->info("%v", duration);
+    qInfo("%v", duration);
     SimUtilities::quit();
     */
 
@@ -152,7 +153,7 @@ void World::simulate() {
         // Notify the use of a late mouse position update
         if (P()->printLateMousePositionUpdates() && duration > 1.0/P()->mousePositionUpdateRate()) {
 			// TODO: MACK
-            // Logging::get()->warn(
+            // qWarning(
             //     "A mouse position update was late by %v seconds, which is %v percent late.",
             //     (duration - 1.0/P()->mousePositionUpdateRate()),
             //     (duration - 1.0/P()->mousePositionUpdateRate())/(1.0/P()->mousePositionUpdateRate()) * 100);
@@ -209,11 +210,14 @@ void World::checkCollision() {
         double duration = end - start;
 
         // Notify the use of a late collision detection
+        // TODO: MACK - make some variables for these long expressions
         if (P()->printLateCollisionDetections() && duration > 1.0 / P()->collisionDetectionRate()) {
-            Logging::get()->warn(
-                "A collision detection was late by %v seconds, which is %v percent late.",
-                (duration - 1.0/P()->collisionDetectionRate()),
-                (duration - 1.0/P()->collisionDetectionRate())/(1.0/P()->collisionDetectionRate()) * 100);
+            qWarning()
+                << "A collision detection was late by "
+                << (duration - 1.0/P()->collisionDetectionRate())
+                << " seconds, which is "
+                << (duration - 1.0/P()->collisionDetectionRate())/(1.0/P()->collisionDetectionRate()) * 100
+                << " percent late.";
         }
 
         // Sleep the appropriate amout of time, based on the collision detection duration

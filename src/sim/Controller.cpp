@@ -1,5 +1,7 @@
 #include "Controller.h"
 
+#include <QDebug>
+
 // #include "../mouse/MouseAlgorithms.h" // TODO: MACK
 #include "Logging.h"
 #include "MouseChecker.h"
@@ -89,7 +91,7 @@ void Controller::validateMouseAlgorithm(const QString& mouseAlgorithm) {
     // TODO: MACK
     /*
     if (!MouseAlgorithms::isMouseAlgorithm(mouseAlgorithm)) {
-        Logging::get()->error("\"%v\" is not a valid mouse algorithm.", mouseAlgorithm);
+        qCritical("\"%v\" is not a valid mouse algorithm.", mouseAlgorithm);
         SimUtilities::quit();
     }
     */
@@ -98,14 +100,14 @@ void Controller::validateMouseAlgorithm(const QString& mouseAlgorithm) {
 void Controller::validateMouseInterfaceType(
         const QString& mouseAlgorithm, const QString& interfaceType) {
     if (!STRING_TO_INTERFACE_TYPE.contains(interfaceType)) {
-        Logging::get()->error(
-            "\"%v\" is not a valid interface type. You must declare the "
-            "interface type of the mouse algorithm \"%v\" to be either \"%v\" "
-            "or \"%v\".",
-            interfaceType.toStdString(),
-            mouseAlgorithm.toStdString(),
-            INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE).toStdString(),
-            INTERFACE_TYPE_TO_STRING.value(InterfaceType::CONTINUOUS).toStdString());
+        qCritical()
+            << "\"" << interfaceType << "\" is not a valid interface type. You"
+            << " must declare the interface type of the mouse algorithm \""
+            << mouseAlgorithm << "\" to be either \""
+            << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
+            << "\" or \""
+            << INTERFACE_TYPE_TO_STRING.value(InterfaceType::CONTINUOUS)
+            << "\".";
         SimUtilities::quit();
     }
 }
@@ -117,18 +119,16 @@ void Controller::validateMouseInitialDirection(
         || initialDirection == OPENING_DIRECTION_STRING
         || initialDirection == WALL_DIRECTION_STRING
     )) {
-        Logging::get()->error(
-            "\"%v\" is not a valid initial direction. You must declare the"
-            " initial direction of the mouse algorithm \"%v\" to be one of"
-            " \"%v\", \"%v\", \"%v\", \"%v\", \"%v\", or \"%v\".",
-            initialDirection.toStdString(),
-            mouseAlgorithm.toStdString(),
-            DIRECTION_TO_STRING.value(Direction::NORTH).toStdString(),
-            DIRECTION_TO_STRING.value(Direction::EAST).toStdString(),
-            DIRECTION_TO_STRING.value(Direction::SOUTH).toStdString(),
-            DIRECTION_TO_STRING.value(Direction::WEST).toStdString(),
-            OPENING_DIRECTION_STRING.toStdString(),
-            WALL_DIRECTION_STRING.toStdString());
+        qCritical()
+            << "\"" << initialDirection << "\" is not a valid initial"
+            << " direction. You must declare the initial direction of the mouse"
+            << " algorithm \"" << mouseAlgorithm << "\" to be one of \""
+            << DIRECTION_TO_STRING.value(Direction::NORTH) << "\", \""
+            << DIRECTION_TO_STRING.value(Direction::EAST) << "\", \""
+            << DIRECTION_TO_STRING.value(Direction::SOUTH) << "\", \""
+            << DIRECTION_TO_STRING.value(Direction::WEST) << "\", \""
+            << OPENING_DIRECTION_STRING << "\", or \""
+            << WALL_DIRECTION_STRING << "\".";
         SimUtilities::quit();
     }
 }
@@ -137,14 +137,12 @@ void Controller::validateTileTextRowsAndCols(
     const QString& mouseAlgorithm,
     int tileTextNumberOfRows, int tileTextNumberOfCols) {
     if (tileTextNumberOfRows < 0 || tileTextNumberOfCols < 0) {
-        Logging::get()->error(
-            "Both tileTextNumberOfRows() and tileTextNumberOfCols() must return"
-            " non-negative integers. Since they return \"%v\" and \"%v\","
-            " respectively, the tile text dimensions of the mouse algorithm"
-            " \"%v\" are invalid.",
-            tileTextNumberOfRows, 
-            tileTextNumberOfCols,
-            mouseAlgorithm.toStdString());
+        qCritical()
+            << "Both tileTextNumberOfRows() and tileTextNumberOfCols() must"
+            << " return non-negative integers. Since they return \""
+            << tileTextNumberOfRows << "\" and \"" << tileTextNumberOfCols
+            << "\", respectively, the tile text dimensions of the mouse"
+            << " algorithm \"" << mouseAlgorithm << "\" are invalid.";
         SimUtilities::quit();
     }
 }
@@ -152,11 +150,10 @@ void Controller::validateTileTextRowsAndCols(
 void Controller::validateMouseWheelSpeedFraction(
     const QString& mouseAlgorithm, double wheelSpeedFraction) {
     if (!(0.0 <= wheelSpeedFraction && wheelSpeedFraction <= 1.0)) {
-        Logging::get()->error(
-            "\"%v\" is not a valid wheel speed fraction. The wheel speed"
-            " fraction of the mouse algorithm \"%v\" has to be in [0.0, 1.0].",
-            wheelSpeedFraction, 
-            mouseAlgorithm.toStdString());
+        qCritical()
+            << "\"" << wheelSpeedFraction << "\" is not a valid wheel speed"
+            << " fraction. The wheel speed fraction of the mouse algorithm \""
+            << mouseAlgorithm << "\" has to be in [0.0, 1.0].";
         SimUtilities::quit();
     }
 }
@@ -172,24 +169,26 @@ void Controller::initAndValidateMouse(
     Direction direction = getInitialDirection(initialDirection, model);
     bool success = model->getMouse()->initialize(mouseFile, direction);
     if (!success) {
-        Logging::get()->error(
-            "Unable to successfully initialize the mouse in the algorithm"
-            " \"%v\" from \"%v\".",
-            mouseAlgorithm.toStdString(),
-            mouseFile.toStdString());
+        qCritical()
+            << "Unable to successfully initialize the mouse in the algorithm \""
+            << mouseAlgorithm << "\" from \"" << mouseFile << "\".";
         SimUtilities::quit();
     }
 
     // Validate the mouse
     if (STRING_TO_INTERFACE_TYPE.value(interfaceType) == InterfaceType::DISCRETE) {
         if (!MouseChecker::isDiscreteInterfaceCompatible(*model->getMouse())) {
-            Logging::get()->error("The mouse file \"%v\" is not discrete interface compatible.", mouseFile.toStdString());
+            qCritical()
+                << "The mouse file \"" << mouseFile << "\" is not discrete"
+                << " interface compatible.";
             SimUtilities::quit();
         }
     }
     else { // InterfaceType::CONTINUOUS
         if (!MouseChecker::isContinuousInterfaceCompatible(*model->getMouse())) {
-            Logging::get()->error("The mouse file \"%v\" is not continuous interface compatible.", mouseFile.toStdString());
+            qCritical()
+                << "The mouse file \"" << mouseFile << "\" is not continuous"
+                << " interface compatible.";
             SimUtilities::quit();
         }
     }

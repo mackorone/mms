@@ -79,6 +79,10 @@ QString SimUtilities::timestampToDatetimeString(const Duration& timestamp) {
 }
 
 QString SimUtilities::formatSeconds(double seconds) {
+    // TODO: MACK
+    if (seconds == 0.0) {
+        return QString("00:00.000");
+    }
     int minutes = 0;
     while (seconds >= 60) {
         minutes += 1;

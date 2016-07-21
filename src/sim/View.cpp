@@ -2,6 +2,7 @@
 
 #include <tdogl/Bitmap.h>
 #include <tdogl/Shader.h>
+#include <QDebug>
 #include <QPair>
 
 #include "../mouse/IMouseAlgorithm.h"
@@ -119,11 +120,13 @@ void View::refresh() {
     double duration = end - start;
 
     // Notify the user of a late frame
+    // TODO: MACK - make variables for these long expressions
     if (P()->printLateFrames() && duration > 1.0/P()->frameRate()) {
-        Logging::get()->warn(
-            "A frame was late by %v seconds, which is %v percent late.",
-            duration - 1.0/P()->frameRate(),
-            (duration - 1.0/P()->frameRate())/(1.0/P()->frameRate()) * 100);
+        qWarning()
+            << "A frame was late by " << duration - 1.0/P()->frameRate()
+            << " seconds, which is "
+            << (duration - 1.0/P()->frameRate())/(1.0/P()->frameRate()) * 100
+            << " percent late.";
     }
 
     // Sleep the appropriate amount of time, base on the drawing duration
@@ -166,9 +169,10 @@ void View::keyPress(unsigned char key, int x, int y) {
             S()->setPaused(!S()->paused());
         }
         else {
-            Logging::get()->warn(
-                "Pausing the simulator is only allowed in %v mode.",
-                INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE).toStdString());
+            qWarning()
+                << "Pausing the simulator is only allowed in "
+                << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
+                << " mode.";
         }
     }
     else if (key == 'f') {
@@ -177,9 +181,10 @@ void View::keyPress(unsigned char key, int x, int y) {
             S()->setSimSpeed(S()->simSpeed() * 1.5);
         }
         else {
-            Logging::get()->warn(
-                "Increasing the simulator speed is only allowed in %v mode.",
-                INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE).toStdString());
+            qWarning()
+                << "Increasing the simulator speed is only allowed in "
+                << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
+                << " mode.";
         }
     }
     else if (key == 's') {
@@ -188,9 +193,10 @@ void View::keyPress(unsigned char key, int x, int y) {
             S()->setSimSpeed(S()->simSpeed() / 1.5);
         }
         else {
-            Logging::get()->warn(
-                "Decreasing the simulator speed is only allowed in %v mode.",
-                INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE).toStdString());
+            qWarning()
+                << "Decreasing the simulator speed is only allowed in "
+                << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
+                << " mode.";
         }
     }
     else if (key == 'l') {
@@ -253,12 +259,12 @@ void View::keyPress(unsigned char key, int x, int y) {
         int inputButton = QString("0123456789").indexOf(key);
         if (!S()->inputButtonWasPressed(inputButton)) {
             S()->setInputButtonWasPressed(inputButton, true);
-            Logging::get()->info("Input button %v was pressed.", inputButton);
+            qInfo() << "Input button " << inputButton << " was pressed.";
         }
         else {
-            Logging::get()->warn(
-                "Input button %v has not yet been acknowledged as pressed; pressing it has no effect.",
-                inputButton);
+            qWarning()
+                << "Input button " << inputButton << " has not yet been"
+                << " acknowledged as pressed; pressing it has no effect.";
         }
     }
 }
@@ -308,7 +314,7 @@ void View::initGraphics(int argc, char* argv[], const GlutFunctions& functions) 
     // GLEW Initialization
     GLenum err = glewInit();
     if (GLEW_OK != err) {
-        Logging::get()->error("Unable to initialize GLEW.");
+        qCritical() << "Unable to initialize GLEW.";
         SimUtilities::quit();
     }
 
@@ -364,10 +370,9 @@ void View::initTextureProgram() {
     // Load the bitmap texture into the texture atlas
     QString tileTextFontImagePath = Directory::get()->getResImgsDirectory() + P()->tileTextFontImage();
     if (!SimUtilities::isFile(tileTextFontImagePath)) {
-        Logging::get()->error(
-            "Could not find font image file \"%v\" in \"%v\".",
-            P()->tileTextFontImage().toStdString(),
-            Directory::get()->getResImgsDirectory().toStdString());
+        qCritical()
+            << "Could not find font image file \"" << P()->tileTextFontImage()
+            << "\" in \"" << Directory::get()->getResImgsDirectory() << "\".";
         SimUtilities::quit();
     }
     tdogl::Bitmap bmp = tdogl::Bitmap::bitmapFromFile(tileTextFontImagePath.toStdString());

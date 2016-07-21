@@ -1,5 +1,7 @@
 #include "Header.h"
 
+#include <QDebug>
+
 #include "../mouse/IMouseAlgorithm.h"
 #include "Directory.h"
 #include "Layout.h"
@@ -24,9 +26,10 @@ Header::Header(Model* model) :
     QString fontPath = Directory::get()->getResFontsDirectory() + P()->headerTextFont();
     if (!SimUtilities::isFile(fontPath)) {
         // If the font doesn't exist, we simply draw no text whatsoever
-        Logging::get()->warn(
-            "\"%v\" is not a valid font file; it's very possible that the file"
-            " does not exist. No header will drawn.", fontPath.toStdString());
+        qWarning()
+            << "\"" << fontPath << "\" is not a valid font file; it's very"
+            << " possible that the file does not exist. No header will be"
+            << " drawn.";
     }
 
     // Create the text drawer object

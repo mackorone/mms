@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QDebug>
 #include <QMap>
 #include <QString>
 
@@ -82,11 +83,12 @@ private:
             const pugi::xml_node& node, const QMap<QString, T>& map, bool* success) {
         QString name = node.child(NAME_TAG.toStdString().c_str()).child_value();
         if (name.isEmpty()) {
-            Logging::get()->warn("No %v name specified.", type.toStdString());
+            qWarning() << "No " << type << " name specified.";
             *success = false;
         }
         if (map.contains(name)) {
-            Logging::get()->warn("Two %vs both have the name \"%v\".", type.toStdString(), name.toStdString());
+            qWarning()
+                << "Two " << type << "s both have the name \"" << name << "\".";
             *success = false;
         }
         return name;

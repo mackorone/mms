@@ -1,6 +1,7 @@
 #include "MazeChecker.h"
 
 #include <functional>
+#include <QDebug>
 #include <QPair>
 
 #include "Assert.h"
@@ -191,7 +192,7 @@ QVector<QString> MazeChecker::hasNoInaccessibleLocations(const BasicMaze& maze) 
 
 QVector<QString> MazeChecker::hasThreeStartingWalls(const BasicMaze& maze) {
     /*
-        Logging::get()->warn("There are not exactly three starting walls.");
+        qWarning("There are not exactly three starting walls.");
     QMap<Direction, bool> walls = maze.at(0).at(0);
     return walls.at(Direction::NORTH) != walls.at(Direction::EAST);
     */
@@ -201,7 +202,7 @@ QVector<QString> MazeChecker::hasThreeStartingWalls(const BasicMaze& maze) {
 QVector<QString> MazeChecker::hasOneEntranceToCenter(const BasicMaze& maze) {
     // TODO: MACK - fix this to work with QVector
     /*
-        Logging::get()->warn("The center of the maze has more than one entrance.");
+        qWarning("The center of the maze has more than one entrance.");
     QVector<QPair<int, int>> centerTiles = getCenterTiles(maze.size(), maze.at(0).size()); 
     int numberOfEntrances = 0;
     for (QPair<int, int> tile : centerTiles) {
@@ -221,7 +222,7 @@ QVector<QString> MazeChecker::hasOneEntranceToCenter(const BasicMaze& maze) {
 
 QVector<QString> MazeChecker::hasHollowCenter(const BasicMaze& maze) {
     /*
-        Logging::get()->warn("The maze does not have a hollow center.");
+        qWarning("The maze does not have a hollow center.");
 
     QVector<QPair<int, int>> centerTiles = getCenterTiles(maze.size(), maze.at(0).size()); 
     for (QPair<int, int> tile : centerTiles) {
@@ -244,7 +245,7 @@ QVector<QString> MazeChecker::hasHollowCenter(const BasicMaze& maze) {
 QVector<QString> MazeChecker::hasWallAttachedToEachNonCenterPost(const BasicMaze& maze) {
     // TODO: MACK - fix this to work with QVector
     /*
-        Logging::get()->warn("There is at least one non-center post with no walls connected to it.");
+        qWarning("There is at least one non-center post with no walls connected to it.");
     QVector<QPair<int, int>> centerTiles = getCenterTiles(maze.size(), maze.at(0).size());
     auto upperRightPostIsCenterPost = [&](int x, int y) {
         return centerTiles.size() == 4 && {x, y} == SimUtilities::min(centerTiles);
@@ -271,7 +272,7 @@ QVector<QString> MazeChecker::hasWallAttachedToEachNonCenterPost(const BasicMaze
 QVector<QString> MazeChecker::isUnsolvableByWallFollower(const BasicMaze& maze) {
 
     /*
-        Logging::get()->warn("The maze is solvable by a maze-following robot.");
+        qWarning("The maze is solvable by a maze-following robot.");
     std::set<QPair<int, int>> reachableByWallFollower;
 
     QPair<int, int> position = {0, 0};

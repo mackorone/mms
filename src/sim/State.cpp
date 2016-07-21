@@ -1,5 +1,7 @@
 #include "State.h"
 
+#include <QDebug>
+
 #include "Assert.h"
 #include "Key.h"
 #include "Logging.h"
@@ -58,7 +60,7 @@ bool State::crashed() {
 
 void State::setCrashed() {
     m_crashed = true;
-    Logging::get()->warn("%v", P()->crashMessage().toStdString());
+    qWarning() << P()->crashMessage();
 }
 
 LayoutType State::layoutType() {
