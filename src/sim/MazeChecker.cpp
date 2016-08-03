@@ -82,7 +82,7 @@ QVector<QString> MazeChecker::isRectangular(const BasicMaze& maze) {
 
 QVector<QString> MazeChecker::isEnclosed(const BasicMaze& maze) {
     // TODO: MACK - test this
-    static QVector<QPair<std::function<bool(int, int)>, Direction>> requirements {
+    QVector<QPair<std::function<bool(int, int)>, Direction>> requirements {
         {[&maze](int x, int y){return x ==               0;}, Direction::WEST},
         {[&maze](int x, int y){return y ==               0;}, Direction::SOUTH},
         {[&maze](int x, int y){return x == maze.size() - 1;}, Direction::EAST},

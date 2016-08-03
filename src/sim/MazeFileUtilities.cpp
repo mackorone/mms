@@ -7,10 +7,10 @@
 // TODO: MACK - convert to Qt after Tomasz is done fixing
 #include <fstream>
 #include <cstdint>
-#include "Logging.h"
-#include "SimUtilities.h"
 
+#include "Logging.h"
 #include "MazeChecker.h"
+#include "SimUtilities.h"
 
 namespace sim {
 
