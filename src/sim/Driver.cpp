@@ -4,10 +4,6 @@
 #include <QProcess>
 #include <QDebug>
 
-//#include <QtGlobal> // qInstallMessageHandler
-#include <QFile>
-// TODO: MACK
-
 // TODO: MACK - replace this with QThread
 #include <thread>
 
@@ -26,68 +22,19 @@ Model* Driver::m_model;
 View* Driver::m_view;
 Controller* Driver::m_controller;
 
-// TODO: MACK - put this is logging
-void myMessageHandler(
-        QtMsgType type,
-        const QMessageLogContext& context,
-        const QString& msg) {
-
-    // TODO: MACK - benchmark this
-    
-    // TODO: MACK - if debug, we want line numbers
-    // "[ %real_time | %sim_time | %level | %logger ] - %msg");
-    static const QMap<QtMsgType, QString> mapping {
-        {QtDebugMsg,    "DEBUG"   },
-        {QtInfoMsg,     "INFO"    },
-        {QtWarningMsg,  "WARN"    },
-        {QtCriticalMsg, "CRITICAL"},
-        {QtFatalMsg,    "FATAL"   },
-        {QtSystemMsg,   "SYSTEM"  },
-    };
-
-    // TODO: MACK - why is this 9 sometimes?
-    double seconds = Time::get()->elapsedRealTime().getSeconds();
-    QString secondsString = SimUtilities::formatSeconds(seconds);
-    secondsString.truncate(secondsString.indexOf(".") + 4); // Trim to 3 decimal places
-
-    double sim_seconds = Time::get()->elapsedSimTime().getSeconds();
-    QString sim_secondsString = SimUtilities::formatSeconds(sim_seconds);
-    sim_secondsString.truncate(sim_secondsString.indexOf(".") + 4); // Trim to 3 decimal places
-
-    QString formatted = QString("[ %1 | %2 | %3 ] - %4").arg(
-        secondsString,
-        sim_secondsString,
-        mapping.value(type),
-        msg
-    );
-
-    std::cout << formatted.toStdString() << std::endl;
-
-    QFile outFile("/home/mack/Desktop/test-log.txt");
-    outFile.open(QIODevice::WriteOnly | QIODevice::Append);
-    QTextStream ts(&outFile);
-    ts << formatted << endl << flush;
-}
-
 void Driver::drive(int argc, char* argv[]) {
 
     // Make sure that this function is called just once
     SIM_ASSERT_RUNS_JUST_ONCE();
 
-    // Before anything else, initialize the Time object
+    // Initialize the Qt core application
+    QCoreApplication app(argc, argv);
+
+    // Initialize the Time object
     Time::init();
 
-    // TODO: See http://doc.qt.io/qt-5/qloggingcategory.html#setFilterRules
-    // TODO: http://doc.qt.io/qt-5/qtglobal.html#qSetMessagePattern
-    qInstallMessageHandler(myMessageHandler);
-
-    // Then, initialize the Directory object
-    QCoreApplication app(argc, argv);
-    // TODO: MACK - app.exec()?
-    QString path = app.applicationFilePath(); // .../mms/sim/bin
-    path = path.left(path.lastIndexOf("/")); // Strips off /bin
-    path = path.left(path.lastIndexOf("/")); // Strips off /sim
-    Directory::init(path + "/");
+    // Initialize the Directory object
+    Directory::init(app.applicationFilePath());
 
     // TODO: MACK - Replace this with Qt functionality
     // Then, determine the runId (just datetime for now)

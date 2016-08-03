@@ -60,7 +60,7 @@ bool State::crashed() {
 
 void State::setCrashed() {
     m_crashed = true;
-    qWarning() << P()->crashMessage();
+    qWarning().noquote().nospace() << P()->crashMessage();
 }
 
 LayoutType State::layoutType() {

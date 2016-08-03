@@ -77,14 +77,14 @@ void MouseInterface::quit() {
 void MouseInterface::setTileColor(int x, int y, char color) {
 
     if (!m_maze->withinMaze(x, y)) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "There is no tile at position (" << x << ", " << y << ") and"
             << " thus you cannot set its color.";
         return;
     }
 
     if (!CHAR_TO_COLOR.contains(color)) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "You cannot set the color of tile (" << x << ", " << y << ") to"
             << "'" << color << "' since '" << color << "' is not mapped to a"
             << " color.";
@@ -97,7 +97,7 @@ void MouseInterface::setTileColor(int x, int y, char color) {
 void MouseInterface::clearTileColor(int x, int y) {
 
     if (!m_maze->withinMaze(x, y)) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "There is no tile at position (" << x << ", " << y << "), and"
             << " thus you cannot clear its color.";
         return;
@@ -115,7 +115,7 @@ void MouseInterface::clearAllTileColor() {
 void MouseInterface::setTileText(int x, int y, const QString& text) {
 
     if (!m_maze->withinMaze(x, y)) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "There is no tile at position (" << x << ", " << y << "), and"
             << " thus you cannot set its text to \"" << text << "\".";
         return;
@@ -127,7 +127,7 @@ void MouseInterface::setTileText(int x, int y, const QString& text) {
 void MouseInterface::clearTileText(int x, int y) {
 
     if (!m_maze->withinMaze(x, y)) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "There is no tile at position (" << x << ", " << y << "), and"
             << " thus you cannot clear its text.";
         return;
@@ -145,14 +145,14 @@ void MouseInterface::clearAllTileText() {
 void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) {
 
     if (!m_maze->withinMaze(x, y)) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "There is no tile at position (" << x << ", " << y << "), and"
             << " thus you cannot declare any of its walls.";
         return;
     }
 
     if (!CHAR_TO_DIRECTION.contains(direction)) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "The character '" << direction << "' is not mapped to a valid"
             << " direction.";
         return;
@@ -171,14 +171,14 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
 void MouseInterface::undeclareWall(int x, int y, char direction) {
 
     if (!m_maze->withinMaze(x, y)) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "There is no tile at position (" << x << ", " << y << "), and"
             << " thus you cannot undeclare any of its walls.";
         return;
     }
 
     if (!CHAR_TO_DIRECTION.contains(direction)) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "The character '" << direction << "' is not mapped to a valid"
             << " direction.";
         return;
@@ -196,7 +196,7 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
 void MouseInterface::setTileFogginess(int x, int y, bool foggy) {
 
     if (!m_maze->withinMaze(x, y)) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "There is no tile at position (" << x << ", " << y << "), and"
             << " thus you cannot set its fogginess.";
         return;
@@ -208,7 +208,7 @@ void MouseInterface::setTileFogginess(int x, int y, bool foggy) {
 void MouseInterface::declareTileDistance(int x, int y, int distance) {
 
     if (!m_maze->withinMaze(x, y)) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "There is no tile at position (" << x << ", " << y << "), and"
             << " thus you cannot set its distance.";
         return;
@@ -230,7 +230,7 @@ void MouseInterface::declareTileDistance(int x, int y, int distance) {
 void MouseInterface::undeclareTileDistance(int x, int y) {
 
     if (!m_maze->withinMaze(x, y)) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "There is no tile at position (" << x << ", " << y << "), and"
             << " thus you cannot clear its distance.";
         return;
@@ -251,7 +251,7 @@ void MouseInterface::resetPosition() {
 bool MouseInterface::inputButtonPressed(int inputButton) {
 
     if (inputButton < 0 || 9 < inputButton) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "There is no input button with the number " << inputButton << ","
             << " and thus you cannot check to see if it has been pressed.";
         return false;
@@ -263,14 +263,14 @@ bool MouseInterface::inputButtonPressed(int inputButton) {
 void MouseInterface::acknowledgeInputButtonPressed(int inputButton) {
 
     if (inputButton < 0 || 9 < inputButton) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "There is no input button with the number " << inputButton << ","
             << " and thus you cannot acknowledge that it has been pressed.";
         return;
     }
 
     S()->setInputButtonWasPressed(inputButton, false);
-    qInfo()
+    qInfo().noquote().nospace()
         << "Input button " << inputButton << " was acknowledged as pressed; it"
         << " can now be pressed again.";
 }
@@ -280,7 +280,7 @@ double MouseInterface::getWheelMaxSpeed(const QString& name) {
     ENSURE_CONTINUOUS_INTERFACE
 
     if (!m_mouse->hasWheel(name)) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "There is no wheel called \"" << name << "\" and thus you cannot"
             << " get its max speed.";
         return 0.0;
@@ -294,14 +294,14 @@ void MouseInterface::setWheelSpeed(const QString& name, double rpm) {
     ENSURE_CONTINUOUS_INTERFACE
 
     if (!m_mouse->hasWheel(name)) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "There is no wheel called \"" << name << "\" and thus you cannot"
             << " set its speed.";
         return;
     }
 
     if (getWheelMaxSpeed(name) < std::abs(rpm)) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "You're attempting to set the speed of wheel \"" << name << "\""
             << " to " << rpm << " rpm, which has magnitude greater than the max"
             << " speed of " << getWheelMaxSpeed(name) << " rpm. Thus, the wheel"
@@ -317,7 +317,7 @@ double MouseInterface::getWheelEncoderTicksPerRevolution(const QString& name) {
     ENSURE_CONTINUOUS_INTERFACE
 
     if (!m_mouse->hasWheel(name)) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "There is no wheel called \"" << name << "\" and thus you cannot"
             << " get its number of encoder ticks per revolution.";
         return 0.0;
@@ -331,7 +331,7 @@ int MouseInterface::readWheelEncoder(const QString& name) {
     ENSURE_CONTINUOUS_INTERFACE
 
     if (!m_mouse->hasWheel(name)) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "There is no wheel called \"" << name << "\" and thus you cannot"
             << " read its encoder.";
         return 0;
@@ -350,14 +350,14 @@ void MouseInterface::resetWheelEncoder(const QString& name) {
     ENSURE_CONTINUOUS_INTERFACE
 
     if (!m_mouse->hasWheel(name)) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "There is no wheel called \"" << name << "\" and thus you cannot"
             << " reset its encoder.";
         return;
     }
 
     if (m_mouse->getWheelEncoderType(name) != EncoderType::RELATIVE) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "The encoder type of the wheel \"" << name << "\" is \""
             << ENCODER_TYPE_TO_STRING.value(m_mouse->getWheelEncoderType(name))
             << "\". However, you may only reset the wheel encoder if the"
@@ -375,7 +375,7 @@ double MouseInterface::readSensor(QString name) {
     ENSURE_CONTINUOUS_INTERFACE
 
     if (!m_mouse->hasSensor(name)) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "There is no sensor called \"" << name << "\" and thus you"
             << " cannot read its value.";
         return 0.0;
@@ -635,7 +635,7 @@ double MouseInterface::currentRotationDegrees() {
 
 void MouseInterface::ensureDiscreteInterface(const QString& callingFunction) const {
     if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) != InterfaceType::DISCRETE) {
-        qCritical()
+        qCritical().noquote().nospace()
             << "You must declare the interface type to be \""
             << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
             << "\" to use MouseInterface::" << callingFunction << "().";
@@ -645,7 +645,7 @@ void MouseInterface::ensureDiscreteInterface(const QString& callingFunction) con
 
 void MouseInterface::ensureContinuousInterface(const QString& callingFunction) const {
     if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) != InterfaceType::CONTINUOUS) {
-        qCritical()
+        qCritical().noquote().nospace()
             << "You must declare the interface type to be \""
             << INTERFACE_TYPE_TO_STRING.value(InterfaceType::CONTINUOUS)
             << "\" to use MouseInterface::" << callingFunction << "().";
@@ -655,7 +655,7 @@ void MouseInterface::ensureContinuousInterface(const QString& callingFunction) c
 
 void MouseInterface::ensureAllowOmniscience(const QString& callingFunction) const {
     if (!m_mouseAlgorithm->allowOmniscience()) {
-        qCritical()
+        qCritical().noquote().nospace()
             << "You must return true from \"allowOmniscience()\" in order to"
             << " use MouseInterface::" << callingFunction << "().";
         SimUtilities::quit();
@@ -664,7 +664,7 @@ void MouseInterface::ensureAllowOmniscience(const QString& callingFunction) cons
 
 void MouseInterface::ensureNotTileEdgeMovements(const QString& callingFunction) const {
     if (m_mouseAlgorithm->useTileEdgeMovements()) {
-        qCritical()
+        qCritical().noquote().nospace()
             << "You must return false from \"useTileEdgeMovements()\" in order"
             << " to use MouseInterface::" << callingFunction << "().";
         SimUtilities::quit();
@@ -673,7 +673,7 @@ void MouseInterface::ensureNotTileEdgeMovements(const QString& callingFunction) 
 
 void MouseInterface::ensureUseTileEdgeMovements(const QString& callingFunction) const {
     if (!m_mouseAlgorithm->useTileEdgeMovements()) {
-        qCritical()
+        qCritical().noquote().nospace()
             << "You must return true from \"useTileEdgeMovements()\" in order"
             << " to use MouseInterface::" << callingFunction << "().";
         SimUtilities::quit();
@@ -682,7 +682,7 @@ void MouseInterface::ensureUseTileEdgeMovements(const QString& callingFunction) 
 
 void MouseInterface::ensureInsideOrigin(const QString& callingFunction) const {
     if (!m_inOrigin) {
-        qCritical()
+        qCritical().noquote().nospace()
             << "You should only call MouseInterface::" << callingFunction
             << "() if you're in the origin, i.e., you haven't moved forward"
             << " at all yet.";
@@ -692,7 +692,7 @@ void MouseInterface::ensureInsideOrigin(const QString& callingFunction) const {
 
 void MouseInterface::ensureOutsideOrigin(const QString& callingFunction) const {
     if (m_inOrigin) {
-        qCritical()
+        qCritical().noquote().nospace()
             << "You should only call \"MouseInterface::" << callingFunction
             << "()\" if you're outside of the origin, i.e., you've already"
             << " called \"MouseInterface::originMoveForwardToEdge()\".";
@@ -719,7 +719,7 @@ void MouseInterface::setTileTextImpl(int x, int y, const QString& text) {
         while (index < (row + 1) * m_options.tileTextNumberOfCols && index < text.size()) {
             char c = text.at(index).toLatin1();
             if (m_allowableTileTextCharacters.find(c) != m_allowableTileTextCharacters.end()) { // TODO: MACK - use contains
-                qWarning()
+                qWarning().noquote().nospace()
                     << "Unable to set the tile text for unprintable character \""
                     << (c == '\n' ? "\\n" :
                        (c == '\t' ? "\\t" :
@@ -1095,7 +1095,7 @@ void MouseInterface::doDiagonal(int count, bool startLeft, bool endLeft) {
 
     if (startLeft == endLeft) {
         if (count % 2 != 1) {
-            qWarning()
+            qWarning().noquote().nospace()
                 << "Turning left or right at both the entrance and exit of a"
                 << " diagonal requires that you specify and odd number of"
                 << " diagonal segments to traverse. You tried turning "
@@ -1108,7 +1108,7 @@ void MouseInterface::doDiagonal(int count, bool startLeft, bool endLeft) {
 
     else {
         if (count % 2 != 0) {
-            qWarning()
+            qWarning().noquote().nospace()
                 << "Turning left at the entrance and right at the exit (or vice"
                 << " versa) of a diagonal requires that you specify and even"
                 << " number of diagonal segments to traverse. You tried "

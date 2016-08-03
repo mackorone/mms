@@ -122,7 +122,7 @@ void View::refresh() {
     // Notify the user of a late frame
     // TODO: MACK - make variables for these long expressions
     if (P()->printLateFrames() && duration > 1.0/P()->frameRate()) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "A frame was late by " << duration - 1.0/P()->frameRate()
             << " seconds, which is "
             << (duration - 1.0/P()->frameRate())/(1.0/P()->frameRate()) * 100
@@ -169,7 +169,7 @@ void View::keyPress(unsigned char key, int x, int y) {
             S()->setPaused(!S()->paused());
         }
         else {
-            qWarning()
+            qWarning().noquote().nospace()
                 << "Pausing the simulator is only allowed in "
                 << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
                 << " mode.";
@@ -181,7 +181,7 @@ void View::keyPress(unsigned char key, int x, int y) {
             S()->setSimSpeed(S()->simSpeed() * 1.5);
         }
         else {
-            qWarning()
+            qWarning().noquote().nospace()
                 << "Increasing the simulator speed is only allowed in "
                 << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
                 << " mode.";
@@ -193,7 +193,7 @@ void View::keyPress(unsigned char key, int x, int y) {
             S()->setSimSpeed(S()->simSpeed() / 1.5);
         }
         else {
-            qWarning()
+            qWarning().noquote().nospace()
                 << "Decreasing the simulator speed is only allowed in "
                 << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
                 << " mode.";
@@ -259,10 +259,11 @@ void View::keyPress(unsigned char key, int x, int y) {
         int inputButton = QString("0123456789").indexOf(key);
         if (!S()->inputButtonWasPressed(inputButton)) {
             S()->setInputButtonWasPressed(inputButton, true);
-            qInfo() << "Input button " << inputButton << " was pressed.";
+            qInfo().noquote().nospace()
+                << "Input button " << inputButton << " was pressed.";
         }
         else {
-            qWarning()
+            qWarning().noquote().nospace()
                 << "Input button " << inputButton << " has not yet been"
                 << " acknowledged as pressed; pressing it has no effect.";
         }
@@ -314,7 +315,7 @@ void View::initGraphics(int argc, char* argv[], const GlutFunctions& functions) 
     // GLEW Initialization
     GLenum err = glewInit();
     if (GLEW_OK != err) {
-        qCritical() << "Unable to initialize GLEW.";
+        qCritical().noquote().nospace() << "Unable to initialize GLEW.";
         SimUtilities::quit();
     }
 
@@ -332,7 +333,8 @@ void View::initPolygonProgram() {
 
     // Set up the program and attribute pointers
     m_polygonProgram = new tdogl::Program({tdogl::Shader::shaderFromFile(
-        Directory::get()->getResShadersDirectory().toStdString() + "polygonVertexShader.txt", GL_VERTEX_SHADER)});
+        Directory::get()->getResShadersDirectory().toStdString() +
+        "polygonVertexShader.txt", GL_VERTEX_SHADER)});
     glEnableVertexAttribArray(m_polygonProgram->attrib("coordinate"));
     glVertexAttribPointer(m_polygonProgram->attrib("coordinate"),
         2, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), 0);
@@ -370,7 +372,7 @@ void View::initTextureProgram() {
     // Load the bitmap texture into the texture atlas
     QString tileTextFontImagePath = Directory::get()->getResImgsDirectory() + P()->tileTextFontImage();
     if (!SimUtilities::isFile(tileTextFontImagePath)) {
-        qCritical()
+        qCritical().noquote().nospace()
             << "Could not find font image file \"" << P()->tileTextFontImage()
             << "\" in \"" << Directory::get()->getResImgsDirectory() << "\".";
         SimUtilities::quit();

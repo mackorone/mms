@@ -33,7 +33,7 @@ Maze::Maze() {
             QString reason = (
                 SimUtilities::isFile(mazeFilePath) ?
                 "invalid format" : "file doesn't exist");
-            qCritical()
+            qCritical().noquote().nospace()
                 << "Unable to initialize maze from file \"" << mazeFilePath
                 << "\": " << reason << ".";
             SimUtilities::quit();
@@ -49,7 +49,7 @@ Maze::Maze() {
         // Check to see if there is some directory with the given name
         QString selectedMazeAlgo(P()->mazeAlgorithm());
         if (!algos.contains(selectedMazeAlgo)) {
-             qCritical()
+             qCritical().noquote().nospace()
                 << "\"" << P()->mazeAlgorithm() << "\" is not a valid maze"
                 << " algorithm.";
              SimUtilities::quit();
@@ -79,11 +79,11 @@ Maze::Maze() {
             args << QString::number(P()->generatedMazeWidth());
             args << QString::number(P()->generatedMazeHeight());
             for (int i = 0; i < args.size(); i += 1) {
-                qInfo() << args.at(i);
+                qInfo().noquote().nospace() << args.at(i);
             }
         }
         else {
-            qCritical()
+            qCritical().noquote().nospace()
                 << "No \"Main.{py,cpp}\" found in \""
                 << selectedMazeAlgoDir.absolutePath() << "\"";
             SimUtilities::quit();
@@ -99,7 +99,7 @@ Maze::Maze() {
     // Check to see if it's a valid maze
     m_isValidMaze = MazeChecker::isValidMaze(basicMaze).first;
     if (!m_isValidMaze) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "The maze failed validation. The mouse algorithm will not"
             << " execute.";
     }
@@ -112,27 +112,32 @@ Maze::Maze() {
         // TODO: MACK
         bool success = false; // MazeFileUtilities::save(basicMaze, mazeFilePath, type);
         if (success) {
-            qInfo() << "Maze saved to \"" << mazeFilePath << "\".";
+            qInfo().noquote().nospace()
+                << "Maze saved to \"" << mazeFilePath << "\".";
         }
         else {
-            qWarning() << "Unable to save maze to \"" << mazeFilePath << "\".";
+            qWarning().noquote().nospace()
+                << "Unable to save maze to \"" << mazeFilePath << "\".";
         }
     }
 
     // Mirror and rotate the maze
     if (P()->mazeMirrored()) {
         basicMaze = mirrorAcrossVertical(basicMaze);
-        qInfo() << "Mirroring the maze across the vertical.";
+        qInfo().noquote().nospace()
+            << "Mirroring the maze across the vertical.";
     }
     for (int i = 0; i < P()->mazeRotations(); i += 1) {
         basicMaze = rotateCounterClockwise(basicMaze);
-        qInfo() << "Rotating the maze counter-clockwise (" << i + 1 << ").";
+        qInfo().noquote().nospace()
+            << "Rotating the maze counter-clockwise (" << i + 1 << ").";
     }
 
     // Then, store whether or not the maze is an official maze
     m_isOfficialMaze = m_isValidMaze && MazeChecker::isOfficialMaze(basicMaze).first;
     if (m_isValidMaze && !m_isOfficialMaze) {
-        qWarning() << "The maze did not pass the \"is official maze\" tests.";
+        qWarning().noquote().nospace()
+            << "The maze did not pass the \"is official maze\" tests.";
     }
 
     // Load the maze given by the maze generation algorithm

@@ -83,11 +83,12 @@ private:
             const pugi::xml_node& node, const QMap<QString, T>& map, bool* success) {
         QString name = node.child(NAME_TAG.toStdString().c_str()).child_value();
         if (name.isEmpty()) {
-            qWarning() << "No " << type << " name specified.";
+            qWarning().noquote().nospace()
+                << "No " << type << " name specified.";
             *success = false;
         }
         if (map.contains(name)) {
-            qWarning()
+            qWarning().noquote().nospace()
                 << "Two " << type << "s both have the name \"" << name << "\".";
             *success = false;
         }

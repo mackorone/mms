@@ -65,7 +65,7 @@ void World::simulate() {
     }
     double end(SimUtilities::getHighResTimestamp());
     double duration = end - start;
-    qInfo("%v", duration);
+    qInfo().noquote().nospace() << duration;
     SimUtilities::quit();
     */
 
@@ -212,7 +212,7 @@ void World::checkCollision() {
         // Notify the use of a late collision detection
         // TODO: MACK - make some variables for these long expressions
         if (P()->printLateCollisionDetections() && duration > 1.0 / P()->collisionDetectionRate()) {
-            qWarning()
+            qWarning().noquote().nospace()
                 << "A collision detection was late by "
                 << (duration - 1.0/P()->collisionDetectionRate())
                 << " seconds, which is "

@@ -26,7 +26,7 @@ Header::Header(Model* model) :
     QString fontPath = Directory::get()->getResFontsDirectory() + P()->headerTextFont();
     if (!SimUtilities::isFile(fontPath)) {
         // If the font doesn't exist, we simply draw no text whatsoever
-        qWarning()
+        qWarning().noquote().nospace()
             << "\"" << fontPath << "\" is not a valid font file; it's very"
             << " possible that the file does not exist. No header will be"
             << " drawn.";

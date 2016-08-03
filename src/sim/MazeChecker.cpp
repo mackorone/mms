@@ -109,11 +109,11 @@ QVector<QString> MazeChecker::isEnclosed(const BasicMaze& maze) {
 
 QVector<QString> MazeChecker::hasConsistentWalls(const BasicMaze& maze) {
     // TODO: MACK - test this
-    static QVector<QPair<std::function<bool(int, int)>, Direction>> requirements {
-        {[&maze](int x, int y){return 0 <               x;}, Direction::WEST},
-        {[&maze](int x, int y){return 0 <               y;}, Direction::SOUTH},
-        {[&maze](int x, int y){return x < maze.size() - 1;}, Direction::EAST},
-        {[&maze](int x, int y){return y < maze.size() - 1;}, Direction::NORTH},
+    QVector<QPair<std::function<bool(int, int)>, Direction>> requirements {
+        {[&maze](int x, int y){return 0 <                     x;}, Direction::WEST},
+        {[&maze](int x, int y){return 0 <                     y;}, Direction::SOUTH},
+        {[&maze](int x, int y){return x < maze.size()       - 1;}, Direction::EAST},
+        {[&maze](int x, int y){return y < maze.at(x).size() - 1;}, Direction::NORTH},
     };
     QVector<QString> errors;
     for (int x = 0; x < maze.size(); x += 1) {

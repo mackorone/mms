@@ -6,9 +6,9 @@ namespace sim {
 
 Directory* Directory::INSTANCE = nullptr; 
 
-void Directory::init(const QString& root) {
+void Directory::init(const QString& applicationFilePath) {
     SIM_ASSERT_TR(INSTANCE == nullptr);
-    INSTANCE = new Directory(root);
+    INSTANCE = new Directory(applicationFilePath);
 }
 
 Directory* Directory::get() {
@@ -48,8 +48,11 @@ QString Directory::getRunDirectory() {
     return m_root + "run/";
 }
 
-Directory::Directory(const QString& root) :
-    m_root(root) {
+Directory::Directory(const QString& applicationFilePath) {
+    QString path = applicationFilePath;
+    path = path.left(path.lastIndexOf("/")); // Strips off /bin
+    path = path.left(path.lastIndexOf("/")); // Strips off /sim
+    m_root = path + "/";
 }
 
 } // namespace sim

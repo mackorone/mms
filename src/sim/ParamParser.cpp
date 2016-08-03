@@ -17,7 +17,7 @@ const QString ParamParser::PARAMETERS_TAG = "parameters";
 ParamParser::ParamParser(const QString& filePath) {
     m_fileIsReadable = m_doc.load_file(filePath.toStdString().c_str());
     if (!m_fileIsReadable) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "Unable to read parameters from \"" << filePath << "\": "
             << m_fileIsReadable.description() << ". Using default values for"
             << " all parameters.";
@@ -152,7 +152,7 @@ QString ParamParser::getStringIfHasStringAndIsTileTextAlignment(const QString& t
 
 void ParamParser::printTagNotFound(const QString& type, const QString& tag, const QString& defaultValue) {
     if (m_fileIsReadable) {
-        qWarning()
+        qWarning().noquote().nospace()
             << "Could not find " << type << " parameter \"" << tag << "\"."
             << " Using default value of " << defaultValue << ".";
     }
@@ -160,7 +160,7 @@ void ParamParser::printTagNotFound(const QString& type, const QString& tag, cons
 
 void ParamParser::printLessThan(const QString& type, const QString& tag, const QString& value,
     const QString& defaultValue, const QString& min) {
-    qWarning()
+    qWarning().noquote().nospace()
         << "The value of the " << type << " parameter \"" << tag << "\" is "
         << value << " and is less than the minimum allowed value of " << min
         << ". Using default value of " << defaultValue << ".";
@@ -168,7 +168,7 @@ void ParamParser::printLessThan(const QString& type, const QString& tag, const Q
 
 void ParamParser::printGreaterThan(const QString& type, const QString& tag, const QString& value,
     const QString& defaultValue, const QString& max) {
-    qWarning()
+    qWarning().noquote().nospace()
         << "The value of the " << type << " parameter \"" << tag << "\" is "
         << value << " and is greater than the maximum allowed value of " << max
         << ". Using default value of " << defaultValue	<< ".";
@@ -179,7 +179,7 @@ void ParamParser::printNotSpecialString(
         const QString& tag,
         const QString& value,
         const QString& defaultValue) {
-    qWarning()
+    qWarning().noquote().nospace()
         << "The value of string parameter \"" << tag << "\" is \"" << value
         << "\" and is not a valid " << type << ". Using default value of \""
         << defaultValue << "\".";

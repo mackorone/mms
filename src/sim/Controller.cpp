@@ -100,7 +100,7 @@ void Controller::validateMouseAlgorithm(const QString& mouseAlgorithm) {
 void Controller::validateMouseInterfaceType(
         const QString& mouseAlgorithm, const QString& interfaceType) {
     if (!STRING_TO_INTERFACE_TYPE.contains(interfaceType)) {
-        qCritical()
+        qCritical().noquote().nospace()
             << "\"" << interfaceType << "\" is not a valid interface type. You"
             << " must declare the interface type of the mouse algorithm \""
             << mouseAlgorithm << "\" to be either \""
@@ -119,7 +119,7 @@ void Controller::validateMouseInitialDirection(
         || initialDirection == OPENING_DIRECTION_STRING
         || initialDirection == WALL_DIRECTION_STRING
     )) {
-        qCritical()
+        qCritical().noquote().nospace()
             << "\"" << initialDirection << "\" is not a valid initial"
             << " direction. You must declare the initial direction of the mouse"
             << " algorithm \"" << mouseAlgorithm << "\" to be one of \""
@@ -137,7 +137,7 @@ void Controller::validateTileTextRowsAndCols(
     const QString& mouseAlgorithm,
     int tileTextNumberOfRows, int tileTextNumberOfCols) {
     if (tileTextNumberOfRows < 0 || tileTextNumberOfCols < 0) {
-        qCritical()
+        qCritical().noquote().nospace()
             << "Both tileTextNumberOfRows() and tileTextNumberOfCols() must"
             << " return non-negative integers. Since they return \""
             << tileTextNumberOfRows << "\" and \"" << tileTextNumberOfCols
@@ -150,7 +150,7 @@ void Controller::validateTileTextRowsAndCols(
 void Controller::validateMouseWheelSpeedFraction(
     const QString& mouseAlgorithm, double wheelSpeedFraction) {
     if (!(0.0 <= wheelSpeedFraction && wheelSpeedFraction <= 1.0)) {
-        qCritical()
+        qCritical().noquote().nospace()
             << "\"" << wheelSpeedFraction << "\" is not a valid wheel speed"
             << " fraction. The wheel speed fraction of the mouse algorithm \""
             << mouseAlgorithm << "\" has to be in [0.0, 1.0].";
@@ -169,7 +169,7 @@ void Controller::initAndValidateMouse(
     Direction direction = getInitialDirection(initialDirection, model);
     bool success = model->getMouse()->initialize(mouseFile, direction);
     if (!success) {
-        qCritical()
+        qCritical().noquote().nospace()
             << "Unable to successfully initialize the mouse in the algorithm \""
             << mouseAlgorithm << "\" from \"" << mouseFile << "\".";
         SimUtilities::quit();
@@ -178,7 +178,7 @@ void Controller::initAndValidateMouse(
     // Validate the mouse
     if (STRING_TO_INTERFACE_TYPE.value(interfaceType) == InterfaceType::DISCRETE) {
         if (!MouseChecker::isDiscreteInterfaceCompatible(*model->getMouse())) {
-            qCritical()
+            qCritical().noquote().nospace()
                 << "The mouse file \"" << mouseFile << "\" is not discrete"
                 << " interface compatible.";
             SimUtilities::quit();
@@ -186,7 +186,7 @@ void Controller::initAndValidateMouse(
     }
     else { // InterfaceType::CONTINUOUS
         if (!MouseChecker::isContinuousInterfaceCompatible(*model->getMouse())) {
-            qCritical()
+            qCritical().noquote().nospace()
                 << "The mouse file \"" << mouseFile << "\" is not continuous"
                 << " interface compatible.";
             SimUtilities::quit();

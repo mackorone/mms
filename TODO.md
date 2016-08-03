@@ -6,6 +6,9 @@
     - Write some documentation about formatting
     - qDebug just for simulator
     - kill toStdString
+    - Logging puts spaces, so I'll have to remove all of the extra spaces (or configure it to not do that)
+    - Also, strings are already printing out with quotes
+    - qDebug().nospace().noquote() 
 - Rule of thumb - if it has state, make it a singleton instead of a static class
     - Rewrite singleton access patterns to be a little more readable (kill T(), P(), etc.)
     - All singletons should have an init function

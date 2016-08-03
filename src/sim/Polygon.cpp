@@ -28,7 +28,8 @@ Polygon::Polygon(const Polygon& polygon) :
         static int i = 0;
         i += 1;
         if (i % 100 == 0) {
-            qInfo() << "Untriangulated polygon copies count: %v", i);
+            qInfo().noquote().nospace()
+                << "Untriangulated polygon copies count: %v", i);
         }
         */
     }
