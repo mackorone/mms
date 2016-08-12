@@ -1,11 +1,5 @@
 # High Priority
 
-- Clean up Logging
-    - qCritical should just be qFatal
-    - Check all qInfo etc.
-    - Write some documentation about formatting
-    - qDebug just for simulator
-    - kill toStdString
 - Rule of thumb - if it has state, make it a singleton instead of a static class
     - Rewrite singleton access patterns to be a little more readable (kill T(), P(), etc.)
     - All singletons should have an init function

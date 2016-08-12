@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QFile>
+#include <QTime>
 
 #include "Assert.h"
 #include "Directory.h"
@@ -11,11 +12,15 @@
 
 namespace sim {
 
+QTextStream* Logging::STDOUT = nullptr;
 QTextStream* Logging::STREAM = nullptr;
 
 void Logging::init(const QString& runId) {
 
+    SIM_ASSERT_TR(nullptr == STDOUT);
     SIM_ASSERT_TR(nullptr == STREAM);
+
+    STDOUT = new QTextStream(stdout);
 
     QString dirPath(Directory::get()->getRunDirectory() + runId + "/");
     QDir().mkpath(dirPath);
@@ -25,9 +30,6 @@ void Logging::init(const QString& runId) {
     STREAM = new QTextStream(file);
 
     qInstallMessageHandler(handler);
-
-    // TODO: MACK - auto insert spaces, put quotes
-    //QDebug::setAutoInsertSpaces(false); // TODO: MACK
 }
 
 void Logging::handler(
@@ -35,11 +37,9 @@ void Logging::handler(
         const QMessageLogContext& context,
         const QString& msg) {
 
-    // TODO: MACK - benchmark this
+    SIM_ASSERT_FA(nullptr == STDOUT);
     SIM_ASSERT_FA(nullptr == STREAM);
     
-    // TODO: MACK - if debug, we want line numbers
-    // "[ %real_time | %sim_time | %level | %logger ] - %msg");
     static const QMap<QtMsgType, QString> mapping {
         {QtDebugMsg,    "DEBUG"   },
         {QtInfoMsg,     "INFO"    },
@@ -49,24 +49,22 @@ void Logging::handler(
         {QtSystemMsg,   "SYSTEM"  },
     };
 
-    // TODO: MACK - why is this 9 sometimes?
-    double seconds = Time::get()->elapsedRealTime().getSeconds();
-    QString secondsString = SimUtilities::formatSeconds(seconds);
-    secondsString.truncate(secondsString.indexOf(".") + 4); // Trim to 3 decimal places
+    static const QString formatString = "mm:ss.zzz";
 
-    double sim_seconds = Time::get()->elapsedSimTime().getSeconds();
-    QString sim_secondsString = SimUtilities::formatSeconds(sim_seconds);
-    sim_secondsString.truncate(sim_secondsString.indexOf(".") + 4); // Trim to 3 decimal places
+    int realMs = static_cast<int>(
+        Time::get()->elapsedRealTime().getMilliseconds());
+    int simMs = static_cast<int>(
+        Time::get()->elapsedSimTime().getMilliseconds());
 
     QString formatted = QString("[ %1 | %2 | %3 ] - %4").arg(
-        secondsString,
-        sim_secondsString,
+        QTime(0, 0, 0).addMSecs(realMs).toString(formatString),
+        QTime(0, 0, 0).addMSecs(simMs).toString(formatString),
         mapping.value(type),
         msg
     );
 
-    std::cout << formatted.toStdString() << std::endl;
-    *STREAM << formatted << endl << flush; // TODO: MACK - don't need to flush here, I don't think
+    *STDOUT << formatted << endl;
+    *STREAM << formatted << endl;
 }
 
 } // namespace sim

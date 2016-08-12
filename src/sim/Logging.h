@@ -12,6 +12,7 @@ public:
     static void init(const QString& runId);
 
 private:
+    static QTextStream* STDOUT;
     static QTextStream* STREAM;
     static void handler(
         QtMsgType type,
