@@ -20,7 +20,7 @@
 // avoid a circular dependency; IMouseAlgorithm.h already includes this file
 class IMouseAlgorithm;
 
-namespace sim {
+namespace mms {
 
 class MouseInterface {
 
@@ -220,4 +220,4 @@ private:
 
 };
 
-} // namespace sim
+} // namespace mms

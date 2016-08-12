@@ -16,7 +16,7 @@
 #include "TransformationMatrix.h"
 #include "units/Seconds.h"
 
-namespace sim {
+namespace mms {
 
 View::View(Model* model, int argc, char* argv[], const GlutFunctions& functions) : m_model(model) {
 
@@ -496,4 +496,4 @@ void View::drawFullAndZoomedMaps(
     }
 }
 
-} // namespace sim
+} // namespace mms

@@ -2,7 +2,7 @@
 
 #include "RGB.h"
 
-namespace sim {
+namespace mms {
 
 struct VertexGraphic {
     double x; // x position
@@ -11,4 +11,4 @@ struct VertexGraphic {
     double a; // alpha value
 };
 
-} // namespace sim
+} // namespace mms

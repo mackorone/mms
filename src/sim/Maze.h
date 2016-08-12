@@ -5,7 +5,7 @@
 #include "BasicMaze.h"
 #include "Tile.h"
 
-namespace sim {
+namespace mms {
 
 class Maze {
 
@@ -40,4 +40,4 @@ private:
     static QVector<QVector<Tile>> setTileDistances(QVector<QVector<Tile>> maze);
 };
 
-} // namespace sim
+} // namespace mms

@@ -6,7 +6,7 @@
 #include "units/Cartesian.h"
 #include "units/Degrees.h"
 
-namespace sim {
+namespace mms {
 
 class TransformationMatrix {
 
@@ -51,4 +51,4 @@ private:
 
 };
 
-} // namespace sim
+} // namespace mms

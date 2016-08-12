@@ -1,6 +1,6 @@
 #include "MouseChecker.h"
 
-namespace sim {
+namespace mms {
 
 // TODO: For both, ensure that the center is contained within the collision polygon
 // TODO: For both, ensure that it fits within the starting tile
@@ -15,4 +15,4 @@ bool MouseChecker::isContinuousInterfaceCompatible(const Mouse& mouse) {
     return true;
 }
 
-} // namespace sim
+} // namespace mms

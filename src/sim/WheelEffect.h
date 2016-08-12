@@ -4,7 +4,7 @@
 #include "units/RadiansPerSecond.h"
 #include "Wheel.h"
 
-namespace sim {
+namespace mms {
 
 class WheelEffect {
 
@@ -28,4 +28,4 @@ private:
 
 };
 
-} // namespace sim
+} // namespace mms

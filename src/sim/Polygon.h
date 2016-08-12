@@ -6,7 +6,7 @@
 #include "units/Angle.h"
 #include "units/Cartesian.h"
 
-namespace sim {
+namespace mms {
 
 class Polygon {
 
@@ -47,4 +47,4 @@ private:
     static QVector<Triangle> triangulate(const QVector<Cartesian>& vertices);
 };
 
-} // namespace sim
+} // namespace mms

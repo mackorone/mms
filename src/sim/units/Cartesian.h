@@ -2,7 +2,7 @@
 
 #include "Coordinate.h"
 
-namespace sim {
+namespace mms {
 
 class Cartesian : public Coordinate {
 
@@ -18,4 +18,4 @@ public:
 
 };
 
-} // namespace sim
+} // namespace mms

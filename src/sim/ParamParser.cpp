@@ -10,7 +10,7 @@
 #include "SimUtilities.h"
 #include "TileTextAlignment.h"
 
-namespace sim {
+namespace mms {
 
 const QString ParamParser::PARAMETERS_TAG = "parameters";
 
@@ -185,4 +185,4 @@ void ParamParser::printNotSpecialString(
         << defaultValue << "\".";
 }
 
-} // namespace sim
+} // namespace mms

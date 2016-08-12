@@ -4,7 +4,7 @@
 #include "Mouse.h"
 #include "World.h"
 
-namespace sim {
+namespace mms {
 
 class Model {
 
@@ -21,4 +21,4 @@ private:
 
 };
 
-} // namespace sim
+} // namespace mms

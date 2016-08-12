@@ -29,7 +29,7 @@
 #include "State.h"
 #include "units/Seconds.h"
 
-namespace sim {
+namespace mms {
 
 void SimUtilities::quit() {
     // TODO: MACK - make a better API for exiting from each of the threads
@@ -223,4 +223,4 @@ void SimUtilities::removeExcessArchivedRuns() {
     }
 }
 
-} // namespace sim
+} // namespace mms

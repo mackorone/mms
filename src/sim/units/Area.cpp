@@ -1,6 +1,6 @@
 #include "Area.h"
 
-namespace sim {
+namespace mms {
 
 Area::Area() : m_metersSquared(0.0) {
 }
@@ -12,4 +12,4 @@ double Area::getMetersSquared() const {
     return m_metersSquared;
 }
 
-} // namespace sim
+} // namespace mms

@@ -16,7 +16,7 @@
 #include "Param.h"
 #include "State.h"
 
-namespace sim {
+namespace mms {
 
 Mouse::Mouse(const Maze* maze) :
     m_maze(maze),
@@ -511,4 +511,4 @@ QMap<QString, QPair<double, double>> Mouse::getWheelSpeedAdjustmentFactors(
     return adjustmentFactors;
 }
 
-} // namespace sim
+} // namespace mms

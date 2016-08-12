@@ -5,7 +5,7 @@
 #include "Key.h"
 #include "LayoutType.h"
 
-namespace sim {
+namespace mms {
 
 // Wrapper for the static call to State::getInstance()
 class State;
@@ -95,4 +95,4 @@ private:
     bool crossesDefault(double current, double next, double defaultValue);
 };
 
-} // namespace sim
+} // namespace mms

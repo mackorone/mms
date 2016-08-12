@@ -2,7 +2,7 @@
 
 #include <QPair>
 
-namespace sim {
+namespace mms {
 
 CurveTurnFactorCalculator::CurveTurnFactorCalculator() :
     m_unitForwardComponent(0.0),
@@ -83,4 +83,4 @@ QPair<double, double> CurveTurnFactorCalculator::getCurveTurnFactors(const Meter
     return {m_unitForwardComponent * radius.getMeters(), m_unitTurnComponent};
 }
 
-} // namespace sim
+} // namespace mms

@@ -3,7 +3,7 @@
 #include "Seconds.h"
 #include "Speed.h"
 
-namespace sim {
+namespace mms {
 
 class Distance {
 
@@ -22,4 +22,4 @@ protected:
 
 };
 
-} // namespace sim
+} // namespace mms

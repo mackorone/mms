@@ -1,6 +1,6 @@
 #pragma once
 
-namespace sim {
+namespace mms {
 
 struct VertexTexture {
     double x; // x position
@@ -9,4 +9,4 @@ struct VertexTexture {
     double v; // v position (y position in the texture)
 };
 
-} // namespace sim
+} // namespace mms

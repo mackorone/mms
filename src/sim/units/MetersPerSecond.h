@@ -4,7 +4,7 @@
 #include "Meters.h"
 #include "Speed.h"
 
-namespace sim {
+namespace mms {
 
 class MetersPerSecond : public Speed {
 
@@ -22,4 +22,4 @@ public:
 
 };
 
-} // namespace sim
+} // namespace mms

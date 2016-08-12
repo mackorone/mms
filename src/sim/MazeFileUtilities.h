@@ -6,7 +6,7 @@
 #include "BasicMaze.h"
 #include "MazeFileType.h"
 
-namespace sim {
+namespace mms {
 
 class MazeFileUtilities {
 
@@ -35,4 +35,4 @@ private:
     static QByteArray serializeNumType(const BasicMaze& maze);
 };
 
-} // namespace sim
+} // namespace mms

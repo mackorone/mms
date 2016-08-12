@@ -7,7 +7,7 @@
 #include "Color.h"
 #include "Tile.h"
 
-namespace sim {
+namespace mms {
 
 class TileGraphic {
 
@@ -43,4 +43,4 @@ private:
     QPair<Color, float> deduceWallColorAndAlpha(Direction direction) const;
 };
 
-} // namespace sim
+} // namespace mms

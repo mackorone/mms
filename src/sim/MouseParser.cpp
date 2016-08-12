@@ -9,7 +9,7 @@
 #include "SimUtilities.h"
 #include "units/RevolutionsPerMinute.h"
 
-namespace sim {
+namespace mms {
 
 const Polygon MouseParser::NULL_POLYGON = Polygon({
     Cartesian(Meters(0), Meters(0)),
@@ -255,4 +255,4 @@ Cartesian MouseParser::alignVertex(const Cartesian& vertex, const Cartesian& ali
     return GeometryUtilities::rotateVertexAroundPoint(translated, alignmentRotation, rotationPoint);
 }
 
-} // namespace sim
+} // namespace mms

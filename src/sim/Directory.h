@@ -2,7 +2,7 @@
 
 #include <QString>
 
-namespace sim {
+namespace mms {
 
 class Directory {
 
@@ -53,4 +53,4 @@ private:
 
 };
 
-} // namespace sim
+} // namespace mms

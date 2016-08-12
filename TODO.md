@@ -1,10 +1,5 @@
 # High Priority
 
-- Rule of thumb - if it has state, make it a singleton instead of a static class
-    - Rewrite singleton access patterns to be a little more readable (kill T(), P(), etc.)
-    - All singletons should have an init function
-    - Param and State still need to be converted
-- Renamespace sim to mms
 - Fix timestep
     - Make renderer and physics on same thread
         - Maybe even collision detection too
@@ -95,6 +90,10 @@
 
 # Medum Priority
 
+- Rule of thumb - if it has state, make it a singleton instead of a static class
+    - Rewrite singleton access patterns to be a little more readable (kill S(), P(), etc.)
+    - All singletons should have an init function
+    - Param and State still need to be converted
 - Make a system for nearly instantly checking stats on many mazes:
     - like unit tests
     - solved or not

@@ -4,7 +4,7 @@ namespace diagonalTest {
 
 void DiagonalTest::solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
-        char initialDirection, sim::MouseInterface* mouse) {
+        char initialDirection, mms::MouseInterface* mouse) {
 	mouse->originMoveForwardToEdge();
 	mouse->turnRightToEdge();
 	mouse->turnRightToEdge();
@@ -20,7 +20,7 @@ bool DiagonalTest::useTileEdgeMovements() const {
 	return true;
 }
 
-void DiagonalTest::justMoveForward(sim::MouseInterface* mouse) {
+void DiagonalTest::justMoveForward(mms::MouseInterface* mouse) {
 	if (useTileEdgeMovements()) {
 		// If we're using special tile edge movements, then the origin is a
 		// special case, since we don't start on a tile edge.

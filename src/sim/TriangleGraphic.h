@@ -2,7 +2,7 @@
 
 #include "VertexGraphic.h"
 
-namespace sim {
+namespace mms {
 
 struct TriangleGraphic {
     VertexGraphic p1;
@@ -10,4 +10,4 @@ struct TriangleGraphic {
     VertexGraphic p3;
 };
 
-} // namespace sim
+} // namespace mms

@@ -8,7 +8,7 @@
 #include "Param.h"
 #include "SimUtilities.h"
 
-namespace sim {
+namespace mms {
 
 static const QString& OPENING_DIRECTION_STRING = "OPENING";
 static const QString& WALL_DIRECTION_STRING = "WALL";
@@ -209,4 +209,4 @@ Direction Controller::getInitialDirection(const QString& initialDirection, Model
     return STRING_TO_DIRECTION.value(initialDirection);
 }
 
-} // namespace sim
+} // namespace mms

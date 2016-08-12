@@ -1,6 +1,6 @@
 #include "Duration.h"
 
-namespace sim {
+namespace mms {
 
 Duration::Duration() : m_seconds(0) {
 }
@@ -26,4 +26,4 @@ bool Duration::operator<(const Duration& duration) const {
     return getSeconds() < duration.getSeconds();
 }
 
-} // namespace sim
+} // namespace mms

@@ -6,7 +6,7 @@
 
 #include "ContainerUtilities.h"
 
-namespace sim {
+namespace mms {
 
 enum class TileTextAlignment {
      UPPER_LEFT,  UPPER_CENTER,  UPPER_RIGHT,
@@ -65,4 +65,4 @@ static const QVector<TileTextAlignment> STAR_RIGHT_ALIGNMENTS {
     TileTextAlignment::LOWER_RIGHT, 
 };
 
-} // namespace sim
+} // namespace mms

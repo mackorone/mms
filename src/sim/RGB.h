@@ -1,6 +1,6 @@
 #pragma once
 
-namespace sim {
+namespace mms {
 
 struct RGB {
     double r;
@@ -8,4 +8,4 @@ struct RGB {
     double b;
 };
 
-} // namespace sim
+} // namespace mms

@@ -17,7 +17,7 @@
 #include "SimUtilities.h"
 #include "Tile.h"
 
-namespace sim {
+namespace mms {
 
 Maze::Maze() {
     
@@ -313,4 +313,4 @@ QVector<QVector<Tile>> Maze::setTileDistances(QVector<QVector<Tile>> maze) {
     return maze;
 }
 
-} // namespace sim
+} // namespace mms

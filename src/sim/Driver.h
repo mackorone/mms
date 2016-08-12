@@ -4,7 +4,7 @@
 #include "View.h"
 #include "Controller.h"
 
-namespace sim {
+namespace mms {
 
 class Driver {
 
@@ -19,4 +19,4 @@ private:
 
 };
 
-} // namespace sim
+} // namespace mms

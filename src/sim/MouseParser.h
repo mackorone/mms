@@ -16,7 +16,7 @@
 #include "units/Meters.h"
 #include "Wheel.h"
 
-namespace sim {
+namespace mms {
 
 class MouseParser {
 
@@ -96,4 +96,4 @@ private:
     }
 };
 
-} // namespace sim
+} // namespace mms

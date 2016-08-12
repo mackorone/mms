@@ -1,6 +1,6 @@
 #pragma once
 
-namespace sim {
+namespace mms {
 
 class Duration {
 
@@ -17,4 +17,4 @@ protected:
 
 };
 
-} // namespace sim
+} // namespace mms

@@ -7,7 +7,7 @@
 
 #include "Assert.h"
 
-namespace sim {
+namespace mms {
 
 class ParamParser {
 
@@ -110,4 +110,4 @@ private:
 
 };
 
-} // namespace sim
+} // namespace mms

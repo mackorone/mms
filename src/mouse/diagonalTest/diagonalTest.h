@@ -8,10 +8,10 @@ class DiagonalTest : public IMouseAlgorithm {
 
 public:
 	bool useTileEdgeMovements() const;
-	void justMoveForward(sim::MouseInterface* mouse);
+	void justMoveForward(mms::MouseInterface* mouse);
     void solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
-        char initialDirection, sim::MouseInterface* mouse);
+        char initialDirection, mms::MouseInterface* mouse);
 
 };
 

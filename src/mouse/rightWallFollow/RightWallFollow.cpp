@@ -38,13 +38,13 @@ double RightWallFollow::wheelSpeedFraction() const {
 
 void RightWallFollow::solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
-        char initialDirection, sim::MouseInterface* mouse) {
+        char initialDirection, mms::MouseInterface* mouse) {
     while (true){
         rightWallFollowStep(mouse);
     }
 }
 
-void RightWallFollow::rightWallFollowStep(sim::MouseInterface* mouse) {
+void RightWallFollow::rightWallFollowStep(mms::MouseInterface* mouse) {
     if (!mouse->wallRight()) {
         turnRightAndMoveForward(mouse);
     }
@@ -59,7 +59,7 @@ void RightWallFollow::rightWallFollowStep(sim::MouseInterface* mouse) {
     }
 }
 
-void RightWallFollow::justMoveForward(sim::MouseInterface* mouse) {
+void RightWallFollow::justMoveForward(mms::MouseInterface* mouse) {
     if (useTileEdgeMovements()) {
         // If we're using special tile edge movements, then the origin is a
         // special case, since we don't start on a tile edge.
@@ -78,7 +78,7 @@ void RightWallFollow::justMoveForward(sim::MouseInterface* mouse) {
     }
 }
 
-void RightWallFollow::turnLeftAndMoveForward(sim::MouseInterface* mouse) {
+void RightWallFollow::turnLeftAndMoveForward(mms::MouseInterface* mouse) {
     if (useTileEdgeMovements()) {
         mouse->turnLeftToEdge();
     }
@@ -88,7 +88,7 @@ void RightWallFollow::turnLeftAndMoveForward(sim::MouseInterface* mouse) {
     }
 }
 
-void RightWallFollow::turnRightAndMoveForward(sim::MouseInterface* mouse) {
+void RightWallFollow::turnRightAndMoveForward(mms::MouseInterface* mouse) {
     if (useTileEdgeMovements()) {
         mouse->turnRightToEdge();
     }
@@ -98,7 +98,7 @@ void RightWallFollow::turnRightAndMoveForward(sim::MouseInterface* mouse) {
     }
 }
 
-void RightWallFollow::turnAroundAndMoveForward(sim::MouseInterface* mouse) {
+void RightWallFollow::turnAroundAndMoveForward(mms::MouseInterface* mouse) {
     if (useTileEdgeMovements()) {
         mouse->turnAroundLeftToEdge();
     }

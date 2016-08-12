@@ -8,7 +8,7 @@
 #include "Logging.h"
 #include "SimUtilities.h"
 
-namespace sim {
+namespace mms {
 
 QPair<bool, QVector<QString>> MazeChecker::isDrawableMaze(const BasicMaze& maze) {
     QVector<QString> errors;
@@ -320,4 +320,4 @@ QPair<int, int> MazeChecker::positionAfterMovingForward(
     };
 }
 
-} // namespace sim
+} // namespace mms

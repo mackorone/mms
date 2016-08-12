@@ -18,7 +18,7 @@ Cell::Cell() :
     }
 }
 
-void Cell::setMouseInterface(sim::MouseInterface* mouse) {
+void Cell::setMouseInterface(mms::MouseInterface* mouse) {
     m_mouse = mouse;
 }
 

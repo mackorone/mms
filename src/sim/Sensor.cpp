@@ -8,7 +8,7 @@
 #include "Param.h"
 #include "units/Polar.h"
 
-namespace sim {
+namespace mms {
 
 Sensor::Sensor() :
     m_range(Meters(0)),
@@ -114,4 +114,4 @@ Polygon Sensor::getViewPolygon(
     return Polygon(polygon);
 }
 
-} // namespace sim
+} // namespace mms

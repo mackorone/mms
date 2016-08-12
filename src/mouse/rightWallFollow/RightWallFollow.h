@@ -14,14 +14,14 @@ public:
     double wheelSpeedFraction() const;
     void solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
-        char initialDirection, sim::MouseInterface* mouse);
+        char initialDirection, mms::MouseInterface* mouse);
 
 private:
-    void rightWallFollowStep(sim::MouseInterface* mouse);
-    void justMoveForward(sim::MouseInterface* mouse);
-    void turnLeftAndMoveForward(sim::MouseInterface* mouse);
-    void turnRightAndMoveForward(sim::MouseInterface* mouse);
-    void turnAroundAndMoveForward(sim::MouseInterface* mouse);
+    void rightWallFollowStep(mms::MouseInterface* mouse);
+    void justMoveForward(mms::MouseInterface* mouse);
+    void turnLeftAndMoveForward(mms::MouseInterface* mouse);
+    void turnRightAndMoveForward(mms::MouseInterface* mouse);
+    void turnAroundAndMoveForward(mms::MouseInterface* mouse);
 };
 
 } // namespace rightWallFollow

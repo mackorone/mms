@@ -5,7 +5,7 @@
 
 #include "ContainerUtilities.h"
 
-namespace sim {
+namespace mms {
 
 enum class LayoutType {
     FULL,
@@ -28,4 +28,4 @@ static const QMap<LayoutType, QString> LAYOUT_TYPE_TO_STRING {
 static const QMap<QString, LayoutType> STRING_TO_LAYOUT_TYPE =
     ContainerUtilities::inverse(LAYOUT_TYPE_TO_STRING);
 
-} // namespace sim
+} // namespace mms

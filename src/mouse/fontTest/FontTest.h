@@ -10,7 +10,7 @@ public:
     std::string interfaceType() const;
     void solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
-        char initialDirection, sim::MouseInterface* mouse);
+        char initialDirection, mms::MouseInterface* mouse);
 
 };
 

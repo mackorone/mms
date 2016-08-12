@@ -3,7 +3,7 @@
 #include "Meters.h"
 #include "Radians.h"
 
-namespace sim {
+namespace mms {
 
 class Coordinate { // Synonymous to vector
 
@@ -24,4 +24,4 @@ protected:
 
 };
 
-} // namespace sim
+} // namespace mms

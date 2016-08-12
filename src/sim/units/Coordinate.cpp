@@ -2,7 +2,7 @@
 
 #include "../CPMath.h"
 
-namespace sim {
+namespace mms {
 
 Coordinate::Coordinate() : m_x(Meters(0.0)), m_y(Meters(0.0)) {
 }
@@ -38,4 +38,4 @@ bool Coordinate::operator<(const Coordinate& coordinate) const {
     return (getX() != coordinate.getX() ? getX() < coordinate.getX() : getY() < coordinate.getY());
 }
 
-} // namespace sim
+} // namespace mms

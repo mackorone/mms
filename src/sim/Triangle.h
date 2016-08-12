@@ -2,7 +2,7 @@
 
 #include "units/Cartesian.h"
 
-namespace sim {
+namespace mms {
 
 struct Triangle {
     Cartesian p1;
@@ -10,4 +10,4 @@ struct Triangle {
     Cartesian p3;
 };
 
-} // namespace sim
+} // namespace mms

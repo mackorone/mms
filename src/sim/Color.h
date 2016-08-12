@@ -6,7 +6,7 @@
 #include "ContainerUtilities.h"
 #include "RGB.h"
 
-namespace sim {
+namespace mms {
 
 enum class Color {
     BLACK,
@@ -94,4 +94,4 @@ static const QMap<Color, char> COLOR_TO_CHAR {
 static const QMap<char, Color> CHAR_TO_COLOR =
     ContainerUtilities::inverse(COLOR_TO_CHAR);
 
-} // namespace sim
+} // namespace mms

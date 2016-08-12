@@ -4,7 +4,7 @@
 
 #include "ContainerUtilities.h"
 
-namespace sim {
+namespace mms {
 
 enum class SensorType {
     ANALOG,
@@ -19,4 +19,4 @@ static const QMap<SensorType, QString> SENSOR_TYPE_TO_STRING {
 static const QMap<QString, SensorType> STRING_TO_SENSOR_TYPE =
     ContainerUtilities::inverse(SENSOR_TYPE_TO_STRING);
 
-} // namespace sim
+} // namespace mms

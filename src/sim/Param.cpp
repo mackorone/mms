@@ -14,7 +14,7 @@
 #include "ParamParser.h"
 #include "TileTextAlignment.h"
 
-namespace sim {
+namespace mms {
 
 Param* P() {
     return Param::getInstance();
@@ -470,4 +470,4 @@ QString Param::mouseAlgorithm() {
     return m_mouseAlgorithm;
 }
 
-} // namespace sim
+} // namespace mms

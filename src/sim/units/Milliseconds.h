@@ -2,7 +2,7 @@
 
 #include "Duration.h"
 
-namespace sim {
+namespace mms {
 
 class Milliseconds : public Duration {
 
@@ -13,4 +13,4 @@ public:
 
 };
 
-} // namespace sim
+} // namespace mms

@@ -11,7 +11,7 @@
 #include "State.h"
 #include "Time.h"
 
-namespace sim {
+namespace mms {
 
 Header::Header(Model* model) :
         m_model(model),
@@ -243,4 +243,4 @@ void Header::updateColumnStartingPositions() {
     m_columnStartingPositions = columnStartingPositions;
 }
 
-} // namespace sim
+} // namespace mms

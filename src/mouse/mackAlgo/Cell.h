@@ -9,7 +9,7 @@ class Cell {
 public:
     Cell();
 
-    void setMouseInterface(sim::MouseInterface* mouse);
+    void setMouseInterface(mms::MouseInterface* mouse);
 
     int getX() const;
     int getY() const;
@@ -42,7 +42,7 @@ public:
     void setExamined(bool examined);
 
 private:
-    sim::MouseInterface* m_mouse;
+    mms::MouseInterface* m_mouse;
     int m_x;
     int m_y;
     bool m_walls[4];

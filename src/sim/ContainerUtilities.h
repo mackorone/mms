@@ -7,7 +7,7 @@
 
 #include "Assert.h"
 
-namespace sim {
+namespace mms {
 
 class ContainerUtilities {
 
@@ -43,4 +43,4 @@ public:
 
 };
 
-} // namespace sim
+} // namespace mms

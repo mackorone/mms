@@ -1,6 +1,6 @@
 #include "Milliseconds.h"
 
-namespace sim {
+namespace mms {
 
 Milliseconds::Milliseconds(double milliseconds) {
     static const double secondsPerMillisecond = 1.0 / 1000.0;
@@ -15,4 +15,4 @@ Milliseconds Milliseconds::operator+(const Duration& duration) const {
     return Milliseconds(getMilliseconds() + duration.getMilliseconds());
 }
 
-} // namespace sim
+} // namespace mms

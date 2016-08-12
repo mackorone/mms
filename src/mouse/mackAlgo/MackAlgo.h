@@ -26,13 +26,13 @@ public:
     int tileTextNumberOfCols() const;
     void solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
-        char initialDirection, sim::MouseInterface* mouse);
+        char initialDirection, mms::MouseInterface* mouse);
 #else
     void solve();
 #endif
 
 private:
-    sim::MouseInterface* m_mouse;
+    mms::MouseInterface* m_mouse;
     Cell m_maze[MAZE_WIDTH][MAZE_HEIGHT];
     int m_x;
     int m_y;

@@ -7,7 +7,7 @@
 #include "TileTextAlignment.h"
 #include "units/Cartesian.h"
 
-namespace sim {
+namespace mms {
 
 class TileGraphicTextCache {
 
@@ -59,4 +59,4 @@ private:
             TileTextAlignment tiletextAlignment);
 };
 
-} // namespace sim
+} // namespace mms

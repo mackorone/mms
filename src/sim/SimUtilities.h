@@ -10,7 +10,7 @@
 #include "Maze.h"
 #include "units/Duration.h"
 
-namespace sim {
+namespace mms {
 
 class SimUtilities {
 
@@ -78,4 +78,4 @@ public:
 
 };
 
-} // namespace sim
+} // namespace mms

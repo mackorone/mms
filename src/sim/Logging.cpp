@@ -10,7 +10,7 @@
 #include "SimUtilities.h"
 #include "Time.h"
 
-namespace sim {
+namespace mms {
 
 QTextStream* Logging::STDOUT = nullptr;
 QTextStream* Logging::STREAM = nullptr;
@@ -67,4 +67,4 @@ void Logging::handler(
     *STREAM << formatted << endl;
 }
 
-} // namespace sim
+} // namespace mms

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace sim {
+namespace mms {
 
 class Speed {
 
@@ -15,4 +15,4 @@ protected:
 
 };
 
-} // namespace sim
+} // namespace mms

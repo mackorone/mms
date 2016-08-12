@@ -2,7 +2,7 @@
 
 #include "Mouse.h"
 
-namespace sim {
+namespace mms {
 
 class MouseChecker {
 
@@ -15,4 +15,4 @@ public:
     static bool isContinuousInterfaceCompatible(const Mouse& mouse);
 };
 
-} // namespace sim
+} // namespace mms

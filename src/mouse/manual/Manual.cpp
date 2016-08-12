@@ -15,9 +15,9 @@ std::string Manual::interfaceType() const {
 
 void Manual::solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
-        char initialDirection, sim::MouseInterface* mouse) {
+        char initialDirection, mms::MouseInterface* mouse) {
 
-    sim::S()->setRotateZoomedMap(true);
+    mms::S()->setRotateZoomedMap(true);
 
     double accelerateAmount = 60.0;
     double decelerateAmount = 1.5;
@@ -29,19 +29,19 @@ void Manual::solve(
         leftWheelSpeed /= decelerateAmount;
         rightWheelSpeed /= decelerateAmount;
 
-        if (sim::S()->arrowKeyIsPressed(sim::Key::UP)) {
+        if (mms::S()->arrowKeyIsPressed(mms::Key::UP)) {
             leftWheelSpeed -= accelerateAmount;
             rightWheelSpeed += accelerateAmount;
         }
-        if (sim::S()->arrowKeyIsPressed(sim::Key::DOWN)) {
+        if (mms::S()->arrowKeyIsPressed(mms::Key::DOWN)) {
             leftWheelSpeed += accelerateAmount;
             rightWheelSpeed -= accelerateAmount;
         }
-        if (sim::S()->arrowKeyIsPressed(sim::Key::RIGHT)) {
+        if (mms::S()->arrowKeyIsPressed(mms::Key::RIGHT)) {
             leftWheelSpeed -= accelerateAmount / 4.0;
             rightWheelSpeed -= accelerateAmount / 4.0;
         }
-        if (sim::S()->arrowKeyIsPressed(sim::Key::LEFT)) {
+        if (mms::S()->arrowKeyIsPressed(mms::Key::LEFT)) {
             leftWheelSpeed += accelerateAmount / 4.0;
             rightWheelSpeed += accelerateAmount / 4.0;
         }

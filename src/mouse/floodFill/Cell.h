@@ -35,7 +35,7 @@ public:
     void setWallInspected(int direction, bool inspected);
     void setPrev(Cell* prev);
 
-    void setMouseInterface(sim::MouseInterface* mouse);
+    void setMouseInterface(mms::MouseInterface* mouse);
 
 private:
     int m_x; // x-location of the Cell
@@ -47,7 +47,7 @@ private:
     bool m_wallsInspected[4]; // Whether or not we've inspected the specific walls of a Cell
     Cell* m_prev; // The previous node in the path by which the Cell was discovered
 
-    sim::MouseInterface* m_mouse;
+    mms::MouseInterface* m_mouse;
 
 };
 

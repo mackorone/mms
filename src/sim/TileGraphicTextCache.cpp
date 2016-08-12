@@ -1,6 +1,6 @@
 #include "TileGraphicTextCache.h"
 
-namespace sim {
+namespace mms {
 
 void TileGraphicTextCache::init(
         const Distance& wallLength,
@@ -162,4 +162,4 @@ QMap<
     return positionCache;
 }
 
-} // namespace sim
+} // namespace mms

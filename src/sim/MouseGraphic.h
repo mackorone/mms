@@ -4,7 +4,7 @@
 #include "Color.h"
 #include "Mouse.h"
 
-namespace sim {
+namespace mms {
 
 class MouseGraphic {
 
@@ -18,4 +18,4 @@ private:
 
 };
 
-} // namespace sim
+} // namespace mms

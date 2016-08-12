@@ -1,6 +1,6 @@
 #include "Distance.h"
 
-namespace sim {
+namespace mms {
 
 Distance::Distance() : m_meters(0.0) {
 }
@@ -33,4 +33,4 @@ Seconds Distance::operator/(const Speed& speed) const {
     return Seconds(getMeters() / speed.getMetersPerSecond());
 }
 
-} // namespace sim
+} // namespace mms

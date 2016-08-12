@@ -5,7 +5,7 @@
 
 #include "ContainerUtilities.h"
 
-namespace sim {
+namespace mms {
 
 enum class InterfaceType {
     DISCRETE,
@@ -20,4 +20,4 @@ static const QMap<InterfaceType, QString> INTERFACE_TYPE_TO_STRING {
 static const QMap<QString, InterfaceType> STRING_TO_INTERFACE_TYPE =
     ContainerUtilities::inverse(INTERFACE_TYPE_TO_STRING);
 
-} // namespace sim
+} // namespace mms

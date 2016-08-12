@@ -8,7 +8,7 @@
 
 #include "Logging.h"
 
-namespace sim{
+namespace mms{
 
 MouseGraphic::MouseGraphic(const Mouse* mouse, BufferInterface* bufferInterface) :
         m_mouse(mouse), m_bufferInterface(bufferInterface) {
@@ -66,4 +66,4 @@ void MouseGraphic::draw(const Coordinate& currentTranslation, const Angle& curre
     */
 }
 
-} // namespace sim
+} // namespace mms

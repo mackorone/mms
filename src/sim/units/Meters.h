@@ -3,7 +3,7 @@
 #include "Distance.h"
 #include "MetersSquared.h"
 
-namespace sim {
+namespace mms {
 
 class Meters : public Distance {
 
@@ -21,4 +21,4 @@ public:
 
 };
 
-} // namespace sim
+} // namespace mms

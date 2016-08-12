@@ -2,7 +2,7 @@
 
 #include "Assert.h"
 
-namespace sim {
+namespace mms {
 
 MazeGraphic::MazeGraphic(const Maze* maze, BufferInterface* bufferInterface) {
     for (int x = 0; x < maze->getWidth(); x += 1) {
@@ -98,4 +98,4 @@ bool MazeGraphic::withinMaze(int x, int y) const {
     return 0 <= x && x < getWidth() && 0 <= y && y < getHeight();
 }
 
-} // namespace sim
+} // namespace mms

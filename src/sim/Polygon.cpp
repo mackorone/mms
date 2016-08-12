@@ -9,7 +9,7 @@
 #include "SimUtilities.h"
 #include "units/Polar.h"
 
-namespace sim {
+namespace mms {
 
 Polygon::Polygon() {
 }
@@ -169,4 +169,4 @@ QVector<Triangle> Polygon::triangulate(const QVector<Cartesian>& vertices) {
     return triangles;
 }
 
-} // namespace sim
+} // namespace mms

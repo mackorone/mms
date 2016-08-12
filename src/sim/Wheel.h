@@ -6,7 +6,7 @@
 #include "units/Meters.h"
 #include "units/RadiansPerSecond.h"
 
-namespace sim {
+namespace mms {
 
 class Wheel {
 
@@ -66,4 +66,4 @@ private:
     Polygon getSpeedIndicatorPolygon(const AngularVelocity& angularVelocity) const;
 };
 
-} // namespace sim
+} // namespace mms

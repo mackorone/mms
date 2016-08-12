@@ -1,6 +1,6 @@
 #include "Cartesian.h"
 
-namespace sim {
+namespace mms {
 
 Cartesian::Cartesian() {
     m_x = 0.0;
@@ -38,4 +38,4 @@ void Cartesian::operator+=(const Coordinate& coordinate) {
     m_y += coordinate.getY();
 }
 
-} // namespace sim
+} // namespace mms

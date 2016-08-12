@@ -7,7 +7,7 @@
 #include "Maze.h"
 #include "TileGraphic.h"
 
-namespace sim {
+namespace mms {
 
 class MazeGraphic {
 
@@ -35,4 +35,4 @@ private:
 
 };
 
-} // namespace sim
+} // namespace mms

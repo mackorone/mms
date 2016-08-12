@@ -4,7 +4,7 @@
 
 #include "LayoutType.h"
 
-namespace sim {
+namespace mms {
 
 class Layout {
 
@@ -43,4 +43,4 @@ public:
 
 };
 
-} // namespace sim
+} // namespace mms

@@ -1,6 +1,6 @@
 #include "RadiansPerSecond.h"
 
-namespace sim {
+namespace mms {
 
 RadiansPerSecond::RadiansPerSecond() {
     m_radiansPerSecond = 0;
@@ -42,4 +42,4 @@ void RadiansPerSecond::operator+=(const AngularVelocity& angularVelocity) {
     m_radiansPerSecond += angularVelocity.getRadiansPerSecond();
 }
 
-} // namespace sim
+} // namespace mms

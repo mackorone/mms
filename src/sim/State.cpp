@@ -7,7 +7,7 @@
 #include "Logging.h"
 #include "Param.h"
 
-namespace sim {
+namespace mms {
 
 State* S() {
     return State::getInstance();
@@ -214,4 +214,4 @@ bool State::crossesDefault(double current, double next, double defaultValue) {
     );
 }
 
-} // namespace sim
+} // namespace mms

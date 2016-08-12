@@ -6,7 +6,7 @@
 #include "Direction.h"
 #include "Polygon.h"
 
-namespace sim {
+namespace mms {
 
 class Tile{
 
@@ -47,4 +47,4 @@ private:
     void initCornerPolygons(int mazeWWidth, int mazeHeight);
 };
 
-} // namespace sim
+} // namespace mms

@@ -7,7 +7,7 @@
 
 #include "BasicMaze.h"
 
-namespace sim {
+namespace mms {
 
 class MazeChecker {
 
@@ -50,4 +50,4 @@ private:
         Direction direction);
 };
 
-} // namespace sim
+} // namespace mms

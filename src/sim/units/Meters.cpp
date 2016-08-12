@@ -1,6 +1,6 @@
 #include "Meters.h"
 
-namespace sim {
+namespace mms {
 
 Meters::Meters() {
     m_meters = 0.0;
@@ -42,4 +42,4 @@ void Meters::operator+=(const Distance& distance) {
     m_meters += distance.getMeters();
 }
 
-} // namespace sim
+} // namespace mms

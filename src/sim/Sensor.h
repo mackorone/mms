@@ -10,7 +10,7 @@
 #include "Maze.h"
 #include "Polygon.h"
 
-namespace sim {
+namespace mms {
 
 class Sensor {
 
@@ -56,4 +56,4 @@ private:
         const Maze& maze) const;
 };
 
-} // namespace sim
+} // namespace mms

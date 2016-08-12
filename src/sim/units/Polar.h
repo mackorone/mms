@@ -2,7 +2,7 @@
 
 #include "Coordinate.h"
 
-namespace sim {
+namespace mms {
 
 class Polar : public Coordinate {
 
@@ -13,4 +13,4 @@ public:
 
 };
 
-} // namespace sim
+} // namespace mms

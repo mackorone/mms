@@ -2,7 +2,7 @@
 
 #include <QPair>
 
-namespace sim {
+namespace mms {
 
 QPair<int, int> Layout::getFullMapPosition(
         int windowWidth,
@@ -66,4 +66,4 @@ QPair<int, int> Layout::getZoomedMapSize(
 }
 
 
-} // namespace sim
+} // namespace mms

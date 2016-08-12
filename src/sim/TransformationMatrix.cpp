@@ -6,7 +6,7 @@
 #include "Assert.h"
 #include "CPMath.h"
 
-namespace sim {
+namespace mms {
 
 QVector<float> TransformationMatrix::getFullMapTransformationMatrix(
         const Distance& wallWidth,
@@ -257,4 +257,4 @@ QVector<float> TransformationMatrix::multiply4x4Matrices(
     return result;
 }
 
-} // namespace sim
+} // namespace mms

@@ -1,6 +1,6 @@
 #include "Model.h"
 
-namespace sim {
+namespace mms {
 
 Model::Model() {
     m_maze = new Maze(); 
@@ -20,4 +20,4 @@ World* Model::getWorld() {
     return m_world;
 }
 
-} // namespace sim
+} // namespace mms

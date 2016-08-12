@@ -2,7 +2,7 @@
 
 #include <QString>
 
-namespace sim {
+namespace mms {
 
 // Wrapper for the static call to Param::getInstance()
 class Param;
@@ -180,4 +180,4 @@ private:
     QString m_mouseAlgorithm;
 };
 
-} // namespace sim
+} // namespace mms

@@ -2,7 +2,7 @@
 
 #include "Assert.h"
 
-namespace sim {
+namespace mms {
 
 const float TextDrawer::SCALE_FACTOR = 1.6;
 
@@ -56,4 +56,4 @@ void TextDrawer::concludeDrawingTextForFrame() {
     m_activeTextDrawer = nullptr;
 }
 
-} // namespace sim
+} // namespace mms

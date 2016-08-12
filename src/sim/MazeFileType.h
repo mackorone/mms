@@ -4,7 +4,7 @@
 
 #include "ContainerUtilities.h"
 
-namespace sim {
+namespace mms {
 
 enum class MazeFileType {
     MAP,
@@ -33,4 +33,4 @@ static const QMap<MazeFileType, QString> MAZE_FILE_TYPE_TO_SUFFIX {
 static const QMap<QString, MazeFileType> SUFFIX_TO_MAZE_FILE_TYPE =
     ContainerUtilities::inverse(MAZE_FILE_TYPE_TO_STRING);
 
-} // namespace sim
+} // namespace mms

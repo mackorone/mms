@@ -12,7 +12,7 @@
 #include "MazeChecker.h"
 #include "SimUtilities.h"
 
-namespace sim {
+namespace mms {
 
 BasicMaze MazeFileUtilities::load(const QString& path) {
     QFile file(path);
@@ -649,4 +649,4 @@ QByteArray MazeFileUtilities::serializeNumType(const BasicMaze& maze) {
     throw std::exception();
 }
 
-} //namespace sim
+} //namespace mms

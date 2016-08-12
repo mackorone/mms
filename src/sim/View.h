@@ -20,7 +20,7 @@
 
 class IMouseAlgorithm;
 
-namespace sim {
+namespace mms {
 
 class View {
 
@@ -98,4 +98,4 @@ private:
 
 };
 
-} // namespace sim
+} // namespace mms

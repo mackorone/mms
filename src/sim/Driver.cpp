@@ -15,7 +15,7 @@
 #include "State.h"
 #include "Time.h"
 
-namespace sim {
+namespace mms {
 
 // Definition of the static variables for linking
 Model* Driver::m_model;
@@ -126,4 +126,4 @@ void Driver::drive(int argc, char* argv[]) {
     glutMainLoop();
 }
 
-} // namespace sim
+} // namespace mms

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace sim {
+namespace mms {
 
 class Angle {
 
@@ -24,4 +24,4 @@ private:
 
 };
 
-} // namespace sim
+} // namespace mms

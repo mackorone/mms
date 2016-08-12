@@ -5,9 +5,9 @@
 
 #include "Direction.h"
 
-namespace sim {
+namespace mms {
 
 typedef QMap<Direction, bool> BasicTile;
 typedef QVector<QVector<BasicTile>> BasicMaze;
 
-} // namespace sim
+} // namespace mms

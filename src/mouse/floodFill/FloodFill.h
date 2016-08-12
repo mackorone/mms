@@ -23,10 +23,10 @@ public:
     bool setTileBaseColorWhenDistanceDeclaredCorrectly() const;
     void solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
-        char initialDirection, sim::MouseInterface* mouse);
+        char initialDirection, mms::MouseInterface* mouse);
 
 private:
-    sim::MouseInterface* m_mouse; // A pointer to the mouse interface
+    mms::MouseInterface* m_mouse; // A pointer to the mouse interface
     Cell m_cells[MAZE_SIZE_X][MAZE_SIZE_Y]; // Grid a cells to store maze information
     int m_x; // X position of the mouse
     int m_y; // Y position of the mouse

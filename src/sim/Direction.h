@@ -7,7 +7,7 @@
 #include "ContainerUtilities.h"
 #include "units/Degrees.h"
 
-namespace sim {
+namespace mms {
 
 enum class Direction {
     NORTH,
@@ -75,4 +75,4 @@ static const QMap<Direction, QChar> DIRECTION_TO_CHAR {
 static const QMap<QChar, Direction> CHAR_TO_DIRECTION =
     ContainerUtilities::inverse(DIRECTION_TO_CHAR);
 
-} // namespace sim
+} // namespace mms

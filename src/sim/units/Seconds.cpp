@@ -1,6 +1,6 @@
 #include "Seconds.h"
 
-namespace sim {
+namespace mms {
 
 Seconds::Seconds() {
     m_seconds = 0.0;
@@ -30,4 +30,4 @@ void Seconds::operator+=(const Duration& duration) {
     m_seconds += duration.getSeconds();
 }
 
-} // namespace sim
+} // namespace mms

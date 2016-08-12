@@ -11,7 +11,7 @@
 #include "StaticMouseAlgorithmOptions.h"
 #include "View.h"
 
-namespace sim {
+namespace mms {
 
 class Controller {
 
@@ -61,4 +61,4 @@ private:
 
 };
 
-} // namespace sim
+} // namespace mms

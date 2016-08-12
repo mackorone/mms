@@ -26,7 +26,7 @@ std::string Test::interfaceType() const {
 
 void Test::solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
-        char initialDirection, sim::MouseInterface* mouse) {
+        char initialDirection, mms::MouseInterface* mouse) {
     // This causes translation
     mouse->setWheelSpeed("upper-left", -50);
     mouse->setWheelSpeed("upper-right", -50);

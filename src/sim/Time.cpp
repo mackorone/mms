@@ -3,7 +3,7 @@
 #include "Assert.h"
 #include "SimUtilities.h"
 
-namespace sim {
+namespace mms {
 
 Time* Time::INSTANCE = nullptr;
 
@@ -38,4 +38,4 @@ Time::Time() :
     m_elapsedSimTime(Seconds(0)) {
 }
 
-} // namespace sim
+} // namespace mms

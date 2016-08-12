@@ -19,7 +19,7 @@
 #include "Wheel.h"
 #include "WheelEffect.h"
 
-namespace sim {
+namespace mms {
 
 class Mouse {
 
@@ -184,4 +184,4 @@ private:
 
 };
 
-} // namespace sim
+} // namespace mms

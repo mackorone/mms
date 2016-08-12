@@ -13,7 +13,7 @@
 #include "TriangleGraphic.h"
 #include "TriangleTexture.h"
 
-namespace sim {
+namespace mms {
 
 class BufferInterface {
 
@@ -76,4 +76,4 @@ private:
 
 };
 
-} // namespace sim
+} // namespace mms

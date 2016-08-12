@@ -9,7 +9,7 @@
 #include "StaticMouseAlgorithmOptions.h"
 #include "units/Seconds.h"
 
-namespace sim {
+namespace mms {
 
 class World {
 
@@ -39,4 +39,4 @@ private:
     void checkCollision();
 };
 
-} // namespace sim
+} // namespace mms

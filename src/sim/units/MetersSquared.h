@@ -2,7 +2,7 @@
 
 #include "Area.h"
 
-namespace sim {
+namespace mms {
 
 class MetersSquared : public Area {
 
@@ -17,4 +17,4 @@ public:
 
 };
 
-} // namespace sim
+} // namespace mms

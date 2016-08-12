@@ -7,7 +7,7 @@
 #include "Wheel.h"
 #include "WheelEffect.h"
 
-namespace sim {
+namespace mms {
 
 class CurveTurnFactorCalculator {
 
@@ -30,4 +30,4 @@ private:
 
 };
 
-} // namespace sim
+} // namespace mms

@@ -1,6 +1,6 @@
 #include "WheelEffect.h"
 
-namespace sim {
+namespace mms {
 
 WheelEffect::WheelEffect() :
     m_unitForwardEffect(MetersPerSecond(0)),
@@ -40,4 +40,4 @@ std::tuple<MetersPerSecond, MetersPerSecond, RadiansPerSecond> WheelEffect::getE
     );
 }
 
-} // namespace sim
+} // namespace mms

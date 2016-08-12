@@ -3,7 +3,7 @@
 #include <fontstash/fontstash.h>
 #include <QString>
 
-namespace sim {
+namespace mms {
 
 class TextDrawer {
 
@@ -43,4 +43,4 @@ private:
     static TextDrawer* m_activeTextDrawer;
 };
 
-} // namespace sim
+} // namespace mms

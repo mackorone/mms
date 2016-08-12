@@ -3,7 +3,7 @@
 #include "Duration.h"
 #include "Radians.h"
 
-namespace sim {
+namespace mms {
 
 class AngularVelocity {
 
@@ -23,4 +23,4 @@ protected:
 
 };
 
-} // namespace sim
+} // namespace mms

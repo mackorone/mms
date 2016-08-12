@@ -14,7 +14,7 @@ bool RandomizedWallFollow::declareBothWallHalves() const {
 
 void RandomizedWallFollow::solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
-        char initialDirection, sim::MouseInterface* mouse) {
+        char initialDirection, mms::MouseInterface* mouse) {
     while (true){
         if (rand() % 2 == 0){
             rightWallFollowStep(mouse);
@@ -25,7 +25,7 @@ void RandomizedWallFollow::solve(
     }
 }
 
-void RandomizedWallFollow::rightWallFollowStep(sim::MouseInterface* mouse) {
+void RandomizedWallFollow::rightWallFollowStep(mms::MouseInterface* mouse) {
     if (!mouse->wallRight()){
         mouse->turnRight();
     }
@@ -35,7 +35,7 @@ void RandomizedWallFollow::rightWallFollowStep(sim::MouseInterface* mouse) {
     mouse->moveForward();
 }
 
-void RandomizedWallFollow::leftWallFollowStep(sim::MouseInterface* mouse) {
+void RandomizedWallFollow::leftWallFollowStep(mms::MouseInterface* mouse) {
     if (!mouse->wallLeft()){
         mouse->turnLeft();
     }

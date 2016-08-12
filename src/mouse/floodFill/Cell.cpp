@@ -77,7 +77,7 @@ void Cell::setPrev(Cell* prev) {
     m_prev = prev;
 }
 
-void Cell::setMouseInterface(sim::MouseInterface* mouse) {
+void Cell::setMouseInterface(mms::MouseInterface* mouse) {
     m_mouse = mouse;
 }
 

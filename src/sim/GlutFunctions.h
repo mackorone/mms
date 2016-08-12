@@ -1,6 +1,6 @@
 #pragma once
 
-namespace sim {
+namespace mms {
 
 struct GlutFunctions {
     void (*refresh)(void);
@@ -10,4 +10,4 @@ struct GlutFunctions {
     void (*specialKeyRelease)(int key, int x, int y);
 };
 
-} // namespace sim
+} // namespace mms

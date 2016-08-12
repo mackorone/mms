@@ -12,10 +12,10 @@ public:
     bool declareBothWallHalves() const;
     void solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
-        char initialDirection, sim::MouseInterface* mouse);
+        char initialDirection, mms::MouseInterface* mouse);
 
 private:
-    sim::MouseInterface* m_mouse;
+    mms::MouseInterface* m_mouse;
     void leftWallFollowStep();
 };
 

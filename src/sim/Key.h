@@ -3,7 +3,7 @@
 #include <QMap>
 #include <QVector>
 
-namespace sim {
+namespace mms {
 
 enum class Key {
     LEFT,
@@ -28,4 +28,4 @@ static const QMap<int, Key> INT_TO_KEY {
     {103, Key::DOWN},
 };
 
-} // namespace sim
+} // namespace mms

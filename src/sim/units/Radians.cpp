@@ -1,6 +1,6 @@
 #include "Radians.h"
 
-namespace sim {
+namespace mms {
 
 Radians::Radians() {
     m_radians = 0.0;
@@ -38,4 +38,4 @@ void Radians::operator-=(const Angle& angle) {
     m_radians -= angle.getRadiansNotBounded();
 }
 
-} // namespace sim
+} // namespace mms

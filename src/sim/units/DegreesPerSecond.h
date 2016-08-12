@@ -2,7 +2,7 @@
 
 #include "AngularVelocity.h"
 
-namespace sim {
+namespace mms {
 
 class DegreesPerSecond : public AngularVelocity {
 
@@ -12,4 +12,4 @@ public:
 
 };
 
-} // namespace sim
+} // namespace mms

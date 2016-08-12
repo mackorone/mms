@@ -9,7 +9,7 @@
 
 #include "ContainerUtilities.h"
 
-namespace sim {
+namespace mms {
 
 enum class EncoderType {
     ABSOLUTE,
@@ -24,4 +24,4 @@ static const QMap<EncoderType, QString> ENCODER_TYPE_TO_STRING {
 static const QMap<QString, EncoderType> STRING_TO_ENCODER_TYPE = 
     ContainerUtilities::inverse(ENCODER_TYPE_TO_STRING);
 
-} // namespace sim
+} // namespace mms

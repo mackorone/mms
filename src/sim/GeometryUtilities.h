@@ -7,7 +7,7 @@
 #include "units/Distance.h"
 #include "units/MetersSquared.h"
 
-namespace sim {
+namespace mms {
 
 class GeometryUtilities {
 
@@ -42,4 +42,4 @@ public:
         const Meters& position, const Meters& halfWallWidth, const Meters& tileLength);
 };
 
-} // namespace sim
+} // namespace mms

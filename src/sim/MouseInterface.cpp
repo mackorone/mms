@@ -20,7 +20,7 @@
 #include "SimUtilities.h"
 #include "Time.h"
 
-namespace sim {
+namespace mms {
 
 MouseInterface::MouseInterface(
         const Maze* maze,
@@ -66,12 +66,12 @@ int MouseInterface::millis() {
 void MouseInterface::delay(int milliseconds) {
     Seconds start = Time::get()->elapsedSimTime();
     while (Time::get()->elapsedSimTime() < start + Milliseconds(milliseconds)) {
-        sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
+        mms::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
     }
 }
 
 void MouseInterface::quit() {
-    sim::SimUtilities::quit();
+    mms::SimUtilities::quit();
 }
 
 void MouseInterface::setTileColor(int x, int y, char color) {
@@ -975,7 +975,7 @@ void MouseInterface::moveForwardTo(const Cartesian& destinationTranslation, cons
         SIM_ASSERT_LE(delta.getRho().getMeters(), previousDistance.getMeters());
         previousDistance = delta.getRho();
         // Update the translation delta
-        sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
+        mms::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
         delta = destinationTranslation - m_mouse->getCurrentTranslation();
     }
     // While the angle delta is not ~180 degrees, sleep for a short amout of time
@@ -1010,7 +1010,7 @@ void MouseInterface::arcTo(const Cartesian& destinationTranslation, const Radian
                 m_mouse->getCurrentRotation(),
                 destinationRotation
             ).getRadiansNotBounded()) {
-        sim::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
+        mms::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
     }
 
     // Stop the wheels and teleport to the exact destination
@@ -1152,4 +1152,4 @@ void MouseInterface::doDiagonal(int count, bool startLeft, bool endLeft) {
     }
 }
 
-} // namespace sim
+} // namespace mms

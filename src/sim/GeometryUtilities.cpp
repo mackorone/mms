@@ -8,7 +8,7 @@
 #include "CPMath.h"
 #include "units/Polar.h"
 
-namespace sim {
+namespace mms {
 
 Cartesian GeometryUtilities::translateVertex(const Cartesian& vertex, const Coordinate& translation) {
     return vertex + translation;
@@ -258,4 +258,4 @@ bool GeometryUtilities::isOnTileEdge(
     return (mod < halfWallWidth || tileLengthMinusHalfWallWidth < mod);
 }
 
-} // namespace sim
+} // namespace mms

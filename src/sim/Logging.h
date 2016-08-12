@@ -3,7 +3,7 @@
 #include <QString>
 #include <QTextStream>
 
-namespace sim {
+namespace mms {
 
 class Logging {
 
@@ -20,4 +20,4 @@ private:
         const QString& msg);
 };
 
-} // namespace sim
+} // namespace mms

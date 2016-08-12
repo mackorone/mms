@@ -2,7 +2,7 @@
 
 #include "../CPMath.h"
 
-namespace sim {
+namespace mms {
 
 Degrees::Degrees() {
     m_radians = 0.0;
@@ -33,4 +33,4 @@ Degrees Degrees::operator/(double factor) const {
     return Degrees(getDegreesNotBounded() / factor);
 }
 
-} // namespace sim
+} // namespace mms

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace sim {
+namespace mms {
 
 struct StaticMouseAlgorithmOptions {
     QString mouseFile;
@@ -11,4 +11,4 @@ struct StaticMouseAlgorithmOptions {
     double wheelSpeedFraction;
 };
 
-} // namespace sim
+} // namespace mms

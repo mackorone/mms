@@ -1,6 +1,6 @@
 #include "Speed.h"
 
-namespace sim {
+namespace mms {
 
 Speed::Speed() : m_metersPerSecond(0) {
 }
@@ -16,4 +16,4 @@ bool Speed::operator<(const Speed& speed) const {
     return m_metersPerSecond < speed.getMetersPerSecond();
 }
 
-} // namespace sim
+} // namespace mms

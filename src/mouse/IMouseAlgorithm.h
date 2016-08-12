@@ -30,6 +30,6 @@ public:
     // Necessary to all algorithms
     virtual void solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
-        char initialDirection, sim::MouseInterface* mouse) = 0;
+        char initialDirection, mms::MouseInterface* mouse) = 0;
 
 };

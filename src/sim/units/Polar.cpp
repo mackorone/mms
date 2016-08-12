@@ -2,7 +2,7 @@
 
 #include "Cartesian.h"
 
-namespace sim {
+namespace mms {
 
 Polar::Polar(const Distance& rho, const Angle& theta) {
     m_x = Meters(rho.getMeters() * theta.getCos());
@@ -18,4 +18,4 @@ Polar Polar::operator+(const Coordinate& coordinate) const {
     return Polar(Cartesian(getX() + coordinate.getX(), getY() + coordinate.getY()));
 }
 
-} // namespace sim
+} // namespace mms

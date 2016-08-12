@@ -5,7 +5,7 @@
 #include "CPMath.h"
 #include "GeometryUtilities.h"
 
-namespace sim {
+namespace mms {
 
 Wheel::Wheel() :
     m_radius(Meters(0)),
@@ -131,4 +131,4 @@ Polygon Wheel::getSpeedIndicatorPolygon(const AngularVelocity& angularVelocity) 
     }).rotateAroundPoint(m_initialDirection, m_initialPosition);
 }
 
-} // namespace sim
+} // namespace mms

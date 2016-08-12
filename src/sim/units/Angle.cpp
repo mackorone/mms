@@ -3,7 +3,7 @@
 #include "../Assert.h"
 #include "../CPMath.h"
 
-namespace sim {
+namespace mms {
 
 Angle::Angle() : m_radians(0) {
 }
@@ -60,4 +60,4 @@ double Angle::getDegrees(bool zeroTo360) const {
     return degreesPerRadian * getRadians(zeroTo360);
 }
 
-} // namespace sim
+} // namespace mms

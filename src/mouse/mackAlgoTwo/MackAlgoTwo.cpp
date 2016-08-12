@@ -36,7 +36,7 @@ bool MackAlgoTwo::useTileEdgeMovements() const {
 
 void MackAlgoTwo::solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
-        char initialDirection, sim::MouseInterface* mouse) {
+        char initialDirection, mms::MouseInterface* mouse) {
 
     // Initialize the MouseInterface pointer
     m_mouse = mouse;

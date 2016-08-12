@@ -2,7 +2,7 @@
 
 #include "../CPMath.h"
 
-namespace sim {
+namespace mms {
 
 RevolutionsPerMinute::RevolutionsPerMinute(double revolutionsPerMinute) {
     static const double minutesPerSecond = 1.0 / 60.0;
@@ -14,4 +14,4 @@ RevolutionsPerMinute::RevolutionsPerMinute(const AngularVelocity& angularVelocit
     m_radiansPerSecond = angularVelocity.getRadiansPerSecond();
 }
 
-} // namespace sim
+} // namespace mms

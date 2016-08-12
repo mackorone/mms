@@ -2,7 +2,7 @@
 
 #include "units/Seconds.h"
 
-namespace sim {
+namespace mms {
 
 class Time {
 
@@ -31,4 +31,4 @@ private:
 
 };
 
-} // namespace sim
+} // namespace mms

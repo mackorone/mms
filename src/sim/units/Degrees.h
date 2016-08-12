@@ -2,7 +2,7 @@
 
 #include "Angle.h"
 
-namespace sim {
+namespace mms {
 
 class Degrees : public Angle {
 
@@ -18,4 +18,4 @@ public:
 
 };
 
-} // namespace sim
+} // namespace mms

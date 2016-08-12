@@ -2,7 +2,7 @@
 
 #include "../CPMath.h"
 
-namespace sim {
+namespace mms {
 
 AngularVelocity::AngularVelocity() : m_radiansPerSecond(0) {
 }
@@ -41,4 +41,4 @@ bool AngularVelocity::operator<=(const AngularVelocity& angularVelocity) const {
     return getRadiansPerSecond() <= angularVelocity.getRadiansPerSecond();
 }
 
-} // namespace sim
+} // namespace mms

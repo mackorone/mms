@@ -2,7 +2,7 @@
 
 #include "RGB.h"
 
-namespace sim {
+namespace mms {
 
 BufferInterface::BufferInterface(
         QPair<int, int> mazeSize,
@@ -189,4 +189,4 @@ int BufferInterface::getTileGraphicTextStartingIndex(int x, int y, int row, int 
     return triangleTexturesPerTile * (m_mazeSize.second * x + y) + 2 * (row * maxRowsAndCols.second + col);
 }
 
-} // namespace sim
+} // namespace mms

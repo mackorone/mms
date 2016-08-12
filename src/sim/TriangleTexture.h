@@ -2,7 +2,7 @@
 
 #include "VertexTexture.h"
 
-namespace sim {
+namespace mms {
 
 struct TriangleTexture {
     VertexTexture p1;
@@ -10,4 +10,4 @@ struct TriangleTexture {
     VertexTexture p3;
 };
 
-} // namespace sim
+} // namespace mms

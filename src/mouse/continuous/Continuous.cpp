@@ -30,7 +30,7 @@ namespace continuous {
 	double startAngle = 90;
 	int forwardOffset = 840;
 
-	void Continuous::solve(int mazeWidth, int mazeHeight, bool isOfficialMaze, char initialDirection, sim::MouseInterface* mouse) {
+	void Continuous::solve(int mazeWidth, int mazeHeight, bool isOfficialMaze, char initialDirection, mms::MouseInterface* mouse) {
 
 		m_mouse = mouse;
 		//read initial sensor values to determine first cell move

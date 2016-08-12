@@ -6,7 +6,7 @@
 #include "Param.h"
 #include "State.h"
 
-namespace sim {
+namespace mms {
 
 TileGraphic::TileGraphic() :
     m_tile(nullptr),
@@ -205,4 +205,4 @@ QPair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction) co
     return {wallColor, wallAlpha};
 }
 
-} // namespace sim
+} // namespace mms

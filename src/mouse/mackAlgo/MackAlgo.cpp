@@ -30,7 +30,7 @@ int MackAlgo::tileTextNumberOfCols() const {
 
 void MackAlgo::solve(
         int mazeWidth, int mazeHeight, bool isOfficialMaze,
-        char initialDirection, sim::MouseInterface* mouse) {
+        char initialDirection, mms::MouseInterface* mouse) {
     m_mouse = mouse;
     if (MAZE_WIDTH != mazeWidth || MAZE_HEIGHT != mazeHeight) {
         std::cout << "I am programmed to think the maze is " << MAZE_WIDTH << " x " << MAZE_HEIGHT

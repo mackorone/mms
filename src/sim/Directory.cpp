@@ -2,7 +2,7 @@
 
 #include "Assert.h"
 
-namespace sim {
+namespace mms {
 
 Directory* Directory::INSTANCE = nullptr; 
 
@@ -55,4 +55,4 @@ Directory::Directory(const QString& applicationFilePath) {
     m_root = path + "/";
 }
 
-} // namespace sim
+} // namespace mms

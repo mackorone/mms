@@ -5,7 +5,7 @@
 #include "MetersPerSecond.h"
 #include "Radians.h"
 
-namespace sim {
+namespace mms {
 
 class RadiansPerSecond : public AngularVelocity {
 
@@ -23,4 +23,4 @@ public:
 
 };
 
-} // namespace sim
+} // namespace mms

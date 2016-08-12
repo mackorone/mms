@@ -1,6 +1,6 @@
 #include "MetersPerSecond.h"
 
-namespace sim {
+namespace mms {
 
 MetersPerSecond::MetersPerSecond() {
     m_metersPerSecond = 0;
@@ -42,4 +42,4 @@ void MetersPerSecond::operator+=(const Speed& speed) {
     m_metersPerSecond += speed.getMetersPerSecond();
 }
 
-} // namespace sim
+} // namespace mms

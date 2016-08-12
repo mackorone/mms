@@ -14,7 +14,7 @@
 #include "Time.h"
 #include "units/Milliseconds.h"
 
-namespace sim {
+namespace mms {
 
 World::World(
         const Maze* maze,
@@ -182,7 +182,7 @@ void World::checkCollision() {
 
         // In order to ensure we're sleeping the correct amount of time, we time
         // the collision detection operation and take it into account when we sleep.
-        double start(sim::SimUtilities::getHighResTimestamp());
+        double start(mms::SimUtilities::getHighResTimestamp());
 
         // We declare these statically since we only need one copy of them
         static const Meters halfWallWidth = Meters(P()->wallWidth() / 2.0);
@@ -206,7 +206,7 @@ void World::checkCollision() {
         }
 
         // Get the duration of the collision detection, in seconds
-        double end(sim::SimUtilities::getHighResTimestamp());
+        double end(mms::SimUtilities::getHighResTimestamp());
         double duration = end - start;
 
         // Notify the use of a late collision detection
@@ -221,8 +221,8 @@ void World::checkCollision() {
         }
 
         // Sleep the appropriate amout of time, based on the collision detection duration
-        sim::SimUtilities::sleep(sim::Seconds(std::max(0.0, 1.0 / P()->collisionDetectionRate() - duration)));
+        mms::SimUtilities::sleep(mms::Seconds(std::max(0.0, 1.0 / P()->collisionDetectionRate() - duration)));
     }
 }
 
-} // namespace sim
+} // namespace mms
