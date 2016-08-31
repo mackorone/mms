@@ -15,7 +15,7 @@
 // functions), since algo code no longer shares code with sim code.
 
 // TODO: upforgrabs
-// Refactor these to deduplicate the OPENING, FILE, and LINE printouts.
+// Refactor these to deduplicate the OPENING, CLOSING, FILE, and LINE printouts.
 
 #define SIM_ASSERT_TR(condition)\
 if (!(condition)) {\

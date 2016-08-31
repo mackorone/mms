@@ -25,7 +25,7 @@ public:
     static QPair<bool, QVector<QString>> isValidMaze(const BasicMaze& maze);
     static QPair<bool, QVector<QString>> isOfficialMaze(const BasicMaze& maze);
 
-    // TODO: MACK - this should do somewhere else
+    // TODO: MACK - this should go somewhere else
     // Misc. helper function, used by Maze
     static QSet<QPair<int, int>> getCenterTiles(int width, int height);
 

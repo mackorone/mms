@@ -18,7 +18,10 @@ QPair<bool, QVector<QString>> MazeChecker::isDrawableMaze(const BasicMaze& maze)
 }
 
 QPair<bool, QVector<QString>> MazeChecker::isValidMaze(const BasicMaze& maze) {
-    SIM_ASSERT_TR(isDrawableMaze(maze).first);
+    QPair<bool, QVector<QString>> info = isDrawableMaze(maze);
+    if (!info.first) {
+        return info;
+    }
     QVector<QString> errors;
     errors += isEnclosed(maze);
     errors += hasConsistentWalls(maze);
@@ -26,7 +29,10 @@ QPair<bool, QVector<QString>> MazeChecker::isValidMaze(const BasicMaze& maze) {
 }
 
 QPair<bool, QVector<QString>> MazeChecker::isOfficialMaze(const BasicMaze& maze) {
-    SIM_ASSERT_TR(isValidMaze(maze).first);
+    QPair<bool, QVector<QString>> info = isValidMaze(maze);
+    if (!info.first) {
+        return info;
+    }
     QVector<QString> errors;
     errors += hasNoInaccessibleLocations(maze);
     errors += hasThreeStartingWalls(maze);

@@ -1,30 +1,25 @@
 # High Priority
 
+- Run algorithms as separate process
+    - http://doc.qt.io/qt-5/qprocess.html
+- Make GUI
+- Set up tests/build framework
+- Use Qt XML support
+    - Get rid of other lib/ dependencies
+- Kill toStdString
+- Kill SimUtilities, other platform dependent code
 - Fix timestep
     - Make renderer and physics on same thread
         - Maybe even collision detection too
-- Run algorithms as separate process
-    - http://doc.qt.io/qt-5/qprocess.html
-- Use Qt XML support
-    - Get rid of other lib/ dependencies
-- QT-ify everything
 - QHash instead of QMap
     - QSet instead of QVector in some places
-- Make GUI
-- Kill toStdString
-- Kill SimUtilities, other platform dependent code
-- Kill directory.cpp
 - Get rid of unnecesary QString wrapping, like QString(<some qstring>)
 - Get rid of all c_str() calls
 - Kill toLatin1() calls
-- Get rid of all of the toStdString() calls
-- Format to 80 cols
 - Replace libs with native Qt functions
 - char to QChar
 - Replace QPair with structs
-- QList to QVector?
 - append should replace push_back
-- Rename the namespace from sim to mms
 - auto vs const auto&
     - Use const auto&
 - Bluetooth communication
@@ -228,3 +223,4 @@
 - Reduce the number of LIBS in makefile
 - Does the makefile work for multiple platforms?
 - Get backups of freeglut and glew files
+- Format to 80 cols

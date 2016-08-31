@@ -1,15 +1,13 @@
 #include "Maze.h"
 
 #include <QDebug>
-#include <QDir>
-#include <QDirIterator>
-#include <QProcess>
 #include <QString>
 #include <QQueue>
 
 #include "Assert.h"
 #include "Directory.h"
 #include "Logging.h"
+#include "MazeAlgoUtilities.h"
 #include "MazeChecker.h"
 #include "MazeFileType.h"
 #include "MazeFileUtilities.h"
@@ -23,82 +21,44 @@ Maze::Maze() {
     
     BasicMaze basicMaze;
 
+    // Load from a maze file
     if (P()->useMazeFile()) {
-        // TODO: MACK - clean this up (the file existence check should be in the utility class)
         QString mazeFilePath = Directory::get()->getResMazeDirectory() + P()->mazeFile();
         try {
             basicMaze = MazeFileUtilities::load(mazeFilePath);
         }
-        catch (...) {
-            QString reason = (
-                SimUtilities::isFile(mazeFilePath) ?
-                "invalid format" : "file doesn't exist");
+        catch (const std::exception& e) {
             qCritical().noquote().nospace()
                 << "Unable to initialize maze from file \"" << mazeFilePath
-                << "\": " << reason << ".";
+                << "\": " << QString(e.what()) << ".";
             SimUtilities::quit();
         }
     }
+
+    // TODO: MACK - dedup with above
+    // Load from a maze algorithm
     else {
-        // TODO: MACK - refactor this logic elsewhere
-        QDir mazeAlgosDir(Directory::get()->getSrcMazeAlgosDirectory());
-        mazeAlgosDir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
-        mazeAlgosDir.setSorting(QDir::Name | QDir::QDir::IgnoreCase);
-        QStringList algos = mazeAlgosDir.entryList();
-
-        // Check to see if there is some directory with the given name
-        QString selectedMazeAlgo(P()->mazeAlgorithm());
-        if (!algos.contains(selectedMazeAlgo)) {
-             qCritical().noquote().nospace()
-                << "\"" << P()->mazeAlgorithm() << "\" is not a valid maze"
-                << " algorithm.";
-             SimUtilities::quit();
+        try {
+            basicMaze = MazeAlgoUtilities::generate(
+                P()->mazeAlgorithm(),
+                P()->generatedMazeWidth(),
+                P()->generatedMazeHeight());
         }
-
-        // Get all files in the directory, recursively
-        QDir selectedMazeAlgoDir(mazeAlgosDir);
-        selectedMazeAlgoDir.cd(selectedMazeAlgo);
-        selectedMazeAlgoDir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
-        QDirIterator iterator(selectedMazeAlgoDir, QDirIterator::Subdirectories);
-        QStringList relativePaths;
-        QStringList absolutePaths;
-        while (iterator.hasNext()) {
-            iterator.next();
-            relativePaths << iterator.fileName();
-            absolutePaths << iterator.filePath();
-        }
-
-        // Deduce whether or not it's a C++ or Python algo
-        QStringList args;
-        if (relativePaths.contains(QString("Main.cpp"))) {
-            // TODO: MACK args
-            SimUtilities::quit();
-        }
-        else if (relativePaths.contains(QString("Main.py"))) {
-            args << selectedMazeAlgoDir.absolutePath() + QString("/Main.py");
-            args << QString::number(P()->generatedMazeWidth());
-            args << QString::number(P()->generatedMazeHeight());
-            for (int i = 0; i < args.size(); i += 1) {
-                qInfo().noquote().nospace() << args.at(i);
-            }
-        }
-        else {
+        catch (const std::exception& e) {
             qCritical().noquote().nospace()
-                << "No \"Main.{py,cpp}\" found in \""
-                << selectedMazeAlgoDir.absolutePath() << "\"";
+                << "Unable to initialize maze from algorithm \"" << P()->mazeAlgorithm()
+                << "\": " << QString(e.what()) << ".";
             SimUtilities::quit();
         }
-
-        QProcess process; // TODO: MACK - pass in parent here
-        process.start("python", args);
-        process.waitForFinished();
-        QByteArray bytes = process.readAll();
-        basicMaze = MazeFileUtilities::loadBytes(bytes);
     }
 
     // Check to see if it's a valid maze
-    m_isValidMaze = MazeChecker::isValidMaze(basicMaze).first;
+    QPair<bool, QVector<QString>> isValidInfo = MazeChecker::isValidMaze(basicMaze);
+    m_isValidMaze = isValidInfo.first;
     if (!m_isValidMaze) {
+        for (const QString& string : isValidInfo.second) {
+            qWarning().noquote().nospace() << string;
+        }
         qWarning().noquote().nospace()
             << "The maze failed validation. The mouse algorithm will not"
             << " execute.";
@@ -109,7 +69,7 @@ Maze::Maze() {
         MazeFileType type = STRING_TO_MAZE_FILE_TYPE.value(P()->generatedMazeType());
         QString mazeFilePath = Directory::get()->getResMazeDirectory() +
             P()->generatedMazeFile() + MAZE_FILE_TYPE_TO_SUFFIX.value(type);
-        // TODO: MACK
+        // TODO: MACK - fix maze saving
         bool success = false; // MazeFileUtilities::save(basicMaze, mazeFilePath, type);
         if (success) {
             qInfo().noquote().nospace()
@@ -133,9 +93,13 @@ Maze::Maze() {
             << "Rotating the maze counter-clockwise (" << i + 1 << ").";
     }
 
-    // Then, store whether or not the maze is an official maze
-    m_isOfficialMaze = m_isValidMaze && MazeChecker::isOfficialMaze(basicMaze).first;
+    // Then, store whether or not the maze is an official maze (after mirror and rotation)
+    QPair<bool, QVector<QString>> isOfficialInfo = MazeChecker::isOfficialMaze(basicMaze);
+    m_isOfficialMaze = isOfficialInfo.first;
     if (m_isValidMaze && !m_isOfficialMaze) {
+        for (const QString& string : isOfficialInfo.second) {
+            qWarning().noquote().nospace() << string;
+        }
         qWarning().noquote().nospace()
             << "The maze did not pass the \"is official maze\" tests.";
     }

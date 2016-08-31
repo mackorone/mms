@@ -17,8 +17,7 @@ namespace mms {
 BasicMaze MazeFileUtilities::load(const QString& path) {
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly)) {
-        // TODO: MACK - document what this throws
-        throw std::exception();
+        throw std::runtime_error("file doesn't exist");
     }
     return loadBytes(file.readAll());
 }
@@ -29,23 +28,22 @@ BasicMaze MazeFileUtilities::loadBytes(const QByteArray& bytes) {
     // simply brute force try each of the file types until either one succeeds
     // or they all fail
 
-    // TODO: MACK - what should be validated here?
     #define TRY(expression, validate)\
     try {\
         BasicMaze maze = expression;\
-        if (validate && !MazeChecker::isValidMaze(maze).first) {\
-            throw std::exception();\
+        if (MazeChecker::isDrawableMaze(maze).first) {\
+            if (!validate || MazeChecker::isValidMaze(maze).first) {\
+                return maze;\
+            }\
         }\
-        return maze;\
     }\
     catch (...) { }
 
-    // TODO: MACK - We shouldn't print out warning messages here, I don't think
     TRY(deserializeMazType(bytes), true);
     TRY(deserializeMz2Type(bytes), true);
     TRY(deserializeNumType(bytes), true);
-    TRY(deserializeMapType(bytes), false);
-    throw std::exception();
+    TRY(deserializeMapType(bytes), true);
+    throw std::runtime_error("invalid format");
 }
 
 void MazeFileUtilities::save(
