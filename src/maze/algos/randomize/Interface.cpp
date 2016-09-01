@@ -25,13 +25,13 @@ double Interface::getRandomFloat() {
 void Interface::setWall(int x, int y, char direction, bool wallExists) {
 
     // Sanity checks
-    if (x < 0 || m_maze->size() <= x) {
+    if (x < 0 || getWidth() <= x) {
         std::cout << "Error: x value " << x << " is invalid"
                   << std::endl;
         *m_success = false;
         return;
     }
-    if (y < 0 || m_maze->at(x).size() <= y) {
+    if (y < 0 || getHeight() <= y) {
         std::cout << "Error: y value " << y << " is invalid"
                   << std::endl;
         *m_success = false;
@@ -50,13 +50,13 @@ void Interface::setWall(int x, int y, char direction, bool wallExists) {
     // Set the opposing wall value
     switch (direction) {
         case 'n': {
-            if (y < m_maze->at(x).size() - 1) {
+            if (y < getHeight() - 1) {
                 m_maze->at(x).at(y + 1).at('s') = wallExists;
             }
             break;
         }
         case 'e': {
-            if (x < m_maze->size() - 1) {
+            if (x < getWidth() - 1) {
                 m_maze->at(x + 1).at(y).at('w') = wallExists;
             }
             break;
