@@ -1,19 +1,18 @@
-#include "TomaszMazeGenerator.h"
+#include "Algo.h"
 
 #include <stack>
 #include <cmath>
 #include <queue>
 #include <iostream>
 
-namespace tomasz {
-
-void TomaszMazeGenerator::generate(int mazeWidth, int mazeHeight, MazeInterface* mazeInterface) {
-    m_mazeInterface = mazeInterface;
-    generateMaze(mazeWidth, mazeHeight);
-    convertToBasicMaze(mazeInterface);
+void Algo::generate(Interface* interface) {
+    // TODO: Write algorithm here
+    m_mazeInterface = interface;
+    generateMaze(interface->getWidth(), interface->getHeight());
+    convertToBasicMaze(interface);
 }
 
-void TomaszMazeGenerator::convertToBasicMaze(MazeInterface* mazeInterface) {
+void Algo::convertToBasicMaze(Interface* mazeInterface) {
     for (int x = 0; x < m_width; x += 1) {
         for (int y = 0; y < m_height; y += 1) {
             for (char c : {'n', 'e', 's', 'w'}) {
@@ -37,7 +36,7 @@ void TomaszMazeGenerator::convertToBasicMaze(MazeInterface* mazeInterface) {
     }
 }
 
-void TomaszMazeGenerator::generateMaze(int mazeWidth, int mazeHeight) {
+void Algo::generateMaze(int mazeWidth, int mazeHeight) {
 
     // Declare width and height locally to reduce function calls
     m_width = mazeWidth;
@@ -85,7 +84,7 @@ void TomaszMazeGenerator::generateMaze(int mazeWidth, int mazeHeight) {
             //std::cout << "HERE2" << std::endl;
                                       
             if (m_direction != UNDEFINED) { // We just reached the end of a path. lets break a wall with probability P
-                if (m_mazeInterface->getRandom() <= deadEndBreak) { // break the wall to the most disjoint
+                if (m_mazeInterface->getRandomFloat() <= deadEndBreak) { // break the wall to the most disjoint
                     
                     updateDistanceFromStart(xPos, yPos);
                     breakGradientWall(xPos, yPos); // break the wall towards greatest gradient,
@@ -120,7 +119,7 @@ void TomaszMazeGenerator::generateMaze(int mazeWidth, int mazeHeight) {
     pathIntoCenter(); // Now break down one of those wall at random
 }
 
-void TomaszMazeGenerator::pathIntoCenter() {
+void Algo::pathIntoCenter() {
     // These center variables will always be the lower left corner of
     // the center.  If a side is odd, the division will yeild X.5,
     // this rounded will result in middle.  Middle square of 3 is 2.
@@ -183,7 +182,7 @@ void TomaszMazeGenerator::pathIntoCenter() {
     breakGradientWall(xPosOfGreatest, yPosOfGreatest);
 }
 
-void TomaszMazeGenerator::breakGradientWalls() {
+void Algo::breakGradientWalls() {
     
     Direction directions[4] = {NORTH, EAST, SOUTH, WEST};
     
@@ -221,7 +220,7 @@ void TomaszMazeGenerator::breakGradientWalls() {
     }
 }
 
-Direction TomaszMazeGenerator::moveTowardDirection(int xPos, int yPos, Direction directionToMove){
+Direction Algo::moveTowardDirection(int xPos, int yPos, Direction directionToMove){
     // Set the tile in the direction we move to explored and attach the number
     // Break down the wall between the current cell and that cell
     // And push it unto the stack
@@ -261,7 +260,7 @@ Direction TomaszMazeGenerator::moveTowardDirection(int xPos, int yPos, Direction
     return exploreDIR;
 }
 
-void TomaszMazeGenerator::updateDistanceFromStart(int xPos, int yPos){
+void Algo::updateDistanceFromStart(int xPos, int yPos){
 
     // Note: In a normal recursive backtracer maze generation algorithm, the distance
     // from the start cell is just the size of the stack.  Since I added wall breaking
@@ -343,7 +342,7 @@ void TomaszMazeGenerator::updateDistanceFromStart(int xPos, int yPos){
     
 }
 
-Direction TomaszMazeGenerator::getDirectionToMove(float moveConst, std::map<Direction, bool> choices){
+Direction Algo::getDirectionToMove(float moveConst, std::map<Direction, bool> choices){
 
     //if previous move exists, and repeating it will yeild a valid move AND its not the only valid move
 
@@ -358,35 +357,35 @@ Direction TomaszMazeGenerator::getDirectionToMove(float moveConst, std::map<Dire
     Direction directionToMove;
     
     if (m_direction != UNDEFINED && choices[m_direction] != false && possible != 1) {
-        if (m_mazeInterface->getRandom() <= moveConst) {  // if random variable is below threshold move in last direction
+        if (m_mazeInterface->getRandomFloat() <= moveConst) {  // if random variable is below threshold move in last direction
             directionToMove = m_direction;
         } else {
             auto item = choices.begin();
-            std::advance( item, std::floor(m_mazeInterface->getRandom() * 4 ));
+            std::advance( item, std::floor(m_mazeInterface->getRandomFloat() * 4 ));
             directionToMove =  item->first;
 
             while (choices[directionToMove] == false || directionToMove == m_direction) { // but the last moved direction
                 item = choices.begin();
-                std::advance( item, std::floor(m_mazeInterface->getRandom() * 4 ));
+                std::advance( item, std::floor(m_mazeInterface->getRandomFloat() * 4 ));
                 directionToMove = item->first;         
             }
         }
     }
     else { // otherwise just move in a random viable direction
         auto item = choices.begin();
-        std::advance( item, std::floor(m_mazeInterface->getRandom() * 4 ));
+        std::advance( item, std::floor(m_mazeInterface->getRandomFloat() * 4 ));
         directionToMove = item->first;   
 
         while (choices[directionToMove] == false) { // but the last moved direction
             item = choices.begin();
-            std::advance( item, std::floor(m_mazeInterface->getRandom() * 4 ));
+            std::advance( item, std::floor(m_mazeInterface->getRandomFloat() * 4 ));
             directionToMove = item->first;
         }
     }
     
     return directionToMove;
 }
-void TomaszMazeGenerator::breakGradientWall(int xPos, int yPos) {
+void Algo::breakGradientWall(int xPos, int yPos) {
 
     int currentCellDist = getTile(xPos, yPos)->distanceFromStart;
     int biggestDifference = 0;
@@ -443,7 +442,7 @@ void TomaszMazeGenerator::breakGradientWall(int xPos, int yPos) {
     }
 }
 
-/*std::map<Direction, bool> TomaszMazeGenerator::getValidMoves(int xPos, int yPos) {
+/*std::map<Direction, bool> Algo::getValidMoves(int xPos, int yPos) {
     
     std::map<Direction, bool> choices = {
         {NORTH, isValidUnexploredMove(xPos, yPos, NORTH)},
@@ -462,7 +461,7 @@ void TomaszMazeGenerator::breakGradientWall(int xPos, int yPos) {
     return choices;
 }*/
 
-bool TomaszMazeGenerator::isValidUnexploredMove(int x, int y, Direction direction) {
+bool Algo::isValidUnexploredMove(int x, int y, Direction direction) {
     if (direction == NORTH) { y++; }
     if (direction == EAST)  { x++; }
     if (direction == SOUTH) { y--; }
@@ -478,7 +477,7 @@ bool TomaszMazeGenerator::isValidUnexploredMove(int x, int y, Direction directio
     }
 }
 
-bool TomaszMazeGenerator::isValidExploredTile(int x, int y, Direction direction) {
+bool Algo::isValidExploredTile(int x, int y, Direction direction) {
     if (direction == NORTH) { y++; }
     if (direction == EAST)  { x++; }
     if (direction == SOUTH) { y--; }
@@ -495,7 +494,7 @@ bool TomaszMazeGenerator::isValidExploredTile(int x, int y, Direction direction)
     }
 }
 
-void TomaszMazeGenerator::initializeMaze() {
+void Algo::initializeMaze() {
 
     m_maze.clear(); // In case the calling code called generate twice.
                     // We want to clear the vector, to not push twice
@@ -522,7 +521,7 @@ void TomaszMazeGenerator::initializeMaze() {
     makeCenter();
 }
 
-void TomaszMazeGenerator::makeCenter(){
+void Algo::makeCenter(){
 
     // These center variables will always be the lower left corner of
     // the center.  If a side is odd, the division will yeild X.5,
@@ -551,7 +550,7 @@ void TomaszMazeGenerator::makeCenter(){
     }
 }
 
-void TomaszMazeGenerator::setWall(int x, int y, Direction direction, bool value) {
+void Algo::setWall(int x, int y, Direction direction, bool value) {
 
     switch (direction) {
         case NORTH:
@@ -576,7 +575,7 @@ void TomaszMazeGenerator::setWall(int x, int y, Direction direction, bool value)
     }
 }
 
-TomaszMazeGenerator::TomMazeGenTile* TomaszMazeGenerator::getTile(int x, int y, Direction direction){
+Algo::TomMazeGenTile* Algo::getTile(int x, int y, Direction direction){
     if (direction == NORTH) { y++; }
     if (direction == EAST)  { x++; }
     if (direction == SOUTH) { y--; }
@@ -584,5 +583,3 @@ TomaszMazeGenerator::TomMazeGenTile* TomaszMazeGenerator::getTile(int x, int y, 
     
     return &m_maze.at(x).at(y);
 }
-
-} // namespace tomasz

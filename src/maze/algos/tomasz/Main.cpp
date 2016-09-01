@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
     bool success = true;
 
     Interface interface(&maze, &success);
-    Algo::generate(&interface);
+    Algo().generate(&interface);
 
     if (!success) {
         return 1;

@@ -5,6 +5,6 @@
 class Algo {
 
 public:
-    static void generate(Interface* interface);
+    void generate(Interface* interface);
 
 };

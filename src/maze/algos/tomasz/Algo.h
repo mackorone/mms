@@ -1,24 +1,20 @@
 #pragma once
 
-#include "../IMazeAlgorithm.h"
-
 #include <map>
 #include <vector>
 #include <stack>
 
-namespace tomasz {
+#include "Interface.h"
 
 enum Direction { NORTH, EAST, SOUTH, WEST, UNDEFINED };
 
-// A class that generates a realistic maze at random
-class TomaszMazeGenerator : public IMazeAlgorithm {
+class Algo {
 
 public:
-
-    void generate(int mazeWidth, int mazeHeight, MazeInterface* maze);
+    void generate(Interface* interface);
 
     // TODO: probably rename this...
-    void convertToBasicMaze(MazeInterface* maze);
+    void convertToBasicMaze(Interface* maze);
     
 private:
 
@@ -119,7 +115,7 @@ private:
     TomMazeGenTile* getTile(int x, int y, Direction direction = UNDEFINED);
     
     // Vector of vectors which is the representation of the maze
-    std::vector<std::vector<TomMazeGenTile>> m_maze;
+    std::vector<std::vector<TomMazeGenTile> > m_maze;
     
     // Stack for the depth first search
     std::stack<TomMazeGenTile*> m_stack;
@@ -134,8 +130,6 @@ private:
     Direction m_direction;
 
     // Interface for the maze algorithm
-    MazeInterface* m_mazeInterface;
+    Interface* m_mazeInterface;
 
 };
-
-} // namespace tomasz
