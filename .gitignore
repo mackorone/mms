@@ -10,6 +10,7 @@ zip/
 *.swp
 auto_generated_maze.*
 mm.jar
+a.out
 
 
 ##################### Ignore Visual Studio temporary files, build results, and ################
