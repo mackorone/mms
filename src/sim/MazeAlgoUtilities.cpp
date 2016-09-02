@@ -25,39 +25,77 @@ BasicMaze MazeAlgoUtilities::generate(
          SimUtilities::quit();
     }
 
+    // Get the maze algo directory
+    QString selectedMazeAlgoPath = 
+        Directory::get()->getSrcMazeAlgosDirectory() + mazeAlgorithm;
+
     // Get the files for the algorithm
-    QPair<QStringList, QStringList> files = MazeAlgoUtilities::getFiles(mazeAlgorithm);
+    QPair<QStringList, QStringList> files =
+        MazeAlgoUtilities::getFiles(selectedMazeAlgoPath);
     QStringList relativePaths = files.first;
     QStringList absolutePaths = files.second;
     
-    // TODO: MACK - dedup from getFiles
-    QDir mazeAlgosDir(Directory::get()->getSrcMazeAlgosDirectory());
-    QDir selectedMazeAlgoDir(mazeAlgosDir);
-    selectedMazeAlgoDir.cd(mazeAlgorithm);
-
-    // Deduce whether or not it's a C++ or Python algo
-    QStringList args;
+    // TODO: MACK - make these constants, dedup some of this
     if (relativePaths.contains(QString("Main.cpp"))) {
-        // TODO: MACK args
-        SimUtilities::quit();
+
+        QString binPath = selectedMazeAlgoPath + "/a.out";
+
+        // Build
+        QStringList buildArgs = absolutePaths.filter(".cpp");
+        buildArgs << "-o";
+        buildArgs << binPath;
+        QProcess buildProcess;
+        buildProcess.start("g++", buildArgs);
+        buildProcess.waitForFinished();
+        if (buildProcess.exitCode() != 0) {
+            qCritical().noquote()
+                << "Failed to build maze algo!"
+                << "\n\n" + buildProcess.readAllStandardError();
+            SimUtilities::quit();
+        }
+
+        // Run
+        QStringList runArgs;
+        runArgs << QString::number(width);
+        runArgs << QString::number(height);
+        QProcess runProcess;
+        runProcess.start(binPath, runArgs);
+        runProcess.waitForFinished();
+        if (runProcess.exitCode() != 0) {
+            qCritical().noquote()
+                << "Failed to run maze algo!"
+                << "\n\n" + runProcess.readAllStandardError();
+            SimUtilities::quit();
+        }
+        QByteArray bytes = runProcess.readAllStandardError();
+
+        return MazeFileUtilities::loadBytes(bytes);
     }
     else if (relativePaths.contains(QString("Main.py"))) {
-        args << selectedMazeAlgoDir.absolutePath() + QString("/Main.py");
+
+        QStringList args;
+        args << selectedMazeAlgoPath + QString("/Main.py");
         args << QString::number(width);
         args << QString::number(height);
-    }
-    else {
-        qCritical().noquote().nospace()
-            << "No \"Main.{py,cpp}\" found in \""
-            << selectedMazeAlgoDir.absolutePath() << "\"";
-        SimUtilities::quit();
+        QProcess process;
+        process.start("python", args);
+        process.waitForFinished();
+        if (process.exitCode() != 0) {
+            qCritical().noquote()
+                << "Failed to run maze algo!"
+                << "\n\n" + process.readAllStandardError();
+            SimUtilities::quit();
+        }
+        QByteArray bytes = process.readAllStandardError();
+
+        return MazeFileUtilities::loadBytes(bytes);
     }
 
-    QProcess process; // TODO: MACK - pass in parent here
-    process.start("python", args);
-    process.waitForFinished();
-    QByteArray bytes = process.readAll();
-    return MazeFileUtilities::loadBytes(bytes);
+    // Invalid files
+    qCritical().noquote().nospace()
+        << "No \"Main\" file found in \""
+        << selectedMazeAlgoPath << "\"";
+    SimUtilities::quit();
 }
 
 QStringList MazeAlgoUtilities::getMazeAlgos() {
@@ -68,13 +106,12 @@ QStringList MazeAlgoUtilities::getMazeAlgos() {
     return algos;
 }
 
-QPair<QStringList, QStringList> MazeAlgoUtilities::getFiles(const QString& mazeAlgorithm) {
-    // Get all files in the mazeAlgo directory, recursively
-    QDir mazeAlgosDir(Directory::get()->getSrcMazeAlgosDirectory());
-    QDir selectedMazeAlgoDir(mazeAlgosDir);
-    selectedMazeAlgoDir.cd(mazeAlgorithm);
-    selectedMazeAlgoDir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
-    QDirIterator iterator(selectedMazeAlgoDir, QDirIterator::Subdirectories);
+// TODO: MACK - move this to utils
+QPair<QStringList, QStringList> MazeAlgoUtilities::getFiles(const QString& dirPath) {
+    // Get all files in the directory
+    QDir dir(dirPath);
+    dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
+    QDirIterator iterator(dir, QDirIterator::Subdirectories);
     QStringList relativePaths;
     QStringList absolutePaths;
     while (iterator.hasNext()) {

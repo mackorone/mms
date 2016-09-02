@@ -42,7 +42,7 @@ BasicMaze MazeFileUtilities::loadBytes(const QByteArray& bytes) {
     TRY(deserializeMazType(bytes), true);
     TRY(deserializeMz2Type(bytes), true);
     TRY(deserializeNumType(bytes), true);
-    TRY(deserializeMapType(bytes), true);
+    TRY(deserializeMapType(bytes), false);
     throw std::runtime_error("invalid format");
 }
 

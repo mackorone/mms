@@ -18,7 +18,7 @@ public:
 
 private:
     static QStringList getMazeAlgos();
-    static QPair<QStringList, QStringList> getFiles(const QString& mazeAlgorithm);
+    static QPair<QStringList, QStringList> getFiles(const QString& dirPath);
 
 };
 

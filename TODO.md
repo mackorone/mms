@@ -1,6 +1,6 @@
 # High Priority
 
-- Run algorithms as separate process
+- Run mouse algorithms as separate process
     - http://doc.qt.io/qt-5/qprocess.html
 - Make GUI
 - Set up tests/build framework

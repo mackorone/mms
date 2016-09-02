@@ -45,7 +45,6 @@ void Logging::handler(
         {QtWarningMsg,  "WARN"    },
         {QtCriticalMsg, "CRITICAL"},
         {QtFatalMsg,    "FATAL"   },
-        {QtSystemMsg,   "SYSTEM"  },
     };
 
     static const QString formatString = "mm:ss.zzz";
