@@ -16,7 +16,6 @@ public:
     double getRandomFloat();
     int millis(); // # of milliseconds of sim time (adjusted based on sim speed) that have passed
     void delay(int milliseconds); // # of milliseconds of sim time (adjusted based on sim speed)
-    void quit(); // TODO: MACK - done?
 
     // Tile color
     void setTileColor(int x, int y, char color);
@@ -115,8 +114,5 @@ public:
     double currentXPosMeters();
     double currentYPosMeters();
     double currentRotationDegrees();
-
-private:
-    // TODO: MACK
 
 };

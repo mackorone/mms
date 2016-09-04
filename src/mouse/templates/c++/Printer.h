@@ -1,6 +1,6 @@
 #pragma once
 
-// NOTE: Only supports up to four arguments (truncates)
+// NOTE: Only supports up to four arguments for now (truncates additional args)
 
 #include <iostream>
 
