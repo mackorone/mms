@@ -29,7 +29,6 @@ int main(int argc, char* argv[]) {
 
     // Initialize the algo and delimiter
     Algo algo;
-    std::string delimiter = " ";
 
     // Print the static mouse options
     PRINT("mouseFile", algo.mouseFile());

@@ -5,7 +5,6 @@
 #include <QDebug>
 #include <QPair>
 
-// #include "../mouse/IMouseAlgorithm.h" // TODO: MACK
 #include "BufferInterface.h"
 #include "Directory.h"
 #include "Layout.h"
