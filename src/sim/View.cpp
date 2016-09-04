@@ -5,7 +5,7 @@
 #include <QDebug>
 #include <QPair>
 
-#include "../mouse/IMouseAlgorithm.h"
+// #include "../mouse/IMouseAlgorithm.h" // TODO: MACK
 #include "BufferInterface.h"
 #include "Directory.h"
 #include "Layout.h"
@@ -46,13 +46,14 @@ MouseGraphic* View::getMouseGraphic() {
     return m_mouseGraphic;
 }
 
-void View::setMouseAlgorithmAndOptions(
-        IMouseAlgorithm* mouseAlgorithm,
-        StaticMouseAlgorithmOptions options) {
-    m_mouseAlgorithm = mouseAlgorithm;
-    m_options = options;
-    m_header->setMouseAlgorithmAndOptions(mouseAlgorithm, options);
-}
+// TODO: MACK
+// void View::setMouseAlgorithmAndOptions(
+//         IMouseAlgorithm* mouseAlgorithm,
+//         StaticMouseAlgorithmOptions options) {
+//     m_mouseAlgorithm = mouseAlgorithm;
+//     m_options = options;
+//     m_header->setMouseAlgorithmAndOptions(mouseAlgorithm, options);
+// }
 
 void View::refresh() {
 
@@ -145,6 +146,14 @@ QSet<QChar> View::getAllowableTileTextCharacters() {
 }
 
 void View::initTileGraphicText() {
+
+    // TODO: MACK
+    m_options.tileTextNumberOfRows = 2;
+    m_options.tileTextNumberOfCols = 3;
+    if (10 < m_options.tileTextNumberOfRows || 10 < m_options.tileTextNumberOfCols) {
+        SimUtilities::quit();        
+    }
+
     // Initialze the tile text in the buffer class, do caching for speed improvement
     m_bufferInterface->initTileGraphicText(
         Meters(P()->wallLength()),

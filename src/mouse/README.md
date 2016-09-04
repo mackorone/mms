@@ -1,5 +1,7 @@
 # mouse
 
+TODO: MACK - THIS IS OUTDATED
+
 This directory contains all code relevant to Micromouse algorithms. Some things
 to note:
 

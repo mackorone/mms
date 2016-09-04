@@ -79,14 +79,15 @@ StaticMouseAlgorithmOptions Controller::getOptions() {
     return m_options;
 }
 
-IMouseAlgorithm* Controller::getMouseAlgorithm() {
-    return m_mouseAlgorithm;
-}
+// IMouseAlgorithm* Controller::getMouseAlgorithm() {
+//     return m_mouseAlgorithm;
+// }
 
-MouseInterface* Controller::getMouseInterface() {
-    return m_mouseInterface;
-}
-
+// TODO: MACK
+// MouseInterface* Controller::getMouseInterface() {
+//     return m_mouseInterface;
+// }
+// 
 void Controller::validateMouseAlgorithm(const QString& mouseAlgorithm) {
     // TODO: MACK
     /*

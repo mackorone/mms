@@ -18,7 +18,8 @@
 #include "TriangleGraphic.h"
 #include "TriangleTexture.h"
 
-class IMouseAlgorithm;
+// TODO: MACK
+// class IMouseAlgorithm;
 
 namespace mms {
 
@@ -30,9 +31,10 @@ public:
     MazeGraphic* getMazeGraphic();
     MouseGraphic* getMouseGraphic();
 
-    void setMouseAlgorithmAndOptions(
-        IMouseAlgorithm* mouseAlgorithm,
-        StaticMouseAlgorithmOptions options);
+    // TODO: MACK
+    // void setMouseAlgorithmAndOptions(
+    //     IMouseAlgorithm* mouseAlgorithm,
+    //     StaticMouseAlgorithmOptions options);
 
     void refresh();
     void updateWindowSize(int width, int height);
@@ -71,7 +73,8 @@ private:
     Header* m_header;
 
     // Used to determine whether or not to automatically clear fog
-    IMouseAlgorithm* m_mouseAlgorithm;
+    // TODO: MACK
+    // IMouseAlgorithm* m_mouseAlgorithm;
     StaticMouseAlgorithmOptions m_options;
 
     // Polygon program variables

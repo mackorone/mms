@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-#include "../mouse/IMouseAlgorithm.h"
+// #include "../mouse/IMouseAlgorithm.h"
 #include "Directory.h"
 #include "Layout.h"
 #include "Logging.h"
@@ -15,7 +15,7 @@ namespace mms {
 
 Header::Header(Model* model) :
         m_model(model),
-        m_mouseAlgorithm(nullptr),
+        // m_mouseAlgorithm(nullptr), // TODO: MACK
         m_windowWidth(0),
         m_windowHeight(0),
         m_textHeight(P()->headerTextHeight()),
@@ -44,13 +44,13 @@ int Header::getHeight() const {
     return P()->windowBorderWidth() + numRows * m_textHeight + (numRows - 1) * m_rowSpacing;
 }
 
-void Header::setMouseAlgorithmAndOptions(
-        IMouseAlgorithm* mouseAlgorithm,
-        StaticMouseAlgorithmOptions options) {
-    m_mouseAlgorithm = mouseAlgorithm;
-    m_options = options;
-}
-
+// void Header::setMouseAlgorithmAndOptions(
+//         IMouseAlgorithm* mouseAlgorithm,
+//         StaticMouseAlgorithmOptions options) {
+//     m_mouseAlgorithm = mouseAlgorithm;
+//     m_options = options;
+// }
+// 
 void Header::updateWindowSize(int width, int height) {
     m_windowWidth = width;
     m_windowHeight = height;
@@ -116,38 +116,40 @@ void Header::updateLines() {
 
         // Mouse Info
         QString("Mouse Algo:                  ") + P()->mouseAlgorithm(),
-        QString("Mouse File:                  ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-            m_options.mouseFile),
-        QString("Interface Type:              ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-            m_options.interfaceType),
-        QString("Initial Direction:           ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-            m_options.initialDirection),
-        QString("Tile Text Num Rows:          ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-            QString::number(m_options.tileTextNumberOfRows)),
-        QString("Tile Text Num Cols:          ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-            QString::number(m_options.tileTextNumberOfCols)),
-        QString("Allow Omniscience:           ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-            (m_mouseAlgorithm->allowOmniscience() ? "TRUE" : "FALSE")),
-        QString("Auto Clear Fog:              ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-            (m_mouseAlgorithm->automaticallyClearFog() ? "TRUE" : "FALSE")),
-        QString("Declare Both Wall Halves:    ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-            (m_mouseAlgorithm->declareBothWallHalves() ? "TRUE" : "FALSE")),
-        QString("Auto Set Tile Text:          ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-            (m_mouseAlgorithm->setTileTextWhenDistanceDeclared() ? "TRUE" : "FALSE")),
-        QString("Auto Set Tile Base Color:    ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-            (m_mouseAlgorithm->setTileBaseColorWhenDistanceDeclaredCorrectly() ? "TRUE" : "FALSE")),
-        QString("Wheel Speed Fraction:        ") +
-            (!STRING_TO_INTERFACE_TYPE.contains(m_options.interfaceType) ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) != InterfaceType::DISCRETE ? "N/A" :
-            QString::number(m_options.wheelSpeedFraction))),
-        QString("Declare Wall On Read:        ") +
-            (m_mouseAlgorithm == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) != InterfaceType::DISCRETE ? "N/A" :
-            (m_mouseAlgorithm->declareWallOnRead() ? "TRUE" : "FALSE"))),
-        QString("Use Tile Edge Movements:     ") +
-            (m_mouseAlgorithm == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) != InterfaceType::DISCRETE ? "N/A" :
-            (m_mouseAlgorithm->useTileEdgeMovements() ? "TRUE" : "FALSE"))),
+
+        // TODO: MACK
+        // QString("Mouse File:                  ") + (m_mouseAlgorithm == nullptr ? "NONE" :
+        //     m_options.mouseFile),
+        // QString("Interface Type:              ") + (m_mouseAlgorithm == nullptr ? "NONE" :
+        //     m_options.interfaceType),
+        // QString("Initial Direction:           ") + (m_mouseAlgorithm == nullptr ? "NONE" :
+        //     m_options.initialDirection),
+        // QString("Tile Text Num Rows:          ") + (m_mouseAlgorithm == nullptr ? "NONE" :
+        //     QString::number(m_options.tileTextNumberOfRows)),
+        // QString("Tile Text Num Cols:          ") + (m_mouseAlgorithm == nullptr ? "NONE" :
+        //     QString::number(m_options.tileTextNumberOfCols)),
+        // QString("Allow Omniscience:           ") + (m_mouseAlgorithm == nullptr ? "NONE" :
+        //     (m_mouseAlgorithm->allowOmniscience() ? "TRUE" : "FALSE")),
+        // QString("Auto Clear Fog:              ") + (m_mouseAlgorithm == nullptr ? "NONE" :
+        //     (m_mouseAlgorithm->automaticallyClearFog() ? "TRUE" : "FALSE")),
+        // QString("Declare Both Wall Halves:    ") + (m_mouseAlgorithm == nullptr ? "NONE" :
+        //     (m_mouseAlgorithm->declareBothWallHalves() ? "TRUE" : "FALSE")),
+        // QString("Auto Set Tile Text:          ") + (m_mouseAlgorithm == nullptr ? "NONE" :
+        //     (m_mouseAlgorithm->setTileTextWhenDistanceDeclared() ? "TRUE" : "FALSE")),
+        // QString("Auto Set Tile Base Color:    ") + (m_mouseAlgorithm == nullptr ? "NONE" :
+        //     (m_mouseAlgorithm->setTileBaseColorWhenDistanceDeclaredCorrectly() ? "TRUE" : "FALSE")),
+        // QString("Wheel Speed Fraction:        ") +
+        //     (!STRING_TO_INTERFACE_TYPE.contains(m_options.interfaceType) ? "NONE" :
+        //     (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+        //     QString::number(m_options.wheelSpeedFraction))),
+        // QString("Declare Wall On Read:        ") +
+        //     (m_mouseAlgorithm == nullptr ? "NONE" :
+        //     (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+        //     (m_mouseAlgorithm->declareWallOnRead() ? "TRUE" : "FALSE"))),
+        // QString("Use Tile Edge Movements:     ") +
+        //     (m_mouseAlgorithm == nullptr ? "NONE" :
+        //     (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+        //     (m_mouseAlgorithm->useTileEdgeMovements() ? "TRUE" : "FALSE"))),
 
         // Mouse progress
         QString("Tiles Traversed:             ") +

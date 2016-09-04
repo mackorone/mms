@@ -82,10 +82,11 @@ void Driver::drive(int argc, char* argv[]) {
     m_model->getWorld()->setOptions(
         m_controller->getOptions()
     );
-    m_view->setMouseAlgorithmAndOptions(
-        m_controller->getMouseAlgorithm(),
-        m_controller->getOptions()
-    );
+    // TODO: MACK
+    // m_view->setMouseAlgorithmAndOptions(
+    //     m_controller->getMouseAlgorithm(),
+    //     m_controller->getOptions()
+    // );
 
     // Initialize the tile text, now that the options have been set
     m_view->initTileGraphicText();

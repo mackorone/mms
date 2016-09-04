@@ -20,36 +20,30 @@ namespace mms {
 Maze::Maze() {
     
     BasicMaze basicMaze;
+    QString source = "";
 
-    // Load from a maze file
-    if (P()->useMazeFile()) {
-        QString mazeFilePath = Directory::get()->getResMazeDirectory() + P()->mazeFile();
-        try {
+    try {
+        // Load from a maze file
+        if (P()->useMazeFile()) {
+            QString mazeFilePath =
+                Directory::get()->getResMazeDirectory() + P()->mazeFile();
+            source = "file \"" + mazeFilePath + "\"";
             basicMaze = MazeFileUtilities::load(mazeFilePath);
         }
-        catch (const std::exception& e) {
-            qCritical().noquote().nospace()
-                << "Unable to initialize maze from file \"" << mazeFilePath
-                << "\": " << QString(e.what()) << ".";
-            SimUtilities::quit();
-        }
-    }
-
-    // TODO: MACK - dedup with above
-    // Load from a maze algorithm
-    else {
-        try {
+        // Generate from a maze algorithm
+        else {
+            source = "algorithm \"" + P()->mazeAlgorithm() + "\"";
             basicMaze = MazeAlgoUtilities::generate(
                 P()->mazeAlgorithm(),
                 P()->generatedMazeWidth(),
                 P()->generatedMazeHeight());
         }
-        catch (const std::exception& e) {
-            qCritical().noquote().nospace()
-                << "Unable to initialize maze from algorithm \"" << P()->mazeAlgorithm()
-                << "\": " << QString(e.what()) << ".";
-            SimUtilities::quit();
-        }
+    }
+    catch (const std::exception& e) {
+        qCritical().noquote().nospace()
+            << "Unable to initialize maze from " << source << ": "
+            << QString(e.what()) << ".";
+        SimUtilities::quit();
     }
 
     // Check to see if it's a valid maze
@@ -67,17 +61,17 @@ Maze::Maze() {
     // Optionally save the maze
     if (!P()->useMazeFile() && P()->saveGeneratedMaze()) {
         MazeFileType type = STRING_TO_MAZE_FILE_TYPE.value(P()->generatedMazeType());
-        QString mazeFilePath = Directory::get()->getResMazeDirectory() +
+        QString generatedMazeFilePath = Directory::get()->getResMazeDirectory() +
             P()->generatedMazeFile() + MAZE_FILE_TYPE_TO_SUFFIX.value(type);
         // TODO: MACK - fix maze saving
-        bool success = false; // MazeFileUtilities::save(basicMaze, mazeFilePath, type);
+        bool success = false; // MazeFileUtilities::save(basicMaze, generatedMazeFilePath, type);
         if (success) {
             qInfo().noquote().nospace()
-                << "Maze saved to \"" << mazeFilePath << "\".";
+                << "Maze saved to \"" << generatedMazeFilePath << "\".";
         }
         else {
             qWarning().noquote().nospace()
-                << "Unable to save maze to \"" << mazeFilePath << "\".";
+                << "Unable to save maze to \"" << generatedMazeFilePath << "\".";
         }
     }
 
@@ -93,7 +87,7 @@ Maze::Maze() {
             << "Rotating the maze counter-clockwise (" << i + 1 << ").";
     }
 
-    // Then, store whether or not the maze is an official maze (after mirror and rotation)
+    // Check to see if it's an official maze (after mirror and rotation)
     QPair<bool, QVector<QString>> isOfficialInfo = MazeChecker::isOfficialMaze(basicMaze);
     m_isOfficialMaze = isOfficialInfo.first;
     if (m_isValidMaze && !m_isOfficialMaze) {

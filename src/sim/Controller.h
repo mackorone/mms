@@ -3,11 +3,8 @@
 #include <QString>
 
 // TODO: MACK - come back to cleaning this up
-
-#include "../mouse/IMouseAlgorithm.h" // TODO: MACK - kill this
 #include "Direction.h"
 #include "Model.h"
-#include "MouseInterface.h"
 #include "StaticMouseAlgorithmOptions.h"
 #include "View.h"
 
@@ -19,14 +16,14 @@ public:
     Controller(Model* model, View* view);
 
     StaticMouseAlgorithmOptions getOptions();
-    IMouseAlgorithm* getMouseAlgorithm();
-    MouseInterface* getMouseInterface();
+    // IMouseAlgorithm* getMouseAlgorithm();
+    // MouseInterface* getMouseInterface(); // TODO: MACK
 
 private:
 
     StaticMouseAlgorithmOptions m_options;
-    IMouseAlgorithm* m_mouseAlgorithm;
-    MouseInterface* m_mouseInterface;
+    // IMouseAlgorithm* m_mouseAlgorithm;
+    // MouseInterface* m_mouseInterface; // TODO: MACK
 
     void validateMouseAlgorithm(
         const QString& mouseAlgorithm);

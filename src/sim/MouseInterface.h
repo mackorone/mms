@@ -18,7 +18,7 @@
 
 // We have to forward declare the class (as opposed to including it) so as to
 // avoid a circular dependency; IMouseAlgorithm.h already includes this file
-class IMouseAlgorithm;
+// class IMouseAlgorithm; // TODO: MACK
 
 namespace mms {
 
@@ -29,7 +29,7 @@ public:
         const Maze* maze,
         Mouse* mouse,
         MazeGraphic* mazeGraphic,
-        IMouseAlgorithm* mouseAlgorithm,
+        // IMouseAlgorithm* mouseAlgorithm, // TODO: MACK
         std::set<char> allowableTileTextCharacters,
         StaticMouseAlgorithmOptions options);
 
@@ -93,7 +93,7 @@ public:
     void resetWheelEncoder(const QString& name);
 
     // Returns a value in [0.0, 1.0]
-    double readSensor(QString name);
+    double readSensor(const QString& name);
 
     // Returns deg/s of rotation
     double readGyro();
@@ -149,7 +149,7 @@ private:
     const Maze* m_maze;
     Mouse* m_mouse;
     MazeGraphic* m_mazeGraphic;
-    IMouseAlgorithm* m_mouseAlgorithm;
+    // IMouseAlgorithm* m_mouseAlgorithm; // TODO: MACK
     std::set<char> m_allowableTileTextCharacters;
     StaticMouseAlgorithmOptions m_options;
 
