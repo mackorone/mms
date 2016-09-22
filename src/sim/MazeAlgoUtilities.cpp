@@ -11,6 +11,7 @@
 
 namespace mms {
 
+// TODO: MACK - dedup these with mouse algorithms
 BasicMaze MazeAlgoUtilities::generate(
         const QString& mazeAlgorithm,
         int width,
@@ -98,6 +99,7 @@ BasicMaze MazeAlgoUtilities::generate(
     SimUtilities::quit();
 }
 
+// TODO: MACK - move this to utils, reuse for mouse and maze algos
 QStringList MazeAlgoUtilities::getMazeAlgos() {
     QDir mazeAlgosDir(Directory::get()->getSrcMazeAlgosDirectory());
     mazeAlgosDir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);

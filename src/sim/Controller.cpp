@@ -2,8 +2,8 @@
 
 #include <QDebug>
 
-// #include "../mouse/MouseAlgorithms.h" // TODO: MACK
 #include "Logging.h"
+#include "MouseAlgoUtilities.h"
 #include "MouseChecker.h"
 #include "Param.h"
 #include "SimUtilities.h"
@@ -22,11 +22,10 @@ Controller::Controller(Model* model, View* view) {
     m_options.tileTextNumberOfRows = 2;
     m_options.tileTextNumberOfCols = 3;
     m_options.wheelSpeedFraction = 1.0;
-    /*
-    // Validate and initialize the mouse algorithm
-    validateMouseAlgorithm(P()->mouseAlgorithm());
-    m_mouseAlgorithm = MouseAlgorithms::getMouseAlgorithm(P()->mouseAlgorithm());
 
+    // TODO: MACK - more initialization here
+    MouseAlgoUtilities::execute(P()->mouseAlgorithm());
+    /*
     // Read the static mouse algo options - only do this once
     m_options.mouseFile = m_mouseAlgorithm->mouseFile();
     m_options.interfaceType = m_mouseAlgorithm->interfaceType();
@@ -88,15 +87,15 @@ StaticMouseAlgorithmOptions Controller::getOptions() {
 //     return m_mouseInterface;
 // }
 // 
-void Controller::validateMouseAlgorithm(const QString& mouseAlgorithm) {
-    // TODO: MACK
-    /*
-    if (!MouseAlgorithms::isMouseAlgorithm(mouseAlgorithm)) {
-        qCritical("\"%v\" is not a valid mouse algorithm.", mouseAlgorithm);
-        SimUtilities::quit();
-    }
-    */
-}
+// void Controller::validateMouseAlgorithm(const QString& mouseAlgorithm) {
+//     // TODO: MACK
+//     /*
+//     if (!MouseAlgorithms::isMouseAlgorithm(mouseAlgorithm)) {
+//         qCritical("\"%v\" is not a valid mouse algorithm.", mouseAlgorithm);
+//         SimUtilities::quit();
+//     }
+//     */
+// }
 
 void Controller::validateMouseInterfaceType(
         const QString& mouseAlgorithm, const QString& interfaceType) {

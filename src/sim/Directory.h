@@ -15,8 +15,11 @@ public:
     // Retrieve the Directory singleton
     static Directory* get();
 
-    // mms/maze/algos
+    // mms/src/maze/algos
     QString getSrcMazeAlgosDirectory();
+
+    // mms/src/mouse/algos
+    QString getSrcMouseAlgosDirectory();
 
     // mms/res
     QString getResDirectory();

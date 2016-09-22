@@ -48,6 +48,8 @@ int main(int argc, char* argv[]) {
     PRINT("declareWallOnRead", algo.declareWallOnRead());
     PRINT("useTileEdgeMovements", algo.useTileEdgeMovements());
 
+    // TODO: MACK - wait to receive the OK here
+
     // Call the solve method of the algo
     Interface interface;
     algo.solve(&interface);
