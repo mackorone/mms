@@ -1,8 +1,11 @@
 #pragma once
 
+#include <QObject>
+#include <QProcess>
 #include <QString>
 
 // TODO: MACK - come back to cleaning this up
+// #include "Controller.moc"
 #include "Direction.h"
 #include "Model.h"
 #include "StaticMouseAlgorithmOptions.h"
@@ -10,9 +13,12 @@
 
 namespace mms {
 
-class Controller {
+class Controller : public QObject {
+
+    Q_OBJECT
 
 public:
+
     Controller(Model* model, View* view);
 
     StaticMouseAlgorithmOptions getOptions();
@@ -20,6 +26,9 @@ public:
     // MouseInterface* getMouseInterface(); // TODO: MACK
 
 private:
+
+    // TODO: MACK
+    QProcess* m_process;
 
     StaticMouseAlgorithmOptions m_options;
     // IMouseAlgorithm* m_mouseAlgorithm;
@@ -55,6 +64,18 @@ private:
     Direction getInitialDirection(
         const QString& initialDirection,
         Model* model);
+
+private slots:
+    // TODO: MACK
+    void updateError();
+
+// TODO: MACK
+public:
+    void execute(const QString& mouseAlgorithm);
+
+private:
+    static QStringList getMouseAlgos();
+    static QPair<QStringList, QStringList> getFiles(const QString& dirPath);
 
 };
 

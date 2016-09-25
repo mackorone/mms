@@ -1,5 +1,6 @@
 #include "Algo.h"
 
+// TODO: MACK - these can just be defaults
 std::string Algo::mouseFile() const {
     return "default.xml";
 }

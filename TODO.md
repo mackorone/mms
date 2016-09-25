@@ -7,6 +7,7 @@
 - Use Qt XML support
     - Get rid of other lib/ dependencies
 - Kill toStdString
+- Make all classes QObjects
 - Kill SimUtilities, other platform dependent code
 - Fix timestep
     - Make renderer and physics on same thread

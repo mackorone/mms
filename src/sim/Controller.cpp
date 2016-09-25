@@ -1,9 +1,12 @@
 #include "Controller.h"
 
 #include <QDebug>
+#include <QDir>
+#include <QDirIterator>
+#include <QProcess>
 
+#include "Directory.h"
 #include "Logging.h"
-#include "MouseAlgoUtilities.h"
 #include "MouseChecker.h"
 #include "Param.h"
 #include "SimUtilities.h"
@@ -15,6 +18,7 @@ static const QString& WALL_DIRECTION_STRING = "WALL";
 
 Controller::Controller(Model* model, View* view) {
 
+
     // TODO: MACK
     m_options.mouseFile = "default.xml";
     m_options.interfaceType = "DISCRETE";
@@ -24,7 +28,7 @@ Controller::Controller(Model* model, View* view) {
     m_options.wheelSpeedFraction = 1.0;
 
     // TODO: MACK - more initialization here
-    MouseAlgoUtilities::execute(P()->mouseAlgorithm());
+    execute(P()->mouseAlgorithm());
     /*
     // Read the static mouse algo options - only do this once
     m_options.mouseFile = m_mouseAlgorithm->mouseFile();
@@ -207,6 +211,105 @@ Direction Controller::getInitialDirection(const QString& initialDirection, Model
         return (wallNorth ? Direction::NORTH : Direction::EAST);
     }
     return STRING_TO_DIRECTION.value(initialDirection);
+}
+
+// TODO: MACK
+void Controller::updateError() {
+    qDebug() << m_process->readAllStandardError();
+}
+        
+void Controller::execute(const QString& mouseAlgorithm) {
+
+    // Check to see if there is some directory with the given name
+    QString selectedMouseAlgo(mouseAlgorithm);
+    if (!Controller::getMouseAlgos().contains(selectedMouseAlgo)) {
+         qCritical().noquote().nospace()
+            << "\"" << mouseAlgorithm << "\" is not a valid maze"
+            << " algorithm.";
+         SimUtilities::quit();
+    }
+
+    // Get the maze algo directory
+    QString selectedMouseAlgoPath = 
+        Directory::get()->getSrcMouseAlgosDirectory() + mouseAlgorithm;
+
+    // Get the files for the algorithm
+    QPair<QStringList, QStringList> files =
+        Controller::getFiles(selectedMouseAlgoPath);
+    QStringList relativePaths = files.first;
+    QStringList absolutePaths = files.second;
+
+    // TODO: MACK - make these constants, dedup some of this
+    if (relativePaths.contains(QString("Main.cpp"))) {
+
+        QString binPath = selectedMouseAlgoPath + "/a.out";
+
+        // Build
+        QStringList buildArgs = absolutePaths.filter(".cpp");
+        buildArgs << "-o";
+        buildArgs << binPath;
+        QProcess buildProcess;
+        buildProcess.start("g++", buildArgs);
+        buildProcess.waitForFinished();
+        if (buildProcess.exitCode() != 0) {
+            qCritical().noquote()
+                << "Failed to build mouse algo!"
+                << "\n\n" + buildProcess.readAllStandardError();
+            SimUtilities::quit();
+        }
+
+        // Run
+        m_process = new QProcess();
+        connect(m_process, SIGNAL(readyReadStandardError()), this, SLOT(updateError()));
+        m_process->start(binPath);
+        // TODO: MACK - can't wait for finished here
+        m_process->waitForFinished();
+
+        if (m_process->exitCode() != 0) {
+            qCritical().noquote()
+                << "Mouse algo crashed!"
+                << "\n\n" + m_process->readAllStandardError();
+            SimUtilities::quit();
+        }
+    
+        // TODO: MACK
+        qDebug() << "Success";
+
+        // Success
+        return;
+    } 
+
+    // Invalid files
+    qCritical().noquote().nospace()
+        << "No \"Main\" file found in \""
+        << selectedMouseAlgoPath << "\"";
+    SimUtilities::quit();
+}
+        
+
+// TODO: MACK - move this to utils, reuse for mouse and maze algos
+QStringList Controller::getMouseAlgos() {
+    QDir mouseAlgosDir(Directory::get()->getSrcMouseAlgosDirectory());
+    mouseAlgosDir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
+    mouseAlgosDir.setSorting(QDir::Name | QDir::QDir::IgnoreCase);
+    QStringList algos = mouseAlgosDir.entryList();
+    return algos;
+}
+
+// TODO: MACK - move this to utils
+QPair<QStringList, QStringList> Controller::getFiles(const QString& dirPath) {
+    // Get all files in the directory
+    QDir dir(dirPath);
+    dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
+    QDirIterator iterator(dir, QDirIterator::Subdirectories);
+    QStringList relativePaths;
+    QStringList absolutePaths;
+    while (iterator.hasNext()) {
+        iterator.next();
+        relativePaths << iterator.fileName();
+        absolutePaths << iterator.filePath();
+    }
+    return {relativePaths, absolutePaths};
 }
 
 } // namespace mms

@@ -8,6 +8,8 @@ class Algo {
 
 public:
 
+    // TODO: MACK - the  mouse should advertise the dynamic mouse config whenever it wants to change it
+
     // Static options for both interfaces
     std::string mouseFile() const;
     std::string interfaceType() const;
