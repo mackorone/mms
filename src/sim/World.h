@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QPair>
-#include <set>
+#include <QSet>
 
 #include "InterfaceType.h"
 #include "Maze.h"
@@ -33,7 +33,7 @@ private:
     Seconds m_bestTimeToCenter;
     Seconds m_timeOfOriginDeparture;
 
-    std::set<QPair<int, int>> m_traversedTileLocations;
+    QSet<QPair<int, int>> m_traversedTileLocations;
     int m_closestDistanceToCenter;
 
     void checkCollision();

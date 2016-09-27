@@ -16,90 +16,90 @@ namespace mms {
 static const QString& OPENING_DIRECTION_STRING = "OPENING";
 static const QString& WALL_DIRECTION_STRING = "WALL";
 
-Controller::Controller(Model* model, View* view) {
+Controller::Controller(Model* model, View* view) :
+        m_process(nullptr),
+        m_mouseInterface(nullptr),
+        m_staticOptionsFinalized(false) {
 
+    // Default values for static options
+    m_staticOptions.mouseFile = "default.xml";
+    m_staticOptions.interfaceType = "DISCRETE";
+    m_staticOptions.initialDirection = "NORTH";
+    m_staticOptions.tileTextNumberOfRows = 2;
+    m_staticOptions.tileTextNumberOfCols = 3;
+    m_staticOptions.wheelSpeedFraction = 1.0;
 
-    // TODO: MACK
-    m_options.mouseFile = "default.xml";
-    m_options.interfaceType = "DISCRETE";
-    m_options.initialDirection = "NORTH";
-    m_options.tileTextNumberOfRows = 2;
-    m_options.tileTextNumberOfCols = 3;
-    m_options.wheelSpeedFraction = 1.0;
+    // Default values for dynamic options
+    m_dynamicOptions.allowOmniscience = false;
+    m_dynamicOptions.automaticallyClearFog = true;
+    m_dynamicOptions.declareBothWallHalves = true;
+    m_dynamicOptions.declareWallOnRead = false;
+    m_dynamicOptions.setTileBaseColorWhenDistanceDeclaredCorrectly = false;
+    m_dynamicOptions.setTileTextWhenDistanceDeclared = true;
+    m_dynamicOptions.useTileEdgeMovements = false;
 
-    // TODO: MACK - more initialization here
-    execute(P()->mouseAlgorithm());
-    /*
-    // Read the static mouse algo options - only do this once
-    m_options.mouseFile = m_mouseAlgorithm->mouseFile();
-    m_options.interfaceType = m_mouseAlgorithm->interfaceType();
-    m_options.initialDirection = m_mouseAlgorithm->initialDirection();
-    m_options.tileTextNumberOfRows = m_mouseAlgorithm->tileTextNumberOfRows();
-    m_options.tileTextNumberOfCols = m_mouseAlgorithm->tileTextNumberOfCols();
-    m_options.wheelSpeedFraction = m_mouseAlgorithm->wheelSpeedFraction();
+    // Start the mouse algorithm
+    startMouseAlgorithm(P()->mouseAlgorithm());
+
+    // TODO: MACK - wait until static options have been finalized
+    m_staticOptionsFinalized = true;
+    while (!m_staticOptionsFinalized) {
+        SimUtilities::sleep(Seconds(0.1));
+    }
 
     // Validate all of the static options except for mouseFile,
     // which is validated in the mouse init method
     validateMouseInterfaceType(
         P()->mouseAlgorithm(),
-        m_options.interfaceType
+        m_staticOptions.interfaceType
     );
     validateMouseInitialDirection(
         P()->mouseAlgorithm(),
-        m_options.initialDirection
+        m_staticOptions.initialDirection
     );
     validateTileTextRowsAndCols(
         P()->mouseAlgorithm(),
-        m_options.tileTextNumberOfRows,
-        m_options.tileTextNumberOfCols
+        m_staticOptions.tileTextNumberOfRows,
+        m_staticOptions.tileTextNumberOfCols
     );
     validateMouseWheelSpeedFraction(
         P()->mouseAlgorithm(),
-        m_options.wheelSpeedFraction
+        m_staticOptions.wheelSpeedFraction
     );
 
+    // Initialize the mouse object
     initAndValidateMouse(
         P()->mouseAlgorithm(),
-        m_options.mouseFile,
-        m_options.interfaceType,
-        m_options.initialDirection,
+        m_staticOptions.mouseFile,
+        m_staticOptions.interfaceType,
+        m_staticOptions.initialDirection,
         model
     );
 
+    // Initialize the mouse interface
     m_mouseInterface = new MouseInterface(
         model->getMaze(),
         model->getMouse(),
         view->getMazeGraphic(),
-        m_mouseAlgorithm,
+        this,
         view->getAllowableTileTextCharacters(),
-        m_options
+        m_staticOptions
     );
-    */
 }
 
-StaticMouseAlgorithmOptions Controller::getOptions() {
+MouseInterface* Controller::getMouseInterface() {
+    return m_mouseInterface;
+}
+
+StaticMouseAlgorithmOptions Controller::getStaticOptions() {
     // The Controller object is the source of truth for the static options
-    return m_options;
+    return m_staticOptions;
 }
 
-// IMouseAlgorithm* Controller::getMouseAlgorithm() {
-//     return m_mouseAlgorithm;
-// }
-
-// TODO: MACK
-// MouseInterface* Controller::getMouseInterface() {
-//     return m_mouseInterface;
-// }
-// 
-// void Controller::validateMouseAlgorithm(const QString& mouseAlgorithm) {
-//     // TODO: MACK
-//     /*
-//     if (!MouseAlgorithms::isMouseAlgorithm(mouseAlgorithm)) {
-//         qCritical("\"%v\" is not a valid mouse algorithm.", mouseAlgorithm);
-//         SimUtilities::quit();
-//     }
-//     */
-// }
+DynamicMouseAlgorithmOptions Controller::getDynamicOptions() {
+    // The Controller object is the source of truth for the dynamic options
+    return m_dynamicOptions;
+}
 
 void Controller::validateMouseInterfaceType(
         const QString& mouseAlgorithm, const QString& interfaceType) {
@@ -213,18 +213,43 @@ Direction Controller::getInitialDirection(const QString& initialDirection, Model
     return STRING_TO_DIRECTION.value(initialDirection);
 }
 
-// TODO: MACK
-void Controller::updateError() {
-    qDebug() << m_process->readAllStandardError();
+void Controller::readAndProcessCommands() {
+
+    // Read all of the new text
+    QString input = m_process->readAllStandardError();
+
+    // Separate the input by line
+    QStringList inputLines = input.split("\n");
+
+    // If a line has definitely terminated, take action
+    if (1 < inputLines.size()) {
+        processCommand(m_inputLines.join("") + inputLines.at(0));
+        m_inputLines.clear();
+    }
+
+    // For all complete lines in the input, take action
+    for (int i = 1; i < inputLines.size() - 1; i += 1) {
+        processCommand(inputLines.at(i));
+    }
+
+    // Store the beginning of the incomplete line
+    m_inputLines.append(inputLines.at(inputLines.size() - 1));
+}
+
+QString Controller::processCommand(const QString& command) {
+    // TODO: MACK - big if-else here
+    qDebug() << command;
+    m_mouseInterface->moveForward();
+    return "";
 }
         
-void Controller::execute(const QString& mouseAlgorithm) {
+void Controller::startMouseAlgorithm(const QString& mouseAlgorithm) {
 
     // Check to see if there is some directory with the given name
     QString selectedMouseAlgo(mouseAlgorithm);
     if (!Controller::getMouseAlgos().contains(selectedMouseAlgo)) {
          qCritical().noquote().nospace()
-            << "\"" << mouseAlgorithm << "\" is not a valid maze"
+            << "\"" << mouseAlgorithm << "\" is not a valid mouse"
             << " algorithm.";
          SimUtilities::quit();
     }
@@ -260,21 +285,25 @@ void Controller::execute(const QString& mouseAlgorithm) {
 
         // Run
         m_process = new QProcess();
-        connect(m_process, SIGNAL(readyReadStandardError()), this, SLOT(updateError()));
+        connect(
+            m_process,
+            SIGNAL(readyReadStandardError()),
+            this,
+            SLOT(readAndProcessCommands())
+        );
         m_process->start(binPath);
-        // TODO: MACK - can't wait for finished here
-        m_process->waitForFinished();
 
-        if (m_process->exitCode() != 0) {
-            qCritical().noquote()
-                << "Mouse algo crashed!"
-                << "\n\n" + m_process->readAllStandardError();
-            SimUtilities::quit();
-        }
+        // TODO: MACK - use these instead of waiting for the process to finish
+        // void errorOccurred(QProcess::ProcessError error)
+        // void finished(int exitCode, QProcess::ExitStatus exitStatus)
+        // m_process->waitForFinished();
+        // if (m_process->exitCode() != 0) {
+        //     qCritical().noquote()
+        //         << "Mouse algo crashed!"
+        //         << "\n\n" + m_process->readAllStandardError();
+        //     SimUtilities::quit();
+        // }
     
-        // TODO: MACK
-        qDebug() << "Success";
-
         // Success
         return;
     } 

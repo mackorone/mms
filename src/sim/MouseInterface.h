@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QPair>
+#include <QSet>
 
 #include "InterfaceType.h"
 #include "MazeGraphic.h"
@@ -16,11 +17,11 @@
 #define ENSURE_INSIDE_ORIGIN ensureInsideOrigin(__func__);
 #define ENSURE_OUTSIDE_ORIGIN ensureOutsideOrigin(__func__);
 
-// We have to forward declare the class (as opposed to including it) so as to
-// avoid a circular dependency; IMouseAlgorithm.h already includes this file
-// class IMouseAlgorithm; // TODO: MACK
-
 namespace mms {
+
+// We have to forward declare the class (as opposed to including it) so as to
+// avoid a circular dependency; Controller.h already includes this file
+class Controller;
 
 class MouseInterface {
 
@@ -29,17 +30,11 @@ public:
         const Maze* maze,
         Mouse* mouse,
         MazeGraphic* mazeGraphic,
-        // IMouseAlgorithm* mouseAlgorithm, // TODO: MACK
-        std::set<char> allowableTileTextCharacters,
+        Controller* controller,
+        QSet<QChar> allowableTileTextCharacters,
         StaticMouseAlgorithmOptions options);
 
     // ----- Any interface methods ----- //
-
-    // Logging functions
-    void debug(const QString& str);
-    void info(const QString& str);
-    void warn(const QString& str);
-    void error(const QString& str);
 
     // Misc functions
     double getRandom();
@@ -149,8 +144,8 @@ private:
     const Maze* m_maze;
     Mouse* m_mouse;
     MazeGraphic* m_mazeGraphic;
-    // IMouseAlgorithm* m_mouseAlgorithm; // TODO: MACK
-    std::set<char> m_allowableTileTextCharacters;
+    Controller* m_controller;
+    QSet<QChar> m_allowableTileTextCharacters;
     StaticMouseAlgorithmOptions m_options;
 
     // Whether or not the mouse has moved out the origin

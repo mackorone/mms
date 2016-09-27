@@ -18,10 +18,11 @@
 #include "TriangleGraphic.h"
 #include "TriangleTexture.h"
 
-// TODO: MACK
-// class IMouseAlgorithm;
-
 namespace mms {
+
+// We have to forward declare the class (as opposed to including it) so as to
+// avoid a circular dependency; Controller.h already includes this file
+class Controller;
 
 class View {
 
@@ -31,10 +32,7 @@ public:
     MazeGraphic* getMazeGraphic();
     MouseGraphic* getMouseGraphic();
 
-    // TODO: MACK
-    // void setMouseAlgorithmAndOptions(
-    //     IMouseAlgorithm* mouseAlgorithm,
-    //     StaticMouseAlgorithmOptions options);
+    void setController(Controller* controller);
 
     void refresh();
     void updateWindowSize(int width, int height);
@@ -73,9 +71,7 @@ private:
     Header* m_header;
 
     // Used to determine whether or not to automatically clear fog
-    // TODO: MACK
-    // IMouseAlgorithm* m_mouseAlgorithm;
-    StaticMouseAlgorithmOptions m_options;
+    Controller* m_controller;
 
     // Polygon program variables
     tdogl::Program* m_polygonProgram;

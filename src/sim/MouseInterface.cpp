@@ -1,5 +1,6 @@
 #include "MouseInterface.h"
 
+#include <QChar>
 #include <QDebug>
 #include <QPair>
 
@@ -10,9 +11,9 @@
 #include "units/RevolutionsPerMinute.h"
 #include "units/Seconds.h"
 
-// #include "../mouse/IMouseAlgorithm.h" // TODO: MACK
 #include "Assert.h"
 #include "Color.h"
+#include "Controller.h"
 #include "CPMath.h"
 #include "Logging.h"
 #include "Param.h"
@@ -20,39 +21,24 @@
 #include "SimUtilities.h"
 #include "Time.h"
 
+// TODO: MACK - send back errors to process
+
 namespace mms {
 
 MouseInterface::MouseInterface(
         const Maze* maze,
         Mouse* mouse,
         MazeGraphic* mazeGraphic,
-        // IMouseAlgorithm* mouseAlgorithm, // TODO: MACK
-        std::set<char> allowableTileTextCharacters,
+        Controller* controller,
+        QSet<QChar> allowableTileTextCharacters,
         StaticMouseAlgorithmOptions options) :
         m_maze(maze),
         m_mouse(mouse),
         m_mazeGraphic(mazeGraphic),
-        // m_mouseAlgorithm(mouseAlgorithm), // TODO: MACK
+        m_controller(controller),
         m_allowableTileTextCharacters(allowableTileTextCharacters),
         m_options(options),
         m_inOrigin(true) {
-}
-
-// TODO: MACK - kill these
-void MouseInterface::debug(const QString& str) {
-    //Logging::getMouseLogger()->debug(str.toStdString());
-}
-
-void MouseInterface::info(const QString& str) {
-    //Logging::getMouseLogger()->info(str.toStdString());
-}
-
-void MouseInterface::warn(const QString& str) {
-    //Logging::getMouseLogger()->warn(str.toStdString());
-}
-
-void MouseInterface::error(const QString& str) {
-    //Logging::getMouseLogger()->error(str.toStdString());
 }
 
 double MouseInterface::getRandom() {
@@ -164,8 +150,7 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
             CHAR_TO_DIRECTION.value(direction)
         },
         wallExists,
-        // m_mouseAlgorithm->declareBothWallHalves() // TODO: MACK
-        true
+        m_controller->getDynamicOptions().declareBothWallHalves
     );
 }
 
@@ -190,8 +175,7 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
             {x, y},
             CHAR_TO_DIRECTION.value(direction)
         },
-        // m_mouseAlgorithm->declareBothWallHalves() // TODO: MACK
-        true
+        m_controller->getDynamicOptions().declareBothWallHalves
     );
 }
 
@@ -216,18 +200,17 @@ void MouseInterface::declareTileDistance(int x, int y, int distance) {
         return;
     }
 
-    // TODO: MACK
-    // if (m_mouseAlgorithm->setTileTextWhenDistanceDeclared()) {
-    //     setTileTextImpl(x, y, (0 <= distance ? QString::number(distance) : "inf"));
-    // }
-    // if (m_mouseAlgorithm->setTileBaseColorWhenDistanceDeclaredCorrectly()) {
-    //     int actualDistance = m_maze->getTile(x, y)->getDistance();
-    //     // A negative distance is interpreted to mean infinity
-    //     if (distance == actualDistance || (distance < 0 && actualDistance < 0)) {
-    //         setTileColorImpl(x, y,
-    //             COLOR_TO_CHAR.value(STRING_TO_COLOR.value(P()->distanceCorrectTileBaseColor())));
-    //     }
-    // }
+    if (m_controller->getDynamicOptions().setTileTextWhenDistanceDeclared) {
+        setTileTextImpl(x, y, (0 <= distance ? QString::number(distance) : "inf"));
+    }
+    if (m_controller->getDynamicOptions().setTileBaseColorWhenDistanceDeclaredCorrectly) {
+        int actualDistance = m_maze->getTile(x, y)->getDistance();
+        // A negative distance is interpreted to mean infinity
+        if (distance == actualDistance || (distance < 0 && actualDistance < 0)) {
+            setTileColorImpl(x, y,
+                COLOR_TO_CHAR.value(STRING_TO_COLOR.value(P()->distanceCorrectTileBaseColor())));
+        }
+    }
 }
 
 void MouseInterface::undeclareTileDistance(int x, int y) {
@@ -239,13 +222,12 @@ void MouseInterface::undeclareTileDistance(int x, int y) {
         return;
     }
 
-    // TODO: MACK
-    // if (m_mouseAlgorithm->setTileTextWhenDistanceDeclared()) {
-    //     clearTileTextImpl(x, y);
-    // }
-    // if (m_mouseAlgorithm->setTileBaseColorWhenDistanceDeclaredCorrectly()) {
-    //     setTileColorImpl(x, y, COLOR_TO_CHAR.value(STRING_TO_COLOR.value(P()->tileBaseColor())));
-    // }
+    if (m_controller->getDynamicOptions().setTileTextWhenDistanceDeclared) {
+        clearTileTextImpl(x, y);
+    }
+    if (m_controller->getDynamicOptions().setTileBaseColorWhenDistanceDeclaredCorrectly) {
+        setTileColorImpl(x, y, COLOR_TO_CHAR.value(STRING_TO_COLOR.value(P()->tileBaseColor())));
+    }
 }
 
 void MouseInterface::resetPosition() {
@@ -400,10 +382,8 @@ bool MouseInterface::wallFront() {
     ENSURE_DISCRETE_INTERFACE
 
     return wallFrontImpl(
-        // m_mouseAlgorithm->declareWallOnRead(), // TODO: MACK
-        // m_mouseAlgorithm->declareBothWallHalves()
-        true,
-        true
+        m_controller->getDynamicOptions().declareWallOnRead,
+        m_controller->getDynamicOptions().declareBothWallHalves
     );
 }
 
@@ -412,10 +392,8 @@ bool MouseInterface::wallRight() {
     ENSURE_DISCRETE_INTERFACE
 
     return wallRightImpl(
-        // m_mouseAlgorithm->declareWallOnRead(), // TODO: MACK
-        true,
-        // m_mouseAlgorithm->declareBothWallHalves() // TODO: MACK
-        true
+        m_controller->getDynamicOptions().declareWallOnRead,
+        m_controller->getDynamicOptions().declareBothWallHalves
     );
 }
 
@@ -424,10 +402,8 @@ bool MouseInterface::wallLeft() {
     ENSURE_DISCRETE_INTERFACE
 
     return wallLeftImpl(
-        // m_mouseAlgorithm->declareWallOnRead(), // TODO: MACK
-        true,
-        // m_mouseAlgorithm->declareBothWallHalves() // TODO: MACK
-        true
+        m_controller->getDynamicOptions().declareWallOnRead,
+        m_controller->getDynamicOptions().declareBothWallHalves
     );
 }
 
@@ -664,8 +640,7 @@ void MouseInterface::ensureContinuousInterface(const QString& callingFunction) c
 }
 
 void MouseInterface::ensureAllowOmniscience(const QString& callingFunction) const {
-    // if (!m_mouseAlgorithm->allowOmniscience()) { // TODO: MACK
-    if (true) {
+    if (!m_controller->getDynamicOptions().allowOmniscience) {
         qCritical().noquote().nospace()
             << "You must return true from \"allowOmniscience()\" in order to"
             << " use MouseInterface::" << callingFunction << "().";
@@ -674,8 +649,7 @@ void MouseInterface::ensureAllowOmniscience(const QString& callingFunction) cons
 }
 
 void MouseInterface::ensureNotTileEdgeMovements(const QString& callingFunction) const {
-    // if (m_mouseAlgorithm->useTileEdgeMovements()) { // TODO: MACK
-    if (true) {
+    if (m_controller->getDynamicOptions().useTileEdgeMovements) {
         qCritical().noquote().nospace()
             << "You must return false from \"useTileEdgeMovements()\" in order"
             << " to use MouseInterface::" << callingFunction << "().";
@@ -684,8 +658,7 @@ void MouseInterface::ensureNotTileEdgeMovements(const QString& callingFunction) 
 }
 
 void MouseInterface::ensureUseTileEdgeMovements(const QString& callingFunction) const {
-    // if (!m_mouseAlgorithm->useTileEdgeMovements()) { // TODO: MACK
-    if (true) {
+    if (!m_controller->getDynamicOptions().useTileEdgeMovements) {
         qCritical().noquote().nospace()
             << "You must return true from \"useTileEdgeMovements()\" in order"
             << " to use MouseInterface::" << callingFunction << "().";

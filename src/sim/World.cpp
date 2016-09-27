@@ -53,8 +53,7 @@ int World::getClosestDistanceToCenter() const {
 void World::simulate() {
 
     // Start a separate collision detection thread
-    // TODO: MACK
-    // std::thread collisionDetector(&World::checkCollision, this);
+    std::thread collisionDetector(&World::checkCollision, this);
 
     // Uncomment to do mouse update benchmarking
     /*
@@ -69,7 +68,6 @@ void World::simulate() {
     SimUtilities::quit();
     */
 
-    /*
     // Use this thread to perform mouse position updates
     while (true) {
 
@@ -163,7 +161,6 @@ void World::simulate() {
         // TODO: MACK - This seems to sleep for longer than intended :/
         SimUtilities::sleep(Seconds(std::max(0.0, 1.0/P()->mousePositionUpdateRate() - duration)));
     }
-    */
 }
 
 void World::checkCollision() {

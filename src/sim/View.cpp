@@ -6,6 +6,7 @@
 #include <QPair>
 
 #include "BufferInterface.h"
+#include "Controller.h"
 #include "Directory.h"
 #include "Layout.h"
 #include "Logging.h"
@@ -45,14 +46,11 @@ MouseGraphic* View::getMouseGraphic() {
     return m_mouseGraphic;
 }
 
-// TODO: MACK
-// void View::setMouseAlgorithmAndOptions(
-//         IMouseAlgorithm* mouseAlgorithm,
-//         StaticMouseAlgorithmOptions options) {
-//     m_mouseAlgorithm = mouseAlgorithm;
-//     m_options = options;
-//     m_header->setMouseAlgorithmAndOptions(mouseAlgorithm, options);
-// }
+void View::setController(Controller* controller) {
+    m_controller = controller;
+    // TODO: MACK
+    //m_header->setMouseAlgorithmAndOptions(mouseAlgorithm, options);
+}
 
 void View::refresh() {
 
@@ -61,9 +59,7 @@ void View::refresh() {
     double start(SimUtilities::getHighResTimestamp());
 
     // First, clear fog as necessary
-    // TODO: MACK
-    /*
-    if (m_mouseAlgorithm->automaticallyClearFog()) {
+    if (m_controller->getDynamicOptions().automaticallyClearFog) {
         // TODO: upforgrabs
         // This won't work if the mouse is traveling too quickly and travels more
         // than one tile per frame. Figure out a way that will work in that case.
@@ -71,7 +67,6 @@ void View::refresh() {
             m_model->getMouse()->getCurrentDiscretizedTranslation();
         m_mazeGraphic->setTileFogginess(currentPosition.first, currentPosition.second, false);
     }
-    */
 
     // Determine the starting index of the mouse
     static const int mouseTrianglesStartingIndex = m_graphicCpuBuffer.size();
@@ -146,20 +141,13 @@ QSet<QChar> View::getAllowableTileTextCharacters() {
 
 void View::initTileGraphicText() {
 
-    // TODO: MACK
-    m_options.tileTextNumberOfRows = 2;
-    m_options.tileTextNumberOfCols = 3;
-    if (10 < m_options.tileTextNumberOfRows || 10 < m_options.tileTextNumberOfCols) {
-        SimUtilities::quit();        
-    }
-
     // Initialze the tile text in the buffer class, do caching for speed improvement
     m_bufferInterface->initTileGraphicText(
         Meters(P()->wallLength()),
         Meters(P()->wallWidth()),
         {
-            m_options.tileTextNumberOfRows,
-            m_options.tileTextNumberOfCols
+            m_controller->getStaticOptions().tileTextNumberOfRows,
+            m_controller->getStaticOptions().tileTextNumberOfCols
         },
         m_fontImageMap,
         P()->tileTextBorderFraction(),
@@ -173,7 +161,10 @@ void View::keyPress(unsigned char key, int x, int y) {
 
     if (key == 'p') {
         // Toggle pause (only in discrete mode)
-        if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) == InterfaceType::DISCRETE) {
+        if (
+            STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType)
+            == InterfaceType::DISCRETE
+        ) {
             S()->setPaused(!S()->paused());
         }
         else {
@@ -185,7 +176,10 @@ void View::keyPress(unsigned char key, int x, int y) {
     }
     else if (key == 'f') {
         // Faster (only in discrete mode)
-        if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) == InterfaceType::DISCRETE) {
+        if (
+            STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType)
+            == InterfaceType::DISCRETE
+        ) {
             S()->setSimSpeed(S()->simSpeed() * 1.5);
         }
         else {
@@ -197,7 +191,10 @@ void View::keyPress(unsigned char key, int x, int y) {
     }
     else if (key == 's') {
         // Slower (only in discrete mode)
-        if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) == InterfaceType::DISCRETE) {
+        if (
+            STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType)
+            == InterfaceType::DISCRETE
+        ) {
             S()->setSimSpeed(S()->simSpeed() / 1.5);
         }
         else {

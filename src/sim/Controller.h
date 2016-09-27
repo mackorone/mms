@@ -4,10 +4,10 @@
 #include <QProcess>
 #include <QString>
 
-// TODO: MACK - come back to cleaning this up
-// #include "Controller.moc"
 #include "Direction.h"
+#include "DynamicMouseAlgorithmOptions.h"
 #include "Model.h"
+#include "MouseInterface.h"
 #include "StaticMouseAlgorithmOptions.h"
 #include "View.h"
 
@@ -21,21 +21,28 @@ public:
 
     Controller(Model* model, View* view);
 
-    StaticMouseAlgorithmOptions getOptions();
-    // IMouseAlgorithm* getMouseAlgorithm();
-    // MouseInterface* getMouseInterface(); // TODO: MACK
+    MouseInterface* getMouseInterface();
+
+    StaticMouseAlgorithmOptions getStaticOptions();
+    DynamicMouseAlgorithmOptions getDynamicOptions();
 
 private:
 
-    // TODO: MACK
+    // The mouse algorithm child process
     QProcess* m_process;
 
-    StaticMouseAlgorithmOptions m_options;
-    // IMouseAlgorithm* m_mouseAlgorithm;
-    // MouseInterface* m_mouseInterface; // TODO: MACK
+    // The lines of input from the mouse algorithm
+    QStringList m_inputLines;
 
-    void validateMouseAlgorithm(
-        const QString& mouseAlgorithm);
+    // The interface by which we access the Mouse object
+    MouseInterface* m_mouseInterface;
+
+    // The algorithm options
+    StaticMouseAlgorithmOptions m_staticOptions;
+    DynamicMouseAlgorithmOptions m_dynamicOptions;
+
+    // Whether or not the static options have been finalized
+    bool m_staticOptionsFinalized;
 
     void validateMouseInterfaceType(
         const QString& mouseAlgorithm,
@@ -65,15 +72,16 @@ private:
         const QString& initialDirection,
         Model* model);
 
+    QString processCommand(const QString& command);
+
 private slots:
-    // TODO: MACK
-    void updateError();
 
-// TODO: MACK
-public:
-    void execute(const QString& mouseAlgorithm);
+    void readAndProcessCommands();
 
+// TODO: MACK - refactor these somewhere else
 private:
+
+    void startMouseAlgorithm(const QString& mouseAlgorithm);
     static QStringList getMouseAlgos();
     static QPair<QStringList, QStringList> getFiles(const QString& dirPath);
 

@@ -58,6 +58,8 @@ void Driver::drive(int argc, char* argv[]) {
     GlutFunctions functions = {
         []() {
             m_view->refresh();
+            // TODO: MACK - hack for now
+            QCoreApplication::processEvents();
         },
         [](int width, int height) {
             m_view->updateWindowSize(width, height);
@@ -73,20 +75,19 @@ void Driver::drive(int argc, char* argv[]) {
         }
     };
 
-    // Initialize the model, view, and controller
+    // Initialize the model and view
     m_model = new Model();
     m_view = new View(m_model, argc, argv, functions);
+
+    // Initialize the controller, which starts the algorithm
+    // (and returns once the static options have been set)
     m_controller = new Controller(m_model, m_view);
 
     // Initialize mouse algorithm values in the model and view
     m_model->getWorld()->setOptions(
-        m_controller->getOptions()
+        m_controller->getStaticOptions()
     );
-    // TODO: MACK
-    // m_view->setMouseAlgorithmAndOptions(
-    //     m_controller->getMouseAlgorithm(),
-    //     m_controller->getOptions()
-    // );
+    m_view->setController(m_controller);
 
     // Initialize the tile text, now that the options have been set
     m_view->initTileGraphicText();
@@ -100,28 +101,29 @@ void Driver::drive(int argc, char* argv[]) {
         m_model->getWorld()->simulate();
     });
 
-    // Start the solving loop
-    std::thread solvingThread([]() {
+    // TODO: MACK - we shouldn't need this at all, since controller starts as a separate process
+    // // Start the solving loop
+    // std::thread solvingThread([]() {
 
-        // If the maze is invalid, don't let the algo do anything
-        if (!m_model->getMaze()->isValidMaze()) {
-            return;
-        }
+    //     // If the maze is invalid, don't let the algo do anything
+    //     if (!m_model->getMaze()->isValidMaze()) {
+    //         return;
+    //     }
 
-        // Wait for the window to appear
-        SimUtilities::sleep(Seconds(P()->glutInitDuration()));
+    //     // Wait for the window to appear
+    //     SimUtilities::sleep(Seconds(P()->glutInitDuration()));
 
-        // TODO: MACK
-        // Begin execution of the mouse algorithm
-        /*
-        m_controller->getMouseAlgorithm()->solve(
-            m_model->getMaze()->getWidth(),
-            m_model->getMaze()->getHeight(),
-            m_model->getMaze()->isOfficialMaze(),
-            DIRECTION_TO_CHAR.at(m_model->getMouse()->getCurrentDiscretizedRotation()),
-            m_controller->getMouseInterface());
-        */
-    });
+    //     // TODO: MACK
+    //     // Begin execution of the mouse algorithm
+    //     /*
+    //     m_controller->getMouseAlgorithm()->solve(
+    //         m_model->getMaze()->getWidth(),
+    //         m_model->getMaze()->getHeight(),
+    //         m_model->getMaze()->isOfficialMaze(),
+    //         DIRECTION_TO_CHAR.at(m_model->getMouse()->getCurrentDiscretizedRotation()),
+    //         m_controller->getMouseInterface());
+    //     */
+    // });
 
     // Start the graphics loop
     glutMainLoop();
