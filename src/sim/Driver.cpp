@@ -58,8 +58,6 @@ void Driver::drive(int argc, char* argv[]) {
     GlutFunctions functions = {
         []() {
             m_view->refresh();
-            // TODO: MACK - hack for now
-            QCoreApplication::processEvents();
         },
         [](int width, int height) {
             m_view->updateWindowSize(width, height);
@@ -96,37 +94,24 @@ void Driver::drive(int argc, char* argv[]) {
     // but only after we've initialized the tile graphic text
     m_view->getMazeGraphic()->draw();
 
+    // TODO: MACK - this could be on the same thread as the graphics loop
     // Start the physics loop
     std::thread physicsThread([]() {
         m_model->getWorld()->simulate();
     });
 
-    // TODO: MACK - we shouldn't need this at all, since controller starts as a separate process
-    // // Start the solving loop
-    // std::thread solvingThread([]() {
+    // Start the graphics loop on a separate thread, allows the graphics to
+    // refresh while mouse commands (e.g., moveForward()) can be handled
+    // synchronously in the main thread.
+    std::thread graphicsThread([]() {
+        glutMainLoop();
+    });
 
-    //     // If the maze is invalid, don't let the algo do anything
-    //     if (!m_model->getMaze()->isValidMaze()) {
-    //         return;
-    //     }
-
-    //     // Wait for the window to appear
-    //     SimUtilities::sleep(Seconds(P()->glutInitDuration()));
-
-    //     // TODO: MACK
-    //     // Begin execution of the mouse algorithm
-    //     /*
-    //     m_controller->getMouseAlgorithm()->solve(
-    //         m_model->getMaze()->getWidth(),
-    //         m_model->getMaze()->getHeight(),
-    //         m_model->getMaze()->isOfficialMaze(),
-    //         DIRECTION_TO_CHAR.at(m_model->getMouse()->getCurrentDiscretizedRotation()),
-    //         m_controller->getMouseInterface());
-    //     */
-    // });
-
-    // Start the graphics loop
-    glutMainLoop();
+    // We need to process mouse algo events on the main thread.
+    while (true) {
+        SimUtilities::sleep(Seconds(0.1));
+        QCoreApplication::processEvents();
+    }
 }
 
 } // namespace mms

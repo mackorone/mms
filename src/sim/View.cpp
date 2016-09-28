@@ -117,11 +117,12 @@ void View::refresh() {
     // Notify the user of a late frame
     // TODO: MACK - make variables for these long expressions
     if (P()->printLateFrames() && duration > 1.0/P()->frameRate()) {
-        qWarning().noquote().nospace()
-            << "A frame was late by " << duration - 1.0/P()->frameRate()
-            << " seconds, which is "
-            << (duration - 1.0/P()->frameRate())/(1.0/P()->frameRate()) * 100
-            << " percent late.";
+        // TODO: MACK
+        // qWarning().noquote().nospace()
+        //     << "A frame was late by " << duration - 1.0/P()->frameRate()
+        //     << " seconds, which is "
+        //     << (duration - 1.0/P()->frameRate())/(1.0/P()->frameRate()) * 100
+        //     << " percent late.";
     }
 
     // Sleep the appropriate amount of time, base on the drawing duration

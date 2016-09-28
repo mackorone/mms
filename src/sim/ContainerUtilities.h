@@ -18,7 +18,7 @@ public:
 
     // Returns pairs of items in a map
     template<class K, class V>
-    static QVector<QPair<K, V>> items(const QMap<K, V>& map) {
+    static QVector<QPair<K, V>> items(QMap<K, V> map) {
         QVector<QPair<K, V>> items;
         QMapIterator<K, V> iterator(map);
         while (iterator.hasNext()) {
@@ -30,7 +30,7 @@ public:
 
     // Returns the inverse of a map, fails if there are dupliate values
     template<class K, class V>
-    static QMap<V, K> inverse(const QMap<K, V>& map) {
+    static QMap<V, K> inverse(QMap<K, V> map) {
         QMap<V, K> inverted;
         QMapIterator<K, V> iterator(map);
         while (iterator.hasNext()) {

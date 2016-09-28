@@ -219,13 +219,17 @@ void Mouse::update(const Duration& elapsed) {
     MetersPerSecond sumDy(0);
     RadiansPerSecond sumDr(0);
 
-    // TODO: MACK - check the performance of this - can/should I use ContainerUtilities::items here?
+    // TODO: MACK - check the performance of this, also causing segfaults:
+    // - http://doc.qt.io/qt-5/implicit-sharing.html#implicitly-shared
+    // - http://doc.qt.io/qt-5/containers.html#implicit-sharing-iterator-problem
+    //
     QMapIterator<QString, Wheel> wheelIterator(m_wheels);
     while (wheelIterator.hasNext()) {
         auto pair = wheelIterator.next();
 
         // We can't do pair.second.updateRotation() since that breaks const
-        m_wheels[pair.key()].updateRotation(pair.value().getAngularVelocity() * elapsed);
+        // TODO: MACK
+        // m_wheels[pair.key()].updateRotation(pair.value().getAngularVelocity() * elapsed);
 
         // Get the effects on the rate of change of translation, both forward
         // and sideways, and rotation of the mouse due to this particular wheel
@@ -252,22 +256,25 @@ void Mouse::update(const Duration& elapsed) {
     m_currentRotation += Radians(aveDr * elapsed);
     m_currentTranslation += Cartesian(aveDx * elapsed, aveDy * elapsed);
 
-    // TODO: MACK - check the performance of this - can/should I use ContainerUtilities::items here?
-    QMapIterator<QString, Sensor> sensorIterator(m_sensors);
-    while (sensorIterator.hasNext()) {
-        auto pair = sensorIterator.next();
+    // TODO: MACK - check the performance of this, also causing segfaults:
+    // - http://doc.qt.io/qt-5/implicit-sharing.html#implicitly-shared
+    // - http://doc.qt.io/qt-5/containers.html#implicit-sharing-iterator-problem
+    //
+    // QMapIterator<QString, Sensor> sensorIterator(m_sensors);
+    // while (sensorIterator.hasNext()) {
+    //     auto pair = sensorIterator.next();
 
-        QPair<Cartesian, Radians> translationAndRotation =
-            getCurrentSensorPositionAndDirection(
-                pair.value(),
-                m_currentTranslation,
-                m_currentRotation);
-        // We can't do pair.value().updateReading() since that breaks const
-        m_sensors[pair.key()].updateReading(
-            translationAndRotation.first,
-            translationAndRotation.second,
-            *m_maze);
-    }
+    //     QPair<Cartesian, Radians> translationAndRotation =
+    //         getCurrentSensorPositionAndDirection(
+    //             pair.value(),
+    //             m_currentTranslation,
+    //             m_currentRotation);
+    //     // We can't do pair.value().updateReading() since that breaks const
+    //     m_sensors[pair.key()].updateReading(
+    //         translationAndRotation.first,
+    //         translationAndRotation.second,
+    //         *m_maze);
+    // }
 
     m_updateMutex.unlock();
 }

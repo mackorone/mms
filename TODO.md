@@ -2,6 +2,8 @@
 
 - Run mouse algorithms as separate process
     - http://doc.qt.io/qt-5/qprocess.html
+- Don't need (const X& x) because of implicit sharing
+    - http://doc.qt.io/qt-5/implicit-sharing.html#implicitly-shared
 - Make GUI
 - Set up tests/build framework
 - Use Qt XML support

@@ -13,7 +13,7 @@ class Polygon {
 public:
     Polygon();
     Polygon(const Polygon& polygon);
-    Polygon(const QVector<Cartesian>& vertices);
+    Polygon(QVector<Cartesian> vertices);
 
     QVector<Cartesian> getVertices() const;
     QVector<Triangle> getTriangles() const;
@@ -36,7 +36,7 @@ private:
     // require re-triangulation. We keep it private since it's pretty easy to
     // abuse the fact that the triangles argument should be the triangulation
     // of the polygon specified by the vertices argument.
-    Polygon(const QVector<Cartesian>& vertices, const QVector<Triangle>& triangles);
+    Polygon(QVector<Cartesian> vertices, QVector<Triangle> triangles);
 
     // Tells us whether or not the polygon has already performed triangulation.
     // This is used in the copy constructor, and allows us to be lazy without
@@ -44,7 +44,7 @@ private:
     bool alreadyPerformedTriangulation() const;
 
     // Actually peforms the triangulation of the polygon.
-    static QVector<Triangle> triangulate(const QVector<Cartesian>& vertices);
+    static QVector<Triangle> triangulate(QVector<Cartesian> vertices);
 };
 
 } // namespace mms

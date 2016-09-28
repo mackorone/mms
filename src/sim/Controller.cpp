@@ -21,6 +21,8 @@ Controller::Controller(Model* model, View* view) :
         m_mouseInterface(nullptr),
         m_staticOptionsFinalized(false) {
 
+    // TODO: MACK - move these defaults to their own file
+
     // Default values for static options
     m_staticOptions.mouseFile = "default.xml";
     m_staticOptions.interfaceType = "DISCRETE";
@@ -39,6 +41,12 @@ Controller::Controller(Model* model, View* view) :
     m_dynamicOptions.useTileEdgeMovements = false;
 
     // Start the mouse algorithm
+    // TODO: MACK
+    //     // If the maze is invalid, don't let the algo do anything
+    //     if (!m_model->getMaze()->isValidMaze()) {
+    //         return;
+    //     }
+
     startMouseAlgorithm(P()->mouseAlgorithm());
 
     // TODO: MACK - wait until static options have been finalized
