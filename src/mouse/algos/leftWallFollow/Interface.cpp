@@ -1,8 +1,8 @@
 #include "Interface.h"
 
-#include "Printer.h"
+#include <cstdlib>
 
-// TODO: MACK - wait for response
+#include "Printer.h"
 
 int Interface::mazeWidth() {
     PRINT("mazeWidth");
@@ -118,18 +118,42 @@ double Interface::readGyro() {
 
 bool Interface::wallFront() {
     PRINT("wallFront");
+    std::string x;
+    std::cin >> x;
+    if (x == "true") {
+        return true;
+    }
+    return false;
 }
 
 bool Interface::wallRight() {
     PRINT("wallRight");
+    std::string x;
+    std::cin >> x;
+    if (x == "true") {
+        return true;
+    }
+    return false;
 }
 
 bool Interface::wallLeft() {
     PRINT("wallLeft");
+    std::string x;
+    std::cin >> x;
+    if (x == "true") {
+        return true;
+    }
+    return false;
 }
 
 void Interface::moveForward() {
     PRINT("moveForward");
+    // TODO: MACK - standardize this
+    std::string x;
+    std::cin >> x;
+    if (x != "ACK") {
+        std::exit(1);
+    }
 }
 
 void Interface::moveForward(int count) {
@@ -138,10 +162,22 @@ void Interface::moveForward(int count) {
 
 void Interface::turnLeft() {
     PRINT("turnLeft");
+    // TODO: MACK - standardize this
+    std::string x;
+    std::cin >> x;
+    if (x != "ACK") {
+        std::exit(1);
+    }
 }
 
 void Interface::turnRight() {
     PRINT("turnRight");
+    // TODO: MACK - standardize this
+    std::string x;
+    std::cin >> x;
+    if (x != "ACK") {
+        std::exit(1);
+    }
 }
 
 void Interface::turnAroundLeft() {

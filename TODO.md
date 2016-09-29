@@ -4,6 +4,7 @@
     - http://doc.qt.io/qt-5/qprocess.html
 - Don't need (const X& x) because of implicit sharing
     - http://doc.qt.io/qt-5/implicit-sharing.html#implicitly-shared
+- Don't use stderr to communicate, use something else
 - Make GUI
 - Set up tests/build framework
 - Use Qt XML support

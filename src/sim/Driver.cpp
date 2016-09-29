@@ -109,7 +109,7 @@ void Driver::drive(int argc, char* argv[]) {
 
     // We need to process mouse algo events on the main thread.
     while (true) {
-        SimUtilities::sleep(Seconds(0.1));
+        SimUtilities::sleep(Seconds(0.001));
         QCoreApplication::processEvents();
     }
 }

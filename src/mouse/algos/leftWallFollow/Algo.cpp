@@ -3,8 +3,7 @@
 #include "unistd.h"
 
 void Algo::solve(Interface* interface) {
-    interface->moveForward();
-    while (false) {
+    while (true) {
         if (!interface->wallLeft()){
             interface->turnLeft();
         }

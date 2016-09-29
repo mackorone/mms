@@ -231,13 +231,16 @@ void Controller::readAndProcessCommands() {
 
     // If a line has definitely terminated, take action
     if (1 < inputLines.size()) {
-        processCommand(m_inputLines.join("") + inputLines.at(0));
+        QString line = m_inputLines.join("") + inputLines.at(0);
+        QString response = processCommand(line);
+        m_process->write(response.toStdString().c_str());
         m_inputLines.clear();
     }
 
     // For all complete lines in the input, take action
     for (int i = 1; i < inputLines.size() - 1; i += 1) {
-        processCommand(inputLines.at(i));
+        QString response = processCommand(inputLines.at(i));
+        m_process->write(response.toStdString().c_str());
     }
 
     // Store the beginning of the incomplete line
@@ -246,9 +249,35 @@ void Controller::readAndProcessCommands() {
 
 QString Controller::processCommand(const QString& command) {
     // TODO: MACK - big if-else here
-    qDebug() << command;
-    m_mouseInterface->moveForward();
-    return "";
+    //qDebug() << command;
+    if (command == "wallFront") {
+        QString response = m_mouseInterface->wallFront() ? "true\n" : "false\n";
+        //qDebug() << response;
+        return response;
+    }
+    if (command == "wallRight") {
+        QString response = m_mouseInterface->wallRight() ? "true\n" : "false\n";
+        //qDebug() << response;
+        return response;
+    }
+    if (command == "wallLeft") {
+        QString response = m_mouseInterface->wallLeft() ? "true\n" : "false\n";
+        //qDebug() << response;
+        return response;
+    }
+    if (command == "moveForward") {
+        m_mouseInterface->moveForward();
+        return QString("ACK\n");
+    }
+    if (command == "turnLeft") {
+        m_mouseInterface->turnLeft();
+        return QString("ACK\n");
+    }
+    if (command == "turnRight") {
+        m_mouseInterface->turnRight();
+        return QString("ACK\n");
+    }
+    return QString("ERROR\n");
 }
         
 void Controller::startMouseAlgorithm(const QString& mouseAlgorithm) {
@@ -279,6 +308,7 @@ void Controller::startMouseAlgorithm(const QString& mouseAlgorithm) {
 
         // Build
         QStringList buildArgs = absolutePaths.filter(".cpp");
+        buildArgs << "-g";
         buildArgs << "-o";
         buildArgs << binPath;
         QProcess buildProcess;
