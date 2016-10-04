@@ -4,6 +4,7 @@
 
 #include "Assert.h"
 #include "Color.h"
+#include "Direction.h"
 #include "LayoutType.h"
 #include "Logging.h"
 #include "MazeFileType.h"

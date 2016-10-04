@@ -1,13 +1,10 @@
 #pragma once
 
-#include <QPair>
-
 #include <algorithm>
+#include <QPair>
 #include <QString>
 #include <QVector>
 
-#include "Direction.h"
-#include "Maze.h"
 #include "units/Duration.h"
 
 namespace mms {
@@ -34,8 +31,8 @@ public:
     // Returns the UTC datetime formatted as YY-MM-DD_HH:MM:SS
     static QString timestampToDatetimeString(const Duration& timestamp);
 
-    // Converts seconds to mm:ss.ssss... string
-    static QString formatSeconds(double seconds);
+    // Converts a duration to a mm:ss.zzz string
+    static QString formatDuration(const Duration& duration);
 
     // Convert between types
     static bool isBool(const QString& str);
@@ -45,21 +42,11 @@ public:
     static int strToInt(const QString& str);
     static double strToDouble(const QString& str);
 
-    // Tokenizes a string on whitespace
-    static QVector<QString> tokenize(
-        const QString& str,
-        char delimiter = ' ',
-        bool ignoreEmpties = false,
-        bool respectQuotes = false);
+    // Returns all files contained anywhere within a directory
+    static QPair<QStringList, QStringList> getFiles(const QString& dirPath);
 
-    // Returns the string str with the leading and trailing spaces removed
-    static QString trim(const QString& str);
-
-    // True if path is a path to a file, false otherwise
-    static bool isFile(const QString& path);
-
-    // Returns a vector of strings of paths of the given directory's contents
-    static QVector<QString> getDirectoryContents(const QString& path);
+    // Returns all dirs contained directly within a directory
+    static QStringList getTopLevelDirs(const QString& dirPath);
 
     // Remove oldest runs from the run/ directory if necessary
     static void removeExcessArchivedRuns();

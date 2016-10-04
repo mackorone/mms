@@ -21,32 +21,7 @@ Controller::Controller(Model* model, View* view) :
         m_mouseInterface(nullptr),
         m_staticOptionsFinalized(false) {
 
-    // TODO: MACK - move these defaults to their own file
-
-    // Default values for static options
-    m_staticOptions.mouseFile = "default.xml";
-    m_staticOptions.interfaceType = "DISCRETE";
-    m_staticOptions.initialDirection = "NORTH";
-    m_staticOptions.tileTextNumberOfRows = 2;
-    m_staticOptions.tileTextNumberOfCols = 3;
-    m_staticOptions.wheelSpeedFraction = 1.0;
-
-    // Default values for dynamic options
-    m_dynamicOptions.allowOmniscience = false;
-    m_dynamicOptions.automaticallyClearFog = true;
-    m_dynamicOptions.declareBothWallHalves = true;
-    m_dynamicOptions.declareWallOnRead = false;
-    m_dynamicOptions.setTileBaseColorWhenDistanceDeclaredCorrectly = false;
-    m_dynamicOptions.setTileTextWhenDistanceDeclared = true;
-    m_dynamicOptions.useTileEdgeMovements = false;
-
     // Start the mouse algorithm
-    // TODO: MACK
-    //     // If the maze is invalid, don't let the algo do anything
-    //     if (!m_model->getMaze()->isValidMaze()) {
-    //         return;
-    //     }
-
     startMouseAlgorithm(P()->mouseAlgorithm());
 
     // TODO: MACK - wait until static options have been finalized
@@ -221,7 +196,10 @@ Direction Controller::getInitialDirection(const QString& initialDirection, Model
     return STRING_TO_DIRECTION.value(initialDirection);
 }
 
-void Controller::readAndProcessCommands() {
+void Controller::processMouseAlgoStderr() {
+
+    // TODO: MACK - I think this is perf sensitive. If not, I should refactor
+    // this so that there's only one place where we call processCommand
 
     // Read all of the new text
     QString input = m_process->readAllStandardError();
@@ -248,7 +226,7 @@ void Controller::readAndProcessCommands() {
 }
 
 QString Controller::processCommand(const QString& command) {
-    // TODO: MACK - big if-else here
+    // TODO: MACK - split the command into tokens, parse each one
     //qDebug() << command;
     if (command == "wallFront") {
         QString response = m_mouseInterface->wallFront() ? "true\n" : "false\n";
@@ -284,7 +262,8 @@ void Controller::startMouseAlgorithm(const QString& mouseAlgorithm) {
 
     // Check to see if there is some directory with the given name
     QString selectedMouseAlgo(mouseAlgorithm);
-    if (!Controller::getMouseAlgos().contains(selectedMouseAlgo)) {
+    QString mouseAlgoDir(Directory::get()->getSrcMouseAlgosDirectory());
+    if (!SimUtilities::getTopLevelDirs(mouseAlgoDir).contains(selectedMouseAlgo)) {
          qCritical().noquote().nospace()
             << "\"" << mouseAlgorithm << "\" is not a valid mouse"
             << " algorithm.";
@@ -297,7 +276,7 @@ void Controller::startMouseAlgorithm(const QString& mouseAlgorithm) {
 
     // Get the files for the algorithm
     QPair<QStringList, QStringList> files =
-        Controller::getFiles(selectedMouseAlgoPath);
+        SimUtilities::getFiles(selectedMouseAlgoPath);
     QStringList relativePaths = files.first;
     QStringList absolutePaths = files.second;
 
@@ -327,7 +306,7 @@ void Controller::startMouseAlgorithm(const QString& mouseAlgorithm) {
             m_process,
             SIGNAL(readyReadStandardError()),
             this,
-            SLOT(readAndProcessCommands())
+            SLOT(processMouseAlgoStderr())
         );
         m_process->start(binPath);
 
@@ -353,30 +332,4 @@ void Controller::startMouseAlgorithm(const QString& mouseAlgorithm) {
     SimUtilities::quit();
 }
         
-
-// TODO: MACK - move this to utils, reuse for mouse and maze algos
-QStringList Controller::getMouseAlgos() {
-    QDir mouseAlgosDir(Directory::get()->getSrcMouseAlgosDirectory());
-    mouseAlgosDir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
-    mouseAlgosDir.setSorting(QDir::Name | QDir::QDir::IgnoreCase);
-    QStringList algos = mouseAlgosDir.entryList();
-    return algos;
-}
-
-// TODO: MACK - move this to utils
-QPair<QStringList, QStringList> Controller::getFiles(const QString& dirPath) {
-    // Get all files in the directory
-    QDir dir(dirPath);
-    dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
-    QDirIterator iterator(dir, QDirIterator::Subdirectories);
-    QStringList relativePaths;
-    QStringList absolutePaths;
-    while (iterator.hasNext()) {
-        iterator.next();
-        relativePaths << iterator.fileName();
-        absolutePaths << iterator.filePath();
-    }
-    return {relativePaths, absolutePaths};
-}
-
 } // namespace mms

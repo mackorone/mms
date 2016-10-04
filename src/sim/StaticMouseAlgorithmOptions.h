@@ -3,12 +3,13 @@
 namespace mms {
 
 struct StaticMouseAlgorithmOptions {
-    QString mouseFile;
-    QString interfaceType;
-    QString initialDirection;
-    int tileTextNumberOfRows;
-    int tileTextNumberOfCols;
-    double wheelSpeedFraction;
+    // Fields and default values
+    QString mouseFile = "default.xml";
+    QString interfaceType = "DISCRETE";
+    QString initialDirection = "NORTH";
+    int tileTextNumberOfRows = 2;
+    int tileTextNumberOfCols = 3;
+    double wheelSpeedFraction = 1.0;
 };
 
 } // namespace mms

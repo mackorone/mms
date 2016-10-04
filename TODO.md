@@ -2,10 +2,15 @@
 
 - Run mouse algorithms as separate process
     - http://doc.qt.io/qt-5/qprocess.html
+    - Clean this up a little bit
+    - Don't use stderr to communicate, use something else
+    - Make continuous algos possible
 - Don't need (const X& x) because of implicit sharing
     - http://doc.qt.io/qt-5/implicit-sharing.html#implicitly-shared
-- Don't use stderr to communicate, use something else
+- Rename SIM_ASSERT to just ASSERT
 - Make GUI
+- Include images/fonts with the binary: http://doc.qt.io/qt-5/resources.html
+- If the maze is invalid, don't let the algo do anything
 - Set up tests/build framework
 - Use Qt XML support
     - Get rid of other lib/ dependencies

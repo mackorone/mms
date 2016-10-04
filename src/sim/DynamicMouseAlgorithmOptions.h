@@ -3,13 +3,14 @@
 namespace mms {
 
 struct DynamicMouseAlgorithmOptions {
-    bool allowOmniscience;
-    bool automaticallyClearFog;
-    bool declareBothWallHalves;
-    bool declareWallOnRead;
-    bool setTileBaseColorWhenDistanceDeclaredCorrectly;
-    bool setTileTextWhenDistanceDeclared;
-    bool useTileEdgeMovements;
+    // Fields and default values
+    bool allowOmniscience = false;
+    bool automaticallyClearFog = true;
+    bool declareBothWallHalves = true;
+    bool declareWallOnRead = false;
+    bool setTileBaseColorWhenDistanceDeclaredCorrectly = false;
+    bool setTileTextWhenDistanceDeclared = true;
+    bool useTileEdgeMovements = false;
 };
 
 } // namespace mms

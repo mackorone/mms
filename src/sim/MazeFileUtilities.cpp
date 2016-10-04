@@ -16,6 +16,7 @@ namespace mms {
 
 BasicMaze MazeFileUtilities::load(const QString& path) {
     QFile file(path);
+    // TODO: MACK - replace with QFile::exists
     if (!file.open(QIODevice::ReadOnly)) {
         throw std::runtime_error("file doesn't exist");
     }
@@ -344,7 +345,7 @@ BasicMaze MazeFileUtilities::deserializeNumType(const QByteArray& bytes) {
     for (QString line : lines) {
 
         // Put the tokens in a vector
-        QVector<QString> tokens = SimUtilities::tokenize(line, ' ', true, false);
+        QVector<QString> tokens = line.split(" ", QString::SkipEmptyParts);
 
         // Fill the BasicTile object with the values
         BasicTile tile;

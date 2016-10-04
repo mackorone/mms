@@ -1,8 +1,6 @@
 #include "MazeAlgoUtilities.h"
 
 #include <QDebug>
-#include <QDir>
-#include <QDirIterator>
 #include <QProcess>
 
 #include "Directory.h"
@@ -11,7 +9,7 @@
 
 namespace mms {
 
-// TODO: MACK - dedup these with mouse algorithms
+// TODO: MACK - dedup with mouse algorithm as much as possible
 BasicMaze MazeAlgoUtilities::generate(
         const QString& mazeAlgorithm,
         int width,
@@ -19,7 +17,8 @@ BasicMaze MazeAlgoUtilities::generate(
 
     // Check to see if there is some directory with the given name
     QString selectedMazeAlgo(mazeAlgorithm);
-    if (!MazeAlgoUtilities::getMazeAlgos().contains(selectedMazeAlgo)) {
+    QString mazeAlgosDir(Directory::get()->getSrcMazeAlgosDirectory());
+    if (!SimUtilities::getTopLevelDirs(mazeAlgosDir).contains(selectedMazeAlgo)) {
          qCritical().noquote().nospace()
             << "\"" << mazeAlgorithm << "\" is not a valid maze"
             << " algorithm.";
@@ -32,7 +31,7 @@ BasicMaze MazeAlgoUtilities::generate(
 
     // Get the files for the algorithm
     QPair<QStringList, QStringList> files =
-        MazeAlgoUtilities::getFiles(selectedMazeAlgoPath);
+        SimUtilities::getFiles(selectedMazeAlgoPath);
     QStringList relativePaths = files.first;
     QStringList absolutePaths = files.second;
     
@@ -97,31 +96,6 @@ BasicMaze MazeAlgoUtilities::generate(
         << "No \"Main\" file found in \""
         << selectedMazeAlgoPath << "\"";
     SimUtilities::quit();
-}
-
-// TODO: MACK - move this to utils, reuse for mouse and maze algos
-QStringList MazeAlgoUtilities::getMazeAlgos() {
-    QDir mazeAlgosDir(Directory::get()->getSrcMazeAlgosDirectory());
-    mazeAlgosDir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
-    mazeAlgosDir.setSorting(QDir::Name | QDir::QDir::IgnoreCase);
-    QStringList algos = mazeAlgosDir.entryList();
-    return algos;
-}
-
-// TODO: MACK - move this to utils
-QPair<QStringList, QStringList> MazeAlgoUtilities::getFiles(const QString& dirPath) {
-    // Get all files in the directory
-    QDir dir(dirPath);
-    dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
-    QDirIterator iterator(dir, QDirIterator::Subdirectories);
-    QStringList relativePaths;
-    QStringList absolutePaths;
-    while (iterator.hasNext()) {
-        iterator.next();
-        relativePaths << iterator.fileName();
-        absolutePaths << iterator.filePath();
-    }
-    return {relativePaths, absolutePaths};
 }
 
 } //namespace mms

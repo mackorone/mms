@@ -1,33 +1,20 @@
 #include "SimUtilities.h"
 
 #include <QCoreApplication>
-
-#include <chrono>
-#include <cstdlib>
-#include <ctime>
-#include <ratio>
-#include <fstream>
-#include <glut/glut.h>
-#include <iostream>
-#include <iterator>
-#include <sstream>
+#include <QDateTime>
+#include <QDir>
+#include <QDirIterator>
 #include <QString>
-#include <sys/stat.h>
-#include <thread>
-#include <random>
+#include <QThread>
+#include <QTime>
+#include <QtAlgorithms>
 
-#ifdef _WIN32
-    #include "Windows.h"
-#else
-    #include <dirent.h>
-#endif
+#include <random>
 
 #include "Assert.h"
 #include "Directory.h"
 #include "Logging.h"
 #include "Param.h"
-#include "State.h"
-#include "units/Seconds.h"
 
 namespace mms {
 
@@ -49,177 +36,91 @@ double SimUtilities::getRandom() {
 }
 
 void SimUtilities::sleep(const Duration& duration) {
-    int microseconds = static_cast<int>(std::floor(duration.getMicroseconds()));
-    SIM_ASSERT_LE(0, microseconds);
-	std::this_thread::sleep_for(std::chrono::microseconds(microseconds));
+    SIM_ASSERT_LE(0, duration.getMicroseconds());
+    QThread::usleep(duration.getMicroseconds());
 }
 
 double SimUtilities::getHighResTimestamp() {
-#ifdef _WIN32
-    LARGE_INTEGER freq, counter;         // Keep windows queryperformance for the time being until tests can
-    QueryPerformanceFrequency(&freq);    // be done. Supposedly up until Visual Studio 2013, microsoft uses
-    QueryPerformanceCounter(&counter);   // the normal system clock for chrono high_resolution_clock which only
-    return double(counter.QuadPart) / double(freq.QuadPart); // has 1 ms accuracy.
-#else
-    // chrono::high_resoltion_clock as defined by c++ 11 should use the highest resolution time source available
-    // on the system.  See below for windows note.
-    std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-    // By default a cast to duration is a cast to seconds since the default ratio is 1
-    return std::chrono::duration_cast<std::chrono::duration<double>>(t1.time_since_epoch()).count();
-#endif
+    return QDateTime::currentDateTime().toMSecsSinceEpoch() / 1000.0;
 }
 
 QString SimUtilities::timestampToDatetimeString(const Duration& timestamp) {
-    time_t now = timestamp.getSeconds();
-    struct tm tstruct = {0};
-    tstruct = *gmtime(&now);
-    char buf[80];
-    strftime(buf, sizeof(buf), "%Y-%m-%d %X", &tstruct);
-    return buf;
+    QDateTime timestampObject;
+    timestampObject.setTime_t(timestamp.getSeconds());
+    return timestampObject.toString("yyyy-MM-dd hh:mm:ss");
 }
 
-QString SimUtilities::formatSeconds(double seconds) {
-    // TODO: MACK
-    if (seconds == 0.0) {
-        return QString("00:00.000");
-    }
-    int minutes = 0;
-    while (seconds >= 60) {
-        minutes += 1;
-        seconds -= 60;
-    }
-    QString secondsString = QString::number(seconds);
-    if (secondsString.indexOf(".") < 2) {
-        secondsString.insert(0, "0");
-    }
-    QString minutesString = QString::number(minutes);
-    if (minutesString.size() < 2) {
-        minutesString.insert(0, "0");
-    }
-    // We limit this to millisecond resolution
-    return minutesString + ":" + secondsString.left(6);
+QString SimUtilities::formatDuration(const Duration& duration) {
+    return QTime(0, 0, 0)
+        .addMSecs(duration.getMilliseconds())
+        .toString("mm:ss.zzz");
 }
 
 bool SimUtilities::isBool(const QString& str) {
-    return 0 == str.compare("true") || 0 == str.compare("false");
+    return str == "true" || str == "false";
 }
 
 bool SimUtilities::isInt(const QString& str) {
-    try {
-        std::stoi(str.toStdString());
-    }
-    catch (...) {
-        return false;
-    }
-    return true;
+    bool ok;
+    str.toInt(&ok);
+    return ok;
 }
 
 bool SimUtilities::isDouble(const QString& str) {
-    try {
-        std::stod(str.toStdString());
-    }
-    catch (...) {
-        return false;
-    }
-    return true;
+    bool ok;
+    str.toDouble(&ok);
+    return ok;
 }
 
 bool SimUtilities::strToBool(const QString& str) {
     SIM_ASSERT_TR(isBool(str));
-    return 0 == str.compare("true");
+    return str == "true";
 }
 
 int SimUtilities::strToInt(const QString& str) {
     SIM_ASSERT_TR(isInt(str));
-    return std::stoi(str.toStdString());
+    return str.toInt();
 }
 
 double SimUtilities::strToDouble(const QString& str) {
     SIM_ASSERT_TR(isDouble(str));
-    return std::stod(str.toStdString());
+    return str.toDouble();
 }
 
-QVector<QString> SimUtilities::tokenize(
-        const QString& str,
-        char delimiter,
-        bool ignoreEmpties,
-        bool respectQuotes) {
-
-    // TODO: upforgrabs
-    // Replace this with some QT function
-
-    QVector<QString> tokens;
-    QString word = "";
-
-    for (int i = 0; i < str.size(); i += 1) {
-        if (respectQuotes && str.at(i) == '\"') {
-            do {
-                word += str.at(i);
-                i += 1;
-            } while (i < str.size() && str.at(i) != '\"');
-        }
-        if (str.at(i) == delimiter) {
-            if (!word.isEmpty() || (0 < i && !ignoreEmpties)) {
-                tokens.push_back(word);
-                word = "";
-            }
-        }
-        else {
-            word += str.at(i);
-        }
+QPair<QStringList, QStringList> SimUtilities::getFiles(const QString& dirPath) {
+    QDir dir(dirPath);
+    dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
+    QDirIterator iterator(dir, QDirIterator::Subdirectories);
+    QStringList relativePaths;
+    QStringList absolutePaths;
+    while (iterator.hasNext()) {
+        iterator.next();
+        relativePaths << iterator.fileName();
+        absolutePaths << iterator.filePath();
     }
-    if (!word.isEmpty()) {
-        tokens.push_back(word);
-        word = "";
-    }
-
-    return tokens;
+    return {relativePaths, absolutePaths};
 }
 
-QString SimUtilities::trim(const QString& str) {
-    return str.trimmed();
-}
-
-bool SimUtilities::isFile(const QString& path) {
-    std::ifstream infile(path.toStdString());
-    return infile.good();
-}
-
-QVector<QString> SimUtilities::getDirectoryContents(const QString& path) {
-
-    QVector<QString> contents;
-
-#ifdef _WIN32
-    // TODO: upforgrabs
-    // Implement a windows version of getDirectoryContents
-#else
-    // Taken from http://stackoverflow.com/a/612176/3176152
-    DIR *dir = opendir(path.toStdString().c_str());
-    if (dir != NULL) {
-        struct dirent *ent;
-        while ((ent = readdir(dir)) != NULL) {
-            contents.push_back(path + QString(ent->d_name));
-        }
-        closedir(dir);
-    }
-#endif
-
-    return contents;
+QStringList SimUtilities::getTopLevelDirs(const QString& dirPath) {
+    QDir dir(dirPath);
+    dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
+    dir.setSorting(QDir::Name | QDir::QDir::IgnoreCase);
+    QStringList topLevelDirs = dir.entryList();
+    return topLevelDirs;
 }
 
 void SimUtilities::removeExcessArchivedRuns() {
     // Information about each run is stored in the run/ directory. As it turns
     // out, this information can pile up pretty quickly. We should remove the
     // oldest stuff so that the run/ directory doesn't get too full.
-    QVector<QString> contents = getDirectoryContents(Directory::get()->getRunDirectory());
-    std::sort(contents.begin(), contents.end());
-    for (int i = 2; i < static_cast<int>(contents.size()) - P()->numberOfArchivedRuns(); i += 1) {
-#ifdef _WIN32
-        // TODO: upforgrabs
-        // Implement a windows version of directory removal
-#else
-        system((QString("rm -rf \"") + contents.at(i) + QString("\"")).toStdString().c_str());
-#endif
+    QStringList runDirectories = getTopLevelDirs(Directory::get()->getRunDirectory());
+    qSort(runDirectories);
+    for (int i = 0; i < static_cast<int>(runDirectories.size()) - P()->numberOfArchivedRuns(); i += 1) {
+        QDir dir(Directory::get()->getRunDirectory() + runDirectories.at(i));
+        bool success = dir.removeRecursively();
+        if (!success) {
+            qWarning() << "Unable to delete old run directory:" << dir.path();
+        }
     }
 }
 

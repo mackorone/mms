@@ -36,7 +36,6 @@ void Driver::drive(int argc, char* argv[]) {
     // Initialize the Directory object
     Directory::init(app.applicationFilePath());
 
-    // TODO: MACK - Replace this with Qt functionality
     // Then, determine the runId (just datetime for now)
     QString runId = SimUtilities::timestampToDatetimeString(
         Time::get()->startTimestamp()

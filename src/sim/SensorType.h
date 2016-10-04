@@ -8,7 +8,7 @@ namespace mms {
 
 enum class SensorType {
     ANALOG,
-    DIGITAL // TODO: MACK - comma here
+    DIGITAL,
 };
 
 static const QMap<SensorType, QString> SENSOR_TYPE_TO_STRING {

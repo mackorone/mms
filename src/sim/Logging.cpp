@@ -47,16 +47,9 @@ void Logging::handler(
         {QtFatalMsg,    "FATAL"   },
     };
 
-    static const QString formatString = "mm:ss.zzz";
-
-    int realMs = static_cast<int>(
-        Time::get()->elapsedRealTime().getMilliseconds());
-    int simMs = static_cast<int>(
-        Time::get()->elapsedSimTime().getMilliseconds());
-
     QString formatted = QString("[ %1 | %2 | %3 ] - %4").arg(
-        QTime(0, 0, 0).addMSecs(realMs).toString(formatString),
-        QTime(0, 0, 0).addMSecs(simMs).toString(formatString),
+        SimUtilities::formatDuration(Time::get()->elapsedRealTime()),
+        SimUtilities::formatDuration(Time::get()->elapsedSimTime()),
         mapping.value(type),
         msg
     );

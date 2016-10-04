@@ -3,6 +3,7 @@
 #include <tdogl/Bitmap.h>
 #include <tdogl/Shader.h>
 #include <QDebug>
+#include <QFile>
 #include <QPair>
 
 #include "BufferInterface.h"
@@ -48,8 +49,7 @@ MouseGraphic* View::getMouseGraphic() {
 
 void View::setController(Controller* controller) {
     m_controller = controller;
-    // TODO: MACK
-    //m_header->setMouseAlgorithmAndOptions(mouseAlgorithm, options);
+    m_header->setController(controller);
 }
 
 void View::refresh() {
@@ -102,8 +102,7 @@ void View::refresh() {
     glDisable(GL_SCISSOR_TEST);
 
     // Draw the window header
-    // TODO: MACK
-    // m_header->draw();
+    m_header->draw();
 
     // Display the result
     glutSwapBuffers();
@@ -377,7 +376,7 @@ void View::initTextureProgram() {
 
     // Load the bitmap texture into the texture atlas
     QString tileTextFontImagePath = Directory::get()->getResImgsDirectory() + P()->tileTextFontImage();
-    if (!SimUtilities::isFile(tileTextFontImagePath)) {
+    if (!QFile::exists(tileTextFontImagePath)) {
         qCritical().noquote().nospace()
             << "Could not find font image file \"" << P()->tileTextFontImage()
             << "\" in \"" << Directory::get()->getResImgsDirectory() << "\".";

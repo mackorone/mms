@@ -76,14 +76,11 @@ private:
 
 private slots:
 
-    void readAndProcessCommands();
+    void processMouseAlgoStderr();
 
 // TODO: MACK - refactor these somewhere else
 private:
-
     void startMouseAlgorithm(const QString& mouseAlgorithm);
-    static QStringList getMouseAlgos();
-    static QPair<QStringList, QStringList> getFiles(const QString& dirPath);
 
 };
 

@@ -1,8 +1,9 @@
 #include "Header.h"
 
 #include <QDebug>
+#include <QFile>
 
-// #include "../mouse/IMouseAlgorithm.h"
+#include "Controller.h"
 #include "Directory.h"
 #include "Layout.h"
 #include "Logging.h"
@@ -15,7 +16,7 @@ namespace mms {
 
 Header::Header(Model* model) :
         m_model(model),
-        // m_mouseAlgorithm(nullptr), // TODO: MACK
+        m_controller(nullptr),
         m_windowWidth(0),
         m_windowHeight(0),
         m_textHeight(P()->headerTextHeight()),
@@ -24,7 +25,7 @@ Header::Header(Model* model) :
 
     // Check to make sure that the font file exists
     QString fontPath = Directory::get()->getResFontsDirectory() + P()->headerTextFont();
-    if (!SimUtilities::isFile(fontPath)) {
+    if (!QFile::exists(fontPath)) {
         // If the font doesn't exist, we simply draw no text whatsoever
         qWarning().noquote().nospace()
             << "\"" << fontPath << "\" is not a valid font file; it's very"
@@ -44,13 +45,10 @@ int Header::getHeight() const {
     return P()->windowBorderWidth() + numRows * m_textHeight + (numRows - 1) * m_rowSpacing;
 }
 
-// void Header::setMouseAlgorithmAndOptions(
-//         IMouseAlgorithm* mouseAlgorithm,
-//         StaticMouseAlgorithmOptions options) {
-//     m_mouseAlgorithm = mouseAlgorithm;
-//     m_options = options;
-// }
-// 
+void Header::setController(Controller* controller) {
+    m_controller = controller;
+}
+
 void Header::updateWindowSize(int width, int height) {
     m_windowWidth = width;
     m_windowHeight = height;
@@ -117,39 +115,38 @@ void Header::updateLines() {
         // Mouse Info
         QString("Mouse Algo:                  ") + P()->mouseAlgorithm(),
 
-        // TODO: MACK
-        // QString("Mouse File:                  ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-        //     m_options.mouseFile),
-        // QString("Interface Type:              ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-        //     m_options.interfaceType),
-        // QString("Initial Direction:           ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-        //     m_options.initialDirection),
-        // QString("Tile Text Num Rows:          ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-        //     QString::number(m_options.tileTextNumberOfRows)),
-        // QString("Tile Text Num Cols:          ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-        //     QString::number(m_options.tileTextNumberOfCols)),
-        // QString("Allow Omniscience:           ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-        //     (m_mouseAlgorithm->allowOmniscience() ? "TRUE" : "FALSE")),
-        // QString("Auto Clear Fog:              ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-        //     (m_mouseAlgorithm->automaticallyClearFog() ? "TRUE" : "FALSE")),
-        // QString("Declare Both Wall Halves:    ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-        //     (m_mouseAlgorithm->declareBothWallHalves() ? "TRUE" : "FALSE")),
-        // QString("Auto Set Tile Text:          ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-        //     (m_mouseAlgorithm->setTileTextWhenDistanceDeclared() ? "TRUE" : "FALSE")),
-        // QString("Auto Set Tile Base Color:    ") + (m_mouseAlgorithm == nullptr ? "NONE" :
-        //     (m_mouseAlgorithm->setTileBaseColorWhenDistanceDeclaredCorrectly() ? "TRUE" : "FALSE")),
-        // QString("Wheel Speed Fraction:        ") +
-        //     (!STRING_TO_INTERFACE_TYPE.contains(m_options.interfaceType) ? "NONE" :
-        //     (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) != InterfaceType::DISCRETE ? "N/A" :
-        //     QString::number(m_options.wheelSpeedFraction))),
-        // QString("Declare Wall On Read:        ") +
-        //     (m_mouseAlgorithm == nullptr ? "NONE" :
-        //     (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) != InterfaceType::DISCRETE ? "N/A" :
-        //     (m_mouseAlgorithm->declareWallOnRead() ? "TRUE" : "FALSE"))),
-        // QString("Use Tile Edge Movements:     ") +
-        //     (m_mouseAlgorithm == nullptr ? "NONE" :
-        //     (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) != InterfaceType::DISCRETE ? "N/A" :
-        //     (m_mouseAlgorithm->useTileEdgeMovements() ? "TRUE" : "FALSE"))),
+        QString("Mouse File:                  ") + (m_controller == nullptr ? "NONE" :
+            m_controller->getStaticOptions().mouseFile),
+        QString("Interface Type:              ") + (m_controller == nullptr ? "NONE" :
+            m_controller->getStaticOptions().interfaceType),
+        QString("Initial Direction:           ") + (m_controller == nullptr ? "NONE" :
+            m_controller->getStaticOptions().initialDirection),
+        QString("Tile Text Num Rows:          ") + (m_controller == nullptr ? "NONE" :
+            QString::number(m_controller->getStaticOptions().tileTextNumberOfRows)),
+        QString("Tile Text Num Cols:          ") + (m_controller == nullptr ? "NONE" :
+            QString::number(m_controller->getStaticOptions().tileTextNumberOfCols)),
+        QString("Allow Omniscience:           ") + (m_controller == nullptr ? "NONE" :
+            (m_controller->getDynamicOptions().allowOmniscience ? "TRUE" : "FALSE")),
+        QString("Auto Clear Fog:              ") + (m_controller == nullptr ? "NONE" :
+            (m_controller->getDynamicOptions().automaticallyClearFog ? "TRUE" : "FALSE")),
+        QString("Declare Both Wall Halves:    ") + (m_controller == nullptr ? "NONE" :
+            (m_controller->getDynamicOptions().declareBothWallHalves ? "TRUE" : "FALSE")),
+        QString("Auto Set Tile Text:          ") + (m_controller == nullptr ? "NONE" :
+            (m_controller->getDynamicOptions().setTileTextWhenDistanceDeclared ? "TRUE" : "FALSE")),
+        QString("Auto Set Tile Base Color:    ") + (m_controller == nullptr ? "NONE" :
+            (m_controller->getDynamicOptions().setTileBaseColorWhenDistanceDeclaredCorrectly ? "TRUE" : "FALSE")),
+        QString("Wheel Speed Fraction:        ") +
+            (m_controller == nullptr ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            QString::number(m_controller->getStaticOptions().wheelSpeedFraction))),
+        QString("Declare Wall On Read:        ") +
+            (m_controller == nullptr ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            (m_controller->getDynamicOptions().declareWallOnRead ? "TRUE" : "FALSE"))),
+        QString("Use Tile Edge Movements:     ") +
+            (m_controller == nullptr ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            (m_controller->getDynamicOptions().useTileEdgeMovements ? "TRUE" : "FALSE"))),
 
         // Mouse progress
         QString("Tiles Traversed:             ") +
@@ -163,15 +160,15 @@ void Header::updateLines() {
         QString("Current Y tile:              ") + QString::number(m_model->getMouse()->getCurrentDiscretizedTranslation().second),
         QString("Current Direction:           ") + 
             DIRECTION_TO_STRING.value(m_model->getMouse()->getCurrentDiscretizedRotation()),
-        QString("Elapsed Real Time:           ") + SimUtilities::formatSeconds(Time::get()->elapsedRealTime().getSeconds()),
-        QString("Elapsed Sim Time:            ") + SimUtilities::formatSeconds(Time::get()->elapsedSimTime().getSeconds()),
+        QString("Elapsed Real Time:           ") + SimUtilities::formatDuration(Time::get()->elapsedRealTime()),
+        QString("Elapsed Sim Time:            ") + SimUtilities::formatDuration(Time::get()->elapsedSimTime()),
         QString("Time Since Origin Departure: ") + (
             m_model->getWorld()->getTimeSinceOriginDeparture().getSeconds() < 0 ? "NONE" :
-            SimUtilities::formatSeconds(m_model->getWorld()->getTimeSinceOriginDeparture().getSeconds())
+            SimUtilities::formatDuration(m_model->getWorld()->getTimeSinceOriginDeparture())
         ),
         QString("Best Time to Center:         ") + (
             m_model->getWorld()->getBestTimeToCenter().getSeconds() < 0 ? "NONE" :
-            SimUtilities::formatSeconds(m_model->getWorld()->getBestTimeToCenter().getSeconds())
+            SimUtilities::formatDuration(m_model->getWorld()->getBestTimeToCenter())
         ),
 
         // Sim state

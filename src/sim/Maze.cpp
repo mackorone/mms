@@ -62,7 +62,7 @@ Maze::Maze() {
     if (!P()->useMazeFile() && P()->saveGeneratedMaze()) {
         MazeFileType type = STRING_TO_MAZE_FILE_TYPE.value(P()->generatedMazeType());
         QString generatedMazeFilePath = Directory::get()->getResMazeDirectory() +
-            P()->generatedMazeFile() + MAZE_FILE_TYPE_TO_SUFFIX.value(type);
+            P()->generatedMazeFile() + "." + MAZE_FILE_TYPE_TO_SUFFIX.value(type);
         // TODO: MACK - fix maze saving
         bool success = false; // MazeFileUtilities::save(basicMaze, generatedMazeFilePath, type);
         if (success) {

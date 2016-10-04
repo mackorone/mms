@@ -17,10 +17,6 @@ public:
         int width,
         int height);
 
-private:
-    static QStringList getMazeAlgos();
-    static QPair<QStringList, QStringList> getFiles(const QString& dirPath);
-
 };
 
 } // namespace mms

@@ -5,27 +5,25 @@
 #include "TextDrawer.h"
 #include "World.h"
 
-// TODO: MACK - come back and clean this up
-// class IMouseAlgorithm;
-
 namespace mms {
+
+// We have to forward declare the class (as opposed to including it) so as to
+// avoid a circular dependency; Controller.h already includes this file
+class Controller;
 
 class Header {
 
 public:
     Header(Model* model);
     int getHeight() const;
-    // void setMouseAlgorithmAndOptions(
-    //     IMouseAlgorithm* mouseAlgorithm,
-    //     StaticMouseAlgorithmOptions options);
+    void setController(Controller* controller);
     void updateWindowSize(int width, int height);
     void updateLinesAndColumnStartingPositions();
     void draw();
 
 private:
     Model* m_model;
-    // IMouseAlgorithm* m_mouseAlgorithm; // Used to retrieve dynamic mouse algo options // TODO: MACK
-    StaticMouseAlgorithmOptions m_options; // The options whose values don't change
+    Controller* m_controller; // Used to retrieve mouse algo options
     int m_windowWidth; // The total height of the window, in pixels
     int m_windowHeight; // The total width of the window, in pixels
     int m_textHeight; // The height of the text, in pixels
