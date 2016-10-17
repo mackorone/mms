@@ -1,12 +1,8 @@
 #include <cstdlib>
 #include <iostream>
 
-// TODO: MACk
-#include <unistd.h>
-
 #include "Algo.h"
 #include "Interface.h"
-#include "Printer.h"
 
 int main(int argc, char* argv[]) {
 

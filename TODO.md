@@ -22,6 +22,7 @@
         - Maybe even collision detection too
 - QHash instead of QMap
     - QSet instead of QVector in some places
+- Monitor algo directories using FileSystemWatcher
 - Get rid of unnecesary QString wrapping, like QString(<some qstring>)
 - Get rid of all c_str() calls
 - Kill toLatin1() calls

@@ -6,6 +6,21 @@ class Interface {
 
 public:
 
+    // Algo parameters
+    void setMouseFile(const std::string& mouseFile);
+    void setInterfaceType(const std::string&);
+    void setInitialDirection(const std::string&  initialDirection);
+    void setTileTextNumberOfRows(int tileTextNumberOfRows);
+    void setTileTextNumberOfCols(int tileTextNumberOfCols);
+    void setWheelSpeedFraction(double wheelSpeedFraction);
+    void setAllowOmniscience(bool allowOmniscience);
+    void setAutomaticallyClearFog(bool automaticallyClearFog);
+    void setDeclareBothWallHalves(bool declareBothWallHalves);
+    void setSetTileTextWhenDistanceDeclared(bool setTileTextWhenDistanceDeclared);
+    void setSetTileBaseColorWhenDistanceDeclaredCorrectly(bool setTileBaseColorWhenDistanceDeclaredCorrectly);
+    void setDeclareWallOnRead(bool declareWallOnRead);
+    void setUseTileEdgeMovements(bool useTileEdgeMovements);
+
     // Starting information
     int mazeWidth();
     int mazeHeight();
