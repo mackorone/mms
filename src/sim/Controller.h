@@ -34,6 +34,9 @@ private:
     // The lines of input from the mouse algorithm
     QStringList m_inputLines;
 
+    // The model (used for relaying formation to the algo)
+    Model* m_model;
+
     // The interface by which we access the Mouse object
     MouseInterface* m_mouseInterface;
 

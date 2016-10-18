@@ -6,20 +6,26 @@ class Interface {
 
 public:
 
-    // Algo parameters
+    // Static options (must be set at the beginning)
     void setMouseFile(const std::string& mouseFile);
-    void setInterfaceType(const std::string&);
-    void setInitialDirection(const std::string&  initialDirection);
+    void setInterfaceType(const std::string& interfaceType);
+    void setInitialDirection(const std::string& initialDirection);
     void setTileTextNumberOfRows(int tileTextNumberOfRows);
     void setTileTextNumberOfCols(int tileTextNumberOfCols);
     void setWheelSpeedFraction(double wheelSpeedFraction);
-    void setAllowOmniscience(bool allowOmniscience);
-    void setAutomaticallyClearFog(bool automaticallyClearFog);
-    void setDeclareBothWallHalves(bool declareBothWallHalves);
-    void setSetTileTextWhenDistanceDeclared(bool setTileTextWhenDistanceDeclared);
-    void setSetTileBaseColorWhenDistanceDeclaredCorrectly(bool setTileBaseColorWhenDistanceDeclaredCorrectly);
-    void setDeclareWallOnRead(bool declareWallOnRead);
-    void setUseTileEdgeMovements(bool useTileEdgeMovements);
+
+    void finalizeStaticOptions();
+
+    // Dynamic options (can be updated any time)
+    void updateAllowOmniscience(bool allowOmniscience);
+    void updateAutomaticallyClearFog(bool automaticallyClearFog);
+    void updateDeclareBothWallHalves(bool declareBothWallHalves);
+    void updateSetTileTextWhenDistanceDeclared(
+        bool setTileTextWhenDistanceDeclared);
+    void updateSetTileBaseColorWhenDistanceDeclaredCorrectly(
+        bool setTileBaseColorWhenDistanceDeclaredCorrectly);
+    void updateDeclareWallOnRead(bool declareWallOnRead);
+    void updateUseTileEdgeMovements(bool useTileEdgeMovements);
 
     // Starting information
     int mazeWidth();

@@ -3,6 +3,80 @@
 #include "Printer.h"
 #include "Reader.h"
 
+void Interface::setMouseFile(const std::string& mouseFile) {
+    PRINT("setMouseFile", mouseFile);
+    READ();
+}
+
+void Interface::setInterfaceType(const std::string& interfaceType) {
+    PRINT("setInterfaceType", interfaceType);
+    READ();
+}
+
+void Interface::setInitialDirection(const std::string& initialDirection) {
+    PRINT("setInitialDirection", initialDirection);
+    READ();
+}
+
+void Interface::setTileTextNumberOfRows(int tileTextNumberOfRows) {
+    PRINT("setTileTextNumberOfRows", tileTextNumberOfRows);
+    READ();
+}
+
+void Interface::setTileTextNumberOfCols(int tileTextNumberOfCols) {
+    PRINT("setTileTextNumberOfCols", tileTextNumberOfCols);
+    READ();
+}
+
+void Interface::setWheelSpeedFraction(double wheelSpeedFraction) {
+    PRINT("setWheelSpeedFraction", wheelSpeedFraction);
+    READ();
+}
+
+void Interface::finalizeStaticOptions() {
+    PRINT("finalizeStaticOptions");
+    READ();
+}
+
+void Interface::updateAllowOmniscience(bool allowOmniscience) {
+    PRINT("updateAllowOmniscience", allowOmniscience);
+    READ();
+}
+
+void Interface::updateAutomaticallyClearFog(bool automaticallyClearFog) {
+    PRINT("updateAutomaticallyClearFog", automaticallyClearFog);
+    READ();
+}
+
+void Interface::updateDeclareBothWallHalves(bool declareBothWallHalves) {
+    PRINT("updateDeclareBothWallHalves", declareBothWallHalves);
+    READ();
+}
+
+void Interface::updateSetTileTextWhenDistanceDeclared(
+        bool setTileTextWhenDistanceDeclared) {
+    PRINT("updateSetTileTextWhenDistanceDeclared",
+        setTileTextWhenDistanceDeclared);
+    READ();
+}
+
+void Interface::updateSetTileBaseColorWhenDistanceDeclaredCorrectly(
+        bool setTileBaseColorWhenDistanceDeclaredCorrectly) {
+    PRINT("updateSetTileBaseColorWhenDistanceDeclaredCorrectly",
+        setTileBaseColorWhenDistanceDeclaredCorrectly);
+    READ();
+}
+
+void Interface::updateDeclareWallOnRead(bool declareWallOnRead) {
+    PRINT("updateDeclareWallOnRead", declareWallOnRead);
+    READ();
+}
+
+void Interface::updateUseTileEdgeMovements(bool useTileEdgeMovements) {
+    PRINT("updateUseTileEdgeMovements", useTileEdgeMovements);
+    READ();
+}
+
 int Interface::mazeWidth() {
     PRINT("mazeWidth");
     READ_AND_RETURN_INT();

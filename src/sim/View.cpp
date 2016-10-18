@@ -451,6 +451,7 @@ void View::drawFullAndZoomedMaps(
     // Get the physical size of the maze (in meters)
     double physicalMazeWidth = P()->wallWidth() + m_model->getMaze()->getWidth() * (P()->wallWidth() + P()->wallLength());
     double physicalMazeHeight = P()->wallWidth() + m_model->getMaze()->getHeight() * (P()->wallWidth() + P()->wallLength());
+    // TODO: MACK - these should be distances, not doubles
     QPair<double, double> physicalMazeSize = {physicalMazeWidth, physicalMazeHeight};
 
     // Start using the program and vertex array object

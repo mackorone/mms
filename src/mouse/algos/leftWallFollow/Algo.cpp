@@ -3,6 +3,9 @@
 #include "unistd.h"
 
 void Algo::solve(Interface* interface) {
+
+    interface->finalizeStaticOptions();
+
     while (true) {
         if (!interface->wallLeft()){
             interface->turnLeft();

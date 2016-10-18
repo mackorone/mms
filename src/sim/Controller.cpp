@@ -18,6 +18,7 @@ static const QString& WALL_DIRECTION_STRING = "WALL";
 
 Controller::Controller(Model* model, View* view) :
         m_process(nullptr),
+        m_model(model),
         m_mouseInterface(nullptr),
         m_staticOptionsFinalized(false) {
 
@@ -25,6 +26,7 @@ Controller::Controller(Model* model, View* view) :
     startMouseAlgorithm(P()->mouseAlgorithm());
 
     // TODO: MACK - wait until static options have been finalized
+    // TODO: MACK - remove this line
     m_staticOptionsFinalized = true;
     while (!m_staticOptionsFinalized) {
         SimUtilities::sleep(Seconds(0.1));
@@ -56,13 +58,13 @@ Controller::Controller(Model* model, View* view) :
         m_staticOptions.mouseFile,
         m_staticOptions.interfaceType,
         m_staticOptions.initialDirection,
-        model
+        m_model
     );
 
     // Initialize the mouse interface
     m_mouseInterface = new MouseInterface(
-        model->getMaze(),
-        model->getMouse(),
+        m_model->getMaze(),
+        m_model->getMouse(),
         view->getMazeGraphic(),
         this,
         view->getAllowableTileTextCharacters(),
@@ -211,14 +213,14 @@ void Controller::processMouseAlgoStderr() {
     if (1 < inputLines.size()) {
         QString line = m_inputLines.join("") + inputLines.at(0);
         QString response = processCommand(line);
-        m_process->write(response.toStdString().c_str());
+        m_process->write((response + "\n").toStdString().c_str());
         m_inputLines.clear();
     }
 
     // For all complete lines in the input, take action
     for (int i = 1; i < inputLines.size() - 1; i += 1) {
         QString response = processCommand(inputLines.at(i));
-        m_process->write(response.toStdString().c_str());
+        m_process->write((response + "\n").toStdString().c_str());
     }
 
     // Store the beginning of the incomplete line
@@ -226,37 +228,264 @@ void Controller::processMouseAlgoStderr() {
 }
 
 QString Controller::processCommand(const QString& command) {
-    // TODO: MACK - split the command into tokens, parse each one
-    //qDebug() << command;
-    if (command == "wallFront") {
-        QString response = m_mouseInterface->wallFront() ? "true\n" : "false\n";
-        //qDebug() << response;
-        return response;
+
+    // TODO: MACK
+    qDebug() << command;
+
+    // TODO: upforgrabs
+    // These functions should have sanity checks, e.g., correct
+    // types, not finalizing static options more than once, etc.
+
+    static const QString ACK_STRING = "ACK";
+    static const QString ERROR_STRING = "!";
+
+    QStringList tokens = command.split(" ", QString::SkipEmptyParts);
+    QString function = tokens.at(0);
+
+    if (function == "setMouseFile") {
+        m_staticOptions.mouseFile = tokens.at(1);
+        return ACK_STRING;
     }
-    if (command == "wallRight") {
-        QString response = m_mouseInterface->wallRight() ? "true\n" : "false\n";
-        //qDebug() << response;
-        return response;
+    else if (function == "setInterfaceType") {
+        m_staticOptions.interfaceType = tokens.at(1);
+        return ACK_STRING;
     }
-    if (command == "wallLeft") {
-        QString response = m_mouseInterface->wallLeft() ? "true\n" : "false\n";
-        //qDebug() << response;
-        return response;
+    else if (function == "setInitialDirection") {
+        m_staticOptions.initialDirection = tokens.at(1);
+        return ACK_STRING;
     }
-    if (command == "moveForward") {
+    else if (function == "setTileTextNumberOfRows") {
+        m_staticOptions.tileTextNumberOfRows =
+            SimUtilities::strToInt(tokens.at(1));
+        return ACK_STRING;
+    }
+    else if (function == "setTileTextNumberOfCols") {
+        m_staticOptions.tileTextNumberOfCols =
+            SimUtilities::strToInt(tokens.at(1));
+        return ACK_STRING;
+    }
+    else if (function == "setWheelSpeedFraction") {
+        m_staticOptions.tileTextNumberOfCols =
+            SimUtilities::strToDouble(tokens.at(1));
+        return ACK_STRING;
+    }
+    else if (function == "finalizeStaticOptions") {
+        m_staticOptionsFinalized = true;
+        return ACK_STRING;
+    }
+    else if (function == "updateAllowOmniscience") {
+        m_dynamicOptions.allowOmniscience =
+            SimUtilities::strToBool(tokens.at(1));
+        return ACK_STRING;
+    }
+    else if (function == "updateAutomaticallyClearFog") {
+        m_dynamicOptions.automaticallyClearFog =
+            SimUtilities::strToBool(tokens.at(1));
+        return ACK_STRING;
+    }
+    else if (function == "updateDeclareBothWallHalves") {
+        m_dynamicOptions.declareBothWallHalves =
+            SimUtilities::strToBool(tokens.at(1));
+        return ACK_STRING;
+    }
+    else if (function == "updateSetTileTextWhenDistanceDeclared") {
+        m_dynamicOptions.setTileTextWhenDistanceDeclared =
+            SimUtilities::strToBool(tokens.at(1));
+        return ACK_STRING;
+    }
+    else if (function == "updateSetTileBaseColorWhenDistanceDeclaredCorrectly") {
+        m_dynamicOptions.setTileBaseColorWhenDistanceDeclaredCorrectly =
+            SimUtilities::strToBool(tokens.at(1));
+        return ACK_STRING;
+    }
+    else if (function == "updateDeclareWallOnRead") {
+        m_dynamicOptions.declareWallOnRead =
+            SimUtilities::strToBool(tokens.at(1));
+        return ACK_STRING;
+    }
+    else if (function == "updateUseTileEdgeMovements") {
+        m_dynamicOptions.useTileEdgeMovements =
+            SimUtilities::strToBool(tokens.at(1));
+        return ACK_STRING;
+    }
+    else if (function == "mazeWidth") {
+        return QString::number(m_model->getMaze()->getWidth());
+    }
+    else if (function == "mazeHeight") {
+        return QString::number(m_model->getMaze()->getHeight());
+    }
+    else if (function == "isOfficialMaze") {
+        return QString::number(m_model->getMaze()->isOfficialMaze());
+    }
+    else if (function == "initialDirection") {
+        // TODO: MACK
+    }
+    else if (function == "getRandomFloat") {
+        return QString::number(m_mouseInterface->getRandom());
+    }
+    else if (function == "millis") {
+        return QString::number(m_mouseInterface->millis());
+    }
+    else if (function == "delay") {
+        //(int milliseconds); // # of milliseconds of sim time (adjusted based on sim speed)
+    }
+    else if (function == "setTileColor") {
+        //(int x, int y, char color);
+    }
+    else if (function == "clearTileColor") {
+        //(int x, int y);
+    }
+    else if (function == "clearAllTileColor") {
+        //();
+    }
+    else if (function == "setTileText") {
+        //(int x, int y, const std::string& text);
+    }
+    else if (function == "clearTileText") {
+        //(int x, int y);
+    }
+    else if (function == "clearAllTileText") {
+        //();
+    }
+    else if (function == "declareWall") {
+        //(int x, int y, char direction, bool wallExists);
+    }
+    else if (function == "undeclareWall") {
+        //(int x, int y, char direction);
+    }
+    else if (function == "setTileFogginess") {
+        //(int x, int y, bool foggy);
+    }
+    else if (function == "declareTileDistance") {
+        //(int x, int y, int distance);
+    }
+    else if (function == "undeclareTileDistance") {
+        //(int x, int y);
+    }
+    else if (function == "resetPosition") {
+        //();
+    }
+    else if (function == "inputButtonPressed") {
+        //(int inputButton);
+    }
+    else if (function == "acknowledgeInputButtonPressed") {
+        //(int inputButton);
+    }
+    else if (function == "getWheelMaxSpeed") {
+        //(const std::string& name);
+    }
+    else if (function == "setWheelSpeed") {
+        //(const std::string& name, double rpm);
+    }
+    else if (function == "getWheelEncoderTicksPerRevolution") {
+        //(const std::string& name);
+    }
+    else if (function == "readWheelEncoder") {
+        //(const std::string& name);
+    }
+    else if (function == "resetWheelEncoder") {
+        //(const std::string& name);
+    }
+    else if (function == "readSensor") {
+        //(const std::string& name);
+    }
+    else if (function == "readGyro") {
+        //();
+    }
+    else if (function == "wallFront") {
+        return m_mouseInterface->wallFront() ? "true" : "false";
+    }
+    else if (function == "wallRight") {
+        return m_mouseInterface->wallRight() ? "true" : "false";
+    }
+    else if (function == "wallLeft") {
+        return m_mouseInterface->wallLeft() ? "true" : "false";
+    }
+    else if (function == "moveForward") {
+        //// TODO: MACK
+        //(int count);
         m_mouseInterface->moveForward();
-        return QString("ACK\n");
+        return "ack";
     }
-    if (command == "turnLeft") {
+    else if (function == "turnLeft") {
         m_mouseInterface->turnLeft();
-        return QString("ACK\n");
+        return QString("ack");
     }
-    if (command == "turnRight") {
+    else if (function == "turnRight") {
         m_mouseInterface->turnRight();
-        return QString("ACK\n");
+        return QString("ack");
     }
-    return QString("ERROR\n");
+    else if (function == "turnRight") {
+        //();
+    }
+    else if (function == "turnAroundLeft") {
+        //();
+    }
+    else if (function == "turnAroundRight") {
+        //();
+    }
+    else if (function == "originMoveForwardToEdge") {
+        //();
+    }
+    else if (function == "originTurnLeftInPlace") {
+        //();
+    }
+    else if (function == "originTurnRightInPlace") {
+        //();
+    }
+    else if (function == "moveForwardToEdge") {
+        //();
+    }
+    else if (function == "moveForwardToEdge") {
+        //(int count);
+    }
+    else if (function == "turnLeftToEdge") {
+        //();
+    }
+    else if (function == "turnRightToEdge") {
+        //();
+    }
+    else if (function == "turnAroundLeftToEdge") {
+        //();
+    }
+    else if (function == "turnAroundRightToEdge") {
+        //();
+    }
+    else if (function == "diagonalLeftLeft") {
+        //(int count);
+    }
+    else if (function == "diagonalLeftRight") {
+        //(int count);
+    }
+    else if (function == "diagonalRightLeft") {
+        //(int count);
+    }
+    else if (function == "diagonalRightRight") {
+        //(int count);
+    }
+    else if (function == "currentXTile") {
+        //();
+    }
+    else if (function == "currentYTile") {
+        //();
+    }
+    else if (function == "currentDirection") {
+        //();
+    }
+    else if (function == "currentXPosMeters") {
+        //();
+    }
+    else if (function == "currentYPosMeters") {
+        //();
+    }
+    else if (function == "currentRotationDegrees") {
+        //();
+    }
+    else {
+        return ERROR_STRING;
+    }
 }
+
         
 void Controller::startMouseAlgorithm(const QString& mouseAlgorithm) {
 
