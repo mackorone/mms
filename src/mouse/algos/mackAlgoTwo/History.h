@@ -2,8 +2,6 @@
 
 #include "Byte.h"
 
-namespace mackAlgoTwo {
-
 class History {
 
     // The History class is a circular stack that remembers the previous
@@ -58,5 +56,3 @@ private:
     static twobyte m_data[CAPACITY];
 
 };
-
-} // namespace mackAlgoTwo

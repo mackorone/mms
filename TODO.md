@@ -5,10 +5,12 @@
     - Clean this up a little bit
     - Don't use stderr to communicate, use something else
     - Make continuous algos possible
+    - Print the stdout of the child process somewhere
 - Don't need (const X& x) because of implicit sharing
     - http://doc.qt.io/qt-5/implicit-sharing.html#implicitly-shared
 - Rename SIM_ASSERT to just ASSERT
 - Make GUI
+- Wireframe mode should only affect the maps
 - Include images/fonts with the binary: http://doc.qt.io/qt-5/resources.html
 - If the maze is invalid, don't let the algo do anything
 - Set up tests/build framework

@@ -2,8 +2,6 @@
 
 #include "Byte.h"
 
-namespace mackAlgoTwo {
-
 struct Mode {
 
     static const byte CENTER = 0;
@@ -11,5 +9,3 @@ struct Mode {
     static const byte GIVEUP = 2;
 
 };
-
-} // namespace mackAlgoTwo

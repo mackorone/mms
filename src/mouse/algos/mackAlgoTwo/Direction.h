@@ -2,8 +2,6 @@
 
 #include "Byte.h"
 
-namespace mackAlgoTwo {
-
 struct Direction {
 
     static const byte NORTH = 0;
@@ -12,5 +10,3 @@ struct Direction {
     static const byte WEST  = 3;
 
 };
-
-} // namespace mackAlgoTwo

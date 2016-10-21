@@ -1,5 +1,7 @@
 #include "Controller.h"
 
+#include <QChar>
+#include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
 #include <QDirIterator>
@@ -10,6 +12,7 @@
 #include "MouseChecker.h"
 #include "Param.h"
 #include "SimUtilities.h"
+#include "units/Milliseconds.h"
 
 namespace mms {
 
@@ -25,11 +28,12 @@ Controller::Controller(Model* model, View* view) :
     // Start the mouse algorithm
     startMouseAlgorithm(P()->mouseAlgorithm());
 
-    // TODO: MACK - wait until static options have been finalized
-    // TODO: MACK - remove this line
-    m_staticOptionsFinalized = true;
+    // Wait until static options have been finalized
     while (!m_staticOptionsFinalized) {
-        SimUtilities::sleep(Seconds(0.1));
+        SimUtilities::sleep(Milliseconds(1));
+        // We haven't started the main event loop yet, so we have to explicitly
+        // process events so that we can detect messages from the algorithm.
+        QCoreApplication::processEvents();
     }
 
     // Validate all of the static options except for mouseFile,
@@ -200,8 +204,9 @@ Direction Controller::getInitialDirection(const QString& initialDirection, Model
 
 void Controller::processMouseAlgoStderr() {
 
-    // TODO: MACK - I think this is perf sensitive. If not, I should refactor
-    // this so that there's only one place where we call processCommand
+    // TODO: upforgrabs
+    // Determine whether or not this function is perf sensitive. If so,
+    // refactor this so that we're not copying QStrings between lists.
 
     // Read all of the new text
     QString input = m_process->readAllStandardError();
@@ -209,17 +214,23 @@ void Controller::processMouseAlgoStderr() {
     // Separate the input by line
     QStringList inputLines = input.split("\n");
 
-    // If a line has definitely terminated, take action
+    // A list of commands to be executed
+    QStringList commands;
+
+    // If a line has definitely terminated, it's a command
     if (1 < inputLines.size()) {
-        QString line = m_inputLines.join("") + inputLines.at(0);
-        QString response = processCommand(line);
-        m_process->write((response + "\n").toStdString().c_str());
+        commands.append(m_inputLines.join("") + inputLines.at(0));
         m_inputLines.clear();
     }
 
-    // For all complete lines in the input, take action
+    // All complete lines in the input are commands
     for (int i = 1; i < inputLines.size() - 1; i += 1) {
-        QString response = processCommand(inputLines.at(i));
+        commands.append(inputLines.at(i));
+    }
+
+    // Process all available commands
+    for (int i = 0; i < commands.size(); i += 1) {
+        QString response = processCommand(commands.at(i));
         m_process->write((response + "\n").toStdString().c_str());
     }
 
@@ -228,9 +239,6 @@ void Controller::processMouseAlgoStderr() {
 }
 
 QString Controller::processCommand(const QString& command) {
-
-    // TODO: MACK
-    qDebug() << command;
 
     // TODO: upforgrabs
     // These functions should have sanity checks, e.g., correct
@@ -318,7 +326,11 @@ QString Controller::processCommand(const QString& command) {
         return QString::number(m_model->getMaze()->isOfficialMaze());
     }
     else if (function == "initialDirection") {
-        // TODO: MACK
+        Direction initialDirection = getInitialDirection(
+            m_staticOptions.initialDirection,
+            m_model
+        );
+        return QString(QChar(DIRECTION_TO_CHAR.value(initialDirection)));
     }
     else if (function == "getRandomFloat") {
         return QString::number(m_mouseInterface->getRandom());
@@ -327,163 +339,238 @@ QString Controller::processCommand(const QString& command) {
         return QString::number(m_mouseInterface->millis());
     }
     else if (function == "delay") {
-        //(int milliseconds); // # of milliseconds of sim time (adjusted based on sim speed)
+        int milliseconds = SimUtilities::strToInt(tokens.at(1));
+        m_mouseInterface->delay(milliseconds);
+        return ACK_STRING;
     }
     else if (function == "setTileColor") {
-        //(int x, int y, char color);
+        int x = SimUtilities::strToInt(tokens.at(1));
+        int y = SimUtilities::strToInt(tokens.at(2));
+        char color = SimUtilities::strToChar(tokens.at(3));
+        m_mouseInterface->setTileColor(x, y, color);
+        return ACK_STRING;
     }
     else if (function == "clearTileColor") {
-        //(int x, int y);
+        int x = SimUtilities::strToInt(tokens.at(1));
+        int y = SimUtilities::strToInt(tokens.at(2));
+        m_mouseInterface->clearTileColor(x, y);
+        return ACK_STRING;
     }
     else if (function == "clearAllTileColor") {
-        //();
+        m_mouseInterface->clearAllTileColor();
+        return ACK_STRING;
     }
     else if (function == "setTileText") {
-        //(int x, int y, const std::string& text);
+        int x = SimUtilities::strToInt(tokens.at(1));
+        int y = SimUtilities::strToInt(tokens.at(2));
+        QString text = tokens.at(3);
+        m_mouseInterface->setTileText(x, y, text);
+        return ACK_STRING;
     }
     else if (function == "clearTileText") {
-        //(int x, int y);
+        int x = SimUtilities::strToInt(tokens.at(1));
+        int y = SimUtilities::strToInt(tokens.at(2));
+        m_mouseInterface->clearTileText(x, y);
+        return ACK_STRING;
     }
     else if (function == "clearAllTileText") {
-        //();
+        m_mouseInterface->clearAllTileText();
+        return ACK_STRING;
     }
     else if (function == "declareWall") {
-        //(int x, int y, char direction, bool wallExists);
+        int x = SimUtilities::strToInt(tokens.at(1));
+        int y = SimUtilities::strToInt(tokens.at(2));
+        char direction = SimUtilities::strToChar(tokens.at(3));
+        bool wallExists = SimUtilities::strToBool(tokens.at(4));
+        m_mouseInterface->declareWall(x, y, direction, wallExists);
+        return ACK_STRING;
     }
     else if (function == "undeclareWall") {
-        //(int x, int y, char direction);
+        int x = SimUtilities::strToInt(tokens.at(1));
+        int y = SimUtilities::strToInt(tokens.at(2));
+        char direction = SimUtilities::strToChar(tokens.at(3));
+        m_mouseInterface->undeclareWall(x, y, direction);
+        return ACK_STRING;
     }
     else if (function == "setTileFogginess") {
-        //(int x, int y, bool foggy);
+        int x = SimUtilities::strToInt(tokens.at(1));
+        int y = SimUtilities::strToInt(tokens.at(2));
+        bool foggy = SimUtilities::strToBool(tokens.at(3));
+        m_mouseInterface->setTileFogginess(x, y, foggy);
+        return ACK_STRING;
     }
     else if (function == "declareTileDistance") {
-        //(int x, int y, int distance);
+        int x = SimUtilities::strToInt(tokens.at(1));
+        int y = SimUtilities::strToInt(tokens.at(2));
+        int distance = SimUtilities::strToInt(tokens.at(3));
+        m_mouseInterface->declareTileDistance(x, y, distance);
+        return ACK_STRING;
     }
     else if (function == "undeclareTileDistance") {
-        //(int x, int y);
+        int x = SimUtilities::strToInt(tokens.at(1));
+        int y = SimUtilities::strToInt(tokens.at(2));
+        m_mouseInterface->undeclareTileDistance(x, y);
+        return ACK_STRING;
     }
     else if (function == "resetPosition") {
-        //();
+        m_mouseInterface->resetPosition();
+        return ACK_STRING;
     }
     else if (function == "inputButtonPressed") {
-        //(int inputButton);
+        int inputButton = SimUtilities::strToInt(tokens.at(1));
+        return SimUtilities::boolToStr(
+            m_mouseInterface->inputButtonPressed(inputButton)
+        );
     }
     else if (function == "acknowledgeInputButtonPressed") {
-        //(int inputButton);
+        int inputButton = SimUtilities::strToInt(tokens.at(1));
+        m_mouseInterface->acknowledgeInputButtonPressed(inputButton);
+        return ACK_STRING;
     }
     else if (function == "getWheelMaxSpeed") {
-        //(const std::string& name);
+        QString name = tokens.at(1);
+        return QString::number(m_mouseInterface->getWheelMaxSpeed(name));
     }
     else if (function == "setWheelSpeed") {
-        //(const std::string& name, double rpm);
+        QString name = tokens.at(1);
+        double rpm = SimUtilities::strToDouble(tokens.at(2));
+        m_mouseInterface->setWheelSpeed(name, rpm);
+        return ACK_STRING;
     }
     else if (function == "getWheelEncoderTicksPerRevolution") {
-        //(const std::string& name);
+        QString name = tokens.at(1);
+        return QString::number(
+            m_mouseInterface->getWheelEncoderTicksPerRevolution(name)
+        );
     }
     else if (function == "readWheelEncoder") {
-        //(const std::string& name);
+        QString name = tokens.at(1);
+        return QString::number(
+            m_mouseInterface->readWheelEncoder(name)
+        );
     }
     else if (function == "resetWheelEncoder") {
-        //(const std::string& name);
+        QString name = tokens.at(1);
+        m_mouseInterface->resetWheelEncoder(name);
+        return ACK_STRING;
     }
     else if (function == "readSensor") {
-        //(const std::string& name);
+        QString name = tokens.at(1);
+        return QString::number(m_mouseInterface->readSensor(name));
     }
     else if (function == "readGyro") {
-        //();
+        QString name = tokens.at(1);
+        return QString::number(m_mouseInterface->readGyro());
     }
     else if (function == "wallFront") {
-        return m_mouseInterface->wallFront() ? "true" : "false";
+        return SimUtilities::boolToStr(m_mouseInterface->wallFront());
     }
     else if (function == "wallRight") {
-        return m_mouseInterface->wallRight() ? "true" : "false";
+        return SimUtilities::boolToStr(m_mouseInterface->wallRight());
     }
     else if (function == "wallLeft") {
-        return m_mouseInterface->wallLeft() ? "true" : "false";
+        return SimUtilities::boolToStr(m_mouseInterface->wallLeft());
     }
     else if (function == "moveForward") {
-        //// TODO: MACK
-        //(int count);
-        m_mouseInterface->moveForward();
-        return "ack";
+        int count = 1;
+        if (1 < tokens.size()) {
+            count = SimUtilities::strToInt(tokens.at(1));
+        }
+        m_mouseInterface->moveForward(count);
+        return ACK_STRING;
     }
     else if (function == "turnLeft") {
         m_mouseInterface->turnLeft();
-        return QString("ack");
+        return ACK_STRING;
     }
     else if (function == "turnRight") {
         m_mouseInterface->turnRight();
-        return QString("ack");
-    }
-    else if (function == "turnRight") {
-        //();
+        return ACK_STRING;
     }
     else if (function == "turnAroundLeft") {
-        //();
+        m_mouseInterface->turnAroundLeft();
+        return ACK_STRING;
     }
     else if (function == "turnAroundRight") {
-        //();
+        m_mouseInterface->turnAroundRight();
+        return ACK_STRING;
     }
     else if (function == "originMoveForwardToEdge") {
-        //();
+        m_mouseInterface->originMoveForwardToEdge();
+        return ACK_STRING;
     }
     else if (function == "originTurnLeftInPlace") {
-        //();
+        m_mouseInterface->originTurnLeftInPlace();
+        return ACK_STRING;
     }
     else if (function == "originTurnRightInPlace") {
-        //();
+        m_mouseInterface->originTurnRightInPlace();
+        return ACK_STRING;
     }
     else if (function == "moveForwardToEdge") {
-        //();
-    }
-    else if (function == "moveForwardToEdge") {
-        //(int count);
+        int count = 1;
+        if (1 < tokens.size()) {
+            count = SimUtilities::strToInt(tokens.at(1));
+        }
+        m_mouseInterface->moveForwardToEdge(count);
+        return ACK_STRING;
     }
     else if (function == "turnLeftToEdge") {
-        //();
+        m_mouseInterface->turnLeftToEdge();
+        return ACK_STRING;
     }
     else if (function == "turnRightToEdge") {
-        //();
+        m_mouseInterface->turnRightToEdge();
+        return ACK_STRING;
     }
     else if (function == "turnAroundLeftToEdge") {
-        //();
+        m_mouseInterface->turnAroundLeftToEdge();
+        return ACK_STRING;
     }
     else if (function == "turnAroundRightToEdge") {
-        //();
+        m_mouseInterface->turnAroundRightToEdge();
+        return ACK_STRING;
     }
     else if (function == "diagonalLeftLeft") {
-        //(int count);
+        int count = SimUtilities::strToInt(tokens.at(1));
+        m_mouseInterface->diagonalLeftLeft(count);
+        return ACK_STRING;
     }
     else if (function == "diagonalLeftRight") {
-        //(int count);
+        int count = SimUtilities::strToInt(tokens.at(1));
+        m_mouseInterface->diagonalLeftRight(count);
+        return ACK_STRING;
     }
     else if (function == "diagonalRightLeft") {
-        //(int count);
+        int count = SimUtilities::strToInt(tokens.at(1));
+        m_mouseInterface->diagonalRightLeft(count);
+        return ACK_STRING;
     }
     else if (function == "diagonalRightRight") {
-        //(int count);
+        int count = SimUtilities::strToInt(tokens.at(1));
+        m_mouseInterface->diagonalRightRight(count);
+        return ACK_STRING;
     }
     else if (function == "currentXTile") {
-        //();
+        return QString::number(m_mouseInterface->currentXTile());
     }
     else if (function == "currentYTile") {
-        //();
+        return QString::number(m_mouseInterface->currentYTile());
     }
     else if (function == "currentDirection") {
-        //();
+        return QString(QChar(m_mouseInterface->currentDirection()));
     }
     else if (function == "currentXPosMeters") {
-        //();
+        return QString::number(m_mouseInterface->currentXPosMeters());
     }
     else if (function == "currentYPosMeters") {
-        //();
+        return QString::number(m_mouseInterface->currentYPosMeters());
     }
     else if (function == "currentRotationDegrees") {
-        //();
+        return QString::number(m_mouseInterface->currentRotationDegrees());
     }
-    else {
-        return ERROR_STRING;
-    }
+
+    return ERROR_STRING;
 }
 
         

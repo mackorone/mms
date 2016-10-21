@@ -79,6 +79,6 @@
     <maze-rotations>0</maze-rotations> <!-- 0-3 counterclockwise rotations -->
 
     <!-- Mouse Parameters -->
-    <mouse-algorithm>leftWallFollow</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
+    <mouse-algorithm>mackAlgoTwo</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
 
 </parameters>

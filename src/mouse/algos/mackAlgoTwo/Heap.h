@@ -2,8 +2,6 @@
 
 #include "Byte.h"
 
-namespace mackAlgoTwo {
-
 class Heap {
 
 public:
@@ -31,5 +29,3 @@ private:
     static void heapifyDown(byte index);
     static void swap(byte indexOne, byte indexTwo);
 };
-
-} // namespace mackAlgoTwo

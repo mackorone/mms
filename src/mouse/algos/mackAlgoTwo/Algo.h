@@ -1,33 +1,18 @@
 #pragma once
 
-#include "Options.h"
-
-#if (SIMULATOR)
-#include "../IMouseAlgorithm.h"
-#endif
-
 #include "Byte.h"
 #include "Direction.h"
 #include "Heap.h"
+#include "Interface.h"
 #include "Maze.h"
+#include "Options.h"
 
-namespace mackAlgoTwo {
-
-#if (SIMULATOR)
-class MackAlgoTwo : public IMouseAlgorithm {
-#else
-class MackAlgoTwo {
-#endif
+class Algo {
 
 public:
+
 #if (SIMULATOR)
-    std::string initialDirection() const;
-    int tileTextNumberOfRows() const;
-    int tileTextNumberOfCols() const;
-    bool useTileEdgeMovements() const;
-    void solve(
-        int mazeWidth, int mazeHeight, bool isOfficialMaze,
-        char initialDirection, mms::MouseInterface* mouse);
+    void solve(Interface* interface);
 #else
     void solve();
 #endif
@@ -37,7 +22,7 @@ private:
     static const bool FAST_STRAIGHT_AWAYS = true;
 
 #if (SIMULATOR)
-    mms::MouseInterface* m_mouse;
+    Interface* m_mouse;
 #else
     byte m_moveBufferIndex;
 #endif
@@ -103,5 +88,3 @@ private:
     void unsetCellWall(byte cell, byte direction, bool bothSides = true);
 
 };
-
-} // namespace mackAlgoTwo

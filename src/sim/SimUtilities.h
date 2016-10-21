@@ -39,8 +39,10 @@ public:
     static bool isInt(const QString& str);
     static bool isDouble(const QString& str);
     static bool strToBool(const QString& str);
+    static char strToChar(const QString& str);
     static int strToInt(const QString& str);
     static double strToDouble(const QString& str);
+    static QString boolToStr(bool value);
 
     // Returns all files contained anywhere within a directory
     static QPair<QStringList, QStringList> getFiles(const QString& dirPath);

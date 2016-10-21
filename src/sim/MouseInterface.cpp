@@ -703,13 +703,13 @@ void MouseInterface::setTileTextImpl(int x, int y, const QString& text) {
     while (row < m_options.tileTextNumberOfRows && index < text.size()) {
         QString rowOfText;
         while (index < (row + 1) * m_options.tileTextNumberOfCols && index < text.size()) {
-            char c = text.at(index).toLatin1();
-            if (m_allowableTileTextCharacters.find(c) != m_allowableTileTextCharacters.end()) { // TODO: MACK - use contains
+            QChar c = text.at(index);
+            if (m_allowableTileTextCharacters.find(c) == m_allowableTileTextCharacters.end()) { // TODO: MACK - use contains
                 qWarning().noquote().nospace()
                     << "Unable to set the tile text for unprintable character \""
                     << (c == '\n' ? "\\n" :
                        (c == '\t' ? "\\t" :
-                       (c == '\r' ? "\\r" : QString::number(c))))
+                       (c == '\r' ? "\\r" : QString(c))))
                     << "\". Using the character \"" << P()->defaultTileTextCharacter()
                     << "\" instead.";
                 c = P()->defaultTileTextCharacter();

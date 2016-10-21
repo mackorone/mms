@@ -1,9 +1,8 @@
 #include "Algo.h"
 
-#include "unistd.h"
-
 void Algo::solve(Interface* interface) {
 
+    interface->updateDeclareWallOnRead(true);
     interface->finalizeStaticOptions();
 
     while (true) {

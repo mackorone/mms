@@ -1,4 +1,7 @@
-#include "MackAlgoTwo.h"
+#include "Algo.h"
+
+#include <iostream>
+#include <sstream>
 
 #include "Assert.h"
 #include "History.h"
@@ -14,36 +17,22 @@ extern volatile bool movesDoneAndWallsSet;
 extern volatile bool buttonPressed;
 #endif
 
-namespace mackAlgoTwo {
-
 #if (SIMULATOR)
 
-std::string MackAlgoTwo::initialDirection() const {
-    return "OPENING";
-}
-
-int MackAlgoTwo::tileTextNumberOfRows() const {
-    return 1;
-}
-
-int MackAlgoTwo::tileTextNumberOfCols() const {
-    return 5;
-}
-
-bool MackAlgoTwo::useTileEdgeMovements() const {
-    return false;
-}
-
-void MackAlgoTwo::solve(
-        int mazeWidth, int mazeHeight, bool isOfficialMaze,
-        char initialDirection, mms::MouseInterface* mouse) {
+void Algo::solve(Interface* interface) {
 
     // Initialize the MouseInterface pointer
-    m_mouse = mouse;
+    m_mouse = interface;
+
+    // Set and finalize some options
+    m_mouse->setInitialDirection("OPENING");
+    m_mouse->setTileTextNumberOfRows(1);
+    m_mouse->setTileTextNumberOfCols(5);
+    m_mouse->finalizeStaticOptions();
 
 #else
 
-void MackAlgoTwo::solve() {
+void Algo::solve() {
 
 #endif
 
@@ -52,8 +41,8 @@ void MackAlgoTwo::solve() {
     ASSERT_LE(1, Maze::HEIGHT);
     ASSERT_LE(Maze::WIDTH, 16);
     ASSERT_LE(Maze::HEIGHT, 16);
-    ASSERT_EQ(Maze::WIDTH, mazeWidth);
-    ASSERT_EQ(Maze::HEIGHT, mazeHeight);
+    ASSERT_EQ(Maze::WIDTH, m_mouse->mazeWidth());
+    ASSERT_EQ(Maze::HEIGHT, m_mouse->mazeHeight());
 
     // Initialize the (perimeter of the) maze
     for (byte x = 0; x < Maze::WIDTH; x += 1) {
@@ -76,7 +65,7 @@ void MackAlgoTwo::solve() {
     // Initialize the mouse
     m_x = 0;
     m_y = 0;
-    switch (initialDirection) {
+    switch (m_mouse->initialDirection()) {
         case 'n':
             m_initialDirection = Direction::NORTH;
             break;
@@ -85,7 +74,8 @@ void MackAlgoTwo::solve() {
             break;
         default:
 #if (SIMULATOR)
-            m_mouse->warn("Can't start facing south or west. I'm giving up...");
+            std::cout << "Can't start facing south or west. I'm giving up..."
+                      << std::endl;
 #endif
             return;
     }
@@ -117,14 +107,15 @@ void MackAlgoTwo::solve() {
         // If the maze is unsolvable, give up
         if (m_mode == Mode::GIVEUP) {
 #if (SIMULATOR)
-            m_mouse->warn("Unsolvable maze detected. I'm giving up...");
+            std::cout << "Unsolvable maze detected. I'm giving up..."
+                      << std::endl;
 #endif
             break;
         }
     }
 }
 
-bool MackAlgoTwo::shouldColorVisitedCells() const {
+bool Algo::shouldColorVisitedCells() const {
 #if (SIMULATOR)
     // 1 to enable, 0 to disable
     if (m_mouse->inputButtonPressed(1)) {
@@ -142,11 +133,11 @@ bool MackAlgoTwo::shouldColorVisitedCells() const {
     return false;
 }
 
-byte MackAlgoTwo::colorVisitedCellsDelayMs() const {
+byte Algo::colorVisitedCellsDelayMs() const {
     return 10;
 }
 
-bool MackAlgoTwo::resetButtonPressed() {
+bool Algo::resetButtonPressed() {
 #if (SIMULATOR)
     return m_mouse->inputButtonPressed(2);
 #else
@@ -154,7 +145,7 @@ bool MackAlgoTwo::resetButtonPressed() {
 #endif
 }
 
-void MackAlgoTwo::acknowledgeResetButtonPressed() {
+void Algo::acknowledgeResetButtonPressed() {
 #if (SIMULATOR)
     m_mouse->acknowledgeInputButtonPressed(2);
 #else
@@ -162,15 +153,15 @@ void MackAlgoTwo::acknowledgeResetButtonPressed() {
 #endif
 }
 
-twobyte MackAlgoTwo::getTurnCost() {
+twobyte Algo::getTurnCost() {
     return (FAST_STRAIGHT_AWAYS ? 256 : 2);
 }
 
-twobyte MackAlgoTwo::getStraightAwayCost(byte length) {
+twobyte Algo::getStraightAwayCost(byte length) {
     return (FAST_STRAIGHT_AWAYS ? 256 / length : 3);
 }
 
-void MackAlgoTwo::reset() {
+void Algo::reset() {
 
 #if (SIMULATOR)
     // First, reset the position in the simulator
@@ -210,7 +201,7 @@ void MackAlgoTwo::reset() {
     }
 }
 
-void MackAlgoTwo::step() {
+void Algo::step() {
 
     // Read the walls if unknown
     readWalls();
@@ -259,7 +250,7 @@ void MackAlgoTwo::step() {
     }
 }
 
-byte MackAlgoTwo::generatePath(byte start) {
+byte Algo::generatePath(byte start) {
 
     // Reset the sequence bit of all cells
     for (byte x = 0; x < Maze::WIDTH; x += 1) {
@@ -312,7 +303,7 @@ byte MackAlgoTwo::generatePath(byte start) {
     return reverseLinkedList(getClosestDestinationCell());
 }
 
-void MackAlgoTwo::drawPath(byte start) {
+void Algo::drawPath(byte start) {
 #if (SIMULATOR)
     // This is probably a little two cutesy for it's own good. Oh well...
     byte current = start;
@@ -336,7 +327,7 @@ void MackAlgoTwo::drawPath(byte start) {
 #endif
 }
 
-void MackAlgoTwo::followPath(byte start) {
+void Algo::followPath(byte start) {
 
     // Move forward as long as we know we won't collide with a wall
     byte current = start;
@@ -357,7 +348,7 @@ void MackAlgoTwo::followPath(byte start) {
     }
 }
 
-byte MackAlgoTwo::getFirstUnknown(byte start) {
+byte Algo::getFirstUnknown(byte start) {
     byte current = start;
     while (Maze::hasNext(current) &&
            Maze::isKnown(current, Maze::getNextDirection(current))) {
@@ -366,7 +357,7 @@ byte MackAlgoTwo::getFirstUnknown(byte start) {
     return current;
 }
 
-void MackAlgoTwo::checkNeighbor(byte cell, byte direction) {
+void Algo::checkNeighbor(byte cell, byte direction) {
 
     // Retrieve the neighboring cell, and the direction that would take us from
     // the neighboring cell to the current cell (which is the opposite of the
@@ -404,7 +395,7 @@ void MackAlgoTwo::checkNeighbor(byte cell, byte direction) {
     }
 }
 
-byte MackAlgoTwo::reverseLinkedList(byte cell) {
+byte Algo::reverseLinkedList(byte cell) {
     byte closest = cell;
     byte direction = Maze::getNextDirection(closest);
     byte current = getNeighboringCell(closest, direction);
@@ -420,7 +411,7 @@ byte MackAlgoTwo::reverseLinkedList(byte cell) {
     return current;
 }
 
-bool MackAlgoTwo::inCenter(byte x, byte y) {
+bool Algo::inCenter(byte x, byte y) {
     for (byte xx = Maze::CLLX; xx <= Maze::CURX; xx += 1) {
         for (byte yy = Maze::CLLY; yy <= Maze::CURY; yy += 1) {
             if (x == xx && y == yy) {
@@ -431,11 +422,11 @@ bool MackAlgoTwo::inCenter(byte x, byte y) {
     return false;
 }
 
-bool MackAlgoTwo::inOrigin(byte x, byte y) {
+bool Algo::inOrigin(byte x, byte y) {
     return x == 0 && y == 0;
 }
 
-void MackAlgoTwo::colorCenter(char color) {
+void Algo::colorCenter(char color) {
 #if (SIMULATOR)
     for (byte x = Maze::CLLX; x <= Maze::CURX; x += 1) {
         for (byte y = Maze::CLLY; y <= Maze::CURY; y += 1) {
@@ -445,7 +436,7 @@ void MackAlgoTwo::colorCenter(char color) {
 #endif
 }
 
-void MackAlgoTwo::resetDestinationCellDistances() {
+void Algo::resetDestinationCellDistances() {
     static twobyte maxDistance = 65535;
     if (m_mode == Mode::CENTER) {
         for (byte x = Maze::CLLX; x <= Maze::CURX; x += 1) {
@@ -459,7 +450,7 @@ void MackAlgoTwo::resetDestinationCellDistances() {
     }
 }
 
-byte MackAlgoTwo::getClosestDestinationCell() {
+byte Algo::getClosestDestinationCell() {
     byte closest = Maze::getCell(Maze::CLLX, Maze::CLLY);
     if (m_mode == Mode::CENTER) {
         for (byte x = Maze::CLLX; x <= Maze::CURX; x += 1) {
@@ -477,7 +468,7 @@ byte MackAlgoTwo::getClosestDestinationCell() {
     return closest;
 }
 
-byte MackAlgoTwo::getOppositeDirection(byte direction) {
+byte Algo::getOppositeDirection(byte direction) {
     switch (direction) {
         case Direction::NORTH:
             return Direction::SOUTH;
@@ -492,7 +483,7 @@ byte MackAlgoTwo::getOppositeDirection(byte direction) {
     }
 }
 
-bool MackAlgoTwo::hasNeighboringCell(byte cell, byte direction) {
+bool Algo::hasNeighboringCell(byte cell, byte direction) {
 
     byte x = Maze::getX(cell);
     byte y = Maze::getY(cell);
@@ -509,7 +500,7 @@ bool MackAlgoTwo::hasNeighboringCell(byte cell, byte direction) {
     }
 }
 
-byte MackAlgoTwo::getNeighboringCell(byte cell, byte direction) {
+byte Algo::getNeighboringCell(byte cell, byte direction) {
 
     ASSERT_TR(hasNeighboringCell(cell, direction));
 
@@ -528,7 +519,7 @@ byte MackAlgoTwo::getNeighboringCell(byte cell, byte direction) {
     }
 }
 
-bool MackAlgoTwo::isOneCellAway(byte target) {
+bool Algo::isOneCellAway(byte target) {
 
     byte x = Maze::getX(target);
     byte y = Maze::getY(target);
@@ -549,7 +540,7 @@ bool MackAlgoTwo::isOneCellAway(byte target) {
     return false;
 }
 
-void MackAlgoTwo::moveOneCell(byte target) {
+void Algo::moveOneCell(byte target) {
 
     ASSERT_TR(isOneCellAway(target));
 
@@ -581,7 +572,7 @@ void MackAlgoTwo::moveOneCell(byte target) {
     }
 }
 
-void MackAlgoTwo::readWalls() {
+void Algo::readWalls() {
 
     // Record the cell and wall data for the History
     byte cell = Maze::getCell(m_x, m_y);
@@ -610,7 +601,7 @@ void MackAlgoTwo::readWalls() {
     History::add(cell, data);
 }
 
-bool MackAlgoTwo::readWall(byte direction) {
+bool Algo::readWall(byte direction) {
     switch ((direction - m_d + 4) % 4) {
 #if (SIMULATOR)
         case 0:
@@ -632,24 +623,24 @@ bool MackAlgoTwo::readWall(byte direction) {
     ASSERT_TR(false);
 }
 
-void MackAlgoTwo::turnLeftUpdateState() {
+void Algo::turnLeftUpdateState() {
     m_d = (m_d + 3) % 4;
 }
 
-void MackAlgoTwo::turnRightUpdateState() {
+void Algo::turnRightUpdateState() {
     m_d = (m_d + 1) % 4;
 }
 
-void MackAlgoTwo::turnAroundUpdateState() {
+void Algo::turnAroundUpdateState() {
     m_d = (m_d + 2) % 4;
 }
 
-void MackAlgoTwo::moveForwardUpdateState() {
+void Algo::moveForwardUpdateState() {
     m_x += (m_d == Direction::EAST  ? 1 : (m_d == Direction::WEST  ? -1 : 0));
     m_y += (m_d == Direction::NORTH ? 1 : (m_d == Direction::SOUTH ? -1 : 0));
 }
 
-void MackAlgoTwo::turnLeft() {
+void Algo::turnLeft() {
     turnLeftUpdateState();
 #if (SIMULATOR)
     m_mouse->turnLeft();
@@ -658,7 +649,7 @@ void MackAlgoTwo::turnLeft() {
 #endif
 }
 
-void MackAlgoTwo::turnRight() {
+void Algo::turnRight() {
     turnRightUpdateState();
 #if (SIMULATOR)
     m_mouse->turnRight();
@@ -667,7 +658,7 @@ void MackAlgoTwo::turnRight() {
 #endif
 }
 
-void MackAlgoTwo::turnAround() {
+void Algo::turnAround() {
     turnAroundUpdateState();
 #if (SIMULATOR)
     m_mouse->turnAroundLeft();
@@ -676,7 +667,7 @@ void MackAlgoTwo::turnAround() {
 #endif
 }
 
-void MackAlgoTwo::moveForward() {
+void Algo::moveForward() {
 #if (SIMULATOR)
     m_mouse->moveForward();
 #else
@@ -686,7 +677,7 @@ void MackAlgoTwo::moveForward() {
     moveForwardUpdateState();
 }
 
-void MackAlgoTwo::leftAndForward() {
+void Algo::leftAndForward() {
 #if (SIMULATOR)
     turnLeft();
     moveForward();
@@ -698,7 +689,7 @@ void MackAlgoTwo::leftAndForward() {
 #endif
 }
 
-void MackAlgoTwo::rightAndForward() {
+void Algo::rightAndForward() {
 #if (SIMULATOR)
     turnRight();
     moveForward();
@@ -710,7 +701,7 @@ void MackAlgoTwo::rightAndForward() {
 #endif
 }
 
-void MackAlgoTwo::aroundAndForward() {
+void Algo::aroundAndForward() {
 #if (SIMULATOR)
     turnAround();
     moveForward();
@@ -724,14 +715,16 @@ void MackAlgoTwo::aroundAndForward() {
 #endif
 }
 
-void MackAlgoTwo::setCellDistance(byte cell, twobyte distance) {
+void Algo::setCellDistance(byte cell, twobyte distance) {
     Maze::setDistance(cell, distance);
 #if (SIMULATOR)
-    m_mouse->setTileText(Maze::getX(cell), Maze::getY(cell), std::to_string(distance));
+    std::ostringstream ss;
+    ss << distance;
+    m_mouse->setTileText(Maze::getX(cell), Maze::getY(cell), ss.str());
 #endif
 }
 
-void MackAlgoTwo::setCellWall(byte cell, byte direction, bool isWall, bool bothSides) {
+void Algo::setCellWall(byte cell, byte direction, bool isWall, bool bothSides) {
     Maze::setWall(cell, direction, isWall);
     static char directionChars[] = {'n', 'e', 's', 'w'};
 #if (SIMULATOR)
@@ -743,7 +736,7 @@ void MackAlgoTwo::setCellWall(byte cell, byte direction, bool isWall, bool bothS
     }
 }
 
-void MackAlgoTwo::unsetCellWall(byte cell, byte direction, bool bothSides) {
+void Algo::unsetCellWall(byte cell, byte direction, bool bothSides) {
     Maze::unsetWall(cell, direction);
     static char directionChars[] = {'n', 'e', 's', 'w'};
 #if (SIMULATOR)
@@ -754,5 +747,3 @@ void MackAlgoTwo::unsetCellWall(byte cell, byte direction, bool bothSides) {
         unsetCellWall(neighboringCell, getOppositeDirection(direction), false);
     }
 }
-
-} // namespace mackAlgoTwo

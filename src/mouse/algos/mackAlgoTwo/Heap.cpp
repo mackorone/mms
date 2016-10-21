@@ -3,8 +3,6 @@
 #include "Assert.h"
 #include "Maze.h"
 
-namespace mackAlgoTwo {
-
 byte Heap::m_size = 0;
 byte Heap::m_data[] = {0};
 
@@ -122,5 +120,3 @@ void Heap::swap(byte indexOne, byte indexTwo) {
     m_data[indexOne] = m_data[indexTwo];
     m_data[indexTwo] = temp;
 }
-
-} // namespace mackAlgoTwo

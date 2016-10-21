@@ -3,8 +3,6 @@
 #include "Byte.h"
 #include "Direction.h"
 
-namespace mackAlgoTwo {
-
 struct Info {
     // The distance of the cell from the source (no units)
     twobyte distance;
@@ -74,5 +72,3 @@ struct Maze {
     static void setStraightAwayLength(byte cell, byte straightAwayLength);
 
 };
-
-} // namespace mackAlgoTwo

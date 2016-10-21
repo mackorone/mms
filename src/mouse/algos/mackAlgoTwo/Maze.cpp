@@ -1,7 +1,5 @@
 #include "Maze.h"
 
-namespace mackAlgoTwo {
-
 byte Maze::m_data[] = {0};
 Info Maze::m_info[] = {0};
 
@@ -92,5 +90,3 @@ byte Maze::getStraightAwayLength(byte cell) {
 void Maze::setStraightAwayLength(byte cell, byte straightAwayLength) {
     m_info[cell].misc = (m_info[cell].misc & 15) | (straightAwayLength << 4);
 }
-
-} // namespace mackAlgoTwo

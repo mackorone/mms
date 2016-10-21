@@ -77,6 +77,11 @@ bool SimUtilities::strToBool(const QString& str) {
     return str == "true";
 }
 
+char SimUtilities::strToChar(const QString& str) {
+    SIM_ASSERT_EQ(str.size(), 1);
+    return str.at(0).toLatin1();
+}
+
 int SimUtilities::strToInt(const QString& str) {
     SIM_ASSERT_TR(isInt(str));
     return str.toInt();
@@ -85,6 +90,10 @@ int SimUtilities::strToInt(const QString& str) {
 double SimUtilities::strToDouble(const QString& str) {
     SIM_ASSERT_TR(isDouble(str));
     return str.toDouble();
+}
+
+QString SimUtilities::boolToStr(bool value) {
+    return value ? "true" : "false";
 }
 
 QPair<QStringList, QStringList> SimUtilities::getFiles(const QString& dirPath) {

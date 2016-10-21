@@ -14,6 +14,7 @@
 #include "SimUtilities.h"
 #include "State.h"
 #include "Time.h"
+#include "units/Milliseconds.h"
 
 namespace mms {
 
@@ -108,7 +109,7 @@ void Driver::drive(int argc, char* argv[]) {
 
     // We need to process mouse algo events on the main thread.
     while (true) {
-        SimUtilities::sleep(Seconds(0.001));
+        SimUtilities::sleep(Milliseconds(1));
         QCoreApplication::processEvents();
     }
 }

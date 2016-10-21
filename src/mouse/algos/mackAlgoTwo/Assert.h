@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdlib>
+
 #include "Options.h"
 
 #if (SIMULATOR)
@@ -36,8 +38,8 @@
                   << "FILE: " <<  __FILE__  << std::endl\
                   << "LINE: " <<  __LINE__  << std::endl\
                   << "COND: " << #lhs << " == " << #rhs << std::endl\
-                  << "LHS: " << std::to_string(lhs) << std::endl\
-                  << "RHS: " << std::to_string(rhs) << std::endl\
+                  << "LHS: " << lhs << std::endl\
+                  << "RHS: " << rhs << std::endl\
                   << CLOSING << std::endl;\
         exit(1);\
     }
@@ -48,8 +50,8 @@
                   << "FILE: " <<  __FILE__  << std::endl\
                   << "LINE: " <<  __LINE__  << std::endl\
                   << "COND: " << #lhs << " != " << #rhs << std::endl\
-                  << "LHS: " << std::to_string(lhs) << std::endl\
-                  << "RHS: " << std::to_string(rhs) << std::endl\
+                  << "LHS: " << lhs << std::endl\
+                  << "RHS: " << rhs << std::endl\
                   << CLOSING << std::endl;\
         exit(1);\
     }
@@ -60,8 +62,8 @@
                   << "FILE: " <<  __FILE__  << std::endl\
                   << "LINE: " <<  __LINE__  << std::endl\
                   << "COND: " << #lhs << " < " << #rhs << std::endl\
-                  << "LHS: " << std::to_string(lhs) << std::endl\
-                  << "RHS: " << std::to_string(rhs) << std::endl\
+                  << "LHS: " << lhs << std::endl\
+                  << "RHS: " << rhs << std::endl\
                   << CLOSING << std::endl;\
         exit(1);\
     }
@@ -72,8 +74,8 @@
                   << "FILE: " <<  __FILE__  << std::endl\
                   << "LINE: " <<  __LINE__  << std::endl\
                   << "COND: " << #lhs << " <= " << #rhs << std::endl\
-                  << "LHS: " << std::to_string(lhs) << std::endl\
-                  << "RHS: " << std::to_string(rhs) << std::endl\
+                  << "LHS: " << lhs << std::endl\
+                  << "RHS: " << rhs << std::endl\
                   << CLOSING << std::endl;\
         exit(1);\
     }

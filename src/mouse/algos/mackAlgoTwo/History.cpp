@@ -2,8 +2,6 @@
 
 #include "Assert.h"
 
-namespace mackAlgoTwo {
-
 byte History::m_size = 0;
 byte History::m_tail = 0;
 bool History::m_infoAdded = false;
@@ -45,5 +43,3 @@ byte History::cell(twobyte cellAndData) {
 byte History::data(twobyte cellAndData) {
     return cellAndData & 255;
 }
-
-} // namespace mackAlgoTwo
