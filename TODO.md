@@ -6,9 +6,11 @@
     - Don't use stderr to communicate, use something else
     - Make continuous algos possible
     - Print the stdout of the child process somewhere
+    - Batch tile operations (text, color, etc.)
 - Don't need (const X& x) because of implicit sharing
     - http://doc.qt.io/qt-5/implicit-sharing.html#implicitly-shared
 - Rename SIM_ASSERT to just ASSERT
+- Keep counts of all methods called (so people can debug why it's slow)
 - Make GUI
 - Wireframe mode should only affect the maps
 - Include images/fonts with the binary: http://doc.qt.io/qt-5/resources.html

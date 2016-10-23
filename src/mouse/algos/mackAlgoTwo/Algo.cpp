@@ -274,6 +274,9 @@ byte Algo::generatePath(byte start) {
     // Reset the destination cell distances
     resetDestinationCellDistances();
 
+    // Cache the value of shouldColorVisitedCells
+    bool colorVisitedCells = shouldColorVisitedCells();
+
     // Dijkstra's algo
     ASSERT_EQ(Heap::size(), 0);
     Heap::push(start);
@@ -284,7 +287,7 @@ byte Algo::generatePath(byte start) {
                 checkNeighbor(cell, direction);
             }
         }
-        if (shouldColorVisitedCells()) {
+        if (colorVisitedCells) {
 #if (SIMULATOR)
             m_mouse->delay(colorVisitedCellsDelayMs());
             m_mouse->setTileColor(Maze::getX(cell), Maze::getY(cell), 'Y');

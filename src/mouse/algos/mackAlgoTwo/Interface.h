@@ -6,6 +6,8 @@ class Interface {
 
 public:
 
+    // ----- Functions for setting/updating mouse options ----- //
+
     // Static options (must be set at the beginning)
     void setMouseFile(const std::string& mouseFile);
     void setInterfaceType(const std::string& interfaceType);
@@ -27,6 +29,8 @@ public:
     void updateDeclareWallOnRead(bool declareWallOnRead);
     void updateUseTileEdgeMovements(bool useTileEdgeMovements);
 
+    // ----- Any interface methods ----- //
+
     // Starting information
     int mazeWidth();
     int mazeHeight();
@@ -37,6 +41,13 @@ public:
     double getRandomFloat();
     int millis(); // # of milliseconds of sim time (adjusted based on sim speed) that have passed
     void delay(int milliseconds); // # of milliseconds of sim time (adjusted based on sim speed)
+    void resetPosition(); // Reset position of the mouse
+
+    // Input buttons
+    bool inputButtonPressed(int inputButton);
+    void acknowledgeInputButtonPressed(int inputButton);
+
+    // ----- Tile appearance functions (these don't block) ----- //
 
     // Tile color
     void setTileColor(int x, int y, char color);
@@ -58,13 +69,6 @@ public:
     // Tile distance, where a negative distance corresponds to inf distance
     void declareTileDistance(int x, int y, int distance);
     void undeclareTileDistance(int x, int y);
-
-    // Reset position of the mouse
-    void resetPosition();
-
-    // Input buttons
-    bool inputButtonPressed(int inputButton);
-    void acknowledgeInputButtonPressed(int inputButton);
 
     // ----- Continuous interface methods ----- //
 

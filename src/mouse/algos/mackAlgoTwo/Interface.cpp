@@ -114,62 +114,50 @@ void Interface::delay(int milliseconds) {
 
 void Interface::setTileColor(int x, int y, char color) {
     PRINT("setTileColor", x, y, color);
-    READ();
 }
 
 void Interface::clearTileColor(int x, int y) {
     PRINT("clearTileColor", x, y);
-    READ();
 }
 
 void Interface::clearAllTileColor() {
     PRINT("clearAllTileColor");
-    READ();
 }
 
 void Interface::setTileText(int x, int y, const std::string& text) {
     PRINT("setTileText", x, y, text);
-    READ();
 }
 
 void Interface::clearTileText(int x, int y) {
     PRINT("clearTileText", x, y);
-    READ();
 }
 
 void Interface::clearAllTileText() {
-    PRINT("clearTileText");
-    READ();
+    PRINT("clearAllTileText");
 }
 
 void Interface::declareWall(int x, int y, char direction, bool wallExists) {
     PRINT("declareWall", x, y, direction, boolToString(wallExists));
-    READ();
 }
 
 void Interface::undeclareWall(int x, int y, char direction) {
     PRINT("undeclareWall", x, y, direction);
-    READ();
 }
 
 void Interface::setTileFogginess(int x, int y, bool foggy) {
     PRINT("setTileFogginess", x, y, boolToString(foggy));
-    READ();
 }
 
 void Interface::declareTileDistance(int x, int y, int distance) {
     PRINT("declareTileDistance", x, y, distance);
-    READ();
 }
 
 void Interface::undeclareTileDistance(int x, int y) {
     PRINT("undeclareTileDistance", x, y);
-    READ();
 }
 
 void Interface::resetPosition() {
     PRINT("resetPosition");
-    READ();
 }
 
 bool Interface::inputButtonPressed(int inputButton) {

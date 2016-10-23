@@ -231,7 +231,9 @@ void Controller::processMouseAlgoStderr() {
     // Process all available commands
     for (int i = 0; i < commands.size(); i += 1) {
         QString response = processCommand(commands.at(i));
-        m_process->write((response + "\n").toStdString().c_str());
+        if (!response.isEmpty()) {
+            m_process->write((response + "\n").toStdString().c_str());
+        }
     }
 
     // Store the beginning of the incomplete line
@@ -245,6 +247,7 @@ QString Controller::processCommand(const QString& command) {
     // types, not finalizing static options more than once, etc.
 
     static const QString ACK_STRING = "ACK";
+    static const QString EMPTY_STRING = "";
     static const QString ERROR_STRING = "!";
 
     QStringList tokens = command.split(" ", QString::SkipEmptyParts);
@@ -348,34 +351,34 @@ QString Controller::processCommand(const QString& command) {
         int y = SimUtilities::strToInt(tokens.at(2));
         char color = SimUtilities::strToChar(tokens.at(3));
         m_mouseInterface->setTileColor(x, y, color);
-        return ACK_STRING;
+        return EMPTY_STRING;
     }
     else if (function == "clearTileColor") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
         m_mouseInterface->clearTileColor(x, y);
-        return ACK_STRING;
+        return EMPTY_STRING;
     }
     else if (function == "clearAllTileColor") {
         m_mouseInterface->clearAllTileColor();
-        return ACK_STRING;
+        return EMPTY_STRING;
     }
     else if (function == "setTileText") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
         QString text = tokens.at(3);
         m_mouseInterface->setTileText(x, y, text);
-        return ACK_STRING;
+        return EMPTY_STRING;
     }
     else if (function == "clearTileText") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
         m_mouseInterface->clearTileText(x, y);
-        return ACK_STRING;
+        return EMPTY_STRING;
     }
     else if (function == "clearAllTileText") {
         m_mouseInterface->clearAllTileText();
-        return ACK_STRING;
+        return EMPTY_STRING;
     }
     else if (function == "declareWall") {
         int x = SimUtilities::strToInt(tokens.at(1));
@@ -383,34 +386,34 @@ QString Controller::processCommand(const QString& command) {
         char direction = SimUtilities::strToChar(tokens.at(3));
         bool wallExists = SimUtilities::strToBool(tokens.at(4));
         m_mouseInterface->declareWall(x, y, direction, wallExists);
-        return ACK_STRING;
+        return EMPTY_STRING;
     }
     else if (function == "undeclareWall") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
         char direction = SimUtilities::strToChar(tokens.at(3));
         m_mouseInterface->undeclareWall(x, y, direction);
-        return ACK_STRING;
+        return EMPTY_STRING;
     }
     else if (function == "setTileFogginess") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
         bool foggy = SimUtilities::strToBool(tokens.at(3));
         m_mouseInterface->setTileFogginess(x, y, foggy);
-        return ACK_STRING;
+        return EMPTY_STRING;
     }
     else if (function == "declareTileDistance") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
         int distance = SimUtilities::strToInt(tokens.at(3));
         m_mouseInterface->declareTileDistance(x, y, distance);
-        return ACK_STRING;
+        return EMPTY_STRING;
     }
     else if (function == "undeclareTileDistance") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
         m_mouseInterface->undeclareTileDistance(x, y);
-        return ACK_STRING;
+        return EMPTY_STRING;
     }
     else if (function == "resetPosition") {
         m_mouseInterface->resetPosition();
