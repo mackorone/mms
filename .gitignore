@@ -7,9 +7,14 @@ run/
 src/tests/*.sh
 zip/
 
-.fuse_hidden*
+*.pyc
+*.pyo
 *.swp
+
+.fuse_hidden*
+
 auto_generated_maze.*
+
 mm.jar
 a.out
 

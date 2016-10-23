@@ -6,7 +6,6 @@
 #include <iostream>
 
 void Algo::generate(Interface* interface) {
-    // TODO: Write algorithm here
     m_mazeInterface = interface;
     generateMaze(interface->getWidth(), interface->getHeight());
     convertToBasicMaze(interface);
