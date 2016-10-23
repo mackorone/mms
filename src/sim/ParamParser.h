@@ -69,9 +69,9 @@ private:
     // Generic helper method for getting numeric values within a specific range
     template<class T>
     T getNumIfHasNumAndInRange(const QString& type, const QString& tag, T defaultValue, T min, T max) {
-        SIM_ASSERT_TR(type == "int" || type == "double");
-        SIM_ASSERT_LE(min, defaultValue);
-        SIM_ASSERT_LE(defaultValue, max);
+        ASSERT_TR(type == "int" || type == "double");
+        ASSERT_LE(min, defaultValue);
+        ASSERT_LE(defaultValue, max);
         if (!((type == "int" && hasIntValue(tag)) || (type == "double" && hasDoubleValue(tag)))) {
             printTagNotFound(type, tag, QString::number(defaultValue));
             return defaultValue;

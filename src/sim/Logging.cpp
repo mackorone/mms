@@ -16,8 +16,8 @@ QTextStream* Logging::STREAM = nullptr;
 
 void Logging::init(const QString& runId) {
 
-    SIM_ASSERT_TR(nullptr == STDOUT);
-    SIM_ASSERT_TR(nullptr == STREAM);
+    ASSERT_TR(nullptr == STDOUT);
+    ASSERT_TR(nullptr == STREAM);
 
     STDOUT = new QTextStream(stdout);
 
@@ -36,8 +36,8 @@ void Logging::handler(
         const QMessageLogContext& context,
         const QString& msg) {
 
-    SIM_ASSERT_FA(nullptr == STDOUT);
-    SIM_ASSERT_FA(nullptr == STREAM);
+    ASSERT_FA(nullptr == STDOUT);
+    ASSERT_FA(nullptr == STREAM);
     
     static const QMap<QtMsgType, QString> mapping {
         {QtDebugMsg,    "DEBUG"   },

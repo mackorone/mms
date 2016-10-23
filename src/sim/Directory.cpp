@@ -7,12 +7,12 @@ namespace mms {
 Directory* Directory::INSTANCE = nullptr; 
 
 void Directory::init(const QString& applicationFilePath) {
-    SIM_ASSERT_TR(INSTANCE == nullptr);
+    ASSERT_TR(INSTANCE == nullptr);
     INSTANCE = new Directory(applicationFilePath);
 }
 
 Directory* Directory::get() {
-    SIM_ASSERT_FA(INSTANCE == nullptr);
+    ASSERT_FA(INSTANCE == nullptr);
     return INSTANCE;
 }
 

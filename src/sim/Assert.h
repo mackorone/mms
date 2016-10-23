@@ -11,13 +11,9 @@
 #define CLOSING "---------------------------------------"
 
 // TODO: upforgrabs
-// Rename SIM_ASSERT_TR to just ASSERT_TR (and likewise for the other
-// functions), since algo code no longer shares code with sim code.
-
-// TODO: upforgrabs
 // Refactor these to deduplicate the OPENING, CLOSING, FILE, and LINE printouts.
 
-#define SIM_ASSERT_TR(condition)\
+#define ASSERT_TR(condition)\
 if (!(condition)) {\
     std::cerr << OPENING << std::endl\
               << "FILE: " << __FILE__ << std::endl\
@@ -27,7 +23,7 @@ if (!(condition)) {\
     exit(1);\
 }
 
-#define SIM_ASSERT_FA(condition)\
+#define ASSERT_FA(condition)\
 if (condition) {\
     std::cerr << OPENING << std::endl\
               << "FILE: " << __FILE__ << std::endl\
@@ -37,7 +33,7 @@ if (condition) {\
     exit(1);\
 }
 
-#define SIM_ASSERT_EQ(lhs, rhs)\
+#define ASSERT_EQ(lhs, rhs)\
 if (!((lhs) == (rhs))) {\
     std::cerr << OPENING << std::endl\
               << "FILE: " << __FILE__ << std::endl\
@@ -49,7 +45,7 @@ if (!((lhs) == (rhs))) {\
     exit(1);\
 }
 
-#define SIM_ASSERT_NE(lhs, rhs)\
+#define ASSERT_NE(lhs, rhs)\
 if (!((lhs) != (rhs))) {\
     std::cerr << OPENING << std::endl\
               << "FILE: " << __FILE__ << std::endl\
@@ -61,7 +57,7 @@ if (!((lhs) != (rhs))) {\
     exit(1);\
 }
 
-#define SIM_ASSERT_LT(lhs, rhs)\
+#define ASSERT_LT(lhs, rhs)\
 if (!((lhs) < (rhs))) {\
     std::cerr << OPENING << std::endl\
               << "FILE: " << __FILE__ << std::endl\
@@ -73,7 +69,7 @@ if (!((lhs) < (rhs))) {\
     exit(1);\
 }
 
-#define SIM_ASSERT_LE(lhs, rhs)\
+#define ASSERT_LE(lhs, rhs)\
 if (!((lhs) <= (rhs))) {\
     std::cerr << OPENING << std::endl\
               << "FILE: " << __FILE__ << std::endl\
@@ -85,14 +81,14 @@ if (!((lhs) <= (rhs))) {\
     exit(1);\
 }
 
-#define SIM_ASSERT_RUNS_AT_MOST_N_TIMES(N) {\
+#define ASSERT_RUNS_AT_MOST_N_TIMES(N) {\
     static int count = 0;\
-    SIM_ASSERT_LT(count, N);\
+    ASSERT_LT(count, N);\
     count += 1;\
 }
 
-#define SIM_ASSERT_NEVER_RUNS()\
-SIM_ASSERT_RUNS_AT_MOST_N_TIMES(0);
+#define ASSERT_NEVER_RUNS()\
+ASSERT_RUNS_AT_MOST_N_TIMES(0);
 
-#define SIM_ASSERT_RUNS_JUST_ONCE()\
-SIM_ASSERT_RUNS_AT_MOST_N_TIMES(1);
+#define ASSERT_RUNS_JUST_ONCE()\
+ASSERT_RUNS_AT_MOST_N_TIMES(1);

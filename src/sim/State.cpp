@@ -50,7 +50,7 @@ QString State::runId() {
 }
 
 void State::setRunId(const QString& runId) {
-    SIM_ASSERT_TR(m_runId.isEmpty());
+    ASSERT_TR(m_runId.isEmpty());
     m_runId = runId;
 }
 
@@ -188,22 +188,22 @@ void State::setSimSpeed(double simSpeed) {
 }
 
 bool State::inputButtonWasPressed(int inputButton) {
-    SIM_ASSERT_TR(m_inputButtons.contains(inputButton));
+    ASSERT_TR(m_inputButtons.contains(inputButton));
     return m_inputButtons.value(inputButton);
 }
 
 void State::setInputButtonWasPressed(int inputButton, bool pressed) {
-    SIM_ASSERT_TR(m_inputButtons.contains(inputButton));
+    ASSERT_TR(m_inputButtons.contains(inputButton));
     m_inputButtons[inputButton] = pressed;
 }
 
 bool State::arrowKeyIsPressed(Key key) {
-    SIM_ASSERT_TR(m_arrowKeys.contains(key));
+    ASSERT_TR(m_arrowKeys.contains(key));
     return m_arrowKeys.value(key);
 }
 
 void State::setArrowKeyIsPressed(Key key, bool pressed) {
-    SIM_ASSERT_TR(m_arrowKeys.contains(key));
+    ASSERT_TR(m_arrowKeys.contains(key));
     m_arrowKeys[key] = pressed;
 }
 

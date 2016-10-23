@@ -83,8 +83,8 @@ void Sensor::updateReading(
             getViewPolygon(currentPosition, currentDirection, maze).area() /
             getInitialViewPolygon().area());
 
-    SIM_ASSERT_LE(0.0, m_currentReading);
-    SIM_ASSERT_LE(m_currentReading, 1.0);
+    ASSERT_LE(0.0, m_currentReading);
+    ASSERT_LE(m_currentReading, 1.0);
 }
 
 Polygon Sensor::getViewPolygon(

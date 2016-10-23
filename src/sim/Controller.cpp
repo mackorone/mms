@@ -202,6 +202,14 @@ Direction Controller::getInitialDirection(const QString& initialDirection, Model
     return STRING_TO_DIRECTION.value(initialDirection);
 }
 
+void Controller::processMouseAlgoStdout() {
+    QString output = m_process->readAllStandardOutput();
+    for (const QString& line : output.split("\n", QString::SkipEmptyParts)) {
+        // TODO: MACK - format this better, put this in the GUI, log it, etc.
+        qDebug() << "ALGO:" << line;
+    }
+}
+
 void Controller::processMouseAlgoStderr() {
 
     // TODO: upforgrabs
@@ -621,6 +629,12 @@ void Controller::startMouseAlgorithm(const QString& mouseAlgorithm) {
 
         // Run
         m_process = new QProcess();
+        connect(
+            m_process,
+            SIGNAL(readyReadStandardOutput()),
+            this,
+            SLOT(processMouseAlgoStdout())
+        );
         connect(
             m_process,
             SIGNAL(readyReadStandardError()),

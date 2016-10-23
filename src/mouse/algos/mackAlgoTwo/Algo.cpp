@@ -20,6 +20,7 @@ extern volatile bool buttonPressed;
 #if (SIMULATOR)
 
 void Algo::solve(Interface* interface) {
+    std::cout << "HERE" << std::endl;
 
     // Initialize the MouseInterface pointer
     m_mouse = interface;

@@ -79,10 +79,11 @@ private:
 
 private slots:
 
+    void processMouseAlgoStdout();
     void processMouseAlgoStderr();
 
-// TODO: MACK - refactor these somewhere else
 private:
+
     void startMouseAlgorithm(const QString& mouseAlgorithm);
 
 };

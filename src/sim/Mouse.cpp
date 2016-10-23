@@ -284,15 +284,15 @@ bool Mouse::hasWheel(const QString& name) const {
 }
 
 RadiansPerSecond Mouse::getWheelMaxSpeed(const QString& name) const {
-    SIM_ASSERT_TR(m_wheels.contains(name));
+    ASSERT_TR(m_wheels.contains(name));
     return m_wheels.value(name).getMaxAngularVelocityMagnitude();
 }
 
 void Mouse::setWheelSpeeds(const QMap<QString, RadiansPerSecond>& wheelSpeeds) {
     m_updateMutex.lock();
     for (const auto& pair : ContainerUtilities::items(wheelSpeeds)) {
-        SIM_ASSERT_TR(m_wheels.contains(pair.first));
-        SIM_ASSERT_LE(
+        ASSERT_TR(m_wheels.contains(pair.first));
+        ASSERT_LE(
             std::abs(pair.second.getRevolutionsPerMinute()),
             getWheelMaxSpeed(pair.first).getRevolutionsPerMinute());
         m_wheels[pair.first].setAngularVelocity(pair.second);
@@ -323,17 +323,17 @@ void Mouse::stopAllWheels() {
 }
 
 EncoderType Mouse::getWheelEncoderType(const QString& name) const {
-    SIM_ASSERT_TR(hasWheel(name));
+    ASSERT_TR(hasWheel(name));
     return m_wheels.value(name).getEncoderType();
 }
 
 double Mouse::getWheelEncoderTicksPerRevolution(const QString& name) const {
-    SIM_ASSERT_TR(hasWheel(name));
+    ASSERT_TR(hasWheel(name));
     return m_wheels.value(name).getEncoderTicksPerRevolution();
 }
 
 int Mouse::readWheelAbsoluteEncoder(const QString& name) const {
-    SIM_ASSERT_TR(hasWheel(name));
+    ASSERT_TR(hasWheel(name));
     m_updateMutex.lock();
     int encoderReading = m_wheels.value(name).readAbsoluteEncoder();
     m_updateMutex.unlock();
@@ -341,7 +341,7 @@ int Mouse::readWheelAbsoluteEncoder(const QString& name) const {
 }
 
 int Mouse::readWheelRelativeEncoder(const QString& name) const {
-    SIM_ASSERT_TR(hasWheel(name));
+    ASSERT_TR(hasWheel(name));
     m_updateMutex.lock();
     int encoderReading = m_wheels.value(name).readRelativeEncoder();
     m_updateMutex.unlock();
@@ -349,7 +349,7 @@ int Mouse::readWheelRelativeEncoder(const QString& name) const {
 }
 
 void Mouse::resetWheelRelativeEncoder(const QString& name) {
-    SIM_ASSERT_TR(hasWheel(name));
+    ASSERT_TR(hasWheel(name));
     m_updateMutex.lock();
     m_wheels[name].resetRelativeEncoder();
     m_updateMutex.unlock();
@@ -360,7 +360,7 @@ bool Mouse::hasSensor(const QString& name) const {
 }
 
 double Mouse::readSensor(const QString& name) const {
-    SIM_ASSERT_TR(hasSensor(name));
+    ASSERT_TR(hasSensor(name));
     return m_sensors.value(name).read();
 }
 
@@ -412,13 +412,13 @@ void Mouse::setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardF
 
     // Now we just double check that the magnitudes are where we expect them to be
     double normalizedFactorMagnitude = std::abs(normalizedForwardFactor) + std::abs(normalizedTurnFactor);
-    SIM_ASSERT_LE(0.0, normalizedFactorMagnitude);
-    SIM_ASSERT_LE(normalizedFactorMagnitude, 1.0);
+    ASSERT_LE(0.0, normalizedFactorMagnitude);
+    ASSERT_LE(normalizedFactorMagnitude, 1.0);
 
     // Now set the wheel speeds based on the normalized factors
     QMap<QString, RadiansPerSecond> wheelSpeeds;
     for (const auto& pair : ContainerUtilities::items(m_wheels)) {
-        SIM_ASSERT_TR(m_wheelSpeedAdjustmentFactors.contains(pair.first));
+        ASSERT_TR(m_wheelSpeedAdjustmentFactors.contains(pair.first));
         QPair<double, double> adjustmentFactors = m_wheelSpeedAdjustmentFactors.value(pair.first);
         wheelSpeeds.insert(
             pair.first,
@@ -502,10 +502,10 @@ QMap<QString, QPair<double, double>> Mouse::getWheelSpeedAdjustmentFactors(
     for (const auto& pair : ContainerUtilities::items(ratesOfChangePairs)) {
         double normalizedForwardContribution = pair.second.first / maxForwardRateOfChangeMagnitude;
         double normalizedRadialContribution = pair.second.second / maxRadialRateOfChangeMagnitude;
-        SIM_ASSERT_LE(-1.0, normalizedForwardContribution);
-        SIM_ASSERT_LE(-1.0, normalizedRadialContribution);
-        SIM_ASSERT_LE(normalizedForwardContribution, 1.0);
-        SIM_ASSERT_LE(normalizedRadialContribution, 1.0);
+        ASSERT_LE(-1.0, normalizedForwardContribution);
+        ASSERT_LE(-1.0, normalizedRadialContribution);
+        ASSERT_LE(normalizedForwardContribution, 1.0);
+        ASSERT_LE(normalizedRadialContribution, 1.0);
         adjustmentFactors.insert(
             pair.first,
             {

@@ -241,8 +241,8 @@ QPair<double, double> TransformationMatrix::mapPixelCoordinateToOpenGlCoordinate
 QVector<float> TransformationMatrix::multiply4x4Matrices(
         QVector<float> left,
         QVector<float> right) {
-    SIM_ASSERT_EQ(left.size(), 16);
-    SIM_ASSERT_EQ(right.size(), 16);
+    ASSERT_EQ(left.size(), 16);
+    ASSERT_EQ(right.size(), 16);
     QVector<float> result;
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
@@ -253,7 +253,7 @@ QVector<float> TransformationMatrix::multiply4x4Matrices(
             result.push_back(value);
         }
     }
-    SIM_ASSERT_EQ(result.size(), 16);
+    ASSERT_EQ(result.size(), 16);
     return result;
 }
 

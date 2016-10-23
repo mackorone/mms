@@ -39,7 +39,7 @@ Polygon::Polygon(QVector<Cartesian> vertices) :
     m_vertices(vertices),
     // Postpone triangulation until we absolutely have to do it.
     m_triangles({}) {
-    SIM_ASSERT_LE(3, m_vertices.size());
+    ASSERT_LE(3, m_vertices.size());
     // TODO: MACK - does this actually help?
     // If the number of vertices is three, the triangulation is trivial
     if (m_vertices.size() == 3) {

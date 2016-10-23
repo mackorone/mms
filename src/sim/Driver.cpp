@@ -26,7 +26,7 @@ Controller* Driver::m_controller;
 void Driver::drive(int argc, char* argv[]) {
 
     // Make sure that this function is called just once
-    SIM_ASSERT_RUNS_JUST_ONCE();
+    ASSERT_RUNS_JUST_ONCE();
 
     // Initialize the Qt core application
     QCoreApplication app(argc, argv);

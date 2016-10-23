@@ -36,7 +36,7 @@ double SimUtilities::getRandom() {
 }
 
 void SimUtilities::sleep(const Duration& duration) {
-    SIM_ASSERT_LE(0, duration.getMicroseconds());
+    ASSERT_LE(0, duration.getMicroseconds());
     QThread::usleep(duration.getMicroseconds());
 }
 
@@ -73,22 +73,22 @@ bool SimUtilities::isDouble(const QString& str) {
 }
 
 bool SimUtilities::strToBool(const QString& str) {
-    SIM_ASSERT_TR(isBool(str));
+    ASSERT_TR(isBool(str));
     return str == "true";
 }
 
 char SimUtilities::strToChar(const QString& str) {
-    SIM_ASSERT_EQ(str.size(), 1);
+    ASSERT_EQ(str.size(), 1);
     return str.at(0).toLatin1();
 }
 
 int SimUtilities::strToInt(const QString& str) {
-    SIM_ASSERT_TR(isInt(str));
+    ASSERT_TR(isInt(str));
     return str.toInt();
 }
 
 double SimUtilities::strToDouble(const QString& str) {
-    SIM_ASSERT_TR(isDouble(str));
+    ASSERT_TR(isDouble(str));
     return str.toDouble();
 }
 

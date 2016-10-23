@@ -8,12 +8,12 @@ namespace mms {
 Time* Time::INSTANCE = nullptr;
 
 void Time::init() {
-    SIM_ASSERT_TR(INSTANCE == nullptr);
+    ASSERT_TR(INSTANCE == nullptr);
     INSTANCE = new Time();
 }
 
 Time* Time::get() {
-    SIM_ASSERT_FA(INSTANCE == nullptr);
+    ASSERT_FA(INSTANCE == nullptr);
     return INSTANCE;
 }
 

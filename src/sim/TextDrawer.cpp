@@ -37,7 +37,7 @@ float TextDrawer::getWidth(const QString& str) {
 }
 
 void TextDrawer::drawText(float x, float y, int windowWidth, int windowHeight, const QString& str) {
-    SIM_ASSERT_EQ(m_activeTextDrawer, this);
+    ASSERT_EQ(m_activeTextDrawer, this);
     glLoadIdentity();
     glOrtho(0, windowWidth, 0, windowHeight, -1, 1);
     sth_draw_text(

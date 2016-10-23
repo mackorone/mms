@@ -22,7 +22,7 @@ QPair<int, int> TileGraphicTextCache::getTileGraphicTextMaxSize() const {
 }
 
 QPair<double, double> TileGraphicTextCache::getFontImageCharacterPosition(QChar c) const {
-    SIM_ASSERT_TR(m_fontImageMap.contains(c));
+    ASSERT_TR(m_fontImageMap.contains(c));
     return m_fontImageMap.value(c);
 }
 

@@ -35,7 +35,7 @@ public:
         QMapIterator<K, V> iterator(map);
         while (iterator.hasNext()) {
             auto pair = iterator.next();
-            SIM_ASSERT_FA(inverted.contains(pair.value()));
+            ASSERT_FA(inverted.contains(pair.value()));
             inverted.insert(pair.value(), pair.key());
         }
         return inverted;

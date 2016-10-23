@@ -12,39 +12,39 @@ MazeGraphic::MazeGraphic(const Maze* maze, BufferInterface* bufferInterface) {
         }
         m_tileGraphics.push_back(column);
     }
-    SIM_ASSERT_EQ(getWidth(), maze->getWidth());
-    SIM_ASSERT_EQ(getHeight(), maze->getHeight());
+    ASSERT_EQ(getWidth(), maze->getWidth());
+    ASSERT_EQ(getHeight(), maze->getHeight());
 }
 
 void MazeGraphic::setTileColor(int x, int y, Color color) {
-    SIM_ASSERT_TR(withinMaze(x, y));
+    ASSERT_TR(withinMaze(x, y));
     m_tileGraphics[x][y].setColor(color);
 }
 
 void MazeGraphic::declareWall(int x, int y, Direction direction, bool isWall) {
-    SIM_ASSERT_TR(withinMaze(x, y));
+    ASSERT_TR(withinMaze(x, y));
     m_tileGraphics[x][y].declareWall(direction, isWall);
 }
 
 void MazeGraphic::undeclareWall(int x, int y, Direction direction) {
-    SIM_ASSERT_TR(withinMaze(x, y));
+    ASSERT_TR(withinMaze(x, y));
     m_tileGraphics[x][y].undeclareWall(direction);
 }
 
 void MazeGraphic::setTileFogginess(int x, int y, bool foggy) {
-    SIM_ASSERT_TR(withinMaze(x, y));
+    ASSERT_TR(withinMaze(x, y));
     m_tileGraphics[x][y].setFogginess(foggy);
 }
 
 void MazeGraphic::setTileText(int x, int y, const QVector<QString>& rowsOfText) {
-    SIM_ASSERT_TR(withinMaze(x, y));
+    ASSERT_TR(withinMaze(x, y));
     m_tileGraphics[x][y].setText(rowsOfText);
 }
 
 void MazeGraphic::draw() const {
 
     // Make sure that this function is only called once
-    SIM_ASSERT_RUNS_JUST_ONCE();
+    ASSERT_RUNS_JUST_ONCE();
 
     // Fill the GRAPHIC_CPU_BUFFER
     for (int x = 0; x < m_tileGraphics.size(); x += 1) {
