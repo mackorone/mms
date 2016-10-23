@@ -4,6 +4,7 @@ moc/
 obj/
 rcc/
 run/
+src/tests/*.sh
 zip/
 
 .fuse_hidden*
