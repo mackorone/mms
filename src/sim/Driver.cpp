@@ -1,6 +1,6 @@
 #include "Driver.h"
 
-#include <QCoreApplication>
+#include <QApplication>
 #include <QProcess>
 #include <QDebug>
 
@@ -10,6 +10,7 @@
 #include "Assert.h"
 #include "Directory.h"
 #include "Logging.h"
+#include "MainWindow.h"
 #include "Param.h"
 #include "SimUtilities.h"
 #include "State.h"
@@ -23,13 +24,13 @@ Model* Driver::m_model;
 View* Driver::m_view;
 Controller* Driver::m_controller;
 
-void Driver::drive(int argc, char* argv[]) {
+int Driver::drive(int argc, char* argv[]) {
 
     // Make sure that this function is called just once
     ASSERT_RUNS_JUST_ONCE();
 
     // Initialize the Qt core application
-    QCoreApplication app(argc, argv);
+    QApplication app(argc, argv);
 
     // Initialize the Time object
     Time::init();
@@ -107,11 +108,12 @@ void Driver::drive(int argc, char* argv[]) {
         glutMainLoop();
     });
 
-    // We need to process mouse algo events on the main thread.
-    while (true) {
-        SimUtilities::sleep(Milliseconds(1));
-        QCoreApplication::processEvents();
-    }
+    // TODO: MACK -- create the main window
+    MainWindow w;
+    w.show();
+
+    // Start the event loop
+    return app.exec();
 }
 
 } // namespace mms

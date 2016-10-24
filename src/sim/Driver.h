@@ -10,7 +10,7 @@ class Driver {
 
 public:
     Driver() = delete;
-    static void drive(int argc, char* argv[]);
+    static int drive(int argc, char* argv[]);
 
 private:
     static Model* m_model;

@@ -1,3 +1,13 @@
+# TODO: MACK - is each of these necessary?
+QT += core
+QT += gui
+QT += widgets
+# TARGET = mms # TODO: MACK
+
+TEMPLATE = app
+FORMS += $$files(ui/*.ui, true)
+UI_DIR = ui
+
 CONFIG += debug
 CONFIG += object_parallel_to_source
 CONFIG += qt
@@ -8,6 +18,7 @@ SOURCES += $$files(../lib/*.cpp, true) # TODO: Remove this
 
 HEADERS += $$files(*.h, true)
 HEADERS += $$files(../lib/*.h, true) # TODO: Remove this
+
 
 INCLUDEPATH += ../lib
 
