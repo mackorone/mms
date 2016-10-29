@@ -55,22 +55,23 @@ int Driver::drive(int argc, char* argv[]) {
     // Remove any excessive archived runs
     SimUtilities::removeExcessArchivedRuns();
 
+    // TODO: MACK
     // Generate the glut functions in a static context
     GlutFunctions functions = {
         []() {
-            m_view->refresh();
+            //m_view->refresh();
         },
         [](int width, int height) {
-            m_view->updateWindowSize(width, height);
+            //m_view->updateWindowSize(width, height);
         },
         [](unsigned char key, int x, int y) {
-            m_view->keyPress(key, x, y);
+            //m_view->keyPress(key, x, y);
         },
         [](int key, int x, int y) {
-            m_view->specialKeyPress(key, x, y);
+            //m_view->specialKeyPress(key, x, y);
         },
         [](int key, int x, int y) {
-            m_view->specialKeyRelease(key, x, y);
+            //m_view->specialKeyRelease(key, x, y);
         }
     };
 
@@ -104,12 +105,15 @@ int Driver::drive(int argc, char* argv[]) {
     // Start the graphics loop on a separate thread, allows the graphics to
     // refresh while mouse commands (e.g., moveForward()) can be handled
     // synchronously in the main thread.
+    // TODO: MACK
+    /*
     std::thread graphicsThread([]() {
         glutMainLoop();
     });
+    */
 
     // TODO: MACK -- create the main window
-    MainWindow w;
+    MainWindow w(m_view);
     w.show();
 
     // Start the event loop

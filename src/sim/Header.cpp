@@ -34,13 +34,17 @@ Header::Header(Model* model) :
     }
 
     // Create the text drawer object
-    m_textDrawer = new TextDrawer(fontPath, m_textHeight);
+    // TODO: MACK
+    // m_textDrawer = new TextDrawer(fontPath, m_textHeight);
 
     // Populate the lines with initial values
     updateLines();
 }
 
 int Header::getHeight() const {
+    // TODO: MACK
+    return 0;
+
     int numRows = getNumRows(m_lines.size(), m_columnStartingPositions.size());
     return P()->windowBorderWidth() + numRows * m_textHeight + (numRows - 1) * m_rowSpacing;
 }
@@ -61,6 +65,8 @@ void Header::updateLinesAndColumnStartingPositions() {
 }
 
 void Header::draw() {
+    // TODO: MACK
+    return;
 
     // Update the lines of text to be drawn each and every frame
     updateLines();
@@ -90,6 +96,8 @@ int Header::getNumRows(int numLines, int numCols) const {
 }
 
 void Header::updateLines() {
+    // TODO: MACK
+    return;
 
     if (!S()->headerVisible()) {
         m_lines = {};

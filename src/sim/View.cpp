@@ -19,7 +19,15 @@
 
 namespace mms {
 
-View::View(Model* model, int argc, char* argv[], const GlutFunctions& functions) : m_model(model) {
+View::View(
+        Model* model,
+        int argc,
+        char* argv[],
+        const GlutFunctions&
+        functions,
+        QWidget* parent) :
+        QOpenGLWidget(parent),
+        m_model(model) {
 
     m_bufferInterface = new BufferInterface(
         {m_model->getMaze()->getWidth(), m_model->getMaze()->getHeight()},
@@ -30,12 +38,13 @@ View::View(Model* model, int argc, char* argv[], const GlutFunctions& functions)
     m_mazeGraphic = new MazeGraphic(model->getMaze(), m_bufferInterface);
     m_mouseGraphic = new MouseGraphic(model->getMouse(), m_bufferInterface);
 
-    initGraphics(argc, argv, functions);
-    initPolygonProgram();
-    initTextureProgram();
+    // TODO: MACK
+    // initGraphics(argc, argv, functions);
+    // initPolygonProgram();
+    // initTextureProgram();
 
-    m_screenPixelsPerMeter = glutGet(GLUT_SCREEN_WIDTH) / (glutGet(GLUT_SCREEN_WIDTH_MM) / 1000.0);
-    m_fontImageMap = getFontImageMap();
+    // m_screenPixelsPerMeter = glutGet(GLUT_SCREEN_WIDTH) / (glutGet(GLUT_SCREEN_WIDTH_MM) / 1000.0);
+    // m_fontImageMap = getFontImageMap();
     m_header = new Header(model);
 }
 
@@ -53,11 +62,14 @@ void View::setController(Controller* controller) {
 }
 
 void View::refresh() {
+    // TODO: MACK
+    return;
 
     // In order to ensure we're sleeping the correct amount of time, we time
     // the drawing operation and take it into account when we sleep.
     double start(SimUtilities::getHighResTimestamp());
 
+    // TODO: MACK - this shouldn't be here :/
     // First, clear fog as necessary
     if (m_controller->getDynamicOptions().automaticallyClearFog) {
         // TODO: upforgrabs
@@ -102,7 +114,8 @@ void View::refresh() {
     glDisable(GL_SCISSOR_TEST);
 
     // Draw the window header
-    m_header->draw();
+    // TODO: MACK
+    // m_header->draw();
 
     // Display the result
     glutSwapBuffers();
@@ -293,36 +306,65 @@ void View::specialKeyRelease(int key, int x, int y) {
     }
 }
 
-void View::initGraphics(int argc, char* argv[], const GlutFunctions& functions) {
+void View::initializeGL() {
 
-    // GLUT Initialization
-    glutInit(&argc, argv);
-    // XXX: Is this necessary on OSX?
-    // glutInitDisplayMode(2048 | GLUT_DOUBLE | GLUT_RGBA);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
-    glutInitWindowPosition(0, 0);
-    glutInitWindowSize(P()->defaultWindowWidth(), P()->defaultWindowHeight());
-    glutCreateWindow("Micromouse Simulator");
+    // TODO: MACK
+    initializeOpenGLFunctions();
+
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
     glPolygonMode(GL_FRONT_AND_BACK, S()->wireframeMode() ? GL_LINE : GL_FILL);
-    glutDisplayFunc(functions.refresh);
-    glutIdleFunc(functions.refresh);
-    glutReshapeFunc(functions.windowResize);
-    glutKeyboardFunc(functions.keyPress);
-    glutSpecialFunc(functions.specialKeyPress);
-    glutSpecialUpFunc(functions.specialKeyRelease);
+
+    // initPolygonProgram();
+    // initTextureProgram();
+
+    // m_screenPixelsPerMeter = glutGet(GLUT_SCREEN_WIDTH) / (glutGet(GLUT_SCREEN_WIDTH_MM) / 1000.0);
+    // m_fontImageMap = getFontImageMap();
+
+}
+void View::resizeGL(int w, int h) {
+    // TODO: MACK 
+} 
+void View::paintGL() {
+    refresh();
+} 
+
+
+void View::initGraphics(int argc, char* argv[], const GlutFunctions& functions) {
+
+    // GLUT Initialization
+    //glutInit(&argc, argv); // TODO: MACK
+
+    // XXX: Is this necessary on OSX?
+    // glutInitDisplayMode(2048 | GLUT_DOUBLE | GLUT_RGBA);
+    // glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
+    // glutInitWindowPosition(0, 0);
+    // glutInitWindowSize(P()->defaultWindowWidth(), P()->defaultWindowHeight());
+    // glutCreateWindow("Micromouse Simulator");
+
+    // glClearColor(0.0, 0.0, 0.0, 1.0);
+
+    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    // glEnable(GL_BLEND);
+    // glPolygonMode(GL_FRONT_AND_BACK, S()->wireframeMode() ? GL_LINE : GL_FILL);
+
+    // glutDisplayFunc(functions.refresh);
+    // glutIdleFunc(functions.refresh);
+    // glutReshapeFunc(functions.windowResize);
+    // glutKeyboardFunc(functions.keyPress);
+    // glutSpecialFunc(functions.specialKeyPress);
+    // glutSpecialUpFunc(functions.specialKeyRelease);
 
     // XXX: If this necessary on OSX?
     // glewExperimental = GL_TRUE;
 
     // GLEW Initialization
-    GLenum err = glewInit();
-    if (GLEW_OK != err) {
-        qCritical().noquote().nospace() << "Unable to initialize GLEW.";
-        SimUtilities::quit();
-    }
+    // GLenum err = glewInit();
+    // if (GLEW_OK != err) {
+    //     qCritical().noquote().nospace() << "Unable to initialize GLEW.";
+    //     SimUtilities::quit();
+    // }
 
     // XXX: Print out the OpenGL version
     // std::cout << glGetString(GL_VERSION) << std::endl;

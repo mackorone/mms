@@ -2,18 +2,22 @@
 
 #include <QMainWindow>
 
+// TODO: MACK - rename this, it can just be class declaration
+#include "View.h"
+
 namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
+
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    MainWindow(mms::View* view, QWidget *parent = 0);
     ~MainWindow();
 
 private:
     Ui::MainWindow *ui;
+
 };

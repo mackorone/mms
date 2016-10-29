@@ -116,6 +116,9 @@ void TileGraphic::updateFog() const {
 
 void TileGraphic::updateText() const {
 
+    // TODO: MACK
+    return;
+
     QVector<QString> rows = m_rowsOfText;
     if (S()->tileDistanceVisible()) {
         rows.insert(rows.begin(), (0 <= m_tile->getDistance() ? QString::number(m_tile->getDistance()) : "inf"));

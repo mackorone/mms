@@ -15,9 +15,9 @@
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QMainWindow>
+#include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
-#include <QtWidgets/QStatusBar>
-#include <QtWidgets/QToolBar>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -25,29 +25,44 @@ QT_BEGIN_NAMESPACE
 class Ui_MainWindow
 {
 public:
-    QWidget *centralWidget;
+    QWidget *m_centralWidget;
+    QVBoxLayout *verticalLayout_5;
+    QVBoxLayout *m_openGlWidgetContainer;
     QMenuBar *menuBar;
-    QToolBar *mainToolBar;
-    QStatusBar *statusBar;
+    QMenu *menu_File;
 
     void setupUi(QMainWindow *MainWindow)
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(400, 300);
-        centralWidget = new QWidget(MainWindow);
-        centralWidget->setObjectName(QStringLiteral("centralWidget"));
-        MainWindow->setCentralWidget(centralWidget);
+        MainWindow->resize(1000, 700);
+        MainWindow->setTabShape(QTabWidget::Rounded);
+        m_centralWidget = new QWidget(MainWindow);
+        m_centralWidget->setObjectName(QStringLiteral("m_centralWidget"));
+        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(m_centralWidget->sizePolicy().hasHeightForWidth());
+        m_centralWidget->setSizePolicy(sizePolicy);
+        verticalLayout_5 = new QVBoxLayout(m_centralWidget);
+        verticalLayout_5->setSpacing(6);
+        verticalLayout_5->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_5->setObjectName(QStringLiteral("verticalLayout_5"));
+        m_openGlWidgetContainer = new QVBoxLayout();
+        m_openGlWidgetContainer->setSpacing(6);
+        m_openGlWidgetContainer->setObjectName(QStringLiteral("m_openGlWidgetContainer"));
+
+        verticalLayout_5->addLayout(m_openGlWidgetContainer);
+
+        MainWindow->setCentralWidget(m_centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 400, 25));
+        menuBar->setGeometry(QRect(0, 0, 1000, 25));
+        menu_File = new QMenu(menuBar);
+        menu_File->setObjectName(QStringLiteral("menu_File"));
         MainWindow->setMenuBar(menuBar);
-        mainToolBar = new QToolBar(MainWindow);
-        mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
-        MainWindow->addToolBar(Qt::TopToolBarArea, mainToolBar);
-        statusBar = new QStatusBar(MainWindow);
-        statusBar->setObjectName(QStringLiteral("statusBar"));
-        MainWindow->setStatusBar(statusBar);
+
+        menuBar->addAction(menu_File->menuAction());
 
         retranslateUi(MainWindow);
 
@@ -57,6 +72,7 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Micromouse Simulator", 0));
+        menu_File->setTitle(QApplication::translate("MainWindow", "&File", 0));
     } // retranslateUi
 
 };

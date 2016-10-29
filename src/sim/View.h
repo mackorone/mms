@@ -18,16 +18,31 @@
 #include "TriangleGraphic.h"
 #include "TriangleTexture.h"
 
+//////////////////
+
+#include <QOpenGLContext>
+#include <QOpenGLFunctions>
+#include <QOpenGLWidget>
+
+//////////////////
+
 namespace mms {
 
+// TODO: MACK - we can get rid of this
 // We have to forward declare the class (as opposed to including it) so as to
 // avoid a circular dependency; Controller.h already includes this file
 class Controller;
 
-class View {
+class View : public QOpenGLWidget, protected QOpenGLFunctions {
 
 public:
-    View(Model* model, int argc, char* argv[], const GlutFunctions& functions);
+
+    View(
+		Model* model,
+		int argc,
+		char* argv[],
+		const GlutFunctions& functions,
+		QWidget* parent = 0);
 
     MazeGraphic* getMazeGraphic();
     MouseGraphic* getMouseGraphic();
@@ -43,6 +58,19 @@ public:
     void keyPress(unsigned char key, int x, int y);
     void specialKeyPress(int key, int x, int y);
     void specialKeyRelease(int key, int x, int y);
+
+// TODO: MACK
+protected:
+    void initializeGL();
+        //initializeOpenGLFunctions();
+        //glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+    //}
+    void resizeGL(int w, int h);
+        // TODO: MACK
+    //}
+    void paintGL();
+        //glClear(GL_COLOR_BUFFER_BIT);
+    //}
 
 private:
 
