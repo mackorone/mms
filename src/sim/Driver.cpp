@@ -55,29 +55,12 @@ int Driver::drive(int argc, char* argv[]) {
     // Remove any excessive archived runs
     SimUtilities::removeExcessArchivedRuns();
 
-    // TODO: MACK
-    // Generate the glut functions in a static context
-    GlutFunctions functions = {
-        []() {
-            //m_view->refresh();
-        },
-        [](int width, int height) {
-            //m_view->updateWindowSize(width, height);
-        },
-        [](unsigned char key, int x, int y) {
-            //m_view->keyPress(key, x, y);
-        },
-        [](int key, int x, int y) {
-            //m_view->specialKeyPress(key, x, y);
-        },
-        [](int key, int x, int y) {
-            //m_view->specialKeyRelease(key, x, y);
-        }
-    };
+    /////////////////////////////////////////
+    // TODO: MACK - clean this up a little bit
 
     // Initialize the model and view
     m_model = new Model();
-    m_view = new View(m_model, argc, argv, functions);
+    m_view = new View(m_model, argc, argv);
 
     // Initialize the controller, which starts the algorithm
     // (and returns once the static options have been set)
@@ -96,25 +79,19 @@ int Driver::drive(int argc, char* argv[]) {
     // but only after we've initialized the tile graphic text
     m_view->getMazeGraphic()->draw();
 
+    //
+    /////////////////////////////////////////
+
     // TODO: MACK - this could be on the same thread as the graphics loop
     // Start the physics loop
     std::thread physicsThread([]() {
         m_model->getWorld()->simulate();
     });
 
-    // Start the graphics loop on a separate thread, allows the graphics to
-    // refresh while mouse commands (e.g., moveForward()) can be handled
-    // synchronously in the main thread.
-    // TODO: MACK
-    /*
-    std::thread graphicsThread([]() {
-        glutMainLoop();
-    });
-    */
-
     // TODO: MACK -- create the main window
     MainWindow w(m_view);
     w.show();
+    // TODO: MACK
 
     // Start the event loop
     return app.exec();

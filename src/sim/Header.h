@@ -2,8 +2,10 @@
 
 #include "Model.h"
 #include "StaticMouseAlgorithmOptions.h"
-#include "TextDrawer.h"
 #include "World.h"
+
+// TODO: MACK
+// #include "TextDrawer.h"
 
 namespace mms {
 
@@ -31,7 +33,8 @@ private:
     int m_columnSpacing; // The space between columns, in pixels
     QVector<int> m_columnStartingPositions; // The starting horizontal position of each column, in pixels
     QVector<QString> m_lines; // The lines of text that we're drawing in the header
-    TextDrawer* m_textDrawer; // The object used to dimension and draw the header text
+    // TODO: MACK
+    // TextDrawer* m_textDrawer; // The object used to dimension and draw the header text
 
     // Return the number of rows of text that to be displayed
     int getNumRows(int numLines, int numCols) const;

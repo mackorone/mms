@@ -1,10 +1,11 @@
 # High Priority
 
 - Run mouse algorithms as separate process
-    - http://doc.qt.io/qt-5/qprocess.html
     - Make continuous algos possible
+    - Do some cleanup here
 - Make GUI
     - Put the stdout of the child process somewhere
+    - use QOpenGLDebugLogger
 - Keep counts of all methods called (so people can debug why it's slow)
 - Wireframe mode should only affect the maps
 - Don't need (const X& x) because of implicit sharing

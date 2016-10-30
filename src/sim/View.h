@@ -1,15 +1,20 @@
 #pragma once
 
 #include <QMap>
+#include <QOpenGLBuffer> 
+#include <QOpenGLFunctions>
+#include <QOpenGLShaderProgram> 
+#include <QOpenGLTexture> 
+#include <QOpenGLVertexArrayObject> 
+#include <QOpenGLWidget>
 #include <QPair>
 #include <QSet>
 #include <QVector>
 
-#include <glut/glut.h>
-#include <tdogl/Program.h>
-#include <tdogl/Texture.h>
+// TODO: MACK
+#include <QOpenGLDebugLogger>
+#include <QOpenGLDebugMessage>
 
-#include "GlutFunctions.h"
 #include "Header.h"
 #include "MazeGraphic.h"
 #include "Model.h"
@@ -18,14 +23,6 @@
 #include "TriangleGraphic.h"
 #include "TriangleTexture.h"
 
-//////////////////
-
-#include <QOpenGLContext>
-#include <QOpenGLFunctions>
-#include <QOpenGLWidget>
-
-//////////////////
-
 namespace mms {
 
 // TODO: MACK - we can get rid of this
@@ -33,7 +30,10 @@ namespace mms {
 // avoid a circular dependency; Controller.h already includes this file
 class Controller;
 
+// TODO: MACK - private inheritance here?
 class View : public QOpenGLWidget, protected QOpenGLFunctions {
+
+	Q_OBJECT
 
 public:
 
@@ -41,7 +41,6 @@ public:
 		Model* model,
 		int argc,
 		char* argv[],
-		const GlutFunctions& functions,
 		QWidget* parent = 0);
 
     MazeGraphic* getMazeGraphic();
@@ -59,18 +58,11 @@ public:
     void specialKeyPress(int key, int x, int y);
     void specialKeyRelease(int key, int x, int y);
 
-// TODO: MACK
+// TODO: MACK - do these need to be protected?
 protected:
     void initializeGL();
-        //initializeOpenGLFunctions();
-        //glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-    //}
     void resizeGL(int w, int h);
-        // TODO: MACK
-    //}
     void paintGL();
-        //glClear(GL_COLOR_BUFFER_BIT);
-    //}
 
 private:
 
@@ -98,31 +90,61 @@ private:
     // Window header object
     Header* m_header;
 
+	// TODO: MACK - this shouldn't be in here...
     // Used to determine whether or not to automatically clear fog
     Controller* m_controller;
 
     // Polygon program variables
-    tdogl::Program* m_polygonProgram;
+	// TODO: MACK - do I need this anymore?
+    // tdogl::Program* m_polygonProgram;
     GLuint m_polygonVertexArrayObjectId;
     GLuint m_polygonVertexBufferObjectId;
 
     // Texture program variables
-    tdogl::Texture* m_textureAtlas;
-    tdogl::Program* m_textureProgram;
+    // tdogl::Texture* m_textureAtlas;
+    // tdogl::Program* m_textureProgram;
     GLuint m_textureVertexArrayObjectId;
     GLuint m_textureVertexBufferObjectId;
 
+	//////////
+
+	// TODO: MACK - rename these
+	QOpenGLShaderProgram m_polygonProgram;
+	QOpenGLVertexArrayObject m_polygonVertexArrayObject;
+	QOpenGLBuffer m_polygonVertexBufferObject;
+
+	// TODO: MACK - rename these
+	QOpenGLTexture* m_textureAtlas;
+	QOpenGLShaderProgram m_textureProgram;
+	QOpenGLVertexArrayObject m_textureVertexArrayObject;
+	QOpenGLBuffer m_textureVertexBufferObject;
+
+	//////////
+
     // Initialize all of the graphics
-    void initGraphics(int argc, char* argv[], const GlutFunctions& functions);
+    void initGraphics(int argc, char* argv[]);
     void initPolygonProgram();
     void initTextureProgram();
 
     // Drawing helper methods
     void repopulateVertexBufferObjects();
+	// TODO: MACK
+    // void drawFullAndZoomedMaps(
+    //     const Coordinate& currentMouseTranslation, const Angle& currentMouseRotation,
+    //     tdogl::Program* program, int vaoId, int vboStartingIndex, int vboEndingIndex);
     void drawFullAndZoomedMaps(
-        const Coordinate& currentMouseTranslation, const Angle& currentMouseRotation,
-        tdogl::Program* program, int vaoId, int vboStartingIndex, int vboEndingIndex);
+        const Coordinate& currentMouseTranslation,
+		const Angle& currentMouseRotation,
+        QOpenGLShaderProgram* program,
+		QOpenGLVertexArrayObject* vao,
+		int vboStartingIndex,
+		int vboEndingIndex);
 
+	// TODO: MACK
+	QOpenGLDebugLogger m_logger;
+
+public slots:
+	void onMessageLogged(QOpenGLDebugMessage);
 };
 
 } // namespace mms

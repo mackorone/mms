@@ -17,7 +17,7 @@ QVector<float> TransformationMatrix::getFullMapTransformationMatrix(
 
     // The purpose of this function is to produce a 4x4 matrix which, when
     // applied to the physical coordinate within the vertex shader, transforms
-    // it into an OpenGL coordinate for the full map. In this case, the zoomed
+    // it into an OpenGL coordinate for the full map. In this case, the full
     // map always contains the entirety of the maze.
 
     // Step 1: The physical point (0,0) corresponds to the middle of the
@@ -40,7 +40,7 @@ QVector<float> TransformationMatrix::getFullMapTransformationMatrix(
     //                                 |       |
     //                                 |       |
     //                                 X-------+---
-    //
+
     QVector<float> initialTranslationMatrix = {
         1.0, 0.0, 0.0, static_cast<float>(0.5 * wallWidth.getMeters()),
         0.0, 1.0, 0.0, static_cast<float>(0.5 * wallWidth.getMeters()),
@@ -48,12 +48,11 @@ QVector<float> TransformationMatrix::getFullMapTransformationMatrix(
         0.0, 0.0, 0.0,                                             1.0,
     };
 
-    // Ensure that the maze width and height always appear equally scaled.
+    // Ensure that the maze width and height always appear equally scaled. Note
+    // that this is not literally the number of pixels per meter of the screen.
+    // Rather, it's our desired number of pixels per simulation meter.
     double physicalWidth = physicalMazeSize.first;
     double physicalHeight = physicalMazeSize.second;
-
-    // Note that this is not literally the number of pixels per meter of the
-    // screen. Rather, it's our desired number of pixels per simulation meter.
     double pixelsPerMeter = std::min(fullMapSize.first / physicalWidth, fullMapSize.second / physicalHeight);
     double pixelWidth = pixelsPerMeter * physicalWidth;
     double pixelHeight = pixelsPerMeter * physicalHeight;

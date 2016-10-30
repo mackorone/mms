@@ -74,21 +74,22 @@ void Header::draw() {
     // Get the current number of rows (based on current lines and columnStartingPositions)
     int numRows = getNumRows(m_lines.size(), m_columnStartingPositions.size());
 
+    // TODO: MACK
     // Draw all of the text for the frame
-    m_textDrawer->commenceDrawingTextForFrame();
-    for (int i = 0; i < m_columnStartingPositions.size(); i += 1) {
-        for (int j = 0; j < numRows && i * numRows + j < m_lines.size(); j += 1) {
-            m_textDrawer->drawText(
-                m_columnStartingPositions.at(i),
-                m_windowHeight - P()->windowBorderWidth() - m_textHeight - j * (m_textHeight + m_rowSpacing),
-                m_windowWidth,
-                m_windowHeight,
-                // Prepend a column separator if not the first column
-                QString((0 < i ? "| " : "")) + m_lines.at(i * numRows + j)
-            );
-        }
-    }
-    m_textDrawer->concludeDrawingTextForFrame();
+    // m_textDrawer->commenceDrawingTextForFrame();
+    // for (int i = 0; i < m_columnStartingPositions.size(); i += 1) {
+    //     for (int j = 0; j < numRows && i * numRows + j < m_lines.size(); j += 1) {
+    //         m_textDrawer->drawText(
+    //             m_columnStartingPositions.at(i),
+    //             m_windowHeight - P()->windowBorderWidth() - m_textHeight - j * (m_textHeight + m_rowSpacing),
+    //             m_windowWidth,
+    //             m_windowHeight,
+    //             // Prepend a column separator if not the first column
+    //             QString((0 < i ? "| " : "")) + m_lines.at(i * numRows + j)
+    //         );
+    //     }
+    // }
+    // m_textDrawer->concludeDrawingTextForFrame();
 }
 
 int Header::getNumRows(int numLines, int numCols) const {
@@ -203,51 +204,52 @@ void Header::updateColumnStartingPositions() {
     // - m_lines
     // - m_columnSpacing
 
-    static auto willFit = [&](const QVector<double>& columnWidths) {
-        double sum = 0.0;
-        for (double width : columnWidths) {
-            sum += width;
-        }
-        sum += 2 * P()->windowBorderWidth();
-        sum += (columnWidths.size() - 1) * m_columnSpacing;
-        return sum <= m_windowWidth;
-    };
+    // TODO: MACK
+    // static auto willFit = [&](const QVector<double>& columnWidths) {
+    //     double sum = 0.0;
+    //     for (double width : columnWidths) {
+    //         sum += width;
+    //     }
+    //     sum += 2 * P()->windowBorderWidth();
+    //     sum += (columnWidths.size() - 1) * m_columnSpacing;
+    //     return sum <= m_windowWidth;
+    // };
 
-    static auto getColumnWidths = [&](int numCols) {
-        QVector<double> columnWidths;
-        int numRows = getNumRows(m_lines.size(), numCols);
-        for (int i = 0; i < numCols; i += 1) {
-            double maxLineWidth = 0.0;
-            for (int j = 0; j < numRows && i * numRows + j < m_lines.size(); j += 1) {
-                double lineWidth = m_textDrawer->getWidth(m_lines.at(i * numRows + j));
-                if (maxLineWidth < lineWidth) {
-                    maxLineWidth = lineWidth;
-                }
-            }
-            columnWidths.push_back(maxLineWidth);
-        }
-        return columnWidths;
-    };
+    // static auto getColumnWidths = [&](int numCols) {
+    //     QVector<double> columnWidths;
+    //     int numRows = getNumRows(m_lines.size(), numCols);
+    //     for (int i = 0; i < numCols; i += 1) {
+    //         double maxLineWidth = 0.0;
+    //         for (int j = 0; j < numRows && i * numRows + j < m_lines.size(); j += 1) {
+    //             double lineWidth = m_textDrawer->getWidth(m_lines.at(i * numRows + j));
+    //             if (maxLineWidth < lineWidth) {
+    //                 maxLineWidth = lineWidth;
+    //             }
+    //         }
+    //         columnWidths.push_back(maxLineWidth);
+    //     }
+    //     return columnWidths;
+    // };
 
-    // Determine the optimal column widths
-    QVector<double> columnWidths;
-    int numCols = 1;
-    do {
-        columnWidths = getColumnWidths(numCols);
-        numCols += 1;
-    }
-    while (willFit(getColumnWidths(numCols)));
+    // // Determine the optimal column widths
+    // QVector<double> columnWidths;
+    // int numCols = 1;
+    // do {
+    //     columnWidths = getColumnWidths(numCols);
+    //     numCols += 1;
+    // }
+    // while (willFit(getColumnWidths(numCols)));
 
-    // Calculate the starting positions based on the column widths
-    QVector<int> columnStartingPositions;
-    int currentColumnStart = P()->windowBorderWidth();
-    for (int i = 0; i < columnWidths.size(); i += 1) {
-        columnStartingPositions.push_back(currentColumnStart);
-        currentColumnStart += columnWidths.at(i) + m_columnSpacing;
-    }
+    // // Calculate the starting positions based on the column widths
+    // QVector<int> columnStartingPositions;
+    // int currentColumnStart = P()->windowBorderWidth();
+    // for (int i = 0; i < columnWidths.size(); i += 1) {
+    //     columnStartingPositions.push_back(currentColumnStart);
+    //     currentColumnStart += columnWidths.at(i) + m_columnSpacing;
+    // }
 
-    // Actually update the member variable
-    m_columnStartingPositions = columnStartingPositions;
+    // // Actually update the member variable
+    // m_columnStartingPositions = columnStartingPositions;
 }
 
 } // namespace mms

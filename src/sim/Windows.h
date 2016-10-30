@@ -1,4 +1,5 @@
 // This helps to consolidate some of the weird windows logic
+// TODO: MACK - kill this file
 
 // min and max are defined in Windef.h, included in windows.h
 #define NOMINMAX
