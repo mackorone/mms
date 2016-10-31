@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QTimer>
+
 #include <QOpenGLBuffer>
 #include <QOpenGLDebugLogger>
 #include <QOpenGLDebugMessage>
@@ -36,10 +38,16 @@ private:
     QVector<float> m_vertices;
     QOpenGLBuffer m_vbo;
     void repopulateBuffer();
+
+    QTimer m_timer;
+
+    void printVersionInformation();
+
     
 private slots:
 
     void onMessageLogged(QOpenGLDebugMessage);
+    void timerDone();
 
 };
 

@@ -10,20 +10,26 @@ Example::Example(QWidget *parent) : QOpenGLWidget(parent) {
 void Example::initializeGL() {
 
     initializeOpenGLFunctions();
+	printVersionInformation();
 
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+	// x, y, z
 	m_vertices = {
-		 60.0,  10.0, 0.0,
-	 	110.0, 110.0, 0.0,
-		 10.0, 110.0, 0.0,
+		  0.0,   0.0, 0.0,
+	 	100.0, 100.0, 0.0,
+		  0.0, 100.0, 0.0,
 	};
 
     initLogger();
     initShader();
+
+	connect(this, SIGNAL(frameSwapped()), this, SLOT(update()));
+	//connect(&m_timer, SIGNAL(timeout()), this, SLOT(timerDone()));
+    //m_timer.start(10);
 }
 
 void Example::resizeGL(int w, int h) {
@@ -32,32 +38,20 @@ void Example::resizeGL(int w, int h) {
 
 void Example::paintGL() {
 
+	static int i = 0;
+	// qDebug() << i; // TODO: MACK
+	i += 1;
+
     glClear(GL_COLOR_BUFFER_BIT);
 
 	repopulateBuffer();
 
 	m_program.bind();
-	//m_vao.bind();
-
-	////
-	QColor color(0, 255, 0, 255);
-	QMatrix4x4 pmvMatrix;
-	pmvMatrix.ortho(rect());
-
-	m_program.setUniformValue("matrix", pmvMatrix);
-	m_program.setUniformValue("color", color);
-
-	m_program.enableAttributeArray("vertex");
-	m_program.setAttributeArray("vertex", &m_vertices.front(), 3);
-	////
+	m_vao.bind();
 
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 
-	////
-	m_program.disableAttributeArray("vertex");
-	////
-
-	//m_vao.release();
+	m_vao.release();
 	m_program.release();
 }
 
@@ -87,8 +81,8 @@ void Example::initShader() {
 	m_program.addShaderFromSourceCode(
 		QOpenGLShader::Vertex,
 		R"(
-			attribute highp vec4 vertex;
-			uniform highp mat4 matrix;
+			attribute vec4 vertex;
+			uniform mat4 matrix;
 			void main(void) {
 			   gl_Position = matrix * vertex;
 			}
@@ -97,39 +91,81 @@ void Example::initShader() {
 	m_program.addShaderFromSourceCode(
 		QOpenGLShader::Fragment,
 		R"(
-			uniform mediump vec4 color;
+			uniform vec4 color;
 			void main(void) {
 			   gl_FragColor = color;
 			}
 		)"
 	);
 	m_program.link();
+	m_program.bind();
 
-	// Create the GPU side buffer
+	m_vao.create();
+	m_vao.bind();
+
 	m_vbo.create();
 	m_vbo.bind();
-	m_vbo.allocate(m_vertices.size() * sizeof(float));
-	m_vbo.release();
+	m_vbo.setUsagePattern(QOpenGLBuffer::DynamicDraw);
+	m_vbo.allocate(&m_vertices.front(), m_vertices.size() * sizeof(float));
 
-	// m_vao.create();
-	// QColor color(0, 255, 0, 255);
-	// QMatrix4x4 pmvMatrix;
-	// pmvMatrix.ortho(rect());
-	// m_program.setUniformValue("matrix", pmvMatrix);
-	// m_program.setUniformValue("color", color);
-	// m_vao.bind();
-	// m_vao.release();
+	m_program.enableAttributeArray("vertex");
+	m_program.setAttributeBuffer("vertex", GL_FLOAT, 0, 3);
+
+	QColor color(0, 255, 0, 255);
+	QMatrix4x4 pmvMatrix;
+	pmvMatrix.ortho(rect());
+	m_program.setUniformValue("color", color);
+	m_program.setUniformValue("matrix", pmvMatrix);
+
+	m_vbo.release();
+	m_vao.release();
+	m_program.release();
 }
 
 void Example::repopulateBuffer() {
-	// Copies data from the CPU to the GPU
-	// m_program.enableAttributeArray("vertex");
-	// m_program.setAttributeArray("vertex", &m_vertices.front(), 3);
-	// m_program.disableAttributeArray("vertex");
+
+	static int i = 0;
+	i = (i + 1) % 100;
+	m_vertices[0] = static_cast<float>(i);
+
+	m_vbo.bind();
+	m_vbo.write(0, &m_vertices.front(), m_vertices.size() * sizeof(float));
+	m_vbo.release();
 }
 
 void Example::onMessageLogged(QOpenGLDebugMessage message) {
     qDebug() << message;
+}
+
+void Example::printVersionInformation() {
+
+  QString glType;
+  QString glVersion;
+  QString glProfile;
+
+  // Get Version Information
+  glType = (context()->isOpenGLES()) ? "OpenGL ES" : "OpenGL";
+  glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+
+  // Get Profile Information
+#define CASE(c) case QSurfaceFormat::c: glProfile = #c; break
+  switch (format().profile()) {
+    CASE(NoProfile);
+    CASE(CoreProfile);
+    CASE(CompatibilityProfile);
+  }
+#undef CASE
+
+  // qPrintable() will print our QString w/o quotes around it.
+  qDebug() << qPrintable(glType) << qPrintable(glVersion) << "(" << qPrintable(glProfile) << ")";
+
+}
+
+void Example::timerDone() {
+	static int i = 0;
+	i += 1;
+	qDebug() << i;
+	//update();
 }
 
 } // namespace mms
