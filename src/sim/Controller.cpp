@@ -212,6 +212,8 @@ void Controller::processMouseAlgoStdout() {
 
 void Controller::processMouseAlgoStderr() {
 
+    // TODO: MACK - THIS BLOCKS THE EVENT LOOP - FIX THIS!!!
+
     // TODO: upforgrabs
     // Determine whether or not this function is perf sensitive. If so,
     // refactor this so that we're not copying QStrings between lists.
