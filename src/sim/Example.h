@@ -39,15 +39,12 @@ private:
     QOpenGLBuffer m_vbo;
     void repopulateBuffer();
 
-    QTimer m_timer;
-
     void printVersionInformation();
 
     
 private slots:
 
     void onMessageLogged(QOpenGLDebugMessage);
-    void timerDone();
 
 };
 

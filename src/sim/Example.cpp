@@ -28,8 +28,6 @@ void Example::initializeGL() {
     initShader();
 
 	connect(this, SIGNAL(frameSwapped()), this, SLOT(update()));
-	//connect(&m_timer, SIGNAL(timeout()), this, SLOT(timerDone()));
-    //m_timer.start(10);
 }
 
 void Example::resizeGL(int w, int h) {
@@ -37,10 +35,6 @@ void Example::resizeGL(int w, int h) {
 }
 
 void Example::paintGL() {
-
-	static int i = 0;
-	// qDebug() << i; // TODO: MACK
-	i += 1;
 
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -159,13 +153,6 @@ void Example::printVersionInformation() {
   // qPrintable() will print our QString w/o quotes around it.
   qDebug() << qPrintable(glType) << qPrintable(glVersion) << "(" << qPrintable(glProfile) << ")";
 
-}
-
-void Example::timerDone() {
-	static int i = 0;
-	i += 1;
-	qDebug() << i;
-	//update();
 }
 
 } // namespace mms
