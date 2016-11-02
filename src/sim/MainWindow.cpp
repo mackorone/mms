@@ -9,9 +9,9 @@ MainWindow::MainWindow(mms::View* view, QWidget *parent) :
     ui(new Ui::MainWindow) {
 
     ui->setupUi(this);
-    //ui->m_openGlWidgetContainer->addWidget(view);
-    mms::Example* e = new mms::Example(this);
-    ui->m_openGlWidgetContainer->addWidget(e);
+    ui->m_openGlWidgetContainer->addWidget(view);
+    // mms::Example* e = new mms::Example(this);
+    // ui->m_openGlWidgetContainer->addWidget(e);
 }
 
 MainWindow::~MainWindow() {

@@ -110,14 +110,14 @@ private:
 
 	// TODO: MACK - rename these
 	QOpenGLShaderProgram m_polygonProgram;
-	QOpenGLVertexArrayObject m_polygonVertexArrayObject;
-	QOpenGLBuffer m_polygonVertexBufferObject;
+	QOpenGLVertexArrayObject m_polygonVAO;
+	QOpenGLBuffer m_polygonVBO;
 
 	// TODO: MACK - rename these
 	QOpenGLTexture* m_textureAtlas;
 	QOpenGLShaderProgram m_textureProgram;
-	QOpenGLVertexArrayObject m_textureVertexArrayObject;
-	QOpenGLBuffer m_textureVertexBufferObject;
+	QOpenGLVertexArrayObject m_textureVAO;
+	QOpenGLBuffer m_textureVBO;
 
 	//////////
 
@@ -143,8 +143,14 @@ private:
 	// TODO: MACK
 	QOpenGLDebugLogger m_logger;
 
-public slots:
+	void initLogger();
+	void initShader();
+    void printVersionInformation();
+
+
+private slots:
 	void onMessageLogged(QOpenGLDebugMessage);
+
 };
 
 } // namespace mms
