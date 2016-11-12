@@ -3,6 +3,7 @@
 - Run mouse algorithms as separate process
     - Make continuous algos possible
     - Do some cleanup here
+- Fix .maz file loading
 - Make GUI
     - Put the stdout of the child process somewhere
     - use QOpenGLDebugLogger

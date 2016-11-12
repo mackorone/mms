@@ -88,14 +88,6 @@ void View::refresh() {
     // Enable scissoring so that the maps are only draw in specified locations.
     glEnable(GL_SCISSOR_TEST);
 
-    ////////////
-	// m_polygonProgram.bind();
-	// m_polygonVAO.bind();
-	// glDrawArrays(GL_TRIANGLES, 0, 3);
-	// m_polygonVAO.release();
-	// m_polygonProgram.release();
-    ////////////
-
     // Draw the tiles
     drawFullAndZoomedMaps(
         currentMouseTranslation,
@@ -326,7 +318,8 @@ void View::initializeGL() {
     initializeOpenGLFunctions();
     printVersionInformation();
 
-    glClearColor(0.0, 0.0, 0.0, 1.0);
+    // TODO: MACK
+    glClearColor(0.0, 0.2, 0.0, 1.0);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
     glPolygonMode(GL_FRONT_AND_BACK, S()->wireframeMode() ? GL_LINE : GL_FILL);
@@ -347,7 +340,7 @@ void View::onMessageLogged(QOpenGLDebugMessage message) {
 }
 
 void View::resizeGL(int w, int h) {
-    // TODO: MACK
+    // TODO: MACK: rename this
     updateWindowSize(w, h);
 } 
 
@@ -636,8 +629,45 @@ void View::drawFullAndZoomedMaps(
         matrix.at(8), matrix.at(9), matrix.at(10), matrix.at(11),
         matrix.at(12), matrix.at(13), matrix.at(14), matrix.at(15)
     );
+
+    // TODO: MACK - necessary?
     glScissor(fullMapPosition.first, fullMapPosition.second, fullMapSize.first, fullMapSize.second);
+
     program->setUniformValue("transformationMatrix", transformationMatrix);
+
+    // TODO: MACK - Figure out why the graphic isn't showing
+    for (int i = 0; i < 16; i += 1) {
+        // TODO: Print the base
+        qDebug() << "";
+        qDebug() << "INDEX:" << i;
+        for (int j = 0; j < 2; j += 1) {
+
+            // qDebug() << "TRIANGLE:" << j;
+            // TODO: MACK - this is just the first point
+            double x1 = m_graphicCpuBuffer.at(i * 20 + j).p1.x;
+            double y1 = m_graphicCpuBuffer.at(i * 20 + j).p1.y;
+
+            double x2 = m_graphicCpuBuffer.at(i * 20 + j).p2.x;
+            double y2 = m_graphicCpuBuffer.at(i * 20 + j).p2.y;
+
+            double x3 = m_graphicCpuBuffer.at(i * 20 + j).p3.x;
+            double y3 = m_graphicCpuBuffer.at(i * 20 + j).p3.y;
+
+            QVector<QPair<double, double>> vector;
+            vector.append(qMakePair(y1, x1));
+            vector.append(qMakePair(y2, x2));
+            vector.append(qMakePair(y3, x3));
+            qDebug() << vector;
+
+            qDebug() << "R:" << m_graphicCpuBuffer.at(i * 20 + j).p1.rgb.r;
+            qDebug() << "G:" << m_graphicCpuBuffer.at(i * 20 + j).p1.rgb.g;
+            qDebug() << "B:" << m_graphicCpuBuffer.at(i * 20 + j).p1.rgb.b;
+            qDebug() << "A:" << m_graphicCpuBuffer.at(i * 20 + j).p1.a;
+
+            // qDebug() << "X:" << m_graphicCpuBuffer.at(i * 16 + j).p1.x;
+            // qDebug() << "Y:" << m_graphicCpuBuffer.at(i * 16 + j).p1.y;
+        }
+    }
     glDrawArrays(GL_TRIANGLES, vboStartingIndex, vboEndingIndex);
 
     // Render the zoomed map

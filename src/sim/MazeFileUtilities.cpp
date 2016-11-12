@@ -175,6 +175,9 @@ BasicMaze MazeFileUtilities::deserializeMapType(const QByteArray& bytes) {
 
 BasicMaze MazeFileUtilities::deserializeMazType(const QByteArray& bytes) {
 
+    // TODO: MACK - QVector aborts the application without this
+    throw std::runtime_error("MACK");
+
     // TODO: MACK Convert this to use Qt
     QVector<char> characters;
     for (int i = 0; i < bytes.size(); i += 1) {
