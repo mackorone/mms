@@ -74,10 +74,11 @@ void View::refresh() {
     Radians currentMouseRotation = m_model->getMouse()->getCurrentRotation();
 
     // Make space for mouse updates and fill the CPU buffer with new mouse triangles
-    m_graphicCpuBuffer.erase(
-        m_graphicCpuBuffer.begin() + mouseTrianglesStartingIndex,
-        m_graphicCpuBuffer.end());
-    getMouseGraphic()->draw(currentMouseTranslation, currentMouseRotation);
+    // TODO: MACK
+    // m_graphicCpuBuffer.erase(
+    //     m_graphicCpuBuffer.begin() + mouseTrianglesStartingIndex,
+    //     m_graphicCpuBuffer.end());
+    // getMouseGraphic()->draw(currentMouseTranslation, currentMouseRotation);
 
     // Re-populate both vertex buffer objects
     repopulateVertexBufferObjects();
@@ -548,14 +549,8 @@ void View::repopulateVertexBufferObjects() {
     m_polygonVBO.bind();
 	m_polygonVBO.allocate(
         &m_graphicCpuBuffer.front(),
-        m_graphicCpuBuffer.size() * sizeof(double)
+        m_graphicCpuBuffer.size() * sizeof(TriangleGraphic)
     );
-    // TODO: MACK - necessary?
-    // m_polygonVBO.write(
-    //     0,
-    //     &m_graphicCpuBuffer.front(),
-    //     m_graphicCpuBuffer.size() * sizeof(double)
-    // );
     m_polygonVBO.release();
 
     // TODO: MACK
@@ -635,39 +630,6 @@ void View::drawFullAndZoomedMaps(
 
     program->setUniformValue("transformationMatrix", transformationMatrix);
 
-    // TODO: MACK - Figure out why the graphic isn't showing
-    for (int i = 0; i < 16; i += 1) {
-        // TODO: Print the base
-        qDebug() << "";
-        qDebug() << "INDEX:" << i;
-        for (int j = 0; j < 2; j += 1) {
-
-            // qDebug() << "TRIANGLE:" << j;
-            // TODO: MACK - this is just the first point
-            double x1 = m_graphicCpuBuffer.at(i * 20 + j).p1.x;
-            double y1 = m_graphicCpuBuffer.at(i * 20 + j).p1.y;
-
-            double x2 = m_graphicCpuBuffer.at(i * 20 + j).p2.x;
-            double y2 = m_graphicCpuBuffer.at(i * 20 + j).p2.y;
-
-            double x3 = m_graphicCpuBuffer.at(i * 20 + j).p3.x;
-            double y3 = m_graphicCpuBuffer.at(i * 20 + j).p3.y;
-
-            QVector<QPair<double, double>> vector;
-            vector.append(qMakePair(y1, x1));
-            vector.append(qMakePair(y2, x2));
-            vector.append(qMakePair(y3, x3));
-            qDebug() << vector;
-
-            qDebug() << "R:" << m_graphicCpuBuffer.at(i * 20 + j).p1.rgb.r;
-            qDebug() << "G:" << m_graphicCpuBuffer.at(i * 20 + j).p1.rgb.g;
-            qDebug() << "B:" << m_graphicCpuBuffer.at(i * 20 + j).p1.rgb.b;
-            qDebug() << "A:" << m_graphicCpuBuffer.at(i * 20 + j).p1.a;
-
-            // qDebug() << "X:" << m_graphicCpuBuffer.at(i * 16 + j).p1.x;
-            // qDebug() << "Y:" << m_graphicCpuBuffer.at(i * 16 + j).p1.y;
-        }
-    }
     glDrawArrays(GL_TRIANGLES, vboStartingIndex, vboEndingIndex);
 
     // Render the zoomed map
