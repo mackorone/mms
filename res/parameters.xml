@@ -6,11 +6,11 @@
     <default-window-width>990</default-window-width> <!-- Pixels -->
     <default-window-height>700</default-window-height> <!-- Pixels -->
     <default-layout-type>BOTH</default-layout-type> <!-- FULL, ZOOMED, BOTH -->
-    <window-border-width>10</window-border-width> <!-- Pixels -->
+    <window-border-width>10</window-border-width> <!-- Pixels --> <!-- TODO: MACK -->
     <header-text-font>Unispace-Bold.ttf</header-text-font> <!-- TODO: MACK -->
-    <header-text-height>9</header-text-height>
-    <header-row-spacing>6</header-row-spacing>
-    <header-column-spacing>20</header-column-spacing>
+    <header-text-height>9</header-text-height> <!-- TODO: MACK --->
+    <header-row-spacing>6</header-row-spacing> <!-- TODO: MACK --->
+    <header-column-spacing>20</header-column-spacing> <!-- TODO: MACK --->
     <min-zoomed-map-scale>0.02</min-zoomed-map-scale>
     <max-zoomed-map-scale>1.0</max-zoomed-map-scale>
     <default-zoomed-map-scale>0.1</default-zoomed-map-scale>

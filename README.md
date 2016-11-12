@@ -142,11 +142,8 @@ std::pair<bool, IMouseAlgorithm*> MouseAlgorithms::helper(...) {
 
 | Name                                                          | Author            | Use Case              |
 |---------------------------------------------------------------|-------------------|-----------------------|
-| [fontstash](https://github.com/akrinke/Font-Stash)            | Andreas Krinke    | Text Rendering        |
-| [opengl-series](https://github.com/tomdalling/opengl-series)  | Thomas Dalling    | OpenGL Functionality  |
 | [polypartition](https://github.com/ivanfratric/polypartition) | Ivan Fratric      | Polygon Triangulation |
 | [pugixml](https://github.com/zeux/pugixml)                    | Arseny Kapoulkine | XML Parsing           |
-| [stb](https://github.com/nothings/stb)                        | Sean Barrett      | Images and Fonts      |
 | [qt](https://www.qt.io/)                                      | The Qt Company    | Framework and GUI     |
 
 ## Wiki
