@@ -74,11 +74,10 @@ void View::refresh() {
     Radians currentMouseRotation = m_model->getMouse()->getCurrentRotation();
 
     // Make space for mouse updates and fill the CPU buffer with new mouse triangles
-    // TODO: MACK
-    // m_graphicCpuBuffer.erase(
-    //     m_graphicCpuBuffer.begin() + mouseTrianglesStartingIndex,
-    //     m_graphicCpuBuffer.end());
-    // getMouseGraphic()->draw(currentMouseTranslation, currentMouseRotation);
+    m_graphicCpuBuffer.erase(
+        m_graphicCpuBuffer.begin() + mouseTrianglesStartingIndex,
+        m_graphicCpuBuffer.end());
+    getMouseGraphic()->draw(currentMouseTranslation, currentMouseRotation);
 
     // Re-populate both vertex buffer objects
     repopulateVertexBufferObjects();
@@ -107,13 +106,14 @@ void View::refresh() {
     //     m_textureVertexArrayObjectId, 0, 3 * m_textureCpuBuffer.size());
 
     // Draw the mouse
-    // // TODO: MACK
-    // // drawFullAndZoomedMaps(currentMouseTranslation, currentMouseRotation,
-    // //     m_polygonProgram, m_polygonVertexArrayObjectId, 3 * mouseTrianglesStartingIndex,
-    // //     3 * (m_graphicCpuBuffer.size() - mouseTrianglesStartingIndex));
-    // drawFullAndZoomedMaps(currentMouseTranslation, currentMouseRotation,
-    //     m_polygonVertexArrayObjectId, 3 * mouseTrianglesStartingIndex,
-    //     3 * (m_graphicCpuBuffer.size() - mouseTrianglesStartingIndex));
+    drawFullAndZoomedMaps(
+        currentMouseTranslation,
+        currentMouseRotation,
+        &m_polygonProgram,
+        &m_polygonVAO,
+        3 * mouseTrianglesStartingIndex,
+        3 * (m_graphicCpuBuffer.size() - mouseTrianglesStartingIndex)
+    );
 
     // Disable scissoring so that the glClear can take effect, and so that
     // drawn text isn't clipped at all
@@ -444,36 +444,6 @@ void View::initPolygonProgram() {
 	m_polygonVBO.release();
 	m_polygonVAO.release();
 	m_polygonProgram.release();
-
-    // TODO: MACK
-    /*
-    // Generate the polygon vertex array object and vertex buffer object
-    glGenVertexArrays(1, &m_polygonVertexArrayObjectId);
-    glBindVertexArray(m_polygonVertexArrayObjectId);
-    glGenBuffers(1, &m_polygonVertexBufferObjectId);
-    glBindBuffer(GL_ARRAY_BUFFER, m_polygonVertexBufferObjectId);
-
-    // Set up the program and attribute pointers
-    m_polygonProgram = new tdogl::Program({tdogl::Shader::shaderFromFile(
-        Directory::get()->getResShadersDirectory().toStdString() +
-        "polygonVertexShader.txt", GL_VERTEX_SHADER)});
-
-    glEnableVertexAttribArray(m_polygonProgram.attributeLocation("coordinate"));
-    glVertexAttribPointer(
-        m_polygonProgram.attributeLocation("coordinate"),
-        2, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), 0
-    );
-
-    glEnableVertexAttribArray(m_polygonProgram.attributeLocation("color"));
-    glVertexAttribPointer(
-        m_polygonProgram.attributeLocation("color"),
-        4, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), (char*) NULL + 2 * sizeof(double)
-    );
-
-    // Unbind the vertex array object and vertex buffer object
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-    */
 }
 
 void View::initTextureProgram() {
@@ -546,6 +516,7 @@ QMap<QChar, QPair<double, double>> View::getFontImageMap() {
 
 void View::repopulateVertexBufferObjects() {
 
+    // Overwrite the polygon vertex buffer object data
     m_polygonVBO.bind();
 	m_polygonVBO.allocate(
         &m_graphicCpuBuffer.front(),
@@ -555,13 +526,6 @@ void View::repopulateVertexBufferObjects() {
 
     // TODO: MACK
     /*
-    // Clear the polygon vertex buffer object and re-populate it with data
-    glBindBuffer(GL_ARRAY_BUFFER, m_polygonVertexBufferObjectId);
-    glBufferData(GL_ARRAY_BUFFER, m_graphicCpuBuffer.size() * sizeof(TriangleGraphic), NULL, GL_DYNAMIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, m_graphicCpuBuffer.size() * sizeof(TriangleGraphic),
-        &m_graphicCpuBuffer.front());
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
     // Clear the texture vertex buffer object and re-populate it with data
     glBindBuffer(GL_ARRAY_BUFFER, m_textureVertexBufferObjectId);
     glBufferData(GL_ARRAY_BUFFER, m_textureCpuBuffer.size() * sizeof(TriangleTexture), NULL, GL_DYNAMIC_DRAW);
@@ -577,7 +541,7 @@ void View::drawFullAndZoomedMaps(
         QOpenGLShaderProgram* program,
         QOpenGLVertexArrayObject* vao,
         int vboStartingIndex,
-        int vboEndingIndex) {
+        int vboEndingIndex) { // TODO: MACK - this is really "count" here, not "endingIndex"
 
     // Get the sizes and positions of each of the maps.
     QPair<int, int> fullMapPosition = Layout::getFullMapPosition(
@@ -627,33 +591,34 @@ void View::drawFullAndZoomedMaps(
 
     // TODO: MACK - necessary?
     glScissor(fullMapPosition.first, fullMapPosition.second, fullMapSize.first, fullMapSize.second);
-
     program->setUniformValue("transformationMatrix", transformationMatrix);
-
     glDrawArrays(GL_TRIANGLES, vboStartingIndex, vboEndingIndex);
 
     // Render the zoomed map
     // TODO: MACK
-    /*
-    glScissor(zoomedMapPosition.first, zoomedMapPosition.second, zoomedMapSize.first, zoomedMapSize.second);
-    program->setUniformMatrix4("transformationMatrix",
-        &TransformationMatrix::getZoomedMapTransformationMatrix(
-            physicalMazeSize,
-            zoomedMapPosition,
-            zoomedMapSize,
-            {m_windowWidth, m_windowHeight},
-            m_screenPixelsPerMeter,
-            S()->zoomedMapScale(),
-            S()->rotateZoomedMap(),
-            m_model->getMouse()->getInitialTranslation(),
-            currentMouseTranslation,
-            currentMouseRotation).front(), 1, GL_TRUE);
-    glDrawArrays(GL_TRIANGLES, vboStartingIndex, vboEndingIndex);
-    */
+    auto matrix2 = TransformationMatrix::getZoomedMapTransformationMatrix(
+        physicalMazeSize,
+        zoomedMapPosition,
+        zoomedMapSize,
+        {m_windowWidth, m_windowHeight},
+        m_screenPixelsPerMeter,
+        S()->zoomedMapScale(),
+        S()->rotateZoomedMap(),
+        m_model->getMouse()->getInitialTranslation(),
+        currentMouseTranslation,
+        currentMouseRotation
+    );
+    QMatrix4x4 transformationMatrix2(
+        matrix2.at(0), matrix2.at(1), matrix2.at(2), matrix2.at(3),
+        matrix2.at(4), matrix2.at(5), matrix2.at(6), matrix2.at(7),
+        matrix2.at(8), matrix2.at(9), matrix2.at(10), matrix2.at(11),
+        matrix2.at(12), matrix2.at(13), matrix2.at(14), matrix2.at(15)
+    );
 
-    // Stop using the program and vertex array object
-    vao->release();
-    program->release();
+    // TODO: MACK - necessary?
+    glScissor(zoomedMapPosition.first, zoomedMapPosition.second, zoomedMapSize.first, zoomedMapSize.second);
+    program->setUniformValue("transformationMatrix", transformationMatrix2);
+    glDrawArrays(GL_TRIANGLES, vboStartingIndex, vboEndingIndex);
 
     // If it's the texture program, we should additionally unbind the texture
     // TODO: MACK
@@ -662,6 +627,9 @@ void View::drawFullAndZoomedMaps(
         glBindTexture(GL_TEXTURE_2D, 0);
     }
     */
+
+    // Stop using the program and vertex array object
+    vao->release();
 }
 
 void View::initLogger() {
@@ -686,6 +654,8 @@ void View::initLogger() {
 }
 
 void View::printVersionInformation() {
+
+    // TODO: MACK - clean this up
 
   QString glType;
   QString glVersion;

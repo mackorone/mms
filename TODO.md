@@ -1,6 +1,7 @@
 # High Priority
 
 - Run mouse algorithms as separate process
+    - Fix Controller.cpp execution blocking the event loop
     - Make continuous algos possible
     - Do some cleanup here
 - Fix .maz file loading
