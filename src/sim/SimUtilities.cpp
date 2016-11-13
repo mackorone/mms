@@ -1,6 +1,5 @@
 #include "SimUtilities.h"
 
-#include <QCoreApplication>
 #include <QDateTime>
 #include <QDir>
 #include <QDirIterator>
@@ -124,7 +123,7 @@ void SimUtilities::removeExcessArchivedRuns() {
     // oldest stuff so that the run/ directory doesn't get too full.
     QStringList runDirectories = getTopLevelDirs(Directory::get()->getRunDirectory());
     qSort(runDirectories);
-    for (int i = 0; i < static_cast<int>(runDirectories.size()) - P()->numberOfArchivedRuns(); i += 1) {
+    for (int i = 0; i < runDirectories.size() - P()->numberOfArchivedRuns(); i += 1) {
         QDir dir(Directory::get()->getRunDirectory() + runDirectories.at(i));
         bool success = dir.removeRecursively();
         if (!success) {

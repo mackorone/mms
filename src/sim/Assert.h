@@ -1,9 +1,7 @@
 #pragma once
 
 // Asserts are a simple, development-time condition-checking mechanism. They are
-// meant to be used by authors of mms code and, as such, simply print to
-// stderr. If, for some reason, this is insufficient for you, you're probably
-// using them incorrectly. 
+// meant to be used by authors of mms code and, as such, simply print to stderr.
 
 #include <iostream>
 

@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QProcess>
 #include <QString>
+#include <QThread>
 
 #include "Direction.h"
 #include "DynamicMouseAlgorithmOptions.h"
@@ -10,6 +11,7 @@
 #include "MouseInterface.h"
 #include "StaticMouseAlgorithmOptions.h"
 #include "View.h"
+#include "Worker.h"
 
 namespace mms {
 
@@ -26,7 +28,12 @@ public:
     StaticMouseAlgorithmOptions getStaticOptions();
     DynamicMouseAlgorithmOptions getDynamicOptions();
 
-private:
+// TODO: MACK
+// private:
+
+    // TODO: MACK - make this thread more visible
+    Worker* m_worker;
+    QThread m_workerThread;
 
     // The mouse algorithm child process
     QProcess* m_process;
@@ -46,6 +53,15 @@ private:
 
     // Whether or not the static options have been finalized
     bool m_staticOptionsFinalized;
+
+    // TODO: MACK = should be private
+    Direction getInitialDirection(
+        const QString& initialDirection,
+        Model* model);
+
+
+// TODO: MACK
+private:
 
     void validateMouseInterfaceType(
         const QString& mouseAlgorithm,
@@ -71,11 +87,14 @@ private:
         const QString& initialDirection,
         Model* model);
 
-    Direction getInitialDirection(
-        const QString& initialDirection,
-        Model* model);
-
+    // TODO:MACK
     QString processCommand(const QString& command);
+
+signals:
+    void passCommandToWorker(const QString& command);
+
+public slots:
+    void receiveResultFromWorker(const QString& response);
 
 private slots:
 

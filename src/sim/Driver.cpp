@@ -29,7 +29,7 @@ int Driver::drive(int argc, char* argv[]) {
     // Make sure that this function is called just once
     ASSERT_RUNS_JUST_ONCE();
 
-    // Initialize the Qt core application
+    // Initialize Qt
     QApplication app(argc, argv);
 
     // Initialize the Time object

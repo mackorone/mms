@@ -6,8 +6,9 @@
     - Do some cleanup here
 - Fix .maz file loading
 - Make GUI
+    - Fix texture program
     - Put the stdout of the child process somewhere
-    - use QOpenGLDebugLogger
+    - use QOpenGLDebugLogger (clean this up)
 - Keep counts of all methods called (so people can debug why it's slow)
 - Wireframe mode should only affect the maps
 - Don't need (const X& x) because of implicit sharing

@@ -3,8 +3,8 @@
 namespace mms {
 
 Cartesian::Cartesian() {
-    m_x = 0.0;
-    m_y = 0.0;
+    m_x = Meters(0.0);
+    m_y = Meters(0.0);
 }
 
 Cartesian::Cartesian(const Distance& x, const Distance& y) {
