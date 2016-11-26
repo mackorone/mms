@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <QProcess>
 
 namespace mms {
 
@@ -15,15 +16,18 @@ public:
     // TODO: MACK
     Worker(Controller* controller);
 
-signals:
-    void commandProcessed(const QString& result);
-
 public slots:
-    void processCommand(const QString& command);
+    void init();
+    void processMouseAlgoStderr();
+    void processMouseAlgoStdout();
 
 private:
     Controller* m_controller;
+    QProcess* m_process;
+    QStringList m_inputLines;
+
     QString helper(const QString& command);
+    void startMouseAlgorithm(const QString& mouseAlgorithm);
 
 };
 

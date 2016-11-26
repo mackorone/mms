@@ -194,6 +194,7 @@
 
 # Clean-Up
 
+- Use uniform syntax for Signal/slot connections
 - Rename TriangleTexture and VertexTexture
 - Rename Tile to Cell
 - Write some unittests (QT Unit test)

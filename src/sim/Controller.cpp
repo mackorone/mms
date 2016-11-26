@@ -20,7 +20,6 @@ static const QString& OPENING_DIRECTION_STRING = "OPENING";
 static const QString& WALL_DIRECTION_STRING = "WALL";
 
 Controller::Controller(Model* model, View* view) :
-        m_process(nullptr),
         m_model(model),
         m_mouseInterface(nullptr),
         m_staticOptionsFinalized(false) {
@@ -28,12 +27,8 @@ Controller::Controller(Model* model, View* view) :
     // TODO: MACK
     m_worker = new Worker(this);
     m_worker->moveToThread(&m_workerThread);
-	connect(this, &Controller::passCommandToWorker, m_worker, &Worker::processCommand);
-	connect(m_worker, &Worker::commandProcessed, this, &Controller::receiveResultFromWorker);
+    connect(&m_workerThread, &QThread::started, m_worker, &Worker::init);
 	m_workerThread.start();
-
-    // Start the mouse algorithm
-    startMouseAlgorithm(P()->mouseAlgorithm());
 
     // Wait until static options have been finalized
     while (!m_staticOptionsFinalized) {
@@ -209,136 +204,4 @@ Direction Controller::getInitialDirection(const QString& initialDirection, Model
     return STRING_TO_DIRECTION.value(initialDirection);
 }
 
-void Controller::processMouseAlgoStdout() {
-    QString output = m_process->readAllStandardOutput();
-    for (const QString& line : output.split("\n", QString::SkipEmptyParts)) {
-        // TODO: MACK - format this better, put this in the GUI, log it, etc.
-        qDebug() << "ALGO:" << line;
-    }
-}
-
-// TODO: MACK
-void Controller::receiveResultFromWorker(const QString& response) {
-	if (!response.isEmpty()) {
-		m_process->write((response + "\n").toStdString().c_str());
-	}
-}
-
-void Controller::processMouseAlgoStderr() {
-
-    // TODO: MACK - THIS BLOCKS THE EVENT LOOP - FIX THIS!!!
-
-    // TODO: upforgrabs
-    // Determine whether or not this function is perf sensitive. If so,
-    // refactor this so that we're not copying QStrings between lists.
-
-    // Read all of the new text
-    QString input = m_process->readAllStandardError();
-
-    // Separate the input by line
-    QStringList inputLines = input.split("\n");
-
-    // A list of commands to be executed
-    QStringList commands;
-
-    // If a line has definitely terminated, it's a command
-    if (1 < inputLines.size()) {
-        commands.append(m_inputLines.join("") + inputLines.at(0));
-        m_inputLines.clear();
-    }
-
-    // All complete lines in the input are commands
-    for (int i = 1; i < inputLines.size() - 1; i += 1) {
-        commands.append(inputLines.at(i));
-    }
-
-    // Store the beginning of the incomplete line
-    m_inputLines.append(inputLines.at(inputLines.size() - 1));
-
-    // Process all available commands
-    for (int i = 0; i < commands.size(); i += 1) {
-		emit passCommandToWorker(commands.at(i));
-    }
-}
-
-void Controller::startMouseAlgorithm(const QString& mouseAlgorithm) {
-
-    // Check to see if there is some directory with the given name
-    QString selectedMouseAlgo(mouseAlgorithm);
-    QString mouseAlgoDir(Directory::get()->getSrcMouseAlgosDirectory());
-    if (!SimUtilities::getTopLevelDirs(mouseAlgoDir).contains(selectedMouseAlgo)) {
-         qCritical().noquote().nospace()
-            << "\"" << mouseAlgorithm << "\" is not a valid mouse"
-            << " algorithm.";
-         SimUtilities::quit();
-    }
-
-    // Get the maze algo directory
-    QString selectedMouseAlgoPath = 
-        Directory::get()->getSrcMouseAlgosDirectory() + mouseAlgorithm;
-
-    // Get the files for the algorithm
-    QPair<QStringList, QStringList> files =
-        SimUtilities::getFiles(selectedMouseAlgoPath);
-    QStringList relativePaths = files.first;
-    QStringList absolutePaths = files.second;
-
-    // TODO: MACK - make these constants, dedup some of this
-    if (relativePaths.contains(QString("Main.cpp"))) {
-
-        QString binPath = selectedMouseAlgoPath + "/a.out";
-
-        // Build
-        QStringList buildArgs = absolutePaths.filter(".cpp");
-        buildArgs << "-g";
-        buildArgs << "-o";
-        buildArgs << binPath;
-        QProcess buildProcess;
-        buildProcess.start("g++", buildArgs);
-        buildProcess.waitForFinished();
-        if (buildProcess.exitCode() != 0) {
-            qCritical().noquote()
-                << "Failed to build mouse algo!"
-                << "\n\n" + buildProcess.readAllStandardError();
-            SimUtilities::quit();
-        }
-
-        // Run
-        m_process = new QProcess();
-        connect(
-            m_process,
-            SIGNAL(readyReadStandardOutput()),
-            this,
-            SLOT(processMouseAlgoStdout())
-        );
-        connect(
-            m_process,
-            SIGNAL(readyReadStandardError()),
-            this,
-            SLOT(processMouseAlgoStderr())
-        );
-        m_process->start(binPath);
-
-        // TODO: MACK - use these instead of waiting for the process to finish
-        // void errorOccurred(QProcess::ProcessError error)
-        // void finished(int exitCode, QProcess::ExitStatus exitStatus)
-        // m_process->waitForFinished();
-        // if (m_process->exitCode() != 0) {
-        //     qCritical().noquote()
-        //         << "Mouse algo crashed!"
-        //         << "\n\n" + m_process->readAllStandardError();
-        //     SimUtilities::quit();
-        // }
-    
-        // Success
-        return;
-    } 
-
-    // Invalid files
-    qCritical().noquote().nospace()
-        << "No \"Main\" file found in \""
-        << selectedMouseAlgoPath << "\"";
-    SimUtilities::quit();
-}
-        
 } // namespace mms

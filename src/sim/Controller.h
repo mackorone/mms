@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QObject>
-#include <QProcess>
 #include <QString>
 #include <QThread>
 
@@ -23,6 +22,12 @@ public:
 
     Controller(Model* model, View* view);
 
+    // TODO: MACK
+    // ~Controller() {
+    //     workerThread.quit();
+    //     workerThread.wait();
+    // }
+
     MouseInterface* getMouseInterface();
 
     StaticMouseAlgorithmOptions getStaticOptions();
@@ -34,12 +39,6 @@ public:
     // TODO: MACK - make this thread more visible
     Worker* m_worker;
     QThread m_workerThread;
-
-    // The mouse algorithm child process
-    QProcess* m_process;
-
-    // The lines of input from the mouse algorithm
-    QStringList m_inputLines;
 
     // The model (used for relaying formation to the algo)
     Model* m_model;
@@ -62,6 +61,8 @@ public:
 
 // TODO: MACK
 private:
+
+    // TODO: MACK - do validation in some other class
 
     void validateMouseInterfaceType(
         const QString& mouseAlgorithm,
@@ -86,24 +87,6 @@ private:
         const QString& interfaceType,
         const QString& initialDirection,
         Model* model);
-
-    // TODO:MACK
-    QString processCommand(const QString& command);
-
-signals:
-    void passCommandToWorker(const QString& command);
-
-public slots:
-    void receiveResultFromWorker(const QString& response);
-
-private slots:
-
-    void processMouseAlgoStdout();
-    void processMouseAlgoStderr();
-
-private:
-
-    void startMouseAlgorithm(const QString& mouseAlgorithm);
 
 };
 
