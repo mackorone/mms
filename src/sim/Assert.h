@@ -1,15 +1,10 @@
 #pragma once
 
-// Asserts are a simple, development-time condition-checking mechanism. They are
-// meant to be used by authors of mms code and, as such, simply print to stderr.
-
 #include <iostream>
+#include <stdexcept>
 
 #define OPENING "---------- Assertion failed! ----------"
 #define CLOSING "---------------------------------------"
-
-// TODO: upforgrabs
-// Refactor these to deduplicate the OPENING, CLOSING, FILE, and LINE printouts.
 
 #define ASSERT_TR(condition)\
 if (!(condition)) {\
@@ -18,7 +13,7 @@ if (!(condition)) {\
               << "LINE: " << __LINE__ << std::endl\
               << "COND: " << #condition << std::endl\
               << CLOSING << std::endl;\
-    exit(1);\
+    throw;\
 }
 
 #define ASSERT_FA(condition)\
@@ -28,7 +23,7 @@ if (condition) {\
               << "LINE: " << __LINE__ << std::endl\
               << "COND: " << "!(" << #condition << ")" << std::endl\
               << CLOSING << std::endl;\
-    exit(1);\
+    throw;\
 }
 
 #define ASSERT_EQ(lhs, rhs)\
@@ -40,7 +35,7 @@ if (!((lhs) == (rhs))) {\
               << "LHS: " << lhs << std::endl\
               << "RHS: " << rhs << std::endl\
               << CLOSING << std::endl;\
-    exit(1);\
+    throw;\
 }
 
 #define ASSERT_NE(lhs, rhs)\
@@ -52,7 +47,7 @@ if (!((lhs) != (rhs))) {\
               << "LHS: " << lhs << std::endl\
               << "RHS: " << rhs << std::endl\
               << CLOSING << std::endl;\
-    exit(1);\
+    throw;\
 }
 
 #define ASSERT_LT(lhs, rhs)\
@@ -64,7 +59,7 @@ if (!((lhs) < (rhs))) {\
               << "LHS: " << lhs << std::endl\
               << "RHS: " << rhs << std::endl\
               << CLOSING << std::endl;\
-    exit(1);\
+    throw;\
 }
 
 #define ASSERT_LE(lhs, rhs)\
@@ -76,7 +71,7 @@ if (!((lhs) <= (rhs))) {\
               << "LHS: " << lhs << std::endl\
               << "RHS: " << rhs << std::endl\
               << CLOSING << std::endl;\
-    exit(1);\
+    throw;\
 }
 
 #define ASSERT_RUNS_AT_MOST_N_TIMES(N) {\

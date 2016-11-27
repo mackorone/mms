@@ -1,14 +1,26 @@
 #include "Worker.h"
 
+#include <QCoreApplication>
+
 #include "Controller.h"
 #include "Directory.h"
+#include "Model.h"
+#include "MouseChecker.h"
 #include "Param.h"
 #include "SimUtilities.h"
+#include "View.h"
+#include "units/Milliseconds.h"
 
 namespace mms {
 
-Worker::Worker(Controller* controller) :
+static const QString& OPENING_DIRECTION_STRING = "OPENING";
+static const QString& WALL_DIRECTION_STRING = "WALL";
+
+Worker::Worker(Model* model, View* view, Controller* controller) :
+        m_model(model),
+        m_view(view),
         m_controller(controller),
+        m_staticOptionsFinalized(false),
         m_process(nullptr) {
 }
 
@@ -25,6 +37,53 @@ void Worker::init() {
         &QProcess::readyReadStandardError,
         this,
         &Worker::processMouseAlgoStderr
+    );
+
+
+    // Wait until static options have been finalized
+    while (!m_staticOptionsFinalized) {
+        SimUtilities::sleep(Milliseconds(1));
+        // We haven't started the main event loop yet, so we have to explicitly
+        // process events so that we can detect messages from the algorithm.
+        QCoreApplication::processEvents();
+    }
+
+    // Validate all of the static options except for mouseFile,
+    // which is validated in the mouse init method
+    validateMouseInterfaceType(
+        P()->mouseAlgorithm(),
+        m_controller->getStaticOptions().interfaceType
+    );
+    validateMouseInitialDirection(
+        P()->mouseAlgorithm(),
+        m_controller->getStaticOptions().initialDirection
+    );
+    validateTileTextRowsAndCols(
+        P()->mouseAlgorithm(),
+        m_controller->getStaticOptions().tileTextNumberOfRows,
+        m_controller->getStaticOptions().tileTextNumberOfCols
+    );
+    validateMouseWheelSpeedFraction(
+        P()->mouseAlgorithm(),
+        m_controller->getStaticOptions().wheelSpeedFraction
+    );
+
+    // Initialize the mouse object
+    initAndValidateMouse(
+        P()->mouseAlgorithm(),
+        m_controller->getStaticOptions().mouseFile,
+        m_controller->getStaticOptions().interfaceType,
+        m_controller->getStaticOptions().initialDirection,
+        m_model
+    );
+
+    // Initialize the mouse interface
+    m_mouseInterface = new MouseInterface(
+        m_model->getMaze(),
+        m_model->getMouse(),
+        m_view->getMazeGraphic(),
+        m_controller,
+        m_view->getAllowableTileTextCharacters()
     );
 }
 
@@ -46,9 +105,6 @@ void Worker::processMouseAlgoStderr() {
 
     // Read all of the new text
     QString input = m_process->readAllStandardError();
-
-    // TODO: MACK
-    qDebug() << input;
 
     // Separate the input by line
     QStringList inputLines = input.split("\n");
@@ -120,7 +176,7 @@ QString Worker::helper(const QString& command) {
         return ACK_STRING;
     }
     else if (function == "finalizeStaticOptions") {
-        m_controller->m_staticOptionsFinalized = true;
+        m_staticOptionsFinalized = true;
         return ACK_STRING;
     }
     else if (function == "updateAllowOmniscience") {
@@ -159,64 +215,64 @@ QString Worker::helper(const QString& command) {
         return ACK_STRING;
     }
     else if (function == "mazeWidth") {
-        return QString::number(m_controller->m_model->getMaze()->getWidth());
+        return QString::number(m_model->getMaze()->getWidth());
     }
     else if (function == "mazeHeight") {
-        return QString::number(m_controller->m_model->getMaze()->getHeight());
+        return QString::number(m_model->getMaze()->getHeight());
     }
     else if (function == "isOfficialMaze") {
-        return QString::number(m_controller->m_model->getMaze()->isOfficialMaze());
+        return QString::number(m_model->getMaze()->isOfficialMaze());
     }
     else if (function == "initialDirection") {
-        Direction initialDirection = m_controller->getInitialDirection(
+        Direction initialDirection = getInitialDirection(
             m_controller->m_staticOptions.initialDirection,
-            m_controller->m_model
+            m_model
         );
         return QString(QChar(DIRECTION_TO_CHAR.value(initialDirection)));
     }
     else if (function == "getRandomFloat") {
-        return QString::number(m_controller->m_mouseInterface->getRandom());
+        return QString::number(m_mouseInterface->getRandom());
     }
     else if (function == "millis") {
-        return QString::number(m_controller->m_mouseInterface->millis());
+        return QString::number(m_mouseInterface->millis());
     }
     else if (function == "delay") {
         int milliseconds = SimUtilities::strToInt(tokens.at(1));
-        m_controller->m_mouseInterface->delay(milliseconds);
+        m_mouseInterface->delay(milliseconds);
         return ACK_STRING;
     }
     else if (function == "setTileColor") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
         char color = SimUtilities::strToChar(tokens.at(3));
-        m_controller->m_mouseInterface->setTileColor(x, y, color);
+        m_mouseInterface->setTileColor(x, y, color);
         return EMPTY_STRING;
     }
     else if (function == "clearTileColor") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
-        m_controller->m_mouseInterface->clearTileColor(x, y);
+        m_mouseInterface->clearTileColor(x, y);
         return EMPTY_STRING;
     }
     else if (function == "clearAllTileColor") {
-        m_controller->m_mouseInterface->clearAllTileColor();
+        m_mouseInterface->clearAllTileColor();
         return EMPTY_STRING;
     }
     else if (function == "setTileText") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
         QString text = tokens.at(3);
-        m_controller->m_mouseInterface->setTileText(x, y, text);
+        m_mouseInterface->setTileText(x, y, text);
         return EMPTY_STRING;
     }
     else if (function == "clearTileText") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
-        m_controller->m_mouseInterface->clearTileText(x, y);
+        m_mouseInterface->clearTileText(x, y);
         return EMPTY_STRING;
     }
     else if (function == "clearAllTileText") {
-        m_controller->m_mouseInterface->clearAllTileText();
+        m_mouseInterface->clearAllTileText();
         return EMPTY_STRING;
     }
     else if (function == "declareWall") {
@@ -224,129 +280,129 @@ QString Worker::helper(const QString& command) {
         int y = SimUtilities::strToInt(tokens.at(2));
         char direction = SimUtilities::strToChar(tokens.at(3));
         bool wallExists = SimUtilities::strToBool(tokens.at(4));
-        m_controller->m_mouseInterface->declareWall(x, y, direction, wallExists);
+        m_mouseInterface->declareWall(x, y, direction, wallExists);
         return EMPTY_STRING;
     }
     else if (function == "undeclareWall") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
         char direction = SimUtilities::strToChar(tokens.at(3));
-        m_controller->m_mouseInterface->undeclareWall(x, y, direction);
+        m_mouseInterface->undeclareWall(x, y, direction);
         return EMPTY_STRING;
     }
     else if (function == "setTileFogginess") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
         bool foggy = SimUtilities::strToBool(tokens.at(3));
-        m_controller->m_mouseInterface->setTileFogginess(x, y, foggy);
+        m_mouseInterface->setTileFogginess(x, y, foggy);
         return EMPTY_STRING;
     }
     else if (function == "declareTileDistance") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
         int distance = SimUtilities::strToInt(tokens.at(3));
-        m_controller->m_mouseInterface->declareTileDistance(x, y, distance);
+        m_mouseInterface->declareTileDistance(x, y, distance);
         return EMPTY_STRING;
     }
     else if (function == "undeclareTileDistance") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
-        m_controller->m_mouseInterface->undeclareTileDistance(x, y);
+        m_mouseInterface->undeclareTileDistance(x, y);
         return EMPTY_STRING;
     }
     else if (function == "resetPosition") {
-        m_controller->m_mouseInterface->resetPosition();
+        m_mouseInterface->resetPosition();
         return ACK_STRING;
     }
     else if (function == "inputButtonPressed") {
         int inputButton = SimUtilities::strToInt(tokens.at(1));
         return SimUtilities::boolToStr(
-            m_controller->m_mouseInterface->inputButtonPressed(inputButton)
+            m_mouseInterface->inputButtonPressed(inputButton)
         );
     }
     else if (function == "acknowledgeInputButtonPressed") {
         int inputButton = SimUtilities::strToInt(tokens.at(1));
-        m_controller->m_mouseInterface->acknowledgeInputButtonPressed(inputButton);
+        m_mouseInterface->acknowledgeInputButtonPressed(inputButton);
         return ACK_STRING;
     }
     else if (function == "getWheelMaxSpeed") {
         QString name = tokens.at(1);
-        return QString::number(m_controller->m_mouseInterface->getWheelMaxSpeed(name));
+        return QString::number(m_mouseInterface->getWheelMaxSpeed(name));
     }
     else if (function == "setWheelSpeed") {
         QString name = tokens.at(1);
         double rpm = SimUtilities::strToDouble(tokens.at(2));
-        m_controller->m_mouseInterface->setWheelSpeed(name, rpm);
+        m_mouseInterface->setWheelSpeed(name, rpm);
         return ACK_STRING;
     }
     else if (function == "getWheelEncoderTicksPerRevolution") {
         QString name = tokens.at(1);
         return QString::number(
-            m_controller->m_mouseInterface->getWheelEncoderTicksPerRevolution(name)
+            m_mouseInterface->getWheelEncoderTicksPerRevolution(name)
         );
     }
     else if (function == "readWheelEncoder") {
         QString name = tokens.at(1);
         return QString::number(
-            m_controller->m_mouseInterface->readWheelEncoder(name)
+            m_mouseInterface->readWheelEncoder(name)
         );
     }
     else if (function == "resetWheelEncoder") {
         QString name = tokens.at(1);
-        m_controller->m_mouseInterface->resetWheelEncoder(name);
+        m_mouseInterface->resetWheelEncoder(name);
         return ACK_STRING;
     }
     else if (function == "readSensor") {
         QString name = tokens.at(1);
-        return QString::number(m_controller->m_mouseInterface->readSensor(name));
+        return QString::number(m_mouseInterface->readSensor(name));
     }
     else if (function == "readGyro") {
         QString name = tokens.at(1);
-        return QString::number(m_controller->m_mouseInterface->readGyro());
+        return QString::number(m_mouseInterface->readGyro());
     }
     else if (function == "wallFront") {
-        return SimUtilities::boolToStr(m_controller->m_mouseInterface->wallFront());
+        return SimUtilities::boolToStr(m_mouseInterface->wallFront());
     }
     else if (function == "wallRight") {
-        return SimUtilities::boolToStr(m_controller->m_mouseInterface->wallRight());
+        return SimUtilities::boolToStr(m_mouseInterface->wallRight());
     }
     else if (function == "wallLeft") {
-        return SimUtilities::boolToStr(m_controller->m_mouseInterface->wallLeft());
+        return SimUtilities::boolToStr(m_mouseInterface->wallLeft());
     }
     else if (function == "moveForward") {
         int count = 1;
         if (1 < tokens.size()) {
             count = SimUtilities::strToInt(tokens.at(1));
         }
-        m_controller->m_mouseInterface->moveForward(count);
+        m_mouseInterface->moveForward(count);
         return ACK_STRING;
     }
     else if (function == "turnLeft") {
-        m_controller->m_mouseInterface->turnLeft();
+        m_mouseInterface->turnLeft();
         return ACK_STRING;
     }
     else if (function == "turnRight") {
-        m_controller->m_mouseInterface->turnRight();
+        m_mouseInterface->turnRight();
         return ACK_STRING;
     }
     else if (function == "turnAroundLeft") {
-        m_controller->m_mouseInterface->turnAroundLeft();
+        m_mouseInterface->turnAroundLeft();
         return ACK_STRING;
     }
     else if (function == "turnAroundRight") {
-        m_controller->m_mouseInterface->turnAroundRight();
+        m_mouseInterface->turnAroundRight();
         return ACK_STRING;
     }
     else if (function == "originMoveForwardToEdge") {
-        m_controller->m_mouseInterface->originMoveForwardToEdge();
+        m_mouseInterface->originMoveForwardToEdge();
         return ACK_STRING;
     }
     else if (function == "originTurnLeftInPlace") {
-        m_controller->m_mouseInterface->originTurnLeftInPlace();
+        m_mouseInterface->originTurnLeftInPlace();
         return ACK_STRING;
     }
     else if (function == "originTurnRightInPlace") {
-        m_controller->m_mouseInterface->originTurnRightInPlace();
+        m_mouseInterface->originTurnRightInPlace();
         return ACK_STRING;
     }
     else if (function == "moveForwardToEdge") {
@@ -354,62 +410,62 @@ QString Worker::helper(const QString& command) {
         if (1 < tokens.size()) {
             count = SimUtilities::strToInt(tokens.at(1));
         }
-        m_controller->m_mouseInterface->moveForwardToEdge(count);
+        m_mouseInterface->moveForwardToEdge(count);
         return ACK_STRING;
     }
     else if (function == "turnLeftToEdge") {
-        m_controller->m_mouseInterface->turnLeftToEdge();
+        m_mouseInterface->turnLeftToEdge();
         return ACK_STRING;
     }
     else if (function == "turnRightToEdge") {
-        m_controller->m_mouseInterface->turnRightToEdge();
+        m_mouseInterface->turnRightToEdge();
         return ACK_STRING;
     }
     else if (function == "turnAroundLeftToEdge") {
-        m_controller->m_mouseInterface->turnAroundLeftToEdge();
+        m_mouseInterface->turnAroundLeftToEdge();
         return ACK_STRING;
     }
     else if (function == "turnAroundRightToEdge") {
-        m_controller->m_mouseInterface->turnAroundRightToEdge();
+        m_mouseInterface->turnAroundRightToEdge();
         return ACK_STRING;
     }
     else if (function == "diagonalLeftLeft") {
         int count = SimUtilities::strToInt(tokens.at(1));
-        m_controller->m_mouseInterface->diagonalLeftLeft(count);
+        m_mouseInterface->diagonalLeftLeft(count);
         return ACK_STRING;
     }
     else if (function == "diagonalLeftRight") {
         int count = SimUtilities::strToInt(tokens.at(1));
-        m_controller->m_mouseInterface->diagonalLeftRight(count);
+        m_mouseInterface->diagonalLeftRight(count);
         return ACK_STRING;
     }
     else if (function == "diagonalRightLeft") {
         int count = SimUtilities::strToInt(tokens.at(1));
-        m_controller->m_mouseInterface->diagonalRightLeft(count);
+        m_mouseInterface->diagonalRightLeft(count);
         return ACK_STRING;
     }
     else if (function == "diagonalRightRight") {
         int count = SimUtilities::strToInt(tokens.at(1));
-        m_controller->m_mouseInterface->diagonalRightRight(count);
+        m_mouseInterface->diagonalRightRight(count);
         return ACK_STRING;
     }
     else if (function == "currentXTile") {
-        return QString::number(m_controller->m_mouseInterface->currentXTile());
+        return QString::number(m_mouseInterface->currentXTile());
     }
     else if (function == "currentYTile") {
-        return QString::number(m_controller->m_mouseInterface->currentYTile());
+        return QString::number(m_mouseInterface->currentYTile());
     }
     else if (function == "currentDirection") {
-        return QString(QChar(m_controller->m_mouseInterface->currentDirection()));
+        return QString(QChar(m_mouseInterface->currentDirection()));
     }
     else if (function == "currentXPosMeters") {
-        return QString::number(m_controller->m_mouseInterface->currentXPosMeters());
+        return QString::number(m_mouseInterface->currentXPosMeters());
     }
     else if (function == "currentYPosMeters") {
-        return QString::number(m_controller->m_mouseInterface->currentYPosMeters());
+        return QString::number(m_mouseInterface->currentYPosMeters());
     }
     else if (function == "currentRotationDegrees") {
-        return QString::number(m_controller->m_mouseInterface->currentRotationDegrees());
+        return QString::number(m_mouseInterface->currentRotationDegrees());
     }
 
     return ERROR_STRING;
@@ -481,6 +537,118 @@ void Worker::startMouseAlgorithm(const QString& mouseAlgorithm) {
         << "No \"Main\" file found in \""
         << selectedMouseAlgoPath << "\"";
     SimUtilities::quit();
+}
+
+void Worker::validateMouseInterfaceType(
+        const QString& mouseAlgorithm, const QString& interfaceType) {
+    if (!STRING_TO_INTERFACE_TYPE.contains(interfaceType)) {
+        qCritical().noquote().nospace()
+            << "\"" << interfaceType << "\" is not a valid interface type. You"
+            << " must declare the interface type of the mouse algorithm \""
+            << mouseAlgorithm << "\" to be either \""
+            << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
+            << "\" or \""
+            << INTERFACE_TYPE_TO_STRING.value(InterfaceType::CONTINUOUS)
+            << "\".";
+        SimUtilities::quit();
+    }
+}
+
+void Worker::validateMouseInitialDirection(
+        const QString& mouseAlgorithm, const QString& initialDirection) {
+    if (!(
+        STRING_TO_DIRECTION.contains(initialDirection)
+        || initialDirection == OPENING_DIRECTION_STRING
+        || initialDirection == WALL_DIRECTION_STRING
+    )) {
+        qCritical().noquote().nospace()
+            << "\"" << initialDirection << "\" is not a valid initial"
+            << " direction. You must declare the initial direction of the mouse"
+            << " algorithm \"" << mouseAlgorithm << "\" to be one of \""
+            << DIRECTION_TO_STRING.value(Direction::NORTH) << "\", \""
+            << DIRECTION_TO_STRING.value(Direction::EAST) << "\", \""
+            << DIRECTION_TO_STRING.value(Direction::SOUTH) << "\", \""
+            << DIRECTION_TO_STRING.value(Direction::WEST) << "\", \""
+            << OPENING_DIRECTION_STRING << "\", or \""
+            << WALL_DIRECTION_STRING << "\".";
+        SimUtilities::quit();
+    }
+}
+
+void Worker::validateTileTextRowsAndCols(
+    const QString& mouseAlgorithm,
+    int tileTextNumberOfRows, int tileTextNumberOfCols) {
+    if (tileTextNumberOfRows < 0 || tileTextNumberOfCols < 0) {
+        qCritical().noquote().nospace()
+            << "Both tileTextNumberOfRows() and tileTextNumberOfCols() must"
+            << " return non-negative integers. Since they return \""
+            << tileTextNumberOfRows << "\" and \"" << tileTextNumberOfCols
+            << "\", respectively, the tile text dimensions of the mouse"
+            << " algorithm \"" << mouseAlgorithm << "\" are invalid.";
+        SimUtilities::quit();
+    }
+}
+
+void Worker::validateMouseWheelSpeedFraction(
+    const QString& mouseAlgorithm, double wheelSpeedFraction) {
+    if (!(0.0 <= wheelSpeedFraction && wheelSpeedFraction <= 1.0)) {
+        qCritical().noquote().nospace()
+            << "\"" << wheelSpeedFraction << "\" is not a valid wheel speed"
+            << " fraction. The wheel speed fraction of the mouse algorithm \""
+            << mouseAlgorithm << "\" has to be in [0.0, 1.0].";
+        SimUtilities::quit();
+    }
+}
+
+void Worker::initAndValidateMouse(
+        const QString& mouseAlgorithm,
+        const QString& mouseFile,
+        const QString& interfaceType,
+        const QString& initialDirection,
+        Model* model) {
+
+    // Initialize the mouse with the file provided
+    Direction direction = getInitialDirection(initialDirection, model);
+    bool success = model->getMouse()->initialize(mouseFile, direction);
+    if (!success) {
+        qCritical().noquote().nospace()
+            << "Unable to successfully initialize the mouse in the algorithm \""
+            << mouseAlgorithm << "\" from \"" << mouseFile << "\".";
+        SimUtilities::quit();
+    }
+
+    // Validate the mouse
+    if (STRING_TO_INTERFACE_TYPE.value(interfaceType) == InterfaceType::DISCRETE) {
+        if (!MouseChecker::isDiscreteInterfaceCompatible(*model->getMouse())) {
+            qCritical().noquote().nospace()
+                << "The mouse file \"" << mouseFile << "\" is not discrete"
+                << " interface compatible.";
+            SimUtilities::quit();
+        }
+    }
+    else { // InterfaceType::CONTINUOUS
+        if (!MouseChecker::isContinuousInterfaceCompatible(*model->getMouse())) {
+            qCritical().noquote().nospace()
+                << "The mouse file \"" << mouseFile << "\" is not continuous"
+                << " interface compatible.";
+            SimUtilities::quit();
+        }
+    }
+}
+
+Direction Worker::getInitialDirection(const QString& initialDirection, Model* model) {
+    bool wallNorth = model->getMaze()->getTile(0, 0)->isWall(Direction::NORTH);
+    bool wallEast = model->getMaze()->getTile(0, 0)->isWall(Direction::EAST);
+    if (!STRING_TO_DIRECTION.contains(initialDirection) && wallNorth == wallEast) {
+        return Direction::NORTH;
+    }
+    if (initialDirection == OPENING_DIRECTION_STRING) {
+        return (wallNorth ? Direction::EAST : Direction::NORTH);
+    }
+    if (initialDirection == WALL_DIRECTION_STRING) {
+        return (wallNorth ? Direction::NORTH : Direction::EAST);
+    }
+    return STRING_TO_DIRECTION.value(initialDirection);
 }
         
 } // namespace mms

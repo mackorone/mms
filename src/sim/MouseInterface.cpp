@@ -30,14 +30,12 @@ MouseInterface::MouseInterface(
         Mouse* mouse,
         MazeGraphic* mazeGraphic,
         Controller* controller,
-        QSet<QChar> allowableTileTextCharacters,
-        StaticMouseAlgorithmOptions options) :
+        QSet<QChar> allowableTileTextCharacters) :
         m_maze(maze),
         m_mouse(mouse),
         m_mazeGraphic(mazeGraphic),
         m_controller(controller),
         m_allowableTileTextCharacters(allowableTileTextCharacters),
-        m_options(options),
         m_inOrigin(true) {
 }
 
@@ -620,7 +618,7 @@ double MouseInterface::currentRotationDegrees() {
 }
 
 void MouseInterface::ensureDiscreteInterface(const QString& callingFunction) const {
-    if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) != InterfaceType::DISCRETE) {
+    if (STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType) != InterfaceType::DISCRETE) {
         qCritical().noquote().nospace()
             << "You must declare the interface type to be \""
             << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
@@ -630,7 +628,7 @@ void MouseInterface::ensureDiscreteInterface(const QString& callingFunction) con
 }
 
 void MouseInterface::ensureContinuousInterface(const QString& callingFunction) const {
-    if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) != InterfaceType::CONTINUOUS) {
+    if (STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType) != InterfaceType::CONTINUOUS) {
         qCritical().noquote().nospace()
             << "You must declare the interface type to be \""
             << INTERFACE_TYPE_TO_STRING.value(InterfaceType::CONTINUOUS)
@@ -700,9 +698,9 @@ void MouseInterface::setTileTextImpl(int x, int y, const QString& text) {
     QVector<QString> rowsOfText;
     int row = 0;
     int index = 0;
-    while (row < m_options.tileTextNumberOfRows && index < text.size()) {
+    while (row < m_controller->getStaticOptions().tileTextNumberOfRows && index < text.size()) {
         QString rowOfText;
-        while (index < (row + 1) * m_options.tileTextNumberOfCols && index < text.size()) {
+        while (index < (row + 1) * m_controller->getStaticOptions().tileTextNumberOfCols && index < text.size()) {
             QChar c = text.at(index);
             if (m_allowableTileTextCharacters.find(c) == m_allowableTileTextCharacters.end()) { // TODO: MACK - use contains
                 qWarning().noquote().nospace()
@@ -953,7 +951,7 @@ void MouseInterface::moveForwardTo(const Cartesian& destinationTranslation, cons
     Meters previousDistance = delta.getRho();
 
     // Start the mouse moving forward
-    m_mouse->setWheelSpeedsForMoveForward(m_options.wheelSpeedFraction);
+    m_mouse->setWheelSpeedsForMoveForward(m_controller->getStaticOptions().wheelSpeedFraction);
 
     // Move forward until we've reached the destination
     do {
@@ -982,11 +980,11 @@ void MouseInterface::arcTo(const Cartesian& destinationTranslation, const Radian
     // Set the speed based on the initial rotation delta
     if (0 < initialRotationDelta.getDegreesNotBounded()) {
         m_mouse->setWheelSpeedsForCurveLeft(
-            m_options.wheelSpeedFraction * extraWheelSpeedFraction, radius);
+            m_controller->getStaticOptions().wheelSpeedFraction * extraWheelSpeedFraction, radius);
     }
     else {
         m_mouse->setWheelSpeedsForCurveRight(
-            m_options.wheelSpeedFraction * extraWheelSpeedFraction, radius);
+            m_controller->getStaticOptions().wheelSpeedFraction * extraWheelSpeedFraction, radius);
     }
     
     // While the deltas have the same sign, sleep for a short amount of time

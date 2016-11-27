@@ -6,7 +6,6 @@
 #include "InterfaceType.h"
 #include "MazeGraphic.h"
 #include "Mouse.h"
-#include "StaticMouseAlgorithmOptions.h"
 #include "Param.h"
 
 #define ENSURE_DISCRETE_INTERFACE ensureDiscreteInterface(__func__);
@@ -31,8 +30,7 @@ public:
         Mouse* mouse,
         MazeGraphic* mazeGraphic,
         Controller* controller,
-        QSet<QChar> allowableTileTextCharacters,
-        StaticMouseAlgorithmOptions options);
+        QSet<QChar> allowableTileTextCharacters);
 
     // ----- Any interface methods ----- //
 
@@ -146,7 +144,6 @@ private:
     MazeGraphic* m_mazeGraphic;
     Controller* m_controller;
     QSet<QChar> m_allowableTileTextCharacters;
-    StaticMouseAlgorithmOptions m_options;
 
     // Whether or not the mouse has moved out the origin
     bool m_inOrigin;

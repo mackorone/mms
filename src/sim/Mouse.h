@@ -26,10 +26,10 @@ class Mouse {
 public:
     Mouse(const Maze* maze);
 
-    // Initializes the mouse (body, wheels, sensors, etc.); returns true if successful, false if not
-    bool initialize(
-        const QString& mouseFile,
-        Direction initialDirection);
+    // Initializes the mouse (body, wheels, sensors, etc.);
+    // returns true if successful, false if not
+    bool initialize(const QString& mouseFile, Direction initialDirection);
+    bool isInitialized() const;
 
     // Gets the initial translation and rotation of the mouse
     Cartesian getInitialTranslation() const;
@@ -118,6 +118,9 @@ public:
     RadiansPerSecond readGyro() const;
 
 private:
+    // Whether or not the mouse is initialized
+    bool m_isInitialized;
+
     // Used for the sensor readings
     const Maze* m_maze;
 

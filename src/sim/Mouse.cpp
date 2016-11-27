@@ -19,6 +19,7 @@
 namespace mms {
 
 Mouse::Mouse(const Maze* maze) :
+    m_isInitialized(false),
     m_maze(maze),
     m_currentGyro(RadiansPerSecond(0.0)) {
 }
@@ -89,8 +90,20 @@ bool Mouse::initialize(
         sensor.getInitialViewPolygon().getTriangles();
     }
 
+    // TODO: MACK - dedup these two fields - return type of void here instead?
+
+    // Mark the mouse as initialized
+    m_isInitialized = success;
+
+    // TODO: MACK
+    qDebug() << "INITIALIZED";
+
     // Return success
     return success;
+}
+
+bool Mouse::isInitialized() const {
+    return m_isInitialized;
 }
 
 Cartesian Mouse::getInitialTranslation() const {

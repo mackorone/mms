@@ -10,6 +10,7 @@ class Model {
 
 public:
     Model();
+    // TODO: MACK - const?
     Maze* getMaze();
     Mouse* getMouse();
     World* getWorld();

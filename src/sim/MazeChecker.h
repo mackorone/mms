@@ -13,6 +13,9 @@ class MazeChecker {
 
 public:
 
+    // TODO: MACK - the fact that these return QPairs is a little bit weird -
+    // it's duplicating information
+
     // The MazeChecker class is not constructible
     MazeChecker() = delete;
 
