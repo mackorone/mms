@@ -22,7 +22,7 @@ namespace mms {
 // Definition of the static variables for linking
 Model* Driver::m_model;
 View* Driver::m_view;
-Controller* Driver::m_controller;
+ControllerManager* Driver::m_controllerManager;
 
 int Driver::drive(int argc, char* argv[]) {
 
@@ -62,19 +62,19 @@ int Driver::drive(int argc, char* argv[]) {
     m_model = new Model();
     m_view = new View(m_model, argc, argv);
 
-    // Initialize the controller, which starts the algorithm
+    // Initialize the controllerManager, which starts the algorithm
     // (and returns once the static options have been set)
-    m_controller = new Controller(m_model, m_view);
-    m_controller->spawnMouseAlgo();
+    m_controllerManager = new ControllerManager(m_model, m_view);
+    m_controllerManager->spawnMouseAlgo();
 
     // Initialize mouse algorithm values in the model and view
     // TODO: MACK
     /*
     m_model->getWorld()->setOptions(
-        m_controller->getStaticOptions()
+        m_controllerManager->getStaticOptions()
     );
     */
-    m_view->setController(m_controller);
+    m_view->setControllerManager(m_controllerManager);
 
     // Initialize the tile text, now that the options have been set
     m_view->initTileGraphicText();

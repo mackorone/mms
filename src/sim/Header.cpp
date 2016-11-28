@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <QFile>
 
-#include "Controller.h"
+#include "ControllerManager.h"
 #include "Directory.h"
 #include "Layout.h"
 #include "Logging.h"
@@ -16,7 +16,7 @@ namespace mms {
 
 Header::Header(Model* model) :
         m_model(model),
-        m_controller(nullptr),
+        m_controllerManager(nullptr),
         m_windowWidth(0),
         m_windowHeight(0),
         m_textHeight(P()->headerTextHeight()),
@@ -49,8 +49,8 @@ int Header::getHeight() const {
     return P()->windowBorderWidth() + numRows * m_textHeight + (numRows - 1) * m_rowSpacing;
 }
 
-void Header::setController(Controller* controller) {
-    m_controller = controller;
+void Header::setControllerManager(ControllerManager* controllerManager) {
+    m_controllerManager = controllerManager;
 }
 
 void Header::updateWindowSize(int width, int height) {
@@ -125,38 +125,38 @@ void Header::updateLines() {
         /*
         QString("Mouse Algo:                  ") + P()->mouseAlgorithm(),
 
-        QString("Mouse File:                  ") + (m_controller == nullptr ? "NONE" :
-            m_controller->getStaticOptions().mouseFile),
-        QString("Interface Type:              ") + (m_controller == nullptr ? "NONE" :
-            m_controller->getStaticOptions().interfaceType),
-        QString("Initial Direction:           ") + (m_controller == nullptr ? "NONE" :
-            m_controller->getStaticOptions().initialDirection),
-        QString("Tile Text Num Rows:          ") + (m_controller == nullptr ? "NONE" :
-            QString::number(m_controller->getStaticOptions().tileTextNumberOfRows)),
-        QString("Tile Text Num Cols:          ") + (m_controller == nullptr ? "NONE" :
-            QString::number(m_controller->getStaticOptions().tileTextNumberOfCols)),
-        QString("Allow Omniscience:           ") + (m_controller == nullptr ? "NONE" :
-            (m_controller->getDynamicOptions().allowOmniscience ? "TRUE" : "FALSE")),
-        QString("Auto Clear Fog:              ") + (m_controller == nullptr ? "NONE" :
-            (m_controller->getDynamicOptions().automaticallyClearFog ? "TRUE" : "FALSE")),
-        QString("Declare Both Wall Halves:    ") + (m_controller == nullptr ? "NONE" :
-            (m_controller->getDynamicOptions().declareBothWallHalves ? "TRUE" : "FALSE")),
-        QString("Auto Set Tile Text:          ") + (m_controller == nullptr ? "NONE" :
-            (m_controller->getDynamicOptions().setTileTextWhenDistanceDeclared ? "TRUE" : "FALSE")),
-        QString("Auto Set Tile Base Color:    ") + (m_controller == nullptr ? "NONE" :
-            (m_controller->getDynamicOptions().setTileBaseColorWhenDistanceDeclaredCorrectly ? "TRUE" : "FALSE")),
+        QString("Mouse File:                  ") + (m_controllerManager == nullptr ? "NONE" :
+            m_controllerManager->getStaticOptions().mouseFile),
+        QString("Interface Type:              ") + (m_controllerManager == nullptr ? "NONE" :
+            m_controllerManager->getStaticOptions().interfaceType),
+        QString("Initial Direction:           ") + (m_controllerManager == nullptr ? "NONE" :
+            m_controllerManager->getStaticOptions().initialDirection),
+        QString("Tile Text Num Rows:          ") + (m_controllerManager == nullptr ? "NONE" :
+            QString::number(m_controllerManager->getStaticOptions().tileTextNumberOfRows)),
+        QString("Tile Text Num Cols:          ") + (m_controllerManager == nullptr ? "NONE" :
+            QString::number(m_controllerManager->getStaticOptions().tileTextNumberOfCols)),
+        QString("Allow Omniscience:           ") + (m_controllerManager == nullptr ? "NONE" :
+            (m_controllerManager->getDynamicOptions().allowOmniscience ? "TRUE" : "FALSE")),
+        QString("Auto Clear Fog:              ") + (m_controllerManager == nullptr ? "NONE" :
+            (m_controllerManager->getDynamicOptions().automaticallyClearFog ? "TRUE" : "FALSE")),
+        QString("Declare Both Wall Halves:    ") + (m_controllerManager == nullptr ? "NONE" :
+            (m_controllerManager->getDynamicOptions().declareBothWallHalves ? "TRUE" : "FALSE")),
+        QString("Auto Set Tile Text:          ") + (m_controllerManager == nullptr ? "NONE" :
+            (m_controllerManager->getDynamicOptions().setTileTextWhenDistanceDeclared ? "TRUE" : "FALSE")),
+        QString("Auto Set Tile Base Color:    ") + (m_controllerManager == nullptr ? "NONE" :
+            (m_controllerManager->getDynamicOptions().setTileBaseColorWhenDistanceDeclaredCorrectly ? "TRUE" : "FALSE")),
         QString("Wheel Speed Fraction:        ") +
-            (m_controller == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
-            QString::number(m_controller->getStaticOptions().wheelSpeedFraction))),
+            (m_controllerManager == nullptr ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            QString::number(m_controllerManager->getStaticOptions().wheelSpeedFraction))),
         QString("Declare Wall On Read:        ") +
-            (m_controller == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
-            (m_controller->getDynamicOptions().declareWallOnRead ? "TRUE" : "FALSE"))),
+            (m_controllerManager == nullptr ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            (m_controllerManager->getDynamicOptions().declareWallOnRead ? "TRUE" : "FALSE"))),
         QString("Use Tile Edge Movements:     ") +
-            (m_controller == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
-            (m_controller->getDynamicOptions().useTileEdgeMovements ? "TRUE" : "FALSE"))),
+            (m_controllerManager == nullptr ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            (m_controllerManager->getDynamicOptions().useTileEdgeMovements ? "TRUE" : "FALSE"))),
         */
 
         // Mouse progress

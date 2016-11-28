@@ -10,22 +10,22 @@
 namespace mms {
 
 // We have to forward declare the class (as opposed to including it) so as to
-// avoid a circular dependency; Controller.h already includes this file
-class Controller;
+// avoid a circular dependency; ControllerManager.h already includes this file
+class ControllerManager;
 
 class Header {
 
 public:
     Header(Model* model);
     int getHeight() const;
-    void setController(Controller* controller);
+    void setControllerManager(ControllerManager* controllerManager);
     void updateWindowSize(int width, int height);
     void updateLinesAndColumnStartingPositions();
     void draw();
 
 private:
     Model* m_model;
-    Controller* m_controller; // Used to retrieve mouse algo options
+    ControllerManager* m_controllerManager; // Used to retrieve mouse algo options
     int m_windowWidth; // The total height of the window, in pixels
     int m_windowHeight; // The total width of the window, in pixels
     int m_textHeight; // The height of the text, in pixels

@@ -27,8 +27,8 @@ namespace mms {
 
 // TODO: MACK - we can get rid of this
 // We have to forward declare the class (as opposed to including it) so as to
-// avoid a circular dependency; Controller.h already includes this file
-class Controller;
+// avoid a circular dependency; ControllerManager.h already includes this file
+class ControllerManager;
 
 // TODO: MACK - private inheritance here?
 class View : public QOpenGLWidget, protected QOpenGLFunctions {
@@ -46,7 +46,7 @@ public:
     MazeGraphic* getMazeGraphic();
     MouseGraphic* getMouseGraphic();
 
-    void setController(Controller* controller);
+    void setControllerManager(ControllerManager* controllerManager);
 
     void refresh();
     void updateWindowSize(int width, int height);
@@ -92,7 +92,7 @@ private:
 
 	// TODO: MACK - this shouldn't be in here...
     // Used to determine whether or not to automatically clear fog
-    Controller* m_controller;
+    ControllerManager* m_controllerManager;
 
     // Polygon program variables
 	// TODO: MACK - do I need this anymore?

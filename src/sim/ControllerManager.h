@@ -10,13 +10,13 @@
 
 namespace mms {
 
-class Controller : public QObject {
+class ControllerManager : public QObject {
 
     Q_OBJECT
 
 public:
 
-    Controller(Model* model, View* view);
+    ControllerManager(Model* model, View* view);
     void spawnMouseAlgo();
 
 private:

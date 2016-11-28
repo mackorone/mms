@@ -2,7 +2,7 @@
 
 #include <QCoreApplication>
 
-#include "Controller.h"
+#include "ControllerManager.h"
 #include "Directory.h"
 #include "Model.h"
 #include "MouseChecker.h"
@@ -16,10 +16,10 @@ namespace mms {
 static const QString& OPENING_DIRECTION_STRING = "OPENING";
 static const QString& WALL_DIRECTION_STRING = "WALL";
 
-Worker::Worker(Model* model, View* view, Controller* controller) :
+Worker::Worker(Model* model, View* view, ControllerManager* controllerManager) :
         m_model(model),
         m_view(view),
-        m_controller(controller),
+        m_controllerManager(controllerManager),
         m_staticOptionsFinalized(false),
         m_process(nullptr) {
 }
@@ -108,7 +108,7 @@ void Worker::processMouseAlgoStdout() {
 
 void Worker::processMouseAlgoStderr() {
 
-    // TODO: MACK - don't do anything until the Controller is constructed...
+    // TODO: MACK - don't do anything until the ControllerManager is constructed...
 
     // TODO: upforgrabs
     // Determine whether or not this function is perf sensitive. If so,

@@ -1,13 +1,13 @@
-#include "Controller.h"
+#include "ControllerManager.h"
 
 namespace mms {
 
-Controller::Controller(Model* model, View* view) :
+ControllerManager::ControllerManager(Model* model, View* view) :
         m_model(model),
         m_view(view) {
 }
 
-void Controller::spawnMouseAlgo() {
+void ControllerManager::spawnMouseAlgo() {
 
     Worker* worker = new Worker(m_model, m_view, this);
     QThread* thread = new QThread();

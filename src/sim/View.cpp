@@ -5,7 +5,7 @@
 #include <QPair>
 
 #include "BufferInterface.h"
-#include "Controller.h"
+#include "ControllerManager.h"
 #include "Directory.h"
 #include "Layout.h"
 #include "Logging.h"
@@ -44,9 +44,9 @@ MouseGraphic* View::getMouseGraphic() {
     return m_mouseGraphic;
 }
 
-void View::setController(Controller* controller) {
-    m_controller = controller;
-    m_header->setController(controller);
+void View::setControllerManager(ControllerManager* controllerManager) {
+    m_controllerManager = controllerManager;
+    m_header->setControllerManager(controllerManager);
 }
 
 void View::refresh() {
@@ -58,7 +58,7 @@ void View::refresh() {
     // TODO: MACK - this shouldn't be here :/
     // First, clear fog as necessary
     /*
-    if (m_controller->getDynamicOptions().automaticallyClearFog) {
+    if (m_controllerManager->getDynamicOptions().automaticallyClearFog) {
         // TODO: upforgrabs
         // This won't work if the mouse is traveling too quickly and travels more
         // than one tile per frame. Figure out a way that will work in that case.
@@ -170,8 +170,8 @@ void View::initTileGraphicText() {
         {
             // TODO: MACK
             /*
-            m_controller->getStaticOptions().tileTextNumberOfRows,
-            m_controller->getStaticOptions().tileTextNumberOfCols
+            m_controllerManager->getStaticOptions().tileTextNumberOfRows,
+            m_controllerManager->getStaticOptions().tileTextNumberOfCols
             */
             2,
             4
@@ -191,7 +191,7 @@ void View::keyPress(unsigned char key, int x, int y) {
         // TODO: MACK
         /*
         if (
-            STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType)
+            STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType)
             == InterfaceType::DISCRETE
         ) {
             S()->setPaused(!S()->paused());
@@ -209,7 +209,7 @@ void View::keyPress(unsigned char key, int x, int y) {
         // TODO: MACK
         /*
         if (
-            STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType)
+            STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType)
             == InterfaceType::DISCRETE
         ) {
             S()->setSimSpeed(S()->simSpeed() * 1.5);
@@ -227,7 +227,7 @@ void View::keyPress(unsigned char key, int x, int y) {
         // TODO: MACK
         /*
         if (
-            STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType)
+            STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType)
             == InterfaceType::DISCRETE
         ) {
             S()->setSimSpeed(S()->simSpeed() / 1.5);

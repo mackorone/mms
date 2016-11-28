@@ -2,7 +2,7 @@
 
 #include "Model.h"
 #include "View.h"
-#include "Controller.h"
+#include "ControllerManager.h"
 
 namespace mms {
 
@@ -15,7 +15,7 @@ public:
 private:
     static Model* m_model;
     static View* m_view;
-    static Controller* m_controller;
+    static ControllerManager* m_controllerManager;
 
 };
 

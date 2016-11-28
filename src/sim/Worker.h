@@ -9,7 +9,7 @@
 
 namespace mms {
 
-class Controller;
+class ControllerManager;
 class Model;
 class View;
 
@@ -19,7 +19,7 @@ class Worker : public QObject {
 
 public:
     // TODO: MACK
-    Worker(Model* model, View* view, Controller* controller);
+    Worker(Model* model, View* view, ControllerManager* controllerManager);
 
     StaticMouseAlgorithmOptions getStaticOptions();
     DynamicMouseAlgorithmOptions getDynamicOptions();
@@ -32,7 +32,7 @@ public slots:
 private:
     Model* m_model;
     View* m_view;
-    Controller* m_controller;
+    ControllerManager* m_controllerManager;
 
     QProcess* m_process;
     QStringList m_inputLines;

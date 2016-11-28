@@ -19,7 +19,7 @@
 namespace mms {
 
 // We have to forward declare the class (as opposed to including it) so as to
-// avoid a circular dependency; Controller.h already includes this file
+// avoid a circular dependency; ControllerManager.h already includes this file
 class Worker;
 
 class MouseInterface {
