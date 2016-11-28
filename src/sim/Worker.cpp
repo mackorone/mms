@@ -52,28 +52,28 @@ void Worker::init() {
     // which is validated in the mouse init method
     validateMouseInterfaceType(
         P()->mouseAlgorithm(),
-        m_controller->getStaticOptions().interfaceType
+        m_staticOptions.interfaceType
     );
     validateMouseInitialDirection(
         P()->mouseAlgorithm(),
-        m_controller->getStaticOptions().initialDirection
+        m_staticOptions.initialDirection
     );
     validateTileTextRowsAndCols(
         P()->mouseAlgorithm(),
-        m_controller->getStaticOptions().tileTextNumberOfRows,
-        m_controller->getStaticOptions().tileTextNumberOfCols
+        m_staticOptions.tileTextNumberOfRows,
+        m_staticOptions.tileTextNumberOfCols
     );
     validateMouseWheelSpeedFraction(
         P()->mouseAlgorithm(),
-        m_controller->getStaticOptions().wheelSpeedFraction
+        m_staticOptions.wheelSpeedFraction
     );
 
     // Initialize the mouse object
     initAndValidateMouse(
         P()->mouseAlgorithm(),
-        m_controller->getStaticOptions().mouseFile,
-        m_controller->getStaticOptions().interfaceType,
-        m_controller->getStaticOptions().initialDirection,
+        m_staticOptions.mouseFile,
+        m_staticOptions.interfaceType,
+        m_staticOptions.initialDirection,
         m_model
     );
 
@@ -82,10 +82,21 @@ void Worker::init() {
         m_model->getMaze(),
         m_model->getMouse(),
         m_view->getMazeGraphic(),
-        m_controller,
+        this,
         m_view->getAllowableTileTextCharacters()
     );
 }
+
+StaticMouseAlgorithmOptions Worker::getStaticOptions() {
+    // The Worker object is the source of truth for the static options
+    return m_staticOptions;
+}
+
+DynamicMouseAlgorithmOptions Worker::getDynamicOptions() {
+    // The Worker object is the source of truth for the dynamic options
+    return m_dynamicOptions;
+}
+
 
 void Worker::processMouseAlgoStdout() {
     QString output = m_process->readAllStandardOutput();
@@ -149,29 +160,29 @@ QString Worker::helper(const QString& command) {
     QString function = tokens.at(0);
 
     if (function == "setMouseFile") {
-        m_controller->m_staticOptions.mouseFile = tokens.at(1);
+        m_staticOptions.mouseFile = tokens.at(1);
         return ACK_STRING;
     }
     else if (function == "setInterfaceType") {
-        m_controller->m_staticOptions.interfaceType = tokens.at(1);
+        m_staticOptions.interfaceType = tokens.at(1);
         return ACK_STRING;
     }
     else if (function == "setInitialDirection") {
-        m_controller->m_staticOptions.initialDirection = tokens.at(1);
+        m_staticOptions.initialDirection = tokens.at(1);
         return ACK_STRING;
     }
     else if (function == "setTileTextNumberOfRows") {
-        m_controller->m_staticOptions.tileTextNumberOfRows =
+        m_staticOptions.tileTextNumberOfRows =
             SimUtilities::strToInt(tokens.at(1));
         return ACK_STRING;
     }
     else if (function == "setTileTextNumberOfCols") {
-        m_controller->m_staticOptions.tileTextNumberOfCols =
+        m_staticOptions.tileTextNumberOfCols =
             SimUtilities::strToInt(tokens.at(1));
         return ACK_STRING;
     }
     else if (function == "setWheelSpeedFraction") {
-        m_controller->m_staticOptions.tileTextNumberOfCols =
+        m_staticOptions.tileTextNumberOfCols =
             SimUtilities::strToDouble(tokens.at(1));
         return ACK_STRING;
     }
@@ -180,37 +191,37 @@ QString Worker::helper(const QString& command) {
         return ACK_STRING;
     }
     else if (function == "updateAllowOmniscience") {
-        m_controller->m_dynamicOptions.allowOmniscience =
+        m_dynamicOptions.allowOmniscience =
             SimUtilities::strToBool(tokens.at(1));
         return ACK_STRING;
     }
     else if (function == "updateAutomaticallyClearFog") {
-        m_controller->m_dynamicOptions.automaticallyClearFog =
+        m_dynamicOptions.automaticallyClearFog =
             SimUtilities::strToBool(tokens.at(1));
         return ACK_STRING;
     }
     else if (function == "updateDeclareBothWallHalves") {
-        m_controller->m_dynamicOptions.declareBothWallHalves =
+        m_dynamicOptions.declareBothWallHalves =
             SimUtilities::strToBool(tokens.at(1));
         return ACK_STRING;
     }
     else if (function == "updateSetTileTextWhenDistanceDeclared") {
-        m_controller->m_dynamicOptions.setTileTextWhenDistanceDeclared =
+        m_dynamicOptions.setTileTextWhenDistanceDeclared =
             SimUtilities::strToBool(tokens.at(1));
         return ACK_STRING;
     }
     else if (function == "updateSetTileBaseColorWhenDistanceDeclaredCorrectly") {
-        m_controller->m_dynamicOptions.setTileBaseColorWhenDistanceDeclaredCorrectly =
+        m_dynamicOptions.setTileBaseColorWhenDistanceDeclaredCorrectly =
             SimUtilities::strToBool(tokens.at(1));
         return ACK_STRING;
     }
     else if (function == "updateDeclareWallOnRead") {
-        m_controller->m_dynamicOptions.declareWallOnRead =
+        m_dynamicOptions.declareWallOnRead =
             SimUtilities::strToBool(tokens.at(1));
         return ACK_STRING;
     }
     else if (function == "updateUseTileEdgeMovements") {
-        m_controller->m_dynamicOptions.useTileEdgeMovements =
+        m_dynamicOptions.useTileEdgeMovements =
             SimUtilities::strToBool(tokens.at(1));
         return ACK_STRING;
     }
@@ -225,7 +236,7 @@ QString Worker::helper(const QString& command) {
     }
     else if (function == "initialDirection") {
         Direction initialDirection = getInitialDirection(
-            m_controller->m_staticOptions.initialDirection,
+            m_staticOptions.initialDirection,
             m_model
         );
         return QString(QChar(DIRECTION_TO_CHAR.value(initialDirection)));

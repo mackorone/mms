@@ -95,9 +95,6 @@ bool Mouse::initialize(
     // Mark the mouse as initialized
     m_isInitialized = success;
 
-    // TODO: MACK
-    qDebug() << "INITIALIZED";
-
     // Return success
     return success;
 }

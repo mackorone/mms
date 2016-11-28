@@ -65,11 +65,15 @@ int Driver::drive(int argc, char* argv[]) {
     // Initialize the controller, which starts the algorithm
     // (and returns once the static options have been set)
     m_controller = new Controller(m_model, m_view);
+    m_controller->spawnMouseAlgo();
 
     // Initialize mouse algorithm values in the model and view
+    // TODO: MACK
+    /*
     m_model->getWorld()->setOptions(
         m_controller->getStaticOptions()
     );
+    */
     m_view->setController(m_controller);
 
     // Initialize the tile text, now that the options have been set

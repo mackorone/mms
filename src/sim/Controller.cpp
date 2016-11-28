@@ -2,21 +2,20 @@
 
 namespace mms {
 
-Controller::Controller(Model* model, View* view) {
-    m_worker = new Worker(model, view, this);
-    m_worker->moveToThread(&m_workerThread);
-    connect(&m_workerThread, &QThread::started, m_worker, &Worker::init);
-	m_workerThread.start();
+Controller::Controller(Model* model, View* view) :
+        m_model(model),
+        m_view(view) {
 }
 
-StaticMouseAlgorithmOptions Controller::getStaticOptions() {
-    // The Controller object is the source of truth for the static options
-    return m_staticOptions;
-}
+void Controller::spawnMouseAlgo() {
 
-DynamicMouseAlgorithmOptions Controller::getDynamicOptions() {
-    // The Controller object is the source of truth for the dynamic options
-    return m_dynamicOptions;
+    Worker* worker = new Worker(m_model, m_view, this);
+    QThread* thread = new QThread();
+    m_controllers.append({worker, thread});
+
+    worker->moveToThread(thread);
+    connect(thread, &QThread::started, worker, &Worker::init);
+	thread->start();
 }
 
 } // namespace mms

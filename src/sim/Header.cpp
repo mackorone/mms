@@ -122,6 +122,7 @@ void Header::updateLines() {
         QString("Maze Is Official:            ") + (m_model->getMaze()->isOfficialMaze() ? "TRUE" : "FALSE"),
 
         // Mouse Info
+        /*
         QString("Mouse Algo:                  ") + P()->mouseAlgorithm(),
 
         QString("Mouse File:                  ") + (m_controller == nullptr ? "NONE" :
@@ -156,6 +157,7 @@ void Header::updateLines() {
             (m_controller == nullptr ? "NONE" :
             (STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
             (m_controller->getDynamicOptions().useTileEdgeMovements ? "TRUE" : "FALSE"))),
+        */
 
         // Mouse progress
         QString("Tiles Traversed:             ") +

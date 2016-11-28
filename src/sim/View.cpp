@@ -57,6 +57,7 @@ void View::refresh() {
 
     // TODO: MACK - this shouldn't be here :/
     // First, clear fog as necessary
+    /*
     if (m_controller->getDynamicOptions().automaticallyClearFog) {
         // TODO: upforgrabs
         // This won't work if the mouse is traveling too quickly and travels more
@@ -65,6 +66,7 @@ void View::refresh() {
             m_model->getMouse()->getCurrentDiscretizedTranslation();
         m_mazeGraphic->setTileFogginess(currentPosition.first, currentPosition.second, false);
     }
+    */
 
     // Determine the starting index of the mouse
     static const int mouseTrianglesStartingIndex = m_graphicCpuBuffer.size();
@@ -166,8 +168,13 @@ void View::initTileGraphicText() {
         Meters(P()->wallLength()),
         Meters(P()->wallWidth()),
         {
+            // TODO: MACK
+            /*
             m_controller->getStaticOptions().tileTextNumberOfRows,
             m_controller->getStaticOptions().tileTextNumberOfCols
+            */
+            2,
+            4
         },
         m_fontImageMap,
         P()->tileTextBorderFraction(),
@@ -181,6 +188,8 @@ void View::keyPress(unsigned char key, int x, int y) {
 
     if (key == 'p') {
         // Toggle pause (only in discrete mode)
+        // TODO: MACK
+        /*
         if (
             STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType)
             == InterfaceType::DISCRETE
@@ -193,9 +202,12 @@ void View::keyPress(unsigned char key, int x, int y) {
                 << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
                 << " mode.";
         }
+        */
     }
     else if (key == 'f') {
         // Faster (only in discrete mode)
+        // TODO: MACK
+        /*
         if (
             STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType)
             == InterfaceType::DISCRETE
@@ -208,9 +220,12 @@ void View::keyPress(unsigned char key, int x, int y) {
                 << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
                 << " mode.";
         }
+        */
     }
     else if (key == 's') {
         // Slower (only in discrete mode)
+        // TODO: MACK
+        /*
         if (
             STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType)
             == InterfaceType::DISCRETE
@@ -223,6 +238,7 @@ void View::keyPress(unsigned char key, int x, int y) {
                 << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
                 << " mode.";
         }
+        */
     }
     else if (key == 'l') {
         // Cycle through the available layouts

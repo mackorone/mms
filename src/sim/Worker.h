@@ -3,7 +3,9 @@
 #include <QObject>
 #include <QProcess>
 
+#include "DynamicMouseAlgorithmOptions.h"
 #include "MouseInterface.h"
+#include "StaticMouseAlgorithmOptions.h"
 
 namespace mms {
 
@@ -18,6 +20,9 @@ class Worker : public QObject {
 public:
     // TODO: MACK
     Worker(Model* model, View* view, Controller* controller);
+
+    StaticMouseAlgorithmOptions getStaticOptions();
+    DynamicMouseAlgorithmOptions getDynamicOptions();
 
 public slots:
     void init();
@@ -36,6 +41,10 @@ private:
     void startMouseAlgorithm(const QString& mouseAlgorithm);
 
     // TODO: MACK
+
+    // The algorithm options
+    StaticMouseAlgorithmOptions m_staticOptions;
+    DynamicMouseAlgorithmOptions m_dynamicOptions;
 
     // The interface by which we access the Mouse object
     MouseInterface* m_mouseInterface;
