@@ -30,43 +30,32 @@ namespace mms {
 // avoid a circular dependency; ControllerManager.h already includes this file
 class ControllerManager;
 
-// TODO: MACK - private inheritance here?
+// Inheriting from QOpenGLFunctions allows us to call the gl functions directly
 class View : public QOpenGLWidget, protected QOpenGLFunctions {
 
 	Q_OBJECT
 
 public:
 
-    View(
-		Model* model,
-		int argc,
-		char* argv[],
-		QWidget* parent = 0);
+    View(Model* model, int argc, char* argv[], QWidget* parent = 0);
 
     MazeGraphic* getMazeGraphic();
     MouseGraphic* getMouseGraphic();
 
     void setControllerManager(ControllerManager* controllerManager);
 
-    void refresh();
-    void updateWindowSize(int width, int height);
-
     QSet<QChar> getAllowableTileTextCharacters();
     void initTileGraphicText();
 
-    void keyPress(unsigned char key, int x, int y);
-    void specialKeyPress(int key, int x, int y);
-    void specialKeyRelease(int key, int x, int y);
-
-// TODO: MACK - do these need to be protected?
 protected:
+
     void initializeGL();
-    void resizeGL(int w, int h);
     void paintGL();
+    void resizeGL(int width, int height);
 
 private:
 
-    // CPU-side buffers, and interface
+    // CPU-side buffers and the interface to modify them
     QVector<TriangleGraphic> m_graphicCpuBuffer;
     QVector<TriangleTexture> m_textureCpuBuffer;
     BufferInterface* m_bufferInterface;
@@ -94,12 +83,6 @@ private:
     // Used to determine whether or not to automatically clear fog
     ControllerManager* m_controllerManager;
 
-    // Polygon program variables
-	// TODO: MACK - do I need this anymore?
-    // tdogl::Program* m_polygonProgram;
-    GLuint m_polygonVertexArrayObjectId;
-    GLuint m_polygonVertexBufferObjectId;
-
     // Texture program variables
     // tdogl::Texture* m_textureAtlas;
     // tdogl::Program* m_textureProgram;
@@ -121,33 +104,25 @@ private:
 
 	//////////
 
-    // Initialize all of the graphics
-    void initGraphics(int argc, char* argv[]);
+    // Initialize the graphics
     void initPolygonProgram();
     void initTextureProgram();
 
     // Drawing helper methods
     void repopulateVertexBufferObjects();
-	// TODO: MACK
-    // void drawFullAndZoomedMaps(
-    //     const Coordinate& currentMouseTranslation, const Angle& currentMouseRotation,
-    //     tdogl::Program* program, int vaoId, int vboStartingIndex, int vboEndingIndex);
     void drawFullAndZoomedMaps(
         const Coordinate& currentMouseTranslation,
 		const Angle& currentMouseRotation,
         QOpenGLShaderProgram* program,
 		QOpenGLVertexArrayObject* vao,
 		int vboStartingIndex,
-		int vboEndingIndex);
+		int count);
 
-	// TODO: MACK
+	// TODO: MACK - clean this up
 	QOpenGLDebugLogger m_logger;
-
 	void initLogger();
 	void initShader();
     void printVersionInformation();
-
-
 private slots:
 	void onMessageLogged(QOpenGLDebugMessage);
 

@@ -12,7 +12,6 @@ MainWindow::MainWindow(mms::View* view, QWidget *parent) :
     ui(new Ui::MainWindow) {
     ui->setupUi(this);
     ui->m_openGlWidgetContainer->addWidget(view);
-    //setFocusPolicy(Qt::ClickFocus); // TODO: MACK
 }
 
 MainWindow::~MainWindow() {
@@ -34,7 +33,9 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
             STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType)
             == InterfaceType::DISCRETE
         ) {
+        */
             S()->setPaused(!S()->paused());
+        /*
         }
         else {
             qWarning().noquote().nospace()
@@ -52,7 +53,9 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
             STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType)
             == InterfaceType::DISCRETE
         ) {
+        */
             S()->setSimSpeed(S()->simSpeed() * 1.5);
+        /*
         }
         else {
             qWarning().noquote().nospace()
@@ -70,7 +73,9 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
             STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType)
             == InterfaceType::DISCRETE
         ) {
+        */
             S()->setSimSpeed(S()->simSpeed() / 1.5);
+        /*
         }
         else {
             qWarning().noquote().nospace()
@@ -157,6 +162,7 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
     */
 }
 
+// TODO: MACK
 /*
 void View::specialKeyPress(int key, int x, int y) {
     if (!INT_TO_KEY.contains(key)) {

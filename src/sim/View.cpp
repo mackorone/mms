@@ -1,6 +1,8 @@
 #include "View.h"
 
+#include <QApplication>
 #include <QDebug>
+#include <QDesktopWidget>
 #include <QFile>
 #include <QPair>
 
@@ -17,11 +19,7 @@
 
 namespace mms {
 
-View::View(
-        Model* model,
-        int argc,
-        char* argv[],
-        QWidget* parent) :
+View::View(Model* model, int argc, char* argv[], QWidget* parent) :
         QOpenGLWidget(parent),
         m_model(model) {
 
@@ -49,7 +47,57 @@ void View::setControllerManager(ControllerManager* controllerManager) {
     m_header->setControllerManager(controllerManager);
 }
 
-void View::refresh() {
+QSet<QChar> View::getAllowableTileTextCharacters() {
+    return QSet<QChar>::fromList(m_fontImageMap.keys());
+}
+
+void View::initTileGraphicText() {
+
+    // Initialze the tile text in the buffer class, do caching for speed improvement
+    m_bufferInterface->initTileGraphicText(
+        Meters(P()->wallLength()),
+        Meters(P()->wallWidth()),
+        {
+            // TODO: MACK
+            /*
+            m_controllerManager->getStaticOptions().tileTextNumberOfRows,
+            m_controllerManager->getStaticOptions().tileTextNumberOfCols
+            */
+            2,
+            4
+        },
+        m_fontImageMap,
+        P()->tileTextBorderFraction(),
+        STRING_TO_TILE_TEXT_ALIGNMENT.value(P()->tileTextAlignment()));
+}
+
+void View::initializeGL() {
+
+    // First, make it possible to call gl functions directly
+    initializeOpenGLFunctions();
+
+    // Then, set some gl values
+    glClearColor(0.1, 0.0, 0.0, 1.0);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glPolygonMode(GL_FRONT_AND_BACK, S()->wireframeMode() ? GL_LINE : GL_FILL);
+
+    // TODO: MACK
+    printVersionInformation();
+    initLogger();
+    initPolygonProgram();
+    // initTextureProgram();
+
+    // Retrieve the screen pixels per meter, used to scale the zoomed map
+    QDesktopWidget* widget = QApplication::desktop();
+    m_screenPixelsPerMeter =
+        widget->availableGeometry().width() / (widget->widthMM() / 1000.0);
+
+    // Lastly, ensure that we're continuously refreshing the widget
+	connect(this, SIGNAL(frameSwapped()), this, SLOT(update()));
+}
+
+void View::paintGL() {
 
     // In order to ensure we're sleeping the correct amount of time, we time
     // the drawing operation and take it into account when we sleep.
@@ -57,8 +105,8 @@ void View::refresh() {
 
     // TODO: MACK - this shouldn't be here :/
     // First, clear fog as necessary
-    /*
-    if (m_controllerManager->getDynamicOptions().automaticallyClearFog) {
+    // if (m_controllerManager->getDynamicOptions().automaticallyClearFog) {
+    if (true) {
         // TODO: upforgrabs
         // This won't work if the mouse is traveling too quickly and travels more
         // than one tile per frame. Figure out a way that will work in that case.
@@ -66,7 +114,6 @@ void View::refresh() {
             m_model->getMouse()->getCurrentDiscretizedTranslation();
         m_mazeGraphic->setTileFogginess(currentPosition.first, currentPosition.second, false);
     }
-    */
 
     // Determine the starting index of the mouse
     static const int mouseTrianglesStartingIndex = m_graphicCpuBuffer.size();
@@ -104,8 +151,6 @@ void View::refresh() {
     // TODO: MACK
     // drawFullAndZoomedMaps(currentMouseTranslation, currentMouseRotation,
     //     m_textureProgram, m_textureVertexArrayObjectId, 0, 3 * m_textureCpuBuffer.size());
-    // drawFullAndZoomedMaps(currentMouseTranslation, currentMouseRotation,
-    //     m_textureVertexArrayObjectId, 0, 3 * m_textureCpuBuffer.size());
 
     // Draw the mouse
     drawFullAndZoomedMaps(
@@ -124,10 +169,6 @@ void View::refresh() {
     // Draw the window header
     // TODO: MACK
     // m_header->draw();
-
-    // TODO: MACK
-    // Display the result
-    // glSwapBuffers();
 
     // Get the duration of the drawing operation, in seconds. Note that this duration
     // is simply the total number of real seconds that have passed, which is exactly
@@ -150,259 +191,14 @@ void View::refresh() {
     SimUtilities::sleep(Seconds(std::max(0.0, 1.0/P()->frameRate() - duration)));
 }
 
-void View::updateWindowSize(int width, int height) {
+void View::resizeGL(int width, int height) {
     m_windowWidth = width;
     m_windowHeight = height;
     m_header->updateWindowSize(width, height);
-    glViewport(0, 0, width, height);
-}
-
-QSet<QChar> View::getAllowableTileTextCharacters() {
-    return QSet<QChar>::fromList(m_fontImageMap.keys());
-}
-
-void View::initTileGraphicText() {
-
-    // Initialze the tile text in the buffer class, do caching for speed improvement
-    m_bufferInterface->initTileGraphicText(
-        Meters(P()->wallLength()),
-        Meters(P()->wallWidth()),
-        {
-            // TODO: MACK
-            /*
-            m_controllerManager->getStaticOptions().tileTextNumberOfRows,
-            m_controllerManager->getStaticOptions().tileTextNumberOfCols
-            */
-            2,
-            4
-        },
-        m_fontImageMap,
-        P()->tileTextBorderFraction(),
-        STRING_TO_TILE_TEXT_ALIGNMENT.value(P()->tileTextAlignment()));
-}
-
-void View::keyPress(unsigned char key, int x, int y) {
-
-    // NOTE: If you're adding or removing anything from this function, make
-    // sure to update wiki/Keys.md
-
-    if (key == 'p') {
-        // Toggle pause (only in discrete mode)
-        // TODO: MACK
-        /*
-        if (
-            STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType)
-            == InterfaceType::DISCRETE
-        ) {
-            S()->setPaused(!S()->paused());
-        }
-        else {
-            qWarning().noquote().nospace()
-                << "Pausing the simulator is only allowed in "
-                << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
-                << " mode.";
-        }
-        */
-    }
-    else if (key == 'f') {
-        // Faster (only in discrete mode)
-        // TODO: MACK
-        /*
-        if (
-            STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType)
-            == InterfaceType::DISCRETE
-        ) {
-            S()->setSimSpeed(S()->simSpeed() * 1.5);
-        }
-        else {
-            qWarning().noquote().nospace()
-                << "Increasing the simulator speed is only allowed in "
-                << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
-                << " mode.";
-        }
-        */
-    }
-    else if (key == 's') {
-        // Slower (only in discrete mode)
-        // TODO: MACK
-        /*
-        if (
-            STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType)
-            == InterfaceType::DISCRETE
-        ) {
-            S()->setSimSpeed(S()->simSpeed() / 1.5);
-        }
-        else {
-            qWarning().noquote().nospace()
-                << "Decreasing the simulator speed is only allowed in "
-                << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
-                << " mode.";
-        }
-        */
-    }
-    else if (key == 'l') {
-        // Cycle through the available layouts
-        S()->setLayoutType(LAYOUT_TYPE_CYCLE.value(S()->layoutType()));
-    }
-    else if (key == 'r') {
-        // Toggle rotate zoomed map
-        S()->setRotateZoomedMap(!S()->rotateZoomedMap());
-    }
-    else if (key == 'i') {
-        // Zoom in
-        S()->setZoomedMapScale(S()->zoomedMapScale() * 1.5);
-    }
-    else if (key == 'o') {
-        // Zoom out
-        S()->setZoomedMapScale(S()->zoomedMapScale() / 1.5);
-    }
-    else if (key == 't') {
-        // Toggle wall truth visibility
-        S()->setWallTruthVisible(!S()->wallTruthVisible());
-        m_mazeGraphic->updateWalls();
-    }
-    else if (key == 'c') {
-        // Toggle tile colors
-        S()->setTileColorsVisible(!S()->tileColorsVisible());
-        m_mazeGraphic->updateColor();
-    }
-    else if (key == 'g') {
-        // Toggle tile fog
-        S()->setTileFogVisible(!S()->tileFogVisible());
-        m_mazeGraphic->updateFog();
-    }
-    else if (key == 'x') {
-        // Toggle tile text
-        S()->setTileTextVisible(!S()->tileTextVisible());
-        m_mazeGraphic->updateText();
-    }
-    else if (key == 'd') {
-        // Toggle tile distance visibility
-        S()->setTileDistanceVisible(!S()->tileDistanceVisible());
-        m_mazeGraphic->updateText();
-    }
-    else if (key == 'h') {
-        // Toggle header visibility
-        S()->setHeaderVisible(!S()->headerVisible());
-        m_header->updateLinesAndColumnStartingPositions();
-    }
-    else if (key == 'w') {
-        // Toggle wireframe mode
-        S()->setWireframeMode(!S()->wireframeMode());
-        glPolygonMode(GL_FRONT_AND_BACK, S()->wireframeMode() ? GL_LINE : GL_FILL);
-    }
-    else if (key == 'q') {
-        // Quit
-        SimUtilities::quit();
-    }
-    else if (QString("0123456789").indexOf(key) != -1) {
-        // Press an input button
-        int inputButton = QString("0123456789").indexOf(key);
-        if (!S()->inputButtonWasPressed(inputButton)) {
-            S()->setInputButtonWasPressed(inputButton, true);
-            qInfo().noquote().nospace()
-                << "Input button " << inputButton << " was pressed.";
-        }
-        else {
-            qWarning().noquote().nospace()
-                << "Input button " << inputButton << " has not yet been"
-                << " acknowledged as pressed; pressing it has no effect.";
-        }
-    }
-}
-
-void View::specialKeyPress(int key, int x, int y) {
-    if (!INT_TO_KEY.contains(key)) {
-        return;
-    }
-    if (ARROW_KEYS.contains(INT_TO_KEY.value(key))) {
-        S()->setArrowKeyIsPressed(INT_TO_KEY.value(key), true);
-    }
-}
-
-void View::specialKeyRelease(int key, int x, int y) {
-    if (!INT_TO_KEY.contains(key)) {
-        return;
-    }
-    if (ARROW_KEYS.contains(INT_TO_KEY.value(key))) {
-        S()->setArrowKeyIsPressed(INT_TO_KEY.value(key), false);
-    }
-}
-
-void View::initializeGL() {
-
-    // TODO: MACK
-    initializeOpenGLFunctions();
-    printVersionInformation();
-
-    // TODO: MACK
-    glClearColor(0.0, 0.2, 0.0, 1.0);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-    glPolygonMode(GL_FRONT_AND_BACK, S()->wireframeMode() ? GL_LINE : GL_FILL);
-
-    initLogger();
-
-    // TODO: MACK
-    initPolygonProgram();
-    // initTextureProgram();
-    // TODO: MACK - fix this
-    m_screenPixelsPerMeter = 10000; // glutGet(GLUT_SCREEN_WIDTH) / (glutGet(GLUT_SCREEN_WIDTH_MM) / 1000.0);
-
-	connect(this, SIGNAL(frameSwapped()), this, SLOT(update()));
 }
 
 void View::onMessageLogged(QOpenGLDebugMessage message) {
-    qDebug() << message;
-}
-
-void View::resizeGL(int w, int h) {
-    // TODO: MACK: rename this
-    updateWindowSize(w, h);
-} 
-
-void View::paintGL() {
-    refresh();
-} 
-
-
-void View::initGraphics(int argc, char* argv[]) {
-
-    // GLUT Initialization
-    //glutInit(&argc, argv); // TODO: MACK
-
-    // XXX: Is this necessary on OSX?
-    // glutInitDisplayMode(2048 | GLUT_DOUBLE | GLUT_RGBA);
-    // glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
-    // glutInitWindowPosition(0, 0);
-    // glutInitWindowSize(P()->defaultWindowWidth(), P()->defaultWindowHeight());
-    // glutCreateWindow("Micromouse Simulator");
-
-    // glClearColor(0.0, 0.0, 0.0, 1.0);
-
-    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    // glEnable(GL_BLEND);
-    // glPolygonMode(GL_FRONT_AND_BACK, S()->wireframeMode() ? GL_LINE : GL_FILL);
-
-    // glutDisplayFunc(functions.refresh);
-    // glutIdleFunc(functions.refresh);
-    // glutReshapeFunc(functions.windowResize);
-    // glutKeyboardFunc(functions.keyPress);
-    // glutSpecialFunc(functions.specialKeyPress);
-    // glutSpecialUpFunc(functions.specialKeyRelease);
-
-    // XXX: If this necessary on OSX?
-    // glewExperimental = GL_TRUE;
-
-    // GLEW Initialization
-    // GLenum err = glewInit();
-    // if (GLEW_OK != err) {
-    //     qCritical().noquote().nospace() << "Unable to initialize GLEW.";
-    //     SimUtilities::quit();
-    // }
-
-    // XXX: Print out the OpenGL version
-    // std::cout << glGetString(GL_VERSION) << std::endl;
+    qDebug() << "OPENGL DEBUG:" << message;
 }
 
 void View::initPolygonProgram() {
@@ -472,7 +268,7 @@ void View::initTextureProgram() {
     glGenBuffers(1, &m_textureVertexBufferObjectId);
     glBindBuffer(GL_ARRAY_BUFFER, m_textureVertexBufferObjectId);
 
-    Set up the program and attribute pointers
+    // Set up the program and attribute pointers
     std::vector<tdogl::Shader> shaders;
     shaders.push_back(tdogl::Shader::shaderFromFile(
         Directory::get()->getResShadersDirectory().toStdString() + "textureVertexShader.txt", GL_VERTEX_SHADER));
@@ -486,7 +282,7 @@ void View::initTextureProgram() {
     glVertexAttribPointer(m_textureProgram->attrib("textureCoordinate"),
         2, GL_DOUBLE, GL_TRUE, 4 * sizeof(double), (char*) NULL + 2 * sizeof(double));
 
-    Load the bitmap texture into the texture atlas
+    // Load the bitmap texture into the texture atlas
     QString tileTextFontImagePath = Directory::get()->getResImgsDirectory() + P()->tileTextFontImage();
     if (!QFile::exists(tileTextFontImagePath)) {
         qCritical().noquote().nospace()
@@ -504,6 +300,7 @@ void View::initTextureProgram() {
     */
 }
 
+// TODO: MACK - move this somewhere else
 QMap<QChar, QPair<double, double>> View::getFontImageMap() {
 
     // These values must perfectly reflect the font image being used, or else
@@ -557,7 +354,7 @@ void View::drawFullAndZoomedMaps(
         QOpenGLShaderProgram* program,
         QOpenGLVertexArrayObject* vao,
         int vboStartingIndex,
-        int vboEndingIndex) { // TODO: MACK - this is really "count" here, not "endingIndex"
+        int count) {
 
     // Get the sizes and positions of each of the maps.
     QPair<int, int> fullMapPosition = Layout::getFullMapPosition(
@@ -608,7 +405,7 @@ void View::drawFullAndZoomedMaps(
     // TODO: MACK - necessary?
     glScissor(fullMapPosition.first, fullMapPosition.second, fullMapSize.first, fullMapSize.second);
     program->setUniformValue("transformationMatrix", transformationMatrix);
-    glDrawArrays(GL_TRIANGLES, vboStartingIndex, vboEndingIndex);
+    glDrawArrays(GL_TRIANGLES, vboStartingIndex, count);
 
     // Render the zoomed map
     // TODO: MACK
@@ -634,7 +431,7 @@ void View::drawFullAndZoomedMaps(
     // TODO: MACK - necessary?
     glScissor(zoomedMapPosition.first, zoomedMapPosition.second, zoomedMapSize.first, zoomedMapSize.second);
     program->setUniformValue("transformationMatrix", transformationMatrix2);
-    glDrawArrays(GL_TRIANGLES, vboStartingIndex, vboEndingIndex);
+    glDrawArrays(GL_TRIANGLES, vboStartingIndex, count);
 
     // If it's the texture program, we should additionally unbind the texture
     // TODO: MACK

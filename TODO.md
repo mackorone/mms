@@ -5,6 +5,7 @@
     - Make continuous algos possible
     - Do some cleanup here
 - Fix .maz file loading
+- Fix wireframe mode
 - Make GUI
     - Fix texture program
     - Put the stdout of the child process somewhere
