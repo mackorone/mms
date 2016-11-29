@@ -19,7 +19,7 @@
 #include "State.h"
 #include "SimUtilities.h"
 #include "Time.h"
-#include "Worker.h"
+#include "Controller.h"
 
 // TODO: MACK - send back errors to process
 
@@ -29,12 +29,12 @@ MouseInterface::MouseInterface(
         const Maze* maze,
         Mouse* mouse,
         MazeGraphic* mazeGraphic,
-        Worker* worker,
+        Controller* controller,
         QSet<QChar> allowableTileTextCharacters) :
         m_maze(maze),
         m_mouse(mouse),
         m_mazeGraphic(mazeGraphic),
-        m_worker(worker),
+        m_controller(controller),
         m_allowableTileTextCharacters(allowableTileTextCharacters),
         m_inOrigin(true) {
 }
@@ -148,7 +148,7 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
             CHAR_TO_DIRECTION.value(direction)
         },
         wallExists,
-        m_worker->getDynamicOptions().declareBothWallHalves
+        m_controller->getDynamicOptions().declareBothWallHalves
     );
 }
 
@@ -173,7 +173,7 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
             {x, y},
             CHAR_TO_DIRECTION.value(direction)
         },
-        m_worker->getDynamicOptions().declareBothWallHalves
+        m_controller->getDynamicOptions().declareBothWallHalves
     );
 }
 
@@ -198,10 +198,10 @@ void MouseInterface::declareTileDistance(int x, int y, int distance) {
         return;
     }
 
-    if (m_worker->getDynamicOptions().setTileTextWhenDistanceDeclared) {
+    if (m_controller->getDynamicOptions().setTileTextWhenDistanceDeclared) {
         setTileTextImpl(x, y, (0 <= distance ? QString::number(distance) : "inf"));
     }
-    if (m_worker->getDynamicOptions().setTileBaseColorWhenDistanceDeclaredCorrectly) {
+    if (m_controller->getDynamicOptions().setTileBaseColorWhenDistanceDeclaredCorrectly) {
         int actualDistance = m_maze->getTile(x, y)->getDistance();
         // A negative distance is interpreted to mean infinity
         if (distance == actualDistance || (distance < 0 && actualDistance < 0)) {
@@ -220,10 +220,10 @@ void MouseInterface::undeclareTileDistance(int x, int y) {
         return;
     }
 
-    if (m_worker->getDynamicOptions().setTileTextWhenDistanceDeclared) {
+    if (m_controller->getDynamicOptions().setTileTextWhenDistanceDeclared) {
         clearTileTextImpl(x, y);
     }
-    if (m_worker->getDynamicOptions().setTileBaseColorWhenDistanceDeclaredCorrectly) {
+    if (m_controller->getDynamicOptions().setTileBaseColorWhenDistanceDeclaredCorrectly) {
         setTileColorImpl(x, y, COLOR_TO_CHAR.value(STRING_TO_COLOR.value(P()->tileBaseColor())));
     }
 }
@@ -380,8 +380,8 @@ bool MouseInterface::wallFront() {
     ENSURE_DISCRETE_INTERFACE
 
     return wallFrontImpl(
-        m_worker->getDynamicOptions().declareWallOnRead,
-        m_worker->getDynamicOptions().declareBothWallHalves
+        m_controller->getDynamicOptions().declareWallOnRead,
+        m_controller->getDynamicOptions().declareBothWallHalves
     );
 }
 
@@ -390,8 +390,8 @@ bool MouseInterface::wallRight() {
     ENSURE_DISCRETE_INTERFACE
 
     return wallRightImpl(
-        m_worker->getDynamicOptions().declareWallOnRead,
-        m_worker->getDynamicOptions().declareBothWallHalves
+        m_controller->getDynamicOptions().declareWallOnRead,
+        m_controller->getDynamicOptions().declareBothWallHalves
     );
 }
 
@@ -400,8 +400,8 @@ bool MouseInterface::wallLeft() {
     ENSURE_DISCRETE_INTERFACE
 
     return wallLeftImpl(
-        m_worker->getDynamicOptions().declareWallOnRead,
-        m_worker->getDynamicOptions().declareBothWallHalves
+        m_controller->getDynamicOptions().declareWallOnRead,
+        m_controller->getDynamicOptions().declareBothWallHalves
     );
 }
 
@@ -618,7 +618,7 @@ double MouseInterface::currentRotationDegrees() {
 }
 
 void MouseInterface::ensureDiscreteInterface(const QString& callingFunction) const {
-    if (STRING_TO_INTERFACE_TYPE.value(m_worker->getStaticOptions().interfaceType) != InterfaceType::DISCRETE) {
+    if (STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType) != InterfaceType::DISCRETE) {
         qCritical().noquote().nospace()
             << "You must declare the interface type to be \""
             << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
@@ -628,7 +628,7 @@ void MouseInterface::ensureDiscreteInterface(const QString& callingFunction) con
 }
 
 void MouseInterface::ensureContinuousInterface(const QString& callingFunction) const {
-    if (STRING_TO_INTERFACE_TYPE.value(m_worker->getStaticOptions().interfaceType) != InterfaceType::CONTINUOUS) {
+    if (STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType) != InterfaceType::CONTINUOUS) {
         qCritical().noquote().nospace()
             << "You must declare the interface type to be \""
             << INTERFACE_TYPE_TO_STRING.value(InterfaceType::CONTINUOUS)
@@ -638,7 +638,7 @@ void MouseInterface::ensureContinuousInterface(const QString& callingFunction) c
 }
 
 void MouseInterface::ensureAllowOmniscience(const QString& callingFunction) const {
-    if (!m_worker->getDynamicOptions().allowOmniscience) {
+    if (!m_controller->getDynamicOptions().allowOmniscience) {
         qCritical().noquote().nospace()
             << "You must return true from \"allowOmniscience()\" in order to"
             << " use MouseInterface::" << callingFunction << "().";
@@ -647,7 +647,7 @@ void MouseInterface::ensureAllowOmniscience(const QString& callingFunction) cons
 }
 
 void MouseInterface::ensureNotTileEdgeMovements(const QString& callingFunction) const {
-    if (m_worker->getDynamicOptions().useTileEdgeMovements) {
+    if (m_controller->getDynamicOptions().useTileEdgeMovements) {
         qCritical().noquote().nospace()
             << "You must return false from \"useTileEdgeMovements()\" in order"
             << " to use MouseInterface::" << callingFunction << "().";
@@ -656,7 +656,7 @@ void MouseInterface::ensureNotTileEdgeMovements(const QString& callingFunction) 
 }
 
 void MouseInterface::ensureUseTileEdgeMovements(const QString& callingFunction) const {
-    if (!m_worker->getDynamicOptions().useTileEdgeMovements) {
+    if (!m_controller->getDynamicOptions().useTileEdgeMovements) {
         qCritical().noquote().nospace()
             << "You must return true from \"useTileEdgeMovements()\" in order"
             << " to use MouseInterface::" << callingFunction << "().";
@@ -698,9 +698,9 @@ void MouseInterface::setTileTextImpl(int x, int y, const QString& text) {
     QVector<QString> rowsOfText;
     int row = 0;
     int index = 0;
-    while (row < m_worker->getStaticOptions().tileTextNumberOfRows && index < text.size()) {
+    while (row < m_controller->getStaticOptions().tileTextNumberOfRows && index < text.size()) {
         QString rowOfText;
-        while (index < (row + 1) * m_worker->getStaticOptions().tileTextNumberOfCols && index < text.size()) {
+        while (index < (row + 1) * m_controller->getStaticOptions().tileTextNumberOfCols && index < text.size()) {
             QChar c = text.at(index);
             if (m_allowableTileTextCharacters.find(c) == m_allowableTileTextCharacters.end()) { // TODO: MACK - use contains
                 qWarning().noquote().nospace()
@@ -951,7 +951,7 @@ void MouseInterface::moveForwardTo(const Cartesian& destinationTranslation, cons
     Meters previousDistance = delta.getRho();
 
     // Start the mouse moving forward
-    m_mouse->setWheelSpeedsForMoveForward(m_worker->getStaticOptions().wheelSpeedFraction);
+    m_mouse->setWheelSpeedsForMoveForward(m_controller->getStaticOptions().wheelSpeedFraction);
 
     // Move forward until we've reached the destination
     do {
@@ -980,11 +980,11 @@ void MouseInterface::arcTo(const Cartesian& destinationTranslation, const Radian
     // Set the speed based on the initial rotation delta
     if (0 < initialRotationDelta.getDegreesNotBounded()) {
         m_mouse->setWheelSpeedsForCurveLeft(
-            m_worker->getStaticOptions().wheelSpeedFraction * extraWheelSpeedFraction, radius);
+            m_controller->getStaticOptions().wheelSpeedFraction * extraWheelSpeedFraction, radius);
     }
     else {
         m_mouse->setWheelSpeedsForCurveRight(
-            m_worker->getStaticOptions().wheelSpeedFraction * extraWheelSpeedFraction, radius);
+            m_controller->getStaticOptions().wheelSpeedFraction * extraWheelSpeedFraction, radius);
     }
     
     // While the deltas have the same sign, sleep for a short amount of time

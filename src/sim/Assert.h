@@ -3,7 +3,8 @@
 #include <iostream>
 #include <stdexcept>
 
-#define OPENING "---------- Assertion failed! ----------"
+#define ERR_MSG "Assertion failed!"
+#define OPENING "---------- " ERR_MSG " ----------"
 #define CLOSING "---------------------------------------"
 
 #define ASSERT_TR(condition)\
@@ -13,7 +14,7 @@ if (!(condition)) {\
               << "LINE: " << __LINE__ << std::endl\
               << "COND: " << #condition << std::endl\
               << CLOSING << std::endl;\
-    throw;\
+    throw std::runtime_error(ERR_MSG);\
 }
 
 #define ASSERT_FA(condition)\
@@ -23,7 +24,7 @@ if (condition) {\
               << "LINE: " << __LINE__ << std::endl\
               << "COND: " << "!(" << #condition << ")" << std::endl\
               << CLOSING << std::endl;\
-    throw;\
+    throw std::runtime_error(ERR_MSG);\
 }
 
 #define ASSERT_EQ(lhs, rhs)\
@@ -35,7 +36,7 @@ if (!((lhs) == (rhs))) {\
               << "LHS: " << lhs << std::endl\
               << "RHS: " << rhs << std::endl\
               << CLOSING << std::endl;\
-    throw;\
+    throw std::runtime_error(ERR_MSG);\
 }
 
 #define ASSERT_NE(lhs, rhs)\
@@ -47,7 +48,7 @@ if (!((lhs) != (rhs))) {\
               << "LHS: " << lhs << std::endl\
               << "RHS: " << rhs << std::endl\
               << CLOSING << std::endl;\
-    throw;\
+    throw std::runtime_error(ERR_MSG);\
 }
 
 #define ASSERT_LT(lhs, rhs)\
@@ -59,7 +60,7 @@ if (!((lhs) < (rhs))) {\
               << "LHS: " << lhs << std::endl\
               << "RHS: " << rhs << std::endl\
               << CLOSING << std::endl;\
-    throw;\
+    throw std::runtime_error(ERR_MSG);\
 }
 
 #define ASSERT_LE(lhs, rhs)\
@@ -71,7 +72,7 @@ if (!((lhs) <= (rhs))) {\
               << "LHS: " << lhs << std::endl\
               << "RHS: " << rhs << std::endl\
               << CLOSING << std::endl;\
-    throw;\
+    throw std::runtime_error(ERR_MSG);\
 }
 
 #define ASSERT_RUNS_AT_MOST_N_TIMES(N) {\

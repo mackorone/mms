@@ -6,7 +6,7 @@
 
 #include "Model.h"
 #include "View.h"
-#include "Worker.h"
+#include "Controller.h"
 
 namespace mms {
 
@@ -17,16 +17,16 @@ class ControllerManager : public QObject {
 public:
 
     ControllerManager(Model* model, View* view);
-    void spawnMouseAlgo();
+    void spawnMouseAlgo(const QString& mouseAlgorithm);
 
 private:
 
-    // The model and view, which we pass to each of the workers
+    // The model and view, which we pass to each controller
     Model* m_model;
     View* m_view;
 
-    // A list of workers and the threads they're running on
-    QList<QPair<Worker*, QThread*>> m_controllers;
+    // A list of controllers and the threads they're running on
+    QList<QPair<Controller*, QThread*>> m_controllers;
 
 };
 

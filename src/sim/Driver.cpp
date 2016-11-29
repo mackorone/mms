@@ -65,7 +65,7 @@ int Driver::drive(int argc, char* argv[]) {
     // Initialize the controllerManager, which starts the algorithm
     // (and returns once the static options have been set)
     m_controllerManager = new ControllerManager(m_model, m_view);
-    m_controllerManager->spawnMouseAlgo();
+    m_controllerManager->spawnMouseAlgo(P()->mouseAlgorithm());
 
     // Initialize mouse algorithm values in the model and view
     // TODO: MACK

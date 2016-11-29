@@ -1,8 +1,7 @@
-#include "Worker.h"
+#include "Controller.h"
 
 #include <QCoreApplication>
 
-#include "ControllerManager.h"
 #include "Directory.h"
 #include "Model.h"
 #include "MouseChecker.h"
@@ -16,27 +15,28 @@ namespace mms {
 static const QString& OPENING_DIRECTION_STRING = "OPENING";
 static const QString& WALL_DIRECTION_STRING = "WALL";
 
-Worker::Worker(Model* model, View* view, ControllerManager* controllerManager) :
+Controller::Controller(Model* model, View* view, const QString& mouseAlgorithm) :
         m_model(model),
         m_view(view),
-        m_controllerManager(controllerManager),
+        m_mouseAlgorithm(mouseAlgorithm),
         m_staticOptionsFinalized(false),
         m_process(nullptr) {
 }
 
-void Worker::init() {
-    startMouseAlgorithm(P()->mouseAlgorithm());
+void Controller::init() {
+
+    startMouseAlgorithm(m_mouseAlgorithm);
     connect(
         m_process,
         &QProcess::readyReadStandardOutput,
         this,
-        &Worker::processMouseAlgoStdout
+        &Controller::processMouseAlgoStdout
     );
     connect(
         m_process,
         &QProcess::readyReadStandardError,
         this,
-        &Worker::processMouseAlgoStderr
+        &Controller::processMouseAlgoStderr
     );
 
 
@@ -51,26 +51,26 @@ void Worker::init() {
     // Validate all of the static options except for mouseFile,
     // which is validated in the mouse init method
     validateMouseInterfaceType(
-        P()->mouseAlgorithm(),
+        m_mouseAlgorithm,
         m_staticOptions.interfaceType
     );
     validateMouseInitialDirection(
-        P()->mouseAlgorithm(),
+        m_mouseAlgorithm,
         m_staticOptions.initialDirection
     );
     validateTileTextRowsAndCols(
-        P()->mouseAlgorithm(),
+        m_mouseAlgorithm,
         m_staticOptions.tileTextNumberOfRows,
         m_staticOptions.tileTextNumberOfCols
     );
     validateMouseWheelSpeedFraction(
-        P()->mouseAlgorithm(),
+        m_mouseAlgorithm,
         m_staticOptions.wheelSpeedFraction
     );
 
     // Initialize the mouse object
     initAndValidateMouse(
-        P()->mouseAlgorithm(),
+        m_mouseAlgorithm,
         m_staticOptions.mouseFile,
         m_staticOptions.interfaceType,
         m_staticOptions.initialDirection,
@@ -87,18 +87,18 @@ void Worker::init() {
     );
 }
 
-StaticMouseAlgorithmOptions Worker::getStaticOptions() {
-    // The Worker object is the source of truth for the static options
+StaticMouseAlgorithmOptions Controller::getStaticOptions() {
+    // The Controller object is the source of truth for the static options
     return m_staticOptions;
 }
 
-DynamicMouseAlgorithmOptions Worker::getDynamicOptions() {
-    // The Worker object is the source of truth for the dynamic options
+DynamicMouseAlgorithmOptions Controller::getDynamicOptions() {
+    // The Controller object is the source of truth for the dynamic options
     return m_dynamicOptions;
 }
 
 
-void Worker::processMouseAlgoStdout() {
+void Controller::processMouseAlgoStdout() {
     QString output = m_process->readAllStandardOutput();
     for (const QString& line : output.split("\n", QString::SkipEmptyParts)) {
         // TODO: MACK - format this better, put this in the GUI, log it, etc.
@@ -106,9 +106,7 @@ void Worker::processMouseAlgoStdout() {
     }
 }
 
-void Worker::processMouseAlgoStderr() {
-
-    // TODO: MACK - don't do anything until the ControllerManager is constructed...
+void Controller::processMouseAlgoStderr() {
 
     // TODO: upforgrabs
     // Determine whether or not this function is perf sensitive. If so,
@@ -139,14 +137,14 @@ void Worker::processMouseAlgoStderr() {
 
     // Process all available commands
     for (int i = 0; i < commands.size(); i += 1) {
-        QString response = helper(commands.at(i));
+        QString response = processCommand(commands.at(i));
         if (!response.isEmpty()) {
             m_process->write((response + "\n").toStdString().c_str());
         }
     }
 }
 
-QString Worker::helper(const QString& command) {
+QString Controller::processCommand(const QString& command) {
 
     // TODO: upforgrabs
     // These functions should have sanity checks, e.g., correct
@@ -482,7 +480,7 @@ QString Worker::helper(const QString& command) {
     return ERROR_STRING;
 }
 
-void Worker::startMouseAlgorithm(const QString& mouseAlgorithm) {
+void Controller::startMouseAlgorithm(const QString& mouseAlgorithm) {
 
     // Check to see if there is some directory with the given name
     QString selectedMouseAlgo(mouseAlgorithm);
@@ -550,7 +548,7 @@ void Worker::startMouseAlgorithm(const QString& mouseAlgorithm) {
     SimUtilities::quit();
 }
 
-void Worker::validateMouseInterfaceType(
+void Controller::validateMouseInterfaceType(
         const QString& mouseAlgorithm, const QString& interfaceType) {
     if (!STRING_TO_INTERFACE_TYPE.contains(interfaceType)) {
         qCritical().noquote().nospace()
@@ -565,7 +563,7 @@ void Worker::validateMouseInterfaceType(
     }
 }
 
-void Worker::validateMouseInitialDirection(
+void Controller::validateMouseInitialDirection(
         const QString& mouseAlgorithm, const QString& initialDirection) {
     if (!(
         STRING_TO_DIRECTION.contains(initialDirection)
@@ -586,7 +584,7 @@ void Worker::validateMouseInitialDirection(
     }
 }
 
-void Worker::validateTileTextRowsAndCols(
+void Controller::validateTileTextRowsAndCols(
     const QString& mouseAlgorithm,
     int tileTextNumberOfRows, int tileTextNumberOfCols) {
     if (tileTextNumberOfRows < 0 || tileTextNumberOfCols < 0) {
@@ -600,7 +598,7 @@ void Worker::validateTileTextRowsAndCols(
     }
 }
 
-void Worker::validateMouseWheelSpeedFraction(
+void Controller::validateMouseWheelSpeedFraction(
     const QString& mouseAlgorithm, double wheelSpeedFraction) {
     if (!(0.0 <= wheelSpeedFraction && wheelSpeedFraction <= 1.0)) {
         qCritical().noquote().nospace()
@@ -611,7 +609,7 @@ void Worker::validateMouseWheelSpeedFraction(
     }
 }
 
-void Worker::initAndValidateMouse(
+void Controller::initAndValidateMouse(
         const QString& mouseAlgorithm,
         const QString& mouseFile,
         const QString& interfaceType,
@@ -647,7 +645,7 @@ void Worker::initAndValidateMouse(
     }
 }
 
-Direction Worker::getInitialDirection(const QString& initialDirection, Model* model) {
+Direction Controller::getInitialDirection(const QString& initialDirection, Model* model) {
     bool wallNorth = model->getMaze()->getTile(0, 0)->isWall(Direction::NORTH);
     bool wallEast = model->getMaze()->getTile(0, 0)->isWall(Direction::EAST);
     if (!STRING_TO_DIRECTION.contains(initialDirection) && wallNorth == wallEast) {

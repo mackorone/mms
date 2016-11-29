@@ -9,38 +9,37 @@
 
 namespace mms {
 
-class ControllerManager;
 class Model;
 class View;
 
-class Worker : public QObject {
+class Controller : public QObject {
 
     Q_OBJECT
 
 public:
-    // TODO: MACK
-    Worker(Model* model, View* view, ControllerManager* controllerManager);
+    Controller(Model* model, View* view, const QString& mouseAlgorithm);
 
     StaticMouseAlgorithmOptions getStaticOptions();
     DynamicMouseAlgorithmOptions getDynamicOptions();
 
 public slots:
+
     void init();
     void processMouseAlgoStderr();
     void processMouseAlgoStdout();
 
 private:
+
     Model* m_model;
     View* m_view;
-    ControllerManager* m_controllerManager;
+
+    QString m_mouseAlgorithm;
 
     QProcess* m_process;
     QStringList m_inputLines;
 
-    QString helper(const QString& command);
+    QString processCommand(const QString& command);
     void startMouseAlgorithm(const QString& mouseAlgorithm);
-
-    // TODO: MACK
 
     // The algorithm options
     StaticMouseAlgorithmOptions m_staticOptions;

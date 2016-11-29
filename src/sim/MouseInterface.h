@@ -20,7 +20,7 @@ namespace mms {
 
 // We have to forward declare the class (as opposed to including it) so as to
 // avoid a circular dependency; ControllerManager.h already includes this file
-class Worker;
+class Controller;
 
 class MouseInterface {
 
@@ -29,7 +29,7 @@ public:
         const Maze* maze,
         Mouse* mouse,
         MazeGraphic* mazeGraphic,
-        Worker* worker,
+        Controller* controller,
         QSet<QChar> allowableTileTextCharacters);
 
     // ----- Any interface methods ----- //
@@ -142,7 +142,7 @@ private:
     const Maze* m_maze;
     Mouse* m_mouse;
     MazeGraphic* m_mazeGraphic;
-    Worker* m_worker;
+    Controller* m_controller;
     QSet<QChar> m_allowableTileTextCharacters;
 
     // Whether or not the mouse has moved out the origin

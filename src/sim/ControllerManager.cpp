@@ -7,14 +7,14 @@ ControllerManager::ControllerManager(Model* model, View* view) :
         m_view(view) {
 }
 
-void ControllerManager::spawnMouseAlgo() {
+void ControllerManager::spawnMouseAlgo(const QString& mouseAlgorithm) {
 
-    Worker* worker = new Worker(m_model, m_view, this);
+    Controller* controller = new Controller(m_model, m_view, mouseAlgorithm);
     QThread* thread = new QThread();
-    m_controllers.append({worker, thread});
+    m_controllers.append({controller, thread});
 
-    worker->moveToThread(thread);
-    connect(thread, &QThread::started, worker, &Worker::init);
+    connect(thread, &QThread::started, controller, &Controller::init);
+    controller->moveToThread(thread);
 	thread->start();
 }
 
