@@ -87,7 +87,7 @@ void View::initializeGL() {
     printVersionInformation();
     initLogger();
     initPolygonProgram();
-    // initTextureProgram();
+    initTextureProgram();
 
     // Lastly, ensure that we're continuously refreshing the widget
 	connect(this, SIGNAL(frameSwapped()), this, SLOT(update()));
@@ -143,10 +143,15 @@ void View::paintGL() {
         3 * mouseTrianglesStartingIndex
     );
 
-    // Draw the tile text
-    // TODO: MACK
-    // drawFullAndZoomedMaps(currentMouseTranslation, currentMouseRotation,
-    //     m_textureProgram, m_textureVertexArrayObjectId, 0, 3 * m_textureCpuBuffer.size());
+    // Overlay the tile text
+    drawFullAndZoomedMaps(
+        currentMouseTranslation,
+        currentMouseRotation,
+        &m_textureProgram,
+        &m_textureVAO,
+        0,
+        3 * m_textureCpuBuffer.size()
+    );
 
     // Draw the mouse
     drawFullAndZoomedMaps(
@@ -256,44 +261,71 @@ void View::initPolygonProgram() {
 
 void View::initTextureProgram() {
 
-    // TODO: MACK
-    /*
-    // Generate the texture vertex array object and vertex buffer object
-    glGenVertexArrays(1, &m_textureVertexArrayObjectId);
-    glBindVertexArray(m_textureVertexArrayObjectId);
-    glGenBuffers(1, &m_textureVertexBufferObjectId);
-    glBindBuffer(GL_ARRAY_BUFFER, m_textureVertexBufferObjectId);
+	m_textureProgram.addShaderFromSourceCode(
+		QOpenGLShader::Vertex,
+		R"(
+            uniform mat4 transformationMatrix;
+            attribute vec2 coordinate;
+            attribute vec2 inTextureCoordinate;
+            varying vec2 outTextureCoordinate;
+            void main() {
+                gl_Position = transformationMatrix * vec4(coordinate, 0.0, 1.0);
+                outTextureCoordinate = inTextureCoordinate;
+            }
+		)"
+	);
+	m_textureProgram.addShaderFromSourceCode(
+		QOpenGLShader::Fragment,
+		R"(
+            uniform sampler2D texture;
+            varying vec2 outTextureCoordinate;
+            void main() {
+                gl_FragColor = texture2D(texture, outTextureCoordinate);
+            }
+		)"
+	);
+	m_textureProgram.link();
+	m_textureProgram.bind();
 
-    // Set up the program and attribute pointers
-    std::vector<tdogl::Shader> shaders;
-    shaders.push_back(tdogl::Shader::shaderFromFile(
-        Directory::get()->getResShadersDirectory().toStdString() + "textureVertexShader.txt", GL_VERTEX_SHADER));
-    shaders.push_back(tdogl::Shader::shaderFromFile(
-        Directory::get()->getResShadersDirectory().toStdString() + "textureFragmentShader.txt", GL_FRAGMENT_SHADER));
-    m_textureProgram = new tdogl::Program(shaders);
-    glEnableVertexAttribArray(m_textureProgram->attrib("coordinate"));
-    glVertexAttribPointer(m_textureProgram->attrib("coordinate"),
-        2, GL_DOUBLE, GL_FALSE, 4 * sizeof(double), NULL);
-    glEnableVertexAttribArray(m_textureProgram->attrib("textureCoordinate"));
-    glVertexAttribPointer(m_textureProgram->attrib("textureCoordinate"),
-        2, GL_DOUBLE, GL_TRUE, 4 * sizeof(double), (char*) NULL + 2 * sizeof(double));
+	m_textureVAO.create();
+	m_textureVAO.bind();
+
+	m_textureVBO.create();
+	m_textureVBO.bind();
+	m_textureVBO.setUsagePattern(QOpenGLBuffer::DynamicDraw);
+
+	m_textureProgram.enableAttributeArray("coordinate");
+	m_textureProgram.setAttributeBuffer(
+        "coordinate", // name
+        GL_DOUBLE, // type
+        0, // offset (bytes)
+        2, // tupleSize (number of elements in the attribute array)
+        4 * sizeof(double) // stride (bytes between vertices)
+    );
+
+	m_textureProgram.enableAttributeArray("inTextureCoordinate");
+	m_textureProgram.setAttributeBuffer(
+        "inTextureCoordinate", // name
+        GL_DOUBLE, // type
+        2 * sizeof(double), // offset (bytes)
+        2, // tupleSize (number of elements in the attribute array)
+        4 * sizeof(double) // stride (bytes between vertices)
+    );
 
     // Load the bitmap texture into the texture atlas
-    QString tileTextFontImagePath = Directory::get()->getResImgsDirectory() + P()->tileTextFontImage();
+    QString tileTextFontImagePath =
+        Directory::get()->getResImgsDirectory() + P()->tileTextFontImage();
     if (!QFile::exists(tileTextFontImagePath)) {
         qCritical().noquote().nospace()
             << "Could not find font image file \"" << P()->tileTextFontImage()
             << "\" in \"" << Directory::get()->getResImgsDirectory() << "\".";
         SimUtilities::quit();
     }
-    tdogl::Bitmap bmp = tdogl::Bitmap::bitmapFromFile(tileTextFontImagePath.toStdString());
-    bmp.flipVertically();
-    m_textureAtlas = new tdogl::Texture(bmp);
+    m_textureAtlas = new QOpenGLTexture(QImage(tileTextFontImagePath).mirrored());
 
-    // Unbind the vertex array object and vertex buffer object
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-    */
+	m_polygonVBO.release();
+	m_polygonVAO.release();
+	m_polygonProgram.release();
 }
 
 // TODO: MACK - move this somewhere else
@@ -333,15 +365,13 @@ void View::repopulateVertexBufferObjects() {
     );
     m_polygonVBO.release();
 
-    // TODO: MACK
-    /*
-    // Clear the texture vertex buffer object and re-populate it with data
-    glBindBuffer(GL_ARRAY_BUFFER, m_textureVertexBufferObjectId);
-    glBufferData(GL_ARRAY_BUFFER, m_textureCpuBuffer.size() * sizeof(TriangleTexture), NULL, GL_DYNAMIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, m_textureCpuBuffer.size() * sizeof(TriangleTexture),
-        &m_textureCpuBuffer.front());
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    */
+    // Overwrite the texture vertex buffer object data
+    m_textureVBO.bind();
+	m_textureVBO.allocate(
+        &m_textureCpuBuffer.front(),
+        m_textureCpuBuffer.size() * sizeof(TriangleTexture)
+    );
+    m_textureVBO.release();
 }
 
 void View::drawFullAndZoomedMaps(
@@ -373,14 +403,11 @@ void View::drawFullAndZoomedMaps(
     vao->bind();
 
     // If it's the texture program, bind the texture and set the uniform
-    // TODO: MACK
-    /*
-    if (program == m_textureProgram) {
+    if (program == &m_textureProgram) {
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, m_textureAtlas->object());
-        program->setUniform("_texture", 0);
+        m_textureAtlas->bind();
+        program->setUniformValue("texture", 0);
     }
-    */
 
     // Render the full map
     // TODO: MACK
@@ -430,12 +457,9 @@ void View::drawFullAndZoomedMaps(
     glDrawArrays(GL_TRIANGLES, vboStartingIndex, count);
 
     // If it's the texture program, we should additionally unbind the texture
-    // TODO: MACK
-    /*
-    if (program == m_textureProgram) {
-        glBindTexture(GL_TEXTURE_2D, 0);
+    if (program == &m_textureProgram) {
+        m_textureAtlas->release();
     }
-    */
 
     // Stop using the program and vertex array object
     vao->release();

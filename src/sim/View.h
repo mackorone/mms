@@ -80,26 +80,16 @@ private:
     // Used to determine whether or not to automatically clear fog
     ControllerManager* m_controllerManager;
 
-    // Texture program variables
-    // tdogl::Texture* m_textureAtlas;
-    // tdogl::Program* m_textureProgram;
-    GLuint m_textureVertexArrayObjectId;
-    GLuint m_textureVertexBufferObjectId;
-
-	//////////
-
-	// TODO: MACK - rename these
+    // Polygon program variables
 	QOpenGLShaderProgram m_polygonProgram;
 	QOpenGLVertexArrayObject m_polygonVAO;
 	QOpenGLBuffer m_polygonVBO;
 
-	// TODO: MACK - rename these
+    // Texture program variables
 	QOpenGLTexture* m_textureAtlas;
 	QOpenGLShaderProgram m_textureProgram;
 	QOpenGLVertexArrayObject m_textureVAO;
 	QOpenGLBuffer m_textureVBO;
-
-	//////////
 
     // Initialize the graphics
     void initPolygonProgram();
