@@ -24,6 +24,7 @@ View::View(Model* model, QWidget* parent) :
         QOpenGLWidget(parent),
         m_model(model) {
 
+    // Initialize the buffer and graphics objects
     m_bufferInterface = new BufferInterface(
         {m_model->getMaze()->getWidth(), m_model->getMaze()->getHeight()},
         &m_graphicCpuBuffer,
@@ -31,8 +32,15 @@ View::View(Model* model, QWidget* parent) :
     );
     m_mazeGraphic = new MazeGraphic(model->getMaze(), m_bufferInterface);
     m_mouseGraphic = new MouseGraphic(model->getMouse(), m_bufferInterface);
+
     m_fontImageMap = getFontImageMap();
     m_header = new Header(model);
+
+    // Ensure that we continuously refresh the widget
+	connect(
+        this, &View::frameSwapped,
+        this, static_cast<void (View::*)()>(&View::update)
+    );
 }
 
 MazeGraphic* View::getMazeGraphic() {
@@ -72,25 +80,59 @@ void View::initTileGraphicText() {
         STRING_TO_TILE_TEXT_ALIGNMENT.value(P()->tileTextAlignment()));
 }
 
+QVector<QString> View::getOpenGLVersionInfo() {
+    static QVector<QString> openGLVersionInfo;
+    if (openGLVersionInfo.empty()) {
+        QString glType = context()->isOpenGLES() ? "OpenGL ES" : "OpenGL";
+        QString glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+        QString glProfile;
+        switch (format().profile()) {
+            case QSurfaceFormat::NoProfile:
+                glProfile = "NoProfile";
+                break;
+            case QSurfaceFormat::CoreProfile:
+                glProfile = "CoreProfile";
+                break;
+            case QSurfaceFormat::CompatibilityProfile:
+                glProfile = "CompatibilityProfile";
+                break;
+        }
+        openGLVersionInfo = {glType, glVersion, glProfile};
+    }
+    return openGLVersionInfo;
+}
+
+void View::initOpenGLLogger() {
+    if (m_openGLLogger.initialize()) {
+        m_openGLLogger.startLogging(QOpenGLDebugLogger::SynchronousLogging);
+        m_openGLLogger.enableMessages();
+        m_openGLLogger.disableMessages(
+            QOpenGLDebugMessage::AnySource,
+            QOpenGLDebugMessage::AnyType,
+            QOpenGLDebugMessage::NotificationSeverity
+        );
+    }
+}
+
 void View::initializeGL() {
 
-    // First, make it possible to call gl functions directly
+    // Contains all initialization that requires an OpenGL context
+
+    // First, initialize the logger
+    initOpenGLLogger();
+
+    // Make it possible to call gl functions directly
     initializeOpenGLFunctions();
 
-    // Then, set some gl values
+    // Set some gl values
     glClearColor(0.1, 0.0, 0.0, 1.0);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
     glPolygonMode(GL_FRONT_AND_BACK, S()->wireframeMode() ? GL_LINE : GL_FILL);
 
-    // TODO: MACK
-    printVersionInformation();
-    initLogger();
+    // Initialize the polygon and texture programs
     initPolygonProgram();
     initTextureProgram();
-
-    // Lastly, ensure that we're continuously refreshing the widget
-	connect(this, SIGNAL(frameSwapped()), this, SLOT(update()));
 }
 
 void View::paintGL() {
@@ -196,10 +238,6 @@ void View::resizeGL(int width, int height) {
     m_windowWidth = width;
     m_windowHeight = height;
     m_header->updateWindowSize(width, height);
-}
-
-void View::onMessageLogged(QOpenGLDebugMessage message) {
-    qDebug() << "OPENGL DEBUG:" << message;
 }
 
 void View::initPolygonProgram() {
@@ -463,53 +501,6 @@ void View::drawFullAndZoomedMaps(
 
     // Stop using the program and vertex array object
     vao->release();
-}
-
-void View::initLogger() {
-    connect(
-        &m_logger,
-        SIGNAL(messageLogged(QOpenGLDebugMessage)),
-        this,
-        SLOT(onMessageLogged(QOpenGLDebugMessage))
-    );
-    if (m_logger.initialize()) {
-        // TODO: MACK - change to asynchronous
-        m_logger.startLogging(QOpenGLDebugLogger::SynchronousLogging);
-        m_logger.enableMessages();
-        if (true) {
-            m_logger.disableMessages(
-                QOpenGLDebugMessage::AnySource,
-                QOpenGLDebugMessage::AnyType,
-                QOpenGLDebugMessage::NotificationSeverity
-            );
-        }
-    }
-}
-
-void View::printVersionInformation() {
-
-    // TODO: MACK - clean this up
-
-  QString glType;
-  QString glVersion;
-  QString glProfile;
-
-  // Get Version Information
-  glType = (context()->isOpenGLES()) ? "OpenGL ES" : "OpenGL";
-  glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
-
-  // Get Profile Information
-#define CASE(c) case QSurfaceFormat::c: glProfile = #c; break
-  switch (format().profile()) {
-    CASE(NoProfile);
-    CASE(CoreProfile);
-    CASE(CompatibilityProfile);
-  }
-#undef CASE
-
-  // qPrintable() will print our QString w/o quotes around it.
-  qDebug() << qPrintable(glType) << qPrintable(glVersion) << "(" << qPrintable(glProfile) << ")";
-
 }
 
 } // namespace mms

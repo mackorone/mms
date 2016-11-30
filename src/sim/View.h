@@ -47,6 +47,8 @@ public:
     QSet<QChar> getAllowableTileTextCharacters();
     void initTileGraphicText();
 
+    QVector<QString> getOpenGLVersionInfo();
+
 protected:
 
     void initializeGL();
@@ -54,6 +56,13 @@ protected:
     void resizeGL(int width, int height);
 
 private:
+
+    // Vector of OpenGL version info
+    QVector<QString> m_openglVersionInfo;
+
+    // Logger of OpenGL warnings and errors
+	QOpenGLDebugLogger m_openGLLogger;
+	void initOpenGLLogger();
 
     // CPU-side buffers and the interface to modify them
     QVector<TriangleGraphic> m_graphicCpuBuffer;
@@ -104,15 +113,6 @@ private:
 		QOpenGLVertexArrayObject* vao,
 		int vboStartingIndex,
 		int count);
-
-	// TODO: MACK - clean this up
-	QOpenGLDebugLogger m_logger;
-	void initLogger();
-	void initShader();
-    void printVersionInformation();
-private slots:
-	void onMessageLogged(QOpenGLDebugMessage);
-
 };
 
 } // namespace mms

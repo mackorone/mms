@@ -2,7 +2,7 @@
 
 #include <QObject>
 #include <QThread>
-#include <QList>
+#include <QVector>
 
 #include "Model.h"
 #include "View.h"
@@ -26,7 +26,7 @@ private:
     View* m_view;
 
     // A list of controllers and the threads they're running on
-    QList<QPair<Controller*, QThread*>> m_controllers;
+    QVector<QPair<Controller*, QThread*>> m_controllers;
 
 };
 

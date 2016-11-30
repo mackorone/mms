@@ -157,6 +157,7 @@ QString Controller::processCommand(const QString& command) {
     QStringList tokens = command.split(" ", QString::SkipEmptyParts);
     QString function = tokens.at(0);
 
+    // TODO: We don't need static config - we can just update the values as we get them
     if (function == "setMouseFile") {
         m_staticOptions.mouseFile = tokens.at(1);
         return ACK_STRING;
