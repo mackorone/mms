@@ -13,13 +13,14 @@
 #include "Logging.h"
 #include "Param.h"
 #include "SimUtilities.h"
+#include "Screen.h"
 #include "State.h"
 #include "TransformationMatrix.h"
 #include "units/Seconds.h"
 
 namespace mms {
 
-View::View(Model* model, int argc, char* argv[], QWidget* parent) :
+View::View(Model* model, QWidget* parent) :
         QOpenGLWidget(parent),
         m_model(model) {
 
@@ -87,11 +88,6 @@ void View::initializeGL() {
     initLogger();
     initPolygonProgram();
     // initTextureProgram();
-
-    // Retrieve the screen pixels per meter, used to scale the zoomed map
-    QDesktopWidget* widget = QApplication::desktop();
-    m_screenPixelsPerMeter =
-        widget->availableGeometry().width() / (widget->widthMM() / 1000.0);
 
     // Lastly, ensure that we're continuously refreshing the widget
 	connect(this, SIGNAL(frameSwapped()), this, SLOT(update()));
@@ -414,7 +410,7 @@ void View::drawFullAndZoomedMaps(
         zoomedMapPosition,
         zoomedMapSize,
         {m_windowWidth, m_windowHeight},
-        m_screenPixelsPerMeter,
+        Screen::get()->pixelsPerMeter(),
         S()->zoomedMapScale(),
         S()->rotateZoomedMap(),
         m_model->getMouse()->getInitialTranslation(),

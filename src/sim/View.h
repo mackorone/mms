@@ -37,7 +37,7 @@ class View : public QOpenGLWidget, protected QOpenGLFunctions {
 
 public:
 
-    View(Model* model, int argc, char* argv[], QWidget* parent = 0);
+    View(Model* model, QWidget* parent = 0);
 
     MazeGraphic* getMazeGraphic();
     MouseGraphic* getMouseGraphic();
@@ -68,9 +68,6 @@ private:
     // The window size, in pixels
     int m_windowWidth;
     int m_windowHeight;
-
-    // The number of pixels per meter of screen
-    double m_screenPixelsPerMeter;
 
     // A map from char to x and y location in the font image
     QMap<QChar, QPair<double, double>> m_fontImageMap;

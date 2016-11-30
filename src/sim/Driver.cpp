@@ -1,28 +1,27 @@
 #include "Driver.h"
 
 #include <QApplication>
+#include <QDesktopWidget>
 #include <QProcess>
-#include <QDebug>
 
 // TODO: MACK - replace this with QThread
 #include <thread>
 
 #include "Assert.h"
+#include "ControllerManager.h"
 #include "Directory.h"
 #include "Logging.h"
 #include "MainWindow.h"
+#include "Model.h"
 #include "Param.h"
+#include "Screen.h"
 #include "SimUtilities.h"
 #include "State.h"
 #include "Time.h"
+#include "View.h"
 #include "units/Milliseconds.h"
 
 namespace mms {
-
-// Definition of the static variables for linking
-Model* Driver::m_model;
-View* Driver::m_view;
-ControllerManager* Driver::m_controllerManager;
 
 int Driver::drive(int argc, char* argv[]) {
 
@@ -34,6 +33,9 @@ int Driver::drive(int argc, char* argv[]) {
 
     // Initialize the Time object
     Time::init();
+
+    // Initialize the Screen object
+    Screen::init();
 
     // Initialize the Directory object
     Directory::init(app.applicationFilePath());
@@ -59,41 +61,41 @@ int Driver::drive(int argc, char* argv[]) {
     // TODO: MACK - clean this up a little bit
 
     // Initialize the model and view
-    m_model = new Model();
-    m_view = new View(m_model, argc, argv);
+    Model* model = new Model();
+    View* view = new View(model);
 
     // Initialize the controllerManager, which starts the algorithm
     // (and returns once the static options have been set)
-    m_controllerManager = new ControllerManager(m_model, m_view);
-    m_controllerManager->spawnMouseAlgo(P()->mouseAlgorithm());
+    ControllerManager* controllerManager = new ControllerManager(model, view);
+    controllerManager->spawnMouseAlgo(P()->mouseAlgorithm());
 
     // Initialize mouse algorithm values in the model and view
     // TODO: MACK
     /*
-    m_model->getWorld()->setOptions(
-        m_controllerManager->getStaticOptions()
+    model->getWorld()->setOptions(
+        controllerManager->getStaticOptions()
     );
     */
-    m_view->setControllerManager(m_controllerManager);
+    view->setControllerManager(controllerManager);
 
     // Initialize the tile text, now that the options have been set
-    m_view->initTileGraphicText();
+    view->initTileGraphicText();
 
     // Lastly, we need to populate the graphics buffers with maze information,
     // but only after we've initialized the tile graphic text
-    m_view->getMazeGraphic()->draw();
+    view->getMazeGraphic()->draw();
 
     //
     /////////////////////////////////////////
 
     // TODO: MACK - this could be on the same thread as the graphics loop
     // Start the physics loop
-    std::thread physicsThread([]() {
-        m_model->getWorld()->simulate();
+    std::thread physicsThread([=]() {
+        model->getWorld()->simulate();
     });
 
     // TODO: MACK -- create the main window
-    MainWindow w(m_view);
+    MainWindow w(view);
     w.show();
     // TODO: MACK
 
