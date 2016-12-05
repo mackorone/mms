@@ -60,16 +60,6 @@ private:
         int tileTextNumberOfRows,
         int tileTextNumberOfCols);
 
-    void validateMouseWheelSpeedFraction(
-        const QString& mouseAlgorithm,
-        double wheelSpeedFraction);
-
-    void initAndValidateMouse(
-        const QString& mouseAlgorithm,
-        const QString& mouseFile,
-        const QString& interfaceType,
-        Model* model);
-
 };
 
 } // namespace mms

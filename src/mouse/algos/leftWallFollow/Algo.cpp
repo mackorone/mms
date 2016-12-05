@@ -5,13 +5,13 @@ void Algo::solve(Interface* interface) {
     interface->updateDeclareWallOnRead(true);
     interface->finalizeStaticOptions();
 
+    interface->setMouseFile("megaMouse.xml");
+    interface->setWheelSpeedFraction(0.1);
     interface->moveForward();
-    interface->setMouseFile("omniMouse.xml");
+    interface->setWheelSpeedFraction(0.01);
     interface->moveForward();
-    interface->setMouseFile("default.xml");
-    interface->turnRight();
+    interface->setWheelSpeedFraction(0.1);
     interface->moveForward();
-    interface->setMouseFile("default.xml");
     /*
     while (true) {
         if (!interface->wallLeft()){

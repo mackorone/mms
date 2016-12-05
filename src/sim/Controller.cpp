@@ -57,10 +57,6 @@ void Controller::init() {
         m_staticOptions.tileTextNumberOfRows,
         m_staticOptions.tileTextNumberOfCols
     );
-    validateMouseWheelSpeedFraction(
-        m_mouseAlgorithm,
-        m_staticOptions.wheelSpeedFraction
-    );
 
     // Initialize the mouse interface
     m_mouseInterface = new MouseInterface(
@@ -168,8 +164,8 @@ QString Controller::processCommand(const QString& command) {
         return ACK_STRING;
     }
     else if (function == "setWheelSpeedFraction") {
-        m_staticOptions.tileTextNumberOfCols =
-            SimUtilities::strToDouble(tokens.at(1));
+        m_mouseInterface->setWheelSpeedFraction(
+            SimUtilities::strToDouble(tokens.at(1)));
         return ACK_STRING;
     }
     else if (function == "finalizeStaticOptions") {
@@ -557,17 +553,6 @@ void Controller::validateTileTextRowsAndCols(
             << tileTextNumberOfRows << "\" and \"" << tileTextNumberOfCols
             << "\", respectively, the tile text dimensions of the mouse"
             << " algorithm \"" << mouseAlgorithm << "\" are invalid.";
-        SimUtilities::quit();
-    }
-}
-
-void Controller::validateMouseWheelSpeedFraction(
-    const QString& mouseAlgorithm, double wheelSpeedFraction) {
-    if (!(0.0 <= wheelSpeedFraction && wheelSpeedFraction <= 1.0)) {
-        qCritical().noquote().nospace()
-            << "\"" << wheelSpeedFraction << "\" is not a valid wheel speed"
-            << " fraction. The wheel speed fraction of the mouse algorithm \""
-            << mouseAlgorithm << "\" has to be in [0.0, 1.0].";
         SimUtilities::quit();
     }
 }

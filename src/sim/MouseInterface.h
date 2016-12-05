@@ -38,6 +38,7 @@ public:
     char getStartedDirection();
     void setStartingDirection(char direction);
     void setMouseFile(const QString& mouseFile);
+    void setWheelSpeedFraction(double wheelSpeedFraction);
 
     // Misc functions
     double getRandom();
@@ -152,6 +153,10 @@ private:
 
     // Whether or not the mouse has moved out the origin
     bool m_inOrigin;
+
+    // A constant used to ensure that the mouse
+    // doesn't travel to fast in DISCRETE mode
+    double m_wheelSpeedFraction;
 
     // Cache of tiles, for making clearAll methods faster
     std::set<QPair<int, int>> m_tilesWithColor;

@@ -36,7 +36,8 @@ MouseInterface::MouseInterface(
         m_mazeGraphic(mazeGraphic),
         m_controller(controller),
         m_allowableTileTextCharacters(allowableTileTextCharacters),
-        m_inOrigin(true) {
+        m_inOrigin(true),
+        m_wheelSpeedFraction(1.0) {
 }
 
 char MouseInterface::getStartedDirection() {
@@ -54,9 +55,24 @@ void MouseInterface::setStartingDirection(char direction) {
 }
 
 void MouseInterface::setMouseFile(const QString& mouseFile) {
-    // TODO: MACK
+    // TODO: MACK - validation here
     m_mouse->reload(mouseFile);
 }
+
+void MouseInterface::setWheelSpeedFraction(double wheelSpeedFraction) {
+    // TODO: MACK - validation here
+    /*
+    if (!(0.0 <= wheelSpeedFraction && wheelSpeedFraction <= 1.0)) {
+        qCritical().noquote().nospace()
+            << "\"" << wheelSpeedFraction << "\" is not a valid wheel speed"
+            << " fraction. The wheel speed fraction of the mouse algorithm \""
+            << mouseAlgorithm << "\" has to be in [0.0, 1.0].";
+        SimUtilities::quit();
+    }
+    */
+    m_wheelSpeedFraction = wheelSpeedFraction;
+}
+
 
 double MouseInterface::getRandom() {
     return SimUtilities::getRandom();
@@ -970,7 +986,7 @@ void MouseInterface::moveForwardTo(const Cartesian& destinationTranslation, cons
     Meters previousDistance = delta.getRho();
 
     // Start the mouse moving forward
-    m_mouse->setWheelSpeedsForMoveForward(m_controller->getStaticOptions().wheelSpeedFraction);
+    m_mouse->setWheelSpeedsForMoveForward(m_wheelSpeedFraction);
 
     // Move forward until we've reached the destination
     do {
@@ -999,11 +1015,11 @@ void MouseInterface::arcTo(const Cartesian& destinationTranslation, const Radian
     // Set the speed based on the initial rotation delta
     if (0 < initialRotationDelta.getDegreesNotBounded()) {
         m_mouse->setWheelSpeedsForCurveLeft(
-            m_controller->getStaticOptions().wheelSpeedFraction * extraWheelSpeedFraction, radius);
+            m_wheelSpeedFraction * extraWheelSpeedFraction, radius);
     }
     else {
         m_mouse->setWheelSpeedsForCurveRight(
-            m_controller->getStaticOptions().wheelSpeedFraction * extraWheelSpeedFraction, radius);
+            m_wheelSpeedFraction * extraWheelSpeedFraction, radius);
     }
     
     // While the deltas have the same sign, sleep for a short amount of time
