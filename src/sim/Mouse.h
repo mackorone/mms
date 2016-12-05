@@ -3,9 +3,10 @@
 #include <QMap>
 #include <QPair>
 #include <QString>
-
-#include <mutex>
 #include <QVector>
+
+// TODO: MACK - QMutex
+#include <mutex>
 
 #include "units/Cartesian.h"
 #include "units/RadiansPerSecond.h"
@@ -26,14 +27,25 @@ class Mouse {
 public:
     Mouse(const Maze* maze);
 
-    // Initializes the mouse (body, wheels, sensors, etc.);
-    // returns true if successful, false if not
-    bool initialize(const QString& mouseFile, Direction initialDirection);
-    bool isInitialized() const;
+    // Reloads the mouse (body, wheels, sensors, etc.) from the
+    // given file; returns true if successful, false if not
+    bool reload(const QString& mouseFile);
 
-    // Gets the initial translation and rotation of the mouse
+    // Returns the name of the current mouse file
+    QString getMouseFile() const;
+
+    // Resets the mouse to the beginning of the maze (taking into
+    // account the desired starting direction, as set by the algorithm)
+    void reset();
+
+    // Sets the current translation and rotation of the mouse
+    void teleport(const Coordinate& translation, const Angle& rotation);
+
+    // Returns the direction of the mouse at the most recent reset
+    Direction getStartedDirection() const;
+
+    // Gets the initial translation of the mouse
     Cartesian getInitialTranslation() const;
-    Radians getInitialRotation() const;
 
     // Gets the current translation and rotation of the mouse
     Cartesian getCurrentTranslation() const;
@@ -42,9 +54,6 @@ public:
     // Gets the current discretized translation and rotation of the mouse
     QPair<int, int> getCurrentDiscretizedTranslation() const;
     Direction getCurrentDiscretizedRotation() const;
-
-    // Sets the current translation and rotation of the mouse
-    void teleport(const Coordinate& translation, const Angle& rotation);
 
     // Retrieves the polygon of just the body of the mouse
     Polygon getCurrentBodyPolygon(
@@ -83,6 +92,9 @@ public:
     // Returns the magnitde of the max angular velocity of the wheel
     RadiansPerSecond getWheelMaxSpeed(const QString& name) const;
 
+    // Set the direction that the mouse should face whenever reset
+    void setStartingDirection(Direction startingDirection);
+
     // An atomic interface for setting the wheel speeds
     void setWheelSpeeds(const QMap<QString, RadiansPerSecond>& wheelSpeeds);
 
@@ -118,13 +130,19 @@ public:
     RadiansPerSecond readGyro() const;
 
 private:
-    // Whether or not the mouse is initialized
-    bool m_isInitialized;
 
     // Used for the sensor readings
     const Maze* m_maze;
 
-    // The initial translation and rotation of the mouse
+    // The file that defines the current mouse geometry
+    QString m_mouseFile;
+
+    // The direction that the mouse did and should face,
+    // respectively, at the most recent and next reset
+    Direction m_startedDirection;
+    Direction m_startingDirection;
+
+    // The translation and rotation of the mouse at the previous reload
     Cartesian m_initialTranslation;
     Radians m_initialRotation;
 
@@ -137,6 +155,10 @@ private:
 
     // The effect that each wheel has on mouse forward, sideways, and turn movements
     QMap<QString, WheelEffect> m_wheelEffects;
+    QMap<QString, WheelEffect> getWheelEffects(
+        const Cartesian& initialTranslation,
+        const Radians& initialRotation,
+        const QMap<QString, Wheel>& wheels) const;
 
     // The fractions of a each wheel's max speed that cause the mouse to
     // perform the move forward and turn movements, respectively, as optimally
@@ -146,6 +168,9 @@ private:
     // Also note that the fractions are in [-1.0, 1.0], so that the max wheel
     // speed is never exceeded.
     QMap<QString, QPair<double, double>> m_wheelSpeedAdjustmentFactors;
+    QMap<QString, QPair<double, double>> getWheelSpeedAdjustmentFactors(
+        const QMap<QString, Wheel>& wheels,
+        const QMap<QString, WheelEffect>& wheelEffects) const;
 
     // Used to calculate the linear combination of the forward component and turn
     // component, based on curve turn radius, that cause the mouse to perform a
@@ -162,8 +187,10 @@ private:
     mutable std::mutex m_updateMutex; 
 
     // Helper function for polygon retrieval based on a given mouse translation and rotation
-    Polygon getCurrentPolygon(const Polygon& initialPolygon,
-        const Cartesian& currentTranslation, const Radians& currentRotation) const;
+    Polygon getCurrentPolygon(
+        const Polygon& initialPolygon,
+        const Cartesian& currentTranslation,
+        const Radians& currentRotation) const;
 
     // Retrieve the current position/rotation of sensor based on position/rotation of mouse
     QPair<Cartesian, Radians> getCurrentSensorPositionAndDirection(
@@ -173,17 +200,6 @@ private:
 
     // Sets the wheel speed for a particular movement, based on the linear combo of the two factors
     void setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardFactor, double turnFactor);
-
-    // Helper method for getting forward and turn rates of change due to a single wheel
-    QMap<QString, WheelEffect> getWheelEffects(
-        const Cartesian& initialTranslation,
-        const Radians& initialRotation,
-        const QMap<QString, Wheel>& wheels) const;
-
-    // Helper method for getting wheel speed adjustment factors based on wheel effects
-    QMap<QString, QPair<double, double>> getWheelSpeedAdjustmentFactors(
-        const QMap<QString, Wheel>& wheels,
-        const QMap<QString, WheelEffect>& wheelEffects) const;
 
 };
 

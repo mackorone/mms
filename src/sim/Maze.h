@@ -3,6 +3,7 @@
 #include <QVector>
 
 #include "BasicMaze.h"
+#include "Direction.h"
 #include "Tile.h"
 
 namespace mms {
@@ -19,6 +20,7 @@ public:
     bool isValidMaze() const;
     bool isOfficialMaze() const;
     bool isCenterTile(int x, int y) const;
+    Direction getOptimalStartingDirection() const;
 
 private:
     // Vector to hold all of the tiles

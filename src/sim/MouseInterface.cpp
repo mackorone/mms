@@ -39,6 +39,25 @@ MouseInterface::MouseInterface(
         m_inOrigin(true) {
 }
 
+char MouseInterface::getStartedDirection() {
+    return DIRECTION_TO_CHAR.value(m_mouse->getStartedDirection()).toLatin1();
+}
+
+void MouseInterface::setStartingDirection(char direction) {
+    if (!CHAR_TO_DIRECTION.contains(direction)) {
+        qWarning().noquote().nospace()
+            << "The character '" << direction << "' is not mapped to a valid"
+            << " direction.";
+        return;
+    }
+    m_mouse->setStartingDirection(CHAR_TO_DIRECTION.value(direction));
+}
+
+void MouseInterface::setMouseFile(const QString& mouseFile) {
+    // TODO: MACK
+    m_mouse->reload(mouseFile);
+}
+
 double MouseInterface::getRandom() {
     return SimUtilities::getRandom();
 }
@@ -229,7 +248,7 @@ void MouseInterface::undeclareTileDistance(int x, int y) {
 }
 
 void MouseInterface::resetPosition() {
-    m_mouse->teleport(m_mouse->getInitialTranslation(), m_mouse->getInitialRotation());
+    m_mouse->reset();
 }
 
 bool MouseInterface::inputButtonPressed(int inputButton) {

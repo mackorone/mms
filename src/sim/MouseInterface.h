@@ -34,6 +34,11 @@ public:
 
     // ----- Any interface methods ----- //
 
+    // Config-related functions
+    char getStartedDirection();
+    void setStartingDirection(char direction);
+    void setMouseFile(const QString& mouseFile);
+
     // Misc functions
     double getRandom();
     int millis(); // # of milliseconds of sim time (adjusted based on sim speed) that have passed

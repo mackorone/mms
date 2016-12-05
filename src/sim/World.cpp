@@ -71,12 +71,6 @@ void World::simulate() {
     // Use this thread to perform mouse position updates
     while (true) {
 
-        // If the mouse isn't initialized, don't do anything
-        if (!m_mouse->isInitialized()) {
-            SimUtilities::sleep(Seconds(1.0 / P()->collisionDetectionRate()));
-            continue;
-        }
-
         // In order to ensure we're sleeping the correct amount of time, we time
         // the mouse position update operation and take it into account when we sleep.
         double start(SimUtilities::getHighResTimestamp());

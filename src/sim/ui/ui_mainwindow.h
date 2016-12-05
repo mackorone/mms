@@ -13,10 +13,12 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
+#include <QtWidgets/QTabWidget>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
@@ -25,9 +27,14 @@ QT_BEGIN_NAMESPACE
 class Ui_MainWindow
 {
 public:
-    QWidget *m_centralWidget;
-    QVBoxLayout *verticalLayout_5;
-    QVBoxLayout *m_openGlWidgetContainer;
+    QWidget *centralWidget;
+    QHBoxLayout *horizontalLayout;
+    QTabWidget *tabWidget;
+    QWidget *tab_3;
+    QVBoxLayout *verticalLayout;
+    QVBoxLayout *mapContainer;
+    QWidget *tab_4;
+    QVBoxLayout *verticalLayout_3;
     QMenuBar *menuBar;
     QMenu *menu_File;
 
@@ -37,24 +44,43 @@ public:
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
         MainWindow->resize(1000, 700);
         MainWindow->setTabShape(QTabWidget::Rounded);
-        m_centralWidget = new QWidget(MainWindow);
-        m_centralWidget->setObjectName(QStringLiteral("m_centralWidget"));
+        centralWidget = new QWidget(MainWindow);
+        centralWidget->setObjectName(QStringLiteral("centralWidget"));
         QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(m_centralWidget->sizePolicy().hasHeightForWidth());
-        m_centralWidget->setSizePolicy(sizePolicy);
-        verticalLayout_5 = new QVBoxLayout(m_centralWidget);
-        verticalLayout_5->setSpacing(6);
-        verticalLayout_5->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_5->setObjectName(QStringLiteral("verticalLayout_5"));
-        m_openGlWidgetContainer = new QVBoxLayout();
-        m_openGlWidgetContainer->setSpacing(6);
-        m_openGlWidgetContainer->setObjectName(QStringLiteral("m_openGlWidgetContainer"));
+        sizePolicy.setHeightForWidth(centralWidget->sizePolicy().hasHeightForWidth());
+        centralWidget->setSizePolicy(sizePolicy);
+        horizontalLayout = new QHBoxLayout(centralWidget);
+        horizontalLayout->setSpacing(6);
+        horizontalLayout->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
+        tabWidget = new QTabWidget(centralWidget);
+        tabWidget->setObjectName(QStringLiteral("tabWidget"));
+        tab_3 = new QWidget();
+        tab_3->setObjectName(QStringLiteral("tab_3"));
+        verticalLayout = new QVBoxLayout(tab_3);
+        verticalLayout->setSpacing(6);
+        verticalLayout->setContentsMargins(11, 11, 11, 11);
+        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
+        mapContainer = new QVBoxLayout();
+        mapContainer->setSpacing(6);
+        mapContainer->setObjectName(QStringLiteral("mapContainer"));
 
-        verticalLayout_5->addLayout(m_openGlWidgetContainer);
+        verticalLayout->addLayout(mapContainer);
 
-        MainWindow->setCentralWidget(m_centralWidget);
+        tabWidget->addTab(tab_3, QString());
+        tab_4 = new QWidget();
+        tab_4->setObjectName(QStringLiteral("tab_4"));
+        verticalLayout_3 = new QVBoxLayout(tab_4);
+        verticalLayout_3->setSpacing(6);
+        verticalLayout_3->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
+        tabWidget->addTab(tab_4, QString());
+
+        horizontalLayout->addWidget(tabWidget);
+
+        MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
         menuBar->setGeometry(QRect(0, 0, 1000, 25));
@@ -66,12 +92,17 @@ public:
 
         retranslateUi(MainWindow);
 
+        tabWidget->setCurrentIndex(0);
+
+
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
 
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Micromouse Simulator", 0));
+        tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("MainWindow", "Tab 1", 0));
+        tabWidget->setTabText(tabWidget->indexOf(tab_4), QApplication::translate("MainWindow", "Tab 2", 0));
         menu_File->setTitle(QApplication::translate("MainWindow", "&File", 0));
     } // retranslateUi
 

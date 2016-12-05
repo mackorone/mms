@@ -13,7 +13,7 @@ void Interface::setInterfaceType(const std::string& interfaceType) {
     READ();
 }
 
-void Interface::setInitialDirection(const std::string& initialDirection) {
+void Interface::setInitialDirection(char initialDirection) {
     PRINT("setInitialDirection", initialDirection);
     READ();
 }

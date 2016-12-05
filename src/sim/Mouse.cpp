@@ -18,27 +18,30 @@
 
 namespace mms {
 
-Mouse::Mouse(const Maze* maze) :
-    m_isInitialized(false),
-    m_maze(maze),
-    m_currentGyro(RadiansPerSecond(0.0)) {
-}
-
-bool Mouse::initialize(
-        const QString& mouseFile,
-        Direction initialDirection) {
-
-    // We begin with the assumption that the initialization will succeed
-    bool success = true;
+Mouse::Mouse(const Maze* maze) : m_maze(maze) {
 
     // The initial translation of the mouse is just the center of the starting tile
     Meters halfOfTileDistance = Meters((P()->wallLength() + P()->wallWidth()) / 2.0);
     m_initialTranslation = Cartesian(halfOfTileDistance, halfOfTileDistance);
     m_currentTranslation = m_initialTranslation;
 
-    // The initial rotation of the mouse, however, is determined by the options
-    m_initialRotation = DIRECTION_TO_ANGLE.value(initialDirection);
+    // The initial rotation of the mouse is determined by the starting tile walls
+    Direction optimalStartingDirection = maze->getOptimalStartingDirection();
+    m_startedDirection = optimalStartingDirection;
+    m_startingDirection = m_startedDirection;
+    m_initialRotation = DIRECTION_TO_ANGLE.value(m_startingDirection);
     m_currentRotation = m_initialRotation;
+
+    // Load the mouse geometry
+    reload("default.xml");
+}
+
+bool Mouse::reload(const QString& mouseFile) {
+
+    // TODO: MACK - I need a mutex here so as to not conflict with update()
+
+    // We begin with the assumption that the initialization will succeed
+    bool success = true;
 
     // Create the mouse parser object
     MouseParser parser(Directory::get()->getResMouseDirectory() + mouseFile, &success);
@@ -90,25 +93,36 @@ bool Mouse::initialize(
         sensor.getInitialViewPolygon().getTriangles();
     }
 
-    // TODO: MACK - dedup these two fields - return type of void here instead?
-
-    // Mark the mouse as initialized
-    m_isInitialized = success;
+    // Lastly, keep track of the mouse file we just successfully loaded
+    m_mouseFile = mouseFile;
 
     // Return success
     return success;
 }
 
-bool Mouse::isInitialized() const {
-    return m_isInitialized;
+QString Mouse::getMouseFile() const {
+    return m_mouseFile;
+}
+
+void Mouse::reset() {
+    teleport(
+        getInitialTranslation(),
+        DIRECTION_TO_ANGLE.value(m_startingDirection)
+    );
+    m_startedDirection = m_startingDirection;
+}
+
+void Mouse::teleport(const Coordinate& translation, const Angle& rotation) {
+    m_currentTranslation = translation;
+    m_currentRotation = rotation;
+}
+
+Direction Mouse::getStartedDirection() const {
+    return m_startedDirection;
 }
 
 Cartesian Mouse::getInitialTranslation() const {
     return m_initialTranslation;
-}
-
-Radians Mouse::getInitialRotation() const {
-    return m_initialRotation;
 }
 
 Cartesian Mouse::getCurrentTranslation() const {
@@ -152,11 +166,6 @@ Direction Mouse::getCurrentDiscretizedRotation() const {
         case 3:
             return Direction::SOUTH;
     }
-}
-
-void Mouse::teleport(const Coordinate& translation, const Angle& rotation) {
-    m_currentTranslation = translation;
-    m_currentRotation = rotation;
 }
 
 Polygon Mouse::getCurrentBodyPolygon(
@@ -298,6 +307,10 @@ RadiansPerSecond Mouse::getWheelMaxSpeed(const QString& name) const {
     return m_wheels.value(name).getMaxAngularVelocityMagnitude();
 }
 
+void Mouse::setStartingDirection(Direction direction) {
+    m_startingDirection = direction;
+}
+
 void Mouse::setWheelSpeeds(const QMap<QString, RadiansPerSecond>& wheelSpeeds) {
     m_updateMutex.lock();
     for (const auto& pair : ContainerUtilities::items(wheelSpeeds)) {
@@ -378,11 +391,13 @@ RadiansPerSecond Mouse::readGyro() const {
     return m_currentGyro;
 }
 
-Polygon Mouse::getCurrentPolygon(const Polygon& initialPolygon,
-        const Cartesian& currentTranslation, const Radians& currentRotation) const {
+Polygon Mouse::getCurrentPolygon(
+        const Polygon& initialPolygon,
+        const Cartesian& currentTranslation,
+        const Radians& currentRotation) const {
     return initialPolygon
         .translate(currentTranslation - getInitialTranslation())
-        .rotateAroundPoint(currentRotation - getInitialRotation(), currentTranslation);
+        .rotateAroundPoint(currentRotation - m_initialRotation, currentTranslation);
 }
 
 QPair<Cartesian, Radians> Mouse::getCurrentSensorPositionAndDirection(
@@ -390,7 +405,7 @@ QPair<Cartesian, Radians> Mouse::getCurrentSensorPositionAndDirection(
         const Cartesian& currentTranslation,
         const Radians& currentRotation) const {
     Cartesian translationDelta = currentTranslation - getInitialTranslation();
-    Radians rotationDelta = currentRotation - getInitialRotation();
+    Radians rotationDelta = currentRotation - m_initialRotation;
     return {
         GeometryUtilities::rotateVertexAroundPoint(
             GeometryUtilities::translateVertex(
@@ -452,7 +467,7 @@ QMap<QString, WheelEffect> Mouse::getWheelEffects(
 
     QMap<QString, WheelEffect> wheelEffects;
 
-    for (const auto& pair : ContainerUtilities::items(m_wheels)) {
+    for (const auto& pair : ContainerUtilities::items(wheels)) {
         wheelEffects.insert(
             pair.first,
             WheelEffect(
@@ -483,7 +498,7 @@ QMap<QString, QPair<double, double>> Mouse::getWheelSpeedAdjustmentFactors(
     QMap<QString, QPair<MetersPerSecond, RadiansPerSecond>> ratesOfChangePairs;
     for (const auto& pair : ContainerUtilities::items(wheelEffects)) {
         std::tuple<MetersPerSecond, MetersPerSecond, RadiansPerSecond> effects =
-            pair.second.getEffects(m_wheels.value(pair.first).getMaxAngularVelocityMagnitude());
+            pair.second.getEffects(wheels.value(pair.first).getMaxAngularVelocityMagnitude());
         ratesOfChangePairs.insert(
             pair.first,
             {

@@ -17,7 +17,7 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    MainWindow(mms::View* view, QWidget *parent = 0);
+    MainWindow(View* view, QWidget *parent = 0);
     ~MainWindow();
 
 protected:

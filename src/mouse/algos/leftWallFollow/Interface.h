@@ -11,7 +11,7 @@ public:
     // Static options (must be set at the beginning)
     void setMouseFile(const std::string& mouseFile);
     void setInterfaceType(const std::string& interfaceType);
-    void setInitialDirection(const std::string& initialDirection);
+    void setInitialDirection(char initialDirection);
     void setTileTextNumberOfRows(int tileTextNumberOfRows);
     void setTileTextNumberOfCols(int tileTextNumberOfCols);
     void setWheelSpeedFraction(double wheelSpeedFraction);

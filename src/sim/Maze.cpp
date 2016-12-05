@@ -107,7 +107,7 @@ int Maze::getWidth() const {
 }
 
 int Maze::getHeight() const {
-    return (m_maze.size() > 0 ? m_maze.at(0).size() : 0);
+    return (0 < m_maze.size() ? m_maze.at(0).size() : 0);
 }
 
 bool Maze::withinMaze(int x, int y) const {
@@ -134,6 +134,17 @@ bool Maze::isOfficialMaze() const {
 
 bool Maze::isCenterTile(int x, int y) const {
     return MazeChecker::getCenterTiles(getWidth(), getHeight()).contains({x, y});
+}
+
+Direction Maze::getOptimalStartingDirection() const {
+    if (getHeight() == 0) {
+        return Direction::NORTH;
+    }
+    if (getTile(0, 0)->isWall(Direction::NORTH) &&
+        !getTile(0, 0)->isWall(Direction::EAST)) {
+        return Direction::EAST;
+    }
+    return Direction::NORTH;
 }
 
 QVector<QVector<Tile>> Maze::initializeFromBasicMaze(const BasicMaze& basicMaze) {

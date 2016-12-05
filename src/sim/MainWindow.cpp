@@ -6,12 +6,12 @@
 
 namespace mms {
 
-MainWindow::MainWindow(mms::View* view, QWidget *parent) :
+MainWindow::MainWindow(View* view, QWidget *parent) :
     QMainWindow(parent),
     m_view(view),
     ui(new Ui::MainWindow) {
     ui->setupUi(this);
-    ui->m_openGlWidgetContainer->addWidget(view);
+    ui->mapContainer->addWidget(view);
 }
 
 MainWindow::~MainWindow() {

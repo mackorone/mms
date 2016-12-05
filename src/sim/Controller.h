@@ -51,17 +51,9 @@ private:
     // Whether or not the static options have been finalized
     bool m_staticOptionsFinalized;
 
-    Direction getInitialDirection(
-        const QString& initialDirection,
-        Model* model);
-
     void validateMouseInterfaceType(
         const QString& mouseAlgorithm,
         const QString& interfaceType);
-
-    void validateMouseInitialDirection(
-        const QString& mouseAlgorithm,
-        const QString& initialDirection);
 
     void validateTileTextRowsAndCols(
         const QString& mouseAlgorithm,
@@ -76,7 +68,6 @@ private:
         const QString& mouseAlgorithm,
         const QString& mouseFile,
         const QString& interfaceType,
-        const QString& initialDirection,
         Model* model);
 
 };

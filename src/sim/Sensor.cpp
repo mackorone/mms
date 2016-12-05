@@ -92,6 +92,8 @@ Polygon Sensor::getViewPolygon(
         const Radians& currentDirection,
         const Maze& maze) const {
 
+    // TODO: MACK - this can be deduped with getCurrentViewPolygon
+
     // Calling this function causes triangulation of a polygon
 
     static Meters halfWallWidth = Meters(P()->wallWidth() / 2.0);

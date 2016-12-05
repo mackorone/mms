@@ -12,9 +12,6 @@
 
 namespace mms {
 
-static const QString& OPENING_DIRECTION_STRING = "OPENING";
-static const QString& WALL_DIRECTION_STRING = "WALL";
-
 Controller::Controller(Model* model, View* view, const QString& mouseAlgorithm) :
         m_model(model),
         m_view(view),
@@ -40,6 +37,7 @@ void Controller::init() {
     );
 
 
+    // TODO: MACK - eventually remove this
     // Wait until static options have been finalized
     while (!m_staticOptionsFinalized) {
         SimUtilities::sleep(Milliseconds(1));
@@ -54,10 +52,6 @@ void Controller::init() {
         m_mouseAlgorithm,
         m_staticOptions.interfaceType
     );
-    validateMouseInitialDirection(
-        m_mouseAlgorithm,
-        m_staticOptions.initialDirection
-    );
     validateTileTextRowsAndCols(
         m_mouseAlgorithm,
         m_staticOptions.tileTextNumberOfRows,
@@ -66,15 +60,6 @@ void Controller::init() {
     validateMouseWheelSpeedFraction(
         m_mouseAlgorithm,
         m_staticOptions.wheelSpeedFraction
-    );
-
-    // Initialize the mouse object
-    initAndValidateMouse(
-        m_mouseAlgorithm,
-        m_staticOptions.mouseFile,
-        m_staticOptions.interfaceType,
-        m_staticOptions.initialDirection,
-        m_model
     );
 
     // Initialize the mouse interface
@@ -159,7 +144,8 @@ QString Controller::processCommand(const QString& command) {
 
     // TODO: We don't need static config - we can just update the values as we get them
     if (function == "setMouseFile") {
-        m_staticOptions.mouseFile = tokens.at(1);
+        // TODO: MACK - should I do something with success/failure flag?
+        m_mouseInterface->setMouseFile(tokens.at(1));
         return ACK_STRING;
     }
     else if (function == "setInterfaceType") {
@@ -167,7 +153,8 @@ QString Controller::processCommand(const QString& command) {
         return ACK_STRING;
     }
     else if (function == "setInitialDirection") {
-        m_staticOptions.initialDirection = tokens.at(1);
+        char direction = SimUtilities::strToChar(tokens.at(1));
+        m_mouseInterface->setStartingDirection(direction);
         return ACK_STRING;
     }
     else if (function == "setTileTextNumberOfRows") {
@@ -234,11 +221,7 @@ QString Controller::processCommand(const QString& command) {
         return QString::number(m_model->getMaze()->isOfficialMaze());
     }
     else if (function == "initialDirection") {
-        Direction initialDirection = getInitialDirection(
-            m_staticOptions.initialDirection,
-            m_model
-        );
-        return QString(QChar(DIRECTION_TO_CHAR.value(initialDirection)));
+        return QString(QChar(m_mouseInterface->getStartedDirection()));
     }
     else if (function == "getRandomFloat") {
         return QString::number(m_mouseInterface->getRandom());
@@ -564,27 +547,6 @@ void Controller::validateMouseInterfaceType(
     }
 }
 
-void Controller::validateMouseInitialDirection(
-        const QString& mouseAlgorithm, const QString& initialDirection) {
-    if (!(
-        STRING_TO_DIRECTION.contains(initialDirection)
-        || initialDirection == OPENING_DIRECTION_STRING
-        || initialDirection == WALL_DIRECTION_STRING
-    )) {
-        qCritical().noquote().nospace()
-            << "\"" << initialDirection << "\" is not a valid initial"
-            << " direction. You must declare the initial direction of the mouse"
-            << " algorithm \"" << mouseAlgorithm << "\" to be one of \""
-            << DIRECTION_TO_STRING.value(Direction::NORTH) << "\", \""
-            << DIRECTION_TO_STRING.value(Direction::EAST) << "\", \""
-            << DIRECTION_TO_STRING.value(Direction::SOUTH) << "\", \""
-            << DIRECTION_TO_STRING.value(Direction::WEST) << "\", \""
-            << OPENING_DIRECTION_STRING << "\", or \""
-            << WALL_DIRECTION_STRING << "\".";
-        SimUtilities::quit();
-    }
-}
-
 void Controller::validateTileTextRowsAndCols(
     const QString& mouseAlgorithm,
     int tileTextNumberOfRows, int tileTextNumberOfCols) {
@@ -610,55 +572,4 @@ void Controller::validateMouseWheelSpeedFraction(
     }
 }
 
-void Controller::initAndValidateMouse(
-        const QString& mouseAlgorithm,
-        const QString& mouseFile,
-        const QString& interfaceType,
-        const QString& initialDirection,
-        Model* model) {
-
-    // Initialize the mouse with the file provided
-    Direction direction = getInitialDirection(initialDirection, model);
-    bool success = model->getMouse()->initialize(mouseFile, direction);
-    if (!success) {
-        qCritical().noquote().nospace()
-            << "Unable to successfully initialize the mouse in the algorithm \""
-            << mouseAlgorithm << "\" from \"" << mouseFile << "\".";
-        SimUtilities::quit();
-    }
-
-    // Validate the mouse
-    if (STRING_TO_INTERFACE_TYPE.value(interfaceType) == InterfaceType::DISCRETE) {
-        if (!MouseChecker::isDiscreteInterfaceCompatible(*model->getMouse())) {
-            qCritical().noquote().nospace()
-                << "The mouse file \"" << mouseFile << "\" is not discrete"
-                << " interface compatible.";
-            SimUtilities::quit();
-        }
-    }
-    else { // InterfaceType::CONTINUOUS
-        if (!MouseChecker::isContinuousInterfaceCompatible(*model->getMouse())) {
-            qCritical().noquote().nospace()
-                << "The mouse file \"" << mouseFile << "\" is not continuous"
-                << " interface compatible.";
-            SimUtilities::quit();
-        }
-    }
-}
-
-Direction Controller::getInitialDirection(const QString& initialDirection, Model* model) {
-    bool wallNorth = model->getMaze()->getTile(0, 0)->isWall(Direction::NORTH);
-    bool wallEast = model->getMaze()->getTile(0, 0)->isWall(Direction::EAST);
-    if (!STRING_TO_DIRECTION.contains(initialDirection) && wallNorth == wallEast) {
-        return Direction::NORTH;
-    }
-    if (initialDirection == OPENING_DIRECTION_STRING) {
-        return (wallNorth ? Direction::EAST : Direction::NORTH);
-    }
-    if (initialDirection == WALL_DIRECTION_STRING) {
-        return (wallNorth ? Direction::NORTH : Direction::EAST);
-    }
-    return STRING_TO_DIRECTION.value(initialDirection);
-}
-        
 } // namespace mms
