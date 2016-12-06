@@ -1,4 +1,4 @@
-#include "View.h"
+#include "Map.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -20,7 +20,7 @@
 
 namespace mms {
 
-View::View(Model* model, QWidget* parent) :
+Map::Map(Model* model, QWidget* parent) :
         QOpenGLWidget(parent),
         m_model(model) {
 
@@ -38,8 +38,8 @@ View::View(Model* model, QWidget* parent) :
 
     // Ensure that we continuously refresh the widget
 	connect(
-        this, &View::frameSwapped,
-        this, static_cast<void (View::*)()>(&View::update)
+        this, &Map::frameSwapped,
+        this, static_cast<void (Map::*)()>(&Map::update)
     );
 
     // TODO: MACK
@@ -49,19 +49,19 @@ View::View(Model* model, QWidget* parent) :
     initTileGraphicText(2, 4);
 }
 
-MazeGraphic* View::getMazeGraphic() {
+MazeGraphic* Map::getMazeGraphic() {
     return m_mazeGraphic;
 }
 
-MouseGraphic* View::getMouseGraphic() {
+MouseGraphic* Map::getMouseGraphic() {
     return m_mouseGraphic;
 }
 
-QSet<QChar> View::getAllowableTileTextCharacters() {
+QSet<QChar> Map::getAllowableTileTextCharacters() {
     return QSet<QChar>::fromList(m_fontImageMap.keys());
 }
 
-void View::initTileGraphicText(int numRows, int numCols) {
+void Map::initTileGraphicText(int numRows, int numCols) {
 
     // Initialze the tile text in the buffer class, do caching for speed improvement
     m_bufferInterface->initTileGraphicText(
@@ -78,7 +78,7 @@ void View::initTileGraphicText(int numRows, int numCols) {
     m_mazeGraphic->drawTextures();
 }
 
-QVector<QString> View::getOpenGLVersionInfo() {
+QVector<QString> Map::getOpenGLVersionInfo() {
     static QVector<QString> openGLVersionInfo;
     if (openGLVersionInfo.empty()) {
         QString glType = context()->isOpenGLES() ? "OpenGL ES" : "OpenGL";
@@ -101,11 +101,11 @@ QVector<QString> View::getOpenGLVersionInfo() {
 }
 
 // TODO: MACK
-BufferInterface* View::getBufferInterface() {
+BufferInterface* Map::getBufferInterface() {
     return m_bufferInterface;
 }
 
-void View::initOpenGLLogger() {
+void Map::initOpenGLLogger() {
     if (m_openGLLogger.initialize()) {
         m_openGLLogger.startLogging(QOpenGLDebugLogger::SynchronousLogging);
         m_openGLLogger.enableMessages();
@@ -117,7 +117,7 @@ void View::initOpenGLLogger() {
     }
 }
 
-void View::initializeGL() {
+void Map::initializeGL() {
 
     // Contains all initialization that requires an OpenGL context
 
@@ -138,7 +138,7 @@ void View::initializeGL() {
     initTextureProgram();
 }
 
-void View::paintGL() {
+void Map::paintGL() {
 
     // In order to ensure we're sleeping the correct amount of time, we time
     // the drawing operation and take it into account when we sleep.
@@ -237,13 +237,13 @@ void View::paintGL() {
     SimUtilities::sleep(Seconds(std::max(0.0, 1.0/P()->frameRate() - duration)));
 }
 
-void View::resizeGL(int width, int height) {
+void Map::resizeGL(int width, int height) {
     m_windowWidth = width;
     m_windowHeight = height;
     m_header->updateWindowSize(width, height);
 }
 
-void View::initPolygonProgram() {
+void Map::initPolygonProgram() {
 
 	m_polygonProgram.addShaderFromSourceCode(
 		QOpenGLShader::Vertex,
@@ -300,7 +300,7 @@ void View::initPolygonProgram() {
 	m_polygonProgram.release();
 }
 
-void View::initTextureProgram() {
+void Map::initTextureProgram() {
 
 	m_textureProgram.addShaderFromSourceCode(
 		QOpenGLShader::Vertex,
@@ -370,7 +370,7 @@ void View::initTextureProgram() {
 }
 
 // TODO: MACK - move this somewhere else
-QMap<QChar, QPair<double, double>> View::getFontImageMap() {
+QMap<QChar, QPair<double, double>> Map::getFontImageMap() {
 
     // These values must perfectly reflect the font image being used, or else
     // the wrong characters will be displayed on the tiles.
@@ -396,7 +396,7 @@ QMap<QChar, QPair<double, double>> View::getFontImageMap() {
     return fontImageMap;
 }
 
-void View::repopulateVertexBufferObjects() {
+void Map::repopulateVertexBufferObjects() {
 
     // Overwrite the polygon vertex buffer object data
     m_polygonVBO.bind();
@@ -415,7 +415,7 @@ void View::repopulateVertexBufferObjects() {
     m_textureVBO.release();
 }
 
-void View::drawFullAndZoomedMaps(
+void Map::drawFullAndZoomedMaps(
         const Coordinate& currentMouseTranslation,
         const Angle& currentMouseRotation,
         QOpenGLShaderProgram* program,

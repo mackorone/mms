@@ -1,5 +1,7 @@
 # High Priority
 
+- Clean up View
+- Kill Layout
 - Run mouse algorithms as separate process
     - Make continuous algos possible
     - Do some cleanup here

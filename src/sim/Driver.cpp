@@ -18,7 +18,7 @@
 #include "SimUtilities.h"
 #include "State.h"
 #include "Time.h"
-#include "View.h"
+#include "Map.h"
 #include "units/Milliseconds.h"
 
 namespace mms {
@@ -59,12 +59,12 @@ int Driver::drive(int argc, char* argv[]) {
 
     // TODO: MACK - clean this up
 
-    // Initialize the model and view
+    // Initialize the model and map
     Model* model = new Model();
-    View* view = new View(model);
+    Map* map = new Map(model);
 
     // Initialize the controllerManager, which starts the algorithm
-    ControllerManager* controllerManager = new ControllerManager(model, view);
+    ControllerManager* controllerManager = new ControllerManager(model, map);
     controllerManager->spawnMouseAlgo(P()->mouseAlgorithm());
 
     // TODO: MACK - this could be on the same thread as the graphics loop
@@ -74,7 +74,7 @@ int Driver::drive(int argc, char* argv[]) {
     });
 
     // TODO: MACK -- create the main window
-    MainWindow w(view);
+    MainWindow w(map);
     w.show();
     // TODO: MACK
 

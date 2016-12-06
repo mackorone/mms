@@ -6,12 +6,12 @@
 
 namespace mms {
 
-MainWindow::MainWindow(View* view, QWidget *parent) :
+MainWindow::MainWindow(Map* map, QWidget *parent) :
     QMainWindow(parent),
-    m_view(view),
+    m_map(map),
     ui(new Ui::MainWindow) {
     ui->setupUi(this);
-    ui->mapContainer->addWidget(view);
+    ui->mapContainer->addWidget(map);
 }
 
 MainWindow::~MainWindow() {
@@ -104,27 +104,27 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
     else if (key == Qt::Key_T) {
         // Toggle wall truth visibility
         S()->setWallTruthVisible(!S()->wallTruthVisible());
-        m_view->getMazeGraphic()->updateWalls();
+        m_map->getMazeGraphic()->updateWalls();
     }
     else if (key == Qt::Key_C) {
         // Toggle tile colors
         S()->setTileColorsVisible(!S()->tileColorsVisible());
-        m_view->getMazeGraphic()->updateColor();
+        m_map->getMazeGraphic()->updateColor();
     }
     else if (key == Qt::Key_G) {
         // Toggle tile fog
         S()->setTileFogVisible(!S()->tileFogVisible());
-        m_view->getMazeGraphic()->updateFog();
+        m_map->getMazeGraphic()->updateFog();
     }
     else if (key == Qt::Key_X) {
         // Toggle tile text
         S()->setTileTextVisible(!S()->tileTextVisible());
-        m_view->getMazeGraphic()->updateText();
+        m_map->getMazeGraphic()->updateText();
     }
     else if (key == Qt::Key_D) {
         // Toggle tile distance visibility
         S()->setTileDistanceVisible(!S()->tileDistanceVisible());
-        m_view->getMazeGraphic()->updateText();
+        m_map->getMazeGraphic()->updateText();
     }
     else if (key == Qt::Key_H) {
         // Toggle header visibility
@@ -167,7 +167,7 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
 
 // TODO: MACK
 /*
-void View::specialKeyPress(int key, int x, int y) {
+void Map::specialKeyPress(int key, int x, int y) {
     if (!INT_TO_KEY.contains(key)) {
         return;
     }
@@ -176,7 +176,7 @@ void View::specialKeyPress(int key, int x, int y) {
     }
 }
 
-void View::specialKeyRelease(int key, int x, int y) {
+void Map::specialKeyRelease(int key, int x, int y) {
     if (!INT_TO_KEY.contains(key)) {
         return;
     }

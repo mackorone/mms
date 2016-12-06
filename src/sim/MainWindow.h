@@ -4,7 +4,7 @@
 #include <QMainWindow>
 
 // TODO: MACK - rename this, it can just be class declaration
-#include "View.h"
+#include "Map.h"
 
 namespace Ui {
 class MainWindow;
@@ -17,14 +17,14 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    MainWindow(View* view, QWidget *parent = 0);
+    MainWindow(Map* map, QWidget *parent = 0);
     ~MainWindow();
 
 protected:
     void keyPressEvent(QKeyEvent* event);
 
 private:
-    View* m_view;
+    Map* m_map;
     Ui::MainWindow *ui;
 
 };

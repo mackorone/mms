@@ -10,14 +10,14 @@
 namespace mms {
 
 class Model;
-class View;
+class Map;
 
 class Controller : public QObject {
 
     Q_OBJECT
 
 public:
-    Controller(Model* model, View* view, const QString& mouseAlgorithm);
+    Controller(Model* model, Map* map, const QString& mouseAlgorithm);
 
     StaticMouseAlgorithmOptions getStaticOptions();
     DynamicMouseAlgorithmOptions getDynamicOptions();
@@ -31,7 +31,7 @@ public slots:
 private:
 
     Model* m_model;
-    View* m_view;
+    Map* m_map;
 
     QString m_mouseAlgorithm;
 

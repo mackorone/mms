@@ -8,6 +8,8 @@ namespace mms {
 
 class Layout {
 
+    // TODO: MACK - kill this
+
 public:
 
     // This class is not constructible
