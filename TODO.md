@@ -4,6 +4,7 @@
     - Make continuous algos possible
     - Do some cleanup here
     - Deprecate static algo options (and maybe even dynamic ones too!)
+- Fix collision detection
 - Fix .maz file loading
 - Fix wireframe mode
 - Make GUI

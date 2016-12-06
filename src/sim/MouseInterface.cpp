@@ -742,7 +742,7 @@ void MouseInterface::setTileTextImpl(int x, int y, const QString& text) {
     int numRows = maxSize.first;
     int numCols = maxSize.second;
 
-    // TODO: MACK - use QString left() to clean this up
+    // TODO: MACK - use QString left() to clean this up - this should just be in the updateText function anyways
     while (row < numRows && index < text.size()) {
         QString rowOfText;
         while (index < (row + 1) * numCols && index < text.size()) {

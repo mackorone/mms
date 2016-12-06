@@ -108,7 +108,6 @@ void TileGraphic::drawTextures() {
     }
     m_rowsOfText = newRowsOfText;
     
-    
     // Insert all of the triangle texture objects into the buffer ...
     for (int row = 0; row < maxRowsAndCols.first; row += 1) {
         for (int col = 0; col < maxRowsAndCols.second; col += 1) {

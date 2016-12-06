@@ -57,8 +57,7 @@ int Driver::drive(int argc, char* argv[]) {
     // Remove any excessive archived runs
     SimUtilities::removeExcessArchivedRuns();
 
-    /////////////////////////////////////////
-    // TODO: MACK - clean this up a little bit
+    // TODO: MACK - clean this up
 
     // Initialize the model and view
     Model* model = new Model();
@@ -67,11 +66,6 @@ int Driver::drive(int argc, char* argv[]) {
     // Initialize the controllerManager, which starts the algorithm
     ControllerManager* controllerManager = new ControllerManager(model, view);
     controllerManager->spawnMouseAlgo(P()->mouseAlgorithm());
-
-    // TODO: MACK - kill this...
-    // model->getWorld()->setOptions(
-    //     controllerManager->getStaticOptions()
-    // );
 
     // TODO: MACK - this could be on the same thread as the graphics loop
     // Start the physics loop

@@ -17,17 +17,13 @@
 namespace mms {
 
 World::World(
-        const Maze* maze,
-        Mouse* mouse) :
-        m_maze(maze),
-        m_mouse(mouse),
-        m_bestTimeToCenter(Seconds(-1)),
-        m_timeOfOriginDeparture(Seconds(-1)),
-        m_closestDistanceToCenter(-1) {
-}
-
-void World::setOptions(StaticMouseAlgorithmOptions options) {
-    m_options = options;
+    const Maze* maze,
+    Mouse* mouse) :
+    m_maze(maze),
+    m_mouse(mouse),
+    m_bestTimeToCenter(Seconds(-1)),
+    m_timeOfOriginDeparture(Seconds(-1)),
+    m_closestDistanceToCenter(-1) {
 }
 
 Seconds World::getBestTimeToCenter() const {
@@ -170,8 +166,9 @@ void World::checkCollision() {
         return;
     }
 
+    // TODO: MACK
     // If the interface type is DISCRETE, let this thread exit
-    if (STRING_TO_INTERFACE_TYPE.value(m_options.interfaceType) == InterfaceType::DISCRETE) {
+    if (true) {
         return;
     }
 

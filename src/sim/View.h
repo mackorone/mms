@@ -22,7 +22,9 @@
 
 namespace mms {
 
-// TODO: MACK - break out the buffers into a separate class, call it View
+// TODO: MACK - break out the buffers into a separate class, call it MouseView (or something)
+
+// TODO: MACK View class should be renamed to Map
 
 // Inheriting from QOpenGLFunctions allows us to call the gl functions directly
 class View : public QOpenGLWidget, protected QOpenGLFunctions {
@@ -41,7 +43,7 @@ public:
 
     QVector<QString> getOpenGLVersionInfo();
 
-    // TODO: MACK
+    // TODO: MACK - we shouldn't have to expose this
     BufferInterface* getBufferInterface();
 
 protected:
@@ -66,8 +68,8 @@ private:
 
     // The model and graphic objects
     Model* m_model;
-    MazeGraphic* m_mazeGraphic;
-    MouseGraphic* m_mouseGraphic;
+    MazeGraphic* m_mazeGraphic; // TODO: MACK - doesn't need to be in here
+    MouseGraphic* m_mouseGraphic; // TODO: MACK - doesn't need to be in here
 
     // The window size, in pixels
     int m_windowWidth;
