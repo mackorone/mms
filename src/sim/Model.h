@@ -9,13 +9,17 @@ namespace mms {
 class Model {
 
 public:
+
     Model();
-    // TODO: MACK - const?
-    Maze* getMaze();
+
+    const Maze* getMaze() const;
+    const Mouse* getMouse() const;
+
     Mouse* getMouse();
     World* getWorld();
 
 private:
+
     Maze* m_maze;
     Mouse* m_mouse;
     World* m_world;

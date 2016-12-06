@@ -3,7 +3,7 @@
 #include <QKeyEvent>
 #include <QMainWindow>
 
-// TODO: MACK - rename this, it can just be class declaration
+#include "Lens.h"
 #include "Map.h"
 
 namespace Ui {
@@ -17,14 +17,14 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    MainWindow(Map* map, QWidget *parent = 0);
+    MainWindow(Lens* lens, Map* map, QWidget *parent = 0);
     ~MainWindow();
 
 protected:
     void keyPressEvent(QKeyEvent* event);
 
 private:
-    Map* m_map;
+    Lens* m_lens;
     Ui::MainWindow *ui;
 
 };

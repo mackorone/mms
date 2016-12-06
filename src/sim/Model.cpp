@@ -8,8 +8,12 @@ Model::Model() {
     m_world = new World(m_maze, m_mouse);
 }
 
-Maze* Model::getMaze() {
+const Maze* Model::getMaze() const {
     return m_maze;
+}
+
+const Mouse* Model::getMouse() const {
+    return m_mouse;
 }
 
 Mouse* Model::getMouse() {

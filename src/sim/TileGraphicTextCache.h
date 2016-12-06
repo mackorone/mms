@@ -18,7 +18,6 @@ public:
         const Distance& wallLength,
         const Distance& wallWidth,
         QPair<int, int> tileGraphicTextMaxSize,
-        const QMap<QChar, QPair<double, double>>& fontImageMap,
         double borderFraction,
         TileTextAlignment tiletextAlignment);
 
@@ -40,10 +39,6 @@ private:
 
     // The max rows and cols of text per tile
     QPair<int, int> m_tileGraphicTextMaxSize;
-
-    // A map of char to the starting and ending horizontal positions (fraction
-    // from 0.0 to 1.0) in the font image
-    QMap<QChar, QPair<double, double>> m_fontImageMap;
 
     // A map of the number of rows/cols to be displayed and the current row/col
     // to the LL/UR text coordinates for the starting tile, namely tile (0, 0)

@@ -4,8 +4,8 @@
 #include <QThread>
 #include <QVector>
 
+#include "Lens.h"
 #include "Model.h"
-#include "Map.h"
 #include "Controller.h"
 
 namespace mms {
@@ -16,14 +16,14 @@ class ControllerManager : public QObject {
 
 public:
 
-    ControllerManager(Model* model, Map* map);
+    ControllerManager(Model* model, Lens* lens);
     void spawnMouseAlgo(const QString& mouseAlgorithm);
 
 private:
 
-    // The model and map, which we pass to each controller
+    // The model and lens, which we pass to each controller
     Model* m_model;
-    Map* m_map;
+    Lens* m_lens;
 
     // A list of controllers and the threads they're running on
     QVector<QPair<Controller*, QThread*>> m_controllers;

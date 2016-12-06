@@ -4,20 +4,19 @@
 #include <QProcess>
 
 #include "DynamicMouseAlgorithmOptions.h"
+#include "Lens.h"
+#include "Model.h"
 #include "MouseInterface.h"
 #include "StaticMouseAlgorithmOptions.h"
 
 namespace mms {
-
-class Model;
-class Map;
 
 class Controller : public QObject {
 
     Q_OBJECT
 
 public:
-    Controller(Model* model, Map* map, const QString& mouseAlgorithm);
+    Controller(Model* model, Lens* lens, const QString& mouseAlgorithm);
 
     StaticMouseAlgorithmOptions getStaticOptions();
     DynamicMouseAlgorithmOptions getDynamicOptions();
@@ -31,7 +30,7 @@ public slots:
 private:
 
     Model* m_model;
-    Map* m_map;
+    Lens* m_lens;
 
     QString m_mouseAlgorithm;
 

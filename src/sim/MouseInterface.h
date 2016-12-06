@@ -30,7 +30,6 @@ public:
         Mouse* mouse,
         MazeGraphic* mazeGraphic,
         Controller* controller,
-        QSet<QChar> allowableTileTextCharacters,
         BufferInterface* bufferInterface); // TODO: MACK
 
     // ----- Any interface methods ----- //
@@ -150,7 +149,6 @@ private:
     Mouse* m_mouse;
     MazeGraphic* m_mazeGraphic;
     Controller* m_controller;
-    QSet<QChar> m_allowableTileTextCharacters;
 
     // TODO: MACK
     BufferInterface* m_bufferInterface;

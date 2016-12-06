@@ -10,6 +10,7 @@
 #include "Assert.h"
 #include "ControllerManager.h"
 #include "Directory.h"
+#include "FontImage.h"
 #include "Logging.h"
 #include "MainWindow.h"
 #include "Model.h"
@@ -37,6 +38,9 @@ int Driver::drive(int argc, char* argv[]) {
     // Initialize the Screen object
     Screen::init();
 
+    // Initialize the FontImage object
+    FontImage::init();
+
     // Initialize the Directory object
     Directory::init(app.applicationFilePath());
 
@@ -59,12 +63,12 @@ int Driver::drive(int argc, char* argv[]) {
 
     // TODO: MACK - clean this up
 
-    // Initialize the model and map
+    // Initialize the model, lens, and map
     Model* model = new Model();
-    Map* map = new Map(model);
+    Lens* lens = new Lens(model);
 
     // Initialize the controllerManager, which starts the algorithm
-    ControllerManager* controllerManager = new ControllerManager(model, map);
+    ControllerManager* controllerManager = new ControllerManager(model, lens);
     controllerManager->spawnMouseAlgo(P()->mouseAlgorithm());
 
     // TODO: MACK - this could be on the same thread as the graphics loop
@@ -74,7 +78,8 @@ int Driver::drive(int argc, char* argv[]) {
     });
 
     // TODO: MACK -- create the main window
-    MainWindow w(map);
+    Map* map = new Map(model, lens);
+    MainWindow w(lens, map);
     w.show();
     // TODO: MACK
 

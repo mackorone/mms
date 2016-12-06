@@ -6,9 +6,9 @@
 
 namespace mms {
 
-MainWindow::MainWindow(Map* map, QWidget *parent) :
+MainWindow::MainWindow(Lens* lens, Map* map, QWidget *parent) :
     QMainWindow(parent),
-    m_map(map),
+    m_lens(lens),
     ui(new Ui::MainWindow) {
     ui->setupUi(this);
     ui->mapContainer->addWidget(map);
@@ -104,27 +104,27 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
     else if (key == Qt::Key_T) {
         // Toggle wall truth visibility
         S()->setWallTruthVisible(!S()->wallTruthVisible());
-        m_map->getMazeGraphic()->updateWalls();
+        m_lens->getMazeGraphic()->updateWalls();
     }
     else if (key == Qt::Key_C) {
         // Toggle tile colors
         S()->setTileColorsVisible(!S()->tileColorsVisible());
-        m_map->getMazeGraphic()->updateColor();
+        m_lens->getMazeGraphic()->updateColor();
     }
     else if (key == Qt::Key_G) {
         // Toggle tile fog
         S()->setTileFogVisible(!S()->tileFogVisible());
-        m_map->getMazeGraphic()->updateFog();
+        m_lens->getMazeGraphic()->updateFog();
     }
     else if (key == Qt::Key_X) {
         // Toggle tile text
         S()->setTileTextVisible(!S()->tileTextVisible());
-        m_map->getMazeGraphic()->updateText();
+        m_lens->getMazeGraphic()->updateText();
     }
     else if (key == Qt::Key_D) {
         // Toggle tile distance visibility
         S()->setTileDistanceVisible(!S()->tileDistanceVisible());
-        m_map->getMazeGraphic()->updateText();
+        m_lens->getMazeGraphic()->updateText();
     }
     else if (key == Qt::Key_H) {
         // Toggle header visibility

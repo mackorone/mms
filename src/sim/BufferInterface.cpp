@@ -19,7 +19,6 @@ void BufferInterface::initTileGraphicText(
         const Distance& wallLength,
         const Distance& wallWidth,
         QPair<int, int> tileGraphicTextMaxSize,
-        const QMap<QChar, QPair<double, double>>& fontImageMap,
         double borderFraction,
         TileTextAlignment tileTextAlignment) {
 
@@ -27,7 +26,6 @@ void BufferInterface::initTileGraphicText(
         wallLength,
         wallWidth,
         tileGraphicTextMaxSize,
-        fontImageMap,
         borderFraction,
         tileTextAlignment
     );

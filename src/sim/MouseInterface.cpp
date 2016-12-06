@@ -12,14 +12,15 @@
 #include "units/Seconds.h"
 
 #include "Assert.h"
-#include "Color.h"
 #include "CPMath.h"
+#include "Color.h"
+#include "Controller.h"
+#include "FontImage.h"
 #include "Logging.h"
 #include "Param.h"
-#include "State.h"
 #include "SimUtilities.h"
+#include "State.h"
 #include "Time.h"
-#include "Controller.h"
 
 // TODO: MACK - send back errors to process
 // TODO: MACK - a lot of this should be lifted into Controller - maybe controller renamed to interface?
@@ -31,13 +32,11 @@ MouseInterface::MouseInterface(
         Mouse* mouse,
         MazeGraphic* mazeGraphic,
         Controller* controller,
-        QSet<QChar> allowableTileTextCharacters,
         BufferInterface* bufferInterface) : // TODO: MACK
         m_maze(maze),
         m_mouse(mouse),
         m_mazeGraphic(mazeGraphic),
         m_controller(controller),
-        m_allowableTileTextCharacters(allowableTileTextCharacters),
         m_inOrigin(true),
         m_wheelSpeedFraction(1.0),
         m_bufferInterface(bufferInterface) {
@@ -747,7 +746,7 @@ void MouseInterface::setTileTextImpl(int x, int y, const QString& text) {
         QString rowOfText;
         while (index < (row + 1) * numCols && index < text.size()) {
             QChar c = text.at(index);
-            if (m_allowableTileTextCharacters.find(c) == m_allowableTileTextCharacters.end()) { // TODO: MACK - use contains
+            if (!FontImage::get()->positions().contains(c)) {
                 qWarning().noquote().nospace()
                     << "Unable to set the tile text for unprintable character \""
                     << (c == '\n' ? "\\n" :

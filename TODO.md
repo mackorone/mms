@@ -2,6 +2,7 @@
 
 - Clean up View
 - Kill Layout
+- QVector<QString> to QStringList
 - Run mouse algorithms as separate process
     - Make continuous algos possible
     - Do some cleanup here
@@ -199,6 +200,7 @@
 
 # Clean-Up
 
+- Javadoc as much as possible
 - Use uniform syntax for Signal/slot connections
 - Rename TriangleTexture and VertexTexture
 - Rename Tile to Cell

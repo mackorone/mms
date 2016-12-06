@@ -1,19 +1,19 @@
 #include "TileGraphicTextCache.h"
 
+#include "FontImage.h"
+
 namespace mms {
 
 void TileGraphicTextCache::init(
         const Distance& wallLength,
         const Distance& wallWidth,
         QPair<int, int> tileGraphicTextMaxSize,
-        const QMap<QChar, QPair<double, double>>& fontImageMap,
         double borderFraction,
         TileTextAlignment tileTextAlignment) {
 
     m_wallLength = wallLength;
     m_wallWidth = wallWidth;
     m_tileGraphicTextMaxSize = tileGraphicTextMaxSize;
-    m_fontImageMap = fontImageMap;
     m_tileGraphicTextPositions = buildPositionCache(borderFraction, tileTextAlignment);
 }
 
@@ -22,8 +22,8 @@ QPair<int, int> TileGraphicTextCache::getTileGraphicTextMaxSize() const {
 }
 
 QPair<double, double> TileGraphicTextCache::getFontImageCharacterPosition(QChar c) const {
-    ASSERT_TR(m_fontImageMap.contains(c));
-    return m_fontImageMap.value(c);
+    ASSERT_TR(FontImage::get()->positions().contains(c));
+    return FontImage::get()->positions().value(c);
 }
 
 QPair<Cartesian, Cartesian> TileGraphicTextCache::getTileGraphicTextPosition(

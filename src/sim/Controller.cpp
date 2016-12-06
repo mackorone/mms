@@ -3,18 +3,17 @@
 #include <QCoreApplication>
 
 #include "Directory.h"
-#include "Model.h"
+#include "Logging.h"
 #include "MouseChecker.h"
 #include "Param.h"
 #include "SimUtilities.h"
-#include "Map.h"
 #include "units/Milliseconds.h"
 
 namespace mms {
 
-Controller::Controller(Model* model, Map* map, const QString& mouseAlgorithm) :
+Controller::Controller(Model* model, Lens* lens, const QString& mouseAlgorithm) :
         m_model(model),
-        m_map(map),
+        m_lens(lens),
         m_mouseAlgorithm(mouseAlgorithm),
         m_staticOptionsFinalized(false),
         m_process(nullptr) {
@@ -57,10 +56,9 @@ void Controller::init() {
     m_mouseInterface = new MouseInterface(
         m_model->getMaze(),
         m_model->getMouse(),
-        m_map->getMazeGraphic(),
+        m_lens->getMazeGraphic(),
         this,
-        m_map->getAllowableTileTextCharacters(),
-        m_map->getBufferInterface()
+        m_lens->getBufferInterface()
     );
 }
 
@@ -164,7 +162,7 @@ QString Controller::processCommand(const QString& command) {
         // }
         int rows = SimUtilities::strToInt(tokens.at(1));
         int cols = SimUtilities::strToInt(tokens.at(2));
-        m_map->initTileGraphicText(rows, cols);
+        m_lens->initTileGraphicText(rows, cols);
         return ACK_STRING;
     }
     else if (function == "setWheelSpeedFraction") {

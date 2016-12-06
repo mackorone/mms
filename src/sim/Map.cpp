@@ -1,13 +1,8 @@
 #include "Map.h"
 
-#include <QApplication>
-#include <QDebug>
-#include <QDesktopWidget>
 #include <QFile>
 #include <QPair>
 
-#include "BufferInterface.h"
-#include "ControllerManager.h"
 #include "Directory.h"
 #include "Layout.h"
 #include "Logging.h"
@@ -20,62 +15,16 @@
 
 namespace mms {
 
-Map::Map(Model* model, QWidget* parent) :
+Map::Map(const Model* model, Lens* lens, QWidget* parent) :
         QOpenGLWidget(parent),
-        m_model(model) {
-
-    // Initialize the buffer and graphics objects
-    m_bufferInterface = new BufferInterface(
-        {m_model->getMaze()->getWidth(), m_model->getMaze()->getHeight()},
-        &m_graphicCpuBuffer,
-        &m_textureCpuBuffer
-    );
-    m_mazeGraphic = new MazeGraphic(model->getMaze(), m_bufferInterface);
-    m_mouseGraphic = new MouseGraphic(model->getMouse(), m_bufferInterface);
-
-    m_fontImageMap = getFontImageMap();
-    m_header = new Header(model);
+        m_model(model),
+        m_lens(lens) {
 
     // Ensure that we continuously refresh the widget
 	connect(
         this, &Map::frameSwapped,
         this, static_cast<void (Map::*)()>(&Map::update)
     );
-
-    // TODO: MACK
-    m_mazeGraphic->drawPolygons();
-
-    // TODO: MACK - get these defaults from somewhere
-    initTileGraphicText(2, 4);
-}
-
-MazeGraphic* Map::getMazeGraphic() {
-    return m_mazeGraphic;
-}
-
-MouseGraphic* Map::getMouseGraphic() {
-    return m_mouseGraphic;
-}
-
-QSet<QChar> Map::getAllowableTileTextCharacters() {
-    return QSet<QChar>::fromList(m_fontImageMap.keys());
-}
-
-void Map::initTileGraphicText(int numRows, int numCols) {
-
-    // Initialze the tile text in the buffer class, do caching for speed improvement
-    m_bufferInterface->initTileGraphicText(
-        Meters(P()->wallLength()),
-        Meters(P()->wallWidth()),
-        {numRows, numCols},
-        m_fontImageMap,
-        P()->tileTextBorderFraction(),
-        STRING_TO_TILE_TEXT_ALIGNMENT.value(P()->tileTextAlignment()));
-
-    // TODO: MACK - this is kind of confusing
-    // - I should insert and then update (no draw method)
-    m_textureCpuBuffer.clear();
-    m_mazeGraphic->drawTextures();
 }
 
 QVector<QString> Map::getOpenGLVersionInfo() {
@@ -98,11 +47,6 @@ QVector<QString> Map::getOpenGLVersionInfo() {
         openGLVersionInfo = {glType, glVersion, glProfile};
     }
     return openGLVersionInfo;
-}
-
-// TODO: MACK
-BufferInterface* Map::getBufferInterface() {
-    return m_bufferInterface;
 }
 
 void Map::initOpenGLLogger() {
@@ -147,6 +91,7 @@ void Map::paintGL() {
     // TODO: MACK - this shouldn't be here :/
     // First, clear fog as necessary
     // if (m_controllerManager->getDynamicOptions().automaticallyClearFog) {
+    /*
     if (true) {
         // TODO: upforgrabs
         // This won't work if the mouse is traveling too quickly and travels more
@@ -155,19 +100,20 @@ void Map::paintGL() {
             m_model->getMouse()->getCurrentDiscretizedTranslation();
         m_mazeGraphic->setTileFogginess(currentPosition.first, currentPosition.second, false);
     }
+    */
 
     // Determine the starting index of the mouse
-    static const int mouseTrianglesStartingIndex = m_graphicCpuBuffer.size();
+    static const int mouseTrianglesStartingIndex = m_lens->getGraphicCpuBuffer()->size();
 
     // Get the current mouse translation and rotation
     Cartesian currentMouseTranslation = m_model->getMouse()->getCurrentTranslation();
     Radians currentMouseRotation = m_model->getMouse()->getCurrentRotation();
 
     // Make space for mouse updates and fill the CPU buffer with new mouse triangles
-    m_graphicCpuBuffer.erase(
-        m_graphicCpuBuffer.begin() + mouseTrianglesStartingIndex,
-        m_graphicCpuBuffer.end());
-    getMouseGraphic()->draw(currentMouseTranslation, currentMouseRotation);
+    m_lens->getGraphicCpuBuffer()->erase(
+        m_lens->getGraphicCpuBuffer()->begin() + mouseTrianglesStartingIndex,
+        m_lens->getGraphicCpuBuffer()->end());
+    m_lens->getMouseGraphic()->draw(currentMouseTranslation, currentMouseRotation);
 
     // Re-populate both vertex buffer objects
     repopulateVertexBufferObjects();
@@ -195,7 +141,7 @@ void Map::paintGL() {
         &m_textureProgram,
         &m_textureVAO,
         0,
-        3 * m_textureCpuBuffer.size()
+        3 * m_lens->getTextureCpuBuffer()->size()
     );
 
     // Draw the mouse
@@ -205,16 +151,12 @@ void Map::paintGL() {
         &m_polygonProgram,
         &m_polygonVAO,
         3 * mouseTrianglesStartingIndex,
-        3 * (m_graphicCpuBuffer.size() - mouseTrianglesStartingIndex)
+        3 * (m_lens->getGraphicCpuBuffer()->size() - mouseTrianglesStartingIndex)
     );
 
     // Disable scissoring so that the glClear can take effect, and so that
     // drawn text isn't clipped at all
     glDisable(GL_SCISSOR_TEST);
-
-    // Draw the window header
-    // TODO: MACK
-    // m_header->draw();
 
     // Get the duration of the drawing operation, in seconds. Note that this duration
     // is simply the total number of real seconds that have passed, which is exactly
@@ -240,7 +182,6 @@ void Map::paintGL() {
 void Map::resizeGL(int width, int height) {
     m_windowWidth = width;
     m_windowHeight = height;
-    m_header->updateWindowSize(width, height);
 }
 
 void Map::initPolygonProgram() {
@@ -354,6 +295,7 @@ void Map::initTextureProgram() {
     );
 
     // Load the bitmap texture into the texture atlas
+    // TODO: MACK - figure out how to couple this with the FontImage class
     QString tileTextFontImagePath =
         Directory::get()->getResImgsDirectory() + P()->tileTextFontImage();
     if (!QFile::exists(tileTextFontImagePath)) {
@@ -369,48 +311,24 @@ void Map::initTextureProgram() {
 	m_polygonProgram.release();
 }
 
-// TODO: MACK - move this somewhere else
-QMap<QChar, QPair<double, double>> Map::getFontImageMap() {
-
-    // These values must perfectly reflect the font image being used, or else
-    // the wrong characters will be displayed on the tiles.
-    QString fontImageChars =
-        " !\"#$%&'()*+,-./0123456789:;<=>?"
-        "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
-        "`abcdefghijklmnopqrstuvwxyz{|}~";
-
-    // Get a map of the font image characters (allowable tile text characters)
-    // to their position in the png image (a fraction from 0.0 to 1.0)
-    QMap<QChar, QPair<double, double>> fontImageMap;
-    for (int i = 0; i < fontImageChars.size(); i += 1) {
-        fontImageMap.insert(
-            fontImageChars.at(i),
-            {
-                static_cast<double>(i + 0) / static_cast<double>(fontImageChars.size()),
-                static_cast<double>(i + 1) / static_cast<double>(fontImageChars.size())
-            }
-        );
-    }
-
-    // Return the map
-    return fontImageMap;
-}
-
 void Map::repopulateVertexBufferObjects() {
+
+    // TODO: MACK - we shouldn't need literal TriangleGraphic and
+    // TriangleTexture here - these should be method calls on the lens object
 
     // Overwrite the polygon vertex buffer object data
     m_polygonVBO.bind();
 	m_polygonVBO.allocate(
-        &m_graphicCpuBuffer.front(),
-        m_graphicCpuBuffer.size() * sizeof(TriangleGraphic)
+        &(m_lens->getGraphicCpuBuffer()->front()),
+        m_lens->getGraphicCpuBuffer()->size() * sizeof(TriangleGraphic)
     );
     m_polygonVBO.release();
 
     // Overwrite the texture vertex buffer object data
     m_textureVBO.bind();
 	m_textureVBO.allocate(
-        &m_textureCpuBuffer.front(),
-        m_textureCpuBuffer.size() * sizeof(TriangleTexture)
+        &(m_lens->getTextureCpuBuffer()->front()),
+        m_lens->getTextureCpuBuffer()->size() * sizeof(TriangleTexture)
     );
     m_textureVBO.release();
 }
@@ -425,13 +343,13 @@ void Map::drawFullAndZoomedMaps(
 
     // Get the sizes and positions of each of the maps.
     QPair<int, int> fullMapPosition = Layout::getFullMapPosition(
-        m_windowWidth, m_windowHeight, m_header->getHeight(), P()->windowBorderWidth(), S()->layoutType());
+        m_windowWidth, m_windowHeight, 0, P()->windowBorderWidth(), S()->layoutType());
     QPair<int, int> fullMapSize = Layout::getFullMapSize(
-        m_windowWidth, m_windowHeight, m_header->getHeight(), P()->windowBorderWidth(), S()->layoutType());
+        m_windowWidth, m_windowHeight, 0, P()->windowBorderWidth(), S()->layoutType());
     QPair<int, int> zoomedMapPosition = Layout::getZoomedMapPosition(
-        m_windowWidth, m_windowHeight, m_header->getHeight(), P()->windowBorderWidth(), S()->layoutType());
+        m_windowWidth, m_windowHeight, 0, P()->windowBorderWidth(), S()->layoutType());
     QPair<int, int> zoomedMapSize = Layout::getZoomedMapSize(
-        m_windowWidth, m_windowHeight, m_header->getHeight(), P()->windowBorderWidth(), S()->layoutType());
+        m_windowWidth, m_windowHeight, 0, P()->windowBorderWidth(), S()->layoutType());
 
     // Get the physical size of the maze (in meters)
     double physicalMazeWidth = P()->wallWidth() + m_model->getMaze()->getWidth() * (P()->wallWidth() + P()->wallLength());

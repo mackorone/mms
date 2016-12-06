@@ -8,41 +8,25 @@
 #include <QOpenGLTexture> 
 #include <QOpenGLVertexArrayObject> 
 #include <QOpenGLWidget>
-#include <QPair>
-#include <QSet>
 #include <QVector>
 
-#include "Header.h"
-#include "MazeGraphic.h"
+#include "Lens.h"
 #include "Model.h"
-#include "MouseGraphic.h"
-#include "StaticMouseAlgorithmOptions.h"
-#include "TriangleGraphic.h"
-#include "TriangleTexture.h"
 
 namespace mms {
 
-// TODO: MACK - break out the buffers into a separate class, call it MouseView (or something)
-
-// Inheriting from QOpenGLFunctions allows us to call the gl functions directly
 class Map : public QOpenGLWidget, protected QOpenGLFunctions {
+    
+    // NOTE: Inheriting from QOpenGLFunctions allows
+    // us to call the OpenGL functions directly
 
 	Q_OBJECT
 
 public:
 
-    Map(Model* model, QWidget* parent = 0);
-
-    MazeGraphic* getMazeGraphic();
-    MouseGraphic* getMouseGraphic();
-
-    QSet<QChar> getAllowableTileTextCharacters();
-    void initTileGraphicText(int numRows, int numCols);
+    Map(const Model* model, Lens* lens, QWidget* parent = 0);
 
     QVector<QString> getOpenGLVersionInfo();
-
-    // TODO: MACK - we shouldn't have to expose this
-    BufferInterface* getBufferInterface();
 
 protected:
 
@@ -52,33 +36,20 @@ protected:
 
 private:
 
-    // Vector of OpenGL version info
-    QVector<QString> m_openglVersionInfo;
-
     // Logger of OpenGL warnings and errors
 	QOpenGLDebugLogger m_openGLLogger;
 	void initOpenGLLogger();
 
-    // CPU-side buffers and the interface to modify them
-    QVector<TriangleGraphic> m_graphicCpuBuffer;
-    QVector<TriangleTexture> m_textureCpuBuffer;
-    BufferInterface* m_bufferInterface;
+    // The maze-and-mouse model
+    const Model* m_model;
 
-    // The model and graphic objects
-    Model* m_model;
-    MazeGraphic* m_mazeGraphic; // TODO: MACK - doesn't need to be in here
-    MouseGraphic* m_mouseGraphic; // TODO: MACK - doesn't need to be in here
+    // The maze, as perceived by the mouse algo
+    // TODO: MACK - figure out how to make const
+    /* const */ Lens* m_lens;
 
     // The window size, in pixels
     int m_windowWidth;
     int m_windowHeight;
-
-    // A map from char to x and y location in the font image
-    QMap<QChar, QPair<double, double>> m_fontImageMap;
-    QMap<QChar, QPair<double, double>> getFontImageMap();
-
-    // Window header object
-    Header* m_header;
 
     // Polygon program variables
 	QOpenGLShaderProgram m_polygonProgram;
