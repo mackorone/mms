@@ -25,9 +25,7 @@ void Algo::solve(Interface* interface) {
     m_mouse = interface;
 
     // Set and finalize some options
-    m_mouse->setInitialDirection("OPENING");
-    m_mouse->setTileTextNumberOfRows(1);
-    m_mouse->setTileTextNumberOfCols(5);
+    m_mouse->setTileTextRowsAndCols(1, 5);
     m_mouse->finalizeStaticOptions();
 
 #else

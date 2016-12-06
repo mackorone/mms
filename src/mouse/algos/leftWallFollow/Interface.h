@@ -12,8 +12,7 @@ public:
     void setMouseFile(const std::string& mouseFile);
     void setInterfaceType(const std::string& interfaceType);
     void setInitialDirection(char initialDirection);
-    void setTileTextNumberOfRows(int tileTextNumberOfRows);
-    void setTileTextNumberOfCols(int tileTextNumberOfCols);
+    void setTileTextRowsAndCols(int numRows, int numCols);
     void setWheelSpeedFraction(double wheelSpeedFraction);
 
     void finalizeStaticOptions();

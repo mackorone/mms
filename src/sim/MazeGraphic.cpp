@@ -41,7 +41,7 @@ void MazeGraphic::setTileText(int x, int y, const QVector<QString>& rowsOfText) 
     m_tileGraphics[x][y].setText(rowsOfText);
 }
 
-void MazeGraphic::draw() const {
+void MazeGraphic::drawPolygons() const {
 
     // Make sure that this function is only called once
     ASSERT_RUNS_JUST_ONCE();
@@ -49,7 +49,17 @@ void MazeGraphic::draw() const {
     // Fill the GRAPHIC_CPU_BUFFER
     for (int x = 0; x < m_tileGraphics.size(); x += 1) {
         for (int y = 0; y < m_tileGraphics.at(x).size(); y += 1) {
-            m_tileGraphics.at(x).at(y).draw();
+            m_tileGraphics.at(x).at(y).drawPolygons();
+        }
+    }
+}
+
+void MazeGraphic::drawTextures() {
+    // Fill the TEXTURE_CPU_BUFFER
+    for (int x = 0; x < m_tileGraphics.size(); x += 1) {
+        for (int y = 0; y < m_tileGraphics.at(x).size(); y += 1) {
+            // m_tileGraphics.at(x).at(y).drawTextures(); // TODO: MACK
+            m_tileGraphics[x][y].drawTextures();
         }
     }
 }

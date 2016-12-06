@@ -68,24 +68,10 @@ int Driver::drive(int argc, char* argv[]) {
     ControllerManager* controllerManager = new ControllerManager(model, view);
     controllerManager->spawnMouseAlgo(P()->mouseAlgorithm());
 
-    // Initialize mouse algorithm values in the model and view
-    // TODO: MACK
-    /*
-    model->getWorld()->setOptions(
-        controllerManager->getStaticOptions()
-    );
-    */
-    view->setControllerManager(controllerManager);
-
-    // Initialize the tile text, now that the options have been set
-    view->initTileGraphicText();
-
-    // Lastly, we need to populate the graphics buffers with maze information,
-    // but only after we've initialized the tile graphic text
-    view->getMazeGraphic()->draw();
-
-    //
-    /////////////////////////////////////////
+    // TODO: MACK - kill this...
+    // model->getWorld()->setOptions(
+    //     controllerManager->getStaticOptions()
+    // );
 
     // TODO: MACK - this could be on the same thread as the graphics loop
     // Start the physics loop

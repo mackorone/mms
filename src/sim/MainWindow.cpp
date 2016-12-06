@@ -143,11 +143,15 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
         // Quit
         SimUtilities::quit();
     }
-    // TODO: MACK
-    /*
-    else if (QString("0123456789").indexOf(key) != -1) {
+    else if (
+        key == Qt::Key_0 || key == Qt::Key_1 ||
+        key == Qt::Key_2 || key == Qt::Key_3 ||
+        key == Qt::Key_4 || key == Qt::Key_5 ||
+        key == Qt::Key_6 || key == Qt::Key_7 ||
+        key == Qt::Key_8 || key == Qt::Key_9
+    ) {
         // Press an input button
-        int inputButton = QString("0123456789").indexOf(key);
+        int inputButton = key - Qt::Key_0;
         if (!S()->inputButtonWasPressed(inputButton)) {
             S()->setInputButtonWasPressed(inputButton, true);
             qInfo().noquote().nospace()
@@ -159,7 +163,6 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
                 << " acknowledged as pressed; pressing it has no effect.";
         }
     }
-    */
 }
 
 // TODO: MACK

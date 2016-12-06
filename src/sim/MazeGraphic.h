@@ -20,7 +20,10 @@ public:
     void setTileFogginess(int x, int y, bool foggy);
     void setTileText(int x, int y, const QVector<QString>& rowsOfText);
 
-    void draw() const;
+    // TODO: MACK - rename these
+    void drawPolygons() const;
+    void drawTextures();
+
     void updateColor() const;
     void updateWalls() const;
     void updateFog() const;

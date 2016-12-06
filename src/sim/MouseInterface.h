@@ -30,7 +30,8 @@ public:
         Mouse* mouse,
         MazeGraphic* mazeGraphic,
         Controller* controller,
-        QSet<QChar> allowableTileTextCharacters);
+        QSet<QChar> allowableTileTextCharacters,
+        BufferInterface* bufferInterface); // TODO: MACK
 
     // ----- Any interface methods ----- //
 
@@ -151,11 +152,14 @@ private:
     Controller* m_controller;
     QSet<QChar> m_allowableTileTextCharacters;
 
+    // TODO: MACK
+    BufferInterface* m_bufferInterface;
+
     // Whether or not the mouse has moved out the origin
     bool m_inOrigin;
 
     // A constant used to ensure that the mouse
-    // doesn't travel to fast in DISCRETE mode
+    // doesn't travel too fast in DISCRETE mode
     double m_wheelSpeedFraction;
 
     // Cache of tiles, for making clearAll methods faster

@@ -2,6 +2,8 @@
 
 #include "RGB.h"
 
+#include "Logging.h" // TODO: MACK
+
 namespace mms {
 
 BufferInterface::BufferInterface(
@@ -184,8 +186,8 @@ int BufferInterface::getTileGraphicFogStartingIndex(int x, int y) {
 }
 
 int BufferInterface::getTileGraphicTextStartingIndex(int x, int y, int row, int col) {
-    static QPair<int, int> maxRowsAndCols = getTileGraphicTextMaxSize();
-    static int triangleTexturesPerTile = 2 * maxRowsAndCols.first * maxRowsAndCols.second;
+    QPair<int, int> maxRowsAndCols = getTileGraphicTextMaxSize();
+    int triangleTexturesPerTile = 2 * maxRowsAndCols.first * maxRowsAndCols.second;
     return triangleTexturesPerTile * (m_mazeSize.second * x + y) + 2 * (row * maxRowsAndCols.second + col);
 }
 

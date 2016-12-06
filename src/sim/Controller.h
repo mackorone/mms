@@ -55,11 +55,6 @@ private:
         const QString& mouseAlgorithm,
         const QString& interfaceType);
 
-    void validateTileTextRowsAndCols(
-        const QString& mouseAlgorithm,
-        int tileTextNumberOfRows,
-        int tileTextNumberOfCols);
-
 };
 
 } // namespace mms

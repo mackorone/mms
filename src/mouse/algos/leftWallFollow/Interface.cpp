@@ -18,13 +18,8 @@ void Interface::setInitialDirection(char initialDirection) {
     READ();
 }
 
-void Interface::setTileTextNumberOfRows(int tileTextNumberOfRows) {
-    PRINT("setTileTextNumberOfRows", tileTextNumberOfRows);
-    READ();
-}
-
-void Interface::setTileTextNumberOfCols(int tileTextNumberOfCols) {
-    PRINT("setTileTextNumberOfCols", tileTextNumberOfCols);
+void Interface::setTileTextRowsAndCols(int numRows, int numCols) {
+    PRINT("setTileTextRowsAndCols", numRows, numCols);
     READ();
 }
 

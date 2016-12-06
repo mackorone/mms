@@ -22,11 +22,6 @@
 
 namespace mms {
 
-// TODO: MACK - we can get rid of this
-// We have to forward declare the class (as opposed to including it) so as to
-// avoid a circular dependency; ControllerManager.h already includes this file
-class ControllerManager;
-
 // TODO: MACK - break out the buffers into a separate class, call it View
 
 // Inheriting from QOpenGLFunctions allows us to call the gl functions directly
@@ -41,12 +36,13 @@ public:
     MazeGraphic* getMazeGraphic();
     MouseGraphic* getMouseGraphic();
 
-    void setControllerManager(ControllerManager* controllerManager);
-
     QSet<QChar> getAllowableTileTextCharacters();
-    void initTileGraphicText();
+    void initTileGraphicText(int numRows, int numCols);
 
     QVector<QString> getOpenGLVersionInfo();
+
+    // TODO: MACK
+    BufferInterface* getBufferInterface();
 
 protected:
 
@@ -83,10 +79,6 @@ private:
 
     // Window header object
     Header* m_header;
-
-	// TODO: MACK - this shouldn't be in here...
-    // Used to determine whether or not to automatically clear fog
-    ControllerManager* m_controllerManager;
 
     // Polygon program variables
 	QOpenGLShaderProgram m_polygonProgram;

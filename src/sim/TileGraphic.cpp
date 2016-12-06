@@ -16,10 +16,10 @@ TileGraphic::TileGraphic() :
 }
 
 TileGraphic::TileGraphic(const Tile* tile, BufferInterface* bufferInterface) :
-        m_tile(tile),
-        m_bufferInterface(bufferInterface),
-        m_color(STRING_TO_COLOR.value(P()->tileBaseColor())),
-        m_foggy(true) {
+    m_tile(tile),
+    m_bufferInterface(bufferInterface),
+    m_color(STRING_TO_COLOR.value(P()->tileBaseColor())),
+    m_foggy(true) {
 }
 
 bool TileGraphic::wallDeclared(Direction direction) const {
@@ -51,7 +51,7 @@ void TileGraphic::setText(const QVector<QString>& rowsOfText) {
     updateText();
 }
 
-void TileGraphic::draw() const {
+void TileGraphic::drawPolygons() const {
 
     // Note that the order in which we call insertIntoGraphicCpuBuffer
     // determines the order in which the polygons are drawn. Also note that the
@@ -85,10 +85,31 @@ void TileGraphic::draw() const {
         m_tile->getFullPolygon(),
         STRING_TO_COLOR.value(P()->tileFogColor()),
         m_foggy && S()->tileFogVisible() ? P()->tileFogAlpha() : 0.0);
+}
 
+void TileGraphic::drawTextures() {
 
-    // Insert all of the triangle texture objects into the buffer ...
+    // Get the latest tile text rows and cols
     QPair<int, int> maxRowsAndCols = m_bufferInterface->getTileGraphicTextMaxSize();
+
+    // Reformat the text into new row sizes
+    QString text = "";
+    for (const QString& row : m_rowsOfText) {
+        text += row;
+    }
+    // TODO: MACK - this should be string list
+    QVector<QString> newRowsOfText;
+    while (maxRowsAndCols.second <= text.size()) {
+        newRowsOfText.append(text.left(maxRowsAndCols.second));
+        text = text.mid(maxRowsAndCols.second);
+    }
+    if (0 < text.size()) {
+        newRowsOfText.append(text);
+    }
+    m_rowsOfText = newRowsOfText;
+    
+    
+    // Insert all of the triangle texture objects into the buffer ...
     for (int row = 0; row < maxRowsAndCols.first; row += 1) {
         for (int col = 0; col < maxRowsAndCols.second; col += 1) {
             m_bufferInterface->insertIntoTextureCpuBuffer();

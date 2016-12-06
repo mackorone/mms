@@ -52,11 +52,6 @@ void Controller::init() {
         m_mouseAlgorithm,
         m_staticOptions.interfaceType
     );
-    validateTileTextRowsAndCols(
-        m_mouseAlgorithm,
-        m_staticOptions.tileTextNumberOfRows,
-        m_staticOptions.tileTextNumberOfCols
-    );
 
     // Initialize the mouse interface
     m_mouseInterface = new MouseInterface(
@@ -64,7 +59,8 @@ void Controller::init() {
         m_model->getMouse(),
         m_view->getMazeGraphic(),
         this,
-        m_view->getAllowableTileTextCharacters()
+        m_view->getAllowableTileTextCharacters(),
+        m_view->getBufferInterface()
     );
 }
 
@@ -139,8 +135,10 @@ QString Controller::processCommand(const QString& command) {
     QString function = tokens.at(0);
 
     // TODO: We don't need static config - we can just update the values as we get them
+    // TODO: MACK - maybe just call these "update"?
     if (function == "setMouseFile") {
         // TODO: MACK - should I do something with success/failure flag?
+        // TODO: MACK - call this reload
         m_mouseInterface->setMouseFile(tokens.at(1));
         return ACK_STRING;
     }
@@ -153,14 +151,20 @@ QString Controller::processCommand(const QString& command) {
         m_mouseInterface->setStartingDirection(direction);
         return ACK_STRING;
     }
-    else if (function == "setTileTextNumberOfRows") {
-        m_staticOptions.tileTextNumberOfRows =
-            SimUtilities::strToInt(tokens.at(1));
-        return ACK_STRING;
-    }
-    else if (function == "setTileTextNumberOfCols") {
-        m_staticOptions.tileTextNumberOfCols =
-            SimUtilities::strToInt(tokens.at(1));
+    else if (function == "setTileTextRowsAndCols") {
+        // TODO: MACK - validation
+        // if (tileTextNumberOfRows < 0 || tileTextNumberOfCols < 0) {
+        //     qCritical().noquote().nospace()
+        //         << "Both tileTextNumberOfRows() and tileTextNumberOfCols() must"
+        //         << " return non-negative integers. Since they return \""
+        //         << tileTextNumberOfRows << "\" and \"" << tileTextNumberOfCols
+        //         << "\", respectively, the tile text dimensions of the mouse"
+        //         << " algorithm \"" << mouseAlgorithm << "\" are invalid.";
+        //     SimUtilities::quit();
+        // }
+        int rows = SimUtilities::strToInt(tokens.at(1));
+        int cols = SimUtilities::strToInt(tokens.at(2));
+        m_view->initTileGraphicText(rows, cols);
         return ACK_STRING;
     }
     else if (function == "setWheelSpeedFraction") {
@@ -539,20 +543,6 @@ void Controller::validateMouseInterfaceType(
             << "\" or \""
             << INTERFACE_TYPE_TO_STRING.value(InterfaceType::CONTINUOUS)
             << "\".";
-        SimUtilities::quit();
-    }
-}
-
-void Controller::validateTileTextRowsAndCols(
-    const QString& mouseAlgorithm,
-    int tileTextNumberOfRows, int tileTextNumberOfCols) {
-    if (tileTextNumberOfRows < 0 || tileTextNumberOfCols < 0) {
-        qCritical().noquote().nospace()
-            << "Both tileTextNumberOfRows() and tileTextNumberOfCols() must"
-            << " return non-negative integers. Since they return \""
-            << tileTextNumberOfRows << "\" and \"" << tileTextNumberOfCols
-            << "\", respectively, the tile text dimensions of the mouse"
-            << " algorithm \"" << mouseAlgorithm << "\" are invalid.";
         SimUtilities::quit();
     }
 }

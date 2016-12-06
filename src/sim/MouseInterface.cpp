@@ -22,6 +22,7 @@
 #include "Controller.h"
 
 // TODO: MACK - send back errors to process
+// TODO: MACK - a lot of this should be lifted into Controller - maybe controller renamed to interface?
 
 namespace mms {
 
@@ -30,14 +31,16 @@ MouseInterface::MouseInterface(
         Mouse* mouse,
         MazeGraphic* mazeGraphic,
         Controller* controller,
-        QSet<QChar> allowableTileTextCharacters) :
+        QSet<QChar> allowableTileTextCharacters,
+        BufferInterface* bufferInterface) : // TODO: MACK
         m_maze(maze),
         m_mouse(mouse),
         m_mazeGraphic(mazeGraphic),
         m_controller(controller),
         m_allowableTileTextCharacters(allowableTileTextCharacters),
         m_inOrigin(true),
-        m_wheelSpeedFraction(1.0) {
+        m_wheelSpeedFraction(1.0),
+        m_bufferInterface(bufferInterface) {
 }
 
 char MouseInterface::getStartedDirection() {
@@ -733,9 +736,16 @@ void MouseInterface::setTileTextImpl(int x, int y, const QString& text) {
     QVector<QString> rowsOfText;
     int row = 0;
     int index = 0;
-    while (row < m_controller->getStaticOptions().tileTextNumberOfRows && index < text.size()) {
+
+    // TODO: MACK - clean this up
+    QPair<int, int> maxSize = m_bufferInterface->getTileGraphicTextMaxSize();
+    int numRows = maxSize.first;
+    int numCols = maxSize.second;
+
+    // TODO: MACK - use QString left() to clean this up
+    while (row < numRows && index < text.size()) {
         QString rowOfText;
-        while (index < (row + 1) * m_controller->getStaticOptions().tileTextNumberOfCols && index < text.size()) {
+        while (index < (row + 1) * numCols && index < text.size()) {
             QChar c = text.at(index);
             if (m_allowableTileTextCharacters.find(c) == m_allowableTileTextCharacters.end()) { // TODO: MACK - use contains
                 qWarning().noquote().nospace()

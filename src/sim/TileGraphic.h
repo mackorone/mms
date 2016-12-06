@@ -24,7 +24,10 @@ public:
     void setFogginess(bool foggy);
     void setText(const QVector<QString>& rowsOfText);
 
-    void draw() const;
+    // TODO: MACK - rename these
+    void drawPolygons() const;
+    void drawTextures();
+
     void updateColor() const;
     void updateWalls() const;
     void updateFog() const;

@@ -41,6 +41,12 @@ View::View(Model* model, QWidget* parent) :
         this, &View::frameSwapped,
         this, static_cast<void (View::*)()>(&View::update)
     );
+
+    // TODO: MACK
+    m_mazeGraphic->drawPolygons();
+
+    // TODO: MACK - get these defaults from somewhere
+    initTileGraphicText(2, 4);
 }
 
 MazeGraphic* View::getMazeGraphic() {
@@ -51,33 +57,25 @@ MouseGraphic* View::getMouseGraphic() {
     return m_mouseGraphic;
 }
 
-void View::setControllerManager(ControllerManager* controllerManager) {
-    m_controllerManager = controllerManager;
-    m_header->setControllerManager(controllerManager);
-}
-
 QSet<QChar> View::getAllowableTileTextCharacters() {
     return QSet<QChar>::fromList(m_fontImageMap.keys());
 }
 
-void View::initTileGraphicText() {
+void View::initTileGraphicText(int numRows, int numCols) {
 
     // Initialze the tile text in the buffer class, do caching for speed improvement
     m_bufferInterface->initTileGraphicText(
         Meters(P()->wallLength()),
         Meters(P()->wallWidth()),
-        {
-            // TODO: MACK
-            /*
-            m_controllerManager->getStaticOptions().tileTextNumberOfRows,
-            m_controllerManager->getStaticOptions().tileTextNumberOfCols
-            */
-            2,
-            4
-        },
+        {numRows, numCols},
         m_fontImageMap,
         P()->tileTextBorderFraction(),
         STRING_TO_TILE_TEXT_ALIGNMENT.value(P()->tileTextAlignment()));
+
+    // TODO: MACK - this is kind of confusing
+    // - I should insert and then update (no draw method)
+    m_textureCpuBuffer.clear();
+    m_mazeGraphic->drawTextures();
 }
 
 QVector<QString> View::getOpenGLVersionInfo() {
@@ -100,6 +98,11 @@ QVector<QString> View::getOpenGLVersionInfo() {
         openGLVersionInfo = {glType, glVersion, glProfile};
     }
     return openGLVersionInfo;
+}
+
+// TODO: MACK
+BufferInterface* View::getBufferInterface() {
+    return m_bufferInterface;
 }
 
 void View::initOpenGLLogger() {
