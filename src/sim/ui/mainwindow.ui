@@ -35,7 +35,13 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <layout class="QVBoxLayout" name="mapContainer"/>
+         <layout class="QHBoxLayout" name="mapContainer3"/>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="mapContainer2"/>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="mapContainer1"/>
         </item>
        </layout>
       </widget>

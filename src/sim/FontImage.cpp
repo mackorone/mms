@@ -1,14 +1,18 @@
 #include "FontImage.h"
 
+#include <QFile>
+
 #include "Assert.h"
+#include "Logging.h"
+#include "SimUtilities.h"
 
 namespace mms {
 
 FontImage* FontImage::INSTANCE = nullptr;
 
-void FontImage::init() {
+void FontImage::init(const QString& imageFilePath) {
     ASSERT_TR(INSTANCE == nullptr);
-    INSTANCE = new FontImage();
+    INSTANCE = new FontImage(imageFilePath);
 }
 
 FontImage* FontImage::get() {
@@ -16,11 +20,22 @@ FontImage* FontImage::get() {
     return INSTANCE;
 }
 
+QString FontImage::imageFilePath() {
+    return m_imageFilePath;
+}
+
 QMap<QChar, QPair<double, double>> FontImage::positions() {
     return m_positions;
 }
 
-FontImage::FontImage() {
+FontImage::FontImage(const QString& imageFilePath) :
+        m_imageFilePath(imageFilePath) {
+
+    // Ensure the m_imageFilePath exists
+    if (!QFile::exists(m_imageFilePath)) {
+        qCritical() << "Could not find font image file " << m_imageFilePath;
+        SimUtilities::quit();
+    }
 
     // These values must perfectly reflect the font image being used,
     // else the wrong characters will be displayed on the tiles

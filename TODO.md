@@ -1,5 +1,7 @@
 # High Priority
 
+- Share OpenGL context
+- Try sharing VBOs, etc.
 - Clean up View
 - Kill Layout
 - QVector<QString> to QStringList

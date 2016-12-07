@@ -32,7 +32,9 @@ public:
     QTabWidget *tabWidget;
     QWidget *tab_3;
     QVBoxLayout *verticalLayout;
-    QVBoxLayout *mapContainer;
+    QHBoxLayout *mapContainer3;
+    QHBoxLayout *mapContainer2;
+    QHBoxLayout *mapContainer1;
     QWidget *tab_4;
     QVBoxLayout *verticalLayout_3;
     QMenuBar *menuBar;
@@ -63,11 +65,23 @@ public:
         verticalLayout->setSpacing(6);
         verticalLayout->setContentsMargins(11, 11, 11, 11);
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
-        mapContainer = new QVBoxLayout();
-        mapContainer->setSpacing(6);
-        mapContainer->setObjectName(QStringLiteral("mapContainer"));
+        mapContainer3 = new QHBoxLayout();
+        mapContainer3->setSpacing(6);
+        mapContainer3->setObjectName(QStringLiteral("mapContainer3"));
 
-        verticalLayout->addLayout(mapContainer);
+        verticalLayout->addLayout(mapContainer3);
+
+        mapContainer2 = new QHBoxLayout();
+        mapContainer2->setSpacing(6);
+        mapContainer2->setObjectName(QStringLiteral("mapContainer2"));
+
+        verticalLayout->addLayout(mapContainer2);
+
+        mapContainer1 = new QHBoxLayout();
+        mapContainer1->setSpacing(6);
+        mapContainer1->setObjectName(QStringLiteral("mapContainer1"));
+
+        verticalLayout->addLayout(mapContainer1);
 
         tabWidget->addTab(tab_3, QString());
         tab_4 = new QWidget();

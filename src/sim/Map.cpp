@@ -4,6 +4,7 @@
 #include <QPair>
 
 #include "Directory.h"
+#include "FontImage.h"
 #include "Layout.h"
 #include "Logging.h"
 #include "Param.h"
@@ -295,16 +296,8 @@ void Map::initTextureProgram() {
     );
 
     // Load the bitmap texture into the texture atlas
-    // TODO: MACK - figure out how to couple this with the FontImage class
-    QString tileTextFontImagePath =
-        Directory::get()->getResImgsDirectory() + P()->tileTextFontImage();
-    if (!QFile::exists(tileTextFontImagePath)) {
-        qCritical().noquote().nospace()
-            << "Could not find font image file \"" << P()->tileTextFontImage()
-            << "\" in \"" << Directory::get()->getResImgsDirectory() << "\".";
-        SimUtilities::quit();
-    }
-    m_textureAtlas = new QOpenGLTexture(QImage(tileTextFontImagePath).mirrored());
+    m_textureAtlas = new QOpenGLTexture(
+        QImage(FontImage::get()->imageFilePath()).mirrored());
 
 	m_polygonVBO.release();
 	m_polygonVAO.release();

@@ -38,9 +38,6 @@ int Driver::drive(int argc, char* argv[]) {
     // Initialize the Screen object
     Screen::init();
 
-    // Initialize the FontImage object
-    FontImage::init();
-
     // Initialize the Directory object
     Directory::init(app.applicationFilePath());
 
@@ -58,12 +55,17 @@ int Driver::drive(int argc, char* argv[]) {
     // 3) Initialize the Param object
     S()->setRunId(runId);
 
+    // Initialize the FontImage object
+    FontImage::init(
+        Directory::get()->getResImgsDirectory() +
+        P()->tileTextFontImage());
+
     // Remove any excessive archived runs
     SimUtilities::removeExcessArchivedRuns();
 
     // TODO: MACK - clean this up
 
-    // Initialize the model, lens, and map
+    // Initialize the model and lens
     Model* model = new Model();
     Lens* lens = new Lens(model);
 
@@ -78,8 +80,7 @@ int Driver::drive(int argc, char* argv[]) {
     });
 
     // TODO: MACK -- create the main window
-    Map* map = new Map(model, lens);
-    MainWindow w(lens, map);
+    MainWindow w(model, lens);
     w.show();
     // TODO: MACK
 

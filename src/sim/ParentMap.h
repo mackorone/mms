@@ -15,7 +15,7 @@
 
 namespace mms {
 
-class Map : public QOpenGLWidget, protected QOpenGLFunctions {
+class Parent : public QOpenGLWidget, protected QOpenGLFunctions {
     
     // NOTE: Inheriting from QOpenGLFunctions allows
     // us to call the OpenGL functions directly
@@ -24,7 +24,7 @@ class Map : public QOpenGLWidget, protected QOpenGLFunctions {
 
 public:
 
-    Map(const Model* model, Lens* lens, QWidget* parent = 0);
+    ParentMap(const Model* model, Lens* lens, QWidget* parent = 0);
 
     QVector<QString> getOpenGLVersionInfo();
 

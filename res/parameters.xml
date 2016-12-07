@@ -6,7 +6,7 @@
     <default-window-width>990</default-window-width> <!-- Pixels -->
     <default-window-height>700</default-window-height> <!-- Pixels -->
     <default-layout-type>BOTH</default-layout-type> <!-- FULL, ZOOMED, BOTH -->
-    <window-border-width>10</window-border-width> <!-- Pixels --> <!-- TODO: MACK -->
+    <window-border-width>0</window-border-width> <!-- Pixels --> <!-- TODO: MACK -->
     <header-text-font>Unispace-Bold.ttf</header-text-font> <!-- TODO: MACK -->
     <header-text-height>9</header-text-height> <!-- TODO: MACK --->
     <header-row-spacing>6</header-row-spacing> <!-- TODO: MACK --->
