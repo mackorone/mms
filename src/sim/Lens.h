@@ -28,6 +28,7 @@ public:
     void initTileGraphicText(int numRows, int numCols);
     BufferInterface* getBufferInterface();
 
+    // TODO: MACK - const???
     // Return pointers to constant buffers, for rendering maps
     QVector<TriangleGraphic>* getGraphicCpuBuffer();
     QVector<TriangleTexture>* getTextureCpuBuffer();

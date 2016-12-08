@@ -1,7 +1,5 @@
 # High Priority
 
-- Share OpenGL context
-- Try sharing VBOs, etc.
 - Clean up View
 - Kill Layout
 - QVector<QString> to QStringList
@@ -10,6 +8,9 @@
     - Do some cleanup here
     - Deprecate static algo options (and maybe even dynamic ones too!)
 - Fix collision detection
+- Make framerate for multiple OpenGLWidgets faster
+    - Share OpenGL context
+    - Try sharing VBOs, etc.
 - Fix .maz file loading
 - Fix wireframe mode
 - Make GUI

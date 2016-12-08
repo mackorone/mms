@@ -16,18 +16,17 @@ public:
     TileGraphic();
     TileGraphic(const Tile* tile, BufferInterface* bufferInterface);
 
-    bool wallDeclared(Direction direction) const;
-
     void setColor(const Color color);
     void declareWall(Direction direction, bool isWall);
     void undeclareWall(Direction direction);
     void setFogginess(bool foggy);
-    void setText(const QVector<QString>& rowsOfText);
+    void setText(const QString& text);
 
-    // TODO: MACK - rename these
+    // TODO: MACK - rename these to "reload" or something
     void drawPolygons() const;
     void drawTextures();
 
+    // TODO: MACK - rename these to "refresh" or something
     void updateColor() const;
     void updateWalls() const;
     void updateFog() const;
@@ -40,7 +39,7 @@ private:
     Color m_color;
     QMap<Direction, bool> m_declaredWalls;
     bool m_foggy;
-    QVector<QString> m_rowsOfText;
+    QString m_text;
 
     void updateWall(Direction direction) const;
     QPair<Color, float> deduceWallColorAndAlpha(Direction direction) const;

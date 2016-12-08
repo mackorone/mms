@@ -22,10 +22,6 @@ TileGraphic::TileGraphic(const Tile* tile, BufferInterface* bufferInterface) :
     m_foggy(true) {
 }
 
-bool TileGraphic::wallDeclared(Direction direction) const {
-    return m_declaredWalls.contains(direction);
-}
-
 void TileGraphic::setColor(Color color) {
     m_color = color;
     updateColor();
@@ -46,8 +42,8 @@ void TileGraphic::setFogginess(bool foggy) {
     updateFog();
 }
 
-void TileGraphic::setText(const QVector<QString>& rowsOfText) {
-    m_rowsOfText = rowsOfText;
+void TileGraphic::setText(const QString& text) {
+    m_text = text;
     updateText();
 }
 
@@ -88,26 +84,6 @@ void TileGraphic::drawPolygons() const {
 }
 
 void TileGraphic::drawTextures() {
-
-    // Get the latest tile text rows and cols
-    QPair<int, int> maxRowsAndCols = m_bufferInterface->getTileGraphicTextMaxSize();
-
-    // Reformat the text into new row sizes
-    QString text = "";
-    for (const QString& row : m_rowsOfText) {
-        text += row;
-    }
-    // TODO: MACK - this should be string list
-    QVector<QString> newRowsOfText;
-    while (maxRowsAndCols.second <= text.size()) {
-        newRowsOfText.append(text.left(maxRowsAndCols.second));
-        text = text.mid(maxRowsAndCols.second);
-    }
-    if (0 < text.size()) {
-        newRowsOfText.append(text);
-    }
-    m_rowsOfText = newRowsOfText;
-    
     // Insert all of the triangle texture objects into the buffer ...
     for (int row = 0; row < maxRowsAndCols.first; row += 1) {
         for (int col = 0; col < maxRowsAndCols.second; col += 1) {
@@ -136,22 +112,59 @@ void TileGraphic::updateFog() const {
 
 void TileGraphic::updateText() const {
 
-    QVector<QString> rows = m_rowsOfText;
+	// First, retrieve the maximum number of rows and cols of text allowed
+    QPair<int, int> maxRowsAndCols =
+		m_bufferInterface->getTileGraphicTextMaxSize();
+
+	// Then, generate the rows of text that will be displayed
+	QVector<QString> rowsOfText;
+
+	// If the true tile distance is visible, display that as the
+	// first row (and intentially don't spill into the second row)
     if (S()->tileDistanceVisible()) {
-        rows.insert(rows.begin(), (0 <= m_tile->getDistance() ? QString::number(m_tile->getDistance()) : "inf"));
+        rowsOfText.append(
+			0 <= m_tile->getDistance()
+			? QString::number(m_tile->getDistance())
+			: "inf");
     }
 
-    QPair<int, int> maxRowsAndCols = m_bufferInterface->getTileGraphicTextMaxSize();
+	// Split the text into rows
+	QString remaining = m_text;
+	while (!remaining.isEmpty() && rowsOfText.size() < maxRowsAndCols.first) {
+		QString row = remaining.left(maxRowsAndCols.second);
+		rowsOfText.append(row);
+		remaining = remaining.mid(maxRowsAndCols.second);
+	}
+
+	// For all possible character positions, insert some character
+	// (blank if necessary) into the tile text cpu buffer
     for (int row = 0; row < maxRowsAndCols.first; row += 1) {
         for (int col = 0; col < maxRowsAndCols.second; col += 1) {
+			int numRows = std::min(
+				static_cast<int>(rows.size()),
+				maxRowsAndCols.first
+			);
+            int numCols = std::min(
+				static_cast<int>(row < rows.size() ? rows.at(row).size() : 0),
+				maxRowsAndCols.second
+			);
+			QChar c = ' ';
+			if (
+				S()->tileTextVisible() &&
+				row < rows.size() &&
+				col < rows.at(row).size()
+			) {
+				c = rows.at(row).at(col).toLatin1();
+			}
+			ASSERT_TR(FontImage::get()->positions().contains(c));
             m_bufferInterface->updateTileGraphicText(
                 m_tile->getX(),
                 m_tile->getY(),
-                std::min(static_cast<int>(rows.size()), maxRowsAndCols.first),
-                std::min(static_cast<int>((row < rows.size() ? rows.at(row).size() : 0)), maxRowsAndCols.second),
+				numRows,
                 row,
                 col,
-                (S()->tileTextVisible() && row < rows.size() && col < rows.at(row).size() ? rows.at(row).at(col).toLatin1() : ' '));
+                c
+			);
         }
     }
 }
@@ -182,7 +195,7 @@ QPair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction) co
     else {
 
         // If the wall was declared, use the wall color and tile base color ...
-        if (wallDeclared(direction)) {
+        if (m_declaredWalls.contains(direction)) {
             if (m_declaredWalls.value(direction)) {
                 // Correct declaration
                 if (m_tile->isWall(direction)) {

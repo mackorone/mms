@@ -732,37 +732,24 @@ void MouseInterface::clearTileColorImpl(int x, int y) {
 }
 
 void MouseInterface::setTileTextImpl(int x, int y, const QString& text) {
-    QVector<QString> rowsOfText;
-    int row = 0;
-    int index = 0;
 
-    // TODO: MACK - clean this up
-    QPair<int, int> maxSize = m_bufferInterface->getTileGraphicTextMaxSize();
-    int numRows = maxSize.first;
-    int numCols = maxSize.second;
-
-    // TODO: MACK - use QString left() to clean this up - this should just be in the updateText function anyways
-    while (row < numRows && index < text.size()) {
-        QString rowOfText;
-        while (index < (row + 1) * numCols && index < text.size()) {
-            QChar c = text.at(index);
-            if (!FontImage::get()->positions().contains(c)) {
-                qWarning().noquote().nospace()
-                    << "Unable to set the tile text for unprintable character \""
-                    << (c == '\n' ? "\\n" :
-                       (c == '\t' ? "\\t" :
-                       (c == '\r' ? "\\r" : QString(c))))
-                    << "\". Using the character \"" << P()->defaultTileTextCharacter()
-                    << "\" instead.";
-                c = P()->defaultTileTextCharacter();
-            }
-            rowOfText += c;
-            index += 1;
+    // Ensure that all characters are valid
+    QString filtered;
+    for (const QChar& c : text) {
+        if (!FontImage::get()->positions().contains(c)) {
+            qWarning().noquote().nospace()
+                << "Unable to set the tile text for unprintable character \""
+                << (c == '\n' ? "\\n" :
+                   (c == '\t' ? "\\t" :
+                   (c == '\r' ? "\\r" : QString(c))))
+                << "\". Using the character \"" << P()->defaultTileTextCharacter()
+                << "\" instead.";
+            c = P()->defaultTileTextCharacter();
         }
-        rowsOfText.push_back(rowOfText); 
-        row += 1;
+        filtered += c;
     }
-    m_mazeGraphic->setTileText(x, y, rowsOfText);
+
+    m_mazeGraphic->setTileText(x, y, filtered);
     m_tilesWithText.insert({x, y});
 }
 

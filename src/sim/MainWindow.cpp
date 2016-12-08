@@ -13,13 +13,9 @@ MainWindow::MainWindow(Model* model, Lens* lens, QWidget *parent) :
     m_lens(lens),
     ui(new Ui::MainWindow) {
     ui->setupUi(this);
-    for (int i = 0; i < 3; i += 1) {
+    for (int i = 0; i < 1; i += 1) {
         Map* map1 = new Map(model, lens);
-        Map* map2 = new Map(model, lens);
-        Map* map3 = new Map(model, lens);
         ui->mapContainer1->addWidget(map1);
-        ui->mapContainer2->addWidget(map2);
-        ui->mapContainer3->addWidget(map3);
     }
 }
 
