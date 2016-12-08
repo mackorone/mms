@@ -36,9 +36,9 @@ void MazeGraphic::setTileFogginess(int x, int y, bool foggy) {
     m_tileGraphics[x][y].setFogginess(foggy);
 }
 
-void MazeGraphic::setTileText(int x, int y, const QVector<QString>& rowsOfText) {
+void MazeGraphic::setTileText(int x, int y, const QString& text) {
     ASSERT_TR(withinMaze(x, y));
-    m_tileGraphics[x][y].setText(rowsOfText);
+    m_tileGraphics[x][y].setText(text);
 }
 
 void MazeGraphic::drawPolygons() const {

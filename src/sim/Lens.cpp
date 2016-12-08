@@ -47,10 +47,6 @@ void Lens::initTileGraphicText(int numRows, int numCols) {
     m_mazeGraphic->drawTextures();
 }
 
-BufferInterface* Lens::getBufferInterface() {
-    return m_bufferInterface;
-}
-
 QVector<TriangleGraphic>* Lens::getGraphicCpuBuffer() {
     return &m_graphicCpuBuffer;
 }

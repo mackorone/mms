@@ -57,8 +57,7 @@ void Controller::init() {
         m_model->getMaze(),
         m_model->getMouse(),
         m_lens->getMazeGraphic(),
-        this,
-        m_lens->getBufferInterface()
+        this
     );
 }
 
@@ -252,7 +251,10 @@ QString Controller::processCommand(const QString& command) {
     else if (function == "setTileText") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
-        QString text = tokens.at(3);
+        QString text = "";
+        if (3 < tokens.size()) {
+            text = tokens.at(3);
+        }
         m_mouseInterface->setTileText(x, y, text);
         return EMPTY_STRING;
     }

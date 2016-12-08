@@ -3,6 +3,7 @@
 #include <QPair>
 
 #include "Color.h"
+#include "FontImage.h"
 #include "Param.h"
 #include "State.h"
 
@@ -85,6 +86,8 @@ void TileGraphic::drawPolygons() const {
 
 void TileGraphic::drawTextures() {
     // Insert all of the triangle texture objects into the buffer ...
+    QPair<int, int> maxRowsAndCols =
+		m_bufferInterface->getTileGraphicTextMaxSize();
     for (int row = 0; row < maxRowsAndCols.first; row += 1) {
         for (int col = 0; col < maxRowsAndCols.second; col += 1) {
             m_bufferInterface->insertIntoTextureCpuBuffer();
@@ -141,26 +144,27 @@ void TileGraphic::updateText() const {
     for (int row = 0; row < maxRowsAndCols.first; row += 1) {
         for (int col = 0; col < maxRowsAndCols.second; col += 1) {
 			int numRows = std::min(
-				static_cast<int>(rows.size()),
+				static_cast<int>(rowsOfText.size()),
 				maxRowsAndCols.first
 			);
             int numCols = std::min(
-				static_cast<int>(row < rows.size() ? rows.at(row).size() : 0),
+				static_cast<int>(row < rowsOfText.size() ? rowsOfText.at(row).size() : 0),
 				maxRowsAndCols.second
 			);
 			QChar c = ' ';
 			if (
 				S()->tileTextVisible() &&
-				row < rows.size() &&
-				col < rows.at(row).size()
+				row < rowsOfText.size() &&
+				col < rowsOfText.at(row).size()
 			) {
-				c = rows.at(row).at(col).toLatin1();
+				c = rowsOfText.at(row).at(col).toLatin1();
 			}
 			ASSERT_TR(FontImage::get()->positions().contains(c));
             m_bufferInterface->updateTileGraphicText(
                 m_tile->getX(),
                 m_tile->getY(),
 				numRows,
+				numCols,
                 row,
                 col,
                 c

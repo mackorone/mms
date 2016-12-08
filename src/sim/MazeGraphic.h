@@ -18,7 +18,7 @@ public:
     void declareWall(int x, int y, Direction direction, bool isWall);
     void undeclareWall(int x, int y, Direction direction);
     void setTileFogginess(int x, int y, bool foggy);
-    void setTileText(int x, int y, const QVector<QString>& rowsOfText);
+    void setTileText(int x, int y, const QString& text);
 
     // TODO: MACK - rename these
     void drawPolygons() const;

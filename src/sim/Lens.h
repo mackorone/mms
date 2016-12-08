@@ -23,10 +23,8 @@ public:
     MazeGraphic* getMazeGraphic();
     MouseGraphic* getMouseGraphic();
 
-    // TODO: MACK - TileGraphicText is a property of the lens
-    // TODO: MACK - we shouldn't have to expose this
+    // TODO: MACK - rename this
     void initTileGraphicText(int numRows, int numCols);
-    BufferInterface* getBufferInterface();
 
     // TODO: MACK - const???
     // Return pointers to constant buffers, for rendering maps

@@ -29,8 +29,7 @@ public:
         const Maze* maze,
         Mouse* mouse,
         MazeGraphic* mazeGraphic,
-        Controller* controller,
-        BufferInterface* bufferInterface); // TODO: MACK
+        Controller* controller);
 
     // ----- Any interface methods ----- //
 
@@ -149,9 +148,6 @@ private:
     Mouse* m_mouse;
     MazeGraphic* m_mazeGraphic;
     Controller* m_controller;
-
-    // TODO: MACK
-    BufferInterface* m_bufferInterface;
 
     // Whether or not the mouse has moved out the origin
     bool m_inOrigin;

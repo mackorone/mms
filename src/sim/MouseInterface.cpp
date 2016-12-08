@@ -31,15 +31,13 @@ MouseInterface::MouseInterface(
         const Maze* maze,
         Mouse* mouse,
         MazeGraphic* mazeGraphic,
-        Controller* controller,
-        BufferInterface* bufferInterface) : // TODO: MACK
+        Controller* controller) :
         m_maze(maze),
         m_mouse(mouse),
         m_mazeGraphic(mazeGraphic),
         m_controller(controller),
         m_inOrigin(true),
-        m_wheelSpeedFraction(1.0),
-        m_bufferInterface(bufferInterface) {
+        m_wheelSpeedFraction(1.0) {
 }
 
 char MouseInterface::getStartedDirection() {
@@ -735,7 +733,8 @@ void MouseInterface::setTileTextImpl(int x, int y, const QString& text) {
 
     // Ensure that all characters are valid
     QString filtered;
-    for (const QChar& c : text) {
+    for (int i = 0; i < text.size(); i += 1) {
+        QChar c = text.at(i);
         if (!FontImage::get()->positions().contains(c)) {
             qWarning().noquote().nospace()
                 << "Unable to set the tile text for unprintable character \""
