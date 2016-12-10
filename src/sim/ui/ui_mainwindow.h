@@ -18,7 +18,6 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
-#include <QtWidgets/QSplitter>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
@@ -29,10 +28,7 @@ class Ui_MainWindow
 public:
     QWidget *centralWidget;
     QVBoxLayout *verticalLayout;
-    QSplitter *splitter;
-    QWidget *gridLayoutWidget;
     QGridLayout *infoContainer;
-    QWidget *verticalLayoutWidget;
     QVBoxLayout *mapContainer;
     QMenuBar *menuBar;
     QMenu *menu_File;
@@ -54,33 +50,17 @@ public:
         verticalLayout->setSpacing(6);
         verticalLayout->setContentsMargins(11, 11, 11, 11);
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
-        splitter = new QSplitter(centralWidget);
-        splitter->setObjectName(QStringLiteral("splitter"));
-        splitter->setAutoFillBackground(true);
-        splitter->setStyleSheet(QStringLiteral(""));
-        splitter->setFrameShape(QFrame::Panel);
-        splitter->setFrameShadow(QFrame::Plain);
-        splitter->setLineWidth(0);
-        splitter->setOrientation(Qt::Vertical);
-        splitter->setHandleWidth(10);
-        gridLayoutWidget = new QWidget(splitter);
-        gridLayoutWidget->setObjectName(QStringLiteral("gridLayoutWidget"));
-        infoContainer = new QGridLayout(gridLayoutWidget);
+        infoContainer = new QGridLayout();
         infoContainer->setSpacing(6);
-        infoContainer->setContentsMargins(11, 11, 11, 11);
         infoContainer->setObjectName(QStringLiteral("infoContainer"));
-        infoContainer->setContentsMargins(0, 0, 0, 0);
-        splitter->addWidget(gridLayoutWidget);
-        verticalLayoutWidget = new QWidget(splitter);
-        verticalLayoutWidget->setObjectName(QStringLiteral("verticalLayoutWidget"));
-        mapContainer = new QVBoxLayout(verticalLayoutWidget);
-        mapContainer->setSpacing(6);
-        mapContainer->setContentsMargins(11, 11, 11, 11);
-        mapContainer->setObjectName(QStringLiteral("mapContainer"));
-        mapContainer->setContentsMargins(0, 0, 0, 0);
-        splitter->addWidget(verticalLayoutWidget);
 
-        verticalLayout->addWidget(splitter);
+        verticalLayout->addLayout(infoContainer);
+
+        mapContainer = new QVBoxLayout();
+        mapContainer->setSpacing(6);
+        mapContainer->setObjectName(QStringLiteral("mapContainer"));
+
+        verticalLayout->addLayout(mapContainer);
 
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);

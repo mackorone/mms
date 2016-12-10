@@ -23,18 +23,6 @@ MainWindow::MainWindow(Model* model, Lens* lens, QWidget *parent) :
     // Initialization
     ui->setupUi(this);
 
-    // Put a box around the splitter handle
-    {
-        QSplitterHandle* handle = ui->splitter->handle(1);
-        QVBoxLayout* layout = new QVBoxLayout(handle);
-        layout->setSpacing(0);
-        layout->setMargin(0);
-        QFrame* line = new QFrame(handle);
-        line->setFrameShape(QFrame::Box);
-        line->setStyleSheet("background-color:rgb(192,192,192);");
-        layout->addWidget(line);
-    }
-
     // Add header info to the UI
     QVector<QPair<QString, QVariant>> info {
         // Run info
