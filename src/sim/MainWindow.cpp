@@ -28,7 +28,7 @@ MainWindow::MainWindow(Model* model, Lens* lens, QWidget *parent) :
         int row = i % itemsPerColumn;
         int col = 2 * (i / itemsPerColumn);
         QString label = labels.at(i).first;
-        QLabel* labelHolder = new QLabel(label + ":");
+        QLabel* labelHolder = new QLabel(label + (label.isEmpty() ? "" : ":"));
         QLabel* valueHolder = new QLabel();
         ui->infoContainer->addWidget(labelHolder, row, col);
         ui->infoContainer->addWidget(valueHolder, row, col + 1);
@@ -245,6 +245,7 @@ QVector<QPair<QString, QVariant>> MainWindow::getHeaderInfo() const {
         // Run info
         {"Run ID", S()->runId()},
         {"Random Seed", P()->randomSeed()},
+        {"", ""},
 
         // Maze info
         {
@@ -254,9 +255,11 @@ QVector<QPair<QString, QVariant>> MainWindow::getHeaderInfo() const {
         {"Maze Width", m_model->getMaze()->getWidth()},
         {"Maze Height", m_model->getMaze()->getHeight()},
         {"Maze Is Official", m_model->getMaze()->isOfficialMaze() ? "TRUE" : "FALSE"},
+        {"", ""},
 
         // Mouse Info
         {"Mouse Algo", P()->mouseAlgorithm()},
+        {"", ""},
         /*
         {"Mouse File", (
             m_controllerManager == nullptr
