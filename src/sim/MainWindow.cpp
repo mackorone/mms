@@ -2,8 +2,6 @@
 #include "ui_mainwindow.h"
 
 #include <QLabel>
-#include <QLineEdit>
-#include <QVariant>
 #include <QtCore>
 
 #include "Map.h"
@@ -24,115 +22,37 @@ MainWindow::MainWindow(Model* model, Lens* lens, QWidget *parent) :
     ui->setupUi(this);
 
     // Add header info to the UI
-    QVector<QPair<QString, QVariant>> info {
-        // Run info
-        {"Run ID", S()->runId()},
-        {"Random Seed", P()->randomSeed()},
-
-        // Maze info
-        {
-            (P()->useMazeFile() ? "Maze File" : "Maze Algo"),
-            (P()->useMazeFile() ? P()->mazeFile() : P()->mazeAlgorithm()),
-        },
-        {"Maze Width", m_model->getMaze()->getWidth()},
-        {"Maze Height", m_model->getMaze()->getHeight()},
-        {"Maze Is Official", m_model->getMaze()->isOfficialMaze() ? "TRUE" : "FALSE"},
-
-        // Mouse Info
-        {"Mouse Algo", P()->mouseAlgorithm()},
-        /*
-        {"Mouse File", (
-            m_controllerManager == nullptr
-            ? "NONE"
-            : m_controllerManager->getStaticOptions().mouseFile
-        }),
-        */
-        /*
-        QString("Interface Type:              ") + (m_controllerManager == nullptr ? "NONE" :
-            m_controllerManager->getStaticOptions().interfaceType),
-        QString("Initial Direction:           ") + (m_controllerManager == nullptr ? "NONE" :
-            m_controllerManager->getStaticOptions().initialDirection),
-        QString("Tile Text Num Rows:          ") + (m_controllerManager == nullptr ? "NONE" :
-            QString::number(m_controllerManager->getStaticOptions().tileTextNumberOfRows)),
-        QString("Tile Text Num Cols:          ") + (m_controllerManager == nullptr ? "NONE" :
-            QString::number(m_controllerManager->getStaticOptions().tileTextNumberOfCols)),
-        QString("Allow Omniscience:           ") + (m_controllerManager == nullptr ? "NONE" :
-            (m_controllerManager->getDynamicOptions().allowOmniscience ? "TRUE" : "FALSE")),
-        QString("Auto Clear Fog:              ") + (m_controllerManager == nullptr ? "NONE" :
-            (m_controllerManager->getDynamicOptions().automaticallyClearFog ? "TRUE" : "FALSE")),
-        QString("Declare Both Wall Halves:    ") + (m_controllerManager == nullptr ? "NONE" :
-            (m_controllerManager->getDynamicOptions().declareBothWallHalves ? "TRUE" : "FALSE")),
-        QString("Auto Set Tile Text:          ") + (m_controllerManager == nullptr ? "NONE" :
-            (m_controllerManager->getDynamicOptions().setTileTextWhenDistanceDeclared ? "TRUE" : "FALSE")),
-        QString("Auto Set Tile Base Color:    ") + (m_controllerManager == nullptr ? "NONE" :
-            (m_controllerManager->getDynamicOptions().setTileBaseColorWhenDistanceDeclaredCorrectly ? "TRUE" : "FALSE")),
-        QString("Wheel Speed Fraction:        ") +
-            (m_controllerManager == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
-            QString::number(m_controllerManager->getStaticOptions().wheelSpeedFraction))),
-        QString("Declare Wall On Read:        ") +
-            (m_controllerManager == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
-            (m_controllerManager->getDynamicOptions().declareWallOnRead ? "TRUE" : "FALSE"))),
-        QString("Use Tile Edge Movements:     ") +
-            (m_controllerManager == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
-            (m_controllerManager->getDynamicOptions().useTileEdgeMovements ? "TRUE" : "FALSE"))),
-        */
-
-        // Mouse progress
-        {"Tiles Traversed",
-            QString::number(m_model->getWorld()->getNumberOfTilesTraversed()) + "/" +
-            QString::number(m_model->getMaze()->getWidth() * m_model->getMaze()->getHeight())
-        },
-        {"Closest Distance to Center", m_model->getWorld()->getClosestDistanceToCenter()},
-        {"Current X (m)", m_model->getMouse()->getCurrentTranslation().getX().getMeters()},
-        {"Current Y (m)", m_model->getMouse()->getCurrentTranslation().getY().getMeters()},
-        {"Current Rotation (deg)", m_model->getMouse()->getCurrentRotation().getDegreesZeroTo360()},
-        {"Current X tile", m_model->getMouse()->getCurrentDiscretizedTranslation().first},
-        {"Current Y tile", m_model->getMouse()->getCurrentDiscretizedTranslation().second},
-        {"Current Direction",
-            DIRECTION_TO_STRING.value(m_model->getMouse()->getCurrentDiscretizedRotation())
-        },
-        {"Elapsed Real Time", SimUtilities::formatDuration(Time::get()->elapsedRealTime())},
-        {"Elapsed Sim Time", SimUtilities::formatDuration(Time::get()->elapsedSimTime())},
-        {"Time Since Origin Departure",
-            m_model->getWorld()->getTimeSinceOriginDeparture().getSeconds() < 0
-            ? "NONE"
-            : SimUtilities::formatDuration(m_model->getWorld()->getTimeSinceOriginDeparture())
-        },
-        {"Best Time to Center",
-            m_model->getWorld()->getBestTimeToCenter().getSeconds() < 0
-            ? "NONE"
-            : SimUtilities::formatDuration(m_model->getWorld()->getBestTimeToCenter())
-        },
-
-        // Sim state
-        {"Crashed", (S()->crashed() ? "TRUE" : "FALSE")},
-        {"Layout Type (l)", LAYOUT_TYPE_TO_STRING.value(S()->layoutType())},
-        {"Rotate Zoomed Map (r)", (S()->rotateZoomedMap() ? "TRUE" : "FALSE")},
-        {"Zoomed Map Scale (i, o)", QString::number(S()->zoomedMapScale())},
-        {"Wall Truth Visible (t)", (S()->wallTruthVisible() ? "TRUE" : "FALSE")},
-        {"Tile Colors Visible (c)", (S()->tileColorsVisible() ? "TRUE" : "FALSE")},
-        {"Tile Fog Visible (g)", (S()->tileFogVisible() ? "TRUE" : "FALSE")},
-        {"Tile Text Visible (x)", (S()->tileTextVisible() ? "TRUE" : "FALSE")},
-        {"Tile Distance Visible (d)", (S()->tileDistanceVisible() ? "TRUE" : "FALSE")},
-        {"Header Visible (h)", (S()->headerVisible() ? "TRUE" : "FALSE")},
-        {"Wireframe Mode (w)", (S()->wireframeMode() ? "TRUE" : "FALSE")},
-        {"Paused (p)", (S()->paused() ? "TRUE" : "FALSE")},
-        {"Sim Speed (f, s)", QString::number(S()->simSpeed())},
-    };
-
-    int itemsPerColumn = qCeil(info.size() / 3.0);
-    for (int i = 0; i < info.size(); i += 1) {
-        const auto& pair = info.at(i);
+    QVector<QPair<QString, QVariant>> labels = getHeaderInfo();
+    int itemsPerColumn = qCeil(labels.size() / 4.0);
+    for (int i = 0; i < labels.size(); i += 1) {
         int row = i % itemsPerColumn;
         int col = 2 * (i / itemsPerColumn);
-        ui->infoContainer->addWidget(new QLabel(pair.first + ":"), row, col);
-        QLineEdit* lineEdit = new QLineEdit(pair.second.toString());
-        lineEdit->setReadOnly(true);
-        ui->infoContainer->addWidget(lineEdit, row, col + 1);
+        QString label = labels.at(i).first;
+        QLabel* labelHolder = new QLabel(label + ":");
+        QLabel* valueHolder = new QLabel();
+        ui->infoContainer->addWidget(labelHolder, row, col);
+        ui->infoContainer->addWidget(valueHolder, row, col + 1);
+        m_headerItems.insert(label, valueHolder);
     }
+
+    // Periodically update the header
+    connect(
+        &m_headerRefreshTimer,
+        &QTimer::timeout,
+        this,
+        [=](){
+            QVector<QPair<QString, QVariant>> items = getHeaderInfo();
+            for (const auto& pair : items) {
+                QString text = pair.second.toString();
+                if (pair.second.type() == QVariant::Double) {
+                    text = QString::number(pair.second.toDouble(), 'f', 3);
+                }
+                m_headerItems.value(pair.first)->setText(text);
+            }
+        }
+    );
+    m_headerRefreshTimer.start(33);
+
 
     // Add a map to the UI
     Map* map = new Map(model, lens);
@@ -318,4 +238,107 @@ void Map::specialKeyRelease(int key, int x, int y) {
         QString("Random Seed:                 ") + QString::number(P()->randomSeed()),
 
 */
+
+QVector<QPair<QString, QVariant>> MainWindow::getHeaderInfo() const {
+    return {
+
+        // Run info
+        {"Run ID", S()->runId()},
+        {"Random Seed", P()->randomSeed()},
+
+        // Maze info
+        {
+            (P()->useMazeFile() ? "Maze File" : "Maze Algo"),
+            (P()->useMazeFile() ? P()->mazeFile() : P()->mazeAlgorithm()),
+        },
+        {"Maze Width", m_model->getMaze()->getWidth()},
+        {"Maze Height", m_model->getMaze()->getHeight()},
+        {"Maze Is Official", m_model->getMaze()->isOfficialMaze() ? "TRUE" : "FALSE"},
+
+        // Mouse Info
+        {"Mouse Algo", P()->mouseAlgorithm()},
+        /*
+        {"Mouse File", (
+            m_controllerManager == nullptr
+            ? "NONE"
+            : m_controllerManager->getStaticOptions().mouseFile
+        }),
+        */
+        /*
+        QString("Interface Type:              ") + (m_controllerManager == nullptr ? "NONE" :
+            m_controllerManager->getStaticOptions().interfaceType),
+        QString("Initial Direction:           ") + (m_controllerManager == nullptr ? "NONE" :
+            m_controllerManager->getStaticOptions().initialDirection),
+        QString("Tile Text Num Rows:          ") + (m_controllerManager == nullptr ? "NONE" :
+            QString::number(m_controllerManager->getStaticOptions().tileTextNumberOfRows)),
+        QString("Tile Text Num Cols:          ") + (m_controllerManager == nullptr ? "NONE" :
+            QString::number(m_controllerManager->getStaticOptions().tileTextNumberOfCols)),
+        QString("Allow Omniscience:           ") + (m_controllerManager == nullptr ? "NONE" :
+            (m_controllerManager->getDynamicOptions().allowOmniscience ? "TRUE" : "FALSE")),
+        QString("Auto Clear Fog:              ") + (m_controllerManager == nullptr ? "NONE" :
+            (m_controllerManager->getDynamicOptions().automaticallyClearFog ? "TRUE" : "FALSE")),
+        QString("Declare Both Wall Halves:    ") + (m_controllerManager == nullptr ? "NONE" :
+            (m_controllerManager->getDynamicOptions().declareBothWallHalves ? "TRUE" : "FALSE")),
+        QString("Auto Set Tile Text:          ") + (m_controllerManager == nullptr ? "NONE" :
+            (m_controllerManager->getDynamicOptions().setTileTextWhenDistanceDeclared ? "TRUE" : "FALSE")),
+        QString("Auto Set Tile Base Color:    ") + (m_controllerManager == nullptr ? "NONE" :
+            (m_controllerManager->getDynamicOptions().setTileBaseColorWhenDistanceDeclaredCorrectly ? "TRUE" : "FALSE")),
+        QString("Wheel Speed Fraction:        ") +
+            (m_controllerManager == nullptr ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            QString::number(m_controllerManager->getStaticOptions().wheelSpeedFraction))),
+        QString("Declare Wall On Read:        ") +
+            (m_controllerManager == nullptr ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            (m_controllerManager->getDynamicOptions().declareWallOnRead ? "TRUE" : "FALSE"))),
+        QString("Use Tile Edge Movements:     ") +
+            (m_controllerManager == nullptr ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            (m_controllerManager->getDynamicOptions().useTileEdgeMovements ? "TRUE" : "FALSE"))),
+        */
+
+        // Mouse progress
+        {"Tiles Traversed",
+            QString::number(m_model->getWorld()->getNumberOfTilesTraversed()) + " / " +
+            QString::number(m_model->getMaze()->getWidth() * m_model->getMaze()->getHeight())
+        },
+        {"Closest Distance to Center", m_model->getWorld()->getClosestDistanceToCenter()},
+        {"Current X (m)", m_model->getMouse()->getCurrentTranslation().getX().getMeters()},
+        {"Current Y (m)", m_model->getMouse()->getCurrentTranslation().getY().getMeters()},
+        {"Current Rotation (deg)", m_model->getMouse()->getCurrentRotation().getDegreesZeroTo360()},
+        {"Current X tile", m_model->getMouse()->getCurrentDiscretizedTranslation().first},
+        {"Current Y tile", m_model->getMouse()->getCurrentDiscretizedTranslation().second},
+        {"Current Direction",
+            DIRECTION_TO_STRING.value(m_model->getMouse()->getCurrentDiscretizedRotation())
+        },
+        {"Elapsed Real Time", SimUtilities::formatDuration(Time::get()->elapsedRealTime())},
+        {"Elapsed Sim Time", SimUtilities::formatDuration(Time::get()->elapsedSimTime())},
+        {"Time Since Origin Departure",
+            m_model->getWorld()->getTimeSinceOriginDeparture().getSeconds() < 0
+            ? "NONE"
+            : SimUtilities::formatDuration(m_model->getWorld()->getTimeSinceOriginDeparture())
+        },
+        {"Best Time to Center",
+            m_model->getWorld()->getBestTimeToCenter().getSeconds() < 0
+            ? "NONE"
+            : SimUtilities::formatDuration(m_model->getWorld()->getBestTimeToCenter())
+        },
+
+        // Sim state
+        {"Crashed", (S()->crashed() ? "TRUE" : "FALSE")},
+        {"Layout Type (l)", LAYOUT_TYPE_TO_STRING.value(S()->layoutType())},
+        {"Rotate Zoomed Map (r)", (S()->rotateZoomedMap() ? "TRUE" : "FALSE")},
+        {"Zoomed Map Scale (i, o)", QString::number(S()->zoomedMapScale())},
+        {"Wall Truth Visible (t)", (S()->wallTruthVisible() ? "TRUE" : "FALSE")},
+        {"Tile Colors Visible (c)", (S()->tileColorsVisible() ? "TRUE" : "FALSE")},
+        {"Tile Fog Visible (g)", (S()->tileFogVisible() ? "TRUE" : "FALSE")},
+        {"Tile Text Visible (x)", (S()->tileTextVisible() ? "TRUE" : "FALSE")},
+        {"Tile Distance Visible (d)", (S()->tileDistanceVisible() ? "TRUE" : "FALSE")},
+        {"Header Visible (h)", (S()->headerVisible() ? "TRUE" : "FALSE")},
+        {"Wireframe Mode (w)", (S()->wireframeMode() ? "TRUE" : "FALSE")},
+        {"Paused (p)", (S()->paused() ? "TRUE" : "FALSE")},
+        {"Sim Speed (f, s)", QString::number(S()->simSpeed())},
+    };
+}
+
 } // namespace mms

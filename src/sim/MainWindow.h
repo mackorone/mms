@@ -1,7 +1,9 @@
 #pragma once
 
 #include <QKeyEvent>
+#include <QLabel>
 #include <QMainWindow>
+#include <QTimer>
 
 #include "Lens.h"
 #include "Model.h"
@@ -27,6 +29,10 @@ private:
     Model* m_model;
     Lens* m_lens;
     Ui::MainWindow *ui;
+
+    QMap<QString, QLabel*> m_headerItems;
+    QVector<QPair<QString, QVariant>> getHeaderInfo() const;
+    QTimer m_headerRefreshTimer;
 
 };
 
