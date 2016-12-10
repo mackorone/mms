@@ -1,22 +1,155 @@
 #include "MainWindow.h"
 #include "ui_mainwindow.h"
 
+#include <QLabel>
+#include <QLineEdit>
+#include <QVariant>
+#include <QtCore>
+
 #include "Map.h"
+#include "Param.h"
 #include "SimUtilities.h"
 #include "State.h"
+#include "Time.h"
 
 namespace mms {
 
 MainWindow::MainWindow(Model* model, Lens* lens, QWidget *parent) :
-    QMainWindow(parent),
-    m_model(model),
-    m_lens(lens),
-    ui(new Ui::MainWindow) {
+        QMainWindow(parent),
+        m_model(model),
+        m_lens(lens),
+        ui(new Ui::MainWindow) {
+
+    // Initialization
     ui->setupUi(this);
-    for (int i = 0; i < 1; i += 1) {
-        Map* map1 = new Map(model, lens);
-        ui->mapContainer1->addWidget(map1);
+
+    // Put a box around the splitter handle
+    {
+        QSplitterHandle* handle = ui->splitter->handle(1);
+        QVBoxLayout* layout = new QVBoxLayout(handle);
+        layout->setSpacing(0);
+        layout->setMargin(0);
+        QFrame* line = new QFrame(handle);
+        line->setFrameShape(QFrame::Box);
+        line->setStyleSheet("background-color:rgb(192,192,192);");
+        layout->addWidget(line);
     }
+
+    // Add header info to the UI
+    QVector<QPair<QString, QVariant>> info {
+        // Run info
+        {"Run ID", S()->runId()},
+        {"Random Seed", P()->randomSeed()},
+
+        // Maze info
+        {
+            (P()->useMazeFile() ? "Maze File" : "Maze Algo"),
+            (P()->useMazeFile() ? P()->mazeFile() : P()->mazeAlgorithm()),
+        },
+        {"Maze Width", m_model->getMaze()->getWidth()},
+        {"Maze Height", m_model->getMaze()->getHeight()},
+        {"Maze Is Official", m_model->getMaze()->isOfficialMaze() ? "TRUE" : "FALSE"},
+
+        // Mouse Info
+        {"Mouse Algo", P()->mouseAlgorithm()},
+        /*
+        {"Mouse File", (
+            m_controllerManager == nullptr
+            ? "NONE"
+            : m_controllerManager->getStaticOptions().mouseFile
+        }),
+        */
+        /*
+        QString("Interface Type:              ") + (m_controllerManager == nullptr ? "NONE" :
+            m_controllerManager->getStaticOptions().interfaceType),
+        QString("Initial Direction:           ") + (m_controllerManager == nullptr ? "NONE" :
+            m_controllerManager->getStaticOptions().initialDirection),
+        QString("Tile Text Num Rows:          ") + (m_controllerManager == nullptr ? "NONE" :
+            QString::number(m_controllerManager->getStaticOptions().tileTextNumberOfRows)),
+        QString("Tile Text Num Cols:          ") + (m_controllerManager == nullptr ? "NONE" :
+            QString::number(m_controllerManager->getStaticOptions().tileTextNumberOfCols)),
+        QString("Allow Omniscience:           ") + (m_controllerManager == nullptr ? "NONE" :
+            (m_controllerManager->getDynamicOptions().allowOmniscience ? "TRUE" : "FALSE")),
+        QString("Auto Clear Fog:              ") + (m_controllerManager == nullptr ? "NONE" :
+            (m_controllerManager->getDynamicOptions().automaticallyClearFog ? "TRUE" : "FALSE")),
+        QString("Declare Both Wall Halves:    ") + (m_controllerManager == nullptr ? "NONE" :
+            (m_controllerManager->getDynamicOptions().declareBothWallHalves ? "TRUE" : "FALSE")),
+        QString("Auto Set Tile Text:          ") + (m_controllerManager == nullptr ? "NONE" :
+            (m_controllerManager->getDynamicOptions().setTileTextWhenDistanceDeclared ? "TRUE" : "FALSE")),
+        QString("Auto Set Tile Base Color:    ") + (m_controllerManager == nullptr ? "NONE" :
+            (m_controllerManager->getDynamicOptions().setTileBaseColorWhenDistanceDeclaredCorrectly ? "TRUE" : "FALSE")),
+        QString("Wheel Speed Fraction:        ") +
+            (m_controllerManager == nullptr ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            QString::number(m_controllerManager->getStaticOptions().wheelSpeedFraction))),
+        QString("Declare Wall On Read:        ") +
+            (m_controllerManager == nullptr ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            (m_controllerManager->getDynamicOptions().declareWallOnRead ? "TRUE" : "FALSE"))),
+        QString("Use Tile Edge Movements:     ") +
+            (m_controllerManager == nullptr ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            (m_controllerManager->getDynamicOptions().useTileEdgeMovements ? "TRUE" : "FALSE"))),
+        */
+
+        // Mouse progress
+        {"Tiles Traversed",
+            QString::number(m_model->getWorld()->getNumberOfTilesTraversed()) + "/" +
+            QString::number(m_model->getMaze()->getWidth() * m_model->getMaze()->getHeight())
+        },
+        {"Closest Distance to Center", m_model->getWorld()->getClosestDistanceToCenter()},
+        {"Current X (m)", m_model->getMouse()->getCurrentTranslation().getX().getMeters()},
+        {"Current Y (m)", m_model->getMouse()->getCurrentTranslation().getY().getMeters()},
+        {"Current Rotation (deg)", m_model->getMouse()->getCurrentRotation().getDegreesZeroTo360()},
+        {"Current X tile", m_model->getMouse()->getCurrentDiscretizedTranslation().first},
+        {"Current Y tile", m_model->getMouse()->getCurrentDiscretizedTranslation().second},
+        {"Current Direction",
+            DIRECTION_TO_STRING.value(m_model->getMouse()->getCurrentDiscretizedRotation())
+        },
+        {"Elapsed Real Time", SimUtilities::formatDuration(Time::get()->elapsedRealTime())},
+        {"Elapsed Sim Time", SimUtilities::formatDuration(Time::get()->elapsedSimTime())},
+        {"Time Since Origin Departure",
+            m_model->getWorld()->getTimeSinceOriginDeparture().getSeconds() < 0
+            ? "NONE"
+            : SimUtilities::formatDuration(m_model->getWorld()->getTimeSinceOriginDeparture())
+        },
+        {"Best Time to Center",
+            m_model->getWorld()->getBestTimeToCenter().getSeconds() < 0
+            ? "NONE"
+            : SimUtilities::formatDuration(m_model->getWorld()->getBestTimeToCenter())
+        },
+
+        // Sim state
+        {"Crashed", (S()->crashed() ? "TRUE" : "FALSE")},
+        {"Layout Type (l)", LAYOUT_TYPE_TO_STRING.value(S()->layoutType())},
+        {"Rotate Zoomed Map (r)", (S()->rotateZoomedMap() ? "TRUE" : "FALSE")},
+        {"Zoomed Map Scale (i, o)", QString::number(S()->zoomedMapScale())},
+        {"Wall Truth Visible (t)", (S()->wallTruthVisible() ? "TRUE" : "FALSE")},
+        {"Tile Colors Visible (c)", (S()->tileColorsVisible() ? "TRUE" : "FALSE")},
+        {"Tile Fog Visible (g)", (S()->tileFogVisible() ? "TRUE" : "FALSE")},
+        {"Tile Text Visible (x)", (S()->tileTextVisible() ? "TRUE" : "FALSE")},
+        {"Tile Distance Visible (d)", (S()->tileDistanceVisible() ? "TRUE" : "FALSE")},
+        {"Header Visible (h)", (S()->headerVisible() ? "TRUE" : "FALSE")},
+        {"Wireframe Mode (w)", (S()->wireframeMode() ? "TRUE" : "FALSE")},
+        {"Paused (p)", (S()->paused() ? "TRUE" : "FALSE")},
+        {"Sim Speed (f, s)", QString::number(S()->simSpeed())},
+    };
+
+    int itemsPerColumn = qCeil(info.size() / 3.0);
+    for (int i = 0; i < info.size(); i += 1) {
+        const auto& pair = info.at(i);
+        int row = i % itemsPerColumn;
+        int col = 2 * (i / itemsPerColumn);
+        ui->infoContainer->addWidget(new QLabel(pair.first + ":"), row, col);
+        QLineEdit* lineEdit = new QLineEdit(pair.second.toString());
+        lineEdit->setReadOnly(true);
+        ui->infoContainer->addWidget(lineEdit, row, col + 1);
+    }
+
+    // Add a map to the UI
+    Map* map = new Map(model, lens);
+    map->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    ui->mapContainer->addWidget(map);
 }
 
 MainWindow::~MainWindow() {
@@ -191,4 +324,10 @@ void Map::specialKeyRelease(int key, int x, int y) {
 }
 */
 
+
+/*
+        QString("Run ID:                      ") + S()->runId(),
+        QString("Random Seed:                 ") + QString::number(P()->randomSeed()),
+
+*/
 } // namespace mms

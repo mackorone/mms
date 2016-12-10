@@ -13,12 +13,12 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
-#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
-#include <QtWidgets/QTabWidget>
+#include <QtWidgets/QSplitter>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
@@ -28,15 +28,12 @@ class Ui_MainWindow
 {
 public:
     QWidget *centralWidget;
-    QHBoxLayout *horizontalLayout;
-    QTabWidget *tabWidget;
-    QWidget *tab_3;
     QVBoxLayout *verticalLayout;
-    QHBoxLayout *mapContainer3;
-    QHBoxLayout *mapContainer2;
-    QHBoxLayout *mapContainer1;
-    QWidget *tab_4;
-    QVBoxLayout *verticalLayout_3;
+    QSplitter *splitter;
+    QWidget *gridLayoutWidget;
+    QGridLayout *infoContainer;
+    QWidget *verticalLayoutWidget;
+    QVBoxLayout *mapContainer;
     QMenuBar *menuBar;
     QMenu *menu_File;
 
@@ -53,46 +50,37 @@ public:
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(centralWidget->sizePolicy().hasHeightForWidth());
         centralWidget->setSizePolicy(sizePolicy);
-        horizontalLayout = new QHBoxLayout(centralWidget);
-        horizontalLayout->setSpacing(6);
-        horizontalLayout->setContentsMargins(11, 11, 11, 11);
-        horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
-        tabWidget = new QTabWidget(centralWidget);
-        tabWidget->setObjectName(QStringLiteral("tabWidget"));
-        tab_3 = new QWidget();
-        tab_3->setObjectName(QStringLiteral("tab_3"));
-        verticalLayout = new QVBoxLayout(tab_3);
+        verticalLayout = new QVBoxLayout(centralWidget);
         verticalLayout->setSpacing(6);
         verticalLayout->setContentsMargins(11, 11, 11, 11);
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
-        mapContainer3 = new QHBoxLayout();
-        mapContainer3->setSpacing(6);
-        mapContainer3->setObjectName(QStringLiteral("mapContainer3"));
+        splitter = new QSplitter(centralWidget);
+        splitter->setObjectName(QStringLiteral("splitter"));
+        splitter->setAutoFillBackground(true);
+        splitter->setStyleSheet(QStringLiteral(""));
+        splitter->setFrameShape(QFrame::Panel);
+        splitter->setFrameShadow(QFrame::Plain);
+        splitter->setLineWidth(0);
+        splitter->setOrientation(Qt::Vertical);
+        splitter->setHandleWidth(10);
+        gridLayoutWidget = new QWidget(splitter);
+        gridLayoutWidget->setObjectName(QStringLiteral("gridLayoutWidget"));
+        infoContainer = new QGridLayout(gridLayoutWidget);
+        infoContainer->setSpacing(6);
+        infoContainer->setContentsMargins(11, 11, 11, 11);
+        infoContainer->setObjectName(QStringLiteral("infoContainer"));
+        infoContainer->setContentsMargins(0, 0, 0, 0);
+        splitter->addWidget(gridLayoutWidget);
+        verticalLayoutWidget = new QWidget(splitter);
+        verticalLayoutWidget->setObjectName(QStringLiteral("verticalLayoutWidget"));
+        mapContainer = new QVBoxLayout(verticalLayoutWidget);
+        mapContainer->setSpacing(6);
+        mapContainer->setContentsMargins(11, 11, 11, 11);
+        mapContainer->setObjectName(QStringLiteral("mapContainer"));
+        mapContainer->setContentsMargins(0, 0, 0, 0);
+        splitter->addWidget(verticalLayoutWidget);
 
-        verticalLayout->addLayout(mapContainer3);
-
-        mapContainer2 = new QHBoxLayout();
-        mapContainer2->setSpacing(6);
-        mapContainer2->setObjectName(QStringLiteral("mapContainer2"));
-
-        verticalLayout->addLayout(mapContainer2);
-
-        mapContainer1 = new QHBoxLayout();
-        mapContainer1->setSpacing(6);
-        mapContainer1->setObjectName(QStringLiteral("mapContainer1"));
-
-        verticalLayout->addLayout(mapContainer1);
-
-        tabWidget->addTab(tab_3, QString());
-        tab_4 = new QWidget();
-        tab_4->setObjectName(QStringLiteral("tab_4"));
-        verticalLayout_3 = new QVBoxLayout(tab_4);
-        verticalLayout_3->setSpacing(6);
-        verticalLayout_3->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
-        tabWidget->addTab(tab_4, QString());
-
-        horizontalLayout->addWidget(tabWidget);
+        verticalLayout->addWidget(splitter);
 
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
@@ -106,17 +94,12 @@ public:
 
         retranslateUi(MainWindow);
 
-        tabWidget->setCurrentIndex(0);
-
-
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
 
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Micromouse Simulator", 0));
-        tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("MainWindow", "Tab 1", 0));
-        tabWidget->setTabText(tabWidget->indexOf(tab_4), QApplication::translate("MainWindow", "Tab 2", 0));
         menu_File->setTitle(QApplication::translate("MainWindow", "&File", 0));
     } // retranslateUi
 
