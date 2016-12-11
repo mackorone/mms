@@ -25,10 +25,63 @@
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <layout class="QGridLayout" name="infoContainer"/>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <layout class="QVBoxLayout" name="mapContainer"/>
+      </item>
+      <item>
+       <widget class="QTabWidget" name="tabWidget">
+        <widget class="QWidget" name="tab_6">
+         <attribute name="title">
+          <string>Tab 1</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QScrollArea" name="scrollArea">
+            <property name="widgetResizable">
+             <bool>true</bool>
+            </property>
+            <widget class="QWidget" name="scrollAreaWidgetContents">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>588</width>
+               <height>161</height>
+              </rect>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_3">
+              <item row="0" column="0">
+               <layout class="QGridLayout" name="infoContainer"/>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_7">
+         <attribute name="title">
+          <string>Tab 2</string>
+         </attribute>
+        </widget>
+       </widget>
+      </item>
+     </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="mapContainer"/>
+     <widget class="QTabWidget" name="tabWidget_2">
+      <widget class="QWidget" name="tab_11">
+       <attribute name="title">
+        <string>Tab 1</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="tab_12">
+       <attribute name="title">
+        <string>Tab 2</string>
+       </attribute>
+      </widget>
+     </widget>
     </item>
    </layout>
   </widget>

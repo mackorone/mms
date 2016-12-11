@@ -19,7 +19,6 @@ public:
     int defaultWindowWidth();
     int defaultWindowHeight();
     QString defaultLayoutType();
-    int windowBorderWidth();
     double minZoomedMapScale();
     double maxZoomedMapScale();
     double defaultZoomedMapScale();
@@ -99,7 +98,6 @@ private:
     int m_defaultWindowWidth;
     int m_defaultWindowHeight;
     QString m_defaultLayoutType;
-    int m_windowBorderWidth;
     double m_minZoomedMapScale;
     double m_maxZoomedMapScale;
     double m_defaultZoomedMapScale;

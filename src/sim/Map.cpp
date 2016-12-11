@@ -73,7 +73,7 @@ void Map::initializeGL() {
     initializeOpenGLFunctions();
 
     // Set some gl values
-    glClearColor(0.1, 0.0, 0.0, 1.0);
+    glClearColor(0.0, 0.0, 0.0, 1.0);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
     glPolygonMode(GL_FRONT_AND_BACK, S()->wireframeMode() ? GL_LINE : GL_FILL);
@@ -322,14 +322,12 @@ void Map::drawFullAndZoomedMaps(
         int count) {
 
     // Get the sizes and positions of each of the maps.
-    QPair<int, int> fullMapPosition = Layout::getFullMapPosition(
-        m_windowWidth, m_windowHeight, 0, P()->windowBorderWidth(), S()->layoutType());
+    QPair<int, int> fullMapPosition = Layout::getFullMapPosition();
+    QPair<int, int> zoomedMapPosition = Layout::getZoomedMapPosition();
     QPair<int, int> fullMapSize = Layout::getFullMapSize(
-        m_windowWidth, m_windowHeight, 0, P()->windowBorderWidth(), S()->layoutType());
-    QPair<int, int> zoomedMapPosition = Layout::getZoomedMapPosition(
-        m_windowWidth, m_windowHeight, 0, P()->windowBorderWidth(), S()->layoutType());
+        m_windowWidth, m_windowHeight, S()->layoutType());
     QPair<int, int> zoomedMapSize = Layout::getZoomedMapSize(
-        m_windowWidth, m_windowHeight, 0, P()->windowBorderWidth(), S()->layoutType());
+        m_windowWidth, m_windowHeight, S()->layoutType());
 
     // Get the physical size of the maze (in meters)
     double physicalMazeWidth = P()->wallWidth() + m_model->getMaze()->getWidth() * (P()->wallWidth() + P()->wallLength());

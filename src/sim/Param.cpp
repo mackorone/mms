@@ -40,9 +40,7 @@ Param::Param() {
     m_defaultWindowHeight = parser.getIntIfHasIntAndNotLessThan(
         "default-window-height", 700, 100);
     m_defaultLayoutType = parser.getStringIfHasStringAndIsLayoutType(
-        "default-layout-type", LAYOUT_TYPE_TO_STRING.value(LayoutType::BOTH));
-    m_windowBorderWidth = parser.getIntIfHasIntAndInRange(
-        "window-border-width", 10, 0, 30);
+        "default-layout-type", LAYOUT_TYPE_TO_STRING.value(LayoutType::FULL));
     m_minZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange(
         "min-zoomed-map-scale", 0.02, 0.01, 0.04);
     m_maxZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange(
@@ -188,10 +186,6 @@ int Param::defaultWindowHeight() {
 
 QString Param::defaultLayoutType() {
     return m_defaultLayoutType;
-}
-
-int Param::windowBorderWidth() {
-    return m_windowBorderWidth;
 }
 
 double Param::minZoomedMapScale() {

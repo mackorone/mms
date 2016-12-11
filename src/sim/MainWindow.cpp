@@ -25,8 +25,8 @@ MainWindow::MainWindow(Model* model, Lens* lens, QWidget *parent) :
     QVector<QPair<QString, QVariant>> labels = getHeaderInfo();
     int itemsPerColumn = qCeil(labels.size() / 4.0);
     for (int i = 0; i < labels.size(); i += 1) {
-        int row = i % itemsPerColumn;
-        int col = 2 * (i / itemsPerColumn);
+        int row = i; //  % itemsPerColumn; // TODO: MACK
+        int col = 0; // 2 * (i / itemsPerColumn); // TODO: MACK
         QString label = labels.at(i).first;
         QLabel* labelHolder = new QLabel(label + (label.isEmpty() ? "" : ":"));
         QLabel* valueHolder = new QLabel();
