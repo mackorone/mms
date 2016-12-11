@@ -5,6 +5,7 @@
 #include <QMainWindow>
 #include <QTimer>
 
+#include "Controller.h"
 #include "Lens.h"
 #include "Model.h"
 
@@ -19,7 +20,12 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    MainWindow(Model* model, Lens* lens, QWidget *parent = 0);
+    MainWindow(
+        Model* model,
+        Lens* lens,
+        Controller* controller,
+        QWidget *parent = 0);
+
     ~MainWindow();
 
 protected:

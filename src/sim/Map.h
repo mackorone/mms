@@ -8,7 +8,6 @@
 #include <QOpenGLTexture> 
 #include <QOpenGLVertexArrayObject> 
 #include <QOpenGLWidget>
-#include <QResizeEvent>
 #include <QVector>
 
 #include "LayoutType.h"
@@ -35,7 +34,6 @@ protected:
     void initializeGL();
     void paintGL();
     void resizeGL(int width, int height);
-	void resizeEvent(QResizeEvent* event);
 
 private:
 

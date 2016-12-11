@@ -71,7 +71,8 @@ int Driver::drive(int argc, char* argv[]) {
 
     // Initialize the controllerManager, which starts the algorithm
     ControllerManager* controllerManager = new ControllerManager(model, lens);
-    controllerManager->spawnMouseAlgo(P()->mouseAlgorithm());
+    Controller* controller =
+        controllerManager->spawnMouseAlgo(P()->mouseAlgorithm());
 
     // TODO: MACK - this could be on the same thread as the graphics loop
     // Start the physics loop
@@ -80,7 +81,7 @@ int Driver::drive(int argc, char* argv[]) {
     });
 
     // TODO: MACK -- create the main window
-    MainWindow w(model, lens);
+    MainWindow w(model, lens, controller);
     w.show();
     // TODO: MACK
 

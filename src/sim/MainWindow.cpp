@@ -12,7 +12,11 @@
 
 namespace mms {
 
-MainWindow::MainWindow(Model* model, Lens* lens, QWidget *parent) :
+MainWindow::MainWindow(
+        Model* model,
+        Lens* lens,
+        Controller* controller,
+        QWidget *parent) :
         QMainWindow(parent),
         m_model(model),
         m_lens(lens),
@@ -21,9 +25,18 @@ MainWindow::MainWindow(Model* model, Lens* lens, QWidget *parent) :
     // Initialization
     ui->setupUi(this);
 
+    // TODO: MACK
+    connect(
+        controller,
+        &Controller::algoStdout,
+        ui->stdoutTextEdit,
+        &QPlainTextEdit::appendPlainText
+    );
+
     // Add header info to the UI
     QVector<QPair<QString, QVariant>> labels = getHeaderInfo();
     int itemsPerColumn = qCeil(labels.size() / 4.0);
+    /*
     for (int i = 0; i < labels.size(); i += 1) {
         int row = i; //  % itemsPerColumn; // TODO: MACK
         int col = 0; // 2 * (i / itemsPerColumn); // TODO: MACK
@@ -52,12 +65,16 @@ MainWindow::MainWindow(Model* model, Lens* lens, QWidget *parent) :
         }
     );
     m_headerRefreshTimer.start(33);
+    */
 
     // Add a map to the UI
     Map* map = new Map(model, lens);
     map->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    map->setMinimumSize(500, 500);
+    map->setMinimumSize(300, 300);
     ui->mapContainer->addWidget(map);
+
+    // TODO: MACK - lastly, resize the window
+    resize(1200, 633);
 }
 
 MainWindow::~MainWindow() {
@@ -243,6 +260,7 @@ QVector<QPair<QString, QVariant>> MainWindow::getHeaderInfo() const {
     return {
 
         // Run info
+        // TODO: MACK - run directory
         {"Run ID", S()->runId()},
         {"Random Seed", P()->randomSeed()},
         {"", ""},

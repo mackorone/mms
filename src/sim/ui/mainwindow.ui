@@ -23,62 +23,78 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout_3">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_3">
-      <item>
-       <layout class="QVBoxLayout" name="mapContainer"/>
-      </item>
-      <item>
-       <widget class="QTabWidget" name="tabWidget">
-        <widget class="QWidget" name="tab_6">
-         <attribute name="title">
-          <string>Tab 1</string>
-         </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
-          <item>
-           <widget class="QScrollArea" name="scrollArea">
-            <property name="widgetResizable">
-             <bool>true</bool>
-            </property>
-            <widget class="QWidget" name="scrollAreaWidgetContents">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>0</y>
-               <width>588</width>
-               <height>161</height>
-              </rect>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_3">
-              <item row="0" column="0">
-               <layout class="QGridLayout" name="infoContainer"/>
-              </item>
-             </layout>
-            </widget>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="tab_7">
-         <attribute name="title">
-          <string>Tab 2</string>
-         </attribute>
-        </widget>
-       </widget>
-      </item>
-     </layout>
+     <layout class="QVBoxLayout" name="mapContainer"/>
     </item>
     <item>
-     <widget class="QTabWidget" name="tabWidget_2">
-      <widget class="QWidget" name="tab_11">
+     <widget class="QTabWidget" name="tabs">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="runStatsTab">
        <attribute name="title">
-        <string>Tab 1</string>
+        <string>Run Stats</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3"/>
       </widget>
-      <widget class="QWidget" name="tab_12">
+      <widget class="QWidget" name="stdoutTab">
        <attribute name="title">
-        <string>Tab 2</string>
+        <string>Algo Stdout</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QScrollArea" name="stdoutScrollArea">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="stdoutScrollAreaContents">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>590</width>
+             <height>384</height>
+            </rect>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_7">
+            <item>
+             <widget class="QPlainTextEdit" name="stdoutTextEdit">
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+              <property name="plainText">
+               <string/>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="algoOptionsTab">
+       <attribute name="title">
+        <string>Algo Options</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_6"/>
+      </widget>
+      <widget class="QWidget" name="apiCallsTab">
+       <attribute name="title">
+        <string>API Calls</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_5"/>
+      </widget>
+      <widget class="QWidget" name="mazeInfoTab">
+       <attribute name="title">
+        <string>Maze Info</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout"/>
+      </widget>
+      <widget class="QWidget" name="optionsTab">
+       <attribute name="title">
+        <string>Options</string>
        </attribute>
       </widget>
      </widget>

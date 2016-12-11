@@ -16,16 +16,19 @@ class Controller : public QObject {
     Q_OBJECT
 
 public:
+
     Controller(Model* model, Lens* lens, const QString& mouseAlgorithm);
 
     StaticMouseAlgorithmOptions getStaticOptions();
     DynamicMouseAlgorithmOptions getDynamicOptions();
 
-public slots:
-
     void init();
     void processMouseAlgoStderr();
     void processMouseAlgoStdout();
+
+signals:
+
+    void algoStdout(const QString& line);
 
 private:
 

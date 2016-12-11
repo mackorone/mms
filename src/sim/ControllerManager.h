@@ -17,7 +17,7 @@ class ControllerManager : public QObject {
 public:
 
     ControllerManager(Model* model, Lens* lens);
-    void spawnMouseAlgo(const QString& mouseAlgorithm);
+    Controller* spawnMouseAlgo(const QString& mouseAlgorithm);
 
 private:
 

@@ -153,17 +153,6 @@ void Map::resizeGL(int width, int height) {
     m_windowHeight = height;
 }
 
-void Map::resizeEvent(QResizeEvent* event) {
-    // Ensure 1:1 aspect ratio
-    int width = event->size().width();
-    int height = event->size().height();
-    int min = qMin(width, height);
-    if (width != height) {
-        resize(QSize(min, min));
-    }
-    QOpenGLWidget::resizeEvent(event);
-}
-
 void Map::initPolygonProgram() {
 
 	m_polygonProgram.addShaderFromSourceCode(

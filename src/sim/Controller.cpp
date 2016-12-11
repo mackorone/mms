@@ -46,6 +46,7 @@ void Controller::init() {
         this,
         &Controller::processMouseAlgoStderr
     );
+    // TODO: MACK - start here
 
     // TODO: MACK - eventually remove this
     // Wait until static options have been finalized
@@ -82,12 +83,12 @@ DynamicMouseAlgorithmOptions Controller::getDynamicOptions() {
     return m_dynamicOptions;
 }
 
-
 void Controller::processMouseAlgoStdout() {
+    // TODO: MACK - do the same sort of grouping as in stderr
     QString output = m_process->readAllStandardOutput();
     for (const QString& line : output.split("\n", QString::SkipEmptyParts)) {
-        // TODO: MACK - format this better, put this in the GUI, log it, etc.
-        qDebug() << "ALGO:" << line;
+        // TODO: MACK - how to ensure that we're hooked up to the stdout textEdit before this happends?
+        emit algoStdout(line);
     }
 }
 
@@ -519,6 +520,7 @@ void Controller::startMouseAlgorithm(const QString& mouseAlgorithm) {
 
         // Run
         m_process = new QProcess();
+        // TODO: MACK - I should be doing the connections here
         m_process->start(binPath);
 
         // TODO: MACK - use these instead of waiting for the process to finish

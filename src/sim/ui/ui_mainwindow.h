@@ -13,12 +13,12 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
-#include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
+#include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QScrollArea>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QVBoxLayout>
@@ -30,20 +30,24 @@ class Ui_MainWindow
 {
 public:
     QWidget *centralWidget;
-    QVBoxLayout *verticalLayout;
     QHBoxLayout *horizontalLayout_3;
     QVBoxLayout *mapContainer;
-    QTabWidget *tabWidget;
-    QWidget *tab_6;
+    QTabWidget *tabs;
+    QWidget *runStatsTab;
     QVBoxLayout *verticalLayout_3;
-    QScrollArea *scrollArea;
-    QWidget *scrollAreaWidgetContents;
-    QGridLayout *gridLayout_3;
-    QGridLayout *infoContainer;
-    QWidget *tab_7;
-    QTabWidget *tabWidget_2;
-    QWidget *tab_11;
-    QWidget *tab_12;
+    QWidget *stdoutTab;
+    QVBoxLayout *verticalLayout_4;
+    QScrollArea *stdoutScrollArea;
+    QWidget *stdoutScrollAreaContents;
+    QVBoxLayout *verticalLayout_7;
+    QPlainTextEdit *stdoutTextEdit;
+    QWidget *algoOptionsTab;
+    QVBoxLayout *verticalLayout_6;
+    QWidget *apiCallsTab;
+    QVBoxLayout *verticalLayout_5;
+    QWidget *mazeInfoTab;
+    QVBoxLayout *verticalLayout;
+    QWidget *optionsTab;
     QMenuBar *menuBar;
     QMenu *menu_File;
 
@@ -60,12 +64,9 @@ public:
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(centralWidget->sizePolicy().hasHeightForWidth());
         centralWidget->setSizePolicy(sizePolicy);
-        verticalLayout = new QVBoxLayout(centralWidget);
-        verticalLayout->setSpacing(6);
-        verticalLayout->setContentsMargins(11, 11, 11, 11);
-        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
-        horizontalLayout_3 = new QHBoxLayout();
+        horizontalLayout_3 = new QHBoxLayout(centralWidget);
         horizontalLayout_3->setSpacing(6);
+        horizontalLayout_3->setContentsMargins(11, 11, 11, 11);
         horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
         mapContainer = new QVBoxLayout();
         mapContainer->setSpacing(6);
@@ -73,54 +74,68 @@ public:
 
         horizontalLayout_3->addLayout(mapContainer);
 
-        tabWidget = new QTabWidget(centralWidget);
-        tabWidget->setObjectName(QStringLiteral("tabWidget"));
-        tab_6 = new QWidget();
-        tab_6->setObjectName(QStringLiteral("tab_6"));
-        verticalLayout_3 = new QVBoxLayout(tab_6);
+        tabs = new QTabWidget(centralWidget);
+        tabs->setObjectName(QStringLiteral("tabs"));
+        runStatsTab = new QWidget();
+        runStatsTab->setObjectName(QStringLiteral("runStatsTab"));
+        verticalLayout_3 = new QVBoxLayout(runStatsTab);
         verticalLayout_3->setSpacing(6);
         verticalLayout_3->setContentsMargins(11, 11, 11, 11);
         verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
-        scrollArea = new QScrollArea(tab_6);
-        scrollArea->setObjectName(QStringLiteral("scrollArea"));
-        scrollArea->setWidgetResizable(true);
-        scrollAreaWidgetContents = new QWidget();
-        scrollAreaWidgetContents->setObjectName(QStringLiteral("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 588, 161));
-        gridLayout_3 = new QGridLayout(scrollAreaWidgetContents);
-        gridLayout_3->setSpacing(6);
-        gridLayout_3->setContentsMargins(11, 11, 11, 11);
-        gridLayout_3->setObjectName(QStringLiteral("gridLayout_3"));
-        infoContainer = new QGridLayout();
-        infoContainer->setSpacing(6);
-        infoContainer->setObjectName(QStringLiteral("infoContainer"));
+        tabs->addTab(runStatsTab, QString());
+        stdoutTab = new QWidget();
+        stdoutTab->setObjectName(QStringLiteral("stdoutTab"));
+        verticalLayout_4 = new QVBoxLayout(stdoutTab);
+        verticalLayout_4->setSpacing(6);
+        verticalLayout_4->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
+        stdoutScrollArea = new QScrollArea(stdoutTab);
+        stdoutScrollArea->setObjectName(QStringLiteral("stdoutScrollArea"));
+        stdoutScrollArea->setWidgetResizable(true);
+        stdoutScrollAreaContents = new QWidget();
+        stdoutScrollAreaContents->setObjectName(QStringLiteral("stdoutScrollAreaContents"));
+        stdoutScrollAreaContents->setGeometry(QRect(0, 0, 590, 384));
+        verticalLayout_7 = new QVBoxLayout(stdoutScrollAreaContents);
+        verticalLayout_7->setSpacing(6);
+        verticalLayout_7->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_7->setObjectName(QStringLiteral("verticalLayout_7"));
+        stdoutTextEdit = new QPlainTextEdit(stdoutScrollAreaContents);
+        stdoutTextEdit->setObjectName(QStringLiteral("stdoutTextEdit"));
+        stdoutTextEdit->setReadOnly(true);
 
-        gridLayout_3->addLayout(infoContainer, 0, 0, 1, 1);
+        verticalLayout_7->addWidget(stdoutTextEdit);
 
-        scrollArea->setWidget(scrollAreaWidgetContents);
+        stdoutScrollArea->setWidget(stdoutScrollAreaContents);
 
-        verticalLayout_3->addWidget(scrollArea);
+        verticalLayout_4->addWidget(stdoutScrollArea);
 
-        tabWidget->addTab(tab_6, QString());
-        tab_7 = new QWidget();
-        tab_7->setObjectName(QStringLiteral("tab_7"));
-        tabWidget->addTab(tab_7, QString());
+        tabs->addTab(stdoutTab, QString());
+        algoOptionsTab = new QWidget();
+        algoOptionsTab->setObjectName(QStringLiteral("algoOptionsTab"));
+        verticalLayout_6 = new QVBoxLayout(algoOptionsTab);
+        verticalLayout_6->setSpacing(6);
+        verticalLayout_6->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_6->setObjectName(QStringLiteral("verticalLayout_6"));
+        tabs->addTab(algoOptionsTab, QString());
+        apiCallsTab = new QWidget();
+        apiCallsTab->setObjectName(QStringLiteral("apiCallsTab"));
+        verticalLayout_5 = new QVBoxLayout(apiCallsTab);
+        verticalLayout_5->setSpacing(6);
+        verticalLayout_5->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_5->setObjectName(QStringLiteral("verticalLayout_5"));
+        tabs->addTab(apiCallsTab, QString());
+        mazeInfoTab = new QWidget();
+        mazeInfoTab->setObjectName(QStringLiteral("mazeInfoTab"));
+        verticalLayout = new QVBoxLayout(mazeInfoTab);
+        verticalLayout->setSpacing(6);
+        verticalLayout->setContentsMargins(11, 11, 11, 11);
+        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
+        tabs->addTab(mazeInfoTab, QString());
+        optionsTab = new QWidget();
+        optionsTab->setObjectName(QStringLiteral("optionsTab"));
+        tabs->addTab(optionsTab, QString());
 
-        horizontalLayout_3->addWidget(tabWidget);
-
-
-        verticalLayout->addLayout(horizontalLayout_3);
-
-        tabWidget_2 = new QTabWidget(centralWidget);
-        tabWidget_2->setObjectName(QStringLiteral("tabWidget_2"));
-        tab_11 = new QWidget();
-        tab_11->setObjectName(QStringLiteral("tab_11"));
-        tabWidget_2->addTab(tab_11, QString());
-        tab_12 = new QWidget();
-        tab_12->setObjectName(QStringLiteral("tab_12"));
-        tabWidget_2->addTab(tab_12, QString());
-
-        verticalLayout->addWidget(tabWidget_2);
+        horizontalLayout_3->addWidget(tabs);
 
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
@@ -134,16 +149,22 @@ public:
 
         retranslateUi(MainWindow);
 
+        tabs->setCurrentIndex(0);
+
+
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
 
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Micromouse Simulator", 0));
-        tabWidget->setTabText(tabWidget->indexOf(tab_6), QApplication::translate("MainWindow", "Tab 1", 0));
-        tabWidget->setTabText(tabWidget->indexOf(tab_7), QApplication::translate("MainWindow", "Tab 2", 0));
-        tabWidget_2->setTabText(tabWidget_2->indexOf(tab_11), QApplication::translate("MainWindow", "Tab 1", 0));
-        tabWidget_2->setTabText(tabWidget_2->indexOf(tab_12), QApplication::translate("MainWindow", "Tab 2", 0));
+        tabs->setTabText(tabs->indexOf(runStatsTab), QApplication::translate("MainWindow", "Run Stats", 0));
+        stdoutTextEdit->setPlainText(QString());
+        tabs->setTabText(tabs->indexOf(stdoutTab), QApplication::translate("MainWindow", "Algo Stdout", 0));
+        tabs->setTabText(tabs->indexOf(algoOptionsTab), QApplication::translate("MainWindow", "Algo Options", 0));
+        tabs->setTabText(tabs->indexOf(apiCallsTab), QApplication::translate("MainWindow", "API Calls", 0));
+        tabs->setTabText(tabs->indexOf(mazeInfoTab), QApplication::translate("MainWindow", "Maze Info", 0));
+        tabs->setTabText(tabs->indexOf(optionsTab), QApplication::translate("MainWindow", "Options", 0));
         menu_File->setTitle(QApplication::translate("MainWindow", "&File", 0));
     } // retranslateUi
 

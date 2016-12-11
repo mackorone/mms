@@ -7,7 +7,7 @@ ControllerManager::ControllerManager(Model* model, Lens* lens) :
     m_lens(lens) {
 }
 
-void ControllerManager::spawnMouseAlgo(const QString& mouseAlgorithm) {
+Controller* ControllerManager::spawnMouseAlgo(const QString& mouseAlgorithm) {
 
     Controller* controller = new Controller(m_model, m_lens, mouseAlgorithm);
     QThread* thread = new QThread();
@@ -16,6 +16,8 @@ void ControllerManager::spawnMouseAlgo(const QString& mouseAlgorithm) {
     connect(thread, &QThread::started, controller, &Controller::init);
     controller->moveToThread(thread);
 	thread->start();
+
+    return controller;
 }
 
 } // namespace mms
