@@ -14,28 +14,14 @@ QPair<int, int> Layout::getZoomedMapPosition() {
     return {0, 0};
 }
 
-QPair<int, int> Layout::getFullMapSize(
-        int windowWidth,
-        int windowHeight,
-        LayoutType layoutType) {
-
-    if (layoutType == LayoutType::ZOOMED) {
-        return {0, 0};
-    }
+QPair<int, int> Layout::getFullMapSize(int windowWidth, int windowHeight) {
     return {
         windowWidth - 2 * FULL_MAP_BORDER_WIDTH,
         windowHeight - 2 * FULL_MAP_BORDER_WIDTH
     };
 }
 
-QPair<int, int> Layout::getZoomedMapSize(
-        int windowWidth,
-        int windowHeight,
-        LayoutType layoutType) {
-
-    if (layoutType == LayoutType::FULL) {
-        return {0, 0};
-    }
+QPair<int, int> Layout::getZoomedMapSize(int windowWidth, int windowHeight) {
     return {windowWidth, windowHeight};
 }
 

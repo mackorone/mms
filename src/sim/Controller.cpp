@@ -21,6 +21,18 @@ Controller::Controller(Model* model, Lens* lens, const QString& mouseAlgorithm) 
 
 void Controller::init() {
 
+    // First, Hook up a signal for clearing tile fog
+    connect(
+        m_model->getWorld(),
+        &World::newTileLocationTraversed,
+        this,
+        [=](int x, int y){
+            // TODO: MACK
+            // if (m_controllerManager->getDynamicOptions().automaticallyClearFog) {
+            m_lens->getMazeGraphic()->setTileFogginess(x, y, false);
+        }
+    );
+
     startMouseAlgorithm(m_mouseAlgorithm);
     connect(
         m_process,
@@ -34,7 +46,6 @@ void Controller::init() {
         this,
         &Controller::processMouseAlgoStderr
     );
-
 
     // TODO: MACK - eventually remove this
     // Wait until static options have been finalized

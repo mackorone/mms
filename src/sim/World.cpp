@@ -98,12 +98,10 @@ void World::simulate() {
         QPair<int, int> location = m_mouse->getCurrentDiscretizedTranslation();
         const Tile* tileAtLocation = m_maze->getTile(location.first, location.second);
 
-        // Whether or not this is a newly traversed tile
-        bool newLocation = !m_traversedTileLocations.contains(location);
-
-        // Update the set of traversed tiles
-        if (newLocation) {
+        // If this is a new tile, update the set of traversed tiles
+        if (!m_traversedTileLocations.contains(location)) {
             m_traversedTileLocations.insert(location);
+            emit newTileLocationTraversed(location.first, location.second);
             if (m_closestDistanceToCenter == -1 ||
                     tileAtLocation->getDistance() < m_closestDistanceToCenter) {
                 m_closestDistanceToCenter = tileAtLocation->getDistance(); 

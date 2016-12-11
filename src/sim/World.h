@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QObject>
 #include <QPair>
 #include <QSet>
 
@@ -10,7 +11,9 @@
 
 namespace mms {
 
-class World {
+class World : public QObject {
+
+    Q_OBJECT
 
 public:
     World(const Maze* maze, Mouse* mouse);
@@ -22,6 +25,9 @@ public:
     int getClosestDistanceToCenter() const;
 
     void simulate();
+
+signals:
+    void newTileLocationTraversed(int x, int y);
 
 private:
     const Maze* m_maze;

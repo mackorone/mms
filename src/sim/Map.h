@@ -11,6 +11,7 @@
 #include <QResizeEvent>
 #include <QVector>
 
+#include "LayoutType.h"
 #include "Lens.h"
 #include "Model.h"
 
@@ -70,7 +71,8 @@ private:
 
     // Drawing helper methods
     void repopulateVertexBufferObjects();
-    void drawFullAndZoomedMaps(
+    void drawMap(
+        LayoutType type,
         const Coordinate& currentMouseTranslation,
 		const Angle& currentMouseRotation,
         QOpenGLShaderProgram* program,
