@@ -21,7 +21,7 @@ Map::Map(const Model* model, Lens* lens, QWidget* parent) :
         m_model(model),
         m_lens(lens) {
 
-    // Ensure that we continuously refresh the widget
+    // Continuously refresh the widget
 	connect(
         this, &Map::frameSwapped,
         this, static_cast<void (Map::*)()>(&Map::update)
@@ -159,6 +159,17 @@ void Map::paintGL() {
 void Map::resizeGL(int width, int height) {
     m_windowWidth = width;
     m_windowHeight = height;
+}
+
+void Map::resizeEvent(QResizeEvent* event) {
+    // Ensure 1:1 aspect ratio
+    int width = event->size().width();
+    int height = event->size().height();
+    int min = qMin(width, height);
+    if (width != height) {
+        resize(QSize(min, min));
+    }
+    QOpenGLWidget::resizeEvent(event);
 }
 
 void Map::initPolygonProgram() {

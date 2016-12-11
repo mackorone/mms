@@ -53,10 +53,10 @@ MainWindow::MainWindow(Model* model, Lens* lens, QWidget *parent) :
     );
     m_headerRefreshTimer.start(33);
 
-
     // Add a map to the UI
     Map* map = new Map(model, lens);
     map->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    map->setMinimumSize(500, 500);
     ui->mapContainer->addWidget(map);
 }
 
