@@ -85,10 +85,6 @@ void Map::initializeGL() {
 
 void Map::paintGL() {
 
-    // In order to ensure we're sleeping the correct amount of time, we time
-    // the drawing operation and take it into account when we sleep.
-    double start(SimUtilities::getHighResTimestamp());
-
     // TODO: MACK - this shouldn't be here :/
     // First, clear fog as necessary
     // if (m_controllerManager->getDynamicOptions().automaticallyClearFog) {
@@ -158,26 +154,6 @@ void Map::paintGL() {
     // Disable scissoring so that the glClear can take effect, and so that
     // drawn text isn't clipped at all
     glDisable(GL_SCISSOR_TEST);
-
-    // Get the duration of the drawing operation, in seconds. Note that this duration
-    // is simply the total number of real seconds that have passed, which is exactly
-    // what we want (since the frame-rate is perceived in real-time and not CPU time).
-    double end(SimUtilities::getHighResTimestamp());
-    double duration = end - start;
-
-    // Notify the user of a late frame
-    // TODO: MACK - make variables for these long expressions
-    if (P()->printLateFrames() && duration > 1.0/P()->frameRate()) {
-        // TODO: MACK
-        // qWarning().noquote().nospace()
-        //     << "A frame was late by " << duration - 1.0/P()->frameRate()
-        //     << " seconds, which is "
-        //     << (duration - 1.0/P()->frameRate())/(1.0/P()->frameRate()) * 100
-        //     << " percent late.";
-    }
-
-    // Sleep the appropriate amount of time, base on the drawing duration
-    SimUtilities::sleep(Seconds(std::max(0.0, 1.0/P()->frameRate() - duration)));
 }
 
 void Map::resizeGL(int width, int height) {

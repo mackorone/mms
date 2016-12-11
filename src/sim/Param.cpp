@@ -43,14 +43,6 @@ Param::Param() {
         "default-layout-type", LAYOUT_TYPE_TO_STRING.value(LayoutType::BOTH));
     m_windowBorderWidth = parser.getIntIfHasIntAndInRange(
         "window-border-width", 10, 0, 30);
-    m_headerTextFont = parser.getStringIfHasString(
-        "header-text-font", "Unispace-Bold.ttf");
-    m_headerTextHeight = parser.getIntIfHasIntAndInRange(
-        "header-text-height", 9, 0, 30);
-    m_headerRowSpacing = parser.getIntIfHasIntAndInRange(
-        "header-row-spacing", 6, 0, 30);
-    m_headerColumnSpacing = parser.getIntIfHasIntAndInRange(
-        "header-column-spacing", 20, 0, 60);
     m_minZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange(
         "min-zoomed-map-scale", 0.02, 0.01, 0.04);
     m_maxZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange(
@@ -59,10 +51,6 @@ Param::Param() {
         "default-zoomed-map-scale", 0.1, m_minZoomedMapScale, m_maxZoomedMapScale);
     m_defaultRotateZoomedMap = parser.getBoolIfHasBool(
         "default-rotate-zoomed-map", false);
-    m_frameRate = parser.getIntIfHasIntAndInRange(
-        "frame-rate", 60, 1, 120);
-    m_printLateFrames = parser.getBoolIfHasBool(
-        "print-late-frames", false);
     m_tileBaseColor = parser.getStringIfHasStringAndIsColor(
         "tile-base-color", COLOR_TO_STRING.value(Color::BLACK));
     m_tileWallColor = parser.getStringIfHasStringAndIsColor(
@@ -206,22 +194,6 @@ int Param::windowBorderWidth() {
     return m_windowBorderWidth;
 }
 
-QString Param::headerTextFont() {
-    return m_headerTextFont;
-}
-
-int Param::headerTextHeight() {
-    return m_headerTextHeight;
-}
-
-int Param::headerRowSpacing() {
-    return m_headerRowSpacing;
-}
-
-int Param::headerColumnSpacing() {
-    return m_headerColumnSpacing;
-}
-
 double Param::minZoomedMapScale() {
     return m_minZoomedMapScale;
 }
@@ -236,14 +208,6 @@ double Param::defaultZoomedMapScale() {
 
 bool Param::defaultRotateZoomedMap() {
     return m_defaultRotateZoomedMap;
-}
-
-int Param::frameRate() {
-    return m_frameRate;
-}
-
-bool Param::printLateFrames() {
-    return m_printLateFrames;
 }
 
 QString Param::tileBaseColor() {
