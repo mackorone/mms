@@ -15,7 +15,6 @@ public:
     int getWidth() const;
     int getHeight() const;
     bool withinMaze(int x, int y) const;
-    Tile* getTile(int x, int y);
     const Tile* getTile(int x, int y) const;
     bool isValidMaze() const;
     bool isOfficialMaze() const;

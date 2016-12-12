@@ -75,6 +75,7 @@ int Driver::drive(int argc, char* argv[]) {
         controllerManager->spawnMouseAlgo(P()->mouseAlgorithm());
 
     // TODO: MACK - this could be on the same thread as the graphics loop
+    // TODO: MACK - timing of the algo start vs world start
     // Start the physics loop
     std::thread physicsThread([=]() {
         model->getWorld()->simulate();

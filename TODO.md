@@ -1,5 +1,16 @@
 # High Priority
 
+- Order of initialization
+    - Maze is generated/loaded
+    - World is started (doing nothing yet)
+    - Algorithm is chosen
+        - Attach process signals to Window
+        - Tile fog signal is attached
+    - Mouse is added to the world
+    - Algorithm is run
+    - Where are the graphics created?
+- Why is tile fog not clearing immediately?
+    - Sometimes the signal is emitted too soon
 - Clean up View
 - Kill Layout
 - QVector<QString> to QStringList

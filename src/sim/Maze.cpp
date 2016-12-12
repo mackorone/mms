@@ -114,11 +114,6 @@ bool Maze::withinMaze(int x, int y) const {
     return 0 <= x && x < getWidth() && 0 <= y && y < getHeight();
 }
 
-Tile* Maze::getTile(int x, int y) {
-    ASSERT_TR(withinMaze(x, y));
-    return &m_maze[x][y];
-}
-
 const Tile* Maze::getTile(int x, int y) const {
     ASSERT_TR(withinMaze(x, y));
     return &m_maze.at(x).at(y);

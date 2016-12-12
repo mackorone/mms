@@ -24,7 +24,7 @@ public:
 
     void init();
     void processMouseAlgoStderr();
-    void processMouseAlgoStdout();
+    void processMouseAlgoStdout(); // TODO: MACK
 
 signals:
 
