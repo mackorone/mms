@@ -8,8 +8,8 @@ void Interface::setMouseFile(const std::string& mouseFile) {
     READ();
 }
 
-void Interface::setInterfaceType(const std::string& interfaceType) {
-    PRINT("setInterfaceType", interfaceType);
+void Interface::useContinuousInterface() {
+    PRINT("useContinuousInterface");
     READ();
 }
 

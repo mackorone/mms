@@ -14,6 +14,8 @@ namespace mms {
 Controller::Controller(Model* model, Lens* lens, const QString& mouseAlgorithm) :
         m_model(model),
         m_lens(lens),
+        m_interfaceType(InterfaceType::DISCRETE),
+        m_interfaceTypeFinalized(false),
         m_mouseAlgorithm(mouseAlgorithm),
         m_staticOptionsFinalized(false),
         m_process(nullptr) {
@@ -66,13 +68,6 @@ void Controller::init() {
         QCoreApplication::processEvents();
     }
 
-    // Validate all of the static options except for mouseFile,
-    // which is validated in the mouse init method
-    validateMouseInterfaceType(
-        m_mouseAlgorithm,
-        m_staticOptions.interfaceType
-    );
-
     // Initialize the mouse interface
     m_mouseInterface = new MouseInterface(
         m_model->getMaze(),
@@ -82,9 +77,10 @@ void Controller::init() {
     );
 }
 
-StaticMouseAlgorithmOptions Controller::getStaticOptions() {
-    // The Controller object is the source of truth for the static options
-    return m_staticOptions;
+InterfaceType Controller::getInterfaceType() {
+    // Finalize the interface type the first time it's queried
+    m_interfaceTypeFinalized = true;
+    return m_interfaceType;
 }
 
 DynamicMouseAlgorithmOptions Controller::getDynamicOptions() {
@@ -160,8 +156,13 @@ QString Controller::processCommand(const QString& command) {
         m_mouseInterface->setMouseFile(tokens.at(1));
         return ACK_STRING;
     }
-    else if (function == "setInterfaceType") {
-        m_staticOptions.interfaceType = tokens.at(1);
+    else if (function == "useContinuousInterface") {
+        if (m_interfaceTypeFinalized) {
+            // TODO: MACK - error string here
+        }
+        else {
+            m_interfaceType = InterfaceType::CONTINUOUS;
+        }
         return ACK_STRING;
     }
     else if (function == "setInitialDirection") {
@@ -552,21 +553,6 @@ void Controller::startMouseAlgorithm(const QString& mouseAlgorithm) {
         << "No \"Main\" file found in \""
         << selectedMouseAlgoPath << "\"";
     SimUtilities::quit();
-}
-
-void Controller::validateMouseInterfaceType(
-        const QString& mouseAlgorithm, const QString& interfaceType) {
-    if (!STRING_TO_INTERFACE_TYPE.contains(interfaceType)) {
-        qCritical().noquote().nospace()
-            << "\"" << interfaceType << "\" is not a valid interface type. You"
-            << " must declare the interface type of the mouse algorithm \""
-            << mouseAlgorithm << "\" to be either \""
-            << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
-            << "\" or \""
-            << INTERFACE_TYPE_TO_STRING.value(InterfaceType::CONTINUOUS)
-            << "\".";
-        SimUtilities::quit();
-    }
 }
 
 } // namespace mms

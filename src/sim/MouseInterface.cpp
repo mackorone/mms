@@ -653,7 +653,7 @@ double MouseInterface::currentRotationDegrees() {
 }
 
 void MouseInterface::ensureDiscreteInterface(const QString& callingFunction) const {
-    if (STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType) != InterfaceType::DISCRETE) {
+    if (m_controller->getInterfaceType() != InterfaceType::DISCRETE) {
         qCritical().noquote().nospace()
             << "You must declare the interface type to be \""
             << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
@@ -663,7 +663,7 @@ void MouseInterface::ensureDiscreteInterface(const QString& callingFunction) con
 }
 
 void MouseInterface::ensureContinuousInterface(const QString& callingFunction) const {
-    if (STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType) != InterfaceType::CONTINUOUS) {
+    if (m_controller->getInterfaceType() != InterfaceType::CONTINUOUS) {
         qCritical().noquote().nospace()
             << "You must declare the interface type to be \""
             << INTERFACE_TYPE_TO_STRING.value(InterfaceType::CONTINUOUS)
