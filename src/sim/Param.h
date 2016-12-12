@@ -51,7 +51,6 @@ public:
 
     // Simulation parameters
     int randomSeed();
-    double glutInitDuration();
     bool defaultPaused();
     double minSimSpeed();
     double maxSimSpeed();
@@ -129,7 +128,6 @@ private:
 
     // Simulation parameters
     int m_randomSeed;
-    double m_glutInitDuration;
     bool m_defaultPaused;
     double m_minSimSpeed;
     double m_maxSimSpeed;

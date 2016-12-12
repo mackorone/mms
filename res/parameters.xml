@@ -42,7 +42,6 @@
     <collision-detection-enabled>true</collision-detection-enabled>
     <crash-message>Oh no! Your mouse crashed! It can't move anymore...</crash-message>
     <default-tile-text-character>?</default-tile-text-character>
-    <glut-init-duration>0.1</glut-init-duration> <!-- Seconds -->
     <default-paused>false</default-paused>
     <min-sim-speed>0.1</min-sim-speed> <!-- Fraction/factor of actual time -->
     <max-sim-speed>10.0</max-sim-speed> <!-- Fraction/factor of actual time -->

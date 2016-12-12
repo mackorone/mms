@@ -110,8 +110,6 @@ Param::Param() {
         useRandomSeed = false;
     }
     m_randomSeed = (useRandomSeed ? parser.getIntValue("random-seed") : std::random_device()());
-    m_glutInitDuration = parser.getDoubleIfHasDoubleAndInRange(
-        "glut-init-duration", 0.1, 0.0, 5.0);
     m_defaultPaused = parser.getBoolIfHasBool(
         "default-paused", false);
     m_minSimSpeed = parser.getDoubleIfHasDoubleAndInRange(
@@ -304,10 +302,6 @@ QString Param::distanceCorrectTileBaseColor() {
 
 int Param::randomSeed() {
     return m_randomSeed;
-}
-
-double Param::glutInitDuration() {
-    return m_glutInitDuration;
 }
 
 bool Param::defaultPaused() {
