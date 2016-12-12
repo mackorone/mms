@@ -28,11 +28,6 @@ void Interface::setWheelSpeedFraction(double wheelSpeedFraction) {
     READ();
 }
 
-void Interface::finalizeStaticOptions() {
-    PRINT("finalizeStaticOptions");
-    READ();
-}
-
 void Interface::updateAllowOmniscience(bool allowOmniscience) {
     PRINT("updateAllowOmniscience", boolToString(allowOmniscience));
     READ();

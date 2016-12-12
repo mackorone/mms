@@ -1,7 +1,5 @@
 #include "Controller.h"
 
-#include <QCoreApplication>
-
 #include "Directory.h"
 #include "Logging.h"
 #include "MouseChecker.h"
@@ -17,7 +15,6 @@ Controller::Controller(Model* model, Lens* lens, const QString& mouseAlgorithm) 
         m_interfaceType(InterfaceType::DISCRETE),
         m_interfaceTypeFinalized(false),
         m_mouseAlgorithm(mouseAlgorithm),
-        m_staticOptionsFinalized(false),
         m_process(nullptr) {
 }
 
@@ -58,15 +55,6 @@ void Controller::init() {
         &Controller::processMouseAlgoStderr
     );
     // TODO: MACK - start here
-
-    // TODO: MACK - eventually remove this
-    // Wait until static options have been finalized
-    while (!m_staticOptionsFinalized) {
-        SimUtilities::sleep(Milliseconds(1));
-        // We haven't started the main event loop yet, so we have to explicitly
-        // process events so that we can detect messages from the algorithm.
-        QCoreApplication::processEvents();
-    }
 
     // Initialize the mouse interface
     m_mouseInterface = new MouseInterface(
@@ -189,10 +177,6 @@ QString Controller::processCommand(const QString& command) {
     else if (function == "setWheelSpeedFraction") {
         m_mouseInterface->setWheelSpeedFraction(
             SimUtilities::strToDouble(tokens.at(1)));
-        return ACK_STRING;
-    }
-    else if (function == "finalizeStaticOptions") {
-        m_staticOptionsFinalized = true;
         return ACK_STRING;
     }
     else if (function == "updateAllowOmniscience") {

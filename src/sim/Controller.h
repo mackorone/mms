@@ -54,9 +54,6 @@ private:
     // The interface by which we access the Mouse object
     MouseInterface* m_mouseInterface;
 
-    // Whether or not the static options have been finalized
-    bool m_staticOptionsFinalized;
-
 };
 
 } // namespace mms

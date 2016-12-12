@@ -3,7 +3,6 @@
 void Algo::solve(Interface* interface) {
 
     interface->updateDeclareWallOnRead(true);
-    interface->finalizeStaticOptions();
 
     while (true) {
         if (!interface->wallLeft()){
