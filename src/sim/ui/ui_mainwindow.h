@@ -13,6 +13,7 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QMainWindow>
@@ -35,6 +36,10 @@ public:
     QTabWidget *tabs;
     QWidget *runStatsTab;
     QVBoxLayout *verticalLayout_3;
+    QScrollArea *runStatsScrollArea;
+    QWidget *runStatsScrollAreaContents;
+    QVBoxLayout *verticalLayout_2;
+    QGridLayout *runStatsLayout;
     QWidget *stdoutTab;
     QVBoxLayout *verticalLayout_4;
     QScrollArea *stdoutScrollArea;
@@ -47,7 +52,16 @@ public:
     QVBoxLayout *verticalLayout_5;
     QWidget *mazeInfoTab;
     QVBoxLayout *verticalLayout;
+    QScrollArea *mazeInfoScrollArea;
+    QWidget *mazeInfoScrollAreaContents;
+    QVBoxLayout *verticalLayout_8;
+    QGridLayout *mazeInfoLayout;
     QWidget *optionsTab;
+    QVBoxLayout *verticalLayout_9;
+    QScrollArea *optionsScrollArea;
+    QWidget *optionsScrollAreaContents;
+    QVBoxLayout *verticalLayout_10;
+    QGridLayout *optionsLayout;
     QMenuBar *menuBar;
     QMenu *menu_File;
 
@@ -82,6 +96,26 @@ public:
         verticalLayout_3->setSpacing(6);
         verticalLayout_3->setContentsMargins(11, 11, 11, 11);
         verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
+        runStatsScrollArea = new QScrollArea(runStatsTab);
+        runStatsScrollArea->setObjectName(QStringLiteral("runStatsScrollArea"));
+        runStatsScrollArea->setWidgetResizable(true);
+        runStatsScrollAreaContents = new QWidget();
+        runStatsScrollAreaContents->setObjectName(QStringLiteral("runStatsScrollAreaContents"));
+        runStatsScrollAreaContents->setGeometry(QRect(0, 0, 590, 384));
+        verticalLayout_2 = new QVBoxLayout(runStatsScrollAreaContents);
+        verticalLayout_2->setSpacing(6);
+        verticalLayout_2->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
+        runStatsLayout = new QGridLayout();
+        runStatsLayout->setSpacing(6);
+        runStatsLayout->setObjectName(QStringLiteral("runStatsLayout"));
+
+        verticalLayout_2->addLayout(runStatsLayout);
+
+        runStatsScrollArea->setWidget(runStatsScrollAreaContents);
+
+        verticalLayout_3->addWidget(runStatsScrollArea);
+
         tabs->addTab(runStatsTab, QString());
         stdoutTab = new QWidget();
         stdoutTab->setObjectName(QStringLiteral("stdoutTab"));
@@ -130,9 +164,53 @@ public:
         verticalLayout->setSpacing(6);
         verticalLayout->setContentsMargins(11, 11, 11, 11);
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
+        mazeInfoScrollArea = new QScrollArea(mazeInfoTab);
+        mazeInfoScrollArea->setObjectName(QStringLiteral("mazeInfoScrollArea"));
+        mazeInfoScrollArea->setWidgetResizable(true);
+        mazeInfoScrollAreaContents = new QWidget();
+        mazeInfoScrollAreaContents->setObjectName(QStringLiteral("mazeInfoScrollAreaContents"));
+        mazeInfoScrollAreaContents->setGeometry(QRect(0, 0, 590, 384));
+        verticalLayout_8 = new QVBoxLayout(mazeInfoScrollAreaContents);
+        verticalLayout_8->setSpacing(6);
+        verticalLayout_8->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_8->setObjectName(QStringLiteral("verticalLayout_8"));
+        mazeInfoLayout = new QGridLayout();
+        mazeInfoLayout->setSpacing(6);
+        mazeInfoLayout->setObjectName(QStringLiteral("mazeInfoLayout"));
+
+        verticalLayout_8->addLayout(mazeInfoLayout);
+
+        mazeInfoScrollArea->setWidget(mazeInfoScrollAreaContents);
+
+        verticalLayout->addWidget(mazeInfoScrollArea);
+
         tabs->addTab(mazeInfoTab, QString());
         optionsTab = new QWidget();
         optionsTab->setObjectName(QStringLiteral("optionsTab"));
+        verticalLayout_9 = new QVBoxLayout(optionsTab);
+        verticalLayout_9->setSpacing(6);
+        verticalLayout_9->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_9->setObjectName(QStringLiteral("verticalLayout_9"));
+        optionsScrollArea = new QScrollArea(optionsTab);
+        optionsScrollArea->setObjectName(QStringLiteral("optionsScrollArea"));
+        optionsScrollArea->setWidgetResizable(true);
+        optionsScrollAreaContents = new QWidget();
+        optionsScrollAreaContents->setObjectName(QStringLiteral("optionsScrollAreaContents"));
+        optionsScrollAreaContents->setGeometry(QRect(0, 0, 590, 384));
+        verticalLayout_10 = new QVBoxLayout(optionsScrollAreaContents);
+        verticalLayout_10->setSpacing(6);
+        verticalLayout_10->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_10->setObjectName(QStringLiteral("verticalLayout_10"));
+        optionsLayout = new QGridLayout();
+        optionsLayout->setSpacing(6);
+        optionsLayout->setObjectName(QStringLiteral("optionsLayout"));
+
+        verticalLayout_10->addLayout(optionsLayout);
+
+        optionsScrollArea->setWidget(optionsScrollAreaContents);
+
+        verticalLayout_9->addWidget(optionsScrollArea);
+
         tabs->addTab(optionsTab, QString());
 
         horizontalLayout_3->addWidget(tabs);

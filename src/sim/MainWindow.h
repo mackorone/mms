@@ -36,8 +36,19 @@ private:
     Lens* m_lens;
     Ui::MainWindow *ui;
 
-    QMap<QString, QLabel*> m_headerItems;
-    QVector<QPair<QString, QVariant>> getHeaderInfo() const;
+    // Header-related members
+    // TODO: MACK - refactor this into its own class
+
+    QMap<QString, QLabel*> m_runStats;
+    QMap<QString, QLabel*> m_algoOptions;
+    QMap<QString, QLabel*> m_mazeInfo;
+    QMap<QString, QLabel*> m_options;
+
+    QVector<QPair<QString, QVariant>> getRunStats() const;
+    QVector<QPair<QString, QVariant>> getAlgoOptions() const;
+    QVector<QPair<QString, QVariant>> getMazeInfo() const;
+    QVector<QPair<QString, QVariant>> getOptions() const;
+
     QTimer m_headerRefreshTimer;
 
 };

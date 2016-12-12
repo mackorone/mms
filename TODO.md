@@ -9,6 +9,7 @@
     - Mouse is added to the world
     - Algorithm is run
     - Where are the graphics created?
+- Header visibility toggling
 - Why is tile fog not clearing immediately?
     - Sometimes the signal is emitted too soon
 - Clean up View

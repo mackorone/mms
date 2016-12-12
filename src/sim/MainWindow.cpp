@@ -33,19 +33,28 @@ MainWindow::MainWindow(
         &QPlainTextEdit::appendPlainText
     );
 
-    // Add header info to the UI
-    QVector<QPair<QString, QVariant>> labels = getHeaderInfo();
-    int itemsPerColumn = qCeil(labels.size() / 4.0);
-    /*
-    for (int i = 0; i < labels.size(); i += 1) {
-        int row = i; //  % itemsPerColumn; // TODO: MACK
-        int col = 0; // 2 * (i / itemsPerColumn); // TODO: MACK
-        QString label = labels.at(i).first;
-        QLabel* labelHolder = new QLabel(label + (label.isEmpty() ? "" : ":"));
+    // TODO: MACK - clean this up
+
+    // Add run stats info to the UI
+    QVector<QPair<QString, QVariant>> runStats = getRunStats();
+    for (int i = 0; i < runStats.size(); i += 1) {
+        QString label = runStats.at(i).first;
+        QLabel* labelHolder = new QLabel(label + ":");
         QLabel* valueHolder = new QLabel();
-        ui->infoContainer->addWidget(labelHolder, row, col);
-        ui->infoContainer->addWidget(valueHolder, row, col + 1);
-        m_headerItems.insert(label, valueHolder);
+        ui->runStatsLayout->addWidget(labelHolder, i, 0);
+        ui->runStatsLayout->addWidget(valueHolder, i, 1);
+        m_runStats.insert(label, valueHolder);
+    }
+
+    // Add run stats info to the UI
+    QVector<QPair<QString, QVariant>> mazeInfo = getMazeInfo();
+    for (int i = 0; i < mazeInfo.size(); i += 1) {
+        QString label = mazeInfo.at(i).first;
+        QLabel* labelHolder = new QLabel(label + ":");
+        QLabel* valueHolder = new QLabel();
+        ui->mazeInfoLayout->addWidget(labelHolder, i, 0);
+        ui->mazeInfoLayout->addWidget(valueHolder, i, 1);
+        m_mazeInfo.insert(label, valueHolder);
     }
 
     // Periodically update the header
@@ -54,18 +63,26 @@ MainWindow::MainWindow(
         &QTimer::timeout,
         this,
         [=](){
-            QVector<QPair<QString, QVariant>> items = getHeaderInfo();
-            for (const auto& pair : items) {
+            // TODO: MACK - only update if tab is visible
+            QVector<QPair<QString, QVariant>> runStats = getRunStats();
+            for (const auto& pair : runStats) {
                 QString text = pair.second.toString();
                 if (pair.second.type() == QVariant::Double) {
                     text = QString::number(pair.second.toDouble(), 'f', 3);
                 }
-                m_headerItems.value(pair.first)->setText(text);
+                m_runStats.value(pair.first)->setText(text);
+            }
+            QVector<QPair<QString, QVariant>> mazeInfo = getMazeInfo();
+            for (const auto& pair : mazeInfo) {
+                QString text = pair.second.toString();
+                if (pair.second.type() == QVariant::Double) {
+                    text = QString::number(pair.second.toDouble(), 'f', 3);
+                }
+                m_mazeInfo.value(pair.first)->setText(text);
             }
         }
     );
     m_headerRefreshTimer.start(33);
-    */
 
     // Add a map to the UI
     Map* map = new Map(model, lens);
@@ -245,31 +262,42 @@ void Map::specialKeyRelease(int key, int x, int y) {
 */
 
 
-/*
-        QString("Run ID:                      ") + S()->runId(),
-        QString("Random Seed:                 ") + QString::number(P()->randomSeed()),
-
-*/
-
-QVector<QPair<QString, QVariant>> MainWindow::getHeaderInfo() const {
+QVector<QPair<QString, QVariant>> MainWindow::getRunStats() const {
     return {
-
-        // Run info
-        // TODO: MACK - run directory
-        {"Run ID", S()->runId()},
+        {"Run ID", S()->runId()}, // TODO: MACK - run directory
         {"Random Seed", P()->randomSeed()},
-        {"", ""},
-
-        // Maze info
-        {
-            (P()->useMazeFile() ? "Maze File" : "Maze Algo"),
-            (P()->useMazeFile() ? P()->mazeFile() : P()->mazeAlgorithm()),
+        {"Mouse Algo", P()->mouseAlgorithm()},
+        {"Tiles Traversed",
+            QString::number(m_model->getWorld()->getNumberOfTilesTraversed()) + " / " +
+            QString::number(m_model->getMaze()->getWidth() * m_model->getMaze()->getHeight())
         },
-        {"Maze Width", m_model->getMaze()->getWidth()},
-        {"Maze Height", m_model->getMaze()->getHeight()},
-        {"Maze Is Official", m_model->getMaze()->isOfficialMaze() ? "TRUE" : "FALSE"},
-        {"", ""},
+        {"Closest Distance to Center", m_model->getWorld()->getClosestDistanceToCenter()},
+        {"Current X (m)", m_model->getMouse()->getCurrentTranslation().getX().getMeters()},
+        {"Current Y (m)", m_model->getMouse()->getCurrentTranslation().getY().getMeters()},
+        {"Current Rotation (deg)", m_model->getMouse()->getCurrentRotation().getDegreesZeroTo360()},
+        {"Current X tile", m_model->getMouse()->getCurrentDiscretizedTranslation().first},
+        {"Current Y tile", m_model->getMouse()->getCurrentDiscretizedTranslation().second},
+        {"Current Direction",
+            DIRECTION_TO_STRING.value(m_model->getMouse()->getCurrentDiscretizedRotation())
+        },
+        {"Elapsed Real Time", SimUtilities::formatDuration(Time::get()->elapsedRealTime())},
+        {"Elapsed Sim Time", SimUtilities::formatDuration(Time::get()->elapsedSimTime())},
+        {"Time Since Origin Departure",
+            m_model->getWorld()->getTimeSinceOriginDeparture().getSeconds() < 0
+            ? "NONE"
+            : SimUtilities::formatDuration(m_model->getWorld()->getTimeSinceOriginDeparture())
+        },
+        {"Best Time to Center",
+            m_model->getWorld()->getBestTimeToCenter().getSeconds() < 0
+            ? "NONE"
+            : SimUtilities::formatDuration(m_model->getWorld()->getBestTimeToCenter())
+        },
+        {"Crashed", (S()->crashed() ? "TRUE" : "FALSE")},
+    };
+}
 
+QVector<QPair<QString, QVariant>> MainWindow::getAlgoOptions() const {
+    return {
         // Mouse Info
         {"Mouse Algo", P()->mouseAlgorithm()},
         {"", ""},
@@ -312,36 +340,24 @@ QVector<QPair<QString, QVariant>> MainWindow::getHeaderInfo() const {
             (STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
             (m_controllerManager->getDynamicOptions().useTileEdgeMovements ? "TRUE" : "FALSE"))),
         */
+    };
+}
 
-        // Mouse progress
-        {"Tiles Traversed",
-            QString::number(m_model->getWorld()->getNumberOfTilesTraversed()) + " / " +
-            QString::number(m_model->getMaze()->getWidth() * m_model->getMaze()->getHeight())
+QVector<QPair<QString, QVariant>> MainWindow::getMazeInfo() const {
+    return {
+        {
+            (P()->useMazeFile() ? "Maze File" : "Maze Algo"),
+            (P()->useMazeFile() ? P()->mazeFile() : P()->mazeAlgorithm()),
         },
-        {"Closest Distance to Center", m_model->getWorld()->getClosestDistanceToCenter()},
-        {"Current X (m)", m_model->getMouse()->getCurrentTranslation().getX().getMeters()},
-        {"Current Y (m)", m_model->getMouse()->getCurrentTranslation().getY().getMeters()},
-        {"Current Rotation (deg)", m_model->getMouse()->getCurrentRotation().getDegreesZeroTo360()},
-        {"Current X tile", m_model->getMouse()->getCurrentDiscretizedTranslation().first},
-        {"Current Y tile", m_model->getMouse()->getCurrentDiscretizedTranslation().second},
-        {"Current Direction",
-            DIRECTION_TO_STRING.value(m_model->getMouse()->getCurrentDiscretizedRotation())
-        },
-        {"Elapsed Real Time", SimUtilities::formatDuration(Time::get()->elapsedRealTime())},
-        {"Elapsed Sim Time", SimUtilities::formatDuration(Time::get()->elapsedSimTime())},
-        {"Time Since Origin Departure",
-            m_model->getWorld()->getTimeSinceOriginDeparture().getSeconds() < 0
-            ? "NONE"
-            : SimUtilities::formatDuration(m_model->getWorld()->getTimeSinceOriginDeparture())
-        },
-        {"Best Time to Center",
-            m_model->getWorld()->getBestTimeToCenter().getSeconds() < 0
-            ? "NONE"
-            : SimUtilities::formatDuration(m_model->getWorld()->getBestTimeToCenter())
-        },
+        {"Maze Width", m_model->getMaze()->getWidth()},
+        {"Maze Height", m_model->getMaze()->getHeight()},
+        {"Maze Is Official", m_model->getMaze()->isOfficialMaze() ? "TRUE" : "FALSE"},
+    };
+}
 
+QVector<QPair<QString, QVariant>> MainWindow::getOptions() const {
+    return {
         // Sim state
-        {"Crashed", (S()->crashed() ? "TRUE" : "FALSE")},
         {"Layout Type (l)", LAYOUT_TYPE_TO_STRING.value(S()->layoutType())},
         {"Rotate Zoomed Map (r)", (S()->rotateZoomedMap() ? "TRUE" : "FALSE")},
         {"Zoomed Map Scale (i, o)", QString::number(S()->zoomedMapScale())},
@@ -350,7 +366,7 @@ QVector<QPair<QString, QVariant>> MainWindow::getHeaderInfo() const {
         {"Tile Fog Visible (g)", (S()->tileFogVisible() ? "TRUE" : "FALSE")},
         {"Tile Text Visible (x)", (S()->tileTextVisible() ? "TRUE" : "FALSE")},
         {"Tile Distance Visible (d)", (S()->tileDistanceVisible() ? "TRUE" : "FALSE")},
-        {"Header Visible (h)", (S()->headerVisible() ? "TRUE" : "FALSE")},
+        {"Header Visible (h)", (S()->headerVisible() ? "TRUE" : "FALSE")}, // TODO: MACK
         {"Paused (p)", (S()->paused() ? "TRUE" : "FALSE")},
         {"Sim Speed (f, s)", QString::number(S()->simSpeed())},
     };
