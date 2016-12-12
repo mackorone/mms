@@ -47,7 +47,6 @@ public:
     bool defaultTileDistanceVisible();
     bool defaultHeaderVisible();
     double tileFogAlpha();
-    bool defaultWireframeMode();
     QString distanceCorrectTileBaseColor();
 
     // Simulation parameters
@@ -126,7 +125,6 @@ private:
     bool m_defaultTileDistanceVisible;
     bool m_defaultHeaderVisible;
     double m_tileFogAlpha;
-    bool m_defaultWireframeMode;
     QString m_distanceCorrectTileBaseColor;
 
     // Simulation parameters

@@ -34,7 +34,6 @@ State::State() {
     m_tileDistanceVisible = P()->defaultTileDistanceVisible();
     m_headerVisible = P()->defaultHeaderVisible();
     m_tileFogVisible = P()->defaultTileFogVisible();
-    m_wireframeMode = P()->defaultWireframeMode();
     m_paused = P()->defaultPaused();
     m_simSpeed = P()->defaultSimSpeed();
     for (int i = 0; i < 10; i += 1) {
@@ -147,14 +146,6 @@ bool State::headerVisible() {
 
 void State::setHeaderVisible(bool headerVisible) {
     m_headerVisible = headerVisible;
-}
-
-bool State::wireframeMode() {
-    return m_wireframeMode;
-}
-
-void State::setWireframeMode(bool wireframeMode) {
-    m_wireframeMode = wireframeMode;
 }
 
 bool State::paused() {

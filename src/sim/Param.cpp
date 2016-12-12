@@ -97,8 +97,6 @@ Param::Param() {
         "default-header-visible", true);
     m_tileFogAlpha = parser.getDoubleIfHasDoubleAndInRange(
         "tile-fog-alpha", 0.15, 0.0, 1.0);
-    m_defaultWireframeMode = parser.getBoolIfHasBool(
-        "default-wireframe-mode", false);
     m_distanceCorrectTileBaseColor = parser.getStringIfHasStringAndIsColor(
         "distance-correct-tile-base-color", COLOR_TO_STRING.value(Color::DARK_YELLOW));
 
@@ -298,10 +296,6 @@ bool Param::defaultHeaderVisible() {
 
 double Param::tileFogAlpha() {
     return m_tileFogAlpha;
-}
-
-bool Param::defaultWireframeMode() {
-    return m_defaultWireframeMode;
 }
 
 QString Param::distanceCorrectTileBaseColor() {

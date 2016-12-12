@@ -197,11 +197,6 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
         m_header->updateLinesAndColumnStartingPositions();
         */
     }
-    else if (key == Qt::Key_W) {
-        // Toggle wireframe mode
-        S()->setWireframeMode(!S()->wireframeMode());
-        glPolygonMode(GL_FRONT_AND_BACK, S()->wireframeMode() ? GL_LINE : GL_FILL);
-    }
     else if (key == Qt::Key_Q) {
         // Quit
         SimUtilities::quit();
@@ -356,7 +351,6 @@ QVector<QPair<QString, QVariant>> MainWindow::getHeaderInfo() const {
         {"Tile Text Visible (x)", (S()->tileTextVisible() ? "TRUE" : "FALSE")},
         {"Tile Distance Visible (d)", (S()->tileDistanceVisible() ? "TRUE" : "FALSE")},
         {"Header Visible (h)", (S()->headerVisible() ? "TRUE" : "FALSE")},
-        {"Wireframe Mode (w)", (S()->wireframeMode() ? "TRUE" : "FALSE")},
         {"Paused (p)", (S()->paused() ? "TRUE" : "FALSE")},
         {"Sim Speed (f, s)", QString::number(S()->simSpeed())},
     };

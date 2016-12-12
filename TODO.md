@@ -23,7 +23,6 @@
     - Share OpenGL context
     - Try sharing VBOs, etc.
 - Fix .maz file loading
-- Fix wireframe mode
 - Make GUI
     - Fix texture program
     - Put the stdout of the child process somewhere

@@ -51,9 +51,6 @@ public:
     bool headerVisible();
     void setHeaderVisible(bool headerVisible);
 
-    bool wireframeMode();
-    void setWireframeMode(bool wireframeMode);
-
     bool paused();
     void setPaused(bool paused);
 
@@ -85,7 +82,6 @@ private:
     bool m_tileTextVisible;
     bool m_tileDistanceVisible;
     bool m_headerVisible;
-    bool m_wireframeMode;
     bool m_paused;
     double m_simSpeed;
     QMap<int, bool> m_inputButtons;
