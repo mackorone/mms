@@ -263,15 +263,18 @@ void Map::specialKeyRelease(int key, int x, int y) {
 
 
 QVector<QPair<QString, QVariant>> MainWindow::getRunStats() const {
+    // TODO: MACK
+    MouseStats stats = m_model->getWorld()->getMouseStats("");
+
     return {
         {"Run ID", S()->runId()}, // TODO: MACK - run directory
         {"Random Seed", P()->randomSeed()},
         {"Mouse Algo", P()->mouseAlgorithm()},
         {"Tiles Traversed",
-            QString::number(m_model->getWorld()->getNumberOfTilesTraversed()) + " / " +
+            QString::number(stats.traversedTileLocations.size()) + " / " +
             QString::number(m_model->getMaze()->getWidth() * m_model->getMaze()->getHeight())
         },
-        {"Closest Distance to Center", m_model->getWorld()->getClosestDistanceToCenter()},
+        {"Closest Distance to Center", stats.closestDistanceToCenter},
         {"Current X (m)", m_model->getMouse()->getCurrentTranslation().getX().getMeters()},
         {"Current Y (m)", m_model->getMouse()->getCurrentTranslation().getY().getMeters()},
         {"Current Rotation (deg)", m_model->getMouse()->getCurrentRotation().getDegreesZeroTo360()},
@@ -282,6 +285,7 @@ QVector<QPair<QString, QVariant>> MainWindow::getRunStats() const {
         },
         {"Elapsed Real Time", SimUtilities::formatDuration(Time::get()->elapsedRealTime())},
         {"Elapsed Sim Time", SimUtilities::formatDuration(Time::get()->elapsedSimTime())},
+        /*
         {"Time Since Origin Departure",
             m_model->getWorld()->getTimeSinceOriginDeparture().getSeconds() < 0
             ? "NONE"
@@ -292,6 +296,7 @@ QVector<QPair<QString, QVariant>> MainWindow::getRunStats() const {
             ? "NONE"
             : SimUtilities::formatDuration(m_model->getWorld()->getBestTimeToCenter())
         },
+        */
         {"Crashed", (S()->crashed() ? "TRUE" : "FALSE")},
     };
 }

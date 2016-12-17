@@ -1,6 +1,7 @@
 # High Priority
 
 - Order of initialization
+    - World has a mazes and list of mouse algos
     - Maze is generated/loaded
     - World is started (doing nothing yet)
     - Algorithm is chosen

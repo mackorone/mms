@@ -1,29 +1,28 @@
 #pragma once
 
 #include <QObject>
-#include <QPair>
-#include <QSet>
 
-#include "InterfaceType.h"
 #include "Maze.h"
 #include "Mouse.h"
-#include "units/Seconds.h"
+#include "MouseStats.h"
 
 namespace mms {
 
+// TODO: MACK - rename to model
 class World : public QObject {
 
     Q_OBJECT
 
 public:
-    World(const Maze* maze, Mouse* mouse);
 
-    Seconds getBestTimeToCenter() const;
-    Seconds getTimeSinceOriginDeparture() const;
+    World();
 
-    int getNumberOfTilesTraversed() const;
-    int getClosestDistanceToCenter() const;
+    void setMaze(const Maze* maze);
+    void addMouse(const QString& name, Mouse* mouse);
 
+    MouseStats getMouseStats(const QString& name) const;
+
+    // TODO: MACK - call this init (World is actually a singleton)
     void simulate();
 
 signals:
@@ -31,13 +30,8 @@ signals:
 
 private:
     const Maze* m_maze;
-    Mouse* m_mouse;
-    
-    Seconds m_bestTimeToCenter;
-    Seconds m_timeOfOriginDeparture;
-
-    QSet<QPair<int, int>> m_traversedTileLocations;
-    int m_closestDistanceToCenter;
+    QMap<QString, Mouse*> m_mice;
+    QMap<QString, MouseStats> m_stats;
 
     void checkCollision();
 };

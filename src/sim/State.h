@@ -21,6 +21,7 @@ public:
     QString runId();
     void setRunId(const QString& runId);
 
+    // TODO: MACK - should be a property of the mouse?
     bool crashed();
     void setCrashed();
 

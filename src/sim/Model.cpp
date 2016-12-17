@@ -3,9 +3,13 @@
 namespace mms {
 
 Model::Model() {
+    m_world = new World();
+
     m_maze = new Maze(); 
     m_mouse = new Mouse(m_maze); 
-    m_world = new World(m_maze, m_mouse);
+
+    m_world->setMaze(m_maze);
+    m_world->addMouse("", m_mouse); // TODO: MACK - name
 }
 
 const Maze* Model::getMaze() const {

@@ -1,6 +1,5 @@
 #include "World.h"
 
-#include <QDebug>
 #include <QPair>
 #include <thread>
 
@@ -16,34 +15,23 @@
 
 namespace mms {
 
-World::World(
-    const Maze* maze,
-    Mouse* mouse) :
-    m_maze(maze),
-    m_mouse(mouse),
-    m_bestTimeToCenter(Seconds(-1)),
-    m_timeOfOriginDeparture(Seconds(-1)),
-    m_closestDistanceToCenter(-1) {
+World::World() : m_maze(nullptr) {
 }
 
-Seconds World::getBestTimeToCenter() const {
-    return m_bestTimeToCenter;
+void World::setMaze(const Maze* maze) {
+    m_maze = maze;
 }
 
-Seconds World::getTimeSinceOriginDeparture() const {
-    // If we haven't left the origin yet, return -1
-    if (m_timeOfOriginDeparture < Seconds(0)) {
-        return Seconds(-1);
-    }
-    return Time::get()->elapsedSimTime() - m_timeOfOriginDeparture;
+void World::addMouse(const QString& name, Mouse* mouse) {
+    ASSERT_FA(m_maze == nullptr);
+    ASSERT_FA(m_mice.contains(name));
+    m_mice.insert(name, mouse);
+    m_stats.insert(name, MouseStats());
 }
 
-int World::getNumberOfTilesTraversed() const {
-    return m_traversedTileLocations.size();
-}
-
-int World::getClosestDistanceToCenter() const {
-    return m_closestDistanceToCenter;
+MouseStats World::getMouseStats(const QString& name) const {
+    ASSERT_TR(m_stats.contains(name));
+    return m_stats.value(name);
 }
 
 void World::simulate() {
@@ -90,50 +78,55 @@ void World::simulate() {
         // Update the sim time
         Time::get()->incrementElapsedSimTime(elapsedSimTimeForThisIteration);
 
-        // Update the position of the mouse
-        m_mouse->update(elapsedSimTimeForThisIteration);
+        // Update the position and stats for each mouse
+        for (const QString& name : m_mice.keys()) {
+            Mouse* mouse = m_mice.value(name);
+            MouseStats& stats = m_stats[name];
 
-        // Retrieve the current discretized location of the mouse, and
-        // the tile at that location, for use with the next few code blocks
-        QPair<int, int> location = m_mouse->getCurrentDiscretizedTranslation();
-        const Tile* tileAtLocation = m_maze->getTile(location.first, location.second);
+            // Update the position of the mouse
+            mouse->update(elapsedSimTimeForThisIteration);
 
-        // If this is a new tile, update the set of traversed tiles
-        if (!m_traversedTileLocations.contains(location)) {
-            m_traversedTileLocations.insert(location);
-            emit newTileLocationTraversed(location.first, location.second);
-            if (m_closestDistanceToCenter == -1 ||
-                    tileAtLocation->getDistance() < m_closestDistanceToCenter) {
-                m_closestDistanceToCenter = tileAtLocation->getDistance(); 
+            // Retrieve the current discretized location of the mouse, and
+            // the tile at that location, for use with the next few code blocks
+            QPair<int, int> location = mouse->getCurrentDiscretizedTranslation();
+            const Tile* tileAtLocation = m_maze->getTile(location.first, location.second);
+
+            // If this is a new tile, update the set of traversed tiles
+            if (!stats.traversedTileLocations.contains(location)) {
+                stats.traversedTileLocations.insert(location);
+                if (stats.closestDistanceToCenter == -1 ||
+                        tileAtLocation->getDistance() < stats.closestDistanceToCenter) {
+                    stats.closestDistanceToCenter = tileAtLocation->getDistance(); 
+                }
+                // Alert any listeners that a new tile was entered
+                emit newTileLocationTraversed(location.first, location.second);
             }
-        }
 
-        // If we've returned to the origin, reset the departure time
-        if (location.first == 0 && location.second == 0) {
-            if (Seconds(0) < m_timeOfOriginDeparture) {
-                m_timeOfOriginDeparture = Seconds(-1);
+            // If we've returned to the origin, reset the departure time
+            if (location.first == 0 && location.second == 0) {
+                stats.timeOfOriginDeparture = Seconds(-1);
             }
-        }
 
-        // Otherwise, if we've just left the origin, update the departure time
-        else if (m_timeOfOriginDeparture < Seconds(0)) {
-            m_timeOfOriginDeparture = Time::get()->elapsedSimTime();
-        }
-
-        // Separately, if we're in the center, update the best time to center
-        if (m_maze->isCenterTile(location.first, location.second)) {
-            Seconds timeToCenter = Time::get()->elapsedSimTime() - m_timeOfOriginDeparture;
-            if (m_bestTimeToCenter < Seconds(0) || timeToCenter < m_bestTimeToCenter) {
-                m_bestTimeToCenter = timeToCenter;
+            // Otherwise, if we've just left the origin, update the departure time
+            else if (stats.timeOfOriginDeparture < Seconds(0)) {
+                stats.timeOfOriginDeparture = Time::get()->elapsedSimTime();
             }
-        }
 
-        // If we're ever outside of the maze, crash. It would be cool to have
-        // some "out of bounds" state but I haven't implemented that yet. We
-        // continue here to make sure that we join with the other thread.
-        if (!m_maze->withinMaze(location.first, location.second)) {
-            S()->setCrashed();
-            continue;
+            // Separately, if we're in the center, update the best time to center
+            if (m_maze->isCenterTile(location.first, location.second)) {
+                Seconds timeToCenter = Time::get()->elapsedSimTime() - stats.timeOfOriginDeparture;
+                if (stats.bestTimeToCenter < Seconds(0) || timeToCenter < stats.bestTimeToCenter) {
+                    stats.bestTimeToCenter = timeToCenter;
+                }
+            }
+
+            // If we're ever outside of the maze, crash. It would be cool to have
+            // some "out of bounds" state but I haven't implemented that yet. We
+            // continue here to make sure that we join with the other thread.
+            if (!m_maze->withinMaze(location.first, location.second)) {
+                S()->setCrashed();
+                continue;
+            }
         }
 
         // Get the duration of the mouse position update, in seconds. Note that this duration
@@ -170,6 +163,7 @@ void World::checkCollision() {
         return;
     }
 
+    /*
     while (true) {
 
         // In order to ensure we're sleeping the correct amount of time, we time
@@ -215,6 +209,7 @@ void World::checkCollision() {
         // Sleep the appropriate amout of time, based on the collision detection duration
         mms::SimUtilities::sleep(mms::Seconds(std::max(0.0, 1.0 / P()->collisionDetectionRate() - duration)));
     }
+    */
 }
 
 } // namespace mms

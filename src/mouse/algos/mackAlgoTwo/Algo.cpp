@@ -26,7 +26,6 @@ void Algo::solve(Interface* interface) {
 
     // Set and finalize some options
     m_mouse->setTileTextRowsAndCols(1, 5);
-    m_mouse->finalizeStaticOptions();
 
 #else
 

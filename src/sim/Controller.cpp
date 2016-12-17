@@ -41,7 +41,73 @@ void Controller::init() {
         }
     );
 
-    startMouseAlgorithm(m_mouseAlgorithm);
+/////////////////
+
+    // Check to see if there is some directory with the given name
+    QString selectedMouseAlgo(m_mouseAlgorithm);
+    QString mouseAlgoDir(Directory::get()->getSrcMouseAlgosDirectory());
+    if (!SimUtilities::getTopLevelDirs(mouseAlgoDir).contains(selectedMouseAlgo)) {
+         qCritical().noquote().nospace()
+            << "\"" << m_mouseAlgorithm << "\" is not a valid mouse"
+            << " algorithm.";
+         SimUtilities::quit();
+    }
+
+    // Get the maze algo directory
+    QString selectedMouseAlgoPath = 
+        Directory::get()->getSrcMouseAlgosDirectory() + m_mouseAlgorithm;
+
+    // Get the files for the algorithm
+    QPair<QStringList, QStringList> files =
+        SimUtilities::getFiles(selectedMouseAlgoPath);
+    QStringList relativePaths = files.first;
+    QStringList absolutePaths = files.second;
+
+    // TODO: MACK - make these constants, dedup some of this
+    if (relativePaths.contains(QString("Main.cpp"))) {
+
+        QString binPath = selectedMouseAlgoPath + "/a.out";
+
+        // Build
+        QStringList buildArgs = absolutePaths.filter(".cpp");
+        buildArgs << "-g";
+        buildArgs << "-o";
+        buildArgs << binPath;
+        QProcess buildProcess;
+        buildProcess.start("g++", buildArgs);
+        buildProcess.waitForFinished();
+        if (buildProcess.exitCode() != 0) {
+            qCritical().noquote()
+                << "Failed to build mouse algo!"
+                << "\n\n" + buildProcess.readAllStandardError();
+            SimUtilities::quit();
+        }
+
+        // Run
+        m_process = new QProcess();
+        // TODO: MACK - I should be doing the connections here
+        m_process->start(binPath);
+
+        // TODO: MACK - use these instead of waiting for the process to finish
+        // void errorOccurred(QProcess::ProcessError error)
+        // void finished(int exitCode, QProcess::ExitStatus exitStatus)
+        // m_process->waitForFinished();
+        // if (m_process->exitCode() != 0) {
+        //     qCritical().noquote()
+        //         << "Mouse algo crashed!"
+        //         << "\n\n" + m_process->readAllStandardError();
+        //     SimUtilities::quit();
+        // }
+    } 
+    else {
+        // Invalid files
+        qCritical().noquote().nospace()
+            << "No \"Main\" file found in \""
+            << selectedMouseAlgoPath << "\"";
+        SimUtilities::quit();
+    }
+
+/////////////////
     connect(
         m_process,
         &QProcess::readyReadStandardOutput,
@@ -472,71 +538,6 @@ QString Controller::processCommand(const QString& command) {
 
 void Controller::startMouseAlgorithm(const QString& mouseAlgorithm) {
 
-    // Check to see if there is some directory with the given name
-    QString selectedMouseAlgo(mouseAlgorithm);
-    QString mouseAlgoDir(Directory::get()->getSrcMouseAlgosDirectory());
-    if (!SimUtilities::getTopLevelDirs(mouseAlgoDir).contains(selectedMouseAlgo)) {
-         qCritical().noquote().nospace()
-            << "\"" << mouseAlgorithm << "\" is not a valid mouse"
-            << " algorithm.";
-         SimUtilities::quit();
-    }
-
-    // Get the maze algo directory
-    QString selectedMouseAlgoPath = 
-        Directory::get()->getSrcMouseAlgosDirectory() + mouseAlgorithm;
-
-    // Get the files for the algorithm
-    QPair<QStringList, QStringList> files =
-        SimUtilities::getFiles(selectedMouseAlgoPath);
-    QStringList relativePaths = files.first;
-    QStringList absolutePaths = files.second;
-
-    // TODO: MACK - make these constants, dedup some of this
-    if (relativePaths.contains(QString("Main.cpp"))) {
-
-        QString binPath = selectedMouseAlgoPath + "/a.out";
-
-        // Build
-        QStringList buildArgs = absolutePaths.filter(".cpp");
-        buildArgs << "-g";
-        buildArgs << "-o";
-        buildArgs << binPath;
-        QProcess buildProcess;
-        buildProcess.start("g++", buildArgs);
-        buildProcess.waitForFinished();
-        if (buildProcess.exitCode() != 0) {
-            qCritical().noquote()
-                << "Failed to build mouse algo!"
-                << "\n\n" + buildProcess.readAllStandardError();
-            SimUtilities::quit();
-        }
-
-        // Run
-        m_process = new QProcess();
-        // TODO: MACK - I should be doing the connections here
-        m_process->start(binPath);
-
-        // TODO: MACK - use these instead of waiting for the process to finish
-        // void errorOccurred(QProcess::ProcessError error)
-        // void finished(int exitCode, QProcess::ExitStatus exitStatus)
-        // m_process->waitForFinished();
-        // if (m_process->exitCode() != 0) {
-        //     qCritical().noquote()
-        //         << "Mouse algo crashed!"
-        //         << "\n\n" + m_process->readAllStandardError();
-        //     SimUtilities::quit();
-        // }
-    
-        // Success
-        return;
-    } 
-
-    // Invalid files
-    qCritical().noquote().nospace()
-        << "No \"Main\" file found in \""
-        << selectedMouseAlgoPath << "\"";
-    SimUtilities::quit();
 }
 
 } // namespace mms
