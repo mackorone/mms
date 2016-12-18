@@ -65,7 +65,7 @@ QVector<Triangle> Polygon::getTriangles() const {
 
 MetersSquared Polygon::area() const {
 
-    // See http://mathworld.wolfram.com/PolygonArea.html
+    // See http://mathmodel.wolfram.com/PolygonArea.html
 
     double sumOfDeterminants = 0.0;
     for (int i = 0; i < m_vertices.size(); i += 1) {

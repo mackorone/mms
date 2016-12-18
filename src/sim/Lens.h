@@ -12,7 +12,7 @@
 namespace mms {
 
 /**
- * This class represents the world as perceived by the mouse
+ * This class represents the model as perceived by the mouse
  */
 class Lens {
 

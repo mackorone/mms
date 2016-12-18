@@ -8,20 +8,19 @@
 
 namespace mms {
 
-// TODO: MACK - rename to model
-class World : public QObject {
+class Model : public QObject {
 
     Q_OBJECT
 
 public:
-    World();
+    Model();
 
     void setMaze(const Maze* maze);
     void addMouse(const QString& name, Mouse* mouse);
 
     MouseStats getMouseStats(const QString& name) const;
 
-    // TODO: MACK - call this init (World is actually a singleton)
+    // TODO: MACK - call this init (Model is actually a singleton)
     void simulate();
 
 signals:

@@ -1,4 +1,4 @@
-#include "World.h"
+#include "Model.h"
 
 #include <QPair>
 #include <thread>
@@ -15,30 +15,30 @@
 
 namespace mms {
 
-World::World() : m_maze(nullptr) {
+Model::Model() : m_maze(nullptr) {
 }
 
-void World::setMaze(const Maze* maze) {
+void Model::setMaze(const Maze* maze) {
     // TODO: MACK - clear the mice
     m_maze = maze;
 }
 
-void World::addMouse(const QString& name, Mouse* mouse) {
+void Model::addMouse(const QString& name, Mouse* mouse) {
     ASSERT_FA(m_maze == nullptr);
     ASSERT_FA(m_mice.contains(name));
     m_mice.insert(name, mouse);
     m_stats.insert(name, MouseStats());
 }
 
-MouseStats World::getMouseStats(const QString& name) const {
+MouseStats Model::getMouseStats(const QString& name) const {
     ASSERT_TR(m_stats.contains(name));
     return m_stats.value(name);
 }
 
-void World::simulate() {
+void Model::simulate() {
 
     // Start a separate collision detection thread
-    std::thread collisionDetector(&World::checkCollision, this);
+    std::thread collisionDetector(&Model::checkCollision, this);
 
     // Uncomment to do mouse update benchmarking
     /*
@@ -153,7 +153,7 @@ void World::simulate() {
     }
 }
 
-void World::checkCollision() {
+void Model::checkCollision() {
 
     // If collision detectino isn't enabled, let this thread exit
     if (!P()->collisionDetectionEnabled()) {

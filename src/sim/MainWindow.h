@@ -9,7 +9,7 @@
 #include "Lens.h"
 #include "Maze.h"
 #include "Mouse.h"
-#include "World.h"
+#include "Model.h"
 
 namespace Ui {
 class MainWindow;
@@ -23,7 +23,7 @@ class MainWindow : public QMainWindow {
 
 public:
     MainWindow(
-        const World* world,
+        const Model* model,
         const Maze* maze,
         Mouse* mouse,
         Lens* lens,
@@ -36,7 +36,7 @@ protected:
     void keyPressEvent(QKeyEvent* event);
 
 private:
-    const World* m_world;
+    const Model* m_model;
     const Maze* m_maze;
     Mouse* m_mouse;
     Lens* m_lens;

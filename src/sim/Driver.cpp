@@ -20,7 +20,7 @@
 #include "SimUtilities.h"
 #include "State.h"
 #include "Time.h"
-#include "World.h"
+#include "Model.h"
 #include "units/Milliseconds.h"
 
 namespace mms {
@@ -65,31 +65,32 @@ int Driver::drive(int argc, char* argv[]) {
     SimUtilities::removeExcessArchivedRuns();
 
     // TODO: MACK - clean this up
-    World* world = new World();
+    Model* model = new Model();
     Maze* maze = new Maze();
+
     Mouse* mouse = new Mouse(maze);
 
-    world->setMaze(maze);
-    world->addMouse("", mouse); // TODO: MACK - name
+    model->setMaze(maze);
+    model->addMouse("", mouse); // TODO: MACK - name
 
     // Initialize the model and lens
     Lens* lens = new Lens(maze, mouse);
 
     // Initialize the controllerManager, which starts the algorithm
     ControllerManager* controllerManager =
-        new ControllerManager(world, maze, mouse, lens);
+        new ControllerManager(model, maze, mouse, lens);
     Controller* controller =
         controllerManager->spawnMouseAlgo(P()->mouseAlgorithm());
 
     // TODO: MACK - this could be on the same thread as the graphics loop
-    // TODO: MACK - timing of the algo start vs world start
+    // TODO: MACK - timing of the algo start vs model start
     // Start the physics loop
     std::thread physicsThread([=]() {
-        world->simulate();
+        model->simulate();
     });
 
     // TODO: MACK -- create the main window
-    MainWindow w(world, maze, mouse, lens, controller);
+    MainWindow w(model, maze, mouse, lens, controller);
     w.show();
     // TODO: MACK
 

@@ -8,7 +8,7 @@
 #include "Maze.h"
 #include "Mouse.h"
 #include "MouseInterface.h"
-#include "World.h"
+#include "Model.h"
 
 namespace mms {
 
@@ -19,7 +19,7 @@ class Controller : public QObject {
 public:
 
     Controller(
-        const World* world, 
+        const Model* model, 
         const Maze* maze,
         Mouse* mouse,
         Lens* lens,
@@ -40,7 +40,7 @@ signals:
 
 private:
 
-    const World* m_world;
+    const Model* m_model;
     const Maze* m_maze;
     Mouse* m_mouse;
     Lens* m_lens;

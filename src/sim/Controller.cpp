@@ -10,12 +10,12 @@
 namespace mms {
 
 Controller::Controller(
-    const World* world,
+    const Model* model,
     const Maze* maze,
     Mouse* mouse,
     Lens* lens,
     const QString& mouseAlgorithm) :
-    m_world(world),
+    m_model(model),
     m_maze(maze),
     m_mouse(mouse),
     m_lens(lens),
@@ -29,17 +29,17 @@ void Controller::init() {
 
     // First, Hook up a signal for clearing tile fog
     // TODO: MACK - this connection needs to be made *before* the
-    // world starts simulating (so as to catch the first signal)
-    // But the world needs to start simulating before the algo starts.
+    // model starts simulating (so as to catch the first signal)
+    // But the model needs to start simulating before the algo starts.
     // But the algo needs to determine whether or not this connection should be
     // made... catch 222
 
-    // TODO: MACK - Make this connection before the world starts simulating
+    // TODO: MACK - Make this connection before the model starts simulating
     // If the algo doesn't want it, it'll need to disable and mark the starting
     // tile as foggy
     connect(
-        m_world,
-        &World::newTileLocationTraversed,
+        m_model,
+        &Model::newTileLocationTraversed,
         this,
         [=](int x, int y){
             if (getDynamicOptions().automaticallyClearFog) {

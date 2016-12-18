@@ -13,14 +13,14 @@
 namespace mms {
 
 MainWindow::MainWindow(
-        const World* world,
+        const Model* model,
         const Maze* maze,
         Mouse* mouse,
         Lens* lens,
         Controller* controller,
         QWidget *parent) :
         QMainWindow(parent),
-        m_world(world),
+        m_model(model),
         m_maze(maze),
         m_mouse(mouse),
         m_lens(lens),
@@ -268,7 +268,7 @@ void Map::specialKeyRelease(int key, int x, int y) {
 
 QVector<QPair<QString, QVariant>> MainWindow::getRunStats() const {
     // TODO: MACK
-    MouseStats stats = m_world->getMouseStats("");
+    MouseStats stats = m_model->getMouseStats("");
 
     return {
         {"Run ID", S()->runId()}, // TODO: MACK - run directory
