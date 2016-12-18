@@ -8,7 +8,6 @@
 #include "Lens.h"
 #include "Maze.h"
 #include "Mouse.h"
-#include "Model.h"
 
 namespace mms {
 
@@ -19,7 +18,6 @@ class ControllerManager : public QObject {
 public:
 
     ControllerManager(
-        const Model* model,
         const Maze* maze,
         Mouse* mouse,
         Lens* lens);
@@ -29,7 +27,6 @@ public:
 private:
 
     // The pointers we pass to each controller
-    const Model* m_model;
     const Maze* m_maze;
     Mouse* m_mouse;
     Lens* m_lens;

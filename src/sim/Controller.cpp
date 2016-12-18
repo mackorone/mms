@@ -2,6 +2,7 @@
 
 #include "Directory.h"
 #include "Logging.h"
+#include "Model.h"
 #include "MouseChecker.h"
 #include "Param.h"
 #include "SimUtilities.h"
@@ -10,12 +11,10 @@
 namespace mms {
 
 Controller::Controller(
-    const Model* model,
     const Maze* maze,
     Mouse* mouse,
     Lens* lens,
     const QString& mouseAlgorithm) :
-    m_model(model),
     m_maze(maze),
     m_mouse(mouse),
     m_lens(lens),
@@ -38,7 +37,7 @@ void Controller::init() {
     // If the algo doesn't want it, it'll need to disable and mark the starting
     // tile as foggy
     connect(
-        m_model,
+        Model::get(),
         &Model::newTileLocationTraversed,
         this,
         [=](int x, int y){

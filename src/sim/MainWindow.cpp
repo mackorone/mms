@@ -5,6 +5,7 @@
 #include <QtCore>
 
 #include "Map.h"
+#include "Model.h"
 #include "Param.h"
 #include "SimUtilities.h"
 #include "State.h"
@@ -13,14 +14,12 @@
 namespace mms {
 
 MainWindow::MainWindow(
-        const Model* model,
         const Maze* maze,
         Mouse* mouse,
         Lens* lens,
         Controller* controller,
         QWidget *parent) :
         QMainWindow(parent),
-        m_model(model),
         m_maze(maze),
         m_mouse(mouse),
         m_lens(lens),
@@ -268,7 +267,7 @@ void Map::specialKeyRelease(int key, int x, int y) {
 
 QVector<QPair<QString, QVariant>> MainWindow::getRunStats() const {
     // TODO: MACK
-    MouseStats stats = m_model->getMouseStats("");
+    MouseStats stats = Model::get()->getMouseStats("");
 
     return {
         {"Run ID", S()->runId()}, // TODO: MACK - run directory

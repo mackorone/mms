@@ -15,24 +15,16 @@
 
 namespace mms {
 
-Model::Model() : m_maze(nullptr) {
+Model* Model::INSTANCE = nullptr;
+
+void Model::init() {
+    ASSERT_TR(INSTANCE == nullptr);
+    INSTANCE = new Model();
 }
 
-void Model::setMaze(const Maze* maze) {
-    // TODO: MACK - clear the mice
-    m_maze = maze;
-}
-
-void Model::addMouse(const QString& name, Mouse* mouse) {
-    ASSERT_FA(m_maze == nullptr);
-    ASSERT_FA(m_mice.contains(name));
-    m_mice.insert(name, mouse);
-    m_stats.insert(name, MouseStats());
-}
-
-MouseStats Model::getMouseStats(const QString& name) const {
-    ASSERT_TR(m_stats.contains(name));
-    return m_stats.value(name);
+Model* Model::get() {
+    ASSERT_FA(INSTANCE == nullptr);
+    return INSTANCE;
 }
 
 void Model::simulate() {
@@ -151,6 +143,26 @@ void Model::simulate() {
         // TODO: MACK - This seems to sleep for longer than intended :/
         SimUtilities::sleep(Seconds(std::max(0.0, 1.0/P()->mousePositionUpdateRate() - duration)));
     }
+}
+
+void Model::setMaze(const Maze* maze) {
+    // TODO: MACK - clear the mice
+    m_maze = maze;
+}
+
+void Model::addMouse(const QString& name, Mouse* mouse) {
+    ASSERT_FA(m_maze == nullptr);
+    ASSERT_FA(m_mice.contains(name));
+    m_mice.insert(name, mouse);
+    m_stats.insert(name, MouseStats());
+}
+
+MouseStats Model::getMouseStats(const QString& name) const {
+    ASSERT_TR(m_stats.contains(name));
+    return m_stats.value(name);
+}
+
+Model::Model() : m_maze(nullptr) {
 }
 
 void Model::checkCollision() {

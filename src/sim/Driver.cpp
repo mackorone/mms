@@ -63,32 +63,34 @@ int Driver::drive(int argc, char* argv[]) {
     // Remove any excessive archived runs
     SimUtilities::removeExcessArchivedRuns();
 
-    // TODO: MACK - clean this up
-
-    // Create the model and start the physics loop
-    Model model;
+    // Initialize the model, start the physics loop
+    Model::init();
     QThread modelThread;
-    QObject::connect(&modelThread, &QThread::started, &model, &Model::simulate);
-    model.moveToThread(&modelThread);
+    QObject::connect(
+        &modelThread, &QThread::started,
+        Model::get(), &Model::simulate);
+    Model::get()->moveToThread(&modelThread);
     modelThread.start();
+
+    // TODO: MACK - clean this up
 
     Maze* maze = new Maze();
     Mouse* mouse = new Mouse(maze);
 
-    model.setMaze(maze);
-    model.addMouse("", mouse); // TODO: MACK - name
+    Model::get()->setMaze(maze);
+    Model::get()->addMouse("", mouse); // TODO: MACK - name
 
     // Initialize the model and lens
     Lens* lens = new Lens(maze, mouse);
 
     // Initialize the controllerManager, which starts the algorithm
     ControllerManager* controllerManager =
-        new ControllerManager(&model, maze, mouse, lens);
+        new ControllerManager(maze, mouse, lens);
     Controller* controller =
         controllerManager->spawnMouseAlgo(P()->mouseAlgorithm());
 
     // TODO: MACK -- create the main window
-    MainWindow w(&model, maze, mouse, lens, controller);
+    MainWindow w(maze, mouse, lens, controller);
     w.show();
     // TODO: MACK
 
