@@ -9,13 +9,20 @@
 
 namespace mms {
 
-Controller::Controller(Model* model, Lens* lens, const QString& mouseAlgorithm) :
-        m_model(model),
-        m_lens(lens),
-        m_interfaceType(InterfaceType::DISCRETE),
-        m_interfaceTypeFinalized(false),
-        m_mouseAlgorithm(mouseAlgorithm),
-        m_process(nullptr) {
+Controller::Controller(
+    const World* world,
+    const Maze* maze,
+    Mouse* mouse,
+    Lens* lens,
+    const QString& mouseAlgorithm) :
+    m_world(world),
+    m_maze(maze),
+    m_mouse(mouse),
+    m_lens(lens),
+    m_interfaceType(InterfaceType::DISCRETE),
+    m_interfaceTypeFinalized(false),
+    m_mouseAlgorithm(mouseAlgorithm),
+    m_process(nullptr) {
 }
 
 void Controller::init() {
@@ -31,7 +38,7 @@ void Controller::init() {
     // If the algo doesn't want it, it'll need to disable and mark the starting
     // tile as foggy
     connect(
-        m_model->getWorld(),
+        m_world,
         &World::newTileLocationTraversed,
         this,
         [=](int x, int y){
@@ -124,8 +131,8 @@ void Controller::init() {
 
     // Initialize the mouse interface
     m_mouseInterface = new MouseInterface(
-        m_model->getMaze(),
-        m_model->getMouse(),
+        m_maze,
+        m_mouse,
         m_lens->getMazeGraphic(),
         this
     );
@@ -281,13 +288,13 @@ QString Controller::processCommand(const QString& command) {
         return ACK_STRING;
     }
     else if (function == "mazeWidth") {
-        return QString::number(m_model->getMaze()->getWidth());
+        return QString::number(m_maze->getWidth());
     }
     else if (function == "mazeHeight") {
-        return QString::number(m_model->getMaze()->getHeight());
+        return QString::number(m_maze->getHeight());
     }
     else if (function == "isOfficialMaze") {
-        return QString::number(m_model->getMaze()->isOfficialMaze());
+        return QString::number(m_maze->isOfficialMaze());
     }
     else if (function == "initialDirection") {
         return QString(QChar(m_mouseInterface->getStartedDirection()));

@@ -25,7 +25,7 @@ class Map : public QOpenGLWidget, protected QOpenGLFunctions {
 
 public:
 
-    Map(const Model* model, Lens* lens, QWidget* parent = 0);
+    Map(const Maze* maze, const Mouse* mouse, Lens* lens, QWidget* parent = 0);
 
     QVector<QString> getOpenGLVersionInfo();
 
@@ -42,7 +42,8 @@ private:
 	void initOpenGLLogger();
 
     // The maze-and-mouse model
-    const Model* m_model;
+    const Maze* m_maze;
+    const Mouse* m_mouse;
 
     // TODO: MACK - figure out how to make const
     // The maze, as perceived by the mouse algo

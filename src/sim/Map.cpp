@@ -16,9 +16,10 @@
 
 namespace mms {
 
-Map::Map(const Model* model, Lens* lens, QWidget* parent) :
+Map::Map(const Maze* maze, const Mouse* mouse, Lens* lens, QWidget* parent) :
         QOpenGLWidget(parent),
-        m_model(model),
+        m_maze(maze),
+        m_mouse(mouse),
         m_lens(lens) {
 
     // Continuously refresh the widget
@@ -89,8 +90,8 @@ void Map::paintGL() {
     static const int mouseTrianglesStartingIndex = m_lens->getGraphicCpuBuffer()->size();
 
     // Get the current mouse translation and rotation
-    Cartesian currentMouseTranslation = m_model->getMouse()->getCurrentTranslation();
-    Radians currentMouseRotation = m_model->getMouse()->getCurrentRotation();
+    Cartesian currentMouseTranslation = m_mouse->getCurrentTranslation();
+    Radians currentMouseRotation = m_mouse->getCurrentRotation();
 
     // Make space for mouse updates and fill the CPU buffer with new mouse triangles
     m_lens->getGraphicCpuBuffer()->erase(
@@ -304,8 +305,8 @@ void Map::drawMap(
         int count) {
 
     // Get the physical size of the maze (in meters)
-    double physicalMazeWidth = P()->wallWidth() + m_model->getMaze()->getWidth() * (P()->wallWidth() + P()->wallLength());
-    double physicalMazeHeight = P()->wallWidth() + m_model->getMaze()->getHeight() * (P()->wallWidth() + P()->wallLength());
+    double physicalMazeWidth = P()->wallWidth() + m_maze->getWidth() * (P()->wallWidth() + P()->wallLength());
+    double physicalMazeHeight = P()->wallWidth() + m_maze->getHeight() * (P()->wallWidth() + P()->wallLength());
     // TODO: MACK - these should be distances, not doubles
     QPair<double, double> physicalMazeSize = {physicalMazeWidth, physicalMazeHeight};
 
@@ -362,7 +363,7 @@ void Map::drawMap(
             Screen::get()->pixelsPerMeter(),
             S()->zoomedMapScale(),
             S()->rotateZoomedMap(),
-            m_model->getMouse()->getInitialTranslation(),
+            m_mouse->getInitialTranslation(),
             currentMouseTranslation,
             currentMouseRotation
         );

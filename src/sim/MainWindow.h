@@ -21,7 +21,9 @@ class MainWindow : public QMainWindow {
 
 public:
     MainWindow(
-        Model* model,
+        const World* world,
+        const Maze* maze,
+        Mouse* mouse,
         Lens* lens,
         Controller* controller,
         QWidget *parent = 0);
@@ -32,7 +34,9 @@ protected:
     void keyPressEvent(QKeyEvent* event);
 
 private:
-    Model* m_model;
+    const World* m_world;
+    const Maze* m_maze;
+    Mouse* m_mouse;
     Lens* m_lens;
     Ui::MainWindow *ui;
 

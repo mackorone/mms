@@ -5,16 +5,16 @@
 
 namespace mms {
 
-Lens::Lens(Model* model) {
+Lens::Lens(const Maze* maze, const Mouse* mouse) {
 
     // Initialize the buffer and graphics objects
     m_bufferInterface = new BufferInterface(
-        {model->getMaze()->getWidth(), model->getMaze()->getHeight()},
+        {maze->getWidth(), maze->getHeight()},
         &m_graphicCpuBuffer,
         &m_textureCpuBuffer
     );
-    m_mazeGraphic = new MazeGraphic(model->getMaze(), m_bufferInterface);
-    m_mouseGraphic = new MouseGraphic(model->getMouse(), m_bufferInterface);
+    m_mazeGraphic = new MazeGraphic(maze, m_bufferInterface);
+    m_mouseGraphic = new MouseGraphic(mouse, m_bufferInterface);
 
     // TODO: MACK
     m_mazeGraphic->drawPolygons();

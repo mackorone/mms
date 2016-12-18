@@ -19,6 +19,7 @@ World::World() : m_maze(nullptr) {
 }
 
 void World::setMaze(const Maze* maze) {
+    // TODO: MACK - clear the mice
     m_maze = maze;
 }
 
@@ -54,6 +55,8 @@ void World::simulate() {
 
     // Use this thread to perform mouse position updates
     while (true) {
+
+        // TODO: MACK - handle no maze, no mice
 
         // In order to ensure we're sleeping the correct amount of time, we time
         // the mouse position update operation and take it into account when we sleep.

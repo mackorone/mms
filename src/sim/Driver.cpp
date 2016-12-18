@@ -64,13 +64,19 @@ int Driver::drive(int argc, char* argv[]) {
     SimUtilities::removeExcessArchivedRuns();
 
     // TODO: MACK - clean this up
+    World* world = new World();
+    Maze* maze = new Maze();
+    Mouse* mouse = new Mouse(maze);
+
+    world->setMaze(maze);
+    world->addMouse("", mouse); // TODO: MACK - name
 
     // Initialize the model and lens
-    Model* model = new Model();
-    Lens* lens = new Lens(model);
+    Lens* lens = new Lens(maze, mouse);
 
     // Initialize the controllerManager, which starts the algorithm
-    ControllerManager* controllerManager = new ControllerManager(model, lens);
+    ControllerManager* controllerManager =
+        new ControllerManager(world, maze, mouse, lens);
     Controller* controller =
         controllerManager->spawnMouseAlgo(P()->mouseAlgorithm());
 
@@ -78,11 +84,11 @@ int Driver::drive(int argc, char* argv[]) {
     // TODO: MACK - timing of the algo start vs world start
     // Start the physics loop
     std::thread physicsThread([=]() {
-        model->getWorld()->simulate();
+        world->simulate();
     });
 
     // TODO: MACK -- create the main window
-    MainWindow w(model, lens, controller);
+    MainWindow w(world, maze, mouse, lens, controller);
     w.show();
     // TODO: MACK
 

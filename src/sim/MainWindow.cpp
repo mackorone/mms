@@ -13,12 +13,16 @@
 namespace mms {
 
 MainWindow::MainWindow(
-        Model* model,
+        const World* world,
+        const Maze* maze,
+        Mouse* mouse,
         Lens* lens,
         Controller* controller,
         QWidget *parent) :
         QMainWindow(parent),
-        m_model(model),
+        m_world(world),
+        m_maze(maze),
+        m_mouse(mouse),
         m_lens(lens),
         ui(new Ui::MainWindow) {
 
@@ -85,7 +89,7 @@ MainWindow::MainWindow(
     m_headerRefreshTimer.start(33);
 
     // Add a map to the UI
-    Map* map = new Map(model, lens);
+    Map* map = new Map(maze, mouse, lens);
     map->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     map->setMinimumSize(300, 300);
     ui->mapContainer->addWidget(map);
@@ -264,7 +268,7 @@ void Map::specialKeyRelease(int key, int x, int y) {
 
 QVector<QPair<QString, QVariant>> MainWindow::getRunStats() const {
     // TODO: MACK
-    MouseStats stats = m_model->getWorld()->getMouseStats("");
+    MouseStats stats = m_world->getMouseStats("");
 
     return {
         {"Run ID", S()->runId()}, // TODO: MACK - run directory
@@ -272,31 +276,30 @@ QVector<QPair<QString, QVariant>> MainWindow::getRunStats() const {
         {"Mouse Algo", P()->mouseAlgorithm()},
         {"Tiles Traversed",
             QString::number(stats.traversedTileLocations.size()) + " / " +
-            QString::number(m_model->getMaze()->getWidth() * m_model->getMaze()->getHeight())
+            QString::number(m_maze->getWidth() * m_maze->getHeight())
         },
         {"Closest Distance to Center", stats.closestDistanceToCenter},
-        {"Current X (m)", m_model->getMouse()->getCurrentTranslation().getX().getMeters()},
-        {"Current Y (m)", m_model->getMouse()->getCurrentTranslation().getY().getMeters()},
-        {"Current Rotation (deg)", m_model->getMouse()->getCurrentRotation().getDegreesZeroTo360()},
-        {"Current X tile", m_model->getMouse()->getCurrentDiscretizedTranslation().first},
-        {"Current Y tile", m_model->getMouse()->getCurrentDiscretizedTranslation().second},
+        {"Current X (m)", m_mouse->getCurrentTranslation().getX().getMeters()},
+        {"Current Y (m)", m_mouse->getCurrentTranslation().getY().getMeters()},
+        {"Current Rotation (deg)", m_mouse->getCurrentRotation().getDegreesZeroTo360()},
+        {"Current X tile", m_mouse->getCurrentDiscretizedTranslation().first},
+        {"Current Y tile", m_mouse->getCurrentDiscretizedTranslation().second},
         {"Current Direction",
-            DIRECTION_TO_STRING.value(m_model->getMouse()->getCurrentDiscretizedRotation())
+            DIRECTION_TO_STRING.value(m_mouse->getCurrentDiscretizedRotation())
         },
         {"Elapsed Real Time", SimUtilities::formatDuration(Time::get()->elapsedRealTime())},
         {"Elapsed Sim Time", SimUtilities::formatDuration(Time::get()->elapsedSimTime())},
-        /*
         {"Time Since Origin Departure",
-            m_model->getWorld()->getTimeSinceOriginDeparture().getSeconds() < 0
+            stats.timeOfOriginDeparture.getSeconds() < 0
             ? "NONE"
-            : SimUtilities::formatDuration(m_model->getWorld()->getTimeSinceOriginDeparture())
+            : SimUtilities::formatDuration(
+                Time::get()->elapsedSimTime() - stats.timeOfOriginDeparture)
         },
         {"Best Time to Center",
-            m_model->getWorld()->getBestTimeToCenter().getSeconds() < 0
+            stats.bestTimeToCenter.getSeconds() < 0
             ? "NONE"
-            : SimUtilities::formatDuration(m_model->getWorld()->getBestTimeToCenter())
+            : SimUtilities::formatDuration(stats.bestTimeToCenter)
         },
-        */
         {"Crashed", (S()->crashed() ? "TRUE" : "FALSE")},
     };
 }
@@ -354,9 +357,9 @@ QVector<QPair<QString, QVariant>> MainWindow::getMazeInfo() const {
             (P()->useMazeFile() ? "Maze File" : "Maze Algo"),
             (P()->useMazeFile() ? P()->mazeFile() : P()->mazeAlgorithm()),
         },
-        {"Maze Width", m_model->getMaze()->getWidth()},
-        {"Maze Height", m_model->getMaze()->getHeight()},
-        {"Maze Is Official", m_model->getMaze()->isOfficialMaze() ? "TRUE" : "FALSE"},
+        {"Maze Width", m_maze->getWidth()},
+        {"Maze Height", m_maze->getHeight()},
+        {"Maze Is Official", m_maze->isOfficialMaze() ? "TRUE" : "FALSE"},
     };
 }
 

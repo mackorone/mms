@@ -14,7 +14,6 @@ class World : public QObject {
     Q_OBJECT
 
 public:
-
     World();
 
     void setMaze(const Maze* maze);

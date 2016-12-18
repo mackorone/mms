@@ -17,7 +17,7 @@ class Lens {
 
 public:
 
-    Lens(Model* model);
+    Lens(const Maze* maze, const Mouse* mouse);
 
     // TODO: MACK - we shouldn't have to expose these
     MazeGraphic* getMazeGraphic();

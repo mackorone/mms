@@ -5,8 +5,10 @@
 
 #include "DynamicMouseAlgorithmOptions.h"
 #include "Lens.h"
-#include "Model.h"
+#include "Maze.h"
+#include "Mouse.h"
 #include "MouseInterface.h"
+#include "World.h"
 
 namespace mms {
 
@@ -16,7 +18,12 @@ class Controller : public QObject {
 
 public:
 
-    Controller(Model* model, Lens* lens, const QString& mouseAlgorithm);
+    Controller(
+        const World* world, 
+        const Maze* maze,
+        Mouse* mouse,
+        Lens* lens,
+        const QString& mouseAlgorithm);
 
     // TODO: MACK
     InterfaceType getInterfaceType();
@@ -33,7 +40,9 @@ signals:
 
 private:
 
-    Model* m_model;
+    const World* m_world;
+    const Maze* m_maze;
+    Mouse* m_mouse;
     Lens* m_lens;
 
     // TODO: MACK - defaults to DISCRETE
