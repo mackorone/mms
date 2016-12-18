@@ -7,19 +7,20 @@
 // TODO: MACK - replace this with QThread
 #include <thread>
 
-#include "Assert.h"
 #include "ControllerManager.h"
 #include "Directory.h"
 #include "FontImage.h"
 #include "Logging.h"
 #include "MainWindow.h"
-#include "Model.h"
+#include "Map.h"
+#include "Maze.h"
+#include "Mouse.h"
 #include "Param.h"
 #include "Screen.h"
 #include "SimUtilities.h"
 #include "State.h"
 #include "Time.h"
-#include "Map.h"
+#include "World.h"
 #include "units/Milliseconds.h"
 
 namespace mms {

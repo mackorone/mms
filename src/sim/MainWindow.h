@@ -7,7 +7,9 @@
 
 #include "Controller.h"
 #include "Lens.h"
-#include "Model.h"
+#include "Maze.h"
+#include "Mouse.h"
+#include "World.h"
 
 namespace Ui {
 class MainWindow;

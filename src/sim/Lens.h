@@ -2,8 +2,9 @@
 
 #include <QVector>
 
+#include "Maze.h"
 #include "MazeGraphic.h"
-#include "Model.h"
+#include "Mouse.h"
 #include "MouseGraphic.h"
 #include "TriangleGraphic.h"
 #include "TriangleTexture.h"

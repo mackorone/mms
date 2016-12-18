@@ -12,7 +12,8 @@
 
 #include "LayoutType.h"
 #include "Lens.h"
-#include "Model.h"
+#include "Maze.h"
+#include "Mouse.h"
 
 namespace mms {
 
@@ -41,7 +42,7 @@ private:
 	QOpenGLDebugLogger m_openGLLogger;
 	void initOpenGLLogger();
 
-    // The maze-and-mouse model
+    // The maze and mouse
     const Maze* m_maze;
     const Mouse* m_mouse;
 
