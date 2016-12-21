@@ -72,27 +72,19 @@ int Driver::drive(int argc, char* argv[]) {
     Model::get()->moveToThread(&modelThread);
     modelThread.start();
 
-    // TODO: MACK - clean this up
+    // Create the maze, add it to the model
+    Maze maze;
+    Model::get()->setMaze(&maze);
 
-    Maze* maze = new Maze();
-    Mouse* mouse = new Mouse(maze);
+    // Create the main window
+    MainWindow window(&maze);
+    window.show();
 
-    Model::get()->setMaze(maze);
-    Model::get()->addMouse("", mouse); // TODO: MACK - name
+    // Initialize the controllerManager, which starts all algorithms
+    ControllerManager* controllerManager = new ControllerManager(&maze, &window);
 
-    // Initialize the model and lens
-    Lens* lens = new Lens(maze, mouse);
-
-    // Initialize the controllerManager, which starts the algorithm
-    ControllerManager* controllerManager =
-        new ControllerManager(maze, mouse, lens);
-    Controller* controller =
-        controllerManager->spawnMouseAlgo(P()->mouseAlgorithm());
-
-    // TODO: MACK -- create the main window
-    MainWindow w(maze, mouse, lens, controller);
-    w.show();
-    // TODO: MACK
+    // Spawn a new mouse algorithm
+    controllerManager->spawnMouseAlgo(P()->mouseAlgorithm());
 
     // Start the event loop
     return app.exec();

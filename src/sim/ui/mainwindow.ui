@@ -30,7 +30,7 @@
     <item>
      <widget class="QTabWidget" name="tabs">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="runStatsTab">
        <attribute name="title">
@@ -88,6 +88,9 @@
               </property>
               <property name="plainText">
                <string/>
+              </property>
+              <property name="textInteractionFlags">
+               <set>Qt::TextSelectableByMouse</set>
               </property>
              </widget>
             </item>

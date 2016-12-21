@@ -5,10 +5,8 @@
 #include <QMainWindow>
 #include <QTimer>
 
-#include "Controller.h"
-#include "Lens.h"
+#include "MLC.h"
 #include "Maze.h"
-#include "Mouse.h"
 
 namespace Ui {
 class MainWindow;
@@ -21,12 +19,10 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    MainWindow(
-        const Maze* maze,
-        Mouse* mouse,
-        Lens* lens,
-        Controller* controller,
-        QWidget *parent = 0);
+    MainWindow(const Maze* maze, QWidget *parent = 0);
+
+    // TODO: MACK - then name of this
+    void newMLC(MLC mlc);
 
     ~MainWindow();
 
@@ -35,9 +31,10 @@ protected:
 
 private:
     const Maze* m_maze;
-    Mouse* m_mouse;
-    Lens* m_lens;
     Ui::MainWindow *ui;
+
+    // TODO: MACK
+    MLC m_mlc;
 
     // Header-related members
     // TODO: MACK - refactor this into its own class

@@ -26,16 +26,11 @@ Controller::Controller(
 
 void Controller::init() {
 
-    // First, Hook up a signal for clearing tile fog
-    // TODO: MACK - this connection needs to be made *before* the
-    // model starts simulating (so as to catch the first signal)
-    // But the model needs to start simulating before the algo starts.
-    // But the algo needs to determine whether or not this connection should be
-    // made... catch 222
-
-    // TODO: MACK - Make this connection before the model starts simulating
-    // If the algo doesn't want it, it'll need to disable and mark the starting
-    // tile as foggy
+    // First, connect the newTileLocationTraversed signal to a lambda that
+    // clears tile fog. This ensures that the first tile's fog is always
+    // cleared (the initial value of automaticallyClearFog is true). This means
+    // that, if an algorithm doesn't want to automatically clear tile fog,
+    // it'll have to disable tile fog and then mark the first/ tile as foggy.
     connect(
         Model::get(),
         &Model::newTileLocationTraversed,
@@ -47,7 +42,50 @@ void Controller::init() {
         }
     );
 
-/////////////////
+    // Create the subprocess on which we'll execute the algorithm
+    m_process = new QProcess();
+
+    // Publish all algorithm stdout so that the UI can display it
+    connect(
+        m_process,
+        &QProcess::readyReadStandardOutput,
+        this,
+        [=](){
+            QString text = m_process->readAllStandardOutput();
+            QStringList lines = getLines(text, &m_stdoutBuffer);
+            for (const QString& line : lines) {
+                emit algoStdout(line);
+            }
+        }
+    );
+
+    // Process all stderr commands as appropriate
+    connect(
+        m_process,
+        &QProcess::readyReadStandardError,
+        this,
+        [=](){
+            QString text = m_process->readAllStandardError();
+            QStringList lines = getLines(text, &m_stderrBuffer);
+            for (const QString& line : lines) {
+                QString response = processCommand(line);
+                if (!response.isEmpty()) {
+                    m_process->write((response + "\n").toStdString().c_str());
+                }
+            }
+        }
+    );
+
+    // Initialize the mouse interface
+    m_mouseInterface = new MouseInterface(
+        m_maze,
+        m_mouse,
+        m_lens->getMazeGraphic(),
+        this
+    );
+}
+
+void Controller::start() {
 
     // Check to see if there is some directory with the given name
     QString selectedMouseAlgo(m_mouseAlgorithm);
@@ -90,7 +128,6 @@ void Controller::init() {
         }
 
         // Run
-        m_process = new QProcess();
         // TODO: MACK - I should be doing the connections here
         m_process->start(binPath);
 
@@ -112,87 +149,49 @@ void Controller::init() {
             << selectedMouseAlgoPath << "\"";
         SimUtilities::quit();
     }
-
-/////////////////
-    connect(
-        m_process,
-        &QProcess::readyReadStandardOutput,
-        this,
-        &Controller::processMouseAlgoStdout
-    );
-    connect(
-        m_process,
-        &QProcess::readyReadStandardError,
-        this,
-        &Controller::processMouseAlgoStderr
-    );
-    // TODO: MACK - start here
-
-    // Initialize the mouse interface
-    m_mouseInterface = new MouseInterface(
-        m_maze,
-        m_mouse,
-        m_lens->getMazeGraphic(),
-        this
-    );
 }
 
-InterfaceType Controller::getInterfaceType() {
+InterfaceType Controller::getInterfaceType() const {
     // Finalize the interface type the first time it's queried
     m_interfaceTypeFinalized = true;
     return m_interfaceType;
 }
 
-DynamicMouseAlgorithmOptions Controller::getDynamicOptions() {
+DynamicMouseAlgorithmOptions Controller::getDynamicOptions() const {
     // The Controller object is the source of truth for the dynamic options
     return m_dynamicOptions;
 }
 
-void Controller::processMouseAlgoStdout() {
-    // TODO: MACK - do the same sort of grouping as in stderr
-    QString output = m_process->readAllStandardOutput();
-    for (const QString& line : output.split("\n", QString::SkipEmptyParts)) {
-        // TODO: MACK - how to ensure that we're hooked up to the stdout textEdit before this happends?
-        emit algoStdout(line);
-    }
-}
-
-void Controller::processMouseAlgoStderr() {
+QStringList Controller::getLines(const QString& text, QStringList* buffer) {
 
     // TODO: upforgrabs
     // Determine whether or not this function is perf sensitive. If so,
     // refactor this so that we're not copying QStrings between lists.
 
-    // Read all of the new text
-    QString input = m_process->readAllStandardError();
+    // Separate the text by line
+    QStringList parts = text.split("\n");
 
-    // Separate the input by line
-    QStringList inputLines = input.split("\n");
+    // We'll return list of complete lines
+    QStringList lines;
 
-    // A list of commands to be executed
-    QStringList commands;
-
-    // If a line has definitely terminated, it's a command
-    if (1 < inputLines.size()) {
-        commands.append(m_inputLines.join("") + inputLines.at(0));
-        m_inputLines.clear();
+    // If the text has at least one newline character, we definitely have a
+    // complete line; combine it with the contents of the buffer and append
+    // it to the list of lines to be returned
+    if (1 < parts.size()) {
+        lines.append(buffer->join("") + parts.at(0));
+        buffer->clear();
     }
 
-    // All complete lines in the input are commands
-    for (int i = 1; i < inputLines.size() - 1; i += 1) {
-        commands.append(inputLines.at(i));
+    // All newline-separated parts in the text are lines
+    for (int i = 1; i < parts.size() - 1; i += 1) {
+        lines.append(parts.at(i));
     }
 
-    // Store the beginning of the incomplete line
-    m_inputLines.append(inputLines.at(inputLines.size() - 1));
+    // Store the last part of the text (empty string if the text ended
+    // with newline) in the buffer, to be combined with future input
+    buffer->append(parts.at(parts.size() - 1));
 
-    // Process all available commands
-    for (int i = 0; i < commands.size(); i += 1) {
-        QString response = processCommand(commands.at(i));
-        if (!response.isEmpty()) {
-            m_process->write((response + "\n").toStdString().c_str());
-        }
-    }
+    return lines;
 }
 
 QString Controller::processCommand(const QString& command) {
@@ -540,10 +539,6 @@ QString Controller::processCommand(const QString& command) {
     }
 
     return ERROR_STRING;
-}
-
-void Controller::startMouseAlgorithm(const QString& mouseAlgorithm) {
-
 }
 
 } // namespace mms

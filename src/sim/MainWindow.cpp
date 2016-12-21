@@ -13,24 +13,26 @@
 
 namespace mms {
 
-MainWindow::MainWindow(
-        const Maze* maze,
-        Mouse* mouse,
-        Lens* lens,
-        Controller* controller,
-        QWidget *parent) :
+MainWindow::MainWindow(const Maze* maze, QWidget *parent) :
         QMainWindow(parent),
         m_maze(maze),
-        m_mouse(mouse),
-        m_lens(lens),
         ui(new Ui::MainWindow) {
 
     // Initialization
     ui->setupUi(this);
 
+    // Resize the window
+    resize(P()->defaultWindowWidth(), P()->defaultWindowHeight());
+}
+
+void MainWindow::newMLC(MLC mlc) {
+
     // TODO: MACK
+    m_mlc = mlc;
+
+    // Ensure that we're listening for mouse algo stdout
     connect(
-        controller,
+        mlc.controller,
         &Controller::algoStdout,
         ui->stdoutTextEdit,
         &QPlainTextEdit::appendPlainText
@@ -88,13 +90,10 @@ MainWindow::MainWindow(
     m_headerRefreshTimer.start(33);
 
     // Add a map to the UI
-    Map* map = new Map(maze, mouse, lens);
+    Map* map = new Map(m_maze, mlc.mouse, mlc.lens);
     map->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     map->setMinimumSize(300, 300);
     ui->mapContainer->addWidget(map);
-
-    // TODO: MACK - lastly, resize the window
-    resize(1200, 633);
 }
 
 MainWindow::~MainWindow() {
@@ -187,27 +186,27 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
     else if (key == Qt::Key_T) {
         // Toggle wall truth visibility
         S()->setWallTruthVisible(!S()->wallTruthVisible());
-        m_lens->getMazeGraphic()->updateWalls();
+        m_mlc.lens->getMazeGraphic()->updateWalls();
     }
     else if (key == Qt::Key_C) {
         // Toggle tile colors
         S()->setTileColorsVisible(!S()->tileColorsVisible());
-        m_lens->getMazeGraphic()->updateColor();
+        m_mlc.lens->getMazeGraphic()->updateColor();
     }
     else if (key == Qt::Key_G) {
         // Toggle tile fog
         S()->setTileFogVisible(!S()->tileFogVisible());
-        m_lens->getMazeGraphic()->updateFog();
+        m_mlc.lens->getMazeGraphic()->updateFog();
     }
     else if (key == Qt::Key_X) {
         // Toggle tile text
         S()->setTileTextVisible(!S()->tileTextVisible());
-        m_lens->getMazeGraphic()->updateText();
+        m_mlc.lens->getMazeGraphic()->updateText();
     }
     else if (key == Qt::Key_D) {
         // Toggle tile distance visibility
         S()->setTileDistanceVisible(!S()->tileDistanceVisible());
-        m_lens->getMazeGraphic()->updateText();
+        m_mlc.lens->getMazeGraphic()->updateText();
     }
     else if (key == Qt::Key_H) {
         // Toggle header visibility
@@ -267,6 +266,7 @@ void Map::specialKeyRelease(int key, int x, int y) {
 
 QVector<QPair<QString, QVariant>> MainWindow::getRunStats() const {
     // TODO: MACK
+    return {};
     MouseStats stats = Model::get()->getMouseStats("");
 
     return {
@@ -278,13 +278,13 @@ QVector<QPair<QString, QVariant>> MainWindow::getRunStats() const {
             QString::number(m_maze->getWidth() * m_maze->getHeight())
         },
         {"Closest Distance to Center", stats.closestDistanceToCenter},
-        {"Current X (m)", m_mouse->getCurrentTranslation().getX().getMeters()},
-        {"Current Y (m)", m_mouse->getCurrentTranslation().getY().getMeters()},
-        {"Current Rotation (deg)", m_mouse->getCurrentRotation().getDegreesZeroTo360()},
-        {"Current X tile", m_mouse->getCurrentDiscretizedTranslation().first},
-        {"Current Y tile", m_mouse->getCurrentDiscretizedTranslation().second},
+        {"Current X (m)", m_mlc.mouse->getCurrentTranslation().getX().getMeters()},
+        {"Current Y (m)", m_mlc.mouse->getCurrentTranslation().getY().getMeters()},
+        {"Current Rotation (deg)", m_mlc.mouse->getCurrentRotation().getDegreesZeroTo360()},
+        {"Current X tile", m_mlc.mouse->getCurrentDiscretizedTranslation().first},
+        {"Current Y tile", m_mlc.mouse->getCurrentDiscretizedTranslation().second},
         {"Current Direction",
-            DIRECTION_TO_STRING.value(m_mouse->getCurrentDiscretizedRotation())
+            DIRECTION_TO_STRING.value(m_mlc.mouse->getCurrentDiscretizedRotation())
         },
         {"Elapsed Real Time", SimUtilities::formatDuration(Time::get()->elapsedRealTime())},
         {"Elapsed Sim Time", SimUtilities::formatDuration(Time::get()->elapsedSimTime())},

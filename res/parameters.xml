@@ -3,8 +3,8 @@
 <parameters>
 
     <!-- Graphical Parameters -->
-    <default-window-width>990</default-window-width> <!-- Pixels -->
-    <default-window-height>700</default-window-height> <!-- Pixels -->
+    <default-window-width>1200</default-window-width> <!-- Pixels -->
+    <default-window-height>633</default-window-height> <!-- Pixels -->
     <default-layout-type>FULL</default-layout-type> <!-- FULL, BOTH -->
     <min-zoomed-map-scale>0.02</min-zoomed-map-scale>
     <max-zoomed-map-scale>1.0</max-zoomed-map-scale>
@@ -70,6 +70,6 @@
     <maze-rotations>0</maze-rotations> <!-- 0-3 counterclockwise rotations -->
 
     <!-- Mouse Parameters -->
-    <mouse-algorithm>mackAlgoTwo</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
+    <mouse-algorithm>leftWallFollow</mouse-algorithm> <!-- The name as specified in src/mouse/MouseAlgorithms.cpp -->
 
 </parameters>

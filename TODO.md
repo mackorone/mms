@@ -1,15 +1,10 @@
 # High Priority
 
+- Make a note about newline
+- Indicate whether or not there are lines in the stdout buffer
 - Order of initialization
-    - World has a mazes and list of mouse algos
-    - Maze is generated/loaded
-    - World is started (doing nothing yet)
-    - Algorithm is chosen
-        - Attach process signals to Window
-        - Tile fog signal is attached
-    - Mouse is added to the world
-    - Algorithm is run
-    - Where are the graphics created?
+    - Working on cleaning up Controller
+- Make sure all QObjects have parents
 - Header visibility toggling
 - Stderr get's printed out when the algo exits, gets sent to Controller
 - Why is tile fog not clearing immediately?
@@ -17,6 +12,7 @@
 - Clean up View
 - Kill Layout
 - QVector<QString> to QStringList
+- QList vs QVector - pick one
 - Run mouse algorithms as separate process
     - Make continuous algos possible
     - Do some cleanup here

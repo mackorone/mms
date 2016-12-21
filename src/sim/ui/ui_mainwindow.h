@@ -136,6 +136,7 @@ public:
         stdoutTextEdit = new QPlainTextEdit(stdoutScrollAreaContents);
         stdoutTextEdit->setObjectName(QStringLiteral("stdoutTextEdit"));
         stdoutTextEdit->setReadOnly(true);
+        stdoutTextEdit->setTextInteractionFlags(Qt::TextSelectableByMouse);
 
         verticalLayout_7->addWidget(stdoutTextEdit);
 
@@ -227,7 +228,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        tabs->setCurrentIndex(0);
+        tabs->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(MainWindow);

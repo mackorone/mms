@@ -1,18 +1,14 @@
 #include "Map.h"
 
-#include <QFile>
 #include <QPair>
 
-#include "Directory.h"
 #include "FontImage.h"
 #include "Layout.h"
 #include "Logging.h"
 #include "Param.h"
-#include "SimUtilities.h"
 #include "Screen.h"
 #include "State.h"
 #include "TransformationMatrix.h"
-#include "units/Seconds.h"
 
 namespace mms {
 
