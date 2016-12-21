@@ -1,6 +1,8 @@
 #pragma once
 
-#include <map>
+#include <QDebug>
+#include <QMap>
+#include <QString>
 
 #include "ContainerUtilities.h"
 
@@ -32,5 +34,10 @@ static const QMap<MazeFileType, QString> MAZE_FILE_TYPE_TO_SUFFIX {
 
 static const QMap<QString, MazeFileType> SUFFIX_TO_MAZE_FILE_TYPE =
     ContainerUtilities::inverse(MAZE_FILE_TYPE_TO_STRING);
+
+inline QDebug operator<<(QDebug stream, MazeFileType mazeFileType) {
+    stream.noquote() << MAZE_FILE_TYPE_TO_STRING.value(mazeFileType);
+    return stream;
+}
 
 } // namespace mms

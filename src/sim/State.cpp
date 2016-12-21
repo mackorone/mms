@@ -1,7 +1,5 @@
 #include "State.h"
 
-#include <QDebug>
-
 #include "Assert.h"
 #include "Key.h"
 #include "Logging.h"
@@ -196,6 +194,7 @@ bool State::arrowKeyIsPressed(Key key) {
 void State::setArrowKeyIsPressed(Key key, bool pressed) {
     ASSERT_TR(m_arrowKeys.contains(key));
     m_arrowKeys[key] = pressed;
+    qDebug() << m_arrowKeys; // TODO: MACK
 }
 
 bool State::crossesDefault(double current, double next, double defaultValue) {

@@ -19,21 +19,27 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
+
     MainWindow(const Maze* maze, QWidget *parent = 0);
-
-    // TODO: MACK - then name of this
-    void newMLC(MLC mlc);
-
     ~MainWindow();
 
+    // Inform the UI about a new mouse/lens/controller trio
+    void newMLC(MLC mlc);
+
 protected:
+
     void keyPressEvent(QKeyEvent* event);
+    void keyReleaseEvent(QKeyEvent* event);
 
 private:
-    const Maze* m_maze;
+
+    // The UI object
     Ui::MainWindow *ui;
 
-    // TODO: MACK
+    // The maze
+    const Maze* m_maze;
+
+    // The mouse/lens/controller trio
     MLC m_mlc;
 
     // Header-related members

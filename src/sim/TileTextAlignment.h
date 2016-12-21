@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QDebug>
 #include <QMap>
 #include <QString>
 #include <QVector>
@@ -64,5 +65,10 @@ static const QVector<TileTextAlignment> STAR_RIGHT_ALIGNMENTS {
     TileTextAlignment::CENTER_RIGHT, 
     TileTextAlignment::LOWER_RIGHT, 
 };
+
+inline QDebug operator<<(QDebug stream, TileTextAlignment tileTextAlignment) {
+    stream.noquote() << TILE_TEXT_ALIGNMENT_TO_STRING.value(tileTextAlignment);
+    return stream;
+}
 
 } // namespace mms

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QDebug>
 #include <QMap>
 #include <QString>
 
@@ -93,5 +94,10 @@ static const QMap<Color, char> COLOR_TO_CHAR {
 
 static const QMap<char, Color> CHAR_TO_COLOR =
     ContainerUtilities::inverse(COLOR_TO_CHAR);
+
+inline QDebug operator<<(QDebug stream, Color color) {
+    stream.noquote() << COLOR_TO_STRING.value(color);
+    return stream;
+}
 
 } // namespace mms

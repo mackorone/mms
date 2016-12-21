@@ -25,6 +25,10 @@ MainWindow::MainWindow(const Maze* maze, QWidget *parent) :
     resize(P()->defaultWindowWidth(), P()->defaultWindowHeight());
 }
 
+MainWindow::~MainWindow() {
+    delete ui;
+}
+
 void MainWindow::newMLC(MLC mlc) {
 
     // TODO: MACK
@@ -96,10 +100,6 @@ void MainWindow::newMLC(MLC mlc) {
     ui->mapContainer->addWidget(map);
 }
 
-MainWindow::~MainWindow() {
-    delete ui;
-}
-
 void MainWindow::keyPressEvent(QKeyEvent* event) {
 
     // NOTE: If you're adding or removing anything from this function, make
@@ -109,63 +109,45 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
 
     if (key == Qt::Key_P) {
         // Toggle pause (only in discrete mode)
-        // TODO: MACK
-        /*
-        if (
-            STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType)
-            == InterfaceType::DISCRETE
-        ) {
-        */
-            S()->setPaused(!S()->paused());
-        /*
+        if (m_mlc.controller != nullptr) {
+            if (m_mlc.controller->getInterfaceType() == InterfaceType::DISCRETE) {
+                S()->setPaused(!S()->paused());
+            }
+            else {
+                qWarning().noquote().nospace()
+                    << "Pausing the simulator is only allowed in "
+                    << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
+                    << " mode.";
+            }
         }
-        else {
-            qWarning().noquote().nospace()
-                << "Pausing the simulator is only allowed in "
-                << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
-                << " mode.";
-        }
-        */
     }
     else if (key == Qt::Key_F) {
         // Faster (only in discrete mode)
-        // TODO: MACK
-        /*
-        if (
-            STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType)
-            == InterfaceType::DISCRETE
-        ) {
-        */
-            S()->setSimSpeed(S()->simSpeed() * 1.5);
-        /*
+        if (m_mlc.controller != nullptr) {
+            if (m_mlc.controller->getInterfaceType() == InterfaceType::DISCRETE) {
+                S()->setSimSpeed(S()->simSpeed() * 1.5);
+            }
+            else {
+                qWarning().noquote().nospace()
+                    << "Increasing the simulator speed is only allowed in "
+                    << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
+                    << " mode.";
+            }
         }
-        else {
-            qWarning().noquote().nospace()
-                << "Increasing the simulator speed is only allowed in "
-                << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
-                << " mode.";
-        }
-        */
     }
     else if (key == Qt::Key_S) {
         // Slower (only in discrete mode)
-        // TODO: MACK
-        /*
-        if (
-            STRING_TO_INTERFACE_TYPE.value(m_controllerManager->getStaticOptions().interfaceType)
-            == InterfaceType::DISCRETE
-        ) {
-        */
-            S()->setSimSpeed(S()->simSpeed() / 1.5);
-        /*
+        if (m_mlc.controller != nullptr) {
+            if (m_mlc.controller->getInterfaceType() == InterfaceType::DISCRETE) {
+                S()->setSimSpeed(S()->simSpeed() / 1.5);
+            }
+            else {
+                qWarning().noquote().nospace()
+                    << "Decreasing the simulator speed is only allowed in "
+                    << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
+                    << " mode.";
+            }
         }
-        else {
-            qWarning().noquote().nospace()
-                << "Decreasing the simulator speed is only allowed in "
-                << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
-                << " mode.";
-        }
-        */
     }
     else if (key == Qt::Key_L) {
         // Cycle through the available layouts
@@ -240,29 +222,23 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
                 << " acknowledged as pressed; pressing it has no effect.";
         }
     }
-}
-
-// TODO: MACK
-/*
-void Map::specialKeyPress(int key, int x, int y) {
-    if (!INT_TO_KEY.contains(key)) {
-        return;
-    }
-    if (ARROW_KEYS.contains(INT_TO_KEY.value(key))) {
+    else if (
+        INT_TO_KEY.contains(key) &&
+        ARROW_KEYS.contains(INT_TO_KEY.value(key))
+    ) {
         S()->setArrowKeyIsPressed(INT_TO_KEY.value(key), true);
     }
 }
 
-void Map::specialKeyRelease(int key, int x, int y) {
-    if (!INT_TO_KEY.contains(key)) {
-        return;
-    }
-    if (ARROW_KEYS.contains(INT_TO_KEY.value(key))) {
+void MainWindow::keyReleaseEvent(QKeyEvent* event) {
+    int key = event->key();
+    if (
+        INT_TO_KEY.contains(key) &&
+        ARROW_KEYS.contains(INT_TO_KEY.value(key))
+    ) {
         S()->setArrowKeyIsPressed(INT_TO_KEY.value(key), false);
     }
 }
-*/
-
 
 QVector<QPair<QString, QVariant>> MainWindow::getRunStats() const {
     // TODO: MACK

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QDebug>
 #include <QMap>
 #include <QString>
 
@@ -24,5 +25,10 @@ static const QMap<LayoutType, QString> LAYOUT_TYPE_TO_STRING {
 
 static const QMap<QString, LayoutType> STRING_TO_LAYOUT_TYPE =
     ContainerUtilities::inverse(LAYOUT_TYPE_TO_STRING);
+
+inline QDebug operator<<(QDebug stream, LayoutType layoutType) {
+    stream.noquote() << LAYOUT_TYPE_TO_STRING.value(layoutType);
+    return stream;
+}
 
 } // namespace mms

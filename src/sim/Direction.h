@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QDebug>
 #include <QMap>
 #include <QString>
 #include <QVector>
@@ -74,5 +75,10 @@ static const QMap<Direction, QChar> DIRECTION_TO_CHAR {
 
 static const QMap<QChar, Direction> CHAR_TO_DIRECTION =
     ContainerUtilities::inverse(DIRECTION_TO_CHAR);
+
+inline QDebug operator<<(QDebug stream, Direction direction) {
+    stream.noquote() << DIRECTION_TO_STRING.value(direction);
+    return stream;
+}
 
 } // namespace mms
