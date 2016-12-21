@@ -29,7 +29,6 @@ State::State() {
     m_tileColorsVisible = P()->defaultTileColorsVisible();
     m_tileTextVisible = P()->defaultTileTextVisible();
     m_tileDistanceVisible = P()->defaultTileDistanceVisible();
-    m_headerVisible = P()->defaultHeaderVisible();
     m_tileFogVisible = P()->defaultTileFogVisible();
     m_paused = P()->defaultPaused();
     m_simSpeed = P()->defaultSimSpeed();
@@ -136,14 +135,6 @@ bool State::tileDistanceVisible() {
 
 void State::setTileDistanceVisible(bool tileDistanceVisible) {
     m_tileDistanceVisible = tileDistanceVisible;
-}
-
-bool State::headerVisible() {
-    return m_headerVisible;
-}
-
-void State::setHeaderVisible(bool headerVisible) {
-    m_headerVisible = headerVisible;
 }
 
 bool State::paused() {

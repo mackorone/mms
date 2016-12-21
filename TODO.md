@@ -4,7 +4,6 @@
 - Indicate whether or not there are lines in the stdout buffer (checkbox?)
 - Surface error messages to the UI
 - Make sure all QObjects have parents
-- Header visibility toggling
 - Stderr get's printed out when the algo exits, gets sent to Controller
 - Why is tile fog not clearing immediately?
     - Sometimes the signal is emitted too soon

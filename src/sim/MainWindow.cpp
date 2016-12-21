@@ -203,14 +203,6 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
         S()->setTileDistanceVisible(!S()->tileDistanceVisible());
         m_mlc.lens->getMazeGraphic()->updateText();
     }
-    else if (key == Qt::Key_H) {
-        // Toggle header visibility
-        // TODO: MACK
-        /*
-        S()->setHeaderVisible(!S()->headerVisible());
-        m_header->updateLinesAndColumnStartingPositions();
-        */
-    }
     else if (key == Qt::Key_Q) {
         // Quit
         SimUtilities::quit();
@@ -362,7 +354,6 @@ QVector<QPair<QString, QVariant>> MainWindow::getOptions() const {
         {"Tile Fog Visible (g)", (S()->tileFogVisible() ? "TRUE" : "FALSE")},
         {"Tile Text Visible (x)", (S()->tileTextVisible() ? "TRUE" : "FALSE")},
         {"Tile Distance Visible (d)", (S()->tileDistanceVisible() ? "TRUE" : "FALSE")},
-        {"Header Visible (h)", (S()->headerVisible() ? "TRUE" : "FALSE")}, // TODO: MACK
         {"Paused (p)", (S()->paused() ? "TRUE" : "FALSE")},
         {"Sim Speed (f, s)", QString::number(S()->simSpeed())},
     };

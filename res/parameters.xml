@@ -32,7 +32,6 @@
     <default-tile-fog-visible>true</default-tile-fog-visible>
     <default-tile-text-visible>true</default-tile-text-visible>
     <default-tile-distance-visible>false</default-tile-distance-visible>
-    <default-header-visible>true</default-header-visible>
     <tile-fog-alpha>0.15</tile-fog-alpha> <!-- Must be in [0.0, 1.0] -->
     <distance-correct-tile-base-color>DARK_YELLOW</distance-correct-tile-base-color>
 

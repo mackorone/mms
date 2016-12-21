@@ -48,9 +48,6 @@ public:
     bool tileDistanceVisible();
     void setTileDistanceVisible(bool tileDistanceVisible);
 
-    bool headerVisible();
-    void setHeaderVisible(bool headerVisible);
-
     bool paused();
     void setPaused(bool paused);
 
@@ -81,7 +78,6 @@ private:
     bool m_tileFogVisible;
     bool m_tileTextVisible;
     bool m_tileDistanceVisible;
-    bool m_headerVisible;
     bool m_paused;
     double m_simSpeed;
     QMap<int, bool> m_inputButtons;

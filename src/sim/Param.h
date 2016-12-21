@@ -45,7 +45,6 @@ public:
     bool defaultTileFogVisible();
     bool defaultTileTextVisible();
     bool defaultTileDistanceVisible();
-    bool defaultHeaderVisible();
     double tileFogAlpha();
     QString distanceCorrectTileBaseColor();
 
@@ -122,7 +121,6 @@ private:
     bool m_defaultTileFogVisible;
     bool m_defaultTileTextVisible;
     bool m_defaultTileDistanceVisible;
-    bool m_defaultHeaderVisible;
     double m_tileFogAlpha;
     QString m_distanceCorrectTileBaseColor;
 
