@@ -100,6 +100,19 @@ void MainWindow::newMLC(MLC mlc) {
     ui->mapContainer->addWidget(map);
 }
 
+bool MainWindow::eventFilter(QObject *object, QEvent *e) {
+    if (e->type() == QEvent::KeyPress) {
+        keyPressEvent(static_cast<QKeyEvent*>(e));
+        return true;
+    }
+    else if (e->type() == QEvent::KeyRelease) {
+        keyReleaseEvent(static_cast<QKeyEvent*>(e));
+        return true;
+    }
+    // Let the event propogate to other widgets
+    return false;
+}
+
 void MainWindow::keyPressEvent(QKeyEvent* event) {
 
     // NOTE: If you're adding or removing anything from this function, make
@@ -223,20 +236,20 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
         }
     }
     else if (
-        INT_TO_KEY.contains(key) &&
-        ARROW_KEYS.contains(INT_TO_KEY.value(key))
+        key == Qt::Key_Up || key == Qt::Key_Down ||
+        key == Qt::Key_Left || key == Qt::Key_Right
     ) {
-        S()->setArrowKeyIsPressed(INT_TO_KEY.value(key), true);
+        S()->setArrowKeyIsPressed(key, true);
     }
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent* event) {
     int key = event->key();
     if (
-        INT_TO_KEY.contains(key) &&
-        ARROW_KEYS.contains(INT_TO_KEY.value(key))
+        key == Qt::Key_Up || key == Qt::Key_Down ||
+        key == Qt::Key_Left || key == Qt::Key_Right
     ) {
-        S()->setArrowKeyIsPressed(INT_TO_KEY.value(key), false);
+        S()->setArrowKeyIsPressed(key, false);
     }
 }
 

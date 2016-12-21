@@ -2,7 +2,6 @@
 
 #include <QMap>
 
-#include "Key.h"
 #include "LayoutType.h"
 
 namespace mms {
@@ -61,8 +60,8 @@ public:
     bool inputButtonWasPressed(int inputButton);
     void setInputButtonWasPressed(int inputButton, bool pressed);
 
-    bool arrowKeyIsPressed(Key key);
-    void setArrowKeyIsPressed(Key key, bool pressed);
+    bool arrowKeyIsPressed(int key);
+    void setArrowKeyIsPressed(int key, bool pressed);
 
 private:
 
@@ -86,7 +85,7 @@ private:
     bool m_paused;
     double m_simSpeed;
     QMap<int, bool> m_inputButtons;
-    QMap<Key, bool> m_arrowKeys;
+    QMap<int, bool> m_arrowKeys;
 
     // Returns true if defaultValue lies between current and next
     bool crossesDefault(double current, double next, double defaultValue);

@@ -79,6 +79,8 @@ int Driver::drive(int argc, char* argv[]) {
     // Create the main window
     MainWindow window(&maze);
     window.show();
+    // Ensure key-press events get sent to the window
+    app.installEventFilter(&window);
 
     // Initialize the controllerManager, which starts all algorithms
     ControllerManager* controllerManager = new ControllerManager(&maze, &window);

@@ -28,6 +28,7 @@ public:
 
 protected:
 
+    bool eventFilter(QObject *object, QEvent *e);
     void keyPressEvent(QKeyEvent* event);
     void keyReleaseEvent(QKeyEvent* event);
 

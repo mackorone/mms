@@ -1,7 +1,6 @@
 #include "State.h"
 
 #include "Assert.h"
-#include "Key.h"
 #include "Logging.h"
 #include "Param.h"
 
@@ -37,9 +36,10 @@ State::State() {
     for (int i = 0; i < 10; i += 1) {
         m_inputButtons.insert(i, false);
     }
-    for (Key key : ARROW_KEYS) {
-        m_arrowKeys.insert(key, false);
-    }
+    m_arrowKeys.insert(Qt::Key_Up, false);
+    m_arrowKeys.insert(Qt::Key_Down, false);
+    m_arrowKeys.insert(Qt::Key_Left, false);
+    m_arrowKeys.insert(Qt::Key_Right, false);
 }
 
 QString State::runId() {
@@ -186,15 +186,14 @@ void State::setInputButtonWasPressed(int inputButton, bool pressed) {
     m_inputButtons[inputButton] = pressed;
 }
 
-bool State::arrowKeyIsPressed(Key key) {
+bool State::arrowKeyIsPressed(int key) {
     ASSERT_TR(m_arrowKeys.contains(key));
     return m_arrowKeys.value(key);
 }
 
-void State::setArrowKeyIsPressed(Key key, bool pressed) {
+void State::setArrowKeyIsPressed(int key, bool pressed) {
     ASSERT_TR(m_arrowKeys.contains(key));
     m_arrowKeys[key] = pressed;
-    qDebug() << m_arrowKeys; // TODO: MACK
 }
 
 bool State::crossesDefault(double current, double next, double defaultValue) {
