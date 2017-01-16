@@ -159,10 +159,12 @@ void Controller::start() {
     }
 }
 
-InterfaceType Controller::getInterfaceType() const {
+InterfaceType Controller::getInterfaceType(bool canFinalize) {
     // Finalize the interface type the first time it's queried
-    // TODO: MACK - don't finalize on key-press
-    m_interfaceTypeFinalized = true;
+    // by the MouseInterface (but not by the key-press logic)
+    if (canFinalize && !m_interfaceTypeFinalized) {
+        m_interfaceTypeFinalized = true;
+    }
     return m_interfaceType;
 }
 

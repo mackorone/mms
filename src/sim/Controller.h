@@ -26,7 +26,7 @@ public:
     void init();
     void start();
 
-    InterfaceType getInterfaceType() const;
+    InterfaceType getInterfaceType(bool canFinalize);
     DynamicMouseAlgorithmOptions getDynamicOptions() const;
 
 signals:
@@ -45,7 +45,7 @@ private:
 
     QString m_mouseAlgorithm;
     InterfaceType m_interfaceType;
-    mutable bool m_interfaceTypeFinalized; // TODO: MACK - shouldn't be affected by key-presses
+    bool m_interfaceTypeFinalized;
 
     // The runtime algorithm options
     DynamicMouseAlgorithmOptions m_dynamicOptions;

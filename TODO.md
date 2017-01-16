@@ -5,6 +5,7 @@
 - Add controls about UI
 - Make a note about newline for algo stdout
 - Fix the elapsed sim time
+- Toggle stdout/stderr line wrap
 - API call counts
 - Indicate whether or not there are lines in the stdout buffer (checkbox?)
 - Surface error messages to the UI

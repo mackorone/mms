@@ -209,7 +209,7 @@ public:
         buildTextEdit->setObjectName(QStringLiteral("buildTextEdit"));
         sizePolicy.setHeightForWidth(buildTextEdit->sizePolicy().hasHeightForWidth());
         buildTextEdit->setSizePolicy(sizePolicy);
-        buildTextEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
+        buildTextEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
         buildTextEdit->setTextInteractionFlags(Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse);
 
         verticalLayout_16->addWidget(buildTextEdit);
@@ -244,7 +244,7 @@ public:
         runTextEdit->setObjectName(QStringLiteral("runTextEdit"));
         sizePolicy.setHeightForWidth(runTextEdit->sizePolicy().hasHeightForWidth());
         runTextEdit->setSizePolicy(sizePolicy);
-        runTextEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
+        runTextEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
         runTextEdit->setTextInteractionFlags(Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse);
 
         verticalLayout_17->addWidget(runTextEdit);
@@ -289,7 +289,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        outputWidget->setCurrentIndex(0);
+        outputWidget->setCurrentIndex(1);
         statusWidget_2->setCurrentIndex(0);
 
 
@@ -302,7 +302,7 @@ public:
         runButton->setText(QApplication::translate("MainWindow", "Run", 0));
         buildProgressLabel->setText(QApplication::translate("MainWindow", "Build Progress", 0));
         buildButton->setText(QApplication::translate("MainWindow", "Build", 0));
-        selectAlgorithmLabel->setText(QApplication::translate("MainWindow", "Select Algorithm", 0));
+        selectAlgorithmLabel->setText(QApplication::translate("MainWindow", "Algorithm", 0));
         buildAndRunButton->setText(QApplication::translate("MainWindow", "Build and Run", 0));
         outputWidget->setTabText(outputWidget->indexOf(buildTab), QApplication::translate("MainWindow", "Build Ouput", 0));
         outputWidget->setTabText(outputWidget->indexOf(runTab), QApplication::translate("MainWindow", "Run Ouput", 0));

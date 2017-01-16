@@ -6,7 +6,6 @@
 #include <QProcess>
 #include <QThread>
 
-#include "ControllerManager.h"
 #include "Directory.h"
 #include "FontImage.h"
 #include "Logging.h"
@@ -81,12 +80,6 @@ int Driver::drive(int argc, char* argv[]) {
     window.show();
     // Ensure key-press events get sent to the window
     app.installEventFilter(&window);
-
-    // Initialize the controllerManager, which starts all algorithms
-    ControllerManager* controllerManager = new ControllerManager(&maze, &window);
-
-    // Spawn a new mouse algorithm
-    controllerManager->spawnMouseAlgo(P()->mouseAlgorithm());
 
     // Start the event loop
     return app.exec();

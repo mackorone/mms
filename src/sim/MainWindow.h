@@ -4,7 +4,10 @@
 #include <QKeyEvent>
 #include <QLabel>
 #include <QMainWindow>
+#include <QPair>
+#include <QThread>
 #include <QTimer>
+#include <QVector>
 
 #include "MLC.h"
 #include "Maze.h"
@@ -23,9 +26,6 @@ public:
 
     MainWindow(const Maze* maze, QWidget *parent = 0);
     ~MainWindow();
-
-    // Inform the UI about a new mouse/lens/controller trio
-    void newMLC(MLC mlc);
 
 protected:
 
@@ -47,6 +47,10 @@ private:
     // Key related helpers
     void keyPress(int key);
     void keyRelease(int key);
+
+    // Controller managing
+    void spawnMouseAlgo(const QString& mouseAlgorithm);
+    QVector<QPair<MLC, QThread*>> m_controllers;
 
     // Header-related members
     // TODO: MACK - refactor this into its own class

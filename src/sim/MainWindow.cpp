@@ -27,94 +27,26 @@ MainWindow::MainWindow(const Maze* maze, QWidget *parent) :
     resize(P()->defaultWindowWidth(), P()->defaultWindowHeight());
 
     // TODO: MACK
-    // Check to see if there is some directory with the given name
     QString mouseAlgoDir(Directory::get()->getSrcMouseAlgosDirectory());
     QStringList algoDirs = SimUtilities::getTopLevelDirs(mouseAlgoDir);
     qSort(algoDirs);
     for (const QString& dir : algoDirs) {
         ui->selectAlgorithmComboBox->addItem(dir);
     }
+
+    // TODO: MACK
+    connect(
+        ui->runButton,
+        &QPushButton::clicked,
+        this,
+        [=](){
+            spawnMouseAlgo(P()->mouseAlgorithm());
+        }
+    );
 }
 
 MainWindow::~MainWindow() {
     delete ui;
-}
-
-void MainWindow::newMLC(MLC mlc) {
-    m_mlc = mlc;
-
-    // Add a map to the UI
-    Map* map = new Map(m_maze, mlc.mouse, mlc.lens);
-    ui->mapLayout->addWidget(map);
-
-    // Listen for build errors
-    connect(
-        mlc.controller,
-        &Controller::buildError,
-        ui->buildTextEdit,
-        &QPlainTextEdit::appendPlainText
-    );
-
-    // Listen for mouse algo stdout
-    connect(
-        mlc.controller,
-        &Controller::algoStdout,
-        ui->runTextEdit,
-        &QPlainTextEdit::appendPlainText
-    );
-
-    // TODO: MACK - group the position stuff together
-
-    /*
-    // Add run stats info to the UI
-    QVector<QPair<QString, QVariant>> runStats = getRunStats();
-    for (int i = 0; i < runStats.size(); i += 1) {
-        QString label = runStats.at(i).first;
-        QLabel* labelHolder = new QLabel(label + ":");
-        QLabel* valueHolder = new QLabel();
-        ui->runStatsLayout->addWidget(labelHolder, i, 0);
-        ui->runStatsLayout->addWidget(valueHolder, i, 1);
-        m_runStats.insert(label, valueHolder);
-    }
-
-    // Add run stats info to the UI
-    QVector<QPair<QString, QVariant>> mazeInfo = getMazeInfo();
-    for (int i = 0; i < mazeInfo.size(); i += 1) {
-        QString label = mazeInfo.at(i).first;
-        QLabel* labelHolder = new QLabel(label + ":");
-        QLabel* valueHolder = new QLabel();
-        ui->mazeInfoLayout->addWidget(labelHolder, i, 0);
-        ui->mazeInfoLayout->addWidget(valueHolder, i, 1);
-        m_mazeInfo.insert(label, valueHolder);
-    }
-
-    // Periodically update the header
-    connect(
-        &m_headerRefreshTimer,
-        &QTimer::timeout,
-        this,
-        [=](){
-            // TODO: MACK - only update if tab is visible
-            QVector<QPair<QString, QVariant>> runStats = getRunStats();
-            for (const auto& pair : runStats) {
-                QString text = pair.second.toString();
-                if (pair.second.type() == QVariant::Double) {
-                    text = QString::number(pair.second.toDouble(), 'f', 3);
-                }
-                m_runStats.value(pair.first)->setText(text);
-            }
-            QVector<QPair<QString, QVariant>> mazeInfo = getMazeInfo();
-            for (const auto& pair : mazeInfo) {
-                QString text = pair.second.toString();
-                if (pair.second.type() == QVariant::Double) {
-                    text = QString::number(pair.second.toDouble(), 'f', 3);
-                }
-                m_mazeInfo.value(pair.first)->setText(text);
-            }
-        }
-    );
-    m_headerRefreshTimer.start(50);
-    */
 }
 
 bool MainWindow::eventFilter(QObject *object, QEvent *e) {
@@ -138,7 +70,7 @@ void MainWindow::keyPress(int key) {
     if (key == Qt::Key_P) {
         // Toggle pause (only in discrete mode)
         if (m_mlc.controller != nullptr) {
-            if (m_mlc.controller->getInterfaceType() == InterfaceType::DISCRETE) {
+            if (m_mlc.controller->getInterfaceType(false) == InterfaceType::DISCRETE) {
                 S()->setPaused(!S()->paused());
             }
             else {
@@ -152,7 +84,7 @@ void MainWindow::keyPress(int key) {
     else if (key == Qt::Key_F) {
         // Faster (only in discrete mode)
         if (m_mlc.controller != nullptr) {
-            if (m_mlc.controller->getInterfaceType() == InterfaceType::DISCRETE) {
+            if (m_mlc.controller->getInterfaceType(false) == InterfaceType::DISCRETE) {
                 S()->setSimSpeed(S()->simSpeed() * 1.5);
             }
             else {
@@ -166,7 +98,7 @@ void MainWindow::keyPress(int key) {
     else if (key == Qt::Key_S) {
         // Slower (only in discrete mode)
         if (m_mlc.controller != nullptr) {
-            if (m_mlc.controller->getInterfaceType() == InterfaceType::DISCRETE) {
+            if (m_mlc.controller->getInterfaceType(false) == InterfaceType::DISCRETE) {
                 S()->setSimSpeed(S()->simSpeed() / 1.5);
             }
             else {
@@ -259,6 +191,114 @@ void MainWindow::keyRelease(int key) {
     }
 }
 
+void MainWindow::spawnMouseAlgo(const QString& mouseAlgorithm) {
+
+    // Generate the mouse, lens, and controller
+    Mouse* mouse = new Mouse(m_maze);
+    Lens* lens = new Lens(m_maze, mouse);
+    Controller* controller = new Controller(m_maze, mouse, lens, mouseAlgorithm);
+    MLC mlc = {mouse, lens, controller};
+
+    // Configures the window to listen for build and run stdout,
+    // as forwarded by the controller, and adds a map to the UI
+
+    /////////////////////////////////
+    m_mlc = mlc;
+
+    // Add a map to the UI
+    Map* map = new Map(m_maze, mlc.mouse, mlc.lens);
+    ui->mapLayout->addWidget(map);
+
+    // Listen for build errors
+    connect(
+        mlc.controller,
+        &Controller::buildError,
+        ui->buildTextEdit,
+        &QPlainTextEdit::appendPlainText
+    );
+
+    // Listen for mouse algo stdout
+    connect(
+        mlc.controller,
+        &Controller::algoStdout,
+        ui->runTextEdit,
+        &QPlainTextEdit::appendPlainText
+    );
+
+    // TODO: MACK - group the position stuff together
+
+    /*
+    // Add run stats info to the UI
+    QVector<QPair<QString, QVariant>> runStats = getRunStats();
+    for (int i = 0; i < runStats.size(); i += 1) {
+        QString label = runStats.at(i).first;
+        QLabel* labelHolder = new QLabel(label + ":");
+        QLabel* valueHolder = new QLabel();
+        ui->runStatsLayout->addWidget(labelHolder, i, 0);
+        ui->runStatsLayout->addWidget(valueHolder, i, 1);
+        m_runStats.insert(label, valueHolder);
+    }
+
+    // Add run stats info to the UI
+    QVector<QPair<QString, QVariant>> mazeInfo = getMazeInfo();
+    for (int i = 0; i < mazeInfo.size(); i += 1) {
+        QString label = mazeInfo.at(i).first;
+        QLabel* labelHolder = new QLabel(label + ":");
+        QLabel* valueHolder = new QLabel();
+        ui->mazeInfoLayout->addWidget(labelHolder, i, 0);
+        ui->mazeInfoLayout->addWidget(valueHolder, i, 1);
+        m_mazeInfo.insert(label, valueHolder);
+    }
+
+    // Periodically update the header
+    connect(
+        &m_headerRefreshTimer,
+        &QTimer::timeout,
+        this,
+        [=](){
+            // TODO: MACK - only update if tab is visible
+            QVector<QPair<QString, QVariant>> runStats = getRunStats();
+            for (const auto& pair : runStats) {
+                QString text = pair.second.toString();
+                if (pair.second.type() == QVariant::Double) {
+                    text = QString::number(pair.second.toDouble(), 'f', 3);
+                }
+                m_runStats.value(pair.first)->setText(text);
+            }
+            QVector<QPair<QString, QVariant>> mazeInfo = getMazeInfo();
+            for (const auto& pair : mazeInfo) {
+                QString text = pair.second.toString();
+                if (pair.second.type() == QVariant::Double) {
+                    text = QString::number(pair.second.toDouble(), 'f', 3);
+                }
+                m_mazeInfo.value(pair.first)->setText(text);
+            }
+        }
+    );
+    m_headerRefreshTimer.start(50);
+    */
+    /////////////////////////////////
+
+    // The thread on which the controller will execute
+    QThread* thread = new QThread();
+    m_controllers.append({mlc, thread});
+
+    // We need to actually spawn the QProcess (i.e., m_process = new
+    // QProcess()) in the separate thread, hence why this is asynch
+    connect(thread, &QThread::started, controller, [=](){
+        // We need to add the mouse to the world *after* the the controller is
+        // initialized (thus ensuring that tile fog is cleared automatically),
+        // but *before* we actually start the algorithm (lest the mouse
+        // position/orientation not be updated properly during the beginning of
+        // the mouse algo's execution)
+        controller->init();
+        Model::get()->addMouse("", mouse);
+        controller->start();
+    });
+    controller->moveToThread(thread);
+	thread->start();
+}
+
 QVector<QPair<QString, QVariant>> MainWindow::getRunStats() const {
 
     MouseStats stats;
@@ -316,7 +356,7 @@ QVector<QPair<QString, QVariant>> MainWindow::getAlgoOptions() const {
         {"Interface Type",
             m_mlc.controller == nullptr
             ? "NONE"
-            : INTERFACE_TYPE_TO_STRING.value(m_mlc.controller->getInterfaceType())
+            : INTERFACE_TYPE_TO_STRING.value(m_mlc.controller->getInterfaceType(false))
         },
         /*
         QString("Initial Direction:           ") + (m_mlc.controller == nullptr ? "NONE" :
