@@ -1,3 +1,5 @@
+#pragma once
+
 #include <QtTest/QtTest>
 
 class Example: public QObject {

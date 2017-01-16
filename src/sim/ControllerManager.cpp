@@ -17,8 +17,8 @@ void ControllerManager::spawnMouseAlgo(const QString& mouseAlgorithm) {
     Controller* controller = new Controller(m_maze, mouse, lens, mouseAlgorithm);
     MLC mlc = {mouse, lens, controller};
 
-    // Configures the window to listen for algo stdout, as
-    // forwarded by the controller, and adds a map to the UI
+    // Configures the window to listen for build and run stdout,
+    // as forwarded by the controller, and adds a map to the UI
     m_window->newMLC(mlc);
 
     // The thread on which the controller will execute

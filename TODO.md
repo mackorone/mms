@@ -1,15 +1,17 @@
 # High Priority
 
-- Make a note about newline
+- Clean up mouseInterface/controller and MainWindow
+- Hook up build output
+- Add controls about UI
+- Make a note about newline for algo stdout
+- Fix the elapsed sim time
+- API call counts
 - Indicate whether or not there are lines in the stdout buffer (checkbox?)
 - Surface error messages to the UI
-- Make sure all QObjects have parents
 - Stderr get's printed out when the algo exits, gets sent to Controller
 - Why is tile fog not clearing immediately?
-    - Sometimes the signal is emitted too soon
 - Clean up View
 - Kill Layout
-- QVector<QString> to QStringList
 - QList vs QVector - pick one
 - Run mouse algorithms as separate process
     - Make continuous algos possible
@@ -210,7 +212,9 @@
 
 # Clean-Up
 
+- QVector<QString> to QStringList
 - Javadoc as much as possible
+- Make sure all QObjects have parents
 - Use uniform syntax for Signal/slot connections
 - Rename TriangleTexture and VertexTexture
 - Rename Tile to Cell

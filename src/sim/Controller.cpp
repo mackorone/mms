@@ -30,7 +30,7 @@ void Controller::init() {
     // clears tile fog. This ensures that the first tile's fog is always
     // cleared (the initial value of automaticallyClearFog is true). This means
     // that, if an algorithm doesn't want to automatically clear tile fog,
-    // it'll have to disable tile fog and then mark the first/ tile as foggy.
+    // it'll have to disable tile fog and then mark the first tile as foggy.
     connect(
         Model::get(),
         &Model::newTileLocationTraversed,
@@ -38,40 +38,6 @@ void Controller::init() {
         [=](int x, int y){
             if (getDynamicOptions().automaticallyClearFog) {
                 m_lens->getMazeGraphic()->setTileFogginess(x, y, false);
-            }
-        }
-    );
-
-    // Create the subprocess on which we'll execute the algorithm
-    m_process = new QProcess();
-
-    // Publish all algorithm stdout so that the UI can display it
-    connect(
-        m_process,
-        &QProcess::readyReadStandardOutput,
-        this,
-        [=](){
-            QString text = m_process->readAllStandardOutput();
-            QStringList lines = getLines(text, &m_stdoutBuffer);
-            for (const QString& line : lines) {
-                emit algoStdout(line);
-            }
-        }
-    );
-
-    // Process all stderr commands as appropriate
-    connect(
-        m_process,
-        &QProcess::readyReadStandardError,
-        this,
-        [=](){
-            QString text = m_process->readAllStandardError();
-            QStringList lines = getLines(text, &m_stderrBuffer);
-            for (const QString& line : lines) {
-                QString response = processCommand(line);
-                if (!response.isEmpty()) {
-                    m_process->write((response + "\n").toStdString().c_str());
-                }
             }
         }
     );
@@ -114,21 +80,63 @@ void Controller::start() {
 
         // Build
         QStringList buildArgs = absolutePaths.filter(".cpp");
+        buildArgs << "-W";
         buildArgs << "-g";
         buildArgs << "-o";
         buildArgs << binPath;
-        QProcess buildProcess;
-        buildProcess.start("g++", buildArgs);
-        buildProcess.waitForFinished();
-        if (buildProcess.exitCode() != 0) {
+        QProcess* buildProcess = new QProcess();
+        connect(
+            buildProcess,
+            &QProcess::readyReadStandardError,
+            this,
+            [=](){
+                emit buildError(buildProcess->readAllStandardError());
+            }
+        );
+        buildProcess->start("g++", buildArgs);
+        buildProcess->waitForFinished();
+        if (buildProcess->exitCode() != 0) {
             qCritical().noquote()
                 << "Failed to build mouse algo!"
-                << "\n\n" + buildProcess.readAllStandardError();
+                << "\n\n" + buildProcess->readAllStandardError();
             SimUtilities::quit();
         }
 
+        // Create the subprocess on which we'll execute the algorithm
+        m_process = new QProcess();
+
+        // Publish all algorithm stdout so that the UI can display it
+        connect(
+            m_process,
+            &QProcess::readyReadStandardOutput,
+            this,
+            [=](){
+                QString text = m_process->readAllStandardOutput();
+                QStringList lines = getLines(text, &m_stdoutBuffer);
+                for (const QString& line : lines) {
+                    emit algoStdout(line);
+                }
+            }
+        );
+
+        // Process all stderr commands as appropriate
+        connect(
+            m_process,
+            &QProcess::readyReadStandardError,
+            this,
+            [=](){
+                QString text = m_process->readAllStandardError();
+                QStringList lines = getLines(text, &m_stderrBuffer);
+                for (const QString& line : lines) {
+                    QString response = processCommand(line);
+                    if (!response.isEmpty()) {
+                        m_process->write((response + "\n").toStdString().c_str());
+                    }
+                }
+            }
+        );
+
         // Run
-        // TODO: MACK - I should be doing the connections here
         m_process->start(binPath);
 
         // TODO: MACK - use these instead of waiting for the process to finish
@@ -153,6 +161,7 @@ void Controller::start() {
 
 InterfaceType Controller::getInterfaceType() const {
     // Finalize the interface type the first time it's queried
+    // TODO: MACK - don't finalize on key-press
     m_interfaceTypeFinalized = true;
     return m_interfaceType;
 }

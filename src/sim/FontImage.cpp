@@ -34,6 +34,8 @@ FontImage::FontImage(const QString& imageFilePath) :
     // Ensure the m_imageFilePath exists
     if (!QFile::exists(m_imageFilePath)) {
         qCritical() << "Could not find font image file " << m_imageFilePath;
+        // TODO: upforgrabs
+        // Don't quit here - instead, just disable tile text
         SimUtilities::quit();
     }
 

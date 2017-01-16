@@ -20,8 +20,9 @@ public:
     void simulate();
 
     void setMaze(const Maze* maze);
-    void addMouse(const QString& name, Mouse* mouse);
 
+    void addMouse(const QString& name, Mouse* mouse);
+    bool containsMouse(const QString& name) const;
     MouseStats getMouseStats(const QString& name) const;
 
 signals:

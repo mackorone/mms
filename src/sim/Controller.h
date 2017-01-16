@@ -31,7 +31,7 @@ public:
 
 signals:
 
-    // Gets emitted whenever a newline is written to stdout
+    void buildError(const QString& text);
     void algoStdout(const QString& line);
 
 private:
@@ -45,7 +45,7 @@ private:
 
     QString m_mouseAlgorithm;
     InterfaceType m_interfaceType;
-    mutable bool m_interfaceTypeFinalized;
+    mutable bool m_interfaceTypeFinalized; // TODO: MACK - shouldn't be affected by key-presses
 
     // The runtime algorithm options
     DynamicMouseAlgorithmOptions m_dynamicOptions;
@@ -53,7 +53,7 @@ private:
     // The subprocess on which the mouse algo executes
     QProcess* m_process;
 
-    // Buffers containing incomplete stdout/stderr lines
+    // Buffers containing incomplete algo stdout/stderr lines
     QStringList m_stdoutBuffer;
     QStringList m_stderrBuffer;
 

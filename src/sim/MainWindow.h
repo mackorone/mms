@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QGridLayout>
 #include <QKeyEvent>
 #include <QLabel>
 #include <QMainWindow>
@@ -28,9 +29,9 @@ public:
 
 protected:
 
+    // Method that gets called on all events (allows us to
+    // effectively capture key-press and key-release events)
     bool eventFilter(QObject *object, QEvent *e);
-    void keyPressEvent(QKeyEvent* event);
-    void keyReleaseEvent(QKeyEvent* event);
 
 private:
 
@@ -43,8 +44,15 @@ private:
     // The mouse/lens/controller trio
     MLC m_mlc;
 
+    // Key related helpers
+    void keyPress(int key);
+    void keyRelease(int key);
+
     // Header-related members
     // TODO: MACK - refactor this into its own class
+
+    QGridLayout* m_activeTab; // TODO: MACK
+    QMap<QGridLayout*, QMap<QString, QLabel*>> m_stats;
 
     QMap<QString, QLabel*> m_runStats;
     QMap<QString, QLabel*> m_algoOptions;

@@ -13,14 +13,18 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QComboBox>
 #include <QtWidgets/QGridLayout>
-#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
+#include <QtWidgets/QLabel>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPlainTextEdit>
+#include <QtWidgets/QProgressBar>
+#include <QtWidgets/QPushButton>
 #include <QtWidgets/QScrollArea>
+#include <QtWidgets/QSplitter>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
@@ -31,37 +35,39 @@ class Ui_MainWindow
 {
 public:
     QWidget *centralWidget;
-    QHBoxLayout *horizontalLayout_3;
-    QVBoxLayout *mapContainer;
-    QTabWidget *tabs;
-    QWidget *runStatsTab;
-    QVBoxLayout *verticalLayout_3;
-    QScrollArea *runStatsScrollArea;
-    QWidget *runStatsScrollAreaContents;
-    QVBoxLayout *verticalLayout_2;
-    QGridLayout *runStatsLayout;
-    QWidget *stdoutTab;
-    QVBoxLayout *verticalLayout_4;
-    QScrollArea *stdoutScrollArea;
-    QWidget *stdoutScrollAreaContents;
-    QVBoxLayout *verticalLayout_7;
-    QPlainTextEdit *stdoutTextEdit;
-    QWidget *algoOptionsTab;
-    QVBoxLayout *verticalLayout_6;
-    QWidget *apiCallsTab;
-    QVBoxLayout *verticalLayout_5;
-    QWidget *mazeInfoTab;
-    QVBoxLayout *verticalLayout;
-    QScrollArea *mazeInfoScrollArea;
-    QWidget *mazeInfoScrollAreaContents;
-    QVBoxLayout *verticalLayout_8;
-    QGridLayout *mazeInfoLayout;
-    QWidget *optionsTab;
-    QVBoxLayout *verticalLayout_9;
-    QScrollArea *optionsScrollArea;
-    QWidget *optionsScrollAreaContents;
-    QVBoxLayout *verticalLayout_10;
-    QGridLayout *optionsLayout;
+    QGridLayout *gridLayout_2;
+    QSplitter *splitter;
+    QWidget *mapWidget;
+    QVBoxLayout *mapLayout;
+    QWidget *otherWidget;
+    QVBoxLayout *controlLayout;
+    QWidget *controlWidget;
+    QGridLayout *gridLayout;
+    QPushButton *runButton;
+    QLabel *buildProgressLabel;
+    QPushButton *buildButton;
+    QLabel *selectAlgorithmLabel;
+    QPushButton *buildAndRunButton;
+    QProgressBar *buildProgressBar;
+    QComboBox *selectAlgorithmComboBox;
+    QWidget *infoWidget;
+    QVBoxLayout *verticalLayout_13;
+    QTabWidget *outputWidget;
+    QWidget *buildTab;
+    QVBoxLayout *verticalLayout_14;
+    QScrollArea *buildScrollArea;
+    QWidget *buildLayout;
+    QVBoxLayout *verticalLayout_16;
+    QPlainTextEdit *buildTextEdit;
+    QWidget *runTab;
+    QVBoxLayout *verticalLayout_15;
+    QScrollArea *runScrollArea;
+    QWidget *runLayout;
+    QVBoxLayout *verticalLayout_17;
+    QPlainTextEdit *runTextEdit;
+    QTabWidget *statusWidget_2;
+    QWidget *tab;
+    QWidget *tab_2;
     QMenuBar *menuBar;
     QMenu *menu_File;
 
@@ -78,143 +84,198 @@ public:
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(centralWidget->sizePolicy().hasHeightForWidth());
         centralWidget->setSizePolicy(sizePolicy);
-        horizontalLayout_3 = new QHBoxLayout(centralWidget);
-        horizontalLayout_3->setSpacing(6);
-        horizontalLayout_3->setContentsMargins(11, 11, 11, 11);
-        horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
-        mapContainer = new QVBoxLayout();
-        mapContainer->setSpacing(6);
-        mapContainer->setObjectName(QStringLiteral("mapContainer"));
+        gridLayout_2 = new QGridLayout(centralWidget);
+        gridLayout_2->setSpacing(6);
+        gridLayout_2->setContentsMargins(11, 11, 11, 11);
+        gridLayout_2->setObjectName(QStringLiteral("gridLayout_2"));
+        gridLayout_2->setHorizontalSpacing(0);
+        gridLayout_2->setContentsMargins(0, 0, 0, 0);
+        splitter = new QSplitter(centralWidget);
+        splitter->setObjectName(QStringLiteral("splitter"));
+        splitter->setOrientation(Qt::Horizontal);
+        splitter->setOpaqueResize(true);
+        splitter->setHandleWidth(9);
+        splitter->setChildrenCollapsible(false);
+        mapWidget = new QWidget(splitter);
+        mapWidget->setObjectName(QStringLiteral("mapWidget"));
+        mapWidget->setMinimumSize(QSize(300, 300));
+        mapLayout = new QVBoxLayout(mapWidget);
+        mapLayout->setSpacing(6);
+        mapLayout->setContentsMargins(11, 11, 11, 11);
+        mapLayout->setObjectName(QStringLiteral("mapLayout"));
+        mapLayout->setContentsMargins(-1, -1, 3, -1);
+        splitter->addWidget(mapWidget);
+        otherWidget = new QWidget(splitter);
+        otherWidget->setObjectName(QStringLiteral("otherWidget"));
+        otherWidget->setStyleSheet(QStringLiteral(""));
+        controlLayout = new QVBoxLayout(otherWidget);
+        controlLayout->setSpacing(0);
+        controlLayout->setContentsMargins(11, 11, 11, 11);
+        controlLayout->setObjectName(QStringLiteral("controlLayout"));
+        controlLayout->setContentsMargins(0, 0, 0, 0);
+        controlWidget = new QWidget(otherWidget);
+        controlWidget->setObjectName(QStringLiteral("controlWidget"));
+        gridLayout = new QGridLayout(controlWidget);
+        gridLayout->setSpacing(6);
+        gridLayout->setContentsMargins(11, 11, 11, 11);
+        gridLayout->setObjectName(QStringLiteral("gridLayout"));
+        gridLayout->setContentsMargins(3, -1, -1, 6);
+        runButton = new QPushButton(controlWidget);
+        runButton->setObjectName(QStringLiteral("runButton"));
 
-        horizontalLayout_3->addLayout(mapContainer);
+        gridLayout->addWidget(runButton, 2, 1, 1, 1);
 
-        tabs = new QTabWidget(centralWidget);
-        tabs->setObjectName(QStringLiteral("tabs"));
-        runStatsTab = new QWidget();
-        runStatsTab->setObjectName(QStringLiteral("runStatsTab"));
-        verticalLayout_3 = new QVBoxLayout(runStatsTab);
-        verticalLayout_3->setSpacing(6);
-        verticalLayout_3->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
-        runStatsScrollArea = new QScrollArea(runStatsTab);
-        runStatsScrollArea->setObjectName(QStringLiteral("runStatsScrollArea"));
-        runStatsScrollArea->setWidgetResizable(true);
-        runStatsScrollAreaContents = new QWidget();
-        runStatsScrollAreaContents->setObjectName(QStringLiteral("runStatsScrollAreaContents"));
-        runStatsScrollAreaContents->setGeometry(QRect(0, 0, 590, 384));
-        verticalLayout_2 = new QVBoxLayout(runStatsScrollAreaContents);
-        verticalLayout_2->setSpacing(6);
-        verticalLayout_2->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
-        runStatsLayout = new QGridLayout();
-        runStatsLayout->setSpacing(6);
-        runStatsLayout->setObjectName(QStringLiteral("runStatsLayout"));
+        buildProgressLabel = new QLabel(controlWidget);
+        buildProgressLabel->setObjectName(QStringLiteral("buildProgressLabel"));
+        buildProgressLabel->setLayoutDirection(Qt::LeftToRight);
+        buildProgressLabel->setAlignment(Qt::AlignCenter);
 
-        verticalLayout_2->addLayout(runStatsLayout);
+        gridLayout->addWidget(buildProgressLabel, 1, 0, 1, 1);
 
-        runStatsScrollArea->setWidget(runStatsScrollAreaContents);
+        buildButton = new QPushButton(controlWidget);
+        buildButton->setObjectName(QStringLiteral("buildButton"));
 
-        verticalLayout_3->addWidget(runStatsScrollArea);
+        gridLayout->addWidget(buildButton, 2, 0, 1, 1);
 
-        tabs->addTab(runStatsTab, QString());
-        stdoutTab = new QWidget();
-        stdoutTab->setObjectName(QStringLiteral("stdoutTab"));
-        verticalLayout_4 = new QVBoxLayout(stdoutTab);
-        verticalLayout_4->setSpacing(6);
-        verticalLayout_4->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
-        stdoutScrollArea = new QScrollArea(stdoutTab);
-        stdoutScrollArea->setObjectName(QStringLiteral("stdoutScrollArea"));
-        stdoutScrollArea->setWidgetResizable(true);
-        stdoutScrollAreaContents = new QWidget();
-        stdoutScrollAreaContents->setObjectName(QStringLiteral("stdoutScrollAreaContents"));
-        stdoutScrollAreaContents->setGeometry(QRect(0, 0, 590, 384));
-        verticalLayout_7 = new QVBoxLayout(stdoutScrollAreaContents);
-        verticalLayout_7->setSpacing(6);
-        verticalLayout_7->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_7->setObjectName(QStringLiteral("verticalLayout_7"));
-        stdoutTextEdit = new QPlainTextEdit(stdoutScrollAreaContents);
-        stdoutTextEdit->setObjectName(QStringLiteral("stdoutTextEdit"));
-        stdoutTextEdit->setReadOnly(true);
-        stdoutTextEdit->setTextInteractionFlags(Qt::TextSelectableByMouse);
+        selectAlgorithmLabel = new QLabel(controlWidget);
+        selectAlgorithmLabel->setObjectName(QStringLiteral("selectAlgorithmLabel"));
+        selectAlgorithmLabel->setAlignment(Qt::AlignCenter);
 
-        verticalLayout_7->addWidget(stdoutTextEdit);
+        gridLayout->addWidget(selectAlgorithmLabel, 0, 0, 1, 1);
 
-        stdoutScrollArea->setWidget(stdoutScrollAreaContents);
+        buildAndRunButton = new QPushButton(controlWidget);
+        buildAndRunButton->setObjectName(QStringLiteral("buildAndRunButton"));
 
-        verticalLayout_4->addWidget(stdoutScrollArea);
+        gridLayout->addWidget(buildAndRunButton, 2, 2, 1, 1);
 
-        tabs->addTab(stdoutTab, QString());
-        algoOptionsTab = new QWidget();
-        algoOptionsTab->setObjectName(QStringLiteral("algoOptionsTab"));
-        verticalLayout_6 = new QVBoxLayout(algoOptionsTab);
-        verticalLayout_6->setSpacing(6);
-        verticalLayout_6->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_6->setObjectName(QStringLiteral("verticalLayout_6"));
-        tabs->addTab(algoOptionsTab, QString());
-        apiCallsTab = new QWidget();
-        apiCallsTab->setObjectName(QStringLiteral("apiCallsTab"));
-        verticalLayout_5 = new QVBoxLayout(apiCallsTab);
-        verticalLayout_5->setSpacing(6);
-        verticalLayout_5->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_5->setObjectName(QStringLiteral("verticalLayout_5"));
-        tabs->addTab(apiCallsTab, QString());
-        mazeInfoTab = new QWidget();
-        mazeInfoTab->setObjectName(QStringLiteral("mazeInfoTab"));
-        verticalLayout = new QVBoxLayout(mazeInfoTab);
-        verticalLayout->setSpacing(6);
-        verticalLayout->setContentsMargins(11, 11, 11, 11);
-        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
-        mazeInfoScrollArea = new QScrollArea(mazeInfoTab);
-        mazeInfoScrollArea->setObjectName(QStringLiteral("mazeInfoScrollArea"));
-        mazeInfoScrollArea->setWidgetResizable(true);
-        mazeInfoScrollAreaContents = new QWidget();
-        mazeInfoScrollAreaContents->setObjectName(QStringLiteral("mazeInfoScrollAreaContents"));
-        mazeInfoScrollAreaContents->setGeometry(QRect(0, 0, 590, 384));
-        verticalLayout_8 = new QVBoxLayout(mazeInfoScrollAreaContents);
-        verticalLayout_8->setSpacing(6);
-        verticalLayout_8->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_8->setObjectName(QStringLiteral("verticalLayout_8"));
-        mazeInfoLayout = new QGridLayout();
-        mazeInfoLayout->setSpacing(6);
-        mazeInfoLayout->setObjectName(QStringLiteral("mazeInfoLayout"));
+        buildProgressBar = new QProgressBar(controlWidget);
+        buildProgressBar->setObjectName(QStringLiteral("buildProgressBar"));
+        QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(buildProgressBar->sizePolicy().hasHeightForWidth());
+        buildProgressBar->setSizePolicy(sizePolicy1);
+        buildProgressBar->setValue(24);
 
-        verticalLayout_8->addLayout(mazeInfoLayout);
+        gridLayout->addWidget(buildProgressBar, 1, 1, 1, 2);
 
-        mazeInfoScrollArea->setWidget(mazeInfoScrollAreaContents);
+        selectAlgorithmComboBox = new QComboBox(controlWidget);
+        selectAlgorithmComboBox->setObjectName(QStringLiteral("selectAlgorithmComboBox"));
+        sizePolicy.setHeightForWidth(selectAlgorithmComboBox->sizePolicy().hasHeightForWidth());
+        selectAlgorithmComboBox->setSizePolicy(sizePolicy);
 
-        verticalLayout->addWidget(mazeInfoScrollArea);
+        gridLayout->addWidget(selectAlgorithmComboBox, 0, 1, 1, 2);
 
-        tabs->addTab(mazeInfoTab, QString());
-        optionsTab = new QWidget();
-        optionsTab->setObjectName(QStringLiteral("optionsTab"));
-        verticalLayout_9 = new QVBoxLayout(optionsTab);
-        verticalLayout_9->setSpacing(6);
-        verticalLayout_9->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_9->setObjectName(QStringLiteral("verticalLayout_9"));
-        optionsScrollArea = new QScrollArea(optionsTab);
-        optionsScrollArea->setObjectName(QStringLiteral("optionsScrollArea"));
-        optionsScrollArea->setWidgetResizable(true);
-        optionsScrollAreaContents = new QWidget();
-        optionsScrollAreaContents->setObjectName(QStringLiteral("optionsScrollAreaContents"));
-        optionsScrollAreaContents->setGeometry(QRect(0, 0, 590, 384));
-        verticalLayout_10 = new QVBoxLayout(optionsScrollAreaContents);
-        verticalLayout_10->setSpacing(6);
-        verticalLayout_10->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_10->setObjectName(QStringLiteral("verticalLayout_10"));
-        optionsLayout = new QGridLayout();
-        optionsLayout->setSpacing(6);
-        optionsLayout->setObjectName(QStringLiteral("optionsLayout"));
 
-        verticalLayout_10->addLayout(optionsLayout);
+        controlLayout->addWidget(controlWidget);
 
-        optionsScrollArea->setWidget(optionsScrollAreaContents);
+        infoWidget = new QWidget(otherWidget);
+        infoWidget->setObjectName(QStringLiteral("infoWidget"));
+        QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Expanding);
+        sizePolicy2.setHorizontalStretch(0);
+        sizePolicy2.setVerticalStretch(0);
+        sizePolicy2.setHeightForWidth(infoWidget->sizePolicy().hasHeightForWidth());
+        infoWidget->setSizePolicy(sizePolicy2);
+        verticalLayout_13 = new QVBoxLayout(infoWidget);
+        verticalLayout_13->setSpacing(6);
+        verticalLayout_13->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_13->setObjectName(QStringLiteral("verticalLayout_13"));
+        verticalLayout_13->setContentsMargins(3, 0, -1, -1);
+        outputWidget = new QTabWidget(infoWidget);
+        outputWidget->setObjectName(QStringLiteral("outputWidget"));
+        sizePolicy.setHeightForWidth(outputWidget->sizePolicy().hasHeightForWidth());
+        outputWidget->setSizePolicy(sizePolicy);
+        buildTab = new QWidget();
+        buildTab->setObjectName(QStringLiteral("buildTab"));
+        verticalLayout_14 = new QVBoxLayout(buildTab);
+        verticalLayout_14->setSpacing(3);
+        verticalLayout_14->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_14->setObjectName(QStringLiteral("verticalLayout_14"));
+        verticalLayout_14->setContentsMargins(3, 3, 3, 3);
+        buildScrollArea = new QScrollArea(buildTab);
+        buildScrollArea->setObjectName(QStringLiteral("buildScrollArea"));
+        sizePolicy.setHeightForWidth(buildScrollArea->sizePolicy().hasHeightForWidth());
+        buildScrollArea->setSizePolicy(sizePolicy);
+        buildScrollArea->setWidgetResizable(true);
+        buildLayout = new QWidget();
+        buildLayout->setObjectName(QStringLiteral("buildLayout"));
+        buildLayout->setGeometry(QRect(0, 0, 307, 199));
+        verticalLayout_16 = new QVBoxLayout(buildLayout);
+        verticalLayout_16->setSpacing(3);
+        verticalLayout_16->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_16->setObjectName(QStringLiteral("verticalLayout_16"));
+        verticalLayout_16->setContentsMargins(3, 3, 3, 3);
+        buildTextEdit = new QPlainTextEdit(buildLayout);
+        buildTextEdit->setObjectName(QStringLiteral("buildTextEdit"));
+        sizePolicy.setHeightForWidth(buildTextEdit->sizePolicy().hasHeightForWidth());
+        buildTextEdit->setSizePolicy(sizePolicy);
+        buildTextEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
+        buildTextEdit->setTextInteractionFlags(Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse);
 
-        verticalLayout_9->addWidget(optionsScrollArea);
+        verticalLayout_16->addWidget(buildTextEdit);
 
-        tabs->addTab(optionsTab, QString());
+        buildScrollArea->setWidget(buildLayout);
 
-        horizontalLayout_3->addWidget(tabs);
+        verticalLayout_14->addWidget(buildScrollArea);
+
+        outputWidget->addTab(buildTab, QString());
+        buildScrollArea->raise();
+        runTab = new QWidget();
+        runTab->setObjectName(QStringLiteral("runTab"));
+        verticalLayout_15 = new QVBoxLayout(runTab);
+        verticalLayout_15->setSpacing(3);
+        verticalLayout_15->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_15->setObjectName(QStringLiteral("verticalLayout_15"));
+        verticalLayout_15->setContentsMargins(3, 3, 3, 3);
+        runScrollArea = new QScrollArea(runTab);
+        runScrollArea->setObjectName(QStringLiteral("runScrollArea"));
+        sizePolicy.setHeightForWidth(runScrollArea->sizePolicy().hasHeightForWidth());
+        runScrollArea->setSizePolicy(sizePolicy);
+        runScrollArea->setWidgetResizable(true);
+        runLayout = new QWidget();
+        runLayout->setObjectName(QStringLiteral("runLayout"));
+        runLayout->setGeometry(QRect(0, 0, 307, 199));
+        verticalLayout_17 = new QVBoxLayout(runLayout);
+        verticalLayout_17->setSpacing(3);
+        verticalLayout_17->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_17->setObjectName(QStringLiteral("verticalLayout_17"));
+        verticalLayout_17->setContentsMargins(3, 3, 3, 3);
+        runTextEdit = new QPlainTextEdit(runLayout);
+        runTextEdit->setObjectName(QStringLiteral("runTextEdit"));
+        sizePolicy.setHeightForWidth(runTextEdit->sizePolicy().hasHeightForWidth());
+        runTextEdit->setSizePolicy(sizePolicy);
+        runTextEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
+        runTextEdit->setTextInteractionFlags(Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse);
+
+        verticalLayout_17->addWidget(runTextEdit);
+
+        runScrollArea->setWidget(runLayout);
+
+        verticalLayout_15->addWidget(runScrollArea);
+
+        outputWidget->addTab(runTab, QString());
+
+        verticalLayout_13->addWidget(outputWidget);
+
+        statusWidget_2 = new QTabWidget(infoWidget);
+        statusWidget_2->setObjectName(QStringLiteral("statusWidget_2"));
+        sizePolicy.setHeightForWidth(statusWidget_2->sizePolicy().hasHeightForWidth());
+        statusWidget_2->setSizePolicy(sizePolicy);
+        tab = new QWidget();
+        tab->setObjectName(QStringLiteral("tab"));
+        statusWidget_2->addTab(tab, QString());
+        tab_2 = new QWidget();
+        tab_2->setObjectName(QStringLiteral("tab_2"));
+        statusWidget_2->addTab(tab_2, QString());
+
+        verticalLayout_13->addWidget(statusWidget_2);
+
+
+        controlLayout->addWidget(infoWidget);
+
+        splitter->addWidget(otherWidget);
+
+        gridLayout_2->addWidget(splitter, 0, 0, 1, 1);
 
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
@@ -228,7 +289,8 @@ public:
 
         retranslateUi(MainWindow);
 
-        tabs->setCurrentIndex(0);
+        outputWidget->setCurrentIndex(0);
+        statusWidget_2->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
@@ -237,13 +299,15 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Micromouse Simulator", 0));
-        tabs->setTabText(tabs->indexOf(runStatsTab), QApplication::translate("MainWindow", "Run Stats", 0));
-        stdoutTextEdit->setPlainText(QString());
-        tabs->setTabText(tabs->indexOf(stdoutTab), QApplication::translate("MainWindow", "Algo Stdout", 0));
-        tabs->setTabText(tabs->indexOf(algoOptionsTab), QApplication::translate("MainWindow", "Algo Options", 0));
-        tabs->setTabText(tabs->indexOf(apiCallsTab), QApplication::translate("MainWindow", "API Calls", 0));
-        tabs->setTabText(tabs->indexOf(mazeInfoTab), QApplication::translate("MainWindow", "Maze Info", 0));
-        tabs->setTabText(tabs->indexOf(optionsTab), QApplication::translate("MainWindow", "Options", 0));
+        runButton->setText(QApplication::translate("MainWindow", "Run", 0));
+        buildProgressLabel->setText(QApplication::translate("MainWindow", "Build Progress", 0));
+        buildButton->setText(QApplication::translate("MainWindow", "Build", 0));
+        selectAlgorithmLabel->setText(QApplication::translate("MainWindow", "Select Algorithm", 0));
+        buildAndRunButton->setText(QApplication::translate("MainWindow", "Build and Run", 0));
+        outputWidget->setTabText(outputWidget->indexOf(buildTab), QApplication::translate("MainWindow", "Build Ouput", 0));
+        outputWidget->setTabText(outputWidget->indexOf(runTab), QApplication::translate("MainWindow", "Run Ouput", 0));
+        statusWidget_2->setTabText(statusWidget_2->indexOf(tab), QApplication::translate("MainWindow", "Tab 1", 0));
+        statusWidget_2->setTabText(statusWidget_2->indexOf(tab_2), QApplication::translate("MainWindow", "Tab 2", 0));
         menu_File->setTitle(QApplication::translate("MainWindow", "&File", 0));
     } // retranslateUi
 

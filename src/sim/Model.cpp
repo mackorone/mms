@@ -157,6 +157,10 @@ void Model::addMouse(const QString& name, Mouse* mouse) {
     m_stats.insert(name, MouseStats());
 }
 
+bool Model::containsMouse(const QString& name) const {
+    return m_mice.contains(name);
+}
+
 MouseStats Model::getMouseStats(const QString& name) const {
     ASSERT_TR(m_stats.contains(name));
     return m_stats.value(name);
