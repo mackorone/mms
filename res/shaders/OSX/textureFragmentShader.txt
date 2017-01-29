@@ -1,8 +1,0 @@
-#version 410
-
-uniform sampler2D _texture;
-out vec2 _textureCoordinate;
-out vec4 FragColor;
-void main() {
-    FragColor = texture(_texture, _textureCoordinate);
-}

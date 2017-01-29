@@ -8,4 +8,3 @@ parameters at runtime as opposed to compile-time.
 * `mouse/` - A directory where mouse configurations live
 * `fonts/` - A directory where `ttf` fonts live
 * `imgs/` - A directory where `png` images live
-* `shaders/` - A directory where OpenGL vertex and fragment shaders live
