@@ -48,7 +48,11 @@ private:
     void keyPress(int key);
     void keyRelease(int key);
 
-    // Controller managing
+    // Algo building
+    void build(const QString& mouseAlgorithm);
+    QProcess* m_buildProcess;
+
+    // Algo running
     void spawnMouseAlgo(const QString& mouseAlgorithm);
     QVector<QPair<MLC, QThread*>> m_controllers;
 

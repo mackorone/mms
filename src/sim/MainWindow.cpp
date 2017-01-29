@@ -27,6 +27,16 @@ MainWindow::MainWindow(const Maze* maze, QWidget *parent) :
     resize(P()->defaultWindowWidth(), P()->defaultWindowHeight());
 
     // TODO: MACK
+    // ui->mapLayout->setWidth(100);
+
+    // TODO: MACK - settings somewhere
+    QFont font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    font.setPointSize(10);
+    ui->buildTextEdit->document()->setDefaultFont(font);
+    ui->runTextEdit->document()->setDefaultFont(font);
+    ui->buildTextEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
+
+    // TODO: MACK
     QString mouseAlgoDir(Directory::get()->getSrcMouseAlgosDirectory());
     QStringList algoDirs = SimUtilities::getTopLevelDirs(mouseAlgoDir);
     qSort(algoDirs);
@@ -36,10 +46,22 @@ MainWindow::MainWindow(const Maze* maze, QWidget *parent) :
 
     // TODO: MACK
     connect(
+        ui->buildButton,
+        &QPushButton::clicked,
+        this,
+        [=](){
+            // TODO: MACK
+            build(P()->mouseAlgorithm());
+        }
+    );
+
+    // TODO: MACK
+    connect(
         ui->runButton,
         &QPushButton::clicked,
         this,
         [=](){
+            // TODO: MACK
             spawnMouseAlgo(P()->mouseAlgorithm());
         }
     );
@@ -191,6 +213,70 @@ void MainWindow::keyRelease(int key) {
     }
 }
 
+void MainWindow::build(const QString& mouseAlgorithm) {
+
+    // Check to see if there is some directory with the given name
+    QString mouseAlgosDir(Directory::get()->getSrcMouseAlgosDirectory());
+    if (!SimUtilities::getTopLevelDirs(mouseAlgosDir).contains(mouseAlgorithm)) {
+         qCritical().noquote().nospace()
+            << "\"" << mouseAlgorithm << "\" is not a valid mouse"
+            << " algorithm.";
+         SimUtilities::quit();
+    }
+
+    // Get the mouse algo directory
+    QString selectedMouseAlgoPath = 
+        Directory::get()->getSrcMouseAlgosDirectory() + mouseAlgorithm;
+
+    // Get the files for the algorithm
+    QPair<QStringList, QStringList> files =
+        SimUtilities::getFiles(selectedMouseAlgoPath);
+    QStringList relativePaths = files.first;
+    QStringList absolutePaths = files.second;
+
+    // TODO: MACK - make these constants, dedup some of this
+    if (relativePaths.contains(QString("Main.cpp"))) {
+
+        // TODO: MACK - ensure we're cleaning this up properly
+        // First, instantiate a new process
+        m_buildProcess = new QProcess(this);
+
+        // Listen for build errors
+        connect(
+            m_buildProcess,
+            &QProcess::readyReadStandardError,
+            this,
+            [&](){
+                QString errors = m_buildProcess->readAllStandardError();
+                ui->buildTextEdit->appendPlainText(errors);
+            }
+        );
+
+        // Re-enable build button when build finishes
+        connect(
+            m_buildProcess,
+            static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(
+                &QProcess::finished
+            ),
+            this,
+            [&](int exitCode, QProcess::ExitStatus exitStatus){
+                ui->buildButton->setEnabled(true);
+            }
+        );
+            
+        // Disable the build button before build starts
+        ui->buildButton->setEnabled(false);
+
+        // Now, start the build
+        QStringList buildArgs = absolutePaths.filter(".cpp");
+        buildArgs << "-W";
+        buildArgs << "-g";
+        buildArgs << "-o";
+        buildArgs << selectedMouseAlgoPath + "/a.out";
+        m_buildProcess->start("g++", buildArgs);
+    }
+}
+
 void MainWindow::spawnMouseAlgo(const QString& mouseAlgorithm) {
 
     // Generate the mouse, lens, and controller
@@ -207,15 +293,8 @@ void MainWindow::spawnMouseAlgo(const QString& mouseAlgorithm) {
 
     // Add a map to the UI
     Map* map = new Map(m_maze, mlc.mouse, mlc.lens);
+    // TODO: MACK - minimum size, size policy
     ui->mapLayout->addWidget(map);
-
-    // Listen for build errors
-    connect(
-        mlc.controller,
-        &Controller::buildError,
-        ui->buildTextEdit,
-        &QPlainTextEdit::appendPlainText
-    );
 
     // Listen for mouse algo stdout
     connect(

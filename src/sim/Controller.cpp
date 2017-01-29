@@ -18,9 +18,9 @@ Controller::Controller(
     m_maze(maze),
     m_mouse(mouse),
     m_lens(lens),
+    m_mouseAlgorithm(mouseAlgorithm),
     m_interfaceType(InterfaceType::DISCRETE),
     m_interfaceTypeFinalized(false),
-    m_mouseAlgorithm(mouseAlgorithm),
     m_process(nullptr) {
 }
 
@@ -53,6 +53,8 @@ void Controller::init() {
 
 void Controller::start() {
 
+    // TODO: MACK - Deduplicate with maze algo utilities
+
     // Check to see if there is some directory with the given name
     QString selectedMouseAlgo(m_mouseAlgorithm);
     QString mouseAlgoDir(Directory::get()->getSrcMouseAlgosDirectory());
@@ -63,7 +65,7 @@ void Controller::start() {
          SimUtilities::quit();
     }
 
-    // Get the maze algo directory
+    // Get the mouse algo directory
     QString selectedMouseAlgoPath = 
         Directory::get()->getSrcMouseAlgosDirectory() + m_mouseAlgorithm;
 
@@ -75,32 +77,6 @@ void Controller::start() {
 
     // TODO: MACK - make these constants, dedup some of this
     if (relativePaths.contains(QString("Main.cpp"))) {
-
-        QString binPath = selectedMouseAlgoPath + "/a.out";
-
-        // Build
-        QStringList buildArgs = absolutePaths.filter(".cpp");
-        buildArgs << "-W";
-        buildArgs << "-g";
-        buildArgs << "-o";
-        buildArgs << binPath;
-        QProcess* buildProcess = new QProcess();
-        connect(
-            buildProcess,
-            &QProcess::readyReadStandardError,
-            this,
-            [=](){
-                emit buildError(buildProcess->readAllStandardError());
-            }
-        );
-        buildProcess->start("g++", buildArgs);
-        buildProcess->waitForFinished();
-        if (buildProcess->exitCode() != 0) {
-            qCritical().noquote()
-                << "Failed to build mouse algo!"
-                << "\n\n" + buildProcess->readAllStandardError();
-            SimUtilities::quit();
-        }
 
         // Create the subprocess on which we'll execute the algorithm
         m_process = new QProcess();
@@ -137,7 +113,7 @@ void Controller::start() {
         );
 
         // Run
-        m_process->start(binPath);
+        m_process->start(selectedMouseAlgoPath + "/a.out");
 
         // TODO: MACK - use these instead of waiting for the process to finish
         // void errorOccurred(QProcess::ProcessError error)

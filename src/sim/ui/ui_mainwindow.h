@@ -21,9 +21,7 @@
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPlainTextEdit>
-#include <QtWidgets/QProgressBar>
 #include <QtWidgets/QPushButton>
-#include <QtWidgets/QScrollArea>
 #include <QtWidgets/QSplitter>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QVBoxLayout>
@@ -44,26 +42,19 @@ public:
     QWidget *controlWidget;
     QGridLayout *gridLayout;
     QPushButton *runButton;
-    QLabel *buildProgressLabel;
     QPushButton *buildButton;
     QLabel *selectAlgorithmLabel;
     QPushButton *buildAndRunButton;
-    QProgressBar *buildProgressBar;
     QComboBox *selectAlgorithmComboBox;
     QWidget *infoWidget;
-    QVBoxLayout *verticalLayout_13;
+    QGridLayout *gridLayout_3;
+    QSplitter *infoWidgetSplitter;
     QTabWidget *outputWidget;
     QWidget *buildTab;
-    QVBoxLayout *verticalLayout_14;
-    QScrollArea *buildScrollArea;
-    QWidget *buildLayout;
-    QVBoxLayout *verticalLayout_16;
+    QVBoxLayout *verticalLayout;
     QPlainTextEdit *buildTextEdit;
     QWidget *runTab;
-    QVBoxLayout *verticalLayout_15;
-    QScrollArea *runScrollArea;
-    QWidget *runLayout;
-    QVBoxLayout *verticalLayout_17;
+    QVBoxLayout *verticalLayout_2;
     QPlainTextEdit *runTextEdit;
     QTabWidget *statusWidget_2;
     QWidget *tab;
@@ -98,7 +89,9 @@ public:
         splitter->setChildrenCollapsible(false);
         mapWidget = new QWidget(splitter);
         mapWidget->setObjectName(QStringLiteral("mapWidget"));
-        mapWidget->setMinimumSize(QSize(300, 300));
+        sizePolicy.setHeightForWidth(mapWidget->sizePolicy().hasHeightForWidth());
+        mapWidget->setSizePolicy(sizePolicy);
+        mapWidget->setMinimumSize(QSize(0, 0));
         mapLayout = new QVBoxLayout(mapWidget);
         mapLayout->setSpacing(6);
         mapLayout->setContentsMargins(11, 11, 11, 11);
@@ -123,19 +116,12 @@ public:
         runButton = new QPushButton(controlWidget);
         runButton->setObjectName(QStringLiteral("runButton"));
 
-        gridLayout->addWidget(runButton, 2, 1, 1, 1);
-
-        buildProgressLabel = new QLabel(controlWidget);
-        buildProgressLabel->setObjectName(QStringLiteral("buildProgressLabel"));
-        buildProgressLabel->setLayoutDirection(Qt::LeftToRight);
-        buildProgressLabel->setAlignment(Qt::AlignCenter);
-
-        gridLayout->addWidget(buildProgressLabel, 1, 0, 1, 1);
+        gridLayout->addWidget(runButton, 1, 1, 1, 1);
 
         buildButton = new QPushButton(controlWidget);
         buildButton->setObjectName(QStringLiteral("buildButton"));
 
-        gridLayout->addWidget(buildButton, 2, 0, 1, 1);
+        gridLayout->addWidget(buildButton, 1, 0, 1, 1);
 
         selectAlgorithmLabel = new QLabel(controlWidget);
         selectAlgorithmLabel->setObjectName(QStringLiteral("selectAlgorithmLabel"));
@@ -146,18 +132,7 @@ public:
         buildAndRunButton = new QPushButton(controlWidget);
         buildAndRunButton->setObjectName(QStringLiteral("buildAndRunButton"));
 
-        gridLayout->addWidget(buildAndRunButton, 2, 2, 1, 1);
-
-        buildProgressBar = new QProgressBar(controlWidget);
-        buildProgressBar->setObjectName(QStringLiteral("buildProgressBar"));
-        QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(buildProgressBar->sizePolicy().hasHeightForWidth());
-        buildProgressBar->setSizePolicy(sizePolicy1);
-        buildProgressBar->setValue(24);
-
-        gridLayout->addWidget(buildProgressBar, 1, 1, 1, 2);
+        gridLayout->addWidget(buildAndRunButton, 1, 2, 1, 1);
 
         selectAlgorithmComboBox = new QComboBox(controlWidget);
         selectAlgorithmComboBox->setObjectName(QStringLiteral("selectAlgorithmComboBox"));
@@ -171,93 +146,61 @@ public:
 
         infoWidget = new QWidget(otherWidget);
         infoWidget->setObjectName(QStringLiteral("infoWidget"));
-        QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Expanding);
-        sizePolicy2.setHorizontalStretch(0);
-        sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(infoWidget->sizePolicy().hasHeightForWidth());
-        infoWidget->setSizePolicy(sizePolicy2);
-        verticalLayout_13 = new QVBoxLayout(infoWidget);
-        verticalLayout_13->setSpacing(6);
-        verticalLayout_13->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_13->setObjectName(QStringLiteral("verticalLayout_13"));
-        verticalLayout_13->setContentsMargins(3, 0, -1, -1);
-        outputWidget = new QTabWidget(infoWidget);
+        QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Expanding);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(infoWidget->sizePolicy().hasHeightForWidth());
+        infoWidget->setSizePolicy(sizePolicy1);
+        gridLayout_3 = new QGridLayout(infoWidget);
+        gridLayout_3->setSpacing(6);
+        gridLayout_3->setContentsMargins(11, 11, 11, 11);
+        gridLayout_3->setObjectName(QStringLiteral("gridLayout_3"));
+        gridLayout_3->setContentsMargins(3, -1, -1, -1);
+        infoWidgetSplitter = new QSplitter(infoWidget);
+        infoWidgetSplitter->setObjectName(QStringLiteral("infoWidgetSplitter"));
+        infoWidgetSplitter->setOrientation(Qt::Vertical);
+        infoWidgetSplitter->setHandleWidth(9);
+        infoWidgetSplitter->setChildrenCollapsible(false);
+        outputWidget = new QTabWidget(infoWidgetSplitter);
         outputWidget->setObjectName(QStringLiteral("outputWidget"));
         sizePolicy.setHeightForWidth(outputWidget->sizePolicy().hasHeightForWidth());
         outputWidget->setSizePolicy(sizePolicy);
         buildTab = new QWidget();
         buildTab->setObjectName(QStringLiteral("buildTab"));
-        verticalLayout_14 = new QVBoxLayout(buildTab);
-        verticalLayout_14->setSpacing(3);
-        verticalLayout_14->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_14->setObjectName(QStringLiteral("verticalLayout_14"));
-        verticalLayout_14->setContentsMargins(3, 3, 3, 3);
-        buildScrollArea = new QScrollArea(buildTab);
-        buildScrollArea->setObjectName(QStringLiteral("buildScrollArea"));
-        sizePolicy.setHeightForWidth(buildScrollArea->sizePolicy().hasHeightForWidth());
-        buildScrollArea->setSizePolicy(sizePolicy);
-        buildScrollArea->setWidgetResizable(true);
-        buildLayout = new QWidget();
-        buildLayout->setObjectName(QStringLiteral("buildLayout"));
-        buildLayout->setGeometry(QRect(0, 0, 307, 199));
-        verticalLayout_16 = new QVBoxLayout(buildLayout);
-        verticalLayout_16->setSpacing(3);
-        verticalLayout_16->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_16->setObjectName(QStringLiteral("verticalLayout_16"));
-        verticalLayout_16->setContentsMargins(3, 3, 3, 3);
-        buildTextEdit = new QPlainTextEdit(buildLayout);
+        verticalLayout = new QVBoxLayout(buildTab);
+        verticalLayout->setSpacing(6);
+        verticalLayout->setContentsMargins(11, 11, 11, 11);
+        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
+        verticalLayout->setContentsMargins(6, 6, 6, 6);
+        buildTextEdit = new QPlainTextEdit(buildTab);
         buildTextEdit->setObjectName(QStringLiteral("buildTextEdit"));
         sizePolicy.setHeightForWidth(buildTextEdit->sizePolicy().hasHeightForWidth());
         buildTextEdit->setSizePolicy(sizePolicy);
         buildTextEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
         buildTextEdit->setTextInteractionFlags(Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse);
 
-        verticalLayout_16->addWidget(buildTextEdit);
-
-        buildScrollArea->setWidget(buildLayout);
-
-        verticalLayout_14->addWidget(buildScrollArea);
+        verticalLayout->addWidget(buildTextEdit);
 
         outputWidget->addTab(buildTab, QString());
-        buildScrollArea->raise();
         runTab = new QWidget();
         runTab->setObjectName(QStringLiteral("runTab"));
-        verticalLayout_15 = new QVBoxLayout(runTab);
-        verticalLayout_15->setSpacing(3);
-        verticalLayout_15->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_15->setObjectName(QStringLiteral("verticalLayout_15"));
-        verticalLayout_15->setContentsMargins(3, 3, 3, 3);
-        runScrollArea = new QScrollArea(runTab);
-        runScrollArea->setObjectName(QStringLiteral("runScrollArea"));
-        sizePolicy.setHeightForWidth(runScrollArea->sizePolicy().hasHeightForWidth());
-        runScrollArea->setSizePolicy(sizePolicy);
-        runScrollArea->setWidgetResizable(true);
-        runLayout = new QWidget();
-        runLayout->setObjectName(QStringLiteral("runLayout"));
-        runLayout->setGeometry(QRect(0, 0, 307, 199));
-        verticalLayout_17 = new QVBoxLayout(runLayout);
-        verticalLayout_17->setSpacing(3);
-        verticalLayout_17->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_17->setObjectName(QStringLiteral("verticalLayout_17"));
-        verticalLayout_17->setContentsMargins(3, 3, 3, 3);
-        runTextEdit = new QPlainTextEdit(runLayout);
+        verticalLayout_2 = new QVBoxLayout(runTab);
+        verticalLayout_2->setSpacing(6);
+        verticalLayout_2->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
+        verticalLayout_2->setContentsMargins(6, 6, 6, 6);
+        runTextEdit = new QPlainTextEdit(runTab);
         runTextEdit->setObjectName(QStringLiteral("runTextEdit"));
         sizePolicy.setHeightForWidth(runTextEdit->sizePolicy().hasHeightForWidth());
         runTextEdit->setSizePolicy(sizePolicy);
         runTextEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
         runTextEdit->setTextInteractionFlags(Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse);
 
-        verticalLayout_17->addWidget(runTextEdit);
-
-        runScrollArea->setWidget(runLayout);
-
-        verticalLayout_15->addWidget(runScrollArea);
+        verticalLayout_2->addWidget(runTextEdit);
 
         outputWidget->addTab(runTab, QString());
-
-        verticalLayout_13->addWidget(outputWidget);
-
-        statusWidget_2 = new QTabWidget(infoWidget);
+        infoWidgetSplitter->addWidget(outputWidget);
+        statusWidget_2 = new QTabWidget(infoWidgetSplitter);
         statusWidget_2->setObjectName(QStringLiteral("statusWidget_2"));
         sizePolicy.setHeightForWidth(statusWidget_2->sizePolicy().hasHeightForWidth());
         statusWidget_2->setSizePolicy(sizePolicy);
@@ -267,8 +210,9 @@ public:
         tab_2 = new QWidget();
         tab_2->setObjectName(QStringLiteral("tab_2"));
         statusWidget_2->addTab(tab_2, QString());
+        infoWidgetSplitter->addWidget(statusWidget_2);
 
-        verticalLayout_13->addWidget(statusWidget_2);
+        gridLayout_3->addWidget(infoWidgetSplitter, 0, 0, 1, 1);
 
 
         controlLayout->addWidget(infoWidget);
@@ -300,7 +244,6 @@ public:
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Micromouse Simulator", 0));
         runButton->setText(QApplication::translate("MainWindow", "Run", 0));
-        buildProgressLabel->setText(QApplication::translate("MainWindow", "Build Progress", 0));
         buildButton->setText(QApplication::translate("MainWindow", "Build", 0));
         selectAlgorithmLabel->setText(QApplication::translate("MainWindow", "Algorithm", 0));
         buildAndRunButton->setText(QApplication::translate("MainWindow", "Build and Run", 0));

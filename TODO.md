@@ -1,7 +1,9 @@
 # High Priority
 
-- Clean up mouseInterface/controller and MainWindow
-- Hook up build output
+- Remove log files (unnecessary for now)
+- Indicate build failure/success with colors
+- Clean up mouseInterface/controller and MainWindow/controller (MouseAlgoUtilities)
+- Hook up build output (in addition to stderr)
 - Add controls about UI
 - Make a note about newline for algo stdout
 - Fix the elapsed sim time
@@ -11,8 +13,8 @@
 - Surface error messages to the UI
 - Stderr get's printed out when the algo exits, gets sent to Controller
 - Why is tile fog not clearing immediately?
-- Clean up View
-- Kill Layout
+- Kill Layout class
+- Blank map on startup would be good
 - QList vs QVector - pick one
 - Run mouse algorithms as separate process
     - Make continuous algos possible
@@ -118,6 +120,7 @@
 
 # Medum Priority
 
+- Pass by reference or value in lambdas
 - Rule of thumb - if it has state, make it a singleton instead of a static class
     - Rewrite singleton access patterns to be a little more readable (kill S(), P(), etc.)
     - All singletons should have an init function

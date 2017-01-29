@@ -31,7 +31,6 @@ public:
 
 signals:
 
-    void buildError(const QString& text);
     void algoStdout(const QString& line);
 
 private:
@@ -40,12 +39,13 @@ private:
     Mouse* m_mouse;
     Lens* m_lens;
 
-    // The interface by which we access the Mouse object
-    MouseInterface* m_mouseInterface;
-
+    // Some mouse algo options/config
     QString m_mouseAlgorithm;
     InterfaceType m_interfaceType;
     bool m_interfaceTypeFinalized;
+
+    // The interface by which we access the Mouse object
+    MouseInterface* m_mouseInterface;
 
     // The runtime algorithm options
     DynamicMouseAlgorithmOptions m_dynamicOptions;

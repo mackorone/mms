@@ -1,25 +1,20 @@
 #include "Driver.h"
 
 #include <QApplication>
-#include <QDesktopWidget>
+#include <QCoreApplication>
 #include <QObject>
-#include <QProcess>
 #include <QThread>
 
 #include "Directory.h"
 #include "FontImage.h"
 #include "Logging.h"
 #include "MainWindow.h"
-#include "Map.h"
 #include "Maze.h"
-#include "Mouse.h"
-#include "Param.h"
 #include "Screen.h"
 #include "SimUtilities.h"
 #include "State.h"
 #include "Time.h"
 #include "Model.h"
-#include "units/Milliseconds.h"
 
 namespace mms {
 
@@ -27,6 +22,11 @@ int Driver::drive(int argc, char* argv[]) {
 
     // Make sure that this function is called just once
     ASSERT_RUNS_JUST_ONCE();
+
+    // Initialize some fields for QSettings
+    QCoreApplication::setOrganizationName("mackorone");
+    QCoreApplication::setOrganizationDomain("www.github.com/mackorone");
+    QCoreApplication::setApplicationName("mms");
 
     // Initialize Qt
     QApplication app(argc, argv);
