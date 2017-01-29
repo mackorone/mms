@@ -16,6 +16,8 @@
 #include "Time.h"
 #include "Model.h"
 
+#include "MouseAlgos.h" // TODO: MACK
+
 namespace mms {
 
 int Driver::drive(int argc, char* argv[]) {
@@ -23,6 +25,7 @@ int Driver::drive(int argc, char* argv[]) {
     // Make sure that this function is called just once
     ASSERT_RUNS_JUST_ONCE();
 
+    // TODO: MACK - move this to Settings::init()
     // Initialize some fields for QSettings
     QCoreApplication::setOrganizationName("mackorone");
     QCoreApplication::setOrganizationDomain("www.github.com/mackorone");

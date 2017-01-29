@@ -20,10 +20,6 @@ QString Directory::getSrcMazeAlgosDirectory() {
     return m_root + "src/maze/algos/";
 }
 
-QString Directory::getSrcMouseAlgosDirectory() {
-    return m_root + "src/mouse/algos/";
-}
-
 QString Directory::getResDirectory() {
     return m_root + "res/";
 }
@@ -42,10 +38,6 @@ QString Directory::getResMazeDirectory() {
 
 QString Directory::getResMouseDirectory() {
     return getResDirectory() + "mouse/";
-}
-
-QString Directory::getResShadersDirectory() {
-    return getResDirectory() + "shaders/";
 }
 
 QString Directory::getRunDirectory() {

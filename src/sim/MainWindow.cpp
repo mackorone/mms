@@ -5,9 +5,11 @@
 #include <QLabel>
 #include <QtCore>
 
+#include "Assert.h"
 #include "Directory.h"
 #include "Map.h"
 #include "Model.h"
+#include "MouseAlgos.h"
 #include "Param.h"
 #include "SimUtilities.h"
 #include "State.h"
@@ -36,12 +38,9 @@ MainWindow::MainWindow(const Maze* maze, QWidget *parent) :
     ui->runTextEdit->document()->setDefaultFont(font);
     ui->buildTextEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
 
-    // TODO: MACK
-    QString mouseAlgoDir(Directory::get()->getSrcMouseAlgosDirectory());
-    QStringList algoDirs = SimUtilities::getTopLevelDirs(mouseAlgoDir);
-    qSort(algoDirs);
-    for (const QString& dir : algoDirs) {
-        ui->selectAlgorithmComboBox->addItem(dir);
+    // Load saved algos
+    for (const QString& algoName : MouseAlgos::algoNames()) {
+        ui->selectAlgorithmComboBox->addItem(algoName);
     }
 
     // TODO: MACK
@@ -49,10 +48,7 @@ MainWindow::MainWindow(const Maze* maze, QWidget *parent) :
         ui->buildButton,
         &QPushButton::clicked,
         this,
-        [=](){
-            // TODO: MACK
-            build(P()->mouseAlgorithm());
-        }
+        &MainWindow::build
     );
 
     // TODO: MACK
@@ -213,68 +209,54 @@ void MainWindow::keyRelease(int key) {
     }
 }
 
-void MainWindow::build(const QString& mouseAlgorithm) {
+void MainWindow::build() {
 
-    // Check to see if there is some directory with the given name
-    QString mouseAlgosDir(Directory::get()->getSrcMouseAlgosDirectory());
-    if (!SimUtilities::getTopLevelDirs(mouseAlgosDir).contains(mouseAlgorithm)) {
-         qCritical().noquote().nospace()
-            << "\"" << mouseAlgorithm << "\" is not a valid mouse"
-            << " algorithm.";
-         SimUtilities::quit();
-    }
+    const QString& algoName = ui->selectAlgorithmComboBox->currentText();
+    ASSERT_TR(MouseAlgos::algoNames().contains(algoName));
 
-    // Get the mouse algo directory
-    QString selectedMouseAlgoPath = 
-        Directory::get()->getSrcMouseAlgosDirectory() + mouseAlgorithm;
+    // TODO: MACK - check settings actually contains these values and contains
+    // and path validity here
+    QString dirPath = MouseAlgos::getDirPath(algoName);
+    QString buildCommand = MouseAlgos::getBuildCommand(algoName);
 
-    // Get the files for the algorithm
-    QPair<QStringList, QStringList> files =
-        SimUtilities::getFiles(selectedMouseAlgoPath);
-    QStringList relativePaths = files.first;
-    QStringList absolutePaths = files.second;
+    // TODO: MACK - ensure we're cleaning this up properly
+    // First, instantiate a new process
+    m_buildProcess = new QProcess(this);
+    m_buildProcess->setWorkingDirectory(dirPath);
 
-    // TODO: MACK - make these constants, dedup some of this
-    if (relativePaths.contains(QString("Main.cpp"))) {
+    // Listen for build errors
+    connect(
+        m_buildProcess,
+        &QProcess::readyReadStandardError,
+        this,
+        [&](){
+            QString errors = m_buildProcess->readAllStandardError();
+            ui->buildTextEdit->appendPlainText(errors);
+        }
+    );
 
-        // TODO: MACK - ensure we're cleaning this up properly
-        // First, instantiate a new process
-        m_buildProcess = new QProcess(this);
-
-        // Listen for build errors
-        connect(
-            m_buildProcess,
-            &QProcess::readyReadStandardError,
-            this,
-            [&](){
-                QString errors = m_buildProcess->readAllStandardError();
-                ui->buildTextEdit->appendPlainText(errors);
-            }
-        );
-
-        // Re-enable build button when build finishes
-        connect(
-            m_buildProcess,
-            static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(
-                &QProcess::finished
-            ),
-            this,
-            [&](int exitCode, QProcess::ExitStatus exitStatus){
-                ui->buildButton->setEnabled(true);
-            }
-        );
+    // Re-enable build button when build finishes
+    connect(
+        m_buildProcess,
+        static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(
+            &QProcess::finished
+        ),
+        this,
+        [&](int exitCode, QProcess::ExitStatus exitStatus){
+            ui->buildButton->setEnabled(true);
+        }
+    );
             
-        // Disable the build button before build starts
-        ui->buildButton->setEnabled(false);
+    // Disable the build button before build starts
+    ui->buildButton->setEnabled(false);
 
-        // Now, start the build
-        QStringList buildArgs = absolutePaths.filter(".cpp");
-        buildArgs << "-W";
-        buildArgs << "-g";
-        buildArgs << "-o";
-        buildArgs << selectedMouseAlgoPath + "/a.out";
-        m_buildProcess->start("g++", buildArgs);
-    }
+    // Now, start the build
+    QStringList args = buildCommand.split(' ', QString::SkipEmptyParts);
+    // TODO: MACK - check sanity of build command
+    ASSERT_LT(0, args.size());
+    QString command = args.at(0);
+    args.removeFirst();
+    m_buildProcess->start(command, args);
 }
 
 void MainWindow::spawnMouseAlgo(const QString& mouseAlgorithm) {

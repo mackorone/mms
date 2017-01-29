@@ -1,6 +1,8 @@
 # High Priority
 
 - Remove log files (unnecessary for now)
+- Kill Directory.h/.cpp
+- Kill getTopLevelDirs
 - Indicate build failure/success with colors
 - Clean up mouseInterface/controller and MainWindow/controller (MouseAlgoUtilities)
 - Hook up build output (in addition to stderr)
@@ -121,6 +123,7 @@
 # Medum Priority
 
 - Pass by reference or value in lambdas
+- Ensure random seed is provided to algo
 - Rule of thumb - if it has state, make it a singleton instead of a static class
     - Rewrite singleton access patterns to be a little more readable (kill S(), P(), etc.)
     - All singletons should have an init function

@@ -3,6 +3,7 @@
 #include "Directory.h"
 #include "Logging.h"
 #include "Model.h"
+#include "MouseAlgos.h"
 #include "MouseChecker.h"
 #include "Param.h"
 #include "SimUtilities.h"
@@ -53,7 +54,21 @@ void Controller::init() {
 
 void Controller::start() {
 
-    // TODO: MACK - Deduplicate with maze algo utilities
+    // TODO: MACK
+/*
+214     const QString& algoName = ui->selectAlgorithmComboBox->currentText();
+215     ASSERT_TR(MouseAlgos::algoNames().contains(algoName));
+216 
+217     // TODO: MACK - check settings actually contains these values and contains
+218     // and path validity here
+219     QString dirPath = MouseAlgos::getDirPath(algoName);
+220     QString buildCommand = MouseAlgos::getBuildCommand(algoName);
+221 
+222     // TODO: MACK - ensure we're cleaning this up properly
+223     // First, instantiate a new process
+224     m_buildProcess = new QProcess(this);
+225     m_buildProcess->setWorkingDirectory(dirPath);
+
 
     // Check to see if there is some directory with the given name
     QString selectedMouseAlgo(m_mouseAlgorithm);
@@ -133,6 +148,7 @@ void Controller::start() {
             << selectedMouseAlgoPath << "\"";
         SimUtilities::quit();
     }
+    */
 }
 
 InterfaceType Controller::getInterfaceType(bool canFinalize) {

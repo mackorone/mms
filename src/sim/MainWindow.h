@@ -49,7 +49,7 @@ private:
     void keyRelease(int key);
 
     // Algo building
-    void build(const QString& mouseAlgorithm);
+    void build();
     QProcess* m_buildProcess;
 
     // Algo running

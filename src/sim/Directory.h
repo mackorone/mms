@@ -18,9 +18,6 @@ public:
     // mms/src/maze/algos
     QString getSrcMazeAlgosDirectory();
 
-    // mms/src/mouse/algos
-    QString getSrcMouseAlgosDirectory();
-
     // mms/res
     QString getResDirectory();
 
@@ -35,9 +32,6 @@ public:
 
     // mms/res/mouse
     QString getResMouseDirectory();
-
-    // mms/res/shaders
-    QString getResShadersDirectory();
 
     // mms/run
     QString getRunDirectory();
