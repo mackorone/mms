@@ -1,7 +1,7 @@
 #include "Maze.h"
 
 byte Maze::m_data[] = {0};
-Info Maze::m_info[] = {0};
+Info Maze::m_info[] = {0, 0};
 
 byte Maze::getX(byte cell) {
     return cell / HEIGHT;

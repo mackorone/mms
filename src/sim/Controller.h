@@ -17,14 +17,9 @@ class Controller : public QObject {
 
 public:
 
-    Controller(
-        const Maze* maze,
-        Mouse* mouse,
-        Lens* lens,
-        const QString& mouseAlgorithm);
-
+    Controller(const Maze* maze, Mouse* mouse, Lens* lens);
     void init();
-    void start();
+    void start(const QString& algoName);
 
     InterfaceType getInterfaceType(bool canFinalize);
     DynamicMouseAlgorithmOptions getDynamicOptions() const;
@@ -39,8 +34,6 @@ private:
     Mouse* m_mouse;
     Lens* m_lens;
 
-    // Some mouse algo options/config
-    QString m_mouseAlgorithm;
     InterfaceType m_interfaceType;
     bool m_interfaceTypeFinalized;
 

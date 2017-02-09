@@ -11,15 +11,10 @@
 
 namespace mms {
 
-Controller::Controller(
-    const Maze* maze,
-    Mouse* mouse,
-    Lens* lens,
-    const QString& mouseAlgorithm) :
+Controller::Controller(const Maze* maze, Mouse* mouse, Lens* lens) :
     m_maze(maze),
     m_mouse(mouse),
     m_lens(lens),
-    m_mouseAlgorithm(mouseAlgorithm),
     m_interfaceType(InterfaceType::DISCRETE),
     m_interfaceTypeFinalized(false),
     m_process(nullptr) {
@@ -52,109 +47,74 @@ void Controller::init() {
     );
 }
 
-void Controller::start() {
+void Controller::start(const QString& algoName) {
 
-    // TODO: MACK
-/*
-214     const QString& algoName = ui->selectAlgorithmComboBox->currentText();
-215     ASSERT_TR(MouseAlgos::algoNames().contains(algoName));
-216 
-217     // TODO: MACK - check settings actually contains these values and contains
-218     // and path validity here
-219     QString dirPath = MouseAlgos::getDirPath(algoName);
-220     QString buildCommand = MouseAlgos::getBuildCommand(algoName);
-221 
-222     // TODO: MACK - ensure we're cleaning this up properly
-223     // First, instantiate a new process
-224     m_buildProcess = new QProcess(this);
-225     m_buildProcess->setWorkingDirectory(dirPath);
+    // TODO: MACK - check settings actually contains these values and contains
+    // and path validity here
+    QString dirPath = MouseAlgos::getDirPath(algoName);
+    QString runCommand = MouseAlgos::getRunCommand(algoName);
 
+    // Create the subprocess on which we'll execute the algorithm
+    m_process = new QProcess();
+    m_process->setWorkingDirectory(dirPath);
 
-    // Check to see if there is some directory with the given name
-    QString selectedMouseAlgo(m_mouseAlgorithm);
-    QString mouseAlgoDir(Directory::get()->getSrcMouseAlgosDirectory());
-    if (!SimUtilities::getTopLevelDirs(mouseAlgoDir).contains(selectedMouseAlgo)) {
-         qCritical().noquote().nospace()
-            << "\"" << m_mouseAlgorithm << "\" is not a valid mouse"
-            << " algorithm.";
-         SimUtilities::quit();
-    }
+    // Publish all algorithm stdout so that the UI can display it
+    connect(
+        m_process,
+        &QProcess::readyReadStandardOutput,
+        this,
+        [=](){
+            QString text = m_process->readAllStandardOutput();
+            QStringList lines = getLines(text, &m_stdoutBuffer);
+            for (const QString& line : lines) {
+                emit algoStdout(line);
+            }
+        }
+    );
 
-    // Get the mouse algo directory
-    QString selectedMouseAlgoPath = 
-        Directory::get()->getSrcMouseAlgosDirectory() + m_mouseAlgorithm;
-
-    // Get the files for the algorithm
-    QPair<QStringList, QStringList> files =
-        SimUtilities::getFiles(selectedMouseAlgoPath);
-    QStringList relativePaths = files.first;
-    QStringList absolutePaths = files.second;
-
-    // TODO: MACK - make these constants, dedup some of this
-    if (relativePaths.contains(QString("Main.cpp"))) {
-
-        // Create the subprocess on which we'll execute the algorithm
-        m_process = new QProcess();
-
-        // Publish all algorithm stdout so that the UI can display it
-        connect(
-            m_process,
-            &QProcess::readyReadStandardOutput,
-            this,
-            [=](){
-                QString text = m_process->readAllStandardOutput();
-                QStringList lines = getLines(text, &m_stdoutBuffer);
-                for (const QString& line : lines) {
-                    emit algoStdout(line);
+    // Process all stderr commands as appropriate
+    connect(
+        m_process,
+        &QProcess::readyReadStandardError,
+        this,
+        [=](){
+            QString text = m_process->readAllStandardError();
+            QStringList lines = getLines(text, &m_stderrBuffer);
+            for (const QString& line : lines) {
+                QString response = processCommand(line);
+                if (!response.isEmpty()) {
+                    m_process->write((response + "\n").toStdString().c_str());
                 }
             }
-        );
+        }
+    );
 
-        // Process all stderr commands as appropriate
-        connect(
-            m_process,
-            &QProcess::readyReadStandardError,
-            this,
-            [=](){
-                QString text = m_process->readAllStandardError();
-                QStringList lines = getLines(text, &m_stderrBuffer);
-                for (const QString& line : lines) {
-                    QString response = processCommand(line);
-                    if (!response.isEmpty()) {
-                        m_process->write((response + "\n").toStdString().c_str());
-                    }
-                }
-            }
-        );
+    // TODO: MACK - check for crashes/erros written to stderr
+    // TODO: MACK - connect the finished signal to something
+    // TODO: MACK - use these instead of waiting for the process to finish
+    // void errorOccurred(QProcess::ProcessError error)
+    // void finished(int exitCode, QProcess::ExitStatus exitStatus)
+    // m_process->waitForFinished();
+    // if (m_process->exitCode() != 0) {
+    //     qCritical().noquote()
+    //         << "Mouse algo crashed!"
+    //         << "\n\n" + m_process->readAllStandardError();
+    //     SimUtilities::quit();
+    // }
 
-        // Run
-        m_process->start(selectedMouseAlgoPath + "/a.out");
-
-        // TODO: MACK - use these instead of waiting for the process to finish
-        // void errorOccurred(QProcess::ProcessError error)
-        // void finished(int exitCode, QProcess::ExitStatus exitStatus)
-        // m_process->waitForFinished();
-        // if (m_process->exitCode() != 0) {
-        //     qCritical().noquote()
-        //         << "Mouse algo crashed!"
-        //         << "\n\n" + m_process->readAllStandardError();
-        //     SimUtilities::quit();
-        // }
-    } 
-    else {
-        // Invalid files
-        qCritical().noquote().nospace()
-            << "No \"Main\" file found in \""
-            << selectedMouseAlgoPath << "\"";
-        SimUtilities::quit();
-    }
-    */
+    // TODO: MACK - helper for this
+    QStringList args = runCommand.split(' ', QString::SkipEmptyParts);
+    // TODO: MACK - check sanity of run command
+    ASSERT_LT(0, args.size());
+    QString command = args.at(0);
+    args.removeFirst();
+    m_process->start(command, args);
 }
 
 InterfaceType Controller::getInterfaceType(bool canFinalize) {
     // Finalize the interface type the first time it's queried
     // by the MouseInterface (but not by the key-press logic)
-    if (canFinalize && !m_interfaceTypeFinalized) {
+    if (!m_interfaceTypeFinalized && canFinalize) {
         m_interfaceTypeFinalized = true;
     }
     return m_interfaceType;

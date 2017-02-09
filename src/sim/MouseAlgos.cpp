@@ -11,6 +11,7 @@ const QString MouseAlgos::NAME_KEY = "name";
 const QString MouseAlgos::DIR_PATH_KEY = "dirPath";
 const QString MouseAlgos::BUILD_COMMAND_KEY = "buildCommand";
 const QString MouseAlgos::RUN_COMMAND_KEY = "runCommand";
+const QString MouseAlgos::MOUSE_FILE_PATH_KEY = "mouseFilePath";
 
 QStringList MouseAlgos::algoNames() {
     QStringList names;
@@ -37,11 +38,16 @@ QString MouseAlgos::getRunCommand(const QString& name) {
     return get(name, RUN_COMMAND_KEY);
 }
 
+QString MouseAlgos::getMouseFilePath(const QString& name) {
+    return get(name, MOUSE_FILE_PATH_KEY);
+}
+
 void MouseAlgos::addAlgo(
         const QString& name,
         const QString& dirPath,
         const QString& buildCommand,
-        const QString& runCommand) {
+        const QString& runCommand,
+        const QString& mouseFilePath) {
 
     QSettings settings;
 
@@ -67,6 +73,7 @@ void MouseAlgos::addAlgo(
     settings.setValue(DIR_PATH_KEY, dirPath);
     settings.setValue(BUILD_COMMAND_KEY, buildCommand);
     settings.setValue(RUN_COMMAND_KEY, runCommand);
+    settings.setValue(MOUSE_FILE_PATH_KEY, mouseFilePath);
     settings.endArray();
 }
 

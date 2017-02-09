@@ -122,6 +122,7 @@
 
 # Medum Priority
 
+- Use tr on all user-facing strings to make the application translatable
 - Pass by reference or value in lambdas
 - Ensure random seed is provided to algo
 - Rule of thumb - if it has state, make it a singleton instead of a static class

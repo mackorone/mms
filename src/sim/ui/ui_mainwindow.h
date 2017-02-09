@@ -37,14 +37,17 @@ public:
     QSplitter *splitter;
     QWidget *mapWidget;
     QVBoxLayout *mapLayout;
-    QWidget *otherWidget;
+    QTabWidget *otherWidget;
+    QWidget *mazeTab;
+    QWidget *mouseTab;
     QVBoxLayout *controlLayout;
     QWidget *controlWidget;
     QGridLayout *gridLayout;
-    QPushButton *runButton;
     QPushButton *buildButton;
+    QPushButton *importButton;
     QLabel *selectAlgorithmLabel;
     QPushButton *buildAndRunButton;
+    QPushButton *runButton;
     QComboBox *selectAlgorithmComboBox;
     QWidget *infoWidget;
     QGridLayout *gridLayout_3;
@@ -91,37 +94,42 @@ public:
         mapWidget->setObjectName(QStringLiteral("mapWidget"));
         sizePolicy.setHeightForWidth(mapWidget->sizePolicy().hasHeightForWidth());
         mapWidget->setSizePolicy(sizePolicy);
-        mapWidget->setMinimumSize(QSize(0, 0));
+        mapWidget->setMinimumSize(QSize(300, 0));
         mapLayout = new QVBoxLayout(mapWidget);
         mapLayout->setSpacing(6);
         mapLayout->setContentsMargins(11, 11, 11, 11);
         mapLayout->setObjectName(QStringLiteral("mapLayout"));
         mapLayout->setContentsMargins(-1, -1, 3, -1);
         splitter->addWidget(mapWidget);
-        otherWidget = new QWidget(splitter);
+        otherWidget = new QTabWidget(splitter);
         otherWidget->setObjectName(QStringLiteral("otherWidget"));
         otherWidget->setStyleSheet(QStringLiteral(""));
-        controlLayout = new QVBoxLayout(otherWidget);
+        mazeTab = new QWidget();
+        mazeTab->setObjectName(QStringLiteral("mazeTab"));
+        otherWidget->addTab(mazeTab, QString());
+        mouseTab = new QWidget();
+        mouseTab->setObjectName(QStringLiteral("mouseTab"));
+        controlLayout = new QVBoxLayout(mouseTab);
         controlLayout->setSpacing(0);
         controlLayout->setContentsMargins(11, 11, 11, 11);
         controlLayout->setObjectName(QStringLiteral("controlLayout"));
         controlLayout->setContentsMargins(0, 0, 0, 0);
-        controlWidget = new QWidget(otherWidget);
+        controlWidget = new QWidget(mouseTab);
         controlWidget->setObjectName(QStringLiteral("controlWidget"));
         gridLayout = new QGridLayout(controlWidget);
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
         gridLayout->setContentsMargins(3, -1, -1, 6);
-        runButton = new QPushButton(controlWidget);
-        runButton->setObjectName(QStringLiteral("runButton"));
-
-        gridLayout->addWidget(runButton, 1, 1, 1, 1);
-
         buildButton = new QPushButton(controlWidget);
         buildButton->setObjectName(QStringLiteral("buildButton"));
 
         gridLayout->addWidget(buildButton, 1, 0, 1, 1);
+
+        importButton = new QPushButton(controlWidget);
+        importButton->setObjectName(QStringLiteral("importButton"));
+
+        gridLayout->addWidget(importButton, 0, 4, 1, 1);
 
         selectAlgorithmLabel = new QLabel(controlWidget);
         selectAlgorithmLabel->setObjectName(QStringLiteral("selectAlgorithmLabel"));
@@ -132,7 +140,12 @@ public:
         buildAndRunButton = new QPushButton(controlWidget);
         buildAndRunButton->setObjectName(QStringLiteral("buildAndRunButton"));
 
-        gridLayout->addWidget(buildAndRunButton, 1, 2, 1, 1);
+        gridLayout->addWidget(buildAndRunButton, 1, 4, 1, 1);
+
+        runButton = new QPushButton(controlWidget);
+        runButton->setObjectName(QStringLiteral("runButton"));
+
+        gridLayout->addWidget(runButton, 1, 1, 1, 2);
 
         selectAlgorithmComboBox = new QComboBox(controlWidget);
         selectAlgorithmComboBox->setObjectName(QStringLiteral("selectAlgorithmComboBox"));
@@ -144,7 +157,7 @@ public:
 
         controlLayout->addWidget(controlWidget);
 
-        infoWidget = new QWidget(otherWidget);
+        infoWidget = new QWidget(mouseTab);
         infoWidget->setObjectName(QStringLiteral("infoWidget"));
         QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Expanding);
         sizePolicy1.setHorizontalStretch(0);
@@ -217,6 +230,7 @@ public:
 
         controlLayout->addWidget(infoWidget);
 
+        otherWidget->addTab(mouseTab, QString());
         splitter->addWidget(otherWidget);
 
         gridLayout_2->addWidget(splitter, 0, 0, 1, 1);
@@ -233,7 +247,8 @@ public:
 
         retranslateUi(MainWindow);
 
-        outputWidget->setCurrentIndex(1);
+        otherWidget->setCurrentIndex(1);
+        outputWidget->setCurrentIndex(0);
         statusWidget_2->setCurrentIndex(0);
 
 
@@ -243,14 +258,17 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Micromouse Simulator", 0));
-        runButton->setText(QApplication::translate("MainWindow", "Run", 0));
+        otherWidget->setTabText(otherWidget->indexOf(mazeTab), QApplication::translate("MainWindow", "Maze", 0));
         buildButton->setText(QApplication::translate("MainWindow", "Build", 0));
+        importButton->setText(QApplication::translate("MainWindow", "Import", 0));
         selectAlgorithmLabel->setText(QApplication::translate("MainWindow", "Algorithm", 0));
         buildAndRunButton->setText(QApplication::translate("MainWindow", "Build and Run", 0));
+        runButton->setText(QApplication::translate("MainWindow", "Run", 0));
         outputWidget->setTabText(outputWidget->indexOf(buildTab), QApplication::translate("MainWindow", "Build Ouput", 0));
         outputWidget->setTabText(outputWidget->indexOf(runTab), QApplication::translate("MainWindow", "Run Ouput", 0));
         statusWidget_2->setTabText(statusWidget_2->indexOf(tab), QApplication::translate("MainWindow", "Tab 1", 0));
         statusWidget_2->setTabText(statusWidget_2->indexOf(tab_2), QApplication::translate("MainWindow", "Tab 2", 0));
+        otherWidget->setTabText(otherWidget->indexOf(mouseTab), QApplication::translate("MainWindow", "Mouse", 0));
         menu_File->setTitle(QApplication::translate("MainWindow", "&File", 0));
     } // retranslateUi
 

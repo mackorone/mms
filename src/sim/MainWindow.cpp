@@ -1,6 +1,7 @@
 #include "MainWindow.h"
 #include "ui_mainwindow.h"
 
+#include <QFileDialog>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QtCore>
@@ -28,9 +29,6 @@ MainWindow::MainWindow(const Maze* maze, QWidget *parent) :
     // Resize the window
     resize(P()->defaultWindowWidth(), P()->defaultWindowHeight());
 
-    // TODO: MACK
-    // ui->mapLayout->setWidth(100);
-
     // TODO: MACK - settings somewhere
     QFont font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     font.setPointSize(10);
@@ -43,22 +41,44 @@ MainWindow::MainWindow(const Maze* maze, QWidget *parent) :
         ui->selectAlgorithmComboBox->addItem(algoName);
     }
 
-    // TODO: MACK
+    // Connect the build button
     connect(
         ui->buildButton,
         &QPushButton::clicked,
         this,
-        &MainWindow::build
+        [&](){
+            // TODO: MACK - helper for this (ensure all fields exist)
+            const QString& algoName = ui->selectAlgorithmComboBox->currentText();
+            ASSERT_TR(MouseAlgos::algoNames().contains(algoName));
+            build(algoName);
+        }
     );
 
-    // TODO: MACK
+    // Connect the run button
     connect(
         ui->runButton,
         &QPushButton::clicked,
         this,
-        [=](){
-            // TODO: MACK
-            spawnMouseAlgo(P()->mouseAlgorithm());
+        [&](){
+            // TODO: MACK - helper for this (ensure all fields exist)
+            const QString& algoName = ui->selectAlgorithmComboBox->currentText();
+            ASSERT_TR(MouseAlgos::algoNames().contains(algoName));
+            spawnMouseAlgo(algoName);
+        }
+    );
+
+    // TODO: MACK - connect the import button (add more functionality here)
+    connect(
+        ui->importButton,
+        &QPushButton::clicked,
+        this,
+        [&](){
+            QString dir = QFileDialog::getExistingDirectory(
+                this,
+                tr("Open Directory"),
+                "/home",
+                QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
+            );
         }
     );
 }
@@ -209,10 +229,7 @@ void MainWindow::keyRelease(int key) {
     }
 }
 
-void MainWindow::build() {
-
-    const QString& algoName = ui->selectAlgorithmComboBox->currentText();
-    ASSERT_TR(MouseAlgos::algoNames().contains(algoName));
+void MainWindow::build(const QString& algoName) {
 
     // TODO: MACK - check settings actually contains these values and contains
     // and path validity here
@@ -259,12 +276,12 @@ void MainWindow::build() {
     m_buildProcess->start(command, args);
 }
 
-void MainWindow::spawnMouseAlgo(const QString& mouseAlgorithm) {
+void MainWindow::spawnMouseAlgo(const QString& algoName) {
 
     // Generate the mouse, lens, and controller
     Mouse* mouse = new Mouse(m_maze);
     Lens* lens = new Lens(m_maze, mouse);
-    Controller* controller = new Controller(m_maze, mouse, lens, mouseAlgorithm);
+    Controller* controller = new Controller(m_maze, mouse, lens);
     MLC mlc = {mouse, lens, controller};
 
     // Configures the window to listen for build and run stdout,
@@ -354,7 +371,7 @@ void MainWindow::spawnMouseAlgo(const QString& mouseAlgorithm) {
         // the mouse algo's execution)
         controller->init();
         Model::get()->addMouse("", mouse);
-        controller->start();
+        controller->start(algoName);
     });
     controller->moveToThread(thread);
 	thread->start();

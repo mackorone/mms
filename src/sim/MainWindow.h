@@ -49,11 +49,11 @@ private:
     void keyRelease(int key);
 
     // Algo building
-    void build();
+    void build(const QString& algoName);
     QProcess* m_buildProcess;
 
     // Algo running
-    void spawnMouseAlgo(const QString& mouseAlgorithm);
+    void spawnMouseAlgo(const QString& algoName);
     QVector<QPair<MLC, QThread*>> m_controllers;
 
     // Header-related members

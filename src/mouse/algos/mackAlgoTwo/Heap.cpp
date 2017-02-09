@@ -83,7 +83,6 @@ byte Heap::getMinChildIndex(byte index) {
 }
 
 void Heap::heapifyUp(byte index) {
-    ASSERT_LE(0, index);
     ASSERT_LT(index, m_size);
     byte parentIndex = getParentIndex(index);
     while (
@@ -97,7 +96,6 @@ void Heap::heapifyUp(byte index) {
 }
 
 void Heap::heapifyDown(byte index) {
-    ASSERT_LE(0, index);
     ASSERT_LT(index, m_size);
     byte minChildIndex = getMinChildIndex(index);
     while (
@@ -111,8 +109,6 @@ void Heap::heapifyDown(byte index) {
 }
 
 void Heap::swap(byte indexOne, byte indexTwo) {
-    ASSERT_LE(0, indexOne);
-    ASSERT_LE(0, indexTwo);
     ASSERT_LT(indexOne, m_size);
     ASSERT_LT(indexTwo, m_size);
     ASSERT_NE(indexOne, indexTwo);
