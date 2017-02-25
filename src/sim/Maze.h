@@ -11,7 +11,11 @@ namespace mms {
 class Maze {
 
 public:
-    Maze();
+
+    Maze(); // TODO: MACK - dummy maze
+
+    static Maze fromFile(const QString& path);
+    
     int getWidth() const;
     int getHeight() const;
     bool withinMaze(int x, int y) const;
@@ -22,6 +26,10 @@ public:
     Direction getOptimalStartingDirection() const;
 
 private:
+
+    // TODO: MACK - private constructor
+    Maze(BasicMaze basicMaze);
+
     // Vector to hold all of the tiles
     QVector<QVector<Tile>> m_maze;
 

@@ -1,5 +1,8 @@
 # High Priority
 
+- Add maze loading functionality
+    - Add maze gen functionality
+    - Remove params for maze load/gen
 - Remove log files (unnecessary for now)
 - Kill Directory.h/.cpp
 - Kill getTopLevelDirs

@@ -9,6 +9,8 @@
 #include "Assert.h"
 #include "Directory.h"
 #include "Map.h"
+#include "MazeFileType.h"
+#include "MazeFiles.h"
 #include "Model.h"
 #include "MouseAlgos.h"
 #include "Param.h"
@@ -18,10 +20,11 @@
 
 namespace mms {
 
-MainWindow::MainWindow(const Maze* maze, QWidget *parent) :
+MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
-        m_maze(maze),
         ui(new Ui::MainWindow) {
+
+    // TODO: MACK - add the initial maze
 
     // Initialization
     ui->setupUi(this);
@@ -81,6 +84,51 @@ MainWindow::MainWindow(const Maze* maze, QWidget *parent) :
             );
         }
     );
+
+    // TODO: MACK - connect the import mazes button
+    connect(
+        ui->importMazesButton,
+        &QPushButton::clicked,
+        this,
+        [&](){
+            QStringList suffixes;
+            for (const QString& suffix : MAZE_FILE_TYPE_TO_SUFFIX.values()) {
+                suffixes.append(QString("*.") + suffix);
+            }
+            QStringList paths = QFileDialog::getOpenFileNames(
+                this,
+                tr("Select one or more maze files to import"),
+                "/home",
+                QString("Mazes Files (") + suffixes.join(" ") + ")"
+            );
+            for (const QString& path : paths) {
+                MazeFiles::addMazeFile(path);
+            }
+            refreshMazeFiles();
+        }
+    );
+
+    // TODO: MACK - set some maze files table properties
+    ui->mazeFilesTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->mazeFilesTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->mazeFilesTable->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->mazeFilesTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents); 
+    refreshMazeFiles();
+
+    connect(
+        ui->mazeFilesTable,
+        &QTableWidget::itemSelectionChanged,
+        this,
+        [&](){
+            if (ui->mazeFilesTable->selectedItems().size() < 1) {
+                return;
+            }
+            QString path = ui->mazeFilesTable->selectedItems().at(1)->text();
+            m_maze = Maze::fromFile(path);
+            Model::get()->setMaze(&m_maze);
+        }
+    );
+
 }
 
 MainWindow::~MainWindow() {
@@ -229,6 +277,69 @@ void MainWindow::keyRelease(int key) {
     }
 }
 
+void MainWindow::refreshMazeFiles() {
+    QStringList mazeFiles = MazeFiles::getMazeFiles();
+    ui->mazeFilesTable->setRowCount(mazeFiles.size());
+    ui->mazeFilesTable->setColumnCount(2);
+    for (int i = 0; i < mazeFiles.size(); i += 1) {
+        QString path = mazeFiles.at(i);
+        ui->mazeFilesTable->setItem(i, 0, new QTableWidgetItem(QFileInfo(path).fileName()));
+        ui->mazeFilesTable->setItem(i, 1, new QTableWidgetItem(path));
+    }
+}
+
+void MainWindow::mazeBuild(const QString& mazeAlgoName) {
+
+    // TODO: MACK - check settings actually contains these values and contains
+    // and path validity here
+    /*
+    QString dirPath = MazeAlgos::getDirPath(algoName);
+    QString buildCommand = MazeAlgos::getBuildCommand(algoName);
+
+    // TODO: MACK - ensure we're cleaning this up properly
+    // First, instantiate a new process
+    m_mazeBuildProcess = new QProcess(this);
+    m_mazeBuildProcess->setWorkingDirectory(dirPath);
+
+    // Listen for build errors
+    connect(
+        m_mazeBuildProcess,
+        &QProcess::readyReadStandardError,
+        this,
+        [&](){
+            QString errors = m_mazeBuildProcess->readAllStandardError();
+            ui->buildTextEdit->appendPlainText(errors);
+        }
+    );
+
+    // Re-enable build button when build finishes
+    connect(
+        m_mazeBuildProcess,
+        static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(
+            &QProcess::finished
+        ),
+        this,
+        [&](int exitCode, QProcess::ExitStatus exitStatus){
+            ui->buildButton->setEnabled(true);
+        }
+    );
+            
+    // Disable the build button before build starts
+    ui->buildButton->setEnabled(false);
+
+    // Now, start the build
+    QStringList args = buildCommand.split(' ', QString::SkipEmptyParts);
+    // TODO: MACK - check sanity of build command
+    ASSERT_LT(0, args.size());
+    QString command = args.at(0);
+    args.removeFirst();
+    m_mazeBuildProcess->start(command, args);
+    */
+}
+
+void MainWindow::mazeRun(const QString& mazeAlgoName) {
+}
+
 void MainWindow::build(const QString& algoName) {
 
     // TODO: MACK - check settings actually contains these values and contains
@@ -279,9 +390,9 @@ void MainWindow::build(const QString& algoName) {
 void MainWindow::spawnMouseAlgo(const QString& algoName) {
 
     // Generate the mouse, lens, and controller
-    Mouse* mouse = new Mouse(m_maze);
-    Lens* lens = new Lens(m_maze, mouse);
-    Controller* controller = new Controller(m_maze, mouse, lens);
+    Mouse* mouse = new Mouse(&m_maze);
+    Lens* lens = new Lens(&m_maze, mouse);
+    Controller* controller = new Controller(&m_maze, mouse, lens);
     MLC mlc = {mouse, lens, controller};
 
     // Configures the window to listen for build and run stdout,
@@ -291,7 +402,7 @@ void MainWindow::spawnMouseAlgo(const QString& algoName) {
     m_mlc = mlc;
 
     // Add a map to the UI
-    Map* map = new Map(m_maze, mlc.mouse, mlc.lens);
+    Map* map = new Map(&m_maze, mlc.mouse, mlc.lens);
     // TODO: MACK - minimum size, size policy
     ui->mapLayout->addWidget(map);
 
@@ -390,7 +501,7 @@ QVector<QPair<QString, QVariant>> MainWindow::getRunStats() const {
         {"Mouse Algo", P()->mouseAlgorithm()},
         {"Tiles Traversed",
             QString::number(stats.traversedTileLocations.size()) + " / " +
-            QString::number(m_maze->getWidth() * m_maze->getHeight())
+            QString::number(m_maze.getWidth() * m_maze.getHeight())
         },
         {"Closest Distance to Center", stats.closestDistanceToCenter},
         {"Current X (m)", m_mlc.mouse->getCurrentTranslation().getX().getMeters()},
@@ -493,9 +604,9 @@ QVector<QPair<QString, QVariant>> MainWindow::getMazeInfo() const {
             (P()->useMazeFile() ? "Maze File" : "Maze Algo"),
             (P()->useMazeFile() ? P()->mazeFile() : P()->mazeAlgorithm()),
         },
-        {"Maze Width", m_maze->getWidth()},
-        {"Maze Height", m_maze->getHeight()},
-        {"Maze Is Official", m_maze->isOfficialMaze() ? "TRUE" : "FALSE"},
+        {"Maze Width", m_maze.getWidth()},
+        {"Maze Height", m_maze.getHeight()},
+        {"Maze Is Official", m_maze.isOfficialMaze() ? "TRUE" : "FALSE"},
     };
 }
 

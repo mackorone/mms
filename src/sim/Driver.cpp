@@ -16,8 +16,6 @@
 #include "Time.h"
 #include "Model.h"
 
-#include "MouseAlgos.h" // TODO: MACK
-
 namespace mms {
 
 int Driver::drive(int argc, char* argv[]) {
@@ -74,12 +72,8 @@ int Driver::drive(int argc, char* argv[]) {
     Model::get()->moveToThread(&modelThread);
     modelThread.start();
 
-    // Create the maze, add it to the model
-    Maze maze;
-    Model::get()->setMaze(&maze);
-
     // Create the main window
-    MainWindow window(&maze);
+    MainWindow window;
     window.show();
     // Ensure key-press events get sent to the window
     app.installEventFilter(&window);

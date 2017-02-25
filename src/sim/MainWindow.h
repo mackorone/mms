@@ -24,7 +24,7 @@ class MainWindow : public QMainWindow {
 
 public:
 
-    MainWindow(const Maze* maze, QWidget *parent = 0);
+    MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
 protected:
@@ -39,7 +39,7 @@ private:
     Ui::MainWindow *ui;
 
     // The maze
-    const Maze* m_maze;
+    Maze m_maze;
 
     // The mouse/lens/controller trio
     MLC m_mlc;
@@ -48,11 +48,27 @@ private:
     void keyPress(int key);
     void keyRelease(int key);
 
-    // Algo building
+    // ------- TODO
+
+    void refreshMazeFiles();
+
+    // ------- TODO
+
+    // Maze algo building
+    void mazeBuild(const QString& mazeAlgoName);
+    QProcess* m_mazeBuildProcess;
+
+    // Maze algo running
+    void mazeRun(const QString& mazeAlgoName);
+    QProcess* m_mazeRunProcess;
+
+    // -------
+
+    // Mouse algo building
     void build(const QString& algoName);
     QProcess* m_buildProcess;
 
-    // Algo running
+    // Mouse algo running
     void spawnMouseAlgo(const QString& algoName);
     QVector<QPair<MLC, QThread*>> m_controllers;
 
