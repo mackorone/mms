@@ -22,10 +22,9 @@ namespace mms {
 
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
-        m_map(nullptr), // TODO: MACK
-        ui(new Ui::MainWindow) {
-
-    // TODO: MACK - add the initial maze
+        ui(new Ui::MainWindow),
+        m_map(new Map()),
+        m_maze(nullptr) {
 
     // Initialization
     ui->setupUi(this);
@@ -44,6 +43,9 @@ MainWindow::MainWindow(QWidget *parent) :
     for (const QString& algoName : MouseAlgos::algoNames()) {
         ui->selectAlgorithmComboBox->addItem(algoName);
     }
+
+    // Add map to the UI
+    ui->mapLayout->addWidget(m_map);
 
     // Connect the build button
     connect(
@@ -121,19 +123,12 @@ MainWindow::MainWindow(QWidget *parent) :
         &QTableWidget::itemSelectionChanged,
         this,
         [&](){
-            if (ui->mazeFilesTable->selectedItems().size() < 1) {
-                return;
-            }
             QString path = ui->mazeFilesTable->selectedItems().at(1)->text();
+            // TODO: MACK - ensure we're not leaking memory here
+            delete m_maze;
             m_maze = Maze::fromFile(path);
-            Model::get()->setMaze(&m_maze);
-
-            // Add a map to the UI
-            if (m_map == nullptr) {
-                m_map = new Map();
-                ui->mapLayout->addWidget(m_map);
-            }
-            m_map->setMaze(&m_maze);
+            Model::get()->setMaze(m_maze);
+            m_map->setMaze(m_maze);
         }
     );
 
@@ -397,10 +392,16 @@ void MainWindow::build(const QString& algoName) {
 
 void MainWindow::spawnMouseAlgo(const QString& algoName) {
 
+    // TODO: MACK
+    if (m_map == nullptr) {
+        qDebug() << "MAP needs to exist!";
+        return;
+    }
+
     // Generate the mouse, lens, and controller
-    Mouse* mouse = new Mouse(&m_maze);
-    Lens* lens = new Lens(&m_maze, mouse);
-    Controller* controller = new Controller(&m_maze, mouse, lens);
+    Mouse* mouse = new Mouse(m_maze);
+    Lens* lens = new Lens(m_maze, mouse);
+    Controller* controller = new Controller(m_maze, mouse, lens);
     MLC mlc = {mouse, lens, controller};
 
     // Configures the window to listen for build and run stdout,
@@ -505,10 +506,10 @@ QVector<QPair<QString, QVariant>> MainWindow::getRunStats() const {
     return {
         {"Run ID", S()->runId()}, // TODO: MACK - run directory
         {"Random Seed", P()->randomSeed()},
-        {"Mouse Algo", P()->mouseAlgorithm()},
+        // {"Mouse Algo", P()->mouseAlgorithm()}, // TODO: MACK
         {"Tiles Traversed",
             QString::number(stats.traversedTileLocations.size()) + " / " +
-            QString::number(m_maze.getWidth() * m_maze.getHeight())
+            QString::number(m_maze->getWidth() * m_maze->getHeight())
         },
         {"Closest Distance to Center", stats.closestDistanceToCenter},
         {"Current X (m)", m_mlc.mouse->getCurrentTranslation().getX().getMeters()},
@@ -540,7 +541,7 @@ QVector<QPair<QString, QVariant>> MainWindow::getAlgoOptions() const {
     return {
         // Mouse Info
         // TODO: MACK - get this from the controller
-        {"Mouse Algo", P()->mouseAlgorithm()},
+        // {"Mouse Algo", P()->mouseAlgorithm()},
         /*
         {"Mouse File", (
             m_mlc.controller == nullptr
@@ -607,13 +608,16 @@ QVector<QPair<QString, QVariant>> MainWindow::getAlgoOptions() const {
 
 QVector<QPair<QString, QVariant>> MainWindow::getMazeInfo() const {
     return {
+        // TODO: MACK
+        /*
         {
             (P()->useMazeFile() ? "Maze File" : "Maze Algo"),
             (P()->useMazeFile() ? P()->mazeFile() : P()->mazeAlgorithm()),
         },
-        {"Maze Width", m_maze.getWidth()},
-        {"Maze Height", m_maze.getHeight()},
-        {"Maze Is Official", m_maze.isOfficialMaze() ? "TRUE" : "FALSE"},
+        */
+        {"Maze Width", m_maze->getWidth()},
+        {"Maze Height", m_maze->getHeight()},
+        {"Maze Is Official", m_maze->isOfficialMaze() ? "TRUE" : "FALSE"},
     };
 }
 

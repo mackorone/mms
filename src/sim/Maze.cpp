@@ -17,41 +17,37 @@
 
 namespace mms {
 
-Maze::Maze() {
-    // TODO: MACK
+Maze* Maze::fromFile(const QString& path) {
+    BasicMaze basicMaze;
+    try {
+        basicMaze = MazeFileUtilities::load(path);
+    }
+    catch (const std::exception& e) {
+        qCritical().nospace()
+            << "Unable to initialize maze from file " << path << ": "
+            << QString(e.what()) << ".";
+        SimUtilities::quit();
+    }
+    return new Maze(basicMaze);
+}
+
+Maze* Maze::fromAlgo(const QString& algo, int width, int height) {
+    // TODO: MACK - dedup with fromFile
+    BasicMaze basicMaze;
+    try {
+        basicMaze = MazeAlgoUtilities::generate(algo, width, height);
+    }
+    catch (const std::exception& e) {
+        qCritical().nospace()
+            << "Unable to initialize maze from algorithm " << algo << ": "
+            << QString(e.what()) << ".";
+        SimUtilities::quit();
+    }
+    return new Maze(basicMaze);
 }
 
 Maze::Maze(BasicMaze basicMaze) {
     
-    // TODO: MACK
-    //BasicMaze basicMaze;
-    //QString source = "";
-
-    //try {
-    //    // Load from a maze file
-    //    if (P()->useMazeFile()) {
-    //        QString mazeFilePath =
-    //            Directory::get()->getResMazeDirectory() + P()->mazeFile();
-    //        source = "file \"" + mazeFilePath + "\"";
-    //        basicMaze = MazeFileUtilities::load(mazeFilePath);
-    //    }
-    //    // Generate from a maze algorithm
-    //    else {
-    //        source = "algorithm \"" + P()->mazeAlgorithm() + "\"";
-    //        basicMaze = MazeAlgoUtilities::generate(
-    //            P()->mazeAlgorithm(),
-    //            P()->generatedMazeWidth(),
-    //            P()->generatedMazeHeight());
-    //    }
-    //}
-    //catch (const std::exception& e) {
-    //    qCritical().noquote().nospace()
-    //        << "Unable to initialize maze from " << source << ": "
-    //        << QString(e.what()) << ".";
-    //    SimUtilities::quit();
-    //}
-
-
     // Check to see if it's a valid maze
     QPair<bool, QVector<QString>> isValidInfo = MazeChecker::isValidMaze(basicMaze);
     m_isValidMaze = isValidInfo.first;
@@ -64,12 +60,13 @@ Maze::Maze(BasicMaze basicMaze) {
             << " execute.";
     }
 
+    // TODO: MACK - fix maze saving
+    /*
     // Optionally save the maze
-    if (!P()->useMazeFile() && P()->saveGeneratedMaze()) {
+    if (P()->saveGeneratedMaze()) {
         MazeFileType type = STRING_TO_MAZE_FILE_TYPE.value(P()->generatedMazeType());
         QString generatedMazeFilePath = Directory::get()->getResMazeDirectory() +
             P()->generatedMazeFile() + "." + MAZE_FILE_TYPE_TO_SUFFIX.value(type);
-        // TODO: MACK - fix maze saving
         bool success = false; // MazeFileUtilities::save(basicMaze, generatedMazeFilePath, type);
         if (success) {
             qInfo().noquote().nospace()
@@ -80,6 +77,7 @@ Maze::Maze(BasicMaze basicMaze) {
                 << "Unable to save maze to \"" << generatedMazeFilePath << "\".";
         }
     }
+    */
 
     // Mirror and rotate the maze
     if (P()->mazeMirrored()) {
@@ -106,20 +104,6 @@ Maze::Maze(BasicMaze basicMaze) {
 
     // Load the maze given by the maze generation algorithm
     m_maze = initializeFromBasicMaze(basicMaze);
-}
-
-Maze Maze::fromFile(const QString& path) {
-    BasicMaze basicMaze;
-    try {
-        basicMaze = MazeFileUtilities::load(path);
-    }
-    catch (const std::exception& e) {
-        qCritical().noquote().nospace()
-            << "Unable to initialize maze from file " << path << ": "
-            << QString(e.what()) << ".";
-        SimUtilities::quit();
-    }
-    return Maze(basicMaze);
 }
 
 int Maze::getWidth() const {

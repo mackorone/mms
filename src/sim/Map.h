@@ -27,10 +27,13 @@ public:
 
     Map(QWidget* parent = 0);
 
-    void setMaze(const Maze* maze); // TODO: MACK - should this remove the mouse - yes
+    // Updates the displayed maze and removes mouse
+    void setMaze(const Maze* maze);
+
+    // Adds a mouse to the Map, requires Maze to exist
     void setMouseAndLens(const Mouse* mouse, Lens* lens);
 
-    // TODO: MACK - do we need this???
+    // Retrieves OpenGL version info
     QVector<QString> getOpenGLVersionInfo();
 
 protected:
@@ -49,11 +52,12 @@ private:
     const Maze* m_maze;
     const Mouse* m_mouse;
 
-    // TODO: MACK - figure out how to make const
-    // The maze, as perceived by the mouse algo
+    // TODO: MACK - ideally, I only have ownership of one lens...
+    // The maze, as:
+    // - It's perceived by the mouse algo
+    // - It appears in real life
+    // - It's shown in the UI
     Lens* m_lens;
-    // TODO: MACK
-    // The maze, as it appears in real life
     Lens* m_truth;
     Lens* m_currentLens;
 

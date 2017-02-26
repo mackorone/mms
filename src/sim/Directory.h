@@ -27,9 +27,6 @@ public:
     // mms/res/imgs
     QString getResImgsDirectory();
 
-    // mms/res/maze
-    QString getResMazeDirectory();
-
     // mms/res/mouse
     QString getResMouseDirectory();
 

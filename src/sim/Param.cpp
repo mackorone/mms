@@ -144,30 +144,10 @@ Param::Param() {
         "wall-width", 0.012, 0.006, 0.024);
     m_wallLength = parser.getDoubleIfHasDoubleAndInRange(
         "wall-length", 0.168, 0.084, 0.336);
-    m_mazeFile = parser.getStringIfHasString(
-        "maze-file", "");
-    m_useMazeFile = parser.getBoolIfHasBool(
-        "use-maze-file", false);
-    m_generatedMazeWidth = parser.getIntIfHasIntAndInRange(
-        "generated-maze-width", 16, 1, 256);
-    m_generatedMazeHeight = parser.getIntIfHasIntAndInRange(
-        "generated-maze-height", 16, 1, 256);
-    m_mazeAlgorithm = parser.getStringIfHasString(
-        "maze-algorithm", "Tomasz");
-    m_saveGeneratedMaze = parser.getBoolIfHasBool(
-        "save-generated-maze", true);
-    m_generatedMazeFile = parser.getStringIfHasString(
-        "generated-maze-file", "auto_generated_maze");
-    m_generatedMazeType = parser.getStringIfHasStringAndIsMazeFileType(
-        "generated-maze-type", MAZE_FILE_TYPE_TO_STRING.value(MazeFileType::MAP));
     m_mazeMirrored = parser.getBoolIfHasBool(
         "maze-mirrored", false);
     m_mazeRotations = parser.getIntIfHasIntAndInRange(
         "maze-rotations", 0, 0, 3);
-
-    // Mouse parameters
-    m_mouseAlgorithm = parser.getStringIfHasString(
-        "mouse-algorithm", "RightWallFollow");
 }
 
 int Param::defaultWindowWidth() {
@@ -358,14 +338,6 @@ int Param::numberOfArchivedRuns() {
     return m_numberOfArchivedRuns;
 }
 
-QString Param::mazeFile() {
-    return m_mazeFile;
-}
-
-bool Param::useMazeFile() {
-    return m_useMazeFile;
-}
-
 double Param::wallWidth() {
     return m_wallWidth;
 }
@@ -374,40 +346,12 @@ double Param::wallLength() {
     return m_wallLength;
 }
 
-int Param::generatedMazeWidth() {
-    return m_generatedMazeWidth;
-}
-
-int Param::generatedMazeHeight() {
-    return m_generatedMazeHeight;
-}
-
-QString Param::mazeAlgorithm() {
-    return m_mazeAlgorithm;
-}
-
-bool Param::saveGeneratedMaze() {
-    return m_saveGeneratedMaze;
-}
-
-QString Param::generatedMazeFile() {
-    return m_generatedMazeFile;
-}
-
-QString Param::generatedMazeType() {
-    return m_generatedMazeType;
-}
-
 bool Param::mazeMirrored() {
     return m_mazeMirrored;
 }
 
 int Param::mazeRotations() {
     return m_mazeRotations;
-}
-
-QString Param::mouseAlgorithm() {
-    return m_mouseAlgorithm;
 }
 
 } // namespace mms

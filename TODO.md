@@ -4,6 +4,8 @@
     - Add maze gen functionality
     - Remove params for maze load/gen
 - Remove log files (unnecessary for now)
+- Maze editing and saving
+    - Choose which type of file to save
 - Kill Directory.h/.cpp
 - Kill getTopLevelDirs
 - Indicate build failure/success with colors

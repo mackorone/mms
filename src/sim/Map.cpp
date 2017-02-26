@@ -2,6 +2,7 @@
 
 #include <QPair>
 
+#include "Assert.h"
 #include "FontImage.h"
 #include "Layout.h"
 #include "Logging.h"
@@ -14,29 +15,41 @@ namespace mms {
 
 Map::Map(QWidget* parent) :
         QOpenGLWidget(parent),
+        m_maze(nullptr),
+        m_mouse(nullptr),
+        m_lens(nullptr),
         m_truth(nullptr),
-        m_currentLens(nullptr),
-        m_mouse(nullptr) {
+        m_currentLens(nullptr) {
 
+    // The Map widget should only ever be constructed once
+    ASSERT_RUNS_JUST_ONCE();
+
+    // TODO: MACK - this prevents the file selection widgets from refreshing
     // Continuously refresh the widget
 	connect(
         this, &Map::frameSwapped,
         this, static_cast<void (Map::*)()>(&Map::update)
     );
+    // TODO: MACK
+    // QThread modelThread;
+    // QObject::connect(
+    //     &modelThread, &QThread::started,
+    //     Model::get(), &Model::simulate);
+    // Model::get()->moveToThread(&modelThread);
+    // modelThread.start();
 }
 
 void Map::setMaze(const Maze* maze) {
     m_maze = maze;
-    // TODO: MACK
-    if (m_truth != nullptr) {
-        delete m_truth;
-    }
+    m_mouse = nullptr;
+    m_lens = nullptr;
+    delete m_truth;
     m_truth = new Lens(maze, nullptr);
     m_currentLens = m_truth;
-    // TODO: MACK - remove mouse and lens here
 }
 
 void Map::setMouseAndLens(const Mouse* mouse, Lens* lens) {
+    ASSERT_FA(m_maze == nullptr);
     m_mouse = mouse;
     m_lens = lens;
     m_currentLens = m_lens;
@@ -98,6 +111,12 @@ void Map::initializeGL() {
 }
 
 void Map::paintGL() {
+
+    // TODO: MACK - this shouldn't be necessary, there should always be some current lens
+    if (m_currentLens == nullptr) {
+        glClear(GL_COLOR_BUFFER_BIT);
+        return;
+    }
 
     // Determine the starting index of the mouse
     static const int mouseTrianglesStartingIndex = m_currentLens->getGraphicCpuBuffer()->size();

@@ -40,8 +40,11 @@ private:
     // The UI object
     Ui::MainWindow *ui;
 
+    // The map object
+    Map* m_map;
+
     // The maze
-    Maze m_maze;
+    Maze* m_maze;
 
     // The mouse/lens/controller trio
     MLC m_mlc;
@@ -51,8 +54,6 @@ private:
     void keyRelease(int key);
 
     // ------- TODO
-
-    Map* m_map; // TODO: Keep track of this instead of Lens in MLC
 
     void refreshMazeFiles();
 
@@ -66,7 +67,7 @@ private:
     void mazeRun(const QString& mazeAlgoName);
     QProcess* m_mazeRunProcess;
 
-    // -------
+    // ------- TODO
 
     // Mouse algo building
     void build(const QString& algoName);

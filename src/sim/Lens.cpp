@@ -14,6 +14,7 @@ Lens::Lens(const Maze* maze, const Mouse* mouse) {
         &m_textureCpuBuffer
     );
     m_mazeGraphic = new MazeGraphic(maze, m_bufferInterface);
+
     // TODO: MACK
     if (mouse == nullptr) {
         m_mouseGraphic = nullptr;

@@ -69,19 +69,8 @@ public:
     // Maze parameters
     double wallWidth();
     double wallLength();
-    QString mazeFile();
-    bool useMazeFile();
-    int generatedMazeWidth();
-    int generatedMazeHeight();
-    QString mazeAlgorithm();
-    bool saveGeneratedMaze();
-    QString generatedMazeFile();
-    QString generatedMazeType();
     bool mazeMirrored();
     int mazeRotations();
-
-    // Mouse parameters
-    QString mouseAlgorithm();
 
 private:
 
@@ -145,19 +134,8 @@ private:
     // Maze parameters
     double m_wallWidth;
     double m_wallLength;
-    QString m_mazeFile;
-    bool m_useMazeFile;
-    int m_generatedMazeWidth;
-    int m_generatedMazeHeight;
-    QString m_mazeAlgorithm;
-    bool m_saveGeneratedMaze;
-    QString m_generatedMazeFile;
-    QString m_generatedMazeType;
     bool m_mazeMirrored;
     int m_mazeRotations;
-
-    // Mouse parameters
-    QString m_mouseAlgorithm;
 };
 
 } // namespace mms

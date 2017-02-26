@@ -12,14 +12,14 @@ class Maze {
 
 public:
 
-    Maze(); // TODO: MACK - dummy maze
-
-    static Maze fromFile(const QString& path);
+    static Maze* fromFile(const QString& path);
+    static Maze* fromAlgo(const QString& algo, int width, int height);
     
     int getWidth() const;
     int getHeight() const;
     bool withinMaze(int x, int y) const;
     const Tile* getTile(int x, int y) const;
+
     bool isValidMaze() const;
     bool isOfficialMaze() const;
     bool isCenterTile(int x, int y) const;
@@ -27,14 +27,14 @@ public:
 
 private:
 
-    // TODO: MACK - private constructor 
-    Maze(BasicMaze basicMaze);
+    // Private constructor forces clients to construct
+    // a maze using one of the public static methods
+    explicit Maze(BasicMaze basicMaze);
 
     // Vector to hold all of the tiles
     QVector<QVector<Tile>> m_maze;
 
     // Used for memoizing MazeChecker functions
-    // TODO: MACK
     bool m_isValidMaze;
     bool m_isOfficialMaze;
 

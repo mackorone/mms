@@ -9,7 +9,6 @@
 #include "FontImage.h"
 #include "Logging.h"
 #include "MainWindow.h"
-#include "Maze.h"
 #include "Screen.h"
 #include "SimUtilities.h"
 #include "State.h"
@@ -76,6 +75,8 @@ int Driver::drive(int argc, char* argv[]) {
     MainWindow window;
     window.show();
     // Ensure key-press events get sent to the window
+    // TODO: MACK - use buttons for this instead, which will allow
+    // the arrow keys to be used for maze file table navigation
     app.installEventFilter(&window);
 
     // Start the event loop

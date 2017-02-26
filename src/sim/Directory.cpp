@@ -32,10 +32,6 @@ QString Directory::getResImgsDirectory() {
     return getResDirectory() + "imgs/";
 }
 
-QString Directory::getResMazeDirectory() {
-    return getResDirectory() + "maze/";
-}
-
 QString Directory::getResMouseDirectory() {
     return getResDirectory() + "mouse/";
 }
