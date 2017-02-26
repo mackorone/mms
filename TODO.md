@@ -125,6 +125,7 @@
 
 # Medum Priority
 
+- Use explicit on one argument constructors
 - Use tr on all user-facing strings to make the application translatable
 - Pass by reference or value in lambdas
 - Ensure random seed is provided to algo

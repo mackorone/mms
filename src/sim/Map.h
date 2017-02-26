@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QMap>
 #include <QOpenGLBuffer> 
 #include <QOpenGLDebugLogger>
 #include <QOpenGLFunctions>
@@ -26,8 +25,12 @@ class Map : public QOpenGLWidget, protected QOpenGLFunctions {
 
 public:
 
-    Map(const Maze* maze, const Mouse* mouse, Lens* lens, QWidget* parent = 0);
+    Map(QWidget* parent = 0);
 
+    void setMaze(const Maze* maze); // TODO: MACK - should this remove the mouse - yes
+    void setMouseAndLens(const Mouse* mouse, Lens* lens);
+
+    // TODO: MACK - do we need this???
     QVector<QString> getOpenGLVersionInfo();
 
 protected:
@@ -49,6 +52,10 @@ private:
     // TODO: MACK - figure out how to make const
     // The maze, as perceived by the mouse algo
     Lens* m_lens;
+    // TODO: MACK
+    // The maze, as it appears in real life
+    Lens* m_truth;
+    Lens* m_currentLens;
 
     // The window size, in pixels
     int m_windowWidth;

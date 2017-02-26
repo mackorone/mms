@@ -328,43 +328,40 @@ BasicMaze MazeFileUtilities::deserializeMz2Type(const QByteArray& bytes) {
 
 BasicMaze MazeFileUtilities::deserializeNumType(const QByteArray& bytes) {
 
-    /*
     // The maze to be returned
     BasicMaze maze;
 
     // The column to be appended
     QVector<BasicTile> column;
 
-    // First, read the entirety of the file
-    QVector<QString> lines;
-    std::ifstream file(mazeFilePath.toStdString());
-    QString line("");
-    while (getline(file, line)) {
-        lines.push_back(line);
-    }
-    file.close(); // The file should be read and closed up here since we might error out
-
     // Iterate over all of the lines
+    QStringList lines = QString(bytes).trimmed().split("\n");
     for (QString line : lines) {
 
         // Put the tokens in a vector
-        QVector<QString> tokens = line.split(" ", QString::SkipEmptyParts);
+        QStringList tokens = line.split(" ", QString::SkipEmptyParts);
+        if (tokens.size() < 6) {
+            throw std::runtime_error("Not enough tokens");
+        }
+        for (const QString& token : tokens) {
+            if (!SimUtilities::isInt(token)) {
+                throw std::runtime_error("Non-numeric token");
+            }
+        }
 
         // Fill the BasicTile object with the values
         BasicTile tile;
         for (Direction direction : DIRECTIONS) {
-            tile.insert({direction,
-                (1 == std::stoi(tokens.at(2 + DIRECTIONS.indexOf(direction))))
-                // We can't use the sim utilities string to into becuase we have to throw an
-                // exception if we fail. The sim utilities throw an assert.
-                //
-                // We might want to rethink throwing the assert. Why not use the std c++ way
-                // of dealing with the error
-            });
+            QString num = tokens.at(2 + DIRECTIONS.indexOf(direction));
+            tile.insert(
+                direction,
+                SimUtilities::strToInt(num) == 1
+            );
         }
 
-        // If the tile belongs to a new column, append the current column and then empty it
-        if (maze.size() < std::stoi(tokens.at(0))) {
+        // If the tile belongs to a new column,
+        // append the current column and empty it
+        if (maze.size() < SimUtilities::strToInt(tokens.at(0))) {
             maze.push_back(column);
             column.clear();
         }
@@ -376,17 +373,12 @@ BasicMaze MazeFileUtilities::deserializeNumType(const QByteArray& bytes) {
     // Make sure to append the last column
     maze.push_back(column);
 
-    if (!MazeChecker::isValidMaze(maze)) {
-        throw std::exception(); // The load produced an incorrect maze
-    }
-
     return maze;
-    */
-    throw std::exception();
 }
 
 QByteArray MazeFileUtilities::serializeMapType(const BasicMaze& maze) {
 
+    // TODO: MACK - FIXME
     /*
     // The characters to use in the file
     char post = '+';
@@ -468,6 +460,7 @@ QByteArray MazeFileUtilities::serializeMapType(const BasicMaze& maze) {
 
 QByteArray MazeFileUtilities::serializeMazType(const BasicMaze& maze) {
 
+    // TODO: MACK - FIXME
     /*
     if (maze.size() != 16) {
         return false; // We only support 16x16 mazes
@@ -514,6 +507,7 @@ QByteArray MazeFileUtilities::serializeMazType(const BasicMaze& maze) {
 
 QByteArray MazeFileUtilities::serializeMz2Type(const BasicMaze& maze) {
 
+    // TODO: MACK - FIXME
     /*
     // Create the stream
     std::ofstream file(mazeFilePath.toStdString(), std::ios::trunc | std::ios::binary);
@@ -622,6 +616,7 @@ QByteArray MazeFileUtilities::serializeMz2Type(const BasicMaze& maze) {
 
 QByteArray MazeFileUtilities::serializeNumType(const BasicMaze& maze) {
 
+    // TODO: MACK - FIXME
     /*
     // Create the stream
     std::ofstream file(mazeFilePath.toStdString(), std::ios::trunc);

@@ -12,6 +12,8 @@
 #include "MLC.h"
 #include "Maze.h"
 
+#include <Map.h> // TODO: MACK
+
 namespace Ui {
 class MainWindow;
 }
@@ -49,6 +51,8 @@ private:
     void keyRelease(int key);
 
     // ------- TODO
+
+    Map* m_map; // TODO: Keep track of this instead of Lens in MLC
 
     void refreshMazeFiles();
 

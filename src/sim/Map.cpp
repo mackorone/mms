@@ -12,17 +12,34 @@
 
 namespace mms {
 
-Map::Map(const Maze* maze, const Mouse* mouse, Lens* lens, QWidget* parent) :
+Map::Map(QWidget* parent) :
         QOpenGLWidget(parent),
-        m_maze(maze),
-        m_mouse(mouse),
-        m_lens(lens) {
+        m_truth(nullptr),
+        m_currentLens(nullptr),
+        m_mouse(nullptr) {
 
     // Continuously refresh the widget
 	connect(
         this, &Map::frameSwapped,
         this, static_cast<void (Map::*)()>(&Map::update)
     );
+}
+
+void Map::setMaze(const Maze* maze) {
+    m_maze = maze;
+    // TODO: MACK
+    if (m_truth != nullptr) {
+        delete m_truth;
+    }
+    m_truth = new Lens(maze, nullptr);
+    m_currentLens = m_truth;
+    // TODO: MACK - remove mouse and lens here
+}
+
+void Map::setMouseAndLens(const Mouse* mouse, Lens* lens) {
+    m_mouse = mouse;
+    m_lens = lens;
+    m_currentLens = m_lens;
 }
 
 QVector<QString> Map::getOpenGLVersionInfo() {
@@ -83,17 +100,23 @@ void Map::initializeGL() {
 void Map::paintGL() {
 
     // Determine the starting index of the mouse
-    static const int mouseTrianglesStartingIndex = m_lens->getGraphicCpuBuffer()->size();
+    static const int mouseTrianglesStartingIndex = m_currentLens->getGraphicCpuBuffer()->size();
 
-    // Get the current mouse translation and rotation
-    Cartesian currentMouseTranslation = m_mouse->getCurrentTranslation();
-    Radians currentMouseRotation = m_mouse->getCurrentRotation();
+    // TODO: MACK
+    Cartesian currentMouseTranslation(Meters(0.0), Meters(0.0));
+    Radians currentMouseRotation(0.0);
+    if (m_mouse != nullptr) {
 
-    // Make space for mouse updates and fill the CPU buffer with new mouse triangles
-    m_lens->getGraphicCpuBuffer()->erase(
-        m_lens->getGraphicCpuBuffer()->begin() + mouseTrianglesStartingIndex,
-        m_lens->getGraphicCpuBuffer()->end());
-    m_lens->getMouseGraphic()->draw(currentMouseTranslation, currentMouseRotation);
+        // Get the current mouse translation and rotation
+        currentMouseTranslation = m_mouse->getCurrentTranslation();
+        currentMouseRotation = m_mouse->getCurrentRotation();
+
+        // Make space for mouse updates and fill the CPU buffer with new mouse triangles
+        m_currentLens->getGraphicCpuBuffer()->erase(
+            m_currentLens->getGraphicCpuBuffer()->begin() + mouseTrianglesStartingIndex,
+            m_currentLens->getGraphicCpuBuffer()->end());
+        m_currentLens->getMouseGraphic()->draw(currentMouseTranslation, currentMouseRotation);
+    }
 
     // Re-populate both vertex buffer objects
     repopulateVertexBufferObjects();
@@ -126,7 +149,7 @@ void Map::paintGL() {
         &m_textureProgram,
         &m_textureVAO,
         0,
-        3 * m_lens->getTextureCpuBuffer()->size()
+        3 * m_currentLens->getTextureCpuBuffer()->size()
     );
 
     // Draw the mouse
@@ -137,7 +160,7 @@ void Map::paintGL() {
         &m_polygonProgram,
         &m_polygonVAO,
         3 * mouseTrianglesStartingIndex,
-        3 * (m_lens->getGraphicCpuBuffer()->size() - mouseTrianglesStartingIndex)
+        3 * (m_currentLens->getGraphicCpuBuffer()->size() - mouseTrianglesStartingIndex)
     );
 
     // Disable scissoring so that the glClear can take effect, and so that
@@ -277,16 +300,16 @@ void Map::repopulateVertexBufferObjects() {
     // Overwrite the polygon vertex buffer object data
     m_polygonVBO.bind();
 	m_polygonVBO.allocate(
-        &(m_lens->getGraphicCpuBuffer()->front()),
-        m_lens->getGraphicCpuBuffer()->size() * sizeof(TriangleGraphic)
+        &(m_currentLens->getGraphicCpuBuffer()->front()),
+        m_currentLens->getGraphicCpuBuffer()->size() * sizeof(TriangleGraphic)
     );
     m_polygonVBO.release();
 
     // Overwrite the texture vertex buffer object data
     m_textureVBO.bind();
 	m_textureVBO.allocate(
-        &(m_lens->getTextureCpuBuffer()->front()),
-        m_lens->getTextureCpuBuffer()->size() * sizeof(TriangleTexture)
+        &(m_currentLens->getTextureCpuBuffer()->front()),
+        m_currentLens->getTextureCpuBuffer()->size() * sizeof(TriangleTexture)
     );
     m_textureVBO.release();
 }
@@ -318,7 +341,7 @@ void Map::drawMap(
     }
     
     // Render the full map
-    if (type == LayoutType::FULL) {
+    if (type == LayoutType::FULL || m_mouse == nullptr) { // TODO: MACK
 
         QPair<int, int> fullMapPosition = Layout::getFullMapPosition();
         QPair<int, int> fullMapSize = Layout::getFullMapSize(m_windowWidth, m_windowHeight);

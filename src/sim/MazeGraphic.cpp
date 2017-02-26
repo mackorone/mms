@@ -44,7 +44,7 @@ void MazeGraphic::setTileText(int x, int y, const QString& text) {
 void MazeGraphic::drawPolygons() const {
 
     // Make sure that this function is only called once
-    ASSERT_RUNS_JUST_ONCE();
+    // ASSERT_RUNS_JUST_ONCE(); // TODO: MACK
 
     // Fill the GRAPHIC_CPU_BUFFER
     for (int x = 0; x < m_tileGraphics.size(); x += 1) {

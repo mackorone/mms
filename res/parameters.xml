@@ -28,8 +28,8 @@
     <mouse-sensor-color>GREEN</mouse-sensor-color>
     <mouse-view-color>WHITE</mouse-view-color>
     <default-tile-colors-visible>true</default-tile-colors-visible>
-    <default-wall-truth-visible>false</default-wall-truth-visible>
-    <default-tile-fog-visible>true</default-tile-fog-visible>
+    <default-wall-truth-visible>true</default-wall-truth-visible>
+    <default-tile-fog-visible>false</default-tile-fog-visible>
     <default-tile-text-visible>true</default-tile-text-visible>
     <default-tile-distance-visible>false</default-tile-distance-visible>
     <tile-fog-alpha>0.15</tile-fog-alpha> <!-- Must be in [0.0, 1.0] -->

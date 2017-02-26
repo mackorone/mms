@@ -109,8 +109,9 @@ Maze::Maze(BasicMaze basicMaze) {
 }
 
 Maze Maze::fromFile(const QString& path) {
+    BasicMaze basicMaze;
     try {
-        return Maze(MazeFileUtilities::load(path));
+        basicMaze = MazeFileUtilities::load(path);
     }
     catch (const std::exception& e) {
         qCritical().noquote().nospace()
@@ -118,6 +119,7 @@ Maze Maze::fromFile(const QString& path) {
             << QString(e.what()) << ".";
         SimUtilities::quit();
     }
+    return Maze(basicMaze);
 }
 
 int Maze::getWidth() const {

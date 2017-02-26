@@ -27,7 +27,7 @@ public:
 
 private:
 
-    // TODO: MACK - private constructor
+    // TODO: MACK - private constructor 
     Maze(BasicMaze basicMaze);
 
     // Vector to hold all of the tiles

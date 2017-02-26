@@ -14,7 +14,13 @@ Lens::Lens(const Maze* maze, const Mouse* mouse) {
         &m_textureCpuBuffer
     );
     m_mazeGraphic = new MazeGraphic(maze, m_bufferInterface);
-    m_mouseGraphic = new MouseGraphic(mouse, m_bufferInterface);
+    // TODO: MACK
+    if (mouse == nullptr) {
+        m_mouseGraphic = nullptr;
+    }
+    else {
+        m_mouseGraphic = new MouseGraphic(mouse, m_bufferInterface);
+    }
 
     // TODO: MACK
     m_mazeGraphic->drawPolygons();

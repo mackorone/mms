@@ -22,6 +22,7 @@ namespace mms {
 
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
+        m_map(nullptr), // TODO: MACK
         ui(new Ui::MainWindow) {
 
     // TODO: MACK - add the initial maze
@@ -126,6 +127,13 @@ MainWindow::MainWindow(QWidget *parent) :
             QString path = ui->mazeFilesTable->selectedItems().at(1)->text();
             m_maze = Maze::fromFile(path);
             Model::get()->setMaze(&m_maze);
+
+            // Add a map to the UI
+            if (m_map == nullptr) {
+                m_map = new Map();
+                ui->mapLayout->addWidget(m_map);
+            }
+            m_map->setMaze(&m_maze);
         }
     );
 
@@ -402,9 +410,8 @@ void MainWindow::spawnMouseAlgo(const QString& algoName) {
     m_mlc = mlc;
 
     // Add a map to the UI
-    Map* map = new Map(&m_maze, mlc.mouse, mlc.lens);
     // TODO: MACK - minimum size, size policy
-    ui->mapLayout->addWidget(map);
+    m_map->setMouseAndLens(mlc.mouse, mlc.lens);
 
     // Listen for mouse algo stdout
     connect(
