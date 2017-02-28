@@ -10,8 +10,8 @@
 #include <QVector>
 
 #include "LayoutType.h"
-#include "Lens.h"
 #include "Maze.h"
+#include "MazeView.h"
 #include "Mouse.h"
 
 namespace mms {
@@ -27,11 +27,9 @@ public:
 
     Map(QWidget* parent = 0);
 
-    // Updates the displayed maze and removes mouse
     void setMaze(const Maze* maze);
-
-    // Adds a mouse to the Map, requires Maze to exist
-    void setMouseAndLens(const Mouse* mouse, Lens* lens);
+    void setMouse(const Mouse* mouse);
+	void setView(const MazeView* view);
 
     // Retrieves OpenGL version info
     QVector<QString> getOpenGLVersionInfo();
@@ -48,20 +46,14 @@ private:
 	QOpenGLDebugLogger m_openGLLogger;
 	void initOpenGLLogger();
 
-    // The maze and mouse
-    const Maze* m_maze;
+    // The maze, mouse, and current view
+	const Maze* m_maze;
     const Mouse* m_mouse;
+	const MazeView* m_view;
 
-    // TODO: MACK - ideally, I only have ownership of one lens...
-    // The maze, as:
-    // - It's perceived by the mouse algo
-    // - It appears in real life
-    // - It's shown in the UI
-    Lens* m_lens;
-    Lens* m_truth;
-    Lens* m_currentLens;
+	// TODO: MACK - how do I draw the mouse
 
-    // The window size, in pixels
+    // The map's window size, in pixels
     int m_windowWidth;
     int m_windowHeight;
 

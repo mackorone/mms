@@ -9,10 +9,11 @@
 #include <QTimer>
 #include <QVector>
 
-#include "MLC.h"
+#include "Controller.h"
+#include "Map.h"
 #include "Maze.h"
-
-#include <Map.h> // TODO: MACK
+#include "MazeView.h"
+#include "MazeViewMutable.h"
 
 namespace Ui {
 class MainWindow;
@@ -46,8 +47,14 @@ private:
     // The maze
     Maze* m_maze;
 
-    // The mouse/lens/controller trio
-    MLC m_mlc;
+    // The true view of the maze
+    MazeView* m_truth;
+
+    // The mouse, its view of the maze, and the controller
+    // responsible for spawning and interfacing with the algorithm
+    Mouse* m_mouse;
+    MazeViewMutable* m_view;
+    Controller* m_controller;
 
     // Key related helpers
     void keyPress(int key);
@@ -75,7 +82,7 @@ private:
 
     // Mouse algo running
     void spawnMouseAlgo(const QString& algoName);
-    QVector<QPair<MLC, QThread*>> m_controllers;
+    QThread* m_mouseAlgoThread;
 
     // Header-related members
     // TODO: MACK - refactor this into its own class

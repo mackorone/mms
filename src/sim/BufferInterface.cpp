@@ -2,8 +2,6 @@
 
 #include "RGB.h"
 
-#include "Logging.h" // TODO: MACK
-
 namespace mms {
 
 BufferInterface::BufferInterface(

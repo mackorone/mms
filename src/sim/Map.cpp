@@ -17,9 +17,7 @@ Map::Map(QWidget* parent) :
         QOpenGLWidget(parent),
         m_maze(nullptr),
         m_mouse(nullptr),
-        m_lens(nullptr),
-        m_truth(nullptr),
-        m_currentLens(nullptr) {
+        m_view(nullptr) {
 
     // The Map widget should only ever be constructed once
     ASSERT_RUNS_JUST_ONCE();
@@ -41,18 +39,19 @@ Map::Map(QWidget* parent) :
 
 void Map::setMaze(const Maze* maze) {
     m_maze = maze;
+    m_view = nullptr;
     m_mouse = nullptr;
-    m_lens = nullptr;
-    delete m_truth;
-    m_truth = new Lens(maze, nullptr);
-    m_currentLens = m_truth;
 }
 
-void Map::setMouseAndLens(const Mouse* mouse, Lens* lens) {
+void Map::setView(const MazeView* view) {
     ASSERT_FA(m_maze == nullptr);
+    m_view = view;
+}
+
+void Map::setMouse(const Mouse* mouse) {
+    ASSERT_FA(m_maze == nullptr);
+    ASSERT_FA(m_view == nullptr);
     m_mouse = mouse;
-    m_lens = lens;
-    m_currentLens = m_lens;
 }
 
 QVector<QString> Map::getOpenGLVersionInfo() {
@@ -112,14 +111,14 @@ void Map::initializeGL() {
 
 void Map::paintGL() {
 
-    // TODO: MACK - this shouldn't be necessary, there should always be some current lens
-    if (m_currentLens == nullptr) {
+    // If the view hasn't been set yet, just draw black
+    if (m_view == nullptr) {
         glClear(GL_COLOR_BUFFER_BIT);
         return;
     }
 
     // Determine the starting index of the mouse
-    static const int mouseTrianglesStartingIndex = m_currentLens->getGraphicCpuBuffer()->size();
+    static const int mouseTrianglesStartingIndex = m_view->getGraphicCpuBuffer()->size();
 
     // TODO: MACK
     Cartesian currentMouseTranslation(Meters(0.0), Meters(0.0));
@@ -131,10 +130,13 @@ void Map::paintGL() {
         currentMouseRotation = m_mouse->getCurrentRotation();
 
         // Make space for mouse updates and fill the CPU buffer with new mouse triangles
-        m_currentLens->getGraphicCpuBuffer()->erase(
-            m_currentLens->getGraphicCpuBuffer()->begin() + mouseTrianglesStartingIndex,
-            m_currentLens->getGraphicCpuBuffer()->end());
-        m_currentLens->getMouseGraphic()->draw(currentMouseTranslation, currentMouseRotation);
+        // TODO: MACK - draw the mouse
+        /*
+        m_view->getGraphicCpuBuffer()->erase(
+            m_view->getGraphicCpuBuffer()->begin() + mouseTrianglesStartingIndex,
+            m_view->getGraphicCpuBuffer()->end());
+        m_view->getMouseGraphic()->draw(currentMouseTranslation, currentMouseRotation);
+        */
     }
 
     // Re-populate both vertex buffer objects
@@ -168,7 +170,7 @@ void Map::paintGL() {
         &m_textureProgram,
         &m_textureVAO,
         0,
-        3 * m_currentLens->getTextureCpuBuffer()->size()
+        3 * m_view->getTextureCpuBuffer()->size()
     );
 
     // Draw the mouse
@@ -179,7 +181,7 @@ void Map::paintGL() {
         &m_polygonProgram,
         &m_polygonVAO,
         3 * mouseTrianglesStartingIndex,
-        3 * (m_currentLens->getGraphicCpuBuffer()->size() - mouseTrianglesStartingIndex)
+        3 * (m_view->getGraphicCpuBuffer()->size() - mouseTrianglesStartingIndex)
     );
 
     // Disable scissoring so that the glClear can take effect, and so that
@@ -319,16 +321,16 @@ void Map::repopulateVertexBufferObjects() {
     // Overwrite the polygon vertex buffer object data
     m_polygonVBO.bind();
 	m_polygonVBO.allocate(
-        &(m_currentLens->getGraphicCpuBuffer()->front()),
-        m_currentLens->getGraphicCpuBuffer()->size() * sizeof(TriangleGraphic)
+        &(m_view->getGraphicCpuBuffer()->front()),
+        m_view->getGraphicCpuBuffer()->size() * sizeof(TriangleGraphic)
     );
     m_polygonVBO.release();
 
     // Overwrite the texture vertex buffer object data
     m_textureVBO.bind();
 	m_textureVBO.allocate(
-        &(m_currentLens->getTextureCpuBuffer()->front()),
-        m_currentLens->getTextureCpuBuffer()->size() * sizeof(TriangleTexture)
+        &(m_view->getTextureCpuBuffer()->front()),
+        m_view->getTextureCpuBuffer()->size() * sizeof(TriangleTexture)
     );
     m_textureVBO.release();
 }

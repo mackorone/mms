@@ -4,8 +4,8 @@
 #include <QProcess>
 
 #include "DynamicMouseAlgorithmOptions.h"
-#include "Lens.h"
 #include "Maze.h"
+#include "MazeViewMutable.h"
 #include "Mouse.h"
 #include "MouseInterface.h"
 
@@ -17,7 +17,7 @@ class Controller : public QObject {
 
 public:
 
-    Controller(const Maze* maze, Mouse* mouse, Lens* lens);
+    Controller(const Maze* maze, Mouse* mouse, MazeViewMutable* view);
     void init();
     void start(const QString& algoName);
 
@@ -32,7 +32,7 @@ private:
 
     const Maze* m_maze;
     Mouse* m_mouse;
-    Lens* m_lens;
+    MazeViewMutable* m_view;
 
     InterfaceType m_interfaceType;
     bool m_interfaceTypeFinalized;

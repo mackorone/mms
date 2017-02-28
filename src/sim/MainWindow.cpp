@@ -23,11 +23,18 @@ namespace mms {
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
         ui(new Ui::MainWindow),
-        m_map(new Map()),
-        m_maze(nullptr) {
+        m_map(new Map),
+        m_maze(nullptr),
+        m_truth(nullptr),
+        m_mouse(nullptr),
+        m_view(nullptr),
+        m_controller(nullptr) {
 
-    // Initialization
+    // Initialize the UI
     ui->setupUi(this);
+
+    // Add map to the UI
+    ui->mapLayout->addWidget(m_map);
 
     // Resize the window
     resize(P()->defaultWindowWidth(), P()->defaultWindowHeight());
@@ -43,9 +50,6 @@ MainWindow::MainWindow(QWidget *parent) :
     for (const QString& algoName : MouseAlgos::algoNames()) {
         ui->selectAlgorithmComboBox->addItem(algoName);
     }
-
-    // Add map to the UI
-    ui->mapLayout->addWidget(m_map);
 
     // Connect the build button
     connect(
@@ -125,16 +129,26 @@ MainWindow::MainWindow(QWidget *parent) :
         [&](){
             QString path = ui->mazeFilesTable->selectedItems().at(1)->text();
             // TODO: MACK - ensure we're not leaking memory here
+            Maze* maze = Maze::fromFile(path);
+            if (maze == nullptr) {
+                return;
+            }
             delete m_maze;
-            m_maze = Maze::fromFile(path);
+            delete m_truth;
+            m_maze = maze;
+            m_truth = new MazeView(m_maze);
             Model::get()->setMaze(m_maze);
-            m_map->setMaze(m_maze);
+            m_map->setMaze(maze);
+            m_map->setView(m_truth);
         }
     );
 
 }
 
 MainWindow::~MainWindow() {
+    // TODO: MACK - other cleanup here
+    delete m_maze;
+    delete m_map;
     delete ui;
 }
 
@@ -158,8 +172,8 @@ void MainWindow::keyPress(int key) {
 
     if (key == Qt::Key_P) {
         // Toggle pause (only in discrete mode)
-        if (m_mlc.controller != nullptr) {
-            if (m_mlc.controller->getInterfaceType(false) == InterfaceType::DISCRETE) {
+        if (m_controller != nullptr) {
+            if (m_controller->getInterfaceType(false) == InterfaceType::DISCRETE) {
                 S()->setPaused(!S()->paused());
             }
             else {
@@ -172,8 +186,8 @@ void MainWindow::keyPress(int key) {
     }
     else if (key == Qt::Key_F) {
         // Faster (only in discrete mode)
-        if (m_mlc.controller != nullptr) {
-            if (m_mlc.controller->getInterfaceType(false) == InterfaceType::DISCRETE) {
+        if (m_controller != nullptr) {
+            if (m_controller->getInterfaceType(false) == InterfaceType::DISCRETE) {
                 S()->setSimSpeed(S()->simSpeed() * 1.5);
             }
             else {
@@ -186,8 +200,8 @@ void MainWindow::keyPress(int key) {
     }
     else if (key == Qt::Key_S) {
         // Slower (only in discrete mode)
-        if (m_mlc.controller != nullptr) {
-            if (m_mlc.controller->getInterfaceType(false) == InterfaceType::DISCRETE) {
+        if (m_controller != nullptr) {
+            if (m_controller->getInterfaceType(false) == InterfaceType::DISCRETE) {
                 S()->setSimSpeed(S()->simSpeed() / 1.5);
             }
             else {
@@ -217,27 +231,32 @@ void MainWindow::keyPress(int key) {
     else if (key == Qt::Key_T) {
         // Toggle wall truth visibility
         S()->setWallTruthVisible(!S()->wallTruthVisible());
-        m_mlc.lens->getMazeGraphic()->updateWalls();
+        // TODO: MACK - update both MazeViews?
+        m_view->getMazeGraphic()->updateWalls();
     }
     else if (key == Qt::Key_C) {
         // Toggle tile colors
         S()->setTileColorsVisible(!S()->tileColorsVisible());
-        m_mlc.lens->getMazeGraphic()->updateColor();
+        // TODO: MACK - update both MazeViews?
+        m_view->getMazeGraphic()->updateColor();
     }
     else if (key == Qt::Key_G) {
         // Toggle tile fog
         S()->setTileFogVisible(!S()->tileFogVisible());
-        m_mlc.lens->getMazeGraphic()->updateFog();
+        // TODO: MACK - update both MazeViews?
+        m_view->getMazeGraphic()->updateFog();
     }
     else if (key == Qt::Key_X) {
         // Toggle tile text
         S()->setTileTextVisible(!S()->tileTextVisible());
-        m_mlc.lens->getMazeGraphic()->updateText();
+        // TODO: MACK - update both MazeViews?
+        m_view->getMazeGraphic()->updateText();
     }
     else if (key == Qt::Key_D) {
         // Toggle tile distance visibility
         S()->setTileDistanceVisible(!S()->tileDistanceVisible());
-        m_mlc.lens->getMazeGraphic()->updateText();
+        // TODO: MACK - update both MazeViews?
+        m_view->getMazeGraphic()->updateText();
     }
     else if (key == Qt::Key_Q) {
         // Quit
@@ -392,31 +411,23 @@ void MainWindow::build(const QString& algoName) {
 
 void MainWindow::spawnMouseAlgo(const QString& algoName) {
 
-    // TODO: MACK
-    if (m_map == nullptr) {
-        qDebug() << "MAP needs to exist!";
-        return;
-    }
-
     // Generate the mouse, lens, and controller
-    Mouse* mouse = new Mouse(m_maze);
-    Lens* lens = new Lens(m_maze, mouse);
-    Controller* controller = new Controller(m_maze, mouse, lens);
-    MLC mlc = {mouse, lens, controller};
+    m_mouse = new Mouse(m_maze);
+    m_view = new MazeViewMutable(m_maze);
+    m_controller = new Controller(m_maze, m_mouse, m_view);
 
     // Configures the window to listen for build and run stdout,
     // as forwarded by the controller, and adds a map to the UI
 
     /////////////////////////////////
-    m_mlc = mlc;
 
     // Add a map to the UI
     // TODO: MACK - minimum size, size policy
-    m_map->setMouseAndLens(mlc.mouse, mlc.lens);
+    m_map->setMouse(m_mouse);
 
     // Listen for mouse algo stdout
     connect(
-        mlc.controller,
+        m_controller,
         &Controller::algoStdout,
         ui->runTextEdit,
         &QPlainTextEdit::appendPlainText
@@ -477,23 +488,22 @@ void MainWindow::spawnMouseAlgo(const QString& algoName) {
     /////////////////////////////////
 
     // The thread on which the controller will execute
-    QThread* thread = new QThread();
-    m_controllers.append({mlc, thread});
+    m_mouseAlgoThread = new QThread();
 
     // We need to actually spawn the QProcess (i.e., m_process = new
     // QProcess()) in the separate thread, hence why this is asynch
-    connect(thread, &QThread::started, controller, [=](){
+    connect(m_mouseAlgoThread, &QThread::started, m_controller, [=](){
         // We need to add the mouse to the world *after* the the controller is
         // initialized (thus ensuring that tile fog is cleared automatically),
         // but *before* we actually start the algorithm (lest the mouse
         // position/orientation not be updated properly during the beginning of
         // the mouse algo's execution)
-        controller->init();
-        Model::get()->addMouse("", mouse);
-        controller->start(algoName);
+        m_controller->init();
+        Model::get()->addMouse("", m_mouse);
+        m_controller->start(algoName);
     });
-    controller->moveToThread(thread);
-	thread->start();
+    m_controller->moveToThread(m_mouseAlgoThread);
+	m_mouseAlgoThread->start();
 }
 
 QVector<QPair<QString, QVariant>> MainWindow::getRunStats() const {
@@ -512,13 +522,13 @@ QVector<QPair<QString, QVariant>> MainWindow::getRunStats() const {
             QString::number(m_maze->getWidth() * m_maze->getHeight())
         },
         {"Closest Distance to Center", stats.closestDistanceToCenter},
-        {"Current X (m)", m_mlc.mouse->getCurrentTranslation().getX().getMeters()},
-        {"Current Y (m)", m_mlc.mouse->getCurrentTranslation().getY().getMeters()},
-        {"Current Rotation (deg)", m_mlc.mouse->getCurrentRotation().getDegreesZeroTo360()},
-        {"Current X tile", m_mlc.mouse->getCurrentDiscretizedTranslation().first},
-        {"Current Y tile", m_mlc.mouse->getCurrentDiscretizedTranslation().second},
+        {"Current X (m)", m_mouse->getCurrentTranslation().getX().getMeters()},
+        {"Current Y (m)", m_mouse->getCurrentTranslation().getY().getMeters()},
+        {"Current Rotation (deg)", m_mouse->getCurrentRotation().getDegreesZeroTo360()},
+        {"Current X tile", m_mouse->getCurrentDiscretizedTranslation().first},
+        {"Current Y tile", m_mouse->getCurrentDiscretizedTranslation().second},
         {"Current Direction",
-            DIRECTION_TO_STRING.value(m_mlc.mouse->getCurrentDiscretizedRotation())
+            DIRECTION_TO_STRING.value(m_mouse->getCurrentDiscretizedRotation())
         },
         {"Elapsed Real Time", SimUtilities::formatDuration(Time::get()->elapsedRealTime())},
         {"Elapsed Sim Time", SimUtilities::formatDuration(Time::get()->elapsedSimTime())},
@@ -544,64 +554,64 @@ QVector<QPair<QString, QVariant>> MainWindow::getAlgoOptions() const {
         // {"Mouse Algo", P()->mouseAlgorithm()},
         /*
         {"Mouse File", (
-            m_mlc.controller == nullptr
+            m_controller == nullptr
             ? "NONE"
-            : m_mlc.controller->getStaticOptions().mouseFile
+            : m_controller->getStaticOptions().mouseFile
         }),
         */
         // TODO: MACK - interface type not finalized
         {"Interface Type",
-            m_mlc.controller == nullptr
+            m_controller == nullptr
             ? "NONE"
-            : INTERFACE_TYPE_TO_STRING.value(m_mlc.controller->getInterfaceType(false))
+            : INTERFACE_TYPE_TO_STRING.value(m_controller->getInterfaceType(false))
         },
         /*
-        QString("Initial Direction:           ") + (m_mlc.controller == nullptr ? "NONE" :
-            m_mlc.controller->getStaticOptions().initialDirection),
-        QString("Tile Text Num Rows:          ") + (m_mlc.controller == nullptr ? "NONE" :
-            QString::number(m_mlc.controller->getStaticOptions().tileTextNumberOfRows)),
-        QString("Tile Text Num Cols:          ") + (m_mlc.controller == nullptr ? "NONE" :
-            QString::number(m_mlc.controller->getStaticOptions().tileTextNumberOfCols)),
+        QString("Initial Direction:           ") + (m_controller == nullptr ? "NONE" :
+            m_controller->getStaticOptions().initialDirection),
+        QString("Tile Text Num Rows:          ") + (m_controller == nullptr ? "NONE" :
+            QString::number(m_controller->getStaticOptions().tileTextNumberOfRows)),
+        QString("Tile Text Num Cols:          ") + (m_controller == nullptr ? "NONE" :
+            QString::number(m_controller->getStaticOptions().tileTextNumberOfCols)),
         */
         {"Allow Omniscience",
-            m_mlc.controller == nullptr
+            m_controller == nullptr
             ? "NONE"
-            : m_mlc.controller->getDynamicOptions().allowOmniscience ? "TRUE" : "FALSE"
+            : m_controller->getDynamicOptions().allowOmniscience ? "TRUE" : "FALSE"
         },
         {"Auto Clear Fog",
-            m_mlc.controller == nullptr
+            m_controller == nullptr
             ? "NONE"
-            : m_mlc.controller->getDynamicOptions().automaticallyClearFog ? "TRUE" : "FALSE"
+            : m_controller->getDynamicOptions().automaticallyClearFog ? "TRUE" : "FALSE"
         },
         {"Declare Both Wall Halves",
-            m_mlc.controller == nullptr
+            m_controller == nullptr
             ? "NONE"
-            : m_mlc.controller->getDynamicOptions().declareBothWallHalves ? "TRUE" : "FALSE"
+            : m_controller->getDynamicOptions().declareBothWallHalves ? "TRUE" : "FALSE"
         },
         {"Auto Set Tile Text",
-            m_mlc.controller == nullptr
+            m_controller == nullptr
             ? "NONE"
-            : m_mlc.controller->getDynamicOptions().setTileTextWhenDistanceDeclared ? "TRUE" : "FALSE"
+            : m_controller->getDynamicOptions().setTileTextWhenDistanceDeclared ? "TRUE" : "FALSE"
         },
         {"Auto Set Tile Base Color",
-            m_mlc.controller == nullptr
+            m_controller == nullptr
             ? "NONE"
-            : m_mlc.controller->getDynamicOptions().setTileBaseColorWhenDistanceDeclaredCorrectly ? "TRUE" : "FALSE"
+            : m_controller->getDynamicOptions().setTileBaseColorWhenDistanceDeclaredCorrectly ? "TRUE" : "FALSE"
         }
         // TODO: MACK
         /*
         QString("Wheel Speed Fraction:        ") +
-            (m_mlc.controller == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.value(m_mlc.controller->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
-            QString::number(m_mlc.controller->getStaticOptions().wheelSpeedFraction))),
+            (m_controller == nullptr ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            QString::number(m_controller->getStaticOptions().wheelSpeedFraction))),
         QString("Declare Wall On Read:        ") +
-            (m_mlc.controller == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.value(m_mlc.controller->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
-            (m_mlc.controller->getDynamicOptions().declareWallOnRead ? "TRUE" : "FALSE"))),
+            (m_controller == nullptr ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            (m_controller->getDynamicOptions().declareWallOnRead ? "TRUE" : "FALSE"))),
         QString("Use Tile Edge Movements:     ") +
-            (m_mlc.controller == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.value(m_mlc.controller->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
-            (m_mlc.controller->getDynamicOptions().useTileEdgeMovements ? "TRUE" : "FALSE"))),
+            (m_controller == nullptr ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            (m_controller->getDynamicOptions().useTileEdgeMovements ? "TRUE" : "FALSE"))),
         */
     };
 }

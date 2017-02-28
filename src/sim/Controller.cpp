@@ -11,10 +11,10 @@
 
 namespace mms {
 
-Controller::Controller(const Maze* maze, Mouse* mouse, Lens* lens) :
+Controller::Controller(const Maze* maze, Mouse* mouse, MazeViewMutable* view) :
     m_maze(maze),
     m_mouse(mouse),
-    m_lens(lens),
+    m_view(view),
     m_interfaceType(InterfaceType::DISCRETE),
     m_interfaceTypeFinalized(false),
     m_process(nullptr) {
@@ -33,7 +33,7 @@ void Controller::init() {
         this,
         [=](int x, int y){
             if (getDynamicOptions().automaticallyClearFog) {
-                m_lens->getMazeGraphic()->setTileFogginess(x, y, false);
+                m_view->getMazeGraphic()->setTileFogginess(x, y, false);
             }
         }
     );
@@ -42,7 +42,7 @@ void Controller::init() {
     m_mouseInterface = new MouseInterface(
         m_maze,
         m_mouse,
-        m_lens->getMazeGraphic(),
+        m_view->getMazeGraphic(),
         this
     );
 }
@@ -205,7 +205,7 @@ QString Controller::processCommand(const QString& command) {
         // }
         int rows = SimUtilities::strToInt(tokens.at(1));
         int cols = SimUtilities::strToInt(tokens.at(2));
-        m_lens->initTileGraphicText(rows, cols);
+        m_view->initTileGraphicText(rows, cols);
         return ACK_STRING;
     }
     else if (function == "setWheelSpeedFraction") {

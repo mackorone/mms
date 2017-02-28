@@ -23,10 +23,10 @@ Maze* Maze::fromFile(const QString& path) {
         basicMaze = MazeFileUtilities::load(path);
     }
     catch (const std::exception& e) {
-        qCritical().nospace()
+        qWarning().nospace()
             << "Unable to initialize maze from file " << path << ": "
             << QString(e.what()) << ".";
-        SimUtilities::quit();
+        return nullptr;
     }
     return new Maze(basicMaze);
 }
@@ -38,10 +38,10 @@ Maze* Maze::fromAlgo(const QString& algo, int width, int height) {
         basicMaze = MazeAlgoUtilities::generate(algo, width, height);
     }
     catch (const std::exception& e) {
-        qCritical().nospace()
+        qWarning().nospace()
             << "Unable to initialize maze from algorithm " << algo << ": "
             << QString(e.what()) << ".";
-        SimUtilities::quit();
+        return nullptr;
     }
     return new Maze(basicMaze);
 }

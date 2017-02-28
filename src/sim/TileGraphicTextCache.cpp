@@ -52,7 +52,7 @@ QMap<
         double borderFraction, TileTextAlignment tileTextAlignment) {
 
     // The tile graphic text could look like either of the following, depending
-    // on the layout, boarder, and max size
+    // on the layout, border, and max size
     //
     //                    col
     //     *-*---------------------------*-*    *-*---------------------------*-*

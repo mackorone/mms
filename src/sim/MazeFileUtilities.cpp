@@ -74,10 +74,9 @@ BasicMaze MazeFileUtilities::deserializeMapType(const QByteArray& bytes) {
 
     // TODO: MACK
     // +++
-    // |
+    // 
     // +++
-    // +++
-    // Doesn't load
+    // Crashes the simulator
 
     // First, convert the bytes to lines
     QStringList lines = QString(bytes).trimmed().split("\n");
