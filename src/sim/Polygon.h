@@ -11,6 +11,7 @@ namespace mms {
 class Polygon {
 
 public:
+
     Polygon();
     Polygon(const Polygon& polygon);
     Polygon(QVector<Cartesian> vertices);
@@ -25,6 +26,7 @@ public:
     Polygon rotateAroundPoint(const Angle& angle, const Coordinate& point) const;
 
 private:
+
     QVector<Cartesian> m_vertices;
 
     // We're lazy about triangulation, since it's expensive and not always
@@ -45,6 +47,7 @@ private:
 
     // Actually peforms the triangulation of the polygon.
     static QVector<Triangle> triangulate(QVector<Cartesian> vertices);
+
 };
 
 } // namespace mms

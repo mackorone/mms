@@ -14,6 +14,7 @@
 #include "Maze.h"
 #include "MazeView.h"
 #include "MazeViewMutable.h"
+#include "MouseGraphic.h"
 
 namespace Ui {
 class MainWindow;
@@ -50,9 +51,10 @@ private:
     // The true view of the maze
     MazeView* m_truth;
 
-    // The mouse, its view of the maze, and the controller
-    // responsible for spawning and interfacing with the algorithm
+    // The mouse, its graphic, its view of the maze, and the controller
+    // responsible for spawning and interfacing with the mouse algorithm
     Mouse* m_mouse;
+    MouseGraphic* m_mouseGraphic;
     MazeViewMutable* m_view;
     Controller* m_controller;
 

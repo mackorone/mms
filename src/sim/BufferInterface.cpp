@@ -1,6 +1,7 @@
 #include "BufferInterface.h"
 
 #include "RGB.h"
+#include "SimUtilities.h"
 
 namespace mms {
 
@@ -34,7 +35,7 @@ QPair<int, int> BufferInterface::getTileGraphicTextMaxSize() {
 }
 
 void BufferInterface::insertIntoGraphicCpuBuffer(const Polygon& polygon, Color color, double alpha) {
-    QVector<TriangleGraphic> tgs = polygonToTriangleGraphics(polygon, color, alpha);
+    QVector<TriangleGraphic> tgs = SimUtilities::polygonToTriangleGraphics(polygon, color, alpha);
     for (int i = 0; i < tgs.size(); i += 1) {
         m_graphicCpuBuffer->push_back(tgs.at(i));
     }
@@ -134,24 +135,6 @@ void BufferInterface::updateTileGraphicText(int x, int y, int numRows, int numCo
     t2->p3.x = LL_UR.second.getX().getMeters();
     t2->p3.y = LL_UR.first.getY().getMeters();
     t2->p3.u = fontImageCharacterPosition.second;
-}
-
-void BufferInterface::drawMousePolygon(const Polygon& polygon, Color color, double sensorAlpha) {
-    m_graphicCpuBuffer->append(polygonToTriangleGraphics(polygon, color, sensorAlpha));
-}
-
-QVector<TriangleGraphic> BufferInterface::polygonToTriangleGraphics(const Polygon& polygon, Color color, double alpha) {
-    QVector<Triangle> triangles = polygon.getTriangles();
-    QVector<TriangleGraphic> triangleGraphics;
-    RGB colorValues = COLOR_TO_RGB.value(color);
-    for (Triangle triangle : triangles) {
-        triangleGraphics.push_back({
-            {triangle.p1.getX().getMeters(), triangle.p1.getY().getMeters(), colorValues, alpha},
-            {triangle.p2.getX().getMeters(), triangle.p2.getY().getMeters(), colorValues, alpha},
-            {triangle.p3.getX().getMeters(), triangle.p3.getY().getMeters(), colorValues, alpha}
-        });
-    }
-    return triangleGraphics;
 }
 
 int BufferInterface::trianglesPerTile() {

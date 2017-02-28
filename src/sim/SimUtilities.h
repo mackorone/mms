@@ -5,6 +5,9 @@
 #include <QString>
 #include <QVector>
 
+#include "Color.h"
+#include "Polygon.h"
+#include "TriangleGraphic.h"
 #include "units/Duration.h"
 
 namespace mms {
@@ -52,6 +55,12 @@ public:
 
     // Remove oldest runs from the run/ directory if necessary
     static void removeExcessArchivedRuns();
+
+    // Converts a polygon to a vector of triangle graphics
+    static QVector<TriangleGraphic> polygonToTriangleGraphics(
+        const Polygon& polygon,
+        Color color,
+        double alpha);
 
     // A simple pair-comparitor function
     template <class T>

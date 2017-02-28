@@ -3,8 +3,9 @@
 - Add maze loading functionality
     - Add maze gen functionality
     - Remove params for maze load/gen
+- Button for toggling the maze views
 - Verify that the tile text automatically refresh when we set tileGraphicTextMaxSize
-- Do we really need MazeViewMutable? Why not just make it mutable by default?
+- Put MazeView into MazeGraphic (it should all be encapsulated in there)
 - Remove log files (unnecessary for now)
 - Maze editing and saving
     - Choose which type of file to save

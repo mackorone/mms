@@ -12,7 +12,8 @@
 #include "LayoutType.h"
 #include "Maze.h"
 #include "MazeView.h"
-#include "Mouse.h"
+#include "MouseGraphic.h"
+#include "TriangleGraphic.h"
 
 namespace mms {
 
@@ -28,8 +29,8 @@ public:
     Map(QWidget* parent = 0);
 
     void setMaze(const Maze* maze);
-    void setMouse(const Mouse* mouse);
 	void setView(const MazeView* view);
+    void setMouseGraphic(const MouseGraphic* mouseGraphic);
 
     // Retrieves OpenGL version info
     QVector<QString> getOpenGLVersionInfo();
@@ -46,12 +47,10 @@ private:
 	QOpenGLDebugLogger m_openGLLogger;
 	void initOpenGLLogger();
 
-    // The maze, mouse, and current view
+    // No ownership here - only pointers
 	const Maze* m_maze;
-    const Mouse* m_mouse;
 	const MazeView* m_view;
-
-	// TODO: MACK - how do I draw the mouse
+    const MouseGraphic* m_mouseGraphic;
 
     // The map's window size, in pixels
     int m_windowWidth;
@@ -73,7 +72,8 @@ private:
     void initTextureProgram();
 
     // Drawing helper methods
-    void repopulateVertexBufferObjects();
+    void repopulateVertexBufferObjects(
+		const QVector<TriangleGraphic>& mouseBuffer);
     void drawMap(
         LayoutType type,
         const Coordinate& currentMouseTranslation,

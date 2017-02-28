@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QChar>
-#include <QMap>
 #include <QPair>
 #include <QVector>
 
@@ -18,6 +17,7 @@ namespace mms {
 class BufferInterface {
 
 public:
+
     BufferInterface(
         QPair<int, int> mazeSize,
         QVector<TriangleGraphic>* graphicCpuBuffer,
@@ -45,9 +45,6 @@ public:
     void updateTileGraphicFog(int x, int y, double alpha);
     void updateTileGraphicText(int x, int y, int numRows, int numCols, int row, int col, QChar c);
 
-    // Appends a mouse polygon to the graphic cpu buffer
-    void drawMousePolygon(const Polygon& polygon, Color color, double sensorAlpha);
-
 private:
 
     // The width and height of the maze
@@ -60,10 +57,8 @@ private:
     // A cache for tile graphic text information
     TileGraphicTextCache m_tileGraphicTextCache;
 
-    // Converts a polygon to a vector of triangle graphics or triangle textures
-    QVector<TriangleGraphic> polygonToTriangleGraphics(const Polygon& polygon, Color color, double alpha);
-
-    // Retrieve the indices into the graphic cpu buffer for each specific type of Tile triangle
+    // Retrieve the indices into the graphic cpu buffer,
+    // for each specific type of Tile triangle
     int trianglesPerTile();
     int getTileGraphicBaseStartingIndex(int x, int y);
     int getTileGraphicWallStartingIndex(int x, int y, Direction direction);

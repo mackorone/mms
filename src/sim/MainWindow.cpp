@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
         m_maze(nullptr),
         m_truth(nullptr),
         m_mouse(nullptr),
+        m_mouseGraphic(nullptr),
         m_view(nullptr),
         m_controller(nullptr) {
 
@@ -413,6 +414,7 @@ void MainWindow::spawnMouseAlgo(const QString& algoName) {
 
     // Generate the mouse, lens, and controller
     m_mouse = new Mouse(m_maze);
+    m_mouseGraphic = new MouseGraphic(m_mouse);
     m_view = new MazeViewMutable(m_maze);
     m_controller = new Controller(m_maze, m_mouse, m_view);
 
@@ -423,7 +425,7 @@ void MainWindow::spawnMouseAlgo(const QString& algoName) {
 
     // Add a map to the UI
     // TODO: MACK - minimum size, size policy
-    m_map->setMouse(m_mouse);
+    m_map->setMouseGraphic(m_mouseGraphic);
 
     // Listen for mouse algo stdout
     connect(
