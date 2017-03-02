@@ -143,28 +143,27 @@ MainWindow::MainWindow(QWidget *parent) :
             m_map->setView(m_truth);
             m_map->setMouseGraphic(nullptr);
 
-            bool doExecute = m_controller != nullptr;
-            if (doExecute) {
-                m_controller->deleteLater();
-                m_controller = nullptr;
-                m_mouseAlgoThread->quit();
-                /*
-                connect(m_mouseAlgoThread, &QThread::finished, m_controller, [=](){
+            if (m_controller != nullptr) {
+                connect(m_mouseAlgoThread, &QThread::finished, this, [=](){
                     qDebug() << "THREAD FINISHED"; 
+                    m_controller->deleteLater();
+                    m_controller = nullptr;
+                    Model::get()->setMaze(m_maze);
+                    delete prev_maze;
+                    delete prev_truth;
+                    // TODO: MACK - the deletes below are causing problems :/
+                    delete m_mouseAlgoThread;
+                    delete m_mouseGraphic;
+                    delete m_view;
+                    delete m_mouse;
                 });
-                */
-                m_mouseAlgoThread->wait(); // TODO: MACK - wait still blocks the event loop here
+                m_mouseAlgoThread->quit();
             }
-            Model::get()->setMaze(m_maze);
-
-            delete prev_maze;
-            delete prev_truth;
-            if (doExecute) {
-                delete m_mouseAlgoThread;
-                delete m_mouseGraphic;
-                delete m_view;
-                delete m_mouse;
-            } 
+            else {
+                Model::get()->setMaze(m_maze);
+                delete prev_maze;
+                delete prev_truth;
+            }
         }
     );
 }
