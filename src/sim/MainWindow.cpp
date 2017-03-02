@@ -29,7 +29,8 @@ MainWindow::MainWindow(QWidget *parent) :
         m_mouse(nullptr),
         m_mouseGraphic(nullptr),
         m_view(nullptr),
-        m_controller(nullptr) {
+        m_controller(nullptr),
+        m_mouseAlgoThread(nullptr) {
 
     // Initialize the UI
     ui->setupUi(this);
@@ -129,21 +130,43 @@ MainWindow::MainWindow(QWidget *parent) :
         this,
         [&](){
             QString path = ui->mazeFilesTable->selectedItems().at(1)->text();
-            // TODO: MACK - ensure we're not leaking memory here
             Maze* maze = Maze::fromFile(path);
             if (maze == nullptr) {
                 return;
             }
-            delete m_maze;
-            delete m_truth;
+
+            Maze* prev_maze = m_maze;
+            MazeView* prev_truth = m_truth;
             m_maze = maze;
             m_truth = new MazeView(m_maze);
-            Model::get()->setMaze(m_maze);
-            m_map->setMaze(maze);
+            m_map->setMaze(m_maze);
             m_map->setView(m_truth);
+            m_map->setMouseGraphic(nullptr);
+
+            bool doExecute = m_controller != nullptr;
+            if (doExecute) {
+                m_controller->deleteLater();
+                m_controller = nullptr;
+                m_mouseAlgoThread->quit();
+                /*
+                connect(m_mouseAlgoThread, &QThread::finished, m_controller, [=](){
+                    qDebug() << "THREAD FINISHED"; 
+                });
+                */
+                m_mouseAlgoThread->wait(); // TODO: MACK - wait still blocks the event loop here
+            }
+            Model::get()->setMaze(m_maze);
+
+            delete prev_maze;
+            delete prev_truth;
+            if (doExecute) {
+                delete m_mouseAlgoThread;
+                delete m_mouseGraphic;
+                delete m_view;
+                delete m_mouse;
+            } 
         }
     );
-
 }
 
 MainWindow::~MainWindow() {
@@ -425,6 +448,7 @@ void MainWindow::spawnMouseAlgo(const QString& algoName) {
 
     // Add a map to the UI
     // TODO: MACK - minimum size, size policy
+    m_map->setView(m_view);
     m_map->setMouseGraphic(m_mouseGraphic);
 
     // Listen for mouse algo stdout
@@ -493,7 +517,10 @@ void MainWindow::spawnMouseAlgo(const QString& algoName) {
     m_mouseAlgoThread = new QThread();
 
     // We need to actually spawn the QProcess (i.e., m_process = new
-    // QProcess()) in the separate thread, hence why this is asynch
+    // QProcess()) in the separate thread, hence why this is async. Note that
+    // we need the separate thread because, while it's performing an
+    // algorithm-requested action, the Controller could block the GUI loop from
+    // executing.
     connect(m_mouseAlgoThread, &QThread::started, m_controller, [=](){
         // We need to add the mouse to the world *after* the the controller is
         // initialized (thus ensuring that tile fog is cleared automatically),

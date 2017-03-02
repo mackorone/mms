@@ -20,6 +20,11 @@ Controller::Controller(const Maze* maze, Mouse* mouse, MazeViewMutable* view) :
     m_process(nullptr) {
 }
 
+Controller::~Controller() {
+    delete m_process;
+    delete m_mouseInterface;
+}
+
 void Controller::init() {
 
     // First, connect the newTileLocationTraversed signal to a lambda that

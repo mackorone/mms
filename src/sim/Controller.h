@@ -18,6 +18,8 @@ class Controller : public QObject {
 public:
 
     Controller(const Maze* maze, Mouse* mouse, MazeViewMutable* view);
+    ~Controller(); // Can be used to abort the process
+
     void init();
     void start(const QString& algoName);
 

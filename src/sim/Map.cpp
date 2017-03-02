@@ -22,19 +22,13 @@ Map::Map(QWidget* parent) :
     // The Map widget should only ever be constructed once
     ASSERT_RUNS_JUST_ONCE();
 
-    // TODO: MACK - this prevents the file selection widgets from refreshing
     // Continuously refresh the widget
-	connect(
-        this, &Map::frameSwapped,
+    connect(
+        &m_timer, &QTimer::timeout,
         this, static_cast<void (Map::*)()>(&Map::update)
     );
-    // TODO: MACK
-    // QThread modelThread;
-    // QObject::connect(
-    //     &modelThread, &QThread::started,
-    //     Model::get(), &Model::simulate);
-    // Model::get()->moveToThread(&modelThread);
-    // modelThread.start();
+    // TODO: MACK - make this configurable
+    m_timer.start(24); // 45 fps
 }
 
 void Map::setMaze(const Maze* maze) {

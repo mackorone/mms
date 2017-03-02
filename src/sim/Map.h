@@ -7,6 +7,7 @@
 #include <QOpenGLTexture> 
 #include <QOpenGLVertexArrayObject> 
 #include <QOpenGLWidget>
+#include <QTimer>
 #include <QVector>
 
 #include "LayoutType.h"
@@ -46,6 +47,9 @@ private:
     // Logger of OpenGL warnings and errors
 	QOpenGLDebugLogger m_openGLLogger;
 	void initOpenGLLogger();
+
+    // Frame refresh timer
+    QTimer m_timer;
 
     // No ownership here - only pointers
 	const Maze* m_maze;

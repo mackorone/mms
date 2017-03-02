@@ -146,7 +146,9 @@ void Model::simulate() {
 }
 
 void Model::setMaze(const Maze* maze) {
-    // TODO: MACK - clear the mice
+    m_mice.clear();
+    m_stats.clear();
+    // TODO: MACK - block until update loop is done here
     m_maze = maze;
 }
 
