@@ -137,32 +137,22 @@ MainWindow::MainWindow(QWidget *parent) :
 
             Maze* prev_maze = m_maze;
             MazeView* prev_truth = m_truth;
+
             m_maze = maze;
             m_truth = new MazeView(m_maze);
             m_map->setMaze(m_maze);
-            m_map->setView(m_truth);
-            m_map->setMouseGraphic(nullptr);
 
-            if (m_controller != nullptr) {
-                connect(m_mouseAlgoThread, &QThread::finished, this, [=](){
-                    qDebug() << "THREAD FINISHED"; 
-                    m_controller->deleteLater();
-                    m_controller = nullptr;
-                    Model::get()->setMaze(m_maze);
-                    delete prev_maze;
-                    delete prev_truth;
-                    // TODO: MACK - the deletes below are causing problems :/
-                    delete m_mouseAlgoThread;
-                    delete m_mouseGraphic;
-                    delete m_view;
-                    delete m_mouse;
-                });
-                m_mouseAlgoThread->quit();
-            }
-            else {
-                Model::get()->setMaze(m_maze);
-                delete prev_maze;
-                delete prev_truth;
+            bool respawn = m_controller != nullptr;
+            killMouseAlgorithm();
+
+            Model::get()->setMaze(m_maze);
+            delete prev_maze;
+            delete prev_truth;
+
+            if (respawn) {
+                const QString& algoName = ui->selectAlgorithmComboBox->currentText();
+                ASSERT_TR(MouseAlgos::algoNames().contains(algoName));
+                spawnMouseAlgo(algoName);
             }
         }
     );
@@ -322,6 +312,18 @@ void MainWindow::keyRelease(int key) {
     }
 }
 
+void MainWindow::killMouseAlgorithm() {
+    m_map->setView(m_truth);
+    if (m_controller != nullptr) {
+        m_controller = nullptr;
+        m_map->setMouseGraphic(nullptr);
+        m_mouseAlgoThread->quit();
+        //m_mouseAlgoThread->wait(); // TODO: MACK
+        // TODO: MACK - we need some synchronization here
+        Model::get()->removeMouse("");
+    }
+}
+
 void MainWindow::refreshMazeFiles() {
     QStringList mazeFiles = MazeFiles::getMazeFiles();
     ui->mazeFilesTable->setRowCount(mazeFiles.size());
@@ -434,10 +436,14 @@ void MainWindow::build(const QString& algoName) {
 
 void MainWindow::spawnMouseAlgo(const QString& algoName) {
 
+    // Kill the current mouse algorithm
+    killMouseAlgorithm();
+    qDebug() << "KILLED";
+
     // Generate the mouse, lens, and controller
     m_mouse = new Mouse(m_maze);
-    m_mouseGraphic = new MouseGraphic(m_mouse);
     m_view = new MazeViewMutable(m_maze);
+    m_mouseGraphic = new MouseGraphic(m_mouse);
     m_controller = new Controller(m_maze, m_mouse, m_view);
 
     // Configures the window to listen for build and run stdout,
@@ -512,6 +518,11 @@ void MainWindow::spawnMouseAlgo(const QString& algoName) {
     */
     /////////////////////////////////
 
+    Mouse* mouse = m_mouse;
+    MazeViewMutable* view = m_view;
+    MouseGraphic* mouseGraphic = m_mouseGraphic;
+    Controller* controller = m_controller;
+
     // The thread on which the controller will execute
     m_mouseAlgoThread = new QThread();
 
@@ -526,10 +537,27 @@ void MainWindow::spawnMouseAlgo(const QString& algoName) {
         // but *before* we actually start the algorithm (lest the mouse
         // position/orientation not be updated properly during the beginning of
         // the mouse algo's execution)
-        m_controller->init();
-        Model::get()->addMouse("", m_mouse);
-        m_controller->start(algoName);
+        controller->init();
+        Model::get()->addMouse("", mouse);
+        controller->start(algoName);
     });
+
+    connect(m_mouseAlgoThread, &QThread::finished, this, [=](){
+        // qDebug() << "THREAD FINISHED"; 
+        controller->deleteLater();
+        // TODO: MACK - if we remove the wait(), the
+        // following delete statements cause problems
+        delete mouseGraphic;
+        delete view;
+        delete mouse;
+    });
+    connect(
+        m_mouseAlgoThread,
+        &QThread::finished,
+        m_mouseAlgoThread,
+        &QThread::deleteLater
+        //static_cast<void(QThread::*)(void)>(&QObject::deleteLater)
+    );
     m_controller->moveToThread(m_mouseAlgoThread);
 	m_mouseAlgoThread->start();
 }

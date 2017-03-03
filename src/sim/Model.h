@@ -22,6 +22,7 @@ public:
     void setMaze(const Maze* maze);
 
     void addMouse(const QString& name, Mouse* mouse);
+    void removeMouse(const QString& name);
     bool containsMouse(const QString& name) const;
     MouseStats getMouseStats(const QString& name) const;
 

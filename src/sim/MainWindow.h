@@ -62,6 +62,9 @@ private:
     void keyPress(int key);
     void keyRelease(int key);
 
+    // Stops the currently executing mouse algorithm
+    void killMouseAlgorithm();
+
     // ------- TODO
 
     void refreshMazeFiles();

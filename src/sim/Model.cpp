@@ -159,6 +159,14 @@ void Model::addMouse(const QString& name, Mouse* mouse) {
     m_stats.insert(name, MouseStats());
 }
 
+void Model::removeMouse(const QString& name) {
+    ASSERT_FA(m_maze == nullptr);
+    ASSERT_TR(m_mice.contains(name));
+    ASSERT_TR(m_stats.contains(name));
+    m_mice.remove(name);
+    m_stats.remove(name);
+}
+
 bool Model::containsMouse(const QString& name) const {
     return m_mice.contains(name);
 }
