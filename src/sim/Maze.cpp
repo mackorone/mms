@@ -31,15 +31,16 @@ Maze* Maze::fromFile(const QString& path) {
     return new Maze(basicMaze);
 }
 
-Maze* Maze::fromAlgo(const QString& algo, int width, int height) {
+Maze* Maze::fromAlgo(const QByteArray& bytes) {
     // TODO: MACK - dedup with fromFile
+    // TODO: MACK - rename this to fromBytes
     BasicMaze basicMaze;
     try {
-        basicMaze = MazeAlgoUtilities::generate(algo, width, height);
+        basicMaze = MazeFileUtilities::loadBytes(bytes);
     }
     catch (const std::exception& e) {
         qWarning().nospace()
-            << "Unable to initialize maze from algorithm " << algo << ": "
+            << "Unable to initialize maze from bytes " << bytes << ": "
             << QString(e.what()) << ".";
         return nullptr;
     }

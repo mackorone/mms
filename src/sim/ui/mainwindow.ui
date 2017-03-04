@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>640</width>
+    <width>663</width>
     <height>480</height>
    </rect>
   </property>
@@ -87,7 +87,7 @@
          <item>
           <widget class="QTabWidget" name="tabWidget">
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
            <widget class="QWidget" name="mazeFilesTab">
             <attribute name="title">
@@ -97,13 +97,6 @@
              <item>
               <widget class="QWidget" name="widget" native="true">
                <layout class="QHBoxLayout" name="horizontalLayout">
-                <item>
-                 <widget class="QPushButton" name="loadMazeButton">
-                  <property name="text">
-                   <string>Load Maze</string>
-                  </property>
-                 </widget>
-                </item>
                 <item>
                  <widget class="QPushButton" name="importMazesButton">
                   <property name="text">
@@ -134,21 +127,21 @@
                  <number>6</number>
                 </property>
                 <item row="0" column="4">
-                 <widget class="QPushButton" name="importButton_2">
+                 <widget class="QPushButton" name="mazeImportButton">
                   <property name="text">
                    <string>Import</string>
                   </property>
                  </widget>
                 </item>
                 <item row="1" column="0">
-                 <widget class="QPushButton" name="buildButton_2">
+                 <widget class="QPushButton" name="mazeBuildButton">
                   <property name="text">
                    <string>Build</string>
                   </property>
                  </widget>
                 </item>
                 <item row="1" column="1" colspan="2">
-                 <widget class="QPushButton" name="runButton_2">
+                 <widget class="QPushButton" name="mazeRunButton">
                   <property name="text">
                    <string>Run</string>
                   </property>
@@ -172,7 +165,7 @@
                  </widget>
                 </item>
                 <item row="0" column="1" colspan="2">
-                 <widget class="QComboBox" name="selectAlgorithmComboBox_2">
+                 <widget class="QComboBox" name="selectMazeAlgorithmComboBox">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                     <horstretch>0</horstretch>
@@ -215,7 +208,7 @@
                     </sizepolicy>
                    </property>
                    <property name="currentIndex">
-                    <number>0</number>
+                    <number>1</number>
                    </property>
                    <widget class="QWidget" name="buildTab_2">
                     <attribute name="title">
@@ -235,7 +228,7 @@
                       <number>6</number>
                      </property>
                      <item>
-                      <widget class="QPlainTextEdit" name="buildTextEdit_2">
+                      <widget class="QPlainTextEdit" name="mazeBuildTextEdit">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                          <horstretch>0</horstretch>
@@ -270,7 +263,7 @@
                       <number>6</number>
                      </property>
                      <item>
-                      <widget class="QPlainTextEdit" name="runTextEdit_2">
+                      <widget class="QPlainTextEdit" name="mazeRunTextEdit">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                          <horstretch>0</horstretch>
@@ -294,7 +287,6 @@
               </widget>
              </item>
             </layout>
-            <zorder>infoWidgetSplitter_2</zorder>
             <zorder>infoWidget_2</zorder>
             <zorder>controlWidget_2</zorder>
            </widget>
@@ -362,20 +354,41 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="1" colspan="2">
-             <widget class="QPushButton" name="runButton">
+            <item row="2" column="0">
+             <widget class="QPushButton" name="pauseButton">
               <property name="text">
-               <string>Run</string>
+               <string>Pause</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="1" colspan="2">
+            <item row="0" column="3">
              <widget class="QComboBox" name="selectAlgorithmComboBox">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <widget class="QPushButton" name="runButton">
+              <property name="text">
+               <string>Run</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="4">
+             <widget class="QSlider" name="horizontalSlider">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="3">
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>Speed</string>
               </property>
              </widget>
             </item>
@@ -524,7 +537,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>640</width>
+     <width>663</width>
      <height>22</height>
     </rect>
    </property>

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QByteArray>
 #include <QVector>
 
 #include "BasicMaze.h"
@@ -13,7 +14,7 @@ class Maze {
 public:
 
     static Maze* fromFile(const QString& path);
-    static Maze* fromAlgo(const QString& algo, int width, int height);
+    static Maze* fromAlgo(const QByteArray& bytes);
     
     int getWidth() const;
     int getHeight() const;

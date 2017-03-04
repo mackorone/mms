@@ -15,10 +15,7 @@
 #include "MazeView.h"
 #include "MazeViewMutable.h"
 #include "MouseGraphic.h"
-
-namespace Ui {
-class MainWindow;
-}
+#include "ui_mainwindow.h"
 
 namespace mms {
 
@@ -40,15 +37,13 @@ protected:
 private:
 
     // The UI object
-    Ui::MainWindow *ui;
+    Ui::MainWindow ui;
 
     // The map object
-    Map* m_map;
+    Map m_map;
 
-    // The maze
+    // The maze and the true view of the maze
     Maze* m_maze;
-
-    // The true view of the maze
     MazeView* m_truth;
 
     // The mouse, its graphic, its view of the maze, and the controller
@@ -62,14 +57,11 @@ private:
     void keyPress(int key);
     void keyRelease(int key);
 
-    // Stops the currently executing mouse algorithm
+    // TODO: MACK - hastily implemented helper functions
+
     void killMouseAlgorithm();
-
-    // ------- TODO
-
     void refreshMazeFiles();
-
-    // ------- TODO
+    void togglePause();
 
     // Maze algo building
     void mazeBuild(const QString& mazeAlgoName);

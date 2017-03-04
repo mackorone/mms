@@ -3,6 +3,7 @@
 - Add maze loading functionality
     - Add maze gen functionality
     - Remove params for maze load/gen
+- Support json file format
 - Button for toggling the maze views
 - Verify that the tile text automatically refresh when we set tileGraphicTextMaxSize
 - Put MazeView into MazeGraphic (it should all be encapsulated in there)

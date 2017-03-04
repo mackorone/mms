@@ -23,6 +23,7 @@
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QSlider>
 #include <QtWidgets/QSplitter>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QTableWidget>
@@ -47,29 +48,28 @@ public:
     QVBoxLayout *verticalLayout_7;
     QWidget *widget;
     QHBoxLayout *horizontalLayout;
-    QPushButton *loadMazeButton;
     QPushButton *importMazesButton;
     QTableWidget *mazeFilesTable;
     QWidget *mazeAlgorithmsTab;
     QVBoxLayout *verticalLayout_5;
     QWidget *controlWidget_2;
     QGridLayout *gridLayout_4;
-    QPushButton *importButton_2;
-    QPushButton *buildButton_2;
-    QPushButton *runButton_2;
+    QPushButton *mazeImportButton;
+    QPushButton *mazeBuildButton;
+    QPushButton *mazeRunButton;
     QPushButton *buildAndRunButton_2;
     QLabel *selectAlgorithmLabel_2;
-    QComboBox *selectAlgorithmComboBox_2;
+    QComboBox *selectMazeAlgorithmComboBox;
     QWidget *infoWidget_2;
     QGridLayout *gridLayout_5;
     QSplitter *infoWidgetSplitter_2;
     QTabWidget *outputWidget_2;
     QWidget *buildTab_2;
     QVBoxLayout *verticalLayout_3;
-    QPlainTextEdit *buildTextEdit_2;
+    QPlainTextEdit *mazeBuildTextEdit;
     QWidget *runTab_2;
     QVBoxLayout *verticalLayout_4;
-    QPlainTextEdit *runTextEdit_2;
+    QPlainTextEdit *mazeRunTextEdit;
     QWidget *mouseTab;
     QVBoxLayout *controlLayout;
     QWidget *controlWidget;
@@ -78,8 +78,11 @@ public:
     QPushButton *importButton;
     QLabel *selectAlgorithmLabel;
     QPushButton *buildAndRunButton;
-    QPushButton *runButton;
+    QPushButton *pauseButton;
     QComboBox *selectAlgorithmComboBox;
+    QPushButton *runButton;
+    QSlider *horizontalSlider;
+    QLabel *label;
     QWidget *infoWidget;
     QGridLayout *gridLayout_3;
     QSplitter *infoWidgetSplitter;
@@ -100,7 +103,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(640, 480);
+        MainWindow->resize(663, 480);
         MainWindow->setTabShape(QTabWidget::Rounded);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
@@ -155,11 +158,6 @@ public:
         horizontalLayout->setSpacing(6);
         horizontalLayout->setContentsMargins(11, 11, 11, 11);
         horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
-        loadMazeButton = new QPushButton(widget);
-        loadMazeButton->setObjectName(QStringLiteral("loadMazeButton"));
-
-        horizontalLayout->addWidget(loadMazeButton);
-
         importMazesButton = new QPushButton(widget);
         importMazesButton->setObjectName(QStringLiteral("importMazesButton"));
 
@@ -187,20 +185,20 @@ public:
         gridLayout_4->setContentsMargins(11, 11, 11, 11);
         gridLayout_4->setObjectName(QStringLiteral("gridLayout_4"));
         gridLayout_4->setContentsMargins(3, -1, -1, 6);
-        importButton_2 = new QPushButton(controlWidget_2);
-        importButton_2->setObjectName(QStringLiteral("importButton_2"));
+        mazeImportButton = new QPushButton(controlWidget_2);
+        mazeImportButton->setObjectName(QStringLiteral("mazeImportButton"));
 
-        gridLayout_4->addWidget(importButton_2, 0, 4, 1, 1);
+        gridLayout_4->addWidget(mazeImportButton, 0, 4, 1, 1);
 
-        buildButton_2 = new QPushButton(controlWidget_2);
-        buildButton_2->setObjectName(QStringLiteral("buildButton_2"));
+        mazeBuildButton = new QPushButton(controlWidget_2);
+        mazeBuildButton->setObjectName(QStringLiteral("mazeBuildButton"));
 
-        gridLayout_4->addWidget(buildButton_2, 1, 0, 1, 1);
+        gridLayout_4->addWidget(mazeBuildButton, 1, 0, 1, 1);
 
-        runButton_2 = new QPushButton(controlWidget_2);
-        runButton_2->setObjectName(QStringLiteral("runButton_2"));
+        mazeRunButton = new QPushButton(controlWidget_2);
+        mazeRunButton->setObjectName(QStringLiteral("mazeRunButton"));
 
-        gridLayout_4->addWidget(runButton_2, 1, 1, 1, 2);
+        gridLayout_4->addWidget(mazeRunButton, 1, 1, 1, 2);
 
         buildAndRunButton_2 = new QPushButton(controlWidget_2);
         buildAndRunButton_2->setObjectName(QStringLiteral("buildAndRunButton_2"));
@@ -213,12 +211,12 @@ public:
 
         gridLayout_4->addWidget(selectAlgorithmLabel_2, 0, 0, 1, 1);
 
-        selectAlgorithmComboBox_2 = new QComboBox(controlWidget_2);
-        selectAlgorithmComboBox_2->setObjectName(QStringLiteral("selectAlgorithmComboBox_2"));
-        sizePolicy.setHeightForWidth(selectAlgorithmComboBox_2->sizePolicy().hasHeightForWidth());
-        selectAlgorithmComboBox_2->setSizePolicy(sizePolicy);
+        selectMazeAlgorithmComboBox = new QComboBox(controlWidget_2);
+        selectMazeAlgorithmComboBox->setObjectName(QStringLiteral("selectMazeAlgorithmComboBox"));
+        sizePolicy.setHeightForWidth(selectMazeAlgorithmComboBox->sizePolicy().hasHeightForWidth());
+        selectMazeAlgorithmComboBox->setSizePolicy(sizePolicy);
 
-        gridLayout_4->addWidget(selectAlgorithmComboBox_2, 0, 1, 1, 2);
+        gridLayout_4->addWidget(selectMazeAlgorithmComboBox, 0, 1, 1, 2);
 
 
         verticalLayout_5->addWidget(controlWidget_2);
@@ -251,14 +249,14 @@ public:
         verticalLayout_3->setContentsMargins(11, 11, 11, 11);
         verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
         verticalLayout_3->setContentsMargins(6, 6, 6, 6);
-        buildTextEdit_2 = new QPlainTextEdit(buildTab_2);
-        buildTextEdit_2->setObjectName(QStringLiteral("buildTextEdit_2"));
-        sizePolicy.setHeightForWidth(buildTextEdit_2->sizePolicy().hasHeightForWidth());
-        buildTextEdit_2->setSizePolicy(sizePolicy);
-        buildTextEdit_2->setLineWrapMode(QPlainTextEdit::WidgetWidth);
-        buildTextEdit_2->setTextInteractionFlags(Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse);
+        mazeBuildTextEdit = new QPlainTextEdit(buildTab_2);
+        mazeBuildTextEdit->setObjectName(QStringLiteral("mazeBuildTextEdit"));
+        sizePolicy.setHeightForWidth(mazeBuildTextEdit->sizePolicy().hasHeightForWidth());
+        mazeBuildTextEdit->setSizePolicy(sizePolicy);
+        mazeBuildTextEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
+        mazeBuildTextEdit->setTextInteractionFlags(Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse);
 
-        verticalLayout_3->addWidget(buildTextEdit_2);
+        verticalLayout_3->addWidget(mazeBuildTextEdit);
 
         outputWidget_2->addTab(buildTab_2, QString());
         runTab_2 = new QWidget();
@@ -268,14 +266,14 @@ public:
         verticalLayout_4->setContentsMargins(11, 11, 11, 11);
         verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
         verticalLayout_4->setContentsMargins(6, 6, 6, 6);
-        runTextEdit_2 = new QPlainTextEdit(runTab_2);
-        runTextEdit_2->setObjectName(QStringLiteral("runTextEdit_2"));
-        sizePolicy.setHeightForWidth(runTextEdit_2->sizePolicy().hasHeightForWidth());
-        runTextEdit_2->setSizePolicy(sizePolicy);
-        runTextEdit_2->setLineWrapMode(QPlainTextEdit::WidgetWidth);
-        runTextEdit_2->setTextInteractionFlags(Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse);
+        mazeRunTextEdit = new QPlainTextEdit(runTab_2);
+        mazeRunTextEdit->setObjectName(QStringLiteral("mazeRunTextEdit"));
+        sizePolicy.setHeightForWidth(mazeRunTextEdit->sizePolicy().hasHeightForWidth());
+        mazeRunTextEdit->setSizePolicy(sizePolicy);
+        mazeRunTextEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
+        mazeRunTextEdit->setTextInteractionFlags(Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse);
 
-        verticalLayout_4->addWidget(runTextEdit_2);
+        verticalLayout_4->addWidget(mazeRunTextEdit);
 
         outputWidget_2->addTab(runTab_2, QString());
         infoWidgetSplitter_2->addWidget(outputWidget_2);
@@ -286,7 +284,6 @@ public:
         verticalLayout_5->addWidget(infoWidget_2);
 
         tabWidget->addTab(mazeAlgorithmsTab, QString());
-        infoWidgetSplitter_2->raise();
         infoWidget_2->raise();
         controlWidget_2->raise();
 
@@ -328,17 +325,33 @@ public:
 
         gridLayout->addWidget(buildAndRunButton, 1, 4, 1, 1);
 
-        runButton = new QPushButton(controlWidget);
-        runButton->setObjectName(QStringLiteral("runButton"));
+        pauseButton = new QPushButton(controlWidget);
+        pauseButton->setObjectName(QStringLiteral("pauseButton"));
 
-        gridLayout->addWidget(runButton, 1, 1, 1, 2);
+        gridLayout->addWidget(pauseButton, 2, 0, 1, 1);
 
         selectAlgorithmComboBox = new QComboBox(controlWidget);
         selectAlgorithmComboBox->setObjectName(QStringLiteral("selectAlgorithmComboBox"));
         sizePolicy.setHeightForWidth(selectAlgorithmComboBox->sizePolicy().hasHeightForWidth());
         selectAlgorithmComboBox->setSizePolicy(sizePolicy);
 
-        gridLayout->addWidget(selectAlgorithmComboBox, 0, 1, 1, 2);
+        gridLayout->addWidget(selectAlgorithmComboBox, 0, 3, 1, 1);
+
+        runButton = new QPushButton(controlWidget);
+        runButton->setObjectName(QStringLiteral("runButton"));
+
+        gridLayout->addWidget(runButton, 1, 3, 1, 1);
+
+        horizontalSlider = new QSlider(controlWidget);
+        horizontalSlider->setObjectName(QStringLiteral("horizontalSlider"));
+        horizontalSlider->setOrientation(Qt::Horizontal);
+
+        gridLayout->addWidget(horizontalSlider, 2, 4, 1, 1);
+
+        label = new QLabel(controlWidget);
+        label->setObjectName(QStringLiteral("label"));
+
+        gridLayout->addWidget(label, 2, 3, 1, 1);
 
 
         controlLayout->addWidget(controlWidget);
@@ -421,7 +434,7 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 640, 22));
+        menuBar->setGeometry(QRect(0, 0, 663, 22));
         menu_File = new QMenu(menuBar);
         menu_File->setObjectName(QStringLiteral("menu_File"));
         MainWindow->setMenuBar(menuBar);
@@ -431,8 +444,8 @@ public:
         retranslateUi(MainWindow);
 
         otherWidget->setCurrentIndex(0);
-        tabWidget->setCurrentIndex(0);
-        outputWidget_2->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(1);
+        outputWidget_2->setCurrentIndex(1);
         outputWidget->setCurrentIndex(0);
         statusWidget_2->setCurrentIndex(0);
 
@@ -443,12 +456,11 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Micromouse Simulator", Q_NULLPTR));
-        loadMazeButton->setText(QApplication::translate("MainWindow", "Load Maze", Q_NULLPTR));
         importMazesButton->setText(QApplication::translate("MainWindow", "Import Mazes", Q_NULLPTR));
         tabWidget->setTabText(tabWidget->indexOf(mazeFilesTab), QApplication::translate("MainWindow", "Maze Files", Q_NULLPTR));
-        importButton_2->setText(QApplication::translate("MainWindow", "Import", Q_NULLPTR));
-        buildButton_2->setText(QApplication::translate("MainWindow", "Build", Q_NULLPTR));
-        runButton_2->setText(QApplication::translate("MainWindow", "Run", Q_NULLPTR));
+        mazeImportButton->setText(QApplication::translate("MainWindow", "Import", Q_NULLPTR));
+        mazeBuildButton->setText(QApplication::translate("MainWindow", "Build", Q_NULLPTR));
+        mazeRunButton->setText(QApplication::translate("MainWindow", "Run", Q_NULLPTR));
         buildAndRunButton_2->setText(QApplication::translate("MainWindow", "Build and Run", Q_NULLPTR));
         selectAlgorithmLabel_2->setText(QApplication::translate("MainWindow", "Algorithm", Q_NULLPTR));
         outputWidget_2->setTabText(outputWidget_2->indexOf(buildTab_2), QApplication::translate("MainWindow", "Build Ouput", Q_NULLPTR));
@@ -459,7 +471,9 @@ public:
         importButton->setText(QApplication::translate("MainWindow", "Import", Q_NULLPTR));
         selectAlgorithmLabel->setText(QApplication::translate("MainWindow", "Algorithm", Q_NULLPTR));
         buildAndRunButton->setText(QApplication::translate("MainWindow", "Build and Run", Q_NULLPTR));
+        pauseButton->setText(QApplication::translate("MainWindow", "Pause", Q_NULLPTR));
         runButton->setText(QApplication::translate("MainWindow", "Run", Q_NULLPTR));
+        label->setText(QApplication::translate("MainWindow", "Speed", Q_NULLPTR));
         outputWidget->setTabText(outputWidget->indexOf(buildTab), QApplication::translate("MainWindow", "Build Ouput", Q_NULLPTR));
         outputWidget->setTabText(outputWidget->indexOf(runTab), QApplication::translate("MainWindow", "Run Ouput", Q_NULLPTR));
         statusWidget_2->setTabText(statusWidget_2->indexOf(tab), QApplication::translate("MainWindow", "Tab 1", Q_NULLPTR));
