@@ -19,6 +19,7 @@ SOURCES += $$files(../lib/*.cpp, true) # TODO: Remove this
 HEADERS += $$files(*.h, true)
 HEADERS += $$files(../lib/*.h, true) # TODO: Remove this
 
+RESOURCES = images.qrc
 
 INCLUDEPATH += ../lib
 

@@ -20,14 +20,6 @@ QString Directory::getResDirectory() {
     return m_root + "res/";
 }
 
-QString Directory::getResFontsDirectory() {
-    return getResDirectory() + "fonts/";
-}
-
-QString Directory::getResImgsDirectory() {
-    return getResDirectory() + "imgs/";
-}
-
 QString Directory::getResMouseDirectory() {
     return getResDirectory() + "mouse/";
 }

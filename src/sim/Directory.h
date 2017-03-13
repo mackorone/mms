@@ -18,12 +18,6 @@ public:
     // mms/res
     QString getResDirectory();
 
-    // mms/res/fonts
-    QString getResFontsDirectory();
-
-    // mms/res/imgs
-    QString getResImgsDirectory();
-
     // mms/res/mouse
     QString getResMouseDirectory();
 

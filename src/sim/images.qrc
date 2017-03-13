@@ -1,0 +1,9 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file>images/BPmono.png</file>
+    <file>images/DejaVuSansMono.png</file>
+    <file>images/DroidSansMono.png</file>
+    <file>images/Hack-Regular.png</file>
+    <file>images/Unispace-Bold.png</file>
+</qresource>
+</RCC>

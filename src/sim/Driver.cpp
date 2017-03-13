@@ -40,17 +40,14 @@ int Driver::drive(int argc, char* argv[]) {
     // Initialize the Directory object
     Directory::init(app.applicationFilePath());
 
-    // TODO: MACK
     // Initialize the State object in order to:
     // 1) Set the runId
     // 2) Avoid a race condition (between threads)
     // 3) Initialize the Param object
-    S()->setRunId(""); // TODO: MACK
+    S()->setRunId(""); // TODO: MACK - remove run id
 
     // Initialize the FontImage object
-    FontImage::init(
-        Directory::get()->getResImgsDirectory() +
-        P()->tileTextFontImage());
+    FontImage::init(P()->tileTextFontImage());
 
     // Initialize the model, start the physics loop
     Model::init();
