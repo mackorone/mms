@@ -31,9 +31,6 @@ public:
     // Like time() in <ctime> but higher resolution (returns seconds since epoch)
     static double getHighResTimestamp();
 
-    // Returns the UTC datetime formatted as YY-MM-DD_HH:MM:SS
-    static QString timestampToDatetimeString(const Duration& timestamp);
-
     // Converts a duration to a mm:ss.zzz string
     static QString formatDuration(const Duration& duration);
 
@@ -46,15 +43,6 @@ public:
     static int strToInt(const QString& str);
     static double strToDouble(const QString& str);
     static QString boolToStr(bool value);
-
-    // Returns all files contained anywhere within a directory
-    static QPair<QStringList, QStringList> getFiles(const QString& dirPath);
-
-    // Returns all dirs contained directly within a directory
-    static QStringList getTopLevelDirs(const QString& dirPath);
-
-    // Remove oldest runs from the run/ directory if necessary
-    static void removeExcessArchivedRuns();
 
     // Converts a polygon to a vector of triangle graphics
     static QVector<TriangleGraphic> polygonToTriangleGraphics(

@@ -1,7 +1,6 @@
 #include "Driver.h"
 
 #include <QApplication>
-#include <QCoreApplication>
 #include <QObject>
 #include <QThread>
 
@@ -32,33 +31,26 @@ int Driver::drive(int argc, char* argv[]) {
     // Initialize the Screen object
     Screen::init();
 
+    // Initiliaze the Logging object
+    Logging::init();
+
     // Initialize the Settings object
     Settings::init();
 
     // Initialize the Directory object
     Directory::init(app.applicationFilePath());
 
-    // Then, determine the runId (just datetime for now)
-    QString runId = SimUtilities::timestampToDatetimeString(
-        Time::get()->startTimestamp()
-    );
-
-    // Then, initiliaze logging (before initializing Param or State)
-    Logging::init(runId);
-
+    // TODO: MACK
     // Initialize the State object in order to:
     // 1) Set the runId
     // 2) Avoid a race condition (between threads)
     // 3) Initialize the Param object
-    S()->setRunId(runId);
+    S()->setRunId(""); // TODO: MACK
 
     // Initialize the FontImage object
     FontImage::init(
         Directory::get()->getResImgsDirectory() +
         P()->tileTextFontImage());
-
-    // Remove any excessive archived runs
-    SimUtilities::removeExcessArchivedRuns();
 
     // Initialize the model, start the physics loop
     Model::init();

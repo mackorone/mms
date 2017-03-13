@@ -10,11 +10,10 @@ class Logging {
 
 public:
     Logging() = delete;
-    static void init(const QString& runId);
+    static void init();
 
 private:
     static QTextStream* STDOUT;
-    static QTextStream* STREAM;
     static void handler(
         QtMsgType type,
         const QMessageLogContext& context,

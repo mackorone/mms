@@ -27,9 +27,6 @@ public:
     // mms/res/mouse
     QString getResMouseDirectory();
 
-    // mms/run
-    QString getRunDirectory();
-
 private:
 
     // A private constructor is used to ensure

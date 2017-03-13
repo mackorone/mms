@@ -1,18 +1,12 @@
 #include "SimUtilities.h"
 
 #include <QDateTime>
-#include <QDir>
-#include <QDirIterator>
-#include <QString>
 #include <QThread>
 #include <QTime>
-#include <QtAlgorithms>
 
 #include <random>
 
 #include "Assert.h"
-#include "Directory.h"
-#include "Logging.h"
 #include "Param.h"
 
 namespace mms {
@@ -41,12 +35,6 @@ void SimUtilities::sleep(const Duration& duration) {
 
 double SimUtilities::getHighResTimestamp() {
     return QDateTime::currentDateTime().toMSecsSinceEpoch() / 1000.0;
-}
-
-QString SimUtilities::timestampToDatetimeString(const Duration& timestamp) {
-    QDateTime timestampObject;
-    timestampObject.setTime_t(timestamp.getSeconds());
-    return timestampObject.toString("yyyy-MM-dd hh:mm:ss");
 }
 
 QString SimUtilities::formatDuration(const Duration& duration) {
@@ -93,43 +81,6 @@ double SimUtilities::strToDouble(const QString& str) {
 
 QString SimUtilities::boolToStr(bool value) {
     return value ? "true" : "false";
-}
-
-QPair<QStringList, QStringList> SimUtilities::getFiles(const QString& dirPath) {
-    QDir dir(dirPath);
-    dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
-    QDirIterator iterator(dir, QDirIterator::Subdirectories);
-    QStringList relativePaths;
-    QStringList absolutePaths;
-    while (iterator.hasNext()) {
-        iterator.next();
-        relativePaths << iterator.fileName();
-        absolutePaths << iterator.filePath();
-    }
-    return {relativePaths, absolutePaths};
-}
-
-QStringList SimUtilities::getTopLevelDirs(const QString& dirPath) {
-    QDir dir(dirPath);
-    dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
-    dir.setSorting(QDir::Name | QDir::QDir::IgnoreCase);
-    QStringList topLevelDirs = dir.entryList();
-    return topLevelDirs;
-}
-
-void SimUtilities::removeExcessArchivedRuns() {
-    // Information about each run is stored in the run/ directory. As it turns
-    // out, this information can pile up pretty quickly. We should remove the
-    // oldest stuff so that the run/ directory doesn't get too full.
-    QStringList runDirectories = getTopLevelDirs(Directory::get()->getRunDirectory());
-    qSort(runDirectories);
-    for (int i = 0; i < runDirectories.size() - P()->numberOfArchivedRuns(); i += 1) {
-        QDir dir(Directory::get()->getRunDirectory() + runDirectories.at(i));
-        bool success = dir.removeRecursively();
-        if (!success) {
-            qWarning() << "Unable to delete old run directory:" << dir.path();
-        }
-    }
 }
 
 QVector<TriangleGraphic> SimUtilities::polygonToTriangleGraphics(

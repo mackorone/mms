@@ -11,7 +11,6 @@
 - Button for toggling the maze views
 - Verify that the tile text automatically refresh when we set tileGraphicTextMaxSize
 - Put MazeView into MazeGraphic (it should all be encapsulated in there)
-- Remove log files (unnecessary for now)
 - Maze editing and saving
     - Choose which type of file to save
 - Kill Directory.h/.cpp
@@ -80,8 +79,6 @@
     - Repurpose "mousee" project for this
 - Make a way to ensure that the algorithm has no memory leaks
     - We need a simple test harness, no graphics, discrete only
-- Windows logging is not working (Use QT logging)
-    - Not printing out on non-main threads?
 - Logging is too expensive
     - Causing freezing and crashing
     - Generalize a method for counting and logging few times, 1 per second
@@ -182,16 +179,12 @@
 - Data recording for pause, rewind, fast forward
 - Interrupt interface
 - Run the program with maximum thread priority
-- New maze w/o restarting app
-    - Be able to restart in the middle of a run (this is tricky with the algo thread...)
 - Fix the makefile so that if header files disappear we don't need to make clean
 - Crash recovery semantics
     - Set a flag, let the algo check the flag
 - Draw a path of where the robot has been (the history object could be used for recording as well)
 - Perhaps use a separate process entirely for the mouse (so we can restart it easily)
 - Write scripts we can execute (like unit tests) to make sure that our docs are in sync with the code
-- Some way to turn the loggers on/off
-- A way to log/print only info or higher, warn or higher, etc.
 - Replace the convexHull with union in the mouse collision polygon initialization
 - XML schema/validators
 - Support multiple mice
@@ -210,7 +203,6 @@
 - Clean up the coding standards
 - Optimize for space in the TEXTURE_CPU_BUFFER and GRAPHIC_CPU_BUFFER - Don't repeat vertices
 - VSync so the graphics don't tear
-- Better run number system
 - Update the check_params.py script to make sure that the return type of the
   Param methods is the same as the type of the member variable
 - Detect STL use in maze and mouse algos, send a warning

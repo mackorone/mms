@@ -32,10 +32,6 @@ QString Directory::getResMouseDirectory() {
     return getResDirectory() + "mouse/";
 }
 
-QString Directory::getRunDirectory() {
-    return m_root + "run/";
-}
-
 Directory::Directory(const QString& applicationFilePath) {
     QString path = applicationFilePath;
     path = path.left(path.lastIndexOf("/")); // Strips off /bin
