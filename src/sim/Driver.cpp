@@ -10,6 +10,7 @@
 #include "Logging.h"
 #include "MainWindow.h"
 #include "Screen.h"
+#include "Settings.h"
 #include "SimUtilities.h"
 #include "State.h"
 #include "Time.h"
@@ -22,12 +23,6 @@ int Driver::drive(int argc, char* argv[]) {
     // Make sure that this function is called just once
     ASSERT_RUNS_JUST_ONCE();
 
-    // TODO: MACK - move this to Settings::init()
-    // Initialize some fields for QSettings
-    QCoreApplication::setOrganizationName("mackorone");
-    QCoreApplication::setOrganizationDomain("www.github.com/mackorone");
-    QCoreApplication::setApplicationName("mms");
-
     // Initialize Qt
     QApplication app(argc, argv);
 
@@ -36,6 +31,9 @@ int Driver::drive(int argc, char* argv[]) {
 
     // Initialize the Screen object
     Screen::init();
+
+    // Initialize the Settings object
+    Settings::init();
 
     // Initialize the Directory object
     Directory::init(app.applicationFilePath());
@@ -74,10 +72,6 @@ int Driver::drive(int argc, char* argv[]) {
     // Create the main window
     MainWindow window;
     window.show();
-    // Ensure key-press events get sent to the window
-    // TODO: MACK - use buttons for this instead, which will allow
-    // the arrow keys to be used for maze file table navigation
-    app.installEventFilter(&window);
 
     // Start the event loop
     return app.exec();

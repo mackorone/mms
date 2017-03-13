@@ -1,8 +1,7 @@
 #include "MouseAlgos.h"
 
-#include <QSettings>
-
 #include "Assert.h"
+#include "Settings.h"
 
 namespace mms {
 
@@ -14,16 +13,7 @@ const QString MouseAlgos::RUN_COMMAND_KEY = "runCommand";
 const QString MouseAlgos::MOUSE_FILE_PATH_KEY = "mouseFilePath";
 
 QStringList MouseAlgos::algoNames() {
-    QStringList names;
-    QSettings settings;
-    int size = settings.beginReadArray(GROUP_PREFIX);
-    for (int i = 0; i < size; i += 1) {
-        settings.setArrayIndex(i);
-        names << settings.value(NAME_KEY).toString();
-    }
-    settings.endArray();
-    names.sort(Qt::CaseInsensitive);
-    return names;
+    return Settings::get()->values(GROUP_PREFIX, NAME_KEY);
 }
 
 QString MouseAlgos::getDirPath(const QString& name) {
@@ -48,46 +38,43 @@ void MouseAlgos::addAlgo(
         const QString& buildCommand,
         const QString& runCommand,
         const QString& mouseFilePath) {
+    Settings::get()->add(GROUP_PREFIX, {
+        {NAME_KEY, name},
+        {DIR_PATH_KEY, dirPath},
+        {BUILD_COMMAND_KEY, buildCommand},
+        {RUN_COMMAND_KEY, runCommand},
+        {MOUSE_FILE_PATH_KEY, mouseFilePath},
+    });
+}
 
-    QSettings settings;
+void MouseAlgos::updateAlgo(
+        const QString& name,
+        const QString& newName,
+        const QString& newDirPath,
+        const QString& newBuildCommand,
+        const QString& newRunCommand,
+        const QString& newMouseFilePath) {
+    Settings::get()->update(GROUP_PREFIX, NAME_KEY, name, {
+        {NAME_KEY, newName},
+        {DIR_PATH_KEY, newDirPath},
+        {BUILD_COMMAND_KEY, newBuildCommand},
+        {RUN_COMMAND_KEY, newRunCommand},
+        {MOUSE_FILE_PATH_KEY, newMouseFilePath},
+    });
+}
 
-    // Do some sanity checks
-    int size = settings.beginReadArray(GROUP_PREFIX);
-    for (int i = 0; i < size; i += 1) {
-        settings.setArrayIndex(i);
-        if (name == settings.value(NAME_KEY).toString()) {
-            // TODO: MACK
-            return;
-        }
-        if (dirPath == settings.value(DIR_PATH_KEY).toString()) {
-            // TODO: MACK
-            return;
-        }
-    }
-    settings.endArray();
-
-    // Write the new algo
-    settings.beginWriteArray(GROUP_PREFIX);
-    settings.setArrayIndex(size);
-    settings.setValue(NAME_KEY, name);
-    settings.setValue(DIR_PATH_KEY, dirPath);
-    settings.setValue(BUILD_COMMAND_KEY, buildCommand);
-    settings.setValue(RUN_COMMAND_KEY, runCommand);
-    settings.setValue(MOUSE_FILE_PATH_KEY, mouseFilePath);
-    settings.endArray();
+void MouseAlgos::removeAlgo(const QString& name) {
+    Settings::get()->remove(
+        GROUP_PREFIX,
+        NAME_KEY,
+        name
+    );
 }
 
 QString MouseAlgos::get(const QString& name, const QString& key) {
-    QSettings settings;
-    int size = settings.beginReadArray(GROUP_PREFIX);
-    for (int i = 0; i < size; i += 1) {
-        settings.setArrayIndex(i);
-        if (name == settings.value(NAME_KEY)) {
-            // TODO: MACK - assert it has this
-            return settings.value(key).toString();
-        }
-    }
-    ASSERT_NEVER_RUNS();    
+    const auto& vector = Settings::get()->find(GROUP_PREFIX, NAME_KEY, name);
+    ASSERT_EQ(vector.size(), 1); 
+    return vector.isEmpty() ? "" : vector.at(0).value(key);
 }
 
 } //namespace mms

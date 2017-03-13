@@ -9,7 +9,6 @@ class MazeAlgos {
 
 public:
 
-    // TODO: MACK - renaming algos? Changing paths? etc.
     MazeAlgos() = delete;
 
     static QStringList algoNames();
@@ -22,6 +21,15 @@ public:
         const QString& dirPath,
         const QString& buildCommand,
         const QString& runCommand);
+
+    static void updateAlgo(
+        const QString& name,
+        const QString& newName,
+        const QString& newDirPath,
+        const QString& newBuildCommand,
+        const QString& newRunCommand);
+
+    static void removeAlgo(const QString& name);
 
 private:
 

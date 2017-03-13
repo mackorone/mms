@@ -1,8 +1,12 @@
 # High Priority
 
+- Just "a.out" hangs...
+- If it's paused, I can't select a new maze file...
 - Add maze loading functionality
     - Add maze gen functionality
     - Remove params for maze load/gen
+- If maze algo fails, the simulator crashes
+- Alphabetical order of QSettings contents
 - Support json file format
 - Button for toggling the maze views
 - Verify that the tile text automatically refresh when we set tileGraphicTextMaxSize
@@ -230,6 +234,7 @@
 
 # Clean-Up
 
+- Implicit shared of QString, pass by value
 - QVector<QString> to QStringList
 - Javadoc as much as possible
 - Make sure all QObjects have parents

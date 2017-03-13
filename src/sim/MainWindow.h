@@ -28,12 +28,6 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-protected:
-
-    // Method that gets called on all events (allows us to
-    // effectively capture key-press and key-release events)
-    bool eventFilter(QObject *object, QEvent *e);
-
 private:
 
     // The UI object
@@ -58,28 +52,22 @@ private:
     void keyRelease(int key);
 
     // TODO: MACK - hastily implemented helper functions
-
-    void killMouseAlgorithm();
+    void setMaze(Maze* maze);
     void refreshMazeFiles();
     void togglePause();
 
-    // Maze algo building
-    void mazeBuild(const QString& mazeAlgoName);
-    QProcess* m_mazeBuildProcess;
+    // Maze algo building/running
+    void buildMazeAlgo();
+    void runMazeAlgo();
+    QProcess* m_buildMazeAlgoProcess;
+    QProcess* m_runMazeAlgoProcess;
 
-    // Maze algo running
-    void mazeRun(const QString& mazeAlgoName);
-    QProcess* m_mazeRunProcess;
-
-    // ------- TODO
-
-    // Mouse algo building
-    void build(const QString& algoName);
-    QProcess* m_buildProcess;
-
-    // Mouse algo running
-    void spawnMouseAlgo(const QString& algoName);
-    QThread* m_mouseAlgoThread;
+    // Mouse algo building/running
+    void buildMouseAlgo();
+    void runMouseAlgo();
+    void stopMouseAlgo();
+    QProcess* m_buildMouseAlgoProcess;
+    QThread* m_runMouseAlgoThread;
 
     // Header-related members
     // TODO: MACK - refactor this into its own class

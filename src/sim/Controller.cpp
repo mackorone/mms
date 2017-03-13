@@ -6,6 +6,7 @@
 #include "MouseAlgos.h"
 #include "MouseChecker.h"
 #include "Param.h"
+#include "ProcessUtilities.h"
 #include "SimUtilities.h"
 #include "units/Milliseconds.h"
 
@@ -107,13 +108,7 @@ void Controller::start(const QString& algoName) {
     //     SimUtilities::quit();
     // }
 
-    // TODO: MACK - helper for this
-    QStringList args = runCommand.split(' ', QString::SkipEmptyParts);
-    // TODO: MACK - check sanity of run command
-    ASSERT_LT(0, args.size());
-    QString command = args.at(0);
-    args.removeFirst();
-    m_process->start(command, args);
+    ProcessUtilities::start(m_process, runCommand);
 }
 
 InterfaceType Controller::getInterfaceType(bool canFinalize) {

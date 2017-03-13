@@ -7,7 +7,6 @@
 #include "Assert.h"
 #include "Directory.h"
 #include "Logging.h"
-#include "MazeAlgoUtilities.h"
 #include "MazeChecker.h"
 #include "MazeFileType.h"
 #include "MazeFileUtilities.h"

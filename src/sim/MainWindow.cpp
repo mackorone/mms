@@ -7,14 +7,16 @@
 #include <QtCore>
 
 #include "Assert.h"
+#include "CommandDialog.h"
 #include "Directory.h"
 #include "Map.h"
+#include "MazeAlgos.h"
 #include "MazeFileType.h"
 #include "MazeFiles.h"
-#include "MazeAlgos.h"
 #include "Model.h"
 #include "MouseAlgos.h"
 #include "Param.h"
+#include "ProcessUtilities.h"
 #include "SimUtilities.h"
 #include "State.h"
 #include "Time.h"
@@ -28,8 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
         m_mouse(nullptr),
         m_mouseGraphic(nullptr),
         m_view(nullptr),
-        m_controller(nullptr),
-        m_mouseAlgoThread(nullptr) {
+        m_controller(nullptr) {
 
     // Initialize the UI
     ui.setupUi(this);
@@ -60,55 +61,45 @@ MainWindow::MainWindow(QWidget *parent) :
         ui.selectAlgorithmComboBox->addItem(algoName);
     }
 
-    // Connect the build button
-    connect(
-        ui.mazeBuildButton,
-        &QPushButton::clicked,
-        this,
-        [&](){
-            // TODO: MACK - helper for this (ensure all fields exist)
-            const QString& algoName = ui.selectMazeAlgorithmComboBox->currentText();
-            ASSERT_TR(MazeAlgos::algoNames().contains(algoName));
-            mazeBuild(algoName);
-        }
-    );
+    // Connect the maze algo build/run buttons
+    connect(ui.mazeBuildButton, &QPushButton::clicked, this, &MainWindow::buildMazeAlgo);
+    connect(ui.mazeRunButton, &QPushButton::clicked, this, &MainWindow::runMazeAlgo);
 
-    // Connect the maze run button
-    connect(
-        ui.mazeRunButton,
-        &QPushButton::clicked,
-        this,
-        [&](){
-            // TODO: MACK - helper for this (ensure all fields exist)
-            const QString& algoName = ui.selectMazeAlgorithmComboBox->currentText();
-            ASSERT_TR(MazeAlgos::algoNames().contains(algoName));
-            mazeRun(algoName);
-        }
-    );
+    // Connect the mouse algo build/run buttons
+    connect(ui.buildButton, &QPushButton::clicked, this, &MainWindow::buildMouseAlgo);
+    connect(ui.runButton, &QPushButton::clicked, this, &MainWindow::runMouseAlgo);
 
-    // Connect the build button
     connect(
-        ui.buildButton,
+        ui.editMazeAlgoButton,
         &QPushButton::clicked,
         this,
         [&](){
-            // TODO: MACK - helper for this (ensure all fields exist)
-            const QString& algoName = ui.selectAlgorithmComboBox->currentText();
-            ASSERT_TR(MouseAlgos::algoNames().contains(algoName));
-            build(algoName);
-        }
-    );
-
-    // Connect the run button
-    connect(
-        ui.runButton,
-        &QPushButton::clicked,
-        this,
-        [&](){
-            // TODO: MACK - helper for this (ensure all fields exist)
-            const QString& algoName = ui.selectAlgorithmComboBox->currentText();
-            ASSERT_TR(MouseAlgos::algoNames().contains(algoName));
-            spawnMouseAlgo(algoName);
+            // TODO: MACK - ensure UI matches the backing store
+            QString mazeAlgoName = ui.selectMazeAlgorithmComboBox->currentText();
+            ASSERT_TR(MazeAlgos::algoNames().contains(mazeAlgoName));
+            QStringList names = MazeAlgos::algoNames();
+            names.removeAll(mazeAlgoName);
+            CommandDialog dialog(
+                names,
+                mazeAlgoName,
+                MazeAlgos::getDirPath(mazeAlgoName),
+                MazeAlgos::getBuildCommand(mazeAlgoName),
+                MazeAlgos::getRunCommand(mazeAlgoName),
+                this
+            );
+            if (dialog.exec() == QDialog::Accepted) {
+                MazeAlgos::updateAlgo(
+                    mazeAlgoName,
+                    dialog.getName(),
+                    dialog.getDirectory(),
+                    dialog.getBuildCommand(),
+                    dialog.getRunCommand()
+                );
+                ui.selectMazeAlgorithmComboBox->clear();
+                for (const QString& algoName : MazeAlgos::algoNames()) {
+                    ui.selectMazeAlgorithmComboBox->addItem(algoName);
+                }
+            }
         }
     );
 
@@ -118,18 +109,20 @@ MainWindow::MainWindow(QWidget *parent) :
         &QPushButton::clicked,
         this,
         [&](){
-            QString dir = QFileDialog::getExistingDirectory(
-                this,
-                tr("Open Directory"),
-                "/home",
-                QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
-            );
-            MazeAlgos::addAlgo(
-                "TomaszMazeAlgo",
-                dir,
-                "foo",
-                "bar"
-            );
+            // TODO: MACK - ensure UI matches the backing store
+            CommandDialog dialog(MazeAlgos::algoNames(), this);
+            if (dialog.exec() == QDialog::Accepted) {
+                QString algoName = dialog.getName();
+                MazeAlgos::addAlgo(
+                    algoName,
+                    dialog.getDirectory(),
+                    dialog.getBuildCommand(),
+                    dialog.getRunCommand()
+                );
+                ui.selectMazeAlgorithmComboBox->addItem(algoName);
+                int index = ui.selectMazeAlgorithmComboBox->findText(algoName);
+                ui.selectMazeAlgorithmComboBox->setCurrentIndex(index);
+            }
         }
     );
 
@@ -185,57 +178,19 @@ MainWindow::MainWindow(QWidget *parent) :
         [&](){
             QString path = ui.mazeFilesTable->selectedItems().at(1)->text();
             Maze* maze = Maze::fromFile(path);
-            if (maze == nullptr) {
-                return;
-            }
-
-            Maze* prev_maze = m_maze;
-            MazeView* prev_truth = m_truth;
-
-            m_maze = maze;
-            m_truth = new MazeView(m_maze);
-            m_map.setMaze(m_maze);
-
-            bool respawn = m_controller != nullptr;
-            killMouseAlgorithm();
-
-            Model::get()->setMaze(m_maze);
-            delete prev_maze;
-            delete prev_truth;
-
-            if (respawn) {
-                const QString& algoName = ui.selectAlgorithmComboBox->currentText();
-                ASSERT_TR(MouseAlgos::algoNames().contains(algoName));
-                spawnMouseAlgo(algoName);
+            if (maze != nullptr) {
+                setMaze(maze);
             }
         }
     );
 
     // Connect pause button
-    connect(
-        ui.pauseButton,
-        &QPushButton::clicked,
-        this,
-        &MainWindow::togglePause
-    );
+    connect(ui.pauseButton, &QPushButton::clicked, this, &MainWindow::togglePause);
 }
 
 MainWindow::~MainWindow() {
     // TODO: MACK - other cleanup here
     delete m_maze;
-}
-
-bool MainWindow::eventFilter(QObject *object, QEvent *e) {
-    if (e->type() == QEvent::KeyPress) {
-        keyPress(static_cast<QKeyEvent*>(e)->key());
-        return true;
-    }
-    else if (e->type() == QEvent::KeyRelease) {
-        keyRelease(static_cast<QKeyEvent*>(e)->key());
-        return true;
-    }
-    // Let the event propogate to other widgets
-    return false;
 }
 
 void MainWindow::keyPress(int key) {
@@ -358,16 +313,23 @@ void MainWindow::keyRelease(int key) {
     }
 }
 
-void MainWindow::killMouseAlgorithm() {
-    m_map.setView(m_truth);
-    if (m_controller != nullptr) {
-        m_controller = nullptr;
-        m_map.setMouseGraphic(nullptr);
-        m_mouseAlgoThread->quit();
-        m_mouseAlgoThread->wait(); // TODO: MACK - necessary for the thread to actually get killed
-        // TODO: MACK - we need some synchronization here, because the model
-        // could be using the pointer at the time it's updated
-        Model::get()->removeMouse("");
+void MainWindow::setMaze(Maze* maze) {
+    Maze* prev_maze = m_maze;
+    MazeView* prev_truth = m_truth;
+
+    m_maze = maze;
+    m_truth = new MazeView(m_maze);
+    m_map.setMaze(m_maze);
+
+    bool respawn = m_controller != nullptr;
+    stopMouseAlgo();
+
+    Model::get()->setMaze(m_maze);
+    delete prev_maze;
+    delete prev_truth;
+
+    if (respawn) {
+        runMouseAlgo();
     }
 }
 
@@ -403,39 +365,42 @@ void MainWindow::refreshMazeFiles() {
     }
 }
 
-void MainWindow::mazeBuild(const QString& mazeAlgoName) {
+void MainWindow::buildMazeAlgo() {
 
+    // Determine the maze to build
+    const QString& mazeAlgoName = ui.selectMazeAlgorithmComboBox->currentText();
+    ASSERT_TR(MazeAlgos::algoNames().contains(mazeAlgoName));
     // TODO: MACK - check settings actually contains these values and contains
     // and path validity here
     QString dirPath = MazeAlgos::getDirPath(mazeAlgoName);
     QString mazeBuildCommand = MazeAlgos::getBuildCommand(mazeAlgoName);
     qDebug() << "COMMAND:" << mazeBuildCommand;
 
-    // TODO: MACK - ensure we're cleaning this up properly
     // First, instantiate a new process
-    m_mazeBuildProcess = new QProcess(this);
-    m_mazeBuildProcess->setWorkingDirectory(dirPath);
+    m_buildMazeAlgoProcess = new QProcess(this);
+    m_buildMazeAlgoProcess->setWorkingDirectory(dirPath);
 
     // Listen for build errors
     connect(
-        m_mazeBuildProcess,
+        m_buildMazeAlgoProcess,
         &QProcess::readyReadStandardError,
         this,
         [&](){
-            QString errors = m_mazeBuildProcess->readAllStandardError();
+            QString errors = m_buildMazeAlgoProcess->readAllStandardError();
             ui.mazeBuildTextEdit->appendPlainText(errors);
         }
     );
 
-    // Re-enable build button when build finishes
+    // Re-enable build button when build finishes, clean up the process
     connect(
-        m_mazeBuildProcess,
+        m_buildMazeAlgoProcess,
         static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(
             &QProcess::finished
         ),
         this,
         [&](int exitCode, QProcess::ExitStatus exitStatus){
             ui.mazeBuildButton->setEnabled(true);
+            m_buildMazeAlgoProcess->deleteLater();
         }
     );
             
@@ -443,69 +408,55 @@ void MainWindow::mazeBuild(const QString& mazeAlgoName) {
     ui.mazeBuildButton->setEnabled(false);
 
     // Now, start the build
-    QStringList args = mazeBuildCommand.split(' ', QString::SkipEmptyParts);
-    // TODO: MACK - check sanity of build command
-    ASSERT_LT(0, args.size());
-    QString command = args.at(0);
-    args.removeFirst();
-    m_mazeBuildProcess->start(command, args);
-    qDebug() << "BUILT: " << mazeAlgoName;
+    ProcessUtilities::start(m_buildMazeAlgoProcess, mazeBuildCommand);
 }
 
-void MainWindow::mazeRun(const QString& mazeAlgoName) {
+void MainWindow::runMazeAlgo() {
+
+    const QString& mazeAlgoName = ui.selectMazeAlgorithmComboBox->currentText();
+    ASSERT_TR(MazeAlgos::algoNames().contains(mazeAlgoName));
+
     // TODO: MACK - check settings actually contains these values and contains
     // and path validity here
     QString dirPath = MazeAlgos::getDirPath(mazeAlgoName);
     QString mazeRunCommand = MazeAlgos::getRunCommand(mazeAlgoName);
-    qDebug() << "COMMAND:" << mazeRunCommand;
 
-    // TODO: MACK - ensure we're cleaning this up properly
+    // Add the height and width to the command
+    mazeRunCommand += " ";
+    mazeRunCommand += ui.widthSpinBox->cleanText();
+    mazeRunCommand += " ";
+    mazeRunCommand += ui.heightSpinBox->cleanText();
+
     // First, instantiate a new process
-    m_mazeRunProcess = new QProcess(this);
-    m_mazeRunProcess->setWorkingDirectory(dirPath);
+    m_runMazeAlgoProcess = new QProcess(this);
+    m_runMazeAlgoProcess->setWorkingDirectory(dirPath);
 
     // Listen for output
     connect(
-        m_mazeRunProcess,
+        m_runMazeAlgoProcess,
         &QProcess::readyReadStandardOutput,
         this,
         [&](){
-            QString output = m_mazeRunProcess->readAllStandardOutput();
+            QString output = m_runMazeAlgoProcess->readAllStandardOutput();
             ui.mazeRunTextEdit->appendPlainText(output);
         }
     );
 
     // Re-enable build button when build finishes
     connect(
-        m_mazeRunProcess,
+        m_runMazeAlgoProcess,
         static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(
             &QProcess::finished
         ),
         this,
         [&](int exitCode, QProcess::ExitStatus exitStatus){
             ui.mazeRunButton->setEnabled(true);
-            QString output = m_mazeRunProcess->readAllStandardError();
+            QString output = m_runMazeAlgoProcess->readAllStandardError();
             Maze* maze = Maze::fromAlgo(output.toUtf8());
             if (maze != nullptr) {
-                Maze* prev_maze = m_maze;
-                MazeView* prev_truth = m_truth;
-
-                m_maze = maze;
-                m_truth = new MazeView(m_maze);
-                m_map.setMaze(m_maze);
-
-                bool respawn = m_controller != nullptr;
-                killMouseAlgorithm();
-
-                Model::get()->setMaze(m_maze);
-                delete prev_maze;
-                delete prev_truth;
-                if (respawn) {
-                    const QString& algoName = ui.selectAlgorithmComboBox->currentText();
-                    ASSERT_TR(MouseAlgos::algoNames().contains(algoName));
-                    spawnMouseAlgo(algoName);
-                }
+                setMaze(maze);
             }
+            m_runMazeAlgoProcess->deleteLater();
         }
     );
             
@@ -513,47 +464,45 @@ void MainWindow::mazeRun(const QString& mazeAlgoName) {
     ui.mazeRunButton->setEnabled(false);
 
     // Now, start the build
-    QStringList args = mazeRunCommand.split(' ', QString::SkipEmptyParts);
-    // TODO: MACK - check sanity of build command
-    ASSERT_LT(0, args.size());
-    QString command = args.at(0);
-    args.removeFirst();
-    m_mazeRunProcess->start(command, args);
-    qDebug() << "RAN: " << mazeAlgoName;
+    ProcessUtilities::start(m_runMazeAlgoProcess, mazeRunCommand);
 }
 
-void MainWindow::build(const QString& algoName) {
+void MainWindow::buildMouseAlgo() {
+
+    // TODO: MACK - helper for this (ensure all fields exist)
+    const QString& algoName = ui.selectAlgorithmComboBox->currentText();
+    ASSERT_TR(MouseAlgos::algoNames().contains(algoName));
 
     // TODO: MACK - check settings actually contains these values and contains
     // and path validity here
     QString dirPath = MouseAlgos::getDirPath(algoName);
     QString buildCommand = MouseAlgos::getBuildCommand(algoName);
 
-    // TODO: MACK - ensure we're cleaning this up properly
     // First, instantiate a new process
-    m_buildProcess = new QProcess(this);
-    m_buildProcess->setWorkingDirectory(dirPath);
+    m_buildMouseAlgoProcess = new QProcess(this);
+    m_buildMouseAlgoProcess->setWorkingDirectory(dirPath);
 
     // Listen for build errors
     connect(
-        m_buildProcess,
+        m_buildMouseAlgoProcess,
         &QProcess::readyReadStandardError,
         this,
         [&](){
-            QString errors = m_buildProcess->readAllStandardError();
+            QString errors = m_buildMouseAlgoProcess->readAllStandardError();
             ui.buildTextEdit->appendPlainText(errors);
         }
     );
 
-    // Re-enable build button when build finishes
+    // Re-enable build button when build finishes, clean up the process
     connect(
-        m_buildProcess,
+        m_buildMouseAlgoProcess,
         static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(
             &QProcess::finished
         ),
         this,
         [&](int exitCode, QProcess::ExitStatus exitStatus){
             ui.buildButton->setEnabled(true);
+            m_buildMouseAlgoProcess->deleteLater();
         }
     );
             
@@ -561,18 +510,18 @@ void MainWindow::build(const QString& algoName) {
     ui.buildButton->setEnabled(false);
 
     // Now, start the build
-    QStringList args = buildCommand.split(' ', QString::SkipEmptyParts);
-    // TODO: MACK - check sanity of build command
-    ASSERT_LT(0, args.size());
-    QString command = args.at(0);
-    args.removeFirst();
-    m_buildProcess->start(command, args);
+    ProcessUtilities::start(m_buildMouseAlgoProcess, buildCommand);
 }
 
-void MainWindow::spawnMouseAlgo(const QString& algoName) {
+void MainWindow::runMouseAlgo() {
+
+    // TODO: MACK - respawn after switching the mouse algo combo box selection
+
+    const QString& algoName = ui.selectAlgorithmComboBox->currentText();
+    ASSERT_TR(MouseAlgos::algoNames().contains(algoName));
 
     // Kill the current mouse algorithm
-    killMouseAlgorithm();
+    stopMouseAlgo();
 
     // Generate the mouse, lens, and controller
     m_mouse = new Mouse(m_maze);
@@ -658,15 +607,15 @@ void MainWindow::spawnMouseAlgo(const QString& algoName) {
     Controller* controller = m_controller;
 
     // The thread on which the controller will execute
-    m_mouseAlgoThread = new QThread();
-    QThread* thread = m_mouseAlgoThread;
+    m_runMouseAlgoThread = new QThread();
+    QThread* thread = m_runMouseAlgoThread;
 
     // We need to actually spawn the QProcess (i.e., m_process = new
     // QProcess()) in the separate thread, hence why this is async. Note that
     // we need the separate thread because, while it's performing an
     // algorithm-requested action, the Controller could block the GUI loop from
     // executing.
-    connect(m_mouseAlgoThread, &QThread::started, m_controller, [=](){
+    connect(m_runMouseAlgoThread, &QThread::started, m_controller, [=](){
         // We need to add the mouse to the world *after* the the controller is
         // initialized (thus ensuring that tile fog is cleared automatically),
         // but *before* we actually start the algorithm (lest the mouse
@@ -678,7 +627,6 @@ void MainWindow::spawnMouseAlgo(const QString& algoName) {
     });
 
     connect(thread, &QThread::finished, this, [=](){
-        qDebug() << "THREAD FINISHED"; 
         controller->deleteLater();
         thread->deleteLater();
         // TODO: MACK - if we remove the wait(), the
@@ -686,10 +634,24 @@ void MainWindow::spawnMouseAlgo(const QString& algoName) {
         delete mouseGraphic;
         delete view;
         delete mouse;
-        qDebug() << "THREAD DEAD";
+        // qDebug() << "THREAD DEAD";
     });
-    m_controller->moveToThread(m_mouseAlgoThread);
-	m_mouseAlgoThread->start();
+    m_controller->moveToThread(m_runMouseAlgoThread);
+	m_runMouseAlgoThread->start();
+}
+
+void MainWindow::stopMouseAlgo() {
+    m_map.setView(m_truth);
+    if (m_controller != nullptr) {
+        m_controller = nullptr;
+        m_map.setMouseGraphic(nullptr);
+        m_runMouseAlgoThread->quit();
+        // TODO: MACK - necessary for the thread to actually get killed
+        m_runMouseAlgoThread->wait();
+        // TODO: MACK - we need some synchronization here, because the model
+        // could be using the pointer at the time it's updated
+        Model::get()->removeMouse("");
+    }
 }
 
 QVector<QPair<QString, QVariant>> MainWindow::getRunStats() const {

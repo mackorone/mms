@@ -1,8 +1,7 @@
 #include "MazeFiles.h"
 
-#include <QSettings>
-
 #include "Assert.h"
+#include "Settings.h"
 
 namespace mms {
 
@@ -10,38 +9,17 @@ const QString MazeFiles::GROUP_PREFIX = "mazeFiles";
 const QString MazeFiles::PATH_KEY = "path";
 
 QStringList MazeFiles::getMazeFiles() {
-    QStringList paths;
-    QSettings settings;
-    int size = settings.beginReadArray(GROUP_PREFIX);
-    for (int i = 0; i < size; i += 1) {
-        settings.setArrayIndex(i);
-        paths << settings.value(PATH_KEY).toString();
-    }
-    settings.endArray();
-    paths.sort(Qt::CaseInsensitive);
-    return paths;
+    return Settings::get()->values(GROUP_PREFIX, PATH_KEY);
 }
 
 void MazeFiles::addMazeFile(const QString& path) {
+    Settings::get()->add(GROUP_PREFIX, {
+        {PATH_KEY, path},
+    });
+}
 
-    QSettings settings;
-
-    // Do some sanity checks
-    int size = settings.beginReadArray(GROUP_PREFIX);
-    for (int i = 0; i < size; i += 1) {
-        settings.setArrayIndex(i);
-        if (path == settings.value(PATH_KEY).toString()) {
-            // TODO: MACK
-            return;
-        }
-    }
-    settings.endArray();
-
-    // Write the new algo
-    settings.beginWriteArray(GROUP_PREFIX);
-    settings.setArrayIndex(size);
-    settings.setValue(PATH_KEY, path);
-    settings.endArray();
+void MazeFiles::removeMazeFile(const QString& path) {
+    Settings::get()->remove(GROUP_PREFIX, PATH_KEY, path);
 }
 
 } //namespace mms

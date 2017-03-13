@@ -9,11 +9,10 @@ class MazeFiles {
 
 public:
 
-    // TODO: MACK - renaming? Changing paths? Deleting? etc.
     MazeFiles() = delete;
-
     static QStringList getMazeFiles();
     static void addMazeFile(const QString& path);
+    static void removeMazeFile(const QString& path);
 
 private:
 

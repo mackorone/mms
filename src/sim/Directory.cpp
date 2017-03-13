@@ -16,10 +16,6 @@ Directory* Directory::get() {
     return INSTANCE;
 }
 
-QString Directory::getSrcMazeAlgosDirectory() {
-    return m_root + "src/maze/algos/";
-}
-
 QString Directory::getResDirectory() {
     return m_root + "res/";
 }

@@ -9,7 +9,6 @@ class MouseAlgos {
 
 public:
 
-    // TODO: MACK - renaming algos? Changing paths? etc.
     MouseAlgos() = delete;
 
     static QStringList algoNames();
@@ -24,6 +23,17 @@ public:
         const QString& buildCommand,
         const QString& runCommand,
         const QString& mouseFilePath);
+
+    static void updateAlgo(
+        const QString& name,
+        const QString& newName,
+        const QString& newDirPath,
+        const QString& newBuildCommand,
+        const QString& newRunCommand,
+        const QString& newMouseFilePath);
+
+    static void removeAlgo(const QString& name);
+
 
 private:
 

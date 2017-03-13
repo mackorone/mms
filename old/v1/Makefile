@@ -10,7 +10,7 @@ BIN = ./bin/
 LIBS = -lGL -lglut -lGLU -lpthread
 
 # Any extra include paths
-INC = -I$(SRC)units -I$(SRC)lib
+INC =
 
 # Flags
 # -std=c++11: Use the C++11 standard
