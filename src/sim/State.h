@@ -17,9 +17,6 @@ public:
     // Returns a pointer to the singleton state object
     static State* getInstance();
 
-    QString runId();
-    void setRunId(const QString& runId);
-
     // TODO: MACK - should be a property of the mouse?
     bool crashed();
     void setCrashed();
@@ -68,7 +65,6 @@ private:
     // A pointer to the actual instance of the class
     static State* INSTANCE;
 
-    QString m_runId;
     bool m_crashed;
     LayoutType m_layoutType;
     bool m_rotateZoomedMap;

@@ -5,12 +5,12 @@
 
 namespace mms {
 
-class MazeFiles {
+class SettingsMazeFiles {
 
 public:
 
-    MazeFiles() = delete;
-    static QStringList getMazeFiles();
+    SettingsMazeFiles() = delete;
+    static QStringList getSettingsMazeFiles();
     static void addMazeFile(const QString& path);
     static void removeMazeFile(const QString& path);
 

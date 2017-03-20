@@ -2,19 +2,16 @@
 
 - Just "a.out" hangs...
 - If it's paused, I can't select a new maze file...
-- Add maze loading functionality
-    - Add maze gen functionality
-    - Remove params for maze load/gen
+- Add default maze/mouse files
 - If maze algo fails, the simulator crashes
 - Alphabetical order of QSettings contents
-- Support json file format
+- Support json maze file format
 - Button for toggling the maze views
 - Verify that the tile text automatically refresh when we set tileGraphicTextMaxSize
 - Put MazeView into MazeGraphic (it should all be encapsulated in there)
 - Maze editing and saving
     - Choose which type of file to save
 - Kill Directory.h/.cpp
-- Kill getTopLevelDirs
 - Indicate build failure/success with colors
 - Clean up mouseInterface/controller and MainWindow/controller (MouseAlgoUtilities)
 - Hook up build output (in addition to stderr)
@@ -129,6 +126,7 @@
     - MinSleepDuration is a little bit weird - sometimes we try to sleep less than that
 - GUI
 - Downward sensor
+- Intelligent build command and run command generation
 
 # Medum Priority
 
@@ -196,6 +194,7 @@
 
 # Low Priority
 
+- Update the UI if the QSettings file is changed manually
 - Add gear ratio to the wheels
 - Current rotation jumps between 0 and 360 on megaMouse right wall follow
 - Pointers to wall polygons in each tile, save space by not breaking up walls/corners into multiple tiles

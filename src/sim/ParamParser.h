@@ -12,7 +12,11 @@ namespace mms {
 class ParamParser {
 
 public:
-    ParamParser(const QString& filePath);
+
+    // TODO: MACK
+    //ParamParser() = delete;
+    //ParamParser();
+    static void execEditDialog(); // TODO: MACK - shouldn't include window width
 
     // Check the existence and type of a value
     bool hasBoolValue(const QString& tag);
@@ -51,12 +55,12 @@ public:
     QString getStringIfHasStringAndIsTileTextAlignment(const QString& tag, const QString& defaultValue);
 
 private:
-    // We have to keep m_doc around so valgrind doesn't complain
-    pugi::xml_document m_doc;
-    pugi::xml_node m_root;
-    pugi::xml_parse_result m_fileIsReadable;
 
-    static const QString PARAMETERS_TAG;
+    // Settings group and helper functions
+    static const QString GROUP_PREFIX;
+    static QString getValue(const QString& key);
+    static void setValue(const QString& key, const QString& value);
+
 
     void printTagNotFound(const QString& type, const QString& tag, const QString& defaultValue);
     void printLessThan(const QString& type, const QString& tag, const QString& value,
@@ -74,6 +78,7 @@ private:
         ASSERT_LE(defaultValue, max);
         if (!((type == "int" && hasIntValue(tag)) || (type == "double" && hasDoubleValue(tag)))) {
             printTagNotFound(type, tag, QString::number(defaultValue));
+            setValue(tag, QString::number(defaultValue));
             return defaultValue;
         }
         T value = static_cast<T>(getDoubleValue(tag));
@@ -98,6 +103,7 @@ private:
 
         if (!hasStringValue(tag)) {
             printTagNotFound("string", tag, defaultValue);
+            setValue(tag, defaultValue);
             return defaultValue;
         }
         QString value = getStringValue(tag);

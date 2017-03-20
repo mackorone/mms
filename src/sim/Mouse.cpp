@@ -10,7 +10,6 @@
 
 #include "Assert.h"
 #include "CPMath.h"
-#include "Directory.h"
 #include "GeometryUtilities.h"
 #include "MouseParser.h"
 #include "Param.h"
@@ -31,20 +30,15 @@ Mouse::Mouse(const Maze* maze) : m_maze(maze) {
     m_startingDirection = m_startedDirection;
     m_initialRotation = DIRECTION_TO_ANGLE.value(m_startingDirection);
     m_currentRotation = m_initialRotation;
-
-    // Load the mouse geometry
-    reload("default.xml");
 }
 
 bool Mouse::reload(const QString& mouseFile) {
-
-    // TODO: MACK - I need a mutex here so as to not conflict with update()
 
     // We begin with the assumption that the initialization will succeed
     bool success = true;
 
     // Create the mouse parser object
-    MouseParser parser(Directory::get()->getResMouseDirectory() + mouseFile, &success);
+    MouseParser parser(mouseFile, &success);
     if (!success) { // A checkpoint so that we can fail faster
         return false;
     }

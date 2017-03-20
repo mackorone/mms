@@ -60,11 +60,8 @@ QSet<QPair<int, int>> MazeChecker::getCenterTiles(int width, int height) {
 }
 
 QVector<QString> MazeChecker::isNonempty(const BasicMaze& maze) {
-    // TODO: MACK - test this
-    for (int i = 0; i < maze.size(); i += 1) {
-        if (0 < maze.at(i).size()) {
-            return {};
-        }
+    if (0 < maze.size() && 0 < maze.at(0).size()) {
+        return {};
     }
     return {"The maze is empty."};
 }

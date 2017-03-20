@@ -5,7 +5,6 @@
 #include <QQueue>
 
 #include "Assert.h"
-#include "Directory.h"
 #include "Logging.h"
 #include "MazeChecker.h"
 #include "MazeFileType.h"

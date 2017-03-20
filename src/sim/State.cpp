@@ -20,7 +20,6 @@ State* State::getInstance() {
 }
 
 State::State() {
-    m_runId = "";
     m_crashed = false;
     m_layoutType = STRING_TO_LAYOUT_TYPE.value(P()->defaultLayoutType());
     m_rotateZoomedMap = P()->defaultRotateZoomedMap();
@@ -39,15 +38,6 @@ State::State() {
     m_arrowKeys.insert(Qt::Key_Down, false);
     m_arrowKeys.insert(Qt::Key_Left, false);
     m_arrowKeys.insert(Qt::Key_Right, false);
-}
-
-QString State::runId() {
-    return m_runId;
-}
-
-void State::setRunId(const QString& runId) {
-    ASSERT_TR(m_runId.isEmpty());
-    m_runId = runId;
 }
 
 bool State::crashed() {

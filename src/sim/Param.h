@@ -64,7 +64,6 @@ public:
     bool printLateCollisionDetections();
     int numberOfCircleApproximationPoints();
     int numberOfSensorEdgePoints();
-    int numberOfArchivedRuns();
 
     // Maze parameters
     double wallWidth();
@@ -129,7 +128,6 @@ private:
     bool m_printLateCollisionDetections;
     int m_numberOfCircleApproximationPoints;
     int m_numberOfSensorEdgePoints;
-    int m_numberOfArchivedRuns;
 
     // Maze parameters
     double m_wallWidth;

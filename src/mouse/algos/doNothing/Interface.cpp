@@ -3,11 +3,6 @@
 #include "Printer.h"
 #include "Reader.h"
 
-void Interface::setMouseFile(const std::string& mouseFile) {
-    PRINT("setMouseFile", mouseFile);
-    READ();
-}
-
 void Interface::setInterfaceType(const std::string& interfaceType) {
     PRINT("setInterfaceType", interfaceType);
     READ();

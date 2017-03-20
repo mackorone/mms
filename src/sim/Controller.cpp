@@ -1,9 +1,8 @@
 #include "Controller.h"
 
-#include "Directory.h"
 #include "Logging.h"
 #include "Model.h"
-#include "MouseAlgos.h"
+#include "SettingsMouseAlgos.h"
 #include "MouseChecker.h"
 #include "Param.h"
 #include "ProcessUtilities.h"
@@ -57,8 +56,8 @@ void Controller::start(const QString& algoName) {
 
     // TODO: MACK - check settings actually contains these values and contains
     // and path validity here
-    QString dirPath = MouseAlgos::getDirPath(algoName);
-    QString runCommand = MouseAlgos::getRunCommand(algoName);
+    QString dirPath = SettingsMouseAlgos::getDirPath(algoName);
+    QString runCommand = SettingsMouseAlgos::getRunCommand(algoName);
 
     // Create the subprocess on which we'll execute the algorithm
     m_process = new QProcess();
@@ -170,15 +169,8 @@ QString Controller::processCommand(const QString& command) {
     QStringList tokens = command.split(" ", QString::SkipEmptyParts);
     QString function = tokens.at(0);
 
-    // TODO: We don't need static config - we can just update the values as we get them
     // TODO: MACK - maybe just call these "update"?
-    if (function == "setMouseFile") {
-        // TODO: MACK - should I do something with success/failure flag?
-        // TODO: MACK - call this reload
-        m_mouseInterface->setMouseFile(tokens.at(1));
-        return ACK_STRING;
-    }
-    else if (function == "useContinuousInterface") {
+    if (function == "useContinuousInterface") {
         if (m_interfaceTypeFinalized) {
             // TODO: MACK - error string here
         }

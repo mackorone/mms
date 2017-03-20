@@ -20,10 +20,16 @@ Settings* Settings::get() {
     return INSTANCE;
 }
 
-Settings::Settings() {
-    QCoreApplication::setOrganizationName("mackorone");
-    QCoreApplication::setOrganizationDomain("www.github.com/mackorone");
-    QCoreApplication::setApplicationName("mms");
+QString Settings::value(QString group, QString key) {
+    QSettings settings;
+    settings.beginGroup(group);
+    return settings.value(key).toString();
+}
+
+void Settings::update(QString group, QString key, QString value) {
+    QSettings settings;
+    settings.beginGroup(group);
+    settings.setValue(key, value);
 }
 
 QStringList Settings::values(QString group, QString key) {
@@ -125,6 +131,12 @@ void Settings::update(
         }
         add(group, entry);
     }
+}
+
+Settings::Settings() {
+    QCoreApplication::setOrganizationName("mackorone");
+    QCoreApplication::setOrganizationDomain("www.github.com/mackorone");
+    QCoreApplication::setApplicationName("mms");
 }
 
 QVector<QMap<QString, QString>> Settings::getGroup(QString group) {

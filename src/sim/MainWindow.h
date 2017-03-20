@@ -9,6 +9,7 @@
 #include <QTimer>
 #include <QVector>
 
+#include "ConfigDialog.h"
 #include "Controller.h"
 #include "Map.h"
 #include "Maze.h"
@@ -53,16 +54,21 @@ private:
 
     // TODO: MACK - hastily implemented helper functions
     void setMaze(Maze* maze);
-    void refreshMazeFiles();
+    void refreshSettingsMazeFiles();
     void togglePause();
+    void editParameters();
 
-    // Maze algo building/running
+    // Maze algo
+    void importMazeAlgo();
+    void editMazeAlgo();
     void buildMazeAlgo();
     void runMazeAlgo();
     QProcess* m_buildMazeAlgoProcess;
     QProcess* m_runMazeAlgoProcess;
 
-    // Mouse algo building/running
+    // Mouse algo
+    void importMouseAlgo();
+    void editMouseAlgo();
     void buildMouseAlgo();
     void runMouseAlgo();
     void stopMouseAlgo();

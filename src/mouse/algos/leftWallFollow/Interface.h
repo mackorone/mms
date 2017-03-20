@@ -9,7 +9,6 @@ public:
     // ----- Functions for setting/updating mouse options ----- //
 
     // Static options (should set at the beginning)
-    void setMouseFile(const std::string& mouseFile);
     void useContinuousInterface();
     void setInitialDirection(char initialDirection);
     void setTileTextRowsAndCols(int numRows, int numCols);

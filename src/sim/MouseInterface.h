@@ -36,7 +36,6 @@ public:
     // Config-related functions
     char getStartedDirection();
     void setStartingDirection(char direction);
-    void setMouseFile(const QString& mouseFile);
     void setWheelSpeedFraction(double wheelSpeedFraction);
 
     // Misc functions

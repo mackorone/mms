@@ -54,11 +54,6 @@ void MouseInterface::setStartingDirection(char direction) {
     m_mouse->setStartingDirection(CHAR_TO_DIRECTION.value(direction));
 }
 
-void MouseInterface::setMouseFile(const QString& mouseFile) {
-    // TODO: MACK - validation here
-    m_mouse->reload(mouseFile);
-}
-
 void MouseInterface::setWheelSpeedFraction(double wheelSpeedFraction) {
     // TODO: MACK - validation here
     /*

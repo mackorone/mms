@@ -7,7 +7,6 @@
 
 #include "Color.h"
 #include "Direction.h"
-#include "Directory.h"
 #include "LayoutType.h"
 #include "Logging.h"
 #include "MazeFileType.h"
@@ -32,13 +31,13 @@ Param* Param::getInstance() {
 Param::Param() {
 
     // Create the parameter parser object
-    ParamParser parser(Directory::get()->getResDirectory() + "parameters.xml");
+    ParamParser parser;
 
     // Graphical Parameters
     m_defaultWindowWidth = parser.getIntIfHasIntAndNotLessThan(
-        "default-window-width", 990, 100);
+        "default-window-width", 1200, 100);
     m_defaultWindowHeight = parser.getIntIfHasIntAndNotLessThan(
-        "default-window-height", 700, 100);
+        "default-window-height", 633, 100);
     m_defaultLayoutType = parser.getStringIfHasStringAndIsLayoutType(
         "default-layout-type", LAYOUT_TYPE_TO_STRING.value(LayoutType::FULL));
     m_minZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange(
@@ -84,15 +83,15 @@ Param::Param() {
     m_mouseViewColor = parser.getStringIfHasStringAndIsColor(
         "mouse-view-color", COLOR_TO_STRING.value(Color::WHITE));
     m_defaultWallTruthVisible = parser.getBoolIfHasBool(
-        "default-wall-truth-visible", false);
+        "default-wall-truth-visible", true);
     m_defaultTileColorsVisible = parser.getBoolIfHasBool(
         "default-tile-colors-visible", true);
     m_defaultTileFogVisible = parser.getBoolIfHasBool(
-        "default-tile-fog-visible", true);
+        "default-tile-fog-visible", false);
     m_defaultTileTextVisible = parser.getBoolIfHasBool(
         "default-tile-text-visible", true);
     m_defaultTileDistanceVisible = parser.getBoolIfHasBool(
-        "default-tile-distance-visible", true);
+        "default-tile-distance-visible", false);
     m_tileFogAlpha = parser.getDoubleIfHasDoubleAndInRange(
         "tile-fog-alpha", 0.15, 0.0, 1.0);
     m_distanceCorrectTileBaseColor = parser.getStringIfHasStringAndIsColor(
@@ -125,19 +124,17 @@ Param::Param() {
     m_minSleepDuration = parser.getDoubleIfHasDoubleAndInRange(
         "min-sleep-duration", 5, 1, 25);
     m_mousePositionUpdateRate = parser.getIntIfHasIntAndInRange(
-        "mouse-position-update-rate", 500, 1, 2000);
+        "mouse-position-update-rate", 100, 1, 2000);
     m_printLateMousePostitionUpdates = parser.getBoolIfHasBool(
-        "print-late-mouse-position-updates", false);
+        "print-late-mouse-position-updates", true);
     m_collisionDetectionRate = parser.getIntIfHasIntAndInRange(
         "collision-detection-rate", 40, 1, 100);
     m_printLateCollisionDetections = parser.getBoolIfHasBool(
-        "print-late-collision-detections", false);
+        "print-late-collision-detections", true);
     m_numberOfCircleApproximationPoints = parser.getIntIfHasIntAndInRange(
         "number-of-circle-approximation-points", 8, 3, 30);
     m_numberOfSensorEdgePoints = parser.getIntIfHasIntAndInRange(
         "number-of-sensor-edge-points", 3, 2, 10);
-    m_numberOfArchivedRuns = parser.getIntIfHasIntAndInRange(
-        "number-of-archived-runs", 20, 1, 1000);
 
     // Maze Parameters
     m_wallWidth = parser.getDoubleIfHasDoubleAndInRange(
@@ -332,10 +329,6 @@ int Param::numberOfCircleApproximationPoints() {
 
 int Param::numberOfSensorEdgePoints() {
     return m_numberOfSensorEdgePoints;
-}
-
-int Param::numberOfArchivedRuns() {
-    return m_numberOfArchivedRuns;
 }
 
 double Param::wallWidth() {

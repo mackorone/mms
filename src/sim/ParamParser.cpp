@@ -1,42 +1,74 @@
 #include "ParamParser.h"
 
-#include <QDebug>
-
 #include "Assert.h"
 #include "Color.h"
+#include "ConfigDialog.h"
+#include "ConfigDialogField.h"
 #include "Direction.h"
 #include "LayoutType.h"
 #include "Logging.h"
 #include "MazeFileType.h"
+#include "Settings.h"
 #include "SimUtilities.h"
 #include "TileTextAlignment.h"
 
 namespace mms {
 
-const QString ParamParser::PARAMETERS_TAG = "parameters";
+const QString ParamParser::GROUP_PREFIX = "miscellaneous";
 
-ParamParser::ParamParser(const QString& filePath) {
-    m_fileIsReadable = m_doc.load_file(filePath.toStdString().c_str());
-    if (!m_fileIsReadable) {
-        qWarning().noquote().nospace()
-            << "Unable to read parameters from \"" << filePath << "\": "
-            << m_fileIsReadable.description() << ". Using default values for"
-            << " all parameters.";
-            
+void ParamParser::execEditDialog() {
+
+    /*
+    ConfigDialogField windowWidthField;
+    windowWidthField.key = WINDOW_WIDTH_KEY;
+    windowWidthField.label = "Window Width";
+    windowWidthField.initialValue = getValue(WINDOW_WIDTH_KEY);
+
+    // Execute the dialog
+    ConfigDialog dialog(
+        "Edit",
+        "Miscellaneous",
+        {
+            windowWidthField,
+        },
+        false
+    );
+
+    // Cancel was pressed
+    if (dialog.exec() == QDialog::Rejected) {
+        return;
     }
-    m_root = m_doc.child(PARAMETERS_TAG.toStdString().c_str());
+
+    // Ok was pressed
+    for (const QString& key : {
+        WINDOW_WIDTH_KEY,
+    }) {
+        Settings::get()->update(GROUP_PREFIX, key, dialog.getValue(key));
+    }
+    */
 }
 
+QString ParamParser::getValue(const QString& key) {
+    return Settings::get()->value(GROUP_PREFIX, key);
+}
+
+void ParamParser::setValue(const QString& key, const QString& value) {
+    Settings::get()->update(GROUP_PREFIX, key, value);
+}
+
+// TODO: MACK
+
+// TODO: MACK - rename tag to key
 bool ParamParser::hasBoolValue(const QString& tag){
-    return SimUtilities::isBool(m_root.child(tag.toStdString().c_str()).child_value());
+    return SimUtilities::isBool(getValue(tag));
 }
 
 bool ParamParser::hasDoubleValue(const QString& tag){
-    return SimUtilities::isDouble(m_root.child(tag.toStdString().c_str()).child_value());
+    return SimUtilities::isDouble(getValue(tag));
 }
 
 bool ParamParser::hasIntValue(const QString& tag){
-    return SimUtilities::isInt(m_root.child(tag.toStdString().c_str()).child_value());
+    return SimUtilities::isInt(getValue(tag));
 }
 
 bool ParamParser::hasCharValue(const QString& tag){
@@ -44,32 +76,33 @@ bool ParamParser::hasCharValue(const QString& tag){
 }
 
 bool ParamParser::hasStringValue(const QString& tag){
-    return (!QString(m_root.child(tag.toStdString().c_str()).child_value()).isEmpty());
+    return !getValue(tag).isEmpty();
 }
 
 bool ParamParser::getBoolValue(const QString& tag) {
-    return SimUtilities::strToBool(m_root.child(tag.toStdString().c_str()).child_value());
+    return SimUtilities::strToBool(getValue(tag));
 }
 
 double ParamParser::getDoubleValue(const QString& tag) {
-    return SimUtilities::strToDouble(m_root.child(tag.toStdString().c_str()).child_value());
+    return SimUtilities::strToDouble(getValue(tag));
 }
 
 int ParamParser::getIntValue(const QString& tag) {
-    return SimUtilities::strToInt(m_root.child(tag.toStdString().c_str()).child_value());
+    return SimUtilities::strToInt(getValue(tag));
 }
 
 char ParamParser::getCharValue(const QString& tag) {
-    return QString(m_root.child(tag.toStdString().c_str()).child_value()).at(0).toLatin1();
+    return getValue(tag).at(0).toLatin1();
 }
 
 QString ParamParser::getStringValue(const QString& tag) {
-    return QString(m_root.child(tag.toStdString().c_str()).child_value());
+    return getValue(tag);
 }
 
 bool ParamParser::getBoolIfHasBool(const QString& tag, bool defaultValue) {
     if (!hasBoolValue(tag)) {
         printTagNotFound("bool", tag, (defaultValue ? "true" : "false"));
+        setValue(tag, (defaultValue ? "true" : "false"));
         return defaultValue;
     }
     return getBoolValue(tag);
@@ -78,6 +111,7 @@ bool ParamParser::getBoolIfHasBool(const QString& tag, bool defaultValue) {
 double ParamParser::getDoubleIfHasDouble(const QString& tag, double defaultValue) {
     if (!hasDoubleValue(tag)) {
         printTagNotFound("double", tag, QString::number(defaultValue));
+        setValue(tag, QString::number(defaultValue));
         return defaultValue;
     }
     return getDoubleValue(tag);
@@ -86,6 +120,7 @@ double ParamParser::getDoubleIfHasDouble(const QString& tag, double defaultValue
 int ParamParser::getIntIfHasInt(const QString& tag, int defaultValue) {
     if (!hasIntValue(tag)) {
         printTagNotFound("int", tag, QString::number(defaultValue));
+        setValue(tag, QString::number(defaultValue));
         return defaultValue;
     }
     return getIntValue(tag);
@@ -94,6 +129,7 @@ int ParamParser::getIntIfHasInt(const QString& tag, int defaultValue) {
 char ParamParser::getCharIfHasChar(const QString& tag, char defaultValue) {
     if (!hasCharValue(tag)) {
         printTagNotFound("char", tag, QString("\"") + defaultValue + QString("\""));
+        setValue(tag, QChar(defaultValue));
         return defaultValue;
     }
     return getCharValue(tag);
@@ -102,6 +138,7 @@ char ParamParser::getCharIfHasChar(const QString& tag, char defaultValue) {
 QString ParamParser::getStringIfHasString(const QString& tag, const QString& defaultValue) {
     if (!hasStringValue(tag)) {
         printTagNotFound("string", tag, QString("\"") + defaultValue + QString("\""));
+        setValue(tag, defaultValue);
         return defaultValue;
     }
     return getStringValue(tag);
@@ -152,11 +189,13 @@ QString ParamParser::getStringIfHasStringAndIsTileTextAlignment(const QString& t
 }
 
 void ParamParser::printTagNotFound(const QString& type, const QString& tag, const QString& defaultValue) {
+    // TODO: MACK
+    /*
     if (m_fileIsReadable) {
-        qWarning().noquote().nospace()
-            << "Could not find " << type << " parameter \"" << tag << "\"."
-            << " Using default value of " << defaultValue << ".";
-    }
+    */
+    qWarning().noquote().nospace()
+        << "Could not find " << type << " parameter \"" << tag << "\"."
+        << " Using default value of " << defaultValue << ".";
 }
 
 void ParamParser::printLessThan(const QString& type, const QString& tag, const QString& value,
