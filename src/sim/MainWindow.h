@@ -56,7 +56,6 @@ private:
     void setMaze(Maze* maze);
     void refreshSettingsMazeFiles();
     void togglePause();
-    void editParameters();
 
     // Maze algo
     void importMazeAlgo();

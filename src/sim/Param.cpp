@@ -30,120 +30,117 @@ Param* Param::getInstance() {
 
 Param::Param() {
 
-    // Create the parameter parser object
-    ParamParser parser;
-
     // Graphical Parameters
-    m_defaultWindowWidth = parser.getIntIfHasIntAndNotLessThan(
+    m_defaultWindowWidth = ParamParser::getIntIfHasIntAndNotLessThan(
         "default-window-width", 1200, 100);
-    m_defaultWindowHeight = parser.getIntIfHasIntAndNotLessThan(
+    m_defaultWindowHeight = ParamParser::getIntIfHasIntAndNotLessThan(
         "default-window-height", 633, 100);
-    m_defaultLayoutType = parser.getStringIfHasStringAndIsLayoutType(
+    m_defaultLayoutType = ParamParser::getStringIfHasStringAndIsLayoutType(
         "default-layout-type", LAYOUT_TYPE_TO_STRING.value(LayoutType::FULL));
-    m_minZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange(
+    m_minZoomedMapScale = ParamParser::getDoubleIfHasDoubleAndInRange(
         "min-zoomed-map-scale", 0.02, 0.01, 0.04);
-    m_maxZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange(
+    m_maxZoomedMapScale = ParamParser::getDoubleIfHasDoubleAndInRange(
         "max-zoomed-map-scale", 1.0, 0.5, 2.0);
-    m_defaultZoomedMapScale = parser.getDoubleIfHasDoubleAndInRange(
+    m_defaultZoomedMapScale = ParamParser::getDoubleIfHasDoubleAndInRange(
         "default-zoomed-map-scale", 0.1, m_minZoomedMapScale, m_maxZoomedMapScale);
-    m_defaultRotateZoomedMap = parser.getBoolIfHasBool(
+    m_defaultRotateZoomedMap = ParamParser::getBoolIfHasBool(
         "default-rotate-zoomed-map", false);
-    m_tileBaseColor = parser.getStringIfHasStringAndIsColor(
+    m_tileBaseColor = ParamParser::getStringIfHasStringAndIsColor(
         "tile-base-color", COLOR_TO_STRING.value(Color::BLACK));
-    m_tileWallColor = parser.getStringIfHasStringAndIsColor(
+    m_tileWallColor = ParamParser::getStringIfHasStringAndIsColor(
         "tile-wall-color", COLOR_TO_STRING.value(Color::RED));
-    m_tileCornerColor = parser.getStringIfHasStringAndIsColor(
+    m_tileCornerColor = ParamParser::getStringIfHasStringAndIsColor(
         "tile-corner-color", COLOR_TO_STRING.value(Color::GRAY));
-    m_tileFogColor = parser.getStringIfHasStringAndIsColor(
+    m_tileFogColor = ParamParser::getStringIfHasStringAndIsColor(
         "tile-fog-color", COLOR_TO_STRING.value(Color::GRAY));
-    m_tileTextFontImage = parser.getStringIfHasString(
+    m_tileTextFontImage = ParamParser::getStringIfHasString(
         "tile-text-font-image", "Unispace-Bold.png");
-    m_tileTextBorderFraction = parser.getDoubleIfHasDoubleAndInRange(
+    m_tileTextBorderFraction = ParamParser::getDoubleIfHasDoubleAndInRange(
         "tile-text-border-fraction", .05, .00, .50);
-    m_tileTextAlignment = parser.getStringIfHasStringAndIsTileTextAlignment(
+    m_tileTextAlignment = ParamParser::getStringIfHasStringAndIsTileTextAlignment(
         "tile-text-alignment", TILE_TEXT_ALIGNMENT_TO_STRING.value(TileTextAlignment::CENTER_CENTER));
-    m_tileUndeclaredWallColor = parser.getStringIfHasStringAndIsColor(
+    m_tileUndeclaredWallColor = ParamParser::getStringIfHasStringAndIsColor(
         "tile-undeclared-wall-color", COLOR_TO_STRING.value(Color::DARK_RED));
-    m_tileUndeclaredNoWallColor = parser.getStringIfHasStringAndIsColor(
+    m_tileUndeclaredNoWallColor = ParamParser::getStringIfHasStringAndIsColor(
         "tile-undeclared-no-wall-color", COLOR_TO_STRING.value(Color::DARK_GRAY));
-    m_tileIncorrectlyDeclaredWallColor = parser.getStringIfHasStringAndIsColor(
+    m_tileIncorrectlyDeclaredWallColor = ParamParser::getStringIfHasStringAndIsColor(
         "tile-incorrectly-declared-wall-color", COLOR_TO_STRING.value(Color::ORANGE));
-    m_tileIncorrectlyDeclaredNoWallColor = parser.getStringIfHasStringAndIsColor(
+    m_tileIncorrectlyDeclaredNoWallColor = ParamParser::getStringIfHasStringAndIsColor(
         "tile-incorrectly-declared-no-wall-color", COLOR_TO_STRING.value(Color::DARK_CYAN));
-    m_mouseBodyColor = parser.getStringIfHasStringAndIsColor(
+    m_mouseBodyColor = ParamParser::getStringIfHasStringAndIsColor(
         "mouse-body-color", COLOR_TO_STRING.value(Color::BLUE));
-    m_mouseCenterOfMassColor = parser.getStringIfHasStringAndIsColor(
+    m_mouseCenterOfMassColor = ParamParser::getStringIfHasStringAndIsColor(
         "mouse-center-of-mass-color", COLOR_TO_STRING.value(Color::ORANGE));
-    m_mouseWheelColor = parser.getStringIfHasStringAndIsColor(
+    m_mouseWheelColor = ParamParser::getStringIfHasStringAndIsColor(
         "mouse-wheel-color", COLOR_TO_STRING.value(Color::GREEN));
-    m_mouseWheelSpeedIndicatorColor = parser.getStringIfHasStringAndIsColor(
+    m_mouseWheelSpeedIndicatorColor = ParamParser::getStringIfHasStringAndIsColor(
         "mouse-wheel-speed-indicator-color", COLOR_TO_STRING.value(Color::DARK_GREEN));
-    m_mouseSensorColor = parser.getStringIfHasStringAndIsColor(
+    m_mouseSensorColor = ParamParser::getStringIfHasStringAndIsColor(
         "mouse-sensor-color", COLOR_TO_STRING.value(Color::GREEN));
-    m_mouseViewColor = parser.getStringIfHasStringAndIsColor(
+    m_mouseViewColor = ParamParser::getStringIfHasStringAndIsColor(
         "mouse-view-color", COLOR_TO_STRING.value(Color::WHITE));
-    m_defaultWallTruthVisible = parser.getBoolIfHasBool(
+    m_defaultWallTruthVisible = ParamParser::getBoolIfHasBool(
         "default-wall-truth-visible", true);
-    m_defaultTileColorsVisible = parser.getBoolIfHasBool(
+    m_defaultTileColorsVisible = ParamParser::getBoolIfHasBool(
         "default-tile-colors-visible", true);
-    m_defaultTileFogVisible = parser.getBoolIfHasBool(
+    m_defaultTileFogVisible = ParamParser::getBoolIfHasBool(
         "default-tile-fog-visible", false);
-    m_defaultTileTextVisible = parser.getBoolIfHasBool(
+    m_defaultTileTextVisible = ParamParser::getBoolIfHasBool(
         "default-tile-text-visible", true);
-    m_defaultTileDistanceVisible = parser.getBoolIfHasBool(
+    m_defaultTileDistanceVisible = ParamParser::getBoolIfHasBool(
         "default-tile-distance-visible", false);
-    m_tileFogAlpha = parser.getDoubleIfHasDoubleAndInRange(
+    m_tileFogAlpha = ParamParser::getDoubleIfHasDoubleAndInRange(
         "tile-fog-alpha", 0.15, 0.0, 1.0);
-    m_distanceCorrectTileBaseColor = parser.getStringIfHasStringAndIsColor(
+    m_distanceCorrectTileBaseColor = ParamParser::getStringIfHasStringAndIsColor(
         "distance-correct-tile-base-color", COLOR_TO_STRING.value(Color::DARK_YELLOW));
 
     // Simulation Parameters
-    bool useRandomSeed = parser.getBoolIfHasBool(
+    bool useRandomSeed = ParamParser::getBoolIfHasBool(
         "use-random-seed", false);
-    if (useRandomSeed && !parser.hasIntValue("random-seed")) {
+    if (useRandomSeed && !ParamParser::hasIntValue("random-seed")) {
         qWarning().noquote().nospace()
             << "The value of use-random-seed is true but no valid random-seed"
             << " value was provided. Setting \"use-random-seed\" to false.";
         useRandomSeed = false;
     }
-    m_randomSeed = (useRandomSeed ? parser.getIntValue("random-seed") : std::random_device()());
-    m_defaultPaused = parser.getBoolIfHasBool(
+    m_randomSeed = (useRandomSeed ? ParamParser::getIntValue("random-seed") : std::random_device()());
+    m_defaultPaused = ParamParser::getBoolIfHasBool(
         "default-paused", false);
-    m_minSimSpeed = parser.getDoubleIfHasDoubleAndInRange(
+    m_minSimSpeed = ParamParser::getDoubleIfHasDoubleAndInRange(
         "min-sim-speed", 0.1, 0.01, 0.5);
-    m_maxSimSpeed = parser.getDoubleIfHasDoubleAndInRange(
+    m_maxSimSpeed = ParamParser::getDoubleIfHasDoubleAndInRange(
         "max-sim-speed", 10.0, 2.0, 100.0);
-    m_defaultSimSpeed = parser.getDoubleIfHasDoubleAndInRange(
+    m_defaultSimSpeed = ParamParser::getDoubleIfHasDoubleAndInRange(
         "default-sim-speed", 1.0, m_minSimSpeed, m_maxSimSpeed);
-    m_collisionDetectionEnabled = parser.getBoolIfHasBool(
+    m_collisionDetectionEnabled = ParamParser::getBoolIfHasBool(
         "collision-detection-enabled", true);
-    m_crashMessage = parser.getStringIfHasString(
+    m_crashMessage = ParamParser::getStringIfHasString(
         "crash-message", "CRASH");
-    m_defaultTileTextCharacter = parser.getCharIfHasChar(
+    m_defaultTileTextCharacter = ParamParser::getCharIfHasChar(
         "default-tile-text-character", '?');
-    m_minSleepDuration = parser.getDoubleIfHasDoubleAndInRange(
+    m_minSleepDuration = ParamParser::getDoubleIfHasDoubleAndInRange(
         "min-sleep-duration", 5, 1, 25);
-    m_mousePositionUpdateRate = parser.getIntIfHasIntAndInRange(
+    m_mousePositionUpdateRate = ParamParser::getIntIfHasIntAndInRange(
         "mouse-position-update-rate", 100, 1, 2000);
-    m_printLateMousePostitionUpdates = parser.getBoolIfHasBool(
+    m_printLateMousePostitionUpdates = ParamParser::getBoolIfHasBool(
         "print-late-mouse-position-updates", true);
-    m_collisionDetectionRate = parser.getIntIfHasIntAndInRange(
+    m_collisionDetectionRate = ParamParser::getIntIfHasIntAndInRange(
         "collision-detection-rate", 40, 1, 100);
-    m_printLateCollisionDetections = parser.getBoolIfHasBool(
+    m_printLateCollisionDetections = ParamParser::getBoolIfHasBool(
         "print-late-collision-detections", true);
-    m_numberOfCircleApproximationPoints = parser.getIntIfHasIntAndInRange(
+    m_numberOfCircleApproximationPoints = ParamParser::getIntIfHasIntAndInRange(
         "number-of-circle-approximation-points", 8, 3, 30);
-    m_numberOfSensorEdgePoints = parser.getIntIfHasIntAndInRange(
+    m_numberOfSensorEdgePoints = ParamParser::getIntIfHasIntAndInRange(
         "number-of-sensor-edge-points", 3, 2, 10);
 
     // Maze Parameters
-    m_wallWidth = parser.getDoubleIfHasDoubleAndInRange(
+    m_wallWidth = ParamParser::getDoubleIfHasDoubleAndInRange(
         "wall-width", 0.012, 0.006, 0.024);
-    m_wallLength = parser.getDoubleIfHasDoubleAndInRange(
+    m_wallLength = ParamParser::getDoubleIfHasDoubleAndInRange(
         "wall-length", 0.168, 0.084, 0.336);
-    m_mazeMirrored = parser.getBoolIfHasBool(
+    m_mazeMirrored = ParamParser::getBoolIfHasBool(
         "maze-mirrored", false);
-    m_mazeRotations = parser.getIntIfHasIntAndInRange(
+    m_mazeRotations = ParamParser::getIntIfHasIntAndInRange(
         "maze-rotations", 0, 0, 3);
 }
 

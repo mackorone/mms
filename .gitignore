@@ -9,6 +9,7 @@ zip/
 
 *.pyc
 *.pyo
+*.class
 *.swp
 
 .fuse_hidden*

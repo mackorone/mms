@@ -16,6 +16,8 @@ namespace mms {
 
 const QString ParamParser::GROUP_PREFIX = "miscellaneous";
 
+// TODO: MACK
+
 void ParamParser::execEditDialog() {
 
     /*

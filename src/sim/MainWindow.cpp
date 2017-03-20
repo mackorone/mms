@@ -11,10 +11,10 @@
 #include "MazeFileType.h"
 #include "Model.h"
 #include "Param.h"
+#include "ParamParser.h"
 #include "ProcessUtilities.h"
 #include "SettingsMazeAlgos.h"
 #include "SettingsMazeFiles.h"
-#include "SettingsMiscellaneous.h"
 #include "SettingsMouseAlgos.h"
 #include "SimUtilities.h"
 #include "State.h"
@@ -73,7 +73,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui.runButton, &QPushButton::clicked, this, &MainWindow::runMouseAlgo);
 
     // TODO: MACK
-    connect(ui.editParametersButton, &QPushButton::clicked, this, &MainWindow::editParameters);
+    connect(ui.editParametersButton, &QPushButton::clicked, this, [](){
+        ParamParser::execEditDialog();
+    });
 
     // TODO: MACK - connect the import mazes button
     connect(
@@ -297,10 +299,6 @@ void MainWindow::refreshSettingsMazeFiles() {
         ui.mazeFilesTable->setItem(i, 0, new QTableWidgetItem(QFileInfo(path).fileName()));
         ui.mazeFilesTable->setItem(i, 1, new QTableWidgetItem(path));
     }
-}
-
-void MainWindow::editParameters() {
-    SettingsMiscellaneous::execEditDialog();
 }
 
 // TODO: MACK

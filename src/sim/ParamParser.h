@@ -13,46 +13,44 @@ class ParamParser {
 
 public:
 
-    // TODO: MACK
-    //ParamParser() = delete;
-    //ParamParser();
+    ParamParser() = delete;
     static void execEditDialog(); // TODO: MACK - shouldn't include window width
 
     // Check the existence and type of a value
-    bool hasBoolValue(const QString& tag);
-    bool hasDoubleValue(const QString& tag);
-    bool hasIntValue(const QString& tag);
-    bool hasCharValue(const QString& tag);
-    bool hasStringValue(const QString& tag);
+    static bool hasBoolValue(const QString& tag);
+    static bool hasDoubleValue(const QString& tag);
+    static bool hasIntValue(const QString& tag);
+    static bool hasCharValue(const QString& tag);
+    static bool hasStringValue(const QString& tag);
 
     // Retrieve the particular value
-    bool getBoolValue(const QString& tag);
-    double getDoubleValue(const QString& tag);
-    int getIntValue(const QString& tag);
-    char getCharValue(const QString& tag);
-    QString getStringValue(const QString& tag);
+    static bool getBoolValue(const QString& tag);
+    static double getDoubleValue(const QString& tag);
+    static int getIntValue(const QString& tag);
+    static char getCharValue(const QString& tag);
+    static QString getStringValue(const QString& tag);
 
     // Get a value if we can, otherwise return a default
-    bool getBoolIfHasBool(const QString& tag, bool defaultValue);
-    double getDoubleIfHasDouble(const QString& tag, double defaultValue);
-    int getIntIfHasInt(const QString& tag, int defaultValue);
-    char getCharIfHasChar(const QString& tag, char defaultValue);
-    QString getStringIfHasString(const QString& tag, const QString& defaultValue);
+    static bool getBoolIfHasBool(const QString& tag, bool defaultValue);
+    static double getDoubleIfHasDouble(const QString& tag, double defaultValue);
+    static int getIntIfHasInt(const QString& tag, int defaultValue);
+    static char getCharIfHasChar(const QString& tag, char defaultValue);
+    static QString getStringIfHasString(const QString& tag, const QString& defaultValue);
 
     // If we can get a numeric value and it's valid then return it, else return default
-    double getDoubleIfHasDoubleAndNotLessThan(const QString& tag, double defaultValue, double min);
-    double getDoubleIfHasDoubleAndNotGreaterThan(const QString& tag, double defaultValue, double max);
-    double getDoubleIfHasDoubleAndInRange(const QString& tag, double defaultValue, double min, double max);
-    int getIntIfHasIntAndNotLessThan(const QString& tag, int defaultValue, int min);
-    int getIntIfHasIntAndNotGreaterThan(const QString& tag, int defaultValue, int max);
-    int getIntIfHasIntAndInRange(const QString& tag, int defaultValue, int min, int max);
+    static double getDoubleIfHasDoubleAndNotLessThan(const QString& tag, double defaultValue, double min);
+    static double getDoubleIfHasDoubleAndNotGreaterThan(const QString& tag, double defaultValue, double max);
+    static double getDoubleIfHasDoubleAndInRange(const QString& tag, double defaultValue, double min, double max);
+    static int getIntIfHasIntAndNotLessThan(const QString& tag, int defaultValue, int min);
+    static int getIntIfHasIntAndNotGreaterThan(const QString& tag, int defaultValue, int max);
+    static int getIntIfHasIntAndInRange(const QString& tag, int defaultValue, int min, int max);
 
     // If we can get a value and it's valid/special then return it, else return default
-    QString getStringIfHasStringAndIsColor(const QString& tag, const QString& defaultValue);
-    QString getStringIfHasStringAndIsDirection(const QString& tag, const QString& defaultValue);
-    QString getStringIfHasStringAndIsLayoutType(const QString& tag, const QString& defaultValue);
-    QString getStringIfHasStringAndIsMazeFileType(const QString& tag, const QString& defaultValue);
-    QString getStringIfHasStringAndIsTileTextAlignment(const QString& tag, const QString& defaultValue);
+    static QString getStringIfHasStringAndIsColor(const QString& tag, const QString& defaultValue);
+    static QString getStringIfHasStringAndIsDirection(const QString& tag, const QString& defaultValue);
+    static QString getStringIfHasStringAndIsLayoutType(const QString& tag, const QString& defaultValue);
+    static QString getStringIfHasStringAndIsMazeFileType(const QString& tag, const QString& defaultValue);
+    static QString getStringIfHasStringAndIsTileTextAlignment(const QString& tag, const QString& defaultValue);
 
 private:
 
@@ -62,17 +60,17 @@ private:
     static void setValue(const QString& key, const QString& value);
 
 
-    void printTagNotFound(const QString& type, const QString& tag, const QString& defaultValue);
-    void printLessThan(const QString& type, const QString& tag, const QString& value,
+    static void printTagNotFound(const QString& type, const QString& tag, const QString& defaultValue);
+    static void printLessThan(const QString& type, const QString& tag, const QString& value,
         const QString& defaultValue, const QString& min);
-    void printGreaterThan(const QString& type, const QString& tag, const QString& value,
+    static void printGreaterThan(const QString& type, const QString& tag, const QString& value,
         const QString& defaultValue, const QString& max);
-    void printNotSpecialString(const QString& type, const QString& tag,
+    static void printNotSpecialString(const QString& type, const QString& tag,
         const QString& value, const QString& defaultValue);
 
     // Generic helper method for getting numeric values within a specific range
     template<class T>
-    T getNumIfHasNumAndInRange(const QString& type, const QString& tag, T defaultValue, T min, T max) {
+    static T getNumIfHasNumAndInRange(const QString& type, const QString& tag, T defaultValue, T min, T max) {
         ASSERT_TR(type == "int" || type == "double");
         ASSERT_LE(min, defaultValue);
         ASSERT_LE(defaultValue, max);
@@ -95,7 +93,7 @@ private:
 
     // Generic helper method for getting string values of a special type
     template<class T>
-    QString getStringIfHasStringAndIsSpecial(
+    static QString getStringIfHasStringAndIsSpecial(
             const QString& type,
             const QString& tag,
             const QString& defaultValue,

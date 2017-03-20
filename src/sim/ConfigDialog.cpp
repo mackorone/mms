@@ -34,7 +34,7 @@ ConfigDialog::ConfigDialog(
 
         // Add the QLabel and QLineEdit 
         QLabel* label = new QLabel(field.label);
-        label->setAlignment(Qt::AlignRight);
+        label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
         // TODO: MACK - shouldn't always be a string...
         m_lineEdits[field.key] = new QLineEdit(field.initialValue.toString());
         gridLayout->addWidget(label, row, 0);
