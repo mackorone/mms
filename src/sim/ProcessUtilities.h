@@ -10,7 +10,7 @@ class ProcessUtilities {
 public:
 
     ProcessUtilities() = delete;
-    static void start(QProcess* process, const QString& command);
+    static bool start(QProcess* process, const QString& command);
 
 };
 

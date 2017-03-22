@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QMessageBox>
 #include <QtCore>
 
 #include "Assert.h"
@@ -357,6 +358,16 @@ void MainWindow::buildMazeAlgo() {
         }
     );
 
+    // TODO: MACK
+    connect(
+        m_buildMazeAlgoProcess,
+        &QProcess::started,
+        this,
+        [=](){
+            qDebug() << "STARTED";
+        }
+    );
+
     // Re-enable build button when build finishes, clean up the process
     connect(
         m_buildMazeAlgoProcess,
@@ -374,7 +385,13 @@ void MainWindow::buildMazeAlgo() {
     ui.buildMazeAlgoButton->setEnabled(false);
 
     // Now, start the build
-    ProcessUtilities::start(m_buildMazeAlgoProcess, mazeBuildCommand);
+    bool success = ProcessUtilities::start(m_buildMazeAlgoProcess, mazeBuildCommand);
+    if (!success) {
+        // TODO: MACK
+        qDebug() << "Failed to run:" << mazeBuildCommand;
+        ui.buildMazeAlgoButton->setEnabled(true);
+        m_buildMazeAlgoProcess->deleteLater();
+    }
 }
 
 void MainWindow::runMazeAlgo() {
@@ -430,7 +447,13 @@ void MainWindow::runMazeAlgo() {
     ui.runMazeAlgoButton->setEnabled(false);
 
     // Now, start the build
-    ProcessUtilities::start(m_runMazeAlgoProcess, mazeRunCommand);
+    bool success = ProcessUtilities::start(m_runMazeAlgoProcess, mazeRunCommand);
+    if (!success) {
+            // TODO: MACK
+            qDebug() << "Failed to run:" << mazeRunCommand;
+            ui.runMazeAlgoButton->setEnabled(true);
+            m_runMazeAlgoProcess->deleteLater();
+    }
 }
 
 void MainWindow::importMouseAlgo() {
@@ -513,12 +536,24 @@ void MainWindow::runMouseAlgo() {
     const QString& algoName = ui.selectAlgorithmComboBox->currentText();
     ASSERT_TR(SettingsMouseAlgos::names().contains(algoName));
 
+    // Generate the mouse, lens, and controller
+    m_mouse = new Mouse(m_maze);
+    QString mouseFilePath = SettingsMouseAlgos::getMouseFilePath(algoName);
+    bool success = m_mouse->reload(mouseFilePath);
+    if (!success) {
+        QMessageBox::warning(
+            this,
+            "Invalid Mouse File",
+            // TODO: MACK - provide a reason here
+            QString("The mouse file \n\n\"") + mouseFilePath + "\"\n\ncould not be loaded."
+        );
+        delete m_mouse;
+        return;
+    }
+
     // Kill the current mouse algorithm
     stopMouseAlgo();
 
-    // Generate the mouse, lens, and controller
-    m_mouse = new Mouse(m_maze);
-    m_mouse->reload(SettingsMouseAlgos::getMouseFilePath(algoName));
     m_view = new MazeViewMutable(m_maze);
     m_mouseGraphic = new MouseGraphic(m_mouse);
     m_controller = new Controller(m_maze, m_mouse, m_view);

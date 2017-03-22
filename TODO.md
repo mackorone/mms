@@ -1,6 +1,6 @@
 # High Priority
 
-- Just "a.out" hangs...
+- Better error messages for failed commands
 - If it's paused, I can't select a new maze file...
 - Add default maze/mouse files
 - If maze algo fails, the simulator crashes
@@ -16,10 +16,11 @@
 - Clean up mouseInterface/controller and MainWindow/controller (MouseAlgoUtilities)
 - Hook up build output (in addition to stderr)
 - Add controls about UI
-- Make a note about newline for algo stdout
+- Make a note about newline for algo stdout (only shown in GUI once newline is written)
 - Fix the elapsed sim time
 - Toggle stdout/stderr line wrap
 - API call counts
+    - Keep counts of all methods called (so people can debug why it's slow)
 - Indicate whether or not there are lines in the stdout buffer (checkbox?)
 - Surface error messages to the UI
 - Stderr get's printed out when the algo exits, gets sent to Controller
@@ -32,20 +33,14 @@
     - Do some cleanup here
     - Deprecate static algo options (and maybe even dynamic ones too!)
 - Fix collision detection
-- Make framerate for multiple OpenGLWidgets faster
-    - Share OpenGL context
-    - Try sharing VBOs, etc.
 - Fix .maz file loading
 - Make GUI
     - Fix texture program
     - Put the stdout of the child process somewhere
     - use QOpenGLDebugLogger (clean this up)
 - Rename the whole texture vs polygon thing
-- Keep counts of all methods called (so people can debug why it's slow)
-- Wireframe mode should only affect the maps
 - Don't need (const X& x) because of implicit sharing
     - http://doc.qt.io/qt-5/implicit-sharing.html#implicitly-shared
-- Include images/fonts with the binary: http://doc.qt.io/qt-5/resources.html
 - If the maze is invalid, don't let the algo do anything
 - Set up tests/build framework
 - Use Qt XML support

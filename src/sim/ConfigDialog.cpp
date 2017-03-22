@@ -49,15 +49,13 @@ ConfigDialog::ConfigDialog(
                 if (field.onlyDirectories) {
                     path = QFileDialog::getExistingDirectory(
                         this,
-                        tr("Choose Directory"),
-                        QDir::currentPath()
+                        tr("Choose Directory")
                     );
                 }
                 else {
                     path = QFileDialog::getOpenFileName(
                         this,
-                        tr("Choose File"),
-                        QDir::currentPath()
+                        tr("Choose File")
                     );
                 }
                 if (!path.isNull()) {

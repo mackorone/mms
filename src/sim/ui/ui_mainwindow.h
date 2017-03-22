@@ -44,17 +44,14 @@ public:
     QTabWidget *otherWidget;
     QWidget *mazeTab;
     QVBoxLayout *verticalLayout_6;
-    QTabWidget *tabWidget;
-    QWidget *mazeFilesTab;
-    QVBoxLayout *verticalLayout_7;
     QWidget *widget;
     QHBoxLayout *horizontalLayout;
     QPushButton *importMazesButton;
     QTableWidget *mazeFilesTable;
-    QWidget *mazeAlgorithmsTab;
-    QVBoxLayout *verticalLayout_5;
+    QWidget *tab_3;
+    QVBoxLayout *verticalLayout_10;
     QWidget *controlWidget_2;
-    QGridLayout *gridLayout_4;
+    QGridLayout *gridLayout_6;
     QPushButton *buildMazeAlgoButton;
     QSpinBox *widthSpinBox;
     QSpinBox *heightSpinBox;
@@ -62,15 +59,15 @@ public:
     QPushButton *editMazeAlgoButton;
     QPushButton *runMazeAlgoButton;
     QPushButton *importMazeAlgoButton;
-    QWidget *infoWidget_2;
-    QGridLayout *gridLayout_5;
+    QWidget *infoWidget_3;
+    QGridLayout *gridLayout_7;
     QSplitter *infoWidgetSplitter_2;
-    QTabWidget *outputWidget_2;
-    QWidget *buildTab_2;
-    QVBoxLayout *verticalLayout_3;
+    QTabWidget *outputWidget_3;
+    QWidget *buildTab_3;
+    QVBoxLayout *verticalLayout_8;
     QPlainTextEdit *mazeBuildTextEdit;
-    QWidget *runTab_2;
-    QVBoxLayout *verticalLayout_4;
+    QWidget *runTab_;
+    QVBoxLayout *verticalLayout_9;
     QPlainTextEdit *mazeRunTextEdit;
     QWidget *mouseTab;
     QVBoxLayout *controlLayout;
@@ -147,15 +144,7 @@ public:
         verticalLayout_6->setSpacing(6);
         verticalLayout_6->setContentsMargins(11, 11, 11, 11);
         verticalLayout_6->setObjectName(QStringLiteral("verticalLayout_6"));
-        tabWidget = new QTabWidget(mazeTab);
-        tabWidget->setObjectName(QStringLiteral("tabWidget"));
-        mazeFilesTab = new QWidget();
-        mazeFilesTab->setObjectName(QStringLiteral("mazeFilesTab"));
-        verticalLayout_7 = new QVBoxLayout(mazeFilesTab);
-        verticalLayout_7->setSpacing(6);
-        verticalLayout_7->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_7->setObjectName(QStringLiteral("verticalLayout_7"));
-        widget = new QWidget(mazeFilesTab);
+        widget = new QWidget(mazeTab);
         widget->setObjectName(QStringLiteral("widget"));
         horizontalLayout = new QHBoxLayout(widget);
         horizontalLayout->setSpacing(6);
@@ -167,140 +156,134 @@ public:
         horizontalLayout->addWidget(importMazesButton);
 
 
-        verticalLayout_7->addWidget(widget);
+        verticalLayout_6->addWidget(widget);
 
-        mazeFilesTable = new QTableWidget(mazeFilesTab);
+        mazeFilesTable = new QTableWidget(mazeTab);
         mazeFilesTable->setObjectName(QStringLiteral("mazeFilesTable"));
 
-        verticalLayout_7->addWidget(mazeFilesTable);
+        verticalLayout_6->addWidget(mazeFilesTable);
 
-        tabWidget->addTab(mazeFilesTab, QString());
-        mazeAlgorithmsTab = new QWidget();
-        mazeAlgorithmsTab->setObjectName(QStringLiteral("mazeAlgorithmsTab"));
-        verticalLayout_5 = new QVBoxLayout(mazeAlgorithmsTab);
-        verticalLayout_5->setSpacing(6);
-        verticalLayout_5->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_5->setObjectName(QStringLiteral("verticalLayout_5"));
-        controlWidget_2 = new QWidget(mazeAlgorithmsTab);
+        otherWidget->addTab(mazeTab, QString());
+        tab_3 = new QWidget();
+        tab_3->setObjectName(QStringLiteral("tab_3"));
+        verticalLayout_10 = new QVBoxLayout(tab_3);
+        verticalLayout_10->setSpacing(6);
+        verticalLayout_10->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_10->setObjectName(QStringLiteral("verticalLayout_10"));
+        controlWidget_2 = new QWidget(tab_3);
         controlWidget_2->setObjectName(QStringLiteral("controlWidget_2"));
-        gridLayout_4 = new QGridLayout(controlWidget_2);
-        gridLayout_4->setSpacing(6);
-        gridLayout_4->setContentsMargins(11, 11, 11, 11);
-        gridLayout_4->setObjectName(QStringLiteral("gridLayout_4"));
-        gridLayout_4->setContentsMargins(3, -1, -1, 6);
+        gridLayout_6 = new QGridLayout(controlWidget_2);
+        gridLayout_6->setSpacing(6);
+        gridLayout_6->setContentsMargins(11, 11, 11, 11);
+        gridLayout_6->setObjectName(QStringLiteral("gridLayout_6"));
+        gridLayout_6->setContentsMargins(3, -1, -1, 6);
         buildMazeAlgoButton = new QPushButton(controlWidget_2);
         buildMazeAlgoButton->setObjectName(QStringLiteral("buildMazeAlgoButton"));
 
-        gridLayout_4->addWidget(buildMazeAlgoButton, 1, 1, 1, 1);
+        gridLayout_6->addWidget(buildMazeAlgoButton, 1, 1, 1, 1);
 
         widthSpinBox = new QSpinBox(controlWidget_2);
         widthSpinBox->setObjectName(QStringLiteral("widthSpinBox"));
         widthSpinBox->setMinimum(1);
         widthSpinBox->setValue(16);
 
-        gridLayout_4->addWidget(widthSpinBox, 1, 5, 1, 1);
+        gridLayout_6->addWidget(widthSpinBox, 1, 5, 1, 1);
 
         heightSpinBox = new QSpinBox(controlWidget_2);
         heightSpinBox->setObjectName(QStringLiteral("heightSpinBox"));
         heightSpinBox->setMinimum(1);
         heightSpinBox->setValue(16);
 
-        gridLayout_4->addWidget(heightSpinBox, 1, 6, 1, 1);
+        gridLayout_6->addWidget(heightSpinBox, 1, 6, 1, 1);
 
         selectMazeAlgorithmComboBox = new QComboBox(controlWidget_2);
         selectMazeAlgorithmComboBox->setObjectName(QStringLiteral("selectMazeAlgorithmComboBox"));
         sizePolicy.setHeightForWidth(selectMazeAlgorithmComboBox->sizePolicy().hasHeightForWidth());
         selectMazeAlgorithmComboBox->setSizePolicy(sizePolicy);
 
-        gridLayout_4->addWidget(selectMazeAlgorithmComboBox, 0, 1, 1, 1);
+        gridLayout_6->addWidget(selectMazeAlgorithmComboBox, 0, 1, 1, 1);
 
         editMazeAlgoButton = new QPushButton(controlWidget_2);
         editMazeAlgoButton->setObjectName(QStringLiteral("editMazeAlgoButton"));
 
-        gridLayout_4->addWidget(editMazeAlgoButton, 0, 3, 1, 1);
+        gridLayout_6->addWidget(editMazeAlgoButton, 0, 3, 1, 1);
 
         runMazeAlgoButton = new QPushButton(controlWidget_2);
         runMazeAlgoButton->setObjectName(QStringLiteral("runMazeAlgoButton"));
 
-        gridLayout_4->addWidget(runMazeAlgoButton, 1, 3, 1, 1);
+        gridLayout_6->addWidget(runMazeAlgoButton, 1, 3, 1, 1);
 
         importMazeAlgoButton = new QPushButton(controlWidget_2);
         importMazeAlgoButton->setObjectName(QStringLiteral("importMazeAlgoButton"));
 
-        gridLayout_4->addWidget(importMazeAlgoButton, 0, 5, 1, 2);
+        gridLayout_6->addWidget(importMazeAlgoButton, 0, 5, 1, 2);
 
 
-        verticalLayout_5->addWidget(controlWidget_2);
+        verticalLayout_10->addWidget(controlWidget_2);
 
-        infoWidget_2 = new QWidget(mazeAlgorithmsTab);
-        infoWidget_2->setObjectName(QStringLiteral("infoWidget_2"));
+        infoWidget_3 = new QWidget(tab_3);
+        infoWidget_3->setObjectName(QStringLiteral("infoWidget_3"));
         QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Expanding);
         sizePolicy1.setHorizontalStretch(0);
         sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(infoWidget_2->sizePolicy().hasHeightForWidth());
-        infoWidget_2->setSizePolicy(sizePolicy1);
-        gridLayout_5 = new QGridLayout(infoWidget_2);
-        gridLayout_5->setSpacing(6);
-        gridLayout_5->setContentsMargins(11, 11, 11, 11);
-        gridLayout_5->setObjectName(QStringLiteral("gridLayout_5"));
-        gridLayout_5->setContentsMargins(3, -1, -1, -1);
-        infoWidgetSplitter_2 = new QSplitter(infoWidget_2);
+        sizePolicy1.setHeightForWidth(infoWidget_3->sizePolicy().hasHeightForWidth());
+        infoWidget_3->setSizePolicy(sizePolicy1);
+        gridLayout_7 = new QGridLayout(infoWidget_3);
+        gridLayout_7->setSpacing(6);
+        gridLayout_7->setContentsMargins(11, 11, 11, 11);
+        gridLayout_7->setObjectName(QStringLiteral("gridLayout_7"));
+        gridLayout_7->setContentsMargins(3, -1, -1, -1);
+        infoWidgetSplitter_2 = new QSplitter(infoWidget_3);
         infoWidgetSplitter_2->setObjectName(QStringLiteral("infoWidgetSplitter_2"));
         infoWidgetSplitter_2->setOrientation(Qt::Vertical);
         infoWidgetSplitter_2->setHandleWidth(9);
         infoWidgetSplitter_2->setChildrenCollapsible(false);
-        outputWidget_2 = new QTabWidget(infoWidgetSplitter_2);
-        outputWidget_2->setObjectName(QStringLiteral("outputWidget_2"));
-        sizePolicy.setHeightForWidth(outputWidget_2->sizePolicy().hasHeightForWidth());
-        outputWidget_2->setSizePolicy(sizePolicy);
-        buildTab_2 = new QWidget();
-        buildTab_2->setObjectName(QStringLiteral("buildTab_2"));
-        verticalLayout_3 = new QVBoxLayout(buildTab_2);
-        verticalLayout_3->setSpacing(6);
-        verticalLayout_3->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
-        verticalLayout_3->setContentsMargins(6, 6, 6, 6);
-        mazeBuildTextEdit = new QPlainTextEdit(buildTab_2);
+        outputWidget_3 = new QTabWidget(infoWidgetSplitter_2);
+        outputWidget_3->setObjectName(QStringLiteral("outputWidget_3"));
+        sizePolicy.setHeightForWidth(outputWidget_3->sizePolicy().hasHeightForWidth());
+        outputWidget_3->setSizePolicy(sizePolicy);
+        buildTab_3 = new QWidget();
+        buildTab_3->setObjectName(QStringLiteral("buildTab_3"));
+        verticalLayout_8 = new QVBoxLayout(buildTab_3);
+        verticalLayout_8->setSpacing(6);
+        verticalLayout_8->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_8->setObjectName(QStringLiteral("verticalLayout_8"));
+        verticalLayout_8->setContentsMargins(6, 6, 6, 6);
+        mazeBuildTextEdit = new QPlainTextEdit(buildTab_3);
         mazeBuildTextEdit->setObjectName(QStringLiteral("mazeBuildTextEdit"));
         sizePolicy.setHeightForWidth(mazeBuildTextEdit->sizePolicy().hasHeightForWidth());
         mazeBuildTextEdit->setSizePolicy(sizePolicy);
         mazeBuildTextEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
         mazeBuildTextEdit->setTextInteractionFlags(Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse);
 
-        verticalLayout_3->addWidget(mazeBuildTextEdit);
+        verticalLayout_8->addWidget(mazeBuildTextEdit);
 
-        outputWidget_2->addTab(buildTab_2, QString());
-        runTab_2 = new QWidget();
-        runTab_2->setObjectName(QStringLiteral("runTab_2"));
-        verticalLayout_4 = new QVBoxLayout(runTab_2);
-        verticalLayout_4->setSpacing(6);
-        verticalLayout_4->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
-        verticalLayout_4->setContentsMargins(6, 6, 6, 6);
-        mazeRunTextEdit = new QPlainTextEdit(runTab_2);
+        outputWidget_3->addTab(buildTab_3, QString());
+        runTab_ = new QWidget();
+        runTab_->setObjectName(QStringLiteral("runTab_"));
+        verticalLayout_9 = new QVBoxLayout(runTab_);
+        verticalLayout_9->setSpacing(6);
+        verticalLayout_9->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_9->setObjectName(QStringLiteral("verticalLayout_9"));
+        verticalLayout_9->setContentsMargins(6, 6, 6, 6);
+        mazeRunTextEdit = new QPlainTextEdit(runTab_);
         mazeRunTextEdit->setObjectName(QStringLiteral("mazeRunTextEdit"));
         sizePolicy.setHeightForWidth(mazeRunTextEdit->sizePolicy().hasHeightForWidth());
         mazeRunTextEdit->setSizePolicy(sizePolicy);
         mazeRunTextEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
         mazeRunTextEdit->setTextInteractionFlags(Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse);
 
-        verticalLayout_4->addWidget(mazeRunTextEdit);
+        verticalLayout_9->addWidget(mazeRunTextEdit);
 
-        outputWidget_2->addTab(runTab_2, QString());
-        infoWidgetSplitter_2->addWidget(outputWidget_2);
+        outputWidget_3->addTab(runTab_, QString());
+        infoWidgetSplitter_2->addWidget(outputWidget_3);
 
-        gridLayout_5->addWidget(infoWidgetSplitter_2, 0, 0, 1, 1);
+        gridLayout_7->addWidget(infoWidgetSplitter_2, 0, 0, 1, 1);
 
 
-        verticalLayout_5->addWidget(infoWidget_2);
+        verticalLayout_10->addWidget(infoWidget_3);
 
-        tabWidget->addTab(mazeAlgorithmsTab, QString());
-        infoWidget_2->raise();
-        controlWidget_2->raise();
-
-        verticalLayout_6->addWidget(tabWidget);
-
-        otherWidget->addTab(mazeTab, QString());
+        otherWidget->addTab(tab_3, QString());
         mouseTab = new QWidget();
         mouseTab->setObjectName(QStringLiteral("mouseTab"));
         controlLayout = new QVBoxLayout(mouseTab);
@@ -460,8 +443,7 @@ public:
         retranslateUi(MainWindow);
 
         otherWidget->setCurrentIndex(1);
-        tabWidget->setCurrentIndex(1);
-        outputWidget_2->setCurrentIndex(1);
+        outputWidget_3->setCurrentIndex(0);
         outputWidget->setCurrentIndex(0);
         statusWidget_2->setCurrentIndex(0);
 
@@ -473,15 +455,14 @@ public:
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Micromouse Simulator", Q_NULLPTR));
         importMazesButton->setText(QApplication::translate("MainWindow", "Import Mazes", Q_NULLPTR));
-        tabWidget->setTabText(tabWidget->indexOf(mazeFilesTab), QApplication::translate("MainWindow", "Maze Files", Q_NULLPTR));
+        otherWidget->setTabText(otherWidget->indexOf(mazeTab), QApplication::translate("MainWindow", "Maze Files", Q_NULLPTR));
         buildMazeAlgoButton->setText(QApplication::translate("MainWindow", "Build", Q_NULLPTR));
         editMazeAlgoButton->setText(QApplication::translate("MainWindow", "Edit", Q_NULLPTR));
         runMazeAlgoButton->setText(QApplication::translate("MainWindow", "Run", Q_NULLPTR));
         importMazeAlgoButton->setText(QApplication::translate("MainWindow", "Import", Q_NULLPTR));
-        outputWidget_2->setTabText(outputWidget_2->indexOf(buildTab_2), QApplication::translate("MainWindow", "Build Ouput", Q_NULLPTR));
-        outputWidget_2->setTabText(outputWidget_2->indexOf(runTab_2), QApplication::translate("MainWindow", "Run Ouput", Q_NULLPTR));
-        tabWidget->setTabText(tabWidget->indexOf(mazeAlgorithmsTab), QApplication::translate("MainWindow", "Maze Algorithms", Q_NULLPTR));
-        otherWidget->setTabText(otherWidget->indexOf(mazeTab), QApplication::translate("MainWindow", "Maze", Q_NULLPTR));
+        outputWidget_3->setTabText(outputWidget_3->indexOf(buildTab_3), QApplication::translate("MainWindow", "Build Ouput", Q_NULLPTR));
+        outputWidget_3->setTabText(outputWidget_3->indexOf(runTab_), QApplication::translate("MainWindow", "Run Ouput", Q_NULLPTR));
+        otherWidget->setTabText(otherWidget->indexOf(tab_3), QApplication::translate("MainWindow", "Maze Algorithms", Q_NULLPTR));
         buildButton->setText(QApplication::translate("MainWindow", "Build", Q_NULLPTR));
         importMouseAlgoButton->setText(QApplication::translate("MainWindow", "Import", Q_NULLPTR));
         selectAlgorithmLabel->setText(QApplication::translate("MainWindow", "Algorithm", Q_NULLPTR));
@@ -494,7 +475,7 @@ public:
         outputWidget->setTabText(outputWidget->indexOf(runTab), QApplication::translate("MainWindow", "Run Ouput", Q_NULLPTR));
         statusWidget_2->setTabText(statusWidget_2->indexOf(tab), QApplication::translate("MainWindow", "Tab 1", Q_NULLPTR));
         statusWidget_2->setTabText(statusWidget_2->indexOf(tab_2), QApplication::translate("MainWindow", "Tab 2", Q_NULLPTR));
-        otherWidget->setTabText(otherWidget->indexOf(mouseTab), QApplication::translate("MainWindow", "Mouse", Q_NULLPTR));
+        otherWidget->setTabText(otherWidget->indexOf(mouseTab), QApplication::translate("MainWindow", "Mouse Algorithms", Q_NULLPTR));
         menu_File->setTitle(QApplication::translate("MainWindow", "&File", Q_NULLPTR));
     } // retranslateUi
 

@@ -4,16 +4,15 @@
 
 namespace mms {
 
-void ProcessUtilities::start(QProcess* process, const QString& command) {
+bool ProcessUtilities::start(QProcess* process, const QString& command) {
     QStringList args = command.split(' ', QString::SkipEmptyParts);
-    if (args.isEmpty()) {
-        // TODO: upforgrabs
-        // Indicate to the calling function that no command was started
-        return;
+    QString bin;
+    if (!args.isEmpty()) {
+        bin = args.at(0);
+        args.removeFirst();
     }
-    QString bin = args.at(0);
-    args.removeFirst();
     process->start(bin, args);
+    return process->waitForStarted();
 }
 
 } // namespace mms
