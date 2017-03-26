@@ -66,8 +66,7 @@ void SettingsMazeAlgos::remove(const QString& name) {
 
 QString SettingsMazeAlgos::getValue(const QString& name, const QString& key) {
     const auto& vector = Settings::get()->find(GROUP_PREFIX, NAME_KEY, name);
-    ASSERT_EQ(vector.size(), 1);
-    return vector.at(0).value(key);
+    return (vector.size() == 0 ? "" : vector.at(0).value(key));
 }
 
 } //namespace mms

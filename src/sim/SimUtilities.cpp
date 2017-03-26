@@ -4,6 +4,7 @@
 #include <QThread>
 #include <QTime>
 
+#include <limits>
 #include <random>
 
 #include "Assert.h"
@@ -16,6 +17,19 @@ void SimUtilities::quit() {
     exit(1);
 }
 
+int SimUtilities::randomInt() {
+    static std::mt19937 generator(P()->randomSeed());
+    return generator();
+}
+
+int SimUtilities::randomNonNegativeInt() {
+    int value = randomInt();
+    if (value < 0) {
+        value -= std::numeric_limits<int>::min();
+    }
+    return value;
+}
+
 double SimUtilities::getRandom() {
     
     // The '- 1' ensures that the random number is never 1.
@@ -24,8 +38,8 @@ double SimUtilities::getRandom() {
     // array[std::floor(random * <number of elements>)] without having to check
     // the condition if this function returns 1.
     
-    static std::mt19937 generator(P()->randomSeed());
-    return std::abs(static_cast<double>(generator()) - 1) / static_cast<double>(generator.max());
+    static int max = std::mt19937().max();
+    return std::abs(static_cast<double>(randomInt()) - 1) / static_cast<double>(max);
 }
 
 void SimUtilities::sleep(const Duration& duration) {

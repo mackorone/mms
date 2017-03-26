@@ -27,7 +27,8 @@ Map::Map(QWidget* parent) :
         &m_timer, &QTimer::timeout,
         this, static_cast<void (Map::*)()>(&Map::update)
     );
-    // TODO: MACK - make this configurable
+    // TODO: upforgrabs
+    // Make this configurable
     m_timer.start(24); // 45 fps
 }
 

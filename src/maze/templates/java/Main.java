@@ -26,8 +26,10 @@ public class Main {
         Random random = new Random();
         if (args.length == 3) {
             int seed = Integer.parseInt(args[2]);
-            if (seed <= 0) {
-                System.out.println("Error: <SEED> must be a positive integer");
+            if (seed < 0) {
+                System.out.println(
+                    "Error: <SEED> must be a non-negative integer"
+                );
                 System.exit(1);
             }
             random = new Random(seed);

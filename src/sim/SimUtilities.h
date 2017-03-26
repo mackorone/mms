@@ -22,6 +22,12 @@ public:
     // Quits the simulation
     static void quit();
 
+    // Returns a random integer
+    static int randomInt();
+
+    // Returns a random integer
+    static int randomNonNegativeInt();
+
     // Returns a double in [0.0, 1.0]
     static double getRandom();
 

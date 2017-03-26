@@ -34,108 +34,50 @@ QString SettingsMouseAlgos::getMouseFilePath(const QString& name) {
     return getValue(name, MOUSE_FILE_PATH_KEY);
 }
 
-QString SettingsMouseAlgos::execImportDialog() {
-    return execDialog("");
+void SettingsMouseAlgos::add(
+    const QString& name,
+    const QString& dirPath,
+    const QString& buildCommand,
+    const QString& runCommand,
+    const QString& mouseFilePath
+) {
+    Settings::get()->add(GROUP_PREFIX, {
+        {NAME_KEY, name},
+        {DIR_PATH_KEY, dirPath},
+        {BUILD_COMMAND_KEY, buildCommand},
+        {RUN_COMMAND_KEY, runCommand},
+        {MOUSE_FILE_PATH_KEY, mouseFilePath},
+    });
 }
 
-QString SettingsMouseAlgos::execEditDialog(const QString& name) {
-    return execDialog(name);
+void SettingsMouseAlgos::update(
+    const QString& name,
+    const QString& newName,
+    const QString& newDirPath,
+    const QString& newBuildCommand,
+    const QString& newRunCommand,
+    const QString& newMouseFilePath
+) {
+    Settings::get()->update(GROUP_PREFIX, NAME_KEY, name, {
+        {NAME_KEY, newName},
+        {DIR_PATH_KEY, newDirPath},
+        {BUILD_COMMAND_KEY, newBuildCommand},
+        {RUN_COMMAND_KEY, newRunCommand},
+        {MOUSE_FILE_PATH_KEY, newMouseFilePath},
+    });
+}
+
+void SettingsMouseAlgos::remove(const QString& name) {
+    Settings::get()->remove(
+        GROUP_PREFIX,
+        NAME_KEY,
+        name
+    );
 }
 
 QString SettingsMouseAlgos::getValue(const QString& name, const QString& key) {
     const auto& vector = Settings::get()->find(GROUP_PREFIX, NAME_KEY, name);
-    ASSERT_EQ(vector.size(), 1); 
-    return vector.at(0).value(key);
-}
-
-QString SettingsMouseAlgos::execDialog(const QString& name) {
-
-    bool isEditDialog = !name.isEmpty();
-
-    ConfigDialogField nameField;
-    nameField.key = NAME_KEY;
-    nameField.label = "Name";
-
-    ConfigDialogField dirPathField;
-    dirPathField.key = DIR_PATH_KEY;
-    dirPathField.label = "Directory";
-    dirPathField.fileBrowser = true;
-    dirPathField.onlyDirectories = true;
-
-    ConfigDialogField buildCommandField;
-    buildCommandField.key = BUILD_COMMAND_KEY;
-    buildCommandField.label = "Build Command";
-
-    ConfigDialogField runCommandField;
-    runCommandField.key = RUN_COMMAND_KEY;
-    runCommandField.label = "Run Command";
-
-    ConfigDialogField mouseFilePathField;
-    mouseFilePathField.key = MOUSE_FILE_PATH_KEY;
-    mouseFilePathField.label = "Mouse File";
-    mouseFilePathField.fileBrowser = true;
-
-    // Populate some initial values
-    if (isEditDialog) {
-        nameField.initialValue = name;
-        dirPathField.initialValue = getValue(name, DIR_PATH_KEY);
-        buildCommandField.initialValue = getValue(name, BUILD_COMMAND_KEY);
-        runCommandField.initialValue = getValue(name, RUN_COMMAND_KEY);
-        mouseFilePathField.initialValue = getValue(name, MOUSE_FILE_PATH_KEY);
-    }
-
-    // Disallow certain names
-    QVector<QVariant> nameFilterValues;
-    nameFilterValues.append(QVariant(""));
-    for (const QString& algoName : names()) {
-        if (algoName != name) {
-            nameFilterValues.append(QVariant(algoName));
-        }
-    }
-    nameField.filterValues = nameFilterValues;
-    nameField.inclusiveFilter = false;
-
-    // Execute the dialog
-    QString action = QString((isEditDialog ? "Edit" : "Import"));
-    ConfigDialog dialog(
-        action,
-        "Mouse Algorithm",
-        {
-            nameField,
-            dirPathField,
-            buildCommandField,
-            runCommandField,
-            mouseFilePathField
-        },
-        isEditDialog
-    );
-
-    // Cancel was pressed
-    if (dialog.exec() == QDialog::Rejected) {
-        return QString();
-    }
-
-    // Delete was pressed
-    if (dialog.removeButtonPressed()) {
-        Settings::get()->remove(GROUP_PREFIX, NAME_KEY, name);
-        return QString();
-    }
-
-    // Ok was pressed
-    QMap<QString, QString> map = {
-        {NAME_KEY, dialog.getValue(NAME_KEY)},
-        {DIR_PATH_KEY, dialog.getValue(DIR_PATH_KEY)},
-        {BUILD_COMMAND_KEY, dialog.getValue(BUILD_COMMAND_KEY)},
-        {RUN_COMMAND_KEY, dialog.getValue(RUN_COMMAND_KEY)},
-        {MOUSE_FILE_PATH_KEY, dialog.getValue(MOUSE_FILE_PATH_KEY)}
-    };
-    if (isEditDialog) {
-        Settings::get()->update(GROUP_PREFIX, NAME_KEY, name, map);
-    }
-    else {
-        Settings::get()->add(GROUP_PREFIX, map);
-    }
-    return dialog.getValue(NAME_KEY);
+    return (vector.size() == 0 ? "" : vector.at(0).value(key));
 }
 
 } //namespace mms

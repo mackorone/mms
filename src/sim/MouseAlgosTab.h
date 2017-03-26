@@ -11,24 +11,28 @@
 
 namespace mms {
 
-class MazeAlgosTab : public QWidget {
+class MouseAlgosTab : public QWidget {
 
     Q_OBJECT
 
 public:
 
-    MazeAlgosTab();
+    MouseAlgosTab();
 
 signals:
 
-    void mazeGenerated(const QByteArray& bytes);
+    void mouseAlgoSelected(
+        const QString& name,
+        const QString& runCommand,
+        const QString& directory,
+        const QString& mouseFilePath,
+        int seed,
+        TextDisplay* display);
 
 private:
 
     QComboBox* m_comboBox;
 
-    QSpinBox* m_widthBox;
-    QSpinBox* m_heightBox;
     QSpinBox* m_seedBox;
     QCheckBox* m_seedAutoUpdate;
 

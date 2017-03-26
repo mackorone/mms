@@ -2,6 +2,7 @@
 
 - Better error messages for failed commands
 - If the mouse goes outside of the maze, the simulator crashes
+- Input buttons for the mouse algorithm
 - If it's paused, I can't select a new maze file...
 - Add default maze/mouse files
 - If maze algo fails, the simulator crashes
@@ -24,6 +25,7 @@
 - API call counts
     - Keep counts of all methods called (so people can debug why it's slow)
 - Indicate whether or not there are lines in the stdout buffer (checkbox?)
+- Save button to Maze algo tab
 - Surface error messages to the UI
 - Stderr get's printed out when the algo exits, gets sent to Controller
 - Why is tile fog not clearing immediately?
@@ -42,6 +44,7 @@
     - Fix texture program
     - Put the stdout of the child process somewhere
     - use QOpenGLDebugLogger (clean this up)
+- Ensure Process actually gets cleaned up
 - Rename the whole texture vs polygon thing
 - Don't need (const X& x) because of implicit sharing
     - http://doc.qt.io/qt-5/implicit-sharing.html#implicitly-shared
@@ -128,6 +131,7 @@
 
 # Medum Priority
 
+- Deduplicate some import/edit/build logic between mouse and maze algo tabs
 - Use explicit on one argument constructors
 - Use tr on all user-facing strings to make the application translatable
 - Pass by reference or value in lambdas

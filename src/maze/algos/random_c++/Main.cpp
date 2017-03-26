@@ -27,8 +27,8 @@ int main(int argc, char* argv[]) {
     int seed = time(NULL);
     if (argc == 4) {
         seed = atoi(argv[3]);
-        if (seed <= 0) {
-            std::cout << "Error: <SEED> must be a positive integer"
+        if (seed < 0) {
+            std::cout << "Error: <SEED> must be a non-negative integer"
                       << std::endl;
             return 1;
         }

@@ -1,22 +1,15 @@
 #pragma once
 
-#include <QGridLayout>
-#include <QKeyEvent>
-#include <QLabel>
 #include <QMainWindow>
-#include <QPair>
 #include <QThread>
-#include <QTimer>
-#include <QVector>
 
-#include "ConfigDialog.h"
 #include "Controller.h"
 #include "Map.h"
 #include "Maze.h"
 #include "MazeView.h"
 #include "MazeViewMutable.h"
 #include "MouseGraphic.h"
-#include "ui_mainwindow.h"
+#include "TextDisplay.h"
 
 namespace mms {
 
@@ -26,15 +19,13 @@ class Window : public QMainWindow {
 
 public:
 
-    Window(QWidget *parent = 0);
-    ~Window();
+    Window(QWidget* parent = 0);
 
 private:
 
     // The map object
     Map m_map;
 
-    /*
     // The maze and the true view of the maze
     Maze* m_maze;
     MazeView* m_truth;
@@ -46,30 +37,28 @@ private:
     MazeViewMutable* m_view;
     Controller* m_controller;
 
+    // The event loop for the mouse algo process. We need a separate loop so
+    // that the GUI doesn't lock up on blocking algo commands, like sleep
+    QThread* m_mouseAlgoThread;
+
+    // Helper functions
+    void setMaze(Maze* maze);
+    void runMouseAlgo(
+        const QString& name,
+        const QString& runCommand,
+        const QString& dirPath,
+        const QString& mouseFilePath,
+        int seed,
+        TextDisplay* display);
+    void stopMouseAlgo();
+
+    /*
     // Key related helpers
     void keyPress(int key);
     void keyRelease(int key);
 
     // TODO: MACK - hastily implemented helper functions
-    void setMaze(Maze* maze);
     void togglePause();
-
-    // Maze algo
-    void importMazeAlgo();
-    void editMazeAlgo();
-    void buildMazeAlgo();
-    void runMazeAlgo();
-    QProcess* m_buildMazeAlgoProcess;
-    QProcess* m_runMazeAlgoProcess;
-
-    // Mouse algo
-    void importMouseAlgo();
-    void editMouseAlgo();
-    void buildMouseAlgo();
-    void runMouseAlgo();
-    void stopMouseAlgo();
-    QProcess* m_buildMouseAlgoProcess;
-    QThread* m_runMouseAlgoThread;
 
     // Header-related members
     // TODO: MACK - refactor this into its own class

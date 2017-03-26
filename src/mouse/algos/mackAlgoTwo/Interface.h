@@ -137,6 +137,7 @@ public:
     double currentRotationDegrees();
 
 private:
+
     std::string boolToString(bool value);
 
 };

@@ -24,7 +24,7 @@ def main():
     if len(sys.argv) == 4:
         seed = int(sys.argv[3])
         if seed < 0:
-            print("Error: <SEED> must be a positive integer")
+            print("Error: <SEED> must be a non-negative integer")
             return
         random.seed(seed)
 

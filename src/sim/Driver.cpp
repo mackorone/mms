@@ -6,7 +6,6 @@
 
 #include "FontImage.h"
 #include "Logging.h"
-#include "MainWindow.h"
 #include "Screen.h"
 #include "Settings.h"
 #include "State.h"
@@ -52,8 +51,6 @@ int Driver::drive(int argc, char* argv[]) {
     modelThread.start();
 
     // Create the main window
-    //MainWindow mainWindow; // TODO: MACK
-    //mainWindow.show();
     Window window;
     window.show();
 

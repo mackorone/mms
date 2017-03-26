@@ -11,20 +11,32 @@ public:
 
     SettingsMouseAlgos() = delete;
 
-    // Accessor functions
     static QStringList names();
     static QString getDirPath(const QString& name);
     static QString getBuildCommand(const QString& name);
     static QString getRunCommand(const QString& name);
     static QString getMouseFilePath(const QString& name);
-    
-    // Returns the name of the new/updated algo
-    static QString execImportDialog();
-    static QString execEditDialog(const QString& name);
+
+    static void add(
+        const QString& name,
+        const QString& dirPath,
+        const QString& buildCommand,
+        const QString& runCommand,
+        const QString& mouseFilePath
+    );
+    static void update(
+        const QString& name,
+        const QString& newName,
+        const QString& newDirPath,
+        const QString& newBuildCommand,
+        const QString& newRunCommand,
+        const QString& newMouseFilePath
+    );
+    static void remove(const QString& name);
+
     
 private:
 
-    // Settings groups and keys
     static const QString GROUP_PREFIX;
     static const QString NAME_KEY;
     static const QString DIR_PATH_KEY;
@@ -32,9 +44,7 @@ private:
     static const QString RUN_COMMAND_KEY;
     static const QString MOUSE_FILE_PATH_KEY;
     
-    // Helper functions
     static QString getValue(const QString& name, const QString& key);
-    static QString execDialog(const QString& name);
     
 };
 
