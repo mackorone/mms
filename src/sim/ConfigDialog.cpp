@@ -16,8 +16,8 @@ ConfigDialog::ConfigDialog(
         const QString& action,
         const QString& object,
         const QVector<ConfigDialogField>& fields,
-        bool includeDeleteButton) :
-        m_deleteButtonPressed(false) {
+        bool includeRemoveButton) :
+        m_removeButtonPressed(false) {
 
     // Set the main layout
     QVBoxLayout* mainLayout = new QVBoxLayout();
@@ -87,20 +87,20 @@ ConfigDialog::ConfigDialog(
     connect(m_buttons, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(m_buttons, &QDialogButtonBox::rejected, this, &QDialog::reject);
 
-    // Potentially add a delete button
-    if (includeDeleteButton) {
-        QPushButton* deleteButton = m_buttons->addButton(
-            "&Delete",
+    // Potentially add a remove button
+    if (includeRemoveButton) {
+        QPushButton* removeButton = m_buttons->addButton(
+            "&Remove",
             QDialogButtonBox::DestructiveRole
         );
-        connect(deleteButton, &QPushButton::clicked, this, [=](){
+        connect(removeButton, &QPushButton::clicked, this, [=](){
             QMessageBox::StandardButton response = QMessageBox::question(
                 this, 
-                "Delete " + object,
+                "Remove " + object,
                 "Are you sure?"
             );
             if (response == QMessageBox::StandardButton::Yes) {
-                m_deleteButtonPressed = true;
+                m_removeButtonPressed = true;
                 accept();
             }
         });
@@ -115,8 +115,8 @@ ConfigDialog::ConfigDialog(
     setWindowTitle(action + " " + object);
 }
 
-bool ConfigDialog::deleteButtonPressed() {
-    return m_deleteButtonPressed;
+bool ConfigDialog::removeButtonPressed() {
+    return m_removeButtonPressed;
 }
 
 QString ConfigDialog::getValue(const QString& key) {

@@ -1,9 +1,12 @@
 # High Priority
 
 - Better error messages for failed commands
+- If the mouse goes outside of the maze, the simulator crashes
 - If it's paused, I can't select a new maze file...
 - Add default maze/mouse files
 - If maze algo fails, the simulator crashes
+- Make it easier to edit the simulator parameters
+    - The values should be re-loaded on the fly
 - Alphabetical order of QSettings contents
 - Support json maze file format
 - Button for toggling the maze views
@@ -11,7 +14,6 @@
 - Put MazeView into MazeGraphic (it should all be encapsulated in there)
 - Maze editing and saving
     - Choose which type of file to save
-- Kill Directory.h/.cpp
 - Indicate build failure/success with colors
 - Clean up mouseInterface/controller and MainWindow/controller (MouseAlgoUtilities)
 - Hook up build output (in addition to stderr)
@@ -34,6 +36,8 @@
     - Deprecate static algo options (and maybe even dynamic ones too!)
 - Fix collision detection
 - Fix .maz file loading
+- Organize the code a little better
+- Support rotation and maze mirroring
 - Make GUI
     - Fix texture program
     - Put the stdout of the child process somewhere
@@ -119,7 +123,6 @@
 - Continuous performance
     - CPU with megaMouse.xml
     - MinSleepDuration is a little bit weird - sometimes we try to sleep less than that
-- GUI
 - Downward sensor
 - Intelligent build command and run command generation
 
@@ -172,11 +175,9 @@
 - Data recording for pause, rewind, fast forward
 - Interrupt interface
 - Run the program with maximum thread priority
-- Fix the makefile so that if header files disappear we don't need to make clean
 - Crash recovery semantics
     - Set a flag, let the algo check the flag
 - Draw a path of where the robot has been (the history object could be used for recording as well)
-- Perhaps use a separate process entirely for the mouse (so we can restart it easily)
 - Write scripts we can execute (like unit tests) to make sure that our docs are in sync with the code
 - Replace the convexHull with union in the mouse collision polygon initialization
 - XML schema/validators
@@ -194,16 +195,16 @@
 - Current rotation jumps between 0 and 360 on megaMouse right wall follow
 - Pointers to wall polygons in each tile, save space by not breaking up walls/corners into multiple tiles
 - Get rid of as much platform dependant code as possible
-- Clean up the coding standards
+- Clean up / improve the coding standards
+    - Validation/linting
+    - Replace NULL with nullptr
 - Optimize for space in the TEXTURE_CPU_BUFFER and GRAPHIC_CPU_BUFFER - Don't repeat vertices
 - VSync so the graphics don't tear
 - Update the check_params.py script to make sure that the return type of the
   Param methods is the same as the type of the member variable
 - Detect STL use in maze and mouse algos, send a warning
-- Add a simple polygonFragmentShader
 - Perhaps impose memory limits on the algorithm
 - Add a way to change the mouse color
-- Change FreeGLUT to GLFW
 - 3D
 - Crash animation for both modes
 - Unit tests
@@ -211,12 +212,9 @@
 - Reduce include dependencies as much as possible
 - Implement perfect hashing for key input and algo selection (lulz)
 - Support more than just white fonts
-- Protect functions that shouldn't be accessed by the algo by checking thread ID
-- Change over the Makefile to use cmake
 - Rewrite/clean floodfill
 - Color palettes
 - Tile text color
-- Figure out why #NOGDI doesn't work on windows (1/7 - 1/8 facebook conversations)
 
 # Clean-Up
 
@@ -228,7 +226,6 @@
 - Rename TriangleTexture and VertexTexture
 - Rename Tile to Cell
 - Write some unittests (QT Unit test)
-- Add IMouseAlgorithm (and maze) to the build path so we can just do #include <IMouseAlgorithm.h> (maybe...)
 - Run the parameter consistency script, make sure values align
 - Convert primitive types to GL types (or vice versa)
 - Return const references instead of values (pointers???)
@@ -237,35 +234,26 @@
 - write "isDirectory(std::string path)" and enforce this where necessary
 - write getRandom() and replace old calls to rand()
 - Performance on different systems???
-- The mouse sometimes rotates weirdly (goes slowly, backwards for a second, and then forwards fast. You can see what I mean by just increasing the view length of the sensors for a continuous algo)
+- The mouse sometimes rotates weirdly (goes slowly, backwards for a second, and
+  then forwards fast. You can see what I mean by just increasing the view
+  length of the sensors for a continuous algo)
 - Remove as many c_str() as possible
-- Replace "cout" with "L()"
 - Pass things by reference when possible
-- Sprinkle assertions everywhere
-- Validate the coding standards (especially "{" placement)
 - Rewrite "i++" and "++i" as "i += 1"
 - Give better explanations for the GeometryUtilities
 - Buffer the declared walls and include a quick "resetWalls()" method
-- Clean up / improve the coding standards
 - Fit code into 80/100 columns... use a linter for this
 - Put consts in GraphicUtilties (and other classes)
 - Replace braket notation with methods (walls[NORTH] = true -> walls.insert(std::make_pair(NORTH, true)));
 - Document the confusing coordinate systems
 - for each loop iterations should use const references
-- The interfaces don't need to be passed as pointers, right? Try passing as values...
 - Upgrade convert_mazes.py to Python 3
 - P() be const? S()?
 - init vs initialize
-- Write a script to ensure that ASSERTS don't hold any state
-- Ensure boolean operators aren't used in asserts... should be using a different assert
-- Replace NULL with nullptr
 - Rename Tile to Cell?
 - Fix up so that -Wall -Werror -pedantic-error flags pass
 - -Wall: Show all warning messages
 - -Werror: Fail compilation on warnings
 - -pedantic-errors: Flag even the most pedantic of errors
-- Take out -g makefile option
-- Reduce the number of LIBS in makefile
-- Does the makefile work for multiple platforms?
-- Get backups of freeglut and glew files
-- Format to 80 cols
+- Write a script to ensure that ASSERTS don't hold any state
+- Ensure boolean operators aren't used in asserts... should be using a different assert

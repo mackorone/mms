@@ -1,8 +1,6 @@
 #include "SettingsMazeAlgos.h"
 
 #include "Assert.h"
-#include "ConfigDialog.h"
-#include "ConfigDialogField.h"
 #include "Settings.h"
 
 namespace mms {
@@ -29,100 +27,47 @@ QString SettingsMazeAlgos::getRunCommand(const QString& name) {
     return getValue(name, RUN_COMMAND_KEY);
 }
 
-QString SettingsMazeAlgos::execImportDialog() {
-    return execDialog("");
+void SettingsMazeAlgos::add(
+    const QString& name,
+    const QString& dirPath,
+    const QString& buildCommand,
+    const QString& runCommand
+) {
+    Settings::get()->add(GROUP_PREFIX, {
+        {NAME_KEY, name},
+        {DIR_PATH_KEY, dirPath},
+        {BUILD_COMMAND_KEY, buildCommand},
+        {RUN_COMMAND_KEY, runCommand},
+    });
 }
 
-QString SettingsMazeAlgos::execEditDialog(const QString& name) {
-    return execDialog(name);
+void SettingsMazeAlgos::update(
+    const QString& name,
+    const QString& newName,
+    const QString& newDirPath,
+    const QString& newBuildCommand,
+    const QString& newRunCommand
+) {
+    Settings::get()->update(GROUP_PREFIX, NAME_KEY, name, {
+        {NAME_KEY, newName},
+        {DIR_PATH_KEY, newDirPath},
+        {BUILD_COMMAND_KEY, newBuildCommand},
+        {RUN_COMMAND_KEY, newRunCommand},
+    });
+}
+
+void SettingsMazeAlgos::remove(const QString& name) {
+    Settings::get()->remove(
+        GROUP_PREFIX,
+        NAME_KEY,
+        name
+    );
 }
 
 QString SettingsMazeAlgos::getValue(const QString& name, const QString& key) {
     const auto& vector = Settings::get()->find(GROUP_PREFIX, NAME_KEY, name);
     ASSERT_EQ(vector.size(), 1);
     return vector.at(0).value(key);
-}
-
-QString SettingsMazeAlgos::execDialog(const QString& name) {
-
-    bool isEditDialog = !name.isEmpty();
-
-    ConfigDialogField nameField;
-    nameField.key = NAME_KEY;
-    nameField.label = "Name";
-
-    ConfigDialogField dirPathField;
-    dirPathField.key = DIR_PATH_KEY;
-    dirPathField.label = "Directory";
-    dirPathField.fileBrowser = true;
-    dirPathField.onlyDirectories = true;
-
-    ConfigDialogField buildCommandField;
-    buildCommandField.key = BUILD_COMMAND_KEY;
-    buildCommandField.label = "Build Command";
-
-    ConfigDialogField runCommandField;
-    runCommandField.key = RUN_COMMAND_KEY;
-    runCommandField.label = "Run Command";
-
-    // Populate some initial values
-    if (isEditDialog) {
-        nameField.initialValue = name;
-        dirPathField.initialValue = getValue(name, DIR_PATH_KEY);
-        buildCommandField.initialValue = getValue(name, BUILD_COMMAND_KEY);
-        runCommandField.initialValue = getValue(name, RUN_COMMAND_KEY);
-    }
-
-    // Disallow certain names
-    QVector<QVariant> nameFilterValues;
-    nameFilterValues.append(QVariant(""));
-    for (const QString& algoName : names()) {
-        if (algoName != name) {
-            nameFilterValues.append(QVariant(algoName));
-        }
-    }
-    nameField.filterValues = nameFilterValues;
-    nameField.inclusiveFilter = false;
-
-    // Execute the dialog
-    QString action = QString((isEditDialog ? "Edit" : "Import"));
-    ConfigDialog dialog(
-        action,
-        "Maze Algorithm",
-        {
-            nameField,
-            dirPathField,
-            buildCommandField,
-            runCommandField
-        },
-        isEditDialog
-    );
-
-    // Cancel was pressed
-    if (dialog.exec() == QDialog::Rejected) {
-        return QString();
-    }
-
-    // Delete was pressed
-    if (dialog.deleteButtonPressed()) {
-        Settings::get()->remove(GROUP_PREFIX, NAME_KEY, name);
-        return QString();
-    }
-
-    // Ok was pressed
-    QMap<QString, QString> map = {
-        {NAME_KEY, dialog.getValue(NAME_KEY)},
-        {DIR_PATH_KEY, dialog.getValue(DIR_PATH_KEY)},
-        {BUILD_COMMAND_KEY, dialog.getValue(BUILD_COMMAND_KEY)},
-        {RUN_COMMAND_KEY, dialog.getValue(RUN_COMMAND_KEY)}
-    };
-    if (isEditDialog) {
-        Settings::get()->update(GROUP_PREFIX, NAME_KEY, name, map);
-    }
-    else {
-        Settings::get()->add(GROUP_PREFIX, map);
-    }
-    return dialog.getValue(NAME_KEY);
 }
 
 } //namespace mms

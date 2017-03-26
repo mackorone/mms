@@ -18,14 +18,14 @@ public:
         const QString& action,
         const QString& object,
         const QVector<ConfigDialogField>& fields,
-        bool includeDeleteButton);
+        bool includeRemoveButton);
 
-    bool deleteButtonPressed();
+    bool removeButtonPressed();
     QString getValue(const QString& key);
 
 private:
 
-    bool m_deleteButtonPressed;
+    bool m_removeButtonPressed;
     QDialogButtonBox* m_buttons;
     QMap<QString, QLineEdit*> m_lineEdits;
 

@@ -61,7 +61,6 @@ void Controller::start(const QString& algoName) {
 
     // Create the subprocess on which we'll execute the algorithm
     m_process = new QProcess();
-    m_process->setWorkingDirectory(dirPath);
 
     // Publish all algorithm stdout so that the UI can display it
     connect(
@@ -107,7 +106,8 @@ void Controller::start(const QString& algoName) {
     //     SimUtilities::quit();
     // }
 
-    ProcessUtilities::start(m_process, runCommand);
+    // TODO: MACK - push button?
+    ProcessUtilities::start(runCommand, dirPath, m_process);
 }
 
 InterfaceType Controller::getInterfaceType(bool canFinalize) {

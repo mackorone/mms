@@ -116,7 +116,7 @@ QString SettingsMouseAlgos::execDialog(const QString& name) {
     }
 
     // Delete was pressed
-    if (dialog.deleteButtonPressed()) {
+    if (dialog.removeButtonPressed()) {
         Settings::get()->remove(GROUP_PREFIX, NAME_KEY, name);
         return QString();
     }

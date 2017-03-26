@@ -1,6 +1,13 @@
-#include "MainWindow.h"
-#include "ui_mainwindow.h"
+#include "Window.h"
 
+#include <QSplitter>
+#include <QTabWidget>
+
+#include "MazeAlgosTab.h"
+#include "MazeFilesTab.h"
+#include "TextDisplay.h"
+
+/*
 #include <QFileDialog>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -20,117 +27,92 @@
 #include "SimUtilities.h"
 #include "State.h"
 #include "Time.h"
+*/
 
 namespace mms {
 
-MainWindow::MainWindow(QWidget *parent) :
-        QMainWindow(parent),
+Window::Window(QWidget *parent) : QMainWindow(parent) {
+        /*
         m_maze(nullptr),
         m_truth(nullptr),
         m_mouse(nullptr),
         m_mouseGraphic(nullptr),
         m_view(nullptr),
         m_controller(nullptr) {
+        */
 
-    // Initialize the UI
-    ui.setupUi(this);
+    // Add the splitter to the window
+    QSplitter* splitter = new QSplitter();
+    splitter->setHandleWidth(6);
+    setCentralWidget(splitter);
 
-    // Add map to the UI
-    ui.mapLayout->addWidget(&m_map);
+    // Add the map to the splitter
+    splitter->addWidget(&m_map);
+    
+    // Add the tabs to the splitter
+    QTabWidget* tabWidget = new QTabWidget();
+    splitter->addWidget(tabWidget);
 
-    // Resize the window
+    MazeFilesTab* mazeFilesTab = new MazeFilesTab(); 
+    connect(
+        mazeFilesTab, &MazeFilesTab::mazeFileChanged,
+        this, [=](const QString& path){
+            qDebug() << path;
+            /*
+            QString path = ui.mazeFilesTable->selectedItems().at(1)->text();
+            Maze* maze = Maze::fromFile(path);
+            if (maze != nullptr) {
+                setMaze(maze);
+            }
+            */
+        }
+    );
+
+    MazeAlgosTab* mazeAlgosTab = new MazeAlgosTab();
+
+    // Add some tabs // TODO: MACK
+    tabWidget->addTab(mazeFilesTab, "Maze Files");
+    tabWidget->addTab(mazeAlgosTab, "Maze Algorithms");
+    tabWidget->addTab(new QPushButton(), "Mouse Algorithms");
+
     resize(P()->defaultWindowWidth(), P()->defaultWindowHeight());
+    // TODO: MACK
+    m_map.resize(325, 100);
 
-    // TODO: MACK - settings somewhere
-    QFont font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-    font.setPointSize(10);
-    ui.mazeBuildTextEdit->document()->setDefaultFont(font);
-    ui.mazeRunTextEdit->document()->setDefaultFont(font);
-    ui.buildTextEdit->document()->setDefaultFont(font);
-    ui.runTextEdit->document()->setDefaultFont(font);
-    ui.mazeBuildTextEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
-    ui.mazeRunTextEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
-    ui.buildTextEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
-    ui.runTextEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
+    /*
 
     // Load saved algos
-    for (const QString& algoName : SettingsMazeAlgos::names()) {
-        ui.selectMazeAlgorithmComboBox->addItem(algoName);
-    }
     for (const QString& algoName : SettingsMouseAlgos::names()) {
         ui.selectAlgorithmComboBox->addItem(algoName);
     }
 
     // Connect the maze algo buttons
-    connect(ui.importMazeAlgoButton, &QPushButton::clicked, this,&MainWindow::importMazeAlgo);
-    connect(ui.editMazeAlgoButton, &QPushButton::clicked, this, &MainWindow::editMazeAlgo);
-    connect(ui.buildMazeAlgoButton, &QPushButton::clicked, this, &MainWindow::buildMazeAlgo);
-    connect(ui.runMazeAlgoButton, &QPushButton::clicked, this, &MainWindow::runMazeAlgo);
+    connect(ui.buildMazeAlgoButton, &QPushButton::clicked, this, &Window::buildMazeAlgo);
+    connect(ui.runMazeAlgoButton, &QPushButton::clicked, this, &Window::runMazeAlgo);
 
     // Connect the mouse algo buttons
-    connect(ui.importMouseAlgoButton, &QPushButton::clicked, this, &MainWindow::importMouseAlgo);
-    connect(ui.editMouseAlgoButton, &QPushButton::clicked, this, &MainWindow::editMouseAlgo);
-    connect(ui.buildButton, &QPushButton::clicked, this, &MainWindow::buildMouseAlgo);
-    connect(ui.runButton, &QPushButton::clicked, this, &MainWindow::runMouseAlgo);
+    connect(ui.importMouseAlgoButton, &QPushButton::clicked, this, &Window::importMouseAlgo);
+    connect(ui.editMouseAlgoButton, &QPushButton::clicked, this, &Window::editMouseAlgo);
+    connect(ui.buildButton, &QPushButton::clicked, this, &Window::buildMouseAlgo);
+    connect(ui.runButton, &QPushButton::clicked, this, &Window::runMouseAlgo);
 
     // TODO: MACK
     connect(ui.editParametersButton, &QPushButton::clicked, this, [](){
         ParamParser::execEditDialog();
     });
 
-    // TODO: MACK - connect the import mazes button
-    connect(
-        ui.importMazesButton,
-        &QPushButton::clicked,
-        this,
-        [&](){
-            QStringList suffixes;
-            for (const QString& suffix : MAZE_FILE_TYPE_TO_SUFFIX.values()) {
-                suffixes.append(QString("*.") + suffix);
-            }
-            QStringList paths = QFileDialog::getOpenFileNames(
-                this,
-                tr("Select one or more maze files to import"),
-                "/home",
-                QString("Mazes Files (") + suffixes.join(" ") + ")"
-            );
-            for (const QString& path : paths) {
-                SettingsMazeFiles::addMazeFile(path);
-            }
-            refreshSettingsMazeFiles();
-        }
-    );
-
-    // TODO: MACK - set some maze files table properties
-    ui.mazeFilesTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui.mazeFilesTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui.mazeFilesTable->setSelectionMode(QAbstractItemView::SingleSelection);
-    ui.mazeFilesTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents); 
-    refreshSettingsMazeFiles();
-
-    connect(
-        ui.mazeFilesTable,
-        &QTableWidget::itemSelectionChanged,
-        this,
-        [&](){
-            QString path = ui.mazeFilesTable->selectedItems().at(1)->text();
-            Maze* maze = Maze::fromFile(path);
-            if (maze != nullptr) {
-                setMaze(maze);
-            }
-        }
-    );
-
     // Connect pause button
-    connect(ui.pauseButton, &QPushButton::clicked, this, &MainWindow::togglePause);
+    connect(ui.pauseButton, &QPushButton::clicked, this, &Window::togglePause);
+    */
 }
 
-MainWindow::~MainWindow() {
+Window::~Window() {
     // TODO: MACK - other cleanup here
-    delete m_maze;
+    //delete m_maze;
 }
 
-void MainWindow::keyPress(int key) {
+#if(0)
+void Window::keyPress(int key) {
 
     // NOTE: If you're adding or removing anything from this function, make
     // sure to update wiki/Keys.md
@@ -241,7 +223,7 @@ void MainWindow::keyPress(int key) {
     }
 }
 
-void MainWindow::keyRelease(int key) {
+void Window::keyRelease(int key) {
     if (
         key == Qt::Key_Up || key == Qt::Key_Down ||
         key == Qt::Key_Left || key == Qt::Key_Right
@@ -250,7 +232,7 @@ void MainWindow::keyRelease(int key) {
     }
 }
 
-void MainWindow::setMaze(Maze* maze) {
+void Window::setMaze(Maze* maze) {
     Maze* prev_maze = m_maze;
     MazeView* prev_truth = m_truth;
 
@@ -270,7 +252,7 @@ void MainWindow::setMaze(Maze* maze) {
     }
 }
 
-void MainWindow::togglePause() {
+void Window::togglePause() {
     if (m_controller != nullptr) {
         if (m_controller->getInterfaceType(false) == InterfaceType::DISCRETE) {
             if (S()->paused()) {
@@ -291,52 +273,7 @@ void MainWindow::togglePause() {
     }
 }
 
-void MainWindow::refreshSettingsMazeFiles() {
-    QStringList mazeFiles = SettingsMazeFiles::getSettingsMazeFiles();
-    ui.mazeFilesTable->setRowCount(mazeFiles.size());
-    ui.mazeFilesTable->setColumnCount(2);
-    for (int i = 0; i < mazeFiles.size(); i += 1) {
-        QString path = mazeFiles.at(i);
-        ui.mazeFilesTable->setItem(i, 0, new QTableWidgetItem(QFileInfo(path).fileName()));
-        ui.mazeFilesTable->setItem(i, 1, new QTableWidgetItem(path));
-    }
-}
-
-// TODO: MACK
-void MainWindow::importMazeAlgo() {
-    /*
-    QString name = SettingsMazeAlgos::execImportDialog();
-    if (!name.isEmpty()) {
-        // TODO: MACK - resort, select the updated algo
-        ui.selectMazeAlgorithmComboBox->addItem(name);
-        int index = ui.selectMazeAlgorithmComboBox->findText(name);
-        ui.selectMazeAlgorithmComboBox->setCurrentIndex(index);
-    }
-    */
-}
-
-void MainWindow::editMazeAlgo() {
-
-    /*
-    // TODO: MACK - cancelling causes combo box to change selection
-
-    QString name = ui.selectMazeAlgorithmComboBox->currentText();
-    ASSERT_TR(SettingsMazeAlgos::names().contains(name));
-
-    QString newName = SettingsMazeAlgos::execEditDialog(name);
-    ui.selectMazeAlgorithmComboBox->clear();
-    for (const QString& algoName : SettingsMazeAlgos::names()) {
-        ui.selectMazeAlgorithmComboBox->addItem(algoName);
-    }
-    if (!newName.isEmpty()) {
-        // TODO: MACK - resort, select the updated algo
-        int index = ui.selectMazeAlgorithmComboBox->findText(newName);
-        ui.selectMazeAlgorithmComboBox->setCurrentIndex(index);
-    }
-    */
-}
-
-void MainWindow::buildMazeAlgo() {
+void Window::buildMazeAlgo() {
 
     // Determine the maze to build
     const QString& mazeAlgoName = ui.selectMazeAlgorithmComboBox->currentText();
@@ -389,7 +326,6 @@ void MainWindow::buildMazeAlgo() {
     ui.buildMazeAlgoButton->setEnabled(false);
 
     // Now, start the build
-    /*
     bool success = ProcessUtilities::start(m_buildMazeAlgoProcess, mazeBuildCommand);
     if (!success) {
         // TODO: MACK
@@ -397,10 +333,9 @@ void MainWindow::buildMazeAlgo() {
         ui.buildMazeAlgoButton->setEnabled(true);
         m_buildMazeAlgoProcess->deleteLater();
     }
-    */
 }
 
-void MainWindow::runMazeAlgo() {
+void Window::runMazeAlgo() {
 
     const QString& mazeAlgoName = ui.selectMazeAlgorithmComboBox->currentText();
     ASSERT_TR(SettingsMazeAlgos::names().contains(mazeAlgoName));
@@ -453,7 +388,6 @@ void MainWindow::runMazeAlgo() {
     ui.runMazeAlgoButton->setEnabled(false);
 
     // Now, start the build
-    /*
     bool success = ProcessUtilities::start(m_runMazeAlgoProcess, mazeRunCommand);
     if (!success) {
             // TODO: MACK
@@ -461,10 +395,9 @@ void MainWindow::runMazeAlgo() {
             ui.runMazeAlgoButton->setEnabled(true);
             m_runMazeAlgoProcess->deleteLater();
     }
-    */
 }
 
-void MainWindow::importMouseAlgo() {
+void Window::importMouseAlgo() {
     QString name = SettingsMouseAlgos::execImportDialog();
     if (!name.isEmpty()) {
         // TODO: MACK - resort, select the updated algo
@@ -474,7 +407,7 @@ void MainWindow::importMouseAlgo() {
     }
 }
 
-void MainWindow::editMouseAlgo() {
+void Window::editMouseAlgo() {
 
     QString name = ui.selectAlgorithmComboBox->currentText();
     ASSERT_TR(SettingsMouseAlgos::names().contains(name));
@@ -491,7 +424,7 @@ void MainWindow::editMouseAlgo() {
     }
 }
 
-void MainWindow::buildMouseAlgo() {
+void Window::buildMouseAlgo() {
 
     // TODO: MACK - helper for this (ensure all fields exist)
     const QString& algoName = ui.selectAlgorithmComboBox->currentText();
@@ -534,12 +467,10 @@ void MainWindow::buildMouseAlgo() {
     ui.buildButton->setEnabled(false);
 
     // Now, start the build
-    /*
     ProcessUtilities::start(m_buildMouseAlgoProcess, buildCommand);
-    */
 }
 
-void MainWindow::runMouseAlgo() {
+void Window::runMouseAlgo() {
 
     // TODO: MACK - respawn after switching the mouse algo combo box selection
 
@@ -679,7 +610,7 @@ void MainWindow::runMouseAlgo() {
 	m_runMouseAlgoThread->start();
 }
 
-void MainWindow::stopMouseAlgo() {
+void Window::stopMouseAlgo() {
     m_map.setView(m_truth);
     if (m_controller != nullptr) {
         m_controller = nullptr;
@@ -693,7 +624,7 @@ void MainWindow::stopMouseAlgo() {
     }
 }
 
-QVector<QPair<QString, QVariant>> MainWindow::getRunStats() const {
+QVector<QPair<QString, QVariant>> Window::getRunStats() const {
 
     MouseStats stats;
     if (Model::get()->containsMouse("")) {
@@ -733,7 +664,7 @@ QVector<QPair<QString, QVariant>> MainWindow::getRunStats() const {
     };
 }
 
-QVector<QPair<QString, QVariant>> MainWindow::getAlgoOptions() const {
+QVector<QPair<QString, QVariant>> Window::getAlgoOptions() const {
     return {
         // Mouse Info
         // TODO: MACK - get this from the controller
@@ -802,7 +733,7 @@ QVector<QPair<QString, QVariant>> MainWindow::getAlgoOptions() const {
     };
 }
 
-QVector<QPair<QString, QVariant>> MainWindow::getMazeInfo() const {
+QVector<QPair<QString, QVariant>> Window::getMazeInfo() const {
     return {
         // TODO: MACK
         /*
@@ -817,7 +748,7 @@ QVector<QPair<QString, QVariant>> MainWindow::getMazeInfo() const {
     };
 }
 
-QVector<QPair<QString, QVariant>> MainWindow::getOptions() const {
+QVector<QPair<QString, QVariant>> Window::getOptions() const {
     return {
         // Sim state
         {"Layout Type (l)", LAYOUT_TYPE_TO_STRING.value(S()->layoutType())},
@@ -832,5 +763,6 @@ QVector<QPair<QString, QVariant>> MainWindow::getOptions() const {
         {"Sim Speed (f, s)", QString::number(S()->simSpeed())},
     };
 }
+#endif
 
 } // namespace mms

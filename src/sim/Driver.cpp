@@ -12,6 +12,7 @@
 #include "State.h"
 #include "Time.h"
 #include "Model.h"
+#include "Window.h"
 
 namespace mms {
 
@@ -51,7 +52,9 @@ int Driver::drive(int argc, char* argv[]) {
     modelThread.start();
 
     // Create the main window
-    MainWindow window;
+    //MainWindow mainWindow; // TODO: MACK
+    //mainWindow.show();
+    Window window;
     window.show();
 
     // Start the event loop
