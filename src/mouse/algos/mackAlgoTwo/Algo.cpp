@@ -11,13 +11,10 @@
 
 #if (!SIMULATOR) 
 extern char movesBuffer[256];
-extern bool walls_global[3];
+extern byte moveBufferIndex;
 extern volatile bool movesReady;
 extern volatile bool movesDoneAndWallsSet;
-extern volatile bool buttonPressed;
 #endif
-
-#if (SIMULATOR)
 
 void Algo::solve(Interface* interface) {
 
@@ -26,12 +23,6 @@ void Algo::solve(Interface* interface) {
 
     // Set and finalize some options
     m_mouse->setTileTextRowsAndCols(1, 5);
-
-#else
-
-void Algo::solve() {
-
-#endif
 
     // Assert that the maze size is sane
     ASSERT_LE(1, Maze::WIDTH);
@@ -82,12 +73,12 @@ void Algo::solve() {
     // Perform a series of strategical steps ad infinitum
     while (true) {
 
-#if (SIMULATOR)
         // Clear all tile color, and color the center
         m_mouse->clearAllTileColor();
         m_mouse->setTileColor(0, 0, 'G');
         colorCenter('G');
-#else
+
+#if (!SIMULATOR)
         while (!movesDoneAndWallsSet) {
             // Wait for the walls to be ready
         }
@@ -113,7 +104,6 @@ void Algo::solve() {
 }
 
 bool Algo::shouldColorVisitedCells() const {
-#if (SIMULATOR)
     // 1 to enable, 0 to disable
     if (m_mouse->inputButtonPressed(1)) {
         if (m_mouse->inputButtonPressed(0)) {
@@ -126,7 +116,6 @@ bool Algo::shouldColorVisitedCells() const {
     if (m_mouse->inputButtonPressed(0)) {
         m_mouse->acknowledgeInputButtonPressed(0);
     }
-#endif
     return false;
 }
 
@@ -135,19 +124,11 @@ byte Algo::colorVisitedCellsDelayMs() const {
 }
 
 bool Algo::resetButtonPressed() {
-#if (SIMULATOR)
     return m_mouse->inputButtonPressed(2);
-#else
-    return buttonPressed;
-#endif
 }
 
 void Algo::acknowledgeResetButtonPressed() {
-#if (SIMULATOR)
     m_mouse->acknowledgeInputButtonPressed(2);
-#else
-    buttonPressed = false;
-#endif
 }
 
 twobyte Algo::getTurnCost() {
@@ -160,10 +141,8 @@ twobyte Algo::getStraightAwayCost(byte length) {
 
 void Algo::reset() {
 
-#if (SIMULATOR)
     // First, reset the position in the simulator
     m_mouse->resetPosition();
-#endif
 
     // Then acknowledge that the button was pressed (and potentially sleep)
     acknowledgeResetButtonPressed();
@@ -223,14 +202,14 @@ void Algo::step() {
     drawPath(start);
 
 #if (!SIMULATOR)
-    m_moveBufferIndex = 0;
+    moveBufferIndex = 0;
 #endif
 
     // Move along the path as far as possible
     followPath(start);
 
 #if (!SIMULATOR)
-    movesBuffer[m_moveBufferIndex] = '\0';
+    movesBuffer[moveBufferIndex] = '\0';
     movesReady = true;
 #endif
 
@@ -285,10 +264,8 @@ byte Algo::generatePath(byte start) {
             }
         }
         if (colorVisitedCells) {
-#if (SIMULATOR)
             m_mouse->delay(colorVisitedCellsDelayMs());
             m_mouse->setTileColor(Maze::getX(cell), Maze::getY(cell), 'Y');
-#endif
         }
         if (cell == getClosestDestinationCell()) {
             Heap::clear();
@@ -427,13 +404,11 @@ bool Algo::inOrigin(byte x, byte y) {
 }
 
 void Algo::colorCenter(char color) {
-#if (SIMULATOR)
     for (byte x = Maze::CLLX; x <= Maze::CURX; x += 1) {
         for (byte y = Maze::CLLY; y <= Maze::CURY; y += 1) {
             m_mouse->setTileColor(x, y, color);
         }
     }
-#endif
 }
 
 void Algo::resetDestinationCellDistances() {
@@ -603,21 +578,12 @@ void Algo::readWalls() {
 
 bool Algo::readWall(byte direction) {
     switch ((direction - m_d + 4) % 4) {
-#if (SIMULATOR)
         case 0:
             return m_mouse->wallFront();
         case 1:
             return m_mouse->wallRight();
         case 3:
             return m_mouse->wallLeft();
-#else
-        case 0:
-            return walls_global[1];
-        case 1:
-            return walls_global[2];
-        case 3:
-            return walls_global[0];
-#endif
     }
     // We should never get here
     ASSERT_TR(false);
@@ -671,8 +637,8 @@ void Algo::moveForward() {
 #if (SIMULATOR)
     m_mouse->moveForward();
 #else
-    movesBuffer[m_moveBufferIndex] = 'f';
-    m_moveBufferIndex += 1;
+    movesBuffer[moveBufferIndex] = 'f';
+    moveBufferIndex += 1;
 #endif
     moveForwardUpdateState();
 }
@@ -682,8 +648,8 @@ void Algo::leftAndForward() {
     turnLeft();
     moveForward();
 #else
-    movesBuffer[m_moveBufferIndex] = 'l';
-    m_moveBufferIndex += 1;
+    movesBuffer[moveBufferIndex] = 'l';
+    moveBufferIndex += 1;
     turnLeftUpdateState();
     moveForwardUpdateState();
 #endif
@@ -694,8 +660,8 @@ void Algo::rightAndForward() {
     turnRight();
     moveForward();
 #else
-    movesBuffer[m_moveBufferIndex] = 'r';
-    m_moveBufferIndex += 1;
+    movesBuffer[moveBufferIndex] = 'r';
+    moveBufferIndex += 1;
     turnRightUpdateState();
     moveForwardUpdateState();
 #endif
@@ -706,10 +672,10 @@ void Algo::aroundAndForward() {
     turnAround();
     moveForward();
 #else
-    movesBuffer[m_moveBufferIndex] = 'a';
-    m_moveBufferIndex += 1;
-    movesBuffer[m_moveBufferIndex] = 'f';
-    m_moveBufferIndex += 1;
+    movesBuffer[moveBufferIndex] = 'a';
+    moveBufferIndex += 1;
+    movesBuffer[moveBufferIndex] = 'f';
+    moveBufferIndex += 1;
     turnAroundUpdateState();
     moveForwardUpdateState();
 #endif
@@ -727,9 +693,7 @@ void Algo::setCellDistance(byte cell, twobyte distance) {
 void Algo::setCellWall(byte cell, byte direction, bool isWall, bool bothSides) {
     Maze::setWall(cell, direction, isWall);
     static char directionChars[] = {'n', 'e', 's', 'w'};
-#if (SIMULATOR)
     m_mouse->declareWall(Maze::getX(cell), Maze::getY(cell), directionChars[direction], isWall);
-#endif
     if (bothSides && hasNeighboringCell(cell, direction)) {
         byte neighboringCell = getNeighboringCell(cell, direction);
         setCellWall(neighboringCell, getOppositeDirection(direction), isWall, false);
@@ -739,9 +703,7 @@ void Algo::setCellWall(byte cell, byte direction, bool isWall, bool bothSides) {
 void Algo::unsetCellWall(byte cell, byte direction, bool bothSides) {
     Maze::unsetWall(cell, direction);
     static char directionChars[] = {'n', 'e', 's', 'w'};
-#if (SIMULATOR)
     m_mouse->undeclareWall(Maze::getX(cell), Maze::getY(cell), directionChars[direction]);
-#endif
     if (bothSides && hasNeighboringCell(cell, direction)) {
         byte neighboringCell = getNeighboringCell(cell, direction);
         unsetCellWall(neighboringCell, getOppositeDirection(direction), false);

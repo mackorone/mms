@@ -11,21 +11,14 @@ class Algo {
 
 public:
 
-#if (SIMULATOR)
     void solve(Interface* interface);
-#else
-    void solve();
-#endif
 
 private:
 
     static const bool FAST_STRAIGHT_AWAYS = true;
 
-#if (SIMULATOR)
     Interface* m_mouse;
-#else
-    byte m_moveBufferIndex;
-#endif
+
     byte m_x; // X position of the mouse
     byte m_y; // Y position of the mouse
     byte m_d; // Direction of the mouse

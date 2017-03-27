@@ -131,6 +131,8 @@
 
 # Medum Priority
 
+- Add a print function to interfaces
+- Arduino int could be 16 bits
 - Deduplicate some import/edit/build logic between mouse and maze algo tabs
 - Use explicit on one argument constructors
 - Use tr on all user-facing strings to make the application translatable
