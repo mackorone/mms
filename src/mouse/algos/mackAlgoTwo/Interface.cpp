@@ -80,6 +80,7 @@ void Interface::updateDeclareWallOnRead(bool declareWallOnRead) {
 #if (SIMULATOR)
     PRINT("updateDeclareWallOnRead", boolToString(declareWallOnRead));
     READ();
+#endif
 }
 
 void Interface::updateUseTileEdgeMovements(bool useTileEdgeMovements) {
