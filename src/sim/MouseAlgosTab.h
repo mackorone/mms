@@ -33,6 +33,8 @@ private:
 
     QComboBox* m_comboBox;
 
+    QPushButton* m_editButton;
+
     QSpinBox* m_seedBox;
     QCheckBox* m_seedAutoUpdate;
 

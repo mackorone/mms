@@ -21,6 +21,7 @@ namespace mms {
 
 MouseAlgosTab::MouseAlgosTab() :
         m_comboBox(new QComboBox()),
+        m_editButton(new QPushButton("Edit")),
         m_seedBox(new QSpinBox()),
         m_seedAutoUpdate(new QCheckBox("Auto-update")),
         m_buildButton(new QPushButton("Build")),
@@ -49,8 +50,7 @@ MouseAlgosTab::MouseAlgosTab() :
     topLayout->addWidget(m_comboBox);
 
     // Create the algo buttons
-    QPushButton* editButton = new QPushButton("Edit");
-    connect(editButton, &QPushButton::clicked, this, &MouseAlgosTab::edit);
+    connect(m_editButton, &QPushButton::clicked, this, &MouseAlgosTab::edit);
     connect(m_buildButton, &QPushButton::clicked, this, &MouseAlgosTab::build);
     connect(m_runButton, &QPushButton::clicked, this, &MouseAlgosTab::run);
 
@@ -58,7 +58,7 @@ MouseAlgosTab::MouseAlgosTab() :
     QHBoxLayout* buttonsLayout = new QHBoxLayout();
     buttonsLayout->addWidget(m_runButton);
     buttonsLayout->addWidget(m_buildButton);
-    buttonsLayout->addWidget(editButton);
+    buttonsLayout->addWidget(m_editButton);
     layout->addLayout(buttonsLayout);
 
     // Add the mouse algo config box
@@ -196,7 +196,7 @@ void MouseAlgosTab::edit() {
     // Remove was pressed
     if (dialog.removeButtonPressed()) {
         SettingsMouseAlgos::remove(name);
-        m_comboBox->removeItem(m_comboBox->findText(name));
+        refresh();
         return;
     }
 
@@ -337,6 +337,11 @@ void MouseAlgosTab::refresh(const QString& name) {
     if (index != -1) {
         m_comboBox->setCurrentIndex(index);
     }
+    bool isEmpty = (m_comboBox->count() == 0);
+    m_comboBox->setEnabled(!isEmpty);
+    m_editButton->setEnabled(!isEmpty);
+    m_buildButton->setEnabled(!isEmpty);
+    m_runButton->setEnabled(!isEmpty);
 }
 
 QVector<ConfigDialogField> MouseAlgosTab::getFields() {

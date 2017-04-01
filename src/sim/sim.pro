@@ -1,6 +1,7 @@
 # TODO: MACK - is widgets necessary?
 QT += core
 QT += gui
+QT += xml
 QT += widgets
 # TARGET = mms # TODO: MACK
 

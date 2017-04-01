@@ -344,9 +344,9 @@ void Algo::checkNeighbor(byte cell, byte direction) {
 
     // Determine the cost if routed through the current cell
     twobyte costToNeighbor = Maze::getDistance(cell) + (
-        Maze::getNextDirection(cell) == directionFromNeighbor ?
-        getStraightAwayCost(Maze::getStraightAwayLength(cell) + 1) :
-        getTurnCost()
+        Maze::getNextDirection(cell) == directionFromNeighbor
+        ? getStraightAwayCost(Maze::getStraightAwayLength(cell) + 1)
+        : getTurnCost()
     );
 
     // Make updates to the neighbor cell if necessary

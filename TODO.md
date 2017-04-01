@@ -1,5 +1,6 @@
 # High Priority
 
+- Left-and-forward as native algorithm actions
 - Better error messages for failed commands
 - If the mouse goes outside of the maze, the simulator crashes
 - Input buttons for the mouse algorithm

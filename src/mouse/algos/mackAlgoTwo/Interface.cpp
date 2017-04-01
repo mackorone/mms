@@ -336,9 +336,6 @@ void Interface::moveForward() {
 #if (SIMULATOR)
     PRINT("moveForward");
     READ();
-#else
-    movesBuffer[moveBufferIndex] = 'f';
-    m_moveBufferIndex += 1;
 #endif
 }
 

@@ -27,6 +27,8 @@ private:
 
     QComboBox* m_comboBox;
 
+    QPushButton* m_editButton;
+
     QSpinBox* m_widthBox;
     QSpinBox* m_heightBox;
     QSpinBox* m_seedBox;

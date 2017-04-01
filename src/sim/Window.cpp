@@ -72,35 +72,27 @@ Window::Window(QWidget *parent) :
     // Resize some things
     resize(P()->defaultWindowWidth(), P()->defaultWindowHeight());
     m_map.resize(m_map.height(), m_map.height());
-
-    /*
-    // TODO: MACK
-    connect(ui.editParametersButton, &QPushButton::clicked, this, [](){
-        ParamParser::execEditDialog();
-    });
-
-    // Connect pause button
-    connect(ui.pauseButton, &QPushButton::clicked, this, &Window::togglePause);
-    */
 }
 
 void Window::setMaze(Maze* maze) {
 
-    // TODO: MACK - clean this up
+    // First, stop the mouse algo
+    stopMouseAlgo();
 
-    Maze* prev_maze = m_maze;
-    MazeView* prev_truth = m_truth;
-
+    // Next, update the maze and truth
+    Maze* oldMaze = m_maze;
+    MazeView* oldTruth = m_truth;
     m_maze = maze;
     m_truth = new MazeView(m_maze);
+
+    // Update pointers held by other objects
+    Model::get()->setMaze(m_maze);
     m_map.setMaze(m_maze);
     m_map.setView(m_truth);
 
-    stopMouseAlgo();
-
-    Model::get()->setMaze(m_maze);
-    delete prev_maze;
-    delete prev_truth;
+    // Delete the old objects
+    delete oldMaze;
+    delete oldTruth;
 }
 
 void Window::runMouseAlgo(
@@ -111,151 +103,95 @@ void Window::runMouseAlgo(
         int seed,
         TextDisplay* display) {
 
-    // TODO: MACK - deal with empty maze
+    // If maze is empty, raise an error
+    if (m_maze == nullptr) {
+        QMessageBox::warning(
+            this,
+            "No Maze",
+            "You must load a maze before running a mouse algorithm."
+        );
+        return;
+    }
 
-    // Generate the mouse, lens, and controller
-    m_mouse = new Mouse(m_maze);
-    bool success = m_mouse->reload(mouseFilePath);
+    // Generate the mouse, check mouse file success
+    Mouse* newMouse = new Mouse(m_maze);
+    bool success = newMouse->reload(mouseFilePath);
     if (!success) {
         QMessageBox::warning(
             this,
             "Invalid Mouse File",
-            // TODO: MACK - provide a reason here
-            QString("The mouse file \n\n\"") + mouseFilePath + "\"\n\ncould not be loaded."
+            "The mouse file could not be loaded."
         );
-        delete m_mouse;
+        delete newMouse;
         return;
     }
 
     // Kill the current mouse algorithm
     stopMouseAlgo();
 
-    m_view = new MazeViewMutable(m_maze);
-    m_mouseGraphic = new MouseGraphic(m_mouse);
-    m_controller = new Controller(m_maze, m_mouse, m_view);
-
-    // Configures the window to listen for build and run stdout,
-    // as forwarded by the controller, and adds a map to the UI
-
-    /////////////////////////////////
-
-    // Add a map to the UI
-    // TODO: MACK - minimum size, size policy
-    m_map.setView(m_view);
-    m_map.setMouseGraphic(m_mouseGraphic);
+    // Create some more objects
+    MazeViewMutable* newView = new MazeViewMutable(m_maze);
+    MouseGraphic* newMouseGraphic = new MouseGraphic(newMouse);
+    Controller* newController = new Controller(m_maze, newMouse, newView);
 
     // Listen for mouse algo stdout
     connect(
-        m_controller,
-        &Controller::algoStdout,
-        display,
-        &QPlainTextEdit::appendPlainText
+        newController, &Controller::algoStdout,
+        display, &QPlainTextEdit::appendPlainText
     );
-
-    // TODO: MACK - group the position stuff together
-
-    /*
-    // Add run stats info to the UI
-    QVector<QPair<QString, QVariant>> runStats = getRunStats();
-    for (int i = 0; i < runStats.size(); i += 1) {
-        QString label = runStats.at(i).first;
-        QLabel* labelHolder = new QLabel(label + ":");
-        QLabel* valueHolder = new QLabel();
-        ui->runStatsLayout->addWidget(labelHolder, i, 0);
-        ui->runStatsLayout->addWidget(valueHolder, i, 1);
-        m_runStats.insert(label, valueHolder);
-    }
-
-    // Add run stats info to the UI
-    QVector<QPair<QString, QVariant>> mazeInfo = getMazeInfo();
-    for (int i = 0; i < mazeInfo.size(); i += 1) {
-        QString label = mazeInfo.at(i).first;
-        QLabel* labelHolder = new QLabel(label + ":");
-        QLabel* valueHolder = new QLabel();
-        ui->mazeInfoLayout->addWidget(labelHolder, i, 0);
-        ui->mazeInfoLayout->addWidget(valueHolder, i, 1);
-        m_mazeInfo.insert(label, valueHolder);
-    }
-
-    // Periodically update the header
-    connect(
-        &m_headerRefreshTimer,
-        &QTimer::timeout,
-        this,
-        [=](){
-            // TODO: MACK - only update if tab is visible
-            QVector<QPair<QString, QVariant>> runStats = getRunStats();
-            for (const auto& pair : runStats) {
-                QString text = pair.second.toString();
-                if (pair.second.type() == QVariant::Double) {
-                    text = QString::number(pair.second.toDouble(), 'f', 3);
-                }
-                m_runStats.value(pair.first)->setText(text);
-            }
-            QVector<QPair<QString, QVariant>> mazeInfo = getMazeInfo();
-            for (const auto& pair : mazeInfo) {
-                QString text = pair.second.toString();
-                if (pair.second.type() == QVariant::Double) {
-                    text = QString::number(pair.second.toDouble(), 'f', 3);
-                }
-                m_mazeInfo.value(pair.first)->setText(text);
-            }
-        }
-    );
-    m_headerRefreshTimer.start(50);
-    */
-    /////////////////////////////////
-
-    // TODO: MACK
-    Mouse* mouse = m_mouse;
-    MazeViewMutable* view = m_view;
-    MouseGraphic* mouseGraphic = m_mouseGraphic;
-    Controller* controller = m_controller;
 
     // The thread on which the controller will execute
-    m_mouseAlgoThread = new QThread();
-    QThread* thread = m_mouseAlgoThread;
+    QThread* newMouseAlgoThread = new QThread();
 
-    // We need to actually spawn the QProcess (i.e., m_process = new
-    // QProcess()) in the separate thread, hence why this is async. Note that
-    // we need the separate thread because, while it's performing an
-    // algorithm-requested action, the Controller could block the GUI loop from
-    // executing.
-    connect(m_mouseAlgoThread, &QThread::started, m_controller, [=](){
+    // We need to actually spawn the algorithm's process (via start()) in the
+    // separate thread, hence why this is async. Note that we need the separate
+    // thread because, while it's performing an algorithm-requested action, the
+    // Controller could block the GUI loop from executing.
+    connect(newMouseAlgoThread, &QThread::started, newController, [=](){
         // We need to add the mouse to the world *after* the the controller is
         // initialized (thus ensuring that tile fog is cleared automatically),
         // but *before* we actually start the algorithm (lest the mouse
         // position/orientation not be updated properly during the beginning of
         // the mouse algo's execution)
-        controller->init();
-        Model::get()->addMouse("", mouse);
-        controller->start(name);
+        newController->init();
+        Model::get()->addMouse("", newMouse);
+        newController->start(name);
     });
 
-    connect(thread, &QThread::finished, this, [=](){
-        controller->deleteLater();
-        thread->deleteLater();
-        // TODO: MACK - if we remove the wait(), the
-        // following delete statements cause problems
-        delete mouseGraphic;
-        delete view;
-        delete mouse;
-        // qDebug() << "THREAD DEAD";
+    // When the thread finishes, clean everything up
+    connect(newMouseAlgoThread, &QThread::finished, this, [=](){
+        // newController->deleteLater();
+        // newMouseAlgoThread->deleteLater();
+        // TODO: MACK - switch these two
+        delete newController;
+        delete newMouseAlgoThread;
+        delete newMouseGraphic;
+        delete newView;
+        delete newMouse;
     });
+
+    // Update the member variables
+    m_mouse = newMouse;
+    m_view = newView;
+    m_mouseGraphic = newMouseGraphic;
+    m_controller = newController;
+    m_mouseAlgoThread = newMouseAlgoThread;
+
+    // Update the map to use the algorithm's view
+    m_map.setView(m_view);
+    m_map.setMouseGraphic(m_mouseGraphic);
+
+    // Start the controller thread
     m_controller->moveToThread(m_mouseAlgoThread);
 	m_mouseAlgoThread->start();
 }
 
 void Window::stopMouseAlgo() {
-    m_map.setView(m_truth);
     if (m_controller != nullptr) {
         m_controller = nullptr;
-        m_map.setMouseGraphic(nullptr);
         m_mouseAlgoThread->quit();
-        // TODO: MACK - necessary for the thread to actually get killed
         m_mouseAlgoThread->wait();
-        // TODO: MACK - we need some synchronization here, because the model
-        // could be using the pointer at the time it's updated
+        m_map.setMouseGraphic(nullptr);
         Model::get()->removeMouse("");
     }
 }
@@ -541,6 +477,58 @@ QVector<QPair<QString, QVariant>> Window::getOptions() const {
         {"Sim Speed (f, s)", QString::number(S()->simSpeed())},
     };
 }
+
+    // TODO: MACK - group the position stuff together
+    /*
+    // Add run stats info to the UI
+    QVector<QPair<QString, QVariant>> runStats = getRunStats();
+    for (int i = 0; i < runStats.size(); i += 1) {
+        QString label = runStats.at(i).first;
+        QLabel* labelHolder = new QLabel(label + ":");
+        QLabel* valueHolder = new QLabel();
+        ui->runStatsLayout->addWidget(labelHolder, i, 0);
+        ui->runStatsLayout->addWidget(valueHolder, i, 1);
+        m_runStats.insert(label, valueHolder);
+    }
+
+    // Add run stats info to the UI
+    QVector<QPair<QString, QVariant>> mazeInfo = getMazeInfo();
+    for (int i = 0; i < mazeInfo.size(); i += 1) {
+        QString label = mazeInfo.at(i).first;
+        QLabel* labelHolder = new QLabel(label + ":");
+        QLabel* valueHolder = new QLabel();
+        ui->mazeInfoLayout->addWidget(labelHolder, i, 0);
+        ui->mazeInfoLayout->addWidget(valueHolder, i, 1);
+        m_mazeInfo.insert(label, valueHolder);
+    }
+
+    // Periodically update the header
+    connect(
+        &m_headerRefreshTimer,
+        &QTimer::timeout,
+        this,
+        [=](){
+            // TODO: MACK - only update if tab is visible
+            QVector<QPair<QString, QVariant>> runStats = getRunStats();
+            for (const auto& pair : runStats) {
+                QString text = pair.second.toString();
+                if (pair.second.type() == QVariant::Double) {
+                    text = QString::number(pair.second.toDouble(), 'f', 3);
+                }
+                m_runStats.value(pair.first)->setText(text);
+            }
+            QVector<QPair<QString, QVariant>> mazeInfo = getMazeInfo();
+            for (const auto& pair : mazeInfo) {
+                QString text = pair.second.toString();
+                if (pair.second.type() == QVariant::Double) {
+                    text = QString::number(pair.second.toDouble(), 'f', 3);
+                }
+                m_mazeInfo.value(pair.first)->setText(text);
+            }
+        }
+    );
+    m_headerRefreshTimer.start(50);
+    */
 #endif
 
 } // namespace mms

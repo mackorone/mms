@@ -1,10 +1,11 @@
 #pragma once
 
 #include <QDebug>
+#include <QDomDocument> 
+#include <QDomElement> 
 #include <QMap>
 #include <QString>
 
-#include <pugixml/pugixml.hpp>
 #include <QString>
 #include <QVector>
 
@@ -41,17 +42,16 @@ public:
         bool* success);
 
 private:
-    // We have to keep m_doc around so valgrind doesn't complain
-    pugi::xml_document m_doc;
-    pugi::xml_node m_root;
+    QDomDocument m_doc;
+    QDomElement m_root;
     Radians m_forwardDirection;
     Cartesian m_centerOfMass;
 
-    double getDoubleIfHasDouble(const pugi::xml_node& node, const QString& tag, bool* success);
+    double getDoubleIfHasDouble(const QDomElement& element, const QString& tag, bool* success);
     double getDoubleIfHasDoubleAndNonNegative(
-        const pugi::xml_node& node, const QString& tag, bool* success);
-    pugi::xml_node getContainerNode(const pugi::xml_node& node, const QString& tag, bool* success);
-    EncoderType getEncoderTypeIfValid(const pugi::xml_node& node, bool* success);
+        const QDomElement& element, const QString& tag, bool* success);
+    QDomElement getContainerElement(const QDomElement& element, const QString& tag, bool* success);
+    EncoderType getEncoderTypeIfValid(const QDomElement& element, bool* success);
 
     Cartesian alignVertex(const Cartesian& vertex, const Cartesian& alignmentTranslation,
         const Radians& alignmentRotation, const Cartesian& rotationPoint);
@@ -79,9 +79,12 @@ private:
     static const QString HALF_WIDTH_TAG;
 
     template<class T>
-    QString getNameIfNonemptyAndUnique(const QString& type,
-            const pugi::xml_node& node, const QMap<QString, T>& map, bool* success) {
-        QString name = node.child(NAME_TAG.toStdString().c_str()).child_value();
+    QString getNameIfNonemptyAndUnique(
+            const QString& type,
+            const QDomElement& element,
+            const QMap<QString, T>& map,
+            bool* success) {
+        QString name = element.firstChildElement(NAME_TAG).text();
         if (name.isEmpty()) {
             qWarning().noquote().nospace()
                 << "No " << type << " name specified.";

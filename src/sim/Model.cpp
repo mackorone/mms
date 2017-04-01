@@ -29,8 +29,9 @@ Model* Model::get() {
 
 void Model::simulate() {
 
+    // TODO: MACK
     // Start a separate collision detection thread
-    std::thread collisionDetector(&Model::checkCollision, this);
+    // std::thread collisionDetector(&Model::checkCollision, this);
 
     // Uncomment to do mouse update benchmarking
     /*
@@ -48,7 +49,8 @@ void Model::simulate() {
     // Use this thread to perform mouse position updates
     while (true) {
 
-        // TODO: MACK - handle no maze, no mice
+        // Ensure the maze/mouse aren't updated in this loop
+        m_mutex.lock();
 
         // In order to ensure we're sleeping the correct amount of time, we time
         // the mouse position update operation and take it into account when we sleep.
@@ -56,7 +58,9 @@ void Model::simulate() {
 
         // If we've crashed, let this thread exit
         if (S()->crashed()) {
-            collisionDetector.join();
+            // TODO: MACK
+            // collisionDetector.join();
+            m_mutex.unlock();
             return;
         }
 
@@ -124,6 +128,9 @@ void Model::simulate() {
             }
         }
 
+        // Release the mutex
+        m_mutex.unlock();
+
         // Get the duration of the mouse position update, in seconds. Note that this duration
         // is simply the total number of real seconds that have passed, which is exactly
         // what we want (since the framerate is perceived in real-time and not CPU time).
@@ -146,25 +153,30 @@ void Model::simulate() {
 }
 
 void Model::setMaze(const Maze* maze) {
+    m_mutex.lock();
     m_mice.clear();
     m_stats.clear();
-    // TODO: MACK - block until update loop is done here, avoid race condition
     m_maze = maze;
+    m_mutex.unlock();
 }
 
 void Model::addMouse(const QString& name, Mouse* mouse) {
+    m_mutex.lock();
     ASSERT_FA(m_maze == nullptr);
     ASSERT_FA(m_mice.contains(name));
     m_mice.insert(name, mouse);
     m_stats.insert(name, MouseStats());
+    m_mutex.unlock();
 }
 
 void Model::removeMouse(const QString& name) {
+    m_mutex.lock();
     ASSERT_FA(m_maze == nullptr);
     ASSERT_TR(m_mice.contains(name));
     ASSERT_TR(m_stats.contains(name));
     m_mice.remove(name);
     m_stats.remove(name);
+    m_mutex.unlock();
 }
 
 bool Model::containsMouse(const QString& name) const {

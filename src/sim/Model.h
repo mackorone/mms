@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <QMutex>
 
 #include "Maze.h"
 #include "Mouse.h"
@@ -34,6 +35,8 @@ private:
 
     Model();
     static Model* INSTANCE;
+
+    QMutex m_mutex;
 
     const Maze* m_maze;
     QMap<QString, Mouse*> m_mice;

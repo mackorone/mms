@@ -3,8 +3,6 @@
 #include <QMap>
 #include <QString>
 
-#include <pugixml/pugixml.hpp>
-
 #include "Assert.h"
 
 namespace mms {

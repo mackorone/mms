@@ -1,6 +1,7 @@
 #include "MouseParser.h"
 
 #include <QDebug>
+#include <QFile>
 #include <QVector>
 
 #include "Assert.h"
@@ -40,39 +41,54 @@ const QString MouseParser::HALF_WIDTH_TAG = "Half-Width";
 MouseParser::MouseParser(const QString& filePath, bool* success) :
         m_forwardDirection(Radians(0)),
         m_centerOfMass(Cartesian(Meters(0), Meters(0))) {
-    pugi::xml_parse_result result = m_doc.load_file(filePath.toStdString().c_str());
-    if (!result) {
-        qWarning().noquote().nospace()
-            << "Unable to read mouse parameters in \"" << filePath << "\" - "
-            << result.description();
-        *success = false;
+
+    // Try to open the file
+    QFile file(filePath);
+    *success = file.open(QIODevice::ReadOnly);
+    if (!*success) {
+        qWarning() << "Unable to open file" << filePath;
+        return;
     }
-    else {
-        m_root = m_doc.child(MOUSE_TAG.toStdString().c_str());
-        m_forwardDirection = Radians(Degrees(
-            getDoubleIfHasDouble(m_root, FORWARD_DIRECTION_TAG, success)));
-        pugi::xml_node centerOfMassNode = getContainerNode(m_root, CENTER_OF_MASS_TAG, success);
-        double x = getDoubleIfHasDouble(centerOfMassNode, X_TAG, success);
-        double y = getDoubleIfHasDouble(centerOfMassNode, Y_TAG, success);
-        m_centerOfMass = Cartesian(Meters(x), Meters(y));
+
+    // Try to read the file
+    QString errorMessage;
+    *success = m_doc.setContent(&file, false, &errorMessage);
+    if (!*success) {
+        qWarning() << "Unable to parse file" << filePath << ":" << errorMessage;
     }
+    file.close();
+    if (!*success) {
+        return;
+    }
+
+    // Initialize some members of the class
+    m_root = m_doc.firstChildElement(MOUSE_TAG);
+    m_forwardDirection = Radians(Degrees(
+        getDoubleIfHasDouble(m_root, FORWARD_DIRECTION_TAG, success)));
+    QDomElement centerOfMassElement = getContainerElement(m_root, CENTER_OF_MASS_TAG, success);
+    double x = getDoubleIfHasDouble(centerOfMassElement, X_TAG, success);
+    double y = getDoubleIfHasDouble(centerOfMassElement, Y_TAG, success);
+    m_centerOfMass = Cartesian(Meters(x), Meters(y));
 }
 
 Polygon MouseParser::getBody(
-        const Cartesian& initialTranslation, const Radians& initialRotation, bool* success) {
+        const Cartesian& initialTranslation,
+        const Radians& initialRotation,
+        bool* success) {
 
     Cartesian alignmentTranslation = initialTranslation - m_centerOfMass;
     Radians alignmentRotation = initialRotation - m_forwardDirection;
 
-    pugi::xml_node body = m_root.child(BODY_TAG.toStdString().c_str());
-    if (body.begin() == body.end()) {
-        qWarning().noquote().nospace()
-            << "No \"" << BODY_TAG << "\" tag found.";
+    QDomElement body = m_root.firstChildElement(BODY_TAG);
+    if (body.isNull()) {
+        qWarning() << "No" << BODY_TAG << "tag found.";
         *success = false;
     }
 
     QVector<Cartesian> vertices;
-    for (pugi::xml_node vertex : body.children(VERTEX_TAG.toStdString().c_str())) {
+    QDomNodeList elementList = body.elementsByTagName(VERTEX_TAG);
+    for (int i = 0; i < elementList.size(); i += 1) {
+        QDomElement vertex = elementList.at(i).toElement();
         double x = getDoubleIfHasDouble(vertex, X_TAG, success);
         double y = getDoubleIfHasDouble(vertex, Y_TAG, success);
         vertices.push_back(
@@ -84,9 +100,9 @@ Polygon MouseParser::getBody(
     }
 
     if (vertices.size() < 3) {
-        qWarning().noquote().nospace()
-            << "Invalid mouse \"" << BODY_TAG << "\" - less than three valid"
-            << " vertices were specified.";
+        qWarning()
+            << "Invalid mouse" << BODY_TAG
+            << "- less than three valid vertices were specified.";
         *success = false;
     }
 
@@ -94,9 +110,9 @@ Polygon MouseParser::getBody(
     if (success) {
         bodyPolygon = Polygon(vertices);
         if (bodyPolygon.getTriangles().size() == 0) {
-            qWarning().noquote().nospace()
-                << "Invalid mouse \"" << BODY_TAG << "\" - the vertices"
-                << " specified do not constitute a simple polygon.";
+            qWarning()
+                << "Invalid mouse" << BODY_TAG
+                << "- the vertices specified aren't a simple polygon.";
             *success = false;
         }
     }
@@ -116,12 +132,14 @@ QMap<QString, Wheel> MouseParser::getWheels(
     Radians alignmentRotation = initialRotation - m_forwardDirection;
 
     QMap<QString, Wheel> wheels;
-    for (pugi::xml_node wheel : m_root.children(WHEEL_TAG.toStdString().c_str())) {
+    QDomNodeList elementList = m_root.elementsByTagName(WHEEL_TAG);
+    for (int i = 0; i < elementList.size(); i += 1) {
+        QDomElement wheel = elementList.at(i).toElement();
 
         QString name = getNameIfNonemptyAndUnique("wheel", wheel, wheels, success);
         double diameter = getDoubleIfHasDoubleAndNonNegative(wheel, DIAMETER_TAG, success);
         double width = getDoubleIfHasDoubleAndNonNegative(wheel, WIDTH_TAG, success);
-        pugi::xml_node position = getContainerNode(wheel, POSITION_TAG, success);
+        QDomElement position = getContainerElement(wheel, POSITION_TAG, success);
         double x = getDoubleIfHasDouble(position, X_TAG, success);
         double y = getDoubleIfHasDouble(position, Y_TAG, success);
         double direction = getDoubleIfHasDouble(wheel, DIRECTION_TAG, success);
@@ -162,13 +180,15 @@ QMap<QString, Sensor> MouseParser::getSensors(
     Radians alignmentRotation = initialRotation - m_forwardDirection;
 
     QMap<QString, Sensor> sensors;
-    for (pugi::xml_node sensor : m_root.children(SENSOR_TAG.toStdString().c_str())) {
+    QDomNodeList elementList = m_root.elementsByTagName(SENSOR_TAG);
+    for (int i = 0; i < elementList.size(); i += 1) {
+        QDomElement sensor = elementList.at(i).toElement();
 
         QString name = getNameIfNonemptyAndUnique("sensor", sensor, sensors, success);
         double radius = getDoubleIfHasDoubleAndNonNegative(sensor, RADIUS_TAG, success);
         double range = getDoubleIfHasDoubleAndNonNegative(sensor, RANGE_TAG, success);
         double halfWidth = getDoubleIfHasDoubleAndNonNegative(sensor, HALF_WIDTH_TAG, success);
-        pugi::xml_node position = getContainerNode(sensor, POSITION_TAG, success);
+        QDomElement position = getContainerElement(sensor, POSITION_TAG, success);
         double x = getDoubleIfHasDouble(position, X_TAG, success);
         double y = getDoubleIfHasDouble(position, Y_TAG, success);
         double direction = getDoubleIfHasDouble(sensor, DIRECTION_TAG, success);
@@ -193,8 +213,8 @@ QMap<QString, Sensor> MouseParser::getSensors(
     return sensors;
 }
 
-double MouseParser::getDoubleIfHasDouble(const pugi::xml_node& node, const QString& tag, bool* success) {
-    QString valueString = node.child(tag.toStdString().c_str()).child_value();
+double MouseParser::getDoubleIfHasDouble(const QDomElement& element, const QString& tag, bool* success) {
+    QString valueString = element.firstChildElement(tag).text();
     if (!SimUtilities::isDouble(valueString)) {
         qWarning().noquote().nospace()
             << "Invalid value for tag \"" << tag << "\" - the tag is either"
@@ -207,8 +227,8 @@ double MouseParser::getDoubleIfHasDouble(const pugi::xml_node& node, const QStri
 }
 
 double MouseParser::getDoubleIfHasDoubleAndNonNegative(
-        const pugi::xml_node& node, const QString& tag, bool* success) {
-    double value = getDoubleIfHasDouble(node, tag, success);
+        const QDomElement& element, const QString& tag, bool* success) {
+    double value = getDoubleIfHasDouble(element, tag, success);
     if (value < 0.0) {
         qWarning().noquote().nospace()
             << "The value for tag \"" << tag << "\" is " << value << ", which"
@@ -219,21 +239,20 @@ double MouseParser::getDoubleIfHasDoubleAndNonNegative(
     return value;
 }
 
-pugi::xml_node MouseParser::getContainerNode(const pugi::xml_node& node, const QString& tag, bool* success) {
-    pugi::xml_node containerNode = node.child(tag.toStdString().c_str());
-    if (!containerNode) {
-        qWarning().noquote().nospace()
-            << "No wheel \"" << tag << "\" tag found. This means that the \""
-            << X_TAG << "\" and \"" << Y_TAG << "\" tags won't be found"
-            << " either.";
+QDomElement MouseParser::getContainerElement(const QDomElement& element, const QString& tag, bool* success) {
+    QDomElement containerElement = element.firstChildElement(tag);
+    if (containerElement.isNull()) {
+        qWarning()
+            << "No wheel" << tag << "tag found. This means that the"
+            << X_TAG << "and" << Y_TAG << "tags won't be found" << " either.";
         *success = false;
     }
-    return containerNode;
+    return containerElement;
 }
 
-EncoderType MouseParser::getEncoderTypeIfValid(const pugi::xml_node& node, bool* success) {
+EncoderType MouseParser::getEncoderTypeIfValid(const QDomElement& element, bool* success) {
     EncoderType encoderType;
-    QString encoderTypeString = node.child(ENCODER_TYPE_TAG.toStdString().c_str()).child_value();
+    QString encoderTypeString = element.firstChildElement(ENCODER_TYPE_TAG).text();
     if (STRING_TO_ENCODER_TYPE.contains(encoderTypeString)) {
         encoderType = STRING_TO_ENCODER_TYPE.value(encoderTypeString);
     }
