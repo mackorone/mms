@@ -160,9 +160,6 @@ void Window::runMouseAlgo(
 
     // When the thread finishes, clean everything up
     connect(newMouseAlgoThread, &QThread::finished, this, [=](){
-        // newController->deleteLater();
-        // newMouseAlgoThread->deleteLater();
-        // TODO: MACK - switch these two
         delete newController;
         delete newMouseAlgoThread;
         delete newMouseGraphic;
@@ -188,9 +185,15 @@ void Window::runMouseAlgo(
 
 void Window::stopMouseAlgo() {
     if (m_controller != nullptr) {
-        m_controller = nullptr;
+        // First, tell the event loop to stop
         m_mouseAlgoThread->quit();
+        // Next, break out of sleep loops if necessary
+        m_controller->stop();
+        // Wait for the event loop to actually stop
         m_mouseAlgoThread->wait();
+        // At this point, all mouse functions have stopped
+        m_controller = nullptr;
+        // Update the map and model
         m_map.setMouseGraphic(nullptr);
         Model::get()->removeMouse("");
     }

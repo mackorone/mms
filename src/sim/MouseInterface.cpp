@@ -22,6 +22,15 @@
 #include "State.h"
 #include "Time.h"
 
+// Helper function/macro that ensures that user-requested stops
+// can always interrupt the currently executing algorithm
+#define BREAK_IF_STOPPED_ELSE_SLEEP_MIN() {\
+    if (m_stopped) {\
+        break;\
+    }\
+    SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));\
+}
+
 // TODO: MACK - send back errors to process
 // TODO: MACK - a lot of this should be lifted into Controller - maybe controller renamed to interface?
 
@@ -36,6 +45,7 @@ MouseInterface::MouseInterface(
         m_mouse(mouse),
         m_mazeGraphic(mazeGraphic),
         m_controller(controller),
+        m_stopped(false),
         m_inOrigin(true),
         m_wheelSpeedFraction(1.0) {
 }
@@ -80,12 +90,12 @@ int MouseInterface::millis() {
 void MouseInterface::delay(int milliseconds) {
     Seconds start = Time::get()->elapsedSimTime();
     while (Time::get()->elapsedSimTime() < start + Milliseconds(milliseconds)) {
-        mms::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
+        BREAK_IF_STOPPED_ELSE_SLEEP_MIN();
     }
 }
 
-void MouseInterface::quit() {
-    mms::SimUtilities::quit();
+void MouseInterface::stop() {
+    m_stopped = true;
 }
 
 void MouseInterface::setTileColor(int x, int y, char color) {
@@ -980,11 +990,12 @@ void MouseInterface::moveForwardTo(const Cartesian& destinationTranslation, cons
 
     // Move forward until we've reached the destination
     do {
+        // Check if a stop has been requested
         // Assert that we're actually moving closer to the destination
         ASSERT_LE(delta.getRho().getMeters(), previousDistance.getMeters());
         previousDistance = delta.getRho();
         // Update the translation delta
-        mms::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
+        BREAK_IF_STOPPED_ELSE_SLEEP_MIN();
         delta = destinationTranslation - m_mouse->getCurrentTranslation();
     }
     // While the angle delta is not ~180 degrees, sleep for a short amout of time
@@ -1019,7 +1030,7 @@ void MouseInterface::arcTo(const Cartesian& destinationTranslation, const Radian
                 m_mouse->getCurrentRotation(),
                 destinationRotation
             ).getRadiansNotBounded()) {
-        mms::SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
+        BREAK_IF_STOPPED_ELSE_SLEEP_MIN();
     }
 
     // Stop the wheels and teleport to the exact destination

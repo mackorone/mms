@@ -25,6 +25,7 @@ class Controller;
 class MouseInterface {
 
 public:
+
     MouseInterface(
         const Maze* maze,
         Mouse* mouse,
@@ -42,7 +43,7 @@ public:
     double getRandom();
     int millis(); // # of milliseconds of sim time (adjusted based on sim speed) that have passed
     void delay(int milliseconds); // # of milliseconds of sim time (adjusted based on sim speed)
-    void quit();
+    void stop();
 
     // Tile color
     void setTileColor(int x, int y, char color);
@@ -143,10 +144,15 @@ public:
     double currentRotationDegrees();
 
 private:
+
+    // Pointers to various simulator objects
     const Maze* m_maze;
     Mouse* m_mouse;
     MazeGraphic* m_mazeGraphic;
     Controller* m_controller;
+
+    // Whether or the algo is stopped
+    bool m_stopped;
 
     // Whether or not the mouse has moved out the origin
     bool m_inOrigin;

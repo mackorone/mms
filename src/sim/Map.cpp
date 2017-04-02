@@ -97,7 +97,6 @@ void Map::initializeGL() {
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     // Initialize the polygon and texture programs
     initPolygonProgram();

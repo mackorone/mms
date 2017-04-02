@@ -22,6 +22,7 @@ public:
 
     void init();
     void start(const QString& algoName);
+    void stop();
 
     InterfaceType getInterfaceType(bool canFinalize);
     DynamicMouseAlgorithmOptions getDynamicOptions() const;

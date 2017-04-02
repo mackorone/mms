@@ -20,7 +20,6 @@ public:
     QVector<Triangle> getTriangles() const;
 
     MetersSquared area() const;
-    Cartesian centroid() const;
 
     Polygon translate(const Coordinate& translation) const;
     Polygon rotateAroundPoint(const Angle& angle, const Coordinate& point) const;

@@ -21,6 +21,8 @@ Controller::Controller(const Maze* maze, Mouse* mouse, MazeViewMutable* view) :
 }
 
 Controller::~Controller() {
+    m_process->kill();
+    m_process->waitForFinished();
     delete m_process;
     delete m_mouseInterface;
 }
@@ -108,6 +110,10 @@ void Controller::start(const QString& algoName) {
 
     // TODO: MACK - push button?
     ProcessUtilities::start(runCommand, dirPath, m_process);
+}
+
+void Controller::stop() {
+    m_mouseInterface->stop();
 }
 
 InterfaceType Controller::getInterfaceType(bool canFinalize) {

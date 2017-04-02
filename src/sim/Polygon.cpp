@@ -1,12 +1,10 @@
 #include "Polygon.h"
 
-#include <polypartition/polypartition.h>
-
 #include "Assert.h"
 #include "CPMath.h"
 #include "GeometryUtilities.h"
-#include "Logging.h"
 #include "SimUtilities.h"
+#include "polypartition/polypartition.h"
 #include "units/Polar.h"
 
 namespace mms {
@@ -40,7 +38,6 @@ Polygon::Polygon(QVector<Cartesian> vertices) :
     // Postpone triangulation until we absolutely have to do it.
     m_triangles({}) {
     ASSERT_LE(3, m_vertices.size());
-    // TODO: MACK - does this actually help?
     // If the number of vertices is three, the triangulation is trivial
     if (m_vertices.size() == 3) {
         m_triangles = {{
@@ -80,24 +77,6 @@ MetersSquared Polygon::area() const {
         );
     }
     return MetersSquared(std::abs(sumOfDeterminants / 2.0));
-}
-
-Cartesian Polygon::centroid() const {
-
-    // See http://en.wikipedia.org/wiki/Centroid#Centroid_of_polygon
-
-    Meters cx(0.0);
-    Meters cy(0.0);
-    for (int i = 0; i < m_vertices.size(); i += 1) {
-        int j = (i + 1) % m_vertices.size();
-        cx += (m_vertices.at(i).getX() + m_vertices.at(j).getX())
-            * (m_vertices.at(i).getX() * m_vertices.at(j).getY() - m_vertices.at(j).getX() * m_vertices.at(i).getY()).getMetersSquared();
-        cy += (m_vertices.at(i).getY() + m_vertices.at(j).getY())
-            * (m_vertices.at(i).getX() * m_vertices.at(j).getY() - m_vertices.at(j).getX() * m_vertices.at(i).getY()).getMetersSquared();
-    }
-    cx = Meters(std::abs(cx.getMeters()));
-    cy = Meters(std::abs(cy.getMeters()));
-    return Cartesian(cx / (area() * 6).getMetersSquared(), cy / (area() * 6).getMetersSquared());
 }
 
 Polygon Polygon::translate(const Coordinate& translation) const {
