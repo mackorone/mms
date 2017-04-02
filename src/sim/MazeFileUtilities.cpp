@@ -2,6 +2,7 @@
 
 #include <QChar>
 #include <QFile>
+#include <QRegExp>
 #include <QString>
 
 // TODO: MACK - convert to Qt after Tomasz is done fixing
@@ -79,7 +80,7 @@ BasicMaze MazeFileUtilities::deserializeMapType(const QByteArray& bytes) {
     // Crashes the simulator
 
     // First, convert the bytes to lines
-    QStringList lines = QString(bytes).trimmed().split("\n");
+    QStringList lines = QString(bytes).trimmed().split(QRegExp("\n|\r\n|\r"));
 
     // The maze to be returned
     BasicMaze upsideDownMaze;
