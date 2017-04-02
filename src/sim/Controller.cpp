@@ -95,21 +95,33 @@ void Controller::start(const QString& algoName) {
         }
     );
 
-    // TODO: MACK - check for crashes/erros written to stderr
-    // TODO: MACK - connect the finished signal to something
-    // TODO: MACK - use these instead of waiting for the process to finish
-    // void errorOccurred(QProcess::ProcessError error)
-    // void finished(int exitCode, QProcess::ExitStatus exitStatus)
-    // m_process->waitForFinished();
-    // if (m_process->exitCode() != 0) {
-    //     qCritical().noquote()
-    //         << "Mouse algo crashed!"
-    //         << "\n\n" + m_process->readAllStandardError();
-    //     SimUtilities::quit();
-    // }
+    // TODO: MACK - how should I connect these to the previous?
 
-    // TODO: MACK - push button?
-    ProcessUtilities::start(runCommand, dirPath, m_process);
+	// Re-enable build button when build finishes, clean up the process
+	/*
+	connect(
+		process,
+		static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(
+			&QProcess::finished
+		),
+		this,
+		[=](int exitCode, QProcess::ExitStatus exitStatus){
+			m_buildButton->setEnabled(true);
+			m_buildOutput->appendPlainText(
+				exitStatus == QProcess::NormalExit && exitCode == 0
+				? "[BUILD COMPLETE]\n"
+				: "[BUILD FAILED]\n"
+			);
+			delete process;
+		}   
+	);
+	*/
+
+    bool success = ProcessUtilities::start(runCommand, dirPath, m_process);
+    if (!success) {
+        qDebug() << "[PROCESS FAILED TO START]";
+        delete m_process;
+    }
 }
 
 void Controller::stop() {

@@ -85,6 +85,7 @@ MazeAlgosTab::MazeAlgosTab() :
     QLabel* seedLabel = new QLabel("Previous Seed");
     seedLabel->setAlignment(Qt::AlignCenter);
     m_seedBox->setRange(0, std::numeric_limits<int>::max());
+	m_seedBox->setValue(SimUtilities::randomNonNegativeInt());
 	m_seedAutoUpdate->setCheckState(Qt::Checked);
     optionsLayout->addWidget(seedLabel, 0, 2);
     optionsLayout->addWidget(m_seedBox, 1, 2);
@@ -268,7 +269,7 @@ void MazeAlgosTab::build() {
 				? "[BUILD COMPLETE]\n"
 				: "[BUILD FAILED]\n"
 			);
-            process->deleteLater();
+            delete process;
         }
     );
 
@@ -285,7 +286,7 @@ void MazeAlgosTab::build() {
     if (!success) {
         m_buildButton->setEnabled(true);
     	m_buildOutput->appendPlainText("[PROCESS FAILED TO START]\n");
-        process->deleteLater();
+        delete process;
     }
 }
 
@@ -342,7 +343,7 @@ void MazeAlgosTab::run() {
 			else {
 				m_runOutput->appendPlainText("[RUN FAILED]\n");
 			}
-            process->deleteLater();
+            delete process;
         }
     );
             
@@ -369,7 +370,7 @@ void MazeAlgosTab::run() {
     if (!success) {
         m_runButton->setEnabled(true);
     	m_runOutput->appendPlainText("[PROCESS FAILED TO START]\n");
-        process->deleteLater();
+        delete process;
     }
 }
 
