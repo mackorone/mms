@@ -223,50 +223,6 @@ void Window::keyPress(int key) {
     // NOTE: If you're adding or removing anything from this function, make
     // sure to update wiki/Keys.md
 
-    if (key == Qt::Key_F) {
-        // Faster (only in discrete mode)
-        if (m_controller != nullptr) {
-            if (m_controller->getInterfaceType(false) == InterfaceType::DISCRETE) {
-                S()->setSimSpeed(S()->simSpeed() * 1.5);
-            }
-            else {
-                qWarning().noquote().nospace()
-                    << "Increasing the simulator speed is only allowed in "
-                    << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
-                    << " mode.";
-            }
-        }
-    }
-    else if (key == Qt::Key_S) {
-        // Slower (only in discrete mode)
-        if (m_controller != nullptr) {
-            if (m_controller->getInterfaceType(false) == InterfaceType::DISCRETE) {
-                S()->setSimSpeed(S()->simSpeed() / 1.5);
-            }
-            else {
-                qWarning().noquote().nospace()
-                    << "Decreasing the simulator speed is only allowed in "
-                    << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
-                    << " mode.";
-            }
-        }
-    }
-    else if (key == Qt::Key_L) {
-        // Cycle through the available layouts
-        S()->setLayoutType(LAYOUT_TYPE_CYCLE.value(S()->layoutType()));
-    }
-    else if (key == Qt::Key_R) {
-        // Toggle rotate zoomed map
-        S()->setRotateZoomedMap(!S()->rotateZoomedMap());
-    }
-    else if (key == Qt::Key_I) {
-        // Zoom in
-        S()->setZoomedMapScale(S()->zoomedMapScale() * 1.5);
-    }
-    else if (key == Qt::Key_O) {
-        // Zoom out
-        S()->setZoomedMapScale(S()->zoomedMapScale() / 1.5);
-    }
     else if (key == Qt::Key_T) {
         // Toggle wall truth visibility
         S()->setWallTruthVisible(!S()->wallTruthVisible());

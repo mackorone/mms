@@ -106,12 +106,10 @@ Param::Param() {
     m_randomSeed = (useRandomSeed ? ParamParser::getIntValue("random-seed") : std::random_device()());
     m_defaultPaused = ParamParser::getBoolIfHasBool(
         "default-paused", false);
-    m_minSimSpeed = ParamParser::getDoubleIfHasDoubleAndInRange(
-        "min-sim-speed", 0.1, 0.01, 0.5);
     m_maxSimSpeed = ParamParser::getDoubleIfHasDoubleAndInRange(
         "max-sim-speed", 10.0, 2.0, 100.0);
     m_defaultSimSpeed = ParamParser::getDoubleIfHasDoubleAndInRange(
-        "default-sim-speed", 1.0, m_minSimSpeed, m_maxSimSpeed);
+        "default-sim-speed", 1.0, 0.0, m_maxSimSpeed);
     m_collisionDetectionEnabled = ParamParser::getBoolIfHasBool(
         "collision-detection-enabled", true);
     m_crashMessage = ParamParser::getStringIfHasString(
@@ -274,10 +272,6 @@ int Param::randomSeed() {
 
 bool Param::defaultPaused() {
     return m_defaultPaused;
-}
-
-double Param::minSimSpeed() {
-    return m_minSimSpeed;
 }
 
 double Param::maxSimSpeed() {

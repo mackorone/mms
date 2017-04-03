@@ -13,11 +13,6 @@ enum class LayoutType {
     ZOOMED,
 };
 
-static const QMap<LayoutType, LayoutType> LAYOUT_TYPE_CYCLE {
-    {LayoutType::FULL, LayoutType::ZOOMED},
-    {LayoutType::ZOOMED, LayoutType::FULL},
-};
-
 static const QMap<LayoutType, QString> LAYOUT_TYPE_TO_STRING {
     {LayoutType::FULL, "FULL"},
     {LayoutType::ZOOMED, "ZOOMED"},

@@ -1,5 +1,6 @@
 # High Priority
 
+- A single seed for both maze and mouse algorithms
 - Left-and-forward as native algorithm actions
 - Better error messages for failed commands
 - If the mouse goes outside of the maze, the simulator crashes

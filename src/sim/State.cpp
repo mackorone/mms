@@ -140,8 +140,8 @@ double State::simSpeed() {
 }
 
 void State::setSimSpeed(double simSpeed) {
-    if (simSpeed < P()->minSimSpeed()) {
-        m_simSpeed = P()->minSimSpeed();
+    if (simSpeed < 0.0) {
+        m_simSpeed = 0.0;
     }
     else if (P()->maxSimSpeed() < simSpeed) {
         m_simSpeed = P()->maxSimSpeed();

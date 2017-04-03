@@ -51,7 +51,6 @@ public:
     // Simulation parameters
     int randomSeed();
     bool defaultPaused();
-    double minSimSpeed();
     double maxSimSpeed();
     double defaultSimSpeed();
     bool collisionDetectionEnabled();
@@ -115,7 +114,6 @@ private:
     // Simulation parameters
     int m_randomSeed;
     bool m_defaultPaused;
-    double m_minSimSpeed;
     double m_maxSimSpeed;
     double m_defaultSimSpeed;
     bool m_collisionDetectionEnabled;
