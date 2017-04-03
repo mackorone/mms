@@ -264,3 +264,9 @@
 - -pedantic-errors: Flag even the most pedantic of errors
 - Write a script to ensure that ASSERTS don't hold any state
 - Ensure boolean operators aren't used in asserts... should be using a different assert
+
+// TODO: MACK
+// +++
+// 
+// +++
+// Crashes the simulator

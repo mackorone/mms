@@ -36,6 +36,8 @@ public:
     // Retrieves OpenGL version info
     QVector<QString> getOpenGLVersionInfo();
 
+    void shutdown();
+
 protected:
 
     void initializeGL();

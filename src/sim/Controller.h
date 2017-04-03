@@ -6,6 +6,7 @@
 #include "DynamicMouseAlgorithmOptions.h"
 #include "Maze.h"
 #include "MazeViewMutable.h"
+#include "Model.h"
 #include "Mouse.h"
 #include "MouseInterface.h"
 
@@ -20,9 +21,9 @@ public:
     Controller(const Maze* maze, Mouse* mouse, MazeViewMutable* view);
     ~Controller(); // Can be used to abort the process
 
-    void init();
+    void init(Model* model);
     void start(const QString& algoName);
-    void stop();
+    void requestStop();
 
     InterfaceType getInterfaceType(bool canFinalize);
     DynamicMouseAlgorithmOptions getDynamicOptions() const;

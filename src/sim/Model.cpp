@@ -5,6 +5,7 @@
 
 #include "CPMath.h"
 
+#include "Assert.h"
 #include "GeometryUtilities.h"
 #include "Logging.h"
 #include "Param.h"
@@ -15,16 +16,10 @@
 
 namespace mms {
 
-Model* Model::INSTANCE = nullptr;
-
-void Model::init() {
-    ASSERT_TR(INSTANCE == nullptr);
-    INSTANCE = new Model();
-}
-
-Model* Model::get() {
-    ASSERT_FA(INSTANCE == nullptr);
-    return INSTANCE;
+Model::Model() :
+    m_maze(nullptr),
+    m_shutdownRequested(false) {
+    ASSERT_RUNS_JUST_ONCE();
 }
 
 void Model::simulate() {
@@ -47,7 +42,7 @@ void Model::simulate() {
     */
 
     // Use this thread to perform mouse position updates
-    while (true) {
+    while (!m_shutdownRequested) {
 
         // Ensure the maze/mouse aren't updated in this loop
         m_mutex.lock();
@@ -152,6 +147,10 @@ void Model::simulate() {
     }
 }
 
+void Model::shutdown() {
+    m_shutdownRequested = true;
+}
+
 void Model::setMaze(const Maze* maze) {
     m_mutex.lock();
     m_mice.clear();
@@ -186,9 +185,6 @@ bool Model::containsMouse(const QString& name) const {
 MouseStats Model::getMouseStats(const QString& name) const {
     ASSERT_TR(m_stats.contains(name));
     return m_stats.value(name);
-}
-
-Model::Model() : m_maze(nullptr) {
 }
 
 void Model::checkCollision() {

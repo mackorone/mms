@@ -25,7 +25,7 @@
 // Helper function/macro that ensures that user-requested stops
 // can always interrupt the currently executing algorithm
 #define BREAK_IF_STOPPED_ELSE_SLEEP_MIN() {\
-    if (m_stopped) {\
+    if (m_stopRequested) {\
         break;\
     }\
     SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));\
@@ -45,7 +45,7 @@ MouseInterface::MouseInterface(
         m_mouse(mouse),
         m_mazeGraphic(mazeGraphic),
         m_controller(controller),
-        m_stopped(false),
+        m_stopRequested(false),
         m_inOrigin(true),
         m_wheelSpeedFraction(1.0) {
 }
@@ -94,8 +94,8 @@ void MouseInterface::delay(int milliseconds) {
     }
 }
 
-void MouseInterface::stop() {
-    m_stopped = true;
+void MouseInterface::requestStop() {
+    m_stopRequested = true;
 }
 
 void MouseInterface::setTileColor(int x, int y, char color) {

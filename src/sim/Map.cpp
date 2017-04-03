@@ -29,7 +29,7 @@ Map::Map(QWidget* parent) :
     );
     // TODO: upforgrabs
     // Make this configurable
-    m_timer.start(24); // 45 fps
+    m_timer.start(16); // 60 fps
 }
 
 void Map::setMaze(const Maze* maze) {
@@ -69,6 +69,11 @@ QVector<QString> Map::getOpenGLVersionInfo() {
         openGLVersionInfo = {glType, glVersion, glProfile};
     }
     return openGLVersionInfo;
+}
+
+void Map::shutdown() {
+	makeCurrent();
+	m_openGLLogger.stopLogging();
 }
 
 void Map::initOpenGLLogger() {

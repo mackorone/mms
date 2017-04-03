@@ -27,7 +27,7 @@ Controller::~Controller() {
     delete m_mouseInterface;
 }
 
-void Controller::init() {
+void Controller::init(Model* model) {
 
     // First, connect the newTileLocationTraversed signal to a lambda that
     // clears tile fog. This ensures that the first tile's fog is always
@@ -35,7 +35,7 @@ void Controller::init() {
     // that, if an algorithm doesn't want to automatically clear tile fog,
     // it'll have to disable tile fog and then mark the first tile as foggy.
     connect(
-        Model::get(),
+        model,
         &Model::newTileLocationTraversed,
         this,
         [=](int x, int y){
@@ -124,8 +124,8 @@ void Controller::start(const QString& algoName) {
     }
 }
 
-void Controller::stop() {
-    m_mouseInterface->stop();
+void Controller::requestStop() {
+    m_mouseInterface->requestStop();
 }
 
 InterfaceType Controller::getInterfaceType(bool canFinalize) {
@@ -149,7 +149,7 @@ QStringList Controller::getLines(const QString& text, QStringList* buffer) {
     // refactor this so that we're not copying QStrings between lists.
 
     // Separate the text by line
-    QStringList parts = text.split("\n");
+    QStringList parts = SimUtilities::splitLines(text);
 
     // We'll return list of complete lines
     QStringList lines;

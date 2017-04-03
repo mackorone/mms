@@ -1,9 +1,11 @@
 #pragma once
 
-#include <algorithm>
 #include <QPair>
 #include <QString>
+#include <QStringList>
 #include <QVector>
+
+#include <algorithm>
 
 #include "Color.h"
 #include "Polygon.h"
@@ -39,6 +41,9 @@ public:
 
     // Converts a duration to a mm:ss.zzz string
     static QString formatDuration(const Duration& duration);
+
+    // Splits into lines in a cross-platform way
+    static QStringList splitLines(const QString& string);
 
     // Convert between types
     static bool isBool(const QString& str);

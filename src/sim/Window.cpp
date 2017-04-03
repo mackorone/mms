@@ -23,6 +23,13 @@ Window::Window(QWidget *parent) :
         m_controller(nullptr),
         m_mouseAlgoThread(nullptr) {
 
+    // First, start the physics loop
+    QObject::connect(
+        &m_modelThread, &QThread::started,
+        &m_model, &Model::simulate);
+    m_model.moveToThread(&m_modelThread);
+    m_modelThread.start();
+
     // Add the splitter to the window
     QSplitter* splitter = new QSplitter();
     splitter->setHandleWidth(6);
@@ -74,6 +81,16 @@ Window::Window(QWidget *parent) :
     m_map.resize(m_map.height(), m_map.height());
 }
 
+void Window::closeEvent(QCloseEvent *event) {
+	// Graceful shutdown
+	stopMouseAlgo();
+	m_modelThread.quit();
+	m_model.shutdown();
+	m_modelThread.wait();
+	m_map.shutdown();
+    QMainWindow::closeEvent(event);
+}
+
 void Window::setMaze(Maze* maze) {
 
     // First, stop the mouse algo
@@ -86,7 +103,7 @@ void Window::setMaze(Maze* maze) {
     m_truth = new MazeView(m_maze);
 
     // Update pointers held by other objects
-    Model::get()->setMaze(m_maze);
+    m_model.setMaze(m_maze);
     m_map.setMaze(m_maze);
     m_map.setView(m_truth);
 
@@ -153,8 +170,8 @@ void Window::runMouseAlgo(
         // but *before* we actually start the algorithm (lest the mouse
         // position/orientation not be updated properly during the beginning of
         // the mouse algo's execution)
-        newController->init();
-        Model::get()->addMouse("", newMouse);
+        newController->init(&m_model);
+        m_model.addMouse("", newMouse);
         newController->start(name);
     });
 
@@ -184,19 +201,20 @@ void Window::runMouseAlgo(
 }
 
 void Window::stopMouseAlgo() {
-    if (m_controller != nullptr) {
-        // First, tell the event loop to stop
-        m_mouseAlgoThread->quit();
-        // Next, break out of sleep loops if necessary
-        m_controller->stop();
-        // Wait for the event loop to actually stop
-        m_mouseAlgoThread->wait();
-        // At this point, all mouse functions have stopped
-        m_controller = nullptr;
-        // Update the map and model
-        m_map.setMouseGraphic(nullptr);
-        Model::get()->removeMouse("");
+    // If there is no controller, there is no algo
+    if (m_controller == nullptr) {
+        return;
     }
+    // Request the event loop to stop
+    m_mouseAlgoThread->quit();
+    // Quickly return control to the event loop
+    m_controller->requestStop();
+    // Wait for the event loop to actually stop
+    m_mouseAlgoThread->wait();
+    // At this point, no more mouse functions will execute
+    m_controller = nullptr;
+    m_map.setMouseGraphic(nullptr);
+    m_model.removeMouse("");
 }
 
 #if(0)
@@ -344,8 +362,8 @@ void Window::togglePause() {
 QVector<QPair<QString, QVariant>> Window::getRunStats() const {
 
     MouseStats stats;
-    if (Model::get()->containsMouse("")) {
-        stats = Model::get()->getMouseStats("");
+    if (m_model.containsMouse("")) {
+        stats = m_model.getMouseStats("");
     }
 
     return {

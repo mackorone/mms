@@ -2,12 +2,7 @@
 
 #include <QChar>
 #include <QFile>
-#include <QRegExp>
 #include <QString>
-
-// TODO: MACK - convert to Qt after Tomasz is done fixing
-#include <fstream>
-#include <cstdint>
 
 #include "Logging.h"
 #include "MazeChecker.h"
@@ -73,14 +68,8 @@ void MazeFileUtilities::save(
 
 BasicMaze MazeFileUtilities::deserializeMapType(const QByteArray& bytes) {
 
-    // TODO: MACK
-    // +++
-    // 
-    // +++
-    // Crashes the simulator
-
     // First, convert the bytes to lines
-    QStringList lines = QString(bytes).trimmed().split(QRegExp("\n|\r\n|\r"));
+    QStringList lines = SimUtilities::splitLines(QString(bytes).trimmed());
 
     // The maze to be returned
     BasicMaze upsideDownMaze;
@@ -335,7 +324,7 @@ BasicMaze MazeFileUtilities::deserializeNumType(const QByteArray& bytes) {
     QVector<BasicTile> column;
 
     // Iterate over all of the lines
-    QStringList lines = QString(bytes).trimmed().split("\n");
+    QStringList lines = SimUtilities::splitLines(QString(bytes).trimmed());
     for (QString line : lines) {
 
         // Put the tokens in a vector

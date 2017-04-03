@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QCloseEvent>
 #include <QMainWindow>
 #include <QThread>
 
@@ -8,6 +9,7 @@
 #include "Maze.h"
 #include "MazeView.h"
 #include "MazeViewMutable.h"
+#include "Model.h"
 #include "MouseGraphic.h"
 #include "TextDisplay.h"
 
@@ -20,8 +22,13 @@ class Window : public QMainWindow {
 public:
 
     Window(QWidget* parent = 0);
+    void closeEvent(QCloseEvent *event);
 
 private:
+
+    // The model object
+    Model m_model;
+    QThread m_modelThread;
 
     // The map object
     Map m_map;

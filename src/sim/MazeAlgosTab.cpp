@@ -223,77 +223,23 @@ void MazeAlgosTab::edit() {
 }
 
 void MazeAlgosTab::build() {
-
-	// Clear the build output
-	if (m_buildAutoClear->isChecked()) {
-		m_buildOutput->clear();
-	}
-
-	// Perform some validation
     const QString& name = m_comboBox->currentText();
-    if (!SettingsMazeAlgos::names().contains(name)) {
-		m_buildOutput->appendPlainText("[CORRUPT ALGORITHM CONFIG]\n");
-        return;
-    }
-	QString buildCommand = SettingsMazeAlgos::getBuildCommand(name);
-	if (buildCommand.isEmpty()) {
-		m_buildOutput->appendPlainText("[EMPTY BUILD COMMAND]\n");
-        return;
-	}
-	QString dirPath = SettingsMazeAlgos::getDirPath(name);
-	if (dirPath.isEmpty()) {
-		m_buildOutput->appendPlainText("[EMPTY DIRECTORY]\n");
-        return;
-	}
-
-    // Instantiate a new process
-    QProcess* process = new QProcess(this);
-
-    // Display build errors
-    connect(process, &QProcess::readyReadStandardError, this, [=](){
-        QString errors = process->readAllStandardError();
-        m_buildOutput->appendPlainText(errors);
-    });
-
-    // Re-enable build button when build finishes, clean up the process
-    connect(
-        process,
-        static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(
-            &QProcess::finished
-        ),
-        this,
-        [=](int exitCode, QProcess::ExitStatus exitStatus){
-            m_buildButton->setEnabled(true);
-    		m_buildOutput->appendPlainText(
-				exitStatus == QProcess::NormalExit && exitCode == 0
-				? "[BUILD COMPLETE]\n"
-				: "[BUILD FAILED]\n"
-			);
-            delete process;
-        }
+    ProcessUtilities::build(
+        name,
+        SettingsMazeAlgos::names(),
+        SettingsMazeAlgos::getBuildCommand(name),
+        SettingsMazeAlgos::getDirPath(name),
+        m_buildAutoClear,
+        m_buildOutput,
+        m_buildButton,
+        this
     );
-
-    // GUI upkeep before build starts
-    m_buildButton->setEnabled(false);
-    m_buildOutput->appendPlainText(
-		QString("[BUILD STARTED] - ") +
-		QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss AP") +
-		QString("\n")
-	);
-
-    // Start the build process
-    bool success = ProcessUtilities::start(buildCommand, dirPath, process);
-    if (!success) {
-        m_buildButton->setEnabled(true);
-    	m_buildOutput->appendPlainText("[PROCESS FAILED TO START]\n");
-        delete process;
-    }
 }
 
 void MazeAlgosTab::run() {
 
 	// TODO: upforgrabs
-	// Deduplicate this logic with the build() method
+	// Deduplicate this logic with build()
 
 	// Clear the run output
 	if (m_runAutoClear->isChecked()) {
@@ -357,19 +303,23 @@ void MazeAlgosTab::run() {
     runCommand += " " + m_heightBox->cleanText();
     runCommand += " " + QString::number(m_seedBox->value());
 
-    // GUI upkeep before build starts
+    // GUI upkeep before run starts
     m_runButton->setEnabled(false);
     m_runOutput->appendPlainText(
-		QString("[RUN STARTED] - ") +
+		QString("[RUN INITIATED] - ") +
 		QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss AP") +
 		QString("\n")
 	);
 
-    // Start the build process
+    // Start the run process
     bool success = ProcessUtilities::start(runCommand, dirPath, process);
     if (!success) {
         m_runButton->setEnabled(true);
-    	m_runOutput->appendPlainText("[PROCESS FAILED TO START]\n");
+        m_runOutput->appendPlainText(
+            QString("[RUN FAILED TO START] - ") +
+            process->errorString() +
+            QString("\n")
+        );
         delete process;
     }
 }

@@ -43,7 +43,7 @@ public:
     double getRandom();
     int millis(); // # of milliseconds of sim time (adjusted based on sim speed) that have passed
     void delay(int milliseconds); // # of milliseconds of sim time (adjusted based on sim speed)
-    void stop();
+    void requestStop();
 
     // Tile color
     void setTileColor(int x, int y, char color);
@@ -151,8 +151,8 @@ private:
     MazeGraphic* m_mazeGraphic;
     Controller* m_controller;
 
-    // Whether or the algo is stopped
-    bool m_stopped;
+    // Whether or a stop was requested
+    bool m_stopRequested;
 
     // Whether or not the mouse has moved out the origin
     bool m_inOrigin;

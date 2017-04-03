@@ -41,15 +41,6 @@ int Driver::drive(int argc, char* argv[]) {
     // Initialize the FontImage object
     FontImage::init(P()->tileTextFontImage());
 
-    // Initialize the model, start the physics loop
-    Model::init();
-    QThread modelThread;
-    QObject::connect(
-        &modelThread, &QThread::started,
-        Model::get(), &Model::simulate);
-    Model::get()->moveToThread(&modelThread);
-    modelThread.start();
-
     // Create the main window
     Window window;
     window.show();

@@ -2,7 +2,6 @@
 
 #include <limits>
 
-#include <QDateTime>
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
@@ -217,71 +216,17 @@ void MouseAlgosTab::edit() {
 }
 
 void MouseAlgosTab::build() {
-
-	// Clear the build output
-	if (m_buildAutoClear->isChecked()) {
-		m_buildOutput->clear();
-	}
-
-	// Perform some validation
     const QString& name = m_comboBox->currentText();
-    if (!SettingsMouseAlgos::names().contains(name)) {
-		m_buildOutput->appendPlainText("[CORRUPT ALGORITHM CONFIG]\n");
-        return;
-    }
-	QString buildCommand = SettingsMouseAlgos::getBuildCommand(name);
-	if (buildCommand.isEmpty()) {
-		m_buildOutput->appendPlainText("[EMPTY BUILD COMMAND]\n");
-        return;
-	}
-	QString dirPath = SettingsMouseAlgos::getDirPath(name);
-	if (dirPath.isEmpty()) {
-		m_buildOutput->appendPlainText("[EMPTY DIRECTORY]\n");
-        return;
-	}
-
-    // Instantiate a new process
-    QProcess* process = new QProcess(this);
-
-    // Display build errors
-    connect(process, &QProcess::readyReadStandardError, this, [=](){
-        QString errors = process->readAllStandardError();
-        m_buildOutput->appendPlainText(errors);
-    });
-
-    // Re-enable build button when build finishes, clean up the process
-    connect(
-        process,
-        static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(
-            &QProcess::finished
-        ),
-        this,
-        [=](int exitCode, QProcess::ExitStatus exitStatus){
-            m_buildButton->setEnabled(true);
-    		m_buildOutput->appendPlainText(
-				exitStatus == QProcess::NormalExit && exitCode == 0
-				? "[BUILD COMPLETE]\n"
-				: "[BUILD FAILED]\n"
-			);
-            delete process;
-        }
-    );
-
-    // GUI upkeep before build starts
-    m_buildButton->setEnabled(false);
-    m_buildOutput->appendPlainText(
-		QString("[BUILD STARTED] - ") +
-		QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss AP") +
-		QString("\n")
+	ProcessUtilities::build(
+		name,
+    	SettingsMouseAlgos::names(),
+		SettingsMouseAlgos::getBuildCommand(name),
+		SettingsMouseAlgos::getDirPath(name),
+		m_buildAutoClear,
+		m_buildOutput,
+		m_buildButton,
+		this
 	);
-
-    // Start the build process
-    bool success = ProcessUtilities::start(buildCommand, dirPath, process);
-    if (!success) {
-        m_buildButton->setEnabled(true);
-    	m_buildOutput->appendPlainText("[PROCESS FAILED TO START]\n");
-        delete process;
-    }
 }
 
 void MouseAlgosTab::run() {

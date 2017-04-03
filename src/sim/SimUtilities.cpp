@@ -1,6 +1,7 @@
 #include "SimUtilities.h"
 
 #include <QDateTime>
+#include <QRegExp>
 #include <QThread>
 #include <QTime>
 
@@ -55,6 +56,10 @@ QString SimUtilities::formatDuration(const Duration& duration) {
     return QTime(0, 0, 0)
         .addMSecs(duration.getMilliseconds())
         .toString("mm:ss.zzz");
+}
+
+QStringList SimUtilities::splitLines(const QString& string) {
+    return string.split(QRegExp("\n|\r\n|\r"));
 }
 
 bool SimUtilities::isBool(const QString& str) {

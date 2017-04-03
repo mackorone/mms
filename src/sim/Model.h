@@ -15,10 +15,9 @@ class Model : public QObject {
 
 public:
 
-    static void init();
-    static Model* get();
-
+    Model();
     void simulate();
+    void shutdown();
 
     void setMaze(const Maze* maze);
 
@@ -33,10 +32,8 @@ signals:
 
 private:
 
-    Model();
-    static Model* INSTANCE;
-
     QMutex m_mutex;
+    bool m_shutdownRequested;
 
     const Maze* m_maze;
     QMap<QString, Mouse*> m_mice;
