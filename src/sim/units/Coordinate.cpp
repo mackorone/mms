@@ -1,6 +1,6 @@
 #include "Coordinate.h"
 
-#include "../CPMath.h"
+#include <QtMath>
 
 namespace mms {
 

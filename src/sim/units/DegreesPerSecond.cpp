@@ -1,11 +1,11 @@
 #include "DegreesPerSecond.h"
 
-#include "../CPMath.h"
+#include <QtMath>
 
 namespace mms {
 
 DegreesPerSecond::DegreesPerSecond(double degreesPerSecond) {
-    static const double radiansPerDegree = M_TWOPI / 360.0;
+    static const double radiansPerDegree = 2 * M_PI / 360.0;
     m_radiansPerSecond = radiansPerDegree * degreesPerSecond;
 }
 

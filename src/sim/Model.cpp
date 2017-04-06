@@ -1,17 +1,17 @@
 #include "Model.h"
 
 #include <QPair>
-#include <thread>
+#include <QtMath>
 
-#include "CPMath.h"
+#include <thread>
 
 #include "Assert.h"
 #include "GeometryUtilities.h"
 #include "Logging.h"
 #include "Param.h"
+#include "SimTime.h"
 #include "SimUtilities.h"
 #include "State.h"
-#include "Time.h"
 #include "units/Milliseconds.h"
 
 namespace mms {
@@ -70,7 +70,7 @@ void Model::simulate() {
         Seconds elapsedSimTimeForThisIteration = realTimePerUpdate * S()->simSpeed();
 
         // Update the sim time
-        Time::get()->incrementElapsedSimTime(elapsedSimTimeForThisIteration);
+        SimTime::get()->incrementElapsedSimTime(elapsedSimTimeForThisIteration);
 
         // Update the position and stats for each mouse
         for (const QString& name : m_mice.keys()) {
@@ -103,12 +103,12 @@ void Model::simulate() {
 
             // Otherwise, if we've just left the origin, update the departure time
             else if (stats.timeOfOriginDeparture < Seconds(0)) {
-                stats.timeOfOriginDeparture = Time::get()->elapsedSimTime();
+                stats.timeOfOriginDeparture = SimTime::get()->elapsedSimTime();
             }
 
             // Separately, if we're in the center, update the best time to center
             if (m_maze->isCenterTile(location.first, location.second)) {
-                Seconds timeToCenter = Time::get()->elapsedSimTime() - stats.timeOfOriginDeparture;
+                Seconds timeToCenter = SimTime::get()->elapsedSimTime() - stats.timeOfOriginDeparture;
                 if (stats.bestTimeToCenter < Seconds(0) || timeToCenter < stats.bestTimeToCenter) {
                     stats.bestTimeToCenter = timeToCenter;
                 }

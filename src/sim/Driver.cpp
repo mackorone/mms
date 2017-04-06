@@ -8,8 +8,8 @@
 #include "Logging.h"
 #include "Screen.h"
 #include "Settings.h"
+#include "SimTime.h"
 #include "State.h"
-#include "Time.h"
 #include "Model.h"
 #include "Window.h"
 
@@ -24,7 +24,7 @@ int Driver::drive(int argc, char* argv[]) {
     QApplication app(argc, argv);
 
     // Initialize the Time object
-    Time::init();
+    SimTime::init();
 
     // Initialize the Screen object
     Screen::init();

@@ -1,15 +1,15 @@
 #include "Mouse.h"
 
-#include <QMapIterator>
+#include <QMutableMapIterator>
 #include <QPair>
 #include <QVector>
+#include <QtMath>
 
 #include "units/Meters.h"
 #include "units/MetersPerSecond.h"
 #include "units/Polar.h"
 
 #include "Assert.h"
-#include "CPMath.h"
 #include "GeometryUtilities.h"
 #include "MouseParser.h"
 #include "Param.h"
@@ -72,7 +72,11 @@ bool Mouse::reload(const QString& mouseFile) {
     m_initialCollisionPolygon = GeometryUtilities::convexHull(polygons);
 
     // Initialize the center of mass polygon
-    m_initialCenterOfMassPolygon = GeometryUtilities::createCirclePolygon(m_initialTranslation, Meters(.005), 8);
+    m_initialCenterOfMassPolygon = GeometryUtilities::createCirclePolygon(
+        m_initialTranslation,
+        Meters(.005),
+        8 // Num sides
+    );
 
     // Force triangulation of the drawable polygons, thus ensuring
     // that we only triangulate once, at the beginning of execution
@@ -115,6 +119,10 @@ Direction Mouse::getStartedDirection() const {
     return m_startedDirection;
 }
 
+void Mouse::setStartingDirection(Direction direction) {
+    m_startingDirection = direction;
+}
+
 Cartesian Mouse::getInitialTranslation() const {
     return m_initialTranslation;
 }
@@ -130,26 +138,16 @@ Radians Mouse::getCurrentRotation() const {
 QPair<int, int> Mouse::getCurrentDiscretizedTranslation() const {
     static Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
     Cartesian currentTranslation = getCurrentTranslation();
-    int x = static_cast<int>(
-        std::floor(
-            currentTranslation.getX() / tileLength
-        )
-    );
-    int y = static_cast<int>(
-        std::floor(
-            currentTranslation.getY() / tileLength
-        )
-    );
+    int x = static_cast<int>(qFloor(currentTranslation.getX() / tileLength));
+    int y = static_cast<int>(qFloor(currentTranslation.getY() / tileLength));
     return {x, y};
 }
 
 Direction Mouse::getCurrentDiscretizedRotation() const {
-    int dir = static_cast<int>(
-        std::floor(
-            (getCurrentRotation() + Degrees(45)).getRadiansZeroTo2pi() /
-            Degrees(90).getRadiansZeroTo2pi()
-        )
-    );
+    int dir = static_cast<int>(qFloor(
+        (getCurrentRotation() + Degrees(45)).getRadiansZeroTo2pi() /
+        Degrees(90).getRadiansZeroTo2pi()
+    ));
     switch (dir) {
         case 0:
             return Direction::EAST;
@@ -159,55 +157,99 @@ Direction Mouse::getCurrentDiscretizedRotation() const {
             return Direction::WEST;
         case 3:
             return Direction::SOUTH;
+        default:
+            ASSERT_NEVER_RUNS();
     }
 }
 
 Polygon Mouse::getCurrentBodyPolygon(
-        const Coordinate& currentTranslation, const Angle& currentRotation) const {
-    return getCurrentPolygon(m_initialBodyPolygon, currentTranslation, currentRotation);
+        const Coordinate& currentTranslation,
+        const Angle& currentRotation) const {
+    return getCurrentPolygon(
+        m_initialBodyPolygon,
+        currentTranslation,
+        currentRotation);
 }
 
 Polygon Mouse::getCurrentCollisionPolygon(
-        const Coordinate& currentTranslation, const Angle& currentRotation) const {
-    return getCurrentPolygon(m_initialCollisionPolygon, currentTranslation, currentRotation);
+        const Coordinate& currentTranslation,
+        const Angle& currentRotation) const {
+    return getCurrentPolygon(
+        m_initialCollisionPolygon,
+        currentTranslation,
+        currentRotation);
 }
 
 Polygon Mouse::getCurrentCenterOfMassPolygon(
-        const Coordinate& currentTranslation, const Angle& currentRotation) const {
-    return getCurrentPolygon(m_initialCenterOfMassPolygon, currentTranslation, currentRotation);
+        const Coordinate& currentTranslation,
+        const Angle& currentRotation) const {
+    return getCurrentPolygon(
+        m_initialCenterOfMassPolygon,
+        currentTranslation,
+        currentRotation);
 }
 
 QVector<Polygon> Mouse::getCurrentWheelPolygons(
-        const Coordinate& currentTranslation, const Angle& currentRotation) const {
+        const Coordinate& currentTranslation,
+        const Angle& currentRotation) const {
     QVector<Polygon> polygons;
-    for (const Wheel& wheel : m_wheels) {
-        polygons.push_back(getCurrentPolygon(wheel.getInitialPolygon(), currentTranslation, currentRotation));
+    // TODO: upforgrabs
+    // All getPolygons functions require a lock to deal with the implicit
+    // sharing problem:
+    // http://doc.qt.io/qt-5/containers.html#implicit-sharing-iterator-problem.
+    // Ideally, this shouldn't be the case (we should be able to perform reads
+    // without having to worry about writes). Your task is to figure out how to
+    // remove the lock without causing segfaults.
+    m_mutex.lock();
+    for (const Wheel& wheel : m_wheels.values()) {
+        polygons.push_back(
+            getCurrentPolygon(
+                wheel.getInitialPolygon(),
+                currentTranslation,
+                currentRotation));
     }
+    m_mutex.unlock();
     return polygons;
 }
 
 QVector<Polygon> Mouse::getCurrentWheelSpeedIndicatorPolygons(
-        const Coordinate& currentTranslation, const Angle& currentRotation) const {
+        const Coordinate& currentTranslation,
+        const Angle& currentRotation) const {
     QVector<Polygon> polygons;
-    for (const Wheel& wheel : m_wheels) {
-        polygons.push_back(getCurrentPolygon(wheel.getSpeedIndicatorPolygon(), currentTranslation, currentRotation));
+    m_mutex.lock();
+    for (const Wheel& wheel : m_wheels.values()) {
+        polygons.push_back(
+            getCurrentPolygon(
+                wheel.getSpeedIndicatorPolygon(),
+                currentTranslation,
+                currentRotation));
     }
+    m_mutex.unlock();
     return polygons;
 }
 
 QVector<Polygon> Mouse::getCurrentSensorPolygons(
-        const Coordinate& currentTranslation, const Angle& currentRotation) const {
+        const Coordinate& currentTranslation,
+        const Angle& currentRotation) const {
     QVector<Polygon> polygons;
-    for (const Sensor& sensor : m_sensors) {
-        polygons.push_back(getCurrentPolygon(sensor.getInitialPolygon(), currentTranslation, currentRotation));
+    m_mutex.lock();
+    for (const Sensor& sensor : m_sensors.values()) {
+        polygons.push_back(
+            getCurrentPolygon(
+                sensor.getInitialPolygon(),
+                currentTranslation,
+                currentRotation));
     }
+    m_mutex.unlock();
     return polygons;
 }
 
 QVector<Polygon> Mouse::getCurrentSensorViewPolygons(
-        const Coordinate& currentTranslation, const Angle& currentRotation) const {
+        const Coordinate& currentTranslation,
+        const Angle& currentRotation) const {
     QVector<Polygon> polygons;
-    for (const Sensor& sensor : m_sensors) {
+    m_mutex.lock();
+    for (const Sensor& sensor : m_sensors.values()) {
         QPair<Cartesian, Radians> translationAndRotation =
             getCurrentSensorPositionAndDirection(
                 sensor,
@@ -219,6 +261,7 @@ QVector<Polygon> Mouse::getCurrentSensorViewPolygons(
                 translationAndRotation.second,
                 *m_maze));
     }
+    m_mutex.unlock();
     return polygons;
 }
 
@@ -226,23 +269,19 @@ void Mouse::update(const Duration& elapsed) {
 
     // NOTE: This is a *very* performance critical function
 
-    m_updateMutex.lock();
+    m_mutex.lock();
 
     MetersPerSecond sumDx(0);
     MetersPerSecond sumDy(0);
     RadiansPerSecond sumDr(0);
 
-    // TODO: MACK - check the performance of this, also causing segfaults:
-    // - http://doc.qt.io/qt-5/implicit-sharing.html#implicitly-shared
-    // - http://doc.qt.io/qt-5/containers.html#implicit-sharing-iterator-problem
-    //
-    QMapIterator<QString, Wheel> wheelIterator(m_wheels);
+    // Iterate over all of the wheels
+    QMutableMapIterator<QString, Wheel> wheelIterator(m_wheels);
     while (wheelIterator.hasNext()) {
         auto pair = wheelIterator.next();
 
-        // We can't do pair.second.updateRotation() since that breaks const
-        // TODO: MACK
-        // m_wheels[pair.key()].updateRotation(pair.value().getAngularVelocity() * elapsed);
+        // Update the rotation of the wheel
+        pair.value().updateRotation(pair.value().getAngularVelocity() * elapsed);
 
         // Get the effects on the rate of change of translation, both forward
         // and sideways, and rotation of the mouse due to this particular wheel
@@ -269,27 +308,22 @@ void Mouse::update(const Duration& elapsed) {
     m_currentRotation += Radians(aveDr * elapsed);
     m_currentTranslation += Cartesian(aveDx * elapsed, aveDy * elapsed);
 
-    // TODO: MACK - check the performance of this, also causing segfaults:
-    // - http://doc.qt.io/qt-5/implicit-sharing.html#implicitly-shared
-    // - http://doc.qt.io/qt-5/containers.html#implicit-sharing-iterator-problem
-    //
-    // QMapIterator<QString, Sensor> sensorIterator(m_sensors);
-    // while (sensorIterator.hasNext()) {
-    //     auto pair = sensorIterator.next();
+    // Update all of the sensor readings
+    QMutableMapIterator<QString, Sensor> sensorIterator(m_sensors);
+    while (sensorIterator.hasNext()) {
+        auto pair = sensorIterator.next();
+        QPair<Cartesian, Radians> translationAndRotation =
+            getCurrentSensorPositionAndDirection(
+                pair.value(),
+                m_currentTranslation,
+                m_currentRotation);
+        pair.value().updateReading(
+            translationAndRotation.first,
+            translationAndRotation.second,
+            *m_maze);
+    }
 
-    //     QPair<Cartesian, Radians> translationAndRotation =
-    //         getCurrentSensorPositionAndDirection(
-    //             pair.value(),
-    //             m_currentTranslation,
-    //             m_currentRotation);
-    //     // We can't do pair.value().updateReading() since that breaks const
-    //     m_sensors[pair.key()].updateReading(
-    //         translationAndRotation.first,
-    //         translationAndRotation.second,
-    //         *m_maze);
-    // }
-
-    m_updateMutex.unlock();
+    m_mutex.unlock();
 }
 
 bool Mouse::hasWheel(const QString& name) const {
@@ -301,12 +335,8 @@ RadiansPerSecond Mouse::getWheelMaxSpeed(const QString& name) const {
     return m_wheels.value(name).getMaxAngularVelocityMagnitude();
 }
 
-void Mouse::setStartingDirection(Direction direction) {
-    m_startingDirection = direction;
-}
-
 void Mouse::setWheelSpeeds(const QMap<QString, RadiansPerSecond>& wheelSpeeds) {
-    m_updateMutex.lock();
+    m_mutex.lock();
     for (const auto& pair : ContainerUtilities::items(wheelSpeeds)) {
         ASSERT_TR(m_wheels.contains(pair.first));
         ASSERT_LE(
@@ -314,7 +344,7 @@ void Mouse::setWheelSpeeds(const QMap<QString, RadiansPerSecond>& wheelSpeeds) {
             getWheelMaxSpeed(pair.first).getRevolutionsPerMinute());
         m_wheels[pair.first].setAngularVelocity(pair.second);
     }
-    m_updateMutex.unlock();
+    m_mutex.unlock();
 }
 
 void Mouse::setWheelSpeedsForMoveForward(double fractionOfMaxSpeed) {
@@ -322,19 +352,27 @@ void Mouse::setWheelSpeedsForMoveForward(double fractionOfMaxSpeed) {
 }
 
 void Mouse::setWheelSpeedsForCurveLeft(double fractionOfMaxSpeed, const Meters& radius) {
-    QPair<double, double> curveTurnFactors = m_curveTurnFactorCalculator.getCurveTurnFactors(radius);
-    setWheelSpeedsForMovement(fractionOfMaxSpeed, curveTurnFactors.first, curveTurnFactors.second);
+    QPair<double, double> curveTurnFactors =
+        m_curveTurnFactorCalculator.getCurveTurnFactors(radius);
+    setWheelSpeedsForMovement(
+        fractionOfMaxSpeed,
+        curveTurnFactors.first,
+        curveTurnFactors.second);
 }
 
 void Mouse::setWheelSpeedsForCurveRight(double fractionOfMaxSpeed, const Meters& radius) {
-    QPair<double, double> curveTurnFactors = m_curveTurnFactorCalculator.getCurveTurnFactors(radius);
-    setWheelSpeedsForMovement(fractionOfMaxSpeed, curveTurnFactors.first, -1 * curveTurnFactors.second);
+    QPair<double, double> curveTurnFactors =
+        m_curveTurnFactorCalculator.getCurveTurnFactors(radius);
+    setWheelSpeedsForMovement(
+        fractionOfMaxSpeed,
+        curveTurnFactors.first,
+        -1 * curveTurnFactors.second);
 }
 
 void Mouse::stopAllWheels() {
     QMap<QString, RadiansPerSecond> wheelSpeeds;
-    for (const auto& pair : ContainerUtilities::items(m_wheels)) {
-        wheelSpeeds.insert(pair.first, RadiansPerSecond(0));
+    for (const QString& name : m_wheels.keys()) {
+        wheelSpeeds.insert(name, RadiansPerSecond(0));
     }
     setWheelSpeeds(wheelSpeeds);
 }
@@ -351,25 +389,27 @@ double Mouse::getWheelEncoderTicksPerRevolution(const QString& name) const {
 
 int Mouse::readWheelAbsoluteEncoder(const QString& name) const {
     ASSERT_TR(hasWheel(name));
-    m_updateMutex.lock();
+    m_mutex.lock();
     int encoderReading = m_wheels.value(name).readAbsoluteEncoder();
-    m_updateMutex.unlock();
+    m_mutex.unlock();
     return encoderReading;
 }
 
 int Mouse::readWheelRelativeEncoder(const QString& name) const {
     ASSERT_TR(hasWheel(name));
-    m_updateMutex.lock();
+    m_mutex.lock();
     int encoderReading = m_wheels.value(name).readRelativeEncoder();
-    m_updateMutex.unlock();
+    m_mutex.unlock();
     return encoderReading;
 }
 
 void Mouse::resetWheelRelativeEncoder(const QString& name) {
     ASSERT_TR(hasWheel(name));
-    m_updateMutex.lock();
+    m_mutex.lock();
+    // TODO: upforgrabs
+    // Use value() here instead of [] notation
     m_wheels[name].resetRelativeEncoder();
-    m_updateMutex.unlock();
+    m_mutex.unlock();
 }
 
 bool Mouse::hasSensor(const QString& name) const {
@@ -458,9 +498,7 @@ QMap<QString, WheelEffect> Mouse::getWheelEffects(
         const Cartesian& initialTranslation,
         const Radians& initialRotation,
         const QMap<QString, Wheel>& wheels) const {
-
     QMap<QString, WheelEffect> wheelEffects;
-
     for (const auto& pair : ContainerUtilities::items(wheels)) {
         wheelEffects.insert(
             pair.first,
@@ -471,7 +509,6 @@ QMap<QString, WheelEffect> Mouse::getWheelEffects(
             )
         );
     }
-
     return wheelEffects;
 }
 

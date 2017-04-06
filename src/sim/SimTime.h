@@ -4,12 +4,12 @@
 
 namespace mms {
 
-class Time {
+class SimTime {
 
 public:
 
     static void init();
-    static Time* get();
+    static SimTime* get();
 
     Seconds startTimestamp();
     Seconds elapsedRealTime();
@@ -21,10 +21,10 @@ private:
 
     // A private constructor is used to ensure
     // only one instance of this class exists
-    Time();
+    SimTime();
 
     // A pointer to the actual instance of the class
-    static Time* INSTANCE;
+    static SimTime* INSTANCE;
 
     Seconds m_startTimestamp;
     Seconds m_elapsedSimTime;

@@ -3,6 +3,7 @@
 #include <QChar>
 #include <QDebug>
 #include <QPair>
+#include <QtMath>
 
 #include "units/Meters.h"
 #include "units/MetersPerSecond.h"
@@ -12,15 +13,14 @@
 #include "units/Seconds.h"
 
 #include "Assert.h"
-#include "CPMath.h"
 #include "Color.h"
 #include "Controller.h"
 #include "FontImage.h"
 #include "Logging.h"
 #include "Param.h"
+#include "SimTime.h"
 #include "SimUtilities.h"
 #include "State.h"
-#include "Time.h"
 
 // Helper function/macro that ensures that user-requested stops
 // can always interrupt the currently executing algorithm
@@ -84,12 +84,12 @@ double MouseInterface::getRandom() {
 }
 
 int MouseInterface::millis() {
-    return Time::get()->elapsedSimTime().getMilliseconds();
+    return SimTime::get()->elapsedSimTime().getMilliseconds();
 }
 
 void MouseInterface::delay(int milliseconds) {
-    Seconds start = Time::get()->elapsedSimTime();
-    while (Time::get()->elapsedSimTime() < start + Milliseconds(milliseconds)) {
+    Seconds start = SimTime::get()->elapsedSimTime();
+    while (SimTime::get()->elapsedSimTime() < start + Milliseconds(milliseconds)) {
         BREAK_IF_STOPPED_ELSE_SLEEP_MIN();
     }
 }

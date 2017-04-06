@@ -1,7 +1,8 @@
 #include "Polygon.h"
 
+#include <QtMath>
+
 #include "Assert.h"
-#include "CPMath.h"
 #include "GeometryUtilities.h"
 #include "SimUtilities.h"
 #include "polypartition/polypartition.h"

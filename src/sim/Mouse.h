@@ -1,12 +1,10 @@
 #pragma once
 
 #include <QMap>
+#include <QMutex>
 #include <QPair>
 #include <QString>
 #include <QVector>
-
-// TODO: MACK - QMutex
-#include <mutex>
 
 #include "units/Cartesian.h"
 #include "units/RadiansPerSecond.h"
@@ -44,6 +42,9 @@ public:
     // Returns the direction of the mouse at the most recent reset
     Direction getStartedDirection() const;
 
+    // Set the direction that the mouse should face whenever reset
+    void setStartingDirection(Direction startingDirection);
+
     // Gets the initial translation of the mouse
     Cartesian getInitialTranslation() const;
 
@@ -57,33 +58,42 @@ public:
 
     // Retrieves the polygon of just the body of the mouse
     Polygon getCurrentBodyPolygon(
-        const Coordinate& currentTranslation, const Angle& currentRotation) const;
+        const Coordinate& currentTranslation,
+        const Angle& currentRotation) const;
 
-    // Retrieves the polygon comprised of all parts of the mouse that could collide with walls
+    // Retrieves the polygon comprised of all parts
+    // of the mouse that could collide with walls
     Polygon getCurrentCollisionPolygon(
-        const Coordinate& currentTranslation, const Angle& currentRotation) const;
+        const Coordinate& currentTranslation,
+        const Angle& currentRotation) const;
 
     // Retrieves the center of mass polygon of the mouse
     Polygon getCurrentCenterOfMassPolygon(
-        const Coordinate& currentTranslation, const Angle& currentRotation) const;
+        const Coordinate& currentTranslation,
+        const Angle& currentRotation) const;
 
     // Retrieves the polygons of the wheels of the robot
     QVector<Polygon> getCurrentWheelPolygons(
-        const Coordinate& currentTranslation, const Angle& currentRotation) const;
+        const Coordinate& currentTranslation,
+        const Angle& currentRotation) const;
 
     // Retrieves the speed indicator polygons of the wheels of the robot
     QVector<Polygon> getCurrentWheelSpeedIndicatorPolygons(
-        const Coordinate& currentTranslation, const Angle& currentRotation) const;
+        const Coordinate& currentTranslation,
+        const Angle& currentRotation) const;
 
     // Retrieves the polygons of the sensors of the robot
     QVector<Polygon> getCurrentSensorPolygons(
-        const Coordinate& currentTranslation, const Angle& currentRotation) const;
+        const Coordinate& currentTranslation,
+        const Angle& currentRotation) const;
 
     // Retrieve the polygons corresponding to the views of the sensors
     QVector<Polygon> getCurrentSensorViewPolygons(
-        const Coordinate& currentTranslation, const Angle& currentRotation) const;
+        const Coordinate& currentTranslation,
+        const Angle& currentRotation) const;
 
-    // Instruct the mouse to update its own position based on how much simulation time has elapsed
+    // Instruct the mouse to update its own position
+    // based on how much simulation time has elapsed
     void update(const Duration& elapsed);
 
     // Returns whether or not the mouse has a wheel by a particular name
@@ -91,9 +101,6 @@ public:
 
     // Returns the magnitde of the max angular velocity of the wheel
     RadiansPerSecond getWheelMaxSpeed(const QString& name) const;
-
-    // Set the direction that the mouse should face whenever reset
-    void setStartingDirection(Direction startingDirection);
 
     // An atomic interface for setting the wheel speeds
     void setWheelSpeeds(const QMap<QString, RadiansPerSecond>& wheelSpeeds);
@@ -108,7 +115,8 @@ public:
     // Returns the encoder type of the wheel given by name
     EncoderType getWheelEncoderType(const QString& name) const;
 
-    // Returns the number of encoder ticks per revolution for a particular wheel given by name
+    // Returns the number of encoder ticks per revolution
+    // for a particular wheel given by name
     double getWheelEncoderTicksPerRevolution(const QString& name) const;
 
     // Returns the reading of the encoder of the wheel given by name
@@ -123,7 +131,8 @@ public:
     // Returns whether or not the mouse has a sensor by a particular name
     bool hasSensor(const QString& name) const;
 
-    // Read a sensor, and returns a value from 0.0 (completely free) to 1.0 (completely blocked)
+    // Read a sensor, and returns a value from 0.0
+    // (completely free) to 1.0 (completely blocked)
     double readSensor(const QString& name) const;
 
     // Returns the value of the gyroscope
@@ -177,14 +186,15 @@ private:
     // curve turn as optimally as possible
     CurveTurnFactorCalculator m_curveTurnFactorCalculator;
 
-    // The gyro (rate of rotation), rotation, and translation of the mouse,
-    // which change throughout execution
+    // The gyro (rate of rotation), rotation, and translation
+    // of the mouse, which change throughout execution
     RadiansPerSecond m_currentGyro;
     Cartesian m_currentTranslation;
     Radians m_currentRotation;
 
-    // Ensures that updates happen atomically, mutable so we can use it in const functions
-    mutable std::mutex m_updateMutex; 
+    // Ensures that reads/updates happen atomically,
+    // mutable so we can use it in const functions
+    mutable QMutex m_mutex;
 
     // Helper function for polygon retrieval based on a given mouse translation and rotation
     Polygon getCurrentPolygon(

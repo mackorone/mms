@@ -1,39 +1,39 @@
-#include "Time.h"
+#include "SimTime.h"
 
 #include "Assert.h"
 #include "SimUtilities.h"
 
 namespace mms {
 
-Time* Time::INSTANCE = nullptr;
+SimTime* SimTime::INSTANCE = nullptr;
 
-void Time::init() {
+void SimTime::init() {
     ASSERT_TR(INSTANCE == nullptr);
-    INSTANCE = new Time();
+    INSTANCE = new SimTime();
 }
 
-Time* Time::get() {
+SimTime* SimTime::get() {
     ASSERT_FA(INSTANCE == nullptr);
     return INSTANCE;
 }
 
-Seconds Time::startTimestamp() {
+Seconds SimTime::startTimestamp() {
     return m_startTimestamp;
 }
 
-Seconds Time::elapsedRealTime() {
+Seconds SimTime::elapsedRealTime() {
     return Seconds(SimUtilities::getHighResTimestamp()) - m_startTimestamp;
 }
 
-Seconds Time::elapsedSimTime() {
+Seconds SimTime::elapsedSimTime() {
     return m_elapsedSimTime;
 }
 
-void Time::incrementElapsedSimTime(const Duration& duration) {
+void SimTime::incrementElapsedSimTime(const Duration& duration) {
     m_elapsedSimTime += duration;
 }
 
-Time::Time() :
+SimTime::SimTime() :
     m_startTimestamp(Seconds(SimUtilities::getHighResTimestamp())),
     m_elapsedSimTime(Seconds(0)) {
 }

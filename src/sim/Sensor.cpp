@@ -1,9 +1,10 @@
 #include "Sensor.h"
 
-#include <algorithm>
 #include <QVector>
+#include <QtMath>
 
-#include "CPMath.h"
+#include <algorithm>
+
 #include "GeometryUtilities.h"
 #include "Param.h"
 #include "units/Polar.h"

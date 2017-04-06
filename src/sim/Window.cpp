@@ -338,13 +338,13 @@ QVector<QPair<QString, QVariant>> Window::getRunStats() const {
         {"Current Direction",
             DIRECTION_TO_STRING.value(m_mouse->getCurrentDiscretizedRotation())
         },
-        {"Elapsed Real Time", SimUtilities::formatDuration(Time::get()->elapsedRealTime())},
-        {"Elapsed Sim Time", SimUtilities::formatDuration(Time::get()->elapsedSimTime())},
+        {"Elapsed Real Time", SimUtilities::formatDuration(SimTime::get()->elapsedRealTime())},
+        {"Elapsed Sim Time", SimUtilities::formatDuration(SimTime::get()->elapsedSimTime())},
         {"Time Since Origin Departure",
             stats.timeOfOriginDeparture.getSeconds() < 0
             ? "NONE"
             : SimUtilities::formatDuration(
-                Time::get()->elapsedSimTime() - stats.timeOfOriginDeparture)
+                SimTime::get()->elapsedSimTime() - stats.timeOfOriginDeparture)
         },
         {"Best Time to Center",
             stats.bestTimeToCenter.getSeconds() < 0

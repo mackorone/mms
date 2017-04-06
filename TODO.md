@@ -1,6 +1,7 @@
 # High Priority
 
 - A single seed for both maze and mouse algorithms
+- MacOS retina https://github.com/vispy/vispy/issues/99
 - Left-and-forward as native algorithm actions
 - Better error messages for failed commands
 - If the mouse goes outside of the maze, the simulator crashes

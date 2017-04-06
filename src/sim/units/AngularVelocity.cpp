@@ -1,6 +1,6 @@
 #include "AngularVelocity.h"
 
-#include "../CPMath.h"
+#include <QtMath>
 
 namespace mms {
 
@@ -15,12 +15,12 @@ double AngularVelocity::getRadiansPerSecond() const {
 }
 
 double AngularVelocity::getDegreesPerSecond() const {
-    static const double degreesPerRadian = 360.0 / M_TWOPI;
+    static const double degreesPerRadian = 360.0 / (2 * M_PI);
     return degreesPerRadian * getRadiansPerSecond();
 }
 
 double AngularVelocity::getRevolutionsPerMinute() const {
-    static const double revolutionsPerRadian = 1.0 / M_TWOPI;
+    static const double revolutionsPerRadian = 1.0 / (2 * M_PI);
     static const double secondsPerMinute = 60.0;
     return revolutionsPerRadian * getRadiansPerSecond() * secondsPerMinute;
 }

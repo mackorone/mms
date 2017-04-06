@@ -1,7 +1,8 @@
 #include "Angle.h"
 
+#include <QtMath>
+
 #include "../Assert.h"
-#include "../CPMath.h"
 
 namespace mms {
 
@@ -42,21 +43,21 @@ bool Angle::operator<(const Angle& angle) const {
 double Angle::getRadians(bool zeroTo2pi) const {
     double radians = m_radians;
     if (zeroTo2pi) {
-        radians = std::fmod(radians, M_TWOPI);
+        radians = std::fmod(radians, 2 * M_PI);
         if (radians < 0) {
-           radians += M_TWOPI;
+           radians += 2 * M_PI;
         }
-        if (M_TWOPI <= radians) {
-            radians -= M_TWOPI;
+        if (2 * M_PI <= radians) {
+            radians -= 2 * M_PI;
         }
         ASSERT_LE(0, radians);
-        ASSERT_LT(radians, M_TWOPI);
+        ASSERT_LT(radians, 2 * M_PI);
     }
     return radians;
 }
 
 double Angle::getDegrees(bool zeroTo360) const {
-    static const double degreesPerRadian = 360.0 / M_TWOPI;
+    static const double degreesPerRadian = 360.0 / (2 * M_PI);
     return degreesPerRadian * getRadians(zeroTo360);
 }
 
