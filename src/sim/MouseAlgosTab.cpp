@@ -102,7 +102,7 @@ MouseAlgosTab::MouseAlgosTab() :
         this, [=](int value){
             double fraction = (value + 1.0) / 100.0;
             speedBox->setValue(fraction * maxSpeed);
-            S()->setSimSpeed(fraction * maxSpeed);
+            emit simSpeedChanged(fraction * maxSpeed);
         }
     );
     connect(
@@ -111,7 +111,6 @@ MouseAlgosTab::MouseAlgosTab() :
         this, [=](){
             double percent = speedBox->value() / speedBox->maximum() * 100.0;
             speedSlider->setValue(static_cast<int>(percent - 1.0));
-            S()->setSimSpeed(speedBox->value());
         }
     );
     speedSlider->setValue(100.0 / speedBox->maximum() - 1.0);
@@ -123,7 +122,8 @@ MouseAlgosTab::MouseAlgosTab() :
     QHBoxLayout* zoomBoxLayout = new QHBoxLayout();
     zoomBox->setLayout(zoomBoxLayout);
     connect(zoomBox, &QGroupBox::toggled, this, [=](bool on){
-        S()->setLayoutType(on ? LayoutType::ZOOMED : LayoutType::FULL);
+        // TODO: MACK
+        //S()->setLayoutType(on ? LayoutType::ZOOMED : LayoutType::FULL);
     });
     zoomBox->setChecked(false);
     
@@ -141,7 +141,8 @@ MouseAlgosTab::MouseAlgosTab() :
         this, [=](int value){
             double fraction = (value + 1.0) / 100.0;
             scaleBox->setValue(fraction * maxZoomedMapScale);
-            S()->setZoomedMapScale(fraction * maxZoomedMapScale);
+            // TODO: MACK
+            //S()->setZoomedMapScale(fraction * maxZoomedMapScale);
         }
     );
     connect(
@@ -150,7 +151,6 @@ MouseAlgosTab::MouseAlgosTab() :
         this, [=](){
             double percent = scaleBox->value() / scaleBox->maximum() * 100.0;
             scaleSlider->setValue(static_cast<int>(percent - 1.0));
-            S()->setZoomedMapScale(scaleBox->value());
         }
     );
     scaleSlider->setValue(10.0 / scaleBox->maximum() - 1.0);
@@ -161,7 +161,8 @@ MouseAlgosTab::MouseAlgosTab() :
     connect(
         rotateZoomedMapCheckbox, &QCheckBox::stateChanged,
         this, [=](int state){
-            S()->setRotateZoomedMap(state == Qt::Checked);
+            // TODO: MACK
+            //S()->setRotateZoomedMap(state == Qt::Checked);
         }
     );
 

@@ -21,6 +21,7 @@ public:
 
 signals:
 
+    void simSpeedChanged(double factor);
     void mouseAlgoSelected(
         const QString& name,
         const QString& runCommand,

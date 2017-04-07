@@ -67,7 +67,9 @@ Window::Window(QWidget *parent) :
 			}
 		}
 		else {
-			m_map.setView(m_truth);
+			if (m_truth != nullptr) {
+				m_map.setView(m_truth);
+			}
 		}
 	});
 	holderLayout->addWidget(viewCheckbox);
@@ -112,6 +114,16 @@ Window::Window(QWidget *parent) :
         mouseAlgosTab, &MouseAlgosTab::mouseAlgoSelected,
         this, &Window::runMouseAlgo
     );
+	connect(
+		mouseAlgosTab, &MouseAlgosTab::simSpeedChanged,
+		this, [=](double factor){
+            // We have to call the function on this UI thread (as opposed to
+            // hooking up the signal directly to the slot) because the Model
+            // thread is blocked on simulate(), and thus never processes the
+            // signal
+			m_model.setSimSpeed(factor);
+		}
+	);
     tabWidget->addTab(mouseAlgosTab, "Mouse Algorithms");
 
     // Resize some things

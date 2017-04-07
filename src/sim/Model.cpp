@@ -18,7 +18,8 @@ namespace mms {
 
 Model::Model() :
     m_maze(nullptr),
-    m_shutdownRequested(false) {
+    m_shutdownRequested(false),
+    m_simSpeed(1.0) {
     ASSERT_RUNS_JUST_ONCE();
 }
 
@@ -67,7 +68,7 @@ void Model::simulate() {
 
         // Calculate the amount of sim time that should pass during this iteration
         static Seconds realTimePerUpdate = Seconds(1.0 / P()->mousePositionUpdateRate());
-        Seconds elapsedSimTimeForThisIteration = realTimePerUpdate * S()->simSpeed();
+        Seconds elapsedSimTimeForThisIteration = realTimePerUpdate * m_simSpeed;
 
         // Update the sim time
         SimTime::get()->incrementElapsedSimTime(elapsedSimTimeForThisIteration);
@@ -185,6 +186,10 @@ bool Model::containsMouse(const QString& name) const {
 MouseStats Model::getMouseStats(const QString& name) const {
     ASSERT_TR(m_stats.contains(name));
     return m_stats.value(name);
+}
+
+void Model::setSimSpeed(double factor) {
+    m_simSpeed = factor;
 }
 
 void Model::checkCollision() {

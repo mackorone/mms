@@ -8,7 +8,6 @@
 #include "Logging.h"
 #include "Param.h"
 #include "Screen.h"
-#include "State.h"
 #include "TransformationMatrix.h"
 
 namespace mms {
@@ -17,7 +16,12 @@ Map::Map(QWidget* parent) :
         QOpenGLWidget(parent),
         m_maze(nullptr),
         m_view(nullptr),
-        m_mouseGraphic(nullptr) {
+        m_mouseGraphic(nullptr),
+        m_windowWidth(0),
+        m_windowHeight(0),
+        m_layoutType(LayoutType::FULL),
+        m_zoomedMapScale(0.1),
+        m_rotateZoomedMap(false) {
 
     // The Map widget should only ever be constructed once
     ASSERT_RUNS_JUST_ONCE();
@@ -137,15 +141,12 @@ void Map::paintGL() {
     // Enable scissoring so that the maps are only draw in specified locations.
     glEnable(GL_SCISSOR_TEST);
 
-    // Determine the type of map to draw
-    LayoutType layoutType = S()->layoutType();
-
     // Determine the starting index of the mouse
     int mouseTrianglesStartingIndex = m_view->getGraphicCpuBuffer()->size();
 
     // Draw the tiles
     drawMap(
-        layoutType,
+        m_layoutType,
         currentMouseTranslation,
         currentMouseRotation,
         &m_polygonProgram,
@@ -156,7 +157,7 @@ void Map::paintGL() {
 
     // Overlay the tile text
     drawMap(
-        layoutType,
+        m_layoutType,
         currentMouseTranslation,
         currentMouseRotation,
         &m_textureProgram,
@@ -167,7 +168,7 @@ void Map::paintGL() {
 
     // Draw the mouse
     drawMap(
-        layoutType,
+        m_layoutType,
         currentMouseTranslation,
         currentMouseRotation,
         &m_polygonProgram,
@@ -404,8 +405,8 @@ void Map::drawMap(
             zoomedMapSize,
             {m_windowWidth, m_windowHeight},
             Screen::get()->pixelsPerMeter(),
-            S()->zoomedMapScale(),
-            S()->rotateZoomedMap(),
+            m_zoomedMapScale,
+            m_rotateZoomedMap,
             m_mouseGraphic->getInitialMouseTranslation(),
             currentMouseTranslation,
             currentMouseRotation

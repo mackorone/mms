@@ -26,6 +26,8 @@ public:
     bool containsMouse(const QString& name) const;
     MouseStats getMouseStats(const QString& name) const;
 
+    void setSimSpeed(double factor);
+
 signals:
 
     void newTileLocationTraversed(int x, int y);
@@ -38,6 +40,8 @@ private:
     const Maze* m_maze;
     QMap<QString, Mouse*> m_mice;
     QMap<QString, MouseStats> m_stats;
+
+    double m_simSpeed;
 
     void checkCollision();
 };

@@ -62,6 +62,11 @@ private:
     int m_windowWidth;
     int m_windowHeight;
 
+    // Some display knobs
+    LayoutType m_layoutType;
+    double m_zoomedMapScale;
+    bool m_rotateZoomedMap;
+
     // Polygon program variables
 	QOpenGLShaderProgram m_polygonProgram;
 	QOpenGLVertexArrayObject m_polygonVAO;

@@ -49,28 +49,6 @@ void State::setPaused(bool paused) {
     m_paused = paused;
 }
 
-double State::simSpeed() {
-    return m_simSpeed;
-}
-
-void State::setSimSpeed(double simSpeed) {
-    if (simSpeed < 0.0) {
-        m_simSpeed = 0.0;
-    }
-    else if (P()->maxSimSpeed() < simSpeed) {
-        m_simSpeed = P()->maxSimSpeed();
-    }
-    else {
-        // Anchor to the default whenever we pass by it
-        if (crossesDefault(m_simSpeed, simSpeed, P()->defaultSimSpeed())) {
-            m_simSpeed = P()->defaultSimSpeed();
-        }
-        else {
-            m_simSpeed = simSpeed;
-        }
-    }
-}
-
 bool State::inputButtonWasPressed(int inputButton) {
     ASSERT_TR(m_inputButtons.contains(inputButton));
     return m_inputButtons.value(inputButton);
