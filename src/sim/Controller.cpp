@@ -11,7 +11,7 @@
 
 namespace mms {
 
-Controller::Controller(const Maze* maze, Mouse* mouse, MazeViewMutable* view) :
+Controller::Controller(const Maze* maze, Mouse* mouse, MazeView* view) :
     m_maze(maze),
     m_mouse(mouse),
     m_view(view),

@@ -4,11 +4,25 @@
 
 namespace mms {
 
-MazeGraphic::MazeGraphic(const Maze* maze, BufferInterface* bufferInterface) {
+MazeGraphic::MazeGraphic(
+        const Maze* maze,
+        BufferInterface* bufferInterface,
+        bool wallTruthVisible,
+        bool tileColorsVisible,
+        bool tileFogVisible,
+        bool tileTextVisible,
+        bool autopopulateTextWithDistance) {
     for (int x = 0; x < maze->getWidth(); x += 1) {
         QVector<TileGraphic> column;
         for (int y = 0; y < maze->getHeight(); y += 1) {
-            column.push_back(TileGraphic(maze->getTile(x, y), bufferInterface));
+            column.push_back(TileGraphic(
+                maze->getTile(x, y),
+                bufferInterface,
+                wallTruthVisible,
+                tileColorsVisible,
+                tileFogVisible,
+                tileTextVisible,
+                autopopulateTextWithDistance));
         }
         m_tileGraphics.push_back(column);
     }
@@ -41,11 +55,39 @@ void MazeGraphic::setTileText(int x, int y, const QString& text) {
     m_tileGraphics[x][y].setText(text);
 }
 
+void MazeGraphic::toggleWallTruthVisible() {
+    for (int x = 0; x < getWidth(); x += 1) {
+        for (int y = 0; y < getHeight(); y += 1) {
+            m_tileGraphics[x][y].toggleWallTruthVisible();
+        }
+    }
+}
+
+void MazeGraphic::toggleTileColorsVisible() {
+    for (int x = 0; x < getWidth(); x += 1) {
+        for (int y = 0; y < getHeight(); y += 1) {
+            m_tileGraphics[x][y].toggleTileColorsVisible();
+        }
+    }
+}
+
+void MazeGraphic::toggleTileFogVisible() {
+    for (int x = 0; x < getWidth(); x += 1) {
+        for (int y = 0; y < getHeight(); y += 1) {
+            m_tileGraphics[x][y].toggleTileFogVisible();
+        }
+    }
+}
+
+void MazeGraphic::toggleTileTextVisible() {
+    for (int x = 0; x < getWidth(); x += 1) {
+        for (int y = 0; y < getHeight(); y += 1) {
+            m_tileGraphics[x][y].toggleTileTextVisible();
+        }
+    }
+}
+
 void MazeGraphic::drawPolygons() const {
-
-    // Make sure that this function is only called once
-    // ASSERT_RUNS_JUST_ONCE(); // TODO: MACK
-
     // Fill the GRAPHIC_CPU_BUFFER
     for (int x = 0; x < m_tileGraphics.size(); x += 1) {
         for (int y = 0; y < m_tileGraphics.at(x).size(); y += 1) {
@@ -58,40 +100,7 @@ void MazeGraphic::drawTextures() {
     // Fill the TEXTURE_CPU_BUFFER
     for (int x = 0; x < m_tileGraphics.size(); x += 1) {
         for (int y = 0; y < m_tileGraphics.at(x).size(); y += 1) {
-            // m_tileGraphics.at(x).at(y).drawTextures(); // TODO: MACK
             m_tileGraphics[x][y].drawTextures();
-        }
-    }
-}
-
-void MazeGraphic::updateColor() const {
-    for (int x = 0; x < getWidth(); x += 1) {
-        for (int y = 0; y < getHeight(); y += 1) {
-            m_tileGraphics.at(x).at(y).updateColor();
-        }
-    }
-}
-
-void MazeGraphic::updateWalls() const {
-    for (int x = 0; x < getWidth(); x += 1) {
-        for (int y = 0; y < getHeight(); y += 1) {
-            m_tileGraphics.at(x).at(y).updateWalls();
-        }
-    }
-}
-
-void MazeGraphic::updateFog() const {
-    for (int x = 0; x < getWidth(); x += 1) {
-        for (int y = 0; y < getHeight(); y += 1) {
-            m_tileGraphics.at(x).at(y).updateFog();
-        }
-    }
-}
-
-void MazeGraphic::updateText() const {
-    for (int x = 0; x < getWidth(); x += 1) {
-        for (int y = 0; y < getHeight(); y += 1) {
-            m_tileGraphics.at(x).at(y).updateText();
         }
     }
 }

@@ -12,7 +12,15 @@ namespace mms {
 class MazeGraphic {
 
 public:
-    MazeGraphic(const Maze* maze, BufferInterface* bufferInterface);
+
+    MazeGraphic(
+        const Maze* maze,
+        BufferInterface* bufferInterface,
+        bool wallTruthVisible,
+        bool tileColorsVisible,
+        bool tileFogVisible,
+        bool tileTextVisible,
+        bool autopopulateTextWithDistance);
 
     void setTileColor(int x, int y, Color color);
     void declareWall(int x, int y, Direction direction, bool isWall);
@@ -20,16 +28,18 @@ public:
     void setTileFogginess(int x, int y, bool foggy);
     void setTileText(int x, int y, const QString& text);
 
+    void toggleWallTruthVisible();
+    void toggleTileColorsVisible();
+    void toggleTileFogVisible();
+    void toggleTileTextVisible();
+
     // TODO: MACK - rename these
+    // TODO: MACK - why is only one of these const?
     void drawPolygons() const;
     void drawTextures();
 
-    void updateColor() const;
-    void updateWalls() const;
-    void updateFog() const;
-    void updateText() const;
-
 private:
+
     QVector<QVector<TileGraphic>> m_tileGraphics;
 
     int getWidth() const;

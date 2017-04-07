@@ -1,5 +1,8 @@
 #include "Window.h"
 
+#include <QAction>
+#include <QMenu>
+#include <QMenuBar>
 #include <QMessageBox>
 #include <QSplitter>
 #include <QTabWidget>
@@ -10,6 +13,10 @@
 #include "MouseAlgosTab.h"
 #include "Param.h"
 #include "TextDisplay.h"
+
+// TODO: MACK
+#include <QVBoxLayout>
+#include "State.h"
 
 namespace mms {
 
@@ -35,8 +42,39 @@ Window::Window(QWidget *parent) :
     splitter->setHandleWidth(6);
     setCentralWidget(splitter);
 
+	// Add some menu items
+    QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
+    QAction* quitAction = new QAction(tr("&Quit"), this);
+    connect(quitAction, &QAction::triggered, this, [=](){
+		close();
+	});
+	fileMenu->addAction(quitAction);
+
+	// TODO: MACK
+	// Toggle:
+	// - Walls
+	// - Colors
+	// - Fog
+	// - Text
+	QWidget* holder = new QWidget();
+	QVBoxLayout* holderLayout = new QVBoxLayout();
+	holder->setLayout(holderLayout);
+	QCheckBox* viewCheckbox = new QCheckBox("TEST VIEW");
+    connect(viewCheckbox, &QCheckBox::stateChanged, this, [=](int state){
+        if (state == Qt::Checked) {
+			if (m_view != nullptr) {
+				m_map.setView(m_view);
+			}
+		}
+		else {
+			m_map.setView(m_truth);
+		}
+	});
+	holderLayout->addWidget(viewCheckbox);
+	holderLayout->addWidget(&m_map);
+    splitter->addWidget(holder);
     // Add the map to the splitter
-    splitter->addWidget(&m_map);
+    //splitter->addWidget(&m_map);
     
     // Add the tabs to the splitter
     QTabWidget* tabWidget = new QTabWidget();
@@ -100,7 +138,14 @@ void Window::setMaze(Maze* maze) {
     Maze* oldMaze = m_maze;
     MazeView* oldTruth = m_truth;
     m_maze = maze;
-    m_truth = new MazeView(m_maze);
+    m_truth = new MazeView(
+		m_maze,
+		true, // wallTruthVisible
+		false, // tileColorsVisible
+		false, // tileFogVisible
+		true, // tileTextVisible
+		true // autopopulateTextWithDistance
+	);
 
     // Update pointers held by other objects
     m_model.setMaze(m_maze);
@@ -147,7 +192,14 @@ void Window::runMouseAlgo(
     stopMouseAlgo();
 
     // Create some more objects
-    MazeViewMutable* newView = new MazeViewMutable(m_maze);
+    MazeView* newView = new MazeView(
+		m_maze,
+		false, // wallTruthVisible
+		true, // tileColorsVisible
+		true, // tileFogVisible
+		true, // tileTextVisible
+		false // autopopulateTextWithDistance
+	);
     MouseGraphic* newMouseGraphic = new MouseGraphic(newMouse);
     Controller* newController = new Controller(m_maze, newMouse, newView);
 
@@ -219,45 +271,9 @@ void Window::stopMouseAlgo() {
 
 #if(0)
 void Window::keyPress(int key) {
-
     // NOTE: If you're adding or removing anything from this function, make
     // sure to update wiki/Keys.md
-
-    else if (key == Qt::Key_T) {
-        // Toggle wall truth visibility
-        S()->setWallTruthVisible(!S()->wallTruthVisible());
-        // TODO: MACK - update both MazeViews?
-        m_view->getMazeGraphic()->updateWalls();
-    }
-    else if (key == Qt::Key_C) {
-        // Toggle tile colors
-        S()->setTileColorsVisible(!S()->tileColorsVisible());
-        // TODO: MACK - update both MazeViews?
-        m_view->getMazeGraphic()->updateColor();
-    }
-    else if (key == Qt::Key_G) {
-        // Toggle tile fog
-        S()->setTileFogVisible(!S()->tileFogVisible());
-        // TODO: MACK - update both MazeViews?
-        m_view->getMazeGraphic()->updateFog();
-    }
-    else if (key == Qt::Key_X) {
-        // Toggle tile text
-        S()->setTileTextVisible(!S()->tileTextVisible());
-        // TODO: MACK - update both MazeViews?
-        m_view->getMazeGraphic()->updateText();
-    }
-    else if (key == Qt::Key_D) {
-        // Toggle tile distance visibility
-        S()->setTileDistanceVisible(!S()->tileDistanceVisible());
-        // TODO: MACK - update both MazeViews?
-        m_view->getMazeGraphic()->updateText();
-    }
-    else if (key == Qt::Key_Q) {
-        // Quit
-        SimUtilities::quit();
-    }
-    else if (
+    if (
         key == Qt::Key_0 || key == Qt::Key_1 ||
         key == Qt::Key_2 || key == Qt::Key_3 ||
         key == Qt::Key_4 || key == Qt::Key_5 ||

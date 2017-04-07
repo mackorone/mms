@@ -8,7 +8,6 @@
 #include "Map.h"
 #include "Maze.h"
 #include "MazeView.h"
-#include "MazeViewMutable.h"
 #include "Model.h"
 #include "MouseGraphic.h"
 #include "TextDisplay.h"
@@ -41,7 +40,7 @@ private:
     // responsible for spawning and interfacing with the mouse algorithm
     Mouse* m_mouse;
     MouseGraphic* m_mouseGraphic;
-    MazeViewMutable* m_view;
+    MazeView* m_view;
     Controller* m_controller;
 
     // The event loop for the mouse algo process. We need a separate loop so

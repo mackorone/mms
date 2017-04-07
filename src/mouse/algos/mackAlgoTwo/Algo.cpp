@@ -24,13 +24,35 @@ void Algo::solve(Interface* interface) {
     // Set and finalize some options
     m_mouse->setTileTextRowsAndCols(1, 5);
 
-    // Assert that the maze size is sane
-    ASSERT_LE(1, Maze::WIDTH);
-    ASSERT_LE(1, Maze::HEIGHT);
-    ASSERT_LE(Maze::WIDTH, 16);
-    ASSERT_LE(Maze::HEIGHT, 16);
-    ASSERT_EQ(Maze::WIDTH, m_mouse->mazeWidth());
-    ASSERT_EQ(Maze::HEIGHT, m_mouse->mazeHeight());
+    // Ensure that the maze size is sane
+    if (!(
+        1 <= Maze::WIDTH &&
+        1 <= Maze::HEIGHT &&
+        Maze::WIDTH <= 16 &&
+        Maze::HEIGHT <= 16
+    )) {
+#if (SIMULATOR)
+        std::cout << "ERROR - Maze::WIDTH and Maze::HEIGHT must be in [1, 16]"
+                  << std::endl;
+#endif
+        return;
+    }
+
+    // Ensure that the maze size is as expected
+    if (!(
+        Maze::WIDTH == m_mouse->mazeWidth() &&
+        Maze::HEIGHT == m_mouse->mazeHeight()
+    )) {
+#if (SIMULATOR)
+        std::cout << "ERROR - configured for "
+                  << static_cast<unsigned int>(Maze::WIDTH) << " x "
+                  << static_cast<unsigned int>(Maze::HEIGHT)
+                  << " maze, but actual maze size is "
+                  << m_mouse->mazeWidth() << " x "
+                  << m_mouse->mazeHeight() << std::endl;
+#endif
+        return;
+    }
 
     // Initialize the (perimeter of the) maze
     for (byte x = 0; x < Maze::WIDTH; x += 1) {
@@ -215,9 +237,8 @@ void Algo::step() {
 
     // Update the mode if we've reached the destination
     if (m_mode == Mode::CENTER && inCenter(m_x, m_y)) {
-#if (!SIMULATOR)
-        readWalls();
-        moveForward();
+#if (SIMULATOR)
+        std::cout << "Success!" << std::endl;
 #endif
         m_mode = Mode::ORIGIN;
     }
@@ -604,80 +625,59 @@ void Algo::turnAroundUpdateState() {
 void Algo::moveForwardUpdateState() {
     m_x += (m_d == Direction::EAST  ? 1 : (m_d == Direction::WEST  ? -1 : 0));
     m_y += (m_d == Direction::NORTH ? 1 : (m_d == Direction::SOUTH ? -1 : 0));
-}
-
-void Algo::turnLeft() {
-    turnLeftUpdateState();
 #if (SIMULATOR)
-    m_mouse->turnLeft();
-#else
-    // UNIMPLEMENTED
-#endif
-}
-
-void Algo::turnRight() {
-    turnRightUpdateState();
-#if (SIMULATOR)
-    m_mouse->turnRight();
-#else
-    // UNIMPLEMENTED
-#endif
-}
-
-void Algo::turnAround() {
-    turnAroundUpdateState();
-#if (SIMULATOR)
-    m_mouse->turnAroundLeft();
-#else
-    // UNIMPLEMENTED
+    std::cout << "Moving to ("
+              << static_cast<unsigned int>(m_x) << ", "
+              << static_cast<unsigned int>(m_y) << ")"
+              << std::endl;
 #endif
 }
 
 void Algo::moveForward() {
+    moveForwardUpdateState();
 #if (SIMULATOR)
     m_mouse->moveForward();
 #else
     movesBuffer[moveBufferIndex] = 'f';
     moveBufferIndex += 1;
 #endif
-    moveForwardUpdateState();
 }
 
 void Algo::leftAndForward() {
+    turnLeftUpdateState();
+    moveForwardUpdateState();
 #if (SIMULATOR)
-    turnLeft();
-    moveForward();
+    m_mouse->turnLeft();
+    m_mouse->moveForward();
 #else
     movesBuffer[moveBufferIndex] = 'l';
     moveBufferIndex += 1;
-    turnLeftUpdateState();
-    moveForwardUpdateState();
 #endif
 }
 
 void Algo::rightAndForward() {
+    turnRightUpdateState();
+    moveForwardUpdateState();
 #if (SIMULATOR)
-    turnRight();
-    moveForward();
+    m_mouse->turnRight();
+    m_mouse->moveForward();
 #else
     movesBuffer[moveBufferIndex] = 'r';
     moveBufferIndex += 1;
-    turnRightUpdateState();
-    moveForwardUpdateState();
 #endif
 }
 
 void Algo::aroundAndForward() {
+    turnAroundUpdateState();
+    moveForwardUpdateState();
 #if (SIMULATOR)
-    turnAround();
-    moveForward();
+    m_mouse->turnAroundLeft();
+    m_mouse->moveForward();
 #else
     movesBuffer[moveBufferIndex] = 'a';
     moveBufferIndex += 1;
     movesBuffer[moveBufferIndex] = 'f';
     moveBufferIndex += 1;
-    turnAroundUpdateState();
-    moveForwardUpdateState();
 #endif
 }
 

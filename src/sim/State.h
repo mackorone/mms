@@ -21,30 +21,6 @@ public:
     bool crashed();
     void setCrashed();
 
-    LayoutType layoutType();
-    void setLayoutType(LayoutType layoutType);
-
-    bool rotateZoomedMap();
-    void setRotateZoomedMap(bool rotateZoomedMap);
-
-    double zoomedMapScale();
-    void setZoomedMapScale(double zoomedMapScale);
-
-    bool wallTruthVisible();
-    void setWallTruthVisible(bool wallTruthVisible);
-
-    bool tileColorsVisible();
-    void setTileColorsVisible(bool tileColorsVisible);
-
-    bool tileFogVisible();
-    void setTileFogVisible(bool tileFogVisible);
-
-    bool tileTextVisible();
-    void setTileTextVisible(bool tileTextVisible);
-
-    bool tileDistanceVisible();
-    void setTileDistanceVisible(bool tileDistanceVisible);
-
     bool paused();
     void setPaused(bool paused);
 
@@ -66,21 +42,10 @@ private:
     static State* INSTANCE;
 
     bool m_crashed;
-    LayoutType m_layoutType;
-    bool m_rotateZoomedMap;
-    double m_zoomedMapScale;
-    bool m_wallTruthVisible;
-    bool m_tileColorsVisible;
-    bool m_tileFogVisible;
-    bool m_tileTextVisible;
-    bool m_tileDistanceVisible;
     bool m_paused;
     double m_simSpeed;
     QMap<int, bool> m_inputButtons;
     QMap<int, bool> m_arrowKeys;
-
-    // Returns true if defaultValue lies between current and next
-    bool crossesDefault(double current, double next, double defaultValue);
 };
 
 } // namespace mms

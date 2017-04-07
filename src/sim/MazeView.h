@@ -14,11 +14,20 @@ class MazeView {
 
 public:
 
-    MazeView(const Maze* maze);
+    MazeView(
+        const Maze* maze,
+        bool wallTruthVisible, 
+        bool tileColorsVisible, 
+        bool tileFogVisible, 
+        bool tileTextVisible, 
+        bool autopopulateTextWithDistance);
+
+    MazeGraphic* getMazeGraphic();
+    void initTileGraphicText(int numRows, int numCols);
     const QVector<TriangleGraphic>* getGraphicCpuBuffer() const;
     const QVector<TriangleTexture>* getTextureCpuBuffer() const;
 
-protected:
+private:
 
     // These vectors contain the triangles that will actually be drawn
     QVector<TriangleGraphic> m_graphicCpuBuffer;

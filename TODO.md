@@ -1,8 +1,8 @@
 # High Priority
 
+- Ensure the mouse stays in the maze
 - A single seed for both maze and mouse algorithms
 - MacOS retina https://github.com/vispy/vispy/issues/99
-- Left-and-forward as native algorithm actions
 - Better error messages for failed commands
 - If the mouse goes outside of the maze, the simulator crashes
 - Input buttons for the mouse algorithm
@@ -11,7 +11,6 @@
 - If maze algo fails, the simulator crashes
 - Make it easier to edit the simulator parameters
     - The values should be re-loaded on the fly
-- Alphabetical order of QSettings contents
 - Support json maze file format
 - Button for toggling the maze views
 - Verify that the tile text automatically refresh when we set tileGraphicTextMaxSize
@@ -20,7 +19,6 @@
     - Choose which type of file to save
 - Indicate build failure/success with colors
 - Clean up mouseInterface/controller and MainWindow/controller (MouseAlgoUtilities)
-- Hook up build output (in addition to stderr)
 - Add controls about UI
 - Make a note about newline for algo stdout (only shown in GUI once newline is written)
 - Fix the elapsed sim time
@@ -31,22 +29,15 @@
 - Save button to Maze algo tab
 - Surface error messages to the UI
 - Stderr get's printed out when the algo exits, gets sent to Controller
-- Why is tile fog not clearing immediately?
 - Kill Layout class
 - Blank map on startup would be good
 - QList vs QVector - pick one
 - Run mouse algorithms as separate process
     - Make continuous algos possible
-    - Do some cleanup here
-    - Deprecate static algo options (and maybe even dynamic ones too!)
 - Fix collision detection
 - Fix .maz file loading
 - Organize the code a little better
 - Support rotation and maze mirroring
-- Make GUI
-    - Fix texture program
-    - Put the stdout of the child process somewhere
-    - use QOpenGLDebugLogger (clean this up)
 - Ensure Process actually gets cleaned up
 - Rename the whole texture vs polygon thing
 - Don't need (const X& x) because of implicit sharing

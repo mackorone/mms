@@ -67,10 +67,6 @@ private:
     void turnAroundUpdateState();
     void moveForwardUpdateState();
 
-    void turnLeft();
-    void turnRight();
-    void turnAround();
-
     void moveForward();
     void leftAndForward();
     void rightAndForward();

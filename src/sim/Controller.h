@@ -5,7 +5,7 @@
 
 #include "DynamicMouseAlgorithmOptions.h"
 #include "Maze.h"
-#include "MazeViewMutable.h"
+#include "MazeView.h"
 #include "Model.h"
 #include "Mouse.h"
 #include "MouseInterface.h"
@@ -18,7 +18,7 @@ class Controller : public QObject {
 
 public:
 
-    Controller(const Maze* maze, Mouse* mouse, MazeViewMutable* view);
+    Controller(const Maze* maze, Mouse* mouse, MazeView* view);
     ~Controller(); // Can be used to abort the process
 
     void init(Model* model);
@@ -36,7 +36,7 @@ private:
 
     const Maze* m_maze;
     Mouse* m_mouse;
-    MazeViewMutable* m_view;
+    MazeView* m_view;
 
     InterfaceType m_interfaceType;
     bool m_interfaceTypeFinalized;

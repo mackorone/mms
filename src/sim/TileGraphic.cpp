@@ -5,7 +5,6 @@
 #include "Color.h"
 #include "FontImage.h"
 #include "Param.h"
-#include "State.h"
 
 namespace mms {
 
@@ -13,14 +12,36 @@ TileGraphic::TileGraphic() :
     m_tile(nullptr),
     m_bufferInterface(nullptr),
     m_color(Color::BLACK),
-    m_foggy(false) {
+    m_foggy(false),
+    m_wallTruthVisible(false),
+    m_tileColorsVisible(false),
+    m_tileFogVisible(false),
+    m_tileTextVisible(false) {
 }
 
-TileGraphic::TileGraphic(const Tile* tile, BufferInterface* bufferInterface) :
-    m_tile(tile),
-    m_bufferInterface(bufferInterface),
-    m_color(STRING_TO_COLOR.value(P()->tileBaseColor())),
-    m_foggy(true) {
+TileGraphic::TileGraphic(
+        const Tile* tile,
+        BufferInterface* bufferInterface,
+        bool wallTruthVisible,
+        bool tileColorsVisible,
+        bool tileFogVisible,
+        bool tileTextVisible,
+        bool autopopulateTextWithDistance) :
+        m_tile(tile),
+        m_bufferInterface(bufferInterface),
+        m_color(STRING_TO_COLOR.value(P()->tileBaseColor())),
+        m_foggy(true),
+        m_wallTruthVisible(wallTruthVisible),
+        m_tileColorsVisible(tileColorsVisible),
+        m_tileFogVisible(tileFogVisible),
+        m_tileTextVisible(tileTextVisible) {
+    if (autopopulateTextWithDistance) {
+        m_text = (
+            0 <= m_tile->getDistance()
+			? QString::number(m_tile->getDistance())
+			: "inf"
+        );
+    }
 }
 
 void TileGraphic::setColor(Color color) {
@@ -48,6 +69,26 @@ void TileGraphic::setText(const QString& text) {
     updateText();
 }
 
+void TileGraphic::toggleWallTruthVisible() {
+    m_wallTruthVisible = !m_wallTruthVisible;
+    updateWalls();
+}
+
+void TileGraphic::toggleTileColorsVisible() {
+    m_tileColorsVisible = !m_tileColorsVisible;
+    updateColor();
+}
+
+void TileGraphic::toggleTileFogVisible() {
+    m_tileFogVisible = !m_tileFogVisible;
+    updateFog();
+}
+
+void TileGraphic::toggleTileTextVisible() {
+    m_tileTextVisible = !m_tileTextVisible;
+    updateText();
+}
+
 void TileGraphic::drawPolygons() const {
 
     // Note that the order in which we call insertIntoGraphicCpuBuffer
@@ -57,7 +98,9 @@ void TileGraphic::drawPolygons() const {
     // Draw the base of the tile
     m_bufferInterface->insertIntoGraphicCpuBuffer(
         m_tile->getFullPolygon(),
-        S()->tileColorsVisible() ? m_color : STRING_TO_COLOR.value(P()->tileBaseColor()),
+        m_tileColorsVisible
+            ? m_color
+            : STRING_TO_COLOR.value(P()->tileBaseColor()),
         1.0);
 
     // Draw each of the walls of the tile
@@ -81,7 +124,7 @@ void TileGraphic::drawPolygons() const {
     m_bufferInterface->insertIntoGraphicCpuBuffer(
         m_tile->getFullPolygon(),
         STRING_TO_COLOR.value(P()->tileFogColor()),
-        m_foggy && S()->tileFogVisible() ? P()->tileFogAlpha() : 0.0);
+        m_foggy && m_tileFogVisible ? P()->tileFogAlpha() : 0.0);
 }
 
 void TileGraphic::drawTextures() {
@@ -98,8 +141,12 @@ void TileGraphic::drawTextures() {
 }
 
 void TileGraphic::updateColor() const {
-    m_bufferInterface->updateTileGraphicBaseColor(m_tile->getX(), m_tile->getY(),
-        S()->tileColorsVisible() ? m_color : STRING_TO_COLOR.value(P()->tileBaseColor()));
+    m_bufferInterface->updateTileGraphicBaseColor(
+        m_tile->getX(),
+        m_tile->getY(),
+        m_tileColorsVisible
+            ? m_color
+            : STRING_TO_COLOR.value(P()->tileBaseColor()));
 }
 
 void TileGraphic::updateWalls() const {
@@ -109,8 +156,10 @@ void TileGraphic::updateWalls() const {
 }
 
 void TileGraphic::updateFog() const {
-    m_bufferInterface->updateTileGraphicFog(m_tile->getX(), m_tile->getY(),
-        m_foggy && S()->tileFogVisible() ? P()->tileFogAlpha() : 0.0);
+    m_bufferInterface->updateTileGraphicFog(
+        m_tile->getX(),
+        m_tile->getY(),
+        m_foggy && m_tileFogVisible ? P()->tileFogAlpha() : 0.0);
 }
 
 void TileGraphic::updateText() const {
@@ -121,15 +170,6 @@ void TileGraphic::updateText() const {
 
 	// Then, generate the rows of text that will be displayed
 	QVector<QString> rowsOfText;
-
-	// If the true tile distance is visible, display that as the
-	// first row (and intentially don't spill into the second row)
-    if (S()->tileDistanceVisible()) {
-        rowsOfText.append(
-			0 <= m_tile->getDistance()
-			? QString::number(m_tile->getDistance())
-			: "inf");
-    }
 
 	// Split the text into rows
 	QString remaining = m_text;
@@ -153,7 +193,7 @@ void TileGraphic::updateText() const {
 			);
 			QChar c = ' ';
 			if (
-				S()->tileTextVisible() &&
+				m_tileTextVisible &&
 				row < rowsOfText.size() &&
 				col < rowsOfText.at(row).size()
 			) {
@@ -191,7 +231,7 @@ QPair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction) co
     float wallAlpha = 1.0;
 
     // Either draw the true walls of the tile ...
-    if (S()->wallTruthVisible()) {
+    if (m_wallTruthVisible) {
         wallAlpha = m_tile->isWall(direction) ? 1.0 : 0.0;
     }
 

@@ -990,12 +990,12 @@ void MouseInterface::moveForwardTo(const Cartesian& destinationTranslation, cons
 
     // Move forward until we've reached the destination
     do {
-        // Check if a stop has been requested
         // Assert that we're actually moving closer to the destination
         ASSERT_LE(delta.getRho().getMeters(), previousDistance.getMeters());
         previousDistance = delta.getRho();
-        // Update the translation delta
+        // Check if a stop has been requested
         BREAK_IF_STOPPED_ELSE_SLEEP_MIN();
+        // Update the translation delta
         delta = destinationTranslation - m_mouse->getCurrentTranslation();
     }
     // While the angle delta is not ~180 degrees, sleep for a short amout of time
