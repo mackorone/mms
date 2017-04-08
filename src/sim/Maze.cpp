@@ -122,6 +122,18 @@ const Tile* Maze::getTile(int x, int y) const {
     return &m_maze.at(x).at(y);
 }
 
+int Maze::getMaximumDistance() const {
+    int max = 0;
+    for (int x = 0; x < getWidth(); x += 1) {
+        for (int y = 0; y < getHeight(); y += 1) {
+            if (max < getTile(x, y)->getDistance()) {
+                max = getTile(x, y)->getDistance();
+            }
+        }
+    }
+    return max;
+}
+
 bool Maze::isValidMaze() const {
     return m_isOfficialMaze;
 }

@@ -2,6 +2,7 @@
 
 #include <QCheckBox>
 #include <QCloseEvent>
+#include <QLineEdit>
 #include <QMainWindow>
 #include <QRadioButton>
 #include <QThread>
@@ -30,6 +31,14 @@ private:
     // The model object
     Model m_model;
     QThread m_modelThread;
+
+	// Maze stats GUI elements
+	QLineEdit* m_mazeWidthLineEdit;
+	QLineEdit* m_mazeHeightLineEdit;
+	QLineEdit* m_maxDistanceLineEdit;
+	QLineEdit* m_mazeDirLineEdit;
+	QLineEdit* m_isValidLineEdit;
+	QLineEdit* m_isOfficialLineEdit;
 
     // The map object
     Map m_map;

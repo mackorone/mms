@@ -3,6 +3,7 @@
 #include <QAction>
 #include <QFrame>
 #include <QHBoxLayout>
+#include <QLabel>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
@@ -21,6 +22,12 @@ namespace mms {
 
 Window::Window(QWidget *parent) :
         QMainWindow(parent),
+        m_mazeWidthLineEdit(new QLineEdit()),
+        m_mazeHeightLineEdit(new QLineEdit()),
+        m_maxDistanceLineEdit(new QLineEdit()),
+        m_mazeDirLineEdit(new QLineEdit()),
+        m_isValidLineEdit(new QLineEdit()),
+        m_isOfficialLineEdit(new QLineEdit()),
         m_truthButton(new QRadioButton("Truth")),
         m_viewButton(new QRadioButton("Mouse")),
         m_wallTruthCheckbox(new QCheckBox("Walls")),
@@ -74,13 +81,33 @@ Window::Window(QWidget *parent) :
 	});
 	simulationMenu->addAction(stopAction);
 
-    // Add a container for the map and options
+    // Add a container for the maze stats, map and options
     QWidget* mapHolder = new QWidget();
     QVBoxLayout* mapHolderLayout = new QVBoxLayout();
     mapHolder->setLayout(mapHolderLayout);
     splitter->addWidget(mapHolder);
 
-    // Add the map
+    // Add the maze stats
+	QWidget* mazeStatsBox = new QWidget();
+    QHBoxLayout* mazeStatsLayout = new QHBoxLayout();
+    mazeStatsBox->setLayout(mazeStatsLayout);
+    mapHolderLayout->addWidget(mazeStatsBox);
+    for (QPair<QString, QLineEdit*> pair : QVector<QPair<QString, QLineEdit*>> {
+        {"Width", m_mazeWidthLineEdit},
+        {"Height", m_mazeHeightLineEdit},
+        {"Max", m_maxDistanceLineEdit},
+        {"Start", m_mazeDirLineEdit},
+        {"Valid", m_isValidLineEdit},
+        {"Official", m_isOfficialLineEdit},
+    }) {
+        pair.second->setReadOnly(true);
+        pair.second->setMinimumSize(5, 0);
+        QLabel* label = new QLabel(pair.first);
+        mazeStatsLayout->addWidget(label);
+        mazeStatsLayout->addWidget(pair.second);
+    }
+
+    // Add the map (and set some layout props)
     mapHolderLayout->addWidget(&m_map);
     mapHolderLayout->setContentsMargins(0, 0, 0, 0);
     mapHolderLayout->setSpacing(0);
@@ -205,7 +232,7 @@ Window::Window(QWidget *parent) :
 
     // Resize some things
     resize(P()->defaultWindowWidth(), P()->defaultWindowHeight());
-    m_map.resize(m_map.height(), m_map.height());
+    mapHolder->resize(0, m_map.height());
 }
 
 void Window::closeEvent(QCloseEvent *event) {
@@ -240,6 +267,18 @@ void Window::setMaze(Maze* maze) {
     m_model.setMaze(m_maze);
     m_map.setMaze(m_maze);
     m_map.setView(m_truth);
+
+    // Update maze stats UI widgets
+    m_mazeWidthLineEdit->setText(QString::number(m_maze->getWidth()));
+    m_mazeHeightLineEdit->setText(QString::number(m_maze->getHeight()));
+    m_maxDistanceLineEdit->setText(
+        QString::number(m_maze->getMaximumDistance())
+    );
+    m_mazeDirLineEdit->setText(
+        DIRECTION_TO_STRING.value(m_maze->getOptimalStartingDirection()).at(0)
+    );
+    m_isValidLineEdit->setText(m_maze->isValidMaze() ? "T" : "F");
+    m_isOfficialLineEdit->setText(m_maze->isOfficialMaze() ? "T" : "F");
 
     // Delete the old objects
     delete oldMaze;

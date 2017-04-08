@@ -21,6 +21,7 @@ public:
     bool withinMaze(int x, int y) const;
     const Tile* getTile(int x, int y) const;
 
+    int getMaximumDistance() const;
     bool isValidMaze() const;
     bool isOfficialMaze() const;
     bool isCenterTile(int x, int y) const;
@@ -35,7 +36,7 @@ private:
     // Vector to hold all of the tiles
     QVector<QVector<Tile>> m_maze;
 
-    // Used for memoizing MazeChecker functions
+    // Cache results to these functions
     bool m_isValidMaze;
     bool m_isOfficialMaze;
 
