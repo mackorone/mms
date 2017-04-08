@@ -8,7 +8,6 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QProcess>
-#include <QRadioButton>
 #include <QSlider>
 #include <QSpacerItem>
 #include <QSplitter>
@@ -19,7 +18,6 @@
 #include "ProcessUtilities.h"
 #include "SettingsMouseAlgos.h"
 #include "SimUtilities.h"
-#include "State.h"
 
 namespace mms {
 
@@ -34,8 +32,6 @@ MouseAlgosTab::MouseAlgosTab() :
         m_runButton(new QPushButton("Run")),
         m_runOutput(new TextDisplay()),
 		m_runAutoClear(new QCheckBox("Auto-clear")) {
-
-    // TODO: MACK - clean this up a little bit
 
 	// Initialize the checkstates
 	m_buildAutoClear->setCheckState(Qt::Checked);
@@ -114,57 +110,6 @@ MouseAlgosTab::MouseAlgosTab() :
         }
     );
     speedSlider->setValue(100.0 / speedBox->maximum() - 1.0);
-
-    // Add the map layout buttons
-    QGroupBox* zoomBox = new QGroupBox("Zoomed Map");
-    zoomBox->setCheckable(true);
-    optionsLayout->addWidget(zoomBox, 3, 0, 1, 3);
-    QHBoxLayout* zoomBoxLayout = new QHBoxLayout();
-    zoomBox->setLayout(zoomBoxLayout);
-    connect(zoomBox, &QGroupBox::toggled, this, [=](bool on){
-        // TODO: MACK
-        //S()->setLayoutType(on ? LayoutType::ZOOMED : LayoutType::FULL);
-    });
-    zoomBox->setChecked(false);
-    
-    // Add the zoomed map scale slider
-    double maxZoomedMapScale = P()->maxZoomedMapScale();
-    QSlider* scaleSlider = new QSlider(Qt::Horizontal);
-    QLabel* scaleLabel = new QLabel("Scale");
-    QDoubleSpinBox* scaleBox = new QDoubleSpinBox();
-    scaleBox->setRange(maxZoomedMapScale / 100.0, maxZoomedMapScale);
-    zoomBoxLayout->addWidget(scaleLabel);
-    zoomBoxLayout->addWidget(scaleSlider);
-    zoomBoxLayout->addWidget(scaleBox);
-    connect(
-        scaleSlider, &QSlider::valueChanged,
-        this, [=](int value){
-            double fraction = (value + 1.0) / 100.0;
-            scaleBox->setValue(fraction * maxZoomedMapScale);
-            // TODO: MACK
-            //S()->setZoomedMapScale(fraction * maxZoomedMapScale);
-        }
-    );
-    connect(
-        scaleBox,
-        static_cast<void(QDoubleSpinBox::*)()>(&QDoubleSpinBox::editingFinished),
-        this, [=](){
-            double percent = scaleBox->value() / scaleBox->maximum() * 100.0;
-            scaleSlider->setValue(static_cast<int>(percent - 1.0));
-        }
-    );
-    scaleSlider->setValue(10.0 / scaleBox->maximum() - 1.0);
-
-    // Add the rotate zoomed map option
-    QCheckBox* rotateZoomedMapCheckbox = new QCheckBox("Rotate Zoomed Map");
-    zoomBoxLayout->addWidget(rotateZoomedMapCheckbox);
-    connect(
-        rotateZoomedMapCheckbox, &QCheckBox::stateChanged,
-        this, [=](int state){
-            // TODO: MACK
-            //S()->setRotateZoomedMap(state == Qt::Checked);
-        }
-    );
 
     // Add a spliter for the outputs
     QSplitter* splitter = new QSplitter();

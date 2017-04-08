@@ -33,6 +33,10 @@ public:
 	void setView(const MazeView* view);
     void setMouseGraphic(const MouseGraphic* mouseGraphic);
 
+    void setLayoutType(LayoutType layoutType);
+    void setZoomedMapScale(double zoomedMapScale);
+    void setRotateZoomedMap(bool rotateZoomedMap);
+
     // Retrieves OpenGL version info
     QVector<QString> getOpenGLVersionInfo();
 

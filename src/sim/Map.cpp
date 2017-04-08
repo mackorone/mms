@@ -44,13 +44,27 @@ void Map::setMaze(const Maze* maze) {
 
 void Map::setView(const MazeView* view) {
     ASSERT_FA(m_maze == nullptr);
-    m_view = view;
+    if (view != nullptr) {
+        m_view = view;
+    }
 }
 
 void Map::setMouseGraphic(const MouseGraphic* mouseGraphic) {
     ASSERT_FA(m_maze == nullptr);
     ASSERT_FA(m_view == nullptr);
     m_mouseGraphic = mouseGraphic;
+}
+
+void Map::setLayoutType(LayoutType layoutType) {
+    m_layoutType = layoutType;
+}
+
+void Map::setZoomedMapScale(double zoomedMapScale) {
+    m_zoomedMapScale = zoomedMapScale;
+}
+
+void Map::setRotateZoomedMap(bool rotateZoomedMap) {
+    m_rotateZoomedMap = rotateZoomedMap;
 }
 
 QVector<QString> Map::getOpenGLVersionInfo() {

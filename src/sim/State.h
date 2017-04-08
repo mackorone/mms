@@ -24,14 +24,8 @@ public:
     bool paused();
     void setPaused(bool paused);
 
-    double simSpeed();
-    void setSimSpeed(double simSpeed);
-
     bool inputButtonWasPressed(int inputButton);
     void setInputButtonWasPressed(int inputButton, bool pressed);
-
-    bool arrowKeyIsPressed(int key);
-    void setArrowKeyIsPressed(int key, bool pressed);
 
 private:
 
@@ -43,9 +37,7 @@ private:
 
     bool m_crashed;
     bool m_paused;
-    double m_simSpeed;
     QMap<int, bool> m_inputButtons;
-    QMap<int, bool> m_arrowKeys;
 };
 
 } // namespace mms

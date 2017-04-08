@@ -55,34 +55,34 @@ void MazeGraphic::setTileText(int x, int y, const QString& text) {
     m_tileGraphics[x][y].setText(text);
 }
 
-void MazeGraphic::toggleWallTruthVisible() {
+void MazeGraphic::setWallTruthVisible(bool visible) {
     for (int x = 0; x < getWidth(); x += 1) {
         for (int y = 0; y < getHeight(); y += 1) {
-            m_tileGraphics[x][y].toggleWallTruthVisible();
+            m_tileGraphics[x][y].setWallTruthVisible(visible);
         }
     }
 }
 
-void MazeGraphic::toggleTileColorsVisible() {
+void MazeGraphic::setTileColorsVisible(bool visible) {
     for (int x = 0; x < getWidth(); x += 1) {
         for (int y = 0; y < getHeight(); y += 1) {
-            m_tileGraphics[x][y].toggleTileColorsVisible();
+            m_tileGraphics[x][y].setTileColorsVisible(visible);
         }
     }
 }
 
-void MazeGraphic::toggleTileFogVisible() {
+void MazeGraphic::setTileFogVisible(bool visible) {
     for (int x = 0; x < getWidth(); x += 1) {
         for (int y = 0; y < getHeight(); y += 1) {
-            m_tileGraphics[x][y].toggleTileFogVisible();
+            m_tileGraphics[x][y].setTileFogVisible(visible);
         }
     }
 }
 
-void MazeGraphic::toggleTileTextVisible() {
+void MazeGraphic::setTileTextVisible(bool visible) {
     for (int x = 0; x < getWidth(); x += 1) {
         for (int y = 0; y < getHeight(); y += 1) {
-            m_tileGraphics[x][y].toggleTileTextVisible();
+            m_tileGraphics[x][y].setTileTextVisible(visible);
         }
     }
 }

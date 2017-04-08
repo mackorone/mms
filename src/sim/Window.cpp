@@ -1,11 +1,14 @@
 #include "Window.h"
 
 #include <QAction>
+#include <QFrame>
+#include <QHBoxLayout>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QSplitter>
 #include <QTabWidget>
+#include <QVBoxLayout>
 
 #include "MazeAlgosTab.h"
 #include "MazeFilesTab.h"
@@ -14,14 +17,17 @@
 #include "Param.h"
 #include "TextDisplay.h"
 
-// TODO: MACK
-#include <QVBoxLayout>
-#include "State.h"
-
 namespace mms {
 
 Window::Window(QWidget *parent) :
         QMainWindow(parent),
+        m_truthButton(new QRadioButton("Truth")),
+        m_viewButton(new QRadioButton("Mouse")),
+        m_wallTruthCheckbox(new QCheckBox("Walls")),
+        m_colorCheckbox(new QCheckBox("Color")),
+        m_fogCheckbox(new QCheckBox("Fog")),
+        m_textCheckbox(new QCheckBox("Text")),
+        m_zoomCheckbox(new QCheckBox("Zoom")),
         m_maze(nullptr),
         m_truth(nullptr),
         m_mouse(nullptr),
@@ -42,41 +48,107 @@ Window::Window(QWidget *parent) :
     splitter->setHandleWidth(6);
     setCentralWidget(splitter);
 
-	// Add some menu items
+	// Add some generic menu items
     QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
+    QAction* saveMazeAction = new QAction(tr("&Save Maze As ..."), this);
+    connect(saveMazeAction, &QAction::triggered, this, [=](){
+        // TODO: MACK
+	});
+	fileMenu->addAction(saveMazeAction);
     QAction* quitAction = new QAction(tr("&Quit"), this);
     connect(quitAction, &QAction::triggered, this, [=](){
 		close();
 	});
 	fileMenu->addAction(quitAction);
 
-	// TODO: MACK
-	// Toggle:
-	// - Walls
-	// - Colors
-	// - Fog
-	// - Text
-	QWidget* holder = new QWidget();
-	QVBoxLayout* holderLayout = new QVBoxLayout();
-	holder->setLayout(holderLayout);
-	QCheckBox* viewCheckbox = new QCheckBox("TEST VIEW");
-    connect(viewCheckbox, &QCheckBox::stateChanged, this, [=](int state){
-        if (state == Qt::Checked) {
-			if (m_view != nullptr) {
-				m_map.setView(m_view);
-			}
-		}
-		else {
-			if (m_truth != nullptr) {
-				m_map.setView(m_truth);
-			}
-		}
+	// Add some model-related menu items
+    QMenu* simulationMenu = menuBar()->addMenu(tr("&Simulation"));
+    QAction* pauseAction = new QAction(tr("&Pause"), this);
+    connect(pauseAction, &QAction::triggered, this, [=](){
+        // TODO: MACK
 	});
-	holderLayout->addWidget(viewCheckbox);
-	holderLayout->addWidget(&m_map);
-    splitter->addWidget(holder);
-    // Add the map to the splitter
-    //splitter->addWidget(&m_map);
+	simulationMenu->addAction(pauseAction);
+    QAction* stopAction = new QAction(tr("&Stop"), this);
+    connect(stopAction, &QAction::triggered, this, [=](){
+        // TODO: MACK
+	});
+	simulationMenu->addAction(stopAction);
+
+    // Add a container for the map and options
+    QWidget* mapHolder = new QWidget();
+    QVBoxLayout* mapHolderLayout = new QVBoxLayout();
+    mapHolder->setLayout(mapHolderLayout);
+    splitter->addWidget(mapHolder);
+
+    // Add the map
+    mapHolderLayout->addWidget(&m_map);
+    mapHolderLayout->setContentsMargins(0, 0, 0, 0);
+    mapHolderLayout->setSpacing(0);
+    m_map.setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+
+    // Add the map options
+	QWidget* mapOptionsBox = new QWidget();
+    QHBoxLayout* mapOptionsLayout = new QHBoxLayout();
+    mapOptionsBox->setLayout(mapOptionsLayout);
+    mapHolderLayout->addWidget(mapOptionsBox);
+    mapOptionsLayout->addWidget(m_truthButton);
+    mapOptionsLayout->addWidget(m_viewButton);
+    mapOptionsLayout->addWidget(m_wallTruthCheckbox);
+    mapOptionsLayout->addWidget(m_colorCheckbox);
+    mapOptionsLayout->addWidget(m_fogCheckbox);
+    mapOptionsLayout->addWidget(m_textCheckbox);
+    mapOptionsLayout->addWidget(m_zoomCheckbox);
+
+    // Add functionality to those map buttons
+    connect(m_viewButton, &QRadioButton::toggled, this, [=](bool checked){
+		m_map.setView(checked ? m_view : m_truth);
+        m_wallTruthCheckbox->setEnabled(checked);
+        m_colorCheckbox->setEnabled(checked);
+        m_fogCheckbox->setEnabled(checked);
+        m_textCheckbox->setEnabled(checked);
+    });
+    connect(m_wallTruthCheckbox, &QCheckBox::stateChanged, this, [=](int state){
+        if (m_view != nullptr) {
+            m_view->getMazeGraphic()->setWallTruthVisible(state == Qt::Checked);
+        }
+    });
+    connect(m_colorCheckbox, &QCheckBox::stateChanged, this, [=](int state){
+        if (m_view != nullptr) {
+            m_view->getMazeGraphic()->setTileColorsVisible(state == Qt::Checked);
+        }
+    });
+    connect(m_fogCheckbox, &QCheckBox::stateChanged, this, [=](int state){
+        if (m_view != nullptr) {
+            m_view->getMazeGraphic()->setTileFogVisible(state == Qt::Checked);
+        }
+    });
+    connect(m_textCheckbox, &QCheckBox::stateChanged, this, [=](int state){
+        if (m_view != nullptr) {
+            m_view->getMazeGraphic()->setTileTextVisible(state == Qt::Checked);
+        }
+    });
+    connect(m_zoomCheckbox, &QCheckBox::stateChanged, this, [=](int state){
+        if (m_view != nullptr) {
+            m_map.setLayoutType(
+                state == Qt::Checked
+                ? LayoutType::ZOOMED
+                : LayoutType::FULL);
+        }
+    });
+
+    // Set the default values for the map options
+    m_truthButton->setChecked(true);
+    m_viewButton->setEnabled(false);
+    m_wallTruthCheckbox->setChecked(false);
+    m_wallTruthCheckbox->setEnabled(false);
+    m_colorCheckbox->setChecked(true);
+    m_colorCheckbox->setEnabled(false);
+    m_fogCheckbox->setChecked(true);
+    m_fogCheckbox->setEnabled(false);
+    m_textCheckbox->setChecked(true);
+    m_textCheckbox->setEnabled(false);
+    m_zoomCheckbox->setChecked(false);
+    m_zoomCheckbox->setEnabled(false);
     
     // Add the tabs to the splitter
     QTabWidget* tabWidget = new QTabWidget();
@@ -113,6 +185,11 @@ Window::Window(QWidget *parent) :
     connect(
         mouseAlgosTab, &MouseAlgosTab::mouseAlgoSelected,
         this, &Window::runMouseAlgo
+    );
+    connect(
+        mouseAlgosTab, &MouseAlgosTab::mouseAlgoSelected,
+        this, [=](){
+        }
     );
 	connect(
 		mouseAlgosTab, &MouseAlgosTab::simSpeedChanged,
@@ -203,13 +280,18 @@ void Window::runMouseAlgo(
     // Kill the current mouse algorithm
     stopMouseAlgo();
 
+    // Update some random UI components
+    m_viewButton->setEnabled(true);
+    m_viewButton->setChecked(true);
+    m_zoomCheckbox->setEnabled(true);
+
     // Create some more objects
     MazeView* newView = new MazeView(
 		m_maze,
-		false, // wallTruthVisible
-		true, // tileColorsVisible
-		true, // tileFogVisible
-		true, // tileTextVisible
+		m_wallTruthCheckbox->isChecked(),
+		m_colorCheckbox->isChecked(),
+		m_fogCheckbox->isChecked(),
+		m_textCheckbox->isChecked(),
 		false // autopopulateTextWithDistance
 	);
     MouseGraphic* newMouseGraphic = new MouseGraphic(newMouse);
@@ -279,6 +361,10 @@ void Window::stopMouseAlgo() {
     m_controller = nullptr;
     m_map.setMouseGraphic(nullptr);
     m_model.removeMouse("");
+    // Update some random UI components
+    m_truthButton->setChecked(true);
+    m_viewButton->setEnabled(false);
+    m_zoomCheckbox->setEnabled(false);
 }
 
 #if(0)
@@ -304,21 +390,6 @@ void Window::keyPress(int key) {
                 << "Input button " << inputButton << " has not yet been"
                 << " acknowledged as pressed; pressing it has no effect.";
         }
-    }
-    else if (
-        key == Qt::Key_Up || key == Qt::Key_Down ||
-        key == Qt::Key_Left || key == Qt::Key_Right
-    ) {
-        S()->setArrowKeyIsPressed(key, true);
-    }
-}
-
-void Window::keyRelease(int key) {
-    if (
-        key == Qt::Key_Up || key == Qt::Key_Down ||
-        key == Qt::Key_Left || key == Qt::Key_Right
-    ) {
-        S()->setArrowKeyIsPressed(key, false);
     }
 }
 

@@ -22,14 +22,9 @@ State* State::getInstance() {
 State::State() {
     m_crashed = false;
     m_paused = P()->defaultPaused();
-    m_simSpeed = P()->defaultSimSpeed();
     for (int i = 0; i < 10; i += 1) {
         m_inputButtons.insert(i, false);
     }
-    m_arrowKeys.insert(Qt::Key_Up, false);
-    m_arrowKeys.insert(Qt::Key_Down, false);
-    m_arrowKeys.insert(Qt::Key_Left, false);
-    m_arrowKeys.insert(Qt::Key_Right, false);
 }
 
 bool State::crashed() {
@@ -57,16 +52,6 @@ bool State::inputButtonWasPressed(int inputButton) {
 void State::setInputButtonWasPressed(int inputButton, bool pressed) {
     ASSERT_TR(m_inputButtons.contains(inputButton));
     m_inputButtons[inputButton] = pressed;
-}
-
-bool State::arrowKeyIsPressed(int key) {
-    ASSERT_TR(m_arrowKeys.contains(key));
-    return m_arrowKeys.value(key);
-}
-
-void State::setArrowKeyIsPressed(int key, bool pressed) {
-    ASSERT_TR(m_arrowKeys.contains(key));
-    m_arrowKeys[key] = pressed;
 }
 
 } // namespace mms

@@ -69,23 +69,23 @@ void TileGraphic::setText(const QString& text) {
     updateText();
 }
 
-void TileGraphic::toggleWallTruthVisible() {
-    m_wallTruthVisible = !m_wallTruthVisible;
+void TileGraphic::setWallTruthVisible(bool visible) {
+    m_wallTruthVisible = visible;
     updateWalls();
 }
 
-void TileGraphic::toggleTileColorsVisible() {
-    m_tileColorsVisible = !m_tileColorsVisible;
+void TileGraphic::setTileColorsVisible(bool visible) {
+    m_tileColorsVisible = visible;
     updateColor();
 }
 
-void TileGraphic::toggleTileFogVisible() {
-    m_tileFogVisible = !m_tileFogVisible;
+void TileGraphic::setTileFogVisible(bool visible) {
+    m_tileFogVisible = visible;
     updateFog();
 }
 
-void TileGraphic::toggleTileTextVisible() {
-    m_tileTextVisible = !m_tileTextVisible;
+void TileGraphic::setTileTextVisible(bool visible) {
+    m_tileTextVisible = visible;
     updateText();
 }
 

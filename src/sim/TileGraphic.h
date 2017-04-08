@@ -29,11 +29,10 @@ public:
     void setFogginess(bool foggy);
     void setText(const QString& text);
 
-    void toggleWallTruthVisible();
-    void toggleTileColorsVisible();
-    void toggleTileFogVisible();
-    void toggleTileTextVisible();
-    void toggleTileDistanceVisible();
+    void setWallTruthVisible(bool visible);
+    void setTileColorsVisible(bool visible);
+    void setTileFogVisible(bool visible);
+    void setTileTextVisible(bool visible);
 
     // TODO: MACK - rename these to "reload" or something
     void drawPolygons() const;

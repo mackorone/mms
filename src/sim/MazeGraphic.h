@@ -28,10 +28,10 @@ public:
     void setTileFogginess(int x, int y, bool foggy);
     void setTileText(int x, int y, const QString& text);
 
-    void toggleWallTruthVisible();
-    void toggleTileColorsVisible();
-    void toggleTileFogVisible();
-    void toggleTileTextVisible();
+    void setWallTruthVisible(bool visible);
+    void setTileColorsVisible(bool visible);
+    void setTileFogVisible(bool visible);
+    void setTileTextVisible(bool visible);
 
     // TODO: MACK - rename these
     // TODO: MACK - why is only one of these const?

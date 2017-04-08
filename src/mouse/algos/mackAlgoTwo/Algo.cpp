@@ -44,14 +44,13 @@ void Algo::solve(Interface* interface) {
         Maze::HEIGHT == m_mouse->mazeHeight()
     )) {
 #if (SIMULATOR)
-        std::cout << "ERROR - configured for "
+        std::cout << "WARNING - configured for "
                   << static_cast<unsigned int>(Maze::WIDTH) << " x "
                   << static_cast<unsigned int>(Maze::HEIGHT)
                   << " maze, but actual maze size is "
                   << m_mouse->mazeWidth() << " x "
                   << m_mouse->mazeHeight() << std::endl;
 #endif
-        return;
     }
 
     // Initialize the (perimeter of the) maze

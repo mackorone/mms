@@ -1,7 +1,9 @@
 #pragma once
 
+#include <QCheckBox>
 #include <QCloseEvent>
 #include <QMainWindow>
+#include <QRadioButton>
 #include <QThread>
 
 #include "Controller.h"
@@ -31,6 +33,15 @@ private:
 
     // The map object
     Map m_map;
+
+    // Some map GUI elements
+	QRadioButton* m_truthButton;
+	QRadioButton* m_viewButton;
+	QCheckBox* m_wallTruthCheckbox;
+	QCheckBox* m_colorCheckbox;
+	QCheckBox* m_fogCheckbox;
+	QCheckBox* m_textCheckbox;
+	QCheckBox* m_zoomCheckbox;
 
     // The maze and the true view of the maze
     Maze* m_maze;
