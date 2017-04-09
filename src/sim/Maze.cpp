@@ -135,7 +135,7 @@ int Maze::getMaximumDistance() const {
 }
 
 bool Maze::isValidMaze() const {
-    return m_isOfficialMaze;
+    return m_isValidMaze;
 }
 
 bool Maze::isOfficialMaze() const {

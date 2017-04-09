@@ -18,9 +18,12 @@ class MouseAlgosTab : public QWidget {
 public:
 
     MouseAlgosTab();
+    void mouseAlgoStopped();
 
 signals:
 
+    void stopRequested();
+    void pauseButtonPressed(bool pause);
     void simSpeedChanged(double factor);
     void mouseAlgoSelected(
         const QString& name,
@@ -46,6 +49,9 @@ private:
     QPushButton* m_runButton;
     TextDisplay* m_runOutput;
     QCheckBox* m_runAutoClear;
+
+    QPushButton* m_stopButton;
+    QPushButton* m_pauseButton;
 
     void import();
     void edit();

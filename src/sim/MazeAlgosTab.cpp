@@ -9,7 +9,8 @@
 #include <QLabel>
 #include <QProcess>
 #include <QSpacerItem>
-#include <QSplitter>
+#include <QSplitter> // TODO: MACK
+#include <QToolBox> // TODO: MACK
 #include <QVBoxLayout>
 
 #include "ConfigDialog.h"
@@ -96,11 +97,16 @@ MazeAlgosTab::MazeAlgosTab() :
         m_seedBox->setReadOnly(state == Qt::Checked);
     });
 
+    // TODO: MACK
+    QToolBox* toolBox = new QToolBox();
+    toolBox->layout()->setSpacing(0);
+    layout->addWidget(toolBox);
+
     // Add a spliter for the outputs
-    QSplitter* splitter = new QSplitter();
-    splitter->setOrientation(Qt::Vertical);
-    splitter->setHandleWidth(6);
-    layout->addWidget(splitter);
+    //QSplitter* splitter = new QSplitter();
+    //splitter->setOrientation(Qt::Vertical);
+    //splitter->setHandleWidth(6);
+    //layout->addWidget(splitter);
 
     // Add the build output and run output
 	QVector<QPair<QString, TextDisplay*>> displays;
@@ -124,7 +130,8 @@ MazeAlgosTab::MazeAlgosTab() :
 		);
 		layout->addLayout(headerLayout);
 		layout->addWidget(textDisplay);
-		splitter->addWidget(container);
+		//splitter->addWidget(container);
+		toolBox->addItem(container, label);
 	}
 
     // Add the maze algos

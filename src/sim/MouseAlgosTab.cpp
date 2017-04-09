@@ -19,6 +19,9 @@
 #include "SettingsMouseAlgos.h"
 #include "SimUtilities.h"
 
+// TODO: MACK
+#include "State.h"
+
 namespace mms {
 
 MouseAlgosTab::MouseAlgosTab() :
@@ -31,7 +34,9 @@ MouseAlgosTab::MouseAlgosTab() :
         m_buildAutoClear(new QCheckBox("Auto-clear")),
         m_runButton(new QPushButton("Run")),
         m_runOutput(new TextDisplay()),
-		m_runAutoClear(new QCheckBox("Auto-clear")) {
+		m_runAutoClear(new QCheckBox("Auto-clear")),
+        m_stopButton(new QPushButton("Stop")),
+        m_pauseButton(new QPushButton("Pause")) {
 
 	// Initialize the checkstates
 	m_buildAutoClear->setCheckState(Qt::Checked);
@@ -63,6 +68,47 @@ MouseAlgosTab::MouseAlgosTab() :
     buttonsLayout->addWidget(m_editButton);
     layout->addLayout(buttonsLayout);
 
+    // Add the "speed" buttons
+    QHBoxLayout* speedsLayout = new QHBoxLayout();
+    m_stopButton->setEnabled(false);
+    m_pauseButton->setEnabled(false);
+    speedsLayout->addWidget(m_stopButton);
+    speedsLayout->addWidget(m_pauseButton);
+    connect(m_stopButton, &QPushButton::clicked, this, [=](){
+        emit stopRequested();
+    });
+    connect(m_pauseButton, &QPushButton::clicked, this, [=](){
+        bool pause = m_pauseButton->text() == "Pause";
+        m_pauseButton->setText(pause ? "Resume": "Pause");
+        emit pauseButtonPressed(pause);
+    });
+    layout->addLayout(speedsLayout);
+
+    // Add the "speed" slider
+    double maxSpeed = P()->maxSimSpeed();
+    QSlider* speedSlider = new QSlider(Qt::Horizontal);
+    QDoubleSpinBox* speedBox = new QDoubleSpinBox();
+    speedBox->setRange(maxSpeed / 100.0, maxSpeed);
+    speedsLayout->addWidget(speedSlider);
+    speedsLayout->addWidget(speedBox);
+    connect(
+        speedSlider, &QSlider::valueChanged,
+        this, [=](int value){
+            double fraction = (value + 1.0) / 100.0;
+            speedBox->setValue(fraction * maxSpeed);
+            emit simSpeedChanged(fraction * maxSpeed);
+        }
+    );
+    connect(
+        speedBox,
+        static_cast<void(QDoubleSpinBox::*)()>(&QDoubleSpinBox::editingFinished),
+        this, [=](){
+            double percent = speedBox->value() / speedBox->maximum() * 100.0;
+            speedSlider->setValue(static_cast<int>(percent - 1.0));
+        }
+    );
+    speedSlider->setValue(100.0 / speedBox->maximum() - 1.0);
+
     // Add the mouse algo config box
     QGroupBox* optionsBox = new QGroupBox("Mouse Options");
     layout->addWidget(optionsBox);
@@ -83,33 +129,6 @@ MouseAlgosTab::MouseAlgosTab() :
         seedLabel->setText(text);
         m_seedBox->setReadOnly(state == Qt::Checked);
     });
-
-    // Add the speed adjustments
-    double maxSpeed = P()->maxSimSpeed();
-    QSlider* speedSlider = new QSlider(Qt::Horizontal);
-    QLabel* speedLabel = new QLabel("Speed");
-    QDoubleSpinBox* speedBox = new QDoubleSpinBox();
-    speedBox->setRange(maxSpeed / 100.0, maxSpeed);
-    optionsLayout->addWidget(speedLabel, 2, 0);
-    optionsLayout->addWidget(speedSlider, 2, 1);
-    optionsLayout->addWidget(speedBox, 2, 2);
-    connect(
-        speedSlider, &QSlider::valueChanged,
-        this, [=](int value){
-            double fraction = (value + 1.0) / 100.0;
-            speedBox->setValue(fraction * maxSpeed);
-            emit simSpeedChanged(fraction * maxSpeed);
-        }
-    );
-    connect(
-        speedBox,
-        static_cast<void(QDoubleSpinBox::*)()>(&QDoubleSpinBox::editingFinished),
-        this, [=](){
-            double percent = speedBox->value() / speedBox->maximum() * 100.0;
-            speedSlider->setValue(static_cast<int>(percent - 1.0));
-        }
-    );
-    speedSlider->setValue(100.0 / speedBox->maximum() - 1.0);
 
     // Add a spliter for the outputs
     QSplitter* splitter = new QSplitter();
@@ -144,6 +163,11 @@ MouseAlgosTab::MouseAlgosTab() :
 
     // Add the mouse algos
     refresh();
+}
+
+void MouseAlgosTab::mouseAlgoStopped() {
+    m_stopButton->setEnabled(false);
+    m_pauseButton->setEnabled(false);
 }
 
 void MouseAlgosTab::import() {
@@ -261,6 +285,12 @@ void MouseAlgosTab::build() {
 
 void MouseAlgosTab::run() {
 
+    // TODO: MACK - this is a hack
+    /*
+    S()->setPaused(false);
+    m_pauseButton->setText("Pause");
+    */
+
 	// Clear the run output
 	if (m_runAutoClear->isChecked()) {
 		m_runOutput->clear();
@@ -292,6 +322,11 @@ void MouseAlgosTab::run() {
 	if (m_seedAutoUpdate->isChecked()) {
 		m_seedBox->setValue(SimUtilities::randomNonNegativeInt());
 	}
+
+    // Update some other UI components
+    // TODO: MACK - this is a hack, doesn't work if maze file changed
+    m_stopButton->setEnabled(true);
+    m_pauseButton->setEnabled(true);
 
     // Once we're sure the necessary items exist, emit the signal
     emit mouseAlgoSelected(

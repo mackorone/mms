@@ -21,7 +21,6 @@ State* State::getInstance() {
 
 State::State() {
     m_crashed = false;
-    m_paused = P()->defaultPaused();
     for (int i = 0; i < 10; i += 1) {
         m_inputButtons.insert(i, false);
     }
@@ -34,14 +33,6 @@ bool State::crashed() {
 void State::setCrashed() {
     m_crashed = true;
     qWarning().noquote().nospace() << P()->crashMessage();
-}
-
-bool State::paused() {
-    return m_paused;
-}
-
-void State::setPaused(bool paused) {
-    m_paused = paused;
 }
 
 bool State::inputButtonWasPressed(int inputButton) {

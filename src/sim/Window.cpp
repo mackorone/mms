@@ -210,12 +210,17 @@ Window::Window(QWidget *parent) :
     // Create the mouse algos tab
     MouseAlgosTab* mouseAlgosTab = new MouseAlgosTab();
     connect(
+        mouseAlgosTab, &MouseAlgosTab::stopRequested,
+        this, &Window::stopMouseAlgo
+    );
+    connect(
         mouseAlgosTab, &MouseAlgosTab::mouseAlgoSelected,
         this, &Window::runMouseAlgo
     );
     connect(
-        mouseAlgosTab, &MouseAlgosTab::mouseAlgoSelected,
-        this, [=](){
+        mouseAlgosTab, &MouseAlgosTab::pauseButtonPressed,
+        this, [=](bool pause){
+            m_model.setPaused(pause);
         }
     );
 	connect(
@@ -232,7 +237,6 @@ Window::Window(QWidget *parent) :
 
     // Resize some things
     resize(P()->defaultWindowWidth(), P()->defaultWindowHeight());
-    mapHolder->resize(0, m_map.height());
 }
 
 void Window::closeEvent(QCloseEvent *event) {
@@ -356,7 +360,7 @@ void Window::runMouseAlgo(
         // position/orientation not be updated properly during the beginning of
         // the mouse algo's execution)
         newController->init(&m_model);
-        m_model.addMouse("", newMouse);
+        m_model.setMouse(newMouse);
         newController->start(name);
     });
 
@@ -399,7 +403,7 @@ void Window::stopMouseAlgo() {
     // At this point, no more mouse functions will execute
     m_controller = nullptr;
     m_map.setMouseGraphic(nullptr);
-    m_model.removeMouse("");
+    m_model.removeMouse();
     // Update some random UI components
     m_truthButton->setChecked(true);
     m_viewButton->setEnabled(false);
@@ -461,8 +465,6 @@ QVector<QPair<QString, QVariant>> Window::getRunStats() const {
     }
 
     return {
-        {"Random Seed", P()->randomSeed()},
-        // {"Mouse Algo", P()->mouseAlgorithm()}, // TODO: MACK
         {"Tiles Traversed",
             QString::number(stats.traversedTileLocations.size()) + " / " +
             QString::number(m_maze->getWidth() * m_maze->getHeight())
@@ -562,36 +564,6 @@ QVector<QPair<QString, QVariant>> Window::getAlgoOptions() const {
     };
 }
 
-QVector<QPair<QString, QVariant>> Window::getMazeInfo() const {
-    return {
-        // TODO: MACK
-        /*
-        {
-            (P()->useMazeFile() ? "Maze File" : "Maze Algo"),
-            (P()->useMazeFile() ? P()->mazeFile() : P()->mazeAlgorithm()),
-        },
-        */
-        {"Maze Width", m_maze->getWidth()},
-        {"Maze Height", m_maze->getHeight()},
-        {"Maze Is Official", m_maze->isOfficialMaze() ? "TRUE" : "FALSE"},
-    };
-}
-
-QVector<QPair<QString, QVariant>> Window::getOptions() const {
-    return {
-        // Sim state
-        {"Layout Type (l)", LAYOUT_TYPE_TO_STRING.value(S()->layoutType())},
-        {"Rotate Zoomed Map (r)", (S()->rotateZoomedMap() ? "TRUE" : "FALSE")},
-        {"Zoomed Map Scale (i, o)", QString::number(S()->zoomedMapScale())},
-        {"Wall Truth Visible (t)", (S()->wallTruthVisible() ? "TRUE" : "FALSE")},
-        {"Tile Colors Visible (c)", (S()->tileColorsVisible() ? "TRUE" : "FALSE")},
-        {"Tile Fog Visible (g)", (S()->tileFogVisible() ? "TRUE" : "FALSE")},
-        {"Tile Text Visible (x)", (S()->tileTextVisible() ? "TRUE" : "FALSE")},
-        {"Tile Distance Visible (d)", (S()->tileDistanceVisible() ? "TRUE" : "FALSE")},
-        {"Paused (p)", (S()->paused() ? "TRUE" : "FALSE")},
-        {"Sim Speed (f, s)", QString::number(S()->simSpeed())},
-    };
-}
 
     // TODO: MACK - group the position stuff together
     /*

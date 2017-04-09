@@ -1,6 +1,9 @@
 # High Priority
 
+- Should unpause after pressing "run"
+- Can't exit after pausing...
 - Ensure the mouse stays in the maze
+- Surface information about *why* a maze is valid/invalid (etc.)
 - A single seed for both maze and mouse algorithms
 - MacOS retina https://github.com/vispy/vispy/issues/99
 - Better error messages for failed commands

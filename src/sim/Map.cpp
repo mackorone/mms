@@ -33,7 +33,7 @@ Map::Map(QWidget* parent) :
     );
     // TODO: upforgrabs
     // Make this configurable
-    m_timer.start(16); // 60 fps
+    m_timer.start(24); // 45 fps
 }
 
 void Map::setMaze(const Maze* maze) {

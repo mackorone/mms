@@ -21,9 +21,6 @@ public:
     bool crashed();
     void setCrashed();
 
-    bool paused();
-    void setPaused(bool paused);
-
     bool inputButtonWasPressed(int inputButton);
     void setInputButtonWasPressed(int inputButton, bool pressed);
 
@@ -36,7 +33,6 @@ private:
     static State* INSTANCE;
 
     bool m_crashed;
-    bool m_paused;
     QMap<int, bool> m_inputButtons;
 };
 

@@ -3,8 +3,10 @@
 #include <functional>
 #include <QDebug>
 #include <QPair>
+#include <QQueue>
 
 #include "Assert.h"
+#include "Direction.h"
 #include "Logging.h"
 #include "SimUtilities.h"
 
@@ -67,7 +69,6 @@ QVector<QString> MazeChecker::isNonempty(const BasicMaze& maze) {
 }
 
 QVector<QString> MazeChecker::isRectangular(const BasicMaze& maze) {
-    // TODO: MACK - test this
     for (int i = 0; i < maze.size() - 1; i += 1) {
         if (maze.at(i).size() != maze.at(i + 1).size()) {
             return {QString(
@@ -147,14 +148,13 @@ QVector<QString> MazeChecker::hasConsistentWalls(const BasicMaze& maze) {
 QVector<QString> MazeChecker::hasNoInaccessibleLocations(const BasicMaze& maze) {
 
     // TODO: MACK - test this
-    /*
 
     QSet<QPair<int, int>> discovered;
     QQueue<QPair<int, int>> queue;
 
     for (QPair<int, int> tile : getCenterTiles(maze.size(), maze.at(0).size())) {
         discovered.insert(tile);
-        queue.push(tile);
+        queue.enqueue(tile);
     }
 
     // BFS search
@@ -176,76 +176,68 @@ QVector<QString> MazeChecker::hasNoInaccessibleLocations(const BasicMaze& maze) 
     for (int x = 0; x < maze.size(); x += 1) {
         for (int y = 0; y < maze.at(x).size(); y += 1) {
             if (!discovered.contains({x, y})) {
-                inaccessibleTiles.insert({x, y});
+                inaccessibleTiles.append({x, y});
             }
         }
     }
 
     if (!inaccessibleTiles.isEmpty()) {
         return {QString(
-            "There maze has inaccessible tiles: %1.");
-            .arg(inaccessibleTiles)
+            "There maze has inaccessible tiles")
+            // TODO: MACK
+            //"There maze has inaccessible tiles: %1.")
+            //.arg(inaccessibleTiles)
         };
     }
-    */
 
     return {};
 }
 
 QVector<QString> MazeChecker::hasThreeStartingWalls(const BasicMaze& maze) {
-    /*
-        qWarning("There are not exactly three starting walls.");
     QMap<Direction, bool> walls = maze.at(0).at(0);
-    return walls.at(Direction::NORTH) != walls.at(Direction::EAST);
-    */
+    if (walls.value(Direction::NORTH) == walls.value(Direction::EAST)) {
+        return {"There must be exactly three starting walls."};
+    }
     return {};
 }
 
 QVector<QString> MazeChecker::hasOneEntranceToCenter(const BasicMaze& maze) {
-    // TODO: MACK - fix this to work with QVector
-    /*
-        qWarning("The center of the maze has more than one entrance.");
-    QVector<QPair<int, int>> centerTiles = getCenterTiles(maze.size(), maze.at(0).size()); 
+    QSet<QPair<int, int>> centerTiles = getCenterTiles(maze.size(), maze.at(0).size()); 
     int numberOfEntrances = 0;
     for (QPair<int, int> tile : centerTiles) {
         for (Direction direction : DIRECTIONS) {
-            if (ContainerUtilities::vectorContains(centerTiles, positionAfterMovingForward(tile, direction))) {
+            if (centerTiles.contains(positionAfterMovingForward(tile, direction))) {
                 continue;
             }
-            if (!maze.at(tile.first).at(tile.second).walls.at(direction)) {
+            if (!maze.at(tile.first).at(tile.second).value(direction)) {
                 numberOfEntrances += 1;
             }
         }
     }
-    return numberOfEntrances == 1;
-    */
+    if (numberOfEntrances != 1) {
+        return {"There is not exactly one entrance to the center of the maze"};
+    }
     return {};
 }
 
 QVector<QString> MazeChecker::hasHollowCenter(const BasicMaze& maze) {
-    /*
-        qWarning("The maze does not have a hollow center.");
-
-    QVector<QPair<int, int>> centerTiles = getCenterTiles(maze.size(), maze.at(0).size()); 
+    QSet<QPair<int, int>> centerTiles = getCenterTiles(maze.size(), maze.at(0).size()); 
     for (QPair<int, int> tile : centerTiles) {
         for (QPair<int, int> otherTile : centerTiles) {
             for (Direction direction : DIRECTIONS) {
                 if (positionAfterMovingForward(tile, direction) != otherTile) {
                     continue;
                 }
-                if (maze.at(tile.first).at(tile.second).walls.at(direction)) {
-                    return false;
+                if (maze.at(tile.first).at(tile.second).value(direction)) {
+                    return {"The maze does not have a hollow center"};
                 }
             }
         }
     }
-    return true;
-    */
     return {};
 }
 
 QVector<QString> MazeChecker::hasWallAttachedToEachNonCenterPost(const BasicMaze& maze) {
-    // TODO: MACK - fix this to work with QVector
     /*
         qWarning("There is at least one non-center post with no walls connected to it.");
     QVector<QPair<int, int>> centerTiles = getCenterTiles(maze.size(), maze.at(0).size());

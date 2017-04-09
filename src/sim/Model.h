@@ -20,12 +20,12 @@ public:
     void shutdown();
 
     void setMaze(const Maze* maze);
+    void setMouse(Mouse* mouse);
+    void removeMouse();
 
-    void addMouse(const QString& name, Mouse* mouse);
-    void removeMouse(const QString& name);
-    bool containsMouse(const QString& name) const;
-    MouseStats getMouseStats(const QString& name) const;
+    MouseStats getMouseStats() const;
 
+    void setPaused(bool paused);
     void setSimSpeed(double factor);
 
 signals:
@@ -38,9 +38,10 @@ private:
     bool m_shutdownRequested;
 
     const Maze* m_maze;
-    QMap<QString, Mouse*> m_mice;
-    QMap<QString, MouseStats> m_stats;
+    Mouse* m_mouse;
+    MouseStats* m_stats;
 
+    bool m_paused;
     double m_simSpeed;
 
     void checkCollision();

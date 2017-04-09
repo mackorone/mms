@@ -17,9 +17,12 @@
 namespace mms {
 
 Model::Model() :
-    m_maze(nullptr),
-    m_shutdownRequested(false),
-    m_simSpeed(1.0) {
+        m_maze(nullptr),
+        m_mouse(nullptr),
+        m_stats(nullptr),
+        m_shutdownRequested(false),
+        m_paused(false),
+        m_simSpeed(1.0) {
     ASSERT_RUNS_JUST_ONCE();
 }
 
@@ -45,26 +48,22 @@ void Model::simulate() {
     // Use this thread to perform mouse position updates
     while (!m_shutdownRequested) {
 
-        // Ensure the maze/mouse aren't updated in this loop
-        m_mutex.lock();
-
-        // In order to ensure we're sleeping the correct amount of time, we time
-        // the mouse position update operation and take it into account when we sleep.
-        double start(SimUtilities::getHighResTimestamp());
-
         // If we've crashed, let this thread exit
         if (S()->crashed()) {
             // TODO: MACK
             // collisionDetector.join();
-            m_mutex.unlock();
             return;
         }
 
-        // If the simulation is paused, simply sleep and continue
-        if (S()->paused()) {
+        // If there's nothing to update, sleep for a little bit
+        if (m_mouse == nullptr || m_paused) {
             SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             continue;
         }
+
+        // In order to ensure we're sleeping the correct amount of time, we time
+        // the mouse position update operation and take it into account when we sleep.
+        double start(SimUtilities::getHighResTimestamp());
 
         // Calculate the amount of sim time that should pass during this iteration
         static Seconds realTimePerUpdate = Seconds(1.0 / P()->mousePositionUpdateRate());
@@ -73,54 +72,54 @@ void Model::simulate() {
         // Update the sim time
         SimTime::get()->incrementElapsedSimTime(elapsedSimTimeForThisIteration);
 
-        // Update the position and stats for each mouse
-        for (const QString& name : m_mice.keys()) {
-            Mouse* mouse = m_mice.value(name);
-            MouseStats& stats = m_stats[name];
+        // Ensure the maze/mouse aren't updated in this loop
+        m_mutex.lock();
 
-            // Update the position of the mouse
-            mouse->update(elapsedSimTimeForThisIteration);
+        // Update the position of the mouse
+        m_mouse->update(elapsedSimTimeForThisIteration);
 
-            // Retrieve the current discretized location of the mouse, and
-            // the tile at that location, for use with the next few code blocks
-            QPair<int, int> location = mouse->getCurrentDiscretizedTranslation();
-            const Tile* tileAtLocation = m_maze->getTile(location.first, location.second);
+        // Retrieve the current discretized location of the mouse
+        QPair<int, int> location = m_mouse->getCurrentDiscretizedTranslation();
 
-            // If this is a new tile, update the set of traversed tiles
-            if (!stats.traversedTileLocations.contains(location)) {
-                stats.traversedTileLocations.insert(location);
-                if (stats.closestDistanceToCenter == -1 ||
-                        tileAtLocation->getDistance() < stats.closestDistanceToCenter) {
-                    stats.closestDistanceToCenter = tileAtLocation->getDistance(); 
-                }
-                // Alert any listeners that a new tile was entered
-                emit newTileLocationTraversed(location.first, location.second);
+        // If we're ever outside of the maze, crash. It would be cool to have
+        // some "out of bounds" state but I haven't implemented that yet. We
+        // continue here to make sure that we join with the other thread.
+        if (!m_maze->withinMaze(location.first, location.second)) {
+            S()->setCrashed();
+            m_mutex.unlock();
+            continue;
+
+        }
+
+        // Retrieve the tile at current location
+        const Tile* tileAtLocation = m_maze->getTile(location.first, location.second);
+
+        // If this is a new tile, update the set of traversed tiles
+        if (!m_stats->traversedTileLocations.contains(location)) {
+            m_stats->traversedTileLocations.insert(location);
+            if (m_stats->closestDistanceToCenter == -1 ||
+                    tileAtLocation->getDistance() < m_stats->closestDistanceToCenter) {
+                m_stats->closestDistanceToCenter = tileAtLocation->getDistance(); 
             }
+            // Alert any listeners that a new tile was entered
+            emit newTileLocationTraversed(location.first, location.second);
+        }
 
-            // If we've returned to the origin, reset the departure time
-            if (location.first == 0 && location.second == 0) {
-                stats.timeOfOriginDeparture = Seconds(-1);
-            }
+        // If we've returned to the origin, reset the departure time
+        if (location.first == 0 && location.second == 0) {
+            m_stats->timeOfOriginDeparture = Seconds(-1);
+        }
 
-            // Otherwise, if we've just left the origin, update the departure time
-            else if (stats.timeOfOriginDeparture < Seconds(0)) {
-                stats.timeOfOriginDeparture = SimTime::get()->elapsedSimTime();
-            }
+        // Otherwise, if we've just left the origin, update the departure time
+        else if (m_stats->timeOfOriginDeparture < Seconds(0)) {
+            m_stats->timeOfOriginDeparture = SimTime::get()->elapsedSimTime();
+        }
 
-            // Separately, if we're in the center, update the best time to center
-            if (m_maze->isCenterTile(location.first, location.second)) {
-                Seconds timeToCenter = SimTime::get()->elapsedSimTime() - stats.timeOfOriginDeparture;
-                if (stats.bestTimeToCenter < Seconds(0) || timeToCenter < stats.bestTimeToCenter) {
-                    stats.bestTimeToCenter = timeToCenter;
-                }
-            }
-
-            // If we're ever outside of the maze, crash. It would be cool to have
-            // some "out of bounds" state but I haven't implemented that yet. We
-            // continue here to make sure that we join with the other thread.
-            if (!m_maze->withinMaze(location.first, location.second)) {
-                S()->setCrashed();
-                continue;
+        // Separately, if we're in the center, update the best time to center
+        if (m_maze->isCenterTile(location.first, location.second)) {
+            Seconds timeToCenter = SimTime::get()->elapsedSimTime() - m_stats->timeOfOriginDeparture;
+            if (m_stats->bestTimeToCenter < Seconds(0) || timeToCenter < m_stats->bestTimeToCenter) {
+                m_stats->bestTimeToCenter = timeToCenter;
             }
         }
 
@@ -154,38 +153,43 @@ void Model::shutdown() {
 
 void Model::setMaze(const Maze* maze) {
     m_mutex.lock();
-    m_mice.clear();
-    m_stats.clear();
+    delete m_stats;
+    m_stats = nullptr;
+    m_mouse = nullptr;
     m_maze = maze;
     m_mutex.unlock();
 }
 
-void Model::addMouse(const QString& name, Mouse* mouse) {
+void Model::setMouse(Mouse* mouse) {
     m_mutex.lock();
     ASSERT_FA(m_maze == nullptr);
-    ASSERT_FA(m_mice.contains(name));
-    m_mice.insert(name, mouse);
-    m_stats.insert(name, MouseStats());
+    ASSERT_TR(m_mouse == nullptr);
+    ASSERT_TR(m_stats == nullptr);
+    m_mouse = mouse;
+    m_stats = new MouseStats();
     m_mutex.unlock();
 }
 
-void Model::removeMouse(const QString& name) {
+void Model::removeMouse() {
     m_mutex.lock();
     ASSERT_FA(m_maze == nullptr);
-    ASSERT_TR(m_mice.contains(name));
-    ASSERT_TR(m_stats.contains(name));
-    m_mice.remove(name);
-    m_stats.remove(name);
+    ASSERT_FA(m_mouse == nullptr);
+    ASSERT_FA(m_stats == nullptr);
+    delete m_stats;
+    m_stats = nullptr;
+    m_mouse = nullptr;
     m_mutex.unlock();
 }
 
-bool Model::containsMouse(const QString& name) const {
-    return m_mice.contains(name);
+MouseStats Model::getMouseStats() const {
+    ASSERT_FA(m_maze == nullptr);
+    ASSERT_FA(m_mouse == nullptr);
+    ASSERT_FA(m_stats == nullptr);
+    return *m_stats;
 }
 
-MouseStats Model::getMouseStats(const QString& name) const {
-    ASSERT_TR(m_stats.contains(name));
-    return m_stats.value(name);
+void Model::setPaused(bool paused) {
+    m_paused = paused;
 }
 
 void Model::setSimSpeed(double factor) {
