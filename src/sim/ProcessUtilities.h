@@ -1,13 +1,12 @@
 #pragma once
 
-#include <QCheckBox>
 #include <QObject>
 #include <QPushButton>
 #include <QProcess>
 #include <QString>
 #include <QStringList>
 
-#include "TextDisplay.h"
+#include "TextDisplayWidget.h"
 
 namespace mms {
 
@@ -27,8 +26,7 @@ public:
         const QStringList& names,
         const QString& buildCommand,
         const QString& directory,
-        QCheckBox* autoClear,
-        TextDisplay* output,
+        TextDisplayWidget* display,
         QPushButton* button,
         QObject* parent);
 

@@ -16,7 +16,6 @@
 #include "Model.h"
 #include "MouseAlgosTab.h"
 #include "Param.h"
-#include "TextDisplay.h"
 
 namespace mms {
 
@@ -30,11 +29,12 @@ Window::Window(QWidget *parent) :
         m_isOfficialLineEdit(new QLineEdit()),
         m_truthButton(new QRadioButton("Truth")),
         m_viewButton(new QRadioButton("Mouse")),
+        m_distancesCheckbox(new QCheckBox("Distance")),
         m_wallTruthCheckbox(new QCheckBox("Walls")),
         m_colorCheckbox(new QCheckBox("Color")),
         m_fogCheckbox(new QCheckBox("Fog")),
         m_textCheckbox(new QCheckBox("Text")),
-        m_zoomCheckbox(new QCheckBox("Zoom")),
+        m_followCheckbox(new QCheckBox("Follow")),
         m_maze(nullptr),
         m_truth(nullptr),
         m_mouse(nullptr),
@@ -120,19 +120,26 @@ Window::Window(QWidget *parent) :
     mapHolderLayout->addWidget(mapOptionsBox);
     mapOptionsLayout->addWidget(m_truthButton);
     mapOptionsLayout->addWidget(m_viewButton);
+    mapOptionsLayout->addWidget(m_distancesCheckbox);
     mapOptionsLayout->addWidget(m_wallTruthCheckbox);
     mapOptionsLayout->addWidget(m_colorCheckbox);
     mapOptionsLayout->addWidget(m_fogCheckbox);
     mapOptionsLayout->addWidget(m_textCheckbox);
-    mapOptionsLayout->addWidget(m_zoomCheckbox);
+    mapOptionsLayout->addWidget(m_followCheckbox);
 
     // Add functionality to those map buttons
     connect(m_viewButton, &QRadioButton::toggled, this, [=](bool checked){
 		m_map.setView(checked ? m_view : m_truth);
+        m_distancesCheckbox->setEnabled(!checked);
         m_wallTruthCheckbox->setEnabled(checked);
         m_colorCheckbox->setEnabled(checked);
         m_fogCheckbox->setEnabled(checked);
         m_textCheckbox->setEnabled(checked);
+    });
+    connect(m_distancesCheckbox, &QCheckBox::stateChanged, this, [=](int state){
+        if (m_truth != nullptr) {
+            m_truth->getMazeGraphic()->setTileTextVisible(state == Qt::Checked);
+        }
     });
     connect(m_wallTruthCheckbox, &QCheckBox::stateChanged, this, [=](int state){
         if (m_view != nullptr) {
@@ -154,7 +161,7 @@ Window::Window(QWidget *parent) :
             m_view->getMazeGraphic()->setTileTextVisible(state == Qt::Checked);
         }
     });
-    connect(m_zoomCheckbox, &QCheckBox::stateChanged, this, [=](int state){
+    connect(m_followCheckbox, &QCheckBox::stateChanged, this, [=](int state){
         if (m_view != nullptr) {
             m_map.setLayoutType(
                 state == Qt::Checked
@@ -165,6 +172,8 @@ Window::Window(QWidget *parent) :
 
     // Set the default values for the map options
     m_truthButton->setChecked(true);
+    m_distancesCheckbox->setChecked(true);
+    m_distancesCheckbox->setEnabled(true);
     m_viewButton->setEnabled(false);
     m_wallTruthCheckbox->setChecked(false);
     m_wallTruthCheckbox->setEnabled(false);
@@ -174,8 +183,8 @@ Window::Window(QWidget *parent) :
     m_fogCheckbox->setEnabled(false);
     m_textCheckbox->setChecked(true);
     m_textCheckbox->setEnabled(false);
-    m_zoomCheckbox->setChecked(false);
-    m_zoomCheckbox->setEnabled(false);
+    m_followCheckbox->setChecked(false);
+    m_followCheckbox->setEnabled(false);
     
     // Add the tabs to the splitter
     QTabWidget* tabWidget = new QTabWidget();
@@ -263,7 +272,7 @@ void Window::setMaze(Maze* maze) {
 		true, // wallTruthVisible
 		false, // tileColorsVisible
 		false, // tileFogVisible
-		true, // tileTextVisible
+		m_distancesCheckbox->isChecked(), // tileTextVisible
 		true // autopopulateTextWithDistance
 	);
 
@@ -295,7 +304,7 @@ void Window::runMouseAlgo(
         const QString& dirPath,
         const QString& mouseFilePath,
         int seed,
-        TextDisplay* display) {
+        TextDisplayWidget* display) {
 
     // If maze is empty, raise an error
     if (m_maze == nullptr) {
@@ -326,7 +335,7 @@ void Window::runMouseAlgo(
     // Update some random UI components
     m_viewButton->setEnabled(true);
     m_viewButton->setChecked(true);
-    m_zoomCheckbox->setEnabled(true);
+    m_followCheckbox->setEnabled(true);
 
     // Create some more objects
     MazeView* newView = new MazeView(
@@ -343,7 +352,7 @@ void Window::runMouseAlgo(
     // Listen for mouse algo stdout
     connect(
         newController, &Controller::algoStdout,
-        display, &QPlainTextEdit::appendPlainText
+        display->textEdit, &QPlainTextEdit::appendPlainText
     );
 
     // The thread on which the controller will execute
@@ -407,7 +416,7 @@ void Window::stopMouseAlgo() {
     // Update some random UI components
     m_truthButton->setChecked(true);
     m_viewButton->setEnabled(false);
-    m_zoomCheckbox->setEnabled(false);
+    m_followCheckbox->setEnabled(false);
 }
 
 #if(0)

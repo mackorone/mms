@@ -28,7 +28,7 @@ public:
     static int randomInt();
 
     // Returns a random integer
-    static int randomNonNegativeInt();
+    static int randomNonNegativeInt(int max = 0);
 
     // Returns a double in [0.0, 1.0]
     static double getRandom();

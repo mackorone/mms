@@ -23,10 +23,13 @@ int SimUtilities::randomInt() {
     return generator();
 }
 
-int SimUtilities::randomNonNegativeInt() {
+int SimUtilities::randomNonNegativeInt(int max) {
     int value = randomInt();
     if (value < 0) {
         value -= std::numeric_limits<int>::min();
+    }
+    if (0 < max) {
+        value %= max;
     }
     return value;
 }

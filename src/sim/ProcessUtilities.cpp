@@ -26,27 +26,26 @@ void ProcessUtilities::build(
         const QStringList& names,
         const QString& buildCommand,
         const QString& dirPath,
-        QCheckBox* autoClear,
-        TextDisplay* output,
+        TextDisplayWidget* display,
         QPushButton* button,
         QObject* parent) {
 
-	// Clear the build output
-	if (autoClear->isChecked()) {
-		output->clear();
+	// Clear the build display
+	if (display->autoClearCheckBox->isChecked()) {
+		display->textEdit->clear();
 	}
 
 	// Perform some validation
     if (!names.contains(name)) {
-		output->appendPlainText("[CORRUPT ALGORITHM CONFIG]\n");
+		display->textEdit->appendPlainText("[CORRUPT ALGORITHM CONFIG]\n");
         return;
     }
 	if (buildCommand.isEmpty()) {
-		output->appendPlainText("[EMPTY BUILD COMMAND]\n");
+		display->textEdit->appendPlainText("[EMPTY BUILD COMMAND]\n");
         return;
 	}
 	if (dirPath.isEmpty()) {
-		output->appendPlainText("[EMPTY DIRECTORY]\n");
+		display->textEdit->appendPlainText("[EMPTY DIRECTORY]\n");
         return;
 	}
 
@@ -55,10 +54,10 @@ void ProcessUtilities::build(
 
     // Display all build output/errors
     QObject::connect(process, &QProcess::readyReadStandardOutput, parent, [=](){
-        output->appendPlainText(process->readAllStandardOutput());
+        display->textEdit->appendPlainText(process->readAllStandardOutput());
     });
     QObject::connect(process, &QProcess::readyReadStandardError, parent, [=](){
-        output->appendPlainText(process->readAllStandardError());
+        display->textEdit->appendPlainText(process->readAllStandardError());
     });
 
     // Re-enable build button when build finishes, clean up the process
@@ -70,7 +69,7 @@ void ProcessUtilities::build(
         parent,
         [=](int exitCode, QProcess::ExitStatus exitStatus){
             button->setEnabled(true);
-    		output->appendPlainText(
+    		display->textEdit->appendPlainText(
 				exitStatus == QProcess::NormalExit && exitCode == 0
 				? "[BUILD COMPLETE]\n"
 				: "[BUILD FAILED]\n"
@@ -81,7 +80,7 @@ void ProcessUtilities::build(
 
     // GUI upkeep before build starts
     button->setEnabled(false);
-    output->appendPlainText(
+    display->textEdit->appendPlainText(
 		QString("[BUILD INITIATED] - ") +
 		QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss AP") +
 		QString("\n")
@@ -91,7 +90,7 @@ void ProcessUtilities::build(
     bool success = start(buildCommand, dirPath, process);
     if (!success) {
         button->setEnabled(true);
-    	output->appendPlainText(
+    	display->textEdit->appendPlainText(
             QString("[BUILD FAILED TO START] - ") +
             process->errorString() +
             QString("\n")

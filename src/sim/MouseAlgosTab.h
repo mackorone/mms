@@ -7,7 +7,7 @@
 #include <QWidget>
 
 #include "ConfigDialogField.h"
-#include "TextDisplay.h"
+#include "TextDisplayWidget.h"
 
 namespace mms {
 
@@ -31,7 +31,7 @@ signals:
         const QString& directory,
         const QString& mouseFilePath,
         int seed,
-        TextDisplay* display);
+        TextDisplayWidget* display);
 
 private:
 
@@ -43,12 +43,10 @@ private:
     QCheckBox* m_seedAutoUpdate;
 
     QPushButton* m_buildButton;
-    TextDisplay* m_buildOutput;
-    QCheckBox* m_buildAutoClear;
-
     QPushButton* m_runButton;
-    TextDisplay* m_runOutput;
-    QCheckBox* m_runAutoClear;
+
+    TextDisplayWidget* m_buildDisplay;
+    TextDisplayWidget* m_runDisplay;
 
     QPushButton* m_stopButton;
     QPushButton* m_pauseButton;

@@ -1,5 +1,9 @@
 # High Priority
 
+- Tile fog should disappear immediately
+- If no maze is loaded, we shouldn't just to mouse output tab
+- Write and read from persistant storage...
+- Cancelling build and run, as they're happening
 - Should unpause after pressing "run"
 - Can't exit after pausing...
 - Ensure the mouse stays in the maze
@@ -20,6 +24,8 @@
 - Put MazeView into MazeGraphic (it should all be encapsulated in there)
 - Maze editing and saving
     - Choose which type of file to save
+- Maze loading
+    - Use extension to determine which method to call
 - Indicate build failure/success with colors
 - Clean up mouseInterface/controller and MainWindow/controller (MouseAlgoUtilities)
 - Add controls about UI
@@ -260,6 +266,10 @@
 - -pedantic-errors: Flag even the most pedantic of errors
 - Write a script to ensure that ASSERTS don't hold any state
 - Ensure boolean operators aren't used in asserts... should be using a different assert
+- Ensure consistent use of "Checkbox" vs "CheckBox", etc.
+- You can add layouts to layouts
+    - make sure I'm not creating any unnecessary widgets
+- Use the "widget" suffix for all user-defined widgets
 
 // TODO: MACK
 // +++

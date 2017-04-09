@@ -1,13 +1,12 @@
 #pragma once
 
 #include <QComboBox>
-#include <QCheckBox>
 #include <QPushButton>
 #include <QSpinBox>
 #include <QWidget>
 
 #include "ConfigDialogField.h"
-#include "TextDisplay.h"
+#include "TextDisplayWidget.h"
 
 namespace mms {
 
@@ -25,28 +24,29 @@ signals:
 
 private:
 
-    QComboBox* m_comboBox;
+    static const int MAX_SEED_VALUE = 9999;
 
+    QComboBox* m_comboBox;
     QPushButton* m_editButton;
 
     QSpinBox* m_widthBox;
     QSpinBox* m_heightBox;
-    QSpinBox* m_seedBox;
-    QCheckBox* m_seedAutoUpdate;
+
+    QSpinBox* m_prevSeedBox;
+    QSpinBox* m_nextSeedBox;
 
     QPushButton* m_buildButton;
-    TextDisplay* m_buildOutput;
-    QCheckBox* m_buildAutoClear;
-
     QPushButton* m_runButton;
-    TextDisplay* m_runOutput;
-    QCheckBox* m_runAutoClear;
+
+    TextDisplayWidget* m_buildDisplay;
+    TextDisplayWidget* m_runDisplay;
 
     void import();
     void edit();
     void build();
     void run();
 
+    int getNextSeed();
     void refresh(const QString& name = "");
     QVector<ConfigDialogField> getFields();
 

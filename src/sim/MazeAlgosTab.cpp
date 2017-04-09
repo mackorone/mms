@@ -1,16 +1,12 @@
 #include "MazeAlgosTab.h"
 
-#include <limits>
-
 #include <QDateTime>
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QProcess>
-#include <QSpacerItem>
-#include <QSplitter> // TODO: MACK
-#include <QToolBox> // TODO: MACK
+#include <QTabWidget>
 #include <QVBoxLayout>
 
 #include "ConfigDialog.h"
@@ -25,18 +21,12 @@ MazeAlgosTab::MazeAlgosTab() :
         m_editButton(new QPushButton("Edit")),
         m_widthBox(new QSpinBox()),
         m_heightBox(new QSpinBox()),
-        m_seedBox(new QSpinBox()),
-        m_seedAutoUpdate(new QCheckBox("Auto-update")),
+        m_prevSeedBox(new QSpinBox()),
+        m_nextSeedBox(new QSpinBox()),
         m_buildButton(new QPushButton("Build")),
-        m_buildOutput(new TextDisplay()),
-        m_buildAutoClear(new QCheckBox("Auto-clear")),
+        m_buildDisplay(new TextDisplayWidget()),
         m_runButton(new QPushButton("Run")),
-        m_runOutput(new TextDisplay()),
-		m_runAutoClear(new QCheckBox("Auto-clear")) {
-
-	// Initialize the checkstates
-	m_buildAutoClear->setCheckState(Qt::Checked);
-	m_runAutoClear->setCheckState(Qt::Checked);
+        m_runDisplay(new TextDisplayWidget()) {
 
     // Set up the layout
     QVBoxLayout* layout = new QVBoxLayout();
@@ -64,75 +54,60 @@ MazeAlgosTab::MazeAlgosTab() :
     buttonsLayout->addWidget(m_editButton);
     layout->addLayout(buttonsLayout);
 
-    // Add the maze algo config box
-    QGroupBox* optionsBox = new QGroupBox("Maze Options");
-    layout->addWidget(optionsBox);
-    QGridLayout* optionsLayout = new QGridLayout();
-    optionsBox->setLayout(optionsLayout);
+    // Add runtime options
+    QHBoxLayout* optionsLayout = new QHBoxLayout();
+    layout->addLayout(optionsLayout);
 
-    // Add the width and height config fields
+    // Add the maze size box
+    QGroupBox* mazeSizeBox = new QGroupBox("Maze Size");
+    optionsLayout->addWidget(mazeSizeBox);
+    QGridLayout* mazeSizeLayout = new QGridLayout();
+    mazeSizeBox->setLayout(mazeSizeLayout);
+
+    // Add the maze size inputs
     m_widthBox->setValue(16);
     m_heightBox->setValue(16);
     QLabel* widthLabel = new QLabel("Width");
     QLabel* heightLabel = new QLabel("Height");
     widthLabel->setAlignment(Qt::AlignCenter);
     heightLabel->setAlignment(Qt::AlignCenter);
-    optionsLayout->addWidget(widthLabel, 0, 0);
-    optionsLayout->addWidget(m_widthBox, 1, 0);
-    optionsLayout->addWidget(heightLabel, 0, 1);
-    optionsLayout->addWidget(m_heightBox, 1, 1);
+    mazeSizeLayout->addWidget(widthLabel, 0, 0);
+    mazeSizeLayout->addWidget(m_widthBox, 0, 1);
+    mazeSizeLayout->addWidget(heightLabel, 0, 2);
+    mazeSizeLayout->addWidget(m_heightBox, 0, 3);
 
-    // Add the random seed config field
-    QLabel* seedLabel = new QLabel("Previous Seed");
-    seedLabel->setAlignment(Qt::AlignCenter);
-    m_seedBox->setRange(0, std::numeric_limits<int>::max());
-	m_seedBox->setValue(SimUtilities::randomNonNegativeInt());
-	m_seedAutoUpdate->setCheckState(Qt::Checked);
-    optionsLayout->addWidget(seedLabel, 0, 2);
-    optionsLayout->addWidget(m_seedBox, 1, 2);
-    optionsLayout->addWidget(m_seedAutoUpdate, 1, 3);
-    connect(m_seedAutoUpdate, &QCheckBox::stateChanged, this, [=](int state){
-        QString text = (state == Qt::Checked ? "Previous Seed" : "Seed");
-        seedLabel->setText(text);
-        m_seedBox->setReadOnly(state == Qt::Checked);
+    // Add the random seed box
+    QGroupBox* randomSeedBox = new QGroupBox("Random Seed");
+    optionsLayout->addWidget(randomSeedBox);
+    QGridLayout* randomSeedLayout = new QGridLayout();
+    randomSeedBox->setLayout(randomSeedLayout);
+
+    // Add the random seed inputs
+    m_prevSeedBox->setReadOnly(true);
+    m_prevSeedBox->setButtonSymbols(QAbstractSpinBox::NoButtons);
+    m_prevSeedBox->setRange(0, MAX_SEED_VALUE);
+    m_nextSeedBox->setRange(0, MAX_SEED_VALUE);
+	m_nextSeedBox->setValue(getNextSeed());
+    QLabel* prevLabel = new QLabel("Previous");
+    QLabel* nextLabel = new QLabel("Next");
+    nextLabel->setAlignment(Qt::AlignCenter);
+    prevLabel->setAlignment(Qt::AlignCenter);
+    randomSeedLayout->addWidget(prevLabel, 0, 0);
+    randomSeedLayout->addWidget(m_prevSeedBox, 0, 1);
+    randomSeedLayout->addWidget(nextLabel, 0, 2);
+    randomSeedLayout->addWidget(m_nextSeedBox, 0, 3);
+
+    // Add the build and run output
+    QTabWidget* tabWidget = new QTabWidget();
+    layout->addWidget(tabWidget);
+	tabWidget->addTab(m_buildDisplay, "Build Output");
+	tabWidget->addTab(m_runDisplay, "Run Output");
+    connect(m_buildButton, &QPushButton::clicked, this, [=](){
+        tabWidget->setCurrentWidget(m_buildDisplay);
     });
-
-    // TODO: MACK
-    QToolBox* toolBox = new QToolBox();
-    toolBox->layout()->setSpacing(0);
-    layout->addWidget(toolBox);
-
-    // Add a spliter for the outputs
-    //QSplitter* splitter = new QSplitter();
-    //splitter->setOrientation(Qt::Vertical);
-    //splitter->setHandleWidth(6);
-    //layout->addWidget(splitter);
-
-    // Add the build output and run output
-	QVector<QPair<QString, TextDisplay*>> displays;
-	for (int i = 0; i < 2; i += 1) {
-		QString label = (i == 0 ? "Build Output" : "Run Output");
-		QCheckBox* autoClear = (i == 0 ? m_buildAutoClear : m_runAutoClear);
-		TextDisplay* textDisplay = (i == 0 ? m_buildOutput : m_runOutput);
-		QWidget* container = new QWidget();
-		QVBoxLayout* layout = new QVBoxLayout(container);
-		layout->setContentsMargins(0, 0, 0, 0);
-		QHBoxLayout* headerLayout = new QHBoxLayout();
-		headerLayout->addWidget(new QLabel(label));
-		QPushButton* clearButton = new QPushButton("Clear");
-		connect(clearButton, &QPushButton::clicked, this, [=](){
-			textDisplay->clear();
-		});
-		headerLayout->addWidget(clearButton);
-		headerLayout->addWidget(autoClear);
-		headerLayout->addSpacerItem(
-			new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed)
-		);
-		layout->addLayout(headerLayout);
-		layout->addWidget(textDisplay);
-		//splitter->addWidget(container);
-		toolBox->addItem(container, label);
-	}
+    connect(m_runButton, &QPushButton::clicked, this, [=](){
+        tabWidget->setCurrentWidget(m_runDisplay);
+    });
 
     // Add the maze algos
     refresh();
@@ -236,8 +211,7 @@ void MazeAlgosTab::build() {
         SettingsMazeAlgos::names(),
         SettingsMazeAlgos::getBuildCommand(name),
         SettingsMazeAlgos::getDirPath(name),
-        m_buildAutoClear,
-        m_buildOutput,
+        m_buildDisplay,
         m_buildButton,
         this
     );
@@ -249,24 +223,24 @@ void MazeAlgosTab::run() {
 	// Deduplicate this logic with build()
 
 	// Clear the run output
-	if (m_runAutoClear->isChecked()) {
-		m_runOutput->clear();
+	if (m_runDisplay->autoClearCheckBox->isChecked()) {
+		m_runDisplay->textEdit->clear();
 	}
 
 	// Perform some validation
     const QString& name = m_comboBox->currentText();
     if (!SettingsMazeAlgos::names().contains(name)) {
-		m_runOutput->appendPlainText("[CORRUPT ALGORITHM CONFIG]\n");
+		m_runDisplay->textEdit->appendPlainText("[CORRUPT ALGORITHM CONFIG]\n");
         return;
     }
 	QString runCommand = SettingsMazeAlgos::getRunCommand(name);
 	if (runCommand.isEmpty()) {
-		m_runOutput->appendPlainText("[EMPTY RUN COMMAND]\n");
+		m_runDisplay->textEdit->appendPlainText("[EMPTY RUN COMMAND]\n");
         return;
 	}
 	QString dirPath = SettingsMazeAlgos::getDirPath(name);
 	if (dirPath.isEmpty()) {
-		m_runOutput->appendPlainText("[EMPTY DIRECTORY]\n");
+		m_runDisplay->textEdit->appendPlainText("[EMPTY DIRECTORY]\n");
         return;
 	}
 
@@ -276,7 +250,7 @@ void MazeAlgosTab::run() {
     // Display run output
     connect(process, &QProcess::readyReadStandardOutput, this, [=](){
         QString output = process->readAllStandardOutput();
-        m_runOutput->appendPlainText(output);
+        m_runDisplay->textEdit->appendPlainText(output);
     });
 
     // Re-enable run button when run finishes, clean up the process
@@ -289,30 +263,30 @@ void MazeAlgosTab::run() {
         [=](int exitCode, QProcess::ExitStatus exitStatus){
             m_runButton->setEnabled(true);
 			if (exitStatus == QProcess::NormalExit && exitCode == 0) {
-				m_runOutput->appendPlainText("[RUN COMPLETE]\n");
+				m_runDisplay->textEdit->appendPlainText("[RUN COMPLETE]\n");
 				QString output = process->readAllStandardError();
 				emit mazeGenerated(output.toUtf8());
 			}
 			else {
-				m_runOutput->appendPlainText("[RUN FAILED]\n");
+				m_runDisplay->textEdit->appendPlainText("[RUN FAILED]\n");
 			}
             delete process;
         }
     );
             
 	// Update the random seed
-	if (m_seedAutoUpdate->isChecked()) {
-		m_seedBox->setValue(SimUtilities::randomNonNegativeInt());
-	}
+    int seed = m_nextSeedBox->value();
+    m_prevSeedBox->setValue(seed);
+	m_nextSeedBox->setValue(getNextSeed());
 
     // Add the height, width, and seed to the command
     runCommand += " " + m_widthBox->cleanText();
     runCommand += " " + m_heightBox->cleanText();
-    runCommand += " " + QString::number(m_seedBox->value());
+    runCommand += " " + QString::number(seed);
 
     // GUI upkeep before run starts
     m_runButton->setEnabled(false);
-    m_runOutput->appendPlainText(
+    m_runDisplay->textEdit->appendPlainText(
 		QString("[RUN INITIATED] - ") +
 		QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss AP") +
 		QString("\n")
@@ -322,7 +296,7 @@ void MazeAlgosTab::run() {
     bool success = ProcessUtilities::start(runCommand, dirPath, process);
     if (!success) {
         m_runButton->setEnabled(true);
-        m_runOutput->appendPlainText(
+        m_runDisplay->textEdit->appendPlainText(
             QString("[RUN FAILED TO START] - ") +
             process->errorString() +
             QString("\n")
@@ -373,6 +347,10 @@ QVector<ConfigDialogField> MazeAlgosTab::getFields() {
         buildCommandField,
         runCommandField,
     };
+}
+
+int MazeAlgosTab::getNextSeed() {
+	return SimUtilities::randomNonNegativeInt(MAX_SEED_VALUE + 1);
 }
 
 } // namespace mms

@@ -7,10 +7,8 @@
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QProcess>
 #include <QSlider>
-#include <QSpacerItem>
-#include <QSplitter>
+#include <QTabWidget>
 #include <QVBoxLayout>
 
 #include "ConfigDialog.h"
@@ -30,17 +28,11 @@ MouseAlgosTab::MouseAlgosTab() :
         m_seedBox(new QSpinBox()),
         m_seedAutoUpdate(new QCheckBox("Auto-update")),
         m_buildButton(new QPushButton("Build")),
-        m_buildOutput(new TextDisplay()),
-        m_buildAutoClear(new QCheckBox("Auto-clear")),
+        m_buildDisplay(new TextDisplayWidget()),
         m_runButton(new QPushButton("Run")),
-        m_runOutput(new TextDisplay()),
-		m_runAutoClear(new QCheckBox("Auto-clear")),
+        m_runDisplay(new TextDisplayWidget()),
         m_stopButton(new QPushButton("Stop")),
         m_pauseButton(new QPushButton("Pause")) {
-
-	// Initialize the checkstates
-	m_buildAutoClear->setCheckState(Qt::Checked);
-	m_runAutoClear->setCheckState(Qt::Checked);
 
     // Set up the layout
     QVBoxLayout* layout = new QVBoxLayout();
@@ -130,36 +122,17 @@ MouseAlgosTab::MouseAlgosTab() :
         m_seedBox->setReadOnly(state == Qt::Checked);
     });
 
-    // Add a spliter for the outputs
-    QSplitter* splitter = new QSplitter();
-    splitter->setOrientation(Qt::Vertical);
-    splitter->setHandleWidth(6);
-    layout->addWidget(splitter);
-
     // Add the build output and run output
-	QVector<QPair<QString, TextDisplay*>> displays;
-	for (int i = 0; i < 2; i += 1) {
-		QString label = (i == 0 ? "Build Output" : "Run Output");
-		QCheckBox* autoClear = (i == 0 ? m_buildAutoClear : m_runAutoClear);
-		TextDisplay* textDisplay = (i == 0 ? m_buildOutput : m_runOutput);
-		QWidget* container = new QWidget();
-		QVBoxLayout* layout = new QVBoxLayout(container);
-		layout->setContentsMargins(0, 0, 0, 0);
-		QHBoxLayout* headerLayout = new QHBoxLayout();
-		headerLayout->addWidget(new QLabel(label));
-		QPushButton* clearButton = new QPushButton("Clear");
-		connect(clearButton, &QPushButton::clicked, this, [=](){
-			textDisplay->clear();
-		});
-		headerLayout->addWidget(clearButton);
-		headerLayout->addWidget(autoClear);
-		headerLayout->addSpacerItem(
-			new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed)
-		);
-		layout->addLayout(headerLayout);
-		layout->addWidget(textDisplay);
-		splitter->addWidget(container);
-	}
+	QTabWidget* tabWidget = new QTabWidget();
+    layout->addWidget(tabWidget);
+    tabWidget->addTab(m_buildDisplay, "Build Output");
+    tabWidget->addTab(m_runDisplay, "Run Output");
+    connect(m_buildButton, &QPushButton::clicked, this, [=](){
+        tabWidget->setCurrentWidget(m_buildDisplay);
+    });
+    connect(m_runButton, &QPushButton::clicked, this, [=](){
+        tabWidget->setCurrentWidget(m_runDisplay);
+    });
 
     // Add the mouse algos
     refresh();
@@ -276,8 +249,7 @@ void MouseAlgosTab::build() {
     	SettingsMouseAlgos::names(),
 		SettingsMouseAlgos::getBuildCommand(name),
 		SettingsMouseAlgos::getDirPath(name),
-		m_buildAutoClear,
-		m_buildOutput,
+		m_buildDisplay,
 		m_buildButton,
 		this
 	);
@@ -291,30 +263,29 @@ void MouseAlgosTab::run() {
     m_pauseButton->setText("Pause");
     */
 
-	// Clear the run output
-	if (m_runAutoClear->isChecked()) {
-		m_runOutput->clear();
+	if (m_runDisplay->autoClearCheckBox->isChecked()) {
+		m_runDisplay->textEdit->clear();
 	}
 
 	// Perform some validation
     const QString& name = m_comboBox->currentText();
     if (!SettingsMouseAlgos::names().contains(name)) {
-		m_runOutput->appendPlainText("[CORRUPT ALGORITHM CONFIG]\n");
+		m_runDisplay->textEdit->appendPlainText("[CORRUPT ALGORITHM CONFIG]\n");
         return;
     }
 	QString runCommand = SettingsMouseAlgos::getRunCommand(name);
 	if (runCommand.isEmpty()) {
-		m_runOutput->appendPlainText("[EMPTY RUN COMMAND]\n");
+		m_runDisplay->textEdit->appendPlainText("[EMPTY RUN COMMAND]\n");
         return;
 	}
 	QString dirPath = SettingsMouseAlgos::getDirPath(name);
 	if (dirPath.isEmpty()) {
-		m_runOutput->appendPlainText("[EMPTY DIRECTORY]\n");
+		m_runDisplay->textEdit->appendPlainText("[EMPTY DIRECTORY]\n");
         return;
 	}
 	QString mouseFilePath = SettingsMouseAlgos::getMouseFilePath(name);
 	if (mouseFilePath.isEmpty()) {
-		m_runOutput->appendPlainText("[EMPTY MOUSE FILE]\n");
+		m_runDisplay->textEdit->appendPlainText("[EMPTY MOUSE FILE]\n");
         return;
 	}
 
@@ -335,7 +306,7 @@ void MouseAlgosTab::run() {
         dirPath,
         mouseFilePath,
         m_seedBox->value(),
-        m_runOutput
+        m_runDisplay
     );
 }
 

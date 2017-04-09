@@ -13,7 +13,7 @@
 #include "MazeView.h"
 #include "Model.h"
 #include "MouseGraphic.h"
-#include "TextDisplay.h"
+#include "TextDisplayWidget.h"
 
 namespace mms {
 
@@ -24,7 +24,7 @@ class Window : public QMainWindow {
 public:
 
     Window(QWidget* parent = 0);
-    void closeEvent(QCloseEvent *event);
+    void closeEvent(QCloseEvent* event);
 
 private:
 
@@ -46,11 +46,12 @@ private:
     // Some map GUI elements
 	QRadioButton* m_truthButton;
 	QRadioButton* m_viewButton;
+	QCheckBox* m_distancesCheckbox;
 	QCheckBox* m_wallTruthCheckbox;
 	QCheckBox* m_colorCheckbox;
 	QCheckBox* m_fogCheckbox;
 	QCheckBox* m_textCheckbox;
-	QCheckBox* m_zoomCheckbox;
+	QCheckBox* m_followCheckbox;
 
     // The maze and the true view of the maze
     Maze* m_maze;
@@ -75,7 +76,7 @@ private:
         const QString& dirPath,
         const QString& mouseFilePath,
         int seed,
-        TextDisplay* display);
+        TextDisplayWidget* display);
     void stopMouseAlgo();
 
     /*
