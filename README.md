@@ -80,13 +80,13 @@ make
 mkdir ~/Desktop/MyAlgo
 ```
 
-#### Step 2: Copy "stub" files in any directory in `src/mouse/templates`
+#### Step 2: Copy "stub" files in any directory in `src/mouse/templates`:
 
 ```bash
 cp src/mouse/templates/c++/* ~/Desktop/MyAlgo
 ```
 
-#### Step 3: Add some algorithm logic
+#### Step 3: Add some algorithm logic:
 
 ```bash
 #include "Algo.h"
@@ -100,26 +100,11 @@ void Algo::solve(Interface* interface) {
 }
 ```
 
-#### Step 4: Import, build, and run the algorithm
+#### Step 4: Configure your algorithm:
+
+Here's an example:
 
 ![](https://github.com/mackorone/mms/wiki/images/edit.png)
-
-## Authors
-
-| Name              | Email                | Role                  |
-|-------------------|----------------------|-----------------------|
-| Mack Ward         | mward4@buffalo.edu   | Author and Maintainer |
-| Tomasz Pietruszka | tomaszpi@buffalo.edu | Contributor           |
-| Mitchell Rathbun  | mrathbun@buffalo.edu | Contributor           |
-| Sam Siegart       | srsiegar@buffalo.edu | Contributor           |
-| Kyle Thompson     | kt49@buffalo.edu     | Contributor           |
-
-## Contributing Projects
-
-| Name                                                          | Author            | Use Case              |
-|---------------------------------------------------------------|-------------------|-----------------------|
-| [polypartition](https://github.com/ivanfratric/polypartition) | Ivan Fratric      | Polygon Triangulation |
-| [qt](https://www.qt.io/)                                      | The Qt Company    | Framework and GUI     |
 
 ## Wiki
 
@@ -147,3 +132,20 @@ video demos, and other media related to the simulator.
 Previous incarnations of mms exist in the `old` directory. Feel free to take a
 peek, but previous versions will (obviously) not receive the same attention and
 support as the current version.
+
+## Contributing Projects
+
+| Name                                                          | Author            | Use Case              |
+|---------------------------------------------------------------|-------------------|-----------------------|
+| [polypartition](https://github.com/ivanfratric/polypartition) | Ivan Fratric      | Polygon Triangulation |
+| [qt](https://www.qt.io/)                                      | The Qt Company    | Framework and GUI     |
+
+## Authors
+
+| Name              | Email                | Role                  |
+|-------------------|----------------------|-----------------------|
+| Mack Ward         | mward4@buffalo.edu   | Author and Maintainer |
+| Tomasz Pietruszka | tomaszpi@buffalo.edu | Contributor           |
+| Mitchell Rathbun  | mrathbun@buffalo.edu | Contributor           |
+| Sam Siegart       | srsiegar@buffalo.edu | Contributor           |
+| Kyle Thompson     | kt49@buffalo.edu     | Contributor           |
