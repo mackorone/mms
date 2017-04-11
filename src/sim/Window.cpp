@@ -55,32 +55,6 @@ Window::Window(QWidget *parent) :
     splitter->setHandleWidth(6);
     setCentralWidget(splitter);
 
-	// Add some generic menu items
-    QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
-    QAction* saveMazeAction = new QAction(tr("&Save Maze As ..."), this);
-    connect(saveMazeAction, &QAction::triggered, this, [=](){
-        // TODO: MACK
-	});
-	fileMenu->addAction(saveMazeAction);
-    QAction* quitAction = new QAction(tr("&Quit"), this);
-    connect(quitAction, &QAction::triggered, this, [=](){
-		close();
-	});
-	fileMenu->addAction(quitAction);
-
-	// Add some model-related menu items
-    QMenu* simulationMenu = menuBar()->addMenu(tr("&Simulation"));
-    QAction* pauseAction = new QAction(tr("&Pause"), this);
-    connect(pauseAction, &QAction::triggered, this, [=](){
-        // TODO: MACK
-	});
-	simulationMenu->addAction(pauseAction);
-    QAction* stopAction = new QAction(tr("&Stop"), this);
-    connect(stopAction, &QAction::triggered, this, [=](){
-        // TODO: MACK
-	});
-	simulationMenu->addAction(stopAction);
-
     // Add a container for the maze stats, map and options
     QWidget* mapHolder = new QWidget();
     QVBoxLayout* mapHolderLayout = new QVBoxLayout();
@@ -243,6 +217,59 @@ Window::Window(QWidget *parent) :
 		}
 	);
     tabWidget->addTab(mouseAlgosTab, "Mouse Algorithms");
+
+	// Add some generic menu items
+    /*
+    QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
+    QAction* saveMazeAction = new QAction(tr("&Save Maze As ..."), this);
+    connect(saveMazeAction, &QAction::triggered, this, [=](){
+        // TODO: MACK
+	});
+	fileMenu->addAction(saveMazeAction);
+    QAction* quitAction = new QAction(tr("&Quit"), this);
+    connect(quitAction, &QAction::triggered, this, [=](){
+		close();
+	});
+	fileMenu->addAction(quitAction);
+
+	// Add maze algorithm menu items
+    QMenu* mazeAlgoMenu = menuBar()->addMenu(tr("&Maze Algorithm"));
+    QAction* importAction = new QAction(tr("&Import"), this);
+    // TODO: MACK - just to maze algo tab here?
+    connect(
+        importAction, &QAction::triggered,
+        mazeAlgosTab, &MazeAlgosTab::import
+    );
+	mazeAlgoMenu->addAction(importAction);
+    QAction* editAction = new QAction(tr("&Edit"), this);
+    connect(editAction, &QAction::triggered, this, [=](){
+        // TODO: MACK
+	});
+	mazeAlgoMenu->addAction(editAction);
+    QAction* buildAction = new QAction(tr("&Build"), this);
+    connect(buildAction, &QAction::triggered, this, [=](){
+        // TODO: MACK
+	});
+	mazeAlgoMenu->addAction(buildAction);
+    QAction* runAction = new QAction(tr("&Run"), this);
+    connect(runAction, &QAction::triggered, this, [=](){
+        // TODO: MACK
+	});
+	mazeAlgoMenu->addAction(runAction);
+
+	// Add some model-related menu items
+    QMenu* simulationMenu = menuBar()->addMenu(tr("&Mouse"));
+    QAction* pauseAction = new QAction(tr("&Pause"), this);
+    connect(pauseAction, &QAction::triggered, this, [=](){
+        // TODO: MACK
+	});
+	simulationMenu->addAction(pauseAction);
+    QAction* stopAction = new QAction(tr("&Stop"), this);
+    connect(stopAction, &QAction::triggered, this, [=](){
+        // TODO: MACK
+	});
+	simulationMenu->addAction(stopAction);
+    */
 
     // Resize some things
     resize(P()->defaultWindowWidth(), P()->defaultWindowHeight());

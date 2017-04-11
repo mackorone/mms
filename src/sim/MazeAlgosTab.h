@@ -6,6 +6,7 @@
 #include <QWidget>
 
 #include "ConfigDialogField.h"
+#include "RandomSeedWidget.h"
 #include "TextDisplayWidget.h"
 
 namespace mms {
@@ -17,6 +18,10 @@ class MazeAlgosTab : public QWidget {
 public:
 
     MazeAlgosTab();
+    void import();
+    void edit();
+    void build();
+    void run();
 
 signals:
 
@@ -24,29 +29,19 @@ signals:
 
 private:
 
-    static const int MAX_SEED_VALUE = 9999;
-
     QComboBox* m_comboBox;
     QPushButton* m_editButton;
+    QPushButton* m_buildButton;
+    QPushButton* m_runButton;
 
     QSpinBox* m_widthBox;
     QSpinBox* m_heightBox;
 
-    QSpinBox* m_prevSeedBox;
-    QSpinBox* m_nextSeedBox;
-
-    QPushButton* m_buildButton;
-    QPushButton* m_runButton;
+    RandomSeedWidget* m_seedWidget;
 
     TextDisplayWidget* m_buildDisplay;
     TextDisplayWidget* m_runDisplay;
 
-    void import();
-    void edit();
-    void build();
-    void run();
-
-    int getNextSeed();
     void refresh(const QString& name = "");
     QVector<ConfigDialogField> getFields();
 

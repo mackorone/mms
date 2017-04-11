@@ -57,7 +57,6 @@ private:
     static QString getValue(const QString& key);
     static void setValue(const QString& key, const QString& value);
 
-
     static void printTagNotFound(const QString& type, const QString& tag, const QString& defaultValue);
     static void printLessThan(const QString& type, const QString& tag, const QString& value,
         const QString& defaultValue, const QString& min);

@@ -24,41 +24,35 @@ namespace mms {
 
 MouseAlgosTab::MouseAlgosTab() :
         m_comboBox(new QComboBox()),
-        m_editButton(new QPushButton("Edit")),
+        m_editButton(new QPushButton("&Edit")),
         m_seedBox(new QSpinBox()),
         m_seedAutoUpdate(new QCheckBox("Auto-update")),
-        m_buildButton(new QPushButton("Build")),
+        m_buildButton(new QPushButton("&Build")),
         m_buildDisplay(new TextDisplayWidget()),
-        m_runButton(new QPushButton("Run")),
+        m_runButton(new QPushButton("&Run")),
         m_runDisplay(new TextDisplayWidget()),
-        m_stopButton(new QPushButton("Stop")),
-        m_pauseButton(new QPushButton("Pause")) {
+        m_stopButton(new QPushButton("&Stop")),
+        m_pauseButton(new QPushButton("&Pause")) {
 
     // Set up the layout
     QVBoxLayout* layout = new QVBoxLayout();
     setLayout(layout);
-    QHBoxLayout* topLayout = new QHBoxLayout();
-    layout->addLayout(topLayout);
 
-    // Add the import button
-    QPushButton* importButton = new QPushButton("Import Mouse Algorithm");
+    // Add the combobox and buttons
+    QHBoxLayout* topLayout = new QHBoxLayout();
+    QPushButton* importButton = new QPushButton("&Import");
     connect(importButton, &QPushButton::clicked, this, &MouseAlgosTab::import);
     topLayout->addWidget(importButton);
-
-    // Add the combobox
     topLayout->addWidget(m_comboBox);
+    topLayout->addWidget(m_editButton);
+    topLayout->addWidget(m_buildButton);
+    topLayout->addWidget(m_runButton);
+    layout->addLayout(topLayout);
 
     // Create the algo buttons
     connect(m_editButton, &QPushButton::clicked, this, &MouseAlgosTab::edit);
     connect(m_buildButton, &QPushButton::clicked, this, &MouseAlgosTab::build);
     connect(m_runButton, &QPushButton::clicked, this, &MouseAlgosTab::run);
-
-    // Add the algo buttons to the tab
-    QHBoxLayout* buttonsLayout = new QHBoxLayout();
-    buttonsLayout->addWidget(m_runButton);
-    buttonsLayout->addWidget(m_buildButton);
-    buttonsLayout->addWidget(m_editButton);
-    layout->addLayout(buttonsLayout);
 
     // Add the "speed" buttons
     QHBoxLayout* speedsLayout = new QHBoxLayout();
@@ -100,6 +94,16 @@ MouseAlgosTab::MouseAlgosTab() :
         }
     );
     speedSlider->setValue(100.0 / speedBox->maximum() - 1.0);
+
+    // Add the input buttons
+    QHBoxLayout* inputButtonsLayout = new QHBoxLayout();
+    inputButtonsLayout->addWidget(new QLabel("Input Buttons"));
+    for (int i = 0; i < 10; i += 1) {
+        QPushButton* button = new QPushButton(QString::number(i));
+        button->setMinimumSize(3, 0);
+        inputButtonsLayout->addWidget(button);
+    }
+    layout->addLayout(inputButtonsLayout);
 
     // Add the mouse algo config box
     QGroupBox* optionsBox = new QGroupBox("Mouse Options");

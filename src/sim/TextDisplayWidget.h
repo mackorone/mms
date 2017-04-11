@@ -14,6 +14,8 @@ public:
 
     TextDisplayWidget();
 
+    // TODO: upforgrabs
+    // These should really be private
     QPushButton* clearButton;
     QCheckBox* autoClearCheckBox;
     QPlainTextEdit* textEdit;

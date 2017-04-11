@@ -1,14 +1,14 @@
 # High Priority
 
-- Tile fog should disappear immediately
-- If no maze is loaded, we shouldn't just to mouse output tab
+- Stop button should be disabled if no algorithm is executing
+- If no maze is loaded, we shouldn't jump to mouse output tab
 - Write and read from persistant storage...
+- Save the last-used algo, so that we can jump to it on subsequent runs
 - Cancelling build and run, as they're happening
 - Should unpause after pressing "run"
 - Can't exit after pausing...
 - Ensure the mouse stays in the maze
 - Surface information about *why* a maze is valid/invalid (etc.)
-- A single seed for both maze and mouse algorithms
 - MacOS retina https://github.com/vispy/vispy/issues/99
 - Better error messages for failed commands
 - If the mouse goes outside of the maze, the simulator crashes
@@ -134,6 +134,7 @@
 
 # Medum Priority
 
+- Tile fog should disappear immediately
 - Add a print function to interfaces
 - Arduino int could be 16 bits
 - Deduplicate some import/edit/build logic between mouse and maze algo tabs

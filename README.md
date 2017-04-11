@@ -1,132 +1,108 @@
 # mms
 
-![](https://github.com/mackorone/mms/wiki/imgs/mms.png)
-![](https://github.com/mackorone/mms/wiki/imgs/mms.gif)
-
-## WARNING
-
-`mms` is broken right now. We're working on porting it over to Qt. If you want
-to use the old version of the simulator, check out `mms/old/v2/`.
+![](https://github.com/mackorone/mms/wiki/images/mms.png)
+![](https://github.com/mackorone/mms/wiki/images/mms.gif)
 
 ## About
 
-*mms* is a Micromouse simulator. It allows programmers to write and test
-Micromouse code as if it were running on an actual robot - and so much more.
+mms is a Micromouse simulator.
 
-It has two modes of operation, `DISCRETE` and `CONTINUOUS`, which offer
-different levels of abstraction for writing maze-solving and robot-control
-code, respectively. This means that programmer *X* can write code that gets the
-robot from point *A* to point *B* while programmer *Y* ensures you don't crash
-along the way. And all of *that* can happen while engineer *Z* tries to figure
-out how to properly power a stepper motor.
+It aims to solve two main problems:
+
+1. It's difficult to write Micromouse code *without* a working robot
+1. It's difficult to write Micromouse code *with* a working robot
+
+To elaborate:
+
+1. Without running it on *something* (normally a physical robot), there's no
+way to ensure that the maze-solving and obstacle-avoidance code works as
+expected
+1. Even *with* a working robot, re-uploading and re-running the code is tedious
+and error-prone; it's difficult to reproduce and debug anomalies when they occur
+
+mms solves these problems by:
+
+1. Providing a framework for writing, and an environment for testing, both
+maze-solving and obstacle-avoidance code
+1. Making it easy to run, re-rerun, and understand your code, as it's executing
+(via special logging and graphical utilities)
 
 ## Features
 
 * Provides a framework for:
-    * Writing portable maze-solving code
-    * Writing portable robot-control code
-    * Writing maze-generation code, should you be so inclined
-* Provides mechanisms for displaying what your robot knows as it explores the maze, including:
-    * Setting the color of the tiles
+    * Writing maze-generation code
+    * Writing and testing maze-solving code
+    * Writing and testing obstacle-avoidance code
+
+* Provides mechanisms for understanding your code, as it executes:
+    * Drawing text on the cells
+    * Setting the color of the cells
     * Declaring the existence of walls
-    * Keeping track of where you robot has been
-    * Drawing text on the tiles
-* Supports loading mazes from `.maz` files
-* Highly configurable and customizable
+    * Showing where you robot has been
+
+* Supports:
+    * Loading mazes in many different formats (`.MAZ`, `.MZ2`, `.num`, `.map`)
+    * Simulating the behavior of many types of robots, specified via mouse files
+    * Algorithms written in many different languages (currently C/C++, Java, and Python)
 
 ## Installation, Building, and Running
 
-#### Ubuntu
+#### Pre-compiled Binaries
 
-First, install the necessary software packages:
+In the near future, we'll provide pre-compiled binaries on these three platforms:
+
+* Windows
+* Mac OS X
+* Linux 
+
+Until then, you'll have to build from source.
+
+#### Building From Source
+
+1. Download Qt (see [this download page](https://www.qt.io/download/))
+1. Use the `sim.pro` file in `src/sim` to configure and build the project
+1. Run the resultant binary
+
+For example, on Ubuntu, run the following:
+
 ```bash
-sudo apt-get install g++ freeglut3-dev libglew-dev
-```
-Then build the project:
-```bash
+cd src/sim
+qmake
 make
+../../bin/sim
 ```
-Now run it:
-```bash
-./bin/mms
-```
-
-#### Other Platforms
-
-[Windows](https://www.github.com/mackorone/mms/wiki/Windows\ Installation)
 
 ## Writing An Algorithm
 
 #### Step 1: Create a directory for your algorithm:
 
-```
-mkdir src/mouse/foo
-```
-
-#### Step 2: Define a class that implements the IMouseAlgorithm interface:
-
-**`src/mouse/foo/Bar.h`**
-```c++
-#pragma once
-
-#include "../IMouseAlgorithm.h"
-
-namespace foo {
-
-class Bar : public IMouseAlgorithm {
-
-public:
-    void solve(
-        int mazeWidth, int mazeHeight, bool isOfficialMaze,
-        char initialDirection, sim::MouseInterface* mouse);
-
-};
-
-} // namespace foo
+```bash
+mkdir ~/Desktop/MyAlgo
 ```
 
-**`src/mouse/foo/Bar.cpp`**
-```c++
-#include "Bar.h"
+#### Step 2: Copy "stub" files in any directory in `src/mouse/templates`
 
-namespace foo {
-
-void Bar::solve(
-        int mazeWidth, int mazeHeight, bool isOfficialMaze,
-        char initialDirection, sim::MouseInterface* mouse) {
-
-    // The mouse will move forward one tile and then stop
-    mouse->moveForward();
-}
-
-} // namespace foo
+```bash
+cp src/mouse/templates/c++/* ~/Desktop/MyAlgo
 ```
 
-#### Step 3: Add your class to the list of algorithms:
+#### Step 3: Add some algorithm logic
 
-**`src/mouse/MouseAlgorithms.cpp`**
-```c++
-#include "MouseAlgorithms.h"
-...
-#include "foo/Bar.h"
-...
-std::pair<bool, IMouseAlgorithm*> MouseAlgorithms::helper(...) {
-    ...
-    ALGO("myFooBar", new foo::Bar());
-    ...
+```bash
+#include "Algo.h"
+
+void Algo::solve(Interface* interface) {
+    // TODO: implement the algorithm here
+    if (interface->wallRight()) {
+        interface->moveForward()
+    }
+    // ...
 }
 ```
 
+#### Step 4: Import, build, and run the algorithm
 
-#### Step 4: Update the `mouse-algorithm` parameter:
-
-**`res/parameters.xml`**
-```xml
-...
-<!-- Mouse Parameters -->
-<mouse-algorithm>myFooBar</mouse-algorithm>
-...
-```
+![](https://github.com/mackorone/mms/wiki/images/edit.png)
 
 ## Authors
 
@@ -143,17 +119,16 @@ std::pair<bool, IMouseAlgorithm*> MouseAlgorithms::helper(...) {
 | Name                                                          | Author            | Use Case              |
 |---------------------------------------------------------------|-------------------|-----------------------|
 | [polypartition](https://github.com/ivanfratric/polypartition) | Ivan Fratric      | Polygon Triangulation |
-| [pugixml](https://github.com/zeux/pugixml)                    | Arseny Kapoulkine | XML Parsing           |
 | [qt](https://www.qt.io/)                                      | The Qt Company    | Framework and GUI     |
 
 ## Wiki
 
 See the [wiki](https://www.github.com/mackorone/mms/wiki) for more information and documentation.
 
-Note that the *wiki* repository is contained within the *mms* repository as a
+Note that the wiki repository is contained within the mms repository as a
 [submodule](https://git-scm.com/docs/git-submodule). This means that if you
 want to see/edit the wiki source, you'll have to first clone (not download the
-zip of) *mms*, and then initialize (and update) the submodule:
+zip of) mms, and then initialize (and update) the submodule:
 
 ```bash
 git clone https://github.com/mackorone/mms.git
@@ -166,3 +141,9 @@ git submodule update
 
 See the [Facebook page](https://www.facebook.com/mackorone.mms) for pictures,
 video demos, and other media related to the simulator.
+
+## Older Versions
+
+Previous incarnations of mms exist in the `old` directory. Feel free to take a
+peek, but previous versions will (obviously) not receive the same attention and
+support as the current version.

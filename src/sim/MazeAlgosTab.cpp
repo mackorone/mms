@@ -18,41 +18,34 @@ namespace mms {
 
 MazeAlgosTab::MazeAlgosTab() :
         m_comboBox(new QComboBox()),
-        m_editButton(new QPushButton("Edit")),
+        m_editButton(new QPushButton("&Edit")),
+        m_buildButton(new QPushButton("&Build")),
+        m_runButton(new QPushButton("&Run")),
         m_widthBox(new QSpinBox()),
         m_heightBox(new QSpinBox()),
-        m_prevSeedBox(new QSpinBox()),
-        m_nextSeedBox(new QSpinBox()),
-        m_buildButton(new QPushButton("Build")),
+        m_seedWidget(new RandomSeedWidget()),
         m_buildDisplay(new TextDisplayWidget()),
-        m_runButton(new QPushButton("Run")),
         m_runDisplay(new TextDisplayWidget()) {
 
     // Set up the layout
     QVBoxLayout* layout = new QVBoxLayout();
     setLayout(layout);
-    QHBoxLayout* topLayout = new QHBoxLayout();
-    layout->addLayout(topLayout);
 
-    // Add the import button
-    QPushButton* importButton = new QPushButton("Import Maze Algorithm");
+    // Add the combobox and buttons
+    QHBoxLayout* topLayout = new QHBoxLayout();
+    QPushButton* importButton = new QPushButton("&Import");
     connect(importButton, &QPushButton::clicked, this, &MazeAlgosTab::import);
     topLayout->addWidget(importButton);
-
-    // Add the combobox
     topLayout->addWidget(m_comboBox);
+    topLayout->addWidget(m_editButton);
+    topLayout->addWidget(m_buildButton);
+    topLayout->addWidget(m_runButton);
+    layout->addLayout(topLayout);
 
     // Create the algo buttons
     connect(m_editButton, &QPushButton::clicked, this, &MazeAlgosTab::edit);
     connect(m_buildButton, &QPushButton::clicked, this, &MazeAlgosTab::build);
     connect(m_runButton, &QPushButton::clicked, this, &MazeAlgosTab::run);
-
-    // Add the algo buttons to the tab
-    QHBoxLayout* buttonsLayout = new QHBoxLayout();
-    buttonsLayout->addWidget(m_runButton);
-    buttonsLayout->addWidget(m_buildButton);
-    buttonsLayout->addWidget(m_editButton);
-    layout->addLayout(buttonsLayout);
 
     // Add runtime options
     QHBoxLayout* optionsLayout = new QHBoxLayout();
@@ -77,25 +70,7 @@ MazeAlgosTab::MazeAlgosTab() :
     mazeSizeLayout->addWidget(m_heightBox, 0, 3);
 
     // Add the random seed box
-    QGroupBox* randomSeedBox = new QGroupBox("Random Seed");
-    optionsLayout->addWidget(randomSeedBox);
-    QGridLayout* randomSeedLayout = new QGridLayout();
-    randomSeedBox->setLayout(randomSeedLayout);
-
-    // Add the random seed inputs
-    m_prevSeedBox->setReadOnly(true);
-    m_prevSeedBox->setButtonSymbols(QAbstractSpinBox::NoButtons);
-    m_prevSeedBox->setRange(0, MAX_SEED_VALUE);
-    m_nextSeedBox->setRange(0, MAX_SEED_VALUE);
-	m_nextSeedBox->setValue(getNextSeed());
-    QLabel* prevLabel = new QLabel("Previous");
-    QLabel* nextLabel = new QLabel("Next");
-    nextLabel->setAlignment(Qt::AlignCenter);
-    prevLabel->setAlignment(Qt::AlignCenter);
-    randomSeedLayout->addWidget(prevLabel, 0, 0);
-    randomSeedLayout->addWidget(m_prevSeedBox, 0, 1);
-    randomSeedLayout->addWidget(nextLabel, 0, 2);
-    randomSeedLayout->addWidget(m_nextSeedBox, 0, 3);
+    optionsLayout->addWidget(m_seedWidget);
 
     // Add the build and run output
     QTabWidget* tabWidget = new QTabWidget();
@@ -274,15 +249,10 @@ void MazeAlgosTab::run() {
         }
     );
             
-	// Update the random seed
-    int seed = m_nextSeedBox->value();
-    m_prevSeedBox->setValue(seed);
-	m_nextSeedBox->setValue(getNextSeed());
-
     // Add the height, width, and seed to the command
     runCommand += " " + m_widthBox->cleanText();
     runCommand += " " + m_heightBox->cleanText();
-    runCommand += " " + QString::number(seed);
+    runCommand += " " + QString::number(m_seedWidget->next());
 
     // GUI upkeep before run starts
     m_runButton->setEnabled(false);
@@ -347,10 +317,6 @@ QVector<ConfigDialogField> MazeAlgosTab::getFields() {
         buildCommandField,
         runCommandField,
     };
-}
-
-int MazeAlgosTab::getNextSeed() {
-	return SimUtilities::randomNonNegativeInt(MAX_SEED_VALUE + 1);
 }
 
 } // namespace mms
