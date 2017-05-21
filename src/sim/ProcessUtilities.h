@@ -21,7 +21,7 @@ public:
         const QString& directory,
         QProcess* process);
 
-    static void build(
+    static QProcess* build(
         const QString& name,
         const QStringList& names,
         const QString& buildCommand,

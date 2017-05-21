@@ -47,6 +47,7 @@
 - Fix .maz file loading
 - Organize the code a little better
 - Support rotation and maze mirroring
+- replace "import" with "new"
 - Ensure Process actually gets cleaned up
 - Rename the whole texture vs polygon thing
 - Don't need (const X& x) because of implicit sharing
@@ -271,6 +272,7 @@
 - You can add layouts to layouts
     - make sure I'm not creating any unnecessary widgets
 - Use the "widget" suffix for all user-defined widgets
+- Tile fog should disappear immediately
 
 // TODO: MACK
 // +++

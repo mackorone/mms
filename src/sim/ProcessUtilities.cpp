@@ -21,7 +21,7 @@ bool ProcessUtilities::start(
     return process->waitForStarted();
 }
 
-void ProcessUtilities::build(
+QProcess* ProcessUtilities::build(
         const QString& name,
         const QStringList& names,
         const QString& buildCommand,
@@ -38,15 +38,15 @@ void ProcessUtilities::build(
 	// Perform some validation
     if (!names.contains(name)) {
 		display->textEdit->appendPlainText("[CORRUPT ALGORITHM CONFIG]\n");
-        return;
+        return nullptr;
     }
 	if (buildCommand.isEmpty()) {
 		display->textEdit->appendPlainText("[EMPTY BUILD COMMAND]\n");
-        return;
+        return nullptr;
 	}
 	if (dirPath.isEmpty()) {
 		display->textEdit->appendPlainText("[EMPTY DIRECTORY]\n");
-        return;
+        return nullptr;
 	}
 
     // Instantiate a new process
@@ -70,6 +70,7 @@ void ProcessUtilities::build(
         [=](int exitCode, QProcess::ExitStatus exitStatus){
             button->setEnabled(true);
     		display->textEdit->appendPlainText(
+                // TODO: MACK - display a special message for canceled process
 				exitStatus == QProcess::NormalExit && exitCode == 0
 				? "[BUILD COMPLETE]\n"
 				: "[BUILD FAILED]\n"
@@ -97,6 +98,8 @@ void ProcessUtilities::build(
         );
         delete process;
     }
+
+    return process;
 }
 
 } // namespace mms

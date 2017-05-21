@@ -18,8 +18,8 @@ private:
     int m_max;
     int getNext();
 
-    QSpinBox* m_prevSeedBox;
     QSpinBox* m_nextSeedBox;
+    QSpinBox* m_prevSeedBox;
 
 };
 

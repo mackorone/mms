@@ -10,25 +10,26 @@ namespace mms {
 
 RandomSeedWidget::RandomSeedWidget(int max) :
         m_max(max),
-        m_prevSeedBox(new QSpinBox()),
-        m_nextSeedBox(new QSpinBox()) {
+        m_nextSeedBox(new QSpinBox()),
+        m_prevSeedBox(new QSpinBox()) {
 
+    m_nextSeedBox->setRange(0, m_max);
+    m_nextSeedBox->setValue(getNext());
     m_prevSeedBox->setReadOnly(true);
     m_prevSeedBox->setButtonSymbols(QAbstractSpinBox::NoButtons);
     m_prevSeedBox->setSpecialValueText("N/A");
     m_prevSeedBox->setRange(0, m_max);
-    m_nextSeedBox->setRange(0, m_max);
-    m_nextSeedBox->setValue(getNext());
 
     QHBoxLayout* layout = new QHBoxLayout();
     QGroupBox* groupBox = new QGroupBox("Random Seed");
     QHBoxLayout* groupBoxLayout = new QHBoxLayout();
-    groupBoxLayout->addWidget(new QLabel("Previous"));
-    groupBoxLayout->addWidget(m_prevSeedBox);
     groupBoxLayout->addWidget(new QLabel("Next"));
     groupBoxLayout->addWidget(m_nextSeedBox);
+    groupBoxLayout->addWidget(new QLabel("Previous"));
+    groupBoxLayout->addWidget(m_prevSeedBox);
     groupBox->setLayout(groupBoxLayout);
     layout->addWidget(groupBox);
+    layout->setContentsMargins(0, 0, 0, 0);
     setLayout(layout);
 }
 

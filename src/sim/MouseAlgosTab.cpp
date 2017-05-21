@@ -25,14 +25,12 @@ namespace mms {
 MouseAlgosTab::MouseAlgosTab() :
         m_comboBox(new QComboBox()),
         m_editButton(new QPushButton("&Edit")),
-        m_seedBox(new QSpinBox()),
-        m_seedAutoUpdate(new QCheckBox("Auto-update")),
         m_buildButton(new QPushButton("&Build")),
+        m_runStopButton(new QPushButton("&Run")),
+        m_pauseButton(new QPushButton("&Pause")),
+        m_seedWidget(new RandomSeedWidget()),
         m_buildDisplay(new TextDisplayWidget()),
-        m_runButton(new QPushButton("&Run")),
-        m_runDisplay(new TextDisplayWidget()),
-        m_stopButton(new QPushButton("&Stop")),
-        m_pauseButton(new QPushButton("&Pause")) {
+        m_runDisplay(new TextDisplayWidget()) {
 
     // Set up the layout
     QVBoxLayout* layout = new QVBoxLayout();
@@ -46,23 +44,24 @@ MouseAlgosTab::MouseAlgosTab() :
     topLayout->addWidget(m_comboBox);
     topLayout->addWidget(m_editButton);
     topLayout->addWidget(m_buildButton);
-    topLayout->addWidget(m_runButton);
+    topLayout->addWidget(m_runStopButton);
     layout->addLayout(topLayout);
 
     // Create the algo buttons
     connect(m_editButton, &QPushButton::clicked, this, &MouseAlgosTab::edit);
     connect(m_buildButton, &QPushButton::clicked, this, &MouseAlgosTab::build);
-    connect(m_runButton, &QPushButton::clicked, this, &MouseAlgosTab::run);
+    connect(m_runStopButton, &QPushButton::clicked, this, &MouseAlgosTab::run);
 
     // Add the "speed" buttons
     QHBoxLayout* speedsLayout = new QHBoxLayout();
-    m_stopButton->setEnabled(false);
     m_pauseButton->setEnabled(false);
-    speedsLayout->addWidget(m_stopButton);
+    //speedsLayout->addWidget(m_stopButton);
     speedsLayout->addWidget(m_pauseButton);
+    /*
     connect(m_stopButton, &QPushButton::clicked, this, [=](){
         emit stopRequested();
     });
+    */
     connect(m_pauseButton, &QPushButton::clicked, this, [=](){
         bool pause = m_pauseButton->text() == "Pause";
         m_pauseButton->setText(pause ? "Resume": "Pause");
@@ -101,30 +100,13 @@ MouseAlgosTab::MouseAlgosTab() :
     for (int i = 0; i < 10; i += 1) {
         QPushButton* button = new QPushButton(QString::number(i));
         button->setMinimumSize(3, 0);
+        button->setCheckable(true);
         inputButtonsLayout->addWidget(button);
     }
     layout->addLayout(inputButtonsLayout);
 
-    // Add the mouse algo config box
-    QGroupBox* optionsBox = new QGroupBox("Mouse Options");
-    layout->addWidget(optionsBox);
-    QGridLayout* optionsLayout = new QGridLayout();
-    optionsBox->setLayout(optionsLayout);
-
     // Add the random seed config field
-    QLabel* seedLabel = new QLabel("Previous Seed");
-    seedLabel->setAlignment(Qt::AlignCenter);
-    m_seedBox->setRange(0, std::numeric_limits<int>::max());
-	m_seedBox->setValue(SimUtilities::randomNonNegativeInt());
-	m_seedAutoUpdate->setCheckState(Qt::Checked);
-    optionsLayout->addWidget(seedLabel, 0, 0);
-    optionsLayout->addWidget(m_seedBox, 1, 0);
-    optionsLayout->addWidget(m_seedAutoUpdate, 1, 1);
-    connect(m_seedAutoUpdate, &QCheckBox::stateChanged, this, [=](int state){
-        QString text = (state == Qt::Checked ? "Previous Seed" : "Seed");
-        seedLabel->setText(text);
-        m_seedBox->setReadOnly(state == Qt::Checked);
-    });
+    layout->addWidget(m_seedWidget);
 
     // Add the build output and run output
 	QTabWidget* tabWidget = new QTabWidget();
@@ -134,7 +116,7 @@ MouseAlgosTab::MouseAlgosTab() :
     connect(m_buildButton, &QPushButton::clicked, this, [=](){
         tabWidget->setCurrentWidget(m_buildDisplay);
     });
-    connect(m_runButton, &QPushButton::clicked, this, [=](){
+    connect(m_runStopButton, &QPushButton::clicked, this, [=](){
         tabWidget->setCurrentWidget(m_runDisplay);
     });
 
@@ -143,7 +125,8 @@ MouseAlgosTab::MouseAlgosTab() :
 }
 
 void MouseAlgosTab::mouseAlgoStopped() {
-    m_stopButton->setEnabled(false);
+    //m_stopButton->setEnabled(false);
+    m_runStopButton->setText("&Run"); // TODO: MACK
     m_pauseButton->setEnabled(false);
 }
 
@@ -261,6 +244,12 @@ void MouseAlgosTab::build() {
 
 void MouseAlgosTab::run() {
 
+    if (m_runStopButton->text() == "&Stop") {
+        emit stopRequested();
+        mouseAlgoStopped(); // TODO: MACK
+        return;
+    };
+
     // TODO: MACK - this is a hack
     /*
     S()->setPaused(false);
@@ -293,14 +282,10 @@ void MouseAlgosTab::run() {
         return;
 	}
 
-	// Update the random seed
-	if (m_seedAutoUpdate->isChecked()) {
-		m_seedBox->setValue(SimUtilities::randomNonNegativeInt());
-	}
-
     // Update some other UI components
     // TODO: MACK - this is a hack, doesn't work if maze file changed
-    m_stopButton->setEnabled(true);
+    //m_stopButton->setEnabled(true);
+    m_runStopButton->setText("&Stop");
     m_pauseButton->setEnabled(true);
 
     // Once we're sure the necessary items exist, emit the signal
@@ -309,7 +294,7 @@ void MouseAlgosTab::run() {
         runCommand,
         dirPath,
         mouseFilePath,
-        m_seedBox->value(),
+        m_seedWidget->next(),
         m_runDisplay
     );
 }
@@ -327,7 +312,7 @@ void MouseAlgosTab::refresh(const QString& name) {
     m_comboBox->setEnabled(!isEmpty);
     m_editButton->setEnabled(!isEmpty);
     m_buildButton->setEnabled(!isEmpty);
-    m_runButton->setEnabled(!isEmpty);
+    m_runStopButton->setEnabled(!isEmpty);
 }
 
 QVector<ConfigDialogField> MouseAlgosTab::getFields() {

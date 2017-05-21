@@ -21,7 +21,9 @@ Controller::Controller(const Maze* maze, Mouse* mouse, MazeView* view) :
 }
 
 Controller::~Controller() {
-    m_process->kill();
+    // TODO: upforgrabs
+    // We should call kill() if terminate() doesn't succeed
+    m_process->terminate();
     m_process->waitForFinished();
     delete m_process;
     delete m_mouseInterface;

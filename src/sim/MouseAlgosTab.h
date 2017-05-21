@@ -7,6 +7,7 @@
 #include <QWidget>
 
 #include "ConfigDialogField.h"
+#include "RandomSeedWidget.h"
 #include "TextDisplayWidget.h"
 
 namespace mms {
@@ -38,18 +39,14 @@ private:
     QComboBox* m_comboBox;
 
     QPushButton* m_editButton;
-
-    QSpinBox* m_seedBox;
-    QCheckBox* m_seedAutoUpdate;
-
     QPushButton* m_buildButton;
-    QPushButton* m_runButton;
+    QPushButton* m_runStopButton;
+    QPushButton* m_pauseButton;
+
+    RandomSeedWidget* m_seedWidget;
 
     TextDisplayWidget* m_buildDisplay;
     TextDisplayWidget* m_runDisplay;
-
-    QPushButton* m_stopButton;
-    QPushButton* m_pauseButton;
 
     void import();
     void edit();

@@ -38,7 +38,7 @@ maze-solving and obstacle-avoidance code
     * Drawing text on the cells
     * Setting the color of the cells
     * Declaring the existence of walls
-    * Showing where you robot has been
+    * Showing where your robot has been
 
 * Supports:
     * Loading mazes in many different formats (`.MAZ`, `.MZ2`, `.num`, `.map`)
