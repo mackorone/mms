@@ -1,11 +1,9 @@
 #include "Window.h"
 
 #include <QAction>
-#include <QDateTime> // TODO: MACK - remove me
 #include <QFrame>
 #include <QGroupBox>
 #include <QHBoxLayout>
-#include <QLabel>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
@@ -25,12 +23,12 @@ namespace mms {
 
 Window::Window(QWidget *parent) :
         QMainWindow(parent),
-        m_mazeWidthLineEdit(new QLineEdit()),
-        m_mazeHeightLineEdit(new QLineEdit()),
-        m_maxDistanceLineEdit(new QLineEdit()),
-        m_mazeDirLineEdit(new QLineEdit()),
-        m_isValidLineEdit(new QLineEdit()),
-        m_isOfficialLineEdit(new QLineEdit()),
+        m_mazeWidthLabel(new QLabel()),
+        m_mazeHeightLabel(new QLabel()),
+        m_maxDistanceLabel(new QLabel()),
+        m_mazeDirLabel(new QLabel()),
+        m_isValidLabel(new QLabel()),
+        m_isOfficialLabel(new QLabel()),
         m_truthButton(new QRadioButton("Truth")),
         m_viewButton(new QRadioButton("Mouse")),
         m_distancesCheckbox(new QCheckBox("Distance")),
@@ -53,13 +51,13 @@ Window::Window(QWidget *parent) :
         m_mazeAlgoEditButton(new QPushButton("Edit")),
         m_mazeAlgoImportButton(new QPushButton("Import")),
         m_mazeAlgoBuildProcess(nullptr),
-        m_mazeAlgoBuildButton(new QPushButton("Build")), // TODO: MACK - text initialized in two places
+        m_mazeAlgoBuildButton(new QPushButton("Build")),
         m_mazeAlgoBuildStatus(new QLabel()),
         m_mazeAlgoBuildOutput(new QPlainTextEdit()),
         m_mazeAlgoRunProcess(nullptr),
-        m_mazeAlgoStartRunButton(new QPushButton("Start")),
-        m_mazeAlgoStopRunButton(new QPushButton("Stop")),
-        m_mazeAlgoRunDisplay(new TextDisplayWidget()),
+        m_mazeAlgoRunButton(new QPushButton("Run")),
+        m_mazeAlgoRunStatus(new QLabel()),
+        m_mazeAlgoRunOutput(new QPlainTextEdit()),
         m_mazeAlgoWidthBox(new QSpinBox()),
         m_mazeAlgoHeightBox(new QSpinBox()),
         m_mazeAlgoSeedWidget(new RandomSeedWidget()) {
@@ -87,16 +85,16 @@ Window::Window(QWidget *parent) :
     QHBoxLayout* mazeStatsLayout = new QHBoxLayout();
     mazeStatsBox->setLayout(mazeStatsLayout);
     mapHolderLayout->addWidget(mazeStatsBox);
-    for (QPair<QString, QLineEdit*> pair : QVector<QPair<QString, QLineEdit*>> {
-        {"Width", m_mazeWidthLineEdit},
-        {"Height", m_mazeHeightLineEdit},
-        {"Max", m_maxDistanceLineEdit},
-        {"Start", m_mazeDirLineEdit},
-        {"Valid", m_isValidLineEdit},
-        {"Official", m_isOfficialLineEdit},
+    for (QPair<QString, QLabel*> pair : QVector<QPair<QString, QLabel*>> {
+        {"Width", m_mazeWidthLabel},
+        {"Height", m_mazeHeightLabel},
+        {"Max", m_maxDistanceLabel},
+        {"Start", m_mazeDirLabel},
+        {"Valid", m_isValidLabel},
+        {"Official", m_isOfficialLabel},
     }) {
-        pair.second->setReadOnly(true);
-        pair.second->setMinimumSize(5, 0);
+        pair.second->setAlignment(Qt::AlignCenter);   
+        pair.second->setFrameStyle(QFrame::StyledPanel | QFrame::Plain);
         QLabel* label = new QLabel(pair.first);
         mazeStatsLayout->addWidget(label);
         mazeStatsLayout->addWidget(pair.second);
@@ -231,13 +229,14 @@ Window::Window(QWidget *parent) :
     tabWidget->addTab(mouseAlgosTab, "Mouse Algorithms");
 
 	// Add some generic menu items
-    /*
     QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
+    /*
     QAction* saveMazeAction = new QAction(tr("&Save Maze As ..."), this);
     connect(saveMazeAction, &QAction::triggered, this, [=](){
         // TODO: MACK
 	});
 	fileMenu->addAction(saveMazeAction);
+    */
     QAction* quitAction = new QAction(tr("&Quit"), this);
     connect(quitAction, &QAction::triggered, this, [=](){
 		close();
@@ -245,6 +244,7 @@ Window::Window(QWidget *parent) :
 	fileMenu->addAction(quitAction);
 
 	// Add maze algorithm menu items
+    /*
     QMenu* mazeAlgoMenu = menuBar()->addMenu(tr("&Maze Algorithm"));
     QAction* importAction = new QAction(tr("&Import"), this);
     // TODO: MACK - just to maze algo tab here?
@@ -322,16 +322,16 @@ void Window::setMaze(Maze* maze) {
     m_map.setView(m_truth);
 
     // Update maze stats UI widgets
-    m_mazeWidthLineEdit->setText(QString::number(m_maze->getWidth()));
-    m_mazeHeightLineEdit->setText(QString::number(m_maze->getHeight()));
-    m_maxDistanceLineEdit->setText(
+    m_mazeWidthLabel->setText(QString::number(m_maze->getWidth()));
+    m_mazeHeightLabel->setText(QString::number(m_maze->getHeight()));
+    m_maxDistanceLabel->setText(
         QString::number(m_maze->getMaximumDistance())
     );
-    m_mazeDirLineEdit->setText(
-        DIRECTION_TO_STRING.value(m_maze->getOptimalStartingDirection()).at(0)
+    m_mazeDirLabel->setText(
+        DIRECTION_TO_STRING.value(m_maze->getOptimalStartingDirection())
     );
-    m_isValidLineEdit->setText(m_maze->isValidMaze() ? "T" : "F");
-    m_isOfficialLineEdit->setText(m_maze->isOfficialMaze() ? "T" : "F");
+    m_isValidLabel->setText(m_maze->isValidMaze() ? "TRUE" : "FALSE");
+    m_isOfficialLabel->setText(m_maze->isOfficialMaze() ? "TRUE" : "FALSE");
 
     // Delete the old objects
     delete oldMaze;
@@ -673,8 +673,7 @@ void Window::mazeAlgoTabInit() {
     connect(m_mazeAlgoEditButton, &QPushButton::clicked, this, &Window::mazeAlgoEdit);
     connect(m_mazeAlgoImportButton, &QPushButton::clicked, this, &Window::mazeAlgoImport);
     connect(m_mazeAlgoBuildButton, &QPushButton::clicked, this, &Window::mazeAlgoBuildStart);
-    connect(m_mazeAlgoStartRunButton, &QPushButton::clicked, this, &Window::mazeAlgoStartRun);
-    connect(m_mazeAlgoStopRunButton, &QPushButton::clicked, this, &Window::mazeAlgoStopRun);
+    connect(m_mazeAlgoRunButton, &QPushButton::clicked, this, &Window::mazeAlgoRunStart);
 
     // Next, set up the layout
     QVBoxLayout* layout = new QVBoxLayout();
@@ -694,18 +693,17 @@ void Window::mazeAlgoTabInit() {
     // Actions groupbox
     QGroupBox* actionsGroupBox = new QGroupBox("Actions");
     topLayout->addWidget(actionsGroupBox, 1, 0, 1, 1);
-
-    // TODO: MACK
-    m_mazeAlgoBuildStatus->setAlignment(Qt::AlignCenter);   
-    m_mazeAlgoBuildStatus->setFrameStyle(QFrame::StyledPanel | QFrame::Plain);
-    m_mazeAlgoBuildStatus->setMinimumWidth(90);
-
     QGridLayout* actionsLayout = new QGridLayout();
     actionsGroupBox->setLayout(actionsLayout);
     actionsLayout->addWidget(m_mazeAlgoBuildButton, 0, 0);
     actionsLayout->addWidget(m_mazeAlgoBuildStatus, 0, 1);
-    actionsLayout->addWidget(m_mazeAlgoStartRunButton, 1, 0);
-    actionsLayout->addWidget(m_mazeAlgoStopRunButton, 1, 1);
+    actionsLayout->addWidget(m_mazeAlgoRunButton, 1, 0);
+    actionsLayout->addWidget(m_mazeAlgoRunStatus, 1, 1);
+    for (QLabel* label : {m_mazeAlgoBuildStatus, m_mazeAlgoRunStatus}) {
+        label->setAlignment(Qt::AlignCenter);   
+        label->setFrameStyle(QFrame::StyledPanel | QFrame::Plain);
+        label->setMinimumWidth(90);
+    }
 
     // Options groupbox
     QGroupBox* optionsGroupBox = new QGroupBox("Options");
@@ -734,14 +732,14 @@ void Window::mazeAlgoTabInit() {
     QTabWidget* tabWidget = new QTabWidget();
     layout->addWidget(tabWidget);
 	tabWidget->addTab(m_mazeAlgoBuildOutput, "Build Output");
-	tabWidget->addTab(m_mazeAlgoRunDisplay, "Run Output");
+	tabWidget->addTab(m_mazeAlgoRunOutput, "Run Output");
     // TODO: MACK - should this be the case? What happens if the process
     // doesn't start, or fails validation?
     connect(m_mazeAlgoBuildButton, &QPushButton::clicked, this, [=](){
         tabWidget->setCurrentWidget(m_mazeAlgoBuildOutput);
     });
-    connect(m_mazeAlgoStartRunButton, &QPushButton::clicked, this, [=](){
-        tabWidget->setCurrentWidget(m_mazeAlgoRunDisplay);
+    connect(m_mazeAlgoRunButton, &QPushButton::clicked, this, [=](){
+        tabWidget->setCurrentWidget(m_mazeAlgoRunOutput);
     });
 
 	// TODO: MACK
@@ -851,63 +849,81 @@ void Window::mazeAlgoEdit() {
     mazeAlgoRefresh(newName);
 }
 
-void Window::mazeAlgoBuildStart() {
+void Window::algoActionStart(
+	QProcess** actionProcessVariable,
+	QPushButton* actionButton,
+	QLabel* actionStatus,
+	QPlainTextEdit* actionOutput,
+	const QString& algoName,
+	const QString& actionName,
+	const QString& actionString,
+	QString (*getCommand)(const QString&),
+	QString (*getDirPath)(const QString&),
+	QVector<QString> (Window::*getExtraArgs)(void),
+	void (Window::*actionStart)(void),
+	void (Window::*actionStop)(void),
+	void (Window::*stderrMidAction)(void),
+	void (Window::*stderrPostAction)(void)
+) {
+    // The action should not be running
+    ASSERT_FA(actionProcessVariable == nullptr);
+    ASSERT_TR(*actionProcessVariable == nullptr);
 
-    // No build should be running
-    ASSERT_TR(m_mazeAlgoBuildProcess == nullptr);
+	// Exactly one function should be supplied for handling stderr
+	ASSERT_NE(
+		(stderrMidAction == nullptr),
+		(stderrPostAction == nullptr)
+	);
 
-    // Get the currently selected maze algorithm and its config
-    const QString& name = m_mazeAlgoComboBox->currentText();
-    const QString& buildCommand = SettingsMazeAlgos::getBuildCommand(name);
-    const QString& dirPath = SettingsMazeAlgos::getDirPath(name);
+    // Get the command and directory for the action
+    QString command = getCommand(algoName);
+    QString dirPath = getDirPath(algoName);
 
 	// Perform some validation
-    if (!SettingsMazeAlgos::names().contains(name)) {
+	if (command.isEmpty()) {
         QMessageBox::warning(
             this,
-            "Corrupt Maze Algorithm Config",
-            "Cannot find algorithm \"" + name + "\". Please restart to refresh."
-        );
-        return;
-    }
-	if (buildCommand.isEmpty()) {
-        QMessageBox::warning(
-            this,
-            "Empty Build Command",
-            "Build command for algorithm \"" + name + "\" is empty."
+            QString("Empty %1 Command").arg(actionName),
+            QString("%1 command for algorithm \"%2\" is empty.").arg(
+				actionName,
+				algoName
+			)
         );
         return;
 	}
 	if (dirPath.isEmpty()) {
         QMessageBox::warning(
             this,
-            "Empty Directory",
-            "Directory for algorithm \"" + name + "\" is empty."
+            QString("Empty Directory"),
+            QString("Directory for algorithm \"%1\" is empty.").arg(
+				algoName
+			)
         );
         return;
 	}
 
-	// Clear the build display
-	m_mazeAlgoBuildOutput->clear();
+	// Clear the action ouput
+	actionOutput->clear();
 
     // Instantiate a new process
     QProcess* process = new QProcess(this);
 
-    // Display all build output/errors
+    // Display action output
     QObject::connect(process, &QProcess::readyReadStandardOutput, this, [=](){
         QString output = process->readAllStandardOutput();
         if (output.endsWith("\n")) {
             output.truncate(output.size() - 1);
         }
-        m_mazeAlgoBuildOutput->appendPlainText(output);
+        actionOutput->appendPlainText(output);
     });
-    QObject::connect(process, &QProcess::readyReadStandardError, this, [=](){
-        QString error = process->readAllStandardError();
-        if (error.endsWith("\n")) {
-            error.truncate(error.size() - 1);
-        }
-        m_mazeAlgoBuildOutput->appendPlainText(error);
-    });
+
+	// If configured, handle stderr during the action
+	if (stderrMidAction != nullptr) {
+    	QObject::connect(
+			process, &QProcess::readyReadStandardError,
+			this, stderrMidAction
+		);
+	}
 
     // Re-enable build button when build finishes, clean up the process
     QObject::connect(
@@ -918,178 +934,158 @@ void Window::mazeAlgoBuildStart() {
         this,
         [=](int exitCode, QProcess::ExitStatus exitStatus){
 
-			// Set the button to "Build"
-            disconnect(
-				m_mazeAlgoBuildButton, &QPushButton::clicked,
-				this, &Window::mazeAlgoBuildStop);
-            connect(
-				m_mazeAlgoBuildButton, &QPushButton::clicked,
-				this, &Window::mazeAlgoBuildStart);
-            m_mazeAlgoBuildButton->setText("Build");
+			// Set the button to "Action"
+            disconnect(actionButton, &QPushButton::clicked, this, actionStop);
+            connect(actionButton, &QPushButton::clicked, this, actionStart);
+            actionButton->setText(actionName);
 
-			// Update the status label
+			// Update the status label, call stderrPostAction
             if (exitStatus == QProcess::NormalExit && exitCode == 0) {
-                m_mazeAlgoBuildStatus->setText("COMPLETE");
-                m_mazeAlgoBuildStatus->setStyleSheet(
-					"QLabel { background: rgb(150, 255, 100); }"
-				);
+				if (stderrPostAction != nullptr) {
+					(this->*stderrPostAction)();
+				}
+                actionStatus->setText("COMPLETE");
             }
             else {
-                m_mazeAlgoBuildStatus->setText("FAILED");
-                m_mazeAlgoBuildStatus->setStyleSheet(
-					"QLabel { background: rgb(255, 150, 150); }"
-				);
+                actionStatus->setText("FAILED");
             }
 
             // Clean up the process
-            delete m_mazeAlgoBuildProcess;
-            m_mazeAlgoBuildProcess = nullptr;
+            delete *actionProcessVariable;
+            *actionProcessVariable = nullptr;
         }
     );
 
 	// Set the button to "Cancel"
-    connect(
-		m_mazeAlgoBuildButton, &QPushButton::clicked,
-		this, &Window::mazeAlgoBuildStop);
-    disconnect(
-		m_mazeAlgoBuildButton, &QPushButton::clicked,
-		this, &Window::mazeAlgoBuildStart);
-    m_mazeAlgoBuildButton->setText("Cancel");
+    disconnect(actionButton, &QPushButton::clicked, this, actionStart);
+    connect(actionButton, &QPushButton::clicked, this, actionStop);
+    actionButton->setText("Cancel");
 
 	// Update the status label
-    m_mazeAlgoBuildStatus->setText("BUILDING");
-    m_mazeAlgoBuildStatus->setStyleSheet(
-		"QLabel { background: rgb(255, 255, 100); }"
-	);
+    actionStatus->setText(actionString);
+
+	// Get extra arguments for the command
+	QVector<QString> args;
+	if (getExtraArgs != nullptr) {
+		for (const QString& arg : (this->*getExtraArgs)()) {
+			command += QString(" %1").arg(arg);
+		}
+	}
 
     // Start the build process
-    bool started = ProcessUtilities::start(buildCommand, dirPath, process);
+    bool started = ProcessUtilities::start(command, dirPath, process);
     if (started) {
-        m_mazeAlgoBuildProcess = process;
+        *actionProcessVariable = process;
+		// TODO: MACK - switch the the correct ouput tab here
     }
     else {
 
-	    // Set the button to "Build"
-        disconnect(
-            m_mazeAlgoBuildButton, &QPushButton::clicked,
-            this, &Window::mazeAlgoBuildStop);
-        connect(
-            m_mazeAlgoBuildButton, &QPushButton::clicked,
-            this, &Window::mazeAlgoBuildStart);
-        m_mazeAlgoBuildButton->setText("Build");
+	    // Set the button to "Action"
+        disconnect(actionButton, &QPushButton::clicked, this, actionStop);
+        connect(actionButton, &QPushButton::clicked, this, actionStart);
+        actionButton->setText(actionName);
 
 	    // Update the status label
-        m_mazeAlgoBuildStatus->setText("ERROR");
-		m_mazeAlgoBuildStatus->setStyleSheet(
-			"QLabel { background: rgb(255, 150, 150); }"
-		);
-        m_mazeAlgoBuildOutput->appendPlainText(process->errorString());
+        actionStatus->setText("ERROR");
+        actionOutput->appendPlainText(process->errorString());
 
         // Delete the process
         delete process;
     }
 }
 
-void Window::mazeAlgoBuildStop() {
-    m_mazeAlgoBuildProcess->terminate();
-    m_mazeAlgoBuildProcess->waitForFinished();
-    m_mazeAlgoBuildStatus->setText("CANCELED");
+void Window::algoActionStop(
+	QProcess* actionProcess,
+	QLabel* actionStatus
+) {
+    actionProcess->terminate();
+    actionProcess->waitForFinished();
+    actionStatus->setText("CANCELED");
 }
 
-void Window::mazeAlgoStartRun() {
-
-	// TODO: upforgrabs
-	// Deduplicate this logic with startBuild()
-
-	// Perform some validation
-    const QString& name = m_mazeAlgoComboBox->currentText();
-    if (!SettingsMazeAlgos::names().contains(name)) {
-		m_mazeAlgoRunDisplay->textEdit->appendPlainText("[CORRUPT ALGORITHM CONFIG]\n");
-        return;
-    }
-	QString runCommand = SettingsMazeAlgos::getRunCommand(name);
-	if (runCommand.isEmpty()) {
-		m_mazeAlgoRunDisplay->textEdit->appendPlainText("[EMPTY RUN COMMAND]\n");
-        return;
-	}
-	QString dirPath = SettingsMazeAlgos::getDirPath(name);
-	if (dirPath.isEmpty()) {
-		m_mazeAlgoRunDisplay->textEdit->appendPlainText("[EMPTY DIRECTORY]\n");
-        return;
-	}
-
-    // Instantiate a new process
-    QProcess* process = new QProcess(this);
-
-	// Clear the run output
-	if (m_mazeAlgoRunDisplay->autoClearCheckBox->isChecked()) {
-		m_mazeAlgoRunDisplay->textEdit->clear();
-	}
-
-    // Display run output
-    connect(process, &QProcess::readyReadStandardOutput, this, [=](){
-        QString output = process->readAllStandardOutput();
-        m_mazeAlgoRunDisplay->textEdit->appendPlainText(output);
-    });
-
-    // Re-enable run button when run finishes, clean up the process
-    connect(
-        process,
-        static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(
-            &QProcess::finished
-        ),
-        this,
-        [=](int exitCode, QProcess::ExitStatus exitStatus){
-            m_mazeAlgoStartRunButton->setEnabled(true);
-			if (exitStatus == QProcess::NormalExit && exitCode == 0) {
-				m_mazeAlgoRunDisplay->textEdit->appendPlainText("[RUN COMPLETE]\n");
-				QString output = process->readAllStandardError();
-                Maze* maze = Maze::fromAlgo(output.toUtf8());
-                if (maze != nullptr) {
-                    setMaze(maze);
-                }
-			}
-			else {
-				m_mazeAlgoRunDisplay->textEdit->appendPlainText("[RUN FAILED]\n");
-                // TODO: MACK
-                m_mazeAlgoRunDisplay->textEdit->appendPlainText(process->errorString());
-                m_mazeAlgoRunDisplay->textEdit->appendPlainText(QString::number(exitCode));
-
-			}
-            delete process;
-        }
-    );
-            
-    // Add the height, width, and seed to the command
-    runCommand += " " + m_mazeAlgoWidthBox->cleanText();
-    runCommand += " " + m_mazeAlgoHeightBox->cleanText();
-    runCommand += " " + QString::number(m_mazeAlgoSeedWidget->next());
-
-    // GUI upkeep before run starts
-    m_mazeAlgoStartRunButton->setEnabled(false);
-    m_mazeAlgoRunDisplay->textEdit->appendPlainText(
-		QString("[RUN INITIATED] - ") +
-		QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss AP") +
-		QString("\n")
+void Window::mazeAlgoBuildStart() {
+	algoActionStart(
+		&m_mazeAlgoBuildProcess,
+		m_mazeAlgoBuildButton,
+		m_mazeAlgoBuildStatus,
+		m_mazeAlgoBuildOutput,
+    	m_mazeAlgoComboBox->currentText(),
+		"Build",
+		"BUILDING",
+		SettingsMazeAlgos::getBuildCommand,
+		SettingsMazeAlgos::getDirPath,
+		nullptr,
+		&Window::mazeAlgoBuildStart,
+		&Window::mazeAlgoBuildStop,
+		&Window::mazeAlgoBuildStderr,
+		nullptr
 	);
-
-    // Start the run process
-    bool started = ProcessUtilities::start(runCommand, dirPath, process);
-    if (!started) {
-        m_mazeAlgoStartRunButton->setEnabled(true);
-        m_mazeAlgoRunDisplay->textEdit->appendPlainText(
-            QString("[RUN FAILED TO START] - ") +
-            process->errorString() +
-            QString("\n")
-        );
-        delete process;
-    }
-
-    // TODO: MACK - Update the member variable
 }
 
-void Window::mazeAlgoStopRun() {
-    // TODO: MACK
+void Window::mazeAlgoBuildStop() {
+	algoActionStop(
+    	m_mazeAlgoBuildProcess,
+		m_mazeAlgoBuildStatus
+	);
+}
+
+void Window::mazeAlgoBuildStderr() {
+	ASSERT_FA(m_mazeAlgoBuildProcess == nullptr);
+	QString error = m_mazeAlgoBuildProcess->readAllStandardError();
+	if (error.endsWith("\n")) {
+		error.truncate(error.size() - 1);
+	}
+	m_mazeAlgoBuildOutput->appendPlainText(error);
+}
+
+QVector<QString> Window::mazeAlgoRunExtraArgs() {
+	return {
+		m_mazeAlgoWidthBox->cleanText(),
+		m_mazeAlgoHeightBox->cleanText(),
+		QString::number(m_mazeAlgoSeedWidget->next()),
+	};
+}
+
+void Window::mazeAlgoRunStart() {
+	algoActionStart(
+		&m_mazeAlgoRunProcess,
+		m_mazeAlgoRunButton,
+		m_mazeAlgoRunStatus,
+		m_mazeAlgoRunOutput,
+    	m_mazeAlgoComboBox->currentText(),
+		"Run",
+		"RUNNING",
+		SettingsMazeAlgos::getRunCommand,
+		SettingsMazeAlgos::getDirPath,
+		&Window::mazeAlgoRunExtraArgs,
+		&Window::mazeAlgoRunStart,
+		&Window::mazeAlgoRunStop,
+		nullptr,
+		&Window::mazeAlgoRunStderr
+	);
+}
+
+void Window::mazeAlgoRunStop() {
+	algoActionStop(
+    	m_mazeAlgoRunProcess,
+		m_mazeAlgoRunStatus
+	);
+}
+
+void Window::mazeAlgoRunStderr() {
+	ASSERT_FA(m_mazeAlgoRunProcess == nullptr);
+	QString output = m_mazeAlgoRunProcess->readAllStandardError();
+	Maze* maze = Maze::fromAlgo(output.toUtf8());
+	if (maze != nullptr) {
+		setMaze(maze);
+	}
+	else {
+        QMessageBox::warning(
+            this,
+            "Invalid Maze",
+            "Could not load generated maze"
+        );
+	}
 }
 
 void Window::mazeAlgoRefresh(const QString& name) {
@@ -1105,7 +1101,7 @@ void Window::mazeAlgoRefresh(const QString& name) {
     m_mazeAlgoComboBox->setEnabled(!isEmpty);
     m_mazeAlgoEditButton->setEnabled(!isEmpty);
     m_mazeAlgoBuildButton->setEnabled(!isEmpty);
-    m_mazeAlgoStartRunButton->setEnabled(!isEmpty);
+    m_mazeAlgoRunButton->setEnabled(!isEmpty);
 }
 
 QVector<ConfigDialogField> Window::mazeAlgoGetFields() {

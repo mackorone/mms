@@ -21,6 +21,7 @@ bool ProcessUtilities::start(
     return process->waitForStarted();
 }
 
+// TODO: MACK - kill this
 QProcess* ProcessUtilities::build(
         const QString& name,
         const QStringList& names,

@@ -38,12 +38,12 @@ private:
     QThread m_modelThread;
 
 	// Maze stats GUI elements
-	QLineEdit* m_mazeWidthLineEdit;
-	QLineEdit* m_mazeHeightLineEdit;
-	QLineEdit* m_maxDistanceLineEdit;
-	QLineEdit* m_mazeDirLineEdit;
-	QLineEdit* m_isValidLineEdit;
-	QLineEdit* m_isOfficialLineEdit;
+	QLabel* m_mazeWidthLabel;
+	QLabel* m_mazeHeightLabel;
+	QLabel* m_maxDistanceLabel;
+	QLabel* m_mazeDirLabel;
+	QLabel* m_isValidLabel;
+	QLabel* m_isOfficialLabel;
 
     // The map object
     Map m_map;
@@ -91,28 +91,53 @@ private:
     void mazeAlgoEdit();
     void mazeAlgoImport();
 
-    void mazeAlgoBuildStart();
-    void mazeAlgoBuildStop();
-
-    void mazeAlgoStartRun();
-    void mazeAlgoStopRun();
-
     // TODO: MACK
     QWidget* m_mazeAlgoWidget;
     QComboBox* m_mazeAlgoComboBox;
     QPushButton* m_mazeAlgoEditButton;
     QPushButton* m_mazeAlgoImportButton;
 
+	// Functions encapsulating process management logic,
+    // shared between maze and mouse algorithms
+	void algoActionStart(
+		QProcess** actionProcessVariable,
+		QPushButton* actionButton,
+		QLabel* actionStatus,
+		QPlainTextEdit* actionOutput,
+		const QString& algoName,
+		const QString& actionName,
+		const QString& actionString,
+ 		QString (*getCommand)(const QString&),
+ 		QString (*getDirPath)(const QString&),
+		QVector<QString> (Window::*getExtraArgs)(void),
+		void (Window::*actionStart)(void),
+		void (Window::*actionStop)(void),
+		void (Window::*stderrMidAction)(void),
+		void (Window::*stderrPostAction)(void)
+	);
+	void algoActionStop(
+		QProcess* actionProcess,
+		QLabel* actionStatus
+	);
+
     // Maze algo building
     QProcess* m_mazeAlgoBuildProcess;
     QPushButton* m_mazeAlgoBuildButton;
 	QLabel* m_mazeAlgoBuildStatus;
     QPlainTextEdit* m_mazeAlgoBuildOutput;
+    void mazeAlgoBuildStart();
+    void mazeAlgoBuildStop();
+    void mazeAlgoBuildStderr();
 
+    // Maze algo running
     QProcess* m_mazeAlgoRunProcess;
-    QPushButton* m_mazeAlgoStartRunButton;
-    QPushButton* m_mazeAlgoStopRunButton;
-    TextDisplayWidget* m_mazeAlgoRunDisplay;
+    QPushButton* m_mazeAlgoRunButton;
+    QLabel* m_mazeAlgoRunStatus;
+    QPlainTextEdit* m_mazeAlgoRunOutput;
+    QVector<QString> mazeAlgoRunExtraArgs();
+    void mazeAlgoRunStart();
+    void mazeAlgoRunStop();
+    void mazeAlgoRunStderr();
 
     QSpinBox* m_mazeAlgoWidthBox;
     QSpinBox* m_mazeAlgoHeightBox;

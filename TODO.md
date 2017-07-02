@@ -4,6 +4,7 @@
 - Cancel all processes when the algorithm changes
     - Or when the maze changes
 - Make it more obvious which widgets are read-only
+    - Use QLabel with border
 - Cancelling build and run, as they're happening
 - Stop button should be disabled if no algorithm is executing
     - Running, Complete, Failed, Canceled, Error - status bar for algorithms...
@@ -138,6 +139,7 @@
     - MinSleepDuration is a little bit weird - sometimes we try to sleep less than that
 - Downward sensor
 - Intelligent build command and run command generation
+- Add colors to stats/outputs...
 
 # Medum Priority
 
