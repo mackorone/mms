@@ -2,17 +2,22 @@
 
 #include <QCheckBox>
 #include <QCloseEvent>
+#include <QComboBox>
+#include <QLabel>
 #include <QLineEdit>
 #include <QMainWindow>
+#include <QPlainTextEdit>
 #include <QRadioButton>
 #include <QThread>
 
 #include "Controller.h"
+#include "ConfigDialogField.h"
 #include "Map.h"
 #include "Maze.h"
 #include "MazeView.h"
 #include "Model.h"
 #include "MouseGraphic.h"
+#include "RandomSeedWidget.h"
 #include "TextDisplayWidget.h"
 
 namespace mms {
@@ -78,6 +83,44 @@ private:
         int seed,
         TextDisplayWidget* display);
     void stopMouseAlgo();
+
+// TODO: MACK ---------------  MazeAlgosTab
+private:
+
+    void mazeAlgoTabInit();
+    void mazeAlgoEdit();
+    void mazeAlgoImport();
+
+    void mazeAlgoBuildStart();
+    void mazeAlgoBuildStop();
+
+    void mazeAlgoStartRun();
+    void mazeAlgoStopRun();
+
+    // TODO: MACK
+    QWidget* m_mazeAlgoWidget;
+    QComboBox* m_mazeAlgoComboBox;
+    QPushButton* m_mazeAlgoEditButton;
+    QPushButton* m_mazeAlgoImportButton;
+
+    // Maze algo building
+    QProcess* m_mazeAlgoBuildProcess;
+    QPushButton* m_mazeAlgoBuildButton;
+	QLabel* m_mazeAlgoBuildStatus;
+    QPlainTextEdit* m_mazeAlgoBuildOutput;
+
+    QProcess* m_mazeAlgoRunProcess;
+    QPushButton* m_mazeAlgoStartRunButton;
+    QPushButton* m_mazeAlgoStopRunButton;
+    TextDisplayWidget* m_mazeAlgoRunDisplay;
+
+    QSpinBox* m_mazeAlgoWidthBox;
+    QSpinBox* m_mazeAlgoHeightBox;
+    RandomSeedWidget* m_mazeAlgoSeedWidget;
+
+    void mazeAlgoRefresh(const QString& name = "");
+    QVector<ConfigDialogField> mazeAlgoGetFields();
+
 
     /*
     // Key related helpers

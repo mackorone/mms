@@ -1,23 +1,29 @@
 # High Priority
 
-- Stop button should be disabled if no algorithm is executing
-- If no maze is loaded, we shouldn't jump to mouse output tab
-- Write and read from persistant storage...
-- Save the last-used algo, so that we can jump to it on subsequent runs
+- Set the working directory?
+- Cancel all processes when the algorithm changes
+    - Or when the maze changes
+- Make it more obvious which widgets are read-only
 - Cancelling build and run, as they're happening
+- Stop button should be disabled if no algorithm is executing
+    - Running, Complete, Failed, Canceled, Error - status bar for algorithms...
+- If no maze is loaded, we shouldn't jump to mouse output tab
+- Make it easier to edit the simulator parameters
+    - Write and read from persistant storage...
+    - The values should be re-loaded on the fly
+- Save the last-used algo, so that we can jump to it on subsequent runs
 - Should unpause after pressing "run"
-- Can't exit after pausing...
-- Ensure the mouse stays in the maze
+- Can't exit after pausing the mouse algorithm...
+- If the mouse goes outside of the maze, the simulator crashes
+    - Ensure the mouse stays in the maze
 - Surface information about *why* a maze is valid/invalid (etc.)
 - MacOS retina https://github.com/vispy/vispy/issues/99
 - Better error messages for failed commands
-- If the mouse goes outside of the maze, the simulator crashes
 - Input buttons for the mouse algorithm
 - If it's paused, I can't select a new maze file...
+- Remove "clear" and "autoclear" from text display widget
 - Add default maze/mouse files
 - If maze algo fails, the simulator crashes
-- Make it easier to edit the simulator parameters
-    - The values should be re-loaded on the fly
 - Support json maze file format
 - Button for toggling the maze views
 - Verify that the tile text automatically refresh when we set tileGraphicTextMaxSize
@@ -173,7 +179,6 @@
 - Improve sensor readings by getting the actual complete polygon, not approximated
 - Break up MouseInterface into DiscreteMouseInterface and ContinuousMouseInterface
 - isDiscreteInterfaceCompatible and isContinuousInterfaceCompatible
-- Enable steering the wheels and sensors during run
 - Set acceleration of all moving/rotating things
 - Make some default Arduino implementations for some functions
 - Testing for resource existence (like the shaders, font images, etc.)
@@ -183,7 +188,6 @@
 - Shortest path graphic (display the shortest path)
 - Randomly select a pre-defined maze
 - Write a good continuous algorithm
-- Data recording for pause, rewind, fast forward
 - Interrupt interface
 - Run the program with maximum thread priority
 - Crash recovery semantics
@@ -216,7 +220,6 @@
 - Detect STL use in maze and mouse algos, send a warning
 - Perhaps impose memory limits on the algorithm
 - Add a way to change the mouse color
-- 3D
 - Crash animation for both modes
 - Unit tests
 - Try to break the simulator from within the algos, make it tamper-resistant
@@ -226,6 +229,9 @@
 - Rewrite/clean floodfill
 - Color palettes
 - Tile text color
+- Enable steering the wheels and sensors during run
+- Data recording for pause, rewind, fast forward
+- 3D
 
 # Clean-Up
 

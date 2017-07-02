@@ -1,13 +1,10 @@
 # src
 
-This directory contains all of the source code for *mms*. That is, all compiled
-C++ code lives within this directory. This makes it easy to, within the
-Makefile (which lives in the project root directory), generate a list of build
-rules - we can simply search this directory for files that end in `.cpp`.
+This directory contains all of the source code for *mms*.
 
-The subdirectories are used as follows:
+The subdirectories are as follows:
 
-* `lib` - Contains code (mostly) borrowed from other open source projects
-* `maze` - Contains code for all maze generation algorithms
-* `mouse` - Contains code for all mouse (maze-solving) algorithms
+* `maze` - Contains code for maze generation algorithms
+* `mouse` - Contains code for mouse (maze-solving) algorithms
 * `sim` - Contains code internal to the simulator
+* `tests` - Contains code for testing the simulator

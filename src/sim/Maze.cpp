@@ -51,12 +51,15 @@ Maze::Maze(BasicMaze basicMaze) {
     QPair<bool, QVector<QString>> isValidInfo = MazeChecker::isValidMaze(basicMaze);
     m_isValidMaze = isValidInfo.first;
     if (!m_isValidMaze) {
+        // TODO: MACK - what should I do with these errors here?
+        /*
         for (const QString& string : isValidInfo.second) {
             qWarning().noquote().nospace() << string;
         }
         qWarning().noquote().nospace()
             << "The maze failed validation. The mouse algorithm will not"
             << " execute.";
+        */
     }
 
     // TODO: MACK - fix maze saving
@@ -94,11 +97,14 @@ Maze::Maze(BasicMaze basicMaze) {
     QPair<bool, QVector<QString>> isOfficialInfo = MazeChecker::isOfficialMaze(basicMaze);
     m_isOfficialMaze = isOfficialInfo.first;
     if (m_isValidMaze && !m_isOfficialMaze) {
+        // TODO: MACK - what should I do with these errors here?
+        /*
         for (const QString& string : isOfficialInfo.second) {
             qWarning().noquote().nospace() << string;
         }
         qWarning().noquote().nospace()
             << "The maze did not pass the \"is official maze\" tests.";
+        */
     }
 
     // Load the maze given by the maze generation algorithm

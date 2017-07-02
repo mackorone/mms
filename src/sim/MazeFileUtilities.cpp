@@ -368,6 +368,7 @@ BasicMaze MazeFileUtilities::deserializeNumType(const QByteArray& bytes) {
 QByteArray MazeFileUtilities::serializeMapType(const BasicMaze& maze) {
 
     // TODO: MACK - FIXME
+    // TODO: MACK - deduplicate this with the maze algo code
     /*
     // The characters to use in the file
     char post = '+';
