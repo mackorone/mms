@@ -33,6 +33,8 @@ public:
 
 private:
 
+    // TODO: MACK - move some of the GUI elements down below model elements
+
     // The model object
     Model m_model;
     QThread m_modelThread;
@@ -69,33 +71,8 @@ private:
     MazeView* m_view;
     Controller* m_controller;
 
-    // The event loop for the mouse algo process. We need a separate loop so
-    // that the GUI doesn't lock up on blocking algo commands, like sleep
-    QThread* m_mouseAlgoThread;
-
-    // Helper functions
+    // Helper function for updating the maze 
     void setMaze(Maze* maze);
-    void runMouseAlgo(
-        const QString& name,
-        const QString& runCommand,
-        const QString& dirPath,
-        const QString& mouseFilePath,
-        int seed,
-        TextDisplayWidget* display);
-    void stopMouseAlgo();
-
-// TODO: MACK ---------------  MazeAlgosTab
-private:
-
-    void mazeAlgoTabInit();
-    void mazeAlgoEdit();
-    void mazeAlgoImport();
-
-    // TODO: MACK
-    QWidget* m_mazeAlgoWidget;
-    QComboBox* m_mazeAlgoComboBox;
-    QPushButton* m_mazeAlgoEditButton;
-    QPushButton* m_mazeAlgoImportButton;
 
 	// Functions encapsulating process management logic,
     // shared between maze and mouse algorithms
@@ -104,6 +81,7 @@ private:
 		QPushButton* actionButton,
 		QLabel* actionStatus,
 		QPlainTextEdit* actionOutput,
+        QTabWidget* outputTabWidget,
 		const QString& algoName,
 		const QString& actionName,
 		const QString& actionString,
@@ -119,6 +97,18 @@ private:
 		QProcess* actionProcess,
 		QLabel* actionStatus
 	);
+
+// TODO: MACK ---------------  MazeAlgosTab
+
+    // TODO: MACK
+    QWidget* m_mazeAlgoWidget;
+    QComboBox* m_mazeAlgoComboBox;
+    QPushButton* m_mazeAlgoEditButton;
+    QPushButton* m_mazeAlgoImportButton;
+    QTabWidget* m_mazeAlgoOutputTabWidget;
+    void mazeAlgoTabInit();
+    void mazeAlgoEdit();
+    void mazeAlgoImport();
 
     // Maze algo building
     QProcess* m_mazeAlgoBuildProcess;
@@ -146,6 +136,45 @@ private:
     void mazeAlgoRefresh(const QString& name = "");
     QVector<ConfigDialogField> mazeAlgoGetFields();
 
+// TODO: MACK ------------------ Mouse Algos Tab
+
+    QWidget* m_mouseAlgoWidget;
+    QComboBox* m_mouseAlgoComboBox;
+    QPushButton* m_mouseAlgoEditButton;
+    QPushButton* m_mouseAlgoImportButton;
+    QTabWidget* m_mouseAlgoOutputTabWidget;
+    void mouseAlgoTabInit();
+    void mouseAlgoEdit();
+    void mouseAlgoImport();
+
+    // Mouse algo building
+    QProcess* m_mouseAlgoBuildProcess; // TODO: MACK - thread vs process...
+    QPushButton* m_mouseAlgoBuildButton;
+    QLabel* m_mouseAlgoBuildStatus;
+    QPlainTextEdit* m_mouseAlgoBuildOutput;
+    void mouseAlgoBuildStart();
+    void mouseAlgoBuildStop();
+    void mouseAlgoBuildStderr();
+
+    // The event loop for the mouse algo process. We need a separate loop so
+    // that the GUI doesn't lock up on blocking algo commands, like sleep
+    QThread* m_mouseAlgoThread;
+
+    // Mouse algo running
+    QProcess* m_mouseAlgoRunProcess;
+    QPushButton* m_mouseAlgoRunButton;
+    QLabel* m_mouseAlgoRunStatus;
+    QPlainTextEdit* m_mouseAlgoRunOutput;
+    QVector<QString> mouseAlgoRunExtraArgs();
+    void mouseAlgoRunStart();
+    void mouseAlgoRunStop();
+    void mouseAlgoRunStderr();
+
+    QPushButton* m_mouseAlgoPauseButton;
+    RandomSeedWidget* m_mouseAlgoSeedWidget;
+
+    void mouseAlgoRefresh(const QString& name = "");
+    QVector<ConfigDialogField> mouseAlgoGetFields();
 
     /*
     // Key related helpers

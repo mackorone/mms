@@ -1,5 +1,7 @@
 # High Priority
 
+- Add colors to stats/outputs...
+    - Makes it easier to know that it's not a button
 - Set the working directory?
 - Cancel all processes when the algorithm changes
     - Or when the maze changes
@@ -139,7 +141,6 @@
     - MinSleepDuration is a little bit weird - sometimes we try to sleep less than that
 - Downward sensor
 - Intelligent build command and run command generation
-- Add colors to stats/outputs...
 
 # Medum Priority
 
