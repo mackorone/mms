@@ -1464,19 +1464,13 @@ void Window::mouseAlgoRunStart() {
         connect(
             &m_model,
             &Model::newTileLocationTraversed,
-            // TODO: upforgrabs
-            // Ideally, this lambda would execute on the UI thread, so that the
-            // fog can clear immediately after the mouse enters the tile
-            // (instead of being blocked on the algorithm's actions, e.g., move
-            // forward, sleep, etc.). However, changing "newMouseInterface" to
-            // "this" causes segfaults because the "newView" gets deleted
-            // before all queued "newTileLocationTraversed" events are
-            // processed. Putting it on the algorithms thread forces ensures
-            // that all no events are processed after "waitForFinished"
-            // returns.
-            newMouseInterface,
+            this,
             [=](int x, int y){
-                if (newMouseInterface->getDynamicOptions().automaticallyClearFog) {
+                if (
+                    // Ensure that the interface still exists and fog is enabled
+                    newMouseInterface == m_mouseInterface &&
+                    newMouseInterface->getDynamicOptions().automaticallyClearFog
+                ) {
                     newView->getMazeGraphic()->setTileFogginess(x, y, false);
                 }
             }
@@ -1488,6 +1482,48 @@ void Window::mouseAlgoRunStart() {
         // the mouse position/orientation not be updated properly during the
         // beginning of the mouse algo's execution)
         m_model.setMouse(newMouse);
+
+        // ------------------------
+        // TODO: MACK
+
+            // Re-enable build button when build finishes, clean up the process
+            connect(
+                newProcess,
+                static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(
+                    &QProcess::finished
+                ),
+                this,
+                [=](int exitCode, QProcess::ExitStatus exitStatus){
+
+                    // Set the button to "Action"
+                    disconnect(
+                        m_mouseAlgoRunButton, &QPushButton::clicked,
+                        this, &Window::mouseAlgoRunStop
+                    );
+                    connect(
+                        m_mouseAlgoRunButton, &QPushButton::clicked,
+                        this, &Window::mouseAlgoRunStart
+                    );
+                    m_mouseAlgoRunButton->setText("Run");
+
+                    // Update the status label, call stderrPostAction
+                    if (exitStatus == QProcess::NormalExit && exitCode == 0) {
+                        m_mouseAlgoRunStatus->setText("COMPLETE");
+                        m_mouseAlgoRunStatus->setStyleSheet(
+                            "QLabel { background: rgb(150, 255, 100); }"
+                        );
+                    }
+                    else {
+                        m_mouseAlgoRunStatus->setText("FAILED");
+                        m_mouseAlgoRunStatus->setStyleSheet(
+                            "QLabel { background: rgb(255, 150, 150); }"
+                        );
+                    }
+                }
+            );
+
+        // ------------------------
+
 
         // When the thread finishes, clean everything up
         connect(newMouseAlgoThread, &QThread::finished, this, [=](){
@@ -1501,9 +1537,41 @@ void Window::mouseAlgoRunStart() {
             delete newMouse;
         });
 
+        // ---------------------------
+        // TODO: MACK - extract this into it's own function ...
+
+            // Set the button to "Cancel"
+            disconnect(
+                m_mouseAlgoRunButton, &QPushButton::clicked,
+                this, &Window::mouseAlgoRunStart
+            );
+            connect(
+                m_mouseAlgoRunButton, &QPushButton::clicked,
+                this, &Window::mouseAlgoRunStop
+            );
+            m_mouseAlgoRunButton->setText("Cancel");
+
+            // Update the status label
+            m_mouseAlgoRunStatus->setText("RUNNING");
+            m_mouseAlgoRunStatus->setStyleSheet(
+                "QLabel { background: rgb(255, 255, 100); }"
+            );
+        // ---------------------------
+
         // If the process fails to start, stop the thread and cleanup
         bool success = ProcessUtilities::start(command, dirPath, newProcess);
         if (!success) {
+
+        // ---------------------------
+        // TODO: MACK - extract this into it's own function ...
+                // Update the status label
+                m_mouseAlgoRunStatus->setText("ERROR");
+                m_mouseAlgoRunStatus->setStyleSheet(
+                    "QLabel { background: rgb(255, 150, 150); }"
+                );
+                m_mouseAlgoRunOutput->appendPlainText(newProcess->errorString());
+        // ---------------------------
+
             newMouseAlgoThread->quit();
             m_model.removeMouse();
             return;
@@ -1533,13 +1601,6 @@ void Window::mouseAlgoRunStart() {
 
 void Window::mouseAlgoRunStop() {
 
-    // First, update the UI
-    m_truthButton->setChecked(true);
-    m_viewButton->setEnabled(false);
-    m_followCheckbox->setEnabled(false);
-    // TODO: MACK - change to the current tab
-    // TODO: Stop/pause buttons
-
     // Only stop the algo thread if an algo is running
     if (m_mouseInterface != nullptr) {
         // If the mouse interface exists, the thread exists
@@ -1567,6 +1628,18 @@ void Window::mouseAlgoRunStop() {
     m_mouseGraphic = nullptr;
     m_view = nullptr;
     m_mouse = nullptr;
+
+    // First, update the UI
+    m_truthButton->setChecked(true);
+    m_viewButton->setEnabled(false);
+    m_followCheckbox->setEnabled(false);
+    // TODO: MACK - fix the background color
+    m_mouseAlgoRunStatus->setText("");
+    m_mouseAlgoRunStatus->setStyleSheet(
+        "QLabel { background: rgb(255, 255, 255); }"
+    );
+    // TODO: MACK - change to the current tab
+    // TODO: Stop/pause buttons
 }
 
 void Window::mouseAlgoRefresh(const QString& name) {
