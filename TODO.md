@@ -1,12 +1,9 @@
-# High Priority
 
-- Add colors to stats/outputs...
-    - Makes it easier to know that it's not a button
+ High Priority
+
 - Set the working directory?
 - Cancel all processes when the algorithm changes
     - Or when the maze changes
-- Make it more obvious which widgets are read-only
-    - Use QLabel with border
 - Cancelling build and run, as they're happening
 - Stop button should be disabled if no algorithm is executing
     - Running, Complete, Failed, Canceled, Error - status bar for algorithms...
@@ -46,6 +43,7 @@
 - Indicate whether or not there are lines in the stdout buffer (checkbox?)
 - Save button to Maze algo tab
 - Surface error messages to the UI
+- Timestamp of last built
 - Stderr get's printed out when the algo exits, gets sent to Controller
 - Kill Layout class
 - Blank map on startup would be good
@@ -104,6 +102,8 @@
 - Communicate with subprocesses on stderr
     - Print out the stdout of the subprocesses
 - Sim time is lagging a little bit
+- Make it more obvious which widgets are read-only
+    - Use QLabel with border
 - Discrete mode speed...
     - Ensure that the wheel speed is not too high in the MouseInterface (so that the mouse does not clip through walls)
     - In discrete mode, the mouse can overturn or go too far if the sim speed
@@ -144,7 +144,8 @@
 
 # Medum Priority
 
-- Tile fog should disappear immediately
+- Add colors to stats/outputs...
+    - Makes it easier to know that it's not a button
 - Add a print function to interfaces
 - Arduino int could be 16 bits
 - Deduplicate some import/edit/build logic between mouse and maze algo tabs
@@ -281,7 +282,6 @@
 - You can add layouts to layouts
     - make sure I'm not creating any unnecessary widgets
 - Use the "widget" suffix for all user-defined widgets
-- Tile fog should disappear immediately
 
 // TODO: MACK
 // +++

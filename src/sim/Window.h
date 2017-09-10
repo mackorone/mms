@@ -7,18 +7,19 @@
 #include <QLineEdit>
 #include <QMainWindow>
 #include <QPlainTextEdit>
+#include <QProcess>
+#include <QPushButton>
 #include <QRadioButton>
 #include <QThread>
 
-#include "Controller.h"
 #include "ConfigDialogField.h"
 #include "Map.h"
 #include "Maze.h"
 #include "MazeView.h"
 #include "Model.h"
 #include "MouseGraphic.h"
+#include "MouseInterface.h"
 #include "RandomSeedWidget.h"
-#include "TextDisplayWidget.h"
 
 namespace mms {
 
@@ -69,7 +70,7 @@ private:
     Mouse* m_mouse;
     MouseGraphic* m_mouseGraphic;
     MazeView* m_view;
-    Controller* m_controller;
+    MouseInterface* m_mouseInterface;
 
     // Helper function for updating the maze 
     void setMaze(Maze* maze);
@@ -148,7 +149,7 @@ private:
     void mouseAlgoImport();
 
     // Mouse algo building
-    QProcess* m_mouseAlgoBuildProcess; // TODO: MACK - thread vs process...
+    QProcess* m_mouseAlgoBuildProcess;
     QPushButton* m_mouseAlgoBuildButton;
     QLabel* m_mouseAlgoBuildStatus;
     QPlainTextEdit* m_mouseAlgoBuildOutput;
@@ -161,6 +162,7 @@ private:
     QThread* m_mouseAlgoThread;
 
     // Mouse algo running
+    QStringList m_stderrBuffer;
     QProcess* m_mouseAlgoRunProcess;
     QPushButton* m_mouseAlgoRunButton;
     QLabel* m_mouseAlgoRunStatus;
@@ -168,13 +170,16 @@ private:
     QVector<QString> mouseAlgoRunExtraArgs();
     void mouseAlgoRunStart();
     void mouseAlgoRunStop();
-    void mouseAlgoRunStderr();
 
     QPushButton* m_mouseAlgoPauseButton;
     RandomSeedWidget* m_mouseAlgoSeedWidget;
 
     void mouseAlgoRefresh(const QString& name = "");
     QVector<ConfigDialogField> mouseAlgoGetFields();
+
+    // Given some text (and a buffer containing past input), return
+    // all complete lines and append remaining text to the buffer
+    QStringList getLines(const QString& text, QStringList* buffer);
 
     /*
     // Key related helpers

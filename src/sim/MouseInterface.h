@@ -1,10 +1,11 @@
 #pragma once
 
+#include <QObject>
 #include <QPair>
-#include <QSet>
 
+#include "DynamicMouseAlgorithmOptions.h"
 #include "InterfaceType.h"
-#include "MazeGraphic.h"
+#include "MazeView.h"
 #include "Mouse.h"
 #include "Param.h"
 
@@ -18,19 +19,30 @@
 
 namespace mms {
 
-// We have to forward declare the class (as opposed to including it) so as
-// to avoid a circular dependency; Controller.h already includes this file
-class Controller;
+class MouseInterface : public QObject {
 
-class MouseInterface {
+    Q_OBJECT
 
 public:
 
     MouseInterface(
         const Maze* maze,
         Mouse* mouse,
-        MazeGraphic* mazeGraphic,
-        Controller* controller);
+        MazeView* view);
+
+    // Execute a request, return a response
+    QString dispatch(const QString& command);
+
+    // Request that the mouse algorithm exit
+    void requestStop();
+
+    // Parameters set by the algorithm
+    InterfaceType getInterfaceType(bool canFinalize) const;
+    DynamicMouseAlgorithmOptions getDynamicOptions() const;
+
+private:
+
+    // *********************** START PUBLIC INTERFACE ******************** //
 
     // ----- Any interface methods ----- //
 
@@ -43,7 +55,6 @@ public:
     double getRandom();
     int millis(); // # of milliseconds of sim time (adjusted based on sim speed) that have passed
     void delay(int milliseconds); // # of milliseconds of sim time (adjusted based on sim speed)
-    void requestStop();
 
     // Tile color
     void setTileColor(int x, int y, char color);
@@ -143,13 +154,19 @@ public:
     double currentYPosMeters();
     double currentRotationDegrees();
 
-private:
+    // ************************ END PUBLIC INTERFACE ********************* //
 
     // Pointers to various simulator objects
     const Maze* m_maze;
     Mouse* m_mouse;
-    MazeGraphic* m_mazeGraphic;
-    Controller* m_controller;
+    MazeView* m_view;
+
+    // The interface type (DISCRETE or CONTINUOUS)
+    InterfaceType m_interfaceType;
+    mutable bool m_interfaceTypeFinalized;
+
+    // The runtime algorithm options
+    DynamicMouseAlgorithmOptions m_dynamicOptions;
 
     // Whether or a stop was requested
     bool m_stopRequested;

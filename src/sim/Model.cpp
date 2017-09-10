@@ -171,6 +171,9 @@ void Model::setMouse(Mouse* mouse) {
 }
 
 void Model::removeMouse() {
+    if (m_mouse == nullptr) {
+        return;
+    }
     m_mutex.lock();
     ASSERT_FA(m_maze == nullptr);
     ASSERT_FA(m_mouse == nullptr);

@@ -37,21 +37,23 @@ Map::Map(QWidget* parent) :
 }
 
 void Map::setMaze(const Maze* maze) {
+    ASSERT_TR(m_mouseGraphic == nullptr);
     m_maze = maze;
     m_view = nullptr;
-    m_mouseGraphic = nullptr;
 }
 
 void Map::setView(const MazeView* view) {
-    ASSERT_FA(m_maze == nullptr);
     if (view != nullptr) {
-        m_view = view;
+        ASSERT_FA(m_maze == nullptr);
     }
+    m_view = view;
 }
 
 void Map::setMouseGraphic(const MouseGraphic* mouseGraphic) {
-    ASSERT_FA(m_maze == nullptr);
-    ASSERT_FA(m_view == nullptr);
+    if (mouseGraphic != nullptr) {
+        ASSERT_FA(m_maze == nullptr);
+        ASSERT_FA(m_view == nullptr);
+    }
     m_mouseGraphic = mouseGraphic;
 }
 

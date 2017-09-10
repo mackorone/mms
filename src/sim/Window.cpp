@@ -18,6 +18,7 @@
 #include "ProcessUtilities.h"
 #include "SettingsMazeAlgos.h"
 #include "SettingsMouseAlgos.h"
+#include "SimUtilities.h"
 
 namespace mms {
 
@@ -42,7 +43,7 @@ Window::Window(QWidget *parent) :
         m_mouse(nullptr),
         m_mouseGraphic(nullptr),
         m_view(nullptr),
-        m_controller(nullptr),
+        m_mouseInterface(nullptr),
         m_mouseAlgoThread(nullptr),
 
         // TODO: MACK - MazeAlgosTab
@@ -79,7 +80,7 @@ Window::Window(QWidget *parent) :
         m_mouseAlgoSeedWidget(new RandomSeedWidget()) {
 
     // First, start the physics loop
-    QObject::connect(
+    connect(
         &m_modelThread, &QThread::started,
         &m_model, &Model::simulate);
     m_model.moveToThread(&m_modelThread);
@@ -393,7 +394,7 @@ void Window::algoActionStart(
     QProcess* process = new QProcess(this);
 
     // Display action output
-    QObject::connect(process, &QProcess::readyReadStandardOutput, this, [=](){
+    connect(process, &QProcess::readyReadStandardOutput, this, [=](){
         QString output = process->readAllStandardOutput();
         if (output.endsWith("\n")) {
             output.truncate(output.size() - 1);
@@ -403,14 +404,14 @@ void Window::algoActionStart(
 
 	// If configured, handle stderr during the action
 	if (stderrMidAction != nullptr) {
-    	QObject::connect(
+    	connect(
 			process, &QProcess::readyReadStandardError,
 			this, stderrMidAction
 		);
 	}
 
     // Re-enable build button when build finishes, clean up the process
-    QObject::connect(
+    connect(
         process,
         static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(
             &QProcess::finished
@@ -527,8 +528,8 @@ void Window::keyPress(int key) {
 }
 
 void Window::togglePause() {
-    if (m_controller != nullptr) {
-        if (m_controller->getInterfaceType(false) == InterfaceType::DISCRETE) {
+    if (m_mouseInterface != nullptr) {
+        if (m_mouseInterface->getInterfaceType(false) == InterfaceType::DISCRETE) {
             if (S()->paused()) {
                 S()->setPaused(false);
                 ui.pauseButton->setText("Pause");
@@ -588,68 +589,68 @@ QVector<QPair<QString, QVariant>> Window::getRunStats() const {
 QVector<QPair<QString, QVariant>> Window::getAlgoOptions() const {
     return {
         // Mouse Info
-        // TODO: MACK - get this from the controller
+        // TODO: MACK - get this from the mouseInterface
         // {"Mouse Algo", P()->mouseAlgorithm()},
         /*
         {"Mouse File", (
-            m_controller == nullptr
+            m_mouseInterface == nullptr
             ? "NONE"
-            : m_controller->getStaticOptions().mouseFile
+            : m_mouseInterface->getStaticOptions().mouseFile
         }),
         */
         // TODO: MACK - interface type not finalized
         {"Interface Type",
-            m_controller == nullptr
+            m_mouseInterface == nullptr
             ? "NONE"
-            : INTERFACE_TYPE_TO_STRING.value(m_controller->getInterfaceType(false))
+            : INTERFACE_TYPE_TO_STRING.value(m_mouseInterface->getInterfaceType(false))
         },
         /*
-        QString("Initial Direction:           ") + (m_controller == nullptr ? "NONE" :
-            m_controller->getStaticOptions().initialDirection),
-        QString("Tile Text Num Rows:          ") + (m_controller == nullptr ? "NONE" :
-            QString::number(m_controller->getStaticOptions().tileTextNumberOfRows)),
-        QString("Tile Text Num Cols:          ") + (m_controller == nullptr ? "NONE" :
-            QString::number(m_controller->getStaticOptions().tileTextNumberOfCols)),
+        QString("Initial Direction:           ") + (m_mouseInterface == nullptr ? "NONE" :
+            m_mouseInterface->getStaticOptions().initialDirection),
+        QString("Tile Text Num Rows:          ") + (m_mouseInterface == nullptr ? "NONE" :
+            QString::number(m_mouseInterface->getStaticOptions().tileTextNumberOfRows)),
+        QString("Tile Text Num Cols:          ") + (m_mouseInterface == nullptr ? "NONE" :
+            QString::number(m_mouseInterface->getStaticOptions().tileTextNumberOfCols)),
         */
         {"Allow Omniscience",
-            m_controller == nullptr
+            m_mouseInterface == nullptr
             ? "NONE"
-            : m_controller->getDynamicOptions().allowOmniscience ? "TRUE" : "FALSE"
+            : m_mouseInterface->getDynamicOptions().allowOmniscience ? "TRUE" : "FALSE"
         },
         {"Auto Clear Fog",
-            m_controller == nullptr
+            m_mouseInterface == nullptr
             ? "NONE"
-            : m_controller->getDynamicOptions().automaticallyClearFog ? "TRUE" : "FALSE"
+            : m_mouseInterface->getDynamicOptions().automaticallyClearFog ? "TRUE" : "FALSE"
         },
         {"Declare Both Wall Halves",
-            m_controller == nullptr
+            m_mouseInterface == nullptr
             ? "NONE"
-            : m_controller->getDynamicOptions().declareBothWallHalves ? "TRUE" : "FALSE"
+            : m_mouseInterface->getDynamicOptions().declareBothWallHalves ? "TRUE" : "FALSE"
         },
         {"Auto Set Tile Text",
-            m_controller == nullptr
+            m_mouseInterface == nullptr
             ? "NONE"
-            : m_controller->getDynamicOptions().setTileTextWhenDistanceDeclared ? "TRUE" : "FALSE"
+            : m_mouseInterface->getDynamicOptions().setTileTextWhenDistanceDeclared ? "TRUE" : "FALSE"
         },
         {"Auto Set Tile Base Color",
-            m_controller == nullptr
+            m_mouseInterface == nullptr
             ? "NONE"
-            : m_controller->getDynamicOptions().setTileBaseColorWhenDistanceDeclaredCorrectly ? "TRUE" : "FALSE"
+            : m_mouseInterface->getDynamicOptions().setTileBaseColorWhenDistanceDeclaredCorrectly ? "TRUE" : "FALSE"
         }
         // TODO: MACK
         /*
         QString("Wheel Speed Fraction:        ") +
-            (m_controller == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
-            QString::number(m_controller->getStaticOptions().wheelSpeedFraction))),
+            (m_mouseInterface == nullptr ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE.value(m_mouseInterface->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            QString::number(m_mouseInterface->getStaticOptions().wheelSpeedFraction))),
         QString("Declare Wall On Read:        ") +
-            (m_controller == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
-            (m_controller->getDynamicOptions().declareWallOnRead ? "TRUE" : "FALSE"))),
+            (m_mouseInterface == nullptr ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE.value(m_mouseInterface->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            (m_mouseInterface->getDynamicOptions().declareWallOnRead ? "TRUE" : "FALSE"))),
         QString("Use Tile Edge Movements:     ") +
-            (m_controller == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.value(m_controller->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
-            (m_controller->getDynamicOptions().useTileEdgeMovements ? "TRUE" : "FALSE"))),
+            (m_mouseInterface == nullptr ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE.value(m_mouseInterface->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            (m_mouseInterface->getDynamicOptions().useTileEdgeMovements ? "TRUE" : "FALSE"))),
         */
     };
 }
@@ -1305,7 +1306,6 @@ void Window::mouseAlgoBuildStart() {
 }
 
 void Window::mouseAlgoBuildStop() {
-    // TODO: MACK - handle pause button and other cleanup
 	algoActionStop(
     	m_mouseAlgoBuildProcess,
 		m_mouseAlgoBuildStatus
@@ -1329,12 +1329,13 @@ void Window::mouseAlgoRunStart() {
 
     // TODO: Cancel/stop button not working just yet
     // TODO: MACK - dedup this validation with the other process functions
-    // TODO: MACK - move the QProcess into the Window class
     
     QString algoName = m_mouseAlgoComboBox->currentText();
 	QString dirPath = SettingsMouseAlgos::getDirPath(algoName);
 	QString command = SettingsMouseAlgos::getRunCommand(algoName);
 	QString mouseFilePath = SettingsMouseAlgos::getMouseFilePath(algoName);
+
+    // TODO: MACK - add the random seed to command...
 
 	// Perform config validation
 	if (command.isEmpty()) {
@@ -1393,24 +1394,8 @@ void Window::mouseAlgoRunStart() {
         return;
     }
 
-    /*
-    // Update some other UI components
-    // TODO: MACK - this is a hack, doesn't work if maze file changed
-    //m_stopButton->setEnabled(true);
-    m_runStopButton->setText("&Stop");
-    m_pauseButton->setEnabled(true);
-    */
-
-    // Once validation succeeds, clear the output
-    m_mouseAlgoRunOutput->clear();
-
     // Kill the current mouse algorithm
     mouseAlgoRunStop();
-
-    // Update some random UI components
-    m_viewButton->setEnabled(true);
-    m_viewButton->setChecked(true);
-    m_followCheckbox->setEnabled(true);
 
     // Create some more objects
     MazeView* newView = new MazeView(
@@ -1422,154 +1407,166 @@ void Window::mouseAlgoRunStart() {
 		false // autopopulateTextWithDistance
 	);
     MouseGraphic* newMouseGraphic = new MouseGraphic(newMouse);
-    Controller* newController = new Controller(m_maze, newMouse, newView);
-
-    // Listen for mouse algo stdout
-    connect(
-        newController, &Controller::algoStdout,
-        m_mouseAlgoRunOutput, &QPlainTextEdit::appendPlainText
+    MouseInterface* newMouseInterface = new MouseInterface(
+        m_maze,
+        newMouse,
+        newView
     );
 
-    // The thread on which the controller will execute
+    // Clear the output
+    m_mouseAlgoRunOutput->clear();
+
+    // The thread on which the mouse interface will execute
     QThread* newMouseAlgoThread = new QThread();
 
-    // We need to instantiate the algorithm's QProcess object in a separate
-    // thread, hence why this is async. Note that we need the separate thread
-    // because, while it's performing an algorithm-requested action, the
-    // Controller could block the GUI loop from executing.
-    connect(newMouseAlgoThread, &QThread::started, newController, [=](){
-        // We need to add the mouse to the world *after* the the controller is
-        // initialized (thus ensuring that tile fog is cleared automatically),
-        // but *before* we actually start the algorithm (lest the mouse
-        // position/orientation not be updated properly during the beginning of
-        // the mouse algo's execution)
-        newController->init(&m_model);
-        m_model.setMouse(newMouse);
+    // Instantiate the algorithm's QProcess object in a separate thread to
+    // prevent the Controller from blocking the GUI loop while performing an
+    // algorithm-requested action.
+    connect(newMouseAlgoThread, &QThread::started, newMouseInterface, [=](){
+        
+        // Create the subprocess on which we'll execute the mouse algorithm
+        QProcess* newProcess = new QProcess();
 
-        // TODO: MACK - replace
-        // Create the subprocess on which we'll execute the algorithm
-        m_mouseAlgoRunProcess = new QProcess();
-
-        // Publish all algorithm stdout so that the UI can display it
-        /*
-        connect(
-            m_process,
-            &QProcess::readyReadStandardOutput,
-            this,
-            [=](){
-                QString text = m_process->readAllStandardOutput();
-                QStringList lines = getLines(text, &m_stdoutBuffer);
-                for (const QString& line : lines) {
-                    emit algoStdout(line);
-                }
+        // Listen for mouse algo stdout
+        connect(newProcess, &QProcess::readyReadStandardOutput, this, [=](){
+            QString output = newProcess->readAllStandardOutput();
+            if (output.endsWith("\n")) {
+                output.truncate(output.size() - 1);
             }
-        );
-        */
+            m_mouseAlgoRunOutput->appendPlainText(output);
+        });
 
         // Process all stderr commands as appropriate
         connect(
-            m_mouseAlgoRunProcess,
+            newProcess,
             &QProcess::readyReadStandardError,
-            newController,
+            // Handle the process's stderr on the mouse's event loop to
+            // prevent the UI from freezing during a blocking mouse action
+            newMouseInterface,
             [=](){
-                QString text = m_mouseAlgoRunProcess->readAllStandardError();
-                // TODO: MACK - this is hacked
-                //QStringList lines = getLines(text, &m_stderrBuffer);
-                QStringList lines;
-                lines << "ACK";
+                QString text = newProcess->readAllStandardError();
+                QStringList lines = getLines(text, &m_stderrBuffer);
                 for (const QString& line : lines) {
-                    QString response = "ACK"; //processCommand(line);
+                    QString response = newMouseInterface->dispatch(line);
                     if (!response.isEmpty()) {
-                        m_mouseAlgoRunProcess->write((response + "\n").toStdString().c_str());
+                        newProcess->write((response + "\n").toStdString().c_str());
                     }
                 }
             }
         );
 
-        // TODO: MACK - how should I connect these to the previous?
-
-        // Re-enable build button when build finishes, clean up the process
-        /*
+        // First, connect the newTileLocationTraversed signal to a lambda that
+        // clears tile fog *before* adding the mouse to the maze. This ensures
+        // that the first tile's fog is always cleared (the initial value of
+        // automaticallyClearFog is true). This means that, if an algorithm
+        // doesn't want to automatically clear tile fog, it'll have to disable
+        // tile fog and then mark the first tile as foggy.
         connect(
-            process,
-            static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(
-                &QProcess::finished
-            ),
-            this,
-            [=](int exitCode, QProcess::ExitStatus exitStatus){
-                m_buildButton->setEnabled(true);
-                m_buildOutput->appendPlainText(
-                    exitStatus == QProcess::NormalExit && exitCode == 0
-                    ? "[BUILD COMPLETE]\n"
-                    : "[BUILD FAILED]\n"
-                );
-                delete process;
-            }   
+            &m_model,
+            &Model::newTileLocationTraversed,
+            // TODO: upforgrabs
+            // Ideally, this lambda would execute on the UI thread, so that the
+            // fog can clear immediately after the mouse enters the tile
+            // (instead of being blocked on the algorithm's actions, e.g., move
+            // forward, sleep, etc.). However, changing "newMouseInterface" to
+            // "this" causes segfaults because the "newView" gets deleted
+            // before all queued "newTileLocationTraversed" events are
+            // processed. Putting it on the algorithms thread forces ensures
+            // that all no events are processed after "waitForFinished"
+            // returns.
+            newMouseInterface,
+            [=](int x, int y){
+                if (newMouseInterface->getDynamicOptions().automaticallyClearFog) {
+                    newView->getMazeGraphic()->setTileFogginess(x, y, false);
+                }
+            }
         );
-        */
 
-        bool success = ProcessUtilities::start(command, dirPath, m_mouseAlgoRunProcess);
+        // We need to add the mouse to the world *after* the making the
+        // previous connection (thus ensuring that tile fog is cleared
+        // automatically), but *before* we actually start the algorithm (lest
+        // the mouse position/orientation not be updated properly during the
+        // beginning of the mouse algo's execution)
+        m_model.setMouse(newMouse);
+
+        // When the thread finishes, clean everything up
+        connect(newMouseAlgoThread, &QThread::finished, this, [=](){
+            newProcess->terminate();
+            newProcess->waitForFinished();
+            delete newProcess;
+            delete newMouseAlgoThread;
+            delete newMouseInterface;
+            delete newMouseGraphic;
+            delete newView;
+            delete newMouse;
+        });
+
+        // If the process fails to start, stop the thread and cleanup
+        bool success = ProcessUtilities::start(command, dirPath, newProcess);
         if (!success) {
-            qDebug() << "[PROCESS FAILED TO START]";
-            delete m_mouseAlgoRunProcess;
+            newMouseAlgoThread->quit();
+            m_model.removeMouse();
+            return;
         }
 
+        // Update the member variables because, at this
+        // point, the algorithm started successfully
+        m_mouse = newMouse;
+        m_view = newView;
+        m_mouseGraphic = newMouseGraphic;
+        m_mouseInterface = newMouseInterface;
+        m_mouseAlgoThread = newMouseAlgoThread;
+		m_mouseAlgoRunProcess = newProcess;
+        m_map.setView(newView);
+        m_map.setMouseGraphic(newMouseGraphic);
+
         // TODO: MACK
-        //newController->start(algoName);
+        m_viewButton->setEnabled(true);
+        m_viewButton->setChecked(true);
+        m_followCheckbox->setEnabled(true);
     });
 
-    // When the thread finishes, clean everything up
-    connect(newMouseAlgoThread, &QThread::finished, this, [=](){
-        delete newController;
-        delete newMouseAlgoThread;
-        delete newMouseGraphic;
-        delete newView;
-        delete newMouse;
-    });
-
-    // Update the member variables
-    m_mouse = newMouse;
-    m_view = newView;
-    m_mouseGraphic = newMouseGraphic;
-    m_controller = newController;
-    m_mouseAlgoThread = newMouseAlgoThread;
-
-    // Update the map to use the algorithm's view
-    m_map.setView(m_view);
-    m_map.setMouseGraphic(m_mouseGraphic);
-
-    // Start the controller thread
-    m_controller->moveToThread(m_mouseAlgoThread);
-	m_mouseAlgoThread->start();
+    // Start the mouse interface thread
+    newMouseInterface->moveToThread(newMouseAlgoThread);
+	newMouseAlgoThread->start();
 }
 
 void Window::mouseAlgoRunStop() {
-    // If there is no controller, there is no algo
-    if (m_controller == nullptr) {
-        return;
-    }
-    // If the controller exists, the thread exists
-    ASSERT_FA(m_mouseAlgoThread == nullptr);
-    // Request the event loop to stop
-    m_mouseAlgoThread->quit();
-    // Quickly return control to the event loop
-    m_controller->requestStop();
-    // Wait for the event loop to actually stop
-    m_mouseAlgoThread->wait();
-    // At this point, no more mouse functions will execute
-    m_controller = nullptr;
-    m_mouseAlgoThread = nullptr;
-    // Update the UI and the model
-    m_map.setMouseGraphic(nullptr);
-    m_model.removeMouse();
-    // Update some view-related UI components
+
+    // First, update the UI
     m_truthButton->setChecked(true);
     m_viewButton->setEnabled(false);
     m_followCheckbox->setEnabled(false);
-}
+    // TODO: MACK - change to the current tab
+    // TODO: Stop/pause buttons
 
-void Window::mouseAlgoRunStderr() {
-    // TODO: MACK
+    // Only stop the algo thread if an algo is running
+    if (m_mouseInterface != nullptr) {
+        // If the mouse interface exists, the thread exists
+        ASSERT_FA(m_mouseAlgoThread == nullptr);
+        // Request the event loop to stop
+        m_mouseAlgoThread->quit();
+        // Quickly return control to the event loop
+        m_mouseInterface->requestStop();
+        // Wait for the event loop to actually stop
+        m_mouseAlgoThread->wait();
+        // At this point, no more mouse functions will execute
+    }
+
+    // Regardless of whether or not an algo is running, put the Window in a
+    // "mouseless" state (note that the objects themselves get deleted in a
+    // separate callback). Note that we do this *after* stopping the algo
+    // thread so that we can be sure no more stderr will be emitted.
+    m_stderrBuffer.clear();
+    m_map.setMouseGraphic(nullptr);
+    m_map.setView(m_truth);
+    m_model.removeMouse();
+	m_mouseAlgoRunProcess = nullptr;
+    m_mouseAlgoThread = nullptr;
+    m_mouseInterface = nullptr;
+    m_mouseGraphic = nullptr;
+    m_view = nullptr;
+    m_mouse = nullptr;
 }
 
 void Window::mouseAlgoRefresh(const QString& name) {
@@ -1620,6 +1617,38 @@ QVector<ConfigDialogField> Window::mouseAlgoGetFields() {
         runCommandField,
         mouseFilePathField,
     };
+}
+
+QStringList Window::getLines(const QString& text, QStringList* buffer) {
+
+    // TODO: upforgrabs
+    // Determine whether or not this function is perf sensitive. If so,
+    // refactor this so that we're not copying QStrings between lists.
+
+    // Separate the text by line
+    QStringList parts = SimUtilities::splitLines(text);
+
+    // We'll return list of complete lines
+    QStringList lines;
+
+    // If the text has at least one newline character, we definitely have a
+    // complete line; combine it with the contents of the buffer and append
+    // it to the list of lines to be returned
+    if (1 < parts.size()) {
+        lines.append(buffer->join("") + parts.at(0));
+        buffer->clear();
+    }
+
+    // All newline-separated parts in the text are lines
+    for (int i = 1; i < parts.size() - 1; i += 1) {
+        lines.append(parts.at(i));
+    }
+
+    // Store the last part of the text (empty string if the text ended
+    // with newline) in the buffer, to be combined with future input
+    buffer->append(parts.at(parts.size() - 1));
+
+    return lines;
 }
 
 } // namespace mms
