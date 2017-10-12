@@ -1461,16 +1461,17 @@ void Window::mouseAlgoRunStart() {
         // automaticallyClearFog is true). This means that, if an algorithm
         // doesn't want to automatically clear tile fog, it'll have to disable
         // tile fog and then mark the first tile as foggy.
+
+        // TODO: MACK - if I use this, then it crashes
+        // Note that this runs
+        // on the UI thread so that clearing the fog isn't blocked on algorithm
+        // actions (e.g., move forward, sleep, etc.).
         connect(
             &m_model,
             &Model::newTileLocationTraversed,
-            this,
+            newMouseInterface,
             [=](int x, int y){
-                if (
-                    // Ensure that the interface still exists and fog is enabled
-                    newMouseInterface == m_mouseInterface &&
-                    newMouseInterface->getDynamicOptions().automaticallyClearFog
-                ) {
+                if (newMouseInterface->getDynamicOptions().automaticallyClearFog) {
                     newView->getMazeGraphic()->setTileFogginess(x, y, false);
                 }
             }
@@ -1561,6 +1562,8 @@ void Window::mouseAlgoRunStart() {
         // If the process fails to start, stop the thread and cleanup
         bool success = ProcessUtilities::start(command, dirPath, newProcess);
         if (!success) {
+
+        // TODO: MACK - this doesn't work, button never gets undone
 
         // ---------------------------
         // TODO: MACK - extract this into it's own function ...

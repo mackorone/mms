@@ -1,4 +1,3 @@
-
  High Priority
 
 - Set the working directory?

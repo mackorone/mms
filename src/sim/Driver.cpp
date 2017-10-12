@@ -41,6 +41,9 @@ int Driver::drive(int argc, char* argv[]) {
     // Initialize the FontImage object
     FontImage::init(P()->tileTextFontImage());
 
+    // TODO: MACK - move this to the Window class
+    qRegisterMetaType<QProcess::ExitStatus>("QProcess::ExitStatus");
+
     // Create the main window
     Window window;
     window.show();
