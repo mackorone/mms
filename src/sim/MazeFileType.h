@@ -15,28 +15,14 @@ enum class MazeFileType {
     NUM,
 };
 
-static const QMap<MazeFileType, QString> MAZE_FILE_TYPE_TO_STRING {
-    {MazeFileType::MAP, "MAP"},
-    {MazeFileType::MAZ, "MAZ"},
-    {MazeFileType::MZ2, "MZ2"},
-    {MazeFileType::NUM, "NUM"},
-};
+const QMap<MazeFileType, QString>& MAZE_FILE_TYPE_TO_STRING();
+const QMap<QString, MazeFileType>& STRING_TO_MAZE_FILE_TYPE();
 
-static const QMap<QString, MazeFileType> STRING_TO_MAZE_FILE_TYPE =
-    ContainerUtilities::inverse(MAZE_FILE_TYPE_TO_STRING);
-
-static const QMap<MazeFileType, QString> MAZE_FILE_TYPE_TO_SUFFIX {
-    {MazeFileType::MAP, "map"},
-    {MazeFileType::MAZ, "MAZ"},
-    {MazeFileType::MZ2, "MZ2"},
-    {MazeFileType::NUM, "num"},
-};
-
-static const QMap<QString, MazeFileType> SUFFIX_TO_MAZE_FILE_TYPE =
-    ContainerUtilities::inverse(MAZE_FILE_TYPE_TO_STRING);
+const QMap<MazeFileType, QString>& MAZE_FILE_TYPE_TO_SUFFIX();
+const QMap<QString, MazeFileType>& SUFFIX_TO_MAZE_FILE_TYPE();
 
 inline QDebug operator<<(QDebug stream, MazeFileType mazeFileType) {
-    stream.noquote() << MAZE_FILE_TYPE_TO_STRING.value(mazeFileType);
+    stream.noquote() << MAZE_FILE_TYPE_TO_STRING().value(mazeFileType);
     return stream;
 }
 

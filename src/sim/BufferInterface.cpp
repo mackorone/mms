@@ -63,7 +63,7 @@ void BufferInterface::insertIntoTextureCpuBuffer() {
 
 void BufferInterface::updateTileGraphicBaseColor(int x, int y, Color color) {
     int index = getTileGraphicBaseStartingIndex(x, y);
-    RGB rgb = COLOR_TO_RGB.value(color);
+    RGB rgb = COLOR_TO_RGB().value(color);
     for (int i = 0; i < 2; i += 1) {
         TriangleGraphic* triangleGraphic = &(*m_graphicCpuBuffer)[index + i];
         triangleGraphic->p1.rgb = rgb;
@@ -74,7 +74,7 @@ void BufferInterface::updateTileGraphicBaseColor(int x, int y, Color color) {
 
 void BufferInterface::updateTileGraphicWallColor(int x, int y, Direction direction, Color color, double alpha) {
     int index = getTileGraphicWallStartingIndex(x, y, direction);
-    RGB rgb = COLOR_TO_RGB.value(color);
+    RGB rgb = COLOR_TO_RGB().value(color);
     for (int i = 0; i < 2; i += 1) {
         TriangleGraphic* triangleGraphic = &(*m_graphicCpuBuffer)[index + i];
         triangleGraphic->p1.rgb = rgb;
@@ -153,7 +153,7 @@ int BufferInterface::getTileGraphicBaseStartingIndex(int x, int y) {
 }
 
 int BufferInterface::getTileGraphicWallStartingIndex(int x, int y, Direction direction) {
-    return  2 + trianglesPerTile() * (m_mazeSize.second * x + y) + (2 * DIRECTIONS.indexOf(direction));
+    return  2 + trianglesPerTile() * (m_mazeSize.second * x + y) + (2 * DIRECTIONS().indexOf(direction));
 }
 
 int BufferInterface::getTileGraphicCornerStartingIndex(int x, int y, int cornerNumber) {

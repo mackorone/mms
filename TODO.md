@@ -7,6 +7,7 @@
 - Stop button should be disabled if no algorithm is executing
     - Running, Complete, Failed, Canceled, Error - status bar for algorithms...
 - If no maze is loaded, we shouldn't jump to mouse output tab
+- Reset CRASHED state when we restart the algorithm
 - Make it easier to edit the simulator parameters
     - Write and read from persistant storage...
     - The values should be re-loaded on the fly

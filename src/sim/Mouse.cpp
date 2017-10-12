@@ -28,7 +28,7 @@ Mouse::Mouse(const Maze* maze) : m_maze(maze) {
     Direction optimalStartingDirection = maze->getOptimalStartingDirection();
     m_startedDirection = optimalStartingDirection;
     m_startingDirection = m_startedDirection;
-    m_initialRotation = DIRECTION_TO_ANGLE.value(m_startingDirection);
+    m_initialRotation = DIRECTION_TO_ANGLE().value(m_startingDirection);
     m_currentRotation = m_initialRotation;
 }
 
@@ -105,7 +105,7 @@ QString Mouse::getMouseFile() const {
 void Mouse::reset() {
     teleport(
         getInitialTranslation(),
-        DIRECTION_TO_ANGLE.value(m_startingDirection)
+        DIRECTION_TO_ANGLE().value(m_startingDirection)
     );
     m_startedDirection = m_startingDirection;
 }

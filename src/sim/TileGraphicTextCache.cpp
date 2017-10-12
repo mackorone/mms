@@ -119,18 +119,18 @@ QMap<
                     if (row < numRows && col < numCols) {
 
                         double rowOffset = 0.0;
-                        if (CENTER_STAR_ALIGNMENTS.contains(tileTextAlignment)) {
+                        if (CENTER_STAR_ALIGNMENTS().contains(tileTextAlignment)) {
                             rowOffset = static_cast<double>(maxRows - numRows) / 2.0;
                         }
-                        else if (UPPER_STAR_ALIGNMENTS.contains(tileTextAlignment)) {
+                        else if (UPPER_STAR_ALIGNMENTS().contains(tileTextAlignment)) {
                             rowOffset = static_cast<double>(maxRows - numRows);
                         }
 
                         double colOffset = 0.0;
-                        if (STAR_CENTER_ALIGNMENTS.contains(tileTextAlignment)) {
+                        if (STAR_CENTER_ALIGNMENTS().contains(tileTextAlignment)) {
                             colOffset = static_cast<double>(maxCols - numCols) / 2.0;
                         }
-                        else if (STAR_RIGHT_ALIGNMENTS.contains(tileTextAlignment)) {
+                        else if (STAR_RIGHT_ALIGNMENTS().contains(tileTextAlignment)) {
                             colOffset = static_cast<double>(maxCols - numCols);
                         }
 

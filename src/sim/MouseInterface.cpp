@@ -404,17 +404,17 @@ DynamicMouseAlgorithmOptions MouseInterface::getDynamicOptions() const {
 }   
 
 char MouseInterface::getStartedDirection() {
-    return DIRECTION_TO_CHAR.value(m_mouse->getStartedDirection()).toLatin1();
+    return DIRECTION_TO_CHAR().value(m_mouse->getStartedDirection()).toLatin1();
 }
 
 void MouseInterface::setStartingDirection(char direction) {
-    if (!CHAR_TO_DIRECTION.contains(direction)) {
+    if (!CHAR_TO_DIRECTION().contains(direction)) {
         qWarning().noquote().nospace()
             << "The character '" << direction << "' is not mapped to a valid"
             << " direction.";
         return;
     }
-    m_mouse->setStartingDirection(CHAR_TO_DIRECTION.value(direction));
+    m_mouse->setStartingDirection(CHAR_TO_DIRECTION().value(direction));
 }
 
 void MouseInterface::setWheelSpeedFraction(double wheelSpeedFraction) {
@@ -456,7 +456,7 @@ void MouseInterface::setTileColor(int x, int y, char color) {
         return;
     }
 
-    if (!CHAR_TO_COLOR.contains(color)) {
+    if (!CHAR_TO_COLOR().contains(color)) {
         qWarning().noquote().nospace()
             << "You cannot set the color of tile (" << x << ", " << y << ") to"
             << "'" << color << "' since '" << color << "' is not mapped to a"
@@ -524,7 +524,7 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
         return;
     }
 
-    if (!CHAR_TO_DIRECTION.contains(direction)) {
+    if (!CHAR_TO_DIRECTION().contains(direction)) {
         qWarning().noquote().nospace()
             << "The character '" << direction << "' is not mapped to a valid"
             << " direction.";
@@ -534,7 +534,7 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
     declareWallImpl(
         {
             {x, y},
-            CHAR_TO_DIRECTION.value(direction)
+            CHAR_TO_DIRECTION().value(direction)
         },
         wallExists,
         getDynamicOptions().declareBothWallHalves
@@ -550,7 +550,7 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
         return;
     }
 
-    if (!CHAR_TO_DIRECTION.contains(direction)) {
+    if (!CHAR_TO_DIRECTION().contains(direction)) {
         qWarning().noquote().nospace()
             << "The character '" << direction << "' is not mapped to a valid"
             << " direction.";
@@ -560,7 +560,7 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
     undeclareWallImpl(
         {
             {x, y},
-            CHAR_TO_DIRECTION.value(direction)
+            CHAR_TO_DIRECTION().value(direction)
         },
         getDynamicOptions().declareBothWallHalves
     );
@@ -595,7 +595,7 @@ void MouseInterface::declareTileDistance(int x, int y, int distance) {
         // A negative distance is interpreted to mean infinity
         if (distance == actualDistance || (distance < 0 && actualDistance < 0)) {
             setTileColorImpl(x, y,
-                COLOR_TO_CHAR.value(STRING_TO_COLOR.value(P()->distanceCorrectTileBaseColor())));
+                COLOR_TO_CHAR().value(STRING_TO_COLOR().value(P()->distanceCorrectTileBaseColor())));
         }
     }
 }
@@ -613,7 +613,7 @@ void MouseInterface::undeclareTileDistance(int x, int y) {
         clearTileTextImpl(x, y);
     }
     if (getDynamicOptions().setTileBaseColorWhenDistanceDeclaredCorrectly) {
-        setTileColorImpl(x, y, COLOR_TO_CHAR.value(STRING_TO_COLOR.value(P()->tileBaseColor())));
+        setTileColorImpl(x, y, COLOR_TO_CHAR().value(STRING_TO_COLOR().value(P()->tileBaseColor())));
     }
 }
 
@@ -732,10 +732,10 @@ void MouseInterface::resetWheelEncoder(const QString& name) {
     if (m_mouse->getWheelEncoderType(name) != EncoderType::RELATIVE) {
         qWarning().noquote().nospace()
             << "The encoder type of the wheel \"" << name << "\" is \""
-            << ENCODER_TYPE_TO_STRING.value(m_mouse->getWheelEncoderType(name))
+            << ENCODER_TYPE_TO_STRING().value(m_mouse->getWheelEncoderType(name))
             << "\". However, you may only reset the wheel encoder if the"
             << " encoder type is \""
-            << ENCODER_TYPE_TO_STRING.value(EncoderType::RELATIVE)
+            << ENCODER_TYPE_TO_STRING().value(EncoderType::RELATIVE)
             << "\".";
         return;
     }
@@ -982,7 +982,7 @@ char MouseInterface::currentDirection() {
 
     ENSURE_ALLOW_OMNISCIENCE
 
-    return DIRECTION_TO_CHAR.value(m_mouse->getCurrentDiscretizedRotation()).toLatin1();
+    return DIRECTION_TO_CHAR().value(m_mouse->getCurrentDiscretizedRotation()).toLatin1();
 }
 
 double MouseInterface::currentXPosMeters() {
@@ -1010,7 +1010,7 @@ void MouseInterface::ensureDiscreteInterface(const QString& callingFunction) con
     if (getInterfaceType(true) != InterfaceType::DISCRETE) {
         qCritical().noquote().nospace()
             << "You must declare the interface type to be \""
-            << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
+            << INTERFACE_TYPE_TO_STRING().value(InterfaceType::DISCRETE)
             << "\" to use MouseInterface::" << callingFunction << "().";
         SimUtilities::quit();
     }
@@ -1020,7 +1020,7 @@ void MouseInterface::ensureContinuousInterface(const QString& callingFunction) c
     if (getInterfaceType(true) != InterfaceType::CONTINUOUS) {
         qCritical().noquote().nospace()
             << "You must declare the interface type to be \""
-            << INTERFACE_TYPE_TO_STRING.value(InterfaceType::CONTINUOUS)
+            << INTERFACE_TYPE_TO_STRING().value(InterfaceType::CONTINUOUS)
             << "\" to use MouseInterface::" << callingFunction << "().";
         SimUtilities::quit();
     }
@@ -1074,12 +1074,12 @@ void MouseInterface::ensureOutsideOrigin(const QString& callingFunction) const {
 }
 
 void MouseInterface::setTileColorImpl(int x, int y, char color) {
-    m_view->getMazeGraphic()->setTileColor(x, y, CHAR_TO_COLOR.value(color));
+    m_view->getMazeGraphic()->setTileColor(x, y, CHAR_TO_COLOR().value(color));
     m_tilesWithColor.insert({x, y});
 }
 
 void MouseInterface::clearTileColorImpl(int x, int y) {
-    m_view->getMazeGraphic()->setTileColor(x, y, STRING_TO_COLOR.value(P()->tileBaseColor()));
+    m_view->getMazeGraphic()->setTileColor(x, y, STRING_TO_COLOR().value(P()->tileBaseColor()));
     m_tilesWithColor.erase({x, y});
 }
 
@@ -1142,7 +1142,7 @@ bool MouseInterface::wallLeftImpl(bool declareWallOnRead, bool declareBothWallHa
     return isWall(
         {
             m_mouse->getCurrentDiscretizedTranslation(),
-            DIRECTION_ROTATE_LEFT.value(m_mouse->getCurrentDiscretizedRotation())
+            DIRECTION_ROTATE_LEFT().value(m_mouse->getCurrentDiscretizedRotation())
         },
         declareWallOnRead,
         declareBothWallHalves
@@ -1153,7 +1153,7 @@ bool MouseInterface::wallRightImpl(bool declareWallOnRead, bool declareBothWallH
     return isWall(
         {
             m_mouse->getCurrentDiscretizedTranslation(),
-            DIRECTION_ROTATE_RIGHT.value(m_mouse->getCurrentDiscretizedRotation())
+            DIRECTION_ROTATE_RIGHT().value(m_mouse->getCurrentDiscretizedRotation())
         },
         declareWallOnRead,
         declareBothWallHalves
@@ -1251,8 +1251,8 @@ void MouseInterface::turnToEdgeImpl(bool turnLeft) {
         m_mouse->getCurrentDiscretizedTranslation(),
         (
             turnLeft ?
-            DIRECTION_ROTATE_LEFT.value(m_mouse->getCurrentDiscretizedRotation()) :
-            DIRECTION_ROTATE_RIGHT.value(m_mouse->getCurrentDiscretizedRotation())
+            DIRECTION_ROTATE_LEFT().value(m_mouse->getCurrentDiscretizedRotation()) :
+            DIRECTION_ROTATE_RIGHT().value(m_mouse->getCurrentDiscretizedRotation())
         )
     );
 
@@ -1445,7 +1445,7 @@ QPair<Cartesian, Degrees> MouseInterface::getCrashLocation(
 
     // The crash location is on the edge of the tile inner polygon
     Cartesian centerOfTile = getCenterOfTile(currentTile.first, currentTile.second);
-    Degrees destinationRotation = DIRECTION_TO_ANGLE.value(destinationDirection);
+    Degrees destinationRotation = DIRECTION_TO_ANGLE().value(destinationDirection);
     return {
         centerOfTile + Polar(halfWallLength, destinationRotation),
         destinationRotation

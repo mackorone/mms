@@ -5,7 +5,7 @@
 namespace mms{
 
 Tile::Tile() : m_x(-1), m_y(-1), m_distance(-1) {
-    for (Direction direction : DIRECTIONS) {
+    for (Direction direction : DIRECTIONS()) {
         m_walls.insert(direction, false);
     }
 }

@@ -323,7 +323,7 @@ void Window::setMaze(Maze* maze) {
         QString::number(m_maze->getMaximumDistance())
     );
     m_mazeDirLabel->setText(
-        DIRECTION_TO_STRING.value(m_maze->getOptimalStartingDirection())
+        DIRECTION_TO_STRING().value(m_maze->getOptimalStartingDirection())
     );
     m_isValidLabel->setText(m_maze->isValidMaze() ? "TRUE" : "FALSE");
     m_isOfficialLabel->setText(m_maze->isOfficialMaze() ? "TRUE" : "FALSE");
@@ -542,7 +542,7 @@ void Window::togglePause() {
         else {
             qWarning().noquote().nospace()
                 << "Pausing the simulator is only allowed in "
-                << INTERFACE_TYPE_TO_STRING.value(InterfaceType::DISCRETE)
+                << INTERFACE_TYPE_TO_STRING().value(InterfaceType::DISCRETE)
                 << " mode.";
         }
     }
@@ -567,7 +567,7 @@ QVector<QPair<QString, QVariant>> Window::getRunStats() const {
         {"Current X tile", m_mouse->getCurrentDiscretizedTranslation().first},
         {"Current Y tile", m_mouse->getCurrentDiscretizedTranslation().second},
         {"Current Direction",
-            DIRECTION_TO_STRING.value(m_mouse->getCurrentDiscretizedRotation())
+            DIRECTION_TO_STRING().value(m_mouse->getCurrentDiscretizedRotation())
         },
         {"Elapsed Real Time", SimUtilities::formatDuration(SimTime::get()->elapsedRealTime())},
         {"Elapsed Sim Time", SimUtilities::formatDuration(SimTime::get()->elapsedSimTime())},
@@ -602,7 +602,7 @@ QVector<QPair<QString, QVariant>> Window::getAlgoOptions() const {
         {"Interface Type",
             m_mouseInterface == nullptr
             ? "NONE"
-            : INTERFACE_TYPE_TO_STRING.value(m_mouseInterface->getInterfaceType(false))
+            : INTERFACE_TYPE_TO_STRING().value(m_mouseInterface->getInterfaceType(false))
         },
         /*
         QString("Initial Direction:           ") + (m_mouseInterface == nullptr ? "NONE" :
@@ -641,15 +641,15 @@ QVector<QPair<QString, QVariant>> Window::getAlgoOptions() const {
         /*
         QString("Wheel Speed Fraction:        ") +
             (m_mouseInterface == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.value(m_mouseInterface->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            (STRING_TO_INTERFACE_TYPE().value(m_mouseInterface->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
             QString::number(m_mouseInterface->getStaticOptions().wheelSpeedFraction))),
         QString("Declare Wall On Read:        ") +
             (m_mouseInterface == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.value(m_mouseInterface->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            (STRING_TO_INTERFACE_TYPE().value(m_mouseInterface->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
             (m_mouseInterface->getDynamicOptions().declareWallOnRead ? "TRUE" : "FALSE"))),
         QString("Use Tile Edge Movements:     ") +
             (m_mouseInterface == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE.value(m_mouseInterface->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            (STRING_TO_INTERFACE_TYPE().value(m_mouseInterface->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
             (m_mouseInterface->getDynamicOptions().useTileEdgeMovements ? "TRUE" : "FALSE"))),
         */
     };
@@ -1461,14 +1461,15 @@ void Window::mouseAlgoRunStart() {
         // automaticallyClearFog is true). This means that, if an algorithm
         // doesn't want to automatically clear tile fog, it'll have to disable
         // tile fog and then mark the first tile as foggy.
-
-        // TODO: MACK - if I use this, then it crashes
-        // Note that this runs
-        // on the UI thread so that clearing the fog isn't blocked on algorithm
-        // actions (e.g., move forward, sleep, etc.).
         connect(
             &m_model,
             &Model::newTileLocationTraversed,
+            // TODO: upforgrabs
+            // Changing "newMouseInterface" to "this" makes it so that the fog
+            // clears as soon as the mouse enters a tile (rather than waiting
+            // for the algorithm-requested action to finish). However, it also
+            // causes segfaults. Your mission is to make this work without
+            // causing segfaults.
             newMouseInterface,
             [=](int x, int y){
                 if (newMouseInterface->getDynamicOptions().automaticallyClearFog) {
@@ -1487,41 +1488,41 @@ void Window::mouseAlgoRunStart() {
         // ------------------------
         // TODO: MACK
 
-            // Re-enable build button when build finishes, clean up the process
-            connect(
-                newProcess,
-                static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(
-                    &QProcess::finished
-                ),
-                this,
-                [=](int exitCode, QProcess::ExitStatus exitStatus){
+        // Re-enable build button when build finishes, clean up the process
+        connect(
+            newProcess,
+            static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(
+                &QProcess::finished
+            ),
+            this,
+            [=](int exitCode, QProcess::ExitStatus exitStatus){
 
-                    // Set the button to "Action"
-                    disconnect(
-                        m_mouseAlgoRunButton, &QPushButton::clicked,
-                        this, &Window::mouseAlgoRunStop
-                    );
-                    connect(
-                        m_mouseAlgoRunButton, &QPushButton::clicked,
-                        this, &Window::mouseAlgoRunStart
-                    );
-                    m_mouseAlgoRunButton->setText("Run");
+                // Set the button to "Action"
+                disconnect(
+                    m_mouseAlgoRunButton, &QPushButton::clicked,
+                    this, &Window::mouseAlgoRunStop
+                );
+                connect(
+                    m_mouseAlgoRunButton, &QPushButton::clicked,
+                    this, &Window::mouseAlgoRunStart
+                );
+                m_mouseAlgoRunButton->setText("Run");
 
-                    // Update the status label, call stderrPostAction
-                    if (exitStatus == QProcess::NormalExit && exitCode == 0) {
-                        m_mouseAlgoRunStatus->setText("COMPLETE");
-                        m_mouseAlgoRunStatus->setStyleSheet(
-                            "QLabel { background: rgb(150, 255, 100); }"
-                        );
-                    }
-                    else {
-                        m_mouseAlgoRunStatus->setText("FAILED");
-                        m_mouseAlgoRunStatus->setStyleSheet(
-                            "QLabel { background: rgb(255, 150, 150); }"
-                        );
-                    }
+                // Update the status label, call stderrPostAction
+                if (exitStatus == QProcess::NormalExit && exitCode == 0) {
+                    m_mouseAlgoRunStatus->setText("COMPLETE");
+                    m_mouseAlgoRunStatus->setStyleSheet(
+                        "QLabel { background: rgb(150, 255, 100); }"
+                    );
                 }
-            );
+                else {
+                    m_mouseAlgoRunStatus->setText("FAILED");
+                    m_mouseAlgoRunStatus->setStyleSheet(
+                        "QLabel { background: rgb(255, 150, 150); }"
+                    );
+                }
+            }
+        );
 
         // ------------------------
 

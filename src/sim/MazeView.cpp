@@ -59,7 +59,7 @@ void MazeView::initText(int numRows, int numCols) {
         Meters(P()->wallWidth()),
         {numRows, numCols},
         P()->tileTextBorderFraction(),
-        STRING_TO_TILE_TEXT_ALIGNMENT.value(P()->tileTextAlignment()));
+        STRING_TO_TILE_TEXT_ALIGNMENT().value(P()->tileTextAlignment()));
         
     // TODO: MACK - this is kind of confusing
     // - I should insert and then update (get rid of draw method)

@@ -111,7 +111,7 @@ QVector<TriangleGraphic> SimUtilities::polygonToTriangleGraphics(
         double alpha) {
     QVector<Triangle> triangles = polygon.getTriangles();
     QVector<TriangleGraphic> triangleGraphics;
-    RGB colorValues = COLOR_TO_RGB.value(color);
+    RGB colorValues = COLOR_TO_RGB().value(color);
     for (Triangle triangle : triangles) {
         triangleGraphics.push_back({
             {triangle.p1.getX().getMeters(), triangle.p1.getY().getMeters(), colorValues, alpha},

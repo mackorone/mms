@@ -107,7 +107,7 @@ BasicMaze MazeFileUtilities::deserializeMapType(const QByteArray& bytes) {
                     break;
                 }
                 BasicTile tile;
-                for (Direction direction : DIRECTIONS) {
+                for (Direction direction : DIRECTIONS()) {
                     tile.insert(direction, false);
                 }
                 upsideDownMaze[j].push_back(tile);
@@ -254,7 +254,7 @@ BasicMaze MazeFileUtilities::deserializeMz2Type(const QByteArray& bytes) {
         QVector<BasicTile> column;
         for (auto y = 0; y < height; y++) {
             BasicTile tile;
-            for (Direction direction : DIRECTIONS) {
+            for (Direction direction : DIRECTIONS()) {
                 // Make a filled maze so we get the maze border for free
                 // and don't need any special logic to make it happen
                 tile.insert(direction, true);
@@ -340,8 +340,8 @@ BasicMaze MazeFileUtilities::deserializeNumType(const QByteArray& bytes) {
 
         // Fill the BasicTile object with the values
         BasicTile tile;
-        for (Direction direction : DIRECTIONS) {
-            QString num = tokens.at(2 + DIRECTIONS.indexOf(direction));
+        for (Direction direction : DIRECTIONS()) {
+            QString num = tokens.at(2 + DIRECTIONS().indexOf(direction));
             tile.insert(
                 direction,
                 SimUtilities::strToInt(num) == 1
@@ -620,7 +620,7 @@ QByteArray MazeFileUtilities::serializeNumType(const BasicMaze& maze) {
     for (int x = 0; x < maze.size(); x += 1) {
         for (int y = 0; y < maze.at(x).size(); y += 1) {
             file << x << " " << y;
-            for (Direction direction : DIRECTIONS) {
+            for (Direction direction : DIRECTIONS()) {
                 file << " " << (maze.at(x).at(y).at(direction) ? 1 : 0);
             }
             file << "\n"; // std::endl flushes the buffer everytime its called

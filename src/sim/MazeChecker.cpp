@@ -101,7 +101,7 @@ QVector<QString> MazeChecker::isEnclosed(const BasicMaze& maze) {
                         " no %3 wall.")
                         .arg(x)
                         .arg(y)
-                        .arg(DIRECTION_TO_STRING.value(pair.second))
+                        .arg(DIRECTION_TO_STRING().value(pair.second))
                     );
                 }
             }
@@ -124,7 +124,7 @@ QVector<QString> MazeChecker::hasConsistentWalls(const BasicMaze& maze) {
             for (auto pair : requirements) {
                 if (pair.first(x, y) && maze.at(x).at(y).value(pair.second)) {
                     QPair<int, int> other = positionAfterMovingForward({x, y}, pair.second);
-                    Direction opposite = DIRECTION_OPPOSITE.value(pair.second);
+                    Direction opposite = DIRECTION_OPPOSITE().value(pair.second);
                     if (!maze.at(other.first).at(other.second).value(opposite)) {
                         errors.push_back(QString(
                             "The maze does not have consistent walls: tile"
@@ -132,10 +132,10 @@ QVector<QString> MazeChecker::hasConsistentWalls(const BasicMaze& maze) {
                             " %6 wall")
                             .arg(x)
                             .arg(y)
-                            .arg(DIRECTION_TO_STRING.value(pair.second))
+                            .arg(DIRECTION_TO_STRING().value(pair.second))
                             .arg(other.first)
                             .arg(other.second)
-                            .arg(DIRECTION_TO_STRING.value(opposite))
+                            .arg(DIRECTION_TO_STRING().value(opposite))
                         );
                     }
                 }
@@ -160,7 +160,7 @@ QVector<QString> MazeChecker::hasNoInaccessibleLocations(const BasicMaze& maze) 
     // BFS search
     while (!queue.isEmpty()) {
         QPair<int, int> tile = queue.dequeue();
-        for (Direction direction : DIRECTIONS) {
+        for (Direction direction : DIRECTIONS()) {
             if (maze.at(tile.first).at(tile.second).value(direction)) {
                 continue;
             }
@@ -205,7 +205,7 @@ QVector<QString> MazeChecker::hasOneEntranceToCenter(const BasicMaze& maze) {
     QSet<QPair<int, int>> centerTiles = getCenterTiles(maze.size(), maze.at(0).size()); 
     int numberOfEntrances = 0;
     for (QPair<int, int> tile : centerTiles) {
-        for (Direction direction : DIRECTIONS) {
+        for (Direction direction : DIRECTIONS()) {
             if (centerTiles.contains(positionAfterMovingForward(tile, direction))) {
                 continue;
             }
@@ -224,7 +224,7 @@ QVector<QString> MazeChecker::hasHollowCenter(const BasicMaze& maze) {
     QSet<QPair<int, int>> centerTiles = getCenterTiles(maze.size(), maze.at(0).size()); 
     for (QPair<int, int> tile : centerTiles) {
         for (QPair<int, int> otherTile : centerTiles) {
-            for (Direction direction : DIRECTIONS) {
+            for (Direction direction : DIRECTIONS()) {
                 if (positionAfterMovingForward(tile, direction) != otherTile) {
                     continue;
                 }
@@ -274,12 +274,12 @@ QVector<QString> MazeChecker::isUnsolvableByWallFollower(const BasicMaze& maze) 
 
     while (!ContainerUtilities::setContains(reachableByWallFollower, position)) {
         Direction oldDirection = direction;
-        Direction newDirection = DIRECTION_ROTATE_RIGHT.at(direction);
+        Direction newDirection = DIRECTION_ROTATE_RIGHT().at(direction);
         if (!maze.at(position.first).at(position.second).walls.at(newDirection)) {
             direction = newDirection;
         }
         while (maze.at(position.first).at(position.second).walls.at(direction)) {
-            direction = DIRECTION_ROTATE_LEFT.at(direction);
+            direction = DIRECTION_ROTATE_LEFT().at(direction);
             if (direction == oldDirection) {
                 break;
             }

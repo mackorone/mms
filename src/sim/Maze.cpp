@@ -66,9 +66,9 @@ Maze::Maze(BasicMaze basicMaze) {
     /*
     // Optionally save the maze
     if (P()->saveGeneratedMaze()) {
-        MazeFileType type = STRING_TO_MAZE_FILE_TYPE.value(P()->generatedMazeType());
+        MazeFileType type = STRING_TO_MAZE_FILE_TYPE().value(P()->generatedMazeType());
         QString generatedMazeFilePath = Directory::get()->getResMazeDirectory() +
-            P()->generatedMazeFile() + "." + MAZE_FILE_TYPE_TO_SUFFIX.value(type);
+            P()->generatedMazeFile() + "." + MAZE_FILE_TYPE_TO_SUFFIX().value(type);
         bool success = false; // MazeFileUtilities::save(basicMaze, generatedMazeFilePath, type);
         if (success) {
             qInfo().noquote().nospace()
@@ -171,7 +171,7 @@ QVector<QVector<Tile>> Maze::initializeFromBasicMaze(const BasicMaze& basicMaze)
         for (int y = 0; y < basicMaze.at(x).size(); y += 1) {
             Tile tile;
             tile.setPos(x, y);
-            for (Direction direction : DIRECTIONS) {
+            for (Direction direction : DIRECTIONS()) {
                 tile.setWall(direction, basicMaze.at(x).at(y).value(direction));
             }
             tile.initPolygons(basicMaze.size(), basicMaze.at(x).size());
@@ -196,7 +196,7 @@ BasicMaze Maze::mirrorAcrossVertical(const BasicMaze& basicMaze) {
         QVector<BasicTile> column;
         for (int y = 0; y < basicMaze.at(x).size(); y += 1) {
             BasicTile tile;
-            for (Direction direction : DIRECTIONS) {
+            for (Direction direction : DIRECTIONS()) {
                 tile.insert(
                     direction,
                     basicMaze
@@ -284,7 +284,7 @@ QVector<QVector<Tile>> Maze::setTileDistances(QVector<QVector<Tile>> maze) {
     // Now do a BFS
     while (!discovered.empty()){
         Tile* tile = discovered.dequeue();
-        for (Direction direction : DIRECTIONS) {
+        for (Direction direction : DIRECTIONS()) {
             if (!tile->isWall(direction)) {
                 Tile* neighbor = getNeighbor(tile->getX(), tile->getY(), direction);
                 if (neighbor != nullptr && neighbor->getDistance() == -1) {

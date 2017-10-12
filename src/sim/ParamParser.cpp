@@ -171,23 +171,23 @@ int ParamParser::getIntIfHasIntAndInRange(const QString& tag, int defaultValue, 
 }
 
 QString ParamParser::getStringIfHasStringAndIsColor(const QString& tag, const QString& defaultValue) {
-    return getStringIfHasStringAndIsSpecial("color", tag, defaultValue, STRING_TO_COLOR);
+    return getStringIfHasStringAndIsSpecial("color", tag, defaultValue, STRING_TO_COLOR());
 }
 
 QString ParamParser::getStringIfHasStringAndIsDirection(const QString& tag, const QString& defaultValue) {
-    return getStringIfHasStringAndIsSpecial("direction", tag, defaultValue, STRING_TO_DIRECTION);
+    return getStringIfHasStringAndIsSpecial("direction", tag, defaultValue, STRING_TO_DIRECTION());
 }
 
 QString ParamParser::getStringIfHasStringAndIsLayoutType(const QString& tag, const QString& defaultValue) {
-    return getStringIfHasStringAndIsSpecial("layout type", tag, defaultValue, STRING_TO_LAYOUT_TYPE);
+    return getStringIfHasStringAndIsSpecial("layout type", tag, defaultValue, STRING_TO_LAYOUT_TYPE());
 }
 
 QString ParamParser::getStringIfHasStringAndIsMazeFileType(const QString& tag, const QString& defaultValue) {
-    return getStringIfHasStringAndIsSpecial("maze file type", tag, defaultValue, STRING_TO_MAZE_FILE_TYPE);
+    return getStringIfHasStringAndIsSpecial("maze file type", tag, defaultValue, STRING_TO_MAZE_FILE_TYPE());
 }
 
 QString ParamParser::getStringIfHasStringAndIsTileTextAlignment(const QString& tag, const QString& defaultValue) {
-    return getStringIfHasStringAndIsSpecial("tile text alignment", tag, defaultValue, STRING_TO_TILE_TEXT_ALIGNMENT);
+    return getStringIfHasStringAndIsSpecial("tile text alignment", tag, defaultValue, STRING_TO_TILE_TEXT_ALIGNMENT());
 }
 
 void ParamParser::printTagNotFound(const QString& type, const QString& tag, const QString& defaultValue) {

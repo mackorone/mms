@@ -36,7 +36,7 @@ Param::Param() {
     m_defaultWindowHeight = ParamParser::getIntIfHasIntAndNotLessThan(
         "default-window-height", 633, 100);
     m_defaultLayoutType = ParamParser::getStringIfHasStringAndIsLayoutType(
-        "default-layout-type", LAYOUT_TYPE_TO_STRING.value(LayoutType::FULL));
+        "default-layout-type", LAYOUT_TYPE_TO_STRING().value(LayoutType::FULL));
     m_minZoomedMapScale = ParamParser::getDoubleIfHasDoubleAndInRange(
         "min-zoomed-map-scale", 0.02, 0.01, 0.04);
     m_maxZoomedMapScale = ParamParser::getDoubleIfHasDoubleAndInRange(
@@ -46,39 +46,39 @@ Param::Param() {
     m_defaultRotateZoomedMap = ParamParser::getBoolIfHasBool(
         "default-rotate-zoomed-map", false);
     m_tileBaseColor = ParamParser::getStringIfHasStringAndIsColor(
-        "tile-base-color", COLOR_TO_STRING.value(Color::BLACK));
+        "tile-base-color", COLOR_TO_STRING().value(Color::BLACK));
     m_tileWallColor = ParamParser::getStringIfHasStringAndIsColor(
-        "tile-wall-color", COLOR_TO_STRING.value(Color::RED));
+        "tile-wall-color", COLOR_TO_STRING().value(Color::RED));
     m_tileCornerColor = ParamParser::getStringIfHasStringAndIsColor(
-        "tile-corner-color", COLOR_TO_STRING.value(Color::GRAY));
+        "tile-corner-color", COLOR_TO_STRING().value(Color::GRAY));
     m_tileFogColor = ParamParser::getStringIfHasStringAndIsColor(
-        "tile-fog-color", COLOR_TO_STRING.value(Color::GRAY));
+        "tile-fog-color", COLOR_TO_STRING().value(Color::GRAY));
     m_tileTextFontImage = ParamParser::getStringIfHasString(
         "tile-text-font-image", "Unispace-Bold.png");
     m_tileTextBorderFraction = ParamParser::getDoubleIfHasDoubleAndInRange(
         "tile-text-border-fraction", .05, .00, .50);
     m_tileTextAlignment = ParamParser::getStringIfHasStringAndIsTileTextAlignment(
-        "tile-text-alignment", TILE_TEXT_ALIGNMENT_TO_STRING.value(TileTextAlignment::CENTER_CENTER));
+        "tile-text-alignment", TILE_TEXT_ALIGNMENT_TO_STRING().value(TileTextAlignment::CENTER_CENTER));
     m_tileUndeclaredWallColor = ParamParser::getStringIfHasStringAndIsColor(
-        "tile-undeclared-wall-color", COLOR_TO_STRING.value(Color::DARK_RED));
+        "tile-undeclared-wall-color", COLOR_TO_STRING().value(Color::DARK_RED));
     m_tileUndeclaredNoWallColor = ParamParser::getStringIfHasStringAndIsColor(
-        "tile-undeclared-no-wall-color", COLOR_TO_STRING.value(Color::DARK_GRAY));
+        "tile-undeclared-no-wall-color", COLOR_TO_STRING().value(Color::DARK_GRAY));
     m_tileIncorrectlyDeclaredWallColor = ParamParser::getStringIfHasStringAndIsColor(
-        "tile-incorrectly-declared-wall-color", COLOR_TO_STRING.value(Color::ORANGE));
+        "tile-incorrectly-declared-wall-color", COLOR_TO_STRING().value(Color::ORANGE));
     m_tileIncorrectlyDeclaredNoWallColor = ParamParser::getStringIfHasStringAndIsColor(
-        "tile-incorrectly-declared-no-wall-color", COLOR_TO_STRING.value(Color::DARK_CYAN));
+        "tile-incorrectly-declared-no-wall-color", COLOR_TO_STRING().value(Color::DARK_CYAN));
     m_mouseBodyColor = ParamParser::getStringIfHasStringAndIsColor(
-        "mouse-body-color", COLOR_TO_STRING.value(Color::BLUE));
+        "mouse-body-color", COLOR_TO_STRING().value(Color::BLUE));
     m_mouseCenterOfMassColor = ParamParser::getStringIfHasStringAndIsColor(
-        "mouse-center-of-mass-color", COLOR_TO_STRING.value(Color::ORANGE));
+        "mouse-center-of-mass-color", COLOR_TO_STRING().value(Color::ORANGE));
     m_mouseWheelColor = ParamParser::getStringIfHasStringAndIsColor(
-        "mouse-wheel-color", COLOR_TO_STRING.value(Color::GREEN));
+        "mouse-wheel-color", COLOR_TO_STRING().value(Color::GREEN));
     m_mouseWheelSpeedIndicatorColor = ParamParser::getStringIfHasStringAndIsColor(
-        "mouse-wheel-speed-indicator-color", COLOR_TO_STRING.value(Color::DARK_GREEN));
+        "mouse-wheel-speed-indicator-color", COLOR_TO_STRING().value(Color::DARK_GREEN));
     m_mouseSensorColor = ParamParser::getStringIfHasStringAndIsColor(
-        "mouse-sensor-color", COLOR_TO_STRING.value(Color::GREEN));
+        "mouse-sensor-color", COLOR_TO_STRING().value(Color::GREEN));
     m_mouseViewColor = ParamParser::getStringIfHasStringAndIsColor(
-        "mouse-view-color", COLOR_TO_STRING.value(Color::WHITE));
+        "mouse-view-color", COLOR_TO_STRING().value(Color::WHITE));
     m_defaultWallTruthVisible = ParamParser::getBoolIfHasBool(
         "default-wall-truth-visible", true);
     m_defaultTileColorsVisible = ParamParser::getBoolIfHasBool(
@@ -92,7 +92,7 @@ Param::Param() {
     m_tileFogAlpha = ParamParser::getDoubleIfHasDoubleAndInRange(
         "tile-fog-alpha", 0.15, 0.0, 1.0);
     m_distanceCorrectTileBaseColor = ParamParser::getStringIfHasStringAndIsColor(
-        "distance-correct-tile-base-color", COLOR_TO_STRING.value(Color::DARK_YELLOW));
+        "distance-correct-tile-base-color", COLOR_TO_STRING().value(Color::DARK_YELLOW));
 
     // Simulation Parameters
     bool useRandomSeed = ParamParser::getBoolIfHasBool(

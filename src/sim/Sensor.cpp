@@ -5,6 +5,7 @@
 
 #include <algorithm>
 
+#include "Assert.h"
 #include "GeometryUtilities.h"
 #include "Param.h"
 #include "units/Polar.h"

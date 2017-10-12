@@ -253,16 +253,16 @@ QDomElement MouseParser::getContainerElement(const QDomElement& element, const Q
 EncoderType MouseParser::getEncoderTypeIfValid(const QDomElement& element, bool* success) {
     EncoderType encoderType;
     QString encoderTypeString = element.firstChildElement(ENCODER_TYPE_TAG).text();
-    if (STRING_TO_ENCODER_TYPE.contains(encoderTypeString)) {
-        encoderType = STRING_TO_ENCODER_TYPE.value(encoderTypeString);
+    if (STRING_TO_ENCODER_TYPE().contains(encoderTypeString)) {
+        encoderType = STRING_TO_ENCODER_TYPE().value(encoderTypeString);
     }
     else {
         qWarning().noquote().nospace()
             << "The encoder type \"" << encoderTypeString << "\" is not valid."
             << " The only valid encoder types are \""
-            << ENCODER_TYPE_TO_STRING.value(EncoderType::ABSOLUTE)
+            << ENCODER_TYPE_TO_STRING().value(EncoderType::ABSOLUTE)
             << "\" and \""
-            << ENCODER_TYPE_TO_STRING.value(EncoderType::RELATIVE) << "\".";
+            << ENCODER_TYPE_TO_STRING().value(EncoderType::RELATIVE) << "\".";
         *success = false;
     }
     return encoderType;
