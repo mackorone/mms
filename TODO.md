@@ -1,107 +1,100 @@
- High Priority
+Features
+========
+- Mouse algorithm random seed
+- Mouse algorithm input buttons
+- Mouse algorithm pause button
+    - Ensure we can select new maze files, exit the simulator, etc. while paused
+- Persist the last-used algorithms (and maze file) between invocations
+- Statically link some default maze/mouse files
+    - Similar to what we do for the image files
+    - Pre-loading a blank map on startup would be good
+- Fix existing maze file formats
+- Support more maze file formats
+    - .MAZ, .mz2, https://code.google.com/p/maze-solver/wiki/MazeFileFormats
+    - JSON, https://github.com/bblodget/MicromouseSim/tree/gh-pages/mazes_json
+- Maze "Save As..."
+- API call counts
+    - A table of API method to # of times called
+- Ad hoc maze rotation and mirroring
+- Toggle algorithm output line wrap
 
-- Set the working directory?
-- Status bar for mouse algorithm
+Bugfixes
+========
+- Setting the child process's working directory doesn't work on windows
+    - Instead, we might have to change the simulator's working directory
+- Bad maze algorithms (e.g., "echo foo") can crash the simulator
+
+Cleanup
+=======
+- Make a note about why we write EMPTY_STRING for some dispatched commands
+    - It's a speed optimization, similar to UDP vs. TCP
+- Kill the Layout class
+- Kill the SimUtilities class, along with other platform dependent code
+- Convert QVector<QString> to QStringList
+- Replace push_back() with append()
+- Audit codebase for unnecessary headers
+- Lint the codebase
+
+Wishlist
+========
+- A utility to tell you whether or not the stdlib is used
+- A utility to tell you how much memory the algorithm is occupying
+- A utility to ensure that the algorithm has no memory leaks
+- Clang compiler support
+- Use tr() on all user-facing strings to make text translatable
+- Show the timestamp that the algorithms were last built
+- A button to randomly select a maze file
+- Add stepper motor support in continuous mode
+- Bluetooth communication with an actual robot
+    - Would allow us to see where the robot thinks it is
+
+Unsorted
+========
 - If no maze is loaded, we shouldn't jump to mouse output tab
 - Reset CRASHED state when we restart the algorithm
-- Mouse algorithm pause button
 - Make it easier to edit the simulator parameters
     - Write and read from persistant storage...
     - The values should be re-loaded on the fly
-- Make a note about why we write EMPTY_STRING for some dispatched commands
-- Segfault from trying to call update on a null mouse ...
-- Save the last-used algo, so that we can jump to it on subsequent runs
-- Should unpause after pressing "run"
-- Seed to the mouse algo?
-- Ensure bad maze algorithms (e.g., "echo foo") don't crash the simulator
     - If maze algo fails, the simulator crashes
-- Can't exit after pausing the mouse algorithm...
 - If the mouse goes outside of the maze, the simulator crashes
     - Ensure the mouse stays in the maze
 - Surface information about *why* a maze is valid/invalid (etc.)
 - MacOS retina https://github.com/vispy/vispy/issues/99
 - Better error messages for failed commands
-- Input buttons for the mouse algorithm
-    - Check to ensure input button works
-- If it's paused, I can't select a new maze file...
-- Add default maze/mouse files
-- Support json maze file format
 - Button for toggling the maze views
 - Verify that the tile text automatically refresh when we set tileGraphicTextMaxSize
-- Put MazeView into MazeGraphic (it should all be encapsulated in there)
-- Maze editing and saving
-    - Choose which type of file to save
 - Maze loading
     - Use extension to determine which method to call
-- Indicate build failure/success with colors
 - Clean up mouseInterface/controller and MainWindow/controller (MouseAlgoUtilities)
 - Add controls about UI
-- Make a note about newline for algo stdout (only shown in GUI once newline is written)
 - Fix the elapsed sim time
-- Toggle stdout/stderr line wrap
-- API call counts
-    - Keep counts of all methods called (so people can debug why it's slow)
-- Indicate whether or not there are lines in the stdout buffer (checkbox?)
-- Save button to Maze algo tab
 - Surface error messages to the UI
-- Timestamp of last built
 - Stderr get's printed out when the algo exits, gets sent to Controller
-- Kill Layout class
-- Blank map on startup would be good
-- QList vs QVector - pick one
-- Run mouse algorithms as separate process
-    - Make continuous algos possible
 - Fix collision detection
-- Fix .maz file loading
-- Organize the code a little better
-- Support rotation and maze mirroring
-- replace "import" with "new"
-- Ensure Process actually gets cleaned up
+- Replace "import algorithm" with "new algorithm"
 - Rename the whole texture vs polygon thing
 - Don't need (const X& x) because of implicit sharing
     - http://doc.qt.io/qt-5/implicit-sharing.html#implicitly-shared
 - If the maze is invalid, don't let the algo do anything
 - Set up tests/build framework
-- Use Qt XML support
-    - Get rid of other lib/ dependencies
-- Kill toStdString
 - Make all classes QObjects
-- Kill SimUtilities, other platform dependent code
 - Fix timestep
     - Make renderer and physics on same thread
         - Maybe even collision detection too
 - QHash instead of QMap
     - QSet instead of QVector in some places
 - Monitor algo directories using FileSystemWatcher
-- Get rid of unnecesary QString wrapping, like QString(<some qstring>)
-- Get rid of all c_str() calls
-- Kill toLatin1() calls
+- Get rid of unnecessary QString wrapping, like QString(<some qstring>)
 - Replace libs with native Qt functions
 - char to QChar
 - Replace QPair with structs
-- append should replace push_back
-- auto vs const auto&
-    - Use const auto&
-- Bluetooth communication
-- Support reading or writing more file types
-    - .MAZ, .mz2
-    - https://code.google.com/p/maze-solver/wiki/MazeFileFormats
-- Add computer vision to make it easy to import mazes
-    - Repurpose "mousee" project for this
-- Make a way to ensure that the algorithm has no memory leaks
-    - We need a simple test harness, no graphics, discrete only
 - Logging is too expensive
     - Causing freezing and crashing
     - Generalize a method for counting and logging few times, 1 per second
     - Write some code to make sure update throughput is good
         - 99% of updates are 1ms apart, or something like that
     - Check the sleep duration of updates to make sure that we're actually doing 1000 updates per second
-- Some script that tells you whether or not the headers are used
 - Draw dots on edges
-- Make sure QVector<QString> is QStringList
-- command line args to the algos
-- Communicate with subprocesses on stderr
-    - Print out the stdout of the subprocesses
 - Sim time is lagging a little bit
 - Make it more obvious which widgets are read-only
     - Use QLabel with border
@@ -114,7 +107,6 @@
       as necessary to get the mouse to its destination)
 - Make an algo that can switch between tile edge movements and not
     - Proof of concept
-- Stepper motor
 - Sensor type (digital or analog)
 - Add a way to time the algorithms
     - Make sure consistent at all speeds
@@ -124,36 +116,31 @@
 - Make a mechanism for easily merging the a discrete algo into a continuous one
     - Figure out how to bring the high level logic into the control algo
 - Make MouseInterface into an interface, and then implement the simulator interface, make a real-world interface
-- Look at Tomasz' maze website
 - Figure out how to get rid of ifdefs in algorithm
 - Make a SimInterface and make sure it's easy to "extract" an algorithm for use on Arduino
 - Figure out a nice way to use a vector for tiles for the simulation, but an array for real life
-- Sensor readings for walls other than front, left right
+- Sensor readings for walls other than front, left right (i.e., two cells ahead of you)
 - Include Arduino "types" with the MouseInterface
 - More Arduino function support
 - Add gridlines (see https://www.youtube.com/watch?v=LGRutv9cGBA and https://www.youtube.com/watch?v=gtnTBf5ItEc)
     - Variable width?
     - Add trajectory lines (see https://www.youtube.com/watch?v=kgJClVCPu3w)
 - Buffer communication (like with the real robot)
-- Clang compiler support
 - Make a separate process for algo, so if the algo dies the sim stays alive, and so that we can start an algo over really easily
 - Continuous performance
     - CPU with megaMouse.xml
     - MinSleepDuration is a little bit weird - sometimes we try to sleep less than that
 - Downward sensor
 - Intelligent build command and run command generation
-
-# Medum Priority
-
+- Kill toLatin1() calls
+- Fix/check continuous algo
 - Add colors to stats/outputs...
     - Makes it easier to know that it's not a button
 - Add a print function to interfaces
 - Arduino int could be 16 bits
 - Deduplicate some import/edit/build logic between mouse and maze algo tabs
 - Use explicit on one argument constructors
-- Use tr on all user-facing strings to make the application translatable
 - Pass by reference or value in lambdas
-- Ensure random seed is provided to algo
 - Rule of thumb - if it has state, make it a singleton instead of a static class
     - Rewrite singleton access patterns to be a little more readable (kill S(), P(), etc.)
     - All singletons should have an init function
@@ -189,9 +176,7 @@
 - Testing for resource existence (like the shaders, font images, etc.)
 - Continuous mode improvements (overall)
 - Xorg and compiz performance...
-- Kill SimUtilities...
 - Shortest path graphic (display the shortest path)
-- Randomly select a pre-defined maze
 - Write a good continuous algorithm
 - Interrupt interface
 - Run the program with maximum thread priority
@@ -201,47 +186,28 @@
 - Write scripts we can execute (like unit tests) to make sure that our docs are in sync with the code
 - Replace the convexHull with union in the mouse collision polygon initialization
 - XML schema/validators
-- Support multiple mice
 - Make diagonals smoother
     - make an option for smooth edge movements, including regular turns
     - https://www.youtube.com/watch?v=HPvke3fknrc
     - Stringing together diagonal movements (with smooth turns) is difficult
     - Use small curves to do diagonals
-
-# Low Priority
-
+- Put MazeView into MazeGraphic (it should all be encapsulated in there)
 - Update the UI if the QSettings file is changed manually
 - Add gear ratio to the wheels
 - Current rotation jumps between 0 and 360 on megaMouse right wall follow
 - Pointers to wall polygons in each tile, save space by not breaking up walls/corners into multiple tiles
 - Get rid of as much platform dependant code as possible
 - Clean up / improve the coding standards
-    - Validation/linting
-    - Replace NULL with nullptr
 - Optimize for space in the TEXTURE_CPU_BUFFER and GRAPHIC_CPU_BUFFER - Don't repeat vertices
 - VSync so the graphics don't tear
 - Update the check_params.py script to make sure that the return type of the
   Param methods is the same as the type of the member variable
-- Detect STL use in maze and mouse algos, send a warning
-- Perhaps impose memory limits on the algorithm
 - Add a way to change the mouse color
 - Crash animation for both modes
 - Unit tests
 - Try to break the simulator from within the algos, make it tamper-resistant
-- Reduce include dependencies as much as possible
-- Implement perfect hashing for key input and algo selection (lulz)
-- Support more than just white fonts
-- Rewrite/clean floodfill
-- Color palettes
-- Tile text color
 - Enable steering the wheels and sensors during run
-- Data recording for pause, rewind, fast forward
-- 3D
-
-# Clean-Up
-
 - Implicit shared of QString, pass by value
-- QVector<QString> to QStringList
 - Javadoc as much as possible
 - Make sure all QObjects have parents
 - Use uniform syntax for Signal/slot connections
@@ -259,9 +225,7 @@
 - The mouse sometimes rotates weirdly (goes slowly, backwards for a second, and
   then forwards fast. You can see what I mean by just increasing the view
   length of the sensors for a continuous algo)
-- Remove as many c_str() as possible
 - Pass things by reference when possible
-- Rewrite "i++" and "++i" as "i += 1"
 - Give better explanations for the GeometryUtilities
 - Buffer the declared walls and include a quick "resetWalls()" method
 - Fit code into 80/100 columns... use a linter for this
@@ -283,6 +247,8 @@
 - You can add layouts to layouts
     - make sure I'm not creating any unnecessary widgets
 - Use the "widget" suffix for all user-defined widgets
+- auto vs const auto&
+    - Use const auto&
 
 // TODO: MACK
 // +++

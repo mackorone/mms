@@ -1117,8 +1117,24 @@ void Window::mouseAlgoTabInit() {
     );
     speedSlider->setValue(100.0 / speedBox->maximum() - 1.0);
 
+    // TODO: MACK ------------------
+
+    // Add the input buttons
+    QHBoxLayout* inputButtonsLayout = new QHBoxLayout();
+    inputButtonsLayout->addWidget(new QLabel("Input Buttons"));
+    for (int i = 0; i < 10; i += 1) {
+        QPushButton* button = new QPushButton(QString::number(i));
+        button->setMinimumSize(3, 0);
+        inputButtonsLayout->addWidget(button);
+    }
+    layout->addLayout(inputButtonsLayout);
+
     // TODO: MACK
     /*
+
+    // Add the random seed config field
+    // layout->addWidget(m_seedWidget);
+
     connect(
         mouseAlgosTab, &MouseAlgosTab::pauseButtonPressed,
         this, [=](bool pause){
@@ -1133,19 +1149,6 @@ void Window::mouseAlgoTabInit() {
         emit pauseButtonPressed(pause);
     });
 
-    // Add the input buttons
-    QHBoxLayout* inputButtonsLayout = new QHBoxLayout();
-    inputButtonsLayout->addWidget(new QLabel("Input Buttons"));
-    for (int i = 0; i < 10; i += 1) {
-        QPushButton* button = new QPushButton(QString::number(i));
-        button->setMinimumSize(3, 0);
-        button->setCheckable(true);
-        inputButtonsLayout->addWidget(button);
-    }
-    layout->addLayout(inputButtonsLayout);
-
-    // Add the random seed config field
-    layout->addWidget(m_seedWidget);
     */
 
     // Add the build and run output
@@ -1313,15 +1316,13 @@ void Window::mouseAlgoBuildStderr() {
 
 void Window::mouseAlgoRunStart() {
 
-    // TODO: Cancel/stop button not working just yet
+    // TODO: MACK - add the random seed to command...
     // TODO: MACK - dedup this validation with the other process functions
     
     QString algoName = m_mouseAlgoComboBox->currentText();
 	QString dirPath = SettingsMouseAlgos::getDirPath(algoName);
 	QString command = SettingsMouseAlgos::getRunCommand(algoName);
 	QString mouseFilePath = SettingsMouseAlgos::getMouseFilePath(algoName);
-
-    // TODO: MACK - add the random seed to command...
 
 	// Perform config validation
 	if (command.isEmpty()) {

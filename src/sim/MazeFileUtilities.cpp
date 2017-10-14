@@ -286,7 +286,7 @@ BasicMaze MazeFileUtilities::deserializeMz2Type(const QByteArray& bytes) {
     }
 
     if (numberOfBytes != 0) {
-        for (auto i = 0; i < (7 - numberOfBytes); i++) {
+        for (auto i = 0; i < (7 - numberOfBytes); i += 1) {
             getPopBack(&characters); // Padding so the number of bytes is a muliple of 8
         }
         numberOfBytes = 0;
@@ -562,7 +562,7 @@ QByteArray MazeFileUtilities::serializeMz2Type(const BasicMaze& maze) {
     }
     
     if (numberOfBytes != 0) {
-        for (auto i = 0; i < (7 - numberOfBytes); i++) {
+        for (auto i = 0; i < (7 - numberOfBytes); i += 1 {
             file.put(0); // Padding so the number of bytes is a muliple of 8
         }
         numberOfBytes = 0;
@@ -590,7 +590,7 @@ QByteArray MazeFileUtilities::serializeMz2Type(const BasicMaze& maze) {
     }
 
     if (numberOfBytes != 0) {
-        for (auto i = 0; i < (7 - numberOfBytes); i++) {
+        for (auto i = 0; i < (7 - numberOfBytes); i += 1 {
             file.put(0); // Padding so the number of bytes is a muliple of 8
         }
     }

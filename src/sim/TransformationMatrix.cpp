@@ -244,7 +244,7 @@ QVector<float> TransformationMatrix::multiply4x4Matrices(
     ASSERT_EQ(left.size(), 16);
     ASSERT_EQ(right.size(), 16);
     QVector<float> result;
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i += 1) {
         for (int j = 0; j < 4; j++) {
             double value = 0.0;
             for (int k = 0; k < 4; k++) {
