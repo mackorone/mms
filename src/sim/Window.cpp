@@ -1089,47 +1089,14 @@ void Window::mouseAlgoTabInit() {
         label->setMinimumWidth(90);
     }
 
-    // TODO: MACK
-    /*
-    connect(
-        mouseAlgosTab, &MouseAlgosTab::pauseButtonPressed,
-        this, [=](bool pause){
-            m_model.setPaused(pause);
-        }
-    );
-	connect(
-		mouseAlgosTab, &MouseAlgosTab::simSpeedChanged,
-		this, [=](double factor){
-            // We have to call the function on this UI thread (as opposed to
-            // hooking up the signal directly to the slot) because the Model
-            // thread is blocked on simulate(), and thus never processes the
-            // signal
-			m_model.setSimSpeed(factor);
-		}
-	);
-    tabWidget->addTab(mouseAlgosTab, "Mouse Algorithms");
-    */
-    /*
-    // Add the "speed" buttons
-    QHBoxLayout* speedsLayout = new QHBoxLayout();
-    m_pauseButton->setEnabled(false);
-    //speedsLayout->addWidget(m_stopButton);
-    speedsLayout->addWidget(m_pauseButton);
-    //connect(m_stopButton, &QPushButton::clicked, this, [=](){
-    //    emit stopRequested();
-    //});
-    connect(m_pauseButton, &QPushButton::clicked, this, [=](){
-        bool pause = m_pauseButton->text() == "Pause";
-        m_pauseButton->setText(pause ? "Resume": "Pause");
-        emit pauseButtonPressed(pause);
-    });
-    layout->addLayout(speedsLayout);
-
     // Add the "speed" slider
+    QHBoxLayout* speedsLayout = new QHBoxLayout();
+    layout->addLayout(speedsLayout);
     double maxSpeed = P()->maxSimSpeed();
     QSlider* speedSlider = new QSlider(Qt::Horizontal);
     QDoubleSpinBox* speedBox = new QDoubleSpinBox();
     speedBox->setRange(maxSpeed / 100.0, maxSpeed);
+    speedsLayout->addWidget(new QLabel("Speed"));
     speedsLayout->addWidget(speedSlider);
     speedsLayout->addWidget(speedBox);
     connect(
@@ -1137,7 +1104,7 @@ void Window::mouseAlgoTabInit() {
         this, [=](int value){
             double fraction = (value + 1.0) / 100.0;
             speedBox->setValue(fraction * maxSpeed);
-            emit simSpeedChanged(fraction * maxSpeed);
+			m_model.setSimSpeed(fraction * maxSpeed);
         }
     );
     connect(
@@ -1149,6 +1116,22 @@ void Window::mouseAlgoTabInit() {
         }
     );
     speedSlider->setValue(100.0 / speedBox->maximum() - 1.0);
+
+    // TODO: MACK
+    /*
+    connect(
+        mouseAlgosTab, &MouseAlgosTab::pauseButtonPressed,
+        this, [=](bool pause){
+            m_model.setPaused(pause);
+        }
+    );
+    // Add the "speed" buttons
+    m_pauseButton->setEnabled(false);
+    connect(m_pauseButton, &QPushButton::clicked, this, [=](){
+        bool pause = m_pauseButton->text() == "Pause";
+        m_pauseButton->setText(pause ? "Resume": "Pause");
+        emit pauseButtonPressed(pause);
+    });
 
     // Add the input buttons
     QHBoxLayout* inputButtonsLayout = new QHBoxLayout();

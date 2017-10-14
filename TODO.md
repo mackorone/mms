@@ -12,6 +12,7 @@
 - Segfault from trying to call update on a null mouse ...
 - Save the last-used algo, so that we can jump to it on subsequent runs
 - Should unpause after pressing "run"
+- Seed to the mouse algo?
 - Ensure bad maze algorithms (e.g., "echo foo") don't crash the simulator
     - If maze algo fails, the simulator crashes
 - Can't exit after pausing the mouse algorithm...
@@ -21,8 +22,8 @@
 - MacOS retina https://github.com/vispy/vispy/issues/99
 - Better error messages for failed commands
 - Input buttons for the mouse algorithm
+    - Check to ensure input button works
 - If it's paused, I can't select a new maze file...
-- Remove "clear" and "autoclear" from text display widget
 - Add default maze/mouse files
 - Support json maze file format
 - Button for toggling the maze views

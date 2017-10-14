@@ -143,6 +143,7 @@ void Interface::undeclareTileDistance(int x, int y) {
 
 void Interface::resetPosition() {
     PRINT("resetPosition");
+    READ();
 }
 
 bool Interface::inputButtonPressed(int inputButton) {

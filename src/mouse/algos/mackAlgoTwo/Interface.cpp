@@ -220,6 +220,7 @@ void Interface::undeclareTileDistance(int x, int y) {
 void Interface::resetPosition() {
 #if (SIMULATOR)
     PRINT("resetPosition");
+    READ();
 #endif
 }
 
