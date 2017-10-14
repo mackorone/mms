@@ -1,6 +1,5 @@
 Features
 ========
-- Mouse algorithm input buttons
 - Mouse algorithm pause button
     - Ensure we can select new maze files, exit the simulator, etc. while paused
 - Persist the last-used algorithms (and maze file) between invocations

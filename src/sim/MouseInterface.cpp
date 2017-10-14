@@ -60,7 +60,7 @@ QString MouseInterface::dispatch(const QString& command) {
     // types, not finalizing static options more than once, etc.
 
     static const QString ACK_STRING = "ACK";
-    static const QString EMPTY_STRING = "";
+    static const QString NO_ACK_STRING = "";
     static const QString ERROR_STRING = "!";
 
     QStringList tokens = command.split(" ", QString::SkipEmptyParts);
@@ -165,17 +165,17 @@ QString MouseInterface::dispatch(const QString& command) {
         int y = SimUtilities::strToInt(tokens.at(2));
         char color = SimUtilities::strToChar(tokens.at(3));
         setTileColor(x, y, color);
-        return EMPTY_STRING;
+        return NO_ACK_STRING;
     }
     else if (function == "clearTileColor") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
         clearTileColor(x, y);
-        return EMPTY_STRING;
+        return NO_ACK_STRING;
     }
     else if (function == "clearAllTileColor") {
         clearAllTileColor();
-        return EMPTY_STRING;
+        return NO_ACK_STRING;
     }
     else if (function == "setTileText") {
         int x = SimUtilities::strToInt(tokens.at(1));
@@ -185,17 +185,17 @@ QString MouseInterface::dispatch(const QString& command) {
             text = tokens.at(3);
         }
         setTileText(x, y, text);
-        return EMPTY_STRING;
+        return NO_ACK_STRING;
     }
     else if (function == "clearTileText") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
         clearTileText(x, y);
-        return EMPTY_STRING;
+        return NO_ACK_STRING;
     }
     else if (function == "clearAllTileText") {
         clearAllTileText();
-        return EMPTY_STRING;
+        return NO_ACK_STRING;
     }
     else if (function == "declareWall") {
         int x = SimUtilities::strToInt(tokens.at(1));
@@ -203,34 +203,34 @@ QString MouseInterface::dispatch(const QString& command) {
         char direction = SimUtilities::strToChar(tokens.at(3));
         bool wallExists = SimUtilities::strToBool(tokens.at(4));
         declareWall(x, y, direction, wallExists);
-        return EMPTY_STRING;
+        return NO_ACK_STRING;
     }
     else if (function == "undeclareWall") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
         char direction = SimUtilities::strToChar(tokens.at(3));
         undeclareWall(x, y, direction);
-        return EMPTY_STRING;
+        return NO_ACK_STRING;
     }
     else if (function == "setTileFogginess") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
         bool foggy = SimUtilities::strToBool(tokens.at(3));
         setTileFogginess(x, y, foggy);
-        return EMPTY_STRING;
+        return NO_ACK_STRING;
     }
     else if (function == "declareTileDistance") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
         int distance = SimUtilities::strToInt(tokens.at(3));
         declareTileDistance(x, y, distance);
-        return EMPTY_STRING;
+        return NO_ACK_STRING;
     }
     else if (function == "undeclareTileDistance") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
         undeclareTileDistance(x, y);
-        return EMPTY_STRING;
+        return NO_ACK_STRING;
     }
     else if (function == "resetPosition") {
         resetPosition();
@@ -395,6 +395,10 @@ QString MouseInterface::dispatch(const QString& command) {
 
 void MouseInterface::requestStop() {
     m_stopRequested = true;
+}
+
+void MouseInterface::inputButtonWasPressed(int button) {
+    m_inputButtonsPressed[button] = true;
 }
 
 InterfaceType MouseInterface::getInterfaceType(bool canFinalize) const {
@@ -637,11 +641,14 @@ bool MouseInterface::inputButtonPressed(int inputButton) {
         return false;
     }
 
-    return S()->inputButtonWasPressed(inputButton);
+    return m_inputButtonsPressed.value(inputButton, false);
 }
 
 void MouseInterface::acknowledgeInputButtonPressed(int inputButton) {
 
+    // TODO: upforgrabs
+    // This shouldn't be hardcoded here; instead, it should be derived
+    // from the Window (which actually contains the input buttons)
     if (inputButton < 0 || 9 < inputButton) {
         qWarning().noquote().nospace()
             << "There is no input button with the number " << inputButton << ","
@@ -649,10 +656,8 @@ void MouseInterface::acknowledgeInputButtonPressed(int inputButton) {
         return;
     }
 
-    S()->setInputButtonWasPressed(inputButton, false);
-    qInfo().noquote().nospace()
-        << "Input button " << inputButton << " was acknowledged as pressed; it"
-        << " can now be pressed again.";
+    m_inputButtonsPressed[inputButton] = false;
+    emit inputButtonWasAcknowledged(inputButton);
 }
 
 double MouseInterface::getWheelMaxSpeed(const QString& name) {

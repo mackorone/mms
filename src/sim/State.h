@@ -1,9 +1,5 @@
 #pragma once
 
-#include <QMap>
-
-#include "LayoutType.h"
-
 namespace mms {
 
 // Wrapper for the static call to State::getInstance()
@@ -17,12 +13,9 @@ public:
     // Returns a pointer to the singleton state object
     static State* getInstance();
 
-    // TODO: MACK - should be a property of the mouse?
+    // TODO: MACK - should be a property of the mouse
     bool crashed();
     void setCrashed();
-
-    bool inputButtonWasPressed(int inputButton);
-    void setInputButtonWasPressed(int inputButton, bool pressed);
 
 private:
 
@@ -33,7 +26,6 @@ private:
     static State* INSTANCE;
 
     bool m_crashed;
-    QMap<int, bool> m_inputButtons;
 };
 
 } // namespace mms

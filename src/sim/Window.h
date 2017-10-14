@@ -32,6 +32,11 @@ public:
     Window(QWidget* parent = 0);
     void closeEvent(QCloseEvent* event);
 
+signals:
+
+    // Emits this signal when a user presses an input button
+    void inputButtonWasPressed(int button);
+
 private:
 
     // TODO: MACK - move some of the GUI elements down below model elements
@@ -172,6 +177,7 @@ private:
 
     QPushButton* m_mouseAlgoPauseButton;
     RandomSeedWidget* m_mouseAlgoSeedWidget;
+    QVector<QPushButton*> m_mouseAlgoInputButtons;
 
     void mouseAlgoRefresh(const QString& name = "");
     QVector<ConfigDialogField> mouseAlgoGetFields();

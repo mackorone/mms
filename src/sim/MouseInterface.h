@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QMap>
 #include <QObject>
 #include <QPair>
 
@@ -39,6 +40,9 @@ public:
     // Request that the mouse algorithm exit
     void requestStop();
 
+    // A user pressed an input button in the UI
+    void inputButtonWasPressed(int button);
+
     // Parameters set by the algorithm
     InterfaceType getInterfaceType(bool canFinalize) const;
     DynamicMouseAlgorithmOptions getDynamicOptions() const;
@@ -47,6 +51,9 @@ signals:
 
     // Emit sanitized algorithm output
     void algoOutput(QString output);
+
+    // An algorithm acknowledged an input button
+    void inputButtonWasAcknowledged(int button);
 
 private:
 
@@ -178,6 +185,9 @@ private:
 
     // Whether or a stop was requested
     bool m_stopRequested;
+
+    // Whether or not the input buttons are pressed/acknowleged
+    QMap<int, bool> m_inputButtonsPressed;
 
     // Whether or not the mouse has moved out the origin
     bool m_inOrigin;

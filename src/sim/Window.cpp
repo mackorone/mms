@@ -19,6 +19,7 @@
 #include "SettingsMazeAlgos.h"
 #include "SettingsMouseAlgos.h"
 #include "SimUtilities.h"
+#include "State.h"
 
 namespace mms {
 
@@ -509,31 +510,6 @@ void Window::algoActionStop(
 }
 
 #if(0)
-void Window::keyPress(int key) {
-    // NOTE: If you're adding or removing anything from this function, make
-    // sure to update wiki/Keys.md
-    if (
-        key == Qt::Key_0 || key == Qt::Key_1 ||
-        key == Qt::Key_2 || key == Qt::Key_3 ||
-        key == Qt::Key_4 || key == Qt::Key_5 ||
-        key == Qt::Key_6 || key == Qt::Key_7 ||
-        key == Qt::Key_8 || key == Qt::Key_9
-    ) {
-        // Press an input button
-        int inputButton = key - Qt::Key_0;
-        if (!S()->inputButtonWasPressed(inputButton)) {
-            S()->setInputButtonWasPressed(inputButton, true);
-            qInfo().noquote().nospace()
-                << "Input button " << inputButton << " was pressed.";
-        }
-        else {
-            qWarning().noquote().nospace()
-                << "Input button " << inputButton << " has not yet been"
-                << " acknowledged as pressed; pressing it has no effect.";
-        }
-    }
-}
-
 void Window::togglePause() {
     if (m_mouseInterface != nullptr) {
         if (m_mouseInterface->getInterfaceType(false) == InterfaceType::DISCRETE) {
@@ -1130,24 +1106,20 @@ void Window::mouseAlgoTabInit() {
     );
     speedSlider->setValue(100.0 / speedBox->maximum() - 1.0);
 
-    // TODO: MACK ------------------
-
     // Add the input buttons
     QHBoxLayout* inputButtonsLayout = new QHBoxLayout();
     inputButtonsLayout->addWidget(new QLabel("Input Buttons"));
     for (int i = 0; i < 10; i += 1) {
         QPushButton* button = new QPushButton(QString::number(i));
+        button->setEnabled(false);
         button->setMinimumSize(3, 0);
         inputButtonsLayout->addWidget(button);
+        m_mouseAlgoInputButtons.append(button);
     }
     controlLayout->addLayout(inputButtonsLayout);
 
-    // TODO: MACK
+    // TODO: MACK ------------------
     /*
-
-    // Add the random seed config field
-    // layout->addWidget(m_seedWidget);
-
     connect(
         mouseAlgosTab, &MouseAlgosTab::pauseButtonPressed,
         this, [=](bool pause){
@@ -1161,7 +1133,6 @@ void Window::mouseAlgoTabInit() {
         m_pauseButton->setText(pause ? "Resume": "Pause");
         emit pauseButtonPressed(pause);
     });
-
     */
 
     // Add the build and run output
@@ -1478,6 +1449,32 @@ void Window::mouseAlgoRunStart() {
             }
         );
 
+        // Connect the input buttons to the algorithm
+        for (int i = 0; i < m_mouseAlgoInputButtons.size(); i += 1) {
+            QPushButton* button = m_mouseAlgoInputButtons.at(i);
+            button->setEnabled(true);
+            connect(button, &QPushButton::pressed, this, [=](){
+                button->setEnabled(false);
+                // Note: we can't call inputButtonWasPressed directly because
+                // it's not thread-safe; instead, we use a queued connection
+                emit inputButtonWasPressed(i);
+            });
+            connect(
+                this,
+                &Window::inputButtonWasPressed,
+                newMouseInterface,
+                &MouseInterface::inputButtonWasPressed
+            );
+            connect(
+                newMouseInterface,
+                &MouseInterface::inputButtonWasAcknowledged,
+                this,
+                [=](int button) {
+                    m_mouseAlgoInputButtons.at(button)->setEnabled(true);
+                }
+            );
+        }
+
         // First, connect the newTileLocationTraversed signal to a lambda that
         // clears tile fog *before* adding the mouse to the maze. This ensures
         // that the first tile's fog is always cleared (the initial value of
@@ -1615,7 +1612,7 @@ void Window::mouseAlgoRunStart() {
         m_map.setView(newView);
         m_map.setMouseGraphic(newMouseGraphic);
 
-        // TODO: MACK
+        // TODO: MACK - UI updates
         m_viewButton->setEnabled(true);
         m_viewButton->setChecked(true);
         m_followCheckbox->setEnabled(true);
@@ -1665,6 +1662,9 @@ void Window::mouseAlgoRunStop() {
     m_mouseAlgoRunStatus->setStyleSheet(
         "QLabel { background: rgb(255, 255, 255); }"
     );
+    for (QPushButton* button : m_mouseAlgoInputButtons) {
+        button->setEnabled(false);
+    }
     // TODO: MACK - change to the current tab
     // TODO: Stop/pause buttons
 }
