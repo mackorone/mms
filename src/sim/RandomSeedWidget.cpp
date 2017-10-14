@@ -10,6 +10,7 @@ namespace mms {
 
 RandomSeedWidget::RandomSeedWidget(int max) :
         m_max(max),
+        m_lockSeed(new QCheckBox("Lock")),
         m_nextSeedBox(new QSpinBox()),
         m_prevSeedBox(new QSpinBox()) {
 
@@ -23,6 +24,7 @@ RandomSeedWidget::RandomSeedWidget(int max) :
     QHBoxLayout* layout = new QHBoxLayout();
     QGroupBox* groupBox = new QGroupBox("Random Seed");
     QHBoxLayout* groupBoxLayout = new QHBoxLayout();
+    groupBoxLayout->addWidget(m_lockSeed);
     groupBoxLayout->addWidget(new QLabel("Next"));
     groupBoxLayout->addWidget(m_nextSeedBox);
     groupBoxLayout->addWidget(new QLabel("Previous"));
@@ -37,7 +39,9 @@ int RandomSeedWidget::next() {
     int seed = m_nextSeedBox->value();
     m_prevSeedBox->setValue(seed);
     m_prevSeedBox->setSpecialValueText("");
-    m_nextSeedBox->setValue(getNext());
+    if (!m_lockSeed->isChecked()) {
+        m_nextSeedBox->setValue(getNext());
+    }
     return seed;
 }
 

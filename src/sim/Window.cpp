@@ -772,6 +772,9 @@ void Window::mazeAlgoTabInit() {
     QVBoxLayout* optionsLayout = new QVBoxLayout();
     optionsGroupBox->setLayout(optionsLayout);
 
+    // Add the random seed box
+    optionsLayout->addWidget(m_mazeAlgoSeedWidget);
+
     // Add the maze size box
     QGroupBox* mazeSizeBox = new QGroupBox("Maze Size");
     optionsLayout->addWidget(mazeSizeBox);
@@ -785,9 +788,6 @@ void Window::mazeAlgoTabInit() {
     mazeSizeLayout->addWidget(m_mazeAlgoWidthBox);
     mazeSizeLayout->addWidget(new QLabel("Height"));
     mazeSizeLayout->addWidget(m_mazeAlgoHeightBox);
-
-    // Add the random seed box
-    optionsLayout->addWidget(m_mazeAlgoSeedWidget);
 
     // Add the build and run output
     m_mazeAlgoOutputTabWidget = new QTabWidget();
@@ -1057,8 +1057,6 @@ void Window::mouseAlgoTabInit() {
         this, &Window::mouseAlgoRunStart
     );
 
-    // TODO: MACK - dedup this with maze algo
-
     // Set up the layout
     QVBoxLayout* layout = new QVBoxLayout();
     m_mouseAlgoWidget->setLayout(layout);
@@ -1070,7 +1068,7 @@ void Window::mouseAlgoTabInit() {
     topLayout->addWidget(algorithmGroupBox, 0, 0);
     QGridLayout* algorithmLayout = new QGridLayout();
     algorithmGroupBox->setLayout(algorithmLayout);
-    algorithmLayout->addWidget(m_mouseAlgoComboBox, 0, 0);
+    algorithmLayout->addWidget(m_mouseAlgoComboBox, 0, 0, 1, 2);
     algorithmLayout->addWidget(m_mouseAlgoImportButton, 1, 0);
     algorithmLayout->addWidget(m_mouseAlgoEditButton, 1, 1);
 
@@ -1089,9 +1087,24 @@ void Window::mouseAlgoTabInit() {
         label->setMinimumWidth(90);
     }
 
+    // Options group box
+    QGroupBox* optionsGroupBox = new QGroupBox("Options");
+    topLayout->addWidget(optionsGroupBox, 0, 2, 2, 2);
+    QVBoxLayout* optionsLayout = new QVBoxLayout();
+    optionsGroupBox->setLayout(optionsLayout);
+
+    // Add the random seed widget
+    optionsLayout->addWidget(m_mouseAlgoSeedWidget);
+
+    // Runtime controls group box
+    QGroupBox* controlsGroupBox = new QGroupBox("Controls");
+    optionsLayout->addWidget(controlsGroupBox, 0, 0);
+    QVBoxLayout* controlLayout = new QVBoxLayout();
+    controlsGroupBox->setLayout(controlLayout);
+
     // Add the "speed" slider
     QHBoxLayout* speedsLayout = new QHBoxLayout();
-    layout->addLayout(speedsLayout);
+    controlLayout->addLayout(speedsLayout);
     double maxSpeed = P()->maxSimSpeed();
     QSlider* speedSlider = new QSlider(Qt::Horizontal);
     QDoubleSpinBox* speedBox = new QDoubleSpinBox();
@@ -1127,7 +1140,7 @@ void Window::mouseAlgoTabInit() {
         button->setMinimumSize(3, 0);
         inputButtonsLayout->addWidget(button);
     }
-    layout->addLayout(inputButtonsLayout);
+    controlLayout->addLayout(inputButtonsLayout);
 
     // TODO: MACK
     /*
@@ -1403,6 +1416,10 @@ void Window::mouseAlgoRunStart() {
 
     // Clear the output
     m_mouseAlgoRunOutput->clear();
+
+    // Append the random seed to the command
+    command += " ";
+    command += QString::number(m_mouseAlgoSeedWidget->next());
 
     // The thread on which the mouse interface will execute
     QThread* newMouseAlgoThread = new QThread();

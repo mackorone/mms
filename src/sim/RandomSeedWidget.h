@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QCheckBox>
 #include <QSpinBox>
 
 namespace mms {
@@ -18,6 +19,7 @@ private:
     int m_max;
     int getNext();
 
+    QCheckBox* m_lockSeed;
     QSpinBox* m_nextSeedBox;
     QSpinBox* m_prevSeedBox;
 
