@@ -32,19 +32,6 @@ void Model::simulate() {
     // Start a separate collision detection thread
     // std::thread collisionDetector(&Model::checkCollision, this);
 
-    // Uncomment to do mouse update benchmarking
-    /*
-    double start(SimUtilities::getHighResTimestamp());
-    int limit = 1000;
-    for (int i = 0; i < limit; i += 1) {
-        m_mouse->update(Seconds(1.0 / P()->mousePositionUpdateRate()) * S()->simSpeed());
-    }
-    double end(SimUtilities::getHighResTimestamp());
-    double duration = end - start;
-    qInfo().noquote().nospace() << duration;
-    SimUtilities::quit();
-    */
-
     // Use this thread to perform mouse position updates
     while (!m_shutdownRequested) {
 
@@ -55,8 +42,12 @@ void Model::simulate() {
             return;
         }
 
+        // Ensure the maze/mouse aren't updated in this loop
+        m_mutex.lock();
+
         // If there's nothing to update, sleep for a little bit
         if (m_mouse == nullptr || m_paused) {
+            m_mutex.unlock();
             SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
             continue;
         }
@@ -71,9 +62,6 @@ void Model::simulate() {
 
         // Update the sim time
         SimTime::get()->incrementElapsedSimTime(elapsedSimTimeForThisIteration);
-
-        // Ensure the maze/mouse aren't updated in this loop
-        m_mutex.lock();
 
         // Update the position of the mouse
         m_mouse->update(elapsedSimTimeForThisIteration);

@@ -9,6 +9,7 @@
     - Write and read from persistant storage...
     - The values should be re-loaded on the fly
 - Make a note about why we write EMPTY_STRING for some dispatched commands
+- Segfault from trying to call update on a null mouse ...
 - Save the last-used algo, so that we can jump to it on subsequent runs
 - Should unpause after pressing "run"
 - Ensure bad maze algorithms (e.g., "echo foo") don't crash the simulator
