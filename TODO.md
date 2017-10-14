@@ -1,18 +1,18 @@
  High Priority
 
 - Set the working directory?
-- Cancel all processes when the algorithm changes
-    - Or when the maze changes
-- Cancelling build and run, as they're happening
-- Stop button should be disabled if no algorithm is executing
-    - Running, Complete, Failed, Canceled, Error - status bar for algorithms...
+- Status bar for mouse algorithm
 - If no maze is loaded, we shouldn't jump to mouse output tab
 - Reset CRASHED state when we restart the algorithm
+- Mouse algorithm pause button
 - Make it easier to edit the simulator parameters
     - Write and read from persistant storage...
     - The values should be re-loaded on the fly
+- Make a note about why we write EMPTY_STRING for some dispatched commands
 - Save the last-used algo, so that we can jump to it on subsequent runs
 - Should unpause after pressing "run"
+- Ensure bad maze algorithms (e.g., "echo foo") don't crash the simulator
+    - If maze algo fails, the simulator crashes
 - Can't exit after pausing the mouse algorithm...
 - If the mouse goes outside of the maze, the simulator crashes
     - Ensure the mouse stays in the maze
@@ -23,7 +23,6 @@
 - If it's paused, I can't select a new maze file...
 - Remove "clear" and "autoclear" from text display widget
 - Add default maze/mouse files
-- If maze algo fails, the simulator crashes
 - Support json maze file format
 - Button for toggling the maze views
 - Verify that the tile text automatically refresh when we set tileGraphicTextMaxSize

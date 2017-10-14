@@ -167,7 +167,6 @@ private:
     QPushButton* m_mouseAlgoRunButton;
     QLabel* m_mouseAlgoRunStatus;
     QPlainTextEdit* m_mouseAlgoRunOutput;
-    QVector<QString> mouseAlgoRunExtraArgs();
     void mouseAlgoRunStart();
     void mouseAlgoRunStop();
 

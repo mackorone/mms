@@ -30,6 +30,9 @@ public:
         Mouse* mouse,
         MazeView* view);
 
+    // Called when the algo process writes to stdout
+    void handleStandardOutput(QString output);
+
     // Execute a request, return a response
     QString dispatch(const QString& command);
 
@@ -39,6 +42,11 @@ public:
     // Parameters set by the algorithm
     InterfaceType getInterfaceType(bool canFinalize) const;
     DynamicMouseAlgorithmOptions getDynamicOptions() const;
+
+signals:
+
+    // Emit sanitized algorithm output
+    void algoOutput(QString output);
 
 private:
 

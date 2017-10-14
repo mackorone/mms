@@ -1,8 +1,6 @@
 #include "Driver.h"
 
 #include <QApplication>
-#include <QObject>
-#include <QThread>
 
 #include "FontImage.h"
 #include "Logging.h"
@@ -40,9 +38,6 @@ int Driver::drive(int argc, char* argv[]) {
 
     // Initialize the FontImage object
     FontImage::init(P()->tileTextFontImage());
-
-    // TODO: MACK - move this to the Window class
-    qRegisterMetaType<QProcess::ExitStatus>("QProcess::ExitStatus");
 
     // Create the main window
     Window window;

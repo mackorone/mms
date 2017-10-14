@@ -79,7 +79,11 @@ Window::Window(QWidget *parent) :
         m_mouseAlgoRunOutput(new QPlainTextEdit()),
         m_mouseAlgoSeedWidget(new RandomSeedWidget()) {
 
-    // First, start the physics loop
+    // First, some bookkeeping; we have to explicitly allow the
+    // mouse process exit event to be handled on the GUI thread
+    qRegisterMetaType<QProcess::ExitStatus>("QProcess::ExitStatus");
+
+    // Next, start the physics loop
     connect(
         &m_modelThread, &QThread::started,
         &m_model, &Model::simulate);
@@ -282,7 +286,9 @@ Window::Window(QWidget *parent) :
 
 void Window::closeEvent(QCloseEvent *event) {
 	// Graceful shutdown
-    // TODO: MACK - stop all other currently executing processes, too
+    mazeAlgoBuildStop();
+    mazeAlgoRunStop();
+    mouseAlgoBuildStop();
 	mouseAlgoRunStop();
 	m_modelThread.quit();
 	m_model.shutdown();
@@ -293,9 +299,8 @@ void Window::closeEvent(QCloseEvent *event) {
 
 void Window::setMaze(Maze* maze) {
 
-	// TODO: MACK - stop all processes, like maze building and what not
-
-    // First, stop the mouse algo
+    // Stop running maze/mouse algos
+    mazeAlgoRunStop();
     mouseAlgoRunStop();
 
     // Next, update the maze and truth
@@ -496,9 +501,11 @@ void Window::algoActionStop(
 	QProcess* actionProcess,
 	QLabel* actionStatus
 ) {
-    actionProcess->terminate();
-    actionProcess->waitForFinished();
-    actionStatus->setText("CANCELED");
+    if (actionProcess != nullptr) {
+        actionProcess->terminate();
+        actionProcess->waitForFinished();
+        actionStatus->setText("CANCELED");
+    }
 }
 
 #if(0)
@@ -1321,10 +1328,6 @@ void Window::mouseAlgoBuildStderr() {
 	m_mouseAlgoBuildOutput->appendPlainText(error);
 }
 
-QVector<QString> Window::mouseAlgoRunExtraArgs() {
-    // TODO: MACK
-}
-
 void Window::mouseAlgoRunStart() {
 
     // TODO: Cancel/stop button not working just yet
@@ -1394,7 +1397,8 @@ void Window::mouseAlgoRunStart() {
         return;
     }
 
-    // Kill the current mouse algorithm
+    // Stop running maze/mouse algorithms
+    mazeAlgoRunStop();
     mouseAlgoRunStop();
 
     // Create some more objects
@@ -1427,14 +1431,32 @@ void Window::mouseAlgoRunStart() {
         // Create the subprocess on which we'll execute the mouse algorithm
         QProcess* newProcess = new QProcess();
 
-        // Listen for mouse algo stdout
-        connect(newProcess, &QProcess::readyReadStandardOutput, this, [=](){
-            QString output = newProcess->readAllStandardOutput();
-            if (output.endsWith("\n")) {
-                output.truncate(output.size() - 1);
+        // Ideally, we could call readAllStandardOutput() and appendPlainText()
+        // within the same lambda. Unfortunately, this isn't possible:
+        // - readAllStandardOutput() and readAllStandardError() aren't thread
+        //   safe, and so they must both be called in the algo thread
+        // - appendPlainText() can only be called from within the UI thread
+        // Thus, we have to use a queued signal/slot connection between the
+        // mouse interface (which has affinity in the algo thread) and the
+        // Window (which has affinity in the UI thread), hence two connect()
+        // calls.
+        connect(
+            newProcess,
+            &QProcess::readyReadStandardOutput,
+            newMouseInterface,
+            [=](){
+                QString output = newProcess->readAllStandardOutput();
+                newMouseInterface->handleStandardOutput(output);
             }
-            m_mouseAlgoRunOutput->appendPlainText(output);
-        });
+        );
+        connect(
+            newMouseInterface,
+            &MouseInterface::algoOutput,
+            this,
+            [=](QString output){
+                m_mouseAlgoRunOutput->appendPlainText(output);
+            }
+        );
 
         // Process all stderr commands as appropriate
         connect(

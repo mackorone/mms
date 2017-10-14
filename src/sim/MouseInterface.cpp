@@ -46,6 +46,13 @@ MouseInterface::MouseInterface(
         m_wheelSpeedFraction(1.0) {
 }
 
+void MouseInterface::handleStandardOutput(QString output) {
+	if (output.endsWith("\n")) {
+		output.truncate(output.size() - 1);
+	}
+	emit algoOutput(output);
+}
+
 QString MouseInterface::dispatch(const QString& command) {
 
     // TODO: upforgrabs
