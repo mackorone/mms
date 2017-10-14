@@ -92,8 +92,8 @@ QVector<QString> Map::getOpenGLVersionInfo() {
 }
 
 void Map::shutdown() {
-	makeCurrent();
-	m_openGLLogger.stopLogging();
+    makeCurrent();
+    m_openGLLogger.stopLogging();
 }
 
 void Map::initOpenGLLogger() {
@@ -205,9 +205,9 @@ void Map::resizeGL(int width, int height) {
 
 void Map::initPolygonProgram() {
 
-	m_polygonProgram.addShaderFromSourceCode(
-		QOpenGLShader::Vertex,
-		R"(
+    m_polygonProgram.addShaderFromSourceCode(
+        QOpenGLShader::Vertex,
+        R"(
             uniform mat4 transformationMatrix;
             attribute vec2 coordinate;
             attribute vec4 inColor;
@@ -216,29 +216,29 @@ void Map::initPolygonProgram() {
                 gl_Position = transformationMatrix * vec4(coordinate, 0.0, 1.0);
                 outColor = inColor;
             }
-		)"
-	);
-	m_polygonProgram.addShaderFromSourceCode(
-		QOpenGLShader::Fragment,
-		R"(
+        )"
+    );
+    m_polygonProgram.addShaderFromSourceCode(
+        QOpenGLShader::Fragment,
+        R"(
             varying vec4 outColor;
-			void main(void) {
-			   gl_FragColor = outColor;
-			}
-		)"
-	);
-	m_polygonProgram.link();
-	m_polygonProgram.bind();
+            void main(void) {
+               gl_FragColor = outColor;
+            }
+        )"
+    );
+    m_polygonProgram.link();
+    m_polygonProgram.bind();
 
-	m_polygonVAO.create();
-	m_polygonVAO.bind();
+    m_polygonVAO.create();
+    m_polygonVAO.bind();
 
-	m_polygonVBO.create();
-	m_polygonVBO.bind();
-	m_polygonVBO.setUsagePattern(QOpenGLBuffer::DynamicDraw);
+    m_polygonVBO.create();
+    m_polygonVBO.bind();
+    m_polygonVBO.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
-	m_polygonProgram.enableAttributeArray("coordinate");
-	m_polygonProgram.setAttributeBuffer(
+    m_polygonProgram.enableAttributeArray("coordinate");
+    m_polygonProgram.setAttributeBuffer(
         "coordinate", // name
         GL_DOUBLE, // type
         0, // offset (bytes)
@@ -246,8 +246,8 @@ void Map::initPolygonProgram() {
         6 * sizeof(double) // stride (bytes between vertices)
     );
 
-	m_polygonProgram.enableAttributeArray("inColor");
-	m_polygonProgram.setAttributeBuffer(
+    m_polygonProgram.enableAttributeArray("inColor");
+    m_polygonProgram.setAttributeBuffer(
         "inColor", // name
         GL_DOUBLE, // type
         2 * sizeof(double), // offset (bytes)
@@ -255,16 +255,16 @@ void Map::initPolygonProgram() {
         6 * sizeof(double) // stride (bytes between vertices)
     );
 
-	m_polygonVBO.release();
-	m_polygonVAO.release();
-	m_polygonProgram.release();
+    m_polygonVBO.release();
+    m_polygonVAO.release();
+    m_polygonProgram.release();
 }
 
 void Map::initTextureProgram() {
 
-	m_textureProgram.addShaderFromSourceCode(
-		QOpenGLShader::Vertex,
-		R"(
+    m_textureProgram.addShaderFromSourceCode(
+        QOpenGLShader::Vertex,
+        R"(
             uniform mat4 transformationMatrix;
             attribute vec2 coordinate;
             attribute vec2 inTextureCoordinate;
@@ -273,30 +273,30 @@ void Map::initTextureProgram() {
                 gl_Position = transformationMatrix * vec4(coordinate, 0.0, 1.0);
                 outTextureCoordinate = inTextureCoordinate;
             }
-		)"
-	);
-	m_textureProgram.addShaderFromSourceCode(
-		QOpenGLShader::Fragment,
-		R"(
+        )"
+    );
+    m_textureProgram.addShaderFromSourceCode(
+        QOpenGLShader::Fragment,
+        R"(
             uniform sampler2D texture;
             varying vec2 outTextureCoordinate;
             void main() {
                 gl_FragColor = texture2D(texture, outTextureCoordinate);
             }
-		)"
-	);
-	m_textureProgram.link();
-	m_textureProgram.bind();
+        )"
+    );
+    m_textureProgram.link();
+    m_textureProgram.bind();
 
-	m_textureVAO.create();
-	m_textureVAO.bind();
+    m_textureVAO.create();
+    m_textureVAO.bind();
 
-	m_textureVBO.create();
-	m_textureVBO.bind();
-	m_textureVBO.setUsagePattern(QOpenGLBuffer::DynamicDraw);
+    m_textureVBO.create();
+    m_textureVBO.bind();
+    m_textureVBO.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
-	m_textureProgram.enableAttributeArray("coordinate");
-	m_textureProgram.setAttributeBuffer(
+    m_textureProgram.enableAttributeArray("coordinate");
+    m_textureProgram.setAttributeBuffer(
         "coordinate", // name
         GL_DOUBLE, // type
         0, // offset (bytes)
@@ -304,8 +304,8 @@ void Map::initTextureProgram() {
         4 * sizeof(double) // stride (bytes between vertices)
     );
 
-	m_textureProgram.enableAttributeArray("inTextureCoordinate");
-	m_textureProgram.setAttributeBuffer(
+    m_textureProgram.enableAttributeArray("inTextureCoordinate");
+    m_textureProgram.setAttributeBuffer(
         "inTextureCoordinate", // name
         GL_DOUBLE, // type
         2 * sizeof(double), // offset (bytes)
@@ -317,16 +317,16 @@ void Map::initTextureProgram() {
     m_textureAtlas = new QOpenGLTexture(
         QImage(FontImage::get()->imageFilePath()).mirrored());
 
-	m_polygonVBO.release();
-	m_polygonVAO.release();
-	m_polygonProgram.release();
+    m_polygonVBO.release();
+    m_polygonVAO.release();
+    m_polygonProgram.release();
 }
 
 void Map::repopulateVertexBufferObjects(const QVector<TriangleGraphic>& mouseBuffer) {
 
     // Overwrite the polygon vertex buffer object data
     m_polygonVBO.bind();
-	m_polygonVBO.allocate(sizeof(TriangleGraphic) * (
+    m_polygonVBO.allocate(sizeof(TriangleGraphic) * (
         m_view->getGraphicCpuBuffer()->size() +
         mouseBuffer.size()
     ));
@@ -348,7 +348,7 @@ void Map::repopulateVertexBufferObjects(const QVector<TriangleGraphic>& mouseBuf
 
     // Overwrite the texture vertex buffer object data
     m_textureVBO.bind();
-	m_textureVBO.allocate(
+    m_textureVBO.allocate(
         &(m_view->getTextureCpuBuffer()->front()),
         sizeof(TriangleTexture) * m_view->getTextureCpuBuffer()->size()
     );

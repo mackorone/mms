@@ -38,8 +38,8 @@ TileGraphic::TileGraphic(
     if (autopopulateTextWithDistance) {
         m_text = (
             0 <= m_tile->getDistance()
-			? QString::number(m_tile->getDistance())
-			: "inf"
+            ? QString::number(m_tile->getDistance())
+            : "inf"
         );
     }
 }
@@ -130,7 +130,7 @@ void TileGraphic::drawPolygons() const {
 void TileGraphic::drawTextures() {
     // Insert all of the triangle texture objects into the buffer ...
     QPair<int, int> maxRowsAndCols =
-		m_bufferInterface->getTileGraphicTextMaxSize();
+        m_bufferInterface->getTileGraphicTextMaxSize();
     for (int row = 0; row < maxRowsAndCols.first; row += 1) {
         for (int col = 0; col < maxRowsAndCols.second; col += 1) {
             m_bufferInterface->insertIntoTextureCpuBuffer();
@@ -164,51 +164,51 @@ void TileGraphic::updateFog() const {
 
 void TileGraphic::updateText() const {
 
-	// First, retrieve the maximum number of rows and cols of text allowed
+    // First, retrieve the maximum number of rows and cols of text allowed
     QPair<int, int> maxRowsAndCols =
-		m_bufferInterface->getTileGraphicTextMaxSize();
+        m_bufferInterface->getTileGraphicTextMaxSize();
 
-	// Then, generate the rows of text that will be displayed
-	QVector<QString> rowsOfText;
+    // Then, generate the rows of text that will be displayed
+    QVector<QString> rowsOfText;
 
-	// Split the text into rows
-	QString remaining = m_text;
-	while (!remaining.isEmpty() && rowsOfText.size() < maxRowsAndCols.first) {
-		QString row = remaining.left(maxRowsAndCols.second);
-		rowsOfText.append(row);
-		remaining = remaining.mid(maxRowsAndCols.second);
-	}
+    // Split the text into rows
+    QString remaining = m_text;
+    while (!remaining.isEmpty() && rowsOfText.size() < maxRowsAndCols.first) {
+        QString row = remaining.left(maxRowsAndCols.second);
+        rowsOfText.append(row);
+        remaining = remaining.mid(maxRowsAndCols.second);
+    }
 
-	// For all possible character positions, insert some character
-	// (blank if necessary) into the tile text cpu buffer
+    // For all possible character positions, insert some character
+    // (blank if necessary) into the tile text cpu buffer
     for (int row = 0; row < maxRowsAndCols.first; row += 1) {
         for (int col = 0; col < maxRowsAndCols.second; col += 1) {
-			int numRows = std::min(
-				static_cast<int>(rowsOfText.size()),
-				maxRowsAndCols.first
-			);
+            int numRows = std::min(
+                static_cast<int>(rowsOfText.size()),
+                maxRowsAndCols.first
+            );
             int numCols = std::min(
-				static_cast<int>(row < rowsOfText.size() ? rowsOfText.at(row).size() : 0),
-				maxRowsAndCols.second
-			);
-			QChar c = ' ';
-			if (
-				m_tileTextVisible &&
-				row < rowsOfText.size() &&
-				col < rowsOfText.at(row).size()
-			) {
-				c = rowsOfText.at(row).at(col).toLatin1();
-			}
-			ASSERT_TR(FontImage::get()->positions().contains(c));
+                static_cast<int>(row < rowsOfText.size() ? rowsOfText.at(row).size() : 0),
+                maxRowsAndCols.second
+            );
+            QChar c = ' ';
+            if (
+                m_tileTextVisible &&
+                row < rowsOfText.size() &&
+                col < rowsOfText.at(row).size()
+            ) {
+                c = rowsOfText.at(row).at(col).toLatin1();
+            }
+            ASSERT_TR(FontImage::get()->positions().contains(c));
             m_bufferInterface->updateTileGraphicText(
                 m_tile->getX(),
                 m_tile->getY(),
-				numRows,
-				numCols,
+                numRows,
+                numCols,
                 row,
                 col,
                 c
-			);
+            );
         }
     }
 }

@@ -213,7 +213,7 @@ void ParamParser::printGreaterThan(const QString& type, const QString& tag, cons
     qWarning().noquote().nospace()
         << "The value of the " << type << " parameter \"" << tag << "\" is "
         << value << " and is greater than the maximum allowed value of " << max
-        << ". Using default value of " << defaultValue	<< ".";
+        << ". Using default value of " << defaultValue    << ".";
 }
 
 void ParamParser::printNotSpecialString(

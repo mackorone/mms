@@ -122,7 +122,7 @@ void Model::simulate() {
 
         // Notify the use of a late mouse position update
         if (P()->printLateMousePositionUpdates() && duration > 1.0/P()->mousePositionUpdateRate()) {
-			// TODO: MACK
+            // TODO: MACK
             // qWarning(
             //     "A mouse position update was late by %v seconds, which is %v percent late.",
             //     (duration - 1.0/P()->mousePositionUpdateRate()),

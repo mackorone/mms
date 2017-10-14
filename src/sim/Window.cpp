@@ -102,7 +102,7 @@ Window::Window(QWidget *parent) :
     splitter->addWidget(mapHolder);
 
     // Add the maze stats
-	QWidget* mazeStatsBox = new QWidget();
+    QWidget* mazeStatsBox = new QWidget();
     QHBoxLayout* mazeStatsLayout = new QHBoxLayout();
     mazeStatsBox->setLayout(mazeStatsLayout);
     mapHolderLayout->addWidget(mazeStatsBox);
@@ -128,7 +128,7 @@ Window::Window(QWidget *parent) :
     m_map.setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 
     // Add the map options
-	QWidget* mapOptionsBox = new QWidget();
+    QWidget* mapOptionsBox = new QWidget();
     QHBoxLayout* mapOptionsLayout = new QHBoxLayout();
     mapOptionsBox->setLayout(mapOptionsLayout);
     mapHolderLayout->addWidget(mapOptionsBox);
@@ -143,7 +143,7 @@ Window::Window(QWidget *parent) :
 
     // Add functionality to those map buttons
     connect(m_viewButton, &QRadioButton::toggled, this, [=](bool checked){
-		m_map.setView(checked ? m_view : m_truth);
+        m_map.setView(checked ? m_view : m_truth);
         m_distancesCheckbox->setEnabled(!checked);
         m_wallTruthCheckbox->setEnabled(checked);
         m_colorCheckbox->setEnabled(checked);
@@ -225,22 +225,22 @@ Window::Window(QWidget *parent) :
     mouseAlgoTabInit();
     tabWidget->addTab(m_mouseAlgoWidget, "Mouse Algorithms");
 
-	// Add some generic menu items
+    // Add some generic menu items
     QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
     /*
     QAction* saveMazeAction = new QAction(tr("&Save Maze As ..."), this);
     connect(saveMazeAction, &QAction::triggered, this, [=](){
         // TODO: MACK
-	});
-	fileMenu->addAction(saveMazeAction);
+    });
+    fileMenu->addAction(saveMazeAction);
     */
     QAction* quitAction = new QAction(tr("&Quit"), this);
     connect(quitAction, &QAction::triggered, this, [=](){
-		close();
-	});
-	fileMenu->addAction(quitAction);
+        close();
+    });
+    fileMenu->addAction(quitAction);
 
-	// Add maze algorithm menu items
+    // Add maze algorithm menu items
     /*
     QMenu* mazeAlgoMenu = menuBar()->addMenu(tr("&Maze Algorithm"));
     QAction* importAction = new QAction(tr("&Import"), this);
@@ -249,35 +249,35 @@ Window::Window(QWidget *parent) :
         importAction, &QAction::triggered,
         mazeAlgosTab, &MazeAlgosTab::import
     );
-	mazeAlgoMenu->addAction(importAction);
+    mazeAlgoMenu->addAction(importAction);
     QAction* editAction = new QAction(tr("&Edit"), this);
     connect(editAction, &QAction::triggered, this, [=](){
         // TODO: MACK
-	});
-	mazeAlgoMenu->addAction(editAction);
+    });
+    mazeAlgoMenu->addAction(editAction);
     QAction* buildAction = new QAction(tr("&Build"), this);
     connect(buildAction, &QAction::triggered, this, [=](){
         // TODO: MACK
-	});
-	mazeAlgoMenu->addAction(buildAction);
+    });
+    mazeAlgoMenu->addAction(buildAction);
     QAction* runAction = new QAction(tr("&Run"), this);
     connect(runAction, &QAction::triggered, this, [=](){
         // TODO: MACK
-	});
-	mazeAlgoMenu->addAction(runAction);
+    });
+    mazeAlgoMenu->addAction(runAction);
 
-	// Add some model-related menu items
+    // Add some model-related menu items
     QMenu* simulationMenu = menuBar()->addMenu(tr("&Mouse"));
     QAction* pauseAction = new QAction(tr("&Pause"), this);
     connect(pauseAction, &QAction::triggered, this, [=](){
         // TODO: MACK
-	});
-	simulationMenu->addAction(pauseAction);
+    });
+    simulationMenu->addAction(pauseAction);
     QAction* stopAction = new QAction(tr("&Stop"), this);
     connect(stopAction, &QAction::triggered, this, [=](){
         // TODO: MACK
-	});
-	simulationMenu->addAction(stopAction);
+    });
+    simulationMenu->addAction(stopAction);
     */
 
     // Resize the window
@@ -285,15 +285,15 @@ Window::Window(QWidget *parent) :
 }
 
 void Window::closeEvent(QCloseEvent *event) {
-	// Graceful shutdown
+    // Graceful shutdown
     mazeAlgoBuildStop();
     mazeAlgoRunStop();
     mouseAlgoBuildStop();
-	mouseAlgoRunStop();
-	m_modelThread.quit();
-	m_model.shutdown();
-	m_modelThread.wait();
-	m_map.shutdown();
+    mouseAlgoRunStop();
+    m_modelThread.quit();
+    m_model.shutdown();
+    m_modelThread.wait();
+    m_map.shutdown();
     QMainWindow::closeEvent(event);
 }
 
@@ -308,13 +308,13 @@ void Window::setMaze(Maze* maze) {
     MazeView* oldTruth = m_truth;
     m_maze = maze;
     m_truth = new MazeView(
-		m_maze,
-		true, // wallTruthVisible
-		false, // tileColorsVisible
-		false, // tileFogVisible
-		m_distancesCheckbox->isChecked(), // tileTextVisible
-		true // autopopulateTextWithDistance
-	);
+        m_maze,
+        true, // wallTruthVisible
+        false, // tileColorsVisible
+        false, // tileFogVisible
+        m_distancesCheckbox->isChecked(), // tileTextVisible
+        true // autopopulateTextWithDistance
+    );
 
     // Update pointers held by other objects
     m_model.setMaze(m_maze);
@@ -339,61 +339,61 @@ void Window::setMaze(Maze* maze) {
 }
 
 void Window::algoActionStart(
-	QProcess** actionProcessVariable,
-	QPushButton* actionButton,
-	QLabel* actionStatus,
-	QPlainTextEdit* actionOutput,
+    QProcess** actionProcessVariable,
+    QPushButton* actionButton,
+    QLabel* actionStatus,
+    QPlainTextEdit* actionOutput,
     QTabWidget* outputTabWidget,
-	const QString& algoName,
-	const QString& actionName,
-	const QString& actionString,
-	QString (*getCommand)(const QString&),
-	QString (*getDirPath)(const QString&),
-	QVector<QString> (Window::*getExtraArgs)(void),
-	void (Window::*actionStart)(void),
-	void (Window::*actionStop)(void),
-	void (Window::*stderrMidAction)(void),
-	void (Window::*stderrPostAction)(void)
+    const QString& algoName,
+    const QString& actionName,
+    const QString& actionString,
+    QString (*getCommand)(const QString&),
+    QString (*getDirPath)(const QString&),
+    QVector<QString> (Window::*getExtraArgs)(void),
+    void (Window::*actionStart)(void),
+    void (Window::*actionStop)(void),
+    void (Window::*stderrMidAction)(void),
+    void (Window::*stderrPostAction)(void)
 ) {
     // The action should not be running
     ASSERT_FA(actionProcessVariable == nullptr);
     ASSERT_TR(*actionProcessVariable == nullptr);
 
-	// Exactly one function should be supplied for handling stderr
-	ASSERT_NE(
-		(stderrMidAction == nullptr),
-		(stderrPostAction == nullptr)
-	);
+    // Exactly one function should be supplied for handling stderr
+    ASSERT_NE(
+        (stderrMidAction == nullptr),
+        (stderrPostAction == nullptr)
+    );
 
     // Get the command and directory for the action
     QString command = getCommand(algoName);
     QString dirPath = getDirPath(algoName);
 
-	// Perform some validation
-	if (command.isEmpty()) {
+    // Perform some validation
+    if (command.isEmpty()) {
         QMessageBox::warning(
             this,
             QString("Empty %1 Command").arg(actionName),
             QString("%1 command for algorithm \"%2\" is empty.").arg(
-				actionName,
-				algoName
-			)
+                actionName,
+                algoName
+            )
         );
         return;
-	}
-	if (dirPath.isEmpty()) {
+    }
+    if (dirPath.isEmpty()) {
         QMessageBox::warning(
             this,
             QString("Empty Directory"),
             QString("Directory for algorithm \"%1\" is empty.").arg(
-				algoName
-			)
+                algoName
+            )
         );
         return;
-	}
+    }
 
-	// Clear the action ouput
-	actionOutput->clear();
+    // Clear the action ouput
+    actionOutput->clear();
 
     // Instantiate a new process
     QProcess* process = new QProcess(this);
@@ -407,13 +407,13 @@ void Window::algoActionStart(
         actionOutput->appendPlainText(output);
     });
 
-	// If configured, handle stderr during the action
-	if (stderrMidAction != nullptr) {
-    	connect(
-			process, &QProcess::readyReadStandardError,
-			this, stderrMidAction
-		);
-	}
+    // If configured, handle stderr during the action
+    if (stderrMidAction != nullptr) {
+        connect(
+            process, &QProcess::readyReadStandardError,
+            this, stderrMidAction
+        );
+    }
 
     // Re-enable build button when build finishes, clean up the process
     connect(
@@ -424,16 +424,16 @@ void Window::algoActionStart(
         this,
         [=](int exitCode, QProcess::ExitStatus exitStatus){
 
-			// Set the button to "Action"
+            // Set the button to "Action"
             disconnect(actionButton, &QPushButton::clicked, this, actionStop);
             connect(actionButton, &QPushButton::clicked, this, actionStart);
             actionButton->setText(actionName);
 
-			// Update the status label, call stderrPostAction
+            // Update the status label, call stderrPostAction
             if (exitStatus == QProcess::NormalExit && exitCode == 0) {
-				if (stderrPostAction != nullptr) {
-					(this->*stderrPostAction)();
-				}
+                if (stderrPostAction != nullptr) {
+                    (this->*stderrPostAction)();
+                }
                 actionStatus->setText("COMPLETE");
                 actionStatus->setStyleSheet(
                     "QLabel { background: rgb(150, 255, 100); }"
@@ -452,24 +452,24 @@ void Window::algoActionStart(
         }
     );
 
-	// Set the button to "Cancel"
+    // Set the button to "Cancel"
     disconnect(actionButton, &QPushButton::clicked, this, actionStart);
     connect(actionButton, &QPushButton::clicked, this, actionStop);
     actionButton->setText("Cancel");
 
-	// Update the status label
+    // Update the status label
     actionStatus->setText(actionString);
     actionStatus->setStyleSheet(
         "QLabel { background: rgb(255, 255, 100); }"
     );
 
-	// Get extra arguments for the command
-	QVector<QString> args;
-	if (getExtraArgs != nullptr) {
-		for (const QString& arg : (this->*getExtraArgs)()) {
-			command += QString(" %1").arg(arg);
-		}
-	}
+    // Get extra arguments for the command
+    QVector<QString> args;
+    if (getExtraArgs != nullptr) {
+        for (const QString& arg : (this->*getExtraArgs)()) {
+            command += QString(" %1").arg(arg);
+        }
+    }
 
     // Switch to the correct output tab
     outputTabWidget->setCurrentWidget(actionOutput);
@@ -480,12 +480,12 @@ void Window::algoActionStart(
         *actionProcessVariable = process;
     }
     else {
-	    // Set the button to "Action"
+        // Set the button to "Action"
         disconnect(actionButton, &QPushButton::clicked, this, actionStop);
         connect(actionButton, &QPushButton::clicked, this, actionStart);
         actionButton->setText(actionName);
 
-	    // Update the status label
+        // Update the status label
         actionStatus->setText("ERROR");
         actionStatus->setStyleSheet(
             "QLabel { background: rgb(255, 150, 150); }"
@@ -498,8 +498,8 @@ void Window::algoActionStart(
 }
 
 void Window::algoActionStop(
-	QProcess* actionProcess,
-	QLabel* actionStatus
+    QProcess* actionProcess,
+    QLabel* actionStatus
 ) {
     if (actionProcess != nullptr) {
         actionProcess->terminate();
@@ -792,8 +792,8 @@ void Window::mazeAlgoTabInit() {
     // Add the build and run output
     m_mazeAlgoOutputTabWidget = new QTabWidget();
     layout->addWidget(m_mazeAlgoOutputTabWidget);
-	m_mazeAlgoOutputTabWidget->addTab(m_mazeAlgoBuildOutput, "Build Output");
-	m_mazeAlgoOutputTabWidget->addTab(m_mazeAlgoRunOutput, "Run Output");
+    m_mazeAlgoOutputTabWidget->addTab(m_mazeAlgoBuildOutput, "Build Output");
+    m_mazeAlgoOutputTabWidget->addTab(m_mazeAlgoRunOutput, "Run Output");
 
     // Set the default values for some widgets
     for (QPlainTextEdit* output : {
@@ -907,90 +907,90 @@ void Window::mazeAlgoEdit() {
 }
 
 void Window::mazeAlgoBuildStart() {
-	algoActionStart(
-		&m_mazeAlgoBuildProcess,
-		m_mazeAlgoBuildButton,
-		m_mazeAlgoBuildStatus,
-		m_mazeAlgoBuildOutput,
+    algoActionStart(
+        &m_mazeAlgoBuildProcess,
+        m_mazeAlgoBuildButton,
+        m_mazeAlgoBuildStatus,
+        m_mazeAlgoBuildOutput,
         m_mazeAlgoOutputTabWidget,
-    	m_mazeAlgoComboBox->currentText(),
-		"Build",
-		"BUILDING",
-		SettingsMazeAlgos::getBuildCommand,
-		SettingsMazeAlgos::getDirPath,
-		nullptr,
-		&Window::mazeAlgoBuildStart,
-		&Window::mazeAlgoBuildStop,
-		&Window::mazeAlgoBuildStderr,
-		nullptr
-	);
+        m_mazeAlgoComboBox->currentText(),
+        "Build",
+        "BUILDING",
+        SettingsMazeAlgos::getBuildCommand,
+        SettingsMazeAlgos::getDirPath,
+        nullptr,
+        &Window::mazeAlgoBuildStart,
+        &Window::mazeAlgoBuildStop,
+        &Window::mazeAlgoBuildStderr,
+        nullptr
+    );
 }
 
 void Window::mazeAlgoBuildStop() {
-	algoActionStop(
-    	m_mazeAlgoBuildProcess,
-		m_mazeAlgoBuildStatus
-	);
+    algoActionStop(
+        m_mazeAlgoBuildProcess,
+        m_mazeAlgoBuildStatus
+    );
 }
 
 void Window::mazeAlgoBuildStderr() {
-	ASSERT_FA(m_mazeAlgoBuildProcess == nullptr);
-	QString error = m_mazeAlgoBuildProcess->readAllStandardError();
-	if (error.endsWith("\n")) {
-		error.truncate(error.size() - 1);
-	}
-	m_mazeAlgoBuildOutput->appendPlainText(error);
+    ASSERT_FA(m_mazeAlgoBuildProcess == nullptr);
+    QString error = m_mazeAlgoBuildProcess->readAllStandardError();
+    if (error.endsWith("\n")) {
+        error.truncate(error.size() - 1);
+    }
+    m_mazeAlgoBuildOutput->appendPlainText(error);
 }
 
 QVector<QString> Window::mazeAlgoRunExtraArgs() {
-	return {
-		m_mazeAlgoWidthBox->cleanText(),
-		m_mazeAlgoHeightBox->cleanText(),
-		QString::number(m_mazeAlgoSeedWidget->next()),
-	};
+    return {
+        m_mazeAlgoWidthBox->cleanText(),
+        m_mazeAlgoHeightBox->cleanText(),
+        QString::number(m_mazeAlgoSeedWidget->next()),
+    };
 }
 
 void Window::mazeAlgoRunStart() {
-	algoActionStart(
-		&m_mazeAlgoRunProcess,
-		m_mazeAlgoRunButton,
-		m_mazeAlgoRunStatus,
-		m_mazeAlgoRunOutput,
+    algoActionStart(
+        &m_mazeAlgoRunProcess,
+        m_mazeAlgoRunButton,
+        m_mazeAlgoRunStatus,
+        m_mazeAlgoRunOutput,
         m_mazeAlgoOutputTabWidget,
-    	m_mazeAlgoComboBox->currentText(),
-		"Run",
-		"RUNNING",
-		SettingsMazeAlgos::getRunCommand,
-		SettingsMazeAlgos::getDirPath,
-		&Window::mazeAlgoRunExtraArgs,
-		&Window::mazeAlgoRunStart,
-		&Window::mazeAlgoRunStop,
-		nullptr,
-		&Window::mazeAlgoRunStderr
-	);
+        m_mazeAlgoComboBox->currentText(),
+        "Run",
+        "RUNNING",
+        SettingsMazeAlgos::getRunCommand,
+        SettingsMazeAlgos::getDirPath,
+        &Window::mazeAlgoRunExtraArgs,
+        &Window::mazeAlgoRunStart,
+        &Window::mazeAlgoRunStop,
+        nullptr,
+        &Window::mazeAlgoRunStderr
+    );
 }
 
 void Window::mazeAlgoRunStop() {
-	algoActionStop(
-    	m_mazeAlgoRunProcess,
-		m_mazeAlgoRunStatus
-	);
+    algoActionStop(
+        m_mazeAlgoRunProcess,
+        m_mazeAlgoRunStatus
+    );
 }
 
 void Window::mazeAlgoRunStderr() {
-	ASSERT_FA(m_mazeAlgoRunProcess == nullptr);
-	QString output = m_mazeAlgoRunProcess->readAllStandardError();
-	Maze* maze = Maze::fromAlgo(output.toUtf8());
-	if (maze != nullptr) {
-		setMaze(maze);
-	}
-	else {
+    ASSERT_FA(m_mazeAlgoRunProcess == nullptr);
+    QString output = m_mazeAlgoRunProcess->readAllStandardError();
+    Maze* maze = Maze::fromAlgo(output.toUtf8());
+    if (maze != nullptr) {
+        setMaze(maze);
+    }
+    else {
         QMessageBox::warning(
             this,
             "Invalid Maze",
             "Could not load generated maze"
         );
-	}
+    }
 }
 
 void Window::mazeAlgoRefresh(const QString& name) {
@@ -1117,7 +1117,7 @@ void Window::mouseAlgoTabInit() {
         this, [=](int value){
             double fraction = (value + 1.0) / 100.0;
             speedBox->setValue(fraction * maxSpeed);
-			m_model.setSimSpeed(fraction * maxSpeed);
+            m_model.setSimSpeed(fraction * maxSpeed);
         }
     );
     connect(
@@ -1167,8 +1167,8 @@ void Window::mouseAlgoTabInit() {
     // Add the build and run output
     m_mouseAlgoOutputTabWidget = new QTabWidget();
     layout->addWidget(m_mouseAlgoOutputTabWidget);
-	m_mouseAlgoOutputTabWidget->addTab(m_mouseAlgoBuildOutput, "Build Output");
-	m_mouseAlgoOutputTabWidget->addTab(m_mouseAlgoRunOutput, "Run Output");
+    m_mouseAlgoOutputTabWidget->addTab(m_mouseAlgoBuildOutput, "Build Output");
+    m_mouseAlgoOutputTabWidget->addTab(m_mouseAlgoRunOutput, "Run Output");
 
     // Set the default values for some widgets
     for (QPlainTextEdit* output : {
@@ -1292,39 +1292,39 @@ void Window::mouseAlgoImport() {
 }
 
 void Window::mouseAlgoBuildStart() {
-	algoActionStart(
-		&m_mouseAlgoBuildProcess,
-		m_mouseAlgoBuildButton,
-		m_mouseAlgoBuildStatus,
-		m_mouseAlgoBuildOutput,
+    algoActionStart(
+        &m_mouseAlgoBuildProcess,
+        m_mouseAlgoBuildButton,
+        m_mouseAlgoBuildStatus,
+        m_mouseAlgoBuildOutput,
         m_mouseAlgoOutputTabWidget,
-    	m_mouseAlgoComboBox->currentText(),
-		"Build",
-		"BUILDING",
-		SettingsMouseAlgos::getBuildCommand,
-		SettingsMouseAlgos::getDirPath,
-		nullptr,
-		&Window::mouseAlgoBuildStart,
-		&Window::mouseAlgoBuildStop,
-		&Window::mouseAlgoBuildStderr,
-		nullptr
-	);
+        m_mouseAlgoComboBox->currentText(),
+        "Build",
+        "BUILDING",
+        SettingsMouseAlgos::getBuildCommand,
+        SettingsMouseAlgos::getDirPath,
+        nullptr,
+        &Window::mouseAlgoBuildStart,
+        &Window::mouseAlgoBuildStop,
+        &Window::mouseAlgoBuildStderr,
+        nullptr
+    );
 }
 
 void Window::mouseAlgoBuildStop() {
-	algoActionStop(
-    	m_mouseAlgoBuildProcess,
-		m_mouseAlgoBuildStatus
-	);
+    algoActionStop(
+        m_mouseAlgoBuildProcess,
+        m_mouseAlgoBuildStatus
+    );
 }
 
 void Window::mouseAlgoBuildStderr() {
-	ASSERT_FA(m_mouseAlgoBuildProcess == nullptr);
-	QString error = m_mouseAlgoBuildProcess->readAllStandardError();
-	if (error.endsWith("\n")) {
-		error.truncate(error.size() - 1);
-	}
-	m_mouseAlgoBuildOutput->appendPlainText(error);
+    ASSERT_FA(m_mouseAlgoBuildProcess == nullptr);
+    QString error = m_mouseAlgoBuildProcess->readAllStandardError();
+    if (error.endsWith("\n")) {
+        error.truncate(error.size() - 1);
+    }
+    m_mouseAlgoBuildOutput->appendPlainText(error);
 }
 
 void Window::mouseAlgoRunStart() {
@@ -1333,41 +1333,41 @@ void Window::mouseAlgoRunStart() {
     // TODO: MACK - dedup this validation with the other process functions
     
     QString algoName = m_mouseAlgoComboBox->currentText();
-	QString dirPath = SettingsMouseAlgos::getDirPath(algoName);
-	QString command = SettingsMouseAlgos::getRunCommand(algoName);
-	QString mouseFilePath = SettingsMouseAlgos::getMouseFilePath(algoName);
+    QString dirPath = SettingsMouseAlgos::getDirPath(algoName);
+    QString command = SettingsMouseAlgos::getRunCommand(algoName);
+    QString mouseFilePath = SettingsMouseAlgos::getMouseFilePath(algoName);
 
-	// Perform config validation
-	if (command.isEmpty()) {
+    // Perform config validation
+    if (command.isEmpty()) {
         QMessageBox::warning(
             this,
             "Empty Run Command",
             QString("Run command for algorithm \"%1\" is empty.").arg(
-				algoName
-			)
+                algoName
+            )
         );
         return;
-	}
-	if (dirPath.isEmpty()) {
+    }
+    if (dirPath.isEmpty()) {
         QMessageBox::warning(
             this,
             "Empty Directory",
             QString("Directory for algorithm \"%1\" is empty.").arg(
-				algoName
-			)
+                algoName
+            )
         );
         return;
-	}
-	if (mouseFilePath.isEmpty()) {
+    }
+    if (mouseFilePath.isEmpty()) {
         QMessageBox::warning(
             this,
             "Empty Mouse File",
             QString("Mouse file for algorithm \"%1\" is empty.").arg(
-				algoName
-			)
+                algoName
+            )
         );
         return;
-	}
+    }
 
     // If maze is empty, abort
     if (m_maze == nullptr) {
@@ -1400,13 +1400,13 @@ void Window::mouseAlgoRunStart() {
 
     // Create some more objects
     MazeView* newView = new MazeView(
-		m_maze,
-		m_wallTruthCheckbox->isChecked(),
-		m_colorCheckbox->isChecked(),
-		m_fogCheckbox->isChecked(),
-		m_textCheckbox->isChecked(),
-		false // autopopulateTextWithDistance
-	);
+        m_maze,
+        m_wallTruthCheckbox->isChecked(),
+        m_colorCheckbox->isChecked(),
+        m_fogCheckbox->isChecked(),
+        m_textCheckbox->isChecked(),
+        false // autopopulateTextWithDistance
+    );
     MouseGraphic* newMouseGraphic = new MouseGraphic(newMouse);
     MouseInterface* newMouseInterface = new MouseInterface(
         m_maze,
@@ -1611,7 +1611,7 @@ void Window::mouseAlgoRunStart() {
         m_mouseGraphic = newMouseGraphic;
         m_mouseInterface = newMouseInterface;
         m_mouseAlgoThread = newMouseAlgoThread;
-		m_mouseAlgoRunProcess = newProcess;
+        m_mouseAlgoRunProcess = newProcess;
         m_map.setView(newView);
         m_map.setMouseGraphic(newMouseGraphic);
 
@@ -1623,7 +1623,7 @@ void Window::mouseAlgoRunStart() {
 
     // Start the mouse interface thread
     newMouseInterface->moveToThread(newMouseAlgoThread);
-	newMouseAlgoThread->start();
+    newMouseAlgoThread->start();
 }
 
 void Window::mouseAlgoRunStop() {
@@ -1649,7 +1649,7 @@ void Window::mouseAlgoRunStop() {
     m_map.setMouseGraphic(nullptr);
     m_map.setView(m_truth);
     m_model.removeMouse();
-	m_mouseAlgoRunProcess = nullptr;
+    m_mouseAlgoRunProcess = nullptr;
     m_mouseAlgoThread = nullptr;
     m_mouseInterface = nullptr;
     m_mouseGraphic = nullptr;

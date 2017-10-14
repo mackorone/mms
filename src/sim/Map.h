@@ -23,14 +23,14 @@ class Map : public QOpenGLWidget, protected QOpenGLFunctions {
     // NOTE: Inheriting from QOpenGLFunctions allows
     // us to call the OpenGL functions directly
 
-	Q_OBJECT
+    Q_OBJECT
 
 public:
 
     Map(QWidget* parent = 0);
 
     void setMaze(const Maze* maze);
-	void setView(const MazeView* view);
+    void setView(const MazeView* view);
     void setMouseGraphic(const MouseGraphic* mouseGraphic);
 
     void setLayoutType(LayoutType layoutType);
@@ -51,15 +51,15 @@ protected:
 private:
 
     // Logger of OpenGL warnings and errors
-	QOpenGLDebugLogger m_openGLLogger;
-	void initOpenGLLogger();
+    QOpenGLDebugLogger m_openGLLogger;
+    void initOpenGLLogger();
 
     // Frame refresh timer
     QTimer m_timer;
 
     // No ownership here - only pointers
-	const Maze* m_maze;
-	const MazeView* m_view;
+    const Maze* m_maze;
+    const MazeView* m_view;
     const MouseGraphic* m_mouseGraphic;
 
     // The map's window size, in pixels
@@ -72,15 +72,15 @@ private:
     bool m_rotateZoomedMap;
 
     // Polygon program variables
-	QOpenGLShaderProgram m_polygonProgram;
-	QOpenGLVertexArrayObject m_polygonVAO;
-	QOpenGLBuffer m_polygonVBO;
+    QOpenGLShaderProgram m_polygonProgram;
+    QOpenGLVertexArrayObject m_polygonVAO;
+    QOpenGLBuffer m_polygonVBO;
 
     // Texture program variables
-	QOpenGLTexture* m_textureAtlas;
-	QOpenGLShaderProgram m_textureProgram;
-	QOpenGLVertexArrayObject m_textureVAO;
-	QOpenGLBuffer m_textureVBO;
+    QOpenGLTexture* m_textureAtlas;
+    QOpenGLShaderProgram m_textureProgram;
+    QOpenGLVertexArrayObject m_textureVAO;
+    QOpenGLBuffer m_textureVBO;
 
     // Initialize the graphics
     void initPolygonProgram();
@@ -88,15 +88,15 @@ private:
 
     // Drawing helper methods
     void repopulateVertexBufferObjects(
-		const QVector<TriangleGraphic>& mouseBuffer);
+        const QVector<TriangleGraphic>& mouseBuffer);
     void drawMap(
         LayoutType type,
         const Coordinate& currentMouseTranslation,
-		const Angle& currentMouseRotation,
+        const Angle& currentMouseRotation,
         QOpenGLShaderProgram* program,
-		QOpenGLVertexArrayObject* vao,
-		int vboStartingIndex,
-		int count);
+        QOpenGLVertexArrayObject* vao,
+        int vboStartingIndex,
+        int count);
 };
 
 } // namespace mms

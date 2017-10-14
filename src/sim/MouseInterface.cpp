@@ -47,10 +47,10 @@ MouseInterface::MouseInterface(
 }
 
 void MouseInterface::handleStandardOutput(QString output) {
-	if (output.endsWith("\n")) {
-		output.truncate(output.size() - 1);
-	}
-	emit algoOutput(output);
+    if (output.endsWith("\n")) {
+        output.truncate(output.size() - 1);
+    }
+    emit algoOutput(output);
 }
 
 QString MouseInterface::dispatch(const QString& command) {

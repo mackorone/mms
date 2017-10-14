@@ -172,7 +172,7 @@ BasicMaze MazeFileUtilities::deserializeMazType(const QByteArray& bytes) {
     for (int i = 0; i < bytes.size(); i += 1) {
         characters.push_back(bytes.at(i));
     }
-	
+    
     // The maze to be returned
     BasicMaze maze;
 
