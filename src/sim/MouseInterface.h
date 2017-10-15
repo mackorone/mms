@@ -34,6 +34,9 @@ public:
     // Called when the algo process writes to stdout
     void handleStandardOutput(QString output);
 
+    // Called when the algo process could not start
+    void emitMouseAlgoCannotStart(QString string);
+
     // Execute a request, return a response
     QString dispatch(const QString& command);
 
@@ -54,6 +57,9 @@ signals:
 
     // An algorithm acknowledged an input button
     void inputButtonWasAcknowledged(int button);
+
+    // The algorithm could not be started
+    void mouseAlgoCannotStart(QString errorString);
 
 private:
 

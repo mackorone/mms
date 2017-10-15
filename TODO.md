@@ -4,14 +4,14 @@ Features
     - Similar to what we do for the image files
     - Pre-loading a blank map on startup would be good
 - Fix existing maze file formats
-- Support more maze file formats
-    - .MAZ, .mz2, https://code.google.com/p/maze-solver/wiki/MazeFileFormats
-    - JSON, https://github.com/bblodget/MicromouseSim/tree/gh-pages/mazes_json
-- Maze "Save As..."
 - API call counts
     - A table of API method to # of times called
 - Ad hoc maze rotation and mirroring
 - Toggle algorithm output line wrap
+- Maze "Save As..."
+- Support more maze file formats
+    - .MAZ, .mz2, https://code.google.com/p/maze-solver/wiki/MazeFileFormats
+    - JSON, https://github.com/bblodget/MicromouseSim/tree/gh-pages/mazes_json
 
 Bugfixes
 ========
@@ -24,7 +24,7 @@ Cleanup
 =======
 - Call all "algo stop" functions during Window initialization
     - Deduplicate initialization with "stop algo" code (and "failed algo" code)
-- Make a note about why we write EMPTY_STRING for some dispatched commands
+- Make a note about why we write NO_ACK_STRING for some dispatched commands
     - It's a speed optimization, similar to UDP vs. TCP
 - Kill the Layout class
 - Kill the SimUtilities class, along with other platform dependent code

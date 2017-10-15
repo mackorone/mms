@@ -53,6 +53,10 @@ void MouseInterface::handleStandardOutput(QString output) {
     emit algoOutput(output);
 }
 
+void MouseInterface::emitMouseAlgoCannotStart(QString errorString) {
+    emit mouseAlgoCannotStart(errorString);
+}
+
 QString MouseInterface::dispatch(const QString& command) {
 
     // TODO: upforgrabs

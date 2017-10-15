@@ -37,6 +37,9 @@ signals:
     // Emits this signal when a user presses an input button
     void inputButtonWasPressed(int button);
 
+    // Emits this signal when the mouse algo can't start
+    void mouseAlgoCannotStart(QString errorString);
+
 private:
 
     // The model object
@@ -171,6 +174,7 @@ private:
     QPlainTextEdit* m_mouseAlgoRunOutput;
     void mouseAlgoRunStart();
     void mouseAlgoRunStop();
+    void handleMouseAlgoCannotStart(QString errorString);
 
     void mouseAlgoPause();
     void mouseAlgoResume();
@@ -186,10 +190,8 @@ private:
     QStringList getLines(const QString& text, QStringList* buffer);
 
     // ----- Misc ----- //
-
     /*
     // TODO: MACK
-    // Key related helpers
     QGridLayout* m_activeTab;
     QMap<QGridLayout*, QMap<QString, QLabel*>> m_stats;
     QMap<QString, QLabel*> m_runStats;
