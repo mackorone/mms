@@ -3,8 +3,8 @@
 #include "Printer.h"
 #include "Reader.h"
 
-void Interface::setInterfaceType(const std::string& interfaceType) {
-    PRINT("setInterfaceType", interfaceType);
+void Interface::useContinuousInterface() {
+    PRINT("useContinuousInterface");
     READ();
 }
 
@@ -20,11 +20,6 @@ void Interface::setTileTextRowsAndCols(int numRows, int numCols) {
 
 void Interface::setWheelSpeedFraction(double wheelSpeedFraction) {
     PRINT("setWheelSpeedFraction", wheelSpeedFraction);
-    READ();
-}
-
-void Interface::finalizeStaticOptions() {
-    PRINT("finalizeStaticOptions");
     READ();
 }
 
@@ -148,6 +143,7 @@ void Interface::undeclareTileDistance(int x, int y) {
 
 void Interface::resetPosition() {
     PRINT("resetPosition");
+    READ();
 }
 
 bool Interface::inputButtonPressed(int inputButton) {

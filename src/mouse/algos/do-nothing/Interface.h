@@ -8,13 +8,11 @@ public:
 
     // ----- Functions for setting/updating mouse options ----- //
 
-    // Static options (must be set at the beginning)
-    void setInterfaceType(const std::string& interfaceType);
+    // Static options (should set at the beginning)
+    void useContinuousInterface();
     void setInitialDirection(char initialDirection);
     void setTileTextRowsAndCols(int numRows, int numCols);
     void setWheelSpeedFraction(double wheelSpeedFraction);
-
-    void finalizeStaticOptions();
 
     // Dynamic options (can be updated any time)
     void updateAllowOmniscience(bool allowOmniscience);

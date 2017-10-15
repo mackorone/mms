@@ -511,27 +511,6 @@ void Window::algoActionStop(
 }
 
 #if(0)
-void Window::togglePause() {
-    if (m_mouseInterface != nullptr) {
-        if (m_mouseInterface->getInterfaceType(false) == InterfaceType::DISCRETE) {
-            if (S()->paused()) {
-                S()->setPaused(false);
-                ui.pauseButton->setText("Pause");
-            }
-            else {
-                S()->setPaused(true);
-                ui.pauseButton->setText("Resume");
-            }
-        }
-        else {
-            qWarning().noquote().nospace()
-                << "Pausing the simulator is only allowed in "
-                << INTERFACE_TYPE_TO_STRING().value(InterfaceType::DISCRETE)
-                << " mode.";
-        }
-    }
-}
-
 QVector<QPair<QString, QVariant>> Window::getRunStats() const {
 
     MouseStats stats;

@@ -3,25 +3,29 @@ Features
 - Statically link some default maze/mouse files
     - Similar to what we do for the image files
     - Pre-loading a blank map on startup would be good
-- Fix existing maze file formats
 - API call counts
     - A table of API method to # of times called
 - Ad hoc maze rotation and mirroring
 - Toggle algorithm output line wrap
 - Maze "Save As..."
+- Add a "new algo" wizard to make it easy to bootstap a new algo
 - Support more maze file formats
     - .MAZ, .mz2, https://code.google.com/p/maze-solver/wiki/MazeFileFormats
     - JSON, https://github.com/bblodget/MicromouseSim/tree/gh-pages/mazes_json
 
 Bugfixes
 ========
+- Fix maze checker
+- Fix existing maze file formats
 - Update the build and run status when the algorithm changes
 - Setting the child process's working directory doesn't work on windows
     - Instead, we might have to change the simulator's working directory
 - Bad maze algorithms (e.g., "echo foo") can crash the simulator
+- Don't allow discrete algorithms to be paused
 
 Cleanup
 =======
+- Don't actually log within mouse interface - surface errors a different way
 - Call all "algo stop" functions during Window initialization
     - Deduplicate initialization with "stop algo" code (and "failed algo" code)
 - Make a note about why we write NO_ACK_STRING for some dispatched commands
@@ -32,9 +36,16 @@ Cleanup
 - Replace push_back() with append()
 - Audit codebase for unnecessary headers
 - Lint the codebase
+- Update the codebase to make use of implicit sharing
+    - http://doc.qt.io/qt-5/implicit-sharing.html#implicitly-shared
+- Get rid of unnecessary QString wrapping, like QString(<SOME-QSTRING>)
+- Deduplicate some import/edit/validate logic between mouse and maze algo
+- Use keyword explicit on one argument constructors
+- Ensure UI widget spacing is sane
 
 Wishlist
 ========
+- Wiki page for common error message for failed commands
 - A utility to tell you whether or not the stdlib is used
 - A utility to tell you how much memory the algorithm is occupying
 - A utility to ensure that the algorithm has no memory leaks
@@ -45,10 +56,14 @@ Wishlist
 - Add stepper motor support in continuous mode
 - Bluetooth communication with an actual robot
     - Would allow us to see where the robot thinks it is
+- Monitor algo directories using FileSystemWatcher
+    - Make it obvious when the user should re-build their algo
+- Add sensor types (digital vs. analog)
+- Look into using vsync so the graphics don't tear
+- Make it possible to change the goal location (for smaller mazes)
 
 Unsorted
 ========
-- If no maze is loaded, we shouldn't jump to mouse output tab
 - Reset CRASHED state when we restart the algorithm
 - Make it easier to edit the simulator parameters
     - Write and read from persistant storage...
@@ -58,7 +73,6 @@ Unsorted
     - Ensure the mouse stays in the maze
 - Surface information about *why* a maze is valid/invalid (etc.)
 - MacOS retina https://github.com/vispy/vispy/issues/99
-- Better error messages for failed commands
 - Button for toggling the maze views
 - Verify that the tile text automatically refresh when we set tileGraphicTextMaxSize
 - Maze loading
@@ -66,13 +80,9 @@ Unsorted
 - Clean up mouseInterface/controller and MainWindow/controller (MouseAlgoUtilities)
 - Add controls about UI
 - Fix the elapsed sim time
-- Surface error messages to the UI
-- Stderr get's printed out when the algo exits, gets sent to Controller
 - Fix collision detection
 - Replace "import algorithm" with "new algorithm"
 - Rename the whole texture vs polygon thing
-- Don't need (const X& x) because of implicit sharing
-    - http://doc.qt.io/qt-5/implicit-sharing.html#implicitly-shared
 - If the maze is invalid, don't let the algo do anything
 - Set up tests/build framework
 - Make all classes QObjects
@@ -81,9 +91,6 @@ Unsorted
         - Maybe even collision detection too
 - QHash instead of QMap
     - QSet instead of QVector in some places
-- Monitor algo directories using FileSystemWatcher
-- Get rid of unnecessary QString wrapping, like QString(<some qstring>)
-- Replace libs with native Qt functions
 - char to QChar
 - Replace QPair with structs
 - Logging is too expensive
@@ -105,7 +112,6 @@ Unsorted
       as necessary to get the mouse to its destination)
 - Make an algo that can switch between tile edge movements and not
     - Proof of concept
-- Sensor type (digital or analog)
 - Add a way to time the algorithms
     - Make sure consistent at all speeds
 - Add debugging tips
@@ -124,20 +130,15 @@ Unsorted
     - Variable width?
     - Add trajectory lines (see https://www.youtube.com/watch?v=kgJClVCPu3w)
 - Buffer communication (like with the real robot)
-- Make a separate process for algo, so if the algo dies the sim stays alive, and so that we can start an algo over really easily
 - Continuous performance
+    - Fix/check continuous algo
     - CPU with megaMouse.xml
     - MinSleepDuration is a little bit weird - sometimes we try to sleep less than that
 - Downward sensor
-- Intelligent build command and run command generation
 - Kill toLatin1() calls
-- Fix/check continuous algo
 - Add colors to stats/outputs...
     - Makes it easier to know that it's not a button
-- Add a print function to interfaces
 - Arduino int could be 16 bits
-- Deduplicate some import/edit/build logic between mouse and maze algo tabs
-- Use explicit on one argument constructors
 - Pass by reference or value in lambdas
 - Rule of thumb - if it has state, make it a singleton instead of a static class
     - Rewrite singleton access patterns to be a little more readable (kill S(), P(), etc.)
@@ -172,7 +173,6 @@ Unsorted
 - Set acceleration of all moving/rotating things
 - Make some default Arduino implementations for some functions
 - Testing for resource existence (like the shaders, font images, etc.)
-- Continuous mode improvements (overall)
 - Xorg and compiz performance...
 - Shortest path graphic (display the shortest path)
 - Write a good continuous algorithm
@@ -197,7 +197,6 @@ Unsorted
 - Get rid of as much platform dependant code as possible
 - Clean up / improve the coding standards
 - Optimize for space in the TEXTURE_CPU_BUFFER and GRAPHIC_CPU_BUFFER - Don't repeat vertices
-- VSync so the graphics don't tear
 - Update the check_params.py script to make sure that the return type of the
   Param methods is the same as the type of the member variable
 - Add a way to change the mouse color
@@ -226,7 +225,6 @@ Unsorted
 - Pass things by reference when possible
 - Give better explanations for the GeometryUtilities
 - Buffer the declared walls and include a quick "resetWalls()" method
-- Fit code into 80/100 columns... use a linter for this
 - Put consts in GraphicUtilties (and other classes)
 - Replace braket notation with methods (walls[NORTH] = true -> walls.insert(std::make_pair(NORTH, true)));
 - Document the confusing coordinate systems
@@ -239,9 +237,6 @@ Unsorted
 - -Wall: Show all warning messages
 - -Werror: Fail compilation on warnings
 - -pedantic-errors: Flag even the most pedantic of errors
-- Write a script to ensure that ASSERTS don't hold any state
-- Ensure boolean operators aren't used in asserts... should be using a different assert
-- Ensure consistent use of "Checkbox" vs "CheckBox", etc.
 - You can add layouts to layouts
     - make sure I'm not creating any unnecessary widgets
 - Use the "widget" suffix for all user-defined widgets

@@ -12,6 +12,9 @@ zip/
 *.class
 *.swp
 
+.qmake.stash
+.gitattributes
+
 .fuse_hidden*
 
 auto_generated_maze.*
