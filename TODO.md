@@ -1,6 +1,5 @@
 Features
 ========
-- Persist the last-used algorithms (and maze file) between invocations
 - Statically link some default maze/mouse files
     - Similar to what we do for the image files
     - Pre-loading a blank map on startup would be good

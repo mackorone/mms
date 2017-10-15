@@ -18,6 +18,7 @@
 #include "ProcessUtilities.h"
 #include "SettingsMazeAlgos.h"
 #include "SettingsMouseAlgos.h"
+#include "SettingsRecent.h"
 #include "SimUtilities.h"
 #include "State.h"
 
@@ -726,6 +727,12 @@ void Window::mazeAlgoTabInit() {
     algorithmLayout->addWidget(m_mazeAlgoComboBox, 0, 0, 1, 2);
     algorithmLayout->addWidget(m_mazeAlgoImportButton, 1, 0);
     algorithmLayout->addWidget(m_mazeAlgoEditButton, 1, 1);
+    connect(
+        m_mazeAlgoComboBox, &QComboBox::currentTextChanged,
+        this, [=](QString name){
+            SettingsRecent::setRecentMazeAlgo(name);
+        }
+    );
 
     // Actions groupbox
     QGroupBox* actionsGroupBox = new QGroupBox("Actions");
@@ -788,7 +795,7 @@ void Window::mazeAlgoTabInit() {
     }
 
     // Add the maze algos
-    mazeAlgoRefresh();
+    mazeAlgoRefresh(SettingsRecent::getRecentMazeAlgo());
 }
 
 void Window::mazeAlgoImport() {
@@ -1047,6 +1054,12 @@ void Window::mouseAlgoTabInit() {
     algorithmLayout->addWidget(m_mouseAlgoComboBox, 0, 0, 1, 2);
     algorithmLayout->addWidget(m_mouseAlgoImportButton, 1, 0);
     algorithmLayout->addWidget(m_mouseAlgoEditButton, 1, 1);
+    connect(
+        m_mouseAlgoComboBox, &QComboBox::currentTextChanged,
+        this, [=](QString name){
+            SettingsRecent::setRecentMouseAlgo(name);
+        }
+    );
 
     // Actions groupbox
     QGroupBox* actionsGroupBox = new QGroupBox("Actions");
@@ -1165,7 +1178,7 @@ void Window::mouseAlgoTabInit() {
     }
 
     // Add the mouse algos
-    mouseAlgoRefresh();
+    mouseAlgoRefresh(SettingsRecent::getRecentMouseAlgo());
 }
 
 void Window::mouseAlgoEdit() {
