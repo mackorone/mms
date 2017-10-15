@@ -39,8 +39,6 @@ signals:
 
 private:
 
-    // TODO: MACK - move some of the GUI elements down below model elements
-
     // The model object
     Model m_model;
     QThread m_modelThread;
@@ -104,9 +102,8 @@ private:
         QLabel* actionStatus
     );
 
-// TODO: MACK ---------------  MazeAlgosTab
+    // ----- MazeAlgosTab ----- //
 
-    // TODO: MACK
     QWidget* m_mazeAlgoWidget;
     QComboBox* m_mazeAlgoComboBox;
     QPushButton* m_mazeAlgoEditButton;
@@ -142,7 +139,7 @@ private:
     void mazeAlgoRefresh(const QString& name = "");
     QVector<ConfigDialogField> mazeAlgoGetFields();
 
-// TODO: MACK ------------------ Mouse Algos Tab
+    // ----- MouseAlgosTab ----- //
 
     QWidget* m_mouseAlgoWidget;
     QComboBox* m_mouseAlgoComboBox;
@@ -175,6 +172,8 @@ private:
     void mouseAlgoRunStart();
     void mouseAlgoRunStop();
 
+    void mouseAlgoPause();
+    void mouseAlgoResume();
     QPushButton* m_mouseAlgoPauseButton;
     RandomSeedWidget* m_mouseAlgoSeedWidget;
     QVector<QPushButton*> m_mouseAlgoInputButtons;
@@ -186,30 +185,20 @@ private:
     // all complete lines and append remaining text to the buffer
     QStringList getLines(const QString& text, QStringList* buffer);
 
+    // ----- Misc ----- //
+
     /*
+    // TODO: MACK
     // Key related helpers
-    void keyPress(int key);
-    void keyRelease(int key);
-
-    // TODO: MACK - hastily implemented helper functions
-    void togglePause();
-
-    // Header-related members
-    // TODO: MACK - refactor this into its own class
-
-    QGridLayout* m_activeTab; // TODO: MACK
+    QGridLayout* m_activeTab;
     QMap<QGridLayout*, QMap<QString, QLabel*>> m_stats;
-
     QMap<QString, QLabel*> m_runStats;
     QMap<QString, QLabel*> m_algoOptions;
     QMap<QString, QLabel*> m_options;
-
     QVector<QPair<QString, QVariant>> getRunStats() const;
     QVector<QPair<QString, QVariant>> getAlgoOptions() const;
-
     QTimer m_headerRefreshTimer;
     */
-
 };
 
 } // namespace mms

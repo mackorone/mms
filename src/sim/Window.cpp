@@ -47,7 +47,7 @@ Window::Window(QWidget *parent) :
         m_mouseInterface(nullptr),
         m_mouseAlgoThread(nullptr),
 
-        // TODO: MACK - MazeAlgosTab
+        // MazeAlgosTab
         m_mazeAlgoWidget(new QWidget()),
         m_mazeAlgoComboBox(new QComboBox()),
         m_mazeAlgoEditButton(new QPushButton("Edit")),
@@ -64,7 +64,7 @@ Window::Window(QWidget *parent) :
         m_mazeAlgoHeightBox(new QSpinBox()),
         m_mazeAlgoSeedWidget(new RandomSeedWidget()),
 
-        // TODO: MACK - MouseAlgosTab
+        // MouseAlgosTab
         m_mouseAlgoWidget(new QWidget()),
         m_mouseAlgoComboBox(new QComboBox()),
         m_mouseAlgoEditButton(new QPushButton("Edit")),
@@ -73,12 +73,12 @@ Window::Window(QWidget *parent) :
         m_mouseAlgoBuildButton(new QPushButton("Build")),
         m_mouseAlgoBuildStatus(new QLabel()),
         m_mouseAlgoBuildOutput(new QPlainTextEdit()),
-        // TODO: MACK - are all of these necessary?
         m_mouseAlgoRunProcess(nullptr),
         m_mouseAlgoRunButton(new QPushButton("Run")),
         m_mouseAlgoRunStatus(new QLabel()),
         m_mouseAlgoRunOutput(new QPlainTextEdit()),
-        m_mouseAlgoSeedWidget(new RandomSeedWidget()) {
+        m_mouseAlgoSeedWidget(new RandomSeedWidget()),
+        m_mouseAlgoPauseButton(new QPushButton("Pause")) {
 
     // First, some bookkeeping; we have to explicitly allow the
     // mouse process exit event to be handled on the GUI thread
@@ -1078,7 +1078,7 @@ void Window::mouseAlgoTabInit() {
     QVBoxLayout* controlLayout = new QVBoxLayout();
     controlsGroupBox->setLayout(controlLayout);
 
-    // Add the "speed" slider
+    // Add the pause button and speed slider
     QHBoxLayout* speedsLayout = new QHBoxLayout();
     controlLayout->addLayout(speedsLayout);
     double maxSpeed = P()->maxSimSpeed();
@@ -1088,6 +1088,13 @@ void Window::mouseAlgoTabInit() {
     speedsLayout->addWidget(new QLabel("Speed"));
     speedsLayout->addWidget(speedSlider);
     speedsLayout->addWidget(speedBox);
+    speedsLayout->addWidget(m_mouseAlgoPauseButton);
+
+    // Set up the pause button initial state
+    m_mouseAlgoPauseButton->setEnabled(false);
+    mouseAlgoResume();
+
+    // Add the logic for the speed slider
     connect(
         speedSlider, &QSlider::valueChanged,
         this, [=](int value){
@@ -1162,8 +1169,6 @@ void Window::mouseAlgoTabInit() {
 }
 
 void Window::mouseAlgoEdit() {
-
-    // TODO: MACK - dedup edit and import between maze and mouse
 
     QString name = m_mouseAlgoComboBox->currentText();
 
@@ -1300,9 +1305,6 @@ void Window::mouseAlgoBuildStderr() {
 
 void Window::mouseAlgoRunStart() {
 
-    // TODO: MACK - add the random seed to command...
-    // TODO: MACK - dedup this validation with the other process functions
-    
     QString algoName = m_mouseAlgoComboBox->currentText();
     QString dirPath = SettingsMouseAlgos::getDirPath(algoName);
     QString command = SettingsMouseAlgos::getRunCommand(algoName);
@@ -1388,6 +1390,14 @@ void Window::mouseAlgoRunStart() {
     // Clear the output
     m_mouseAlgoRunOutput->clear();
 
+    // Enabled the pause button
+    m_mouseAlgoPauseButton->setEnabled(true);
+
+    // Enable the push buttons
+    for (QPushButton* button : m_mouseAlgoInputButtons) {
+        button->setEnabled(true);
+    }
+
     // Append the random seed to the command
     command += " ";
     command += QString::number(m_mouseAlgoSeedWidget->next());
@@ -1452,8 +1462,7 @@ void Window::mouseAlgoRunStart() {
         // Connect the input buttons to the algorithm
         for (int i = 0; i < m_mouseAlgoInputButtons.size(); i += 1) {
             QPushButton* button = m_mouseAlgoInputButtons.at(i);
-            button->setEnabled(true);
-            connect(button, &QPushButton::pressed, this, [=](){
+            connect(button, &QPushButton::clicked, this, [=](){
                 button->setEnabled(false);
                 // Note: we can't call inputButtonWasPressed directly because
                 // it's not thread-safe; instead, we use a queued connection
@@ -1662,11 +1671,37 @@ void Window::mouseAlgoRunStop() {
     m_mouseAlgoRunStatus->setStyleSheet(
         "QLabel { background: rgb(255, 255, 255); }"
     );
+    m_mouseAlgoPauseButton->setEnabled(false);
+    mouseAlgoResume();
     for (QPushButton* button : m_mouseAlgoInputButtons) {
         button->setEnabled(false);
     }
-    // TODO: MACK - change to the current tab
-    // TODO: Stop/pause buttons
+}
+
+void Window::mouseAlgoPause() {
+    m_model.setPaused(true);
+    m_mouseAlgoPauseButton->setText("Resume");
+    disconnect(
+        m_mouseAlgoPauseButton, &QPushButton::clicked,
+        this, &Window::mouseAlgoPause
+    );
+    connect(
+        m_mouseAlgoPauseButton, &QPushButton::clicked,
+        this, &Window::mouseAlgoResume
+    );
+}
+
+void Window::mouseAlgoResume() {
+    m_model.setPaused(false);
+    m_mouseAlgoPauseButton->setText("Pause");
+    disconnect(
+        m_mouseAlgoPauseButton, &QPushButton::clicked,
+        this, &Window::mouseAlgoResume
+    );
+    connect(
+        m_mouseAlgoPauseButton, &QPushButton::clicked,
+        this, &Window::mouseAlgoPause
+    );
 }
 
 void Window::mouseAlgoRefresh(const QString& name) {

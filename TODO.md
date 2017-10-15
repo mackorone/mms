@@ -1,7 +1,5 @@
 Features
 ========
-- Mouse algorithm pause button
-    - Ensure we can select new maze files, exit the simulator, etc. while paused
 - Persist the last-used algorithms (and maze file) between invocations
 - Statically link some default maze/mouse files
     - Similar to what we do for the image files
@@ -18,12 +16,15 @@ Features
 
 Bugfixes
 ========
+- Update the build and run status when the algorithm changes
 - Setting the child process's working directory doesn't work on windows
     - Instead, we might have to change the simulator's working directory
 - Bad maze algorithms (e.g., "echo foo") can crash the simulator
 
 Cleanup
 =======
+- Call all "algo stop" functions during Window initialization
+    - Deduplicate initialization with "stop algo" code (and "failed algo" code)
 - Make a note about why we write EMPTY_STRING for some dispatched commands
     - It's a speed optimization, similar to UDP vs. TCP
 - Kill the Layout class
