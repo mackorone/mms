@@ -16,6 +16,7 @@ public:
     Seconds elapsedSimTime();
 
     void incrementElapsedSimTime(const Duration& duration);
+    void reset();
 
 private:
 

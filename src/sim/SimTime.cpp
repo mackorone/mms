@@ -33,9 +33,13 @@ void SimTime::incrementElapsedSimTime(const Duration& duration) {
     m_elapsedSimTime += duration;
 }
 
-SimTime::SimTime() :
-    m_startTimestamp(Seconds(SimUtilities::getHighResTimestamp())),
-    m_elapsedSimTime(Seconds(0)) {
+void SimTime::reset() {
+    m_startTimestamp = Seconds(SimUtilities::getHighResTimestamp());
+    m_elapsedSimTime = Seconds(0);
+}
+
+SimTime::SimTime() {
+    reset();
 }
 
 } // namespace mms

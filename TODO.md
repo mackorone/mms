@@ -45,6 +45,7 @@ Cleanup
 
 Wishlist
 ========
+- Display the dynamic mouse algorithm options
 - Wiki page for common error message for failed commands
 - A utility to tell you whether or not the stdlib is used
 - A utility to tell you how much memory the algorithm is occupying

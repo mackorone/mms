@@ -34,7 +34,7 @@ signals:
 
 private:
 
-    QMutex m_mutex;
+    mutable QMutex m_mutex;
     bool m_shutdownRequested;
 
     const Maze* m_maze;

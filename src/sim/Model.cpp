@@ -155,6 +155,7 @@ void Model::setMouse(Mouse* mouse) {
     ASSERT_TR(m_stats == nullptr);
     m_mouse = mouse;
     m_stats = new MouseStats();
+    SimTime::get()->reset();
     m_mutex.unlock();
 }
 
@@ -173,10 +174,13 @@ void Model::removeMouse() {
 }
 
 MouseStats Model::getMouseStats() const {
-    ASSERT_FA(m_maze == nullptr);
-    ASSERT_FA(m_mouse == nullptr);
-    ASSERT_FA(m_stats == nullptr);
-    return *m_stats;
+    m_mutex.lock();
+    MouseStats stats;
+    if (m_stats != nullptr) {
+        stats = *m_stats; 
+    }
+    m_mutex.unlock();
+    return stats;
 }
 
 void Model::setPaused(bool paused) {

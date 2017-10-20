@@ -19,6 +19,7 @@
 #include "SettingsMazeAlgos.h"
 #include "SettingsMouseAlgos.h"
 #include "SettingsRecent.h"
+#include "SimTime.h"
 #include "SimUtilities.h"
 #include "State.h"
 
@@ -510,57 +511,68 @@ void Window::algoActionStop(
     }
 }
 
-#if(0)
-QVector<QPair<QString, QVariant>> Window::getRunStats() const {
+QPair<QStringList, QVector<QVariant>> Window::getRunStats() const {
 
-    MouseStats stats;
-    if (m_model.containsMouse("")) {
-        stats = m_model.getMouseStats("");
+    static QStringList keys = {
+        "Tiles Traversed",
+        "Closest Distance to Center",
+        "Current X (m)",
+        "Current Y (m)",
+        "Current Rotation (deg)",
+        "Current X Tile",
+        "Current Y Tile",
+        "Current Direction",
+        "Elapsed Real Time",
+        "Elapsed Sim Time",
+        "Time Since Origin Departure",
+        "Best Time to Center",
+        "Crashed",
+    };
+
+    QVector<QVariant> values;
+    MouseStats stats = m_model.getMouseStats();
+
+    // This means the mouse isn't in the maze
+    if (stats.closestDistanceToCenter < 0) {
+        for (int i = 0; i < keys.size(); i += 1) {
+            values.append("N/A");
+        }
     }
-
-    return {
-        {"Tiles Traversed",
+    else {
+        values.append(
             QString::number(stats.traversedTileLocations.size()) + " / " +
             QString::number(m_maze->getWidth() * m_maze->getHeight())
-        },
-        {"Closest Distance to Center", stats.closestDistanceToCenter},
-        {"Current X (m)", m_mouse->getCurrentTranslation().getX().getMeters()},
-        {"Current Y (m)", m_mouse->getCurrentTranslation().getY().getMeters()},
-        {"Current Rotation (deg)", m_mouse->getCurrentRotation().getDegreesZeroTo360()},
-        {"Current X tile", m_mouse->getCurrentDiscretizedTranslation().first},
-        {"Current Y tile", m_mouse->getCurrentDiscretizedTranslation().second},
-        {"Current Direction",
-            DIRECTION_TO_STRING().value(m_mouse->getCurrentDiscretizedRotation())
-        },
-        {"Elapsed Real Time", SimUtilities::formatDuration(SimTime::get()->elapsedRealTime())},
-        {"Elapsed Sim Time", SimUtilities::formatDuration(SimTime::get()->elapsedSimTime())},
-        {"Time Since Origin Departure",
+        );
+        values.append(stats.closestDistanceToCenter);
+        values.append(m_mouse->getCurrentTranslation().getX().getMeters());
+        values.append(m_mouse->getCurrentTranslation().getY().getMeters());
+        values.append(m_mouse->getCurrentRotation().getDegreesZeroTo360());
+        values.append(m_mouse->getCurrentDiscretizedTranslation().first);
+        values.append(m_mouse->getCurrentDiscretizedTranslation().second);
+        values.append(DIRECTION_TO_STRING().value(m_mouse->getCurrentDiscretizedRotation()));
+        values.append(SimUtilities::formatDuration(SimTime::get()->elapsedRealTime()));
+        values.append(SimUtilities::formatDuration(SimTime::get()->elapsedSimTime()));
+        values.append(
             stats.timeOfOriginDeparture.getSeconds() < 0
             ? "NONE"
             : SimUtilities::formatDuration(
                 SimTime::get()->elapsedSimTime() - stats.timeOfOriginDeparture)
-        },
-        {"Best Time to Center",
+        );
+        values.append(
             stats.bestTimeToCenter.getSeconds() < 0
             ? "NONE"
             : SimUtilities::formatDuration(stats.bestTimeToCenter)
-        },
-        {"Crashed", (S()->crashed() ? "TRUE" : "FALSE")},
-    };
+        );
+        values.append((S()->crashed() ? "TRUE" : "FALSE"));
+    }
+
+    return {keys, values};
 }
 
+#if(0)
 QVector<QPair<QString, QVariant>> Window::getAlgoOptions() const {
     return {
         // Mouse Info
-        // TODO: MACK - get this from the mouseInterface
-        // {"Mouse Algo", P()->mouseAlgorithm()},
-        /*
-        {"Mouse File", (
-            m_mouseInterface == nullptr
-            ? "NONE"
-            : m_mouseInterface->getStaticOptions().mouseFile
-        }),
-        */
         // TODO: MACK - interface type not finalized
         {"Interface Type",
             m_mouseInterface == nullptr
@@ -617,59 +629,6 @@ QVector<QPair<QString, QVariant>> Window::getAlgoOptions() const {
         */
     };
 }
-
-
-    // TODO: MACK - group the position stuff together
-    /*
-    // Add run stats info to the UI
-    QVector<QPair<QString, QVariant>> runStats = getRunStats();
-    for (int i = 0; i < runStats.size(); i += 1) {
-        QString label = runStats.at(i).first;
-        QLabel* labelHolder = new QLabel(label + ":");
-        QLabel* valueHolder = new QLabel();
-        ui->runStatsLayout->addWidget(labelHolder, i, 0);
-        ui->runStatsLayout->addWidget(valueHolder, i, 1);
-        m_runStats.insert(label, valueHolder);
-    }
-
-    // Add run stats info to the UI
-    QVector<QPair<QString, QVariant>> mazeInfo = getMazeInfo();
-    for (int i = 0; i < mazeInfo.size(); i += 1) {
-        QString label = mazeInfo.at(i).first;
-        QLabel* labelHolder = new QLabel(label + ":");
-        QLabel* valueHolder = new QLabel();
-        ui->mazeInfoLayout->addWidget(labelHolder, i, 0);
-        ui->mazeInfoLayout->addWidget(valueHolder, i, 1);
-        m_mazeInfo.insert(label, valueHolder);
-    }
-
-    // Periodically update the header
-    connect(
-        &m_headerRefreshTimer,
-        &QTimer::timeout,
-        this,
-        [=](){
-            // TODO: MACK - only update if tab is visible
-            QVector<QPair<QString, QVariant>> runStats = getRunStats();
-            for (const auto& pair : runStats) {
-                QString text = pair.second.toString();
-                if (pair.second.type() == QVariant::Double) {
-                    text = QString::number(pair.second.toDouble(), 'f', 3);
-                }
-                m_runStats.value(pair.first)->setText(text);
-            }
-            QVector<QPair<QString, QVariant>> mazeInfo = getMazeInfo();
-            for (const auto& pair : mazeInfo) {
-                QString text = pair.second.toString();
-                if (pair.second.type() == QVariant::Double) {
-                    text = QString::number(pair.second.toDouble(), 'f', 3);
-                }
-                m_mazeInfo.value(pair.first)->setText(text);
-            }
-        }
-    );
-    m_headerRefreshTimer.start(50);
-    */
 #endif
 
 void Window::mazeAlgoTabInit() {
@@ -1118,8 +1077,10 @@ void Window::mouseAlgoTabInit() {
     controlLayout->addLayout(inputButtonsLayout);
 
     // Add the build and run output
+    QHBoxLayout* bottomLayout = new QHBoxLayout();
+    layout->addLayout(bottomLayout);
     m_mouseAlgoOutputTabWidget = new QTabWidget();
-    layout->addWidget(m_mouseAlgoOutputTabWidget);
+    bottomLayout->addWidget(m_mouseAlgoOutputTabWidget);
     m_mouseAlgoOutputTabWidget->addTab(m_mouseAlgoBuildOutput, "Build Output");
     m_mouseAlgoOutputTabWidget->addTab(m_mouseAlgoRunOutput, "Run Output");
 
@@ -1138,6 +1099,47 @@ void Window::mouseAlgoTabInit() {
         font.setPointSize(10);
         output->document()->setDefaultFont(font);
     }
+
+    // Add the algo run stats
+    QGroupBox* runStatsGroupBox = new QGroupBox("Stats");
+    QGridLayout* runStatsLayout = new QGridLayout();
+    runStatsGroupBox->setLayout(runStatsLayout);
+    bottomLayout->addWidget(runStatsGroupBox);
+    QPair<QStringList, QVector<QVariant>> runStats = getRunStats();
+    QStringList keys = runStats.first;
+    QVector<QVariant> values = runStats.second;
+    ASSERT_EQ(keys.size(), values.size());
+    for (int i = 0; i < keys.size(); i += 1) {
+        QString label = keys.at(i);
+        QLabel* labelHolder = new QLabel(label + ":");
+        QLabel* valueHolder = new QLabel();
+        valueHolder->setAlignment(Qt::AlignCenter);
+        valueHolder->setFrameStyle(QFrame::StyledPanel | QFrame::Plain);
+        valueHolder->setMinimumWidth(80);
+        runStatsLayout->addWidget(labelHolder, i, 0);
+        runStatsLayout->addWidget(valueHolder, i, 1);
+        m_runStats.insert(label, valueHolder);
+    }
+
+    // Periodically update the runstats
+    connect(
+        &m_headerRefreshTimer,
+        &QTimer::timeout,
+        this,
+        [=](){
+            QPair<QStringList, QVector<QVariant>> runStats = getRunStats();
+            QStringList keys = runStats.first;
+            QVector<QVariant> values = runStats.second;
+            for (int i = 0; i < keys.size(); i += 1) {
+                QString text = values.at(i).toString();
+                if (values.at(i).type() == QVariant::Double) {
+                    text = QString::number(values.at(i).toDouble(), 'f', 3);
+                }
+                m_runStats.value(keys.at(i))->setText(text);
+            }
+        }
+    );
+    m_headerRefreshTimer.start(75);
 
     // Add the mouse algos
     mouseAlgoRefresh(SettingsRecent::getRecentMouseAlgo());

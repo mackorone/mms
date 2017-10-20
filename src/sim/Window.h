@@ -190,17 +190,10 @@ private:
     QStringList getLines(const QString& text, QStringList* buffer);
 
     // ----- Misc ----- //
-    /*
-    // TODO: MACK
-    QGridLayout* m_activeTab;
-    QMap<QGridLayout*, QMap<QString, QLabel*>> m_stats;
-    QMap<QString, QLabel*> m_runStats;
-    QMap<QString, QLabel*> m_algoOptions;
-    QMap<QString, QLabel*> m_options;
-    QVector<QPair<QString, QVariant>> getRunStats() const;
-    QVector<QPair<QString, QVariant>> getAlgoOptions() const;
+
     QTimer m_headerRefreshTimer;
-    */
+    QMap<QString, QLabel*> m_runStats;
+    QPair<QStringList, QVector<QVariant>> getRunStats() const;
 };
 
 } // namespace mms
