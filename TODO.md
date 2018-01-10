@@ -15,17 +15,21 @@ Features
 
 Bugfixes
 ========
+- Fix m_mouse segfaults
 - Fix maze checker
 - Fix existing maze file formats
 - Update the build and run status when the algorithm changes
 - Setting the child process's working directory doesn't work on windows
     - Instead, we might have to change the simulator's working directory
 - Bad maze algorithms (e.g., "echo foo") can crash the simulator
-- Don't allow discrete algorithms to be paused
+- Don't allow continuous algorithms to be paused
 
 Cleanup
 =======
+- Remove continuous algorithm support from the interfaces, for now
 - Don't actually log within mouse interface - surface errors a different way
+- Improve sim time accuracy
+- Improve CPU utilization (it's too high)
 - Call all "algo stop" functions during Window initialization
     - Deduplicate initialization with "stop algo" code (and "failed algo" code)
 - Make a note about why we write NO_ACK_STRING for some dispatched commands
@@ -45,6 +49,7 @@ Cleanup
 
 Wishlist
 ========
+- Support continuous algorithms
 - Display the dynamic mouse algorithm options
 - Wiki page for common error message for failed commands
 - A utility to tell you whether or not the stdlib is used

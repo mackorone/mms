@@ -16,7 +16,7 @@ class Model : public QObject {
 public:
 
     Model();
-    void simulate();
+    void start();
     void shutdown();
 
     void setMaze(const Maze* maze);
@@ -33,6 +33,10 @@ signals:
     void newTileLocationTraversed(int x, int y);
 
 private:
+
+    // A fixed timestep of 1ms (sim time)
+    static constexpr double DT = 0.001;
+    void update(double dt);
 
     mutable QMutex m_mutex;
     bool m_shutdownRequested;

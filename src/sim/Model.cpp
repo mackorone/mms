@@ -1,9 +1,6 @@
 #include "Model.h"
 
 #include <QPair>
-#include <QtMath>
-
-#include <thread>
 
 #include "Assert.h"
 #include "GeometryUtilities.h"
@@ -17,126 +14,112 @@
 namespace mms {
 
 Model::Model() :
-        m_maze(nullptr),
-        m_mouse(nullptr),
-        m_stats(nullptr),
-        m_shutdownRequested(false),
-        m_paused(false),
-        m_simSpeed(1.0) {
+    m_shutdownRequested(false),
+    m_maze(nullptr),
+    m_mouse(nullptr),
+    m_stats(nullptr),
+    m_paused(false),
+    m_simSpeed(1.0) {
     ASSERT_RUNS_JUST_ONCE();
 }
 
-void Model::simulate() {
+void Model::start() {
 
     // TODO: MACK
     // Start a separate collision detection thread
     // std::thread collisionDetector(&Model::checkCollision, this);
 
-    // Use this thread to perform mouse position updates
+    double prev = SimUtilities::getHighResTimestamp();
+    double acc = 0.0;
     while (!m_shutdownRequested) {
-
-        // If we've crashed, let this thread exit
-        if (S()->crashed()) {
-            // TODO: MACK
-            // collisionDetector.join();
-            return;
+        double now = SimUtilities::getHighResTimestamp();
+        acc += (now - prev) * m_simSpeed;
+        prev = now;
+        while (acc >= DT) {
+            update(DT);
+            acc -= DT;
         }
-
-        // Ensure the maze/mouse aren't updated in this loop
-        m_mutex.lock();
-
-        // If there's nothing to update, sleep for a little bit
-        if (m_mouse == nullptr || m_paused) {
-            m_mutex.unlock();
-            SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));
-            continue;
-        }
-
-        // In order to ensure we're sleeping the correct amount of time, we time
-        // the mouse position update operation and take it into account when we sleep.
-        double start(SimUtilities::getHighResTimestamp());
-
-        // Calculate the amount of sim time that should pass during this iteration
-        static Seconds realTimePerUpdate = Seconds(1.0 / P()->mousePositionUpdateRate());
-        Seconds elapsedSimTimeForThisIteration = realTimePerUpdate * m_simSpeed;
-
-        // Update the sim time
-        SimTime::get()->incrementElapsedSimTime(elapsedSimTimeForThisIteration);
-
-        // Update the position of the mouse
-        m_mouse->update(elapsedSimTimeForThisIteration);
-
-        // Retrieve the current discretized location of the mouse
-        QPair<int, int> location = m_mouse->getCurrentDiscretizedTranslation();
-
-        // If we're ever outside of the maze, crash. It would be cool to have
-        // some "out of bounds" state but I haven't implemented that yet. We
-        // continue here to make sure that we join with the other thread.
-        if (!m_maze->withinMaze(location.first, location.second)) {
-            S()->setCrashed();
-            m_mutex.unlock();
-            continue;
-
-        }
-
-        // Retrieve the tile at current location
-        const Tile* tileAtLocation = m_maze->getTile(location.first, location.second);
-
-        // If this is a new tile, update the set of traversed tiles
-        if (!m_stats->traversedTileLocations.contains(location)) {
-            m_stats->traversedTileLocations.insert(location);
-            if (m_stats->closestDistanceToCenter == -1 ||
-                    tileAtLocation->getDistance() < m_stats->closestDistanceToCenter) {
-                m_stats->closestDistanceToCenter = tileAtLocation->getDistance(); 
-            }
-            // Alert any listeners that a new tile was entered
-            emit newTileLocationTraversed(location.first, location.second);
-        }
-
-        // If we've returned to the origin, reset the departure time
-        if (location.first == 0 && location.second == 0) {
-            m_stats->timeOfOriginDeparture = Seconds(-1);
-        }
-
-        // Otherwise, if we've just left the origin, update the departure time
-        else if (m_stats->timeOfOriginDeparture < Seconds(0)) {
-            m_stats->timeOfOriginDeparture = SimTime::get()->elapsedSimTime();
-        }
-
-        // Separately, if we're in the center, update the best time to center
-        if (m_maze->isCenterTile(location.first, location.second)) {
-            Seconds timeToCenter = SimTime::get()->elapsedSimTime() - m_stats->timeOfOriginDeparture;
-            if (m_stats->bestTimeToCenter < Seconds(0) || timeToCenter < m_stats->bestTimeToCenter) {
-                m_stats->bestTimeToCenter = timeToCenter;
-            }
-        }
-
-        // Release the mutex
-        m_mutex.unlock();
-
-        // Get the duration of the mouse position update, in seconds. Note that this duration
-        // is simply the total number of real seconds that have passed, which is exactly
-        // what we want (since the framerate is perceived in real-time and not CPU time).
-        double end(SimUtilities::getHighResTimestamp());
-        double duration = end - start;
-
-        // Notify the use of a late mouse position update
-        if (P()->printLateMousePositionUpdates() && duration > 1.0/P()->mousePositionUpdateRate()) {
-            // TODO: MACK
-            // qWarning(
-            //     "A mouse position update was late by %v seconds, which is %v percent late.",
-            //     (duration - 1.0/P()->mousePositionUpdateRate()),
-            //     (duration - 1.0/P()->mousePositionUpdateRate())/(1.0/P()->mousePositionUpdateRate()) * 100);
-        }
-
-        // Sleep the appropriate amout of time, based on the mouse update duration
-        // TODO: MACK - This seems to sleep for longer than intended :/
-        SimUtilities::sleep(Seconds(std::max(0.0, 1.0/P()->mousePositionUpdateRate() - duration)));
-    }
+        SimUtilities::sleep(Seconds(DT / 2.0));
+    };
 }
 
 void Model::shutdown() {
     m_shutdownRequested = true;
+}
+
+void Model::update(double dt) {
+
+    // If we've crashed, let this thread exit
+    if (S()->crashed()) {
+        // TODO: MACK
+        // collisionDetector.join();
+        return;
+    }
+
+    // Ensure the maze/mouse aren't updated in this loop
+    m_mutex.lock();
+
+    // If there's nothing to update, sleep for a little bit
+    if (m_mouse == nullptr || m_paused) {
+        m_mutex.unlock();
+        return;
+    }
+
+    // Calculate the amount of sim time that should pass during this iteration
+    Seconds elapsedSimTimeForThisIteration = Seconds(dt);
+
+    // Update the sim time
+    SimTime::get()->incrementElapsedSimTime(elapsedSimTimeForThisIteration);
+
+    // Update the position of the mouse
+    m_mouse->update(elapsedSimTimeForThisIteration);
+
+    // Retrieve the current discretized location of the mouse
+    QPair<int, int> location = m_mouse->getCurrentDiscretizedTranslation();
+
+    // If we're ever outside of the maze, crash. It would be cool to have
+    // some "out of bounds" state but I haven't implemented that yet. We
+    // continue here to make sure that we join with the other thread.
+    if (!m_maze->withinMaze(location.first, location.second)) {
+        S()->setCrashed();
+        m_mutex.unlock();
+        return;
+    }
+
+    // Retrieve the tile at current location
+    const Tile* tileAtLocation = m_maze->getTile(location.first, location.second);
+
+    // If this is a new tile, update the set of traversed tiles
+    if (!m_stats->traversedTileLocations.contains(location)) {
+        m_stats->traversedTileLocations.insert(location);
+        if (m_stats->closestDistanceToCenter == -1 ||
+                tileAtLocation->getDistance() < m_stats->closestDistanceToCenter) {
+            m_stats->closestDistanceToCenter = tileAtLocation->getDistance(); 
+        }
+        // Alert any listeners that a new tile was entered
+        emit newTileLocationTraversed(location.first, location.second);
+    }
+
+    // If we've returned to the origin, reset the departure time
+    if (location.first == 0 && location.second == 0) {
+        m_stats->timeOfOriginDeparture = Seconds(-1);
+    }
+
+    // Otherwise, if we've just left the origin, update the departure time
+    else if (m_stats->timeOfOriginDeparture < Seconds(0)) {
+        m_stats->timeOfOriginDeparture = SimTime::get()->elapsedSimTime();
+    }
+
+    // Separately, if we're in the center, update the best time to center
+    if (m_maze->isCenterTile(location.first, location.second)) {
+        Seconds timeToCenter = SimTime::get()->elapsedSimTime() - m_stats->timeOfOriginDeparture;
+        if (m_stats->bestTimeToCenter < Seconds(0) || timeToCenter < m_stats->bestTimeToCenter) {
+            m_stats->bestTimeToCenter = timeToCenter;
+        }
+    }
+
+    // Release the mutex
+    m_mutex.unlock();
 }
 
 void Model::setMaze(const Maze* maze) {

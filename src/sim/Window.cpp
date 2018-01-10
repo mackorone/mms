@@ -4,11 +4,13 @@
 #include <QFrame>
 #include <QGroupBox>
 #include <QHBoxLayout>
+#include <QLinkedList>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QSplitter>
 #include <QTabWidget>
+#include <QTimer>
 #include <QVBoxLayout>
 
 #include "ConfigDialog.h"
@@ -27,6 +29,7 @@ namespace mms {
 
 Window::Window(QWidget *parent) :
         QMainWindow(parent),
+        m_fpsLabel(new QLabel()),
         m_mazeWidthLabel(new QLabel()),
         m_mazeHeightLabel(new QLabel()),
         m_maxDistanceLabel(new QLabel()),
@@ -87,9 +90,7 @@ Window::Window(QWidget *parent) :
     qRegisterMetaType<QProcess::ExitStatus>("QProcess::ExitStatus");
 
     // Next, start the physics loop
-    connect(
-        &m_modelThread, &QThread::started,
-        &m_model, &Model::simulate);
+    connect(&m_modelThread, &QThread::started, &m_model, &Model::start);
     m_model.moveToThread(&m_modelThread);
     m_modelThread.start();
 
@@ -110,6 +111,7 @@ Window::Window(QWidget *parent) :
     mazeStatsBox->setLayout(mazeStatsLayout);
     mapHolderLayout->addWidget(mazeStatsBox);
     for (QPair<QString, QLabel*> pair : QVector<QPair<QString, QLabel*>> {
+        {"FPS", m_fpsLabel},
         {"Width", m_mazeWidthLabel},
         {"Height", m_mazeHeightLabel},
         {"Max", m_maxDistanceLabel},
@@ -202,7 +204,7 @@ Window::Window(QWidget *parent) :
     m_textCheckbox->setEnabled(false);
     m_followCheckbox->setChecked(false);
     m_followCheckbox->setEnabled(false);
-    
+
     // Add the tabs to the splitter
     QTabWidget* tabWidget = new QTabWidget();
     splitter->addWidget(tabWidget);
@@ -285,6 +287,34 @@ Window::Window(QWidget *parent) :
 
     // Resize the window
     resize(P()->defaultWindowWidth(), P()->defaultWindowHeight());
+
+    // Start the graphics loop
+    QTimer* mapTimer = new QTimer();
+    QLinkedList<double>* timestamps = new QLinkedList<double>();
+    int numFrames = 10;
+    connect(mapTimer, &QTimer::timeout, this, [=](){
+        double now = SimUtilities::getHighResTimestamp();
+        m_map.update();
+        timestamps->append(now);
+        if (timestamps->size() > numFrames) {
+            double then = timestamps->takeFirst();
+            double fps = numFrames / (now - then);
+            m_fpsLabel->setText(QString::number(fps, 'f', 2));
+        }
+        QPair<QStringList, QVector<QVariant>> runStats = getRunStats();
+        QStringList keys = runStats.first;
+        QVector<QVariant> values = runStats.second;
+        for (int i = 0; i < keys.size(); i += 1) {
+            QString text = values.at(i).toString();
+            if (values.at(i).type() == QVariant::Double) {
+                text = QString::number(values.at(i).toDouble(), 'f', 3);
+            }
+            m_runStats.value(keys.at(i))->setText(text);
+        }
+    });
+    // TODO: upforgrabs
+    // Make this configurable
+    mapTimer->start(0); // 60 fps
 }
 
 void Window::closeEvent(QCloseEvent *event) {
@@ -293,10 +323,10 @@ void Window::closeEvent(QCloseEvent *event) {
     mazeAlgoRunStop();
     mouseAlgoBuildStop();
     mouseAlgoRunStop();
-    m_modelThread.quit();
-    m_model.shutdown();
-    m_modelThread.wait();
     m_map.shutdown();
+    m_model.shutdown();
+    m_modelThread.quit();
+    m_modelThread.wait();
     QMainWindow::closeEvent(event);
 }
 
@@ -539,6 +569,7 @@ QPair<QStringList, QVector<QVariant>> Window::getRunStats() const {
         }
     }
     else {
+        // TODO: MACK - m_mouse can be null here :/ ...
         values.append(
             QString::number(stats.traversedTileLocations.size()) + " / " +
             QString::number(m_maze->getWidth() * m_maze->getHeight())
@@ -1120,26 +1151,6 @@ void Window::mouseAlgoTabInit() {
         runStatsLayout->addWidget(valueHolder, i, 1);
         m_runStats.insert(label, valueHolder);
     }
-
-    // Periodically update the runstats
-    connect(
-        &m_headerRefreshTimer,
-        &QTimer::timeout,
-        this,
-        [=](){
-            QPair<QStringList, QVector<QVariant>> runStats = getRunStats();
-            QStringList keys = runStats.first;
-            QVector<QVariant> values = runStats.second;
-            for (int i = 0; i < keys.size(); i += 1) {
-                QString text = values.at(i).toString();
-                if (values.at(i).type() == QVariant::Double) {
-                    text = QString::number(values.at(i).toDouble(), 'f', 3);
-                }
-                m_runStats.value(keys.at(i))->setText(text);
-            }
-        }
-    );
-    m_headerRefreshTimer.start(75);
 
     // Add the mouse algos
     mouseAlgoRefresh(SettingsRecent::getRecentMouseAlgo());

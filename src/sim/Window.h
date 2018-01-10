@@ -4,7 +4,6 @@
 #include <QCloseEvent>
 #include <QComboBox>
 #include <QLabel>
-#include <QLineEdit>
 #include <QMainWindow>
 #include <QPlainTextEdit>
 #include <QProcess>
@@ -44,7 +43,14 @@ private:
 
     // The model object
     Model m_model;
+
+    // A separate thread ensures that model updates don't get blocked by events
+    // in the UI thread (e.g., drawing, button handlers, etc.). This is
+    // important for continuous algos, which require a high update rate (1ms).
     QThread m_modelThread;
+
+    // FPS GUI elements
+    QLabel* m_fpsLabel;
 
     // Maze stats GUI elements
     QLabel* m_mazeWidthLabel;
@@ -191,7 +197,6 @@ private:
 
     // ----- Misc ----- //
 
-    QTimer m_headerRefreshTimer;
     QMap<QString, QLabel*> m_runStats;
     QPair<QStringList, QVector<QVariant>> getRunStats() const;
 };

@@ -278,6 +278,8 @@ void Mouse::update(const Duration& elapsed) {
     // Iterate over all of the wheels
     QMutableMapIterator<QString, Wheel> wheelIterator(m_wheels);
     while (wheelIterator.hasNext()) {
+
+        // TODO: MACK - this segfaults :/
         auto pair = wheelIterator.next();
 
         // Update the rotation of the wheel

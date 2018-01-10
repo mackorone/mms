@@ -13,27 +13,16 @@
 namespace mms {
 
 Map::Map(QWidget* parent) :
-        QOpenGLWidget(parent),
-        m_maze(nullptr),
-        m_view(nullptr),
-        m_mouseGraphic(nullptr),
-        m_windowWidth(0),
-        m_windowHeight(0),
-        m_layoutType(LayoutType::FULL),
-        m_zoomedMapScale(0.1),
-        m_rotateZoomedMap(false) {
-
-    // The Map widget should only ever be constructed once
+    QOpenGLWidget(parent),
+    m_maze(nullptr),
+    m_view(nullptr),
+    m_mouseGraphic(nullptr),
+    m_windowWidth(0),
+    m_windowHeight(0),
+    m_layoutType(LayoutType::FULL),
+    m_zoomedMapScale(0.1),
+    m_rotateZoomedMap(false) {
     ASSERT_RUNS_JUST_ONCE();
-
-    // Continuously refresh the widget
-    connect(
-        &m_timer, &QTimer::timeout,
-        this, static_cast<void (Map::*)()>(&Map::update)
-    );
-    // TODO: upforgrabs
-    // Make this configurable
-    m_timer.start(24); // 45 fps
 }
 
 void Map::setMaze(const Maze* maze) {
