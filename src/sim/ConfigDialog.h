@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QComboBox>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QLineEdit>
@@ -21,12 +22,15 @@ public:
         bool includeRemoveButton);
 
     bool removeButtonPressed();
-    QString getValue(const QString& key);
+    QString getComboBoxValue(const QString& key);
+    QString getLineEditValue(const QString& key);
+    bool getComboBoxSelected(const QString& key);
 
 private:
 
     bool m_removeButtonPressed;
     QDialogButtonBox* m_buttons;
+    QMap<QString, QComboBox*> m_comboBoxes;
     QMap<QString, QLineEdit*> m_lineEdits;
 
 };

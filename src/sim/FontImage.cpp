@@ -29,7 +29,7 @@ QMap<QChar, QPair<double, double>> FontImage::positions() {
 }
 
 FontImage::FontImage(const QString& imageFile) :
-        m_imageFilePath(QString(":/images/") + imageFile) {
+        m_imageFilePath(QString(":/resources/fonts/") + imageFile) {
 
     // Ensure the m_imageFilePath exists
     if (!QFile::exists(m_imageFilePath)) {

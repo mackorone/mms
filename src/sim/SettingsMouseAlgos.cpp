@@ -12,7 +12,12 @@ const QString SettingsMouseAlgos::NAME_KEY = "name";
 const QString SettingsMouseAlgos::DIR_PATH_KEY = "dirPath";
 const QString SettingsMouseAlgos::BUILD_COMMAND_KEY = "buildCommand";
 const QString SettingsMouseAlgos::RUN_COMMAND_KEY = "runCommand";
-const QString SettingsMouseAlgos::MOUSE_FILE_PATH_KEY = "mouseFilePath";
+const QString SettingsMouseAlgos::MOUSE_FILE_PATH_COMBO_BOX_VALUE_KEY =
+    "mouseFilePathComboBoxValue";
+const QString SettingsMouseAlgos::MOUSE_FILE_PATH_LINE_EDIT_VALUE_KEY =
+    "mouseFilePathLineEditValue";
+const QString SettingsMouseAlgos::MOUSE_FILE_PATH_COMBO_BOX_SELECTED_KEY =
+    "mouseFilePathComboBoxSelected";
 
 QStringList SettingsMouseAlgos::names() {
     return Settings::get()->values(GROUP_PREFIX, NAME_KEY);
@@ -30,8 +35,16 @@ QString SettingsMouseAlgos::getRunCommand(const QString& name) {
     return getValue(name, RUN_COMMAND_KEY);
 }
 
-QString SettingsMouseAlgos::getMouseFilePath(const QString& name) {
-    return getValue(name, MOUSE_FILE_PATH_KEY);
+QString SettingsMouseAlgos::getMouseFilePathComboBoxValue(const QString& name) {
+    return getValue(name, MOUSE_FILE_PATH_COMBO_BOX_VALUE_KEY);
+}
+
+QString SettingsMouseAlgos::getMouseFilePathLineEditValue(const QString& name) {
+    return getValue(name, MOUSE_FILE_PATH_LINE_EDIT_VALUE_KEY);
+}
+
+bool SettingsMouseAlgos::getMouseFilePathComboBoxSelected(const QString& name) {
+    return getValue(name, MOUSE_FILE_PATH_COMBO_BOX_SELECTED_KEY) == "true";
 }
 
 void SettingsMouseAlgos::add(
@@ -39,14 +52,21 @@ void SettingsMouseAlgos::add(
     const QString& dirPath,
     const QString& buildCommand,
     const QString& runCommand,
-    const QString& mouseFilePath
+    const QString& mouseFilePathComboBoxValue,
+    const QString& mouseFilePathLineEditValue,
+    bool mouseFilePathComboBoxSelected
 ) {
     Settings::get()->add(GROUP_PREFIX, {
         {NAME_KEY, name},
         {DIR_PATH_KEY, dirPath},
         {BUILD_COMMAND_KEY, buildCommand},
         {RUN_COMMAND_KEY, runCommand},
-        {MOUSE_FILE_PATH_KEY, mouseFilePath},
+        {MOUSE_FILE_PATH_COMBO_BOX_VALUE_KEY, mouseFilePathComboBoxValue},
+        {MOUSE_FILE_PATH_LINE_EDIT_VALUE_KEY, mouseFilePathLineEditValue},
+        {
+            MOUSE_FILE_PATH_COMBO_BOX_SELECTED_KEY,
+            mouseFilePathComboBoxSelected ? "true" : "false"
+        },
     });
 }
 
@@ -56,14 +76,21 @@ void SettingsMouseAlgos::update(
     const QString& newDirPath,
     const QString& newBuildCommand,
     const QString& newRunCommand,
-    const QString& newMouseFilePath
+    const QString& newMouseFilePathComboBoxValue,
+    const QString& newMouseFilePathLineEditValue,
+    bool newMouseFilePathComboBoxSelected
 ) {
     Settings::get()->update(GROUP_PREFIX, NAME_KEY, name, {
         {NAME_KEY, newName},
         {DIR_PATH_KEY, newDirPath},
         {BUILD_COMMAND_KEY, newBuildCommand},
         {RUN_COMMAND_KEY, newRunCommand},
-        {MOUSE_FILE_PATH_KEY, newMouseFilePath},
+        {MOUSE_FILE_PATH_COMBO_BOX_VALUE_KEY, newMouseFilePathComboBoxValue},
+        {MOUSE_FILE_PATH_LINE_EDIT_VALUE_KEY, newMouseFilePathLineEditValue},
+        {
+            MOUSE_FILE_PATH_COMBO_BOX_SELECTED_KEY,
+            newMouseFilePathComboBoxSelected ? "true" : "false"
+        },
     });
 }
 

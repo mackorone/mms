@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QRadioButton>
 #include <QVBoxLayout>
 
 #include "ContainerUtilities.h"
@@ -13,13 +14,13 @@
 namespace mms {
 
 ConfigDialog::ConfigDialog(
-        const QString& action,
-        const QString& object,
-        const QVector<ConfigDialogField>& fields,
-        bool includeRemoveButton) :
-        m_removeButtonPressed(false) {
+    const QString& action,
+    const QString& object,
+    const QVector<ConfigDialogField>& fields,
+    bool includeRemoveButton) :
+    m_removeButtonPressed(false) {
 
-    // Set the main layout
+    // Set the layout for the dialog
     QVBoxLayout* mainLayout = new QVBoxLayout();
     setLayout(mainLayout);
 
@@ -28,22 +29,23 @@ ConfigDialog::ConfigDialog(
     QGridLayout* gridLayout = new QGridLayout();
     groupBox->setLayout(gridLayout);
 
-    // Add rows for all required config
-    int row = 0;
-    for (const ConfigDialogField& field : fields) {
+    // Add a row for each field
+    for (int row = 0; row < fields.size(); row += 1) {
+        ConfigDialogField field = fields.at(row);
 
-        // Add the QLabel and QLineEdit 
+        // First, add the QLabel
         QLabel* label = new QLabel(field.label);
         label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        // TODO: MACK - shouldn't always be a string...
-        m_lineEdits[field.key] = new QLineEdit(field.initialValue.toString());
         gridLayout->addWidget(label, row, 0);
-        gridLayout->addWidget(m_lineEdits[field.key], row, 2);
 
-        // Add a browse button if necessary
+        // Next, create the line edit
+        m_lineEdits[field.key] =
+            new QLineEdit(field.initialLineEditValue.toString());
+
+        // Next, if necessary, create a browse button
+        QPushButton* browseButton = nullptr;
         if (field.fileBrowser) {
-            QPushButton* browseButton = new QPushButton("Browse");
-            gridLayout->addWidget(browseButton, row, 3);
+            browseButton = new QPushButton("Browse");
             connect(browseButton, &QPushButton::clicked, this, [=](){
                 QString path;
                 if (field.onlyDirectories) {
@@ -65,19 +67,67 @@ ConfigDialog::ConfigDialog(
             });
         }
 
-        // Don't allow submission unless all values are valid
-        // TODO: MACK - I want to actually call this function on startup to ensure starting value isn't invalid
-        // TODO: MACK - if the filters are inclusive, use a combo box
-        connect(m_lineEdits[field.key], &QLineEdit::textChanged, this, [=](){
-            QString text = m_lineEdits[field.key]->text();
-            bool pass = (
-                field.filterValues.contains(text) ==
-                field.inclusiveFilter
-            );
-            m_buttons->button(QDialogButtonBox::Ok)->setEnabled(pass);
-        });
+        // Handle the case of both combo box and line edit
+        if (0 < field.comboBoxValues.size()) {
 
-        row += 1;
+            // Initialize the group box
+            QGroupBox* choicesBox = new QGroupBox();
+            choicesBox->setStyleSheet("QGroupBox{border:0px;}");
+            gridLayout->addWidget(choicesBox, row, 2, 1, 2);
+            QGridLayout* choicesLayout = new QGridLayout();
+            choicesLayout->setContentsMargins(0, 0, 0, 0);
+            choicesBox->setLayout(choicesLayout);
+
+            // Insert the combo box
+            QRadioButton* comboBoxRadioButton = new QRadioButton("Standard");
+            m_comboBoxes[field.key] = new QComboBox();
+            for (const auto& value : field.comboBoxValues) {
+                m_comboBoxes[field.key]->addItem(value.toString());
+            }
+            int index = m_comboBoxes[field.key]->findText(
+                field.initialComboBoxValue.toString()
+            );
+            if (index != -1) {
+                m_comboBoxes[field.key]->setCurrentIndex(index);
+            }
+            choicesLayout->addWidget(comboBoxRadioButton, 0, 0);
+            choicesLayout->addWidget(m_comboBoxes[field.key], 0, 1);
+
+            // Insert the line edit
+            QRadioButton* lineEditRadioButton = new QRadioButton("Custom");
+            choicesLayout->addWidget(lineEditRadioButton, 1, 0);
+            choicesLayout->addWidget(m_lineEdits[field.key], 1, 1);
+            if (browseButton != nullptr) {
+                choicesLayout->addWidget(browseButton, 1, 2);
+            }
+
+            // Make sure only one choice is enabled at a time
+            connect(
+                comboBoxRadioButton, &QRadioButton::toggled,
+                this, [=](){
+                    bool isChecked = comboBoxRadioButton->isChecked();
+                    m_comboBoxes[field.key]->setEnabled(isChecked);
+                    m_lineEdits[field.key]->setEnabled(!isChecked);
+                    if (browseButton != nullptr) {
+                        browseButton->setEnabled(!isChecked);
+                    }
+                }
+            );
+
+            // Enable the most recent choice, guaranteeing a toggle
+            comboBoxRadioButton->setChecked(true);
+            if (!field.comboBoxSelected) {
+                lineEditRadioButton->setChecked(true);
+            }
+        }
+
+        // Handle the case of just a line edit
+        else {
+            gridLayout->addWidget(m_lineEdits[field.key], row, 2);
+            if (browseButton != nullptr) {
+                gridLayout->addWidget(browseButton, row, 3);
+            }
+        }
     }
 
     // Add OK and cancel buttons
@@ -119,8 +169,25 @@ bool ConfigDialog::removeButtonPressed() {
     return m_removeButtonPressed;
 }
 
-QString ConfigDialog::getValue(const QString& key) {
+QString ConfigDialog::getComboBoxValue(const QString& key) {
+    if (!m_comboBoxes.contains(key)) {
+        return QString();
+    }
+    return m_comboBoxes[key]->currentText();
+}
+
+QString ConfigDialog::getLineEditValue(const QString& key) {
+    if (!m_lineEdits.contains(key)) {
+        return QString();
+    }
     return m_lineEdits[key]->text();
+}
+
+bool ConfigDialog::getComboBoxSelected(const QString& key) {
+    if (!m_comboBoxes.contains(key)) {
+        return false;
+    }
+    return m_comboBoxes[key]->isEnabled();
 }
 
 } // namespace mms

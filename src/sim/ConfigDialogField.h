@@ -7,14 +7,12 @@
 namespace mms {
 
 struct ConfigDialogField {
-
     QString key;
     QString label;
-    QVariant initialValue;
-
-    QVector<QVariant> filterValues = {};
-    bool inclusiveFilter = false;
-
+    QVector<QVariant> comboBoxValues;
+    QVariant initialComboBoxValue;
+    QVariant initialLineEditValue;
+    bool comboBoxSelected = false;
     bool fileBrowser = false;
     bool onlyDirectories = false;
 }; 

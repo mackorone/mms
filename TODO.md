@@ -1,7 +1,6 @@
 Features
 ========
-- Statically link some default maze/mouse files
-    - Similar to what we do for the image files
+- Statically link some default maze files
     - Pre-loading a blank map on startup would be good
 - API call counts
     - A table of API method to # of times called
@@ -15,6 +14,7 @@ Features
 
 Bugfixes
 ========
+- File dialogs perf is really bad, correlated with FPS
 - Fix m_mouse segfaults
 - Fix maze checker
 - Fix existing maze file formats
@@ -28,7 +28,7 @@ Cleanup
 =======
 - Remove continuous algorithm support from the interfaces, for now
 - Don't actually log within mouse interface - surface errors a different way
-- Improve sim time accuracy
+- Improve sim time accuracy (time-to-center seems to be a function of sim speed)
 - Improve CPU utilization (it's too high)
 - Call all "algo stop" functions during Window initialization
     - Deduplicate initialization with "stop algo" code (and "failed algo" code)

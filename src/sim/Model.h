@@ -34,7 +34,7 @@ signals:
 
 private:
 
-    // A fixed timestep of 1ms (sim time)
+    // A fixed timestep (in sim time)
     static constexpr double DT = 0.001;
     void update(double dt);
 
