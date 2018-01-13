@@ -5,7 +5,8 @@
 #include <QString>
 
 #ifdef _WIN32
-    #include "Windows.h"
+#undef ABSOLUTE
+#undef RELATIVE
 #endif
 
 #include "ContainerUtilities.h"
