@@ -1,5 +1,6 @@
 #include "MazeFilesTab.h"
 
+#include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QHBoxLayout>
@@ -30,6 +31,8 @@ MazeFilesTab::MazeFilesTab() : m_table(new QTableWidget()) {
     QPushButton* removeButton = new QPushButton("Remove Selected File");
     connect(removeButton, &QPushButton::clicked, this, &MazeFilesTab::remove);
     connect(m_table, &QTableWidget::itemSelectionChanged, this, [=](){
+        // TODO: upforgrabs
+        // We should disable the remove button for the builtin mazes
         removeButton->setEnabled(0 < m_table->selectedItems().size());
     });
     removeButton->setEnabled(false);
@@ -88,7 +91,16 @@ void MazeFilesTab::refresh() {
     m_table->clear();
     m_table->setColumnCount(2);
     m_table->setHorizontalHeaderLabels({"File Name", "File Path"});
-    QStringList mazeFiles = SettingsMazeFiles::getSettingsMazeFiles();
+    QStringList mazeFiles;
+    // TODO: upforgrabs
+    // Verify that the path separators works on windows
+    QString mazeFilesPath = ":/resources/mazes/";
+    for (const auto& file : QDir(mazeFilesPath).entryList()) {
+        mazeFiles.append(mazeFilesPath + file);
+    }
+    for (const auto& path : SettingsMazeFiles::getSettingsMazeFiles()) {
+        mazeFiles.append(path);
+    }
     m_table->setRowCount(mazeFiles.size());
     for (int i = 0; i < mazeFiles.size(); i += 1) {
         QString path = mazeFiles.at(i);
