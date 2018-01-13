@@ -5,13 +5,13 @@
 namespace mms {
 
 const QVector<Direction>& DIRECTIONS() {
-    static const QVector<Direction> map = {
+    static const QVector<Direction> vector = {
         Direction::NORTH,
         Direction::EAST,
         Direction::SOUTH,
         Direction::WEST,
     };
-    return map;
+    return vector;
 }
 
 const QMap<Direction, Direction>& DIRECTION_ROTATE_LEFT() {

@@ -9,8 +9,8 @@
 #include "MazeChecker.h"
 #include "MazeFileType.h"
 #include "MazeFileUtilities.h"
+#include "MazeUtilities.h"
 #include "Param.h"
-#include "SimUtilities.h"
 #include "Tile.h"
 
 namespace mms {
@@ -46,21 +46,18 @@ Maze* Maze::fromAlgo(const QByteArray& bytes) {
 }
 
 Maze::Maze(BasicMaze basicMaze) {
-    
+
+    // Validate the maze
+    MazeValidity validity = MazeChecker::checkMaze(basicMaze);
+
     // Check to see if it's a valid maze
-    QPair<bool, QVector<QString>> isValidInfo = MazeChecker::isValidMaze(basicMaze);
-    m_isValidMaze = isValidInfo.first;
-    if (!m_isValidMaze) {
-        // TODO: MACK - what should I do with these errors here?
-        /*
-        for (const QString& string : isValidInfo.second) {
-            qWarning().noquote().nospace() << string;
-        }
-        qWarning().noquote().nospace()
-            << "The maze failed validation. The mouse algorithm will not"
-            << " execute.";
-        */
-    }
+    m_isValidMaze = (
+        validity == MazeValidity::EXPLORABLE ||
+        validity == MazeValidity::OFFICIAL
+    );
+    m_isOfficialMaze = (
+        validity == MazeValidity::OFFICIAL
+    );
 
     // TODO: MACK - fix maze saving
     /*
@@ -81,6 +78,8 @@ Maze::Maze(BasicMaze basicMaze) {
     }
     */
 
+    // TODO: MACK - make it possible to do rotate and mirroring on the fly
+    /*
     // Mirror and rotate the maze
     if (P()->mazeMirrored()) {
         basicMaze = mirrorAcrossVertical(basicMaze);
@@ -92,20 +91,7 @@ Maze::Maze(BasicMaze basicMaze) {
         qInfo().noquote().nospace()
             << "Rotating the maze counter-clockwise (" << i + 1 << ").";
     }
-
-    // Check to see if it's an official maze (after mirror and rotation)
-    QPair<bool, QVector<QString>> isOfficialInfo = MazeChecker::isOfficialMaze(basicMaze);
-    m_isOfficialMaze = isOfficialInfo.first;
-    if (m_isValidMaze && !m_isOfficialMaze) {
-        // TODO: MACK - what should I do with these errors here?
-        /*
-        for (const QString& string : isOfficialInfo.second) {
-            qWarning().noquote().nospace() << string;
-        }
-        qWarning().noquote().nospace()
-            << "The maze did not pass the \"is official maze\" tests.";
-        */
-    }
+    */
 
     // Load the maze given by the maze generation algorithm
     m_maze = initializeFromBasicMaze(basicMaze);
@@ -149,7 +135,9 @@ bool Maze::isOfficialMaze() const {
 }
 
 bool Maze::isCenterTile(int x, int y) const {
-    return MazeChecker::getCenterTiles(getWidth(), getHeight()).contains({x, y});
+    const auto centerPositions = 
+        MazeUtilities::getCenterPositions(getWidth(), getHeight());
+    return centerPositions.contains({x, y});
 }
 
 Direction Maze::getOptimalStartingDirection() const {

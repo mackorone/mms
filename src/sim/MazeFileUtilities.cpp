@@ -28,8 +28,13 @@ BasicMaze MazeFileUtilities::loadBytes(const QByteArray& bytes) {
     #define TRY(expression, validate)\
     try {\
         BasicMaze maze = expression;\
-        if (MazeChecker::isDrawableMaze(maze).first) {\
-            if (!validate || MazeChecker::isValidMaze(maze).first) {\
+        MazeValidity validity = MazeChecker::checkMaze(maze);\
+        if (validity != MazeValidity::INVALID) {\
+            if (\
+                !validate ||\
+                validity == MazeValidity::EXPLORABLE ||\
+                validity == MazeValidity::OFFICIAL\
+            ) {\
                 return maze;\
             }\
         }\

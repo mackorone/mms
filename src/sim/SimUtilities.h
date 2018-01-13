@@ -61,18 +61,6 @@ public:
         Color color,
         double alpha);
 
-    // A simple pair-comparitor function
-    template <class T>
-    static bool lessThan(const QPair<T, T>& one, const QPair<T, T>& two) {
-        return (one.first < two.first ? true : one.second < two.second);
-    }
-
-    // A simple pair-retrieval function
-    template <class T>
-    static QPair<T, T> min(const QVector<QPair<T, T>>& pairs) {
-        return *std::min_element(pairs.begin(), pairs.end(), lessThan<T>);
-    }
-
 };
 
 } // namespace mms

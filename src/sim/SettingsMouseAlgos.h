@@ -40,7 +40,6 @@ public:
     );
     static void remove(const QString& name);
 
-    
 private:
 
     static const QString GROUP_PREFIX;
