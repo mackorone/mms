@@ -4,6 +4,7 @@
 
 #include "Assert.h"
 #include "Logging.h"
+#include "Resources.h"
 #include "SimUtilities.h"
 
 namespace mms {
@@ -28,19 +29,19 @@ QMap<QChar, QPair<double, double>> FontImage::positions() {
     return m_positions;
 }
 
-FontImage::FontImage(const QString& imageFile) :
-        m_imageFilePath(QString(":/resources/fonts/") + imageFile) {
+FontImage::FontImage(const QString& imageFilePath) :
+    m_imageFilePath(imageFilePath) {
 
     // Ensure the m_imageFilePath exists
     if (!QFile::exists(m_imageFilePath)) {
-        qCritical() << "Could not find font image file " << m_imageFilePath;
+        qCritical() << "Could not find font image file" << m_imageFilePath;
         // TODO: upforgrabs
         // Don't quit here - instead, just disable tile text
         SimUtilities::quit();
     }
 
     // These values must perfectly reflect the font image being used,
-    // else the wrong characters will be displayed on the tiles
+    // or else the wrong characters will be displayed on the tiles
     QString fontImageChars =
         " !\"#$%&'()*+,-./0123456789:;<=>?"
         "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"

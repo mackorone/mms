@@ -8,12 +8,14 @@ Features
 - Toggle algorithm output line wrap
 - Maze "Save As..."
 - Add a "new algo" wizard to make it easy to bootstap a new algo
+- Mouse-over window for why the maze is invalid
 - Support more maze file formats
     - .MAZ, .mz2, https://code.google.com/p/maze-solver/wiki/MazeFileFormats
     - JSON, https://github.com/bblodget/MicromouseSim/tree/gh-pages/mazes_json
 
 Bugfixes
 ========
+- Don't let empty "name" for algorithms
 - File dialogs perf is really bad, correlated with FPS
 - Fix m_mouse segfaults
 - Fix maze checker

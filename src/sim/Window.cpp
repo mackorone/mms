@@ -1,7 +1,6 @@
 #include "Window.h"
 
 #include <QAction>
-#include <QDir>
 #include <QFrame>
 #include <QGroupBox>
 #include <QHBoxLayout>
@@ -19,6 +18,7 @@
 #include "Model.h"
 #include "Param.h"
 #include "ProcessUtilities.h"
+#include "Resources.h"
 #include "SettingsMazeAlgos.h"
 #include "SettingsMouseAlgos.h"
 #include "SettingsRecent.h"
@@ -1743,12 +1743,8 @@ QVector<ConfigDialogField> Window::mouseAlgoGetFields() {
     mouseFilePathField.label = "Mouse File";
     mouseFilePathField.fileBrowser = true;
     QVector<QVariant> standardMouseFiles;
-    // TODO: upforgrabs
-    // Verify that this works on Windows (the
-    // path separators might not behave correctly)
-    QString micePath(":/resources/mice/");
-    for (const auto& file : QDir(micePath).entryList()) {
-        standardMouseFiles.append(micePath + file);
+    for (const auto& file : Resources::getMice()) {
+        standardMouseFiles.append(file);
     }
     mouseFilePathField.comboBoxValues = standardMouseFiles;
 

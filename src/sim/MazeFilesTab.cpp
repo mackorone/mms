@@ -1,6 +1,5 @@
 #include "MazeFilesTab.h"
 
-#include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QHBoxLayout>
@@ -10,6 +9,7 @@
 #include <QVBoxLayout>
 
 #include "MazeFileType.h"
+#include "Resources.h"
 #include "SettingsMazeFiles.h"
 
 namespace mms {
@@ -92,15 +92,8 @@ void MazeFilesTab::refresh() {
     m_table->setColumnCount(2);
     m_table->setHorizontalHeaderLabels({"File Name", "File Path"});
     QStringList mazeFiles;
-    // TODO: upforgrabs
-    // Verify that the path separators works on windows
-    QString mazeFilesPath = ":/resources/mazes/";
-    for (const auto& file : QDir(mazeFilesPath).entryList()) {
-        mazeFiles.append(mazeFilesPath + file);
-    }
-    for (const auto& path : SettingsMazeFiles::getSettingsMazeFiles()) {
-        mazeFiles.append(path);
-    }
+    mazeFiles += Resources::getMazes();
+    mazeFiles += SettingsMazeFiles::getSettingsMazeFiles();
     m_table->setRowCount(mazeFiles.size());
     for (int i = 0; i < mazeFiles.size(); i += 1) {
         QString path = mazeFiles.at(i);

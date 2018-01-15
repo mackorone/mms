@@ -1,16 +1,12 @@
 #include "Param.h"
 
-#include <QDebug>
-
-#include <limits>
-#include <random>
-
 #include "Color.h"
 #include "Direction.h"
 #include "LayoutType.h"
 #include "Logging.h"
 #include "MazeFileType.h"
 #include "ParamParser.h"
+#include "Resources.h"
 #include "TileTextAlignment.h"
 
 namespace mms {
@@ -54,7 +50,7 @@ Param::Param() {
     m_tileFogColor = ParamParser::getStringIfHasStringAndIsColor(
         "tile-fog-color", COLOR_TO_STRING().value(Color::GRAY));
     m_tileTextFontImage = ParamParser::getStringIfHasString(
-        "tile-text-font-image", "Unispace-Bold.png");
+        "tile-text-font-image", Resources::getFonts().last());
     m_tileTextBorderFraction = ParamParser::getDoubleIfHasDoubleAndInRange(
         "tile-text-border-fraction", .05, .00, .50);
     m_tileTextAlignment = ParamParser::getStringIfHasStringAndIsTileTextAlignment(
