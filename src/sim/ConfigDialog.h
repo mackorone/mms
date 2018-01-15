@@ -30,8 +30,12 @@ private:
 
     bool m_removeButtonPressed;
     QDialogButtonBox* m_buttons;
+    QVector<ConfigDialogField> m_fields;
     QMap<QString, QComboBox*> m_comboBoxes;
     QMap<QString, QLineEdit*> m_lineEdits;
+
+    // If invalid, disable the OK button
+    void validate();
 
 };
 

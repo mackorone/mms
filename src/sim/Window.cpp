@@ -981,6 +981,7 @@ QVector<ConfigDialogField> Window::mazeAlgoGetFields() {
     ConfigDialogField nameField;
     nameField.key = "NAME";
     nameField.label = "Name";
+    nameField.allowEmptyLineEditValue = false;
 
     ConfigDialogField dirPathField;
     dirPathField.key = "DIR_PATH";
@@ -1735,6 +1736,7 @@ QVector<ConfigDialogField> Window::mouseAlgoGetFields() {
     ConfigDialogField nameField;
     nameField.key = "NAME";
     nameField.label = "Name";
+    nameField.allowEmptyLineEditValue = false;
 
     ConfigDialogField dirPathField;
     dirPathField.key = "DIR_PATH";

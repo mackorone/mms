@@ -18,6 +18,7 @@ ConfigDialog::ConfigDialog(
     const QString& object,
     const QVector<ConfigDialogField>& fields,
     bool includeRemoveButton) :
+    m_fields(fields),
     m_removeButtonPressed(false) {
 
     // Set the layout for the dialog
@@ -41,6 +42,10 @@ ConfigDialog::ConfigDialog(
         // Next, create the line edit
         m_lineEdits[field.key] =
             new QLineEdit(field.initialLineEditValue.toString());
+        connect(
+            m_lineEdits[field.key], &QLineEdit::textChanged,
+            this, &ConfigDialog::validate
+        );
 
         // Next, if necessary, create a browse button
         QPushButton* browseButton = nullptr;
@@ -163,6 +168,7 @@ ConfigDialog::ConfigDialog(
     // Misc. initialization
     resize(800, 0);
     setWindowTitle(action + " " + object);
+    validate();
 }
 
 bool ConfigDialog::removeButtonPressed() {
@@ -188,6 +194,22 @@ bool ConfigDialog::getComboBoxSelected(const QString& key) {
         return false;
     }
     return m_comboBoxes[key]->isEnabled();
+}
+
+void ConfigDialog::validate() {
+    bool valid = true;
+    for (const auto& field : m_fields) {
+        if (!field.allowEmptyLineEditValue) {
+            if (
+                !field.allowEmptyLineEditValue &&
+                m_lineEdits[field.key]->text().isEmpty()
+            ) {
+                valid = false;
+                break;
+            }
+        }
+    }
+    m_buttons->button(QDialogButtonBox::Ok)->setEnabled(valid);
 }
 
 } // namespace mms

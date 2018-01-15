@@ -1,7 +1,6 @@
 Bugfixes
 ========
 - The "crashed" state doesn't refresh between runs
-- Don't let empty "name" for algorithms
 - File dialogs perf is really bad, correlated with FPS
 - Fix m_mouse segfaults
 - Don't allow mouse algos to run if the maze is not explorable

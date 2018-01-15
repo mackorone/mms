@@ -12,6 +12,7 @@ struct ConfigDialogField {
     QVector<QVariant> comboBoxValues;
     QVariant initialComboBoxValue;
     QVariant initialLineEditValue;
+    bool allowEmptyLineEditValue = true;
     bool comboBoxSelected = true;
     bool fileBrowser = false;
     bool onlyDirectories = false;
