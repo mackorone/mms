@@ -1,34 +1,60 @@
-Features
-========
-- Statically link some default maze files
-    - Pre-loading a blank map on startup would be good
-- API call counts
-    - A table of API method to # of times called
-- Ad hoc maze rotation and mirroring
-- Toggle algorithm output line wrap
-- Maze "Save As..."
-- Add a "new algo" wizard to make it easy to bootstap a new algo
-- Mouse-over window for why the maze is invalid
-- Support more maze file formats
-    - .MAZ, .mz2, https://code.google.com/p/maze-solver/wiki/MazeFileFormats
-    - JSON, https://github.com/bblodget/MicromouseSim/tree/gh-pages/mazes_json
-
 Bugfixes
 ========
+- The "crashed" state doesn't refresh between runs
 - Don't let empty "name" for algorithms
 - File dialogs perf is really bad, correlated with FPS
 - Fix m_mouse segfaults
-- Fix maze checker
-- Don't allow mouse algos to run if the maze is invalid
+- Don't allow mouse algos to run if the maze is not explorable
 - Fix existing maze file formats
 - Update the build and run status when the algorithm changes
 - Setting the child process's working directory doesn't work on windows
     - Instead, we might have to change the simulator's working directory
 - Bad maze algorithms (e.g., "echo foo") can crash the simulator
+- If maze algo fails, the simulator crashes
 - Don't allow continuous algorithms to be paused
+
+Features
+========
+- Add a "new algo" wizard to make it easy to bootstap a new algo
+- Support more maze file formats
+    - .MAZ, .mz2, https://code.google.com/p/maze-solver/wiki/MazeFileFormats
+    - JSON, https://github.com/bblodget/MicromouseSim/tree/gh-pages/mazes_json
+- Make it easier to edit the simulator parameters
+    - Write and read from persistant storage...
+    - The values should be re-loaded on the fly
+
+Wishlist
+========
+- Maze "Save As..."
+- Save the most recent maze
+- API call counts
+    - A table of API method to # of times called
+- Ad hoc maze rotation and mirroring
+- Toggle algorithm output line wrap
+- Surface information about why a maze is valid/invalid
+    - Perhaps a pane that pops up on mouse over
+- Support continuous algorithms
+- Display the dynamic mouse algorithm options
+- Wiki page for common error message for failed commands
+- A utility to tell you whether or not the stdlib is used
+- A utility to tell you how much memory the algorithm is occupying
+- A utility to ensure that the algorithm has no memory leaks
+- Clang compiler support
+- Use tr() on all user-facing strings to make text translatable
+- Show the timestamp that the algorithms were last built
+- A button to randomly select a maze file
+- Add stepper motor support in continuous mode
+- Bluetooth communication with an actual robot
+    - Would allow us to see where the robot thinks it is
+- Monitor algo directories using FileSystemWatcher
+    - Make it obvious when the user should re-build their algo
+- Add sensor types (digital vs. analog)
+- Look into using vsync so the graphics don't tear
+- Make it possible to change the goal location (for smaller mazes)
 
 Cleanup
 =======
+- Update the wiki
 - Remove continuous algorithm support from the interfaces, for now
 - Don't actually log within mouse interface - surface errors a different way
 - Improve sim time accuracy (time-to-center seems to be a function of sim speed)
@@ -49,38 +75,11 @@ Cleanup
 - Deduplicate some import/edit/validate logic between mouse and maze algo
 - Use keyword explicit on one argument constructors
 - Ensure UI widget spacing is sane
-
-Wishlist
-========
-- Support continuous algorithms
-- Display the dynamic mouse algorithm options
-- Wiki page for common error message for failed commands
-- A utility to tell you whether or not the stdlib is used
-- A utility to tell you how much memory the algorithm is occupying
-- A utility to ensure that the algorithm has no memory leaks
-- Clang compiler support
-- Use tr() on all user-facing strings to make text translatable
-- Show the timestamp that the algorithms were last built
-- A button to randomly select a maze file
-- Add stepper motor support in continuous mode
-- Bluetooth communication with an actual robot
-    - Would allow us to see where the robot thinks it is
-- Monitor algo directories using FileSystemWatcher
-    - Make it obvious when the user should re-build their algo
-- Add sensor types (digital vs. analog)
-- Look into using vsync so the graphics don't tear
-- Make it possible to change the goal location (for smaller mazes)
+- Use const auto& for for-loops where possible
 
 Unsorted
 ========
 - Reset CRASHED state when we restart the algorithm
-- Make it easier to edit the simulator parameters
-    - Write and read from persistant storage...
-    - The values should be re-loaded on the fly
-    - If maze algo fails, the simulator crashes
-- If the mouse goes outside of the maze, the simulator crashes
-    - Ensure the mouse stays in the maze
-- Surface information about *why* a maze is valid/invalid (etc.)
 - MacOS retina https://github.com/vispy/vispy/issues/99
 - Button for toggling the maze views
 - Verify that the tile text automatically refresh when we set tileGraphicTextMaxSize
@@ -88,11 +87,9 @@ Unsorted
     - Use extension to determine which method to call
 - Clean up mouseInterface/controller and MainWindow/controller (MouseAlgoUtilities)
 - Add controls about UI
-- Fix the elapsed sim time
 - Fix collision detection
 - Replace "import algorithm" with "new algorithm"
 - Rename the whole texture vs polygon thing
-- If the maze is invalid, don't let the algo do anything
 - Set up tests/build framework
 - Make all classes QObjects
 - Fix timestep
@@ -249,8 +246,6 @@ Unsorted
 - You can add layouts to layouts
     - make sure I'm not creating any unnecessary widgets
 - Use the "widget" suffix for all user-defined widgets
-- auto vs const auto&
-    - Use const auto&
 
 // TODO: MACK
 // +++

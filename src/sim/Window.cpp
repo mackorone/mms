@@ -1,6 +1,7 @@
 #include "Window.h"
 
 #include <QAction>
+#include <QFileDialog>
 #include <QFrame>
 #include <QGroupBox>
 #include <QHBoxLayout>
@@ -233,18 +234,29 @@ Window::Window(QWidget *parent) :
 
     // Add some generic menu items
     QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
-    /*
-    QAction* saveMazeAction = new QAction(tr("&Save Maze As ..."), this);
-    connect(saveMazeAction, &QAction::triggered, this, [=](){
-        // TODO: MACK
-    });
-    fileMenu->addAction(saveMazeAction);
-    */
+
+    // Quit
     QAction* quitAction = new QAction(tr("&Quit"), this);
     connect(quitAction, &QAction::triggered, this, [=](){
         close();
     });
     fileMenu->addAction(quitAction);
+
+    // Save the maze
+	// TODO: MACK - select the maze type here...
+    /*
+    QAction* saveMazeAction = new QAction(tr("&Save Maze As ..."), this);
+    connect(saveMazeAction, &QAction::triggered, this, [=](){
+        QString filename = QFileDialog::getSaveFileName(
+			this,
+			tr("Save File"),
+            "",
+            tr("Images (*.png *.xpm *.jpg)")
+        );
+        qDebug() << filename;
+    });
+    fileMenu->addAction(saveMazeAction);
+    */
 
     // Add maze algorithm menu items
     /*
