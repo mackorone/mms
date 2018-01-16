@@ -13,11 +13,12 @@
 #include "GeometryUtilities.h"
 #include "MouseParser.h"
 #include "Param.h"
-#include "State.h"
 
 namespace mms {
 
-Mouse::Mouse(const Maze* maze) : m_maze(maze) {
+Mouse::Mouse(const Maze* maze) :
+    m_maze(maze),
+    m_crashed(false) {
 
     // The initial translation of the mouse is just the center of the starting tile
     Meters halfOfTileDistance = Meters((P()->wallLength() + P()->wallWidth()) / 2.0);
@@ -102,12 +103,21 @@ QString Mouse::getMouseFile() const {
     return m_mouseFile;
 }
 
+bool Mouse::didCrash() const {
+    return m_crashed;
+}
+
+void Mouse::setCrashed() {
+    m_crashed = true;
+}
+
 void Mouse::reset() {
     teleport(
         getInitialTranslation(),
         DIRECTION_TO_ANGLE().value(m_startingDirection)
     );
     m_startedDirection = m_startingDirection;
+    m_crashed = false;
 }
 
 void Mouse::teleport(const Coordinate& translation, const Angle& rotation) {
@@ -268,6 +278,10 @@ QVector<Polygon> Mouse::getCurrentSensorViewPolygons(
 void Mouse::update(const Duration& elapsed) {
 
     // NOTE: This is a *very* performance critical function
+
+    if (m_crashed) {
+        return;
+    }
 
     m_mutex.lock();
 

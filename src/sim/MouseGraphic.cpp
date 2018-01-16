@@ -1,9 +1,7 @@
 #include "MouseGraphic.h"
 
-#include "Logging.h"
 #include "Param.h"
 #include "SimUtilities.h"
-#include "State.h"
 
 namespace mms {
 

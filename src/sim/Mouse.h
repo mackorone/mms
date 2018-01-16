@@ -32,6 +32,10 @@ public:
     // Returns the name of the current mouse file
     QString getMouseFile() const;
 
+    // Get/set the crashed state of the mouse 
+    bool didCrash() const;
+    void setCrashed();
+
     // Resets the mouse to the beginning of the maze (taking into
     // account the desired starting direction, as set by the algorithm)
     void reset();
@@ -145,6 +149,9 @@ private:
 
     // The file that defines the current mouse geometry
     QString m_mouseFile;
+
+    // Whether or not the mouse crashed
+    bool m_crashed;
 
     // The direction that the mouse did and should face,
     // respectively, at the most recent and next reset

@@ -7,7 +7,6 @@
 #include "Screen.h"
 #include "Settings.h"
 #include "SimTime.h"
-#include "State.h"
 #include "Model.h"
 #include "Window.h"
 
@@ -33,8 +32,8 @@ int Driver::drive(int argc, char* argv[]) {
     // Initialize the Settings object
     Settings::init();
 
-    P(); // Initialize the Param object
-    S(); // Initialize the State object
+    // Initialize the Param object
+    P();
 
     // Initialize the FontImage object
     FontImage::init(P()->tileTextFontImage());

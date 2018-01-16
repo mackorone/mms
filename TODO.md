@@ -1,8 +1,9 @@
 Bugfixes
 ========
-- The "crashed" state doesn't refresh between runs
 - File dialogs perf is really bad, correlated with FPS
 - Fix m_mouse segfaults
+    - Audit all code that's touched by multiple threads (i.e., everything in
+      Mouse, Model, etc.)
 - Don't allow mouse algos to run if the maze is not explorable
 - Fix existing maze file formats
 - Update the build and run status when the algorithm changes
@@ -78,7 +79,7 @@ Cleanup
 
 Unsorted
 ========
-- Reset CRASHED state when we restart the algorithm
+- Make out-of-bounds position not crash the simulator
 - MacOS retina https://github.com/vispy/vispy/issues/99
 - Button for toggling the maze views
 - Verify that the tile text automatically refresh when we set tileGraphicTextMaxSize

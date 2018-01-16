@@ -19,7 +19,6 @@
 #include "Param.h"
 #include "SimTime.h"
 #include "SimUtilities.h"
-#include "State.h"
 
 // Helper function/macro that ensures that user-requested stops
 // can always interrupt the currently executing algorithm
@@ -1207,8 +1206,8 @@ void MouseInterface::moveForwardImpl(bool originMoveForwardToEdge) {
     }
 
     // Otherwise, set the crashed state (if it hasn't already been set)
-    else if (!S()->crashed()) {
-        S()->setCrashed();
+    else if (!m_mouse->didCrash()) {
+        m_mouse->setCrashed();
     }
 }
 
@@ -1284,8 +1283,8 @@ void MouseInterface::turnToEdgeImpl(bool turnLeft) {
     }
 
     // Otherwise, set the crashed state (if it hasn't already been set)
-    else if (!S()->crashed()) {
-        S()->setCrashed();
+    else if (!m_mouse->didCrash()) {
+        m_mouse->setCrashed();
     }
 }
 
@@ -1471,7 +1470,7 @@ QPair<Cartesian, Degrees> MouseInterface::getCrashLocation(
 void MouseInterface::doDiagonal(int count, bool startLeft, bool endLeft) {
 
     // Don't do/print anything if the mouse has already crashed
-    if (S()->crashed()) {
+    if (m_mouse->didCrash()) {
         return;
     }
 
@@ -1532,8 +1531,8 @@ void MouseInterface::doDiagonal(int count, bool startLeft, bool endLeft) {
     turnTo(m_mouse->getCurrentTranslation(), endRotation);
     moveForwardTo(destination + Polar(Meters(P()->wallWidth() / 2.0), m_mouse->getCurrentRotation()), m_mouse->getCurrentRotation());
 
-    if (crash && !S()->crashed()) {
-        S()->setCrashed();
+    if (crash && !m_mouse->didCrash()) {
+        m_mouse->setCrashed();
     }
 }
 

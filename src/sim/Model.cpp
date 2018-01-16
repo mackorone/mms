@@ -8,7 +8,6 @@
 #include "Param.h"
 #include "SimTime.h"
 #include "SimUtilities.h"
-#include "State.h"
 #include "units/Milliseconds.h"
 
 namespace mms {
@@ -25,10 +24,6 @@ Model::Model() :
 
 void Model::start() {
 
-    // TODO: MACK
-    // Start a separate collision detection thread
-    // std::thread collisionDetector(&Model::checkCollision, this);
-
     double prev = SimUtilities::getHighResTimestamp();
     double acc = 0.0;
     while (!m_shutdownRequested) {
@@ -38,6 +33,8 @@ void Model::start() {
         while (acc >= DT) {
             update(DT);
             acc -= DT;
+            // TODO: MACK - check for collisions ...
+            // std::thread collisionDetector(&Model::checkCollision, this);
         }
         SimUtilities::sleep(Seconds(DT / 2.0));
     };
@@ -48,13 +45,6 @@ void Model::shutdown() {
 }
 
 void Model::update(double dt) {
-
-    // If we've crashed, let this thread exit
-    if (S()->crashed()) {
-        // TODO: MACK
-        // collisionDetector.join();
-        return;
-    }
 
     // Ensure the maze/mouse aren't updated in this loop
     m_mutex.lock();
@@ -81,7 +71,7 @@ void Model::update(double dt) {
     // some "out of bounds" state but I haven't implemented that yet. We
     // continue here to make sure that we join with the other thread.
     if (!m_maze->withinMaze(location.first, location.second)) {
-        S()->setCrashed();
+        m_mouse->setCrashed();
         m_mutex.unlock();
         return;
     }

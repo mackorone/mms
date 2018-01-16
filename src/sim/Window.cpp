@@ -25,7 +25,6 @@
 #include "SettingsRecent.h"
 #include "SimTime.h"
 #include "SimUtilities.h"
-#include "State.h"
 
 namespace mms {
 
@@ -607,7 +606,7 @@ QPair<QStringList, QVector<QVariant>> Window::getRunStats() const {
             ? "NONE"
             : SimUtilities::formatDuration(stats.bestTimeToCenter)
         );
-        values.append((S()->crashed() ? "TRUE" : "FALSE"));
+        values.append((m_mouse->didCrash() ? "TRUE" : "FALSE"));
     }
 
     return {keys, values};
