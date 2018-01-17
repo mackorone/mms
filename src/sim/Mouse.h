@@ -6,8 +6,8 @@
 #include <QString>
 #include <QVector>
 
+#include "units/AngularVelocity.h"
 #include "units/Cartesian.h"
-#include "units/RadiansPerSecond.h"
 
 #include "CurveTurnFactorCalculator.h"
 #include "Direction.h"
@@ -99,10 +99,10 @@ public:
     bool hasWheel(const QString& name) const;
 
     // Returns the magnitde of the max angular velocity of the wheel
-    RadiansPerSecond getWheelMaxSpeed(const QString& name) const;
+    AngularVelocity getWheelMaxSpeed(const QString& name) const;
 
     // An atomic interface for setting the wheel speeds
-    void setWheelSpeeds(const QMap<QString, RadiansPerSecond>& wheelSpeeds);
+    void setWheelSpeeds(const QMap<QString, AngularVelocity>& wheelSpeeds);
 
     // Helper methods for setting many wheel speeds at once, without having to
     // know the names of each of the wheels
@@ -135,7 +135,7 @@ public:
     double readSensor(const QString& name) const;
 
     // Returns the value of the gyroscope
-    RadiansPerSecond readGyro() const;
+    AngularVelocity readGyro() const;
 
 private:
 
@@ -190,7 +190,7 @@ private:
 
     // The gyro (rate of rotation), rotation, and translation
     // of the mouse, which change throughout execution
-    RadiansPerSecond m_currentGyro;
+    AngularVelocity m_currentGyro;
     Cartesian m_currentTranslation;
     Angle m_currentRotation;
 

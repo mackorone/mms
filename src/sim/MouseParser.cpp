@@ -8,7 +8,7 @@
 #include "EncoderType.h"
 #include "GeometryUtilities.h"
 #include "SimUtilities.h"
-#include "units/RevolutionsPerMinute.h"
+#include "units/AngularVelocity.h"
 
 namespace mms {
 
@@ -161,7 +161,7 @@ QMap<QString, Wheel> MouseParser::getWheels(
                         alignmentRotation,
                         initialTranslation),
                     Angle::Degrees(direction) + alignmentRotation,
-                    RevolutionsPerMinute(maxAngularVelocityMagnitude),
+                    AngularVelocity::RevolutionsPerMinute(maxAngularVelocityMagnitude),
                     encoderType, 
                     encoderTicksPerRevolution));
         }

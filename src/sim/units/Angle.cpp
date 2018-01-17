@@ -47,6 +47,7 @@ Angle Angle::operator*(double factor) const {
 }
 
 Angle Angle::operator/(double factor) const {
+    ASSERT_NE(factor, 0.0);
     return Angle(m_radians / factor);
 }
 
@@ -70,8 +71,7 @@ bool Angle::operator<(const Angle& other) const {
     return getRadiansZeroTo2pi() < other.getRadiansZeroTo2pi();
 }
 
-Angle::Angle(double radians) {
-    m_radians = radians;
+Angle::Angle(double radians) : m_radians(radians) {
 }
 
 double Angle::getRadians(bool zeroTo2pi) const {

@@ -2,9 +2,9 @@
 
 #include "EncoderType.h"
 #include "Polygon.h"
+#include "units/AngularVelocity.h"
 #include "units/Cartesian.h"
 #include "units/Meters.h"
-#include "units/RadiansPerSecond.h"
 
 namespace mms {
 
@@ -28,8 +28,8 @@ public:
     const Polygon& getInitialPolygon() const;
 
     // Motor
-    RadiansPerSecond getAngularVelocity() const;
-    RadiansPerSecond getMaxAngularVelocityMagnitude() const;
+    AngularVelocity getAngularVelocity() const;
+    AngularVelocity getMaxAngularVelocityMagnitude() const;
     void setAngularVelocity(const AngularVelocity& angularVelocity);
 
     // Encoder
@@ -50,8 +50,8 @@ private:
     Polygon m_initialPolygon;
 
     // Motor
-    RadiansPerSecond m_angularVelocity;
-    RadiansPerSecond m_maxAngularVelocityMagnitude;
+    AngularVelocity m_angularVelocity;
+    AngularVelocity m_maxAngularVelocityMagnitude;
 
     // Encoder
     EncoderType m_encoderType;

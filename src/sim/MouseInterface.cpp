@@ -5,11 +5,11 @@
 #include <QPair>
 #include <QtMath>
 
+#include "units/AngularVelocity.h"
 #include "units/Meters.h"
 #include "units/MetersPerSecond.h"
 #include "units/Milliseconds.h"
 #include "units/Polar.h"
-#include "units/RevolutionsPerMinute.h"
 #include "units/Seconds.h"
 
 #include "Assert.h"
@@ -697,7 +697,7 @@ void MouseInterface::setWheelSpeed(const QString& name, double rpm) {
         return;
     }
 
-    m_mouse->setWheelSpeeds({{name, RevolutionsPerMinute(rpm)}});
+    m_mouse->setWheelSpeeds({{name, AngularVelocity::RevolutionsPerMinute(rpm)}});
 }
 
 double MouseInterface::getWheelEncoderTicksPerRevolution(const QString& name) {

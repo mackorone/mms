@@ -90,6 +90,8 @@ Unsorted
 - Add controls about UI
 - Ensure all imports are correct
 - Fix collision detection
+- Use default initialization of unit types where possible
+    - Rather than explicity calling a constructor with a "0" arg
 - Replace "import algorithm" with "new algorithm"
 - Rename the whole texture vs polygon thing
 - Set up tests/build framework

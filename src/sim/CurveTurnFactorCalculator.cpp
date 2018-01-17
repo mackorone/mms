@@ -25,7 +25,7 @@ CurveTurnFactorCalculator::CurveTurnFactorCalculator(
 
     // Determine the total forward and turn rate of change from all wheels
     MetersPerSecond totalForwardRateOfChange(0);
-    RadiansPerSecond totalRadialRateOfChange(0);
+    AngularVelocity totalRadialRateOfChange;
     for (const auto& pair : ContainerUtilities::items(wheels)) {
 
         // For each of the wheel speed adjustment factors, calculate the wheel's
@@ -38,7 +38,7 @@ CurveTurnFactorCalculator::CurveTurnFactorCalculator(
 
         for (double adjustmentFactor : {adjustmentFactors.first, adjustmentFactors.second}) {
 
-            std::tuple<MetersPerSecond, MetersPerSecond, RadiansPerSecond> effects =
+            std::tuple<MetersPerSecond, MetersPerSecond, AngularVelocity> effects =
                 wheelEffects.value(pair.first).getEffects(
                     pair.second.getMaxAngularVelocityMagnitude() * adjustmentFactor);
 

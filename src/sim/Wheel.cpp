@@ -12,9 +12,8 @@ Wheel::Wheel() :
     m_halfWidth(Meters(0)),
     m_initialPosition(Cartesian(Meters(0), Meters(0))),
     m_initialDirection(Angle::Radians(0)),
-    m_angularVelocity(RadiansPerSecond(0.0)),
-    m_maxAngularVelocityMagnitude(RadiansPerSecond(0)),
-    m_encoderType(EncoderType::ABSOLUTE),
+    m_angularVelocity(AngularVelocity::RadiansPerSecond(0.0)),
+    m_maxAngularVelocityMagnitude(AngularVelocity::RadiansPerSecond(0)),
     m_encoderTicksPerRevolution(0),
     m_absoluteRotation(Angle::Radians(0)),
     m_relativeRotation(Angle::Radians(0)) {
@@ -32,7 +31,7 @@ Wheel::Wheel(
         m_halfWidth(Meters(width) / 2.0),
         m_initialPosition(position),
         m_initialDirection(direction),
-        m_angularVelocity(RadiansPerSecond(0.0)),
+		m_angularVelocity(AngularVelocity::RadiansPerSecond(0.0)),
         m_maxAngularVelocityMagnitude(maxAngularVelocityMagnitude),
         m_encoderType(encoderType),
         m_encoderTicksPerRevolution(encoderTicksPerRevolution),
@@ -67,11 +66,11 @@ const Polygon& Wheel::getInitialPolygon() const {
     return m_initialPolygon;
 }
 
-RadiansPerSecond Wheel::getAngularVelocity() const {
+AngularVelocity Wheel::getAngularVelocity() const {
     return m_angularVelocity;
 }
 
-RadiansPerSecond Wheel::getMaxAngularVelocityMagnitude() const {
+AngularVelocity Wheel::getMaxAngularVelocityMagnitude() const {
     return m_maxAngularVelocityMagnitude;
 }
 

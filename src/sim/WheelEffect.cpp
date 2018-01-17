@@ -5,7 +5,7 @@ namespace mms {
 WheelEffect::WheelEffect() :
     m_unitForwardEffect(MetersPerSecond(0)),
     m_unitSidewaysEffect(MetersPerSecond(0)),
-    m_unitTurnEffect(RadiansPerSecond(0)) {
+    m_unitTurnEffect(AngularVelocity::RadiansPerSecond(0)) {
 }
 
 WheelEffect::WheelEffect(
@@ -24,15 +24,15 @@ WheelEffect::WheelEffect(
     );
 
     Cartesian wheelToCenter = initialTranslation - wheel.getInitialPosition();
-    m_unitTurnEffect = RadiansPerSecond(
+    m_unitTurnEffect = AngularVelocity::RadiansPerSecond(
         wheel.getRadius().getMeters() * 
         (wheelToCenter.getTheta() - wheel.getInitialDirection()).getSin() *
         (1.0 / wheelToCenter.getRho().getMeters())
     );
 }
 
-std::tuple<MetersPerSecond, MetersPerSecond, RadiansPerSecond> WheelEffect::getEffects(
-        const RadiansPerSecond& wheelSpeed) const {
+std::tuple<MetersPerSecond, MetersPerSecond, AngularVelocity> WheelEffect::getEffects(
+        const AngularVelocity& wheelSpeed) const {
     return std::make_tuple(
         m_unitForwardEffect * wheelSpeed.getRadiansPerSecond(),
         m_unitSidewaysEffect * wheelSpeed.getRadiansPerSecond(),
