@@ -1509,8 +1509,11 @@ void MouseInterface::doDiagonal(int count, bool startLeft, bool endLeft) {
     // TODO: MACK - make sure that the path is actually clear
 
     static Meters halfTileWidth = Meters(P()->wallLength() + P()->wallWidth()) / 2.0;
-    static Meters halfTileDiagonal = Meters(std::sqrt(2 * (halfTileWidth * halfTileWidth).getMetersSquared()));
-
+    static Meters halfTileDiagonal = Meters(std::sqrt(
+        2 *
+        halfTileWidth.getMeters() *
+        halfTileWidth.getMeters()
+    ));
     Cartesian backALittleBit = m_mouse->getCurrentTranslation() +
         Polar(Meters(P()->wallWidth() / 2.0), m_mouse->getCurrentRotation() + Angle::Degrees(180));
 

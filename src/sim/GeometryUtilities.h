@@ -3,9 +3,9 @@
 #include "Maze.h"
 #include "Polygon.h"
 #include "units/Angle.h"
+#include "units/Area.h"
 #include "units/Cartesian.h"
 #include "units/Distance.h"
-#include "units/MetersSquared.h"
 
 namespace mms {
 
@@ -26,7 +26,7 @@ public:
     static Polygon createCirclePolygon(const Cartesian& position, const Distance& radius, int numberOfEdges);
 
     // Returns the cross product of the vectors ZA and ZB
-    static MetersSquared crossProduct(const Cartesian& Z, const Cartesian& A, const Cartesian& B);
+    static Area crossProduct(const Cartesian& Z, const Cartesian& A, const Cartesian& B);
 
     // Returns the convex hull of all of the points of all of the polygons
     static Polygon convexHull(const QVector<Polygon>& polygons);

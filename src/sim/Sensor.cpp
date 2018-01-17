@@ -81,9 +81,10 @@ void Sensor::updateReading(
 
     m_currentReading = std::max(
         0.0,
-        1.0 -
-            getViewPolygon(currentPosition, currentDirection, maze).area() /
-            getInitialViewPolygon().area());
+        1.0 - 
+            getViewPolygon(currentPosition, currentDirection, maze)
+                .area().getMetersSquared() /
+            getInitialViewPolygon().area().getMetersSquared());
 
     ASSERT_LE(0.0, m_currentReading);
     ASSERT_LE(m_currentReading, 1.0);

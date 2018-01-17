@@ -61,7 +61,7 @@ QVector<Triangle> Polygon::getTriangles() const {
     return m_triangles;
 }
 
-MetersSquared Polygon::area() const {
+Area Polygon::area() const {
 
     // See http://mathmodel.wolfram.com/PolygonArea.html
 
@@ -77,7 +77,7 @@ MetersSquared Polygon::area() const {
             m_vertices.at(j).getX().getMeters()
         );
     }
-    return MetersSquared(std::abs(sumOfDeterminants / 2.0));
+    return Area::MetersSquared(std::abs(sumOfDeterminants / 2.0));
 }
 
 Polygon Polygon::translate(const Coordinate& translation) const {

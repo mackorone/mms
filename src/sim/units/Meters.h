@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Distance.h"
-#include "MetersSquared.h"
 
 namespace mms {
 
@@ -16,7 +15,6 @@ public:
     Meters operator*(double factor) const;
     Meters operator/(double factor) const;
     double operator/(const Distance& distance) const;
-    MetersSquared operator*(const Distance& distance) const;
     void operator+=(const Distance& distance);
 
 };

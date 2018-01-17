@@ -34,10 +34,6 @@ double Meters::operator/(const Distance& distance) const {
     return getMeters() / distance.getMeters();
 }
 
-MetersSquared Meters::operator*(const Distance& distance) const {
-    return MetersSquared(getMeters() * distance.getMeters());
-}
-
 void Meters::operator+=(const Distance& distance) {
     m_meters += distance.getMeters();
 }

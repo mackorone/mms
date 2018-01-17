@@ -5,12 +5,20 @@ namespace mms {
 class Area {
 
 public:
-    virtual ~Area() = 0;
+
+    Area();
+    static Area MetersSquared(double metersSquared);
+
     double getMetersSquared() const;
 
-protected:
-    Area();
+    Area operator*(double factor) const;
+    Area operator+(const Area& area) const;
+    Area operator-(const Area& area) const;
+
+private:
+
     double m_metersSquared;
+    Area(double metersSquared);
 
 };
 

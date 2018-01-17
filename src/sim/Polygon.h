@@ -4,6 +4,7 @@
 
 #include "Triangle.h"
 #include "units/Angle.h"
+#include "units/Area.h"
 #include "units/Cartesian.h"
 
 namespace mms {
@@ -19,7 +20,7 @@ public:
     QVector<Cartesian> getVertices() const;
     QVector<Triangle> getTriangles() const;
 
-    MetersSquared area() const;
+    Area area() const;
 
     Polygon translate(const Coordinate& translation) const;
     Polygon rotateAroundPoint(const Angle& angle, const Coordinate& point) const;

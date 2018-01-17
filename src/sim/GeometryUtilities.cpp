@@ -40,7 +40,7 @@ Polygon GeometryUtilities::createCirclePolygon(const Cartesian& position, const 
     return Polygon(vertices);
 }
 
-MetersSquared GeometryUtilities::crossProduct(const Cartesian& Z, const Cartesian& A, const Cartesian& B) {
+Area GeometryUtilities::crossProduct(const Cartesian& Z, const Cartesian& A, const Cartesian& B) {
 
     // The cross product of ZA and ZB is simply the determinant of the following matrix:
     //
@@ -48,8 +48,11 @@ MetersSquared GeometryUtilities::crossProduct(const Cartesian& Z, const Cartesia
     //                                |B_x-Z_x, B_y-Z_y|
     //
     // Where Z is simply the location of the origin for the vectors A and B
-
-    return (A.getX() - Z.getX()) * (B.getY() - Z.getY()) - (A.getY() - Z.getY()) * (B.getX() - Z.getX());
+    double UL = A.getX().getMeters() - Z.getX().getMeters();
+    double LR = B.getY().getMeters() - Z.getY().getMeters();
+    double UR = A.getY().getMeters() - Z.getY().getMeters();
+    double LL = B.getX().getMeters() - Z.getX().getMeters();
+    return Area::MetersSquared((UL * LR) - (UR * LL));
 }
 
 Polygon GeometryUtilities::convexHull(const QVector<Polygon>& polygons) {
