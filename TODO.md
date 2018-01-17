@@ -1,5 +1,6 @@
 Bugfixes
 ========
+- Make unit type compatible with std::atomic
 - File dialogs perf is really bad, correlated with FPS
 - Fix m_mouse segfaults
     - Audit all code that's touched by multiple threads (i.e., everything in

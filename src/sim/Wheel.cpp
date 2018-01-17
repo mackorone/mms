@@ -89,14 +89,18 @@ double Wheel::getEncoderTicksPerRevolution() const {
 
 int Wheel::readAbsoluteEncoder() const {
     return static_cast<int>(std::floor(
-        m_encoderTicksPerRevolution * m_absoluteRotation.getRadiansZeroTo2pi() / (2 * M_PI)));
+        m_encoderTicksPerRevolution *
+        m_absoluteRotation.getRadiansZeroTo2pi() /
+        (2 * M_PI)));
 }
 
 int Wheel::readRelativeEncoder() const {
-    // We use std::trunc instead of std::floor so we round towards zero in the
-    // case of a negative relative rotation
+    // We use std::trunc instead of std::floor to ensure
+    // we round negative relative rotations towards zero
     return static_cast<int>(std::trunc(
-        m_encoderTicksPerRevolution * m_relativeRotation.getRadiansNotBounded() / (2 * M_PI)));
+        m_encoderTicksPerRevolution * 
+        m_relativeRotation.getRadiansNotBounded() /
+        (2 * M_PI)));
 }
 
 void Wheel::resetRelativeEncoder() {
