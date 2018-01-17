@@ -126,7 +126,7 @@ void Map::paintGL() {
     }
 
     Cartesian currentMouseTranslation;
-    Radians currentMouseRotation;
+    Angle currentMouseRotation;
     QVector<TriangleGraphic> mouseBuffer;
     if (m_mouseGraphic != nullptr) {
         auto currentPosition = m_mouseGraphic->getCurrentMousePosition();

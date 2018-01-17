@@ -182,8 +182,8 @@ QVector<float> TransformationMatrix::getZoomedMapTransformationMatrix(
     // it, rotate it, scale it, and then translate it back to the proper
     // location. Hence all of the matrices.
 
-    // We subtract Degrees(90) here since we want forward to face NORTH
-    double theta = (Degrees(currentMouseRotation) - Degrees(90)).getRadiansZeroTo2pi();
+    // We subtract Angle::Degrees(90) here since we want forward to face NORTH
+    double theta = (currentMouseRotation - Angle::Degrees(90)).getRadiansZeroTo2pi();
     QVector<float> rotationMatrix = {
         static_cast<float>( std::cos(theta)), static_cast<float>(std::sin(theta)), 0.0, 0.0,
         static_cast<float>(-std::sin(theta)), static_cast<float>(std::cos(theta)), 0.0, 0.0,

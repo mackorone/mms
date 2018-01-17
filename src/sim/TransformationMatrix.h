@@ -4,7 +4,6 @@
 #include <QVector>
 
 #include "units/Cartesian.h"
-#include "units/Degrees.h"
 
 namespace mms {
 

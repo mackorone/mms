@@ -10,7 +10,7 @@ WheelEffect::WheelEffect() :
 
 WheelEffect::WheelEffect(
         const Cartesian& initialTranslation,
-        const Radians& initialRotation,
+        const Angle& initialRotation,
         const Wheel& wheel) {
 
     m_unitForwardEffect = MetersPerSecond(

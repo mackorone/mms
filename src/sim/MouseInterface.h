@@ -246,19 +246,19 @@ private:
         QPair<QPair<int, int>, Direction> wall) const;
 
     // Some helper abstractions for mouse movements
-    void moveForwardTo(const Cartesian& destinationTranslation, const Radians& destinationRotation);
-    void arcTo(const Cartesian& destinationTranslation, const Radians& destinationRotation,
+    void moveForwardTo(const Cartesian& destinationTranslation, const Angle& destinationRotation);
+    void arcTo(const Cartesian& destinationTranslation, const Angle& destinationRotation,
         const Meters& radius, double extraWheelSpeedFraction);
-    void turnTo(const Cartesian& destinationTranslation, const Radians& destinationRotation);
+    void turnTo(const Cartesian& destinationTranslation, const Angle& destinationRotation);
 
     // Returns the angle with from "from" to "to", with values in [-180, 180) degrees
-    Radians getRotationDelta(const Radians& from, const Radians& to) const;
+    Angle getRotationDelta(const Angle& from, const Angle& to) const;
 
     // Returns the center of a given tile
     Cartesian getCenterOfTile(int x, int y) const;
 
     // Returns the location of where the mouse should stop if it crashes
-    QPair<Cartesian, Degrees> getCrashLocation(
+    QPair<Cartesian, Angle> getCrashLocation(
         QPair<int, int> currentTile, Direction destinationDirection);
 
     // TODO: MACK - rename to Impl

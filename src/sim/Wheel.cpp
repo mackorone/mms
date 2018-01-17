@@ -11,13 +11,13 @@ Wheel::Wheel() :
     m_radius(Meters(0)),
     m_halfWidth(Meters(0)),
     m_initialPosition(Cartesian(Meters(0), Meters(0))),
-    m_initialDirection(Radians(0)),
+    m_initialDirection(Angle::Radians(0)),
     m_angularVelocity(RadiansPerSecond(0.0)),
     m_maxAngularVelocityMagnitude(RadiansPerSecond(0)),
     m_encoderType(EncoderType::ABSOLUTE),
     m_encoderTicksPerRevolution(0),
-    m_absoluteRotation(Radians(0)),
-    m_relativeRotation(Radians(0)) {
+    m_absoluteRotation(Angle::Radians(0)),
+    m_relativeRotation(Angle::Radians(0)) {
 }
 
 Wheel::Wheel(
@@ -36,8 +36,8 @@ Wheel::Wheel(
         m_maxAngularVelocityMagnitude(maxAngularVelocityMagnitude),
         m_encoderType(encoderType),
         m_encoderTicksPerRevolution(encoderTicksPerRevolution),
-        m_absoluteRotation(Radians(0)),
-        m_relativeRotation(Radians(0)) {
+        m_absoluteRotation(Angle::Radians(0)),
+        m_relativeRotation(Angle::Radians(0)) {
 
     // Create the initial wheel polygon
     QVector<Cartesian> polygon;
@@ -59,7 +59,7 @@ Cartesian Wheel::getInitialPosition() const {
     return m_initialPosition;
 }
 
-Radians Wheel::getInitialDirection() const {
+Angle Wheel::getInitialDirection() const {
     return m_initialDirection;
 }
 
@@ -99,12 +99,12 @@ int Wheel::readRelativeEncoder() const {
     // we round negative relative rotations towards zero
     return static_cast<int>(std::trunc(
         m_encoderTicksPerRevolution * 
-        m_relativeRotation.getRadiansNotBounded() /
+        m_relativeRotation.getRadiansUnbounded() /
         (2 * M_PI)));
 }
 
 void Wheel::resetRelativeEncoder() {
-    m_relativeRotation = Radians(0);
+    m_relativeRotation = Angle::Radians(0);
 }
 
 void Wheel::updateRotation(const Angle& angle) {

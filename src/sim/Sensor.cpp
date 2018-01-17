@@ -14,9 +14,9 @@ namespace mms {
 
 Sensor::Sensor() :
     m_range(Meters(0)),
-    m_halfWidth(Radians(0)),
+    m_halfWidth(Angle::Radians(0)),
     m_initialPosition(Cartesian(Meters(0), Meters(0))),
-    m_initialDirection(Radians(0)) {
+    m_initialDirection(Angle::Radians(0)) {
 }
 
 Sensor::Sensor(
@@ -39,7 +39,7 @@ Sensor::Sensor(
     QVector<Cartesian> view;
     view.push_back(position);
     for (double i = -1; i <= 1; i += 2.0 / (P()->numberOfSensorEdgePoints() - 1)) {
-        view.push_back(Polar(range, (Radians(halfWidth) * i) + direction) + position);
+        view.push_back(Polar(range, (halfWidth * i) + direction) + position);
     }
     m_initialViewPolygon = Polygon(view);
 
@@ -51,7 +51,7 @@ Cartesian Sensor::getInitialPosition() const {
     return m_initialPosition;
 }
 
-Radians Sensor::getInitialDirection() const {
+Angle Sensor::getInitialDirection() const {
     return m_initialDirection;
 }
 
@@ -65,7 +65,7 @@ const Polygon& Sensor::getInitialViewPolygon() const {
 
 Polygon Sensor::getCurrentViewPolygon(
         const Cartesian& currentPosition,
-        const Radians& currentDirection,
+        const Angle& currentDirection,
         const Maze& maze) const {
     return getViewPolygon(currentPosition, currentDirection, maze);
 }
@@ -76,7 +76,7 @@ double Sensor::read() const {
 
 void Sensor::updateReading(
         const Cartesian& currentPosition,
-        const Radians& currentDirection,
+        const Angle& currentDirection,
         const Maze& maze) {
 
     m_currentReading = std::max(
@@ -91,7 +91,7 @@ void Sensor::updateReading(
 
 Polygon Sensor::getViewPolygon(
         const Cartesian& currentPosition,
-        const Radians& currentDirection,
+        const Angle& currentDirection,
         const Maze& maze) const {
 
     // TODO: MACK - this can be deduped with getCurrentViewPolygon

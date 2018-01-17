@@ -5,8 +5,8 @@
 
 #include "Mouse.h"
 #include "TriangleGraphic.h"
+#include "units/Angle.h"
 #include "units/Cartesian.h"
-#include "units/Radians.h"
 
 namespace mms {
 
@@ -17,7 +17,7 @@ public:
     MouseGraphic(const Mouse* mouse);
 
     Cartesian getInitialMouseTranslation() const;
-    QPair<Cartesian, Radians> getCurrentMousePosition() const;
+    QPair<Cartesian, Angle> getCurrentMousePosition() const;
 
     QVector<TriangleGraphic> draw(
         const Coordinate& currentTranslation,

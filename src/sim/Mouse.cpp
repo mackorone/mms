@@ -141,7 +141,7 @@ Cartesian Mouse::getCurrentTranslation() const {
     return m_currentTranslation;
 }
 
-Radians Mouse::getCurrentRotation() const {
+Angle Mouse::getCurrentRotation() const {
     return m_currentRotation;
 }
 
@@ -155,8 +155,8 @@ QPair<int, int> Mouse::getCurrentDiscretizedTranslation() const {
 
 Direction Mouse::getCurrentDiscretizedRotation() const {
     int dir = static_cast<int>(qFloor(
-        (getCurrentRotation() + Degrees(45)).getRadiansZeroTo2pi() /
-        Degrees(90).getRadiansZeroTo2pi()
+        (getCurrentRotation() + Angle::Degrees(45)).getRadiansZeroTo2pi() /
+        Angle::Degrees(90).getRadiansZeroTo2pi()
     ));
     switch (dir) {
         case 0:
@@ -244,7 +244,7 @@ QVector<Polygon> Mouse::getCurrentSensorViewPolygons(
     QVector<Polygon> polygons;
     m_mutex.lock();
     for (const Sensor& sensor : m_sensors.values()) {
-        QPair<Cartesian, Radians> translationAndRotation =
+        QPair<Cartesian, Angle> translationAndRotation =
             getCurrentSensorPositionAndDirection(
                 sensor,
                 currentTranslation,
@@ -305,14 +305,14 @@ void Mouse::update(const Duration& elapsed) {
     RadiansPerSecond aveDr = sumDr / static_cast<double>(m_wheels.size());
 
     m_currentGyro = aveDr;
-    m_currentRotation += Radians(aveDr * elapsed);
+    m_currentRotation += aveDr * elapsed;
     m_currentTranslation += Cartesian(aveDx * elapsed, aveDy * elapsed);
 
     // Update all of the sensor readings
     QMutableMapIterator<QString, Sensor> sensorIterator(m_sensors);
     while (sensorIterator.hasNext()) {
         auto pair = sensorIterator.next();
-        QPair<Cartesian, Radians> translationAndRotation =
+        QPair<Cartesian, Angle> translationAndRotation =
             getCurrentSensorPositionAndDirection(
                 pair.value(),
                 m_currentTranslation,
@@ -428,18 +428,18 @@ RadiansPerSecond Mouse::readGyro() const {
 Polygon Mouse::getCurrentPolygon(
         const Polygon& initialPolygon,
         const Cartesian& currentTranslation,
-        const Radians& currentRotation) const {
+        const Angle& currentRotation) const {
     return initialPolygon
         .translate(currentTranslation - getInitialTranslation())
         .rotateAroundPoint(currentRotation - m_initialRotation, currentTranslation);
 }
 
-QPair<Cartesian, Radians> Mouse::getCurrentSensorPositionAndDirection(
+QPair<Cartesian, Angle> Mouse::getCurrentSensorPositionAndDirection(
         const Sensor& sensor,
         const Cartesian& currentTranslation,
-        const Radians& currentRotation) const {
+        const Angle& currentRotation) const {
     Cartesian translationDelta = currentTranslation - getInitialTranslation();
-    Radians rotationDelta = currentRotation - m_initialRotation;
+    Angle rotationDelta = currentRotation - m_initialRotation;
     return {
         GeometryUtilities::rotateVertexAroundPoint(
             GeometryUtilities::translateVertex(
@@ -496,7 +496,7 @@ void Mouse::setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardF
 
 QMap<QString, WheelEffect> Mouse::getWheelEffects(
         const Cartesian& initialTranslation,
-        const Radians& initialRotation,
+        const Angle& initialRotation,
         const QMap<QString, Wheel>& wheels) const {
     QMap<QString, WheelEffect> wheelEffects;
     for (const auto& pair : ContainerUtilities::items(wheels)) {

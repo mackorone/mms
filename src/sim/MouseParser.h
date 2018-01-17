@@ -27,24 +27,24 @@ public:
 
     Polygon getBody(
         const Cartesian& initialTranslation,
-        const Radians& initialRotation,
+        const Angle& initialRotation,
         bool* success);
 
     QMap<QString, Wheel> getWheels(
         const Cartesian& initialTranslation,
-        const Radians& initialRotation,
+        const Angle& initialRotation,
         bool* success);
 
     QMap<QString, Sensor> getSensors(
         const Cartesian& initialTranslation,
-        const Radians& initialRotation,
+        const Angle& initialRotation,
         const Maze& maze,
         bool* success);
 
 private:
     QDomDocument m_doc;
     QDomElement m_root;
-    Radians m_forwardDirection;
+    Angle m_forwardDirection;
     Cartesian m_centerOfMass;
 
     double getDoubleIfHasDouble(const QDomElement& element, const QString& tag, bool* success);
@@ -54,7 +54,7 @@ private:
     EncoderType getEncoderTypeIfValid(const QDomElement& element, bool* success);
 
     Cartesian alignVertex(const Cartesian& vertex, const Cartesian& alignmentTranslation,
-        const Radians& alignmentRotation, const Cartesian& rotationPoint);
+        const Angle& alignmentRotation, const Cartesian& rotationPoint);
 
     static const Polygon NULL_POLYGON;
     static const QString MOUSE_TAG;

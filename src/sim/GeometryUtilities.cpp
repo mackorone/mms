@@ -35,7 +35,7 @@ Polygon GeometryUtilities::createCirclePolygon(const Cartesian& position, const 
     ASSERT_LE(3, numberOfEdges);
     QVector<Cartesian> vertices;
     for (int i = 0; i < numberOfEdges; i += 1) {
-        vertices.push_back(Polar(radius, Radians(i * 2 * M_PI / numberOfEdges)) + position);
+        vertices.push_back(Polar(radius, Angle::Radians(i * 2 * M_PI / numberOfEdges)) + position);
     }
     return Polygon(vertices);
 }

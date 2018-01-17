@@ -13,7 +13,7 @@ Cartesian MouseGraphic::getInitialMouseTranslation() const {
     return m_mouse->getInitialTranslation();
 }
 
-QPair<Cartesian, Radians> MouseGraphic::getCurrentMousePosition() const {
+QPair<Cartesian, Angle> MouseGraphic::getCurrentMousePosition() const {
     return {
         m_mouse->getCurrentTranslation(),
         m_mouse->getCurrentRotation(),

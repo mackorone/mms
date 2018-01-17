@@ -12,7 +12,7 @@ public:
     WheelEffect();
     WheelEffect(
         const Cartesian& initialTranslation,
-        const Radians& initialRotation,
+        const Angle& initialRotation,
         const Wheel& wheel);
 
     // The rates at which this wheel would cause the mouse to move forward,

@@ -25,8 +25,8 @@ double AngularVelocity::getRevolutionsPerMinute() const {
     return revolutionsPerRadian * getRadiansPerSecond() * secondsPerMinute;
 }
 
-Radians AngularVelocity::operator*(const Duration& duration) const {
-    return Radians(getRadiansPerSecond() * duration.getSeconds());
+Angle AngularVelocity::operator*(const Duration& duration) const {
+    return Angle::Radians(getRadiansPerSecond() * duration.getSeconds());
 }
 
 double AngularVelocity::operator/(const AngularVelocity& angularVelocity) const {

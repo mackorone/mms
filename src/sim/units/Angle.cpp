@@ -6,10 +6,16 @@
 
 namespace mms {
 
-Angle::Angle() : m_radians(0) {
+Angle::Angle() : Angle(0.0) {
 }
 
-Angle::~Angle() {
+Angle Angle::Radians(double radians) {
+    return Angle(radians);
+}
+
+Angle Angle::Degrees(double degrees) {
+    static const double radiansPerDegree = 2 * M_PI / 360.0;
+    return Angle(radiansPerDegree * degrees);
 }
 
 double Angle::getRadiansZeroTo2pi() const {
@@ -20,11 +26,11 @@ double Angle::getDegreesZeroTo360() const {
     return getDegrees(true);
 }
 
-double Angle::getRadiansNotBounded() const {
+double Angle::getRadiansUnbounded() const {
     return getRadians(false);
 }
 
-double Angle::getDegreesNotBounded() const {
+double Angle::getDegreesUnbounded() const {
     return getDegrees(false);
 }
 
@@ -36,8 +42,36 @@ double Angle::getCos() const {
     return std::cos(getRadiansZeroTo2pi());
 }
 
-bool Angle::operator<(const Angle& angle) const {
-    return getRadiansZeroTo2pi() < angle.getRadiansZeroTo2pi();
+Angle Angle::operator*(double factor) const {
+    return Angle(m_radians * factor);
+}
+
+Angle Angle::operator/(double factor) const {
+    return Angle(m_radians / factor);
+}
+
+Angle Angle::operator+(const Angle& other) const {
+    return Angle(m_radians + other.m_radians);
+}
+
+Angle Angle::operator-(const Angle& other) const {
+    return Angle(m_radians - other.m_radians);
+}
+
+void Angle::operator+=(const Angle& other) {
+    m_radians += other.m_radians;
+}
+
+void Angle::operator-=(const Angle& other) {
+    m_radians -= other.m_radians;
+}
+
+bool Angle::operator<(const Angle& other) const {
+    return getRadiansZeroTo2pi() < other.getRadiansZeroTo2pi();
+}
+
+Angle::Angle(double radians) {
+    m_radians = radians;
 }
 
 double Angle::getRadians(bool zeroTo2pi) const {

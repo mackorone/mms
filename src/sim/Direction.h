@@ -5,7 +5,7 @@
 #include <QString>
 #include <QVector>
 
-#include "units/Degrees.h"
+#include "units/Angle.h"
 
 namespace mms {
 
@@ -26,7 +26,7 @@ const QMap<Direction, Direction>& DIRECTION_ROTATE_LEFT();
 const QMap<Direction, Direction>& DIRECTION_ROTATE_RIGHT();
 const QMap<Direction, Direction>& DIRECTION_OPPOSITE();
 
-const QMap<Direction, Degrees>& DIRECTION_TO_ANGLE();
+const QMap<Direction, Angle>& DIRECTION_TO_ANGLE();
 
 const QMap<Direction, QString>& DIRECTION_TO_STRING();
 const QMap<QString, Direction>& STRING_TO_DIRECTION();

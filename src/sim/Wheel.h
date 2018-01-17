@@ -24,7 +24,7 @@ public:
     // Wheel
     Meters getRadius() const;
     Cartesian getInitialPosition() const;
-    Radians getInitialDirection() const;
+    Angle getInitialDirection() const;
     const Polygon& getInitialPolygon() const;
 
     // Motor
@@ -46,7 +46,7 @@ private:
     Meters m_radius;
     Meters m_halfWidth;
     Cartesian m_initialPosition;
-    Radians m_initialDirection;
+    Angle m_initialDirection;
     Polygon m_initialPolygon;
 
     // Motor
@@ -56,8 +56,8 @@ private:
     // Encoder
     EncoderType m_encoderType;
     double m_encoderTicksPerRevolution;
-    Radians m_absoluteRotation;
-    Radians m_relativeRotation;
+    Angle m_absoluteRotation;
+    Angle m_relativeRotation;
 };
 
 } // namespace mms

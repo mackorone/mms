@@ -39,7 +39,7 @@ const QString MouseParser::RANGE_TAG = "Range";
 const QString MouseParser::HALF_WIDTH_TAG = "Half-Width";
 
 MouseParser::MouseParser(const QString& filePath, bool* success) :
-        m_forwardDirection(Radians(0)),
+        m_forwardDirection(Angle::Radians(0)),
         m_centerOfMass(Cartesian(Meters(0), Meters(0))) {
 
     // Try to open the file
@@ -63,8 +63,8 @@ MouseParser::MouseParser(const QString& filePath, bool* success) :
 
     // Initialize some members of the class
     m_root = m_doc.firstChildElement(MOUSE_TAG);
-    m_forwardDirection = Radians(Degrees(
-        getDoubleIfHasDouble(m_root, FORWARD_DIRECTION_TAG, success)));
+    m_forwardDirection = Angle::Degrees(
+        getDoubleIfHasDouble(m_root, FORWARD_DIRECTION_TAG, success));
     QDomElement centerOfMassElement = getContainerElement(m_root, CENTER_OF_MASS_TAG, success);
     double x = getDoubleIfHasDouble(centerOfMassElement, X_TAG, success);
     double y = getDoubleIfHasDouble(centerOfMassElement, Y_TAG, success);
@@ -73,11 +73,11 @@ MouseParser::MouseParser(const QString& filePath, bool* success) :
 
 Polygon MouseParser::getBody(
         const Cartesian& initialTranslation,
-        const Radians& initialRotation,
+        const Angle& initialRotation,
         bool* success) {
 
     Cartesian alignmentTranslation = initialTranslation - m_centerOfMass;
-    Radians alignmentRotation = initialRotation - m_forwardDirection;
+    Angle alignmentRotation = initialRotation - m_forwardDirection;
 
     QDomElement body = m_root.firstChildElement(BODY_TAG);
     if (body.isNull()) {
@@ -125,11 +125,11 @@ Polygon MouseParser::getBody(
 
 QMap<QString, Wheel> MouseParser::getWheels(
         const Cartesian& initialTranslation,
-        const Radians& initialRotation,
+        const Angle& initialRotation,
         bool* success) {
 
     Cartesian alignmentTranslation = initialTranslation - m_centerOfMass;
-    Radians alignmentRotation = initialRotation - m_forwardDirection;
+    Angle alignmentRotation = initialRotation - m_forwardDirection;
 
     QMap<QString, Wheel> wheels;
     QDomNodeList elementList = m_root.elementsByTagName(WHEEL_TAG);
@@ -160,7 +160,7 @@ QMap<QString, Wheel> MouseParser::getWheels(
                         alignmentTranslation,
                         alignmentRotation,
                         initialTranslation),
-                    Degrees(direction) + alignmentRotation,
+                    Angle::Degrees(direction) + alignmentRotation,
                     RevolutionsPerMinute(maxAngularVelocityMagnitude),
                     encoderType, 
                     encoderTicksPerRevolution));
@@ -172,12 +172,12 @@ QMap<QString, Wheel> MouseParser::getWheels(
 
 QMap<QString, Sensor> MouseParser::getSensors(
         const Cartesian& initialTranslation,
-        const Radians& initialRotation,
+        const Angle& initialRotation,
         const Maze& maze,
         bool* success) {
 
     Cartesian alignmentTranslation = initialTranslation - m_centerOfMass;
-    Radians alignmentRotation = initialRotation - m_forwardDirection;
+    Angle alignmentRotation = initialRotation - m_forwardDirection;
 
     QMap<QString, Sensor> sensors;
     QDomNodeList elementList = m_root.elementsByTagName(SENSOR_TAG);
@@ -199,13 +199,13 @@ QMap<QString, Sensor> MouseParser::getSensors(
                 Sensor(
                     Meters(radius),
                     Meters(range), 
-                    Degrees(halfWidth),
+                    Angle::Degrees(halfWidth),
                     alignVertex(
                         Cartesian(Meters(x), Meters(y)),
                         alignmentTranslation,
                         alignmentRotation,
                         initialTranslation),
-                    Degrees(direction) + alignmentRotation,
+                    Angle::Degrees(direction) + alignmentRotation,
                     maze));
         }
     }
@@ -269,7 +269,7 @@ EncoderType MouseParser::getEncoderTypeIfValid(const QDomElement& element, bool*
 }
 
 Cartesian MouseParser::alignVertex(const Cartesian& vertex, const Cartesian& alignmentTranslation,
-        const Radians& alignmentRotation, const Cartesian& rotationPoint) {
+        const Angle& alignmentRotation, const Cartesian& rotationPoint) {
     Cartesian translated = GeometryUtilities::translateVertex(vertex, alignmentTranslation);
     return GeometryUtilities::rotateVertexAroundPoint(translated, alignmentRotation, rotationPoint);
 }

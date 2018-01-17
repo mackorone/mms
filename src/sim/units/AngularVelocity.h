@@ -1,7 +1,7 @@
 #pragma once
 
+#include "Angle.h"
 #include "Duration.h"
-#include "Radians.h"
 
 namespace mms {
 
@@ -12,7 +12,7 @@ public:
     double getRadiansPerSecond() const;
     double getDegreesPerSecond() const;
     double getRevolutionsPerMinute() const;
-    Radians operator*(const Duration& duration) const;
+    Angle operator*(const Duration& duration) const;
     double operator/(const AngularVelocity& angularVelocity) const;
     bool operator<(const AngularVelocity& angularVelocity) const;
     bool operator<=(const AngularVelocity& angularVelocity) const;

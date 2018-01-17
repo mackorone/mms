@@ -88,6 +88,7 @@ Unsorted
     - Use extension to determine which method to call
 - Clean up mouseInterface/controller and MainWindow/controller (MouseAlgoUtilities)
 - Add controls about UI
+- Ensure all imports are correct
 - Fix collision detection
 - Replace "import algorithm" with "new algorithm"
 - Rename the whole texture vs polygon thing

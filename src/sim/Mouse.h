@@ -54,7 +54,7 @@ public:
 
     // Gets the current translation and rotation of the mouse
     Cartesian getCurrentTranslation() const;
-    Radians getCurrentRotation() const;
+    Angle getCurrentRotation() const;
 
     // Gets the current discretized translation and rotation of the mouse
     QPair<int, int> getCurrentDiscretizedTranslation() const;
@@ -155,7 +155,7 @@ private:
 
     // The translation and rotation of the mouse at the previous reload
     Cartesian m_initialTranslation;
-    Radians m_initialRotation;
+    Angle m_initialRotation;
 
     // The parts of the mouse, as when positioned at m_initialTranslation and m_initialRotation
     Polygon m_initialBodyPolygon; // The polygon of strictly the body of the mouse
@@ -168,7 +168,7 @@ private:
     QMap<QString, WheelEffect> m_wheelEffects;
     QMap<QString, WheelEffect> getWheelEffects(
         const Cartesian& initialTranslation,
-        const Radians& initialRotation,
+        const Angle& initialRotation,
         const QMap<QString, Wheel>& wheels) const;
 
     // The fractions of a each wheel's max speed that cause the mouse to
@@ -192,7 +192,7 @@ private:
     // of the mouse, which change throughout execution
     RadiansPerSecond m_currentGyro;
     Cartesian m_currentTranslation;
-    Radians m_currentRotation;
+    Angle m_currentRotation;
 
     // Ensures that reads/updates happen atomically,
     // mutable so we can use it in const functions
@@ -202,13 +202,13 @@ private:
     Polygon getCurrentPolygon(
         const Polygon& initialPolygon,
         const Cartesian& currentTranslation,
-        const Radians& currentRotation) const;
+        const Angle& currentRotation) const;
 
     // Retrieve the current position/rotation of sensor based on position/rotation of mouse
-    QPair<Cartesian, Radians> getCurrentSensorPositionAndDirection(
+    QPair<Cartesian, Angle> getCurrentSensorPositionAndDirection(
         const Sensor& sensor,
         const Cartesian& currentTranslation,
-        const Radians& currentRotation) const;
+        const Angle& currentRotation) const;
 
     // Sets the wheel speed for a particular movement, based on the linear combo of the two factors
     void setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardFactor, double turnFactor);

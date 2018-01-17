@@ -30,8 +30,8 @@ double RadiansPerSecond::operator/(const AngularVelocity& angularVelocity) const
     return getRadiansPerSecond() / angularVelocity.getRadiansPerSecond();
 }
 
-Radians RadiansPerSecond::operator*(const Duration& duration) const {
-    return Radians(getRadiansPerSecond() * duration.getSeconds());
+Angle RadiansPerSecond::operator*(const Duration& duration) const {
+    return Angle::Radians(getRadiansPerSecond() * duration.getSeconds());
 }
 
 MetersPerSecond RadiansPerSecond::operator*(const Distance& radius) const {

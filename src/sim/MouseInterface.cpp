@@ -1185,7 +1185,7 @@ void MouseInterface::moveForwardImpl(bool originMoveForwardToEdge) {
     bool crash = wallFrontImpl(false, false);
 
     // Get the location of the crash, if it will happen
-    QPair<Cartesian, Degrees> crashLocation = getCrashLocation(
+    QPair<Cartesian, Angle> crashLocation = getCrashLocation(
         m_mouse->getCurrentDiscretizedTranslation(),
         m_mouse->getCurrentDiscretizedRotation()
     );
@@ -1212,11 +1212,11 @@ void MouseInterface::moveForwardImpl(bool originMoveForwardToEdge) {
 }
 
 void MouseInterface::turnLeftImpl() {
-    turnTo(m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation() + Degrees(90));
+    turnTo(m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation() + Angle::Degrees(90));
 }
 
 void MouseInterface::turnRightImpl() {
-    turnTo(m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation() - Degrees(90));
+    turnTo(m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation() - Angle::Degrees(90));
 }
 
 void MouseInterface::turnAroundLeftImpl() {
@@ -1262,7 +1262,7 @@ void MouseInterface::turnToEdgeImpl(bool turnLeft) {
     );
 
     // Get the location of the crash, if it will happen
-    QPair<Cartesian, Degrees> crashLocation = getCrashLocation(
+    QPair<Cartesian, Angle> crashLocation = getCrashLocation(
         m_mouse->getCurrentDiscretizedTranslation(),
         (
             turnLeft ?
@@ -1339,14 +1339,14 @@ QPair<QPair<int, int>, Direction> MouseInterface::getOpposingWall(
     }
 }
 
-void MouseInterface::moveForwardTo(const Cartesian& destinationTranslation, const Radians& destinationRotation) {
+void MouseInterface::moveForwardTo(const Cartesian& destinationTranslation, const Angle& destinationRotation) {
 
     // This function assumes that we're already facing the correct direction,
     // and that we simply need to move forward to reach the destination.
 
     // Determine delta between the two points
     Polar delta = destinationTranslation - m_mouse->getCurrentTranslation();
-    Degrees initialAngle = delta.getTheta();
+    Angle initialAngle = delta.getTheta();
     Meters previousDistance = delta.getRho();
 
     // Start the mouse moving forward
@@ -1371,14 +1371,14 @@ void MouseInterface::moveForwardTo(const Cartesian& destinationTranslation, cons
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
 
-void MouseInterface::arcTo(const Cartesian& destinationTranslation, const Radians& destinationRotation,
+void MouseInterface::arcTo(const Cartesian& destinationTranslation, const Angle& destinationRotation,
         const Meters& radius, double extraWheelSpeedFraction) {
 
     // Determine the inital rotation delta in [-180, 180)
-    Radians initialRotationDelta = getRotationDelta(m_mouse->getCurrentRotation(), destinationRotation);
+    Angle initialRotationDelta = getRotationDelta(m_mouse->getCurrentRotation(), destinationRotation);
 
     // Set the speed based on the initial rotation delta
-    if (0 < initialRotationDelta.getDegreesNotBounded()) {
+    if (0 < initialRotationDelta.getDegreesUnbounded()) {
         m_mouse->setWheelSpeedsForCurveLeft(
             m_wheelSpeedFraction * extraWheelSpeedFraction, radius);
     }
@@ -1389,11 +1389,11 @@ void MouseInterface::arcTo(const Cartesian& destinationTranslation, const Radian
     
     // While the deltas have the same sign, sleep for a short amount of time
     while (0 <
-            initialRotationDelta.getRadiansNotBounded() *
+            initialRotationDelta.getRadiansUnbounded() *
             getRotationDelta(
                 m_mouse->getCurrentRotation(),
                 destinationRotation
-            ).getRadiansNotBounded()) {
+            ).getRadiansUnbounded()) {
         BREAK_IF_STOPPED_ELSE_SLEEP_MIN();
     }
 
@@ -1402,24 +1402,24 @@ void MouseInterface::arcTo(const Cartesian& destinationTranslation, const Radian
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
 
-void MouseInterface::turnTo(const Cartesian& destinationTranslation, const Radians& destinationRotation) {
+void MouseInterface::turnTo(const Cartesian& destinationTranslation, const Angle& destinationRotation) {
     // When we're turning in place, we set the wheels to half speed
     arcTo(destinationTranslation, destinationRotation, Meters(0), 0.5);
 }
 
-Radians MouseInterface::getRotationDelta(const Radians& from, const Radians& to) const {
-    static const Degrees lowerBound = Degrees(-180);
-    static const Degrees upperBound = Degrees(180);
-    static const Degrees fullCircle = Degrees(360);
-    Radians delta = Radians(to.getRadiansZeroTo2pi() - from.getRadiansZeroTo2pi());
-    if (delta.getRadiansNotBounded() < lowerBound.getRadiansNotBounded()) {
+Angle MouseInterface::getRotationDelta(const Angle& from, const Angle& to) const {
+    static const Angle lowerBound = Angle::Degrees(-180);
+    static const Angle upperBound = Angle::Degrees(180);
+    static const Angle fullCircle = Angle::Degrees(360);
+    Angle delta = Angle::Radians(to.getRadiansZeroTo2pi() - from.getRadiansZeroTo2pi());
+    if (delta.getRadiansUnbounded() < lowerBound.getRadiansUnbounded()) {
         delta += fullCircle;
     }
-    if (upperBound.getRadiansNotBounded() <= delta.getRadiansNotBounded()) {
+    if (upperBound.getRadiansUnbounded() <= delta.getRadiansUnbounded()) {
         delta -= fullCircle;
     }
-    ASSERT_LE(lowerBound.getRadiansNotBounded(), delta.getRadiansNotBounded());
-    ASSERT_LT(delta.getRadiansNotBounded(), upperBound.getRadiansNotBounded());
+    ASSERT_LE(lowerBound.getRadiansUnbounded(), delta.getRadiansUnbounded());
+    ASSERT_LT(delta.getRadiansUnbounded(), upperBound.getRadiansUnbounded());
     return delta;
 }
 
@@ -1433,7 +1433,7 @@ Cartesian MouseInterface::getCenterOfTile(int x, int y) const {
     return centerOfTile;
 }
 
-QPair<Cartesian, Degrees> MouseInterface::getCrashLocation(
+QPair<Cartesian, Angle> MouseInterface::getCrashLocation(
         QPair<int, int> currentTile, Direction destinationDirection) {
 
     static Meters halfWallLength = Meters(P()->wallLength() / 2.0);
@@ -1460,7 +1460,7 @@ QPair<Cartesian, Degrees> MouseInterface::getCrashLocation(
 
     // The crash location is on the edge of the tile inner polygon
     Cartesian centerOfTile = getCenterOfTile(currentTile.first, currentTile.second);
-    Degrees destinationRotation = DIRECTION_TO_ANGLE().value(destinationDirection);
+    Angle destinationRotation = DIRECTION_TO_ANGLE().value(destinationDirection);
     return {
         centerOfTile + Polar(halfWallLength, destinationRotation),
         destinationRotation
@@ -1512,18 +1512,18 @@ void MouseInterface::doDiagonal(int count, bool startLeft, bool endLeft) {
     static Meters halfTileDiagonal = Meters(std::sqrt(2 * (halfTileWidth * halfTileWidth).getMetersSquared()));
 
     Cartesian backALittleBit = m_mouse->getCurrentTranslation() +
-        Polar(Meters(P()->wallWidth() / 2.0), m_mouse->getCurrentRotation() + Degrees(180));
+        Polar(Meters(P()->wallWidth() / 2.0), m_mouse->getCurrentRotation() + Angle::Degrees(180));
 
     Cartesian destination = backALittleBit +
-        Polar(halfTileDiagonal * count, m_mouse->getCurrentRotation() + Degrees(45) * (startLeft ? 1 : -1));
+        Polar(halfTileDiagonal * count, m_mouse->getCurrentRotation() + Angle::Degrees(45) * (startLeft ? 1 : -1));
     Polar delta = destination - m_mouse->getCurrentTranslation();
 
-    Radians endRotation = m_mouse->getCurrentRotation();
+    Angle endRotation = m_mouse->getCurrentRotation();
     if (startLeft && endLeft) {
-        endRotation += Degrees(90);
+        endRotation += Angle::Degrees(90);
     }
     if (!startLeft && !endLeft) {
-        endRotation -= Degrees(90);
+        endRotation -= Angle::Degrees(90);
     }
     
     turnTo(m_mouse->getCurrentTranslation(), delta.getTheta());

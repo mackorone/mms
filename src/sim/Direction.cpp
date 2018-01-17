@@ -44,12 +44,12 @@ const QMap<Direction, Direction>& DIRECTION_OPPOSITE() {
     return map;
 }
 
-const QMap<Direction, Degrees>& DIRECTION_TO_ANGLE() {
-    static const QMap<Direction, Degrees> map = {
-        {Direction::NORTH, Degrees(90)},
-        {Direction::EAST, Degrees(0)},
-        {Direction::SOUTH, Degrees(270)},
-        {Direction::WEST, Degrees(180)},
+const QMap<Direction, Angle>& DIRECTION_TO_ANGLE() {
+    static const QMap<Direction, Angle> map = {
+        {Direction::NORTH, Angle::Degrees(90)},
+        {Direction::EAST, Angle::Degrees(0)},
+        {Direction::SOUTH, Angle::Degrees(270)},
+        {Direction::WEST, Angle::Degrees(180)},
     };
     return map;
 }
