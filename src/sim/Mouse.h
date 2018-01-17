@@ -81,11 +81,6 @@ public:
         const Coordinate& currentTranslation,
         const Angle& currentRotation) const;
 
-    // Retrieves the speed indicator polygons of the wheels of the robot
-    QVector<Polygon> getCurrentWheelSpeedIndicatorPolygons(
-        const Coordinate& currentTranslation,
-        const Angle& currentRotation) const;
-
     // Retrieves the polygons of the sensors of the robot
     QVector<Polygon> getCurrentSensorPolygons(
         const Coordinate& currentTranslation,

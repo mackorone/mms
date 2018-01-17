@@ -37,7 +37,6 @@ public:
     QString mouseBodyColor();
     QString mouseCenterOfMassColor();
     QString mouseWheelColor();
-    QString mouseWheelSpeedIndicatorColor();
     QString mouseSensorColor();
     QString mouseViewColor();
     bool defaultWallTruthVisible();
@@ -100,7 +99,6 @@ private:
     QString m_mouseBodyColor;
     QString m_mouseCenterOfMassColor;
     QString m_mouseWheelColor;
-    QString m_mouseWheelSpeedIndicatorColor;
     QString m_mouseSensorColor;
     QString m_mouseViewColor;
     bool m_defaultWallTruthVisible;

@@ -44,14 +44,6 @@ QVector<TriangleGraphic> MouseGraphic::draw(
             STRING_TO_COLOR().value(P()->mouseWheelColor()), 1.0));
     }
 
-    // Next, we draw the wheel speed indicators
-    for (const Polygon& wheelSpeedIndicatorPolygon :
-            m_mouse->getCurrentWheelSpeedIndicatorPolygons(currentTranslation, currentRotation)) {
-        buffer.append(SimUtilities::polygonToTriangleGraphics(
-            wheelSpeedIndicatorPolygon,
-            STRING_TO_COLOR().value(P()->mouseWheelSpeedIndicatorColor()), 1.0));
-    }
-
     // Next, we draw the sensors
     for (const Polygon& sensorPolygon :
             m_mouse->getCurrentSensorPolygons(currentTranslation, currentRotation)) {

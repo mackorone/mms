@@ -69,8 +69,6 @@ Param::Param() {
         "mouse-center-of-mass-color", COLOR_TO_STRING().value(Color::ORANGE));
     m_mouseWheelColor = ParamParser::getStringIfHasStringAndIsColor(
         "mouse-wheel-color", COLOR_TO_STRING().value(Color::GREEN));
-    m_mouseWheelSpeedIndicatorColor = ParamParser::getStringIfHasStringAndIsColor(
-        "mouse-wheel-speed-indicator-color", COLOR_TO_STRING().value(Color::DARK_GREEN));
     m_mouseSensorColor = ParamParser::getStringIfHasStringAndIsColor(
         "mouse-sensor-color", COLOR_TO_STRING().value(Color::GREEN));
     m_mouseViewColor = ParamParser::getStringIfHasStringAndIsColor(
@@ -220,10 +218,6 @@ QString Param::mouseCenterOfMassColor() {
 
 QString Param::mouseWheelColor() {
     return m_mouseWheelColor;
-}
-
-QString Param::mouseWheelSpeedIndicatorColor() {
-    return m_mouseWheelSpeedIndicatorColor;
 }
 
 QString Param::mouseSensorColor() {

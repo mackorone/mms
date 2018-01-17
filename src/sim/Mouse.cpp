@@ -222,22 +222,6 @@ QVector<Polygon> Mouse::getCurrentWheelPolygons(
     return polygons;
 }
 
-QVector<Polygon> Mouse::getCurrentWheelSpeedIndicatorPolygons(
-        const Coordinate& currentTranslation,
-        const Angle& currentRotation) const {
-    QVector<Polygon> polygons;
-    m_mutex.lock();
-    for (const Wheel& wheel : m_wheels.values()) {
-        polygons.push_back(
-            getCurrentPolygon(
-                wheel.getSpeedIndicatorPolygon(),
-                currentTranslation,
-                currentRotation));
-    }
-    m_mutex.unlock();
-    return polygons;
-}
-
 QVector<Polygon> Mouse::getCurrentSensorPolygons(
         const Coordinate& currentTranslation,
         const Angle& currentRotation) const {

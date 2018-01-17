@@ -26,7 +26,6 @@ public:
     Cartesian getInitialPosition() const;
     Radians getInitialDirection() const;
     const Polygon& getInitialPolygon() const;
-    const Polygon& getSpeedIndicatorPolygon() const;
 
     // Motor
     RadiansPerSecond getAngularVelocity() const;
@@ -49,8 +48,6 @@ private:
     Cartesian m_initialPosition;
     Radians m_initialDirection;
     Polygon m_initialPolygon;
-    mutable Polygon m_speedIndicatorPolygon;
-    mutable bool m_speedIndicatorPolygonNeedsToBeUpdated;
 
     // Motor
     RadiansPerSecond m_angularVelocity;
@@ -61,9 +58,6 @@ private:
     double m_encoderTicksPerRevolution;
     Radians m_absoluteRotation;
     Radians m_relativeRotation;
-
-    // Helper function for updating the speed indicator polygon
-    Polygon getSpeedIndicatorPolygon(const AngularVelocity& angularVelocity) const;
 };
 
 } // namespace mms

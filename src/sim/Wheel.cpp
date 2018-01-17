@@ -12,7 +12,6 @@ Wheel::Wheel() :
     m_halfWidth(Meters(0)),
     m_initialPosition(Cartesian(Meters(0), Meters(0))),
     m_initialDirection(Radians(0)),
-    m_speedIndicatorPolygonNeedsToBeUpdated(false),
     m_angularVelocity(RadiansPerSecond(0.0)),
     m_maxAngularVelocityMagnitude(RadiansPerSecond(0)),
     m_encoderType(EncoderType::ABSOLUTE),
@@ -33,7 +32,6 @@ Wheel::Wheel(
         m_halfWidth(Meters(width) / 2.0),
         m_initialPosition(position),
         m_initialDirection(direction),
-        m_speedIndicatorPolygonNeedsToBeUpdated(true),
         m_angularVelocity(RadiansPerSecond(0.0)),
         m_maxAngularVelocityMagnitude(maxAngularVelocityMagnitude),
         m_encoderType(encoderType),
@@ -69,14 +67,6 @@ const Polygon& Wheel::getInitialPolygon() const {
     return m_initialPolygon;
 }
 
-const Polygon& Wheel::getSpeedIndicatorPolygon() const {
-    if (m_speedIndicatorPolygonNeedsToBeUpdated) {
-        m_speedIndicatorPolygon = getSpeedIndicatorPolygon(m_angularVelocity);
-        m_speedIndicatorPolygonNeedsToBeUpdated = false;
-    }
-    return m_speedIndicatorPolygon;
-}
-
 RadiansPerSecond Wheel::getAngularVelocity() const {
     return m_angularVelocity;
 }
@@ -87,7 +77,6 @@ RadiansPerSecond Wheel::getMaxAngularVelocityMagnitude() const {
 
 void Wheel::setAngularVelocity(const AngularVelocity& angularVelocity) {
     m_angularVelocity = angularVelocity;
-    m_speedIndicatorPolygonNeedsToBeUpdated = true;
 }
 
 EncoderType Wheel::getEncoderType() const {
@@ -117,18 +106,6 @@ void Wheel::resetRelativeEncoder() {
 void Wheel::updateRotation(const Angle& angle) {
     m_absoluteRotation += angle;
     m_relativeRotation += angle;
-}
-
-Polygon Wheel::getSpeedIndicatorPolygon(const AngularVelocity& angularVelocity) const {
-    double fractionOfMaxSpeed = 0.0;
-    if (0.0 < getMaxAngularVelocityMagnitude().getRadiansPerSecond()) {
-        fractionOfMaxSpeed = angularVelocity / getMaxAngularVelocityMagnitude();
-    }
-    return Polygon({
-        Cartesian(m_initialPosition) + Cartesian(m_radius * fractionOfMaxSpeed, Meters(0)),
-        Cartesian(m_initialPosition) + Cartesian(Meters(0), Meters(m_halfWidth *  1)),
-        Cartesian(m_initialPosition) + Cartesian(Meters(0), Meters(m_halfWidth * -1)),
-    }).rotateAroundPoint(m_initialDirection, m_initialPosition);
 }
 
 } // namespace mms
