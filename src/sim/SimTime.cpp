@@ -17,15 +17,15 @@ SimTime* SimTime::get() {
     return INSTANCE;
 }
 
-Seconds SimTime::startTimestamp() {
+Duration SimTime::startTimestamp() {
     return m_startTimestamp;
 }
 
-Seconds SimTime::elapsedRealTime() {
-    return Seconds(SimUtilities::getHighResTimestamp()) - m_startTimestamp;
+Duration SimTime::elapsedRealTime() {
+    return Duration::Seconds(SimUtilities::getHighResTimestamp()) - m_startTimestamp;
 }
 
-Seconds SimTime::elapsedSimTime() {
+Duration SimTime::elapsedSimTime() {
     return m_elapsedSimTime;
 }
 
@@ -34,8 +34,8 @@ void SimTime::incrementElapsedSimTime(const Duration& duration) {
 }
 
 void SimTime::reset() {
-    m_startTimestamp = Seconds(SimUtilities::getHighResTimestamp());
-    m_elapsedSimTime = Seconds(0);
+    m_startTimestamp = Duration::Seconds(SimUtilities::getHighResTimestamp());
+    m_elapsedSimTime = Duration::Seconds(0);
 }
 
 SimTime::SimTime() {

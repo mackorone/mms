@@ -8,7 +8,7 @@
 #include "Param.h"
 #include "SimTime.h"
 #include "SimUtilities.h"
-#include "units/Milliseconds.h"
+#include "units/Duration.h"
 
 namespace mms {
 
@@ -36,7 +36,7 @@ void Model::start() {
             // TODO: MACK - check for collisions ...
             // std::thread collisionDetector(&Model::checkCollision, this);
         }
-        SimUtilities::sleep(Seconds(DT / 2.0));
+        SimUtilities::sleep(Duration::Seconds(DT / 2.0));
     };
 }
 
@@ -56,7 +56,7 @@ void Model::update(double dt) {
     }
 
     // Calculate the amount of sim time that should pass during this iteration
-    Seconds elapsedSimTimeForThisIteration = Seconds(dt);
+    Duration elapsedSimTimeForThisIteration = Duration::Seconds(dt);
 
     // Update the sim time
     SimTime::get()->incrementElapsedSimTime(elapsedSimTimeForThisIteration);
@@ -92,18 +92,21 @@ void Model::update(double dt) {
 
     // If we've returned to the origin, reset the departure time
     if (location.first == 0 && location.second == 0) {
-        m_stats->timeOfOriginDeparture = Seconds(-1);
+        m_stats->timeOfOriginDeparture = Duration::Seconds(-1);
     }
 
     // Otherwise, if we've just left the origin, update the departure time
-    else if (m_stats->timeOfOriginDeparture < Seconds(0)) {
+    else if (m_stats->timeOfOriginDeparture < Duration::Seconds(0)) {
         m_stats->timeOfOriginDeparture = SimTime::get()->elapsedSimTime();
     }
 
     // Separately, if we're in the center, update the best time to center
     if (m_maze->isCenterTile(location.first, location.second)) {
-        Seconds timeToCenter = SimTime::get()->elapsedSimTime() - m_stats->timeOfOriginDeparture;
-        if (m_stats->bestTimeToCenter < Seconds(0) || timeToCenter < m_stats->bestTimeToCenter) {
+        Duration timeToCenter = SimTime::get()->elapsedSimTime() - m_stats->timeOfOriginDeparture;
+        if (
+            m_stats->bestTimeToCenter < Duration::Seconds(0) ||
+            timeToCenter < m_stats->bestTimeToCenter
+        ) {
             m_stats->bestTimeToCenter = timeToCenter;
         }
     }

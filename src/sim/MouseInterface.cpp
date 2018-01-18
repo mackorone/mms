@@ -8,8 +8,7 @@
 #include "units/AngularVelocity.h"
 #include "units/Distance.h"
 #include "units/MetersPerSecond.h"
-#include "units/Milliseconds.h"
-#include "units/Seconds.h"
+#include "units/Duration.h"
 
 #include "Assert.h"
 #include "Color.h"
@@ -25,7 +24,7 @@
     if (m_stopRequested) {\
         break;\
     }\
-    SimUtilities::sleep(Milliseconds(P()->minSleepDuration()));\
+    SimUtilities::sleep(Duration::Milliseconds(P()->minSleepDuration()));\
 }
 
 namespace mms {
@@ -454,8 +453,8 @@ int MouseInterface::millis() {
 }
 
 void MouseInterface::delay(int milliseconds) {
-    Seconds start = SimTime::get()->elapsedSimTime();
-    while (SimTime::get()->elapsedSimTime() < start + Milliseconds(milliseconds)) {
+    Duration start = SimTime::get()->elapsedSimTime();
+    while (SimTime::get()->elapsedSimTime() < start + Duration::Milliseconds(milliseconds)) {
         BREAK_IF_STOPPED_ELSE_SLEEP_MIN();
     }
 }

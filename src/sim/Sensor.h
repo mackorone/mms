@@ -5,7 +5,6 @@
 #include "units/Angle.h"
 #include "units/Coordinate.h"
 #include "units/Distance.h"
-#include "units/Seconds.h"
 
 #include "Maze.h"
 #include "Polygon.h"

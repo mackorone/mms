@@ -1,6 +1,6 @@
 #pragma once
 
-#include "units/Seconds.h"
+#include "units/Duration.h"
 
 namespace mms {
 
@@ -11,9 +11,9 @@ public:
     static void init();
     static SimTime* get();
 
-    Seconds startTimestamp();
-    Seconds elapsedRealTime();
-    Seconds elapsedSimTime();
+    Duration startTimestamp();
+    Duration elapsedRealTime();
+    Duration elapsedSimTime();
 
     void incrementElapsedSimTime(const Duration& duration);
     void reset();
@@ -27,8 +27,8 @@ private:
     // A pointer to the actual instance of the class
     static SimTime* INSTANCE;
 
-    Seconds m_startTimestamp;
-    Seconds m_elapsedSimTime;
+    Duration m_startTimestamp;
+    Duration m_elapsedSimTime;
 
 };
 
