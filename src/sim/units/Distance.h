@@ -1,24 +1,30 @@
 #pragma once
 
-#include "Seconds.h"
-#include "Speed.h"
-
 namespace mms {
 
 class Distance {
 
 public:
-    virtual ~Distance() = 0;
-    double getMeters() const;
-    double getCentimeters() const;
-    bool operator==(const Distance& distance) const;
-    bool operator!=(const Distance& distance) const;
-    bool operator<(const Distance& distance) const;
-    Seconds operator/(const Speed& speed) const;
 
-protected:
     Distance();
+    static Distance Meters(double meters);
+
+    double getMeters() const;
+
+    Distance operator*(double factor) const;
+    Distance operator/(double factor) const;
+    Distance operator+(const Distance& other) const;
+    Distance operator-(const Distance& other) const;
+    double operator/(const Distance& other) const;
+    bool operator==(const Distance& other) const;
+    bool operator!=(const Distance& other) const;
+    bool operator<(const Distance& other) const;
+    void operator+=(const Distance& other);
+
+private:
+
     double m_meters;
+    Distance(double meters);
 
 };
 

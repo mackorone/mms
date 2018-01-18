@@ -378,7 +378,7 @@ void Map::drawMap(
 
         // TODO: MACK
         auto matrix = TransformationMatrix::getFullMapTransformationMatrix(
-            Meters(P()->wallWidth()),
+            Distance::Meters(P()->wallWidth()),
             physicalMazeSize,
             fullMapPosition,
             fullMapSize,

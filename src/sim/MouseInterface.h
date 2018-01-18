@@ -251,7 +251,7 @@ private:
     // Some helper abstractions for mouse movements
     void moveForwardTo(const Coordinate& destinationTranslation, const Angle& destinationRotation);
     void arcTo(const Coordinate& destinationTranslation, const Angle& destinationRotation,
-        const Meters& radius, double extraWheelSpeedFraction);
+        const Distance& radius, double extraWheelSpeedFraction);
     void turnTo(const Coordinate& destinationTranslation, const Angle& destinationRotation);
 
     // Returns the angle with from "from" to "to", with values in [-180, 180) degrees

@@ -94,8 +94,8 @@ void Tile::initPolygons(int mazeWidth, int mazeHeight) {
 
 
 void Tile::initFullPolygon(int mazeWidth, int mazeHeight) {
-    Meters halfWallWidth = Meters(P()->wallWidth()) / 2.0;
-    Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
+    Distance halfWallWidth = Distance::Meters(P()->wallWidth()) / 2.0;
+    Distance tileLength = Distance::Meters(P()->wallLength() + P()->wallWidth());
     Coordinate lowerLeftPoint = Coordinate::Cartesian(
         tileLength * getX() - halfWallWidth * (getX() == 0 ? 1 : 0),
         tileLength * getY() - halfWallWidth * (getY() == 0 ? 1 : 0)
@@ -122,7 +122,7 @@ void Tile::initFullPolygon(int mazeWidth, int mazeHeight) {
 
 void Tile::initInteriorPolygon(int mazeWidth, int mazeHeight) {
 
-    Meters halfWallWidth = Meters(P()->wallWidth()) / 2.0;
+    Distance halfWallWidth = Distance::Meters(P()->wallWidth()) / 2.0;
     Coordinate lowerLeftPoint = m_fullPolygon.getVertices().at(0);
     Coordinate upperLeftPoint = m_fullPolygon.getVertices().at(1);
     Coordinate upperRightPoint = m_fullPolygon.getVertices().at(2);

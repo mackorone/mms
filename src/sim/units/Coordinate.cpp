@@ -6,7 +6,7 @@
 
 namespace mms {
 
-Coordinate::Coordinate() : Coordinate(Meters(), Meters()) {
+Coordinate::Coordinate() : Coordinate(Distance(), Distance()) {
 }
 
 Coordinate Coordinate::Cartesian(const Distance& x, const Distance& y) {
@@ -14,22 +14,19 @@ Coordinate Coordinate::Cartesian(const Distance& x, const Distance& y) {
 }
 
 Coordinate Coordinate::Polar(const Distance& rho, const Angle& theta) {
-    return Coordinate(
-        Meters(rho.getMeters() * theta.getCos()),
-        Meters(rho.getMeters() * theta.getSin())
-    );
+    return Coordinate(rho * theta.getCos(), rho * theta.getSin());
 }
 
-Meters Coordinate::getX() const {
+Distance Coordinate::getX() const {
     return m_x;
 }
 
-Meters Coordinate::getY() const {
+Distance Coordinate::getY() const {
     return m_y;
 }
 
-Meters Coordinate::getRho() const {
-    return Meters(std::hypot(m_x.getMeters(), m_y.getMeters()));
+Distance Coordinate::getRho() const {
+    return Distance::Meters(std::hypot(m_x.getMeters(), m_y.getMeters()));
 }
 
 Angle Coordinate::getTheta() const {

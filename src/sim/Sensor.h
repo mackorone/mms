@@ -4,7 +4,7 @@
 
 #include "units/Angle.h"
 #include "units/Coordinate.h"
-#include "units/Meters.h"
+#include "units/Distance.h"
 #include "units/Seconds.h"
 
 #include "Maze.h"
@@ -40,7 +40,7 @@ public:
         const Maze& maze);
 
 private:
-    Meters m_range;
+    Distance m_range;
     Angle m_halfWidth;
 
     Coordinate m_initialPosition;

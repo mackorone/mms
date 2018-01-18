@@ -4,7 +4,7 @@
 #include "Polygon.h"
 #include "units/AngularVelocity.h"
 #include "units/Coordinate.h"
-#include "units/Meters.h"
+#include "units/Distance.h"
 
 namespace mms {
 
@@ -22,7 +22,7 @@ public:
         double encoderTicksPerRevolution);
 
     // Wheel
-    Meters getRadius() const;
+    Distance getRadius() const;
     Coordinate getInitialPosition() const;
     Angle getInitialDirection() const;
     const Polygon& getInitialPolygon() const;
@@ -43,8 +43,8 @@ public:
 private:
 
     // Wheel
-    Meters m_radius;
-    Meters m_halfWidth;
+    Distance m_radius;
+    Distance m_halfWidth;
     Coordinate m_initialPosition;
     Angle m_initialDirection;
     Polygon m_initialPolygon;

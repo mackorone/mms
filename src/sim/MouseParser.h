@@ -14,7 +14,6 @@
 #include "Polygon.h"
 #include "Sensor.h"
 #include "units/Coordinate.h"
-#include "units/Meters.h"
 #include "Wheel.h"
 
 namespace mms {

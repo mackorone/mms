@@ -55,8 +55,8 @@ void MazeView::initText(int numRows, int numCols) {
     // Initialze the tile text in the buffer class,
     // do caching for speed improvement
     m_bufferInterface.initTileGraphicText(
-        Meters(P()->wallLength()),
-        Meters(P()->wallWidth()),
+        Distance::Meters(P()->wallLength()),
+        Distance::Meters(P()->wallWidth()),
         {numRows, numCols},
         P()->tileTextBorderFraction(),
         STRING_TO_TILE_TEXT_ALIGNMENT().value(P()->tileTextAlignment()));

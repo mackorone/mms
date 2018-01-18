@@ -1,36 +1,59 @@
 #include "Distance.h"
 
+#include "../Assert.h"
+
 namespace mms {
 
-Distance::Distance() : m_meters(0.0) {
+Distance::Distance() : Distance(0.0) {
 }
 
-Distance::~Distance() {
+Distance Distance::Meters(double meters) {
+    return Distance(meters);
 }
 
 double Distance::getMeters() const {
     return m_meters;
 }
 
-double Distance::getCentimeters() const {
-    static const double centimetersPerMeter = 100.0;
-    return centimetersPerMeter * getMeters();
+Distance Distance::operator*(double factor) const {
+    return Distance(m_meters * factor);
 }
 
-bool Distance::operator==(const Distance& distance) const {
-    return getMeters() == distance.getMeters();
+Distance Distance::operator/(double factor) const {
+    ASSERT_NE(factor, 0.0);
+    return Distance(m_meters / factor);
 }
 
-bool Distance::operator!=(const Distance& distance) const {
-    return (!(operator==(distance)));
+Distance Distance::operator+(const Distance& other) const {
+    return Distance(m_meters + other.m_meters);
 }
 
-bool Distance::operator<(const Distance& distance) const {
-    return getMeters() < distance.getMeters();
+Distance Distance::operator-(const Distance& other) const {
+    return Distance(m_meters - other.m_meters);
 }
 
-Seconds Distance::operator/(const Speed& speed) const {
-    return Seconds(getMeters() / speed.getMetersPerSecond());
+double Distance::operator/(const Distance& other) const {
+    ASSERT_NE(other.m_meters, 0.0);
+    return m_meters / other.m_meters;
+}
+
+bool Distance::operator==(const Distance& other) const {
+    return m_meters == other.m_meters;
+}
+
+bool Distance::operator!=(const Distance& other) const {
+    return (!operator==(other));
+}
+
+bool Distance::operator<(const Distance& other) const {
+    return m_meters < other.m_meters;
+}
+
+void Distance::operator+=(const Distance& other) {
+    m_meters += other.m_meters;
+}
+
+Distance::Distance(double meters) : m_meters(meters) {
 }
 
 } // namespace mms

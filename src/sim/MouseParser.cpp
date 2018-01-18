@@ -13,9 +13,9 @@
 namespace mms {
 
 const Polygon MouseParser::NULL_POLYGON = Polygon({
-    Coordinate::Cartesian(Meters(0), Meters(0)),
-    Coordinate::Cartesian(Meters(0), Meters(0)),
-    Coordinate::Cartesian(Meters(0), Meters(0)),
+    Coordinate::Cartesian(Distance::Meters(0), Distance::Meters(0)),
+    Coordinate::Cartesian(Distance::Meters(0), Distance::Meters(0)),
+    Coordinate::Cartesian(Distance::Meters(0), Distance::Meters(0)),
 });
 const QString MouseParser::MOUSE_TAG = "Mouse";
 const QString MouseParser::FORWARD_DIRECTION_TAG = "Forward-Direction";
@@ -40,7 +40,7 @@ const QString MouseParser::HALF_WIDTH_TAG = "Half-Width";
 
 MouseParser::MouseParser(const QString& filePath, bool* success) :
         m_forwardDirection(Angle::Radians(0)),
-        m_centerOfMass(Coordinate::Cartesian(Meters(0), Meters(0))) {
+        m_centerOfMass(Coordinate::Cartesian(Distance::Meters(0), Distance::Meters(0))) {
 
     // Try to open the file
     QFile file(filePath);
@@ -68,7 +68,7 @@ MouseParser::MouseParser(const QString& filePath, bool* success) :
     QDomElement centerOfMassElement = getContainerElement(m_root, CENTER_OF_MASS_TAG, success);
     double x = getDoubleIfHasDouble(centerOfMassElement, X_TAG, success);
     double y = getDoubleIfHasDouble(centerOfMassElement, Y_TAG, success);
-    m_centerOfMass = Coordinate::Cartesian(Meters(x), Meters(y));
+    m_centerOfMass = Coordinate::Cartesian(Distance::Meters(x), Distance::Meters(y));
 }
 
 Polygon MouseParser::getBody(
@@ -93,7 +93,7 @@ Polygon MouseParser::getBody(
         double y = getDoubleIfHasDouble(vertex, Y_TAG, success);
         vertices.push_back(
             alignVertex(
-                Coordinate::Cartesian(Meters(x), Meters(y)),
+                Coordinate::Cartesian(Distance::Meters(x), Distance::Meters(y)),
                 alignmentTranslation,
                 alignmentRotation,
                 initialTranslation));
@@ -153,10 +153,10 @@ QMap<QString, Wheel> MouseParser::getWheels(
             wheels.insert(
                 name,
                 Wheel(
-                    Meters(diameter),
-                    Meters(width),
+                    Distance::Meters(diameter),
+                    Distance::Meters(width),
                     alignVertex(
-                        Coordinate::Cartesian(Meters(x), Meters(y)),
+                        Coordinate::Cartesian(Distance::Meters(x), Distance::Meters(y)),
                         alignmentTranslation,
                         alignmentRotation,
                         initialTranslation),
@@ -197,11 +197,11 @@ QMap<QString, Sensor> MouseParser::getSensors(
             sensors.insert(
                 name,
                 Sensor(
-                    Meters(radius),
-                    Meters(range), 
+                    Distance::Meters(radius),
+                    Distance::Meters(range), 
                     Angle::Degrees(halfWidth),
                     alignVertex(
-                        Coordinate::Cartesian(Meters(x), Meters(y)),
+                        Coordinate::Cartesian(Distance::Meters(x), Distance::Meters(y)),
                         alignmentTranslation,
                         alignmentRotation,
                         initialTranslation),

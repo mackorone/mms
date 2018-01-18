@@ -12,9 +12,9 @@
 namespace mms {
 
 Sensor::Sensor() :
-    m_range(Meters(0)),
+    m_range(Distance::Meters(0)),
     m_halfWidth(Angle::Radians(0)),
-    m_initialPosition(Coordinate::Cartesian(Meters(0), Meters(0))),
+    m_initialPosition(Coordinate::Cartesian(Distance::Meters(0), Distance::Meters(0))),
     m_initialDirection(Angle::Radians(0)) {
 }
 
@@ -98,8 +98,8 @@ Polygon Sensor::getViewPolygon(
 
     // Calling this function causes triangulation of a polygon
 
-    static Meters halfWallWidth = Meters(P()->wallWidth() / 2.0);
-    static Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
+    static Distance halfWallWidth = Distance::Meters(P()->wallWidth() / 2.0);
+    static Distance tileLength = Distance::Meters(P()->wallLength() + P()->wallWidth());
 
     QVector<Coordinate> polygon {currentPosition};
 

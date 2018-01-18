@@ -1,7 +1,7 @@
 #pragma once
 
+#include "Distance.h"
 #include "Duration.h"
-#include "Meters.h"
 #include "Speed.h"
 
 namespace mms {
@@ -17,7 +17,7 @@ public:
     MetersPerSecond operator*(double factor) const;
     MetersPerSecond operator/(double factor) const;
     double operator/(const Speed& speed) const;
-    Meters operator*(const Duration& duration) const;
+    Distance operator*(const Duration& duration) const;
     void operator+=(const Speed& speed);
 
 };

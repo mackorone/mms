@@ -34,8 +34,8 @@ public:
 private:
 
     // The length and width of maze walls, respectively
-    Meters m_wallLength;
-    Meters m_wallWidth;
+    Distance m_wallLength;
+    Distance m_wallWidth;
 
     // The max rows and cols of text per tile
     QPair<int, int> m_tileGraphicTextMaxSize;

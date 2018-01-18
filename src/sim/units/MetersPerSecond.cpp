@@ -34,8 +34,8 @@ double MetersPerSecond::operator/(const Speed& speed) const {
     return getMetersPerSecond() / speed.getMetersPerSecond();
 }
 
-Meters MetersPerSecond::operator*(const Duration& duration) const {
-    return Meters(getMetersPerSecond() * duration.getSeconds());
+Distance MetersPerSecond::operator*(const Duration& duration) const {
+    return Distance::Meters(getMetersPerSecond() * duration.getSeconds());
 }
 
 void MetersPerSecond::operator+=(const Speed& speed) {

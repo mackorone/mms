@@ -8,9 +8,9 @@
 namespace mms {
 
 Wheel::Wheel() :
-    m_radius(Meters(0)),
-    m_halfWidth(Meters(0)),
-    m_initialPosition(Coordinate::Cartesian(Meters(0), Meters(0))),
+    m_radius(Distance::Meters(0)),
+    m_halfWidth(Distance::Meters(0)),
+    m_initialPosition(Coordinate::Cartesian(Distance::Meters(0), Distance::Meters(0))),
     m_initialDirection(Angle::Radians(0)),
     m_angularVelocity(AngularVelocity::RadiansPerSecond(0.0)),
     m_maxAngularVelocityMagnitude(AngularVelocity::RadiansPerSecond(0)),
@@ -27,8 +27,8 @@ Wheel::Wheel(
         const AngularVelocity& maxAngularVelocityMagnitude,
         EncoderType encoderType,
         double encoderTicksPerRevolution) :
-        m_radius(Meters(diameter) / 2.0),
-        m_halfWidth(Meters(width) / 2.0),
+        m_radius(diameter / 2.0),
+        m_halfWidth(width / 2.0),
         m_initialPosition(position),
         m_initialDirection(direction),
 		m_angularVelocity(AngularVelocity::RadiansPerSecond(0.0)),
@@ -40,17 +40,17 @@ Wheel::Wheel(
 
     // Create the initial wheel polygon
     QVector<Coordinate> polygon;
-    polygon.push_back(Coordinate::Cartesian(Meters(m_radius) * -1, m_halfWidth * -1));
-    polygon.push_back(Coordinate::Cartesian(Meters(m_radius) *  1, m_halfWidth * -1));
-    polygon.push_back(Coordinate::Cartesian(Meters(m_radius) *  1, m_halfWidth *  1));
-    polygon.push_back(Coordinate::Cartesian(Meters(m_radius) * -1, m_halfWidth *  1));
+    polygon.push_back(Coordinate::Cartesian(m_radius * -1, m_halfWidth * -1));
+    polygon.push_back(Coordinate::Cartesian(m_radius *  1, m_halfWidth * -1));
+    polygon.push_back(Coordinate::Cartesian(m_radius *  1, m_halfWidth *  1));
+    polygon.push_back(Coordinate::Cartesian(m_radius * -1, m_halfWidth *  1));
     m_initialPolygon =
         Polygon(polygon)
             .translate(m_initialPosition)
             .rotateAroundPoint(m_initialDirection, m_initialPosition);
 }
 
-Meters Wheel::getRadius() const {
+Distance Wheel::getRadius() const {
     return m_radius;
 }
 

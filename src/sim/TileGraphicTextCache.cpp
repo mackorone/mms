@@ -38,7 +38,7 @@ QPair<Coordinate, Coordinate> TileGraphicTextCache::getTileGraphicTextPosition(
     );
 
     // Now get the character position in the maze for *this* tile
-    Meters tileLength = m_wallLength + m_wallWidth;
+    Distance tileLength = m_wallLength + m_wallWidth;
     Coordinate offset = Coordinate::Cartesian(tileLength * x, tileLength * y);
     Coordinate LL = textPosition.first + offset;
     Coordinate UR = textPosition.second + offset;
@@ -87,8 +87,8 @@ QMap<
     Coordinate CD = D - C;
 
     // We assume that each character is twice as tall as it is wide, and we scale accordingly
-    Meters characterWidth = CD.getX() / static_cast<double>(maxCols);
-    Meters characterHeight = CD.getY() / static_cast<double>(maxRows);
+    Distance characterWidth = CD.getX() / static_cast<double>(maxCols);
+    Distance characterHeight = CD.getY() / static_cast<double>(maxRows);
     if (characterWidth * 2.0 < characterHeight) {
         characterHeight = characterWidth * 2.0;
     }
@@ -113,8 +113,8 @@ QMap<
             for (int row = 0; row <= maxRows; row += 1) {
                 for (int col = 0; col <= maxCols; col += 1) {
 
-                    Coordinate LL = Coordinate::Cartesian(Meters(0), Meters(0));
-                    Coordinate UR = Coordinate::Cartesian(Meters(0), Meters(0));
+                    Coordinate LL = Coordinate::Cartesian(Distance::Meters(0), Distance::Meters(0));
+                    Coordinate UR = Coordinate::Cartesian(Distance::Meters(0), Distance::Meters(0));
 
                     if (row < numRows && col < numCols) {
 
@@ -135,12 +135,12 @@ QMap<
                         }
 
                         LL = Coordinate::Cartesian(
-                            Meters(E.getX() + characterWidth * (col + colOffset)),
-                            Meters(E.getY() + characterHeight * ((numRows - row - 1) + rowOffset))
+                            E.getX() + characterWidth * (col + colOffset),
+                            E.getY() + characterHeight * ((numRows - row - 1) + rowOffset)
                         );
                         UR = Coordinate::Cartesian(
-                            Meters(E.getX() + characterWidth * (col + colOffset + 1)),
-                            Meters(E.getY() + characterHeight * ((numRows - row - 1) + rowOffset + 1))
+                            E.getX() + characterWidth * (col + colOffset + 1),
+                            E.getY() + characterHeight * ((numRows - row - 1) + rowOffset + 1)
                         );
                     }
 

@@ -146,9 +146,9 @@ QVector<Triangle> Polygon::triangulate(QVector<Coordinate> vertices) {
     QVector<Triangle> triangles;
     for (auto it = result.begin(); it != result.end(); it++) {
         triangles.push_back({
-            Coordinate::Cartesian(Meters((*it)[0].x), Meters((*it)[0].y)),
-            Coordinate::Cartesian(Meters((*it)[1].x), Meters((*it)[1].y)),
-            Coordinate::Cartesian(Meters((*it)[2].x), Meters((*it)[2].y)),
+            Coordinate::Cartesian(Distance::Meters((*it)[0].x), Distance::Meters((*it)[0].y)),
+            Coordinate::Cartesian(Distance::Meters((*it)[1].x), Distance::Meters((*it)[1].y)),
+            Coordinate::Cartesian(Distance::Meters((*it)[2].x), Distance::Meters((*it)[2].y)),
         });
     }
 

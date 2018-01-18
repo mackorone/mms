@@ -5,7 +5,7 @@
 #include <QVector>
 #include <QtMath>
 
-#include "units/Meters.h"
+#include "units/Distance.h"
 #include "units/MetersPerSecond.h"
 
 #include "Assert.h"
@@ -20,7 +20,7 @@ Mouse::Mouse(const Maze* maze) :
     m_crashed(false) {
 
     // The initial translation of the mouse is just the center of the starting tile
-    Meters halfOfTileDistance = Meters((P()->wallLength() + P()->wallWidth()) / 2.0);
+    Distance halfOfTileDistance = Distance::Meters((P()->wallLength() + P()->wallWidth()) / 2.0);
     m_initialTranslation = Coordinate::Cartesian(halfOfTileDistance, halfOfTileDistance);
     m_currentTranslation = m_initialTranslation;
 
@@ -74,7 +74,7 @@ bool Mouse::reload(const QString& mouseFile) {
     // Initialize the center of mass polygon
     m_initialCenterOfMassPolygon = GeometryUtilities::createCirclePolygon(
         m_initialTranslation,
-        Meters(.005),
+        Distance::Meters(.005),
         8 // Num sides
     );
 
@@ -145,7 +145,7 @@ Angle Mouse::getCurrentRotation() const {
 }
 
 QPair<int, int> Mouse::getCurrentDiscretizedTranslation() const {
-    static Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
+    static Distance tileLength = Distance::Meters(P()->wallLength() + P()->wallWidth());
     Coordinate currentTranslation = getCurrentTranslation();
     int x = static_cast<int>(qFloor(currentTranslation.getX() / tileLength));
     int y = static_cast<int>(qFloor(currentTranslation.getY() / tileLength));
@@ -350,7 +350,7 @@ void Mouse::setWheelSpeedsForMoveForward(double fractionOfMaxSpeed) {
     setWheelSpeedsForMovement(fractionOfMaxSpeed, 1.0, 0.0);
 }
 
-void Mouse::setWheelSpeedsForCurveLeft(double fractionOfMaxSpeed, const Meters& radius) {
+void Mouse::setWheelSpeedsForCurveLeft(double fractionOfMaxSpeed, const Distance& radius) {
     QPair<double, double> curveTurnFactors =
         m_curveTurnFactorCalculator.getCurveTurnFactors(radius);
     setWheelSpeedsForMovement(
@@ -359,7 +359,7 @@ void Mouse::setWheelSpeedsForCurveLeft(double fractionOfMaxSpeed, const Meters& 
         curveTurnFactors.second);
 }
 
-void Mouse::setWheelSpeedsForCurveRight(double fractionOfMaxSpeed, const Meters& radius) {
+void Mouse::setWheelSpeedsForCurveRight(double fractionOfMaxSpeed, const Distance& radius) {
     QPair<double, double> curveTurnFactors =
         m_curveTurnFactorCalculator.getCurveTurnFactors(radius);
     setWheelSpeedsForMovement(

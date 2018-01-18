@@ -114,9 +114,12 @@ Polygon GeometryUtilities::convexHull(const QVector<Polygon>& polygons) {
 }
 
 Coordinate GeometryUtilities::castRay(
-        const Coordinate& start, const Coordinate& end, const Maze& maze,
-        const Meters& halfWallWidth, const Meters& tileLength) {
-
+    const Coordinate& start,
+    const Coordinate& end,
+    const Maze& maze,
+    const Distance& halfWallWidth,
+    const Distance& tileLength
+) {
     // This is an implementation of ray-casting, a quick way to determine the
     // first object with which a ray collides. It relies on the fact that we
     // know where the walls are ahead of time.
@@ -124,8 +127,8 @@ Coordinate GeometryUtilities::castRay(
     // First, determine the difference between the points. This allows us to
     // determine the direction of the ray, and thus the logical starting and
     // ending tiles (different from the actual starting and ending tiles).
-    Meters dx = end.getX() - start.getX();
-    Meters dy = end.getY() - start.getY();
+    Distance dx = end.getX() - start.getX();
+    Distance dy = end.getY() - start.getY();
 
     // Determine the direction of the ray
     QPair<int, int> direction = {
@@ -190,8 +193,8 @@ Coordinate GeometryUtilities::castRay(
     );
 
     // The current x and y positions that are tracked in the loop
-    Meters cx = start.getX();
-    Meters cy = start.getY();
+    Distance cx = start.getX();
+    Distance cy = start.getY();
 
     // Determine the logical starting tile
     int sx = static_cast<int>(std::floor((start - logicalShift).getX() / tileLength));
@@ -210,34 +213,45 @@ Coordinate GeometryUtilities::castRay(
     int iy = direction.second;
 
     // The x and y values of the next potential collision
-    Meters nx = tileLength * (sx + ox) + logicalShift.getX();
-    Meters ny = tileLength * (sy + oy) + logicalShift.getY();
+    Distance nx = tileLength * (sx + ox) + logicalShift.getX();
+    Distance ny = tileLength * (sy + oy) + logicalShift.getY();
 
     // The direction of wall to inspect for a potential collision
     Direction wx = (direction.first  == 1 ? Direction::EAST  : Direction::WEST );
     Direction wy = (direction.second == 1 ? Direction::NORTH : Direction::SOUTH);
 
     // The x and y conditions on which to continue looping
-    static std::function<bool(const Meters&, const Meters&)> east = [](const Meters& nx, const Meters& ex) {
+    static std::function<bool(const Distance&, const Distance&)> east = [](const Distance& nx, const Distance& ex) {
         return nx < ex;
     };
-    static std::function<bool(const Meters&, const Meters&)> west = [](const Meters& nx, const Meters& ex) {
+    static std::function<bool(const Distance&, const Distance&)> west = [](const Distance& nx, const Distance& ex) {
         return ex < nx;
     };
-    static std::function<bool(const Meters&, const Meters&)> north = [](const Meters& ny, const Meters& ey) {
+    static std::function<bool(const Distance&, const Distance&)> north = [](const Distance& ny, const Distance& ey) {
         return ny < ey;
     };
-    static std::function<bool(const Meters&, const Meters&)> south = [](const Meters& ny, const Meters& ey) {
+    static std::function<bool(const Distance&, const Distance&)> south = [](const Distance& ny, const Distance& ey) {
         return ey < ny;
     };
-    std::function<bool(const Meters&, const Meters&)>* bx = (direction.first  == 1 ? &east  : &west );
-    std::function<bool(const Meters&, const Meters&)>* by = (direction.second == 1 ? &north : &south);
+    std::function<bool(const Distance&, const Distance&)>* bx = (direction.first  == 1 ? &east  : &west );
+    std::function<bool(const Distance&, const Distance&)>* by = (direction.second == 1 ? &north : &south);
 
     // Loop until we've exhausted the entirety of the ray
     while ((*bx)(nx, end.getX()) || (*by)(ny, end.getY())) {
 
+        bool x_first;
+        if (dx == Distance::Meters(0.0)) {
+            x_first = false;
+        }
+        else if (dy == Distance::Meters(0.0)) {
+            x_first = true;
+        }
+        else {
+            x_first = std::abs((nx - cx) / dx) < std::abs((ny - cy) / dy);
+        }
+
         // x collision will happen first
-        if (std::abs((nx - cx) / dx) < std::abs((ny - cy) / dy)) {
+        if (x_first) {
             cy = cy + (nx - cx) * (dy / dx);
             cx = nx;
             int x = sx + ox - px;
@@ -269,9 +283,12 @@ Coordinate GeometryUtilities::castRay(
 }
 
 bool GeometryUtilities::isOnTileEdge(
-        const Meters& position, const Meters& halfWallWidth, const Meters& tileLength) {
-    Meters tileLengthMinusHalfWallWidth = tileLength - halfWallWidth;
-    Meters mod = Meters(std::fmod(position.getMeters(), tileLength.getMeters()));
+    const Distance& position,
+    const Distance& halfWallWidth,
+    const Distance& tileLength
+) {
+    Distance tileLengthMinusHalfWallWidth = tileLength - halfWallWidth;
+    Distance mod = Distance::Meters(std::fmod(position.getMeters(), tileLength.getMeters()));
     return (mod < halfWallWidth || tileLengthMinusHalfWallWidth < mod);
 }
 

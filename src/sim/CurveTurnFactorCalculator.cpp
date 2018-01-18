@@ -79,7 +79,7 @@ CurveTurnFactorCalculator::CurveTurnFactorCalculator(
     m_unitTurnComponent = B;
 }
 
-QPair<double, double> CurveTurnFactorCalculator::getCurveTurnFactors(const Meters& radius) {
+QPair<double, double> CurveTurnFactorCalculator::getCurveTurnFactors(const Distance& radius) {
     return {m_unitForwardComponent * radius.getMeters(), m_unitTurnComponent};
 }
 

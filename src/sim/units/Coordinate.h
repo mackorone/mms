@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Angle.h"
-#include "Meters.h"
+#include "Distance.h"
 
 namespace mms {
 
@@ -13,9 +13,9 @@ public:
     static Coordinate Cartesian(const Distance& x, const Distance& y);
     static Coordinate Polar(const Distance& rho, const Angle& theta);
 
-    Meters getX() const;
-    Meters getY() const;
-    Meters getRho() const;
+    Distance getX() const;
+    Distance getY() const;
+    Distance getRho() const;
     Angle getTheta() const;
 
     Coordinate operator*(double factor) const;
@@ -29,8 +29,8 @@ public:
 
 private:
 
-    Meters m_x;
-    Meters m_y;
+    Distance m_x;
+    Distance m_y;
     Coordinate(const Distance& x, const Distance& y);
 
 };
