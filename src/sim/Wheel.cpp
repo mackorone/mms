@@ -10,7 +10,7 @@ namespace mms {
 Wheel::Wheel() :
     m_radius(Meters(0)),
     m_halfWidth(Meters(0)),
-    m_initialPosition(Cartesian(Meters(0), Meters(0))),
+    m_initialPosition(Coordinate::Cartesian(Meters(0), Meters(0))),
     m_initialDirection(Angle::Radians(0)),
     m_angularVelocity(AngularVelocity::RadiansPerSecond(0.0)),
     m_maxAngularVelocityMagnitude(AngularVelocity::RadiansPerSecond(0)),
@@ -39,11 +39,11 @@ Wheel::Wheel(
         m_relativeRotation(Angle::Radians(0)) {
 
     // Create the initial wheel polygon
-    QVector<Cartesian> polygon;
-    polygon.push_back(Cartesian(Meters(m_radius) * -1, m_halfWidth * -1));
-    polygon.push_back(Cartesian(Meters(m_radius) *  1, m_halfWidth * -1));
-    polygon.push_back(Cartesian(Meters(m_radius) *  1, m_halfWidth *  1));
-    polygon.push_back(Cartesian(Meters(m_radius) * -1, m_halfWidth *  1));
+    QVector<Coordinate> polygon;
+    polygon.push_back(Coordinate::Cartesian(Meters(m_radius) * -1, m_halfWidth * -1));
+    polygon.push_back(Coordinate::Cartesian(Meters(m_radius) *  1, m_halfWidth * -1));
+    polygon.push_back(Coordinate::Cartesian(Meters(m_radius) *  1, m_halfWidth *  1));
+    polygon.push_back(Coordinate::Cartesian(Meters(m_radius) * -1, m_halfWidth *  1));
     m_initialPolygon =
         Polygon(polygon)
             .translate(m_initialPosition)
@@ -54,7 +54,7 @@ Meters Wheel::getRadius() const {
     return m_radius;
 }
 
-Cartesian Wheel::getInitialPosition() const {
+Coordinate Wheel::getInitialPosition() const {
     return m_initialPosition;
 }
 

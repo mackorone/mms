@@ -5,7 +5,7 @@
 #include "Triangle.h"
 #include "units/Angle.h"
 #include "units/Area.h"
-#include "units/Cartesian.h"
+#include "units/Coordinate.h"
 
 namespace mms {
 
@@ -15,9 +15,9 @@ public:
 
     Polygon();
     Polygon(const Polygon& polygon);
-    Polygon(QVector<Cartesian> vertices);
+    Polygon(QVector<Coordinate> vertices);
 
-    QVector<Cartesian> getVertices() const;
+    QVector<Coordinate> getVertices() const;
     QVector<Triangle> getTriangles() const;
 
     Area area() const;
@@ -27,7 +27,7 @@ public:
 
 private:
 
-    QVector<Cartesian> m_vertices;
+    QVector<Coordinate> m_vertices;
 
     // We're lazy about triangulation, since it's expensive and not always
     // necessary. The "mutable" keyword allows us to assign m_triangles in the
@@ -38,7 +38,7 @@ private:
     // require re-triangulation. We keep it private since it's pretty easy to
     // abuse the fact that the triangles argument should be the triangulation
     // of the polygon specified by the vertices argument.
-    Polygon(QVector<Cartesian> vertices, QVector<Triangle> triangles);
+    Polygon(QVector<Coordinate> vertices, QVector<Triangle> triangles);
 
     // Tells us whether or not the polygon has already performed triangulation.
     // This is used in the copy constructor, and allows us to be lazy without
@@ -46,7 +46,7 @@ private:
     bool alreadyPerformedTriangulation() const;
 
     // Actually peforms the triangulation of the polygon.
-    static QVector<Triangle> triangulate(QVector<Cartesian> vertices);
+    static QVector<Triangle> triangulate(QVector<Coordinate> vertices);
 
 };
 

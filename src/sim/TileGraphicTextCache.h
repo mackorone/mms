@@ -5,7 +5,7 @@
 #include <QPair>
 
 #include "TileTextAlignment.h"
-#include "units/Cartesian.h"
+#include "units/Coordinate.h"
 
 namespace mms {
 
@@ -28,7 +28,7 @@ public:
     QPair<double, double> getFontImageCharacterPosition(QChar c) const;
 
     // Retrieve the LL and UR coordinates for a particular location
-    QPair<Cartesian, Cartesian> getTileGraphicTextPosition(
+    QPair<Coordinate, Coordinate> getTileGraphicTextPosition(
         int x, int y, int numRows, int numCols, int row, int col) const;
 
 private:
@@ -44,12 +44,12 @@ private:
     // to the LL/UR text coordinates for the starting tile, namely tile (0, 0)
     QMap<
         QPair<QPair<int, int>, QPair<int, int>>,
-        QPair<Cartesian, Cartesian>> m_tileGraphicTextPositions;
+        QPair<Coordinate, Coordinate>> m_tileGraphicTextPositions;
 
     // Just a helper method for building the text position cache
     QMap<
         QPair<QPair<int, int>, QPair<int, int>>,
-        QPair<Cartesian, Cartesian>> buildPositionCache(
+        QPair<Coordinate, Coordinate>> buildPositionCache(
             double borderFraction,
             TileTextAlignment tiletextAlignment);
 };

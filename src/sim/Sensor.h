@@ -3,7 +3,7 @@
 #include <set>
 
 #include "units/Angle.h"
-#include "units/Cartesian.h"
+#include "units/Coordinate.h"
 #include "units/Meters.h"
 #include "units/Seconds.h"
 
@@ -24,18 +24,18 @@ public:
         const Angle& direction,
         const Maze& maze);
 
-    Cartesian getInitialPosition() const;
+    Coordinate getInitialPosition() const;
     Angle getInitialDirection() const;
     const Polygon& getInitialPolygon() const;
     const Polygon& getInitialViewPolygon() const;
     Polygon getCurrentViewPolygon(
-        const Cartesian& currentPosition,
+        const Coordinate& currentPosition,
         const Angle& currentDirection,
         const Maze& maze) const;
 
     double read() const;
     void updateReading(
-        const Cartesian& currentPosition,
+        const Coordinate& currentPosition,
         const Angle& currentDirection,
         const Maze& maze);
 
@@ -43,7 +43,7 @@ private:
     Meters m_range;
     Angle m_halfWidth;
 
-    Cartesian m_initialPosition;
+    Coordinate m_initialPosition;
     Angle m_initialDirection;
     Polygon m_initialPolygon;
     Polygon m_initialViewPolygon;
@@ -51,7 +51,7 @@ private:
     double m_currentReading;
 
     Polygon getViewPolygon(
-        const Cartesian& currentPosition,
+        const Coordinate& currentPosition,
         const Angle& currentDirection,
         const Maze& maze) const;
 };

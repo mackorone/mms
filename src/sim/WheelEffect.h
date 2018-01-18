@@ -1,7 +1,7 @@
 #pragma once
 
 #include "units/AngularVelocity.h"
-#include "units/Cartesian.h"
+#include "units/Coordinate.h"
 #include "units/MetersPerSecond.h"
 #include "Wheel.h"
 
@@ -12,7 +12,7 @@ class WheelEffect {
 public:
     WheelEffect();
     WheelEffect(
-        const Cartesian& initialTranslation,
+        const Coordinate& initialTranslation,
         const Angle& initialRotation,
         const Wheel& wheel);
 

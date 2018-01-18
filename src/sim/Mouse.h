@@ -7,7 +7,7 @@
 #include <QVector>
 
 #include "units/AngularVelocity.h"
-#include "units/Cartesian.h"
+#include "units/Coordinate.h"
 
 #include "CurveTurnFactorCalculator.h"
 #include "Direction.h"
@@ -50,10 +50,10 @@ public:
     void setStartingDirection(Direction startingDirection);
 
     // Gets the initial translation of the mouse
-    Cartesian getInitialTranslation() const;
+    Coordinate getInitialTranslation() const;
 
     // Gets the current translation and rotation of the mouse
-    Cartesian getCurrentTranslation() const;
+    Coordinate getCurrentTranslation() const;
     Angle getCurrentRotation() const;
 
     // Gets the current discretized translation and rotation of the mouse
@@ -154,7 +154,7 @@ private:
     Direction m_startingDirection;
 
     // The translation and rotation of the mouse at the previous reload
-    Cartesian m_initialTranslation;
+    Coordinate m_initialTranslation;
     Angle m_initialRotation;
 
     // The parts of the mouse, as when positioned at m_initialTranslation and m_initialRotation
@@ -167,7 +167,7 @@ private:
     // The effect that each wheel has on mouse forward, sideways, and turn movements
     QMap<QString, WheelEffect> m_wheelEffects;
     QMap<QString, WheelEffect> getWheelEffects(
-        const Cartesian& initialTranslation,
+        const Coordinate& initialTranslation,
         const Angle& initialRotation,
         const QMap<QString, Wheel>& wheels) const;
 
@@ -191,7 +191,7 @@ private:
     // The gyro (rate of rotation), rotation, and translation
     // of the mouse, which change throughout execution
     AngularVelocity m_currentGyro;
-    Cartesian m_currentTranslation;
+    Coordinate m_currentTranslation;
     Angle m_currentRotation;
 
     // Ensures that reads/updates happen atomically,
@@ -201,13 +201,13 @@ private:
     // Helper function for polygon retrieval based on a given mouse translation and rotation
     Polygon getCurrentPolygon(
         const Polygon& initialPolygon,
-        const Cartesian& currentTranslation,
+        const Coordinate& currentTranslation,
         const Angle& currentRotation) const;
 
     // Retrieve the current position/rotation of sensor based on position/rotation of mouse
-    QPair<Cartesian, Angle> getCurrentSensorPositionAndDirection(
+    QPair<Coordinate, Angle> getCurrentSensorPositionAndDirection(
         const Sensor& sensor,
-        const Cartesian& currentTranslation,
+        const Coordinate& currentTranslation,
         const Angle& currentRotation) const;
 
     // Sets the wheel speed for a particular movement, based on the linear combo of the two factors

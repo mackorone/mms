@@ -4,7 +4,7 @@
 #include "Polygon.h"
 #include "units/Angle.h"
 #include "units/Area.h"
-#include "units/Cartesian.h"
+#include "units/Coordinate.h"
 #include "units/Distance.h"
 
 namespace mms {
@@ -17,24 +17,24 @@ public:
     GeometryUtilities() = delete;
 
     // Returns the result of translating the vertex by translation
-    static Cartesian translateVertex(const Cartesian& vertex, const Coordinate& translation);
+    static Coordinate translateVertex(const Coordinate& vertex, const Coordinate& translation);
 
     // Returns the result of rotating the vertex around point by the amount specified by angle
-    static Cartesian rotateVertexAroundPoint(const Cartesian& vertex, const Angle& angle, const Coordinate& point);
+    static Coordinate rotateVertexAroundPoint(const Coordinate& vertex, const Angle& angle, const Coordinate& point);
 
     // Creates a circle polygon
-    static Polygon createCirclePolygon(const Cartesian& position, const Distance& radius, int numberOfEdges);
+    static Polygon createCirclePolygon(const Coordinate& position, const Distance& radius, int numberOfEdges);
 
     // Returns the cross product of the vectors ZA and ZB
-    static Area crossProduct(const Cartesian& Z, const Cartesian& A, const Cartesian& B);
+    static Area crossProduct(const Coordinate& Z, const Coordinate& A, const Coordinate& B);
 
     // Returns the convex hull of all of the points of all of the polygons
     static Polygon convexHull(const QVector<Polygon>& polygons);
 
     // Attempts to cast a ray from start to end and returns the first point of
     // intersection with walls or corners, as given by maze, or end if none
-    static Cartesian castRay(
-        const Cartesian& start, const Cartesian& end, const Maze& maze,
+    static Coordinate castRay(
+        const Coordinate& start, const Coordinate& end, const Maze& maze,
         const Meters& halfWallWidth, const Meters& tileLength);
 
     // Returns true if position is located on the edge of a tile, based on halfWallWidth and tileLength

@@ -9,11 +9,11 @@ MouseGraphic::MouseGraphic(const Mouse* mouse) :
     m_mouse(mouse) {
 }
 
-Cartesian MouseGraphic::getInitialMouseTranslation() const {
+Coordinate MouseGraphic::getInitialMouseTranslation() const {
     return m_mouse->getInitialTranslation();
 }
 
-QPair<Cartesian, Angle> MouseGraphic::getCurrentMousePosition() const {
+QPair<Coordinate, Angle> MouseGraphic::getCurrentMousePosition() const {
     return {
         m_mouse->getCurrentTranslation(),
         m_mouse->getCurrentRotation(),

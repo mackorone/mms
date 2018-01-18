@@ -94,73 +94,120 @@ void Tile::initPolygons(int mazeWidth, int mazeHeight) {
 
 
 void Tile::initFullPolygon(int mazeWidth, int mazeHeight) {
-
     Meters halfWallWidth = Meters(P()->wallWidth()) / 2.0;
     Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
-    Cartesian lowerLeftPoint(tileLength * getX() - halfWallWidth * (getX() == 0 ? 1 : 0),
-                             tileLength * getY() - halfWallWidth * (getY() == 0 ? 1 : 0));
-    Cartesian upperRightPoint(tileLength * (getX() + 1) + halfWallWidth * (getX() == mazeWidth - 1 ? 1 : 0),
-                              tileLength * (getY() + 1) + halfWallWidth * (getY() == mazeHeight - 1 ? 1 : 0));
-    Cartesian lowerRightPoint(upperRightPoint.getX(), lowerLeftPoint.getY());
-    Cartesian upperLeftPoint(lowerLeftPoint.getX(), upperRightPoint.getY());
-    m_fullPolygon = Polygon({lowerLeftPoint, upperLeftPoint, upperRightPoint, lowerRightPoint});
+    Coordinate lowerLeftPoint = Coordinate::Cartesian(
+        tileLength * getX() - halfWallWidth * (getX() == 0 ? 1 : 0),
+        tileLength * getY() - halfWallWidth * (getY() == 0 ? 1 : 0)
+    );
+    Coordinate upperRightPoint = Coordinate::Cartesian(
+        tileLength * (getX() + 1) + halfWallWidth * (getX() == mazeWidth - 1 ? 1 : 0),
+        tileLength * (getY() + 1) + halfWallWidth * (getY() == mazeHeight - 1 ? 1 : 0)
+    );
+    Coordinate lowerRightPoint = Coordinate::Cartesian(
+        upperRightPoint.getX(),
+        lowerLeftPoint.getY()
+    );
+    Coordinate upperLeftPoint = Coordinate::Cartesian(
+        lowerLeftPoint.getX(),
+        upperRightPoint.getY()
+    );
+    m_fullPolygon = Polygon({
+        lowerLeftPoint,
+        upperLeftPoint,
+        upperRightPoint,
+        lowerRightPoint,
+    });
 }
 
 void Tile::initInteriorPolygon(int mazeWidth, int mazeHeight) {
 
     Meters halfWallWidth = Meters(P()->wallWidth()) / 2.0;
-    Cartesian lowerLeftPoint = m_fullPolygon.getVertices().at(0);
-    Cartesian upperLeftPoint = m_fullPolygon.getVertices().at(1);
-    Cartesian upperRightPoint = m_fullPolygon.getVertices().at(2);
-    Cartesian lowerRightPoint = m_fullPolygon.getVertices().at(3);
+    Coordinate lowerLeftPoint = m_fullPolygon.getVertices().at(0);
+    Coordinate upperLeftPoint = m_fullPolygon.getVertices().at(1);
+    Coordinate upperRightPoint = m_fullPolygon.getVertices().at(2);
+    Coordinate lowerRightPoint = m_fullPolygon.getVertices().at(3);
 
     m_interiorPolygon = Polygon({
-        lowerLeftPoint + Cartesian(
-            halfWallWidth * (getX() == 0 ? 2 : 1), halfWallWidth * (getY() == 0 ? 2 : 1)),
-        upperLeftPoint + Cartesian(
-            halfWallWidth * (getX() == 0 ? 2 : 1), halfWallWidth * (getY() == mazeHeight - 1 ? -2 : -1)),
-        upperRightPoint + Cartesian(
-            halfWallWidth * (getX() == mazeWidth - 1 ? -2 : -1), halfWallWidth * (getY() == mazeHeight - 1 ? -2 : -1)),
-        lowerRightPoint + Cartesian(
-            halfWallWidth * (getX() == mazeWidth - 1 ? -2 : -1), halfWallWidth * (getY() == 0 ? 2 : 1))});
+        lowerLeftPoint + Coordinate::Cartesian(
+            halfWallWidth * (getX() == 0 ? 2 : 1),
+            halfWallWidth * (getY() == 0 ? 2 : 1)
+        ),
+        upperLeftPoint + Coordinate::Cartesian(
+            halfWallWidth * (getX() == 0 ? 2 : 1),
+            halfWallWidth * (getY() == mazeHeight - 1 ? -2 : -1)
+        ),
+        upperRightPoint + Coordinate::Cartesian(
+            halfWallWidth * (getX() == mazeWidth - 1 ? -2 : -1),
+            halfWallWidth * (getY() == mazeHeight - 1 ? -2 : -1)
+        ),
+        lowerRightPoint + Coordinate::Cartesian(
+            halfWallWidth * (getX() == mazeWidth - 1 ? -2 : -1),
+            halfWallWidth * (getY() == 0 ? 2 : 1)
+        ),
+    });
 }
 
 void Tile::initWallPolygons(int mazeWidth, int mazeHeight) {
 
-    Cartesian outerLowerLeftPoint = m_fullPolygon.getVertices().at(0);
-    Cartesian outerUpperLeftPoint = m_fullPolygon.getVertices().at(1);
-    Cartesian outerUpperRightPoint = m_fullPolygon.getVertices().at(2);
-    Cartesian outerLowerRightPoint = m_fullPolygon.getVertices().at(3);
+    Coordinate outerLowerLeftPoint = m_fullPolygon.getVertices().at(0);
+    Coordinate outerUpperLeftPoint = m_fullPolygon.getVertices().at(1);
+    Coordinate outerUpperRightPoint = m_fullPolygon.getVertices().at(2);
+    Coordinate outerLowerRightPoint = m_fullPolygon.getVertices().at(3);
 
-    Cartesian innerLowerLeftPoint = m_interiorPolygon.getVertices().at(0);
-    Cartesian innerUpperLeftPoint = m_interiorPolygon.getVertices().at(1);
-    Cartesian innerUpperRightPoint = m_interiorPolygon.getVertices().at(2);
-    Cartesian innerLowerRightPoint = m_interiorPolygon.getVertices().at(3);
+    Coordinate innerLowerLeftPoint = m_interiorPolygon.getVertices().at(0);
+    Coordinate innerUpperLeftPoint = m_interiorPolygon.getVertices().at(1);
+    Coordinate innerUpperRightPoint = m_interiorPolygon.getVertices().at(2);
+    Coordinate innerLowerRightPoint = m_interiorPolygon.getVertices().at(3);
 
-    QVector<Cartesian> northWall;
+    QVector<Coordinate> northWall;
     northWall.push_back(innerUpperLeftPoint);
-    northWall.push_back(Cartesian(innerUpperLeftPoint.getX(), outerUpperLeftPoint.getY()));
-    northWall.push_back(Cartesian(innerUpperRightPoint.getX(), outerUpperRightPoint.getY()));
+    northWall.push_back(Coordinate::Cartesian(
+        innerUpperLeftPoint.getX(),
+        outerUpperLeftPoint.getY()
+    ));
+    northWall.push_back(Coordinate::Cartesian(
+        innerUpperRightPoint.getX(),
+        outerUpperRightPoint.getY()
+    ));
     northWall.push_back(innerUpperRightPoint);
     m_wallPolygons.insert(Direction::NORTH, Polygon(northWall));
 
-    QVector<Cartesian> eastWall;
+    QVector<Coordinate> eastWall;
     eastWall.push_back(innerLowerRightPoint);
     eastWall.push_back(innerUpperRightPoint);
-    eastWall.push_back(Cartesian(outerUpperRightPoint.getX(), innerUpperRightPoint.getY()));
-    eastWall.push_back(Cartesian(outerLowerRightPoint.getX(), innerLowerRightPoint.getY()));
+    eastWall.push_back(Coordinate::Cartesian(
+        outerUpperRightPoint.getX(),
+        innerUpperRightPoint.getY()
+    ));
+    eastWall.push_back(Coordinate::Cartesian(
+        outerLowerRightPoint.getX(),
+        innerLowerRightPoint.getY()
+    ));
     m_wallPolygons.insert(Direction::EAST, Polygon(eastWall));
 
-    QVector<Cartesian> southWall;
-    southWall.push_back(Cartesian(innerLowerLeftPoint.getX(), outerLowerLeftPoint.getY()));
+    QVector<Coordinate> southWall;
+    southWall.push_back(Coordinate::Cartesian(
+        innerLowerLeftPoint.getX(),
+        outerLowerLeftPoint.getY()
+    ));
     southWall.push_back(innerLowerLeftPoint);
     southWall.push_back(innerLowerRightPoint);
-    southWall.push_back(Cartesian(innerLowerRightPoint.getX(), outerLowerRightPoint.getY()));
+    southWall.push_back(Coordinate::Cartesian(
+        innerLowerRightPoint.getX(),
+        outerLowerRightPoint.getY()
+    ));
     m_wallPolygons.insert(Direction::SOUTH, Polygon(southWall));
 
-    QVector<Cartesian> westWall;
-    westWall.push_back(Cartesian(outerLowerLeftPoint.getX(), innerLowerLeftPoint.getY()));
-    westWall.push_back(Cartesian(outerUpperLeftPoint.getX(), innerUpperLeftPoint.getY()));
+    QVector<Coordinate> westWall;
+    westWall.push_back(Coordinate::Cartesian(
+        outerLowerLeftPoint.getX(),
+        innerLowerLeftPoint.getY()
+    ));
+    westWall.push_back(Coordinate::Cartesian(
+        outerUpperLeftPoint.getX(),
+        innerUpperLeftPoint.getY()
+    ));
     westWall.push_back(innerUpperLeftPoint);
     westWall.push_back(innerLowerLeftPoint);
     m_wallPolygons.insert(Direction::WEST, Polygon(westWall));
@@ -168,41 +215,65 @@ void Tile::initWallPolygons(int mazeWidth, int mazeHeight) {
 
 void Tile::initCornerPolygons(int mazeWidth, int mazeHeight) {
 
-    Cartesian outerLowerLeftPoint = m_fullPolygon.getVertices().at(0);
-    Cartesian outerUpperLeftPoint = m_fullPolygon.getVertices().at(1);
-    Cartesian outerUpperRightPoint = m_fullPolygon.getVertices().at(2);
-    Cartesian outerLowerRightPoint = m_fullPolygon.getVertices().at(3);
+    Coordinate outerLowerLeftPoint = m_fullPolygon.getVertices().at(0);
+    Coordinate outerUpperLeftPoint = m_fullPolygon.getVertices().at(1);
+    Coordinate outerUpperRightPoint = m_fullPolygon.getVertices().at(2);
+    Coordinate outerLowerRightPoint = m_fullPolygon.getVertices().at(3);
 
-    Cartesian innerLowerLeftPoint = m_interiorPolygon.getVertices().at(0);
-    Cartesian innerUpperLeftPoint = m_interiorPolygon.getVertices().at(1);
-    Cartesian innerUpperRightPoint = m_interiorPolygon.getVertices().at(2);
-    Cartesian innerLowerRightPoint = m_interiorPolygon.getVertices().at(3);
+    Coordinate innerLowerLeftPoint = m_interiorPolygon.getVertices().at(0);
+    Coordinate innerUpperLeftPoint = m_interiorPolygon.getVertices().at(1);
+    Coordinate innerUpperRightPoint = m_interiorPolygon.getVertices().at(2);
+    Coordinate innerLowerRightPoint = m_interiorPolygon.getVertices().at(3);
 
-    QVector<Cartesian> lowerLeftCorner;
+    QVector<Coordinate> lowerLeftCorner;
     lowerLeftCorner.push_back(outerLowerLeftPoint);
-    lowerLeftCorner.push_back(Cartesian(outerLowerLeftPoint.getX(), innerLowerLeftPoint.getY()));
+    lowerLeftCorner.push_back(Coordinate::Cartesian(
+        outerLowerLeftPoint.getX(),
+        innerLowerLeftPoint.getY()
+    ));
     lowerLeftCorner.push_back(innerLowerLeftPoint);
-    lowerLeftCorner.push_back(Cartesian(innerLowerLeftPoint.getX(), outerLowerLeftPoint.getY()));
+    lowerLeftCorner.push_back(Coordinate::Cartesian(
+        innerLowerLeftPoint.getX(),
+        outerLowerLeftPoint.getY()
+    ));
     m_cornerPolygons.push_back(Polygon(lowerLeftCorner));
 
-    QVector<Cartesian> upperLeftCorner;
-    upperLeftCorner.push_back(Cartesian(outerUpperLeftPoint.getX(), innerUpperLeftPoint.getY()));
+    QVector<Coordinate> upperLeftCorner;
+    upperLeftCorner.push_back(Coordinate::Cartesian(
+        outerUpperLeftPoint.getX(),
+        innerUpperLeftPoint.getY()
+    ));
     upperLeftCorner.push_back(outerUpperLeftPoint);
-    upperLeftCorner.push_back(Cartesian(innerUpperLeftPoint.getX(), outerUpperLeftPoint.getY()));
+    upperLeftCorner.push_back(Coordinate::Cartesian(
+        innerUpperLeftPoint.getX(),
+        outerUpperLeftPoint.getY()
+    ));
     upperLeftCorner.push_back(innerUpperLeftPoint);
     m_cornerPolygons.push_back(Polygon(upperLeftCorner));
 
-    QVector<Cartesian> upperRightCorner;
+    QVector<Coordinate> upperRightCorner;
     upperRightCorner.push_back(innerUpperRightPoint);
-    upperRightCorner.push_back(Cartesian(innerUpperRightPoint.getX(), outerUpperRightPoint.getY()));
+    upperRightCorner.push_back(Coordinate::Cartesian(
+        innerUpperRightPoint.getX(),
+        outerUpperRightPoint.getY()
+    ));
     upperRightCorner.push_back(outerUpperRightPoint);
-    upperRightCorner.push_back(Cartesian(outerUpperRightPoint.getX(), innerUpperRightPoint.getY()));
+    upperRightCorner.push_back(Coordinate::Cartesian(
+        outerUpperRightPoint.getX(),
+        innerUpperRightPoint.getY()
+    ));
     m_cornerPolygons.push_back(Polygon(upperRightCorner));
 
-    QVector<Cartesian> lowerRightCorner;
-    lowerRightCorner.push_back(Cartesian(innerLowerRightPoint.getX(), outerLowerRightPoint.getY()));
+    QVector<Coordinate> lowerRightCorner;
+    lowerRightCorner.push_back(Coordinate::Cartesian(
+        innerLowerRightPoint.getX(),
+        outerLowerRightPoint.getY()
+    ));
     lowerRightCorner.push_back(innerLowerRightPoint);
-    lowerRightCorner.push_back(Cartesian(outerLowerRightPoint.getX(), innerLowerRightPoint.getY()));
+    lowerRightCorner.push_back(Coordinate::Cartesian(
+        outerLowerRightPoint.getX(),
+        innerLowerRightPoint.getY()
+    ));
     lowerRightCorner.push_back(outerLowerRightPoint);
     m_cornerPolygons.push_back(Polygon(lowerRightCorner));
 }

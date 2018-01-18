@@ -8,14 +8,13 @@
 #include "Assert.h"
 #include "GeometryUtilities.h"
 #include "Param.h"
-#include "units/Polar.h"
 
 namespace mms {
 
 Sensor::Sensor() :
     m_range(Meters(0)),
     m_halfWidth(Angle::Radians(0)),
-    m_initialPosition(Cartesian(Meters(0), Meters(0))),
+    m_initialPosition(Coordinate::Cartesian(Meters(0), Meters(0))),
     m_initialDirection(Angle::Radians(0)) {
 }
 
@@ -36,10 +35,10 @@ Sensor::Sensor(
         position, radius, P()->numberOfCircleApproximationPoints());
 
     // Create the polygon for the view of the sensor
-    QVector<Cartesian> view;
+    QVector<Coordinate> view;
     view.push_back(position);
     for (double i = -1; i <= 1; i += 2.0 / (P()->numberOfSensorEdgePoints() - 1)) {
-        view.push_back(Polar(range, (halfWidth * i) + direction) + position);
+        view.push_back(Coordinate::Polar(range, (halfWidth * i) + direction) + position);
     }
     m_initialViewPolygon = Polygon(view);
 
@@ -47,7 +46,7 @@ Sensor::Sensor(
     updateReading(m_initialPosition, m_initialDirection, maze);
 }
 
-Cartesian Sensor::getInitialPosition() const {
+Coordinate Sensor::getInitialPosition() const {
     return m_initialPosition;
 }
 
@@ -64,7 +63,7 @@ const Polygon& Sensor::getInitialViewPolygon() const {
 }
 
 Polygon Sensor::getCurrentViewPolygon(
-        const Cartesian& currentPosition,
+        const Coordinate& currentPosition,
         const Angle& currentDirection,
         const Maze& maze) const {
     return getViewPolygon(currentPosition, currentDirection, maze);
@@ -75,7 +74,7 @@ double Sensor::read() const {
 }
 
 void Sensor::updateReading(
-        const Cartesian& currentPosition,
+        const Coordinate& currentPosition,
         const Angle& currentDirection,
         const Maze& maze) {
 
@@ -91,7 +90,7 @@ void Sensor::updateReading(
 }
 
 Polygon Sensor::getViewPolygon(
-        const Cartesian& currentPosition,
+        const Coordinate& currentPosition,
         const Angle& currentDirection,
         const Maze& maze) const {
 
@@ -102,13 +101,16 @@ Polygon Sensor::getViewPolygon(
     static Meters halfWallWidth = Meters(P()->wallWidth() / 2.0);
     static Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
 
-    QVector<Cartesian> polygon {currentPosition};
+    QVector<Coordinate> polygon {currentPosition};
 
     for (double i = -1; i <= 1; i += 2.0 / (P()->numberOfSensorEdgePoints() - 1)) {
         polygon.push_back(
             GeometryUtilities::castRay(
                 currentPosition,
-                currentPosition + Polar(m_range, currentDirection + (m_halfWidth * i)),
+                currentPosition + Coordinate::Polar(
+                    m_range,
+                    currentDirection + (m_halfWidth * i)
+                ),
                 maze,
                 halfWallWidth,
                 tileLength

@@ -240,25 +240,28 @@ private:
     void turnAroundToEdgeImpl(bool turnLeft);
 
     // Helper methods for wall retrieval and declaration
-    bool isWall(QPair<QPair<int, int>, Direction> wall, bool declareWallOnRead, bool declareBothWallHalves);
+    bool isWall(
+        QPair<QPair<int, int>, Direction> wall,
+        bool declareWallOnRead,
+        bool declareBothWallHalves);
     bool hasOpposingWall(QPair<QPair<int, int>, Direction> wall) const;
     QPair<QPair<int, int>, Direction> getOpposingWall(
         QPair<QPair<int, int>, Direction> wall) const;
 
     // Some helper abstractions for mouse movements
-    void moveForwardTo(const Cartesian& destinationTranslation, const Angle& destinationRotation);
-    void arcTo(const Cartesian& destinationTranslation, const Angle& destinationRotation,
+    void moveForwardTo(const Coordinate& destinationTranslation, const Angle& destinationRotation);
+    void arcTo(const Coordinate& destinationTranslation, const Angle& destinationRotation,
         const Meters& radius, double extraWheelSpeedFraction);
-    void turnTo(const Cartesian& destinationTranslation, const Angle& destinationRotation);
+    void turnTo(const Coordinate& destinationTranslation, const Angle& destinationRotation);
 
     // Returns the angle with from "from" to "to", with values in [-180, 180) degrees
     Angle getRotationDelta(const Angle& from, const Angle& to) const;
 
     // Returns the center of a given tile
-    Cartesian getCenterOfTile(int x, int y) const;
+    Coordinate getCenterOfTile(int x, int y) const;
 
     // Returns the location of where the mouse should stop if it crashes
-    QPair<Cartesian, Angle> getCrashLocation(
+    QPair<Coordinate, Angle> getCrashLocation(
         QPair<int, int> currentTile, Direction destinationDirection);
 
     // TODO: MACK - rename to Impl

@@ -125,7 +125,7 @@ void Map::paintGL() {
         return;
     }
 
-    Cartesian currentMouseTranslation;
+    Coordinate currentMouseTranslation;
     Angle currentMouseRotation;
     QVector<TriangleGraphic> mouseBuffer;
     if (m_mouseGraphic != nullptr) {

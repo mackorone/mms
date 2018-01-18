@@ -1,13 +1,13 @@
 #pragma once
 
-#include "units/Cartesian.h"
+#include "units/Coordinate.h"
 
 namespace mms {
 
 struct Triangle {
-    Cartesian p1;
-    Cartesian p2;
-    Cartesian p3;
+    Coordinate p1;
+    Coordinate p2;
+    Coordinate p3;
 };
 
 } // namespace mms

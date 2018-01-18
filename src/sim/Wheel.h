@@ -3,7 +3,7 @@
 #include "EncoderType.h"
 #include "Polygon.h"
 #include "units/AngularVelocity.h"
-#include "units/Cartesian.h"
+#include "units/Coordinate.h"
 #include "units/Meters.h"
 
 namespace mms {
@@ -23,7 +23,7 @@ public:
 
     // Wheel
     Meters getRadius() const;
-    Cartesian getInitialPosition() const;
+    Coordinate getInitialPosition() const;
     Angle getInitialDirection() const;
     const Polygon& getInitialPolygon() const;
 
@@ -45,7 +45,7 @@ private:
     // Wheel
     Meters m_radius;
     Meters m_halfWidth;
-    Cartesian m_initialPosition;
+    Coordinate m_initialPosition;
     Angle m_initialDirection;
     Polygon m_initialPolygon;
 

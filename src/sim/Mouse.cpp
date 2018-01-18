@@ -7,7 +7,6 @@
 
 #include "units/Meters.h"
 #include "units/MetersPerSecond.h"
-#include "units/Polar.h"
 
 #include "Assert.h"
 #include "GeometryUtilities.h"
@@ -22,7 +21,7 @@ Mouse::Mouse(const Maze* maze) :
 
     // The initial translation of the mouse is just the center of the starting tile
     Meters halfOfTileDistance = Meters((P()->wallLength() + P()->wallWidth()) / 2.0);
-    m_initialTranslation = Cartesian(halfOfTileDistance, halfOfTileDistance);
+    m_initialTranslation = Coordinate::Cartesian(halfOfTileDistance, halfOfTileDistance);
     m_currentTranslation = m_initialTranslation;
 
     // The initial rotation of the mouse is determined by the starting tile walls
@@ -133,11 +132,11 @@ void Mouse::setStartingDirection(Direction direction) {
     m_startingDirection = direction;
 }
 
-Cartesian Mouse::getInitialTranslation() const {
+Coordinate Mouse::getInitialTranslation() const {
     return m_initialTranslation;
 }
 
-Cartesian Mouse::getCurrentTranslation() const {
+Coordinate Mouse::getCurrentTranslation() const {
     return m_currentTranslation;
 }
 
@@ -147,7 +146,7 @@ Angle Mouse::getCurrentRotation() const {
 
 QPair<int, int> Mouse::getCurrentDiscretizedTranslation() const {
     static Meters tileLength = Meters(P()->wallLength() + P()->wallWidth());
-    Cartesian currentTranslation = getCurrentTranslation();
+    Coordinate currentTranslation = getCurrentTranslation();
     int x = static_cast<int>(qFloor(currentTranslation.getX() / tileLength));
     int y = static_cast<int>(qFloor(currentTranslation.getY() / tileLength));
     return {x, y};
@@ -244,7 +243,7 @@ QVector<Polygon> Mouse::getCurrentSensorViewPolygons(
     QVector<Polygon> polygons;
     m_mutex.lock();
     for (const Sensor& sensor : m_sensors.values()) {
-        QPair<Cartesian, Angle> translationAndRotation =
+        QPair<Coordinate, Angle> translationAndRotation =
             getCurrentSensorPositionAndDirection(
                 sensor,
                 currentTranslation,
@@ -306,13 +305,13 @@ void Mouse::update(const Duration& elapsed) {
 
     m_currentGyro = aveDr;
     m_currentRotation += aveDr * elapsed;
-    m_currentTranslation += Cartesian(aveDx * elapsed, aveDy * elapsed);
+    m_currentTranslation += Coordinate::Cartesian(aveDx * elapsed, aveDy * elapsed);
 
     // Update all of the sensor readings
     QMutableMapIterator<QString, Sensor> sensorIterator(m_sensors);
     while (sensorIterator.hasNext()) {
         auto pair = sensorIterator.next();
-        QPair<Cartesian, Angle> translationAndRotation =
+        QPair<Coordinate, Angle> translationAndRotation =
             getCurrentSensorPositionAndDirection(
                 pair.value(),
                 m_currentTranslation,
@@ -427,18 +426,18 @@ AngularVelocity Mouse::readGyro() const {
 
 Polygon Mouse::getCurrentPolygon(
         const Polygon& initialPolygon,
-        const Cartesian& currentTranslation,
+        const Coordinate& currentTranslation,
         const Angle& currentRotation) const {
     return initialPolygon
         .translate(currentTranslation - getInitialTranslation())
         .rotateAroundPoint(currentRotation - m_initialRotation, currentTranslation);
 }
 
-QPair<Cartesian, Angle> Mouse::getCurrentSensorPositionAndDirection(
+QPair<Coordinate, Angle> Mouse::getCurrentSensorPositionAndDirection(
         const Sensor& sensor,
-        const Cartesian& currentTranslation,
+        const Coordinate& currentTranslation,
         const Angle& currentRotation) const {
-    Cartesian translationDelta = currentTranslation - getInitialTranslation();
+    Coordinate translationDelta = currentTranslation - getInitialTranslation();
     Angle rotationDelta = currentRotation - m_initialRotation;
     return {
         GeometryUtilities::rotateVertexAroundPoint(
@@ -495,7 +494,7 @@ void Mouse::setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardF
 }
 
 QMap<QString, WheelEffect> Mouse::getWheelEffects(
-        const Cartesian& initialTranslation,
+        const Coordinate& initialTranslation,
         const Angle& initialRotation,
         const QMap<QString, Wheel>& wheels) const {
     QMap<QString, WheelEffect> wheelEffects;

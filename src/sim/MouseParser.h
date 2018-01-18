@@ -13,7 +13,7 @@
 #include "Maze.h"
 #include "Polygon.h"
 #include "Sensor.h"
-#include "units/Cartesian.h"
+#include "units/Coordinate.h"
 #include "units/Meters.h"
 #include "Wheel.h"
 
@@ -26,17 +26,17 @@ public:
     MouseParser(const QString& filePath, bool* success);
 
     Polygon getBody(
-        const Cartesian& initialTranslation,
+        const Coordinate& initialTranslation,
         const Angle& initialRotation,
         bool* success);
 
     QMap<QString, Wheel> getWheels(
-        const Cartesian& initialTranslation,
+        const Coordinate& initialTranslation,
         const Angle& initialRotation,
         bool* success);
 
     QMap<QString, Sensor> getSensors(
-        const Cartesian& initialTranslation,
+        const Coordinate& initialTranslation,
         const Angle& initialRotation,
         const Maze& maze,
         bool* success);
@@ -45,7 +45,7 @@ private:
     QDomDocument m_doc;
     QDomElement m_root;
     Angle m_forwardDirection;
-    Cartesian m_centerOfMass;
+    Coordinate m_centerOfMass;
 
     double getDoubleIfHasDouble(const QDomElement& element, const QString& tag, bool* success);
     double getDoubleIfHasDoubleAndNonNegative(
@@ -53,8 +53,11 @@ private:
     QDomElement getContainerElement(const QDomElement& element, const QString& tag, bool* success);
     EncoderType getEncoderTypeIfValid(const QDomElement& element, bool* success);
 
-    Cartesian alignVertex(const Cartesian& vertex, const Cartesian& alignmentTranslation,
-        const Angle& alignmentRotation, const Cartesian& rotationPoint);
+    Coordinate alignVertex(
+        const Coordinate& vertex,
+        const Coordinate& alignmentTranslation,
+        const Angle& alignmentRotation,
+        const Coordinate& rotationPoint);
 
     static const Polygon NULL_POLYGON;
     static const QString MOUSE_TAG;

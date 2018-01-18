@@ -13,9 +13,9 @@
 namespace mms {
 
 const Polygon MouseParser::NULL_POLYGON = Polygon({
-    Cartesian(Meters(0), Meters(0)),
-    Cartesian(Meters(0), Meters(0)),
-    Cartesian(Meters(0), Meters(0)),
+    Coordinate::Cartesian(Meters(0), Meters(0)),
+    Coordinate::Cartesian(Meters(0), Meters(0)),
+    Coordinate::Cartesian(Meters(0), Meters(0)),
 });
 const QString MouseParser::MOUSE_TAG = "Mouse";
 const QString MouseParser::FORWARD_DIRECTION_TAG = "Forward-Direction";
@@ -40,7 +40,7 @@ const QString MouseParser::HALF_WIDTH_TAG = "Half-Width";
 
 MouseParser::MouseParser(const QString& filePath, bool* success) :
         m_forwardDirection(Angle::Radians(0)),
-        m_centerOfMass(Cartesian(Meters(0), Meters(0))) {
+        m_centerOfMass(Coordinate::Cartesian(Meters(0), Meters(0))) {
 
     // Try to open the file
     QFile file(filePath);
@@ -68,15 +68,15 @@ MouseParser::MouseParser(const QString& filePath, bool* success) :
     QDomElement centerOfMassElement = getContainerElement(m_root, CENTER_OF_MASS_TAG, success);
     double x = getDoubleIfHasDouble(centerOfMassElement, X_TAG, success);
     double y = getDoubleIfHasDouble(centerOfMassElement, Y_TAG, success);
-    m_centerOfMass = Cartesian(Meters(x), Meters(y));
+    m_centerOfMass = Coordinate::Cartesian(Meters(x), Meters(y));
 }
 
 Polygon MouseParser::getBody(
-        const Cartesian& initialTranslation,
+        const Coordinate& initialTranslation,
         const Angle& initialRotation,
         bool* success) {
 
-    Cartesian alignmentTranslation = initialTranslation - m_centerOfMass;
+    Coordinate alignmentTranslation = initialTranslation - m_centerOfMass;
     Angle alignmentRotation = initialRotation - m_forwardDirection;
 
     QDomElement body = m_root.firstChildElement(BODY_TAG);
@@ -85,7 +85,7 @@ Polygon MouseParser::getBody(
         *success = false;
     }
 
-    QVector<Cartesian> vertices;
+    QVector<Coordinate> vertices;
     QDomNodeList elementList = body.elementsByTagName(VERTEX_TAG);
     for (int i = 0; i < elementList.size(); i += 1) {
         QDomElement vertex = elementList.at(i).toElement();
@@ -93,7 +93,7 @@ Polygon MouseParser::getBody(
         double y = getDoubleIfHasDouble(vertex, Y_TAG, success);
         vertices.push_back(
             alignVertex(
-                Cartesian(Meters(x), Meters(y)),
+                Coordinate::Cartesian(Meters(x), Meters(y)),
                 alignmentTranslation,
                 alignmentRotation,
                 initialTranslation));
@@ -124,11 +124,11 @@ Polygon MouseParser::getBody(
 }
 
 QMap<QString, Wheel> MouseParser::getWheels(
-        const Cartesian& initialTranslation,
+        const Coordinate& initialTranslation,
         const Angle& initialRotation,
         bool* success) {
 
-    Cartesian alignmentTranslation = initialTranslation - m_centerOfMass;
+    Coordinate alignmentTranslation = initialTranslation - m_centerOfMass;
     Angle alignmentRotation = initialRotation - m_forwardDirection;
 
     QMap<QString, Wheel> wheels;
@@ -156,7 +156,7 @@ QMap<QString, Wheel> MouseParser::getWheels(
                     Meters(diameter),
                     Meters(width),
                     alignVertex(
-                        Cartesian(Meters(x), Meters(y)),
+                        Coordinate::Cartesian(Meters(x), Meters(y)),
                         alignmentTranslation,
                         alignmentRotation,
                         initialTranslation),
@@ -171,12 +171,12 @@ QMap<QString, Wheel> MouseParser::getWheels(
 }
 
 QMap<QString, Sensor> MouseParser::getSensors(
-        const Cartesian& initialTranslation,
+        const Coordinate& initialTranslation,
         const Angle& initialRotation,
         const Maze& maze,
         bool* success) {
 
-    Cartesian alignmentTranslation = initialTranslation - m_centerOfMass;
+    Coordinate alignmentTranslation = initialTranslation - m_centerOfMass;
     Angle alignmentRotation = initialRotation - m_forwardDirection;
 
     QMap<QString, Sensor> sensors;
@@ -201,7 +201,7 @@ QMap<QString, Sensor> MouseParser::getSensors(
                     Meters(range), 
                     Angle::Degrees(halfWidth),
                     alignVertex(
-                        Cartesian(Meters(x), Meters(y)),
+                        Coordinate::Cartesian(Meters(x), Meters(y)),
                         alignmentTranslation,
                         alignmentRotation,
                         initialTranslation),
@@ -268,10 +268,21 @@ EncoderType MouseParser::getEncoderTypeIfValid(const QDomElement& element, bool*
     return encoderType;
 }
 
-Cartesian MouseParser::alignVertex(const Cartesian& vertex, const Cartesian& alignmentTranslation,
-        const Angle& alignmentRotation, const Cartesian& rotationPoint) {
-    Cartesian translated = GeometryUtilities::translateVertex(vertex, alignmentTranslation);
-    return GeometryUtilities::rotateVertexAroundPoint(translated, alignmentRotation, rotationPoint);
+Coordinate MouseParser::alignVertex(
+    const Coordinate& vertex,
+    const Coordinate& alignmentTranslation,
+    const Angle& alignmentRotation,
+    const Coordinate& rotationPoint
+) {
+    Coordinate translated = GeometryUtilities::translateVertex(
+        vertex,
+        alignmentTranslation
+    );
+    return GeometryUtilities::rotateVertexAroundPoint(
+        translated,
+        alignmentRotation,
+        rotationPoint
+    );
 }
 
 } // namespace mms

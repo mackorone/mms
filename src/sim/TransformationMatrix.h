@@ -3,7 +3,7 @@
 #include <QPair>
 #include <QVector>
 
-#include "units/Cartesian.h"
+#include "units/Coordinate.h"
 
 namespace mms {
 

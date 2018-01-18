@@ -9,7 +9,7 @@ WheelEffect::WheelEffect() :
 }
 
 WheelEffect::WheelEffect(
-        const Cartesian& initialTranslation,
+        const Coordinate& initialTranslation,
         const Angle& initialRotation,
         const Wheel& wheel) {
 
@@ -23,7 +23,7 @@ WheelEffect::WheelEffect(
         (initialRotation - wheel.getInitialDirection()).getSin()
     );
 
-    Cartesian wheelToCenter = initialTranslation - wheel.getInitialPosition();
+    Coordinate wheelToCenter = initialTranslation - wheel.getInitialPosition();
     m_unitTurnEffect = AngularVelocity::RadiansPerSecond(
         wheel.getRadius().getMeters() * 
         (wheelToCenter.getTheta() - wheel.getInitialDirection()).getSin() *

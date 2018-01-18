@@ -160,7 +160,7 @@ QVector<float> TransformationMatrix::getZoomedMapTransformationMatrix(
         mapPixelCoordinateToOpenGlCoordinate({staticTranslationXPixels, staticTranslationYPixels}, windowSize);
 
     // Part B: Find the dynamic translation, i.e., the current translation of the mouse.
-    Cartesian mouseTranslationDelta = Cartesian(currentMouseTranslation) - initialMouseTranslation;
+    Coordinate mouseTranslationDelta = currentMouseTranslation - initialMouseTranslation;
     double dynamicTranslationXPixels = mouseTranslationDelta.getX().getMeters() * pixelsPerMeter;
     double dynamicTranslationYPixels = mouseTranslationDelta.getY().getMeters() * pixelsPerMeter;
     QPair<double, double> dynamicTranslation =

@@ -7,40 +7,53 @@
 #include <functional>
 
 #include "Assert.h"
-#include "units/Polar.h"
 
 namespace mms {
 
-Cartesian GeometryUtilities::translateVertex(const Cartesian& vertex, const Coordinate& translation) {
+Coordinate GeometryUtilities::translateVertex(
+    const Coordinate& vertex,
+    const Coordinate& translation
+) {
     return vertex + translation;
 }
 
-Cartesian GeometryUtilities::rotateVertexAroundPoint(const Cartesian& vertex, const Angle& angle, const Coordinate& point) {
-    Cartesian relativeVertex(
+Coordinate GeometryUtilities::rotateVertexAroundPoint(
+    const Coordinate& vertex,
+    const Angle& angle,
+    const Coordinate& point
+) {
+    Coordinate relativeVertex = Coordinate::Cartesian(
         vertex.getX() - point.getX(),
         vertex.getY() - point.getY()
     );
-    Polar rotatedRelativeVertex(
+    Coordinate rotatedRelativeVertex = Coordinate::Polar(
         relativeVertex.getRho(),
         relativeVertex.getTheta() + angle
     );
-    Cartesian rotatedVertex(
+    Coordinate rotatedVertex = Coordinate::Cartesian(
         rotatedRelativeVertex.getX() + point.getX(),
         rotatedRelativeVertex.getY() + point.getY()
     );
     return rotatedVertex;
 }
 
-Polygon GeometryUtilities::createCirclePolygon(const Cartesian& position, const Distance& radius, int numberOfEdges) {
+Polygon GeometryUtilities::createCirclePolygon(
+    const Coordinate& position,
+    const Distance& radius,
+    int numberOfEdges
+) {
     ASSERT_LE(3, numberOfEdges);
-    QVector<Cartesian> vertices;
+    QVector<Coordinate> vertices;
     for (int i = 0; i < numberOfEdges; i += 1) {
-        vertices.push_back(Polar(radius, Angle::Radians(i * 2 * M_PI / numberOfEdges)) + position);
+        vertices.push_back(Coordinate::Polar(
+            radius,
+            Angle::Radians(i * 2 * M_PI / numberOfEdges)) + position
+        );
     }
     return Polygon(vertices);
 }
 
-Area GeometryUtilities::crossProduct(const Cartesian& Z, const Cartesian& A, const Cartesian& B) {
+Area GeometryUtilities::crossProduct(const Coordinate& Z, const Coordinate& A, const Coordinate& B) {
 
     // The cross product of ZA and ZB is simply the determinant of the following matrix:
     //
@@ -65,16 +78,16 @@ Polygon GeometryUtilities::convexHull(const QVector<Polygon>& polygons) {
     // Note: the last point in the returned list is the same as the first one.
 
     // First, get a list of all of the points
-    QVector<Cartesian> points;
+    QVector<Coordinate> points;
     for (Polygon polygon : polygons) {
-        for (Cartesian point : polygon.getVertices()) {
+        for (Coordinate point : polygon.getVertices()) {
             points.push_back(point);
         }
     }
 
     int n = points.size();
     int k = 0;
-    QVector<Cartesian> hull(2*n);
+    QVector<Coordinate> hull(2*n);
 
     // Sort points lexicographically
     std::sort(points.begin(), points.end());
@@ -100,8 +113,8 @@ Polygon GeometryUtilities::convexHull(const QVector<Polygon>& polygons) {
     return Polygon(hull);
 }
 
-Cartesian GeometryUtilities::castRay(
-        const Cartesian& start, const Cartesian& end, const Maze& maze,
+Coordinate GeometryUtilities::castRay(
+        const Coordinate& start, const Coordinate& end, const Maze& maze,
         const Meters& halfWallWidth, const Meters& tileLength) {
 
     // This is an implementation of ray-casting, a quick way to determine the
@@ -171,7 +184,7 @@ Cartesian GeometryUtilities::castRay(
     // west rays, and IJKL and MNOP, respectively.
 
     // We want to shift the walls in the opposite direction of the ray
-    Cartesian logicalShift = Cartesian(
+    Coordinate logicalShift = Coordinate::Cartesian(
         halfWallWidth * direction.first  * -1,
         halfWallWidth * direction.second * -1
     );
@@ -231,7 +244,7 @@ Cartesian GeometryUtilities::castRay(
             int y = sy + oy - py;
             if (isOnTileEdge(cy, halfWallWidth, tileLength) ||
                     (maze.withinMaze(x, y) && maze.getTile(x, y)->isWall(wx))) {
-                return Cartesian(cx, cy);
+                return Coordinate::Cartesian(cx, cy);
             }
             ox += ix;
             nx = tileLength * (sx + ox) + logicalShift.getX();
@@ -245,7 +258,7 @@ Cartesian GeometryUtilities::castRay(
             int y = sy + oy - py;
             if (isOnTileEdge(cx, halfWallWidth, tileLength) ||
                     (maze.withinMaze(x, y) && maze.getTile(x, y)->isWall(wy))) {
-                return Cartesian(cx, cy);
+                return Coordinate::Cartesian(cx, cy);
             }
             oy += iy;
             ny = tileLength * (sy + oy) + logicalShift.getY();

@@ -109,7 +109,7 @@ void BufferInterface::updateTileGraphicText(int x, int y, int numRows, int numCo
     QPair<double, double> fontImageCharacterPosition =
         m_tileGraphicTextCache.getFontImageCharacterPosition(c);
 
-    QPair<Cartesian, Cartesian> LL_UR =
+    QPair<Coordinate, Coordinate> LL_UR =
         m_tileGraphicTextCache.getTileGraphicTextPosition(x, y, numRows, numCols, row, col);
 
     int triangleTextureIndex = getTileGraphicTextStartingIndex(x, y, row, col);
