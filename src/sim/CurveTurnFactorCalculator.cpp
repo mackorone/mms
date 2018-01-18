@@ -2,6 +2,8 @@
 
 #include <QPair>
 
+#include "units/Speed.h"
+
 namespace mms {
 
 CurveTurnFactorCalculator::CurveTurnFactorCalculator() :
@@ -24,7 +26,7 @@ CurveTurnFactorCalculator::CurveTurnFactorCalculator(
     // initial direction of the mouse) can vary as needed.
 
     // Determine the total forward and turn rate of change from all wheels
-    MetersPerSecond totalForwardRateOfChange(0);
+    Speed totalForwardRateOfChange = Speed::MetersPerSecond(0);
     AngularVelocity totalRadialRateOfChange;
     for (const auto& pair : ContainerUtilities::items(wheels)) {
 
@@ -38,7 +40,7 @@ CurveTurnFactorCalculator::CurveTurnFactorCalculator(
 
         for (double adjustmentFactor : {adjustmentFactors.first, adjustmentFactors.second}) {
 
-            std::tuple<MetersPerSecond, MetersPerSecond, AngularVelocity> effects =
+            std::tuple<Speed, Speed, AngularVelocity> effects =
                 wheelEffects.value(pair.first).getEffects(
                     pair.second.getMaxAngularVelocityMagnitude() * adjustmentFactor);
 

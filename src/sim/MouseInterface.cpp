@@ -7,7 +7,6 @@
 
 #include "units/AngularVelocity.h"
 #include "units/Distance.h"
-#include "units/MetersPerSecond.h"
 #include "units/Duration.h"
 
 #include "Assert.h"

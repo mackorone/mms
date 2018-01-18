@@ -3,8 +3,8 @@
 namespace mms {
 
 WheelEffect::WheelEffect() :
-    m_unitForwardEffect(MetersPerSecond(0)),
-    m_unitSidewaysEffect(MetersPerSecond(0)),
+    m_unitForwardEffect(Speed::MetersPerSecond(0)),
+    m_unitSidewaysEffect(Speed::MetersPerSecond(0)),
     m_unitTurnEffect(AngularVelocity::RadiansPerSecond(0)) {
 }
 
@@ -13,12 +13,12 @@ WheelEffect::WheelEffect(
         const Angle& initialRotation,
         const Wheel& wheel) {
 
-    m_unitForwardEffect = MetersPerSecond(
+    m_unitForwardEffect = Speed::MetersPerSecond(
         wheel.getRadius().getMeters() * 
         (initialRotation - wheel.getInitialDirection()).getCos()
     );
 
-    m_unitSidewaysEffect = MetersPerSecond(
+    m_unitSidewaysEffect = Speed::MetersPerSecond(
         wheel.getRadius().getMeters() * 
         (initialRotation - wheel.getInitialDirection()).getSin()
     );
@@ -31,7 +31,7 @@ WheelEffect::WheelEffect(
     );
 }
 
-std::tuple<MetersPerSecond, MetersPerSecond, AngularVelocity> WheelEffect::getEffects(
+std::tuple<Speed, Speed, AngularVelocity> WheelEffect::getEffects(
         const AngularVelocity& wheelSpeed) const {
     return std::make_tuple(
         m_unitForwardEffect * wheelSpeed.getRadiansPerSecond(),
