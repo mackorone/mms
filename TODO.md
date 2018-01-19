@@ -1,11 +1,9 @@
 Bugfixes
 ========
-- Make unit type compatible with std::atomic
-- File dialogs perf is really bad, correlated with FPS
 - Fix m_mouse segfaults
     - Audit all code that's touched by multiple threads (i.e., everything in
       Mouse, Model, etc.)
-- Don't allow mouse algos to run if the maze is not explorable
+- File dialogs perf is really bad, correlated with FPS
 - Fix existing maze file formats
 - Update the build and run status when the algorithm changes
 - Setting the child process's working directory doesn't work on windows

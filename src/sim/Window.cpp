@@ -1362,12 +1362,21 @@ void Window::mouseAlgoRunStart() {
         return;
     }
 
-    // If maze is empty, abort
+    // Validate the maze
     if (m_maze == nullptr) {
         QMessageBox::warning(
             this,
             "No Maze",
             "You must load a maze before running a mouse algorithm."
+        );
+        return;
+    }
+    if (!m_maze->isValidMaze()) {
+        QMessageBox::warning(
+            this,
+            "Invalid Maze",
+            "Cannot run mouse algorithm because the maze is invalid. The maze "
+            "must be nonempty, rectangular, enclosed, and self-consistent."
         );
         return;
     }
