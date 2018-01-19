@@ -5,7 +5,6 @@ Bugfixes
       Mouse, Model, etc.)
 - File dialogs perf is really bad, correlated with FPS
 - Fix existing maze file formats
-- Update the build and run status when the algorithm changes
 - Setting the child process's working directory doesn't work on windows
     - Instead, we might have to change the simulator's working directory
 - Bad maze algorithms (e.g., "echo foo") can crash the simulator
@@ -34,6 +33,7 @@ Wishlist
     - Perhaps a pane that pops up on mouse over
 - Support continuous algorithms
 - Display the dynamic mouse algorithm options
+- Update the build and run status when the algorithm changes
 - Wiki page for common error message for failed commands
 - A utility to tell you whether or not the stdlib is used
 - A utility to tell you how much memory the algorithm is occupying
