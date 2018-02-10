@@ -94,6 +94,10 @@ BasicMaze MazeFileUtilities::deserializeMapType(const QByteArray& bytes) {
 
         // Special case for the first line of the file
         if (i == 0) {
+            if (line.size() == 0) {
+                // TODO: MACK - clean this up
+                throw std::runtime_error("Invalid first line");
+            }
             delimiter = line.at(0);
             QStringList tokens = line.split(delimiter, QString::SkipEmptyParts);
             for (int j = 0; j < tokens.size(); j += 1) {

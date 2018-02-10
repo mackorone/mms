@@ -1,12 +1,6 @@
 Bugfixes
 ========
-- File dialogs perf is really bad, correlated with FPS
-- Fix existing maze file formats
-- Setting the child process's working directory doesn't work on windows
-    - Instead, we might have to change the simulator's working directory
-- Bad maze algorithms (e.g., "echo foo") can crash the simulator
-- If maze algo fails, the simulator crashes
-- Don't allow continuous algorithms to be paused
+- Make sure mouse algorithms work on Windows
 
 Features
 ========
@@ -35,6 +29,7 @@ Wishlist
 - A utility to tell you whether or not the stdlib is used
 - A utility to tell you how much memory the algorithm is occupying
 - A utility to ensure that the algorithm has no memory leaks
+- Fuzz test the maze loading utilities
 - Clang compiler support
 - Use tr() on all user-facing strings to make text translatable
 - Show the timestamp that the algorithms were last built
@@ -47,10 +42,13 @@ Wishlist
 - Add sensor types (digital vs. analog)
 - Look into using vsync so the graphics don't tear
 - Make it possible to change the goal location (for smaller mazes)
+- Fix existing maze file formats
 
 Cleanup
 =======
 - Update the wiki
+- File dialogs perf is really bad when algo is running
+- Don't allow continuous algorithms to be paused
 - Remove continuous algorithm support from the interfaces, for now
 - Prevent m_mouse segfaults
     - Audit all code that's touched by multiple threads (i.e., everything in
