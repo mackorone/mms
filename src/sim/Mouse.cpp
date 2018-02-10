@@ -473,6 +473,13 @@ void Mouse::setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardF
     ASSERT_LE(0.0, normalizedFactorMagnitude);
     ASSERT_LE(normalizedFactorMagnitude, 1.0);
 
+    // TODO: MACK
+    // This lock is a "hack" to deal with the implicit sharing problem. In
+    // particular, calling ContainerUtilities::items() is problematic here
+    // because it copies the map and the objects in the map. We should probably
+    // just use regular iterators instead.
+    m_mutex.lock();
+
     // Now set the wheel speeds based on the normalized factors
     QMap<QString, AngularVelocity> wheelSpeeds;
     for (const auto& pair : ContainerUtilities::items(m_wheels)) {
@@ -490,6 +497,7 @@ void Mouse::setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardF
             )
         );
     }
+    m_mutex.unlock();
     setWheelSpeeds(wheelSpeeds);
 }
 

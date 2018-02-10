@@ -1,8 +1,5 @@
 Bugfixes
 ========
-- Fix m_mouse segfaults
-    - Audit all code that's touched by multiple threads (i.e., everything in
-      Mouse, Model, etc.)
 - File dialogs perf is really bad, correlated with FPS
 - Fix existing maze file formats
 - Setting the child process's working directory doesn't work on windows
@@ -55,6 +52,11 @@ Cleanup
 =======
 - Update the wiki
 - Remove continuous algorithm support from the interfaces, for now
+- Prevent m_mouse segfaults
+    - Audit all code that's touched by multiple threads (i.e., everything in
+      Mouse, Model, etc.)
+    - Remove ContainerUtilities.h, which copy containers unnecessarily (and
+      cause implicit sharing segfaults)
 - Don't actually log within mouse interface - surface errors a different way
 - Improve sim time accuracy (time-to-center seems to be a function of sim speed)
 - Improve CPU utilization (it's too high)
