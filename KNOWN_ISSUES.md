@@ -1,7 +1,7 @@
 # Known Issues
 
-This is a working list of things that aren't known to be broken/imperfect, but
-that I haven't had the time to fix (yet). If you're having difficulty using the
+This is a working list of things that aren known to be broken/imperfect, but
+that I haven't had the time to fix yet. If you're having difficulty using the
 simulator, and your issue isn't listed here, please let me know and I'll
 investigate/triage it.
 
