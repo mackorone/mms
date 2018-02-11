@@ -201,22 +201,13 @@ QVector<Polygon> Mouse::getCurrentWheelPolygons(
         const Coordinate& currentTranslation,
         const Angle& currentRotation) const {
     QVector<Polygon> polygons;
-    // TODO: upforgrabs
-    // All getPolygons functions require a lock to deal with the implicit
-    // sharing problem:
-    // http://doc.qt.io/qt-5/containers.html#implicit-sharing-iterator-problem.
-    // Ideally, this shouldn't be the case (we should be able to perform reads
-    // without having to worry about writes). Your task is to figure out how to
-    // remove the lock without causing segfaults.
-    m_mutex.lock();
-    for (const Wheel& wheel : m_wheels.values()) {
-        polygons.push_back(
-            getCurrentPolygon(
-                wheel.getInitialPolygon(),
-                currentTranslation,
-                currentRotation));
+    for (const Wheel& wheel: m_wheels) {
+        polygons.push_back(getCurrentPolygon(
+            wheel.getInitialPolygon(),
+            currentTranslation,
+            currentRotation
+        ));
     }
-    m_mutex.unlock();
     return polygons;
 }
 
@@ -224,15 +215,13 @@ QVector<Polygon> Mouse::getCurrentSensorPolygons(
         const Coordinate& currentTranslation,
         const Angle& currentRotation) const {
     QVector<Polygon> polygons;
-    m_mutex.lock();
-    for (const Sensor& sensor : m_sensors.values()) {
-        polygons.push_back(
-            getCurrentPolygon(
-                sensor.getInitialPolygon(),
-                currentTranslation,
-                currentRotation));
+    for (const Sensor& sensor : m_sensors) {
+        polygons.push_back(getCurrentPolygon(
+            sensor.getInitialPolygon(),
+            currentTranslation,
+            currentRotation
+        ));
     }
-    m_mutex.unlock();
     return polygons;
 }
 
@@ -240,20 +229,18 @@ QVector<Polygon> Mouse::getCurrentSensorViewPolygons(
         const Coordinate& currentTranslation,
         const Angle& currentRotation) const {
     QVector<Polygon> polygons;
-    m_mutex.lock();
-    for (const Sensor& sensor : m_sensors.values()) {
+    for (const Sensor& sensor : m_sensors) {
         QPair<Coordinate, Angle> translationAndRotation =
             getCurrentSensorPositionAndDirection(
                 sensor,
                 currentTranslation,
                 currentRotation);
-        polygons.push_back(
-            sensor.getCurrentViewPolygon(
-                translationAndRotation.first,
-                translationAndRotation.second,
-                *m_maze));
+        polygons.push_back(sensor.getCurrentViewPolygon(
+            translationAndRotation.first,
+            translationAndRotation.second,
+            *m_maze
+        ));
     }
-    m_mutex.unlock();
     return polygons;
 }
 
@@ -320,9 +307,9 @@ bool Mouse::hasWheel(const QString& name) const {
     return m_wheels.contains(name);
 }
 
-const AngularVelocity& Mouse::getWheelMaxSpeed(const QString& name) const {
+const AngularVelocity& Mouse::getWheelMaxSpeed(const QString& name) {
     ASSERT_TR(m_wheels.contains(name));
-    return m_wheels.value(name).getMaximumSpeed();
+    return m_wheels[name].getMaximumSpeed();
 }
 
 void Mouse::setWheelSpeeds(const QMap<QString, AngularVelocity>& wheelSpeeds) {
@@ -362,8 +349,9 @@ void Mouse::setWheelSpeedsForCurveRight(double fractionOfMaxSpeed, const Distanc
 
 void Mouse::stopAllWheels() {
     QMap<QString, AngularVelocity> wheelSpeeds;
-    for (const QString& name : m_wheels.keys()) {
-        wheelSpeeds.insert(name, AngularVelocity::RadiansPerSecond(0));
+    QMap<QString, Wheel>::const_iterator it;
+    for (it = m_wheels.constBegin(); it != m_wheels.constEnd(); it += 1) {
+        wheelSpeeds.insert(it.key(), AngularVelocity::RadiansPerSecond(0));
     }
     setWheelSpeeds(wheelSpeeds);
 }
@@ -397,8 +385,6 @@ int Mouse::readWheelRelativeEncoder(const QString& name) const {
 void Mouse::resetWheelRelativeEncoder(const QString& name) {
     ASSERT_TR(hasWheel(name));
     m_mutex.lock();
-    // TODO: upforgrabs
-    // Use value() here instead of [] notation
     m_wheels[name].resetRelativeEncoder();
     m_mutex.unlock();
 }
@@ -465,13 +451,6 @@ void Mouse::setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardF
     ASSERT_LE(0.0, normalizedFactorMagnitude);
     ASSERT_LE(normalizedFactorMagnitude, 1.0);
 
-    // TODO: MACK
-    // This lock is a "hack" to deal with the implicit sharing problem. In
-    // particular, calling ContainerUtilities::items() is problematic here
-    // because it copies the map and the objects in the map. We should probably
-    // just use regular iterators instead.
-    m_mutex.lock();
-
     // Now set the wheel speeds based on the normalized factors
     QMap<QString, AngularVelocity> wheelSpeeds;
     QMap<QString, Wheel>::const_iterator it;
@@ -490,7 +469,6 @@ void Mouse::setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardF
             )
         );
     }
-    m_mutex.unlock();
     setWheelSpeeds(wheelSpeeds);
 }
 

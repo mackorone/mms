@@ -98,8 +98,9 @@ public:
     // Returns whether or not the mouse has a wheel by a particular name
     bool hasWheel(const QString& name) const;
 
-    // Returns the magnitde of the max angular velocity of the wheel
-    const AngularVelocity& getWheelMaxSpeed(const QString& name) const;
+    // Returns the magnitde of the max angular velocity of the wheel;
+    // intentionally not const to avoid making copies of Wheel objects.
+    const AngularVelocity& getWheelMaxSpeed(const QString& name);
 
     // An atomic interface for setting the wheel speeds
     void setWheelSpeeds(const QMap<QString, AngularVelocity>& wheelSpeeds);

@@ -61,7 +61,7 @@ MazeFilesTab::MazeFilesTab() : m_table(new QTableWidget()) {
 
 void MazeFilesTab::import() {
     QStringList suffixes;
-    for (const QString& suffix : MAZE_FILE_TYPE_TO_SUFFIX().values()) {
+    for (const QString& suffix : MAZE_FILE_TYPE_TO_SUFFIX()) {
         suffixes.append(QString("*.") + suffix);
     }
     QStringList paths = QFileDialog::getOpenFileNames(

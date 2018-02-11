@@ -1,6 +1,5 @@
 Up next
 =======
-- Remove ContainerUtilities::items, improve file dialog perf
 - Make sure mouse algorithms work on Windows
 
 Features
@@ -255,3 +254,8 @@ Unsorted
 // 
 // +++
 // Crashes the simulator
+
+Lessons
+=======
+- Map::values and Map::keys copy elements - use iterators to avoid this
+- Map::value creates copies - you can use Map::operator[] to avoid this
