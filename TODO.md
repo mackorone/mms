@@ -1,5 +1,6 @@
-Bugfixes
-========
+Up next
+=======
+- Remove ContainerUtilities::items, improve file dialog perf
 - Make sure mouse algorithms work on Windows
 
 Features
