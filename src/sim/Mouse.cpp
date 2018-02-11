@@ -327,12 +327,13 @@ const AngularVelocity& Mouse::getWheelMaxSpeed(const QString& name) const {
 
 void Mouse::setWheelSpeeds(const QMap<QString, AngularVelocity>& wheelSpeeds) {
     m_mutex.lock();
-    for (const auto& pair : ContainerUtilities::items(wheelSpeeds)) {
-        ASSERT_TR(m_wheels.contains(pair.first));
+    QMap<QString, AngularVelocity>::const_iterator it;
+    for (it = wheelSpeeds.constBegin(); it != wheelSpeeds.constEnd(); it += 1) {
+        ASSERT_TR(m_wheels.contains(it.key()));
         ASSERT_LE(
-            std::abs(pair.second.getRevolutionsPerMinute()),
-            getWheelMaxSpeed(pair.first).getRevolutionsPerMinute());
-        m_wheels[pair.first].setSpeed(pair.second);
+            std::abs(it.value().getRevolutionsPerMinute()),
+            getWheelMaxSpeed(it.key()).getRevolutionsPerMinute());
+        m_wheels[it.key()].setSpeed(it.value());
     }
     m_mutex.unlock();
 }
@@ -473,13 +474,14 @@ void Mouse::setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardF
 
     // Now set the wheel speeds based on the normalized factors
     QMap<QString, AngularVelocity> wheelSpeeds;
-    for (const auto& pair : ContainerUtilities::items(m_wheels)) {
-        ASSERT_TR(m_wheelSpeedAdjustmentFactors.contains(pair.first));
-        QPair<double, double> adjustmentFactors = m_wheelSpeedAdjustmentFactors.value(pair.first);
+    QMap<QString, Wheel>::const_iterator it;
+    for (it = m_wheels.constBegin(); it != m_wheels.constEnd(); it += 1) {
+        ASSERT_TR(m_wheelSpeedAdjustmentFactors.contains(it.key()));
+        QPair<double, double> adjustmentFactors = m_wheelSpeedAdjustmentFactors.value(it.key());
         wheelSpeeds.insert(
-            pair.first,
+            it.key(),
             (
-                pair.second.getMaximumSpeed() *
+                it.value().getMaximumSpeed() *
                 fractionOfMaxSpeed *
                 (
                     normalizedForwardFactor * adjustmentFactors.first +
@@ -506,10 +508,11 @@ QMap<QString, QPair<double, double>> Mouse::getWheelSpeedAdjustmentFactors(
 
     // First, construct the rates of change pairs
     QMap<QString, QPair<Speed, AngularVelocity>> ratesOfChangePairs;
-    for (const auto& pair : ContainerUtilities::items(wheels)) {
-        WheelEffect effect = pair.second.getMaximumEffect();
+    QMap<QString, Wheel>::const_iterator it1;
+    for (it1 = wheels.constBegin(); it1 != wheels.constEnd(); it1 += 1) {
+        WheelEffect effect = it1.value().getMaximumEffect();
         ratesOfChangePairs.insert(
-            pair.first,
+            it1.key(),
             {
                 effect.forwardEffect,
                 effect.turnEffect,
@@ -520,11 +523,12 @@ QMap<QString, QPair<double, double>> Mouse::getWheelSpeedAdjustmentFactors(
     // Then determine the largest magnitude
     Speed maxForwardRateOfChangeMagnitude;
     AngularVelocity maxRadialRateOfChangeMagnitude;
-    for (const auto& pair : ContainerUtilities::items(ratesOfChangePairs)) {
+    QMap<QString, QPair<Speed, AngularVelocity>>::const_iterator it2;
+    for (it2 = ratesOfChangePairs.constBegin(); it2 != ratesOfChangePairs.constEnd(); it2 += 1) {
         Speed forwardRateOfChangeMagnitude = Speed::MetersPerSecond(
-            std::abs(pair.second.first.getMetersPerSecond()));
+            std::abs(it2.value().first.getMetersPerSecond()));
         AngularVelocity radialRateOfChangeMagnitude = AngularVelocity::RadiansPerSecond(
-            std::abs(pair.second.second.getRadiansPerSecond()));
+            std::abs(it2.value().second.getRadiansPerSecond()));
         if (maxForwardRateOfChangeMagnitude < forwardRateOfChangeMagnitude) {
             maxForwardRateOfChangeMagnitude = forwardRateOfChangeMagnitude;
         }
@@ -535,10 +539,11 @@ QMap<QString, QPair<double, double>> Mouse::getWheelSpeedAdjustmentFactors(
 
     // Then divide by the largest magnitude, ensuring values in [-1.0, 1.0]
     QMap<QString, QPair<double, double>> adjustmentFactors;
-    for (const auto& pair : ContainerUtilities::items(ratesOfChangePairs)) {
-        double normalizedForwardContribution = pair.second.first / maxForwardRateOfChangeMagnitude;
+    QMap<QString, QPair<Speed, AngularVelocity>>::const_iterator it3;
+    for (it3 = ratesOfChangePairs.constBegin(); it3 != ratesOfChangePairs.constEnd(); it3 += 1) {
+        double normalizedForwardContribution = it3.value().first / maxForwardRateOfChangeMagnitude;
         double normalizedRadialContribution = (
-            pair.second.second.getRadiansPerSecond() /
+            it3.value().second.getRadiansPerSecond() /
             maxRadialRateOfChangeMagnitude.getRadiansPerSecond()
         );
         ASSERT_LE(-1.0, normalizedForwardContribution);
@@ -546,7 +551,7 @@ QMap<QString, QPair<double, double>> Mouse::getWheelSpeedAdjustmentFactors(
         ASSERT_LE(normalizedForwardContribution, 1.0);
         ASSERT_LE(normalizedRadialContribution, 1.0);
         adjustmentFactors.insert(
-            pair.first,
+            it3.key(),
             {
                 normalizedForwardContribution,
                 normalizedRadialContribution

@@ -29,17 +29,18 @@ CurveTurnFactorCalculator::CurveTurnFactorCalculator(
     // Determine the total forward and turn rate of change from all wheels
     Speed totalForwardRateOfChange = Speed::MetersPerSecond(0);
     AngularVelocity totalRadialRateOfChange;
-    for (const auto& pair : ContainerUtilities::items(wheels)) {
+    QMap<QString, Wheel>::const_iterator it;
+    for (it = wheels.constBegin(); it != wheels.constEnd(); it += 1) {
 
         // For each of the wheel speed adjustment factors, calculate the wheel's
         // contributions. Remember that each of these factors corresponds to
         // the fraction of the max wheel speed such that the mouse performs a
         // particular movement (moving forward or turning) most optimally.
-        ASSERT_TR(wheelSpeedAdjustmentFactors.contains(pair.first));
+        ASSERT_TR(wheelSpeedAdjustmentFactors.contains(it.key()));
         QPair<double, double> adjustmentFactors =
-            wheelSpeedAdjustmentFactors.value(pair.first);
+            wheelSpeedAdjustmentFactors.value(it.key());
 
-        WheelEffect maximumEffect = pair.second.getMaximumEffect();
+        WheelEffect maximumEffect = it.value().getMaximumEffect();
         for (double factor : {adjustmentFactors.first, adjustmentFactors.second}) {
             totalForwardRateOfChange += maximumEffect.forwardEffect * factor;
             totalRadialRateOfChange += maximumEffect.turnEffect * factor;

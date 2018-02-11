@@ -55,8 +55,9 @@ void Settings::add(QString group, QMap<QString, QString> entry) {
     // Append the element at the current size
     settings.beginWriteArray(group);
     settings.setArrayIndex(size);
-    for (const auto& pair : ContainerUtilities::items(entry)) {
-        settings.setValue(pair.first, pair.second);
+    QMap<QString, QString>::const_iterator it;
+    for (it = entry.constBegin(); it != entry.constEnd(); it += 1) {
+        settings.setValue(it.key(), it.value());
     }
     settings.endArray();
 }
@@ -80,8 +81,9 @@ void Settings::remove(QString group, QString key, QString value) {
     for (const auto& entry : entries) {
         if (entry.value(key) != value) {
             settings.setArrayIndex(index);
-            for (const auto& pair : ContainerUtilities::items(entry)) {
-                settings.setValue(pair.first, pair.second);
+            QMap<QString, QString>::const_iterator it;
+            for (it = entry.constBegin(); it != entry.constEnd(); it += 1) {
+                settings.setValue(it.key(), it.value());
             }
             index += 1;
         }
@@ -126,8 +128,9 @@ void Settings::update(
 
     // Re-add the entries, but with updates
     for (QMap<QString, QString> entry : entries) {
-        for (const auto& pair : ContainerUtilities::items(changes)) {
-            entry[pair.first] = pair.second;
+        QMap<QString, QString>::const_iterator it;
+        for (it = changes.constBegin(); it != changes.constEnd(); it += 1) {
+            entry[it.key()] = it.value();
         }
         add(group, entry);
     }
