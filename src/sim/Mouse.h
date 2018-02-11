@@ -16,13 +16,13 @@
 #include "Polygon.h"
 #include "Sensor.h"
 #include "Wheel.h"
-#include "WheelEffect.h"
 
 namespace mms {
 
 class Mouse {
 
 public:
+
     Mouse(const Maze* maze);
 
     // Reloads the mouse (body, wheels, sensors, etc.) from the
@@ -30,7 +30,7 @@ public:
     bool reload(const QString& mouseFile);
 
     // Returns the name of the current mouse file
-    QString getMouseFile() const;
+    const QString& getMouseFile() const;
 
     // Get/set the crashed state of the mouse 
     bool didCrash() const;
@@ -50,11 +50,11 @@ public:
     void setStartingDirection(Direction startingDirection);
 
     // Gets the initial translation of the mouse
-    Coordinate getInitialTranslation() const;
+    const Coordinate& getInitialTranslation() const;
 
     // Gets the current translation and rotation of the mouse
-    Coordinate getCurrentTranslation() const;
-    Angle getCurrentRotation() const;
+    const Coordinate& getCurrentTranslation() const;
+    const Angle& getCurrentRotation() const;
 
     // Gets the current discretized translation and rotation of the mouse
     QPair<int, int> getCurrentDiscretizedTranslation() const;
@@ -99,7 +99,7 @@ public:
     bool hasWheel(const QString& name) const;
 
     // Returns the magnitde of the max angular velocity of the wheel
-    AngularVelocity getWheelMaxSpeed(const QString& name) const;
+    const AngularVelocity& getWheelMaxSpeed(const QString& name) const;
 
     // An atomic interface for setting the wheel speeds
     void setWheelSpeeds(const QMap<QString, AngularVelocity>& wheelSpeeds);
@@ -135,7 +135,7 @@ public:
     double readSensor(const QString& name) const;
 
     // Returns the value of the gyroscope
-    AngularVelocity readGyro() const;
+    const AngularVelocity& readGyro() const;
 
 private:
 
@@ -164,13 +164,6 @@ private:
     QMap<QString, Wheel> m_wheels; // The wheels of the mouse
     QMap<QString, Sensor> m_sensors; // The sensors on the mouse
 
-    // The effect that each wheel has on mouse forward, sideways, and turn movements
-    QMap<QString, WheelEffect> m_wheelEffects;
-    QMap<QString, WheelEffect> getWheelEffects(
-        const Coordinate& initialTranslation,
-        const Angle& initialRotation,
-        const QMap<QString, Wheel>& wheels) const;
-
     // The fractions of a each wheel's max speed that cause the mouse to
     // perform the move forward and turn movements, respectively, as optimally
     // as possible. Note that "as optimally as possible" is purposefully
@@ -180,8 +173,7 @@ private:
     // speed is never exceeded.
     QMap<QString, QPair<double, double>> m_wheelSpeedAdjustmentFactors;
     QMap<QString, QPair<double, double>> getWheelSpeedAdjustmentFactors(
-        const QMap<QString, Wheel>& wheels,
-        const QMap<QString, WheelEffect>& wheelEffects) const;
+        const QMap<QString, Wheel>& wheels) const;
 
     // Used to calculate the linear combination of the forward component and turn
     // component, based on curve turn radius, that cause the mouse to perform a

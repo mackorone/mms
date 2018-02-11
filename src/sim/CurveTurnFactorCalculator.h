@@ -5,7 +5,6 @@
 #include <QString>
 
 #include "Wheel.h"
-#include "WheelEffect.h"
 
 namespace mms {
 
@@ -15,7 +14,6 @@ public:
     CurveTurnFactorCalculator();
     CurveTurnFactorCalculator(
         const QMap<QString, Wheel>& wheels,
-        const QMap<QString, WheelEffect>& wheelEffects,
         const QMap<QString, QPair<double, double>>& wheelSpeedAdjustmentFactors);
 
     // Returns a linear combination of forward and turn movement components

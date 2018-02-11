@@ -2,6 +2,7 @@
 
 #include "Angle.h"
 #include "Duration.h"
+#include "Speed.h"
 
 namespace mms {
 
@@ -23,6 +24,7 @@ public:
     AngularVelocity operator+(const AngularVelocity& other) const;
     AngularVelocity operator-(const AngularVelocity& other) const;
     Angle operator*(const Duration& duration) const;
+    Speed operator*(const Distance& radius) const;
     void operator+=(const AngularVelocity& other);
     bool operator<(const AngularVelocity& other) const;
     bool operator<=(const AngularVelocity& other) const;

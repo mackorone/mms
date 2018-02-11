@@ -11,6 +11,7 @@ Features
 - Make it easier to edit the simulator parameters
     - Write and read from persistant storage...
     - The values should be re-loaded on the fly
+- Add Python bindings for mouse algorithms
 
 Wishlist
 ========
@@ -97,8 +98,7 @@ Unsorted
 - Fix timestep
     - Make renderer and physics on same thread
         - Maybe even collision detection too
-- QHash instead of QMap
-    - QSet instead of QVector in some places
+- QSet instead of QVector in some places
 - char to QChar
 - Replace QPair with structs
 - Logging is too expensive

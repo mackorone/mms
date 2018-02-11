@@ -2,35 +2,40 @@
 
 #include "EncoderType.h"
 #include "Polygon.h"
+#include "WheelEffect.h"
+
 #include "units/AngularVelocity.h"
 #include "units/Coordinate.h"
 #include "units/Distance.h"
+#include "units/Speed.h"
 
 namespace mms {
 
 class Wheel {
 
 public:
+
     Wheel();
     Wheel(
+        const Coordinate& mousePosition,
+        const Coordinate& wheelPosition,
+        const Angle& mouseDirection,
+        const Angle& wheelDirection,
         const Distance& diameter,
         const Distance& width,
-        const Coordinate& position,
-        const Angle& direction,
-        const AngularVelocity& maxAngularVelocityMagnitude,
+        const AngularVelocity& maximumSpeed,
         EncoderType encoderType,
         double encoderTicksPerRevolution);
 
     // Wheel
-    Distance getRadius() const;
-    Coordinate getInitialPosition() const;
-    Angle getInitialDirection() const;
     const Polygon& getInitialPolygon() const;
+    WheelEffect getMaximumEffect() const;
+    WheelEffect update(const Duration& elapsed);
 
     // Motor
-    AngularVelocity getAngularVelocity() const;
-    AngularVelocity getMaxAngularVelocityMagnitude() const;
-    void setAngularVelocity(const AngularVelocity& angularVelocity);
+    const AngularVelocity& getMaximumSpeed() const;
+    const AngularVelocity& getCurrentSpeed() const;
+    void setSpeed(const AngularVelocity& speed);
 
     // Encoder
     EncoderType getEncoderType() const;
@@ -38,26 +43,31 @@ public:
     int readAbsoluteEncoder() const;
     int readRelativeEncoder() const;
     void resetRelativeEncoder();
-    void updateRotation(const Angle& angle);
 
 private:
 
     // Wheel
-    Distance m_radius;
-    Distance m_halfWidth;
-    Coordinate m_initialPosition;
-    Angle m_initialDirection;
     Polygon m_initialPolygon;
 
+    // The effects this wheel (on the mouse) if the
+    // angular velocity is 1.0 rad/s (hence "unit")
+    Speed m_unitForwardEffect;
+    Speed m_unitSidewaysEffect;
+    AngularVelocity m_unitTurnEffect;
+
     // Motor
-    AngularVelocity m_angularVelocity;
-    AngularVelocity m_maxAngularVelocityMagnitude;
+    AngularVelocity m_maximumSpeed;
+    AngularVelocity m_currentSpeed;
 
     // Encoder
     EncoderType m_encoderType;
     double m_encoderTicksPerRevolution;
     Angle m_absoluteRotation;
     Angle m_relativeRotation;
+
+    // Helper function
+    WheelEffect getEffect(const AngularVelocity& speed) const;
+
 };
 
 } // namespace mms

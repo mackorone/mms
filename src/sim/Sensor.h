@@ -23,8 +23,8 @@ public:
         const Angle& direction,
         const Maze& maze);
 
-    Coordinate getInitialPosition() const;
-    Angle getInitialDirection() const;
+    const Coordinate& getInitialPosition() const;
+    const Angle& getInitialDirection() const;
     const Polygon& getInitialPolygon() const;
     const Polygon& getInitialViewPolygon() const;
     Polygon getCurrentViewPolygon(

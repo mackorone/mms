@@ -12,6 +12,7 @@
 #include "GeometryUtilities.h"
 #include "MouseParser.h"
 #include "Param.h"
+#include "WheelEffect.h"
 
 namespace mms {
 
@@ -49,14 +50,12 @@ bool Mouse::reload(const QString& mouseFile) {
     m_wheels = parser.getWheels(m_initialTranslation, m_initialRotation, &success);
     m_sensors = parser.getSensors(m_initialTranslation, m_initialRotation, *m_maze, &success);
 
-    // Initialize the wheel effects and speed adjustment factors
-    m_wheelEffects = getWheelEffects(m_initialTranslation, m_initialRotation, m_wheels);
-    m_wheelSpeedAdjustmentFactors = getWheelSpeedAdjustmentFactors(m_wheels, m_wheelEffects);
+    // Initialize the speed adjustment factors
+    m_wheelSpeedAdjustmentFactors = getWheelSpeedAdjustmentFactors(m_wheels);
 
     // Initialize the curve turn factors, based on previously determined info
     m_curveTurnFactorCalculator = CurveTurnFactorCalculator(
         m_wheels,
-        m_wheelEffects,
         m_wheelSpeedAdjustmentFactors);
 
     // Initialize the collision polygon; this is technically not correct since
@@ -98,7 +97,7 @@ bool Mouse::reload(const QString& mouseFile) {
     return success;
 }
 
-QString Mouse::getMouseFile() const {
+const QString& Mouse::getMouseFile() const {
     return m_mouseFile;
 }
 
@@ -132,15 +131,15 @@ void Mouse::setStartingDirection(Direction direction) {
     m_startingDirection = direction;
 }
 
-Coordinate Mouse::getInitialTranslation() const {
+const Coordinate& Mouse::getInitialTranslation() const {
     return m_initialTranslation;
 }
 
-Coordinate Mouse::getCurrentTranslation() const {
+const Coordinate& Mouse::getCurrentTranslation() const {
     return m_currentTranslation;
 }
 
-Angle Mouse::getCurrentRotation() const {
+const Angle& Mouse::getCurrentRotation() const {
     return m_currentRotation;
 }
 
@@ -266,48 +265,41 @@ void Mouse::update(const Duration& elapsed) {
         return;
     }
 
-    m_mutex.lock();
-
     Speed sumDx;
     Speed sumDy;
     AngularVelocity sumDr;
 
+    m_mutex.lock();
+
     // Iterate over all of the wheels
-    QMutableMapIterator<QString, Wheel> wheelIterator(m_wheels);
-    while (wheelIterator.hasNext()) {
-
-        // TODO: MACK - this segfaults :/
-        auto pair = wheelIterator.next();
-
-        // Update the rotation of the wheel
-        pair.value().updateRotation(pair.value().getAngularVelocity() * elapsed);
-
-        // Get the effects on the rate of change of translation, both forward
-        // and sideways, and rotation of the mouse due to this particular wheel
-        std::tuple<Speed, Speed, AngularVelocity> effects =
-            m_wheelEffects.value(pair.key()).getEffects(pair.value().getAngularVelocity());
+    QMap<QString, Wheel>::iterator it;
+    for (it = m_wheels.begin(); it != m_wheels.end(); it += 1) {
+        WheelEffect effect = it.value().update(elapsed);
 
         // The effect of the forward component
-        sumDx += std::get<0>(effects) * getCurrentRotation().getCos();
-        sumDy += std::get<0>(effects) * getCurrentRotation().getSin();
+        sumDx += effect.forwardEffect * getCurrentRotation().getCos();
+        sumDy += effect.forwardEffect * getCurrentRotation().getSin();
 
         // The effect of the sideways component
-        sumDx += std::get<1>(effects) * getCurrentRotation().getSin();
-        sumDy += std::get<1>(effects) * getCurrentRotation().getCos() * -1;
+        sumDx += effect.sidewaysEffect * getCurrentRotation().getSin();
+        sumDy += effect.sidewaysEffect * getCurrentRotation().getCos() * -1;
 
         // The effect of the rotation component
-        sumDr += std::get<2>(effects);
+        sumDr += effect.turnEffect;
     }
 
-    Speed aveDx = sumDx / static_cast<double>(m_wheels.size());
-    Speed aveDy = sumDy / static_cast<double>(m_wheels.size());
-    AngularVelocity aveDr = sumDr / static_cast<double>(m_wheels.size());
+    m_mutex.unlock();
+
+    Speed aveDx = sumDx / m_wheels.size();
+    Speed aveDy = sumDy / m_wheels.size();
+    AngularVelocity aveDr = sumDr / m_wheels.size();
 
     m_currentGyro = aveDr;
     m_currentRotation += aveDr * elapsed;
     m_currentTranslation += Coordinate::Cartesian(aveDx * elapsed, aveDy * elapsed);
 
     // Update all of the sensor readings
+    /* TODO: MACK
     QMutableMapIterator<QString, Sensor> sensorIterator(m_sensors);
     while (sensorIterator.hasNext()) {
         auto pair = sensorIterator.next();
@@ -321,17 +313,16 @@ void Mouse::update(const Duration& elapsed) {
             translationAndRotation.second,
             *m_maze);
     }
-
-    m_mutex.unlock();
+    */
 }
 
 bool Mouse::hasWheel(const QString& name) const {
     return m_wheels.contains(name);
 }
 
-AngularVelocity Mouse::getWheelMaxSpeed(const QString& name) const {
+const AngularVelocity& Mouse::getWheelMaxSpeed(const QString& name) const {
     ASSERT_TR(m_wheels.contains(name));
-    return m_wheels.value(name).getMaxAngularVelocityMagnitude();
+    return m_wheels.value(name).getMaximumSpeed();
 }
 
 void Mouse::setWheelSpeeds(const QMap<QString, AngularVelocity>& wheelSpeeds) {
@@ -341,7 +332,7 @@ void Mouse::setWheelSpeeds(const QMap<QString, AngularVelocity>& wheelSpeeds) {
         ASSERT_LE(
             std::abs(pair.second.getRevolutionsPerMinute()),
             getWheelMaxSpeed(pair.first).getRevolutionsPerMinute());
-        m_wheels[pair.first].setAngularVelocity(pair.second);
+        m_wheels[pair.first].setSpeed(pair.second);
     }
     m_mutex.unlock();
 }
@@ -420,7 +411,7 @@ double Mouse::readSensor(const QString& name) const {
     return m_sensors.value(name).read();
 }
 
-AngularVelocity Mouse::readGyro() const {
+const AngularVelocity& Mouse::readGyro() const {
     return m_currentGyro;
 }
 
@@ -488,7 +479,7 @@ void Mouse::setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardF
         wheelSpeeds.insert(
             pair.first,
             (
-                pair.second.getMaxAngularVelocityMagnitude() *
+                pair.second.getMaximumSpeed() *
                 fractionOfMaxSpeed *
                 (
                     normalizedForwardFactor * adjustmentFactors.first +
@@ -501,27 +492,8 @@ void Mouse::setWheelSpeedsForMovement(double fractionOfMaxSpeed, double forwardF
     setWheelSpeeds(wheelSpeeds);
 }
 
-QMap<QString, WheelEffect> Mouse::getWheelEffects(
-        const Coordinate& initialTranslation,
-        const Angle& initialRotation,
-        const QMap<QString, Wheel>& wheels) const {
-    QMap<QString, WheelEffect> wheelEffects;
-    for (const auto& pair : ContainerUtilities::items(wheels)) {
-        wheelEffects.insert(
-            pair.first,
-            WheelEffect(
-                initialTranslation,
-                initialRotation,
-                pair.second
-            )
-        );
-    }
-    return wheelEffects;
-}
-
 QMap<QString, QPair<double, double>> Mouse::getWheelSpeedAdjustmentFactors(
-        const QMap<QString, Wheel>& wheels,
-        const QMap<QString, WheelEffect>& wheelEffects) const {
+        const QMap<QString, Wheel>& wheels) const {
 
     // Right now, the heueristic that we're using is that if a wheel greatly
     // contributes to moving forward or turning, then its adjustment factors
@@ -534,14 +506,13 @@ QMap<QString, QPair<double, double>> Mouse::getWheelSpeedAdjustmentFactors(
 
     // First, construct the rates of change pairs
     QMap<QString, QPair<Speed, AngularVelocity>> ratesOfChangePairs;
-    for (const auto& pair : ContainerUtilities::items(wheelEffects)) {
-        std::tuple<Speed, Speed, AngularVelocity> effects =
-            pair.second.getEffects(wheels.value(pair.first).getMaxAngularVelocityMagnitude());
+    for (const auto& pair : ContainerUtilities::items(wheels)) {
+        WheelEffect effect = pair.second.getMaximumEffect();
         ratesOfChangePairs.insert(
             pair.first,
             {
-                std::get<0>(effects),
-                std::get<2>(effects)
+                effect.forwardEffect,
+                effect.turnEffect,
             }
         );
     }

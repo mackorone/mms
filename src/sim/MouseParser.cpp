@@ -153,14 +153,16 @@ QMap<QString, Wheel> MouseParser::getWheels(
             wheels.insert(
                 name,
                 Wheel(
-                    Distance::Meters(diameter),
-                    Distance::Meters(width),
+                    initialTranslation,
                     alignVertex(
                         Coordinate::Cartesian(Distance::Meters(x), Distance::Meters(y)),
                         alignmentTranslation,
                         alignmentRotation,
                         initialTranslation),
+                    initialRotation,
                     Angle::Degrees(direction) + alignmentRotation,
+                    Distance::Meters(diameter),
+                    Distance::Meters(width),
                     AngularVelocity::RevolutionsPerMinute(maxAngularVelocityMagnitude),
                     encoderType, 
                     encoderTicksPerRevolution));

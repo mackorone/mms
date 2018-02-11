@@ -3,79 +3,90 @@
 #include <QVector>
 #include <QtMath>
 
-#include "GeometryUtilities.h"
-
 namespace mms {
 
 Wheel::Wheel() :
-    m_radius(Distance::Meters(0)),
-    m_halfWidth(Distance::Meters(0)),
-    m_initialPosition(Coordinate::Cartesian(Distance::Meters(0), Distance::Meters(0))),
-    m_initialDirection(Angle::Radians(0)),
-    m_angularVelocity(AngularVelocity::RadiansPerSecond(0.0)),
-    m_maxAngularVelocityMagnitude(AngularVelocity::RadiansPerSecond(0)),
+    m_unitForwardEffect(Speed()),
+    m_unitSidewaysEffect(Speed()),
+    m_unitTurnEffect(AngularVelocity()),
+    m_maximumSpeed(AngularVelocity()),
+    m_currentSpeed(AngularVelocity()),
     m_encoderTicksPerRevolution(0),
-    m_absoluteRotation(Angle::Radians(0)),
-    m_relativeRotation(Angle::Radians(0)) {
+    m_absoluteRotation(Angle()),
+    m_relativeRotation(Angle()) {
 }
 
 Wheel::Wheel(
-        const Distance& diameter,
-        const Distance& width,
-        const Coordinate& position,
-        const Angle& direction,
-        const AngularVelocity& maxAngularVelocityMagnitude,
-        EncoderType encoderType,
-        double encoderTicksPerRevolution) :
-        m_radius(diameter / 2.0),
-        m_halfWidth(width / 2.0),
-        m_initialPosition(position),
-        m_initialDirection(direction),
-		m_angularVelocity(AngularVelocity::RadiansPerSecond(0.0)),
-        m_maxAngularVelocityMagnitude(maxAngularVelocityMagnitude),
-        m_encoderType(encoderType),
-        m_encoderTicksPerRevolution(encoderTicksPerRevolution),
-        m_absoluteRotation(Angle::Radians(0)),
-        m_relativeRotation(Angle::Radians(0)) {
-
+    const Coordinate& mousePosition,
+    const Coordinate& wheelPosition,
+    const Angle& mouseDirection,
+    const Angle& wheelDirection,
+    const Distance& diameter,
+    const Distance& width,
+    const AngularVelocity& maximumSpeed,
+    EncoderType encoderType,
+    double encoderTicksPerRevolution
+) :
+    m_maximumSpeed(maximumSpeed),
+    m_currentSpeed(AngularVelocity::RadiansPerSecond(0.0)),
+    m_encoderType(encoderType),
+    m_encoderTicksPerRevolution(encoderTicksPerRevolution),
+    m_absoluteRotation(Angle::Radians(0)),
+    m_relativeRotation(Angle::Radians(0)
+) {
     // Create the initial wheel polygon
     QVector<Coordinate> polygon;
-    polygon.push_back(Coordinate::Cartesian(m_radius * -1, m_halfWidth * -1));
-    polygon.push_back(Coordinate::Cartesian(m_radius *  1, m_halfWidth * -1));
-    polygon.push_back(Coordinate::Cartesian(m_radius *  1, m_halfWidth *  1));
-    polygon.push_back(Coordinate::Cartesian(m_radius * -1, m_halfWidth *  1));
-    m_initialPolygon =
-        Polygon(polygon)
-            .translate(m_initialPosition)
-            .rotateAroundPoint(m_initialDirection, m_initialPosition);
-}
+    Distance radius = diameter / 2.0;
+    Distance halfWidth = width / 2.0;
+    polygon.push_back(Coordinate::Cartesian(radius * -1, halfWidth * -1));
+    polygon.push_back(Coordinate::Cartesian(radius *  1, halfWidth * -1));
+    polygon.push_back(Coordinate::Cartesian(radius *  1, halfWidth *  1));
+    polygon.push_back(Coordinate::Cartesian(radius * -1, halfWidth *  1));
+    m_initialPolygon = Polygon(polygon)
+        .translate(wheelPosition)
+        .rotateAroundPoint(wheelDirection, wheelPosition);
 
-Distance Wheel::getRadius() const {
-    return m_radius;
-}
-
-Coordinate Wheel::getInitialPosition() const {
-    return m_initialPosition;
-}
-
-Angle Wheel::getInitialDirection() const {
-    return m_initialDirection;
+    // Calculate the effects of this wheel on the mouse
+    AngularVelocity oneRadianPerSecond = AngularVelocity::RadiansPerSecond(1.0);
+    double forwardComponent = (mouseDirection - wheelDirection).getCos();
+    double sideWaysComponent = (mouseDirection - wheelDirection).getSin();
+    m_unitForwardEffect = oneRadianPerSecond * radius * forwardComponent;
+    m_unitSidewaysEffect = oneRadianPerSecond * radius * sideWaysComponent;
+    Coordinate wheelToCenter = mousePosition - wheelPosition;
+    double perpendicularComponent =
+        (wheelToCenter.getTheta() - wheelDirection).getSin();
+    m_unitTurnEffect = AngularVelocity::RadiansPerSecond(
+        radius.getMeters() *
+        perpendicularComponent *
+        (1.0 / wheelToCenter.getRho().getMeters())
+    );
 }
 
 const Polygon& Wheel::getInitialPolygon() const {
     return m_initialPolygon;
 }
 
-AngularVelocity Wheel::getAngularVelocity() const {
-    return m_angularVelocity;
+WheelEffect Wheel::getMaximumEffect() const {
+    return getEffect(getMaximumSpeed());
 }
 
-AngularVelocity Wheel::getMaxAngularVelocityMagnitude() const {
-    return m_maxAngularVelocityMagnitude;
+WheelEffect Wheel::update(const Duration& elapsed) {
+    Angle angle = m_currentSpeed * elapsed;
+    m_absoluteRotation += angle;
+    m_relativeRotation += angle;
+    return getEffect(m_currentSpeed);
 }
 
-void Wheel::setAngularVelocity(const AngularVelocity& angularVelocity) {
-    m_angularVelocity = angularVelocity;
+const AngularVelocity& Wheel::getMaximumSpeed() const {
+    return m_maximumSpeed;
+}
+
+const AngularVelocity& Wheel::getCurrentSpeed() const {
+    return m_currentSpeed;
+}
+
+void Wheel::setSpeed(const AngularVelocity& speed) {
+    m_currentSpeed = speed;
 }
 
 EncoderType Wheel::getEncoderType() const {
@@ -106,9 +117,12 @@ void Wheel::resetRelativeEncoder() {
     m_relativeRotation = Angle::Radians(0);
 }
 
-void Wheel::updateRotation(const Angle& angle) {
-    m_absoluteRotation += angle;
-    m_relativeRotation += angle;
+WheelEffect Wheel::getEffect(const AngularVelocity& speed) const {
+    return {
+        m_unitForwardEffect * speed.getRadiansPerSecond(),
+        m_unitSidewaysEffect * speed.getRadiansPerSecond(),
+        m_unitTurnEffect * speed.getRadiansPerSecond()
+    };
 }
 
 } // namespace mms

@@ -12,23 +12,23 @@
 namespace mms {
 
 Sensor::Sensor() :
-    m_range(Distance::Meters(0)),
-    m_halfWidth(Angle::Radians(0)),
-    m_initialPosition(Coordinate::Cartesian(Distance::Meters(0), Distance::Meters(0))),
-    m_initialDirection(Angle::Radians(0)) {
+    m_range(Distance()),
+    m_halfWidth(Angle()),
+    m_initialPosition(Coordinate()),
+    m_initialDirection(Angle()) {
 }
 
 Sensor::Sensor(
-        const Distance& radius,
-        const Distance& range,
-        const Angle& halfWidth,
-        const Coordinate& position,
-        const Angle& direction,
-        const Maze& maze) :
-        m_range(range),
-        m_halfWidth(halfWidth),
-        m_initialPosition(position),
-        m_initialDirection(direction) {
+    const Distance& radius,
+    const Distance& range,
+    const Angle& halfWidth,
+    const Coordinate& position,
+    const Angle& direction,
+    const Maze& maze) :
+    m_range(range),
+    m_halfWidth(halfWidth),
+    m_initialPosition(position),
+    m_initialDirection(direction) {
 
     // Create the polygon for the body of the sensor
     m_initialPolygon = GeometryUtilities::createCirclePolygon(
@@ -46,11 +46,11 @@ Sensor::Sensor(
     updateReading(m_initialPosition, m_initialDirection, maze);
 }
 
-Coordinate Sensor::getInitialPosition() const {
+const Coordinate& Sensor::getInitialPosition() const {
     return m_initialPosition;
 }
 
-Angle Sensor::getInitialDirection() const {
+const Angle& Sensor::getInitialDirection() const {
     return m_initialDirection;
 }
 

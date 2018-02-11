@@ -62,6 +62,10 @@ Angle AngularVelocity::operator*(const Duration& duration) const {
     return Angle::Radians(m_radiansPerSecond * duration.getSeconds());
 }
 
+Speed AngularVelocity::operator*(const Distance& radius) const {
+    return Speed::MetersPerSecond(m_radiansPerSecond * radius.getMeters());
+}
+
 void AngularVelocity::operator+=(const AngularVelocity& other) {
     m_radiansPerSecond += other.m_radiansPerSecond;
 }

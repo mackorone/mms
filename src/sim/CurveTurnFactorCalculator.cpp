@@ -2,6 +2,8 @@
 
 #include <QPair>
 
+#include "WheelEffect.h"
+
 #include "units/Speed.h"
 
 namespace mms {
@@ -13,7 +15,6 @@ CurveTurnFactorCalculator::CurveTurnFactorCalculator() :
 
 CurveTurnFactorCalculator::CurveTurnFactorCalculator(
         const QMap<QString, Wheel>& wheels,
-        const QMap<QString, WheelEffect>& wheelEffects,
         const QMap<QString, QPair<double, double>>& wheelSpeedAdjustmentFactors) {
 
     // TODO: upforgrabs
@@ -38,14 +39,10 @@ CurveTurnFactorCalculator::CurveTurnFactorCalculator(
         QPair<double, double> adjustmentFactors =
             wheelSpeedAdjustmentFactors.value(pair.first);
 
-        for (double adjustmentFactor : {adjustmentFactors.first, adjustmentFactors.second}) {
-
-            std::tuple<Speed, Speed, AngularVelocity> effects =
-                wheelEffects.value(pair.first).getEffects(
-                    pair.second.getMaxAngularVelocityMagnitude() * adjustmentFactor);
-
-            totalForwardRateOfChange += std::get<0>(effects);
-            totalRadialRateOfChange += std::get<2>(effects);
+        WheelEffect maximumEffect = pair.second.getMaximumEffect();
+        for (double factor : {adjustmentFactors.first, adjustmentFactors.second}) {
+            totalForwardRateOfChange += maximumEffect.forwardEffect * factor;
+            totalRadialRateOfChange += maximumEffect.turnEffect * factor;
         }
     }
 
