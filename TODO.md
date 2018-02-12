@@ -1,7 +1,3 @@
-Up next
-=======
-- Make sure mouse algorithms work on Windows
-
 Features
 ========
 - Add a "new algo" wizard to make it easy to bootstap a new algo
@@ -48,7 +44,7 @@ Wishlist
 Cleanup
 =======
 - Update the wiki
-- File dialogs perf is really bad when algo is running
+- Fix File Dialog perf (it's the QLabel perf)
 - Don't allow continuous algorithms to be paused
 - Remove continuous algorithm support from the interfaces, for now
 - Prevent m_mouse segfaults

@@ -86,6 +86,9 @@ const AngularVelocity& Wheel::getCurrentSpeed() const {
 }
 
 void Wheel::setSpeed(const AngularVelocity& speed) {
+    ASSERT_LE(
+        std::abs(speed.getRevolutionsPerMinute()),
+        m_maximumSpeed.getRevolutionsPerMinute());
     m_currentSpeed = speed;
 }
 

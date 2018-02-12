@@ -83,6 +83,7 @@ Window::Window(QWidget *parent) :
         m_mouseAlgoRunButton(new QPushButton("Run")),
         m_mouseAlgoRunStatus(new QLabel()),
         m_mouseAlgoRunOutput(new QPlainTextEdit()),
+        m_mouseAlgoStatsWidget(new MouseAlgoStatsWidget()),
         m_mouseAlgoSeedWidget(new RandomSeedWidget()),
         m_mouseAlgoPauseButton(new QPushButton("Pause")) {
 
@@ -302,11 +303,21 @@ Window::Window(QWidget *parent) :
 
     // Start the graphics loop
     QTimer* mapTimer = new QTimer();
+    connect(
+		mapTimer, &QTimer::timeout,
+		&m_map, static_cast<void(Map::*)()>(&Map::update));
+    // // TODO: upforgrabs
+    // // Make this configurable
+    mapTimer->start(16); // 60 fps
+
+	// TODO: MACK - this is very expensive - fix it
+	/*
+    // Start the info loop
+    QTimer* otherTimer = new QTimer();
     QLinkedList<double>* timestamps = new QLinkedList<double>();
     int numFrames = 10;
-    connect(mapTimer, &QTimer::timeout, this, [=](){
+    connect(otherTimer, &QTimer::timeout, this, [=](){
         double now = SimUtilities::getHighResTimestamp();
-        m_map.update();
         timestamps->append(now);
         if (timestamps->size() > numFrames) {
             double then = timestamps->takeFirst();
@@ -324,9 +335,8 @@ Window::Window(QWidget *parent) :
             m_runStats.value(keys.at(i))->setText(text);
         }
     });
-    // TODO: upforgrabs
-    // Make this configurable
-    mapTimer->start(16); // 60 fps
+    //otherTimer->start(100); // 10 fps
+	*/
 }
 
 void Window::closeEvent(QCloseEvent *event) {
@@ -1129,6 +1139,8 @@ void Window::mouseAlgoTabInit() {
     bottomLayout->addWidget(m_mouseAlgoOutputTabWidget);
     m_mouseAlgoOutputTabWidget->addTab(m_mouseAlgoBuildOutput, "Build Output");
     m_mouseAlgoOutputTabWidget->addTab(m_mouseAlgoRunOutput, "Run Output");
+    m_mouseAlgoOutputTabWidget->addTab(m_mouseAlgoRunOutput, "Run Output");
+    m_mouseAlgoOutputTabWidget->addTab(m_mouseAlgoStatsWidget, "Stats");
 
     // Set the default values for some widgets
     for (QPlainTextEdit* output : {
@@ -1147,25 +1159,8 @@ void Window::mouseAlgoTabInit() {
     }
 
     // Add the algo run stats
-    QGroupBox* runStatsGroupBox = new QGroupBox("Stats");
-    QGridLayout* runStatsLayout = new QGridLayout();
-    runStatsGroupBox->setLayout(runStatsLayout);
-    bottomLayout->addWidget(runStatsGroupBox);
     QPair<QStringList, QVector<QVariant>> runStats = getRunStats();
-    QStringList keys = runStats.first;
-    QVector<QVariant> values = runStats.second;
-    ASSERT_EQ(keys.size(), values.size());
-    for (int i = 0; i < keys.size(); i += 1) {
-        QString label = keys.at(i);
-        QLabel* labelHolder = new QLabel(label + ":");
-        QLabel* valueHolder = new QLabel();
-        valueHolder->setAlignment(Qt::AlignCenter);
-        valueHolder->setFrameStyle(QFrame::StyledPanel | QFrame::Plain);
-        valueHolder->setMinimumWidth(80);
-        runStatsLayout->addWidget(labelHolder, i, 0);
-        runStatsLayout->addWidget(valueHolder, i, 1);
-        m_runStats.insert(label, valueHolder);
-    }
+	m_mouseAlgoStatsWidget->init(runStats.first);
 
     // Add the mouse algos
     mouseAlgoRefresh(SettingsRecent::getRecentMouseAlgo());

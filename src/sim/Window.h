@@ -16,6 +16,7 @@
 #include "Maze.h"
 #include "MazeView.h"
 #include "Model.h"
+#include "MouseAlgoStatsWidget.h"
 #include "MouseGraphic.h"
 #include "MouseInterface.h"
 #include "RandomSeedWidget.h"
@@ -178,6 +179,7 @@ private:
     QPushButton* m_mouseAlgoRunButton;
     QLabel* m_mouseAlgoRunStatus;
     QPlainTextEdit* m_mouseAlgoRunOutput;
+    MouseAlgoStatsWidget* m_mouseAlgoStatsWidget;
     void mouseAlgoRunStart();
     void mouseAlgoRunStop();
     void handleMouseAlgoCannotStart(QString errorString);

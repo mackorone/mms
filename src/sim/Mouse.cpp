@@ -317,9 +317,6 @@ void Mouse::setWheelSpeeds(const QMap<QString, AngularVelocity>& wheelSpeeds) {
     QMap<QString, AngularVelocity>::const_iterator it;
     for (it = wheelSpeeds.constBegin(); it != wheelSpeeds.constEnd(); it += 1) {
         ASSERT_TR(m_wheels.contains(it.key()));
-        ASSERT_LE(
-            std::abs(it.value().getRevolutionsPerMinute()),
-            getWheelMaxSpeed(it.key()).getRevolutionsPerMinute());
         m_wheels[it.key()].setSpeed(it.value());
     }
     m_mutex.unlock();
