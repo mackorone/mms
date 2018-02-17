@@ -49,6 +49,10 @@ void MouseInterface::handleStandardOutput(QString output) {
     emit algoOutput(output);
 }
 
+void MouseInterface::emitMouseAlgoStarted() {
+    emit mouseAlgoStarted();
+}
+
 void MouseInterface::emitMouseAlgoCannotStart(QString errorString) {
     emit mouseAlgoCannotStart(errorString);
 }
