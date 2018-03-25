@@ -18,11 +18,11 @@ public:
     // Graphics parameters
     int defaultWindowWidth();
     int defaultWindowHeight();
-    QString defaultLayoutType();
-    double minZoomedMapScale();
-    double maxZoomedMapScale();
-    double defaultZoomedMapScale();
-    bool defaultRotateZoomedMap();
+    // QString defaultLayoutType();
+    // double minZoomedMapScale();
+    // double maxZoomedMapScale();
+    // double defaultZoomedMapScale();
+    // bool defaultRotateZoomedMap();
     QString tileBaseColor();
     QString tileWallColor();
     QString tileCornerColor();
@@ -39,27 +39,27 @@ public:
     QString mouseWheelColor();
     QString mouseSensorColor();
     QString mouseViewColor();
-    bool defaultWallTruthVisible();
-    bool defaultTileColorsVisible();
-    bool defaultTileFogVisible();
-    bool defaultTileTextVisible();
-    bool defaultTileDistanceVisible();
+    // bool defaultWallTruthVisible();
+    // bool defaultTileColorsVisible();
+    // bool defaultTileFogVisible();
+    // bool defaultTileTextVisible();
+    // bool defaultTileDistanceVisible();
     double tileFogAlpha();
     QString distanceCorrectTileBaseColor();
 
     // Simulation parameters
     int randomSeed();
-    bool defaultPaused();
+    // bool defaultPaused();
     double maxSimSpeed();
     double defaultSimSpeed();
-    bool collisionDetectionEnabled();
-    QString crashMessage();
+    // bool collisionDetectionEnabled();
+    // QString crashMessage();
     char defaultTileTextCharacter();
     double minSleepDuration();
-    int mousePositionUpdateRate();
-    bool printLateMousePositionUpdates();
-    int collisionDetectionRate();
-    bool printLateCollisionDetections();
+    // int mousePositionUpdateRate();
+    // bool printLateMousePositionUpdates();
+    // int collisionDetectionRate();
+    // bool printLateCollisionDetections();
     int numberOfCircleApproximationPoints();
     int numberOfSensorEdgePoints();
 

@@ -8,6 +8,11 @@ Features
     - Write and read from persistant storage...
     - The values should be re-loaded on the fly
 - Add Python bindings for mouse algorithms
+- Ensure that no new instances of wheels/sensors are created during algo execution
+- Improve the config dialog field to support double, int, bool
+- Make wall-length and wall-width constants
+- Make DT configurable
+- Investigate why random seed isn't working as expected
 
 Wishlist
 ========
@@ -23,7 +28,6 @@ Wishlist
 - Display the dynamic mouse algorithm options
 - Update the build and run status when the algorithm changes
 - Wiki page for common error message for failed commands
-- A utility to tell you whether or not the stdlib is used
 - A utility to tell you how much memory the algorithm is occupying
 - A utility to ensure that the algorithm has no memory leaks
 - Fuzz test the maze loading utilities
@@ -75,6 +79,7 @@ Cleanup
 
 Unsorted
 ========
+- A utility to tell you whether or not the stdlib is used
 - Make out-of-bounds position not crash the simulator
 - MacOS retina https://github.com/vispy/vispy/issues/99
 - Button for toggling the maze views
@@ -91,9 +96,6 @@ Unsorted
 - Rename the whole texture vs polygon thing
 - Set up tests/build framework
 - Make all classes QObjects
-- Fix timestep
-    - Make renderer and physics on same thread
-        - Maybe even collision detection too
 - QSet instead of QVector in some places
 - char to QChar
 - Replace QPair with structs
@@ -104,7 +106,6 @@ Unsorted
         - 99% of updates are 1ms apart, or something like that
     - Check the sleep duration of updates to make sure that we're actually doing 1000 updates per second
 - Draw dots on edges
-- Sim time is lagging a little bit
 - Make it more obvious which widgets are read-only
     - Use QLabel with border
 - Discrete mode speed...

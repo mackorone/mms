@@ -42,16 +42,11 @@ signals:
 
 private:
 
-    // The model object
+    // A separate thread for the model ensures that updates don't get blocked
+    // by events in the UI thread (e.g., drawing, button handlers, etc.), which
+    // is important for continuous algos that require a high update rate (1ms).
     Model m_model;
-
-    // A separate thread ensures that model updates don't get blocked by events
-    // in the UI thread (e.g., drawing, button handlers, etc.). This is
-    // important for continuous algos, which require a high update rate (1ms).
     QThread m_modelThread;
-
-    // FPS GUI elements
-    QLabel* m_fpsLabel;
 
     // Maze stats GUI elements
     QLabel* m_mazeWidthLabel;
@@ -87,6 +82,9 @@ private:
 
     // Helper function for updating the maze 
     void setMaze(Maze* maze);
+
+    // Helper function for editing settings
+    void editSettings();
 
     // Functions encapsulating process management logic,
     // shared between maze and mouse algorithms

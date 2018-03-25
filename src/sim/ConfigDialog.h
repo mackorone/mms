@@ -22,9 +22,9 @@ public:
         bool includeRemoveButton);
 
     bool removeButtonPressed();
-    QString getComboBoxValue(const QString& key);
-    QString getLineEditValue(const QString& key);
-    bool getComboBoxSelected(const QString& key);
+    QString getComboBoxValue(const QString& label);
+    QString getLineEditValue(const QString& label);
+    bool getComboBoxSelected(const QString& label);
 
 private:
 

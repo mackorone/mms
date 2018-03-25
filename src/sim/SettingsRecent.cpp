@@ -4,32 +4,32 @@
 
 namespace mms {
 
-const QString SettingsRecent::GROUP_PREFIX = "recent";
-const QString SettingsRecent::MAZE_ALGO_KEY = "maze-algo";
-const QString SettingsRecent::MOUSE_ALGO_KEY = "mouse-algo";
+const QString SettingsRecent::GROUP = "recent";
+const QString SettingsRecent::KEY_MAZE_ALGO = "maze-algo";
+const QString SettingsRecent::KEY_MOUSE_ALGO = "mouse-algo";
 
 QString SettingsRecent::getRecentMazeAlgo() {
-    return getValue(MAZE_ALGO_KEY);
+    return getValue(KEY_MAZE_ALGO);
 }
 
 QString SettingsRecent::getRecentMouseAlgo() {
-    return getValue(MOUSE_ALGO_KEY);
+    return getValue(KEY_MOUSE_ALGO);
 }
 
 void SettingsRecent::setRecentMazeAlgo(const QString& name) {
-    setValue(MAZE_ALGO_KEY, name);
+    setValue(KEY_MAZE_ALGO, name);
 }
 
 void SettingsRecent::setRecentMouseAlgo(const QString& name) {
-    setValue(MOUSE_ALGO_KEY, name);
+    setValue(KEY_MOUSE_ALGO, name);
 }
 
 QString SettingsRecent::getValue(const QString& key) {
-    return Settings::get()->value(GROUP_PREFIX, key);
+    return Settings::get()->value(GROUP, key);
 }
 
 void SettingsRecent::setValue(const QString& key, const QString& value) {
-    Settings::get()->update(GROUP_PREFIX, key, value);
+    Settings::get()->update(GROUP, key, value);
 }
 
 } // namespace mms

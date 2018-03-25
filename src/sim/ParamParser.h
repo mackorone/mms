@@ -53,7 +53,7 @@ public:
 private:
 
     // Settings group and helper functions
-    static const QString GROUP_PREFIX;
+    static const QString GROUP;
     static QString getValue(const QString& key);
     static void setValue(const QString& key, const QString& value);
 

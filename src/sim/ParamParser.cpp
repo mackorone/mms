@@ -14,7 +14,7 @@
 
 namespace mms {
 
-const QString ParamParser::GROUP_PREFIX = "miscellaneous";
+const QString ParamParser::GROUP = "miscellaneous";
 
 // TODO: MACK
 
@@ -45,17 +45,17 @@ void ParamParser::execEditDialog() {
     for (const QString& key : {
         WINDOW_WIDTH_KEY,
     }) {
-        Settings::get()->update(GROUP_PREFIX, key, dialog.getValue(key));
+        Settings::get()->update(GROUP, key, dialog.getValue(key));
     }
     */
 }
 
 QString ParamParser::getValue(const QString& key) {
-    return Settings::get()->value(GROUP_PREFIX, key);
+    return Settings::get()->value(GROUP, key);
 }
 
 void ParamParser::setValue(const QString& key, const QString& value) {
-    Settings::get()->update(GROUP_PREFIX, key, value);
+    Settings::get()->update(GROUP, key, value);
 }
 
 // TODO: MACK

@@ -16,8 +16,8 @@ public:
 
 private:
 
-    static const QString GROUP_PREFIX;
-    static const QString PATH_KEY;
+    static const QString GROUP;
+    static const QString KEY_PATH;
 
 };
 

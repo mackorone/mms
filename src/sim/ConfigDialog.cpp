@@ -9,6 +9,7 @@
 #include <QRadioButton>
 #include <QVBoxLayout>
 
+#include "Assert.h"
 #include "ContainerUtilities.h"
 
 namespace mms {
@@ -20,6 +21,13 @@ ConfigDialog::ConfigDialog(
     bool includeRemoveButton) :
     m_fields(fields),
     m_removeButtonPressed(false) {
+
+    // Ensure that all labels are unique
+    for (int i = 0; i < fields.size(); i += 1) {
+        for (int j = i + 1; j < fields.size(); j += 1) {
+            ASSERT_FA(fields.at(i).label == fields.at(j).label);
+        }
+    }
 
     // Set the layout for the dialog
     QVBoxLayout* mainLayout = new QVBoxLayout();
@@ -40,10 +48,10 @@ ConfigDialog::ConfigDialog(
         gridLayout->addWidget(label, row, 0);
 
         // Next, create the line edit
-        m_lineEdits[field.key] =
+        m_lineEdits[field.label] =
             new QLineEdit(field.initialLineEditValue.toString());
         connect(
-            m_lineEdits[field.key], &QLineEdit::textChanged,
+            m_lineEdits[field.label], &QLineEdit::textChanged,
             this, &ConfigDialog::validate
         );
 
@@ -67,7 +75,7 @@ ConfigDialog::ConfigDialog(
                 }
                 if (!path.isNull()) {
                     QString nativePath = QDir::toNativeSeparators(path);
-                    m_lineEdits[field.key]->setText(nativePath);
+                    m_lineEdits[field.label]->setText(nativePath);
                 }
             });
         }
@@ -84,24 +92,24 @@ ConfigDialog::ConfigDialog(
             choicesBox->setLayout(choicesLayout);
 
             // Insert the combo box
-            QRadioButton* comboBoxRadioButton = new QRadioButton("Standard");
-            m_comboBoxes[field.key] = new QComboBox();
+            QRadioButton* comboBoxRadioButton = new QRadioButton("Built-in");
+            m_comboBoxes[field.label] = new QComboBox();
             for (const auto& value : field.comboBoxValues) {
-                m_comboBoxes[field.key]->addItem(value.toString());
+                m_comboBoxes[field.label]->addItem(value.toString());
             }
-            int index = m_comboBoxes[field.key]->findText(
+            int index = m_comboBoxes[field.label]->findText(
                 field.initialComboBoxValue.toString()
             );
             if (index != -1) {
-                m_comboBoxes[field.key]->setCurrentIndex(index);
+                m_comboBoxes[field.label]->setCurrentIndex(index);
             }
             choicesLayout->addWidget(comboBoxRadioButton, 0, 0);
-            choicesLayout->addWidget(m_comboBoxes[field.key], 0, 1);
+            choicesLayout->addWidget(m_comboBoxes[field.label], 0, 1);
 
             // Insert the line edit
             QRadioButton* lineEditRadioButton = new QRadioButton("Custom");
             choicesLayout->addWidget(lineEditRadioButton, 1, 0);
-            choicesLayout->addWidget(m_lineEdits[field.key], 1, 1);
+            choicesLayout->addWidget(m_lineEdits[field.label], 1, 1);
             if (browseButton != nullptr) {
                 choicesLayout->addWidget(browseButton, 1, 2);
             }
@@ -111,8 +119,8 @@ ConfigDialog::ConfigDialog(
                 comboBoxRadioButton, &QRadioButton::toggled,
                 this, [=](){
                     bool isChecked = comboBoxRadioButton->isChecked();
-                    m_comboBoxes[field.key]->setEnabled(isChecked);
-                    m_lineEdits[field.key]->setEnabled(!isChecked);
+                    m_comboBoxes[field.label]->setEnabled(isChecked);
+                    m_lineEdits[field.label]->setEnabled(!isChecked);
                     if (browseButton != nullptr) {
                         browseButton->setEnabled(!isChecked);
                     }
@@ -128,7 +136,7 @@ ConfigDialog::ConfigDialog(
 
         // Handle the case of just a line edit
         else {
-            gridLayout->addWidget(m_lineEdits[field.key], row, 2);
+            gridLayout->addWidget(m_lineEdits[field.label], row, 2);
             if (browseButton != nullptr) {
                 gridLayout->addWidget(browseButton, row, 3);
             }
@@ -175,25 +183,25 @@ bool ConfigDialog::removeButtonPressed() {
     return m_removeButtonPressed;
 }
 
-QString ConfigDialog::getComboBoxValue(const QString& key) {
-    if (!m_comboBoxes.contains(key)) {
+QString ConfigDialog::getComboBoxValue(const QString& label) {
+    if (!m_comboBoxes.contains(label)) {
         return QString();
     }
-    return m_comboBoxes[key]->currentText();
+    return m_comboBoxes[label]->currentText();
 }
 
-QString ConfigDialog::getLineEditValue(const QString& key) {
-    if (!m_lineEdits.contains(key)) {
+QString ConfigDialog::getLineEditValue(const QString& label) {
+    if (!m_lineEdits.contains(label)) {
         return QString();
     }
-    return m_lineEdits[key]->text();
+    return m_lineEdits[label]->text();
 }
 
-bool ConfigDialog::getComboBoxSelected(const QString& key) {
-    if (!m_comboBoxes.contains(key)) {
+bool ConfigDialog::getComboBoxSelected(const QString& label) {
+    if (!m_comboBoxes.contains(label)) {
         return false;
     }
-    return m_comboBoxes[key]->isEnabled();
+    return m_comboBoxes[label]->isEnabled();
 }
 
 void ConfigDialog::validate() {
@@ -202,7 +210,7 @@ void ConfigDialog::validate() {
         if (!field.allowEmptyLineEditValue) {
             if (
                 !field.allowEmptyLineEditValue &&
-                m_lineEdits[field.key]->text().isEmpty()
+                m_lineEdits[field.label]->text().isEmpty()
             ) {
                 valid = false;
                 break;

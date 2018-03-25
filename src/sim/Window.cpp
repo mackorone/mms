@@ -30,7 +30,6 @@ namespace mms {
 
 Window::Window(QWidget *parent) :
         QMainWindow(parent),
-        m_fpsLabel(new QLabel()),
         m_mazeWidthLabel(new QLabel()),
         m_mazeHeightLabel(new QLabel()),
         m_maxDistanceLabel(new QLabel()),
@@ -113,7 +112,6 @@ Window::Window(QWidget *parent) :
     mazeStatsBox->setLayout(mazeStatsLayout);
     mapHolderLayout->addWidget(mazeStatsBox);
     for (QPair<QString, QLabel*> pair : QVector<QPair<QString, QLabel*>> {
-        {"FPS", m_fpsLabel},
         {"Width", m_mazeWidthLabel},
         {"Height", m_mazeHeightLabel},
         {"Max", m_maxDistanceLabel},
@@ -233,13 +231,16 @@ Window::Window(QWidget *parent) :
     tabWidget->addTab(m_mouseAlgoWidget, "Mouse Algorithms");
 
     // Add some generic menu items
-    QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
+    QMenu* fileMenu = menuBar()->addMenu(tr("&Menu"));
+
+    // Settings
+    QAction* settingsAction = new QAction(tr("&Settings"), this);
+    connect(settingsAction, &QAction::triggered, this, &Window::editSettings);
+    fileMenu->addAction(settingsAction);
 
     // Quit
     QAction* quitAction = new QAction(tr("&Quit"), this);
-    connect(quitAction, &QAction::triggered, this, [=](){
-        close();
-    });
+    connect(quitAction, &QAction::triggered, this, &Window::close);
     fileMenu->addAction(quitAction);
 
     // Save the maze
@@ -322,7 +323,6 @@ Window::Window(QWidget *parent) :
         if (timestamps->size() > numFrames) {
             double then = timestamps->takeFirst();
             double fps = numFrames / (now - then);
-            m_fpsLabel->setText(QString::number(fps, 'f', 2));
         }
         QPair<QStringList, QVector<QVariant>> runStats = getRunStats();
         QStringList keys = runStats.first;
@@ -392,6 +392,97 @@ void Window::setMaze(Maze* maze) {
     delete oldMaze;
     delete oldTruth;
 }
+
+void Window::editSettings() {
+
+    QVector<ConfigDialogField> fields;
+
+// default-window-width
+// default-window-height
+// tile-base-color
+// tile-wall-color
+// tile-corner-color
+// tile-fog-color
+// tile-text-font-image
+// tile-text-border-fraction
+// tile-text-alignment
+// tile-undeclared-wall-color
+// tile-undeclared-no-wall-color
+// tile-incorrectly-declared-wall-color
+// tile-incorrectly-declared-no-wall-color
+// mouse-body-color
+// mouse-center-of-mass-color
+// mouse-wheel-color
+// mouse-sensor-color
+// mouse-view-color
+// tile-fog-alpha
+// distance-correct-tile-base-color
+// random-seed
+// max-sim-speed
+// default-tile-text-character
+// min-sleep-duration
+// dt
+
+
+
+	/*
+    ConfigDialogField nameField;
+    nameField.label = "Name";
+    nameField.allowEmptyLineEditValue = false;
+
+    ConfigDialogField dirPathField;
+    dirPathField.label = "Directory";
+    dirPathField.fileBrowser = true;
+    dirPathField.onlyDirectories = true;
+
+    ConfigDialogField buildCommandField;
+    buildCommandField.label = "Build Command";
+
+    ConfigDialogField runCommandField;
+    runCommandField.label = "Run Command";
+
+    return {
+        nameField,
+        dirPathField,
+        buildCommandField,
+        runCommandField,
+    };
+    ConfigDialogField nameField = fields.at(0);
+    ConfigDialogField dirPathField = fields.at(1);
+    ConfigDialogField buildCommandField = fields.at(2);
+    ConfigDialogField runCommandField = fields.at(3);
+
+    ConfigDialog dialog(
+        "Import",
+        "Maze Algorithm",
+        {
+            nameField,
+            dirPathField,
+            buildCommandField,
+            runCommandField
+        },
+        false // No "Remove" button
+    );
+
+    // Cancel was pressed
+    if (dialog.exec() == QDialog::Rejected) {
+        return;
+    }
+
+    // Ok was pressed
+    QString name = dialog.getLineEditValue(nameField.label);
+    SettingsMazeAlgos::add(
+        name,
+        dialog.getLineEditValue(dirPathField.label),
+        dialog.getLineEditValue(buildCommandField.label),
+        dialog.getLineEditValue(runCommandField.label)
+    );
+
+    // Update the maze algos
+    mazeAlgoRefresh(name);
+    */
+}
+
 
 void Window::algoActionStart(
     QProcess** actionProcessVariable,
@@ -815,12 +906,12 @@ void Window::mazeAlgoImport() {
     }
 
     // Ok was pressed
-    QString name = dialog.getLineEditValue(nameField.key);
+    QString name = dialog.getLineEditValue(nameField.label);
     SettingsMazeAlgos::add(
         name,
-        dialog.getLineEditValue(dirPathField.key),
-        dialog.getLineEditValue(buildCommandField.key),
-        dialog.getLineEditValue(runCommandField.key)
+        dialog.getLineEditValue(dirPathField.label),
+        dialog.getLineEditValue(buildCommandField.label),
+        dialog.getLineEditValue(runCommandField.label)
     );
 
     // Update the maze algos
@@ -869,13 +960,13 @@ void Window::mazeAlgoEdit() {
     }
 
     // OK was pressed
-    QString newName = dialog.getLineEditValue(nameField.key);
+    QString newName = dialog.getLineEditValue(nameField.label);
     SettingsMazeAlgos::update(
         name,
         newName,
-        dialog.getLineEditValue(dirPathField.key),
-        dialog.getLineEditValue(buildCommandField.key),
-        dialog.getLineEditValue(runCommandField.key)
+        dialog.getLineEditValue(dirPathField.label),
+        dialog.getLineEditValue(buildCommandField.label),
+        dialog.getLineEditValue(runCommandField.label)
     );
 
     // Update the maze algos
@@ -988,22 +1079,18 @@ void Window::mazeAlgoRefresh(const QString& name) {
 QVector<ConfigDialogField> Window::mazeAlgoGetFields() {
 
     ConfigDialogField nameField;
-    nameField.key = "NAME";
     nameField.label = "Name";
     nameField.allowEmptyLineEditValue = false;
 
     ConfigDialogField dirPathField;
-    dirPathField.key = "DIR_PATH";
     dirPathField.label = "Directory";
     dirPathField.fileBrowser = true;
     dirPathField.onlyDirectories = true;
 
     ConfigDialogField buildCommandField;
-    buildCommandField.key = "BUILD_COMMAND";
     buildCommandField.label = "Build Command";
 
     ConfigDialogField runCommandField;
-    runCommandField.key = "RUN_COMMAND";
     runCommandField.label = "Run Command";
 
     return {
@@ -1216,16 +1303,16 @@ void Window::mouseAlgoEdit() {
     }
 
     // OK was pressed
-    QString newName = dialog.getLineEditValue(nameField.key);
+    QString newName = dialog.getLineEditValue(nameField.label);
     SettingsMouseAlgos::update(
         name,
         newName,
-        dialog.getLineEditValue(dirPathField.key),
-        dialog.getLineEditValue(buildCommandField.key),
-        dialog.getLineEditValue(runCommandField.key),
-        dialog.getComboBoxValue(mouseFilePathField.key),
-        dialog.getLineEditValue(mouseFilePathField.key),
-        dialog.getComboBoxSelected(mouseFilePathField.key)
+        dialog.getLineEditValue(dirPathField.label),
+        dialog.getLineEditValue(buildCommandField.label),
+        dialog.getLineEditValue(runCommandField.label),
+        dialog.getComboBoxValue(mouseFilePathField.label),
+        dialog.getLineEditValue(mouseFilePathField.label),
+        dialog.getComboBoxSelected(mouseFilePathField.label)
     );
 
     // Update the mouse algos
@@ -1260,15 +1347,15 @@ void Window::mouseAlgoImport() {
     }
 
     // Ok was pressed
-    QString name = dialog.getLineEditValue(nameField.key);
+    QString name = dialog.getLineEditValue(nameField.label);
     SettingsMouseAlgos::add(
         name,
-        dialog.getLineEditValue(dirPathField.key),
-        dialog.getLineEditValue(buildCommandField.key),
-        dialog.getLineEditValue(runCommandField.key),
-        dialog.getComboBoxValue(mouseFilePathField.key),
-        dialog.getLineEditValue(mouseFilePathField.key),
-        dialog.getComboBoxSelected(mouseFilePathField.key)
+        dialog.getLineEditValue(dirPathField.label),
+        dialog.getLineEditValue(buildCommandField.label),
+        dialog.getLineEditValue(runCommandField.label),
+        dialog.getComboBoxValue(mouseFilePathField.label),
+        dialog.getLineEditValue(mouseFilePathField.label),
+        dialog.getComboBoxSelected(mouseFilePathField.label)
     );
 
     // Update the mouse algos
@@ -1737,30 +1824,25 @@ void Window::mouseAlgoRefresh(const QString& name) {
 QVector<ConfigDialogField> Window::mouseAlgoGetFields() {
 
     ConfigDialogField nameField;
-    nameField.key = "NAME";
     nameField.label = "Name";
     nameField.allowEmptyLineEditValue = false;
 
     ConfigDialogField dirPathField;
-    dirPathField.key = "DIR_PATH";
     dirPathField.label = "Directory";
     dirPathField.fileBrowser = true;
     dirPathField.onlyDirectories = true;
 
     ConfigDialogField buildCommandField;
-    buildCommandField.key = "BUILD_COMMAND";
     buildCommandField.label = "Build Command";
 
     ConfigDialogField runCommandField;
-    runCommandField.key = "RUN_COMMAND";
     runCommandField.label = "Run Command";
 
     ConfigDialogField mouseFilePathField;
-    mouseFilePathField.key = "MOUSE_FILE_PATH";
     mouseFilePathField.label = "Mouse File";
     mouseFilePathField.fileBrowser = true;
     QVector<QVariant> standardMouseFiles;
-    for (const auto& file : Resources::getMice()) {
+    for (QString file : Resources::getMice()) {
         standardMouseFiles.append(file);
     }
     mouseFilePathField.comboBoxValues = standardMouseFiles;

@@ -33,11 +33,11 @@ public:
 
 private:
 
-    static const QString GROUP_PREFIX;
-    static const QString NAME_KEY;
-    static const QString DIR_PATH_KEY;
-    static const QString BUILD_COMMAND_KEY;
-    static const QString RUN_COMMAND_KEY;
+    static const QString GROUP;
+    static const QString KEY_NAME;
+    static const QString KEY_DIR_PATH;
+    static const QString KEY_BUILD_COMMAND;
+    static const QString KEY_RUN_COMMAND;
 
     static QString getValue(const QString& name, const QString& key);
 

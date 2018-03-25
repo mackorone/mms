@@ -17,9 +17,9 @@ public:
 
 private:
 
-    static const QString GROUP_PREFIX;
-    static const QString MAZE_ALGO_KEY;
-    static const QString MOUSE_ALGO_KEY;
+    static const QString GROUP;
+    static const QString KEY_MAZE_ALGO;
+    static const QString KEY_MOUSE_ALGO;
 
     static QString getValue(const QString& key);
     static void setValue(const QString& key, const QString& value);

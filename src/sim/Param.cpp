@@ -144,26 +144,6 @@ int Param::defaultWindowHeight() {
     return m_defaultWindowHeight;
 }
 
-QString Param::defaultLayoutType() {
-    return m_defaultLayoutType;
-}
-
-double Param::minZoomedMapScale() {
-    return m_minZoomedMapScale;
-}
-
-double Param::maxZoomedMapScale() {
-    return m_maxZoomedMapScale;
-}
-
-double Param::defaultZoomedMapScale() {
-    return m_defaultZoomedMapScale;
-}
-
-bool Param::defaultRotateZoomedMap() {
-    return m_defaultRotateZoomedMap;
-}
-
 QString Param::tileBaseColor() {
     return m_tileBaseColor;
 }
@@ -228,26 +208,6 @@ QString Param::mouseViewColor() {
     return m_mouseViewColor;
 }
 
-bool Param::defaultWallTruthVisible() {
-    return m_defaultWallTruthVisible;
-}
-
-bool Param::defaultTileColorsVisible() {
-    return m_defaultTileColorsVisible;
-}
-
-bool Param::defaultTileFogVisible() {
-    return m_defaultTileFogVisible;
-}
-
-bool Param::defaultTileTextVisible() {
-    return m_defaultTileTextVisible;
-}
-
-bool Param::defaultTileDistanceVisible() {
-    return m_defaultTileDistanceVisible;
-}
-
 double Param::tileFogAlpha() {
     return m_tileFogAlpha;
 }
@@ -260,10 +220,6 @@ int Param::randomSeed() {
     return m_randomSeed;
 }
 
-bool Param::defaultPaused() {
-    return m_defaultPaused;
-}
-
 double Param::maxSimSpeed() {
     return m_maxSimSpeed;
 }
@@ -272,36 +228,12 @@ double Param::defaultSimSpeed() {
     return m_defaultSimSpeed;
 }
 
-bool Param::collisionDetectionEnabled() {
-    return m_collisionDetectionEnabled;
-}
-
-QString Param::crashMessage() {
-    return m_crashMessage;
-}
-
 char Param::defaultTileTextCharacter() {
     return m_defaultTileTextCharacter;
 }
 
 double Param::minSleepDuration() {
     return m_minSleepDuration;
-}
-
-int Param::mousePositionUpdateRate() {
-    return m_mousePositionUpdateRate;
-}
-
-bool Param::printLateMousePositionUpdates() {
-    return m_printLateMousePostitionUpdates;
-}
-
-int Param::collisionDetectionRate() {
-    return m_collisionDetectionRate;
-}
-
-bool Param::printLateCollisionDetections() {
-    return m_printLateCollisionDetections;
 }
 
 int Param::numberOfCircleApproximationPoints() {

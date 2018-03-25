@@ -170,9 +170,9 @@ void Model::setSimSpeed(double factor) {
 void Model::checkCollision() {
 
     // If collision detectino isn't enabled, let this thread exit
-    if (!P()->collisionDetectionEnabled()) {
-        return;
-    }
+    // if (!P()->collisionDetectionEnabled()) {
+    //     return;
+    // }
 
     // TODO: MACK
     // If the interface type is DISCRETE, let this thread exit

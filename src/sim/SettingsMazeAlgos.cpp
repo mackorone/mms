@@ -5,26 +5,26 @@
 
 namespace mms {
 
-const QString SettingsMazeAlgos::GROUP_PREFIX = "mazeAlgos";
-const QString SettingsMazeAlgos::NAME_KEY = "name";
-const QString SettingsMazeAlgos::DIR_PATH_KEY = "dirPath";
-const QString SettingsMazeAlgos::BUILD_COMMAND_KEY = "buildCommand";
-const QString SettingsMazeAlgos::RUN_COMMAND_KEY = "runCommand";
+const QString SettingsMazeAlgos::GROUP = "mazeAlgos";
+const QString SettingsMazeAlgos::KEY_NAME = "name";
+const QString SettingsMazeAlgos::KEY_DIR_PATH = "dirPath";
+const QString SettingsMazeAlgos::KEY_BUILD_COMMAND = "buildCommand";
+const QString SettingsMazeAlgos::KEY_RUN_COMMAND = "runCommand";
 
 QStringList SettingsMazeAlgos::names() {
-    return Settings::get()->values(GROUP_PREFIX, NAME_KEY);
+    return Settings::get()->values(GROUP, KEY_NAME);
 }
 
 QString SettingsMazeAlgos::getDirPath(const QString& name) {
-    return getValue(name, DIR_PATH_KEY);
+    return getValue(name, KEY_DIR_PATH);
 }
 
 QString SettingsMazeAlgos::getBuildCommand(const QString& name) {
-    return getValue(name, BUILD_COMMAND_KEY);
+    return getValue(name, KEY_BUILD_COMMAND);
 }
 
 QString SettingsMazeAlgos::getRunCommand(const QString& name) {
-    return getValue(name, RUN_COMMAND_KEY);
+    return getValue(name, KEY_RUN_COMMAND);
 }
 
 void SettingsMazeAlgos::add(
@@ -33,11 +33,11 @@ void SettingsMazeAlgos::add(
     const QString& buildCommand,
     const QString& runCommand
 ) {
-    Settings::get()->add(GROUP_PREFIX, {
-        {NAME_KEY, name},
-        {DIR_PATH_KEY, dirPath},
-        {BUILD_COMMAND_KEY, buildCommand},
-        {RUN_COMMAND_KEY, runCommand},
+    Settings::get()->add(GROUP, {
+        {KEY_NAME, name},
+        {KEY_DIR_PATH, dirPath},
+        {KEY_BUILD_COMMAND, buildCommand},
+        {KEY_RUN_COMMAND, runCommand},
     });
 }
 
@@ -48,24 +48,24 @@ void SettingsMazeAlgos::update(
     const QString& newBuildCommand,
     const QString& newRunCommand
 ) {
-    Settings::get()->update(GROUP_PREFIX, NAME_KEY, name, {
-        {NAME_KEY, newName},
-        {DIR_PATH_KEY, newDirPath},
-        {BUILD_COMMAND_KEY, newBuildCommand},
-        {RUN_COMMAND_KEY, newRunCommand},
+    Settings::get()->update(GROUP, KEY_NAME, name, {
+        {KEY_NAME, newName},
+        {KEY_DIR_PATH, newDirPath},
+        {KEY_BUILD_COMMAND, newBuildCommand},
+        {KEY_RUN_COMMAND, newRunCommand},
     });
 }
 
 void SettingsMazeAlgos::remove(const QString& name) {
     Settings::get()->remove(
-        GROUP_PREFIX,
-        NAME_KEY,
+        GROUP,
+        KEY_NAME,
         name
     );
 }
 
 QString SettingsMazeAlgos::getValue(const QString& name, const QString& key) {
-    const auto& vector = Settings::get()->find(GROUP_PREFIX, NAME_KEY, name);
+    const auto& vector = Settings::get()->find(GROUP, KEY_NAME, name);
     return (vector.size() == 0 ? "" : vector.at(0).value(key));
 }
 
