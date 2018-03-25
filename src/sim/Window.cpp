@@ -244,13 +244,13 @@ Window::Window(QWidget *parent) :
     fileMenu->addAction(quitAction);
 
     // Save the maze
-	// TODO: MACK - select the maze type here...
+    // TODO: MACK - select the maze type here...
     /*
     QAction* saveMazeAction = new QAction(tr("&Save Maze As ..."), this);
     connect(saveMazeAction, &QAction::triggered, this, [=](){
         QString filename = QFileDialog::getSaveFileName(
-			this,
-			tr("Save File"),
+            this,
+            tr("Save File"),
             "",
             tr("Images (*.png *.xpm *.jpg)")
         );
@@ -303,16 +303,29 @@ Window::Window(QWidget *parent) :
     resize(P()->defaultWindowWidth(), P()->defaultWindowHeight());
 
     // Start the graphics loop
+    // TODO: upforgrabs
+    // Make fps configurable
+    double secondsPerFrame = 1.0 / 60;
     QTimer* mapTimer = new QTimer();
     connect(
-		mapTimer, &QTimer::timeout,
-		&m_map, static_cast<void(Map::*)()>(&Map::update));
-    // // TODO: upforgrabs
-    // // Make this configurable
-    mapTimer->start(16); // 60 fps
+        mapTimer, &QTimer::timeout,
+        this, [=](){
+            // TODO: MACK - this makes the graphics look choppy
+            // - fix this to only run when dialog is open
+            // Hack to prevent file dialog from locking up...
+            static double then = SimUtilities::getHighResTimestamp();
+            double now = SimUtilities::getHighResTimestamp();
+            if (now - then < secondsPerFrame) {
+                return;
+            }
+            m_map.update();
+            then = now;
+        }
+    );
+    mapTimer->start(secondsPerFrame * 1000);
 
-	// TODO: MACK - this is very expensive - fix it
-	/*
+    // TODO: MACK - this is very expensive - fix it
+    /*
     // Start the info loop
     QTimer* otherTimer = new QTimer();
     QLinkedList<double>* timestamps = new QLinkedList<double>();
@@ -336,7 +349,7 @@ Window::Window(QWidget *parent) :
         }
     });
     //otherTimer->start(100); // 10 fps
-	*/
+    */
 }
 
 void Window::closeEvent(QCloseEvent *event) {
@@ -1247,7 +1260,7 @@ void Window::mouseAlgoTabInit() {
 
     // Add the algo run stats
     QPair<QStringList, QVector<QVariant>> runStats = getRunStats();
-	m_mouseAlgoStatsWidget->init(runStats.first);
+    m_mouseAlgoStatsWidget->init(runStats.first);
 
     // Add the mouse algos
     mouseAlgoRefresh(SettingsRecent::getRecentMouseAlgo());
@@ -1627,6 +1640,8 @@ void Window::mouseAlgoRunStart() {
             this,
             [=](int exitCode, QProcess::ExitStatus exitStatus){
 
+                // TODO: MACK - does the thread get cleaned up if the mouse exits normally?
+
                 // Set the button to "Action"
                 disconnect(
                     m_mouseAlgoRunButton, &QPushButton::clicked,
@@ -1697,29 +1712,37 @@ void Window::mouseAlgoRunStart() {
         m_map.setView(newView);
         m_map.setMouseGraphic(newMouseGraphic);
 
-        // TODO: upforgrabs
-        // I'm pretty sure this isn't thread safe...
-        // UI updates on successful start
-        m_viewButton->setEnabled(true);
-        m_viewButton->setChecked(true);
-        m_followCheckbox->setEnabled(true);
-        m_mouseAlgoPauseButton->setEnabled(true);
-        for (QPushButton* button : m_mouseAlgoInputButtons) {
-            button->setEnabled(true);
-        }
-        m_mouseAlgoRunStatus->setText("RUNNING");
-        m_mouseAlgoRunStatus->setStyleSheet(
-            "QLabel { background: rgb(255, 255, 100); }"
-        );
-        disconnect(
-            m_mouseAlgoRunButton, &QPushButton::clicked,
-            this, &Window::mouseAlgoRunStart
-        );
+        // We have to do some gymnastics here (similar to above)
+        // to ensure that the UI updates happen on the UI thread
         connect(
-            m_mouseAlgoRunButton, &QPushButton::clicked,
-            this, &Window::mouseAlgoRunStop
+            newMouseInterface,
+            &MouseInterface::mouseAlgoStarted,
+            this,
+            [=](){
+                // UI updates on successful start
+                m_viewButton->setEnabled(true);
+                m_viewButton->setChecked(true);
+                m_followCheckbox->setEnabled(true);
+                m_mouseAlgoPauseButton->setEnabled(true);
+                for (QPushButton* button : m_mouseAlgoInputButtons) {
+                    button->setEnabled(true);
+                }
+                m_mouseAlgoRunStatus->setText("RUNNING");
+                m_mouseAlgoRunStatus->setStyleSheet(
+                    "QLabel { background: rgb(255, 255, 100); }"
+                );
+                disconnect(
+                    m_mouseAlgoRunButton, &QPushButton::clicked,
+                    this, &Window::mouseAlgoRunStart
+                );
+                connect(
+                    m_mouseAlgoRunButton, &QPushButton::clicked,
+                    this, &Window::mouseAlgoRunStop
+                );
+                m_mouseAlgoRunButton->setText("Cancel");
+            }
         );
-        m_mouseAlgoRunButton->setText("Cancel");
+        newMouseInterface->emitMouseAlgoStarted();
     });
 
     // Start the mouse interface thread
@@ -1759,6 +1782,7 @@ void Window::mouseAlgoRunStop() {
     m_mouse = nullptr;
 
     // UI updates on stop
+    // TODO: MACK - this also needs to happen when the algo exits normally
     m_truthButton->setChecked(true);
     m_viewButton->setEnabled(false);
     m_followCheckbox->setEnabled(false);

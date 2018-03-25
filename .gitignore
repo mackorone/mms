@@ -224,3 +224,6 @@ FakesAssemblies/
 *.sln
 *.vcxproj
 *.filters
+*.Debug
+*.Release
+*.exe
