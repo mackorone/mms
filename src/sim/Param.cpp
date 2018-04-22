@@ -26,10 +26,6 @@ Param* Param::getInstance() {
 Param::Param() {
 
     // Graphical Parameters
-    m_defaultWindowWidth = ParamParser::getIntIfHasIntAndNotLessThan(
-        "default-window-width", 1200, 100);
-    m_defaultWindowHeight = ParamParser::getIntIfHasIntAndNotLessThan(
-        "default-window-height", 633, 100);
     m_defaultLayoutType = ParamParser::getStringIfHasStringAndIsLayoutType(
         "default-layout-type", LAYOUT_TYPE_TO_STRING().value(LayoutType::FULL));
     m_minZoomedMapScale = ParamParser::getDoubleIfHasDoubleAndInRange(
@@ -103,14 +99,6 @@ Param::Param() {
         "maze-mirrored", false);
     m_mazeRotations = ParamParser::getIntIfHasIntAndInRange(
         "maze-rotations", 0, 0, 3);
-}
-
-int Param::defaultWindowWidth() {
-    return m_defaultWindowWidth;
-}
-
-int Param::defaultWindowHeight() {
-    return m_defaultWindowHeight;
 }
 
 QString Param::tileTextFontImage() {

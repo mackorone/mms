@@ -16,8 +16,6 @@ public:
     static Param* getInstance();
 
     // Graphics parameters
-    int defaultWindowWidth();
-    int defaultWindowHeight();
     // QString defaultLayoutType();
     // double minZoomedMapScale();
     // double maxZoomedMapScale();
@@ -63,8 +61,6 @@ private:
     static Param* INSTANCE;
 
     // Graphics parameters
-    int m_defaultWindowWidth;
-    int m_defaultWindowHeight;
     QString m_defaultLayoutType;
     double m_minZoomedMapScale;
     double m_maxZoomedMapScale;

@@ -31,6 +31,7 @@ public:
 
     Window(QWidget* parent = 0);
     void closeEvent(QCloseEvent* event);
+    void resizeEvent(QResizeEvent* event);
 
 signals:
 

@@ -301,7 +301,9 @@ Window::Window(QWidget *parent) :
     */
 
     // Resize the window
-    resize(P()->defaultWindowWidth(), P()->defaultWindowHeight());
+    resize(
+        SettingsRecent::getRecentWindowWidth(),
+        SettingsRecent::getRecentWindowHeight());
 
     // Start the graphics loop
     // TODO: upforgrabs
@@ -351,6 +353,11 @@ Window::Window(QWidget *parent) :
     });
     //otherTimer->start(100); // 10 fps
     */
+}
+
+void Window::resizeEvent(QResizeEvent* event) {
+    SettingsRecent::setRecentWindowWidth(event->size().width());
+    SettingsRecent::setRecentWindowHeight(event->size().height());
 }
 
 void Window::closeEvent(QCloseEvent *event) {
@@ -411,14 +418,6 @@ void Window::editSettings() {
 
     QVector<ConfigDialogField> fields;
 
-    ConfigDialogField defaultWindowWidthField;
-    defaultWindowWidthField.label = "Default Window Width";
-    defaultWindowWidthField.type = ConfigDialogFieldType::INTEGER;
-
-    ConfigDialogField defaultWindowHeightField;
-    defaultWindowHeightField.label = "Default Window Height";
-    defaultWindowHeightField.type = ConfigDialogFieldType::INTEGER;
-
     ConfigDialogField tileTextFontImageField;
     tileTextFontImageField.label = "Tile Text Font Image";
     tileTextFontImageField.type = ConfigDialogFieldType::FILE;
@@ -451,8 +450,6 @@ void Window::editSettings() {
         "Edit",
         "Settings",
         {
-            defaultWindowWidthField,
-            defaultWindowHeightField,
             tileTextFontImageField,
             tileTextBorderFractionField,
             tileTextAlignmentField,

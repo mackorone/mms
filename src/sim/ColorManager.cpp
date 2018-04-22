@@ -1,7 +1,6 @@
 #include "ColorManager.h"
 
 #include "Assert.h"
-#include "Logging.h"
 #include "Settings.h"
 #include "SimUtilities.h"
 
