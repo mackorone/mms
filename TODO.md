@@ -6,7 +6,6 @@ Release
 - Publish installation and usage guides
 - Disable some UI buttons when algo completes
 - Fix the FPS bugs (remove the label from the header)
-- Rename sensor view to mouse vision
 
 Features
 ========
@@ -86,6 +85,7 @@ Cleanup
 - Use keyword explicit on one argument constructors
 - Ensure UI widget spacing is sane
 - Use const auto& for for-loops where possible
+- Rename sensor view to mouse vision
 
 Unsorted
 ========

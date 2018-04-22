@@ -11,6 +11,7 @@
 
 #include "Assert.h"
 #include "Color.h"
+#include "ColorManager.h"
 #include "FontImage.h"
 #include "Logging.h"
 #include "Param.h"
@@ -610,7 +611,8 @@ void MouseInterface::declareTileDistance(int x, int y, int distance) {
         // A negative distance is interpreted to mean infinity
         if (distance == actualDistance || (distance < 0 && actualDistance < 0)) {
             setTileColorImpl(x, y,
-                COLOR_TO_CHAR().value(STRING_TO_COLOR().value(P()->distanceCorrectTileBaseColor())));
+                COLOR_TO_CHAR().value(
+                    ColorManager::get()->getDistanceCorrectTileBaseColor()));
         }
     }
 }
@@ -628,7 +630,8 @@ void MouseInterface::undeclareTileDistance(int x, int y) {
         clearTileTextImpl(x, y);
     }
     if (getDynamicOptions().setTileBaseColorWhenDistanceDeclaredCorrectly) {
-        setTileColorImpl(x, y, COLOR_TO_CHAR().value(STRING_TO_COLOR().value(P()->tileBaseColor())));
+        setTileColorImpl(x, y,
+            COLOR_TO_CHAR().value(ColorManager::get()->getTileBaseColor()));
     }
 }
 
@@ -1095,7 +1098,8 @@ void MouseInterface::setTileColorImpl(int x, int y, char color) {
 }
 
 void MouseInterface::clearTileColorImpl(int x, int y) {
-    m_view->getMazeGraphic()->setTileColor(x, y, STRING_TO_COLOR().value(P()->tileBaseColor()));
+    m_view->getMazeGraphic()->setTileColor(
+        x, y, ColorManager::get()->getTileBaseColor());
     m_tilesWithColor.erase({x, y});
 }
 

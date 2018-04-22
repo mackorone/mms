@@ -3,6 +3,7 @@
 #include <QPair>
 
 #include "Color.h"
+#include "ColorManager.h"
 #include "FontImage.h"
 #include "Param.h"
 
@@ -29,7 +30,7 @@ TileGraphic::TileGraphic(
         bool autopopulateTextWithDistance) :
         m_tile(tile),
         m_bufferInterface(bufferInterface),
-        m_color(STRING_TO_COLOR().value(P()->tileBaseColor())),
+        m_color(ColorManager::get()->getTileBaseColor()),
         m_foggy(true),
         m_wallTruthVisible(wallTruthVisible),
         m_tileColorsVisible(tileColorsVisible),
@@ -100,7 +101,7 @@ void TileGraphic::drawPolygons() const {
         m_tile->getFullPolygon(),
         m_tileColorsVisible
             ? m_color
-            : STRING_TO_COLOR().value(P()->tileBaseColor()),
+            : ColorManager::get()->getTileBaseColor(),
         1.0);
 
     // Draw each of the walls of the tile
@@ -116,15 +117,17 @@ void TileGraphic::drawPolygons() const {
     for (Polygon polygon : m_tile->getCornerPolygons()) {
         m_bufferInterface->insertIntoGraphicCpuBuffer(
             polygon,
-            STRING_TO_COLOR().value(P()->tileCornerColor()),
+            ColorManager::get()->getTileCornerColor(),
             1.0);
     }
 
     // Draw the fog
     m_bufferInterface->insertIntoGraphicCpuBuffer(
         m_tile->getFullPolygon(),
-        STRING_TO_COLOR().value(P()->tileFogColor()),
-        m_foggy && m_tileFogVisible ? P()->tileFogAlpha() : 0.0);
+        ColorManager::get()->getTileFogColor(),
+        m_foggy && m_tileFogVisible
+            ? ColorManager::get()->getTileFogAlpha()
+            : 0.0);
 }
 
 void TileGraphic::drawTextures() {
@@ -146,7 +149,7 @@ void TileGraphic::updateColor() const {
         m_tile->getY(),
         m_tileColorsVisible
             ? m_color
-            : STRING_TO_COLOR().value(P()->tileBaseColor()));
+            : ColorManager::get()->getTileBaseColor());
 }
 
 void TileGraphic::updateWalls() const {
@@ -159,7 +162,9 @@ void TileGraphic::updateFog() const {
     m_bufferInterface->updateTileGraphicFog(
         m_tile->getX(),
         m_tile->getY(),
-        m_foggy && m_tileFogVisible ? P()->tileFogAlpha() : 0.0);
+        m_foggy && m_tileFogVisible
+            ? ColorManager::get()->getTileFogAlpha()
+            : 0.0);
 }
 
 void TileGraphic::updateText() const {
@@ -227,7 +232,7 @@ void TileGraphic::updateWall(Direction direction) const {
 QPair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction) const {
 
     // Declare the wall color and alpha, assign defaults
-    Color wallColor = STRING_TO_COLOR().value(P()->tileWallColor());
+    Color wallColor = ColorManager::get()->getTileWallColor();
     float wallAlpha = 1.0;
 
     // Either draw the true walls of the tile ...
@@ -243,17 +248,17 @@ QPair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction) co
             if (m_declaredWalls.value(direction)) {
                 // Correct declaration
                 if (m_tile->isWall(direction)) {
-                    wallColor = STRING_TO_COLOR().value(P()->tileWallColor());
+                    wallColor = ColorManager::get()->getTileWallColor();
                 }
                 // Incorrect declaration
                 else {
-                    wallColor = STRING_TO_COLOR().value(P()->tileIncorrectlyDeclaredWallColor());
+                    wallColor = ColorManager::get()->getIncorrectlyDeclaredWallColor();
                 }
             }
             else {
                 // Incorrect declaration
                 if (m_tile->isWall(direction)) {
-                    wallColor = STRING_TO_COLOR().value(P()->tileIncorrectlyDeclaredNoWallColor());
+                    wallColor = ColorManager::get()->getIncorrectlyDeclaredNoWallColor();
                 }
                 // Correct declaration
                 else {
@@ -265,17 +270,17 @@ QPair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction) co
         // ... otherwise, use the undeclared walls colors
         else {
             if (m_tile->isWall(direction)) {
-                wallColor = STRING_TO_COLOR().value(P()->tileUndeclaredWallColor());
+                wallColor = ColorManager::get()->getUndeclaredWallColor();
             }
             else {
-                wallColor = STRING_TO_COLOR().value(P()->tileUndeclaredNoWallColor());
+                wallColor = ColorManager::get()->getUndeclaredNoWallColor();
             }
         }
     }
     
     // If the wall color is the same as the default tile base color,
     // we interpret that to mean that the walls should be transparent
-    if (wallColor == STRING_TO_COLOR().value(P()->tileBaseColor())) {
+    if (wallColor == ColorManager::get()->getTileBaseColor()) {
         wallAlpha = 0.0;
     }
 

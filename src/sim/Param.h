@@ -23,29 +23,14 @@ public:
     // double maxZoomedMapScale();
     // double defaultZoomedMapScale();
     // bool defaultRotateZoomedMap();
-    QString tileBaseColor();
-    QString tileWallColor();
-    QString tileCornerColor();
-    QString tileFogColor();
     QString tileTextFontImage();
     double tileTextBorderFraction();
     QString tileTextAlignment();
-    QString tileUndeclaredWallColor();
-    QString tileUndeclaredNoWallColor();
-    QString tileIncorrectlyDeclaredWallColor();
-    QString tileIncorrectlyDeclaredNoWallColor();
-    QString mouseBodyColor();
-    QString mouseCenterOfMassColor();
-    QString mouseWheelColor();
-    QString mouseSensorColor();
-    QString mouseViewColor();
     // bool defaultWallTruthVisible();
     // bool defaultTileColorsVisible();
     // bool defaultTileFogVisible();
     // bool defaultTileTextVisible();
     // bool defaultTileDistanceVisible();
-    double tileFogAlpha();
-    QString distanceCorrectTileBaseColor();
 
     // Simulation parameters
     int randomSeed(); // TODO: MACK - delete this - no need for random nums
@@ -85,29 +70,14 @@ private:
     double m_maxZoomedMapScale;
     double m_defaultZoomedMapScale;
     bool m_defaultRotateZoomedMap;
-    QString m_tileBaseColor;
-    QString m_tileWallColor;
-    QString m_tileCornerColor;
-    QString m_tileFogColor;
     QString m_tileTextFontImage;
     double m_tileTextBorderFraction;
     QString m_tileTextAlignment;
-    QString m_tileUndeclaredWallColor;
-    QString m_tileUndeclaredNoWallColor;
-    QString m_tileIncorrectlyDeclaredWallColor;
-    QString m_tileIncorrectlyDeclaredNoWallColor;
-    QString m_mouseBodyColor;
-    QString m_mouseCenterOfMassColor;
-    QString m_mouseWheelColor;
-    QString m_mouseSensorColor;
-    QString m_mouseViewColor;
     bool m_defaultWallTruthVisible;
     bool m_defaultTileColorsVisible;
     bool m_defaultTileFogVisible;
     bool m_defaultTileTextVisible;
     bool m_defaultTileDistanceVisible;
-    double m_tileFogAlpha;
-    QString m_distanceCorrectTileBaseColor;
 
     // Simulation parameters
     int m_randomSeed;

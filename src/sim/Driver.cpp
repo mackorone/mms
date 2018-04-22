@@ -2,6 +2,7 @@
 
 #include <QApplication>
 
+#include "ColorManager.h"
 #include "FontImage.h"
 #include "Logging.h"
 #include "Screen.h"
@@ -20,17 +21,16 @@ int Driver::drive(int argc, char* argv[]) {
     // Initialize Qt
     QApplication app(argc, argv);
 
-    // Initialize the Time object
-    SimTime::init();
-
-    // Initialize the Screen object
-    Screen::init();
-
-    // Initiliaze the Logging object
+    // Initialize logging
     Logging::init();
 
-    // Initialize the Settings object
+    // Initialize settings file
     Settings::init();
+
+    // Initialize other singletons
+    ColorManager::init();
+    Screen::init();
+    SimTime::init();
 
     // Initialize the Param object
     P();

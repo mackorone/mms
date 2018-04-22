@@ -14,6 +14,7 @@
 #include <QTimer>
 #include <QVBoxLayout>
 
+#include "ColorManager.h"
 #include "ConfigDialog.h"
 #include "MazeFilesTab.h"
 #include "Model.h"
@@ -410,7 +411,6 @@ void Window::editSettings() {
 
     QVector<ConfigDialogField> fields;
 
-
     ConfigDialogField defaultWindowWidthField;
     defaultWindowWidthField.label = "Default Window Width";
     defaultWindowWidthField.type = ConfigDialogFieldType::INTEGER;
@@ -418,66 +418,6 @@ void Window::editSettings() {
     ConfigDialogField defaultWindowHeightField;
     defaultWindowHeightField.label = "Default Window Height";
     defaultWindowHeightField.type = ConfigDialogFieldType::INTEGER;
-
-    ConfigDialogField tileBaseColorField;
-    tileBaseColorField.label = "Tile Base Color";
-    tileBaseColorField.type = ConfigDialogFieldType::STRING;
-
-    ConfigDialogField tileWallColorField;
-    tileWallColorField.label = "Tile Wall Color";
-    tileWallColorField.type = ConfigDialogFieldType::STRING;
-
-    ConfigDialogField tileCornerColorField;
-    tileCornerColorField.label = "Tile Corner Color";
-    tileCornerColorField.type = ConfigDialogFieldType::STRING;
-
-    ConfigDialogField tileFogColorField;
-    tileFogColorField.label = "Tile Fog Color";
-    tileFogColorField.type = ConfigDialogFieldType::STRING;
-
-    ConfigDialogField tileFogAlphaField;
-    tileFogAlphaField.label = "Tile Fog Alpha";
-    tileFogAlphaField.type = ConfigDialogFieldType::FLOAT;
-
-    ConfigDialogField tileUndeclaredWallColorField;
-    tileUndeclaredWallColorField.label = "Tile Undeclared Wall Color";
-    tileUndeclaredWallColorField.type = ConfigDialogFieldType::STRING;
-
-    ConfigDialogField tileUndeclaredNoWallColorField;
-    tileUndeclaredNoWallColorField.label = "Tile Undeclared No Wall Color";
-    tileUndeclaredNoWallColorField.type = ConfigDialogFieldType::STRING;
-
-    ConfigDialogField tileIncorrectlyDeclaredWallColorField;
-    tileIncorrectlyDeclaredWallColorField.label = "Tile Incorrectly Declared Wall Color";
-    tileIncorrectlyDeclaredWallColorField.type = ConfigDialogFieldType::STRING;
-
-    ConfigDialogField tileIncorrectlyDeclaredNoWallColorField;
-    tileIncorrectlyDeclaredNoWallColorField.label = "Tile Incorrectly Declared No Wall Color";
-    tileIncorrectlyDeclaredNoWallColorField.type = ConfigDialogFieldType::STRING;
-
-    ConfigDialogField distanceCorrectTileBaseColorField;
-    distanceCorrectTileBaseColorField.label = "Distance Correct Tile Base Color";
-    distanceCorrectTileBaseColorField.type = ConfigDialogFieldType::STRING;
-
-    ConfigDialogField mouseBodyColorField;
-    mouseBodyColorField.label = "Mouse Body Color";
-    mouseBodyColorField.type = ConfigDialogFieldType::STRING;
-
-    ConfigDialogField mouseCenterOfMassColorField;
-    mouseCenterOfMassColorField.label = "Mouse Center of Mass Color";
-    mouseCenterOfMassColorField.type = ConfigDialogFieldType::STRING;
-
-    ConfigDialogField mouseWheelColorField;
-    mouseWheelColorField.label = "Mouse Wheel Color";
-    mouseWheelColorField.type = ConfigDialogFieldType::STRING;
-
-    ConfigDialogField mouseSensorColor;
-    mouseSensorColor.label = "Mouse Sensor Color";
-    mouseSensorColor.type = ConfigDialogFieldType::STRING;
-
-    ConfigDialogField mouseViewColor;
-    mouseViewColor.label = "Mouse View Color";
-    mouseViewColor.type = ConfigDialogFieldType::STRING;
 
     ConfigDialogField tileTextFontImageField;
     tileTextFontImageField.label = "Tile Text Font Image";
@@ -513,21 +453,6 @@ void Window::editSettings() {
         {
             defaultWindowWidthField,
             defaultWindowHeightField,
-            tileBaseColorField,
-            tileWallColorField,
-            tileCornerColorField,
-            tileFogColorField,
-            tileFogAlphaField,
-            tileUndeclaredWallColorField,
-            tileUndeclaredNoWallColorField,
-            tileIncorrectlyDeclaredWallColorField,
-            tileIncorrectlyDeclaredNoWallColorField,
-            distanceCorrectTileBaseColorField,
-            mouseBodyColorField,
-            mouseCenterOfMassColorField,
-            mouseWheelColorField,
-            mouseSensorColor,
-            mouseViewColor,
             tileTextFontImageField,
             tileTextBorderFractionField,
             tileTextAlignmentField,

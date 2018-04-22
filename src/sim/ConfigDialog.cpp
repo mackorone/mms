@@ -162,7 +162,7 @@ void ConfigDialog::appendTextField(
 	ConfigDialogField field,
 	QGridLayout* layout
 ) {
-    // Add the QLabel
+    // Add the label
 	int row = layout->rowCount();
 	addLabel(field.label, layout, row);
 

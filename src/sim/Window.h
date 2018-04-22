@@ -84,6 +84,7 @@ private:
     void setMaze(Maze* maze);
 
     // Helper function for editing settings
+    void editColors();
     void editSettings();
 
     // Functions encapsulating process management logic,
