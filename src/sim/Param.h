@@ -48,7 +48,7 @@ public:
     QString distanceCorrectTileBaseColor();
 
     // Simulation parameters
-    int randomSeed();
+    int randomSeed(); // TODO: MACK - delete this - no need for random nums
     // bool defaultPaused();
     double maxSimSpeed();
     double defaultSimSpeed();

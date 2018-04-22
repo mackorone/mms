@@ -410,69 +410,131 @@ void Window::editSettings() {
 
     QVector<ConfigDialogField> fields;
 
-// default-window-width
-// default-window-height
-// tile-base-color
-// tile-wall-color
-// tile-corner-color
-// tile-fog-color
-// tile-text-font-image
-// tile-text-border-fraction
-// tile-text-alignment
-// tile-undeclared-wall-color
-// tile-undeclared-no-wall-color
-// tile-incorrectly-declared-wall-color
-// tile-incorrectly-declared-no-wall-color
-// mouse-body-color
-// mouse-center-of-mass-color
-// mouse-wheel-color
-// mouse-sensor-color
-// mouse-view-color
-// tile-fog-alpha
-// distance-correct-tile-base-color
-// random-seed
-// max-sim-speed
-// default-tile-text-character
-// min-sleep-duration
-// dt
 
+    ConfigDialogField defaultWindowWidthField;
+    defaultWindowWidthField.label = "Default Window Width";
+    defaultWindowWidthField.type = ConfigDialogFieldType::INTEGER;
 
+    ConfigDialogField defaultWindowHeightField;
+    defaultWindowHeightField.label = "Default Window Height";
+    defaultWindowHeightField.type = ConfigDialogFieldType::INTEGER;
 
-	/*
-    ConfigDialogField nameField;
-    nameField.label = "Name";
-    nameField.allowEmptyLineEditValue = false;
+    ConfigDialogField tileBaseColorField;
+    tileBaseColorField.label = "Tile Base Color";
+    tileBaseColorField.type = ConfigDialogFieldType::STRING;
 
-    ConfigDialogField dirPathField;
-    dirPathField.label = "Directory";
-    dirPathField.fileBrowser = true;
-    dirPathField.onlyDirectories = true;
+    ConfigDialogField tileWallColorField;
+    tileWallColorField.label = "Tile Wall Color";
+    tileWallColorField.type = ConfigDialogFieldType::STRING;
 
-    ConfigDialogField buildCommandField;
-    buildCommandField.label = "Build Command";
+    ConfigDialogField tileCornerColorField;
+    tileCornerColorField.label = "Tile Corner Color";
+    tileCornerColorField.type = ConfigDialogFieldType::STRING;
 
-    ConfigDialogField runCommandField;
-    runCommandField.label = "Run Command";
+    ConfigDialogField tileFogColorField;
+    tileFogColorField.label = "Tile Fog Color";
+    tileFogColorField.type = ConfigDialogFieldType::STRING;
 
-    return {
-        nameField,
-        dirPathField,
-        buildCommandField,
-        runCommandField,
-    };
-    ConfigDialogField nameField = fields.at(0);
-    ConfigDialogField dirPathField = fields.at(1);
-    ConfigDialogField buildCommandField = fields.at(2);
-    ConfigDialogField runCommandField = fields.at(3);
+    ConfigDialogField tileFogAlphaField;
+    tileFogAlphaField.label = "Tile Fog Alpha";
+    tileFogAlphaField.type = ConfigDialogFieldType::FLOAT;
+
+    ConfigDialogField tileUndeclaredWallColorField;
+    tileUndeclaredWallColorField.label = "Tile Undeclared Wall Color";
+    tileUndeclaredWallColorField.type = ConfigDialogFieldType::STRING;
+
+    ConfigDialogField tileUndeclaredNoWallColorField;
+    tileUndeclaredNoWallColorField.label = "Tile Undeclared No Wall Color";
+    tileUndeclaredNoWallColorField.type = ConfigDialogFieldType::STRING;
+
+    ConfigDialogField tileIncorrectlyDeclaredWallColorField;
+    tileIncorrectlyDeclaredWallColorField.label = "Tile Incorrectly Declared Wall Color";
+    tileIncorrectlyDeclaredWallColorField.type = ConfigDialogFieldType::STRING;
+
+    ConfigDialogField tileIncorrectlyDeclaredNoWallColorField;
+    tileIncorrectlyDeclaredNoWallColorField.label = "Tile Incorrectly Declared No Wall Color";
+    tileIncorrectlyDeclaredNoWallColorField.type = ConfigDialogFieldType::STRING;
+
+    ConfigDialogField distanceCorrectTileBaseColorField;
+    distanceCorrectTileBaseColorField.label = "Distance Correct Tile Base Color";
+    distanceCorrectTileBaseColorField.type = ConfigDialogFieldType::STRING;
+
+    ConfigDialogField mouseBodyColorField;
+    mouseBodyColorField.label = "Mouse Body Color";
+    mouseBodyColorField.type = ConfigDialogFieldType::STRING;
+
+    ConfigDialogField mouseCenterOfMassColorField;
+    mouseCenterOfMassColorField.label = "Mouse Center of Mass Color";
+    mouseCenterOfMassColorField.type = ConfigDialogFieldType::STRING;
+
+    ConfigDialogField mouseWheelColorField;
+    mouseWheelColorField.label = "Mouse Wheel Color";
+    mouseWheelColorField.type = ConfigDialogFieldType::STRING;
+
+    ConfigDialogField mouseSensorColor;
+    mouseSensorColor.label = "Mouse Sensor Color";
+    mouseSensorColor.type = ConfigDialogFieldType::STRING;
+
+    ConfigDialogField mouseViewColor;
+    mouseViewColor.label = "Mouse View Color";
+    mouseViewColor.type = ConfigDialogFieldType::STRING;
+
+    ConfigDialogField tileTextFontImageField;
+    tileTextFontImageField.label = "Tile Text Font Image";
+    tileTextFontImageField.type = ConfigDialogFieldType::FILE;
+
+    ConfigDialogField tileTextBorderFractionField;
+    tileTextBorderFractionField.label = "Tile Text Border Fraction";
+    tileTextBorderFractionField.type = ConfigDialogFieldType::FLOAT;
+
+    ConfigDialogField tileTextAlignmentField;
+    tileTextAlignmentField.label = "Tile Text Alignment";
+    tileTextAlignmentField.type = ConfigDialogFieldType::STRING;
+
+    ConfigDialogField maxSimSpeedField;
+    maxSimSpeedField.label = "Max Sim Speed";
+    maxSimSpeedField.type = ConfigDialogFieldType::FLOAT;
+
+    ConfigDialogField defaultTileTextCharacterField; // TODO: MACK
+    defaultTileTextCharacterField.label = "Default Tile Text Character";
+    defaultTileTextCharacterField.type = ConfigDialogFieldType::STRING;
+
+    ConfigDialogField minSleepDurationField; // TODO: MACK
+    minSleepDurationField.label = "Minimum Sleep Duration";
+    minSleepDurationField.type = ConfigDialogFieldType::STRING;
+
+    ConfigDialogField dtField; // TODO: MACK
+    dtField.label = "DT";
+    dtField.type = ConfigDialogFieldType::FLOAT;
 
     ConfigDialog dialog(
-        "Import",
-        "Maze Algorithm",
+        "Edit",
+        "Settings",
         {
-            nameField,
-            dirPathField,
-            buildCommandField,
-            runCommandField
+            defaultWindowWidthField,
+            defaultWindowHeightField,
+            tileBaseColorField,
+            tileWallColorField,
+            tileCornerColorField,
+            tileFogColorField,
+            tileFogAlphaField,
+            tileUndeclaredWallColorField,
+            tileUndeclaredNoWallColorField,
+            tileIncorrectlyDeclaredWallColorField,
+            tileIncorrectlyDeclaredNoWallColorField,
+            distanceCorrectTileBaseColorField,
+            mouseBodyColorField,
+            mouseCenterOfMassColorField,
+            mouseWheelColorField,
+            mouseSensorColor,
+            mouseViewColor,
+            tileTextFontImageField,
+            tileTextBorderFractionField,
+            tileTextAlignmentField,
+            maxSimSpeedField,
+            defaultTileTextCharacterField,
+            minSleepDurationField,
+            dtField,
         },
         false // No "Remove" button
     );
@@ -483,6 +545,7 @@ void Window::editSettings() {
     }
 
     // Ok was pressed
+    /*
     QString name = dialog.getLineEditValue(nameField.label);
     SettingsMazeAlgos::add(
         name,
@@ -490,7 +553,6 @@ void Window::editSettings() {
         dialog.getLineEditValue(buildCommandField.label),
         dialog.getLineEditValue(runCommandField.label)
     );
-
     // Update the maze algos
     mazeAlgoRefresh(name);
     */
@@ -1093,18 +1155,20 @@ QVector<ConfigDialogField> Window::mazeAlgoGetFields() {
 
     ConfigDialogField nameField;
     nameField.label = "Name";
+    nameField.type = ConfigDialogFieldType::STRING;
     nameField.allowEmptyLineEditValue = false;
 
     ConfigDialogField dirPathField;
     dirPathField.label = "Directory";
-    dirPathField.fileBrowser = true;
-    dirPathField.onlyDirectories = true;
+    dirPathField.type = ConfigDialogFieldType::DIRECTORY;
 
     ConfigDialogField buildCommandField;
     buildCommandField.label = "Build Command";
+    buildCommandField.type = ConfigDialogFieldType::STRING;
 
     ConfigDialogField runCommandField;
     runCommandField.label = "Run Command";
+    runCommandField.type = ConfigDialogFieldType::STRING;
 
     return {
         nameField,
@@ -1849,22 +1913,24 @@ QVector<ConfigDialogField> Window::mouseAlgoGetFields() {
 
     ConfigDialogField nameField;
     nameField.label = "Name";
+    nameField.type = ConfigDialogFieldType::STRING;
     nameField.allowEmptyLineEditValue = false;
 
     ConfigDialogField dirPathField;
     dirPathField.label = "Directory";
-    dirPathField.fileBrowser = true;
-    dirPathField.onlyDirectories = true;
+    dirPathField.type = ConfigDialogFieldType::DIRECTORY;
 
     ConfigDialogField buildCommandField;
     buildCommandField.label = "Build Command";
+    buildCommandField.type = ConfigDialogFieldType::STRING;
 
     ConfigDialogField runCommandField;
     runCommandField.label = "Run Command";
+    runCommandField.type = ConfigDialogFieldType::STRING;
 
     ConfigDialogField mouseFilePathField;
     mouseFilePathField.label = "Mouse File";
-    mouseFilePathField.fileBrowser = true;
+    mouseFilePathField.type = ConfigDialogFieldType::FILE;
     QVector<QVariant> standardMouseFiles;
     for (QString file : Resources::getMice()) {
         standardMouseFiles.append(file);

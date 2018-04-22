@@ -7,9 +7,8 @@
 namespace mms {
 
 enum class ConfigDialogFieldType {
-    BOOLEAN,
     DIRECTORY,
-    FILE_,
+    FILE,
     FLOAT,
     INTEGER,
     STRING,
@@ -23,11 +22,11 @@ struct ConfigDialogField {
     QVector<QVariant> comboBoxValues;
     QVariant initialComboBoxValue;
     QVariant initialLineEditValue;
+    QVariant initialSpinBoxValue;
+    QVariant initialDoubleSpinBoxValue;
+
     bool allowEmptyLineEditValue = true;
     bool comboBoxSelected = true;
-
-    bool fileBrowser = false;
-    bool onlyDirectories = false;
 }; 
 
 } // namespace mms
