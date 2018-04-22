@@ -6,6 +6,7 @@ Release
 - Publish installation and usage guides
 - Disable some UI buttons when algo completes
 - Fix the FPS bugs (remove the label from the header)
+- Rename sensor view to mouse vision
 
 Features
 ========
