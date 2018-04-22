@@ -14,51 +14,39 @@ public:
     static ColorManager* get();
     
     Color getTileBaseColor();
-    void setTileBaseColor(Color color);
-
     Color getTileWallColor();
-    void setTileWallColor(Color color);
-
     Color getTileCornerColor();
-    void setTileCornerColor(Color color);
-
     Color getTileFogColor();
-    void setTileFogColor(Color color);
-
     double getTileFogAlpha();
-    void setTileFogAlpha(double alpha);
-
     Color getUndeclaredWallColor();
-    void setUndeclaredWallColor(Color color);
-
     Color getUndeclaredNoWallColor();
-    void setUndeclaredNoWallColor(Color color);
-
     Color getIncorrectlyDeclaredWallColor();
-    void setIncorrectlyDeclaredWallColor(Color color);
-
     Color getIncorrectlyDeclaredNoWallColor();
-    void setIncorrectlyDeclaredNoWallColor(Color color);
-
     Color getDistanceCorrectTileBaseColor();
-    void setDistanceCorrectTileBaseColor(Color color);
-
     Color getMouseBodyColor();
-    void setMouseBodyColor(Color color);
-
     Color getMouseCenterOfMassColor();
-    void setMouseCenterOfMassColor(Color color);
-
     Color getMouseWheelColor();
-    void setMouseWheelColor(Color color);
-
     Color getMouseSensorColor();
-    void setMouseSensorColor(Color color);
-
     Color getMouseVisionColor();
-    void setMouseVisionColor(Color color);
 
 private:
+
+    static const QString GROUP;
+    static const QString KEY_TILE_BASE_COLOR;
+    static const QString KEY_TILE_WALL_COLOR;
+    static const QString KEY_TILE_CORNER_COLOR;
+    static const QString KEY_TILE_FOG_COLOR;
+    static const QString KEY_TILE_FOG_ALPHA;
+    static const QString KEY_UNDECLARED_WALL_COLOR;
+    static const QString KEY_UNDECLARED_NO_WALL_COLOR;
+    static const QString KEY_INCORRECTLY_DECLARED_WALL_COLOR;
+    static const QString KEY_INCORRECTLY_DECLARED_NO_WALL_COLOR;
+    static const QString KEY_DISTANCE_CORRECT_TILE_BASE_COLOR;
+    static const QString KEY_MOUSE_BODY_COLOR;
+    static const QString KEY_MOUSE_CENTER_OF_MASS_COLOR;
+    static const QString KEY_MOUSE_WHEEL_COLOR;
+    static const QString KEY_MOUSE_SENSOR_COLOR;
+    static const QString KEY_MOUSE_VISION_COLOR;
 
     ColorManager();
     static ColorManager* INSTANCE;
@@ -78,23 +66,6 @@ private:
     Color m_mouseWheelColor;
     Color m_mouseSensorColor;
     Color m_mouseVisionColor;
-
-    static const QString GROUP;
-    static const QString KEY_TILE_BASE_COLOR;
-    static const QString KEY_TILE_WALL_COLOR;
-    static const QString KEY_TILE_CORNER_COLOR;
-    static const QString KEY_TILE_FOG_COLOR;
-    static const QString KEY_TILE_FOG_ALPHA;
-    static const QString KEY_UNDECLARED_WALL_COLOR;
-    static const QString KEY_UNDECLARED_NO_WALL_COLOR;
-    static const QString KEY_INCORRECTLY_DECLARED_WALL_COLOR;
-    static const QString KEY_INCORRECTLY_DECLARED_NO_WALL_COLOR;
-    static const QString KEY_DISTANCE_CORRECT_TILE_BASE_COLOR;
-    static const QString KEY_MOUSE_BODY_COLOR;
-    static const QString KEY_MOUSE_CENTER_OF_MASS_COLOR;
-    static const QString KEY_MOUSE_WHEEL_COLOR;
-    static const QString KEY_MOUSE_SENSOR_COLOR;
-    static const QString KEY_MOUSE_VISION_COLOR;
 
     static Color getColor(const QString& key, Color defaultColor);
     static void setColor(const QString& key, Color color);
