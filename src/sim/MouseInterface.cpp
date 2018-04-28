@@ -24,7 +24,7 @@
     if (m_stopRequested) {\
         break;\
     }\
-    SimUtilities::sleep(Duration::Milliseconds(P()->minSleepDuration()));\
+    SimUtilities::sleep(Duration::Milliseconds(5));\
 }
 
 namespace mms {
@@ -459,6 +459,7 @@ int MouseInterface::millis() {
 void MouseInterface::delay(int milliseconds) {
     Duration start = SimTime::get()->elapsedSimTime();
     while (SimTime::get()->elapsedSimTime() < start + Duration::Milliseconds(milliseconds)) {
+        // TODO: MACK - rather than polling, the simulator should send an event
         BREAK_IF_STOPPED_ELSE_SLEEP_MIN();
     }
 }

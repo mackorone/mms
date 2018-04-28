@@ -36,7 +36,6 @@ FontImage::FontImage() {
         QStringList fonts = Resources::getFonts();
         for (int i = 0; i < fonts.size(); i += 1) {
             QString font = fonts.at(i);
-            qDebug() << font;
             if (font.contains("Unispace-Bold.png")) {
                 index = i;
                 break;

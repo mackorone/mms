@@ -46,6 +46,7 @@ private:
     Angle m_initialDirection;
     Polygon m_initialPolygon;
     Polygon m_initialViewPolygon;
+    int m_numberOfViewEdgePoints;
 
     double m_currentReading;
 

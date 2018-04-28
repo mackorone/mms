@@ -28,16 +28,20 @@ Sensor::Sensor(
     m_range(range),
     m_halfWidth(halfWidth),
     m_initialPosition(position),
-    m_initialDirection(direction) {
+    m_initialDirection(direction),
+    m_numberOfViewEdgePoints(8) {
 
     // Create the polygon for the body of the sensor
     m_initialPolygon = GeometryUtilities::createCirclePolygon(
-        position, radius, P()->numberOfCircleApproximationPoints());
+        position,
+        radius,
+        8  // number of vertices
+    );
 
     // Create the polygon for the view of the sensor
     QVector<Coordinate> view;
     view.push_back(position);
-    for (double i = -1; i <= 1; i += 2.0 / (P()->numberOfSensorEdgePoints() - 1)) {
+    for (double i = -1; i <= 1; i += 2.0 / (m_numberOfViewEdgePoints - 1)) {
         view.push_back(Coordinate::Polar(range, (halfWidth * i) + direction) + position);
     }
     m_initialViewPolygon = Polygon(view);
@@ -103,7 +107,7 @@ Polygon Sensor::getViewPolygon(
 
     QVector<Coordinate> polygon {currentPosition};
 
-    for (double i = -1; i <= 1; i += 2.0 / (P()->numberOfSensorEdgePoints() - 1)) {
+    for (double i = -1; i <= 1; i += 2.0 / (m_numberOfViewEdgePoints - 1)) {
         polygon.push_back(
             GeometryUtilities::castRay(
                 currentPosition,

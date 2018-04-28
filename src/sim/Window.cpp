@@ -433,38 +433,11 @@ void Window::editSettings() {
     tileTextFontImageField.comboBoxSelected = 
         SettingsMisc::getFontImagePathComboBoxSelected();
 
-    // TODO: MACK
-    
-    ConfigDialogField tileTextBorderFractionField;
-    tileTextBorderFractionField.label = "Tile Text Border Fraction";
-    tileTextBorderFractionField.type = ConfigDialogFieldType::FLOAT;
-
-    ConfigDialogField tileTextAlignmentField;
-    tileTextAlignmentField.label = "Tile Text Alignment";
-    tileTextAlignmentField.type = ConfigDialogFieldType::STRING;
-
-    ConfigDialogField maxSimSpeedField;
-    maxSimSpeedField.label = "Max Sim Speed";
-    maxSimSpeedField.type = ConfigDialogFieldType::FLOAT;
-
-    ConfigDialogField minSleepDurationField; // TODO: MACK
-    minSleepDurationField.label = "Minimum Sleep Duration";
-    minSleepDurationField.type = ConfigDialogFieldType::STRING;
-
-    ConfigDialogField dtField; // TODO: MACK
-    dtField.label = "DT";
-    dtField.type = ConfigDialogFieldType::FLOAT;
-
     ConfigDialog dialog(
         "Edit",
         "Settings",
         {
             tileTextFontImageField,
-            tileTextBorderFractionField,
-            tileTextAlignmentField,
-            maxSimSpeedField,
-            minSleepDurationField,
-            dtField,
         },
         false // No "Remove" button
     );
@@ -474,8 +447,6 @@ void Window::editSettings() {
         return;
     }
 
-    // Ok was pressed
-
     // Update the font image path
     SettingsMisc::setFontImagePathComboBoxValue(
         dialog.getComboBoxValue(tileTextFontImageField.label));
@@ -484,17 +455,9 @@ void Window::editSettings() {
     SettingsMisc::setFontImagePathComboBoxSelected(
         dialog.getComboBoxSelected(tileTextFontImageField.label));
 
-    /*
-    QString name = dialog.getLineEditValue(nameField.label);
-    SettingsMisc::add(
-        name,
-        dialog.getLineEditValue(dirPathField.label),
-        dialog.getLineEditValue(buildCommandField.label),
-        dialog.getLineEditValue(runCommandField.label)
-    );
-    // Update the maze algos
-    mazeAlgoRefresh(name);
-    */
+    // TODO: upforgrabs
+    // Refresh the font, both in the map and in
+    // the FontImage singleton, after any updates
 }
 
 
@@ -1191,7 +1154,7 @@ void Window::mouseAlgoTabInit() {
     // Add the pause button and speed slider
     QHBoxLayout* speedsLayout = new QHBoxLayout();
     controlLayout->addLayout(speedsLayout);
-    double maxSpeed = P()->maxSimSpeed();
+    double maxSpeed = 10.0; // 10x normal speed
     QSlider* speedSlider = new QSlider(Qt::Horizontal);
     QDoubleSpinBox* speedBox = new QDoubleSpinBox();
     speedBox->setRange(maxSpeed / 100.0, maxSpeed);
