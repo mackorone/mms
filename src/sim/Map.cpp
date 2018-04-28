@@ -1,5 +1,6 @@
 #include "Map.h"
 
+#include <QFile>
 #include <QPair>
 
 #include "Assert.h"
@@ -21,7 +22,8 @@ Map::Map(QWidget* parent) :
     m_windowHeight(0),
     m_layoutType(LayoutType::FULL),
     m_zoomedMapScale(0.1),
-    m_rotateZoomedMap(false) {
+    m_rotateZoomedMap(false),
+    m_textureAtlas(nullptr) {
     ASSERT_RUNS_JUST_ONCE();
 }
 
@@ -161,15 +163,17 @@ void Map::paintGL() {
     );
 
     // Overlay the tile text
-    drawMap(
-        m_layoutType,
-        currentMouseTranslation,
-        currentMouseRotation,
-        &m_textureProgram,
-        &m_textureVAO,
-        0,
-        3 * m_view->getTextureCpuBuffer()->size()
-    );
+    if (m_textureAtlas != nullptr) {
+        drawMap(
+            m_layoutType,
+            currentMouseTranslation,
+            currentMouseRotation,
+            &m_textureProgram,
+            &m_textureVAO,
+            0,
+            3 * m_view->getTextureCpuBuffer()->size()
+        );
+    }
 
     // Draw the mouse
     drawMap(
@@ -303,8 +307,16 @@ void Map::initTextureProgram() {
     );
 
     // Load the bitmap texture into the texture atlas
-    m_textureAtlas = new QOpenGLTexture(
-        QImage(FontImage::get()->imageFilePath()).mirrored());
+    if (QFile::exists(FontImage::get()->imageFilePath())) {
+        m_textureAtlas = new QOpenGLTexture(QImage(
+            FontImage::get()->imageFilePath()
+        ).mirrored());
+    }
+    else {
+        qWarning()
+            << "Font image file does not exist:"
+            << FontImage::get()->imageFilePath();
+    }
 
     m_polygonVBO.release();
     m_polygonVAO.release();

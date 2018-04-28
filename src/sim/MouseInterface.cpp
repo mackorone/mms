@@ -1115,9 +1115,8 @@ void MouseInterface::setTileTextImpl(int x, int y, const QString& text) {
                 << (c == '\n' ? "\\n" :
                    (c == '\t' ? "\\t" :
                    (c == '\r' ? "\\r" : QString(c))))
-                << "\". Using the character \"" << P()->defaultTileTextCharacter()
-                << "\" instead.";
-            c = P()->defaultTileTextCharacter();
+                << "\". Using the character \"?\" instead.";
+            c = '?';
         }
         filtered += c;
     }

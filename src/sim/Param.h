@@ -20,9 +20,9 @@ public:
     // double minZoomedMapScale();
     // double maxZoomedMapScale();
     // double defaultZoomedMapScale();
-    // bool defaultRotateZoomedMap();
-    QString tileTextFontImage();
-    double tileTextBorderFraction();
+    // bool defaultRotateZoomedMap(); 
+    QString tileTextFontImage(); // TODO: MACK - delete this
+    double tileTextBorderFraction(); // TODO: MACK - delete this
     QString tileTextAlignment();
     // bool defaultWallTruthVisible();
     // bool defaultTileColorsVisible();
@@ -37,7 +37,6 @@ public:
     double defaultSimSpeed();
     // bool collisionDetectionEnabled();
     // QString crashMessage();
-    char defaultTileTextCharacter();
     double minSleepDuration();
     // int mousePositionUpdateRate();
     // bool printLateMousePositionUpdates();
@@ -49,8 +48,8 @@ public:
     // Maze parameters
     double wallWidth();
     double wallLength();
-    bool mazeMirrored();
-    int mazeRotations();
+    bool mazeMirrored(); // TODO: MACK
+    int mazeRotations(); // TODO: MACK
 
 private:
 
@@ -82,7 +81,6 @@ private:
     double m_defaultSimSpeed;
     bool m_collisionDetectionEnabled;
     QString m_crashMessage;
-    char m_defaultTileTextCharacter;
     double m_minSleepDuration;
     int m_mousePositionUpdateRate;
     bool m_printLateMousePostitionUpdates;

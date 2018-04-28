@@ -29,14 +29,12 @@ int Driver::drive(int argc, char* argv[]) {
 
     // Initialize other singletons
     ColorManager::init();
+    FontImage::init();
     Screen::init();
     SimTime::init();
 
     // Initialize the Param object
     P();
-
-    // Initialize the FontImage object
-    FontImage::init(P()->tileTextFontImage());
 
     // Create the main window
     Window window;

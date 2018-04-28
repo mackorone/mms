@@ -1,19 +1,17 @@
 #include "FontImage.h"
 
-#include <QFile>
-
 #include "Assert.h"
-#include "Logging.h"
 #include "Resources.h"
+#include "SettingsMisc.h"
 #include "SimUtilities.h"
 
 namespace mms {
 
 FontImage* FontImage::INSTANCE = nullptr;
 
-void FontImage::init(const QString& imageFilePath) {
+void FontImage::init() {
     ASSERT_TR(INSTANCE == nullptr);
-    INSTANCE = new FontImage(imageFilePath);
+    INSTANCE = new FontImage();
 }
 
 FontImage* FontImage::get() {
@@ -29,15 +27,29 @@ QMap<QChar, QPair<double, double>> FontImage::positions() {
     return m_positions;
 }
 
-FontImage::FontImage(const QString& imageFilePath) :
-    m_imageFilePath(imageFilePath) {
+FontImage::FontImage() {
 
-    // Ensure the m_imageFilePath exists
-    if (!QFile::exists(m_imageFilePath)) {
-        qCritical() << "Could not find font image file" << m_imageFilePath;
-        // TODO: upforgrabs
-        // Don't quit here - instead, just disable tile text
-        SimUtilities::quit();
+    // Initialize the font image path if necessary
+    QString comboBoxValue = SettingsMisc::getFontImagePathComboBoxValue();
+    if (SettingsMisc::getFontImagePathComboBoxValue().isEmpty()) {
+        int index = 0;
+        QStringList fonts = Resources::getFonts();
+        for (int i = 0; i < fonts.size(); i += 1) {
+            QString font = fonts.at(i);
+            qDebug() << font;
+            if (font.contains("Unispace-Bold.png")) {
+                index = i;
+                break;
+            }
+        }
+        SettingsMisc::setFontImagePathComboBoxValue(fonts.at(index));
+        SettingsMisc::setFontImagePathComboBoxSelected(true);
+    }
+
+    // Read the font image path
+    m_imageFilePath = SettingsMisc::getFontImagePathLineEditValue();
+    if (SettingsMisc::getFontImagePathComboBoxSelected()) {
+        m_imageFilePath = SettingsMisc::getFontImagePathComboBoxValue();
     }
 
     // These values must perfectly reflect the font image being used,

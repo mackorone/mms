@@ -23,7 +23,7 @@
 #include "Resources.h"
 #include "SettingsMazeAlgos.h"
 #include "SettingsMouseAlgos.h"
-#include "SettingsRecent.h"
+#include "SettingsMisc.h"
 #include "SimTime.h"
 #include "SimUtilities.h"
 
@@ -302,8 +302,8 @@ Window::Window(QWidget *parent) :
 
     // Resize the window
     resize(
-        SettingsRecent::getRecentWindowWidth(),
-        SettingsRecent::getRecentWindowHeight());
+        SettingsMisc::getRecentWindowWidth(),
+        SettingsMisc::getRecentWindowHeight());
 
     // Start the graphics loop
     // TODO: upforgrabs
@@ -356,8 +356,8 @@ Window::Window(QWidget *parent) :
 }
 
 void Window::resizeEvent(QResizeEvent* event) {
-    SettingsRecent::setRecentWindowWidth(event->size().width());
-    SettingsRecent::setRecentWindowHeight(event->size().height());
+    SettingsMisc::setRecentWindowWidth(event->size().width());
+    SettingsMisc::setRecentWindowHeight(event->size().height());
 }
 
 void Window::closeEvent(QCloseEvent *event) {
@@ -421,7 +421,20 @@ void Window::editSettings() {
     ConfigDialogField tileTextFontImageField;
     tileTextFontImageField.label = "Tile Text Font Image";
     tileTextFontImageField.type = ConfigDialogFieldType::FILE;
+    QVector<QVariant> fonts;
+    for (QString font : Resources::getFonts()) {
+        fonts.append(font);
+    }
+    tileTextFontImageField.comboBoxValues = fonts;
+    tileTextFontImageField.initialComboBoxValue = 
+        SettingsMisc::getFontImagePathComboBoxValue();
+    tileTextFontImageField.initialLineEditValue = 
+        SettingsMisc::getFontImagePathLineEditValue();
+    tileTextFontImageField.comboBoxSelected = 
+        SettingsMisc::getFontImagePathComboBoxSelected();
 
+    // TODO: MACK
+    
     ConfigDialogField tileTextBorderFractionField;
     tileTextBorderFractionField.label = "Tile Text Border Fraction";
     tileTextBorderFractionField.type = ConfigDialogFieldType::FLOAT;
@@ -433,10 +446,6 @@ void Window::editSettings() {
     ConfigDialogField maxSimSpeedField;
     maxSimSpeedField.label = "Max Sim Speed";
     maxSimSpeedField.type = ConfigDialogFieldType::FLOAT;
-
-    ConfigDialogField defaultTileTextCharacterField; // TODO: MACK
-    defaultTileTextCharacterField.label = "Default Tile Text Character";
-    defaultTileTextCharacterField.type = ConfigDialogFieldType::STRING;
 
     ConfigDialogField minSleepDurationField; // TODO: MACK
     minSleepDurationField.label = "Minimum Sleep Duration";
@@ -454,7 +463,6 @@ void Window::editSettings() {
             tileTextBorderFractionField,
             tileTextAlignmentField,
             maxSimSpeedField,
-            defaultTileTextCharacterField,
             minSleepDurationField,
             dtField,
         },
@@ -467,9 +475,18 @@ void Window::editSettings() {
     }
 
     // Ok was pressed
+
+    // Update the font image path
+    SettingsMisc::setFontImagePathComboBoxValue(
+        dialog.getComboBoxValue(tileTextFontImageField.label));
+    SettingsMisc::setFontImagePathLineEditValue(
+        dialog.getLineEditValue(tileTextFontImageField.label));
+    SettingsMisc::setFontImagePathComboBoxSelected(
+        dialog.getComboBoxSelected(tileTextFontImageField.label));
+
     /*
     QString name = dialog.getLineEditValue(nameField.label);
-    SettingsMazeAlgos::add(
+    SettingsMisc::add(
         name,
         dialog.getLineEditValue(dirPathField.label),
         dialog.getLineEditValue(buildCommandField.label),
@@ -809,7 +826,7 @@ void Window::mazeAlgoTabInit() {
     connect(
         m_mazeAlgoComboBox, &QComboBox::currentTextChanged,
         this, [=](QString name){
-            SettingsRecent::setRecentMazeAlgo(name);
+            SettingsMisc::setRecentMazeAlgo(name);
         }
     );
 
@@ -874,7 +891,7 @@ void Window::mazeAlgoTabInit() {
     }
 
     // Add the maze algos
-    mazeAlgoRefresh(SettingsRecent::getRecentMazeAlgo());
+    mazeAlgoRefresh(SettingsMisc::getRecentMazeAlgo());
 }
 
 void Window::mazeAlgoImport() {
@@ -1137,7 +1154,7 @@ void Window::mouseAlgoTabInit() {
     connect(
         m_mouseAlgoComboBox, &QComboBox::currentTextChanged,
         this, [=](QString name){
-            SettingsRecent::setRecentMouseAlgo(name);
+            SettingsMisc::setRecentMouseAlgo(name);
         }
     );
 
@@ -1249,7 +1266,7 @@ void Window::mouseAlgoTabInit() {
     m_mouseAlgoStatsWidget->init(runStats.first);
 
     // Add the mouse algos
-    mouseAlgoRefresh(SettingsRecent::getRecentMouseAlgo());
+    mouseAlgoRefresh(SettingsMisc::getRecentMouseAlgo());
 }
 
 void Window::mouseAlgoEdit() {

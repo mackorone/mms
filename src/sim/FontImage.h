@@ -9,13 +9,13 @@ namespace mms {
 class FontImage {
 
 public:
-    static void init(const QString& imageFile);
+    static void init();
     static FontImage* get();
     QString imageFilePath();
     QMap<QChar, QPair<double, double>> positions();
 
 private:
-    FontImage(const QString& imageFile);
+    FontImage();
     static FontImage* INSTANCE;
     QString m_imageFilePath;
     QMap<QChar, QPair<double, double>> m_positions;

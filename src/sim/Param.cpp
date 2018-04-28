@@ -73,8 +73,6 @@ Param::Param() {
         "collision-detection-enabled", true);
     m_crashMessage = ParamParser::getStringIfHasString(
         "crash-message", "CRASH");
-    m_defaultTileTextCharacter = ParamParser::getCharIfHasChar(
-        "default-tile-text-character", '?');
     m_minSleepDuration = ParamParser::getDoubleIfHasDoubleAndInRange(
         "min-sleep-duration", 5, 1, 25);
     m_mousePositionUpdateRate = ParamParser::getIntIfHasIntAndInRange(
@@ -123,10 +121,6 @@ double Param::maxSimSpeed() {
 
 double Param::defaultSimSpeed() {
     return m_defaultSimSpeed;
-}
-
-char Param::defaultTileTextCharacter() {
-    return m_defaultTileTextCharacter;
 }
 
 double Param::minSleepDuration() {

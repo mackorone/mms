@@ -5,12 +5,12 @@ namespace mms {
 struct DynamicMouseAlgorithmOptions {
     // Fields and default values
     bool allowOmniscience = false;
-    bool automaticallyClearFog = true;
-    bool declareBothWallHalves = true;
-    bool declareWallOnRead = false;
+    bool automaticallyClearFog = true;  // TODO: MACK - remove
+    bool declareBothWallHalves = true;  // TODO: MACK - remove
+    bool declareWallOnRead = false;     // TODO: MACK - remove
     bool setTileBaseColorWhenDistanceDeclaredCorrectly = false;
-    bool setTileTextWhenDistanceDeclared = true;
-    bool useTileEdgeMovements = false;
+    bool setTileTextWhenDistanceDeclared = true; // TODO: MACK - remove
+    bool useTileEdgeMovements = false; // TODO: MACK - remove
 };
 
 } // namespace mms
