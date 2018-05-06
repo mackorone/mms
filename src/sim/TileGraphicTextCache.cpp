@@ -1,5 +1,6 @@
 #include "TileGraphicTextCache.h"
 
+#include "Assert.h"
 #include "FontImage.h"
 
 namespace mms {
@@ -7,14 +8,12 @@ namespace mms {
 void TileGraphicTextCache::init(
         const Distance& wallLength,
         const Distance& wallWidth,
-        QPair<int, int> tileGraphicTextMaxSize,
-        double borderFraction,
-        TileTextAlignment tileTextAlignment) {
+        QPair<int, int> tileGraphicTextMaxSize) {
 
     m_wallLength = wallLength;
     m_wallWidth = wallWidth;
     m_tileGraphicTextMaxSize = tileGraphicTextMaxSize;
-    m_tileGraphicTextPositions = buildPositionCache(borderFraction, tileTextAlignment);
+    m_tileGraphicTextPositions = buildPositionCache();
 }
 
 QPair<int, int> TileGraphicTextCache::getTileGraphicTextMaxSize() const {
@@ -48,8 +47,8 @@ QPair<Coordinate, Coordinate> TileGraphicTextCache::getTileGraphicTextPosition(
 
 QMap<
     QPair<QPair<int, int>, QPair<int, int>>,
-    QPair<Coordinate, Coordinate>> TileGraphicTextCache::buildPositionCache(
-        double borderFraction, TileTextAlignment tileTextAlignment) {
+    QPair<Coordinate, Coordinate>>
+TileGraphicTextCache::buildPositionCache() {
 
     // The tile graphic text could look like either of the following, depending
     // on the layout, border, and max size
@@ -78,6 +77,7 @@ QMap<
 
     int maxRows = m_tileGraphicTextMaxSize.first;
     int maxCols = m_tileGraphicTextMaxSize.second;
+    double borderFraction = 0.05;  // border padding
 
     // First we get the unscaled diagonal
     Coordinate A = Coordinate::Cartesian(m_wallWidth / 2.0, m_wallWidth / 2.0);
@@ -103,56 +103,33 @@ QMap<
     );
     Coordinate E = C + scalingOffset;
 
-    // For all numbers of rows displayed
+    // For all numbers of rows and columns of text
     for (int numRows = 0; numRows <= maxRows; numRows += 1) {
-
-        // For all numbers of columns displayed
         for (int numCols = 0; numCols <= maxCols; numCols += 1) {
 
             // For each visible row and col
-            for (int row = 0; row <= maxRows; row += 1) {
-                for (int col = 0; col <= maxCols; col += 1) {
+            for (int row = 0; row < numRows; row += 1) {
+                for (int col = 0; col < numCols; col += 1) {
 
-                    Coordinate LL = Coordinate::Cartesian(Distance::Meters(0), Distance::Meters(0));
-                    Coordinate UR = Coordinate::Cartesian(Distance::Meters(0), Distance::Meters(0));
+                    // Center the text within the bounding box
+                    double rowOffset = static_cast<double>(maxRows - numRows) / 2.0;
+                    double colOffset = static_cast<double>(maxCols - numCols) / 2.0;
+                    Coordinate LL = Coordinate::Cartesian(
+                        E.getX() + characterWidth * (col + colOffset),
+                        E.getY() + characterHeight * ((numRows - row - 1) + rowOffset)
+                    );
+                    Coordinate UR = Coordinate::Cartesian(
+                        E.getX() + characterWidth * (col + colOffset + 1),
+                        E.getY() + characterHeight * ((numRows - row - 1) + rowOffset + 1)
+                    );
 
-                    if (row < numRows && col < numCols) {
-
-                        double rowOffset = 0.0;
-                        if (CENTER_STAR_ALIGNMENTS().contains(tileTextAlignment)) {
-                            rowOffset = static_cast<double>(maxRows - numRows) / 2.0;
-                        }
-                        else if (UPPER_STAR_ALIGNMENTS().contains(tileTextAlignment)) {
-                            rowOffset = static_cast<double>(maxRows - numRows);
-                        }
-
-                        double colOffset = 0.0;
-                        if (STAR_CENTER_ALIGNMENTS().contains(tileTextAlignment)) {
-                            colOffset = static_cast<double>(maxCols - numCols) / 2.0;
-                        }
-                        else if (STAR_RIGHT_ALIGNMENTS().contains(tileTextAlignment)) {
-                            colOffset = static_cast<double>(maxCols - numCols);
-                        }
-
-                        LL = Coordinate::Cartesian(
-                            E.getX() + characterWidth * (col + colOffset),
-                            E.getY() + characterHeight * ((numRows - row - 1) + rowOffset)
-                        );
-                        UR = Coordinate::Cartesian(
-                            E.getX() + characterWidth * (col + colOffset + 1),
-                            E.getY() + characterHeight * ((numRows - row - 1) + rowOffset + 1)
-                        );
-                    }
-
+                    // Insert the position into the cache
                     positionCache.insert(
                         {
-                            // The number of rows/cols to be drawn
-                            {numRows, numCols},
-                            // The row and col of the current character
-                            {row, col}
+                            {numRows, numCols}, // Num rows/cols to be drawn
+                            {row, col} // Row and col of the current character
                         },
-                        // The lower left and upper right texture coordinate
-                        {LL, UR}
+                        {LL, UR} // Lower left and upper right texture coord
                     );
                 }
             }

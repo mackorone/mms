@@ -4,7 +4,6 @@
 #include <QMap>
 #include <QPair>
 
-#include "TileTextAlignment.h"
 #include "units/Coordinate.h"
 
 namespace mms {
@@ -17,9 +16,7 @@ public:
     void init(
         const Distance& wallLength,
         const Distance& wallWidth,
-        QPair<int, int> tileGraphicTextMaxSize,
-        double borderFraction,
-        TileTextAlignment tiletextAlignment);
+        QPair<int, int> tileGraphicTextMaxSize);
 
     // Returns the max number of rows and columns of tile graphic text
     QPair<int, int> getTileGraphicTextMaxSize() const;
@@ -49,9 +46,7 @@ private:
     // Just a helper method for building the text position cache
     QMap<
         QPair<QPair<int, int>, QPair<int, int>>,
-        QPair<Coordinate, Coordinate>> buildPositionCache(
-            double borderFraction,
-            TileTextAlignment tiletextAlignment);
+        QPair<Coordinate, Coordinate>> buildPositionCache();
 };
 
 } // namespace mms

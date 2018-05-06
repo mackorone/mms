@@ -2,6 +2,7 @@
 
 #include <QPair>
 
+#include "Assert.h"
 #include "Color.h"
 #include "ColorManager.h"
 #include "FontImage.h"

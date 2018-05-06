@@ -8,7 +8,6 @@
 #include "Direction.h"
 #include "Polygon.h"
 #include "TileGraphicTextCache.h"
-#include "TileTextAlignment.h"
 #include "TriangleGraphic.h"
 #include "TriangleTexture.h"
 
@@ -28,9 +27,7 @@ public:
     void initTileGraphicText(
         const Distance& wallLength,
         const Distance& wallWidth,
-        QPair<int, int> tileGraphicTextMaxSize,
-        double borderFraction,
-        TileTextAlignment tileTextAlignment);
+        QPair<int, int> tileGraphicTextMaxSize);
 
     // Returns the maximum number of rows and columns of text in a tile graphic
     QPair<int, int> getTileGraphicTextMaxSize();

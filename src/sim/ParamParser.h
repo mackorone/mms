@@ -48,7 +48,6 @@ public:
     static QString getStringIfHasStringAndIsDirection(const QString& tag, const QString& defaultValue);
     static QString getStringIfHasStringAndIsLayoutType(const QString& tag, const QString& defaultValue);
     static QString getStringIfHasStringAndIsMazeFileType(const QString& tag, const QString& defaultValue);
-    static QString getStringIfHasStringAndIsTileTextAlignment(const QString& tag, const QString& defaultValue);
 
 private:
 

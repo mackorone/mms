@@ -10,7 +10,6 @@
 #include "MazeFileType.h"
 #include "Settings.h"
 #include "SimUtilities.h"
-#include "TileTextAlignment.h"
 
 namespace mms {
 
@@ -184,10 +183,6 @@ QString ParamParser::getStringIfHasStringAndIsLayoutType(const QString& tag, con
 
 QString ParamParser::getStringIfHasStringAndIsMazeFileType(const QString& tag, const QString& defaultValue) {
     return getStringIfHasStringAndIsSpecial("maze file type", tag, defaultValue, STRING_TO_MAZE_FILE_TYPE());
-}
-
-QString ParamParser::getStringIfHasStringAndIsTileTextAlignment(const QString& tag, const QString& defaultValue) {
-    return getStringIfHasStringAndIsSpecial("tile text alignment", tag, defaultValue, STRING_TO_TILE_TEXT_ALIGNMENT());
 }
 
 void ParamParser::printTagNotFound(const QString& type, const QString& tag, const QString& defaultValue) {

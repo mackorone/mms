@@ -1,9 +1,8 @@
 Release
 =======
 - Auto-populate build and run commands
-- Fix UI updates on mouse algo start/stop
-- Make it easy to edit parameters
 - Publish installation and usage guides
+- Fix UI updates on mouse algo start/stop
 - Disable some UI buttons when algo completes
 - Fix the FPS bugs (remove the label from the header)
 

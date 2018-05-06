@@ -17,16 +17,12 @@ BufferInterface::BufferInterface(
 void BufferInterface::initTileGraphicText(
         const Distance& wallLength,
         const Distance& wallWidth,
-        QPair<int, int> tileGraphicTextMaxSize,
-        double borderFraction,
-        TileTextAlignment tileTextAlignment) {
+        QPair<int, int> tileGraphicTextMaxSize) {
 
     m_tileGraphicTextCache.init(
         wallLength,
         wallWidth,
-        tileGraphicTextMaxSize,
-        borderFraction,
-        tileTextAlignment
+        tileGraphicTextMaxSize
     );
 }
 

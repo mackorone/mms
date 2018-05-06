@@ -1641,6 +1641,8 @@ void Window::mouseAlgoRunStart() {
 
         // When the thread finishes, clean everything up
         connect(newMouseAlgoThread, &QThread::finished, this, [=](){
+            // TODO: MACK - this isn't valid - can't delete an object on a
+            // non-affinity thread
             newProcess->terminate();
             newProcess->waitForFinished();
             delete newProcess;
