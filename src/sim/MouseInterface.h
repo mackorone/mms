@@ -10,14 +10,6 @@
 #include "Mouse.h"
 #include "Param.h"
 
-#define ENSURE_DISCRETE_INTERFACE ensureDiscreteInterface(__func__);
-#define ENSURE_CONTINUOUS_INTERFACE ensureContinuousInterface(__func__);
-#define ENSURE_ALLOW_OMNISCIENCE ensureAllowOmniscience(__func__);
-#define ENSURE_NOT_TILE_EDGE_MOVEMENTS ensureNotTileEdgeMovements(__func__);
-#define ENSURE_USE_TILE_EDGE_MOVEMENTS ensureUseTileEdgeMovements(__func__);
-#define ENSURE_INSIDE_ORIGIN ensureInsideOrigin(__func__);
-#define ENSURE_OUTSIDE_ORIGIN ensureOutsideOrigin(__func__);
-
 namespace mms {
 
 class MouseInterface : public QObject {
@@ -30,9 +22,6 @@ public:
         const Maze* maze,
         Mouse* mouse,
         MazeView* view);
-
-    // Called when the algo process writes to stdout
-    void handleStandardOutput(QString output);
 
     // Called when the algo started successfully
     void emitMouseAlgoStarted();
@@ -111,75 +100,15 @@ private:
     bool inputButtonPressed(int inputButton);
     void acknowledgeInputButtonPressed(int inputButton);
 
-    // ----- Continuous interface methods ----- //
-
-    // Get the magnitude of the max speed of any one wheel in rpm
-    double getWheelMaxSpeed(const QString& name);
-
-    // Set the speed of any one wheel
-    void setWheelSpeed(const QString& name, double rpm);
-
-    // Get the number of encoder ticks per revolution for a wheel
-    double getWheelEncoderTicksPerRevolution(const QString& name);
-
-    // Read the encoder for a particular wheel
-    int readWheelEncoder(const QString& name);
-
-    // Reset the encoder for a particular wheel to zero, but only if the encoder type is relative
-    void resetWheelEncoder(const QString& name);
-
-    // Returns a value in [0.0, 1.0]
-    double readSensor(const QString& name);
-
-    // Returns deg/s of rotation
-    double readGyro();
-
     // ----- Any discrete interface methods ----- //
 
     bool wallFront();
     bool wallRight();
     bool wallLeft();
 
-    // ----- Basic discrete interface methods ----- //
-
     void moveForward();
-    void moveForward(int count);
-
     void turnLeft();
     void turnRight();
-
-    void turnAroundLeft();
-    void turnAroundRight();
-
-    // ----- Special discrete interface methods ----- //
-
-    void originMoveForwardToEdge();
-    void originTurnLeftInPlace();
-    void originTurnRightInPlace();
-
-    void moveForwardToEdge();
-    void moveForwardToEdge(int count);
-
-    void turnLeftToEdge();
-    void turnRightToEdge();
-
-    void turnAroundLeftToEdge();
-    void turnAroundRightToEdge();
-
-    void diagonalLeftLeft(int count);
-    void diagonalLeftRight(int count);
-    void diagonalRightLeft(int count);
-    void diagonalRightRight(int count);
-
-    // ----- Omniscience methods ----- //
-
-    int currentXTile();
-    int currentYTile();
-    char currentDirection();
-
-    double currentXPosMeters();
-    double currentYPosMeters();
-    double currentRotationDegrees();
 
     // ************************ END PUBLIC INTERFACE ********************* //
 

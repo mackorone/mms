@@ -1,5 +1,7 @@
 Release
 =======
+- Remove all maze algo code
+- Clean up mouse algo template
 - Auto-populate build and run commands
 - Publish installation and usage guides
 - Fix UI updates on mouse algo start/stop
@@ -88,6 +90,7 @@ Cleanup
 
 Unsorted
 ========
+- Make a note about how to align text upper-left lower-right etc. if you want
 - A utility to tell you whether or not the stdlib is used
 - Make out-of-bounds position not crash the simulator
 - MacOS retina https://github.com/vispy/vispy/issues/99

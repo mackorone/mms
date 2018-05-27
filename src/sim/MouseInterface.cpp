@@ -18,15 +18,6 @@
 #include "SimTime.h"
 #include "SimUtilities.h"
 
-// Helper function/macro that ensures that user-requested stops
-// can always interrupt the currently executing algorithm
-#define BREAK_IF_STOPPED_ELSE_SLEEP_MIN() {\
-    if (m_stopRequested) {\
-        break;\
-    }\
-    SimUtilities::sleep(Duration::Milliseconds(5));\
-}
-
 namespace mms {
 
 MouseInterface::MouseInterface(
@@ -38,16 +29,8 @@ MouseInterface::MouseInterface(
         m_view(view),
         m_interfaceType(InterfaceType::DISCRETE),
         m_interfaceTypeFinalized(false),
-        m_stopRequested(false),
         m_inOrigin(true),
         m_wheelSpeedFraction(1.0) {
-}
-
-void MouseInterface::handleStandardOutput(QString output) {
-    if (output.endsWith("\n")) {
-        output.truncate(output.size() - 1);
-    }
-    emit algoOutput(output);
 }
 
 void MouseInterface::emitMouseAlgoStarted() {
@@ -252,41 +235,6 @@ QString MouseInterface::dispatch(const QString& command) {
         acknowledgeInputButtonPressed(inputButton);
         return ACK_STRING;
     }
-    else if (function == "getWheelMaxSpeed") {
-        QString name = tokens.at(1);
-        return QString::number(getWheelMaxSpeed(name));
-    }
-    else if (function == "setWheelSpeed") {
-        QString name = tokens.at(1);
-        double rpm = SimUtilities::strToDouble(tokens.at(2));
-        setWheelSpeed(name, rpm);
-        return ACK_STRING;
-    }
-    else if (function == "getWheelEncoderTicksPerRevolution") {
-        QString name = tokens.at(1);
-        return QString::number(
-            getWheelEncoderTicksPerRevolution(name)
-        );
-    }
-    else if (function == "readWheelEncoder") {
-        QString name = tokens.at(1);
-        return QString::number(
-            readWheelEncoder(name)
-        );
-    }
-    else if (function == "resetWheelEncoder") {
-        QString name = tokens.at(1);
-        resetWheelEncoder(name);
-        return ACK_STRING;
-    }
-    else if (function == "readSensor") {
-        QString name = tokens.at(1);
-        return QString::number(readSensor(name));
-    }
-    else if (function == "readGyro") {
-        QString name = tokens.at(1);
-        return QString::number(readGyro());
-    }
     else if (function == "wallFront") {
         return SimUtilities::boolToStr(wallFront());
     }
@@ -297,11 +245,7 @@ QString MouseInterface::dispatch(const QString& command) {
         return SimUtilities::boolToStr(wallLeft());
     }
     else if (function == "moveForward") {
-        int count = 1;
-        if (1 < tokens.size()) {
-            count = SimUtilities::strToInt(tokens.at(1));
-        }
-        moveForward(count);
+        moveForward();
         return ACK_STRING;
     }
     else if (function == "turnLeft") {
@@ -312,94 +256,8 @@ QString MouseInterface::dispatch(const QString& command) {
         turnRight();
         return ACK_STRING;
     }
-    else if (function == "turnAroundLeft") {
-        turnAroundLeft();
-        return ACK_STRING;
-    }
-    else if (function == "turnAroundRight") {
-        turnAroundRight();
-        return ACK_STRING;
-    }
-    else if (function == "originMoveForwardToEdge") {
-        originMoveForwardToEdge();
-        return ACK_STRING;
-    }
-    else if (function == "originTurnLeftInPlace") {
-        originTurnLeftInPlace();
-        return ACK_STRING;
-    }
-    else if (function == "originTurnRightInPlace") {
-        originTurnRightInPlace();
-        return ACK_STRING;
-    }
-    else if (function == "moveForwardToEdge") {
-        int count = 1;
-        if (1 < tokens.size()) {
-            count = SimUtilities::strToInt(tokens.at(1));
-        }
-        moveForwardToEdge(count);
-        return ACK_STRING;
-    }
-    else if (function == "turnLeftToEdge") {
-        turnLeftToEdge();
-        return ACK_STRING;
-    }
-    else if (function == "turnRightToEdge") {
-        turnRightToEdge();
-        return ACK_STRING;
-    }
-    else if (function == "turnAroundLeftToEdge") {
-        turnAroundLeftToEdge();
-        return ACK_STRING;
-    }
-    else if (function == "turnAroundRightToEdge") {
-        turnAroundRightToEdge();
-        return ACK_STRING;
-    }
-    else if (function == "diagonalLeftLeft") {
-        int count = SimUtilities::strToInt(tokens.at(1));
-        diagonalLeftLeft(count);
-        return ACK_STRING;
-    }
-    else if (function == "diagonalLeftRight") {
-        int count = SimUtilities::strToInt(tokens.at(1));
-        diagonalLeftRight(count);
-        return ACK_STRING;
-    }
-    else if (function == "diagonalRightLeft") {
-        int count = SimUtilities::strToInt(tokens.at(1));
-        diagonalRightLeft(count);
-        return ACK_STRING;
-    }
-    else if (function == "diagonalRightRight") {
-        int count = SimUtilities::strToInt(tokens.at(1));
-        diagonalRightRight(count);
-        return ACK_STRING;
-    }
-    else if (function == "currentXTile") {
-        return QString::number(currentXTile());
-    }
-    else if (function == "currentYTile") {
-        return QString::number(currentYTile());
-    }
-    else if (function == "currentDirection") {
-        return QString(QChar(currentDirection()));
-    }
-    else if (function == "currentXPosMeters") {
-        return QString::number(currentXPosMeters());
-    }
-    else if (function == "currentYPosMeters") {
-        return QString::number(currentYPosMeters());
-    }
-    else if (function == "currentRotationDegrees") {
-        return QString::number(currentRotationDegrees());
-    }
 
     return ERROR_STRING;
-}
-
-void MouseInterface::requestStop() {
-    m_stopRequested = true;
 }
 
 void MouseInterface::inputButtonWasPressed(int button) {
@@ -459,8 +317,7 @@ int MouseInterface::millis() {
 void MouseInterface::delay(int milliseconds) {
     Duration start = SimTime::get()->elapsedSimTime();
     while (SimTime::get()->elapsedSimTime() < start + Duration::Milliseconds(milliseconds)) {
-        // TODO: MACK - rather than polling, the simulator should send an event
-        BREAK_IF_STOPPED_ELSE_SLEEP_MIN();
+        SimUtilities::sleep(Duration::Milliseconds(5));\
     }
 }
 
@@ -668,126 +525,7 @@ void MouseInterface::acknowledgeInputButtonPressed(int inputButton) {
     emit inputButtonWasAcknowledged(inputButton);
 }
 
-double MouseInterface::getWheelMaxSpeed(const QString& name) {
-
-    ENSURE_CONTINUOUS_INTERFACE
-
-    if (!m_mouse->hasWheel(name)) {
-        qWarning().noquote().nospace()
-            << "There is no wheel called \"" << name << "\" and thus you cannot"
-            << " get its max speed.";
-        return 0.0;
-    }
-
-    return m_mouse->getWheelMaxSpeed(name).getRevolutionsPerMinute();
-}
-
-void MouseInterface::setWheelSpeed(const QString& name, double rpm) {
-
-    ENSURE_CONTINUOUS_INTERFACE
-
-    if (!m_mouse->hasWheel(name)) {
-        qWarning().noquote().nospace()
-            << "There is no wheel called \"" << name << "\" and thus you cannot"
-            << " set its speed.";
-        return;
-    }
-
-    if (getWheelMaxSpeed(name) < std::abs(rpm)) {
-        qWarning().noquote().nospace()
-            << "You're attempting to set the speed of wheel \"" << name << "\""
-            << " to " << rpm << " rpm, which has magnitude greater than the max"
-            << " speed of " << getWheelMaxSpeed(name) << " rpm. Thus, the wheel"
-            << " speed was not set.";
-        return;
-    }
-
-    m_mouse->setWheelSpeeds({{name, AngularVelocity::RevolutionsPerMinute(rpm)}});
-}
-
-double MouseInterface::getWheelEncoderTicksPerRevolution(const QString& name) {
-
-    ENSURE_CONTINUOUS_INTERFACE
-
-    if (!m_mouse->hasWheel(name)) {
-        qWarning().noquote().nospace()
-            << "There is no wheel called \"" << name << "\" and thus you cannot"
-            << " get its number of encoder ticks per revolution.";
-        return 0.0;
-    }
-
-    return m_mouse->getWheelEncoderTicksPerRevolution(name);
-}
-
-int MouseInterface::readWheelEncoder(const QString& name) {
-
-    ENSURE_CONTINUOUS_INTERFACE
-
-    if (!m_mouse->hasWheel(name)) {
-        qWarning().noquote().nospace()
-            << "There is no wheel called \"" << name << "\" and thus you cannot"
-            << " read its encoder.";
-        return 0;
-    }
-
-    switch (m_mouse->getWheelEncoderType(name)) {
-        case EncoderType::ABSOLUTE:
-            return m_mouse->readWheelAbsoluteEncoder(name);
-        case EncoderType::RELATIVE:
-            return m_mouse->readWheelRelativeEncoder(name);
-    }
-}
-
-void MouseInterface::resetWheelEncoder(const QString& name) {
-
-    ENSURE_CONTINUOUS_INTERFACE
-
-    if (!m_mouse->hasWheel(name)) {
-        qWarning().noquote().nospace()
-            << "There is no wheel called \"" << name << "\" and thus you cannot"
-            << " reset its encoder.";
-        return;
-    }
-
-    if (m_mouse->getWheelEncoderType(name) != EncoderType::RELATIVE) {
-        qWarning().noquote().nospace()
-            << "The encoder type of the wheel \"" << name << "\" is \""
-            << ENCODER_TYPE_TO_STRING().value(m_mouse->getWheelEncoderType(name))
-            << "\". However, you may only reset the wheel encoder if the"
-            << " encoder type is \""
-            << ENCODER_TYPE_TO_STRING().value(EncoderType::RELATIVE)
-            << "\".";
-        return;
-    }
-
-    m_mouse->resetWheelRelativeEncoder(name);
-}
-
-double MouseInterface::readSensor(const QString& name) {
-
-    ENSURE_CONTINUOUS_INTERFACE
-
-    if (!m_mouse->hasSensor(name)) {
-        qWarning().noquote().nospace()
-            << "There is no sensor called \"" << name << "\" and thus you"
-            << " cannot read its value.";
-        return 0.0;
-    }
-
-    return m_mouse->readSensor(name);
-}
-
-double MouseInterface::readGyro() {
-
-    ENSURE_CONTINUOUS_INTERFACE
-
-    return m_mouse->readGyro().getDegreesPerSecond();
-}
-
 bool MouseInterface::wallFront() {
-
-    ENSURE_DISCRETE_INTERFACE
-
     return wallFrontImpl(
         getDynamicOptions().declareWallOnRead,
         getDynamicOptions().declareBothWallHalves
@@ -795,9 +533,6 @@ bool MouseInterface::wallFront() {
 }
 
 bool MouseInterface::wallRight() {
-
-    ENSURE_DISCRETE_INTERFACE
-
     return wallRightImpl(
         getDynamicOptions().declareWallOnRead,
         getDynamicOptions().declareBothWallHalves
@@ -805,9 +540,6 @@ bool MouseInterface::wallRight() {
 }
 
 bool MouseInterface::wallLeft() {
-
-    ENSURE_DISCRETE_INTERFACE
-
     return wallLeftImpl(
         getDynamicOptions().declareWallOnRead,
         getDynamicOptions().declareBothWallHalves
@@ -815,282 +547,15 @@ bool MouseInterface::wallLeft() {
 }
 
 void MouseInterface::moveForward() {
-
-    ENSURE_DISCRETE_INTERFACE
-    ENSURE_NOT_TILE_EDGE_MOVEMENTS
-
     moveForwardImpl();
 }
 
-void MouseInterface::moveForward(int count) {
-
-    ENSURE_DISCRETE_INTERFACE
-    ENSURE_NOT_TILE_EDGE_MOVEMENTS
-
-    for (int i = 0; i < count; i += 1) {
-        moveForwardImpl();
-    }
-}
-
 void MouseInterface::turnLeft() {
-
-    ENSURE_DISCRETE_INTERFACE
-    ENSURE_NOT_TILE_EDGE_MOVEMENTS
-
     turnLeftImpl();
 }
 
 void MouseInterface::turnRight() {
-
-    ENSURE_DISCRETE_INTERFACE
-    ENSURE_NOT_TILE_EDGE_MOVEMENTS
-
     turnRightImpl();
-}
-
-void MouseInterface::turnAroundLeft() {
-
-    ENSURE_DISCRETE_INTERFACE
-    ENSURE_NOT_TILE_EDGE_MOVEMENTS
-
-    turnAroundLeftImpl();
-}
-
-void MouseInterface::turnAroundRight() {
-
-    ENSURE_DISCRETE_INTERFACE
-    ENSURE_NOT_TILE_EDGE_MOVEMENTS
-
-    turnAroundRightImpl();
-}
-
-void MouseInterface::originMoveForwardToEdge() {
-
-    ENSURE_DISCRETE_INTERFACE
-    ENSURE_USE_TILE_EDGE_MOVEMENTS
-    ENSURE_INSIDE_ORIGIN
-
-    moveForwardImpl(true);
-    m_inOrigin = false;
-}
-
-void MouseInterface::originTurnLeftInPlace() {
-
-    ENSURE_DISCRETE_INTERFACE
-    ENSURE_USE_TILE_EDGE_MOVEMENTS
-    ENSURE_INSIDE_ORIGIN
-
-    turnLeftImpl();
-}
-
-void MouseInterface::originTurnRightInPlace() {
-
-    ENSURE_DISCRETE_INTERFACE
-    ENSURE_USE_TILE_EDGE_MOVEMENTS
-    ENSURE_INSIDE_ORIGIN
-
-    turnRightImpl();
-}
-
-void MouseInterface::moveForwardToEdge() {
-
-    ENSURE_DISCRETE_INTERFACE
-    ENSURE_USE_TILE_EDGE_MOVEMENTS
-    ENSURE_OUTSIDE_ORIGIN
-
-    moveForwardImpl();
-}
-
-void MouseInterface::moveForwardToEdge(int count) {
-
-    ENSURE_DISCRETE_INTERFACE
-    ENSURE_USE_TILE_EDGE_MOVEMENTS
-    ENSURE_OUTSIDE_ORIGIN
-
-    for (int i = 0; i < count; i += 1) {
-        moveForwardImpl();
-    }
-}
-
-void MouseInterface::turnLeftToEdge() {
-
-    ENSURE_DISCRETE_INTERFACE
-    ENSURE_USE_TILE_EDGE_MOVEMENTS
-    ENSURE_OUTSIDE_ORIGIN
-
-    turnToEdgeImpl(true);
-}
-
-void MouseInterface::turnRightToEdge() {
-
-    ENSURE_DISCRETE_INTERFACE
-    ENSURE_USE_TILE_EDGE_MOVEMENTS
-    ENSURE_OUTSIDE_ORIGIN
-
-    turnToEdgeImpl(false);
-}
-
-void MouseInterface::turnAroundLeftToEdge() {
-
-    ENSURE_DISCRETE_INTERFACE
-    ENSURE_USE_TILE_EDGE_MOVEMENTS
-    ENSURE_OUTSIDE_ORIGIN
-
-    turnAroundToEdgeImpl(true);
-}
-
-void MouseInterface::turnAroundRightToEdge() {
-
-    ENSURE_DISCRETE_INTERFACE
-    ENSURE_USE_TILE_EDGE_MOVEMENTS
-    ENSURE_OUTSIDE_ORIGIN
-
-    turnAroundToEdgeImpl(false);
-}
-
-void MouseInterface::diagonalLeftLeft(int count) {
-
-    ENSURE_DISCRETE_INTERFACE
-    ENSURE_USE_TILE_EDGE_MOVEMENTS
-    ENSURE_OUTSIDE_ORIGIN
-
-    doDiagonal(count, true, true);
-}
-
-void MouseInterface::diagonalLeftRight(int count) {
-
-    ENSURE_DISCRETE_INTERFACE
-    ENSURE_USE_TILE_EDGE_MOVEMENTS
-    ENSURE_OUTSIDE_ORIGIN
-
-    doDiagonal(count, true, false);
-}
-
-void MouseInterface::diagonalRightLeft(int count) {
-
-    ENSURE_DISCRETE_INTERFACE
-    ENSURE_USE_TILE_EDGE_MOVEMENTS
-    ENSURE_OUTSIDE_ORIGIN
-
-    doDiagonal(count, false, true);
-}
-
-void MouseInterface::diagonalRightRight(int count) {
-
-    ENSURE_DISCRETE_INTERFACE
-    ENSURE_USE_TILE_EDGE_MOVEMENTS
-    ENSURE_OUTSIDE_ORIGIN
-
-    doDiagonal(count, false, false);
-}
-
-int MouseInterface::currentXTile() {
-
-    ENSURE_ALLOW_OMNISCIENCE
-
-    return m_mouse->getCurrentDiscretizedTranslation().first;
-}
-
-int MouseInterface::currentYTile() {
-
-    ENSURE_ALLOW_OMNISCIENCE
-
-    return m_mouse->getCurrentDiscretizedTranslation().second;
-}
-
-char MouseInterface::currentDirection() {
-
-    ENSURE_ALLOW_OMNISCIENCE
-
-    return DIRECTION_TO_CHAR().value(m_mouse->getCurrentDiscretizedRotation()).toLatin1();
-}
-
-double MouseInterface::currentXPosMeters() {
-
-    ENSURE_ALLOW_OMNISCIENCE
-
-    return m_mouse->getCurrentTranslation().getX().getMeters();
-}
-
-double MouseInterface::currentYPosMeters() {
-
-    ENSURE_ALLOW_OMNISCIENCE
-
-    return m_mouse->getCurrentTranslation().getY().getMeters();
-}
-
-double MouseInterface::currentRotationDegrees() {
-
-    ENSURE_ALLOW_OMNISCIENCE
-
-    return m_mouse->getCurrentRotation().getDegreesZeroTo360();
-}
-
-void MouseInterface::ensureDiscreteInterface(const QString& callingFunction) const {
-    if (getInterfaceType(true) != InterfaceType::DISCRETE) {
-        qCritical().noquote().nospace()
-            << "You must declare the interface type to be \""
-            << INTERFACE_TYPE_TO_STRING().value(InterfaceType::DISCRETE)
-            << "\" to use MouseInterface::" << callingFunction << "().";
-        SimUtilities::quit();
-    }
-}
-
-void MouseInterface::ensureContinuousInterface(const QString& callingFunction) const {
-    if (getInterfaceType(true) != InterfaceType::CONTINUOUS) {
-        qCritical().noquote().nospace()
-            << "You must declare the interface type to be \""
-            << INTERFACE_TYPE_TO_STRING().value(InterfaceType::CONTINUOUS)
-            << "\" to use MouseInterface::" << callingFunction << "().";
-        SimUtilities::quit();
-    }
-}
-
-void MouseInterface::ensureAllowOmniscience(const QString& callingFunction) const {
-    if (!getDynamicOptions().allowOmniscience) {
-        qCritical().noquote().nospace()
-            << "You must return true from \"allowOmniscience()\" in order to"
-            << " use MouseInterface::" << callingFunction << "().";
-        SimUtilities::quit();
-    }
-}
-
-void MouseInterface::ensureNotTileEdgeMovements(const QString& callingFunction) const {
-    if (getDynamicOptions().useTileEdgeMovements) {
-        qCritical().noquote().nospace()
-            << "You must return false from \"useTileEdgeMovements()\" in order"
-            << " to use MouseInterface::" << callingFunction << "().";
-        SimUtilities::quit();
-    }
-}
-
-void MouseInterface::ensureUseTileEdgeMovements(const QString& callingFunction) const {
-    if (!getDynamicOptions().useTileEdgeMovements) {
-        qCritical().noquote().nospace()
-            << "You must return true from \"useTileEdgeMovements()\" in order"
-            << " to use MouseInterface::" << callingFunction << "().";
-        SimUtilities::quit();
-    }
-}
-
-void MouseInterface::ensureInsideOrigin(const QString& callingFunction) const {
-    if (!m_inOrigin) {
-        qCritical().noquote().nospace()
-            << "You should only call MouseInterface::" << callingFunction
-            << "() if you're in the origin, i.e., you haven't moved forward"
-            << " at all yet.";
-        SimUtilities::quit();
-    }
-}
-
-void MouseInterface::ensureOutsideOrigin(const QString& callingFunction) const {
-    if (m_inOrigin) {
-        qCritical().noquote().nospace()
-            << "You should only call \"MouseInterface::" << callingFunction
-            << "()\" if you're outside of the origin, i.e., you've already"
-            << " called \"MouseInterface::originMoveForwardToEdge()\".";
-        SimUtilities::quit();
-    }
 }
 
 void MouseInterface::setTileColorImpl(int x, int y, char color) {
@@ -1349,6 +814,8 @@ QPair<QPair<int, int>, Direction> MouseInterface::getOpposingWall(
 
 void MouseInterface::moveForwardTo(const Coordinate& destinationTranslation, const Angle& destinationRotation) {
 
+    /*
+
     // This function assumes that we're already facing the correct direction,
     // and that we simply need to move forward to reach the destination.
 
@@ -1376,12 +843,16 @@ void MouseInterface::moveForwardTo(const Coordinate& destinationTranslation, con
 
     // Stop the wheels and teleport to the exact destination
     m_mouse->stopAllWheels();
+
+    */
+
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
 
 void MouseInterface::arcTo(const Coordinate& destinationTranslation, const Angle& destinationRotation,
         const Distance& radius, double extraWheelSpeedFraction) {
 
+    /*
     // Determine the inital rotation delta in [-180, 180)
     Angle initialRotationDelta = getRotationDelta(m_mouse->getCurrentRotation(), destinationRotation);
 
@@ -1407,6 +878,7 @@ void MouseInterface::arcTo(const Coordinate& destinationTranslation, const Angle
 
     // Stop the wheels and teleport to the exact destination
     m_mouse->stopAllWheels();
+    */
     m_mouse->teleport(destinationTranslation, destinationRotation);
 }
 

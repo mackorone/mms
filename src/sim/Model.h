@@ -16,8 +16,7 @@ class Model : public QObject {
 public:
 
     Model();
-    void start();
-    void shutdown();
+    void step();
 
     void setMaze(const Maze* maze);
     void setMouse(Mouse* mouse);

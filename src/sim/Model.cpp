@@ -13,7 +13,6 @@
 namespace mms {
 
 Model::Model() :
-    m_shutdownRequested(false),
     m_maze(nullptr),
     m_mouse(nullptr),
     m_stats(nullptr),
@@ -22,26 +21,18 @@ Model::Model() :
     ASSERT_RUNS_JUST_ONCE();
 }
 
-void Model::start() {
-
-    double prev = SimUtilities::getHighResTimestamp();
-    double acc = 0.0;
-    while (!m_shutdownRequested) {
-        double now = SimUtilities::getHighResTimestamp();
-        acc += (now - prev) * m_simSpeed;
-        prev = now;
-        while (acc >= DT) {
-            update(DT);
-            acc -= DT;
-            // TODO: MACK - check for collisions ...
-            // std::thread collisionDetector(&Model::checkCollision, this);
-        }
-        SimUtilities::sleep(Duration::Seconds(DT / 2.0));
-    };
-}
-
-void Model::shutdown() {
-    m_shutdownRequested = true;
+void Model::step() {
+    static double prev = SimUtilities::getHighResTimestamp();
+    static double acc = 0.0;
+    double now = SimUtilities::getHighResTimestamp();
+    acc += (now - prev) * m_simSpeed;
+    prev = now;
+    while (acc >= DT) {
+        update(DT);
+        acc -= DT;
+        // TODO: MACK - check for collisions ...
+        // std::thread collisionDetector(&Model::checkCollision, this);
+    }
 }
 
 void Model::update(double dt) {

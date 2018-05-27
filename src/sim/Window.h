@@ -43,11 +43,8 @@ signals:
 
 private:
 
-    // A separate thread for the model ensures that updates don't get blocked
-    // by events in the UI thread (e.g., drawing, button handlers, etc.), which
-    // is important for continuous algos that require a high update rate (1ms).
+    // The game model
     Model m_model;
-    QThread m_modelThread;
 
     // Maze stats GUI elements
     QLabel* m_mazeWidthLabel;
@@ -85,69 +82,7 @@ private:
     void setMaze(Maze* maze);
 
     // Helper function for editing settings
-    void editColors();
     void editSettings();
-
-    // Functions encapsulating process management logic,
-    // shared between maze and mouse algorithms
-    void algoActionStart(
-        QProcess** actionProcessVariable,
-        QPushButton* actionButton,
-        QLabel* actionStatus,
-        QPlainTextEdit* actionOutput,
-        QTabWidget* outputTabWidget,
-        const QString& algoName,
-        const QString& actionName,
-        const QString& actionString,
-         QString (*getCommand)(const QString&),
-         QString (*getDirPath)(const QString&),
-        QVector<QString> (Window::*getExtraArgs)(void),
-        void (Window::*actionStart)(void),
-        void (Window::*actionStop)(void),
-        void (Window::*stderrMidAction)(void),
-        void (Window::*stderrPostAction)(void)
-    );
-    void algoActionStop(
-        QProcess* actionProcess,
-        QLabel* actionStatus
-    );
-
-    // ----- MazeAlgosTab ----- //
-
-    QWidget* m_mazeAlgoWidget;
-    QComboBox* m_mazeAlgoComboBox;
-    QPushButton* m_mazeAlgoEditButton;
-    QPushButton* m_mazeAlgoImportButton;
-    QTabWidget* m_mazeAlgoOutputTabWidget;
-    void mazeAlgoTabInit();
-    void mazeAlgoEdit();
-    void mazeAlgoImport();
-
-    // Maze algo building
-    QProcess* m_mazeAlgoBuildProcess;
-    QPushButton* m_mazeAlgoBuildButton;
-    QLabel* m_mazeAlgoBuildStatus;
-    QPlainTextEdit* m_mazeAlgoBuildOutput;
-    void mazeAlgoBuildStart();
-    void mazeAlgoBuildStop();
-    void mazeAlgoBuildStderr();
-
-    // Maze algo running
-    QProcess* m_mazeAlgoRunProcess;
-    QPushButton* m_mazeAlgoRunButton;
-    QLabel* m_mazeAlgoRunStatus;
-    QPlainTextEdit* m_mazeAlgoRunOutput;
-    QVector<QString> mazeAlgoRunExtraArgs();
-    void mazeAlgoRunStart();
-    void mazeAlgoRunStop();
-    void mazeAlgoRunStderr();
-
-    QSpinBox* m_mazeAlgoWidthBox;
-    QSpinBox* m_mazeAlgoHeightBox;
-    RandomSeedWidget* m_mazeAlgoSeedWidget;
-
-    void mazeAlgoRefresh(const QString& name = "");
-    QVector<ConfigDialogField> mazeAlgoGetFields();
 
     // ----- MouseAlgosTab ----- //
 
@@ -160,18 +95,14 @@ private:
     void mouseAlgoEdit();
     void mouseAlgoImport();
 
-    // Mouse algo building
-    QProcess* m_mouseAlgoBuildProcess;
-    QPushButton* m_mouseAlgoBuildButton;
-    QLabel* m_mouseAlgoBuildStatus;
-    QPlainTextEdit* m_mouseAlgoBuildOutput;
-    void mouseAlgoBuildStart();
-    void mouseAlgoBuildStop();
-    void mouseAlgoBuildStderr();
-
-    // The event loop for the mouse algo process. We need a separate loop so
-    // that the GUI doesn't lock up on blocking algo commands, like sleep
-    QThread* m_mouseAlgoThread;
+    // Build-related members
+    QProcess* m_buildProcess;
+    QPushButton* m_buildButton;
+    QLabel* m_buildStatus;
+    QPlainTextEdit* m_buildOutput;
+    void startBuild();
+    void cancelBuild();
+    void onBuildExit(int exitCode, QProcess::ExitStatus exitStatus);
 
     // Mouse algo running
     QStringList m_stderrBuffer;
