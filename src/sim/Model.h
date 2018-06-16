@@ -46,8 +46,6 @@ private:
 
     bool m_paused;
     double m_simSpeed;
-
-    void checkCollision();
 };
 
 } // namespace mms

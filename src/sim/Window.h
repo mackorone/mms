@@ -9,7 +9,6 @@
 #include <QProcess>
 #include <QPushButton>
 #include <QRadioButton>
-#include <QThread>
 
 #include "ConfigDialogField.h"
 #include "Map.h"
@@ -43,7 +42,7 @@ signals:
 
 private:
 
-    // The game model
+    // The model object
     Model m_model;
 
     // Maze stats GUI elements
@@ -101,19 +100,25 @@ private:
     QLabel* m_buildStatus;
     QPlainTextEdit* m_buildOutput;
     void startBuild();
-    void cancelBuild();
     void onBuildExit(int exitCode, QProcess::ExitStatus exitStatus);
 
-    // Mouse algo running
-    QStringList m_stderrBuffer;
-    QProcess* m_mouseAlgoRunProcess;
-    QPushButton* m_mouseAlgoRunButton;
-    QLabel* m_mouseAlgoRunStatus;
-    QPlainTextEdit* m_mouseAlgoRunOutput;
-    MouseAlgoStatsWidget* m_mouseAlgoStatsWidget;
-    void mouseAlgoRunStart();
-    void mouseAlgoRunStop();
+    // Run-related members
+    QProcess* m_runProcess;
+    QPushButton* m_runButton;
+    QLabel* m_runStatus;
+    QPlainTextEdit* m_runOutput;
+    QStringList m_commandBuffer;
+
+    void startRun();
+    void onRunExit(int exitCode, QProcess::ExitStatus exitStatus);
     void handleMouseAlgoCannotStart(QString errorString);
+
+    // Cancel running processes
+    void cancelBuild();
+    void cancelRun();
+    void cancelProcess(QProcess* process, QLabel* status);
+
+    MouseAlgoStatsWidget* m_mouseAlgoStatsWidget;
 
     void mouseAlgoPause();
     void mouseAlgoResume();

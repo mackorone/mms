@@ -27,46 +27,20 @@ QVector<TriangleGraphic> MouseGraphic::draw(
 
     QVector<TriangleGraphic> buffer;
 
-    // First, we draw the body
+    // Draw the wheel polygon
+    buffer.append(SimUtilities::polygonToTriangleGraphics(
+        m_mouse->getCurrentWheelPolygon(currentTranslation, currentRotation),
+        ColorManager::get()->getMouseWheelColor(), 1.0));
+
+    // Overlay the body polygon
     buffer.append(SimUtilities::polygonToTriangleGraphics(
         m_mouse->getCurrentBodyPolygon(currentTranslation, currentRotation),
         ColorManager::get()->getMouseBodyColor(), 1.0));
 
-    // Next, draw the center of mass
+    // Overlay the center of mass polygon
     buffer.append(SimUtilities::polygonToTriangleGraphics(
         m_mouse->getCurrentCenterOfMassPolygon(currentTranslation, currentRotation),
         ColorManager::get()->getMouseCenterOfMassColor(), 1.0));
-
-    // Next, we draw the wheels
-    for (const Polygon& wheelPolygon :
-            m_mouse->getCurrentWheelPolygons(currentTranslation, currentRotation)) {
-        buffer.append(SimUtilities::polygonToTriangleGraphics(
-            wheelPolygon,
-            ColorManager::get()->getMouseWheelColor(), 1.0));
-    }
-
-    // Next, we draw the sensors
-    for (const Polygon& sensorPolygon :
-            m_mouse->getCurrentSensorPolygons(currentTranslation, currentRotation)) {
-        buffer.append(SimUtilities::polygonToTriangleGraphics(
-            sensorPolygon,
-            ColorManager::get()->getMouseSensorColor(), 1.0));
-    }
-
-    // Lastly, we draw the sensor views
-    for (const Polygon& polygon :
-            m_mouse->getCurrentSensorViewPolygons(currentTranslation, currentRotation)) {
-        buffer.append(SimUtilities::polygonToTriangleGraphics(
-            polygon,
-            ColorManager::get()->getMouseVisionColor(), 1.0));
-    }
-
-    // Uncomment to draw collision polygon
-    /*
-    buffer.append(SimUtilities::polygonToTriangleGraphics(
-        m_mouse->getCurrentCollisionPolygon(currentTranslation, currentRotation),
-        Color::GRAY, .5);
-    */
 
     return buffer;
 }

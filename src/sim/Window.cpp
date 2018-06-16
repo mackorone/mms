@@ -60,10 +60,10 @@ Window::Window(QWidget *parent) :
         m_buildButton(new QPushButton("Build")),
         m_buildStatus(new QLabel()),
         m_buildOutput(new QPlainTextEdit()),
-        m_mouseAlgoRunProcess(nullptr),
-        m_mouseAlgoRunButton(new QPushButton("Run")),
-        m_mouseAlgoRunStatus(new QLabel()),
-        m_mouseAlgoRunOutput(new QPlainTextEdit()),
+        m_runProcess(nullptr),
+        m_runButton(new QPushButton("Run")),
+        m_runStatus(new QLabel()),
+        m_runOutput(new QPlainTextEdit()),
         m_mouseAlgoStatsWidget(new MouseAlgoStatsWidget()),
         m_mouseAlgoSeedWidget(new RandomSeedWidget()),
         m_mouseAlgoPauseButton(new QPushButton("Pause")) {
@@ -294,7 +294,7 @@ Window::Window(QWidget *parent) :
                 return;
             }
             m_map.update();
-            m_model.step();
+            //m_model.step();
             then = now;
         }
     );
@@ -328,6 +328,94 @@ Window::Window(QWidget *parent) :
     */
 }
 
+/*
+void Window::modelStep() {
+    static double DT
+    static double prev = SimUtilities::getHighResTimestamp();
+    static double acc = 0.0;
+    double now = SimUtilities::getHighResTimestamp();
+    acc += (now - prev) * 1.0; // m_simSpeed; TODO: MACK
+    prev = now;
+    while (acc >= DT) {
+        update(DT);
+        acc -= DT;
+        // TODO: MACK - check for collisions ...
+        // std::thread collisionDetector(&Model::checkCollision, this);
+    }
+}
+
+void Window::update(double dt) {
+
+    // Ensure the maze/mouse aren't updated in this loop
+    m_mutex.lock();
+
+    // If there's nothing to update, sleep for a little bit
+    if (m_mouse == nullptr || m_paused) {
+        m_mutex.unlock();
+        return;
+    }
+
+    // Calculate the amount of sim time that should pass during this iteration
+    Duration elapsedSimTimeForThisIteration = Duration::Seconds(dt);
+
+    // Update the sim time
+    SimTime::get()->incrementElapsedSimTime(elapsedSimTimeForThisIteration);
+
+    // Update the position of the mouse
+    m_mouse->update(elapsedSimTimeForThisIteration);
+
+    // Retrieve the current discretized location of the mouse
+    QPair<int, int> location = m_mouse->getCurrentDiscretizedTranslation();
+
+    // If we're ever outside of the maze, crash. It would be cool to have
+    // some "out of bounds" state but I haven't implemented that yet. We
+    // continue here to make sure that we join with the other thread.
+    if (!m_maze->withinMaze(location.first, location.second)) {
+        m_mouse->setCrashed();
+        m_mutex.unlock();
+        return;
+    }
+
+    // Retrieve the tile at current location
+    const Tile* tileAtLocation = m_maze->getTile(location.first, location.second);
+
+    // If this is a new tile, update the set of traversed tiles
+    if (!m_stats->traversedTileLocations.contains(location)) {
+        m_stats->traversedTileLocations.insert(location);
+        if (m_stats->closestDistanceToCenter == -1 ||
+                tileAtLocation->getDistance() < m_stats->closestDistanceToCenter) {
+            m_stats->closestDistanceToCenter = tileAtLocation->getDistance(); 
+        }
+        // Alert any listeners that a new tile was entered
+        emit newTileLocationTraversed(location.first, location.second);
+    }
+
+    // If we've returned to the origin, reset the departure time
+    if (location.first == 0 && location.second == 0) {
+        m_stats->timeOfOriginDeparture = Duration::Seconds(-1);
+    }
+
+    // Otherwise, if we've just left the origin, update the departure time
+    else if (m_stats->timeOfOriginDeparture < Duration::Seconds(0)) {
+        m_stats->timeOfOriginDeparture = SimTime::get()->elapsedSimTime();
+    }
+
+    // Separately, if we're in the center, update the best time to center
+    if (m_maze->isCenterTile(location.first, location.second)) {
+        Duration timeToCenter = SimTime::get()->elapsedSimTime() - m_stats->timeOfOriginDeparture;
+        if (
+            m_stats->bestTimeToCenter < Duration::Seconds(0) ||
+            timeToCenter < m_stats->bestTimeToCenter
+        ) {
+            m_stats->bestTimeToCenter = timeToCenter;
+        }
+    }
+
+    // Release the mutex
+    m_mutex.unlock();
+}
+*/
+
 void Window::resizeEvent(QResizeEvent* event) {
     SettingsMisc::setRecentWindowWidth(event->size().width());
     SettingsMisc::setRecentWindowHeight(event->size().height());
@@ -336,7 +424,7 @@ void Window::resizeEvent(QResizeEvent* event) {
 void Window::closeEvent(QCloseEvent *event) {
     // Graceful shutdown
     cancelBuild();
-    mouseAlgoRunStop();
+    cancelRun();
     m_map.shutdown();
     QMainWindow::closeEvent(event);
 }
@@ -344,7 +432,8 @@ void Window::closeEvent(QCloseEvent *event) {
 void Window::setMaze(Maze* maze) {
 
     // Stop running maze/mouse algos
-    mouseAlgoRunStop();
+    // TODO: MACK -stop the build too?
+    cancelRun();
 
     // Next, update the maze and truth
     Maze* oldMaze = m_maze;
@@ -383,28 +472,10 @@ void Window::setMaze(Maze* maze) {
 
 void Window::editSettings() {
 
-    QVector<ConfigDialogField> fields;
-
-    ConfigDialogField tileTextFontImageField;
-    tileTextFontImageField.label = "Tile Text Font Image";
-    tileTextFontImageField.type = ConfigDialogFieldType::FILE;
-    QVector<QVariant> fonts;
-    for (QString font : Resources::getFonts()) {
-        fonts.append(font);
-    }
-    tileTextFontImageField.comboBoxValues = fonts;
-    tileTextFontImageField.initialComboBoxValue = 
-        SettingsMisc::getFontImagePathComboBoxValue();
-    tileTextFontImageField.initialLineEditValue = 
-        SettingsMisc::getFontImagePathLineEditValue();
-    tileTextFontImageField.comboBoxSelected = 
-        SettingsMisc::getFontImagePathComboBoxSelected();
-
     ConfigDialog dialog(
         "Edit",
         "Settings",
         {
-            tileTextFontImageField,
         },
         false // No "Remove" button
     );
@@ -413,18 +484,6 @@ void Window::editSettings() {
     if (dialog.exec() == QDialog::Rejected) {
         return;
     }
-
-    // Update the font image path
-    SettingsMisc::setFontImagePathComboBoxValue(
-        dialog.getComboBoxValue(tileTextFontImageField.label));
-    SettingsMisc::setFontImagePathLineEditValue(
-        dialog.getLineEditValue(tileTextFontImageField.label));
-    SettingsMisc::setFontImagePathComboBoxSelected(
-        dialog.getComboBoxSelected(tileTextFontImageField.label));
-
-    // TODO: upforgrabs
-    // Refresh the font, both in the map and in
-    // the FontImage singleton, after any updates
 }
 
 QPair<QStringList, QVector<QVariant>> Window::getRunStats() const {
@@ -564,8 +623,8 @@ void Window::mouseAlgoTabInit() {
         this, &Window::startBuild
     );
     connect(
-        m_mouseAlgoRunButton, &QPushButton::clicked,
-        this, &Window::mouseAlgoRunStart
+        m_runButton, &QPushButton::clicked,
+        this, &Window::startRun
     );
 
     // Set up the layout
@@ -596,9 +655,9 @@ void Window::mouseAlgoTabInit() {
     actionsGroupBox->setLayout(actionsLayout);
     actionsLayout->addWidget(m_buildButton, 0, 0);
     actionsLayout->addWidget(m_buildStatus, 0, 1);
-    actionsLayout->addWidget(m_mouseAlgoRunButton, 1, 0);
-    actionsLayout->addWidget(m_mouseAlgoRunStatus, 1, 1);
-    for (QLabel* label : {m_buildStatus, m_mouseAlgoRunStatus}) {
+    actionsLayout->addWidget(m_runButton, 1, 0);
+    actionsLayout->addWidget(m_runStatus, 1, 1);
+    for (QLabel* label : {m_buildStatus, m_runStatus}) {
         label->setAlignment(Qt::AlignCenter);   
         label->setFrameStyle(QFrame::StyledPanel | QFrame::Plain);
         label->setMinimumWidth(90);
@@ -672,14 +731,14 @@ void Window::mouseAlgoTabInit() {
     m_mouseAlgoOutputTabWidget = new QTabWidget();
     bottomLayout->addWidget(m_mouseAlgoOutputTabWidget);
     m_mouseAlgoOutputTabWidget->addTab(m_buildOutput, "Build Output");
-    m_mouseAlgoOutputTabWidget->addTab(m_mouseAlgoRunOutput, "Run Output");
-    m_mouseAlgoOutputTabWidget->addTab(m_mouseAlgoRunOutput, "Run Output");
+    m_mouseAlgoOutputTabWidget->addTab(m_runOutput, "Run Output");
+    m_mouseAlgoOutputTabWidget->addTab(m_runOutput, "Run Output");
     m_mouseAlgoOutputTabWidget->addTab(m_mouseAlgoStatsWidget, "Stats");
 
     // Set the default values for some widgets
     for (QPlainTextEdit* output : {
         m_buildOutput,
-        m_mouseAlgoRunOutput,
+        m_runOutput,
     }) {
         output->setReadOnly(true);
         output->setLineWrapMode(QPlainTextEdit::NoWrap);
@@ -709,7 +768,6 @@ void Window::mouseAlgoEdit() {
     ConfigDialogField dirPathField = fields.at(1);
     ConfigDialogField buildCommandField = fields.at(2);
     ConfigDialogField runCommandField = fields.at(3);
-    ConfigDialogField mouseFilePathField = fields.at(4);
 
     nameField.initialLineEditValue = name;
     dirPathField.initialLineEditValue = SettingsMouseAlgos::getDirPath(name);
@@ -717,12 +775,6 @@ void Window::mouseAlgoEdit() {
         SettingsMouseAlgos::getBuildCommand(name);
     runCommandField.initialLineEditValue =
         SettingsMouseAlgos::getRunCommand(name);
-    mouseFilePathField.initialComboBoxValue =
-        SettingsMouseAlgos::getMouseFilePathComboBoxValue(name);
-    mouseFilePathField.initialLineEditValue =
-        SettingsMouseAlgos::getMouseFilePathLineEditValue(name);
-    mouseFilePathField.comboBoxSelected =
-        SettingsMouseAlgos::getMouseFilePathComboBoxSelected(name);
 
     ConfigDialog dialog(
         "Edit",
@@ -732,7 +784,6 @@ void Window::mouseAlgoEdit() {
             dirPathField,
             buildCommandField,
             runCommandField,
-            mouseFilePathField,
         },
         true // Include a "Remove" button
     );
@@ -756,10 +807,7 @@ void Window::mouseAlgoEdit() {
         newName,
         dialog.getLineEditValue(dirPathField.label),
         dialog.getLineEditValue(buildCommandField.label),
-        dialog.getLineEditValue(runCommandField.label),
-        dialog.getComboBoxValue(mouseFilePathField.label),
-        dialog.getLineEditValue(mouseFilePathField.label),
-        dialog.getComboBoxSelected(mouseFilePathField.label)
+        dialog.getLineEditValue(runCommandField.label)
     );
 
     // Update the mouse algos
@@ -773,7 +821,6 @@ void Window::mouseAlgoImport() {
     ConfigDialogField dirPathField = fields.at(1);
     ConfigDialogField buildCommandField = fields.at(2);
     ConfigDialogField runCommandField = fields.at(3);
-    ConfigDialogField mouseFilePathField = fields.at(4);
 
     ConfigDialog dialog(
         "Import",
@@ -783,7 +830,6 @@ void Window::mouseAlgoImport() {
             dirPathField,
             buildCommandField,
             runCommandField,
-            mouseFilePathField,
         },
         false // No "Remove" button
     );
@@ -799,10 +845,7 @@ void Window::mouseAlgoImport() {
         name,
         dialog.getLineEditValue(dirPathField.label),
         dialog.getLineEditValue(buildCommandField.label),
-        dialog.getLineEditValue(runCommandField.label),
-        dialog.getComboBoxValue(mouseFilePathField.label),
-        dialog.getLineEditValue(mouseFilePathField.label),
-        dialog.getComboBoxSelected(mouseFilePathField.label)
+        dialog.getLineEditValue(runCommandField.label)
     );
 
     // Update the mouse algos
@@ -824,7 +867,7 @@ void Window::startBuild() {
         QMessageBox::warning(
             this,
             QString("Empty Build Command"),
-            QString("Build command for algorithm \"%2\" is empty.").arg(
+            QString("Build command for algorithm \"%1\" is empty.").arg(
                 m_mouseAlgoComboBox->currentText()
             )
         );
@@ -859,6 +902,8 @@ void Window::startBuild() {
         }
         m_buildOutput->appendPlainText(output);
     });
+
+    // Clean up on exit
     connect(
         process,
         static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(
@@ -906,17 +951,6 @@ void Window::startBuild() {
     }
 }
 
-void Window::cancelBuild() {
-    if (m_buildProcess != nullptr) {
-        m_buildProcess->terminate();
-        m_buildProcess->waitForFinished();
-        m_buildStatus->setText("CANCELED");
-        m_buildStatus->setStyleSheet(
-            "QLabel { background: rgb(180, 180, 180); }"
-        );
-    }
-}
-
 void Window::onBuildExit(int exitCode, QProcess::ExitStatus exitStatus) {
 
     // Update the build button
@@ -949,19 +983,15 @@ void Window::onBuildExit(int exitCode, QProcess::ExitStatus exitStatus) {
     m_buildProcess = nullptr;
 }
 
-void Window::mouseAlgoRunStart() {
+void Window::startRun() {
 
+    // Only one algo running at a time
+    ASSERT_TR(m_runProcess == nullptr);
+
+    // Get the command and directory
     QString algoName = m_mouseAlgoComboBox->currentText();
     QString dirPath = SettingsMouseAlgos::getDirPath(algoName);
     QString command = SettingsMouseAlgos::getRunCommand(algoName);
-
-    // If the combobox was selected, use the combobox value
-    QString mouseFile;
-    if (SettingsMouseAlgos::getMouseFilePathComboBoxSelected(algoName)) {
-        mouseFile = SettingsMouseAlgos::getMouseFilePathComboBoxValue(algoName);
-    } else {
-        mouseFile = SettingsMouseAlgos::getMouseFilePathLineEditValue(algoName);
-    }
 
     // Perform config validation
     if (command.isEmpty()) {
@@ -979,16 +1009,6 @@ void Window::mouseAlgoRunStart() {
             this,
             "Empty Directory",
             QString("Directory for algorithm \"%1\" is empty.").arg(
-                algoName
-            )
-        );
-        return;
-    }
-    if (mouseFile.isEmpty()) {
-        QMessageBox::warning(
-            this,
-            "Empty Mouse File",
-            QString("Mouse file for algorithm \"%1\" is empty.").arg(
                 algoName
             )
         );
@@ -1014,25 +1034,10 @@ void Window::mouseAlgoRunStart() {
         return;
     }
 
-    // TODO: MACK - delete the mouse files
     // TODO: MACK - delete the font files too
 
-    // Generate the mouse, check mouse file success
+    // Generate the mouse
     Mouse* newMouse = new Mouse(m_maze);
-    if (!newMouse->reload(mouseFile)) {
-        QMessageBox::warning(
-            this,
-            "Invalid Mouse File",
-            QString("Mouse file \"%1\"could not be loaded.").arg(
-                mouseFile
-            )
-        );
-        delete newMouse;
-        return;
-    }
-
-    // Stop running maze/mouse algorithms
-    mouseAlgoRunStop();
 
     // Create some more objects
     MazeView* newView = new MazeView(
@@ -1051,8 +1056,8 @@ void Window::mouseAlgoRunStart() {
     );
 
     // Clear the output, and jump to it
-    m_mouseAlgoRunOutput->clear();
-    m_mouseAlgoOutputTabWidget->setCurrentWidget(m_mouseAlgoRunOutput);
+    m_runOutput->clear();
+    m_mouseAlgoOutputTabWidget->setCurrentWidget(m_runOutput);
 
     // Append the random seed to the command
     command += " ";
@@ -1071,7 +1076,7 @@ void Window::mouseAlgoRunStart() {
             if (output.endsWith("\n")) {
                 output.truncate(output.size() - 1);
             }
-            m_mouseAlgoRunOutput->appendPlainText(output);
+            m_runOutput->appendPlainText(output);
         }
     );
 
@@ -1084,7 +1089,7 @@ void Window::mouseAlgoRunStart() {
         newMouseInterface,
         [=](){
             QString text = newProcess->readAllStandardError();
-            QStringList lines = getLines(text, &m_stderrBuffer);
+            QStringList lines = getLines(text, &m_commandBuffer);
             for (const QString& line : lines) {
                 QString response = newMouseInterface->dispatch(line);
                 if (!response.isEmpty()) {
@@ -1093,6 +1098,20 @@ void Window::mouseAlgoRunStart() {
             }
         }
     );
+
+    // TODO: MACK
+    // Clean up on exit
+    /*
+    connect(
+        process,
+        static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(
+            &QProcess::finished
+        ),
+        this,
+        &Window::onRunExit
+    );
+    */
+
 
     // Connect the input buttons to the algorithm
     for (int i = 0; i < m_mouseAlgoInputButtons.size(); i += 1) {
@@ -1149,46 +1168,14 @@ void Window::mouseAlgoRunStart() {
     // beginning of the mouse algo's execution)
     m_model.setMouse(newMouse);
 
-    // Re-enable run button when build finishes, clean up the process
+    // Clean up on exit
     connect(
         newProcess,
         static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(
             &QProcess::finished
         ),
         this,
-        [=](int exitCode, QProcess::ExitStatus exitStatus){
-
-            // TODO: MACK - does the thread get cleaned up if the mouse exits normally?
-
-            // Set the button to "Action"
-            disconnect(
-                m_mouseAlgoRunButton, &QPushButton::clicked,
-                this, &Window::mouseAlgoRunStop
-            );
-            connect(
-                m_mouseAlgoRunButton, &QPushButton::clicked,
-                this, &Window::mouseAlgoRunStart
-            );
-            m_mouseAlgoRunButton->setText("Run");
-
-            // Update the status label, call stderrPostAction
-            if (exitStatus == QProcess::NormalExit && exitCode == 0) {
-                m_mouseAlgoRunStatus->setText("COMPLETE");
-                m_mouseAlgoRunStatus->setStyleSheet(
-                    "QLabel { background: rgb(150, 255, 100); }"
-                );
-            }
-            else {
-                // This special case is necessary because
-                // mouseAlgoRunStop() finishes before this executes
-                if (m_mouseAlgoRunStatus->text() != "CANCELED") {
-                    m_mouseAlgoRunStatus->setText("FAILED");
-                }
-                m_mouseAlgoRunStatus->setStyleSheet(
-                    "QLabel { background: rgb(255, 150, 150); }"
-                );
-            }
-        }
+        &Window::onRunExit
     );
 
     // If the process fails to start, stop the thread and cleanup
@@ -1225,11 +1212,14 @@ void Window::mouseAlgoRunStart() {
 
     // Update the member variables because, at this
     // point, the algorithm started successfully
+    delete m_mouse; // TODO: MACK - clean up 
     m_mouse = newMouse;
+    delete m_view; // TODO: MACK - clean up old
     m_view = newView;
+    delete m_mouseGraphic; // TODO: MACK - clean up old
     m_mouseGraphic = newMouseGraphic;
     m_mouseInterface = newMouseInterface;
-    m_mouseAlgoRunProcess = newProcess;
+    m_runProcess = newProcess;
     m_map.setView(newView);
     m_map.setMouseGraphic(newMouseGraphic);
 
@@ -1248,55 +1238,69 @@ void Window::mouseAlgoRunStart() {
             for (QPushButton* button : m_mouseAlgoInputButtons) {
                 button->setEnabled(true);
             }
-            m_mouseAlgoRunStatus->setText("RUNNING");
-            m_mouseAlgoRunStatus->setStyleSheet(
+            m_runStatus->setText("RUNNING");
+            m_runStatus->setStyleSheet(
                 "QLabel { background: rgb(255, 255, 100); }"
             );
             disconnect(
-                m_mouseAlgoRunButton, &QPushButton::clicked,
-                this, &Window::mouseAlgoRunStart
+                m_runButton, &QPushButton::clicked,
+                this, &Window::startRun
             );
             connect(
-                m_mouseAlgoRunButton, &QPushButton::clicked,
-                this, &Window::mouseAlgoRunStop
+                m_runButton, &QPushButton::clicked,
+                this, &Window::cancelRun
             );
-            m_mouseAlgoRunButton->setText("Cancel");
+            m_runButton->setText("Cancel");
         }
     );
     newMouseInterface->emitMouseAlgoStarted();
 }
 
-void Window::mouseAlgoRunStop() {
+void Window::onRunExit(int exitCode, QProcess::ExitStatus exitStatus) {
 
-    // Only stop the algo thread if an algo is running
-    if (m_mouseInterface != nullptr) {
-        m_mouseAlgoRunProcess->terminate();
-        m_mouseAlgoRunProcess->waitForFinished();
-        delete m_mouseAlgoRunProcess;
-        delete m_mouseInterface;
-        delete m_mouseGraphic;
-        delete m_view;
-        delete m_mouse;
-        // At this point, no more mouse functions will execute
-        m_mouseAlgoRunStatus->setText("CANCELED");
+    // TODO: MACK - deduplicate this with onBuildExit
+
+    // Update the run button
+    disconnect(
+        m_runButton,
+        &QPushButton::clicked,
+        this, &Window::cancelRun);
+    connect(
+        m_runButton,
+        &QPushButton::clicked,
+        this, &Window::startRun);
+    m_runButton->setText("Run");
+
+    // Update the status label, call stderrPostAction
+    if (exitStatus == QProcess::NormalExit && exitCode == 0) {
+        m_runStatus->setText("COMPLETE");
+        m_runStatus->setStyleSheet(
+            "QLabel { background: rgb(150, 255, 100); }"
+        );
+    }
+    else {
+        m_runStatus->setText("FAILED");
+        m_runStatus->setStyleSheet(
+            "QLabel { background: rgb(255, 150, 150); }"
+        );
     }
 
-    // Regardless of whether or not an algo is running, put the Window in a
-    // "mouseless" state (note that the objects themselves get deleted in a
-    // separate callback). Note that we do this *after* stopping the algo
-    // thread so that we can be sure no more stderr will be emitted.
-    m_stderrBuffer.clear();
+    // Clean up
+    m_commandBuffer.clear();
+    /*
     m_map.setMouseGraphic(nullptr);
     m_map.setView(m_truth);
+    */
     m_model.removeMouse();
-    m_mouseAlgoRunProcess = nullptr;
-    m_mouseInterface = nullptr;
-    m_mouseGraphic = nullptr;
-    m_view = nullptr;
-    m_mouse = nullptr;
 
-    // UI updates on stop
-    // TODO: MACK - this also needs to happen when the algo exits normally
+    // More clean up
+    delete m_runProcess;
+    m_runProcess = nullptr;
+    delete m_mouseInterface;
+    m_mouseInterface = nullptr;
+
+    // UI updates
+    /*
     m_truthButton->setChecked(true);
     m_viewButton->setEnabled(false);
     m_followCheckbox->setEnabled(false);
@@ -1305,14 +1309,34 @@ void Window::mouseAlgoRunStop() {
     for (QPushButton* button : m_mouseAlgoInputButtons) {
         button->setEnabled(false);
     }
+    */
+}
+
+void Window::cancelBuild() {
+    cancelProcess(m_buildProcess, m_buildStatus);
+}
+
+void Window::cancelRun() {
+    cancelProcess(m_runProcess, m_runStatus);
+}
+
+void Window::cancelProcess(QProcess* process, QLabel* status) {
+    if (process != nullptr) {
+        process->kill();
+        process->waitForFinished();
+        status->setText("CANCELED");
+        status->setStyleSheet(
+            "QLabel { background: rgb(180, 180, 180); }"
+        );
+    }
 }
 
 void Window::handleMouseAlgoCannotStart(QString errorString) {
-    m_mouseAlgoRunStatus->setText("ERROR");
-    m_mouseAlgoRunStatus->setStyleSheet(
+    m_runStatus->setText("ERROR");
+    m_runStatus->setStyleSheet(
         "QLabel { background: rgb(255, 150, 150); }"
     );
-    m_mouseAlgoRunOutput->appendPlainText(errorString);
+    m_runOutput->appendPlainText(errorString);
     m_model.removeMouse();
 }
 
@@ -1356,7 +1380,7 @@ void Window::mouseAlgoRefresh(const QString& name) {
     m_mouseAlgoComboBox->setEnabled(!isEmpty);
     m_mouseAlgoEditButton->setEnabled(!isEmpty);
     m_buildButton->setEnabled(!isEmpty);
-    m_mouseAlgoRunButton->setEnabled(!isEmpty);
+    m_runButton->setEnabled(!isEmpty);
 }
 
 QVector<ConfigDialogField> Window::mouseAlgoGetFields() {
@@ -1378,21 +1402,11 @@ QVector<ConfigDialogField> Window::mouseAlgoGetFields() {
     runCommandField.label = "Run Command";
     runCommandField.type = ConfigDialogFieldType::STRING;
 
-    ConfigDialogField mouseFilePathField;
-    mouseFilePathField.label = "Mouse File";
-    mouseFilePathField.type = ConfigDialogFieldType::FILE;
-    QVector<QVariant> standardMouseFiles;
-    for (QString file : Resources::getMice()) {
-        standardMouseFiles.append(file);
-    }
-    mouseFilePathField.comboBoxValues = standardMouseFiles;
-
     return {
         nameField,
         dirPathField,
         buildCommandField,
         runCommandField,
-        mouseFilePathField,
     };
 }
 

@@ -354,9 +354,11 @@ void MouseInterface::clearTileColor(int x, int y) {
 }
 
 void MouseInterface::clearAllTileColor() {
+    /*
     for (QPair<int, int> position : m_tilesWithColor) {
         clearTileColorImpl(position.first, position.second);
     }
+    */
 }
 
 void MouseInterface::setTileText(int x, int y, const QString& text) {
@@ -566,7 +568,7 @@ void MouseInterface::setTileColorImpl(int x, int y, char color) {
 void MouseInterface::clearTileColorImpl(int x, int y) {
     m_view->getMazeGraphic()->setTileColor(
         x, y, ColorManager::get()->getTileBaseColor());
-    m_tilesWithColor.erase({x, y});
+    m_tilesWithColor -= {x, y};
 }
 
 void MouseInterface::setTileTextImpl(int x, int y, const QString& text) {
@@ -593,7 +595,7 @@ void MouseInterface::setTileTextImpl(int x, int y, const QString& text) {
 
 void MouseInterface::clearTileTextImpl(int x, int y) {
     m_view->getMazeGraphic()->setTileText(x, y, {});
-    m_tilesWithText.erase({x, y});
+    m_tilesWithText -= {x, y};
 }
 
 void MouseInterface::declareWallImpl(

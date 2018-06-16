@@ -6,11 +6,9 @@
 #include <QLabel>
 #include <QMessageBox>
 #include <QPushButton>
-#include <QRadioButton>
 #include <QVBoxLayout>
 
 #include "Assert.h"
-#include "ContainerUtilities.h"
 
 namespace mms {
 
@@ -41,22 +39,7 @@ ConfigDialog::ConfigDialog(
     // Add a row for each field
     for (int row = 0; row < fields.size(); row += 1) {
         ConfigDialogField field = fields.at(row);
-		if (
-            field.type == ConfigDialogFieldType::DIRECTORY ||
-            field.type == ConfigDialogFieldType::FILE ||
-            field.type == ConfigDialogFieldType::STRING
-        ) {
-			appendTextField(field, gridLayout);
-		}
-        else if (
-            field.type == ConfigDialogFieldType::FLOAT ||
-            field.type == ConfigDialogFieldType::INTEGER
-        ) {
-			appendNumberField(field, gridLayout);
-        }
-        else {
-            ASSERT_NEVER_RUNS();
-        }
+		appendTextField(field, gridLayout);
     }
 
     // Add OK and cancel buttons
@@ -100,13 +83,6 @@ bool ConfigDialog::removeButtonPressed() {
     return m_removeButtonPressed;
 }
 
-QString ConfigDialog::getComboBoxValue(const QString& label) {
-    if (!m_comboBoxes.contains(label)) {
-        return QString();
-    }
-    return m_comboBoxes[label]->currentText();
-}
-
 QString ConfigDialog::getLineEditValue(const QString& label) {
     if (!m_lineEdits.contains(label)) {
         return QString();
@@ -114,48 +90,10 @@ QString ConfigDialog::getLineEditValue(const QString& label) {
     return m_lineEdits[label]->text();
 }
 
-bool ConfigDialog::getComboBoxSelected(const QString& label) {
-    if (!m_comboBoxes.contains(label)) {
-        return false;
-    }
-    return m_comboBoxes[label]->isEnabled();
-}
-
 void ConfigDialog::addLabel(QString text, QGridLayout* layout, int row) {
 	QLabel* label = new QLabel(text);
 	label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	layout->addWidget(label, row, 0);
-}
-
-void ConfigDialog::appendNumberField(
-	ConfigDialogField field,
-	QGridLayout* layout
-) {
-	int row = layout->rowCount();
-	addLabel(field.label, layout, row);
-
-    if (field.type == ConfigDialogFieldType::INTEGER) {
-        QSpinBox* spinBox = new QSpinBox(this);
-        m_spinBoxes[field.label] = spinBox;
-        spinBox->setValue(field.initialSpinBoxValue.toInt());
-        connect(
-            spinBox,
-            static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-            this, &ConfigDialog::validate
-        );
-        layout->addWidget(spinBox, row, 2);
-    }
-    else if (field.type == ConfigDialogFieldType::FLOAT) {
-        QDoubleSpinBox* doubleSpinBox = new QDoubleSpinBox(this);
-        m_doubleSpinBoxes[field.label] = doubleSpinBox;
-        doubleSpinBox->setValue(field.initialDoubleSpinBoxValue.toDouble());
-        connect(
-            doubleSpinBox,
-            static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
-            this, &ConfigDialog::validate
-        );
-        layout->addWidget(doubleSpinBox, row, 2);
-    }
 }
 
 void ConfigDialog::appendTextField(
@@ -204,80 +142,22 @@ void ConfigDialog::appendTextField(
         });
     }
 
-    // Handle the case of both combo box and line edit
-    if (0 < field.comboBoxValues.size()) {
-
-        // Initialize the group box
-        QGroupBox* choicesBox = new QGroupBox();
-        choicesBox->setStyleSheet("QGroupBox{border:0px;}");
-        layout->addWidget(choicesBox, row, 2, 1, 2);
-        QGridLayout* choicesLayout = new QGridLayout();
-        choicesLayout->setContentsMargins(0, 0, 0, 0);
-        choicesBox->setLayout(choicesLayout);
-
-        // Insert the combo box
-        QRadioButton* comboBoxRadioButton = new QRadioButton("Built-in");
-        m_comboBoxes[field.label] = new QComboBox();
-        for (const auto& value : field.comboBoxValues) {
-            m_comboBoxes[field.label]->addItem(value.toString());
-        }
-        int index = m_comboBoxes[field.label]->findText(
-            field.initialComboBoxValue.toString()
-        );
-        if (index != -1) {
-            m_comboBoxes[field.label]->setCurrentIndex(index);
-        }
-        choicesLayout->addWidget(comboBoxRadioButton, 0, 0);
-        choicesLayout->addWidget(m_comboBoxes[field.label], 0, 1);
-
-        // Insert the line edit
-        QRadioButton* lineEditRadioButton = new QRadioButton("Custom");
-        choicesLayout->addWidget(lineEditRadioButton, 1, 0);
-        choicesLayout->addWidget(m_lineEdits[field.label], 1, 1);
-        if (browseButton != nullptr) {
-            choicesLayout->addWidget(browseButton, 1, 2);
-        }
-
-        // Make sure only one choice is enabled at a time
-        connect(
-            comboBoxRadioButton, &QRadioButton::toggled,
-            this, [=](){
-                bool isChecked = comboBoxRadioButton->isChecked();
-                m_comboBoxes[field.label]->setEnabled(isChecked);
-                m_lineEdits[field.label]->setEnabled(!isChecked);
-                if (browseButton != nullptr) {
-                    browseButton->setEnabled(!isChecked);
-                }
-            }
-        );
-
-        // Enable the most recent choice, guaranteeing a toggle
-        comboBoxRadioButton->setChecked(true);
-        if (!field.comboBoxSelected) {
-            lineEditRadioButton->setChecked(true);
-        }
-    }
-
-    // Handle the case of just a line edit
-    else {
-        layout->addWidget(m_lineEdits[field.label], row, 2);
-        if (browseButton != nullptr) {
-            layout->addWidget(browseButton, row, 3);
-        }
+    // Add the line edit to the layout
+    layout->addWidget(m_lineEdits[field.label], row, 2);
+    if (browseButton != nullptr) {
+        layout->addWidget(browseButton, row, 3);
     }
 }
 
 void ConfigDialog::validate() {
     bool valid = true;
     for (const auto& field : m_fields) {
-        if (!field.allowEmptyLineEditValue) {
-            if (
-                !field.allowEmptyLineEditValue &&
-                m_lineEdits[field.label]->text().isEmpty()
-            ) {
-                valid = false;
-                break;
-            }
+        if (
+            !field.allowEmptyLineEditValue &&
+            m_lineEdits[field.label]->text().isEmpty()
+        ) {
+            valid = false;
+            break;
         }
     }
     m_buttons->button(QDialogButtonBox::Ok)->setEnabled(valid);

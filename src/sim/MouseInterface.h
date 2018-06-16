@@ -3,6 +3,7 @@
 #include <QMap>
 #include <QObject>
 #include <QPair>
+#include <QSet>
 
 #include "DynamicMouseAlgorithmOptions.h"
 #include "InterfaceType.h"
@@ -138,8 +139,8 @@ private:
     double m_wheelSpeedFraction;
 
     // Cache of tiles, for making clearAll methods faster
-    std::set<QPair<int, int>> m_tilesWithColor;
-    std::set<QPair<int, int>> m_tilesWithText;
+    QSet<QPair<int, int>> m_tilesWithColor;
+    QSet<QPair<int, int>> m_tilesWithText;
 
     // Helper methods for checking particular conditions and failing hard
     void ensureDiscreteInterface(const QString& callingFunction) const;
