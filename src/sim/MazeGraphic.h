@@ -15,23 +15,12 @@ public:
 
     MazeGraphic(
         const Maze* maze,
-        BufferInterface* bufferInterface,
-        bool wallTruthVisible,
-        bool tileColorsVisible,
-        bool tileFogVisible,
-        bool tileTextVisible,
-        bool autopopulateTextWithDistance);
+        BufferInterface* bufferInterface);
 
     void setTileColor(int x, int y, Color color);
     void declareWall(int x, int y, Direction direction, bool isWall);
     void undeclareWall(int x, int y, Direction direction);
-    void setTileFogginess(int x, int y, bool foggy);
     void setTileText(int x, int y, const QString& text);
-
-    void setWallTruthVisible(bool visible);
-    void setTileColorsVisible(bool visible);
-    void setTileFogVisible(bool visible);
-    void setTileTextVisible(bool visible);
 
     // TODO: MACK - rename these
     // TODO: MACK - why is only one of these const?

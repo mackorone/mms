@@ -16,8 +16,6 @@ public:
     Color getTileBaseColor();
     Color getTileWallColor();
     Color getTileCornerColor();
-    Color getTileFogColor();
-    double getTileFogAlpha();
     Color getUndeclaredWallColor();
     Color getUndeclaredNoWallColor();
     Color getIncorrectlyDeclaredWallColor();
@@ -35,8 +33,6 @@ private:
     static const QString KEY_TILE_BASE_COLOR;
     static const QString KEY_TILE_WALL_COLOR;
     static const QString KEY_TILE_CORNER_COLOR;
-    static const QString KEY_TILE_FOG_COLOR;
-    static const QString KEY_TILE_FOG_ALPHA;
     static const QString KEY_UNDECLARED_WALL_COLOR;
     static const QString KEY_UNDECLARED_NO_WALL_COLOR;
     static const QString KEY_INCORRECTLY_DECLARED_WALL_COLOR;
@@ -54,8 +50,6 @@ private:
     Color m_tileBaseColor;
     Color m_tileWallColor;
     Color m_tileCornerColor;
-    Color m_tileFogColor;
-    double m_tileFogAlpha;
     Color m_undeclaredWallColor;
     Color m_undeclaredNoWallColor;
     Color m_incorrectlyDeclaredWallColor;

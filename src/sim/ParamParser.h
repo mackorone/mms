@@ -46,7 +46,6 @@ public:
     // If we can get a value and it's valid/special then return it, else return default
     static QString getStringIfHasStringAndIsColor(const QString& tag, const QString& defaultValue);
     static QString getStringIfHasStringAndIsDirection(const QString& tag, const QString& defaultValue);
-    static QString getStringIfHasStringAndIsLayoutType(const QString& tag, const QString& defaultValue);
     static QString getStringIfHasStringAndIsMazeFileType(const QString& tag, const QString& defaultValue);
 
 private:

@@ -10,8 +10,6 @@ const QString ColorManager::GROUP = "colors";
 const QString ColorManager::KEY_TILE_BASE_COLOR = "tile-base-color";
 const QString ColorManager::KEY_TILE_WALL_COLOR = "tile-wall-color";
 const QString ColorManager::KEY_TILE_CORNER_COLOR = "tile-corner-color";
-const QString ColorManager::KEY_TILE_FOG_COLOR = "tile-fog-color";
-const QString ColorManager::KEY_TILE_FOG_ALPHA = "tile-fog-alpha";
 const QString ColorManager::KEY_UNDECLARED_WALL_COLOR = 
     "undeclared-wall-color";
 const QString ColorManager::KEY_UNDECLARED_NO_WALL_COLOR =
@@ -51,14 +49,6 @@ Color ColorManager::getTileWallColor() {
 
 Color ColorManager::getTileCornerColor() {
     return m_tileCornerColor;
-}
-
-Color ColorManager::getTileFogColor() {
-    return m_tileFogColor;
-}
-
-double ColorManager::getTileFogAlpha() {
-    return m_tileFogAlpha;
 }
 
 Color ColorManager::getUndeclaredWallColor() {
@@ -114,10 +104,6 @@ ColorManager::ColorManager() :
         KEY_TILE_CORNER_COLOR,
         Color::GRAY
     )),
-    m_tileFogColor(getColor(
-        KEY_TILE_FOG_COLOR,
-        Color::GRAY
-    )),
     m_undeclaredWallColor(getColor(
         KEY_UNDECLARED_WALL_COLOR,
         Color::DARK_RED
@@ -158,19 +144,6 @@ ColorManager::ColorManager() :
         KEY_MOUSE_VISION_COLOR,
         Color::WHITE
     )) {
-
-    QString defaultValue = "0.15";
-    QString value = getValue(KEY_TILE_FOG_ALPHA);
-    if (!SimUtilities::isDouble(value)) {
-        value = defaultValue;
-        setValue(KEY_TILE_FOG_ALPHA, value);
-    }
-    double number = SimUtilities::strToDouble(value);
-    if (number < 0.0 || 1.0 < number) {
-        number = SimUtilities::strToDouble(defaultValue);
-        setValue(KEY_TILE_FOG_ALPHA, defaultValue);
-    }
-    m_tileFogAlpha = number;
 }
 
 Color ColorManager::getColor(const QString& key, Color defaultColor) {

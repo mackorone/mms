@@ -5,7 +5,6 @@
 #include "ConfigDialog.h"
 #include "ConfigDialogField.h"
 #include "Direction.h"
-#include "LayoutType.h"
 #include "Logging.h"
 #include "MazeFileType.h"
 #include "Settings.h"
@@ -175,10 +174,6 @@ QString ParamParser::getStringIfHasStringAndIsColor(const QString& tag, const QS
 
 QString ParamParser::getStringIfHasStringAndIsDirection(const QString& tag, const QString& defaultValue) {
     return getStringIfHasStringAndIsSpecial("direction", tag, defaultValue, STRING_TO_DIRECTION());
-}
-
-QString ParamParser::getStringIfHasStringAndIsLayoutType(const QString& tag, const QString& defaultValue) {
-    return getStringIfHasStringAndIsSpecial("layout type", tag, defaultValue, STRING_TO_LAYOUT_TYPE());
 }
 
 QString ParamParser::getStringIfHasStringAndIsMazeFileType(const QString& tag, const QString& defaultValue) {

@@ -5,7 +5,6 @@ namespace mms {
 struct DynamicMouseAlgorithmOptions {
     // Fields and default values
     bool allowOmniscience = false;
-    bool automaticallyClearFog = true;  // TODO: MACK - remove
     bool declareBothWallHalves = true;  // TODO: MACK - remove
     bool declareWallOnRead = false;     // TODO: MACK - remove
     bool setTileBaseColorWhenDistanceDeclaredCorrectly = false;

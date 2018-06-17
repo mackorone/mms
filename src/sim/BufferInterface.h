@@ -39,7 +39,6 @@ public:
     // These methods are inexpensive, and may be called many times
     void updateTileGraphicBaseColor(int x, int y, Color color);
     void updateTileGraphicWallColor(int x, int y, Direction direction, Color color, double alpha);
-    void updateTileGraphicFog(int x, int y, double alpha);
     void updateTileGraphicText(int x, int y, int numRows, int numCols, int row, int col, QChar c);
 
 private:
@@ -60,7 +59,6 @@ private:
     int getTileGraphicBaseStartingIndex(int x, int y);
     int getTileGraphicWallStartingIndex(int x, int y, Direction direction);
     int getTileGraphicCornerStartingIndex(int x, int y, int cornerNumber);
-    int getTileGraphicFogStartingIndex(int x, int y);
 
     // Retrieve the indices into the texture cpu buffer
     int getTileGraphicTextStartingIndex(int x, int y, int row, int col);

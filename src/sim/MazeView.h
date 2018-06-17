@@ -14,14 +14,7 @@ class MazeView {
 
 public:
 
-    MazeView(
-        const Maze* maze,
-        bool wallTruthVisible, 
-        bool tileColorsVisible, 
-        bool tileFogVisible, 
-        bool tileTextVisible, 
-        bool autopopulateTextWithDistance);
-
+    MazeView(const Maze* maze);
     MazeGraphic* getMazeGraphic();
     void initTileGraphicText(int numRows, int numCols);
     const QVector<TriangleGraphic>* getGraphicCpuBuffer() const;

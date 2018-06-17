@@ -20,9 +20,6 @@ Map::Map(QWidget* parent) :
     m_mouseGraphic(nullptr),
     m_windowWidth(0),
     m_windowHeight(0),
-    m_layoutType(LayoutType::FULL),
-    m_zoomedMapScale(0.1),
-    m_rotateZoomedMap(false),
     m_textureAtlas(nullptr) {
     ASSERT_RUNS_JUST_ONCE();
 }
@@ -46,18 +43,6 @@ void Map::setMouseGraphic(const MouseGraphic* mouseGraphic) {
         ASSERT_FA(m_view == nullptr);
     }
     m_mouseGraphic = mouseGraphic;
-}
-
-void Map::setLayoutType(LayoutType layoutType) {
-    m_layoutType = layoutType;
-}
-
-void Map::setZoomedMapScale(double zoomedMapScale) {
-    m_zoomedMapScale = zoomedMapScale;
-}
-
-void Map::setRotateZoomedMap(bool rotateZoomedMap) {
-    m_rotateZoomedMap = rotateZoomedMap;
 }
 
 QVector<QString> Map::getOpenGLVersionInfo() {
@@ -153,7 +138,6 @@ void Map::paintGL() {
 
     // Draw the tiles
     drawMap(
-        m_layoutType,
         currentMouseTranslation,
         currentMouseRotation,
         &m_polygonProgram,
@@ -165,7 +149,6 @@ void Map::paintGL() {
     // Overlay the tile text
     if (m_textureAtlas != nullptr) {
         drawMap(
-            m_layoutType,
             currentMouseTranslation,
             currentMouseRotation,
             &m_textureProgram,
@@ -177,7 +160,6 @@ void Map::paintGL() {
 
     // Draw the mouse
     drawMap(
-        m_layoutType,
         currentMouseTranslation,
         currentMouseRotation,
         &m_polygonProgram,
@@ -357,7 +339,6 @@ void Map::repopulateVertexBufferObjects(const QVector<TriangleGraphic>& mouseBuf
 }
 
 void Map::drawMap(
-        LayoutType type,
         const Coordinate& currentMouseTranslation,
         const Angle& currentMouseRotation,
         QOpenGLShaderProgram* program,
@@ -383,62 +364,27 @@ void Map::drawMap(
     }
     
     // Render the full map
-    if (type == LayoutType::FULL || m_mouseGraphic == nullptr) {
+    QPair<int, int> fullMapPosition = Layout::getFullMapPosition();
+    QPair<int, int> fullMapSize = Layout::getFullMapSize(m_windowWidth, m_windowHeight);
 
-        QPair<int, int> fullMapPosition = Layout::getFullMapPosition();
-        QPair<int, int> fullMapSize = Layout::getFullMapSize(m_windowWidth, m_windowHeight);
+    // TODO: MACK
+    auto matrix = TransformationMatrix::getFullMapTransformationMatrix(
+        Distance::Meters(P()->wallWidth()),
+        physicalMazeSize,
+        fullMapPosition,
+        fullMapSize,
+        {m_windowWidth, m_windowHeight}
+    );
+    QMatrix4x4 transformationMatrix(
+        matrix.at(0), matrix.at(1), matrix.at(2), matrix.at(3),
+        matrix.at(4), matrix.at(5), matrix.at(6), matrix.at(7),
+        matrix.at(8), matrix.at(9), matrix.at(10), matrix.at(11),
+        matrix.at(12), matrix.at(13), matrix.at(14), matrix.at(15)
+    );
 
-        // TODO: MACK
-        auto matrix = TransformationMatrix::getFullMapTransformationMatrix(
-            Distance::Meters(P()->wallWidth()),
-            physicalMazeSize,
-            fullMapPosition,
-            fullMapSize,
-            {m_windowWidth, m_windowHeight}
-        );
-        QMatrix4x4 transformationMatrix(
-            matrix.at(0), matrix.at(1), matrix.at(2), matrix.at(3),
-            matrix.at(4), matrix.at(5), matrix.at(6), matrix.at(7),
-            matrix.at(8), matrix.at(9), matrix.at(10), matrix.at(11),
-            matrix.at(12), matrix.at(13), matrix.at(14), matrix.at(15)
-        );
-
-        glScissor(fullMapPosition.first, fullMapPosition.second, fullMapSize.first, fullMapSize.second);
-        program->setUniformValue("transformationMatrix", transformationMatrix);
-        glDrawArrays(GL_TRIANGLES, vboStartingIndex, count);
-
-    }
-
-    // Render the zoomed map
-    else {
-
-        QPair<int, int> zoomedMapPosition = Layout::getZoomedMapPosition();
-        QPair<int, int> zoomedMapSize = Layout::getZoomedMapSize(m_windowWidth, m_windowHeight);
-
-        // TODO: MACK
-        auto matrix2 = TransformationMatrix::getZoomedMapTransformationMatrix(
-            physicalMazeSize,
-            zoomedMapPosition,
-            zoomedMapSize,
-            {m_windowWidth, m_windowHeight},
-            Screen::get()->pixelsPerMeter(),
-            m_zoomedMapScale,
-            m_rotateZoomedMap,
-            m_mouseGraphic->getInitialMouseTranslation(),
-            currentMouseTranslation,
-            currentMouseRotation
-        );
-        QMatrix4x4 transformationMatrix2(
-            matrix2.at(0), matrix2.at(1), matrix2.at(2), matrix2.at(3),
-            matrix2.at(4), matrix2.at(5), matrix2.at(6), matrix2.at(7),
-            matrix2.at(8), matrix2.at(9), matrix2.at(10), matrix2.at(11),
-            matrix2.at(12), matrix2.at(13), matrix2.at(14), matrix2.at(15)
-        );
-
-        glScissor(zoomedMapPosition.first, zoomedMapPosition.second, zoomedMapSize.first, zoomedMapSize.second);
-        program->setUniformValue("transformationMatrix", transformationMatrix2);
-        glDrawArrays(GL_TRIANGLES, vboStartingIndex, count);
-    }
+    glScissor(fullMapPosition.first, fullMapPosition.second, fullMapSize.first, fullMapSize.second);
+    program->setUniformValue("transformationMatrix", transformationMatrix);
+    glDrawArrays(GL_TRIANGLES, vboStartingIndex, count);
 
     // If it's the texture program, we should additionally unbind the texture
     if (program == &m_textureProgram) {

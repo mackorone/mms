@@ -27,10 +27,6 @@ public:
     void setPaused(bool paused);
     void setSimSpeed(double factor);
 
-signals:
-
-    void newTileLocationTraversed(int x, int y);
-
 private:
 
     // A fixed timestep (in sim time)

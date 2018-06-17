@@ -6,25 +6,14 @@
 
 namespace mms {
 
-MazeView::MazeView(
-        const Maze* maze,
-        bool wallTruthVisible,
-        bool tileColorsVisible,
-        bool tileFogVisible,
-        bool tileTextVisible,
-        bool autopopulateTextWithDistance) :
+MazeView::MazeView(const Maze* maze) :
         m_bufferInterface(
             {maze->getWidth(), maze->getHeight()},
             &m_graphicCpuBuffer,
             &m_textureCpuBuffer),
         m_mazeGraphic(
             maze,
-            &m_bufferInterface,
-            wallTruthVisible,
-            tileColorsVisible,
-            tileFogVisible,
-            tileTextVisible,
-            autopopulateTextWithDistance) {
+            &m_bufferInterface) {
 
     // Establish the coordinates for the tile text characters
     initText(2, 4);

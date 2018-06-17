@@ -37,10 +37,6 @@ void MouseInterface::emitMouseAlgoStarted() {
     emit mouseAlgoStarted();
 }
 
-void MouseInterface::emitMouseAlgoCannotStart(QString errorString) {
-    emit mouseAlgoCannotStart(errorString);
-}
-
 QString MouseInterface::dispatch(const QString& command) {
 
     // TODO: upforgrabs
@@ -92,11 +88,6 @@ QString MouseInterface::dispatch(const QString& command) {
     }
     else if (function == "updateAllowOmniscience") {
         m_dynamicOptions.allowOmniscience =
-            SimUtilities::strToBool(tokens.at(1));
-        return ACK_STRING;
-    }
-    else if (function == "updateAutomaticallyClearFog") {
-        m_dynamicOptions.automaticallyClearFog =
             SimUtilities::strToBool(tokens.at(1));
         return ACK_STRING;
     }
@@ -198,13 +189,6 @@ QString MouseInterface::dispatch(const QString& command) {
         int y = SimUtilities::strToInt(tokens.at(2));
         char direction = SimUtilities::strToChar(tokens.at(3));
         undeclareWall(x, y, direction);
-        return NO_ACK_STRING;
-    }
-    else if (function == "setTileFogginess") {
-        int x = SimUtilities::strToInt(tokens.at(1));
-        int y = SimUtilities::strToInt(tokens.at(2));
-        bool foggy = SimUtilities::strToBool(tokens.at(3));
-        setTileFogginess(x, y, foggy);
         return NO_ACK_STRING;
     }
     else if (function == "declareTileDistance") {
@@ -440,18 +424,6 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
         },
         getDynamicOptions().declareBothWallHalves
     );
-}
-
-void MouseInterface::setTileFogginess(int x, int y, bool foggy) {
-
-    if (!m_maze->withinMaze(x, y)) {
-        qWarning().noquote().nospace()
-            << "There is no tile at position (" << x << ", " << y << "), and"
-            << " thus you cannot set its fogginess.";
-        return;
-    }
-
-    m_view->getMazeGraphic()->setTileFogginess(x, y, foggy);
 }
 
 void MouseInterface::declareTileDistance(int x, int y, int distance) {

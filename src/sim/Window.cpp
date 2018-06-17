@@ -38,18 +38,12 @@ Window::Window(QWidget *parent) :
         m_isOfficialLabel(new QLabel()),
         m_truthButton(new QRadioButton("Truth")),
         m_viewButton(new QRadioButton("Mouse")),
-        m_distancesCheckbox(new QCheckBox("Distance")),
-        m_wallTruthCheckbox(new QCheckBox("Walls")),
-        m_colorCheckbox(new QCheckBox("Color")),
-        m_fogCheckbox(new QCheckBox("Fog")),
-        m_textCheckbox(new QCheckBox("Text")),
-        m_followCheckbox(new QCheckBox("Follow")),
         m_maze(nullptr),
         m_truth(nullptr),
         m_mouse(nullptr),
         m_mouseGraphic(nullptr),
         m_view(nullptr),
-        m_mouseInterface(nullptr),
+        m_runInterface(nullptr),
 
         // MouseAlgosTab
         m_mouseAlgoWidget(new QWidget()),
@@ -116,71 +110,15 @@ Window::Window(QWidget *parent) :
     mapHolderLayout->addWidget(mapOptionsBox);
     mapOptionsLayout->addWidget(m_truthButton);
     mapOptionsLayout->addWidget(m_viewButton);
-    mapOptionsLayout->addWidget(m_distancesCheckbox);
-    mapOptionsLayout->addWidget(m_wallTruthCheckbox);
-    mapOptionsLayout->addWidget(m_colorCheckbox);
-    mapOptionsLayout->addWidget(m_fogCheckbox);
-    mapOptionsLayout->addWidget(m_textCheckbox);
-    mapOptionsLayout->addWidget(m_followCheckbox);
-
-    // Add functionality to those map buttons
-    connect(m_viewButton, &QRadioButton::toggled, this, [=](bool checked){
-        m_map.setView(checked ? m_view : m_truth);
-        m_distancesCheckbox->setEnabled(!checked);
-        m_wallTruthCheckbox->setEnabled(checked);
-        m_colorCheckbox->setEnabled(checked);
-        m_fogCheckbox->setEnabled(checked);
-        m_textCheckbox->setEnabled(checked);
-    });
-    connect(m_distancesCheckbox, &QCheckBox::stateChanged, this, [=](int state){
-        if (m_truth != nullptr) {
-            m_truth->getMazeGraphic()->setTileTextVisible(state == Qt::Checked);
-        }
-    });
-    connect(m_wallTruthCheckbox, &QCheckBox::stateChanged, this, [=](int state){
-        if (m_view != nullptr) {
-            m_view->getMazeGraphic()->setWallTruthVisible(state == Qt::Checked);
-        }
-    });
-    connect(m_colorCheckbox, &QCheckBox::stateChanged, this, [=](int state){
-        if (m_view != nullptr) {
-            m_view->getMazeGraphic()->setTileColorsVisible(state == Qt::Checked);
-        }
-    });
-    connect(m_fogCheckbox, &QCheckBox::stateChanged, this, [=](int state){
-        if (m_view != nullptr) {
-            m_view->getMazeGraphic()->setTileFogVisible(state == Qt::Checked);
-        }
-    });
-    connect(m_textCheckbox, &QCheckBox::stateChanged, this, [=](int state){
-        if (m_view != nullptr) {
-            m_view->getMazeGraphic()->setTileTextVisible(state == Qt::Checked);
-        }
-    });
-    connect(m_followCheckbox, &QCheckBox::stateChanged, this, [=](int state){
-        if (m_view != nullptr) {
-            m_map.setLayoutType(
-                state == Qt::Checked
-                ? LayoutType::ZOOMED
-                : LayoutType::FULL);
-        }
-    });
 
     // Set the default values for the map options
     m_truthButton->setChecked(true);
-    m_distancesCheckbox->setChecked(true);
-    m_distancesCheckbox->setEnabled(true);
     m_viewButton->setEnabled(false);
-    m_wallTruthCheckbox->setChecked(false);
-    m_wallTruthCheckbox->setEnabled(false);
-    m_colorCheckbox->setChecked(true);
-    m_colorCheckbox->setEnabled(false);
-    m_fogCheckbox->setChecked(true);
-    m_fogCheckbox->setEnabled(false);
-    m_textCheckbox->setChecked(true);
-    m_textCheckbox->setEnabled(false);
-    m_followCheckbox->setChecked(false);
-    m_followCheckbox->setEnabled(false);
+
+	// Add functionality to the buttons
+    connect(m_viewButton, &QRadioButton::toggled, this, [=](bool checked){
+        m_map.setView(checked ? m_view : m_truth);
+    });
 
     // Add the tabs to the splitter
     QTabWidget* tabWidget = new QTabWidget();
@@ -439,14 +377,23 @@ void Window::setMaze(Maze* maze) {
     Maze* oldMaze = m_maze;
     MazeView* oldTruth = m_truth;
     m_maze = maze;
-    m_truth = new MazeView(
-        m_maze,
-        true, // wallTruthVisible
-        false, // tileColorsVisible
-        false, // tileFogVisible
-        m_distancesCheckbox->isChecked(), // tileTextVisible
-        true // autopopulateTextWithDistance
-    );
+    m_truth = new MazeView(m_maze);
+
+    // The truth has walls declared and distance as text
+    MazeGraphic* mazeGraphic = m_truth->getMazeGraphic();
+    for (int x = 0; x < m_maze->getWidth(); x += 1) {
+        for (int y = 0; y < m_maze->getHeight(); y += 1) {
+            const Tile* tile = m_maze->getTile(x, y);
+            for (Direction d : DIRECTIONS()) {
+                mazeGraphic->declareWall(x, y, d, tile->isWall(d));
+            }
+            int distance = tile->getDistance();
+            mazeGraphic->setTileText(x, y, 0 <= distance
+                ? QString::number(distance)
+                : "inf"
+            );
+        }
+    }
 
     // Update pointers held by other objects
     m_model.setMaze(m_maze);
@@ -551,57 +498,52 @@ QVector<QPair<QString, QVariant>> Window::getAlgoOptions() const {
         // Mouse Info
         // TODO: MACK - interface type not finalized
         {"Interface Type",
-            m_mouseInterface == nullptr
+            m_runInterface == nullptr
             ? "NONE"
-            : INTERFACE_TYPE_TO_STRING().value(m_mouseInterface->getInterfaceType(false))
+            : INTERFACE_TYPE_TO_STRING().value(m_runInterface->getInterfaceType(false))
         },
         /*
-        QString("Initial Direction:           ") + (m_mouseInterface == nullptr ? "NONE" :
-            m_mouseInterface->getStaticOptions().initialDirection),
-        QString("Tile Text Num Rows:          ") + (m_mouseInterface == nullptr ? "NONE" :
-            QString::number(m_mouseInterface->getStaticOptions().tileTextNumberOfRows)),
-        QString("Tile Text Num Cols:          ") + (m_mouseInterface == nullptr ? "NONE" :
-            QString::number(m_mouseInterface->getStaticOptions().tileTextNumberOfCols)),
+        QString("Initial Direction:           ") + (m_runInterface == nullptr ? "NONE" :
+            m_runInterface->getStaticOptions().initialDirection),
+        QString("Tile Text Num Rows:          ") + (m_runInterface == nullptr ? "NONE" :
+            QString::number(m_runInterface->getStaticOptions().tileTextNumberOfRows)),
+        QString("Tile Text Num Cols:          ") + (m_runInterface == nullptr ? "NONE" :
+            QString::number(m_runInterface->getStaticOptions().tileTextNumberOfCols)),
         */
         {"Allow Omniscience",
-            m_mouseInterface == nullptr
+            m_runInterface == nullptr
             ? "NONE"
-            : m_mouseInterface->getDynamicOptions().allowOmniscience ? "TRUE" : "FALSE"
-        },
-        {"Auto Clear Fog",
-            m_mouseInterface == nullptr
-            ? "NONE"
-            : m_mouseInterface->getDynamicOptions().automaticallyClearFog ? "TRUE" : "FALSE"
+            : m_runInterface->getDynamicOptions().allowOmniscience ? "TRUE" : "FALSE"
         },
         {"Declare Both Wall Halves",
-            m_mouseInterface == nullptr
+            m_runInterface == nullptr
             ? "NONE"
-            : m_mouseInterface->getDynamicOptions().declareBothWallHalves ? "TRUE" : "FALSE"
+            : m_runInterface->getDynamicOptions().declareBothWallHalves ? "TRUE" : "FALSE"
         },
         {"Auto Set Tile Text",
-            m_mouseInterface == nullptr
+            m_runInterface == nullptr
             ? "NONE"
-            : m_mouseInterface->getDynamicOptions().setTileTextWhenDistanceDeclared ? "TRUE" : "FALSE"
+            : m_runInterface->getDynamicOptions().setTileTextWhenDistanceDeclared ? "TRUE" : "FALSE"
         },
         {"Auto Set Tile Base Color",
-            m_mouseInterface == nullptr
+            m_runInterface == nullptr
             ? "NONE"
-            : m_mouseInterface->getDynamicOptions().setTileBaseColorWhenDistanceDeclaredCorrectly ? "TRUE" : "FALSE"
+            : m_runInterface->getDynamicOptions().setTileBaseColorWhenDistanceDeclaredCorrectly ? "TRUE" : "FALSE"
         }
         // TODO: MACK
         /*
         QString("Wheel Speed Fraction:        ") +
-            (m_mouseInterface == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE().value(m_mouseInterface->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
-            QString::number(m_mouseInterface->getStaticOptions().wheelSpeedFraction))),
+            (m_runInterface == nullptr ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE().value(m_runInterface->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            QString::number(m_runInterface->getStaticOptions().wheelSpeedFraction))),
         QString("Declare Wall On Read:        ") +
-            (m_mouseInterface == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE().value(m_mouseInterface->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
-            (m_mouseInterface->getDynamicOptions().declareWallOnRead ? "TRUE" : "FALSE"))),
+            (m_runInterface == nullptr ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE().value(m_runInterface->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            (m_runInterface->getDynamicOptions().declareWallOnRead ? "TRUE" : "FALSE"))),
         QString("Use Tile Edge Movements:     ") +
-            (m_mouseInterface == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE().value(m_mouseInterface->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
-            (m_mouseInterface->getDynamicOptions().useTileEdgeMovements ? "TRUE" : "FALSE"))),
+            (m_runInterface == nullptr ? "NONE" :
+            (STRING_TO_INTERFACE_TYPE().value(m_runInterface->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
+            (m_runInterface->getDynamicOptions().useTileEdgeMovements ? "TRUE" : "FALSE"))),
         */
     };
 }
@@ -1036,24 +978,21 @@ void Window::startRun() {
 
     // TODO: MACK - delete the font files too
 
-    // Generate the mouse
-    Mouse* newMouse = new Mouse(m_maze);
+    // Remove the mouse from the maze
+    removeMouseFromMaze();
 
-    // Create some more objects
-    MazeView* newView = new MazeView(
+    // Generate the mouse
+    m_mouse = new Mouse(m_maze);
+    m_view = new MazeView(m_maze);
+    m_mouseGraphic = new MouseGraphic(m_mouse);
+
+    // New interface and process
+    MouseInterface* interface = new MouseInterface(
         m_maze,
-        m_wallTruthCheckbox->isChecked(),
-        m_colorCheckbox->isChecked(),
-        m_fogCheckbox->isChecked(),
-        m_textCheckbox->isChecked(),
-        false // autopopulateTextWithDistance
+        m_mouse,
+        m_view
     );
-    MouseGraphic* newMouseGraphic = new MouseGraphic(newMouse);
-    MouseInterface* newMouseInterface = new MouseInterface(
-        m_maze,
-        newMouse,
-        newView
-    );
+    QProcess* process = new QProcess();
 
     // Clear the output, and jump to it
     m_runOutput->clear();
@@ -1063,16 +1002,13 @@ void Window::startRun() {
     command += " ";
     command += QString::number(m_mouseAlgoSeedWidget->next());
 
-    // Create the subprocess on which we'll execute the mouse algorithm
-    QProcess* newProcess = new QProcess();
-
     // Print stdout
     connect(
-        newProcess,
+        process,
         &QProcess::readyReadStandardOutput,
-        newMouseInterface,
+        interface,
         [=](){
-            QString output = newProcess->readAllStandardOutput();
+            QString output = process->readAllStandardOutput();
             if (output.endsWith("\n")) {
                 output.truncate(output.size() - 1);
             }
@@ -1082,36 +1018,22 @@ void Window::startRun() {
 
     // Process all stderr commands as appropriate
     connect(
-        newProcess,
+        process,
         &QProcess::readyReadStandardError,
         // Handle the process's stderr on the mouse's event loop to
         // prevent the UI from freezing during a blocking mouse action
-        newMouseInterface,
+        interface,
         [=](){
-            QString text = newProcess->readAllStandardError();
+            QString text = process->readAllStandardError();
             QStringList lines = getLines(text, &m_commandBuffer);
             for (const QString& line : lines) {
-                QString response = newMouseInterface->dispatch(line);
+                QString response = interface->dispatch(line);
                 if (!response.isEmpty()) {
-                    newProcess->write((response + "\n").toStdString().c_str());
+                    process->write((response + "\n").toStdString().c_str());
                 }
             }
         }
     );
-
-    // TODO: MACK
-    // Clean up on exit
-    /*
-    connect(
-        process,
-        static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(
-            &QProcess::finished
-        ),
-        this,
-        &Window::onRunExit
-    );
-    */
-
 
     // Connect the input buttons to the algorithm
     for (int i = 0; i < m_mouseAlgoInputButtons.size(); i += 1) {
@@ -1125,11 +1047,11 @@ void Window::startRun() {
         connect(
             this,
             &Window::inputButtonWasPressed,
-            newMouseInterface,
+            interface,
             &MouseInterface::inputButtonWasPressed
         );
         connect(
-            newMouseInterface,
+            interface,
             &MouseInterface::inputButtonWasAcknowledged,
             this,
             [=](int button) {
@@ -1138,39 +1060,16 @@ void Window::startRun() {
         );
     }
 
-    // First, connect the newTileLocationTraversed signal to a lambda that
-    // clears tile fog *before* adding the mouse to the maze. This ensures
-    // that the first tile's fog is always cleared (the initial value of
-    // automaticallyClearFog is true). This means that, if an algorithm
-    // doesn't want to automatically clear tile fog, it'll have to disable
-    // tile fog and then mark the first tile as foggy.
-    connect(
-        &m_model,
-        &Model::newTileLocationTraversed,
-        // TODO: upforgrabs
-        // Changing "newMouseInterface" to "this" makes it so that the fog
-        // clears as soon as the mouse enters a tile (rather than waiting
-        // for the algorithm-requested action to finish). However, it also
-        // causes segfaults. Your mission is to make this work without
-        // causing segfaults.
-        newMouseInterface,
-        [=](int x, int y){
-            if (newMouseInterface->getDynamicOptions().automaticallyClearFog) {
-                newView->getMazeGraphic()->setTileFogginess(x, y, false);
-            }
-        }
-    );
-
     // We need to add the mouse to the world *after* the making the
     // previous connection (thus ensuring that tile fog is cleared
     // automatically), but *before* we actually start the algorithm (lest
     // the mouse position/orientation not be updated properly during the
     // beginning of the mouse algo's execution)
-    m_model.setMouse(newMouse);
+    m_model.setMouse(m_mouse);
 
     // Clean up on exit
     connect(
-        newProcess,
+        process,
         static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(
             &QProcess::finished
         ),
@@ -1178,82 +1077,51 @@ void Window::startRun() {
         &Window::onRunExit
     );
 
-    // If the process fails to start, stop the thread and cleanup
-    bool success = ProcessUtilities::start(command, dirPath, newProcess);
-    if (!success) {
+    // Start the run process
+    if (ProcessUtilities::start(command, dirPath, process)) {
+
+        m_runInterface = interface;
+        m_runProcess = process;
+        m_map.setView(m_view);
+        m_map.setMouseGraphic(m_mouseGraphic);
+
+        // Update the run button
+        disconnect(
+            m_runButton,
+            &QPushButton::clicked,
+            this, &Window::startRun);
         connect(
-            newMouseInterface,
-            &MouseInterface::mouseAlgoCannotStart,
-            this,
-            &Window::handleMouseAlgoCannotStart
+            m_runButton,
+            &QPushButton::clicked,
+            this, &Window::cancelRun);
+        m_runButton->setText("Cancel");
+
+        // Update the run status
+        m_runStatus->setText("RUNNING");
+        m_runStatus->setStyleSheet(
+            "QLabel { background: rgb(255, 255, 100); }"
         );
-        newMouseInterface->emitMouseAlgoCannotStart(
-            newProcess->errorString()
-        );
 
-        // CLEANUP
-
-        // TODO: MACK - this isn't valid - can't delete an object on a
-        // non-affinity thread
-        newProcess->terminate();
-        newProcess->waitForFinished();
-        delete newProcess;
-        delete newMouseInterface;
-        delete newMouseGraphic;
-        delete newView;
-        delete newMouse;
-
-        // CLEANUP
-
-
-
-        return;
-    }
-
-    // Update the member variables because, at this
-    // point, the algorithm started successfully
-    delete m_mouse; // TODO: MACK - clean up 
-    m_mouse = newMouse;
-    delete m_view; // TODO: MACK - clean up old
-    m_view = newView;
-    delete m_mouseGraphic; // TODO: MACK - clean up old
-    m_mouseGraphic = newMouseGraphic;
-    m_mouseInterface = newMouseInterface;
-    m_runProcess = newProcess;
-    m_map.setView(newView);
-    m_map.setMouseGraphic(newMouseGraphic);
-
-    // We have to do some gymnastics here (similar to above)
-    // to ensure that the UI updates happen on the UI thread
-    connect(
-        newMouseInterface,
-        &MouseInterface::mouseAlgoStarted,
-        this,
-        [=](){
-            // UI updates on successful start
-            m_viewButton->setEnabled(true);
-            m_viewButton->setChecked(true);
-            m_followCheckbox->setEnabled(true);
-            m_mouseAlgoPauseButton->setEnabled(true);
-            for (QPushButton* button : m_mouseAlgoInputButtons) {
-                button->setEnabled(true);
-            }
-            m_runStatus->setText("RUNNING");
-            m_runStatus->setStyleSheet(
-                "QLabel { background: rgb(255, 255, 100); }"
-            );
-            disconnect(
-                m_runButton, &QPushButton::clicked,
-                this, &Window::startRun
-            );
-            connect(
-                m_runButton, &QPushButton::clicked,
-                this, &Window::cancelRun
-            );
-            m_runButton->setText("Cancel");
+        // TODO: MACK - most of these shouldn't be necessary
+        // UI updates on successful start
+        m_viewButton->setEnabled(true);
+        m_viewButton->setChecked(true);
+        m_mouseAlgoPauseButton->setEnabled(true);
+        for (QPushButton* button : m_mouseAlgoInputButtons) {
+            button->setEnabled(true);
         }
-    );
-    newMouseInterface->emitMouseAlgoStarted();
+    } 
+    else {
+        // Clean up the failed process
+        m_runOutput->appendPlainText(process->errorString());
+        m_runStatus->setText("ERROR");
+        m_runStatus->setStyleSheet(
+            "QLabel { background: rgb(230, 150, 230); }"
+        );
+        removeMouseFromMaze();
+        delete interface;
+        delete process;
+    }
 }
 
 void Window::onRunExit(int exitCode, QProcess::ExitStatus exitStatus) {
@@ -1286,30 +1154,44 @@ void Window::onRunExit(int exitCode, QProcess::ExitStatus exitStatus) {
     }
 
     // Clean up
-    m_commandBuffer.clear();
-    /*
-    m_map.setMouseGraphic(nullptr);
-    m_map.setView(m_truth);
-    */
-    m_model.removeMouse();
-
-    // More clean up
     delete m_runProcess;
     m_runProcess = nullptr;
-    delete m_mouseInterface;
-    m_mouseInterface = nullptr;
+    delete m_runInterface;
+    m_runInterface = nullptr;
+    m_commandBuffer.clear();
+}
 
-    // UI updates
-    /*
+void Window::removeMouseFromMaze() {
+
+    // No-op if no mouse
+    if (m_mouse == nullptr) {
+        return;
+    }
+
+    // Update some objects
+    m_model.removeMouse();
+    m_map.setView(m_truth);
+    m_map.setMouseGraphic(nullptr);
+
+    // Delete some objects
+    ASSERT_FA(m_view == nullptr);
+    ASSERT_FA(m_mouseGraphic == nullptr);
+    delete m_mouse;
+    m_mouse = nullptr;
+    delete m_view;
+    m_view = nullptr;
+    delete m_mouseGraphic;
+    m_mouseGraphic = nullptr;
+
+    // TODO: MACK - most of these shouldn't be necessary
+    // Clean up the UI
     m_truthButton->setChecked(true);
     m_viewButton->setEnabled(false);
-    m_followCheckbox->setEnabled(false);
     m_mouseAlgoPauseButton->setEnabled(false);
     mouseAlgoResume();
     for (QPushButton* button : m_mouseAlgoInputButtons) {
         button->setEnabled(false);
     }
-    */
 }
 
 void Window::cancelBuild() {
@@ -1318,17 +1200,19 @@ void Window::cancelBuild() {
 
 void Window::cancelRun() {
     cancelProcess(m_runProcess, m_runStatus);
+    removeMouseFromMaze();
 }
 
 void Window::cancelProcess(QProcess* process, QLabel* status) {
-    if (process != nullptr) {
-        process->kill();
-        process->waitForFinished();
-        status->setText("CANCELED");
-        status->setStyleSheet(
-            "QLabel { background: rgb(180, 180, 180); }"
-        );
+    if (process == nullptr) {
+        return;
     }
+    process->kill();
+    process->waitForFinished();
+    status->setText("CANCELED");
+    status->setStyleSheet(
+        "QLabel { background: rgb(180, 180, 180); }"
+    );
 }
 
 void Window::handleMouseAlgoCannotStart(QString errorString) {

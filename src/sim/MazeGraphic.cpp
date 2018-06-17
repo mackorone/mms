@@ -6,23 +6,13 @@ namespace mms {
 
 MazeGraphic::MazeGraphic(
         const Maze* maze,
-        BufferInterface* bufferInterface,
-        bool wallTruthVisible,
-        bool tileColorsVisible,
-        bool tileFogVisible,
-        bool tileTextVisible,
-        bool autopopulateTextWithDistance) {
+        BufferInterface* bufferInterface) {
     for (int x = 0; x < maze->getWidth(); x += 1) {
         QVector<TileGraphic> column;
         for (int y = 0; y < maze->getHeight(); y += 1) {
             column.push_back(TileGraphic(
                 maze->getTile(x, y),
-                bufferInterface,
-                wallTruthVisible,
-                tileColorsVisible,
-                tileFogVisible,
-                tileTextVisible,
-                autopopulateTextWithDistance));
+                bufferInterface));
         }
         m_tileGraphics.push_back(column);
     }
@@ -45,46 +35,9 @@ void MazeGraphic::undeclareWall(int x, int y, Direction direction) {
     m_tileGraphics[x][y].undeclareWall(direction);
 }
 
-void MazeGraphic::setTileFogginess(int x, int y, bool foggy) {
-    ASSERT_TR(withinMaze(x, y));
-    m_tileGraphics[x][y].setFogginess(foggy);
-}
-
 void MazeGraphic::setTileText(int x, int y, const QString& text) {
     ASSERT_TR(withinMaze(x, y));
     m_tileGraphics[x][y].setText(text);
-}
-
-void MazeGraphic::setWallTruthVisible(bool visible) {
-    for (int x = 0; x < getWidth(); x += 1) {
-        for (int y = 0; y < getHeight(); y += 1) {
-            m_tileGraphics[x][y].setWallTruthVisible(visible);
-        }
-    }
-}
-
-void MazeGraphic::setTileColorsVisible(bool visible) {
-    for (int x = 0; x < getWidth(); x += 1) {
-        for (int y = 0; y < getHeight(); y += 1) {
-            m_tileGraphics[x][y].setTileColorsVisible(visible);
-        }
-    }
-}
-
-void MazeGraphic::setTileFogVisible(bool visible) {
-    for (int x = 0; x < getWidth(); x += 1) {
-        for (int y = 0; y < getHeight(); y += 1) {
-            m_tileGraphics[x][y].setTileFogVisible(visible);
-        }
-    }
-}
-
-void MazeGraphic::setTileTextVisible(bool visible) {
-    for (int x = 0; x < getWidth(); x += 1) {
-        for (int y = 0; y < getHeight(); y += 1) {
-            m_tileGraphics[x][y].setTileTextVisible(visible);
-        }
-    }
 }
 
 void MazeGraphic::drawPolygons() const {

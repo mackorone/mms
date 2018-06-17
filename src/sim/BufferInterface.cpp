@@ -82,16 +82,6 @@ void BufferInterface::updateTileGraphicWallColor(int x, int y, Direction directi
     }
 }
 
-void BufferInterface::updateTileGraphicFog(int x, int y, double alpha) {
-    int index = getTileGraphicFogStartingIndex(x, y);
-    for (int i = 0; i < 2; i += 1) {
-        TriangleGraphic* triangleGraphic = &(*m_graphicCpuBuffer)[index + i];
-        triangleGraphic->p1.a = alpha;
-        triangleGraphic->p2.a = alpha;
-        triangleGraphic->p3.a = alpha;
-    }
-}
-
 void BufferInterface::updateTileGraphicText(int x, int y, int numRows, int numCols, int row, int col, QChar c) {
 
     //    +---------[UR]  [p2]-------[p3]    [p2]
@@ -138,10 +128,9 @@ int BufferInterface::trianglesPerTile() {
     // Base polygon:      2 (2 triangles x 1 polygon  per tile)
     // Wall polygon:      8 (2 triangles x 4 polygons per tile)
     // Corner polygon:    8 (2 triangles x 4 polygons per tile)
-    // Fog polygon:       2 (2 triangles x 1 polygon  per tile)
     // --------------------
-    // Total             20
-    return 20;
+    // Total             18
+    return 18;
 }
 
 int BufferInterface::getTileGraphicBaseStartingIndex(int x, int y) {
@@ -154,10 +143,6 @@ int BufferInterface::getTileGraphicWallStartingIndex(int x, int y, Direction dir
 
 int BufferInterface::getTileGraphicCornerStartingIndex(int x, int y, int cornerNumber) {
     return 10 + trianglesPerTile() * (m_mazeSize.second * x + y) + (2 * cornerNumber);
-}
-
-int BufferInterface::getTileGraphicFogStartingIndex(int x, int y) {
-    return 18 + trianglesPerTile() * (m_mazeSize.second * x + y);
 }
 
 int BufferInterface::getTileGraphicTextStartingIndex(int x, int y, int row, int col) {

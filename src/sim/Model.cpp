@@ -71,14 +71,13 @@ void Model::update(double dt) {
     const Tile* tileAtLocation = m_maze->getTile(location.first, location.second);
 
     // If this is a new tile, update the set of traversed tiles
+    // TODO: MACK - use this somewhere
     if (!m_stats->traversedTileLocations.contains(location)) {
         m_stats->traversedTileLocations.insert(location);
         if (m_stats->closestDistanceToCenter == -1 ||
                 tileAtLocation->getDistance() < m_stats->closestDistanceToCenter) {
             m_stats->closestDistanceToCenter = tileAtLocation->getDistance(); 
         }
-        // Alert any listeners that a new tile was entered
-        emit newTileLocationTraversed(location.first, location.second);
     }
 
     // If we've returned to the origin, reset the departure time

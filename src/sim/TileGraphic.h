@@ -16,23 +16,12 @@ public:
     TileGraphic();
     TileGraphic(
         const Tile* tile,
-        BufferInterface* bufferInterface,
-        bool wallTruthVisible,
-        bool tileColorsVisible,
-        bool tileFogVisible,
-        bool tileTextVisible,
-        bool autopopulateTextWithDistance);
+        BufferInterface* bufferInterface);
 
     void setColor(const Color color);
     void declareWall(Direction direction, bool isWall);
     void undeclareWall(Direction direction);
-    void setFogginess(bool foggy);
     void setText(const QString& text);
-
-    void setWallTruthVisible(bool visible);
-    void setTileColorsVisible(bool visible);
-    void setTileFogVisible(bool visible);
-    void setTileTextVisible(bool visible);
 
     // TODO: MACK - rename these to "reload" or something
     void drawPolygons() const;
@@ -42,7 +31,6 @@ public:
     // TODO: MACK - rename these to "refresh" or something
     void updateColor() const;
     void updateWalls() const;
-    void updateFog() const;
     void updateText() const;
     
 private:
@@ -54,14 +42,7 @@ private:
     // Visual state
     Color m_color;
     QMap<Direction, bool> m_declaredWalls;
-    bool m_foggy;
     QString m_text;
-
-    // Togglable options
-    bool m_wallTruthVisible;
-    bool m_tileColorsVisible;
-    bool m_tileFogVisible;
-    bool m_tileTextVisible;
 
     // Helper functions
     void updateWall(Direction direction) const;

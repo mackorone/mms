@@ -9,7 +9,6 @@
 #include <QOpenGLWidget>
 #include <QVector>
 
-#include "LayoutType.h"
 #include "Maze.h"
 #include "MazeView.h"
 #include "MouseGraphic.h"
@@ -31,10 +30,6 @@ public:
     void setMaze(const Maze* maze);
     void setView(const MazeView* view);
     void setMouseGraphic(const MouseGraphic* mouseGraphic);
-
-    void setLayoutType(LayoutType layoutType);
-    void setZoomedMapScale(double zoomedMapScale);
-    void setRotateZoomedMap(bool rotateZoomedMap);
 
     // Retrieves OpenGL version info
     QVector<QString> getOpenGLVersionInfo();
@@ -62,11 +57,6 @@ private:
     int m_windowWidth;
     int m_windowHeight;
 
-    // Some display knobs
-    LayoutType m_layoutType;
-    double m_zoomedMapScale;
-    bool m_rotateZoomedMap;
-
     // Polygon program variables
     QOpenGLShaderProgram m_polygonProgram;
     QOpenGLVertexArrayObject m_polygonVAO;
@@ -86,7 +76,6 @@ private:
     void repopulateVertexBufferObjects(
         const QVector<TriangleGraphic>& mouseBuffer);
     void drawMap(
-        LayoutType type,
         const Coordinate& currentMouseTranslation,
         const Angle& currentMouseRotation,
         QOpenGLShaderProgram* program,

@@ -13,37 +13,15 @@ namespace mms {
 TileGraphic::TileGraphic() :
     m_tile(nullptr),
     m_bufferInterface(nullptr),
-    m_color(Color::BLACK),
-    m_foggy(false),
-    m_wallTruthVisible(false),
-    m_tileColorsVisible(false),
-    m_tileFogVisible(false),
-    m_tileTextVisible(false) {
+    m_color(Color::BLACK) {
 }
 
 TileGraphic::TileGraphic(
-        const Tile* tile,
-        BufferInterface* bufferInterface,
-        bool wallTruthVisible,
-        bool tileColorsVisible,
-        bool tileFogVisible,
-        bool tileTextVisible,
-        bool autopopulateTextWithDistance) :
-        m_tile(tile),
-        m_bufferInterface(bufferInterface),
-        m_color(ColorManager::get()->getTileBaseColor()),
-        m_foggy(true),
-        m_wallTruthVisible(wallTruthVisible),
-        m_tileColorsVisible(tileColorsVisible),
-        m_tileFogVisible(tileFogVisible),
-        m_tileTextVisible(tileTextVisible) {
-    if (autopopulateTextWithDistance) {
-        m_text = (
-            0 <= m_tile->getDistance()
-            ? QString::number(m_tile->getDistance())
-            : "inf"
-        );
-    }
+    const Tile* tile,
+    BufferInterface* bufferInterface) :
+    m_tile(tile),
+    m_bufferInterface(bufferInterface),
+    m_color(ColorManager::get()->getTileBaseColor()) {
 }
 
 void TileGraphic::setColor(Color color) {
@@ -61,33 +39,8 @@ void TileGraphic::undeclareWall(Direction direction) {
     updateWall(direction);
 }
 
-void TileGraphic::setFogginess(bool foggy) {
-    m_foggy = foggy;
-    updateFog();
-}
-
 void TileGraphic::setText(const QString& text) {
     m_text = text;
-    updateText();
-}
-
-void TileGraphic::setWallTruthVisible(bool visible) {
-    m_wallTruthVisible = visible;
-    updateWalls();
-}
-
-void TileGraphic::setTileColorsVisible(bool visible) {
-    m_tileColorsVisible = visible;
-    updateColor();
-}
-
-void TileGraphic::setTileFogVisible(bool visible) {
-    m_tileFogVisible = visible;
-    updateFog();
-}
-
-void TileGraphic::setTileTextVisible(bool visible) {
-    m_tileTextVisible = visible;
     updateText();
 }
 
@@ -99,11 +52,7 @@ void TileGraphic::drawPolygons() const {
 
     // Draw the base of the tile
     m_bufferInterface->insertIntoGraphicCpuBuffer(
-        m_tile->getFullPolygon(),
-        m_tileColorsVisible
-            ? m_color
-            : ColorManager::get()->getTileBaseColor(),
-        1.0);
+        m_tile->getFullPolygon(), m_color, 1.0);
 
     // Draw each of the walls of the tile
     for (Direction direction : DIRECTIONS()) {
@@ -121,14 +70,6 @@ void TileGraphic::drawPolygons() const {
             ColorManager::get()->getTileCornerColor(),
             1.0);
     }
-
-    // Draw the fog
-    m_bufferInterface->insertIntoGraphicCpuBuffer(
-        m_tile->getFullPolygon(),
-        ColorManager::get()->getTileFogColor(),
-        m_foggy && m_tileFogVisible
-            ? ColorManager::get()->getTileFogAlpha()
-            : 0.0);
 }
 
 void TileGraphic::drawTextures() {
@@ -148,24 +89,13 @@ void TileGraphic::updateColor() const {
     m_bufferInterface->updateTileGraphicBaseColor(
         m_tile->getX(),
         m_tile->getY(),
-        m_tileColorsVisible
-            ? m_color
-            : ColorManager::get()->getTileBaseColor());
+        m_color);
 }
 
 void TileGraphic::updateWalls() const {
     for (Direction direction : DIRECTIONS()) {
         updateWall(direction);
     }
-}
-
-void TileGraphic::updateFog() const {
-    m_bufferInterface->updateTileGraphicFog(
-        m_tile->getX(),
-        m_tile->getY(),
-        m_foggy && m_tileFogVisible
-            ? ColorManager::get()->getTileFogAlpha()
-            : 0.0);
 }
 
 void TileGraphic::updateText() const {
@@ -199,7 +129,6 @@ void TileGraphic::updateText() const {
             );
             QChar c = ' ';
             if (
-                m_tileTextVisible &&
                 row < rowsOfText.size() &&
                 col < rowsOfText.at(row).size()
             ) {
@@ -236,46 +165,37 @@ QPair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction) co
     Color wallColor = ColorManager::get()->getTileWallColor();
     float wallAlpha = 1.0;
 
-    // Either draw the true walls of the tile ...
-    if (m_wallTruthVisible) {
-        wallAlpha = m_tile->isWall(direction) ? 1.0 : 0.0;
-    }
-
-    // ... or the algorithm's (un)declared walls
-    else {
-
-        // If the wall was declared, use the wall color and tile base color ...
-        if (m_declaredWalls.contains(direction)) {
-            if (m_declaredWalls.value(direction)) {
-                // Correct declaration
-                if (m_tile->isWall(direction)) {
-                    wallColor = ColorManager::get()->getTileWallColor();
-                }
-                // Incorrect declaration
-                else {
-                    wallColor = ColorManager::get()->getIncorrectlyDeclaredWallColor();
-                }
+    // If the wall was declared, use the wall color and tile base color ...
+    if (m_declaredWalls.contains(direction)) {
+        if (m_declaredWalls.value(direction)) {
+            // Correct declaration
+            if (m_tile->isWall(direction)) {
+                wallColor = ColorManager::get()->getTileWallColor();
             }
+            // Incorrect declaration
             else {
-                // Incorrect declaration
-                if (m_tile->isWall(direction)) {
-                    wallColor = ColorManager::get()->getIncorrectlyDeclaredNoWallColor();
-                }
-                // Correct declaration
-                else {
-                    wallAlpha = 0.0;
-                }
+                wallColor = ColorManager::get()->getIncorrectlyDeclaredWallColor();
             }
         }
-
-        // ... otherwise, use the undeclared walls colors
         else {
+            // Incorrect declaration
             if (m_tile->isWall(direction)) {
-                wallColor = ColorManager::get()->getUndeclaredWallColor();
+                wallColor = ColorManager::get()->getIncorrectlyDeclaredNoWallColor();
             }
+            // Correct declaration
             else {
-                wallColor = ColorManager::get()->getUndeclaredNoWallColor();
+                wallAlpha = 0.0;
             }
+        }
+    }
+
+    // ... otherwise, use the undeclared walls colors
+    else {
+        if (m_tile->isWall(direction)) {
+            wallColor = ColorManager::get()->getUndeclaredWallColor();
+        }
+        else {
+            wallColor = ColorManager::get()->getUndeclaredNoWallColor();
         }
     }
     

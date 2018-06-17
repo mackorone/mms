@@ -27,9 +27,6 @@ public:
     // Called when the algo started successfully
     void emitMouseAlgoStarted();
 
-    // Called when the algo process could not start
-    void emitMouseAlgoCannotStart(QString string);
-
     // Execute a request, return a response
     QString dispatch(const QString& command);
 
@@ -53,9 +50,6 @@ signals:
 
     // The algorithm started as expected
     void mouseAlgoStarted();
-
-    // The algorithm could not be started
-    void mouseAlgoCannotStart(QString errorString);
 
 private:
 
@@ -86,9 +80,6 @@ private:
     // Tile walls
     void declareWall(int x, int y, char direction, bool wallExists);
     void undeclareWall(int x, int y, char direction);
-
-    // Tile fog
-    void setTileFogginess(int x, int y, bool foggy);
 
     // Tile distance, where a negative distance corresponds to inf distance
     void declareTileDistance(int x, int y, int distance);

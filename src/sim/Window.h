@@ -59,12 +59,6 @@ private:
     // Some map GUI elements
     QRadioButton* m_truthButton;
     QRadioButton* m_viewButton;
-    QCheckBox* m_distancesCheckbox;
-    QCheckBox* m_wallTruthCheckbox;
-    QCheckBox* m_colorCheckbox;
-    QCheckBox* m_fogCheckbox;
-    QCheckBox* m_textCheckbox;
-    QCheckBox* m_followCheckbox;
 
     // The maze and the true view of the maze
     Maze* m_maze;
@@ -75,7 +69,6 @@ private:
     Mouse* m_mouse;
     MouseGraphic* m_mouseGraphic;
     MazeView* m_view;
-    MouseInterface* m_mouseInterface;
 
     // Helper function for updating the maze 
     void setMaze(Maze* maze);
@@ -103,6 +96,7 @@ private:
     void onBuildExit(int exitCode, QProcess::ExitStatus exitStatus);
 
     // Run-related members
+    MouseInterface* m_runInterface;
     QProcess* m_runProcess;
     QPushButton* m_runButton;
     QLabel* m_runStatus;
@@ -112,6 +106,8 @@ private:
     void startRun();
     void onRunExit(int exitCode, QProcess::ExitStatus exitStatus);
     void handleMouseAlgoCannotStart(QString errorString);
+
+    void removeMouseFromMaze();
 
     // Cancel running processes
     void cancelBuild();
