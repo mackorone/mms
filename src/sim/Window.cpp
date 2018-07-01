@@ -1,6 +1,7 @@
 #include "Window.h"
 
 #include <QAction>
+#include <QDoubleSpinBox>
 #include <QFileDialog>
 #include <QFrame>
 #include <QGroupBox>
@@ -59,7 +60,6 @@ Window::Window(QWidget *parent) :
         m_runStatus(new QLabel()),
         m_runOutput(new QPlainTextEdit()),
         m_mouseAlgoStatsWidget(new MouseAlgoStatsWidget()),
-        m_mouseAlgoSeedWidget(new RandomSeedWidget()),
         m_mouseAlgoPauseButton(new QPushButton("Pause")) {
 
     // First, some bookkeeping; we have to explicitly allow the
@@ -611,9 +611,6 @@ void Window::mouseAlgoTabInit() {
     QVBoxLayout* optionsLayout = new QVBoxLayout();
     optionsGroupBox->setLayout(optionsLayout);
 
-    // Add the random seed widget
-    optionsLayout->addWidget(m_mouseAlgoSeedWidget);
-
     // Runtime controls group box
     QGroupBox* controlsGroupBox = new QGroupBox("Controls");
     optionsLayout->addWidget(controlsGroupBox, 0, 0);
@@ -986,6 +983,9 @@ void Window::startRun() {
     m_view = new MazeView(m_maze);
     m_mouseGraphic = new MouseGraphic(m_mouse);
 
+    // Add the mouse to model
+    m_model.setMouse(m_mouse);
+
     // New interface and process
     MouseInterface* interface = new MouseInterface(
         m_maze,
@@ -997,10 +997,6 @@ void Window::startRun() {
     // Clear the output, and jump to it
     m_runOutput->clear();
     m_mouseAlgoOutputTabWidget->setCurrentWidget(m_runOutput);
-
-    // Append the random seed to the command
-    command += " ";
-    command += QString::number(m_mouseAlgoSeedWidget->next());
 
     // Print stdout
     connect(
@@ -1015,6 +1011,8 @@ void Window::startRun() {
             m_runOutput->appendPlainText(output);
         }
     );
+
+	// TODO: MACK - print things that don't look like a command
 
     // Process all stderr commands as appropriate
     connect(
@@ -1059,13 +1057,6 @@ void Window::startRun() {
             }
         );
     }
-
-    // We need to add the mouse to the world *after* the making the
-    // previous connection (thus ensuring that tile fog is cleared
-    // automatically), but *before* we actually start the algorithm (lest
-    // the mouse position/orientation not be updated properly during the
-    // beginning of the mouse algo's execution)
-    m_model.setMouse(m_mouse);
 
     // Clean up on exit
     connect(

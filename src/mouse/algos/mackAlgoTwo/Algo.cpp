@@ -670,7 +670,8 @@ void Algo::aroundAndForward() {
     turnAroundUpdateState();
     moveForwardUpdateState();
 #if (SIMULATOR)
-    m_mouse->turnAroundLeft();
+    m_mouse->turnLeft();
+    m_mouse->turnLeft();
     m_mouse->moveForward();
 #else
     movesBuffer[moveBufferIndex] = 'a';

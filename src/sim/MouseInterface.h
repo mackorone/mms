@@ -57,6 +57,8 @@ private:
 
     // ----- Any interface methods ----- //
 
+    // TODO: MACK add maze width and height
+
     // Config-related functions
     char getStartedDirection();
     void setStartingDirection(char direction);

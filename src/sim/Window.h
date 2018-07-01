@@ -18,7 +18,6 @@
 #include "MouseAlgoStatsWidget.h"
 #include "MouseGraphic.h"
 #include "MouseInterface.h"
-#include "RandomSeedWidget.h"
 
 namespace mms {
 
@@ -119,7 +118,6 @@ private:
     void mouseAlgoPause();
     void mouseAlgoResume();
     QPushButton* m_mouseAlgoPauseButton;
-    RandomSeedWidget* m_mouseAlgoSeedWidget;
     QVector<QPushButton*> m_mouseAlgoInputButtons;
 
     void mouseAlgoRefresh(const QString& name = "");
