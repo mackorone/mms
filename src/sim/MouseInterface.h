@@ -5,7 +5,6 @@
 #include <QPair>
 #include <QSet>
 
-#include "DynamicMouseAlgorithmOptions.h"
 #include "InterfaceType.h"
 #include "MazeView.h"
 #include "Mouse.h"
@@ -38,8 +37,6 @@ public:
 
     // Parameters set by the algorithm
     InterfaceType getInterfaceType(bool canFinalize) const;
-    DynamicMouseAlgorithmOptions getDynamicOptions() const;
-
 signals:
 
     // Emit sanitized algorithm output
@@ -57,17 +54,20 @@ private:
 
     // ----- Any interface methods ----- //
 
-    // TODO: MACK add maze width and height
+    // Maze dimensions
+    int getMazeWidth();
+    int getMazeHeight();
 
-    // Config-related functions
-    char getStartedDirection();
-    void setStartingDirection(char direction);
-    void setWheelSpeedFraction(double wheelSpeedFraction);
+    // Wall existence
+    bool isWallFront();
+    bool isWallRight();
+    bool isWallLeft();
 
-    // Misc functions
-    double getRandom();
-    int millis(); // # of milliseconds of sim time (adjusted based on sim speed) that have passed
-    void delay(int milliseconds); // # of milliseconds of sim time (adjusted based on sim speed)
+    // Movement
+    void moveForward();
+    void turnRight();
+    void turnLeft();
+    void reset();
 
     // Tile color
     void setTileColor(int x, int y, char color);
@@ -83,26 +83,9 @@ private:
     void declareWall(int x, int y, char direction, bool wallExists);
     void undeclareWall(int x, int y, char direction);
 
-    // Tile distance, where a negative distance corresponds to inf distance
-    void declareTileDistance(int x, int y, int distance);
-    void undeclareTileDistance(int x, int y);
-
-    // Reset position of the mouse
-    void resetPosition();
-
     // Input buttons
-    bool inputButtonPressed(int inputButton);
+    bool wasInputButtonPressed(int inputButton);
     void acknowledgeInputButtonPressed(int inputButton);
-
-    // ----- Any discrete interface methods ----- //
-
-    bool wallFront();
-    bool wallRight();
-    bool wallLeft();
-
-    void moveForward();
-    void turnLeft();
-    void turnRight();
 
     // ************************ END PUBLIC INTERFACE ********************* //
 
@@ -114,9 +97,6 @@ private:
     // The interface type (DISCRETE or CONTINUOUS)
     InterfaceType m_interfaceType;
     mutable bool m_interfaceTypeFinalized;
-
-    // The runtime algorithm options
-    DynamicMouseAlgorithmOptions m_dynamicOptions;
 
     // Whether or a stop was requested
     bool m_stopRequested;
@@ -135,47 +115,20 @@ private:
     QSet<QPair<int, int>> m_tilesWithColor;
     QSet<QPair<int, int>> m_tilesWithText;
 
-    // Helper methods for checking particular conditions and failing hard
-    void ensureDiscreteInterface(const QString& callingFunction) const;
-    void ensureContinuousInterface(const QString& callingFunction) const;
-    void ensureAllowOmniscience(const QString& callingFunction) const;
-    void ensureNotTileEdgeMovements(const QString& callingFunction) const;
-    void ensureUseTileEdgeMovements(const QString& callingFunction) const;
-    void ensureInsideOrigin(const QString& callingFunction) const;
-    void ensureOutsideOrigin(const QString& callingFunction) const;
-
-    // Implementation methods:
-    // Any functionality that is executed as part of another MouseInterface
-    // method should have an Impl method, and the Impl method should be called.
-    // As an important note, if any methods can cause a crash, it must handle
-    // the crash appropriately (see moveForwardImpl() for an example).
+    // Implementation methods
     void setTileColorImpl(int x, int y, char color);
     void clearTileColorImpl(int x, int y);
     void setTileTextImpl(int x, int y, const QString& text);
     void clearTileTextImpl(int x, int y);
-    void declareWallImpl(
-        QPair<QPair<int, int>, Direction> wall, bool wallExists, bool declareBothWallHalves);
-    void undeclareWallImpl(
-        QPair<QPair<int, int>, Direction> wall, bool declareBothWallHalves);
-    bool wallFrontImpl(bool declareWallOnRead, bool declareBothWallHalves);
-    bool wallLeftImpl(bool declareWallOnRead, bool declareBothWallHalves);
-    bool wallRightImpl(bool declareWallOnRead, bool declareBothWallHalves);
-    void moveForwardImpl(bool originMoveForwardToEdge = false);
+    void moveForwardImpl();
     void turnLeftImpl();
     void turnRightImpl();
-    void turnAroundLeftImpl();
-    void turnAroundRightImpl();
-    void turnToEdgeImpl(bool turnLeft);
-    void turnAroundToEdgeImpl(bool turnLeft);
 
     // Helper methods for wall retrieval and declaration
-    bool isWall(
-        QPair<QPair<int, int>, Direction> wall,
-        bool declareWallOnRead,
-        bool declareBothWallHalves);
-    bool hasOpposingWall(QPair<QPair<int, int>, Direction> wall) const;
+    bool isWall(QPair<QPair<int, int>, Direction> wall);
+    bool hasOpposingWall(int x, int y, Direction d) const;
     QPair<QPair<int, int>, Direction> getOpposingWall(
-        QPair<QPair<int, int>, Direction> wall) const;
+        int x, int y, Direction d) const;
 
     // Some helper abstractions for mouse movements
     void moveForwardTo(const Coordinate& destinationTranslation, const Angle& destinationRotation);
@@ -192,9 +145,6 @@ private:
     // Returns the location of where the mouse should stop if it crashes
     QPair<Coordinate, Angle> getCrashLocation(
         QPair<int, int> currentTile, Direction destinationDirection);
-
-    // TODO: MACK - rename to Impl
-    void doDiagonal(int count, bool startLeft, bool endLeft);
 
 };
 

@@ -11,6 +11,8 @@ public:
 
     Resources() = delete;
 
+    static QString getMazesPath();
+
     static QStringList getFonts();
     static QStringList getMazes();
     static QStringList getMice();

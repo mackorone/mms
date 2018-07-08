@@ -8,7 +8,6 @@
     <file>resources/mice/default.xml</file>
     <file>resources/mice/megamouse.xml</file>
     <file>resources/mice/omniwheel.xml</file>
-    <file>resources/mazes/1x1.map</file>
     <file>resources/mazes/blank.num</file>
     <file>resources/mazes/example1.num</file>
     <file>resources/mazes/example2.num</file>

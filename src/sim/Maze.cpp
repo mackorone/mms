@@ -140,17 +140,6 @@ bool Maze::isCenterTile(int x, int y) const {
     return centerPositions.contains({x, y});
 }
 
-Direction Maze::getOptimalStartingDirection() const {
-    if (getHeight() == 0) {
-        return Direction::NORTH;
-    }
-    if (getTile(0, 0)->isWall(Direction::NORTH) &&
-        !getTile(0, 0)->isWall(Direction::EAST)) {
-        return Direction::EAST;
-    }
-    return Direction::NORTH;
-}
-
 QVector<QVector<Tile>> Maze::initializeFromBasicMaze(const BasicMaze& basicMaze) {
     // TODO: MACK - assert valid here
     QVector<QVector<Tile>> maze;

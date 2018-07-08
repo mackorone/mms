@@ -16,7 +16,7 @@ MazeView::MazeView(const Maze* maze) :
             &m_bufferInterface) {
 
     // Establish the coordinates for the tile text characters
-    initText(2, 4);
+    initText(2, 5);
 
     // Populate the data vectors with wall polygons and tile distance text.
     m_mazeGraphic.drawPolygons();

@@ -50,93 +50,35 @@ QString MouseInterface::dispatch(const QString& command) {
     QStringList tokens = command.split(" ", QString::SkipEmptyParts);
     QString function = tokens.at(0);
 
-    // TODO: MACK - maybe just call these "update"?
-    if (function == "useContinuousInterface") {
-        if (m_interfaceTypeFinalized) {
-            // TODO: MACK - error string here
-        }
-        else {
-            m_interfaceType = InterfaceType::CONTINUOUS;
-        }
-        return ACK_STRING;
-    }
-    else if (function == "setInitialDirection") {
-        char direction = SimUtilities::strToChar(tokens.at(1));
-        setStartingDirection(direction);
-        return ACK_STRING;
-    }
-    else if (function == "setTileTextRowsAndCols") {
-        // TODO: MACK - validation
-        // if (tileTextNumberOfRows < 0 || tileTextNumberOfCols < 0) {
-        //     qCritical().noquote().nospace()
-        //         << "Both tileTextNumberOfRows() and tileTextNumberOfCols() must"
-        //         << " return non-negative integers. Since they return \""
-        //         << tileTextNumberOfRows << "\" and \"" << tileTextNumberOfCols
-        //         << "\", respectively, the tile text dimensions of the mouse"
-        //         << " algorithm \"" << mouseAlgorithm << "\" are invalid.";
-        //     SimUtilities::quit();
-        // }
-        int rows = SimUtilities::strToInt(tokens.at(1));
-        int cols = SimUtilities::strToInt(tokens.at(2));
-        m_view->initTileGraphicText(rows, cols);
-        return ACK_STRING;
-    }
-    else if (function == "setWheelSpeedFraction") {
-        setWheelSpeedFraction(
-            SimUtilities::strToDouble(tokens.at(1)));
-        return ACK_STRING;
-    }
-    else if (function == "updateAllowOmniscience") {
-        m_dynamicOptions.allowOmniscience =
-            SimUtilities::strToBool(tokens.at(1));
-        return ACK_STRING;
-    }
-    else if (function == "updateDeclareBothWallHalves") {
-        m_dynamicOptions.declareBothWallHalves =
-            SimUtilities::strToBool(tokens.at(1));
-        return ACK_STRING;
-    }
-    else if (function == "updateSetTileTextWhenDistanceDeclared") {
-        m_dynamicOptions.setTileTextWhenDistanceDeclared =
-            SimUtilities::strToBool(tokens.at(1));
-        return ACK_STRING;
-    }
-    else if (function == "updateSetTileBaseColorWhenDistanceDeclaredCorrectly") {
-        m_dynamicOptions.setTileBaseColorWhenDistanceDeclaredCorrectly =
-            SimUtilities::strToBool(tokens.at(1));
-        return ACK_STRING;
-    }
-    else if (function == "updateDeclareWallOnRead") {
-        m_dynamicOptions.declareWallOnRead =
-            SimUtilities::strToBool(tokens.at(1));
-        return ACK_STRING;
-    }
-    else if (function == "updateUseTileEdgeMovements") {
-        m_dynamicOptions.useTileEdgeMovements =
-            SimUtilities::strToBool(tokens.at(1));
-        return ACK_STRING;
-    }
-    else if (function == "mazeWidth") {
+    if (function == "getMazeWidth") {
         return QString::number(m_maze->getWidth());
     }
-    else if (function == "mazeHeight") {
+    else if (function == "getMazeHeight") {
         return QString::number(m_maze->getHeight());
     }
-    else if (function == "isOfficialMaze") {
-        return QString::number(m_maze->isOfficialMaze());
+    else if (function == "isWallFront") {
+        return SimUtilities::boolToStr(isWallFront());
     }
-    else if (function == "initialDirection") {
-        return QString(QChar(getStartedDirection()));
+    else if (function == "isWallRight") {
+        return SimUtilities::boolToStr(isWallRight());
     }
-    else if (function == "getRandomFloat") {
-        return QString::number(getRandom());
+    else if (function == "isWallLeft") {
+        return SimUtilities::boolToStr(isWallLeft());
     }
-    else if (function == "millis") {
-        return QString::number(millis());
+    else if (function == "moveForward") {
+        moveForward();
+        return ACK_STRING;
     }
-    else if (function == "delay") {
-        int milliseconds = SimUtilities::strToInt(tokens.at(1));
-        delay(milliseconds);
+    else if (function == "turnRight") {
+        turnRight();
+        return ACK_STRING;
+    }
+    else if (function == "turnLeft") {
+        turnLeft();
+        return ACK_STRING;
+    }
+    else if (function == "reset") {
+        reset();
         return ACK_STRING;
     }
     else if (function == "setTileColor") {
@@ -191,53 +133,15 @@ QString MouseInterface::dispatch(const QString& command) {
         undeclareWall(x, y, direction);
         return NO_ACK_STRING;
     }
-    else if (function == "declareTileDistance") {
-        int x = SimUtilities::strToInt(tokens.at(1));
-        int y = SimUtilities::strToInt(tokens.at(2));
-        int distance = SimUtilities::strToInt(tokens.at(3));
-        declareTileDistance(x, y, distance);
-        return NO_ACK_STRING;
-    }
-    else if (function == "undeclareTileDistance") {
-        int x = SimUtilities::strToInt(tokens.at(1));
-        int y = SimUtilities::strToInt(tokens.at(2));
-        undeclareTileDistance(x, y);
-        return NO_ACK_STRING;
-    }
-    else if (function == "resetPosition") {
-        resetPosition();
-        return ACK_STRING;
-    }
-    else if (function == "inputButtonPressed") {
+    else if (function == "wasInputButtonPressed") {
         int inputButton = SimUtilities::strToInt(tokens.at(1));
         return SimUtilities::boolToStr(
-            inputButtonPressed(inputButton)
+            wasInputButtonPressed(inputButton)
         );
     }
     else if (function == "acknowledgeInputButtonPressed") {
         int inputButton = SimUtilities::strToInt(tokens.at(1));
         acknowledgeInputButtonPressed(inputButton);
-        return ACK_STRING;
-    }
-    else if (function == "wallFront") {
-        return SimUtilities::boolToStr(wallFront());
-    }
-    else if (function == "wallRight") {
-        return SimUtilities::boolToStr(wallRight());
-    }
-    else if (function == "wallLeft") {
-        return SimUtilities::boolToStr(wallLeft());
-    }
-    else if (function == "moveForward") {
-        moveForward();
-        return ACK_STRING;
-    }
-    else if (function == "turnLeft") {
-        turnLeft();
-        return ACK_STRING;
-    }
-    else if (function == "turnRight") {
-        turnRight();
         return ACK_STRING;
     }
 
@@ -249,61 +153,41 @@ void MouseInterface::inputButtonWasPressed(int button) {
     m_inputButtonsPressed[button] = true;
 }
 
-InterfaceType MouseInterface::getInterfaceType(bool canFinalize) const {
-    // Finalize the interface type the first time it's queried
-    // by the MouseInterface (but not by the key-press logic)
-    if (!m_interfaceTypeFinalized && canFinalize) {
-        m_interfaceTypeFinalized = true;
-    }   
-    return m_interfaceType;
-}   
-
-DynamicMouseAlgorithmOptions MouseInterface::getDynamicOptions() const {
-    return m_dynamicOptions;
-}   
-
-char MouseInterface::getStartedDirection() {
-    return DIRECTION_TO_CHAR().value(m_mouse->getStartedDirection()).toLatin1();
+bool MouseInterface::isWallFront() {
+    return isWall({
+        m_mouse->getCurrentDiscretizedTranslation(),
+        m_mouse->getCurrentDiscretizedRotation()
+    });
 }
 
-void MouseInterface::setStartingDirection(char direction) {
-    if (!CHAR_TO_DIRECTION().contains(direction)) {
-        qWarning().noquote().nospace()
-            << "The character '" << direction << "' is not mapped to a valid"
-            << " direction.";
-        return;
-    }
-    m_mouse->setStartingDirection(CHAR_TO_DIRECTION().value(direction));
+bool MouseInterface::isWallRight() {
+    return isWall({
+        m_mouse->getCurrentDiscretizedTranslation(),
+        DIRECTION_ROTATE_RIGHT().value(m_mouse->getCurrentDiscretizedRotation())
+    });
 }
 
-void MouseInterface::setWheelSpeedFraction(double wheelSpeedFraction) {
-    // TODO: MACK - validation here
-    /*
-    if (!(0.0 <= wheelSpeedFraction && wheelSpeedFraction <= 1.0)) {
-        qCritical().noquote().nospace()
-            << "\"" << wheelSpeedFraction << "\" is not a valid wheel speed"
-            << " fraction. The wheel speed fraction of the mouse algorithm \""
-            << mouseAlgorithm << "\" has to be in [0.0, 1.0].";
-        SimUtilities::quit();
-    }
-    */
-    m_wheelSpeedFraction = wheelSpeedFraction;
+bool MouseInterface::isWallLeft() {
+    return isWall({
+        m_mouse->getCurrentDiscretizedTranslation(),
+        DIRECTION_ROTATE_LEFT().value(m_mouse->getCurrentDiscretizedRotation())
+    });
 }
 
-
-double MouseInterface::getRandom() {
-    return SimUtilities::getRandom();
+void MouseInterface::moveForward() {
+    moveForwardImpl();
 }
 
-int MouseInterface::millis() {
-    return SimTime::get()->elapsedSimTime().getMilliseconds();
+void MouseInterface::turnRight() {
+    turnRightImpl();
 }
 
-void MouseInterface::delay(int milliseconds) {
-    Duration start = SimTime::get()->elapsedSimTime();
-    while (SimTime::get()->elapsedSimTime() < start + Duration::Milliseconds(milliseconds)) {
-        SimUtilities::sleep(Duration::Milliseconds(5));\
-    }
+void MouseInterface::turnLeft() {
+    turnLeftImpl();
+}
+
+void MouseInterface::reset() {
+    m_mouse->reset();
 }
 
 void MouseInterface::setTileColor(int x, int y, char color) {
@@ -394,14 +278,17 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
         return;
     }
 
-    declareWallImpl(
-        {
-            {x, y},
-            CHAR_TO_DIRECTION().value(direction)
-        },
-        wallExists,
-        getDynamicOptions().declareBothWallHalves
-    );
+    Direction d = CHAR_TO_DIRECTION().value(direction);
+    m_view->getMazeGraphic()->declareWall(x, y, d, wallExists); 
+    if (hasOpposingWall(x, y, d)) {
+        auto opposingWall = getOpposingWall(x, y, d);
+        m_view->getMazeGraphic()->declareWall(
+            opposingWall.first.first,
+            opposingWall.first.second,
+            opposingWall.second,
+            wallExists
+        ); 
+    }
 }
 
 void MouseInterface::undeclareWall(int x, int y, char direction) {
@@ -420,61 +307,19 @@ void MouseInterface::undeclareWall(int x, int y, char direction) {
         return;
     }
 
-    undeclareWallImpl(
-        {
-            {x, y},
-            CHAR_TO_DIRECTION().value(direction)
-        },
-        getDynamicOptions().declareBothWallHalves
-    );
-}
-
-void MouseInterface::declareTileDistance(int x, int y, int distance) {
-
-    if (!m_maze->withinMaze(x, y)) {
-        qWarning().noquote().nospace()
-            << "There is no tile at position (" << x << ", " << y << "), and"
-            << " thus you cannot set its distance.";
-        return;
-    }
-
-    if (getDynamicOptions().setTileTextWhenDistanceDeclared) {
-        setTileTextImpl(x, y, (0 <= distance ? QString::number(distance) : "inf"));
-    }
-    if (getDynamicOptions().setTileBaseColorWhenDistanceDeclaredCorrectly) {
-        int actualDistance = m_maze->getTile(x, y)->getDistance();
-        // A negative distance is interpreted to mean infinity
-        if (distance == actualDistance || (distance < 0 && actualDistance < 0)) {
-            setTileColorImpl(x, y,
-                COLOR_TO_CHAR().value(
-                    ColorManager::get()->getDistanceCorrectTileBaseColor()));
-        }
+    Direction d = CHAR_TO_DIRECTION().value(direction);
+    m_view->getMazeGraphic()->undeclareWall(x, y, d);
+    if (hasOpposingWall(x, y, d)) {
+        auto opposingWall = getOpposingWall(x, y, d);
+        m_view->getMazeGraphic()->undeclareWall(
+            opposingWall.first.first,
+            opposingWall.first.second,
+            opposingWall.second
+        ); 
     }
 }
 
-void MouseInterface::undeclareTileDistance(int x, int y) {
-
-    if (!m_maze->withinMaze(x, y)) {
-        qWarning().noquote().nospace()
-            << "There is no tile at position (" << x << ", " << y << "), and"
-            << " thus you cannot clear its distance.";
-        return;
-    }
-
-    if (getDynamicOptions().setTileTextWhenDistanceDeclared) {
-        clearTileTextImpl(x, y);
-    }
-    if (getDynamicOptions().setTileBaseColorWhenDistanceDeclaredCorrectly) {
-        setTileColorImpl(x, y,
-            COLOR_TO_CHAR().value(ColorManager::get()->getTileBaseColor()));
-    }
-}
-
-void MouseInterface::resetPosition() {
-    m_mouse->reset();
-}
-
-bool MouseInterface::inputButtonPressed(int inputButton) {
+bool MouseInterface::wasInputButtonPressed(int inputButton) {
 
     if (inputButton < 0 || 9 < inputButton) {
         qWarning().noquote().nospace()
@@ -500,39 +345,6 @@ void MouseInterface::acknowledgeInputButtonPressed(int inputButton) {
 
     m_inputButtonsPressed[inputButton] = false;
     emit inputButtonWasAcknowledged(inputButton);
-}
-
-bool MouseInterface::wallFront() {
-    return wallFrontImpl(
-        getDynamicOptions().declareWallOnRead,
-        getDynamicOptions().declareBothWallHalves
-    );
-}
-
-bool MouseInterface::wallRight() {
-    return wallRightImpl(
-        getDynamicOptions().declareWallOnRead,
-        getDynamicOptions().declareBothWallHalves
-    );
-}
-
-bool MouseInterface::wallLeft() {
-    return wallLeftImpl(
-        getDynamicOptions().declareWallOnRead,
-        getDynamicOptions().declareBothWallHalves
-    );
-}
-
-void MouseInterface::moveForward() {
-    moveForwardImpl();
-}
-
-void MouseInterface::turnLeft() {
-    turnLeftImpl();
-}
-
-void MouseInterface::turnRight() {
-    turnRightImpl();
 }
 
 void MouseInterface::setTileColorImpl(int x, int y, char color) {
@@ -571,56 +383,7 @@ void MouseInterface::clearTileTextImpl(int x, int y) {
     m_view->getMazeGraphic()->setTileText(x, y, {});
 }
 
-void MouseInterface::declareWallImpl(
-        QPair<QPair<int, int>, Direction> wall, bool wallExists, bool declareBothWallHalves) {
-    m_view->getMazeGraphic()->declareWall(wall.first.first, wall.first.second, wall.second, wallExists); 
-    if (declareBothWallHalves && hasOpposingWall(wall)) {
-        declareWallImpl(getOpposingWall(wall), wallExists, false);
-    }
-}
-
-void MouseInterface::undeclareWallImpl(
-        QPair<QPair<int, int>, Direction> wall, bool declareBothWallHalves) {
-    m_view->getMazeGraphic()->undeclareWall(wall.first.first, wall.first.second, wall.second); 
-    if (declareBothWallHalves && hasOpposingWall(wall)) {
-        undeclareWallImpl(getOpposingWall(wall), false);
-    }
-}
-
-bool MouseInterface::wallFrontImpl(bool declareWallOnRead, bool declareBothWallHalves) {
-    return isWall(
-        {
-            m_mouse->getCurrentDiscretizedTranslation(),
-            m_mouse->getCurrentDiscretizedRotation()
-        },
-        declareWallOnRead,
-        declareBothWallHalves
-    );
-}
-
-bool MouseInterface::wallLeftImpl(bool declareWallOnRead, bool declareBothWallHalves) {
-    return isWall(
-        {
-            m_mouse->getCurrentDiscretizedTranslation(),
-            DIRECTION_ROTATE_LEFT().value(m_mouse->getCurrentDiscretizedRotation())
-        },
-        declareWallOnRead,
-        declareBothWallHalves
-    );
-}
-
-bool MouseInterface::wallRightImpl(bool declareWallOnRead, bool declareBothWallHalves) {
-    return isWall(
-        {
-            m_mouse->getCurrentDiscretizedTranslation(),
-            DIRECTION_ROTATE_RIGHT().value(m_mouse->getCurrentDiscretizedRotation())
-        },
-        declareWallOnRead,
-        declareBothWallHalves
-    );
-}
-
-void MouseInterface::moveForwardImpl(bool originMoveForwardToEdge) {
+void MouseInterface::moveForwardImpl() {
 
     static Distance halfWallLengthPlusWallWidth =
         Distance::Meters(P()->wallLength() / 2.0 + P()->wallWidth());
@@ -628,7 +391,7 @@ void MouseInterface::moveForwardImpl(bool originMoveForwardToEdge) {
     static Distance wallWidth = Distance::Meters(P()->wallWidth());
 
     // Whether or not this movement will cause a crash
-    bool crash = wallFrontImpl(false, false);
+    bool crash = isWallFront();
 
     // Get the location of the crash, if it will happen
     QPair<Coordinate, Angle> crashLocation = getCrashLocation(
@@ -637,11 +400,9 @@ void MouseInterface::moveForwardImpl(bool originMoveForwardToEdge) {
     );
 
     // Get the destination translation of the mouse
-    Coordinate destinationTranslation = m_mouse->getCurrentTranslation() +
-        Coordinate::Polar(
-            (originMoveForwardToEdge ? halfWallLengthPlusWallWidth : tileLength),
-            crashLocation.second
-        );
+    Coordinate destinationTranslation =
+        m_mouse->getCurrentTranslation() +
+        Coordinate::Polar(tileLength, crashLocation.second);
 
     // Move forward to the crash location
     moveForwardTo(crashLocation.first, crashLocation.second);
@@ -665,99 +426,16 @@ void MouseInterface::turnRightImpl() {
     turnTo(m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation() - Angle::Degrees(90));
 }
 
-void MouseInterface::turnAroundLeftImpl() {
-    for (int i = 0; i < 2; i += 1) {
-        turnLeftImpl();
-    }
-}
-
-void MouseInterface::turnAroundRightImpl() {
-    for (int i = 0; i < 2; i += 1) {
-        turnRightImpl();
-    }
-}
-
-void MouseInterface::turnAroundToEdgeImpl(bool turnLeft) {
-
-    // Move to the center of the tile
-    Coordinate delta = Coordinate::Polar(
-        Distance::Meters(P()->wallLength() / 2.0), m_mouse->getCurrentRotation());
-    moveForwardTo(m_mouse->getCurrentTranslation() + delta, m_mouse->getCurrentRotation());
-
-    // Turn around
-    if (turnLeft) {
-        turnAroundLeftImpl();
-    }
-    else {
-        turnAroundRightImpl();
-    }
-
-    // Move forward, into the next tile
-    delta = Coordinate::Polar(
-        Distance::Meters(P()->wallLength() / 2.0 + P()->wallWidth()), m_mouse->getCurrentRotation());
-    moveForwardTo(m_mouse->getCurrentTranslation() + delta, m_mouse->getCurrentRotation());
-}
-
-void MouseInterface::turnToEdgeImpl(bool turnLeft) {
-
-    static Distance halfWallLength = Distance::Meters(P()->wallLength() / 2.0);
-    static Distance wallWidth = Distance::Meters(P()->wallWidth());
-
-    // Whether or not this movement will cause a crash
-    bool crash = (
-        ( turnLeft &&  wallLeftImpl(false, false)) ||
-        (!turnLeft && wallRightImpl(false, false))
-    );
-
-    // Get the location of the crash, if it will happen
-    QPair<Coordinate, Angle> crashLocation = getCrashLocation(
-        m_mouse->getCurrentDiscretizedTranslation(),
-        (
-            turnLeft ?
-            DIRECTION_ROTATE_LEFT().value(m_mouse->getCurrentDiscretizedRotation()) :
-            DIRECTION_ROTATE_RIGHT().value(m_mouse->getCurrentDiscretizedRotation())
-        )
-    );
-
-    // Perform the curve turn
-    arcTo(crashLocation.first, crashLocation.second, halfWallLength, 1.0);
-
-    // If we didn't crash, move forward into the new tile
-    if (!crash) {
-        moveForwardTo(
-            crashLocation.first + Coordinate::Polar(wallWidth, crashLocation.second),
-            crashLocation.second
-        );
-    }
-
-    // Otherwise, set the crashed state (if it hasn't already been set)
-    else if (!m_mouse->didCrash()) {
-        m_mouse->setCrashed();
-    }
-}
-
-bool MouseInterface::isWall(QPair<QPair<int, int>, Direction> wall, bool declareWallOnRead, bool declareBothWallHalves) {
-
+bool MouseInterface::isWall(QPair<QPair<int, int>, Direction> wall) {
     int x = wall.first.first;
     int y = wall.first.second;
     Direction direction = wall.second;
-
     ASSERT_TR(m_maze->withinMaze(x, y));
-
-    bool wallExists = m_maze->getTile(x, y)->isWall(direction);
-
-    if (declareWallOnRead) {
-        declareWallImpl(wall, wallExists, declareBothWallHalves);
-    }
-
-    return wallExists;
+    return m_maze->getTile(x, y)->isWall(direction);
 }
 
-bool MouseInterface::hasOpposingWall(QPair<QPair<int, int>, Direction> wall) const {
-    int x = wall.first.first;
-    int y = wall.first.second;
-    Direction direction = wall.second;
-    switch (direction) {
+bool MouseInterface::hasOpposingWall(int x, int y, Direction d) const {
+    switch (d) {
         case Direction::NORTH:
             return y < m_maze->getHeight() - 1;
         case Direction::EAST:
@@ -766,16 +444,18 @@ bool MouseInterface::hasOpposingWall(QPair<QPair<int, int>, Direction> wall) con
             return 0 < y;
         case Direction::WEST:
             return 0 < x;
+        default:
+            ASSERT_NEVER_RUNS();
     }
 }
 
 QPair<QPair<int, int>, Direction> MouseInterface::getOpposingWall(
-        QPair<QPair<int, int>, Direction> wall) const {
-    ASSERT_TR(hasOpposingWall(wall));
-    int x = wall.first.first;
-    int y = wall.first.second;
-    Direction direction = wall.second;
-    switch (direction) {
+    int x,
+    int y,
+    Direction d
+) const {
+    ASSERT_TR(hasOpposingWall(x, y, d));
+    switch (d) {
         case Direction::NORTH:
             return {{x, y + 1}, Direction::SOUTH};
         case Direction::EAST:
@@ -784,6 +464,8 @@ QPair<QPair<int, int>, Direction> MouseInterface::getOpposingWall(
             return {{x, y - 1}, Direction::NORTH};
         case Direction::WEST:
             return {{x - 1, y}, Direction::EAST};
+        default:
+            ASSERT_NEVER_RUNS();
     }
 }
 
@@ -920,79 +602,6 @@ QPair<Coordinate, Angle> MouseInterface::getCrashLocation(
         centerOfTile + Coordinate::Polar(halfWallLength, destinationRotation),
         destinationRotation
     };
-}
-
-void MouseInterface::doDiagonal(int count, bool startLeft, bool endLeft) {
-
-    // Don't do/print anything if the mouse has already crashed
-    if (m_mouse->didCrash()) {
-        return;
-    }
-
-    // Whether or not the mouse will crash
-    bool crash = false;
-
-    if (startLeft == endLeft) {
-        if (count % 2 != 1) {
-            qWarning().noquote().nospace()
-                << "Turning left or right at both the entrance and exit of a"
-                << " diagonal requires that you specify and odd number of"
-                << " diagonal segments to traverse. You tried turning "
-                << (startLeft ? "left" : "right")
-                << " twice, but specified a segment count of " << count
-                << ". Your mouse will crash at the end of the movement.";
-            crash = true;
-        }
-    }
-
-    else {
-        if (count % 2 != 0) {
-            qWarning().noquote().nospace()
-                << "Turning left at the entrance and right at the exit (or vice"
-                << " versa) of a diagonal requires that you specify and even"
-                << " number of diagonal segments to traverse. You tried "
-                << (startLeft ? "left" : "right")
-                << " at the entrance of the curve turn, and "
-                << (endLeft ? "left" : "right")
-                << " at the exit, but you specified a segment count of "
-                << count << ". Your mouse will crash at the end of the"
-                << " movement.";
-            crash = true;
-        }
-    }
-
-    // TODO: MACK - make sure that the path is actually clear
-
-    static Distance halfTileWidth =
-        Distance::Meters(P()->wallLength() + P()->wallWidth()) / 2.0;
-    static Distance halfTileDiagonal = Distance::Meters(std::sqrt(
-        2 *
-        halfTileWidth.getMeters() *
-        halfTileWidth.getMeters()
-    ));
-    Coordinate backALittleBit = m_mouse->getCurrentTranslation() +
-        Coordinate::Polar(Distance::Meters(P()->wallWidth() / 2.0), m_mouse->getCurrentRotation() + Angle::Degrees(180));
-
-    Coordinate destination = backALittleBit +
-        Coordinate::Polar(halfTileDiagonal * count, m_mouse->getCurrentRotation() + Angle::Degrees(45) * (startLeft ? 1 : -1));
-    Coordinate delta = destination - m_mouse->getCurrentTranslation();
-
-    Angle endRotation = m_mouse->getCurrentRotation();
-    if (startLeft && endLeft) {
-        endRotation += Angle::Degrees(90);
-    }
-    if (!startLeft && !endLeft) {
-        endRotation -= Angle::Degrees(90);
-    }
-    
-    turnTo(m_mouse->getCurrentTranslation(), delta.getTheta());
-    moveForwardTo(destination, m_mouse->getCurrentRotation());
-    turnTo(m_mouse->getCurrentTranslation(), endRotation);
-    moveForwardTo(destination + Coordinate::Polar(Distance::Meters(P()->wallWidth() / 2.0), m_mouse->getCurrentRotation()), m_mouse->getCurrentRotation());
-
-    if (crash && !m_mouse->didCrash()) {
-        m_mouse->setCrashed();
-    }
 }
 
 } // namespace mms

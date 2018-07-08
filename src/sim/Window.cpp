@@ -17,7 +17,6 @@
 
 #include "ColorManager.h"
 #include "ConfigDialog.h"
-#include "MazeFilesTab.h"
 #include "Model.h"
 #include "Param.h"
 #include "ProcessUtilities.h"
@@ -31,12 +30,6 @@ namespace mms {
 
 Window::Window(QWidget *parent) :
         QMainWindow(parent),
-        m_mazeWidthLabel(new QLabel()),
-        m_mazeHeightLabel(new QLabel()),
-        m_maxDistanceLabel(new QLabel()),
-        m_mazeDirLabel(new QLabel()),
-        m_isValidLabel(new QLabel()),
-        m_isOfficialLabel(new QLabel()),
         m_truthButton(new QRadioButton("Truth")),
         m_viewButton(new QRadioButton("Mouse")),
         m_maze(nullptr),
@@ -77,26 +70,6 @@ Window::Window(QWidget *parent) :
     mapHolder->setLayout(mapHolderLayout);
     splitter->addWidget(mapHolder);
 
-    // Add the maze stats
-    QWidget* mazeStatsBox = new QWidget();
-    QHBoxLayout* mazeStatsLayout = new QHBoxLayout();
-    mazeStatsBox->setLayout(mazeStatsLayout);
-    mapHolderLayout->addWidget(mazeStatsBox);
-    for (QPair<QString, QLabel*> pair : QVector<QPair<QString, QLabel*>> {
-        {"Width", m_mazeWidthLabel},
-        {"Height", m_mazeHeightLabel},
-        {"Max", m_maxDistanceLabel},
-        {"Start", m_mazeDirLabel},
-        {"Valid", m_isValidLabel},
-        {"Official", m_isOfficialLabel},
-    }) {
-        pair.second->setAlignment(Qt::AlignCenter);   
-        pair.second->setFrameStyle(QFrame::StyledPanel | QFrame::Plain);
-        QLabel* label = new QLabel(pair.first);
-        mazeStatsLayout->addWidget(label);
-        mazeStatsLayout->addWidget(pair.second);
-    }
-
     // Add the map (and set some layout props)
     mapHolderLayout->addWidget(&m_map);
     mapHolderLayout->setContentsMargins(0, 0, 0, 0);
@@ -120,39 +93,62 @@ Window::Window(QWidget *parent) :
         m_map.setView(checked ? m_view : m_truth);
     });
 
-    // Add the tabs to the splitter
-    QTabWidget* tabWidget = new QTabWidget();
-    splitter->addWidget(tabWidget);
-
-    // Create the maze files tab
-    MazeFilesTab* mazeFilesTab = new MazeFilesTab(); 
-    connect(
-        mazeFilesTab, &MazeFilesTab::mazeFileChanged,
-        this, [=](const QString& path){
-            Maze* maze = Maze::fromFile(path);
-            if (maze != nullptr) {
-                setMaze(maze);
-            }
-        }
-    );
-    tabWidget->addTab(mazeFilesTab, "Maze Files");
-
     // Create the mouse algos tab
     mouseAlgoTabInit();
-    tabWidget->addTab(m_mouseAlgoWidget, "Mouse Algorithms");
+    splitter->addWidget(m_mouseAlgoWidget);
 
-    // Add some generic menu items
-    QMenu* fileMenu = menuBar()->addMenu(tr("&Menu"));
+    // Minor layout stuff
+    m_mouseAlgoWidget->layout()->setContentsMargins(6, 6, 6, 6);
+    splitter->setSizes({550, 360});
 
-    // Settings
-    QAction* settingsAction = new QAction(tr("&Settings"), this);
-    connect(settingsAction, &QAction::triggered, this, &Window::editSettings);
-    fileMenu->addAction(settingsAction);
+    // Load a maze
+    loadMazeFile(Resources::getMazes().at(2));
 
-    // Quit
+    // Add the file menu
+    QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
+
+    // Choose a builtin maze
+    QMenu* chooseMazeMenu = fileMenu->addMenu(tr("&Choose Maze"));
+    for (const QString& path : Resources::getMazes()) {
+        ASSERT_TR(path.startsWith(Resources::getMazesPath()));
+        QAction* action = new QAction(path.right(
+            path.size() -
+            Resources::getMazesPath().size()
+        ), this);
+        connect(action, &QAction::triggered, this, [=](){
+            loadMazeFile(path);
+        });
+        chooseMazeMenu->addAction(action);
+    }
+
+    // Load maze from file
+    QAction* loadMazeAction = new QAction(tr("&Load Maze..."), this);
+    connect(loadMazeAction, &QAction::triggered, this, [=](){
+		QString path = QFileDialog::getOpenFileName(
+			this,
+			tr("Load Maze")
+            //"",
+            //tr("Images (*.png *.xpm *.jpg)")
+		);
+        if (!path.isNull()) {
+            loadMazeFile(path);
+        }
+    });
+    fileMenu->addAction(loadMazeAction);
+
+    // Quit 
     QAction* quitAction = new QAction(tr("&Quit"), this);
     connect(quitAction, &QAction::triggered, this, &Window::close);
     fileMenu->addAction(quitAction);
+
+
+
+    // Settings
+    /*
+    QAction* settingsAction = new QAction(tr("&Settings"), this);
+    connect(settingsAction, &QAction::triggered, this, &Window::editSettings);
+    fileMenu->addAction(settingsAction);
+    */
 
     // Save the maze
     // TODO: MACK - select the maze type here...
@@ -367,6 +363,13 @@ void Window::closeEvent(QCloseEvent *event) {
     QMainWindow::closeEvent(event);
 }
 
+void Window::loadMazeFile(QString path) {
+    Maze* maze = Maze::fromFile(path);
+    if (maze != nullptr) {
+        setMaze(maze);
+    }
+}
+
 void Window::setMaze(Maze* maze) {
 
     // Stop running maze/mouse algos
@@ -399,18 +402,6 @@ void Window::setMaze(Maze* maze) {
     m_model.setMaze(m_maze);
     m_map.setMaze(m_maze);
     m_map.setView(m_truth);
-
-    // Update maze stats UI widgets
-    m_mazeWidthLabel->setText(QString::number(m_maze->getWidth()));
-    m_mazeHeightLabel->setText(QString::number(m_maze->getHeight()));
-    m_maxDistanceLabel->setText(
-        QString::number(m_maze->getMaximumDistance())
-    );
-    m_mazeDirLabel->setText(
-        DIRECTION_TO_STRING().value(m_maze->getOptimalStartingDirection())
-    );
-    m_isValidLabel->setText(m_maze->isValidMaze() ? "TRUE" : "FALSE");
-    m_isOfficialLabel->setText(m_maze->isOfficialMaze() ? "TRUE" : "FALSE");
 
     // Delete the old objects
     delete oldMaze;
@@ -655,7 +646,7 @@ void Window::mouseAlgoTabInit() {
     // Add the input buttons
     QHBoxLayout* inputButtonsLayout = new QHBoxLayout();
     inputButtonsLayout->addWidget(new QLabel("Input Buttons"));
-    for (int i = 0; i < 10; i += 1) {
+    for (int i = 0; i < 2; i += 1) {
         QPushButton* button = new QPushButton(QString::number(i));
         button->setEnabled(false);
         button->setMinimumSize(3, 0);

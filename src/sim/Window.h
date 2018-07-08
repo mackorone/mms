@@ -44,14 +44,6 @@ private:
     // The model object
     Model m_model;
 
-    // Maze stats GUI elements
-    QLabel* m_mazeWidthLabel;
-    QLabel* m_mazeHeightLabel;
-    QLabel* m_maxDistanceLabel;
-    QLabel* m_mazeDirLabel;
-    QLabel* m_isValidLabel;
-    QLabel* m_isOfficialLabel;
-
     // The map object
     Map m_map;
 
@@ -70,6 +62,7 @@ private:
     MazeView* m_view;
 
     // Helper function for updating the maze 
+    void loadMazeFile(QString path);
     void setMaze(Maze* maze);
 
     // Helper function for editing settings

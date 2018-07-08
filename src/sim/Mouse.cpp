@@ -24,7 +24,7 @@ Mouse::Mouse(const Maze* maze) :
     m_currentTranslation = m_initialTranslation;
 
     // The initial rotation of the mouse is determined by the starting tile walls
-    Direction optimalStartingDirection = maze->getOptimalStartingDirection();
+    Direction optimalStartingDirection = Direction::NORTH;
     m_startedDirection = optimalStartingDirection;
     m_startingDirection = m_startedDirection;
     m_initialRotation = DIRECTION_TO_ANGLE().value(m_startingDirection);

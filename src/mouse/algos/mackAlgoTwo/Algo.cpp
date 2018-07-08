@@ -21,9 +21,6 @@ void Algo::solve(Interface* interface) {
     // Initialize the MouseInterface pointer
     m_mouse = interface;
 
-    // Set and finalize some options
-    m_mouse->setTileTextRowsAndCols(1, 5);
-
     // Ensure that the maze size is sane
     if (!(
         1 <= Maze::WIDTH &&
@@ -40,16 +37,16 @@ void Algo::solve(Interface* interface) {
 
     // Ensure that the maze size is as expected
     if (!(
-        Maze::WIDTH == m_mouse->mazeWidth() &&
-        Maze::HEIGHT == m_mouse->mazeHeight()
+        Maze::WIDTH == m_mouse->getMazeWidth() &&
+        Maze::HEIGHT == m_mouse->getMazeHeight()
     )) {
 #if (SIMULATOR)
         std::cout << "WARNING - configured for "
                   << static_cast<unsigned int>(Maze::WIDTH) << " x "
                   << static_cast<unsigned int>(Maze::HEIGHT)
                   << " maze, but actual maze size is "
-                  << m_mouse->mazeWidth() << " x "
-                  << m_mouse->mazeHeight() << std::endl;
+                  << m_mouse->getMazeWidth() << " x "
+                  << m_mouse->getMazeHeight() << std::endl;
 #endif
     }
 
@@ -74,21 +71,7 @@ void Algo::solve(Interface* interface) {
     // Initialize the mouse
     m_x = 0;
     m_y = 0;
-    switch (m_mouse->initialDirection()) {
-        case 'n':
-            m_initialDirection = Direction::NORTH;
-            break;
-        case 'e':
-            m_initialDirection = Direction::EAST;
-            break;
-        default:
-#if (SIMULATOR)
-            std::cout << "Can't start facing south or west. I'm giving up..."
-                      << std::endl;
-#endif
-            return;
-    }
-    m_d = m_initialDirection;
+    m_d = Direction::NORTH;
     m_mode = Mode::CENTER;
 
     // Perform a series of strategical steps ad infinitum
@@ -126,15 +109,15 @@ void Algo::solve(Interface* interface) {
 
 bool Algo::shouldColorVisitedCells() const {
     // 1 to enable, 0 to disable
-    if (m_mouse->inputButtonPressed(1)) {
-        if (m_mouse->inputButtonPressed(0)) {
+    if (m_mouse->wasInputButtonPressed(1)) {
+        if (m_mouse->wasInputButtonPressed(0)) {
             m_mouse->acknowledgeInputButtonPressed(1);
             m_mouse->acknowledgeInputButtonPressed(0);
             return false;
         }
         return true;
     }
-    if (m_mouse->inputButtonPressed(0)) {
+    if (m_mouse->wasInputButtonPressed(0)) {
         m_mouse->acknowledgeInputButtonPressed(0);
     }
     return false;
@@ -145,7 +128,7 @@ byte Algo::colorVisitedCellsDelayMs() const {
 }
 
 bool Algo::resetButtonPressed() {
-    return m_mouse->inputButtonPressed(2);
+    return m_mouse->wasInputButtonPressed(2);
 }
 
 void Algo::acknowledgeResetButtonPressed() {
@@ -163,7 +146,7 @@ twobyte Algo::getStraightAwayCost(byte length) {
 void Algo::reset() {
 
     // First, reset the position in the simulator
-    m_mouse->resetPosition();
+    m_mouse->reset();
 
     // Then acknowledge that the button was pressed (and potentially sleep)
     acknowledgeResetButtonPressed();
@@ -284,7 +267,6 @@ byte Algo::generatePath(byte start) {
             }
         }
         if (colorVisitedCells) {
-            m_mouse->delay(colorVisitedCellsDelayMs());
             m_mouse->setTileColor(Maze::getX(cell), Maze::getY(cell), 'Y');
         }
         if (cell == getClosestDestinationCell()) {
@@ -599,11 +581,11 @@ void Algo::readWalls() {
 bool Algo::readWall(byte direction) {
     switch ((direction - m_d + 4) % 4) {
         case 0:
-            return m_mouse->wallFront();
+            return m_mouse->isWallFront();
         case 1:
-            return m_mouse->wallRight();
+            return m_mouse->isWallRight();
         case 3:
-            return m_mouse->wallLeft();
+            return m_mouse->isWallLeft();
     }
     // We should never get here
     ASSERT_TR(false);

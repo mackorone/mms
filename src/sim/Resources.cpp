@@ -4,12 +4,16 @@
 
 namespace mms {
 
+QString Resources::getMazesPath() {
+    return ":/resources/mazes/";
+}
+
 QStringList Resources::getFonts() {
     return getFiles(":/resources/fonts/");
 }
 
 QStringList Resources::getMazes() {
-    return getFiles(":/resources/mazes/");
+    return getFiles(getMazesPath());
 }
 
 QStringList Resources::getMice() {

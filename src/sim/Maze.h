@@ -25,7 +25,6 @@ public:
     bool isValidMaze() const;
     bool isOfficialMaze() const;
     bool isCenterTile(int x, int y) const;
-    Direction getOptimalStartingDirection() const;
 
 private:
 
