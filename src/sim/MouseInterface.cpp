@@ -27,8 +27,6 @@ MouseInterface::MouseInterface(
         m_maze(maze),
         m_mouse(mouse),
         m_view(view),
-        m_interfaceType(InterfaceType::DISCRETE),
-        m_interfaceTypeFinalized(false),
         m_inOrigin(true),
         m_wheelSpeedFraction(1.0) {
 }

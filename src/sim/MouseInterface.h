@@ -5,7 +5,6 @@
 #include <QPair>
 #include <QSet>
 
-#include "InterfaceType.h"
 #include "MazeView.h"
 #include "Mouse.h"
 #include "Param.h"
@@ -35,8 +34,6 @@ public:
     // A user pressed an input button in the UI
     void inputButtonWasPressed(int button);
 
-    // Parameters set by the algorithm
-    InterfaceType getInterfaceType(bool canFinalize) const;
 signals:
 
     // Emit sanitized algorithm output
@@ -93,10 +90,6 @@ private:
     const Maze* m_maze;
     Mouse* m_mouse;
     MazeView* m_view;
-
-    // The interface type (DISCRETE or CONTINUOUS)
-    InterfaceType m_interfaceType;
-    mutable bool m_interfaceTypeFinalized;
 
     // Whether or a stop was requested
     bool m_stopRequested;

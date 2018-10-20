@@ -10,6 +10,7 @@
 #include <QPushButton>
 #include <QRadioButton>
 
+#include "Assert.h"
 #include "ConfigDialogField.h"
 #include "Map.h"
 #include "Maze.h"

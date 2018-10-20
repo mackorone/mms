@@ -37,11 +37,6 @@ QVector<TriangleGraphic> MouseGraphic::draw(
         m_mouse->getCurrentBodyPolygon(currentTranslation, currentRotation),
         ColorManager::get()->getMouseBodyColor(), 1.0));
 
-    // Overlay the center of mass polygon
-    buffer.append(SimUtilities::polygonToTriangleGraphics(
-        m_mouse->getCurrentCenterOfMassPolygon(currentTranslation, currentRotation),
-        ColorManager::get()->getMouseCenterOfMassColor(), 1.0));
-
     return buffer;
 }
 

@@ -2,6 +2,7 @@
 
 #include <QApplication>
 
+#include "Assert.h"
 #include "ColorManager.h"
 #include "FontImage.h"
 #include "Logging.h"

@@ -5,7 +5,6 @@
 
 #include "Assert.h"
 #include "FontImage.h"
-#include "Layout.h"
 #include "Logging.h"
 #include "Param.h"
 #include "Screen.h"
@@ -364,8 +363,12 @@ void Map::drawMap(
     }
     
     // Render the full map
-    QPair<int, int> fullMapPosition = Layout::getFullMapPosition();
-    QPair<int, int> fullMapSize = Layout::getFullMapSize(m_windowWidth, m_windowHeight);
+    int borderWidth = 5;
+    QPair<int, int> fullMapPosition = {borderWidth, borderWidth};
+    QPair<int, int> fullMapSize = {
+        m_windowWidth - 2 * borderWidth,
+        m_windowHeight - 2 * borderWidth
+    };
 
     // TODO: MACK
     auto matrix = TransformationMatrix::getFullMapTransformationMatrix(

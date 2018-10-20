@@ -1,5 +1,7 @@
 Release
 =======
+- Make a utility to convert mazes from/to different types
+- Kill the parameters class
 - Remove all maze algo code
 - Clean up mouse algo template
 - Auto-populate build and run commands

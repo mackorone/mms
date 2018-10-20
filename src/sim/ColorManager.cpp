@@ -18,14 +18,8 @@ const QString ColorManager::KEY_INCORRECTLY_DECLARED_WALL_COLOR =
     "incorrectly-declared-wall-color";
 const QString ColorManager::KEY_INCORRECTLY_DECLARED_NO_WALL_COLOR =
     "incorrectly-declared-no-wall-color";
-const QString ColorManager::KEY_DISTANCE_CORRECT_TILE_BASE_COLOR =
-    "distance-correct-tile-base-color";
 const QString ColorManager::KEY_MOUSE_BODY_COLOR = "mouse-body-color";
-const QString ColorManager::KEY_MOUSE_CENTER_OF_MASS_COLOR =
-    "mouse-center-of-mass-color";
 const QString ColorManager::KEY_MOUSE_WHEEL_COLOR = "mouse-wheel-color";
-const QString ColorManager::KEY_MOUSE_SENSOR_COLOR = "mouse-sensor-color";
-const QString ColorManager::KEY_MOUSE_VISION_COLOR = "mouse-vision-color";
 
 ColorManager* ColorManager::INSTANCE = nullptr;
 
@@ -67,28 +61,12 @@ Color ColorManager::getIncorrectlyDeclaredNoWallColor() {
     return m_incorrectlyDeclaredNoWallColor;
 }
 
-Color ColorManager::getDistanceCorrectTileBaseColor() {
-    return m_distanceCorrectTileBaseColor;
-}
-
 Color ColorManager::getMouseBodyColor() {
     return m_mouseBodyColor;
 }
 
-Color ColorManager::getMouseCenterOfMassColor() {
-    return m_mouseCenterOfMassColor;
-}
-
 Color ColorManager::getMouseWheelColor() {
     return m_mouseWheelColor;
-}
-
-Color ColorManager::getMouseSensorColor() {
-    return m_mouseSensorColor;
-}
-
-Color ColorManager::getMouseVisionColor() {
-    return m_mouseVisionColor;
 }
 
 ColorManager::ColorManager() :
@@ -106,43 +84,27 @@ ColorManager::ColorManager() :
     )),
     m_undeclaredWallColor(getColor(
         KEY_UNDECLARED_WALL_COLOR,
-        Color::DARK_RED
+        Color::BLACK
     )),
     m_undeclaredNoWallColor(getColor(
         KEY_UNDECLARED_NO_WALL_COLOR,
-        Color::DARK_GRAY
+        Color::BLACK
     )),
     m_incorrectlyDeclaredWallColor(getColor(
         KEY_INCORRECTLY_DECLARED_WALL_COLOR,
-        Color::ORANGE
+        Color::RED
     )),
     m_incorrectlyDeclaredNoWallColor(getColor(
         KEY_INCORRECTLY_DECLARED_NO_WALL_COLOR,
-        Color::DARK_CYAN
-    )),
-    m_distanceCorrectTileBaseColor(getColor(
-        KEY_DISTANCE_CORRECT_TILE_BASE_COLOR,
-        Color::DARK_YELLOW
+        Color::BLACK
     )),
     m_mouseBodyColor(getColor(
         KEY_MOUSE_BODY_COLOR,
         Color::BLUE
     )),
-    m_mouseCenterOfMassColor(getColor(
-        KEY_MOUSE_CENTER_OF_MASS_COLOR,
-        Color::ORANGE
-    )),
     m_mouseWheelColor(getColor(
         KEY_MOUSE_WHEEL_COLOR,
         Color::GREEN
-    )),
-    m_mouseSensorColor(getColor(
-        KEY_MOUSE_SENSOR_COLOR,
-        Color::GREEN
-    )),
-    m_mouseVisionColor(getColor(
-        KEY_MOUSE_VISION_COLOR,
-        Color::WHITE
     )) {
 }
 

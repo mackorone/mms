@@ -209,7 +209,8 @@ Window::Window(QWidget *parent) :
     // Resize the window
     resize(
         SettingsMisc::getRecentWindowWidth(),
-        SettingsMisc::getRecentWindowHeight());
+        SettingsMisc::getRecentWindowHeight()
+    );
 
     // Start the graphics loop
     // TODO: upforgrabs
