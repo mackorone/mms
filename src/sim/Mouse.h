@@ -6,8 +6,8 @@
 #include <QString>
 #include <QVector>
 
-#include "units/AngularVelocity.h"
 #include "units/Coordinate.h"
+#include "units/Duration.h"
 
 #include "Direction.h"
 #include "Maze.h"
@@ -92,7 +92,7 @@ private:
 
     // The gyro (rate of rotation), rotation, and translation
     // of the mouse, which change throughout execution
-    AngularVelocity m_currentGyro;
+    // AngularVelocity m_currentGyro;
     Coordinate m_currentTranslation;
     Angle m_currentRotation;
 

@@ -60,25 +60,6 @@ QVector<Triangle> Polygon::getTriangles() const {
     return m_triangles;
 }
 
-Area Polygon::area() const {
-
-    // See http://mathmodel.wolfram.com/PolygonArea.html
-
-    double sumOfDeterminants = 0.0;
-    for (int i = 0; i < m_vertices.size(); i += 1) {
-        int j = (i + 1) % m_vertices.size();
-        sumOfDeterminants += (
-            m_vertices.at(i).getX().getMeters() *
-            m_vertices.at(j).getY().getMeters()
-        );
-        sumOfDeterminants -= (
-            m_vertices.at(i).getY().getMeters() *
-            m_vertices.at(j).getX().getMeters()
-        );
-    }
-    return Area::MetersSquared(std::abs(sumOfDeterminants / 2.0));
-}
-
 Polygon Polygon::translate(const Coordinate& translation) const {
 
     QVector<Coordinate> vertices;

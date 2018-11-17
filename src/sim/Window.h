@@ -3,12 +3,15 @@
 #include <QCheckBox>
 #include <QCloseEvent>
 #include <QComboBox>
+#include <QDoubleSpinBox>
 #include <QLabel>
 #include <QMainWindow>
 #include <QPlainTextEdit>
 #include <QProcess>
 #include <QPushButton>
+#include <QQueue>
 #include <QRadioButton>
+#include <QTimer>
 
 #include "Assert.h"
 #include "ConfigDialogField.h"
@@ -94,7 +97,25 @@ private:
     QPushButton* m_runButton;
     QLabel* m_runStatus;
     QPlainTextEdit* m_runOutput;
+
+    // A buffer to hold incomplete commands, ensures we only
+    // process commands once they're terminated with a newline
     QStringList m_commandBuffer;
+
+    // Handle a single command
+    void processCommand(QString command);
+
+    // For processing serial commands asynchronously
+    QQueue<QString> m_commandQueue;
+    void processQueuedCommands();
+    QTimer* m_commandQueueTimer;
+
+    // TODO: MACK
+    double m_fracToMove;
+    QDoubleSpinBox* m_speedBox;
+    void scheduleAnotherCall();
+
+    // TODO: MACK
 
     void startRun();
     void onRunExit(int exitCode, QProcess::ExitStatus exitStatus);
@@ -117,9 +138,7 @@ private:
     void mouseAlgoRefresh(const QString& name = "");
     QVector<ConfigDialogField> mouseAlgoGetFields();
 
-    // Given some text (and a buffer containing past input), return
-    // all complete lines and append remaining text to the buffer
-    QStringList getLines(const QString& text, QStringList* buffer);
+    QStringList processText(const QString& text);
 
     // ----- Misc ----- //
 

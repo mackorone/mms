@@ -5,9 +5,9 @@
 #include <QPair>
 #include <QtMath>
 
-#include "units/AngularVelocity.h"
 #include "units/Distance.h"
 #include "units/Duration.h"
+#include "units/Speed.h"
 
 #include "Assert.h"
 #include "Color.h"
@@ -27,6 +27,9 @@ MouseInterface::MouseInterface(
         m_maze(maze),
         m_mouse(mouse),
         m_view(view),
+        m_isMoving(false),
+        m_movementFraction(0.0),
+        m_movement(Movement::MOVE_FORWARD),
         m_inOrigin(true),
         m_wheelSpeedFraction(1.0) {
 }
@@ -41,12 +44,17 @@ QString MouseInterface::dispatch(const QString& command) {
     // These functions should have sanity checks, e.g., correct
     // types, not finalizing static options more than once, etc.
 
+
+    // TODO: MACK - set/unset wall? set and clear?
+
     static const QString ACK_STRING = "ACK";
     static const QString NO_ACK_STRING = "";
     static const QString ERROR_STRING = "!";
 
     QStringList tokens = command.split(" ", QString::SkipEmptyParts);
     QString function = tokens.at(0);
+
+    // TODO: MACK - if it returns a response, it should be serial
 
     if (function == "getMazeWidth") {
         return QString::number(m_maze->getWidth());
@@ -64,8 +72,9 @@ QString MouseInterface::dispatch(const QString& command) {
         return SimUtilities::boolToStr(isWallLeft());
     }
     else if (function == "moveForward") {
+        // TODO: MACK
         moveForward();
-        return ACK_STRING;
+        return NO_ACK_STRING;
     }
     else if (function == "turnRight") {
         turnRight();
@@ -99,6 +108,7 @@ QString MouseInterface::dispatch(const QString& command) {
     else if (function == "setTileText") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
+        // TODO: MACK - don't allow empty string
         QString text = "";
         if (3 < tokens.size()) {
             text = tokens.at(3);
@@ -391,6 +401,42 @@ void MouseInterface::moveForwardImpl() {
     // Whether or not this movement will cause a crash
     bool crash = isWallFront();
 
+    // TODO: MACK
+    // TODO: MACK
+    // TODO: MACK
+    m_startingLocation = m_mouse->getCurrentDiscretizedTranslation();
+    m_startingDirection = m_mouse->getCurrentDiscretizedRotation();
+
+    switch (m_startingDirection) {
+        case Direction::NORTH:
+            m_destinationLocation = {
+                m_startingLocation.first,
+                m_startingLocation.second + 1,
+            };
+            break;
+        case Direction::EAST:
+            m_destinationLocation = {
+                m_startingLocation.first + 1,
+                m_startingLocation.second,
+            };
+            break;
+        case Direction::SOUTH:
+            m_destinationLocation = {
+                m_startingLocation.first,
+                m_startingLocation.second - 1,
+            };
+            break;
+        case Direction::WEST:
+            m_destinationLocation = {
+                m_startingLocation.first - 1,
+                m_startingLocation.second,
+            };
+            break;
+        default:
+            ASSERT_NEVER_RUNS();
+    }
+    m_destinationDirection = m_startingDirection;
+
     // Get the location of the crash, if it will happen
     QPair<Coordinate, Angle> crashLocation = getCrashLocation(
         m_mouse->getCurrentDiscretizedTranslation(),
@@ -403,7 +449,8 @@ void MouseInterface::moveForwardImpl() {
         Coordinate::Polar(tileLength, crashLocation.second);
 
     // Move forward to the crash location
-    moveForwardTo(crashLocation.first, crashLocation.second);
+    // TODO: MACK
+    //moveForwardTo(crashLocation.first, crashLocation.second);
 
     // If we didn't crash, finish the move forward
     if (!crash) {
@@ -468,7 +515,6 @@ QPair<QPair<int, int>, Direction> MouseInterface::getOpposingWall(
 }
 
 void MouseInterface::moveForwardTo(const Coordinate& destinationTranslation, const Angle& destinationRotation) {
-
     /*
 
     // This function assumes that we're already facing the correct direction,
@@ -501,7 +547,56 @@ void MouseInterface::moveForwardTo(const Coordinate& destinationTranslation, con
 
     */
 
-    m_mouse->teleport(destinationTranslation, destinationRotation);
+    m_destinationTranslation = destinationTranslation;
+    m_destinationRotation = destinationRotation;
+    // qDebug() << "DST X:" << m_destinationTranslation.getX().getMeters();
+    // qDebug() << "DST Y:" << m_destinationTranslation.getY().getMeters();
+    m_movement = Movement::MOVE_FORWARD;
+    m_isMoving = true;
+
+    // m_mouse->teleport(
+    //     (m_mouse->getCurrentTranslation() + destinationTranslation) / 2,
+    //      destinationRotation
+    // );
+    //m_mouse->teleport(destinationTranslation, destinationRotation);
+}
+
+bool MouseInterface::isMoving() {
+    return m_isMoving;
+}
+
+// TODO: Only applicable to moveForward
+double MouseInterface::fracRemaining() {
+    return (1.0 - m_movementFraction);
+    //static Distance tileLength = Distance::Meters(P()->wallLength() + P()->wallWidth());
+    //return (tileLength * (1.0 - m_movementFraction)).getMeters();
+}
+
+void MouseInterface::moveALittle(double frac) {
+
+    m_movementFraction += frac;
+    if (m_movementFraction > 1.0) {
+        m_movementFraction = 1.0;
+    }
+
+    // TODO: MACK
+    Coordinate start =
+        getCenterOfTile(m_startingLocation.first, m_startingLocation.second);
+    Coordinate end =
+        getCenterOfTile(m_destinationLocation.first, m_destinationLocation.second);
+
+    double one = 1.0 - m_movementFraction;
+    double two = m_movementFraction;
+
+    m_mouse->teleport(
+        start * one + end * two,
+        m_destinationRotation
+    );
+
+    if (m_movementFraction == 1.0) {
+        m_movementFraction = 0;
+        m_isMoving = false;
+    }
 }
 
 void MouseInterface::arcTo(const Coordinate& destinationTranslation, const Angle& destinationRotation,

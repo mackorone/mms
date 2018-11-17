@@ -12,6 +12,7 @@ Release
 
 Features
 ========
+- Respond with "bump" (or something) if can't move forward
 - Add a "new algo" wizard to make it easy to bootstap a new algo
 - Support more maze file formats
     - .MAZ, .mz2, https://code.google.com/p/maze-solver/wiki/MazeFileFormats

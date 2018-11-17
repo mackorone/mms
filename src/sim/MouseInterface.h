@@ -11,6 +11,12 @@
 
 namespace mms {
 
+enum class Movement {
+    MOVE_FORWARD,
+    TURN_RIGHT,
+    TURN_LEFT,
+};
+
 class MouseInterface : public QObject {
 
     Q_OBJECT
@@ -28,11 +34,13 @@ public:
     // Execute a request, return a response
     QString dispatch(const QString& command);
 
-    // Request that the mouse algorithm exit
-    void requestStop();
-
     // A user pressed an input button in the UI
     void inputButtonWasPressed(int button);
+
+    // TODO: MACK
+    bool isMoving();
+    double fracRemaining();
+    void moveALittle(double frac);
 
 signals:
 
@@ -92,7 +100,23 @@ private:
     MazeView* m_view;
 
     // Whether or a stop was requested
+    // TODO: MACK - delete this
     bool m_stopRequested;
+
+    // TODO: MACK
+
+    QPair<int, int> m_startingLocation;
+    Direction m_startingDirection;
+
+    QPair<int, int> m_destinationLocation;
+    Direction m_destinationDirection;
+
+    Movement m_movement;
+    bool m_isMoving;
+    double m_movementFraction;
+
+    Coordinate m_destinationTranslation;
+    Angle m_destinationRotation;
 
     // Whether or not the input buttons are pressed/acknowleged
     QMap<int, bool> m_inputButtonsPressed;

@@ -30,14 +30,16 @@ namespace mms {
 
 Window::Window(QWidget *parent) :
         QMainWindow(parent),
-        m_truthButton(new QRadioButton("Truth")),
-        m_viewButton(new QRadioButton("Mouse")),
         m_maze(nullptr),
         m_truth(nullptr),
         m_mouse(nullptr),
         m_mouseGraphic(nullptr),
         m_view(nullptr),
         m_runInterface(nullptr),
+        m_commandQueueTimer(new QTimer()),
+
+        // TODO: MACK
+        m_fracToMove(0.0),
 
         // MouseAlgosTab
         m_mouseAlgoWidget(new QWidget()),
@@ -76,30 +78,13 @@ Window::Window(QWidget *parent) :
     mapHolderLayout->setSpacing(0);
     m_map.setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 
-    // Add the map options
-    QWidget* mapOptionsBox = new QWidget();
-    QHBoxLayout* mapOptionsLayout = new QHBoxLayout();
-    mapOptionsBox->setLayout(mapOptionsLayout);
-    mapHolderLayout->addWidget(mapOptionsBox);
-    mapOptionsLayout->addWidget(m_truthButton);
-    mapOptionsLayout->addWidget(m_viewButton);
-
-    // Set the default values for the map options
-    m_truthButton->setChecked(true);
-    m_viewButton->setEnabled(false);
-
-	// Add functionality to the buttons
-    connect(m_viewButton, &QRadioButton::toggled, this, [=](bool checked){
-        m_map.setView(checked ? m_view : m_truth);
-    });
-
     // Create the mouse algos tab
     mouseAlgoTabInit();
     splitter->addWidget(m_mouseAlgoWidget);
 
     // Minor layout stuff
     m_mouseAlgoWidget->layout()->setContentsMargins(6, 6, 6, 6);
-    splitter->setSizes({550, 360});
+    splitter->setSizes({600, 360});
 
     // Load a maze
     loadMazeFile(Resources::getMazes().at(2));
@@ -234,6 +219,12 @@ Window::Window(QWidget *parent) :
         }
     );
     mapTimer->start(secondsPerFrame * 1000);
+
+    m_commandQueueTimer->setSingleShot(true);
+    connect(
+        m_commandQueueTimer, &QTimer::timeout,
+        this, &Window::processQueuedCommands
+    );
 
     // TODO: MACK - this is very expensive - fix it
     /*
@@ -614,11 +605,11 @@ void Window::mouseAlgoTabInit() {
     controlLayout->addLayout(speedsLayout);
     double maxSpeed = 10.0; // 10x normal speed
     QSlider* speedSlider = new QSlider(Qt::Horizontal);
-    QDoubleSpinBox* speedBox = new QDoubleSpinBox();
-    speedBox->setRange(maxSpeed / 100.0, maxSpeed);
+    m_speedBox = new QDoubleSpinBox();
+    m_speedBox->setRange(maxSpeed / 100.0, maxSpeed);
     speedsLayout->addWidget(new QLabel("Speed"));
     speedsLayout->addWidget(speedSlider);
-    speedsLayout->addWidget(speedBox);
+    speedsLayout->addWidget(m_speedBox);
     speedsLayout->addWidget(m_mouseAlgoPauseButton);
 
     // Set up the pause button initial state
@@ -626,23 +617,24 @@ void Window::mouseAlgoTabInit() {
     mouseAlgoResume();
 
     // Add the logic for the speed slider
+    // TODO: MACK - this generates way too many events - any way to generate just a few?
     connect(
         speedSlider, &QSlider::valueChanged,
         this, [=](int value){
             double fraction = (value + 1.0) / 100.0;
-            speedBox->setValue(fraction * maxSpeed);
+            m_speedBox->setValue(fraction * maxSpeed);
             m_model.setSimSpeed(fraction * maxSpeed);
         }
     );
     connect(
-        speedBox,
+        m_speedBox,
         static_cast<void(QDoubleSpinBox::*)()>(&QDoubleSpinBox::editingFinished),
         this, [=](){
-            double percent = speedBox->value() / speedBox->maximum() * 100.0;
+            double percent = m_speedBox->value() / m_speedBox->maximum() * 100.0;
             speedSlider->setValue(static_cast<int>(percent - 1.0));
         }
     );
-    speedSlider->setValue(100.0 / speedBox->maximum() - 1.0);
+    speedSlider->setValue(100.0 / m_speedBox->maximum() - 1.0);
 
     // Add the input buttons
     QHBoxLayout* inputButtonsLayout = new QHBoxLayout();
@@ -914,6 +906,88 @@ void Window::onBuildExit(int exitCode, QProcess::ExitStatus exitStatus) {
     m_buildProcess = nullptr;
 }
 
+void Window::processCommand(QString command) {
+
+	// TODO: MACK - print things that don't look like a command
+
+    // Process no-response commands inline
+    if (
+        command.startsWith("setTileColor") ||
+        command.startsWith("clearTileColor") ||
+        command.startsWith("clearAllTileColor") ||
+        command.startsWith("setTileText") ||
+        command.startsWith("clearTileText") ||
+        command.startsWith("clearAllTileText") ||
+        command.startsWith("declareWall") ||
+        command.startsWith("undeclareWall")
+    ) {
+        m_runInterface->dispatch(command);
+        return;
+    }
+
+    // Enqueue the serial command, process it if
+    // future processing is not already scheduled
+    m_commandQueue.enqueue(command);
+    if (!m_commandQueueTimer->isActive()) {
+        processQueuedCommands();
+    }
+}
+
+// TODO: MACK
+void Window::processQueuedCommands() {
+    while (!m_commandQueue.isEmpty()) {
+        if (m_runInterface->isMoving()) {
+            // Move a little bit
+            // TODO: MACK _ we should actually store the speed value used
+            //  double seconds = SimUtilities::getHighResTimestamp() - m_lastTimestamp;
+            //  double meters = m_metersPerSecond * seconds;
+            //  int ticks = static_cast<int>(meters * 100);
+            m_runInterface->moveALittle(m_fracToMove);
+            if (!m_runInterface->isMoving()) {
+                QString response = "ACK";
+                // qDebug() << "ASYNC RESPONSE:" << response;
+                m_runProcess->write((response + "\n").toStdString().c_str());
+                m_commandQueue.dequeue();
+            }
+            else {
+                scheduleAnotherCall();
+                break;
+            }
+        }
+        else {
+            QString response = m_runInterface->dispatch(m_commandQueue.head());
+            if (!response.isEmpty()) {
+                m_runProcess->write((response + "\n").toStdString().c_str());
+                m_commandQueue.dequeue();
+            } else {
+                scheduleAnotherCall();
+                break;
+            }
+            continue;
+        }
+    }
+}
+
+void Window::scheduleAnotherCall() {
+    double metersPerSecond = m_speedBox->value();
+    double fracRemaining = m_runInterface->fracRemaining();
+    double metersRemaining = fracRemaining * .18;
+    double secondsRemaining = metersRemaining / metersPerSecond;
+    m_fracToMove = 1.0;
+
+    // TODO: MACK
+    double MAX_SECONDS = 0.008;
+    if (secondsRemaining > MAX_SECONDS) {
+        secondsRemaining = MAX_SECONDS;
+        double metersToMove = metersPerSecond * MAX_SECONDS;
+        m_fracToMove = metersToMove / .18;
+    }
+    else {
+        m_fracToMove = 1.0;
+    }
+    m_commandQueueTimer->start(secondsRemaining * 1000);
+}
+
 void Window::startRun() {
 
     // Only one algo running at a time
@@ -991,39 +1065,22 @@ void Window::startRun() {
     m_mouseAlgoOutputTabWidget->setCurrentWidget(m_runOutput);
 
     // Print stdout
-    connect(
-        process,
-        &QProcess::readyReadStandardOutput,
-        interface,
-        [=](){
-            QString output = process->readAllStandardOutput();
-            if (output.endsWith("\n")) {
-                output.truncate(output.size() - 1);
-            }
-            m_runOutput->appendPlainText(output);
+    connect(process, &QProcess::readyReadStandardOutput, this, [=](){
+        QString output = process->readAllStandardOutput();
+        if (output.endsWith("\n")) {
+            output.truncate(output.size() - 1);
         }
-    );
+        m_runOutput->appendPlainText(output);
+    });
 
-	// TODO: MACK - print things that don't look like a command
-
-    // Process all stderr commands as appropriate
-    connect(
-        process,
-        &QProcess::readyReadStandardError,
-        // Handle the process's stderr on the mouse's event loop to
-        // prevent the UI from freezing during a blocking mouse action
-        interface,
-        [=](){
-            QString text = process->readAllStandardError();
-            QStringList lines = getLines(text, &m_commandBuffer);
-            for (const QString& line : lines) {
-                QString response = interface->dispatch(line);
-                if (!response.isEmpty()) {
-                    process->write((response + "\n").toStdString().c_str());
-                }
-            }
+    // Process commands from stderr
+    connect(process, &QProcess::readyReadStandardError, this, [=](){
+        QString text = process->readAllStandardError();
+        QStringList commands = processText(text);
+        for (QString command : commands) {
+            processCommand(command);
         }
-    );
+    });
 
     // Connect the input buttons to the algorithm
     for (int i = 0; i < m_mouseAlgoInputButtons.size(); i += 1) {
@@ -1087,8 +1144,7 @@ void Window::startRun() {
 
         // TODO: MACK - most of these shouldn't be necessary
         // UI updates on successful start
-        m_viewButton->setEnabled(true);
-        m_viewButton->setChecked(true);
+        m_map.setView(m_view);
         m_mouseAlgoPauseButton->setEnabled(true);
         for (QPushButton* button : m_mouseAlgoInputButtons) {
             button->setEnabled(true);
@@ -1142,6 +1198,9 @@ void Window::onRunExit(int exitCode, QProcess::ExitStatus exitStatus) {
     delete m_runInterface;
     m_runInterface = nullptr;
     m_commandBuffer.clear();
+    // TODO: MACK - make sure this works as expected
+    m_commandQueueTimer->stop();
+    m_commandQueue.clear();
 }
 
 void Window::removeMouseFromMaze() {
@@ -1168,9 +1227,6 @@ void Window::removeMouseFromMaze() {
 
     // TODO: MACK - most of these shouldn't be necessary
     // Clean up the UI
-    m_truthButton->setChecked(true);
-    m_viewButton->setEnabled(false);
-    m_mouseAlgoPauseButton->setEnabled(false);
     mouseAlgoResume();
     for (QPushButton* button : m_mouseAlgoInputButtons) {
         button->setEnabled(false);
@@ -1277,7 +1333,7 @@ QVector<ConfigDialogField> Window::mouseAlgoGetFields() {
     };
 }
 
-QStringList Window::getLines(const QString& text, QStringList* buffer) {
+QStringList Window::processText(const QString& text) {
 
     // TODO: upforgrabs
     // Determine whether or not this function is perf sensitive. If so,
@@ -1293,8 +1349,8 @@ QStringList Window::getLines(const QString& text, QStringList* buffer) {
     // complete line; combine it with the contents of the buffer and append
     // it to the list of lines to be returned
     if (1 < parts.size()) {
-        lines.append(buffer->join("") + parts.at(0));
-        buffer->clear();
+        lines.append(m_commandBuffer.join("") + parts.at(0));
+        m_commandBuffer.clear();
     }
 
     // All newline-separated parts in the text are lines
@@ -1304,7 +1360,7 @@ QStringList Window::getLines(const QString& text, QStringList* buffer) {
 
     // Store the last part of the text (empty string if the text ended
     // with newline) in the buffer, to be combined with future input
-    buffer->append(parts.at(parts.size() - 1));
+    m_commandBuffer.append(parts.at(parts.size() - 1));
 
     return lines;
 }

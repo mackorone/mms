@@ -20,8 +20,6 @@ public:
     QVector<Coordinate> getVertices() const;
     QVector<Triangle> getTriangles() const;
 
-    Area area() const;
-
     Polygon translate(const Coordinate& translation) const;
     Polygon rotateAroundPoint(const Angle& angle, const Coordinate& point) const;
 
