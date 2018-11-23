@@ -18,7 +18,6 @@
 #include "Map.h"
 #include "Maze.h"
 #include "MazeView.h"
-#include "Model.h"
 #include "MouseAlgoStatsWidget.h"
 #include "MouseGraphic.h"
 #include "MouseInterface.h"
@@ -44,9 +43,6 @@ signals:
     void mouseAlgoCannotStart(QString errorString);
 
 private:
-
-    // The model object
-    Model m_model;
 
     // The map object
     Map m_map;

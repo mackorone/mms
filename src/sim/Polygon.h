@@ -4,7 +4,6 @@
 
 #include "Triangle.h"
 #include "units/Angle.h"
-#include "units/Area.h"
 #include "units/Coordinate.h"
 
 namespace mms {

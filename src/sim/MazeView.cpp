@@ -1,8 +1,8 @@
 #include "MazeView.h"
 
 #include "BufferInterface.h"
+#include "Dimensions.h"
 #include "MazeGraphic.h"
-#include "Param.h"
 
 namespace mms {
 
@@ -44,8 +44,8 @@ void MazeView::initText(int numRows, int numCols) {
     // Initialze the tile text in the buffer class,
     // do caching for speed improvement
     m_bufferInterface.initTileGraphicText(
-        Distance::Meters(P()->wallLength()),
-        Distance::Meters(P()->wallWidth()),
+        Dimensions::wallLength(),
+        Dimensions::wallWidth(),
         {numRows, numCols}
     );
         

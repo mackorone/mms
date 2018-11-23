@@ -9,7 +9,6 @@
 #include <random>
 
 #include "Assert.h"
-#include "Param.h"
 
 namespace mms {
 
@@ -19,7 +18,7 @@ void SimUtilities::quit() {
 }
 
 int SimUtilities::randomInt() {
-    static std::mt19937 generator(P()->randomSeed());
+    static std::mt19937 generator(0);
     return generator();
 }
 

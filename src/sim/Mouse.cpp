@@ -9,8 +9,8 @@
 #include "units/Speed.h"
 
 #include "Assert.h"
+#include "Dimensions.h"
 #include "GeometryUtilities.h"
-#include "Param.h"
 
 namespace mms {
 
@@ -19,7 +19,7 @@ Mouse::Mouse(const Maze* maze) :
     m_crashed(false) {
 
     // The initial translation of the mouse is just the center of the starting tile
-    Distance halfOfTileDistance = Distance::Meters((P()->wallLength() + P()->wallWidth()) / 2.0);
+    Distance halfOfTileDistance = Dimensions::halfTileLength();
     m_initialTranslation = Coordinate::Cartesian(halfOfTileDistance, halfOfTileDistance);
     m_currentTranslation = m_initialTranslation;
 
@@ -66,17 +66,9 @@ Mouse::Mouse(const Maze* maze) :
     }
     m_initialWheelPolygon = Polygon(wheelVertices);
 
-    // Initialize the center of mass polygon
-    m_initialCenterOfMassPolygon = GeometryUtilities::createCirclePolygon(
-        m_initialTranslation,
-        Distance::Meters(.005),
-        8 // Num sides
-    );
-
     // Force triangulation of the drawable polygons, thus ensuring
     // that we only triangulate once, at the beginning of execution
     m_initialBodyPolygon.getTriangles();
-    m_initialCenterOfMassPolygon.getTriangles();
     m_initialWheelPolygon.getTriangles();
 }
 
@@ -123,7 +115,7 @@ const Angle& Mouse::getCurrentRotation() const {
 }
 
 QPair<int, int> Mouse::getCurrentDiscretizedTranslation() const {
-    static Distance tileLength = Distance::Meters(P()->wallLength() + P()->wallWidth());
+    static Distance tileLength = Dimensions::tileLength();
     Coordinate currentTranslation = getCurrentTranslation();
     int x = static_cast<int>(qFloor(currentTranslation.getX() / tileLength));
     int y = static_cast<int>(qFloor(currentTranslation.getY() / tileLength));
@@ -154,15 +146,6 @@ Polygon Mouse::getCurrentBodyPolygon(
         const Angle& currentRotation) const {
     return getCurrentPolygon(
         m_initialBodyPolygon,
-        currentTranslation,
-        currentRotation);
-}
-
-Polygon Mouse::getCurrentCenterOfMassPolygon(
-        const Coordinate& currentTranslation,
-        const Angle& currentRotation) const {
-    return getCurrentPolygon(
-        m_initialCenterOfMassPolygon,
         currentTranslation,
         currentRotation);
 }

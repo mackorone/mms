@@ -6,7 +6,6 @@
 #include "Color.h"
 #include "ColorManager.h"
 #include "FontImage.h"
-#include "Param.h"
 
 namespace mms {
 

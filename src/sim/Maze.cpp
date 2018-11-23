@@ -10,7 +10,6 @@
 #include "MazeFileType.h"
 #include "MazeFileUtilities.h"
 #include "MazeUtilities.h"
-#include "Param.h"
 #include "Tile.h"
 
 namespace mms {

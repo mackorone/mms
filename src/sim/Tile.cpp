@@ -1,6 +1,6 @@
 #include "Tile.h"
 
-#include "Param.h"
+#include "Dimensions.h"
 
 namespace mms{
 
@@ -94,8 +94,8 @@ void Tile::initPolygons(int mazeWidth, int mazeHeight) {
 
 
 void Tile::initFullPolygon(int mazeWidth, int mazeHeight) {
-    Distance halfWallWidth = Distance::Meters(P()->wallWidth()) / 2.0;
-    Distance tileLength = Distance::Meters(P()->wallLength() + P()->wallWidth());
+    Distance halfWallWidth = Dimensions::halfWallWidth();
+    Distance tileLength = Dimensions::tileLength();
     Coordinate lowerLeftPoint = Coordinate::Cartesian(
         tileLength * getX() - halfWallWidth * (getX() == 0 ? 1 : 0),
         tileLength * getY() - halfWallWidth * (getY() == 0 ? 1 : 0)
@@ -122,7 +122,7 @@ void Tile::initFullPolygon(int mazeWidth, int mazeHeight) {
 
 void Tile::initInteriorPolygon(int mazeWidth, int mazeHeight) {
 
-    Distance halfWallWidth = Distance::Meters(P()->wallWidth()) / 2.0;
+    Distance halfWallWidth = Dimensions::halfWallWidth();
     Coordinate lowerLeftPoint = m_fullPolygon.getVertices().at(0);
     Coordinate upperLeftPoint = m_fullPolygon.getVertices().at(1);
     Coordinate upperRightPoint = m_fullPolygon.getVertices().at(2);

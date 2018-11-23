@@ -17,8 +17,6 @@
 
 #include "ColorManager.h"
 #include "ConfigDialog.h"
-#include "Model.h"
-#include "Param.h"
 #include "ProcessUtilities.h"
 #include "Resources.h"
 #include "SettingsMouseAlgos.h"
@@ -214,7 +212,6 @@ Window::Window(QWidget *parent) :
                 return;
             }
             m_map.update();
-            //m_model.step();
             then = now;
         }
     );
@@ -391,7 +388,6 @@ void Window::setMaze(Maze* maze) {
     }
 
     // Update pointers held by other objects
-    m_model.setMaze(m_maze);
     m_map.setMaze(m_maze);
     m_map.setView(m_truth);
 
@@ -435,8 +431,8 @@ QPair<QStringList, QVector<QVariant>> Window::getRunStats() const {
     };
 
     QVector<QVariant> values;
-    MouseStats stats = m_model.getMouseStats();
 
+    /*
     // This means the mouse isn't in the maze
     if (stats.closestDistanceToCenter < 0) {
         for (int i = 0; i < keys.size(); i += 1) {
@@ -471,6 +467,7 @@ QPair<QStringList, QVector<QVariant>> Window::getRunStats() const {
         );
         values.append((m_mouse->didCrash() ? "TRUE" : "FALSE"));
     }
+    */
 
     return {keys, values};
 }
@@ -623,7 +620,6 @@ void Window::mouseAlgoTabInit() {
         this, [=](int value){
             double fraction = (value + 1.0) / 100.0;
             m_speedBox->setValue(fraction * maxSpeed);
-            m_model.setSimSpeed(fraction * maxSpeed);
         }
     );
     connect(
@@ -933,7 +929,7 @@ void Window::processCommand(QString command) {
     }
 }
 
-// TODO: MACK
+// TODO: MACK - currently turning doesn't work as expected
 void Window::processQueuedCommands() {
     while (!m_commandQueue.isEmpty()) {
         if (m_runInterface->isMoving()) {
@@ -1048,9 +1044,6 @@ void Window::startRun() {
     m_mouse = new Mouse(m_maze);
     m_view = new MazeView(m_maze);
     m_mouseGraphic = new MouseGraphic(m_mouse);
-
-    // Add the mouse to model
-    m_model.setMouse(m_mouse);
 
     // New interface and process
     MouseInterface* interface = new MouseInterface(
@@ -1211,7 +1204,6 @@ void Window::removeMouseFromMaze() {
     }
 
     // Update some objects
-    m_model.removeMouse();
     m_map.setView(m_truth);
     m_map.setMouseGraphic(nullptr);
 
@@ -1260,12 +1252,10 @@ void Window::handleMouseAlgoCannotStart(QString errorString) {
         "QLabel { background: rgb(255, 150, 150); }"
     );
     m_runOutput->appendPlainText(errorString);
-    m_model.removeMouse();
 }
 
 
 void Window::mouseAlgoPause() {
-    m_model.setPaused(true);
     m_mouseAlgoPauseButton->setText("Resume");
     disconnect(
         m_mouseAlgoPauseButton, &QPushButton::clicked,
@@ -1278,7 +1268,6 @@ void Window::mouseAlgoPause() {
 }
 
 void Window::mouseAlgoResume() {
-    m_model.setPaused(false);
     m_mouseAlgoPauseButton->setText("Pause");
     disconnect(
         m_mouseAlgoPauseButton, &QPushButton::clicked,

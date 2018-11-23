@@ -54,11 +54,6 @@ public:
         const Coordinate& currentTranslation,
         const Angle& currentRotation) const;
 
-    // Retrieves the center of mass polygon of the mouse
-    Polygon getCurrentCenterOfMassPolygon(
-        const Coordinate& currentTranslation,
-        const Angle& currentRotation) const;
-
     // Retrieves the polygons of the wheels of the robot
     Polygon getCurrentWheelPolygon(
         const Coordinate& currentTranslation,
@@ -87,7 +82,6 @@ private:
 
     // The parts of the mouse, as when positioned at m_initialTranslation and m_initialRotation
     Polygon m_initialBodyPolygon; // The polygon of strictly the body of the mouse
-    Polygon m_initialCenterOfMassPolygon; // The polygon overlaying the center of mass of the mouse
     Polygon m_initialWheelPolygon; // The wheels of the mouse
 
     // The gyro (rate of rotation), rotation, and translation

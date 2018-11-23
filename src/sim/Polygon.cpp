@@ -83,15 +83,15 @@ Polygon Polygon::rotateAroundPoint(const Angle& angle, const Coordinate& point) 
 
     QVector<Coordinate> vertices;
     for (const Coordinate& vertex : m_vertices) {
-        vertices.push_back(GeometryUtilities::rotateVertexAroundPoint(vertex, angle, point));
+        vertices.push_back(GeometryUtilities::rotateVertexAroundPoint(vertex, point, angle));
     }
 
     QVector<Triangle> triangles;
     for (const Triangle& triangle : m_triangles) {
         triangles.push_back({
-            GeometryUtilities::rotateVertexAroundPoint(triangle.p1, angle, point),
-            GeometryUtilities::rotateVertexAroundPoint(triangle.p2, angle, point),
-            GeometryUtilities::rotateVertexAroundPoint(triangle.p3, angle, point),
+            GeometryUtilities::rotateVertexAroundPoint(triangle.p1, point, angle),
+            GeometryUtilities::rotateVertexAroundPoint(triangle.p2, point, angle),
+            GeometryUtilities::rotateVertexAroundPoint(triangle.p3, point, angle),
         });
     }
 

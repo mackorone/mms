@@ -1,7 +1,6 @@
 #include "MouseGraphic.h"
 
 #include "ColorManager.h"
-#include "Param.h"
 #include "SimUtilities.h"
 
 namespace mms {

@@ -9,7 +9,6 @@
 #include "Screen.h"
 #include "Settings.h"
 #include "SimTime.h"
-#include "Model.h"
 #include "Window.h"
 
 namespace mms {
@@ -22,20 +21,13 @@ int Driver::drive(int argc, char* argv[]) {
     // Initialize Qt
     QApplication app(argc, argv);
 
-    // Initialize logging
+    // Initialize singletons (order matters)
     Logging::init();
-
-    // Initialize settings file
     Settings::init();
-
-    // Initialize other singletons
     ColorManager::init();
     FontImage::init();
     Screen::init();
     SimTime::init();
-
-    // Initialize the Param object
-    P();
 
     // Create the main window
     Window window;

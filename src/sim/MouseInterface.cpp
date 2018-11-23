@@ -12,30 +12,23 @@
 #include "Assert.h"
 #include "Color.h"
 #include "ColorManager.h"
+#include "Dimensions.h"
 #include "FontImage.h"
 #include "Logging.h"
-#include "Param.h"
 #include "SimTime.h"
 #include "SimUtilities.h"
 
 namespace mms {
 
 MouseInterface::MouseInterface(
-        const Maze* maze,
-        Mouse* mouse,
-        MazeView* view) :
-        m_maze(maze),
-        m_mouse(mouse),
-        m_view(view),
-        m_isMoving(false),
-        m_movementFraction(0.0),
-        m_movement(Movement::MOVE_FORWARD),
-        m_inOrigin(true),
-        m_wheelSpeedFraction(1.0) {
-}
-
-void MouseInterface::emitMouseAlgoStarted() {
-    emit mouseAlgoStarted();
+    const Maze* maze,
+    Mouse* mouse,
+    MazeView* view) :
+    m_maze(maze),
+    m_mouse(mouse),
+    m_view(view),
+    m_movement(Movement::NONE),
+    m_progress(0.0) {
 }
 
 QString MouseInterface::dispatch(const QString& command) {
@@ -77,12 +70,14 @@ QString MouseInterface::dispatch(const QString& command) {
         return NO_ACK_STRING;
     }
     else if (function == "turnRight") {
+        // TODO: MACK
         turnRight();
-        return ACK_STRING;
+        return NO_ACK_STRING;
     }
     else if (function == "turnLeft") {
+        // TODO: MACK
         turnLeft();
-        return ACK_STRING;
+        return NO_ACK_STRING;
     }
     else if (function == "reset") {
         reset();
@@ -183,15 +178,22 @@ bool MouseInterface::isWallLeft() {
 }
 
 void MouseInterface::moveForward() {
-    moveForwardImpl();
+    if (isWallFront()) {
+        // TODO: MACK
+        return;
+    }
+    updateStartingLocationAndDirection();
+    m_movement = Movement::MOVE_FORWARD;
 }
 
 void MouseInterface::turnRight() {
-    turnRightImpl();
+    updateStartingLocationAndDirection();
+    m_movement = Movement::TURN_RIGHT;
 }
 
 void MouseInterface::turnLeft() {
-    turnLeftImpl();
+    updateStartingLocationAndDirection();
+    m_movement = Movement::TURN_LEFT;
 }
 
 void MouseInterface::reset() {
@@ -215,7 +217,8 @@ void MouseInterface::setTileColor(int x, int y, char color) {
         return;
     }
 
-    setTileColorImpl(x, y, color);
+    m_view->getMazeGraphic()->setTileColor(x, y, CHAR_TO_COLOR().value(color));
+    m_tilesWithColor.insert({x, y});
 }
 
 void MouseInterface::clearTileColor(int x, int y) {
@@ -247,7 +250,24 @@ void MouseInterface::setTileText(int x, int y, const QString& text) {
         return;
     }
 
-    setTileTextImpl(x, y, text);
+    // Ensure that all characters are valid
+    QString filtered;
+    for (int i = 0; i < text.size(); i += 1) {
+        QChar c = text.at(i);
+        if (!FontImage::get()->positions().contains(c)) {
+            qWarning().noquote().nospace()
+                << "Unable to set the tile text for unprintable character \""
+                << (c == '\n' ? "\\n" :
+                   (c == '\t' ? "\\t" :
+                   (c == '\r' ? "\\r" : QString(c))))
+                << "\". Using the character \"?\" instead.";
+            c = '?';
+        }
+        filtered += c;
+    }
+
+    m_view->getMazeGraphic()->setTileText(x, y, filtered);
+    m_tilesWithText.insert({x, y});
 }
 
 void MouseInterface::clearTileText(int x, int y) {
@@ -355,9 +375,21 @@ void MouseInterface::acknowledgeInputButtonPressed(int inputButton) {
     emit inputButtonWasAcknowledged(inputButton);
 }
 
-void MouseInterface::setTileColorImpl(int x, int y, char color) {
-    m_view->getMazeGraphic()->setTileColor(x, y, CHAR_TO_COLOR().value(color));
-    m_tilesWithColor.insert({x, y});
+void MouseInterface::updateStartingLocationAndDirection() {
+    m_startingLocation = m_mouse->getCurrentDiscretizedTranslation();
+    m_startingDirection = m_mouse->getCurrentDiscretizedRotation();
+}
+
+double MouseInterface::progressRequired(Movement movement) {
+    switch (movement) {
+        case Movement::MOVE_FORWARD:
+            return 100.0;
+        case Movement::TURN_RIGHT:
+        case Movement::TURN_LEFT:
+            return 50.0;
+        default:
+            ASSERT_NEVER_RUNS();
+    }
 }
 
 void MouseInterface::clearTileColorImpl(int x, int y) {
@@ -365,113 +397,11 @@ void MouseInterface::clearTileColorImpl(int x, int y) {
         x, y, ColorManager::get()->getTileBaseColor());
 }
 
-void MouseInterface::setTileTextImpl(int x, int y, const QString& text) {
-
-    // Ensure that all characters are valid
-    QString filtered;
-    for (int i = 0; i < text.size(); i += 1) {
-        QChar c = text.at(i);
-        if (!FontImage::get()->positions().contains(c)) {
-            qWarning().noquote().nospace()
-                << "Unable to set the tile text for unprintable character \""
-                << (c == '\n' ? "\\n" :
-                   (c == '\t' ? "\\t" :
-                   (c == '\r' ? "\\r" : QString(c))))
-                << "\". Using the character \"?\" instead.";
-            c = '?';
-        }
-        filtered += c;
-    }
-
-    m_view->getMazeGraphic()->setTileText(x, y, filtered);
-    m_tilesWithText.insert({x, y});
-}
-
 void MouseInterface::clearTileTextImpl(int x, int y) {
     m_view->getMazeGraphic()->setTileText(x, y, {});
 }
 
-void MouseInterface::moveForwardImpl() {
-
-    static Distance halfWallLengthPlusWallWidth =
-        Distance::Meters(P()->wallLength() / 2.0 + P()->wallWidth());
-    static Distance tileLength = Distance::Meters(P()->wallLength() + P()->wallWidth());
-    static Distance wallWidth = Distance::Meters(P()->wallWidth());
-
-    // Whether or not this movement will cause a crash
-    bool crash = isWallFront();
-
-    // TODO: MACK
-    // TODO: MACK
-    // TODO: MACK
-    m_startingLocation = m_mouse->getCurrentDiscretizedTranslation();
-    m_startingDirection = m_mouse->getCurrentDiscretizedRotation();
-
-    switch (m_startingDirection) {
-        case Direction::NORTH:
-            m_destinationLocation = {
-                m_startingLocation.first,
-                m_startingLocation.second + 1,
-            };
-            break;
-        case Direction::EAST:
-            m_destinationLocation = {
-                m_startingLocation.first + 1,
-                m_startingLocation.second,
-            };
-            break;
-        case Direction::SOUTH:
-            m_destinationLocation = {
-                m_startingLocation.first,
-                m_startingLocation.second - 1,
-            };
-            break;
-        case Direction::WEST:
-            m_destinationLocation = {
-                m_startingLocation.first - 1,
-                m_startingLocation.second,
-            };
-            break;
-        default:
-            ASSERT_NEVER_RUNS();
-    }
-    m_destinationDirection = m_startingDirection;
-
-    // Get the location of the crash, if it will happen
-    QPair<Coordinate, Angle> crashLocation = getCrashLocation(
-        m_mouse->getCurrentDiscretizedTranslation(),
-        m_mouse->getCurrentDiscretizedRotation()
-    );
-
-    // Get the destination translation of the mouse
-    Coordinate destinationTranslation =
-        m_mouse->getCurrentTranslation() +
-        Coordinate::Polar(tileLength, crashLocation.second);
-
-    // Move forward to the crash location
-    // TODO: MACK
-    //moveForwardTo(crashLocation.first, crashLocation.second);
-
-    // If we didn't crash, finish the move forward
-    if (!crash) {
-        moveForwardTo(destinationTranslation, crashLocation.second);
-    }
-
-    // Otherwise, set the crashed state (if it hasn't already been set)
-    else if (!m_mouse->didCrash()) {
-        m_mouse->setCrashed();
-    }
-}
-
-void MouseInterface::turnLeftImpl() {
-    turnTo(m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation() + Angle::Degrees(90));
-}
-
-void MouseInterface::turnRightImpl() {
-    turnTo(m_mouse->getCurrentTranslation(), m_mouse->getCurrentRotation() - Angle::Degrees(90));
-}
-
-bool MouseInterface::isWall(QPair<QPair<int, int>, Direction> wall) {
+bool MouseInterface::isWall(QPair<QPair<int, int>, Direction> wall) const {
     int x = wall.first.first;
     int y = wall.first.second;
     Direction direction = wall.second;
@@ -514,187 +444,83 @@ QPair<QPair<int, int>, Direction> MouseInterface::getOpposingWall(
     }
 }
 
-void MouseInterface::moveForwardTo(const Coordinate& destinationTranslation, const Angle& destinationRotation) {
-    /*
-
-    // This function assumes that we're already facing the correct direction,
-    // and that we simply need to move forward to reach the destination.
-
-    // Determine delta between the two points
-    Coordinate delta = destinationTranslation - m_mouse->getCurrentTranslation();
-    Angle initialAngle = delta.getTheta();
-    Distance previousDistance = delta.getRho();
-
-    // Start the mouse moving forward
-    m_mouse->setWheelSpeedsForMoveForward(m_wheelSpeedFraction);
-
-    // Move forward until we've reached the destination
-    do {
-        // Assert that we're actually moving closer to the destination
-        ASSERT_LE(delta.getRho().getMeters(), previousDistance.getMeters());
-        previousDistance = delta.getRho();
-        // Check if a stop has been requested
-        BREAK_IF_STOPPED_ELSE_SLEEP_MIN();
-        // Update the translation delta
-        delta = destinationTranslation - m_mouse->getCurrentTranslation();
-    }
-    // While the angle delta is not ~180 degrees, sleep for a short amout of time
-    while (std::abs((delta.getTheta() - initialAngle).getDegreesZeroTo360()) <  90
-        || std::abs((delta.getTheta() - initialAngle).getDegreesZeroTo360()) > 270);
-
-    // Stop the wheels and teleport to the exact destination
-    m_mouse->stopAllWheels();
-
-    */
-
-    m_destinationTranslation = destinationTranslation;
-    m_destinationRotation = destinationRotation;
-    // qDebug() << "DST X:" << m_destinationTranslation.getX().getMeters();
-    // qDebug() << "DST Y:" << m_destinationTranslation.getY().getMeters();
-    m_movement = Movement::MOVE_FORWARD;
-    m_isMoving = true;
-
-    // m_mouse->teleport(
-    //     (m_mouse->getCurrentTranslation() + destinationTranslation) / 2,
-    //      destinationRotation
-    // );
-    //m_mouse->teleport(destinationTranslation, destinationRotation);
-}
-
 bool MouseInterface::isMoving() {
-    return m_isMoving;
+    return m_movement != Movement::NONE;
 }
 
-// TODO: Only applicable to moveForward
 double MouseInterface::fracRemaining() {
-    return (1.0 - m_movementFraction);
-    //static Distance tileLength = Distance::Meters(P()->wallLength() + P()->wallWidth());
-    //return (tileLength * (1.0 - m_movementFraction)).getMeters();
+    return progressRequired(m_movement) - m_progress;
 }
 
 void MouseInterface::moveALittle(double frac) {
 
-    m_movementFraction += frac;
-    if (m_movementFraction > 1.0) {
-        m_movementFraction = 1.0;
+    QPair<int, int> destinationLocation = m_startingLocation;
+    Angle startingRotation = DIRECTION_TO_ANGLE().value(m_startingDirection);
+    Angle destinationRotation = startingRotation;
+
+    if (m_movement == Movement::MOVE_FORWARD) {
+        if (m_startingDirection == Direction::NORTH) {
+            destinationLocation.second += 1;
+        }
+        else if (m_startingDirection == Direction::EAST) {
+            destinationLocation.first += 1;
+        }
+        else if (m_startingDirection == Direction::SOUTH) {
+            destinationLocation.second -= 1;
+        }
+        else if (m_startingDirection == Direction::WEST) {
+            destinationLocation.first -= 1;
+        }
+        else {
+            ASSERT_NEVER_RUNS();
+        }
     }
+    else if (m_movement == Movement::TURN_RIGHT) {
+        destinationRotation -= Angle::Degrees(90);
+    }
+    else if (m_movement == Movement::TURN_LEFT) {
+        destinationRotation += Angle::Degrees(90);
+    }
+    else {
+        ASSERT_NEVER_RUNS();
+    }
+
+    m_progress += frac;
+
+    double required = progressRequired(m_movement);
+    double remaining = fracRemaining();
+
+    if (remaining < 0.0) {
+        remaining = 0.0;
+    }
+
+    double two = 1.0 - (remaining / required);
 
     // TODO: MACK
     Coordinate start =
         getCenterOfTile(m_startingLocation.first, m_startingLocation.second);
     Coordinate end =
-        getCenterOfTile(m_destinationLocation.first, m_destinationLocation.second);
+        getCenterOfTile(destinationLocation.first, destinationLocation.second);
 
-    double one = 1.0 - m_movementFraction;
-    double two = m_movementFraction;
+    double one = 1.0 - two;
 
     m_mouse->teleport(
         start * one + end * two,
-        m_destinationRotation
+        startingRotation * one + destinationRotation * two
     );
 
-    if (m_movementFraction == 1.0) {
-        m_movementFraction = 0;
-        m_isMoving = false;
+    if (remaining == 0.0) {
+        m_movement = Movement::NONE;
     }
-}
-
-void MouseInterface::arcTo(const Coordinate& destinationTranslation, const Angle& destinationRotation,
-        const Distance& radius, double extraWheelSpeedFraction) {
-
-    /*
-    // Determine the inital rotation delta in [-180, 180)
-    Angle initialRotationDelta = getRotationDelta(m_mouse->getCurrentRotation(), destinationRotation);
-
-    // Set the speed based on the initial rotation delta
-    if (0 < initialRotationDelta.getDegreesUnbounded()) {
-        m_mouse->setWheelSpeedsForCurveLeft(
-            m_wheelSpeedFraction * extraWheelSpeedFraction, radius);
-    }
-    else {
-        m_mouse->setWheelSpeedsForCurveRight(
-            m_wheelSpeedFraction * extraWheelSpeedFraction, radius);
-    }
-    
-    // While the deltas have the same sign, sleep for a short amount of time
-    while (0 <
-            initialRotationDelta.getRadiansUnbounded() *
-            getRotationDelta(
-                m_mouse->getCurrentRotation(),
-                destinationRotation
-            ).getRadiansUnbounded()) {
-        BREAK_IF_STOPPED_ELSE_SLEEP_MIN();
-    }
-
-    // Stop the wheels and teleport to the exact destination
-    m_mouse->stopAllWheels();
-    */
-    m_mouse->teleport(destinationTranslation, destinationRotation);
-}
-
-void MouseInterface::turnTo(const Coordinate& destinationTranslation, const Angle& destinationRotation) {
-    // When we're turning in place, we set the wheels to half speed
-    arcTo(destinationTranslation, destinationRotation, Distance::Meters(0), 0.5);
-}
-
-Angle MouseInterface::getRotationDelta(const Angle& from, const Angle& to) const {
-    static const Angle lowerBound = Angle::Degrees(-180);
-    static const Angle upperBound = Angle::Degrees(180);
-    static const Angle fullCircle = Angle::Degrees(360);
-    Angle delta = Angle::Radians(to.getRadiansZeroTo2pi() - from.getRadiansZeroTo2pi());
-    if (delta.getRadiansUnbounded() < lowerBound.getRadiansUnbounded()) {
-        delta += fullCircle;
-    }
-    if (upperBound.getRadiansUnbounded() <= delta.getRadiansUnbounded()) {
-        delta -= fullCircle;
-    }
-    ASSERT_LE(lowerBound.getRadiansUnbounded(), delta.getRadiansUnbounded());
-    ASSERT_LT(delta.getRadiansUnbounded(), upperBound.getRadiansUnbounded());
-    return delta;
 }
 
 Coordinate MouseInterface::getCenterOfTile(int x, int y) const {
     ASSERT_TR(m_maze->withinMaze(x, y));
-    static Distance tileLength = Distance::Meters(P()->wallLength() + P()->wallWidth());
     Coordinate centerOfTile = Coordinate::Cartesian(
-        tileLength * (static_cast<double>(x) + 0.5),
-        tileLength * (static_cast<double>(y) + 0.5)
+        Dimensions::tileLength() * (static_cast<double>(x) + 0.5),
+        Dimensions::tileLength() * (static_cast<double>(y) + 0.5)
     );
     return centerOfTile;
-}
-
-QPair<Coordinate, Angle> MouseInterface::getCrashLocation(
-        QPair<int, int> currentTile, Direction destinationDirection) {
-
-    static Distance halfWallLength = Distance::Meters(P()->wallLength() / 2.0);
-
-    // The crash locations for each destinationDirection, (N)orth, (E)ast,
-    // (S)outh, and (W)est, are as show below. Basically, they're on the edge
-    // of the tile's inner polygon. This "crash location" is used as an
-    // intermediate location for (almost) all discrete movements that could
-    // potentially cause the mouse to crash. That is, it's where the mouse
-    // stops if it does crash, so as to give the user an indication of where
-    // the mouse went wrong.
-    //
-    //                      +---+-------------+---+
-    //                      |   |             |   |
-    //                      +---+------N------+---+
-    //                      |   |             |   |
-    //                      |   |             |   |
-    //                      |   W             E   |
-    //                      |   |             |   |
-    //                      |   |             |   |
-    //                      +---+------S------+---+
-    //                      |   |             |   |
-    //                      +---+-------------+---+
-
-    // The crash location is on the edge of the tile inner polygon
-    Coordinate centerOfTile = getCenterOfTile(currentTile.first, currentTile.second);
-    Angle destinationRotation = DIRECTION_TO_ANGLE().value(destinationDirection);
-    return {
-        centerOfTile + Coordinate::Polar(halfWallLength, destinationRotation),
-        destinationRotation
-    };
 }
 
 } // namespace mms

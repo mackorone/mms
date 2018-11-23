@@ -4,9 +4,9 @@
 #include <QPair>
 
 #include "Assert.h"
+#include "Dimensions.h"
 #include "FontImage.h"
 #include "Logging.h"
-#include "Param.h"
 #include "Screen.h"
 #include "TransformationMatrix.h"
 
@@ -346,8 +346,13 @@ void Map::drawMap(
         int count) {
 
     // Get the physical size of the maze (in meters)
-    double physicalMazeWidth = P()->wallWidth() + m_maze->getWidth() * (P()->wallWidth() + P()->wallLength());
-    double physicalMazeHeight = P()->wallWidth() + m_maze->getHeight() * (P()->wallWidth() + P()->wallLength());
+    double physicalMazeWidth =
+        Dimensions::wallWidth().getMeters() +
+        m_maze->getWidth() * Dimensions::tileLength().getMeters();
+    double physicalMazeHeight =
+        Dimensions::wallWidth().getMeters() +
+        m_maze->getHeight() * Dimensions::tileLength().getMeters();
+
     // TODO: MACK - these should be distances, not doubles
     QPair<double, double> physicalMazeSize = {physicalMazeWidth, physicalMazeHeight};
 
@@ -372,7 +377,7 @@ void Map::drawMap(
 
     // TODO: MACK
     auto matrix = TransformationMatrix::getFullMapTransformationMatrix(
-        Distance::Meters(P()->wallWidth()),
+        Dimensions::wallWidth(),
         physicalMazeSize,
         fullMapPosition,
         fullMapSize,
