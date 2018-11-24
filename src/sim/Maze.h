@@ -50,4 +50,4 @@ private:
     static QVector<QVector<Tile>> setTileDistances(QVector<QVector<Tile>> maze);
 };
 
-} // namespace mms
+} 

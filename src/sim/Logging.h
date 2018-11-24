@@ -20,4 +20,4 @@ private:
         const QString& msg);
 };
 
-} // namespace mms
+} 

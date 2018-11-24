@@ -56,4 +56,4 @@ void Duration::operator+=(const Duration& other) {
 Duration::Duration(double seconds) : m_seconds(seconds) {
 }
 
-} // namespace mms
+} 

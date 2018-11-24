@@ -26,4 +26,4 @@ inline QDebug operator<<(QDebug stream, MazeFileType mazeFileType) {
     return stream;
 }
 
-} // namespace mms
+} 

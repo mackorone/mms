@@ -41,4 +41,4 @@ inline QDebug operator<<(QDebug stream, Color color) {
     return stream;
 }
 
-} // namespace mms
+} 

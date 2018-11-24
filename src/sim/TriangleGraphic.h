@@ -10,4 +10,4 @@ struct TriangleGraphic {
     VertexGraphic p3;
 };
 
-} // namespace mms
+} 

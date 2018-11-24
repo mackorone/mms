@@ -72,4 +72,4 @@ Coordinate::Coordinate(const Distance& x, const Distance& y) :
     m_y(y) {
 }
 
-} // namespace mms
+} 

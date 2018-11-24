@@ -55,4 +55,4 @@ QPair<int, int> MazeUtilities::positionAfterMovingForward(
     };
 }
 
-} // namespace mms
+} 

@@ -95,4 +95,4 @@ double Angle::getDegrees(bool zeroTo360) const {
     return degreesPerRadian * getRadians(zeroTo360);
 }
 
-} // namespace mms
+} 

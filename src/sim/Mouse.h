@@ -101,4 +101,4 @@ private:
         const Angle& currentRotation) const;
 };
 
-} // namespace mms
+} 

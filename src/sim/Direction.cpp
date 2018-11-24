@@ -86,4 +86,4 @@ const QMap<QChar, Direction>& CHAR_TO_DIRECTION() {
     return map;
 }
 
-} // namespace mms
+} 

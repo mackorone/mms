@@ -37,4 +37,4 @@ void Logging::handler(
     *STDOUT << formatted << endl;
 }
 
-} // namespace mms
+} 

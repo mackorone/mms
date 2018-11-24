@@ -1,7 +1,6 @@
 Release
 =======
 - Make a utility to convert mazes from/to different types
-- Kill the parameters class
 - Remove all maze algo code
 - Clean up mouse algo template
 - Auto-populate build and run commands
@@ -17,15 +16,7 @@ Features
 - Support more maze file formats
     - .MAZ, .mz2, https://code.google.com/p/maze-solver/wiki/MazeFileFormats
     - JSON, https://github.com/bblodget/MicromouseSim/tree/gh-pages/mazes_json
-- Make it easier to edit the simulator parameters
-    - Write and read from persistant storage...
-    - The values should be re-loaded on the fly
 - Add Python bindings for mouse algorithms
-- Ensure that no new instances of wheels/sensors are created during algo execution
-- Improve the config dialog field to support double, int, bool
-- Make wall-length and wall-width constants
-- Make DT configurable
-- Investigate why random seed isn't working as expected
 
 Wishlist
 ========

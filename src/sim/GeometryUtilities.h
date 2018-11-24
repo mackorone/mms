@@ -21,4 +21,4 @@ public:
         const Angle& angle);
 };
 
-} // namespace mms
+} 

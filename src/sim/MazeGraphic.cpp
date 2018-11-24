@@ -70,4 +70,4 @@ bool MazeGraphic::withinMaze(int x, int y) const {
     return 0 <= x && x < getWidth() && 0 <= y && y < getHeight();
 }
 
-} // namespace mms
+} 

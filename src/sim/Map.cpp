@@ -7,7 +7,6 @@
 #include "Dimensions.h"
 #include "FontImage.h"
 #include "Logging.h"
-#include "Screen.h"
 #include "TransformationMatrix.h"
 
 namespace mms {
@@ -403,4 +402,4 @@ void Map::drawMap(
     vao->release();
 }
 
-} // namespace mms
+} 

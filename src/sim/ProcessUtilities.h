@@ -17,4 +17,4 @@ public:
         QProcess* process);
 };
 
-} // namespace mms
+} 

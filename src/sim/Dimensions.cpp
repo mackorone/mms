@@ -22,4 +22,4 @@ Distance Dimensions::halfWallWidth() {
     return wallWidth() / 2.0;
 }
 
-} // namespace mms
+} 

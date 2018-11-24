@@ -28,4 +28,4 @@ QStringList Resources::getFiles(QString path) {
     return files;
 }
 
-} // namespace mms
+} 

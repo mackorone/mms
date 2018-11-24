@@ -10,4 +10,4 @@ struct TriangleTexture {
     VertexTexture p3;
 };
 
-} // namespace mms
+} 

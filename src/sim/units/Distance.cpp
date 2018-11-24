@@ -56,4 +56,4 @@ void Distance::operator+=(const Distance& other) {
 Distance::Distance(double meters) : m_meters(meters) {
 }
 
-} // namespace mms
+} 

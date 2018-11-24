@@ -39,4 +39,4 @@ QVector<TriangleGraphic> MouseGraphic::draw(
     return buffer;
 }
 
-} // namespace mms
+} 

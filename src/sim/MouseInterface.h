@@ -39,8 +39,8 @@ public:
 
     // TODO: MACK
     bool isMoving();
-    double fracRemaining();
-    void moveALittle(double frac);
+    double progressRemaining();
+    void moveALittle(double progress);
 
 signals:
 
@@ -118,4 +118,4 @@ private:
     Coordinate getCenterOfTile(int x, int y) const;
 };
 
-} // namespace mms
+} 

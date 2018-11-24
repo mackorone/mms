@@ -274,4 +274,4 @@ QVector<QVector<Tile>> Maze::setTileDistances(QVector<QVector<Tile>> maze) {
     return maze;
 }
 
-} // namespace mms
+} 

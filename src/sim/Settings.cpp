@@ -162,4 +162,4 @@ QVector<QMap<QString, QString>> Settings::getGroup(QString group) {
     return entries;
 }
 
-} // namespace mms
+} 

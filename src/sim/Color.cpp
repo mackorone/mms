@@ -85,4 +85,4 @@ const QMap<char, Color>& CHAR_TO_COLOR() {
     return map;
 }
 
-} // namespace mms
+} 

@@ -6,7 +6,6 @@
 #include "ColorManager.h"
 #include "FontImage.h"
 #include "Logging.h"
-#include "Screen.h"
 #include "Settings.h"
 #include "SimTime.h"
 #include "Window.h"
@@ -21,12 +20,11 @@ int Driver::drive(int argc, char* argv[]) {
     // Initialize Qt
     QApplication app(argc, argv);
 
-    // Initialize singletons (order matters)
+    // Initialize singletons
     Logging::init();
     Settings::init();
     ColorManager::init();
     FontImage::init();
-    Screen::init();
     SimTime::init();
 
     // Create the main window
@@ -37,4 +35,4 @@ int Driver::drive(int argc, char* argv[]) {
     return app.exec();
 }
 
-} // namespace mms
+} 

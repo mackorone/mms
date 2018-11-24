@@ -252,4 +252,4 @@ bool MazeChecker::isUnsolvableByWallFollower(const BasicMaze& maze) {
     return true;
 }
 
-} // namespace mms
+} 

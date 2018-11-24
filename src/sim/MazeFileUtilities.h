@@ -35,4 +35,4 @@ private:
     static QByteArray serializeNumType(const BasicMaze& maze);
 };
 
-} // namespace mms
+} 

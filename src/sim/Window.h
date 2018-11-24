@@ -142,4 +142,4 @@ private:
     QPair<QStringList, QVector<QVariant>> getRunStats() const;
 };
 
-} // namespace mms
+} 

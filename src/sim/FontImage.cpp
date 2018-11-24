@@ -3,7 +3,6 @@
 #include "Assert.h"
 #include "Resources.h"
 #include "SettingsMisc.h"
-#include "SimUtilities.h"
 
 namespace mms {
 
@@ -62,10 +61,10 @@ FontImage::FontImage() {
     // their horizontal position in the png image (a fraction from 0.0 to 1.0)
     int size = fontImageChars.size();
     for (int i = 0; i < size; i += 1) {
-        double start = static_cast<double>(i + 0) / static_cast<double>(size);
-        double end   = static_cast<double>(i + 1) / static_cast<double>(size);
+        double start = static_cast<double>(i) / static_cast<double>(size);
+        double end = static_cast<double>(i + 1) / static_cast<double>(size);
         m_positions.insert(fontImageChars.at(i), {start, end});
     }
 }
 
-} // namespace mms
+} 

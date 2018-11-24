@@ -20,4 +20,4 @@ void MouseAlgoStatsWidget::init(QStringList keys) {
     }
 }
 
-} // namespace mms
+} 

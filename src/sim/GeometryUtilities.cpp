@@ -29,4 +29,4 @@ Coordinate GeometryUtilities::rotateVertexAroundPoint(
     return rotatedVertex;
 }
 
-} // namespace mms
+} 

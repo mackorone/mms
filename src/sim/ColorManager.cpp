@@ -125,4 +125,4 @@ void ColorManager::setValue(const QString& key, const QString& value) {
     Settings::get()->update(GROUP, key, value);
 }
 
-} // namespace mms
+} 

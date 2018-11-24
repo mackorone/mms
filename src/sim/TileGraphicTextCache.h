@@ -49,4 +49,4 @@ private:
         QPair<Coordinate, Coordinate>> buildPositionCache();
 };
 
-} // namespace mms
+} 

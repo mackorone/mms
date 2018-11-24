@@ -6,7 +6,6 @@
 #include <QtMath>
 
 #include "units/Distance.h"
-#include "units/Speed.h"
 
 #include "Assert.h"
 #include "Dimensions.h"
@@ -228,4 +227,4 @@ Polygon Mouse::getCurrentPolygon(
         .rotateAroundPoint(currentRotation - m_initialRotation, currentTranslation);
 }
 
-} // namespace mms
+} 

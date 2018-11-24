@@ -207,4 +207,4 @@ QPair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction) co
     return {wallColor, wallAlpha};
 }
 
-} // namespace mms
+} 

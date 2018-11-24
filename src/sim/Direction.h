@@ -39,4 +39,4 @@ inline QDebug operator<<(QDebug stream, Direction direction) {
     return stream;
 }
 
-} // namespace mms
+} 

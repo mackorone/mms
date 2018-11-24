@@ -14,4 +14,4 @@ struct MouseStats {
     int closestDistanceToCenter = -1;
 };
 
-} // namespace mms
+} 

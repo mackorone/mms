@@ -10,4 +10,4 @@ struct Triangle {
     Coordinate p3;
 };
 
-} // namespace mms
+} 

@@ -18,4 +18,4 @@ struct ConfigDialogField {
     bool allowEmptyLineEditValue = true;
 }; 
 
-} // namespace mms
+} 

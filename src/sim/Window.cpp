@@ -17,6 +17,7 @@
 
 #include "ColorManager.h"
 #include "ConfigDialog.h"
+#include "Dimensions.h"
 #include "ProcessUtilities.h"
 #include "Resources.h"
 #include "SettingsMouseAlgos.h"
@@ -600,7 +601,7 @@ void Window::mouseAlgoTabInit() {
     // Add the pause button and speed slider
     QHBoxLayout* speedsLayout = new QHBoxLayout();
     controlLayout->addLayout(speedsLayout);
-    double maxSpeed = 10.0; // 10x normal speed
+    double maxSpeed = 3000.0; // progress points per second
     QSlider* speedSlider = new QSlider(Qt::Horizontal);
     m_speedBox = new QDoubleSpinBox();
     m_speedBox->setRange(maxSpeed / 100.0, maxSpeed);
@@ -661,11 +662,7 @@ void Window::mouseAlgoTabInit() {
     }) {
         output->setReadOnly(true);
         output->setLineWrapMode(QPlainTextEdit::NoWrap);
-        // TODO: upforgrabs
-        // The line wrap mode should be configurable
         QFont font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-        // TODO: upforgrabs
-        // This font size should be configurable
         font.setPointSize(10);
         output->document()->setDefaultFont(font);
     }
@@ -965,22 +962,14 @@ void Window::processQueuedCommands() {
 }
 
 void Window::scheduleAnotherCall() {
-    double metersPerSecond = m_speedBox->value();
-    double fracRemaining = m_runInterface->fracRemaining();
-    double metersRemaining = fracRemaining * .18;
-    double secondsRemaining = metersRemaining / metersPerSecond;
-    m_fracToMove = 1.0;
-
-    // TODO: MACK
     double MAX_SECONDS = 0.008;
+    double progressRemaining = m_runInterface->progressRemaining();
+    double secondsRemaining = progressRemaining / m_speedBox->value();
     if (secondsRemaining > MAX_SECONDS) {
         secondsRemaining = MAX_SECONDS;
-        double metersToMove = metersPerSecond * MAX_SECONDS;
-        m_fracToMove = metersToMove / .18;
+        progressRemaining = secondsRemaining * m_speedBox->value();
     }
-    else {
-        m_fracToMove = 1.0;
-    }
+    m_fracToMove = progressRemaining;
     m_commandQueueTimer->start(secondsRemaining * 1000);
 }
 
@@ -1354,4 +1343,4 @@ QStringList Window::processText(const QString& text) {
     return lines;
 }
 
-} // namespace mms
+} 

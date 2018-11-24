@@ -136,4 +136,4 @@ QVector<Triangle> Polygon::triangulate(QVector<Coordinate> vertices) {
     return triangles;
 }
 
-} // namespace mms
+} 

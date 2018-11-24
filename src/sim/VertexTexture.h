@@ -9,4 +9,4 @@ struct VertexTexture {
     double v; // v position (y position in the texture)
 };
 
-} // namespace mms
+} 

@@ -139,4 +139,4 @@ TileGraphicTextCache::buildPositionCache() {
     return positionCache;
 }
 
-} // namespace mms
+} 

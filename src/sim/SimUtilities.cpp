@@ -121,4 +121,4 @@ QVector<TriangleGraphic> SimUtilities::polygonToTriangleGraphics(
     return triangleGraphics;
 }
 
-} // namespace mms
+} 

@@ -8,4 +8,4 @@ struct RGB {
     double b;
 };
 
-} // namespace mms
+} 

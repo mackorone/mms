@@ -163,4 +163,4 @@ void ConfigDialog::validate() {
     m_buttons->button(QDialogButtonBox::Ok)->setEnabled(valid);
 }
 
-} // namespace mms
+} 

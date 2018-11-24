@@ -11,4 +11,4 @@ struct VertexGraphic {
     double a; // alpha value
 };
 
-} // namespace mms
+} 

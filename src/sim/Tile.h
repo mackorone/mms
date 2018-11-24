@@ -8,7 +8,7 @@
 
 namespace mms {
 
-class Tile{
+class Tile {
 
 public:
     Tile();
@@ -47,4 +47,4 @@ private:
     void initCornerPolygons(int mazeWWidth, int mazeHeight);
 };
 
-} // namespace mms
+} 

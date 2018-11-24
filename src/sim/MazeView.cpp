@@ -55,4 +55,4 @@ void MazeView::initText(int numRows, int numCols) {
     m_mazeGraphic.drawTextures();
 }
 
-} // namespace mms
+} 

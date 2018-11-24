@@ -7,7 +7,6 @@
 
 #include "units/Distance.h"
 #include "units/Duration.h"
-#include "units/Speed.h"
 
 #include "Assert.h"
 #include "Color.h"
@@ -386,7 +385,7 @@ double MouseInterface::progressRequired(Movement movement) {
             return 100.0;
         case Movement::TURN_RIGHT:
         case Movement::TURN_LEFT:
-            return 50.0;
+            return 33.33;
         default:
             ASSERT_NEVER_RUNS();
     }
@@ -448,11 +447,11 @@ bool MouseInterface::isMoving() {
     return m_movement != Movement::NONE;
 }
 
-double MouseInterface::fracRemaining() {
+double MouseInterface::progressRemaining() {
     return progressRequired(m_movement) - m_progress;
 }
 
-void MouseInterface::moveALittle(double frac) {
+void MouseInterface::moveALittle(double progress) {
 
     QPair<int, int> destinationLocation = m_startingLocation;
     Angle startingRotation = DIRECTION_TO_ANGLE().value(m_startingDirection);
@@ -485,24 +484,24 @@ void MouseInterface::moveALittle(double frac) {
         ASSERT_NEVER_RUNS();
     }
 
-    m_progress += frac;
+    m_progress += progress;
 
     double required = progressRequired(m_movement);
-    double remaining = fracRemaining();
+    double remaining = progressRemaining();
 
     if (remaining < 0.0) {
         remaining = 0.0;
     }
 
     double two = 1.0 - (remaining / required);
+    double one = 1.0 - two;
+
 
     // TODO: MACK
     Coordinate start =
         getCenterOfTile(m_startingLocation.first, m_startingLocation.second);
     Coordinate end =
         getCenterOfTile(destinationLocation.first, destinationLocation.second);
-
-    double one = 1.0 - two;
 
     m_mouse->teleport(
         start * one + end * two,
@@ -511,6 +510,7 @@ void MouseInterface::moveALittle(double frac) {
 
     if (remaining == 0.0) {
         m_movement = Movement::NONE;
+        m_progress = 0.0;
     }
 }
 
@@ -523,4 +523,4 @@ Coordinate MouseInterface::getCenterOfTile(int x, int y) const {
     return centerOfTile;
 }
 
-} // namespace mms
+} 

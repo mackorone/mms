@@ -2,7 +2,7 @@
 
 #include "Dimensions.h"
 
-namespace mms{
+namespace mms {
 
 Tile::Tile() : m_x(-1), m_y(-1), m_distance(-1) {
     for (Direction direction : DIRECTIONS()) {
@@ -278,4 +278,4 @@ void Tile::initCornerPolygons(int mazeWidth, int mazeHeight) {
     m_cornerPolygons.push_back(Polygon(lowerRightCorner));
 }
 
-} // namespace mms
+} 

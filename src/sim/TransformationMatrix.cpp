@@ -257,4 +257,4 @@ QVector<float> TransformationMatrix::multiply4x4Matrices(
     return result;
 }
 
-} // namespace mms
+} 

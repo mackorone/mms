@@ -151,4 +151,4 @@ int BufferInterface::getTileGraphicTextStartingIndex(int x, int y, int row, int 
     return triangleTexturesPerTile * (m_mazeSize.second * x + y) + 2 * (row * maxRowsAndCols.second + col);
 }
 
-} // namespace mms
+} 

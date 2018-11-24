@@ -49,4 +49,4 @@ private:
     QPair<Color, float> deduceWallColorAndAlpha(Direction direction) const;
 };
 
-} // namespace mms
+} 
