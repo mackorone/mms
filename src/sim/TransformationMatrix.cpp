@@ -1,26 +1,18 @@
 #include "TransformationMatrix.h"
 
-#include <QPair>
-#include <QtMath>
-
 #include <algorithm>
 
 #include "Assert.h"
+#include "Dimensions.h"
 
 namespace mms {
 
-QVector<float> TransformationMatrix::getFullMapTransformationMatrix(
-        const Distance& wallWidth,
-        QPair<double, double> physicalMazeSize,
-        QPair<int, int> fullMapPosition,
-        QPair<int, int> fullMapSize,
-        QPair<int, int> windowSize) {
-
-    // The purpose of this function is to produce a 4x4 matrix which, when
-    // applied to the physical coordinate within the vertex shader, transforms
-    // it into an OpenGL coordinate for the full map. In this case, the full
-    // map always contains the entirety of the maze.
-
+QMatrix4x4 TransformationMatrix::get(
+    int mazeWidth,
+    int mazeHeight,
+    int mapWidthPixels,
+    int mapHeightPixels
+) {
     // Step 1: The physical point (0,0) corresponds to the middle of the
     // bottom-left corner piece:
     //                                 |       |
@@ -42,11 +34,24 @@ QVector<float> TransformationMatrix::getFullMapTransformationMatrix(
     //                                 |       |
     //                                 X-------+---
 
-    QVector<float> initialTranslationMatrix = {
-        1.0, 0.0, 0.0, static_cast<float>(0.5 * wallWidth.getMeters()),
-        0.0, 1.0, 0.0, static_cast<float>(0.5 * wallWidth.getMeters()),
-        0.0, 0.0, 1.0,                                             0.0,
-        0.0, 0.0, 0.0,                                             1.0,
+    double wallWidth = Dimensions::wallWidth().getMeters();
+    QVector<double> initialTranslationMatrix = {
+        1.0, 0.0, 0.0, static_cast<double>(0.5 * wallWidth),
+        0.0, 1.0, 0.0, static_cast<double>(0.5 * wallWidth),
+        0.0, 0.0, 1.0,                                  0.0,
+        0.0, 0.0, 0.0,                                  1.0,
+    };
+
+    // TODO: MACK
+    QPair<int, int> windowSize = {mapWidthPixels, mapHeightPixels};
+    QPair<int, int> fullMapPosition = {5, 5};
+    QPair<int, int> fullMapSize = {
+        windowSize.first - 10,
+        windowSize.second - 10
+    };
+    QPair<double, double> physicalMazeSize = {
+        (Dimensions::wallWidth() + Dimensions::tileLength() * mazeWidth).getMeters(),
+        (Dimensions::wallWidth() + Dimensions::tileLength() * mazeHeight).getMeters(),
     };
 
     // Ensure that the maze width and height always appear equally scaled. Note
@@ -54,14 +59,17 @@ QVector<float> TransformationMatrix::getFullMapTransformationMatrix(
     // Rather, it's our desired number of pixels per simulation meter.
     double physicalWidth = physicalMazeSize.first;
     double physicalHeight = physicalMazeSize.second;
-    double pixelsPerMeter = std::min(fullMapSize.first / physicalWidth, fullMapSize.second / physicalHeight);
+    double pixelsPerMeter = std::min(
+        fullMapSize.first / physicalWidth,
+        fullMapSize.second / physicalHeight
+    );
     double pixelWidth = pixelsPerMeter * physicalWidth;
     double pixelHeight = pixelsPerMeter * physicalHeight;
 
     QPair<double, double> openGlOrigin =
-        mapPixelCoordinateToOpenGlCoordinate({0, 0}, windowSize);
+        pixelToOpenGl({0, 0}, windowSize);
     QPair<double, double> openGlMazeSize =
-        mapPixelCoordinateToOpenGlCoordinate({pixelWidth, pixelHeight}, windowSize);
+        pixelToOpenGl({pixelWidth, pixelHeight}, windowSize);
 
     double openGlWidth = openGlMazeSize.first - openGlOrigin.first;
     double openGlHeight = openGlMazeSize.second - openGlOrigin.second;
@@ -69,11 +77,11 @@ QVector<float> TransformationMatrix::getFullMapTransformationMatrix(
     double horizontalScaling = openGlWidth / physicalWidth;
     double verticalScaling = openGlHeight / physicalHeight;
 
-    QVector<float> scalingMatrix = {
-        static_cast<float>(horizontalScaling),                                 0.0, 0.0, 0.0,
-                                          0.0, static_cast<float>(verticalScaling), 0.0, 0.0,
-                                          0.0,                                 0.0, 1.0, 0.0,
-                                          0.0,                                 0.0, 0.0, 1.0,
+    QVector<double> scalingMatrix = {
+        static_cast<double>(horizontalScaling), 0.0, 0.0, 0.0,
+        0.0,   static_cast<double>(verticalScaling), 0.0, 0.0,
+        0.0,                                    0.0, 1.0, 0.0,
+        0.0,                                    0.0, 0.0, 1.0,
     };
     
     // Step 3: Construct the translation matrix. Note that here we ensure that
@@ -81,169 +89,44 @@ QVector<float> TransformationMatrix::getFullMapTransformationMatrix(
     double pixelLowerLeftCornerX = fullMapPosition.first + 0.5 * (fullMapSize.first - pixelWidth);
     double pixelLowerLeftCornerY = fullMapPosition.second + 0.5 * (fullMapSize.second - pixelHeight);
     QPair<double, double> openGlLowerLeftCorner =
-        mapPixelCoordinateToOpenGlCoordinate({pixelLowerLeftCornerX, pixelLowerLeftCornerY}, windowSize);
-    QVector<float> translationMatrix = {
-        1.0, 0.0, 0.0,  static_cast<float>(openGlLowerLeftCorner.first),
-        0.0, 1.0, 0.0, static_cast<float>(openGlLowerLeftCorner.second),
-        0.0, 0.0, 1.0,                                              0.0,
-        0.0, 0.0, 0.0,                                              1.0,
-    };
-
-    // Step 4: Compose the matrices
-    QVector<float> transformationMatrix =
-        multiply4x4Matrices(translationMatrix,
-        multiply4x4Matrices(scalingMatrix,
-                            initialTranslationMatrix));
-    return transformationMatrix;
-}
-
-QVector<float> TransformationMatrix::getZoomedMapTransformationMatrix(
-    QPair<double, double> physicalMazeSize,
-    QPair<int, int> zoomedMapPosition,
-    QPair<int, int> zoomedMapSize,
-    QPair<int, int> windowSize,
-    double screenPixelsPerMeter,
-    double zoomedMapScale,
-    bool rotateZoomedMap,
-    const Coordinate& initialMouseTranslation,
-    const Coordinate& currentMouseTranslation,
-    const Angle& currentMouseRotation) {
-
-    // The purpose of this function is to produce a 4x4 matrix which,
-    // when applied to the physical coordinate within the vertex shader,
-    // transforms it into an OpenGL coordinate for the zoomed map. Note that
-    // the zoomed map will likely not contain the entirety of the maze, so the
-    // pixel coordinates will be outside of the map.
-
-    // Step 1: Calculate the scaling matrix
-    double physicalWidth = physicalMazeSize.first;
-    double physicalHeight = physicalMazeSize.second;
-
-    // Note that this is not literally the number of pixels per meter of the
-    // screen. Rather, it's our desired number of pixels per simulation meter.
-    double pixelsPerMeter = screenPixelsPerMeter * zoomedMapScale;
-    double pixelWidth = pixelsPerMeter * physicalWidth;
-    double pixelHeight = pixelsPerMeter * physicalHeight;
-
-    QPair<double, double> openGlOrigin =
-        mapPixelCoordinateToOpenGlCoordinate({0, 0}, windowSize);
-    QPair<double, double> openGlMazeSize =
-        mapPixelCoordinateToOpenGlCoordinate({pixelWidth, pixelHeight}, windowSize);
-
-    double openGlWidth = openGlMazeSize.first - openGlOrigin.first;
-    double openGlHeight = openGlMazeSize.second - openGlOrigin.second;
-
-    double horizontalScaling = openGlWidth / physicalWidth;
-    double verticalScaling = openGlHeight / physicalHeight;
-
-    QVector<float> scalingMatrix = {
-        static_cast<float>(horizontalScaling),                                 0.0, 0.0, 0.0,
-                                          0.0, static_cast<float>(verticalScaling), 0.0, 0.0,
-                                          0.0,                                 0.0, 1.0, 0.0,
-                                          0.0,                                 0.0, 0.0, 1.0,
-    };
-
-    // Step 2: Construct the translation matrix. We must ensure that the mouse
-    // starts (static translation) and stays (dynamic translation) at the
-    // center of the screen.
-
-    // Part A: Find the static translation, i.e., the translation that puts the
-    // center of the mouse (i.e., the midpoint of the line connecting its
-    // wheels) in the center of the zoomed map. 
-    double centerXPixels = initialMouseTranslation.getX().getMeters() * pixelsPerMeter;
-    double centerYPixels = initialMouseTranslation.getY().getMeters() * pixelsPerMeter;
-    double zoomedMapCenterXPixels = zoomedMapPosition.first + 0.5 * zoomedMapSize.first;
-    double zoomedMapCenterYPixels = zoomedMapPosition.second + 0.5 * zoomedMapSize.second;
-    double staticTranslationXPixels = zoomedMapCenterXPixels - centerXPixels;
-    double staticTranslationYPixels = zoomedMapCenterYPixels - centerYPixels;
-    QPair<double, double> staticTranslation =
-        mapPixelCoordinateToOpenGlCoordinate({staticTranslationXPixels, staticTranslationYPixels}, windowSize);
-
-    // Part B: Find the dynamic translation, i.e., the current translation of the mouse.
-    Coordinate mouseTranslationDelta = currentMouseTranslation - initialMouseTranslation;
-    double dynamicTranslationXPixels = mouseTranslationDelta.getX().getMeters() * pixelsPerMeter;
-    double dynamicTranslationYPixels = mouseTranslationDelta.getY().getMeters() * pixelsPerMeter;
-    QPair<double, double> dynamicTranslation =
-        mapPixelCoordinateToOpenGlCoordinate({dynamicTranslationXPixels, dynamicTranslationYPixels}, windowSize);
-
-    // Combine the transalations and form the translation matrix
-    double horizontalTranslation = staticTranslation.first -  dynamicTranslation.first + openGlOrigin.first;
-    double verticalTranslation = staticTranslation.second - dynamicTranslation.second + openGlOrigin.second;
-    QVector<float> translationMatrix = {
-        1.0, 0.0, 0.0, static_cast<float>(horizontalTranslation), 
-        0.0, 1.0, 0.0,   static_cast<float>(verticalTranslation),
-        0.0, 0.0, 1.0,                                       0.0,
-        0.0, 0.0, 0.0,                                       1.0,
-    };
-
-    // Step 3: Construct a few other transformation matrices needed for
-    // rotating the maze. In order to properly rotate the maze, we must first
-    // translate the center of the mouse to the origin. Then we have to unscale
-    // it, rotate it, scale it, and then translate it back to the proper
-    // location. Hence all of the matrices.
-
-    // We subtract Angle::Degrees(90) here since we want forward to face NORTH
-    double theta = (currentMouseRotation - Angle::Degrees(90)).getRadiansZeroTo2pi();
-    QVector<float> rotationMatrix = {
-        static_cast<float>( std::cos(theta)), static_cast<float>(std::sin(theta)), 0.0, 0.0,
-        static_cast<float>(-std::sin(theta)), static_cast<float>(std::cos(theta)), 0.0, 0.0,
-                                    0.0,                            0.0, 1.0, 0.0,
-                                    0.0,                            0.0, 0.0, 1.0,
-    };
-
-    QVector<float> inverseScalingMatrix = {
-        static_cast<float>(1.0/horizontalScaling),                                     0.0, 0.0, 0.0,
-                                              0.0, static_cast<float>(1.0/verticalScaling), 0.0, 0.0,
-                                              0.0,                                     0.0, 1.0, 0.0,
-                                              0.0,                                     0.0, 0.0, 1.0,
-    };
-
-    QPair<double, double> zoomedMapCenterOpenGl =
-        mapPixelCoordinateToOpenGlCoordinate({zoomedMapCenterXPixels, zoomedMapCenterYPixels}, windowSize);
-
-    QVector<float> translateToOriginMatrix = {
-        1.0, 0.0, 0.0,  static_cast<float>(zoomedMapCenterOpenGl.first),
-        0.0, 1.0, 0.0, static_cast<float>(zoomedMapCenterOpenGl.second),
-        0.0, 0.0, 1.0,                                              0.0,
-        0.0, 0.0, 0.0,                                              1.0,
-    };
-
-    QVector<float> inverseTranslateToOriginMatrix = {
-        1.0, 0.0, 0.0,  static_cast<float>(-zoomedMapCenterOpenGl.first),
-        0.0, 1.0, 0.0, static_cast<float>(-zoomedMapCenterOpenGl.second),
+        pixelToOpenGl({pixelLowerLeftCornerX, pixelLowerLeftCornerY}, windowSize);
+    QVector<double> translationMatrix = {
+        1.0, 0.0, 0.0,  static_cast<double>(openGlLowerLeftCorner.first),
+        0.0, 1.0, 0.0, static_cast<double>(openGlLowerLeftCorner.second),
         0.0, 0.0, 1.0,                                               0.0,
         0.0, 0.0, 0.0,                                               1.0,
     };
 
-    QVector<float> zoomedMapCameraMatrix = multiply4x4Matrices(translationMatrix, scalingMatrix);
-    if (rotateZoomedMap) {
-        zoomedMapCameraMatrix =
-            multiply4x4Matrices(translateToOriginMatrix,
-            multiply4x4Matrices(scalingMatrix,
-            multiply4x4Matrices(rotationMatrix,
-            multiply4x4Matrices(inverseScalingMatrix,
-            multiply4x4Matrices(inverseTranslateToOriginMatrix,
-                                zoomedMapCameraMatrix)))));
-    }
-
-    return zoomedMapCameraMatrix;
+    // Step 4: Compose the matrices
+    QVector<double> m =
+        multiply4x4Matrices(translationMatrix,
+        multiply4x4Matrices(scalingMatrix,
+                            initialTranslationMatrix));
+    return QMatrix4x4(
+         m.at(0),  m.at(1),  m.at(2),  m.at(3),
+         m.at(4),  m.at(5),  m.at(6),  m.at(7),
+         m.at(8),  m.at(9), m.at(10), m.at(11),
+        m.at(12), m.at(13), m.at(14), m.at(15)
+    );
 }
 
-QPair<double, double> TransformationMatrix::mapPixelCoordinateToOpenGlCoordinate(
-        QPair<double, double> coordinate,
-        QPair<int, int> windowSize) {
+QPair<double, double> TransformationMatrix::pixelToOpenGl(
+    QPair<double, double> coordinate,
+    QPair<int, int> windowSize
+) {
     return {
         2 * coordinate.first / windowSize.first - 1,
         2 * coordinate.second / windowSize.second - 1
     };
 }
 
-QVector<float> TransformationMatrix::multiply4x4Matrices(
-        QVector<float> left,
-        QVector<float> right) {
+QVector<double> TransformationMatrix::multiply4x4Matrices(
+    QVector<double> left,
+    QVector<double> right
+) {
     ASSERT_EQ(left.size(), 16);
     ASSERT_EQ(right.size(), 16);
-    QVector<float> result;
+    QVector<double> result;
     for (int i = 0; i < 4; i += 1) {
         for (int j = 0; j < 4; j++) {
             double value = 0.0;

@@ -21,7 +21,6 @@ public:
     bool isWall(Direction direction) const;
 
     Polygon getFullPolygon() const;
-    Polygon getInteriorPolygon() const;
     Polygon getWallPolygon(Direction direction) const;
     QVector<Polygon> getCornerPolygons() const;
 

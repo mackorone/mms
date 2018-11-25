@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QChar>
 #include <QDebug>
 #include <QMap>
 #include <QString>
@@ -33,8 +34,8 @@ const QMap<Color, RGB>& COLOR_TO_RGB();
 const QMap<Color, QString>& COLOR_TO_STRING();
 const QMap<QString, Color>& STRING_TO_COLOR();
 
-const QMap<Color, char>& COLOR_TO_CHAR();
-const QMap<char, Color>& CHAR_TO_COLOR();
+const QMap<Color, QChar>& COLOR_TO_CHAR();
+const QMap<QChar, Color>& CHAR_TO_COLOR();
 
 inline QDebug operator<<(QDebug stream, Color color) {
     stream.noquote() << COLOR_TO_STRING().value(color);

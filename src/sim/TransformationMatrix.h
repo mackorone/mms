@@ -1,9 +1,7 @@
 #pragma once
 
 #include <QPair>
-#include <QVector>
-
-#include "units/Coordinate.h"
+#include <QMatrix4x4>
 
 namespace mms {
 
@@ -11,42 +9,29 @@ class TransformationMatrix {
 
 public:
 
-    // This class is not constructible
     TransformationMatrix() = delete;
 
-    // Retrieve the 4x4 transformation matrix for the full map
-    static QVector<float> getFullMapTransformationMatrix(
-        const Distance& wallWidth,
-        QPair<double, double> physicalMazeSize,
-        QPair<int, int> fullMapPosition,
-        QPair<int, int> fullMapSize,
-        QPair<int, int> windowSize);
-
-    // Retrieve the 4x4 transformation matrices for zoomed map
-    static QVector<float> getZoomedMapTransformationMatrix(
-        QPair<double, double> physicalMazeSize,
-        QPair<int, int> zoomedMapPosition,
-        QPair<int, int> zoomedMapSize,
-        QPair<int, int> windowSize,
-        double screenPixelsPerMeter,
-        double zoomedMapScale,
-        bool rotateZoomedMap,
-        const Coordinate& initialMouseTranslation,
-        const Coordinate& currentMouseTranslation,
-        const Angle& currentMouseRotation);
+    // Get a 4x4 matrix which, when applied to a physical coordinate in the
+    // vertex shader, transforms it into an OpenGL coordinate for the map
+    static QMatrix4x4 get(
+        int mazeWidth,
+        int mazeHeight,
+        int mapWidthPixels,
+        int mapHeightPixels);
 
 private:
 
-    // Maps a pixel coordinate ((0,0) in the bottom left, (width, height) in the upper right)
-    // to the OpenGL coordinate system ((-1,-1) in the bottom left, (1,1) in the upper right)
-    static QPair<double, double> mapPixelCoordinateToOpenGlCoordinate(
+    // Translate from a pixel coordinate to an OpenGL coordinate
+    // Pixel coordinate: LL is (0, 0), UR is (width, height)
+    // OpenGL coordinate: LL is (-1, -1), UR is (1, 1)
+    static QPair<double, double> pixelToOpenGl(
         QPair<double, double> coordinate,
         QPair<int, int> windowSize);
 
     // Multiplies two 4x4 matrices together
-    static QVector<float> multiply4x4Matrices(
-        QVector<float> left,
-        QVector<float> right);
+    static QVector<double> multiply4x4Matrices(
+        QVector<double> left,
+        QVector<double> right);
 
 };
 

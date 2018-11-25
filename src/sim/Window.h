@@ -111,7 +111,6 @@ private:
     void mouseAlgoPause();
     void mouseAlgoResume();
     QPushButton* m_mouseAlgoPauseButton;
-    QVector<QPushButton*> m_mouseAlgoInputButtons;
 
     void mouseAlgoRefresh(const QString& name = "");
     QVector<ConfigDialogField> mouseAlgoGetFields();

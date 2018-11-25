@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QChar>
 #include <QMap>
 #include <QObject>
 #include <QPair>
@@ -67,7 +68,7 @@ private:
     void reset();
 
     // Tile color
-    void setTileColor(int x, int y, char color);
+    void setTileColor(int x, int y, QChar color);
     void clearTileColor(int x, int y);
     void clearAllTileColor();
 
@@ -77,8 +78,8 @@ private:
     void clearAllTileText();
 
     // Tile walls
-    void declareWall(int x, int y, char direction, bool wallExists);
-    void undeclareWall(int x, int y, char direction);
+    void setWall(int x, int y, QChar direction);
+    void clearWall(int x, int y, QChar direction);
 
     // Input buttons
     bool wasInputButtonPressed(int inputButton);

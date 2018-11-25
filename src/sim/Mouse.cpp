@@ -159,65 +159,6 @@ Polygon Mouse::getCurrentWheelPolygon(
     );
 }
 
-void Mouse::update(const Duration& elapsed) {
-
-    // NOTE: This is a *very* performance critical function
-
-    if (m_crashed) {
-        return;
-    }
-
-    /*
-    Speed sumDx;
-    Speed sumDy;
-    AngularVelocity sumDr;
-
-    m_mutex.lock();
-
-    // Iterate over all of the wheels
-    QMap<QString, Wheel>::iterator it;
-    for (it = m_wheels.begin(); it != m_wheels.end(); it += 1) {
-        WheelEffect effect = it.value().update(elapsed);
-
-        // The effect of the forward component
-        sumDx += effect.forwardEffect * getCurrentRotation().getCos();
-        sumDy += effect.forwardEffect * getCurrentRotation().getSin();
-
-        // The effect of the sideways component
-        sumDx += effect.sidewaysEffect * getCurrentRotation().getSin();
-        sumDy += effect.sidewaysEffect * getCurrentRotation().getCos() * -1;
-
-        // The effect of the rotation component
-        sumDr += effect.turnEffect;
-    }
-
-    m_mutex.unlock();
-
-    Speed aveDx = sumDx / m_wheels.size();
-    Speed aveDy = sumDy / m_wheels.size();
-    AngularVelocity aveDr = sumDr / m_wheels.size();
-
-    m_currentGyro = aveDr;
-    m_currentRotation += aveDr * elapsed;
-    m_currentTranslation += Coordinate::Cartesian(aveDx * elapsed, aveDy * elapsed);
-
-    // Update all of the sensor readings
-    QMutableMapIterator<QString, Sensor> sensorIterator(m_sensors);
-    while (sensorIterator.hasNext()) {
-        auto pair = sensorIterator.next();
-        QPair<Coordinate, Angle> translationAndRotation =
-            getCurrentSensorPositionAndDirection(
-                pair.value(),
-                m_currentTranslation,
-                m_currentRotation);
-        pair.value().updateReading(
-            translationAndRotation.first,
-            translationAndRotation.second,
-            *m_maze);
-    }
-    */
-}
-
 Polygon Mouse::getCurrentPolygon(
         const Polygon& initialPolygon,
         const Coordinate& currentTranslation,

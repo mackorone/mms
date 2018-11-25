@@ -1,7 +1,6 @@
 #include "Map.h"
 
 #include <QFile>
-#include <QPair>
 
 #include "Assert.h"
 #include "Dimensions.h"
@@ -43,9 +42,9 @@ void Map::setMouseGraphic(const MouseGraphic* mouseGraphic) {
     m_mouseGraphic = mouseGraphic;
 }
 
-QVector<QString> Map::getOpenGLVersionInfo() {
-    static QVector<QString> openGLVersionInfo;
-    if (openGLVersionInfo.empty()) {
+QStringList Map::getOpenGLVersionInfo() {
+    static QStringList info;
+    if (info.empty()) {
         QString glType = context()->isOpenGLES() ? "OpenGL ES" : "OpenGL";
         QString glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
         QString glProfile;
@@ -60,9 +59,11 @@ QVector<QString> Map::getOpenGLVersionInfo() {
                 glProfile = "CompatibilityProfile";
                 break;
         }
-        openGLVersionInfo = {glType, glVersion, glProfile};
+        info.append(glType);
+        info.append(glVersion);
+        info.append(glProfile);
     }
-    return openGLVersionInfo;
+    return info;
 }
 
 void Map::shutdown() {
@@ -344,17 +345,6 @@ void Map::drawMap(
         int vboStartingIndex,
         int count) {
 
-    // Get the physical size of the maze (in meters)
-    double physicalMazeWidth =
-        Dimensions::wallWidth().getMeters() +
-        m_maze->getWidth() * Dimensions::tileLength().getMeters();
-    double physicalMazeHeight =
-        Dimensions::wallWidth().getMeters() +
-        m_maze->getHeight() * Dimensions::tileLength().getMeters();
-
-    // TODO: MACK - these should be distances, not doubles
-    QPair<double, double> physicalMazeSize = {physicalMazeWidth, physicalMazeHeight};
-
     // Start using the program and vertex array object
     program->bind();
     vao->bind();
@@ -366,30 +356,15 @@ void Map::drawMap(
         program->setUniformValue("texture", 0);
     }
     
-    // Render the full map
-    int borderWidth = 5;
-    QPair<int, int> fullMapPosition = {borderWidth, borderWidth};
-    QPair<int, int> fullMapSize = {
-        m_windowWidth - 2 * borderWidth,
-        m_windowHeight - 2 * borderWidth
-    };
-
-    // TODO: MACK
-    auto matrix = TransformationMatrix::getFullMapTransformationMatrix(
-        Dimensions::wallWidth(),
-        physicalMazeSize,
-        fullMapPosition,
-        fullMapSize,
-        {m_windowWidth, m_windowHeight}
-    );
-    QMatrix4x4 transformationMatrix(
-        matrix.at(0), matrix.at(1), matrix.at(2), matrix.at(3),
-        matrix.at(4), matrix.at(5), matrix.at(6), matrix.at(7),
-        matrix.at(8), matrix.at(9), matrix.at(10), matrix.at(11),
-        matrix.at(12), matrix.at(13), matrix.at(14), matrix.at(15)
+    // TODO: MACK - this should be QTransform, no?
+    QMatrix4x4 transformationMatrix = TransformationMatrix::get(
+        m_maze->getWidth(),
+        m_maze->getHeight(),
+        m_windowWidth,
+        m_windowHeight
     );
 
-    glScissor(fullMapPosition.first, fullMapPosition.second, fullMapSize.first, fullMapSize.second);
+    glScissor(0, 0, m_windowWidth, m_windowHeight);
     program->setUniformValue("transformationMatrix", transformationMatrix);
     glDrawArrays(GL_TRIANGLES, vboStartingIndex, count);
 

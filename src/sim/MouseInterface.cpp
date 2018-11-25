@@ -85,7 +85,7 @@ QString MouseInterface::dispatch(const QString& command) {
     else if (function == "setTileColor") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
-        char color = SimUtilities::strToChar(tokens.at(3));
+        QChar color = SimUtilities::strToChar(tokens.at(3));
         setTileColor(x, y, color);
         return NO_ACK_STRING;
     }
@@ -123,16 +123,18 @@ QString MouseInterface::dispatch(const QString& command) {
     else if (function == "declareWall") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
-        char direction = SimUtilities::strToChar(tokens.at(3));
+        QChar direction = SimUtilities::strToChar(tokens.at(3));
         bool wallExists = SimUtilities::strToBool(tokens.at(4));
-        declareWall(x, y, direction, wallExists);
+        if (wallExists) {
+            setWall(x, y, direction);
+        }
         return NO_ACK_STRING;
     }
     else if (function == "undeclareWall") {
         int x = SimUtilities::strToInt(tokens.at(1));
         int y = SimUtilities::strToInt(tokens.at(2));
-        char direction = SimUtilities::strToChar(tokens.at(3));
-        undeclareWall(x, y, direction);
+        QChar direction = SimUtilities::strToChar(tokens.at(3));
+        clearWall(x, y, direction);
         return NO_ACK_STRING;
     }
     else if (function == "wasInputButtonPressed") {
@@ -199,7 +201,7 @@ void MouseInterface::reset() {
     m_mouse->reset();
 }
 
-void MouseInterface::setTileColor(int x, int y, char color) {
+void MouseInterface::setTileColor(int x, int y, QChar color) {
 
     if (!withinMaze(x, y)) {
         qWarning().noquote().nospace()
@@ -289,7 +291,9 @@ void MouseInterface::clearAllTileText() {
     m_tilesWithText.clear();
 }
 
-void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) {
+void MouseInterface::setWall(int x, int y, QChar direction) {
+
+    bool wallExists = true;
 
     if (!withinMaze(x, y)) {
         qWarning().noquote().nospace()
@@ -318,7 +322,7 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
     }
 }
 
-void MouseInterface::undeclareWall(int x, int y, char direction) {
+void MouseInterface::clearWall(int x, int y, QChar direction) {
 
     if (!withinMaze(x, y)) {
         qWarning().noquote().nospace()

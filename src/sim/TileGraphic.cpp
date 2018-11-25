@@ -104,7 +104,7 @@ void TileGraphic::updateText() const {
         m_bufferInterface->getTileGraphicTextMaxSize();
 
     // Then, generate the rows of text that will be displayed
-    QVector<QString> rowsOfText;
+    QStringList rowsOfText;
 
     // Split the text into rows
     QString remaining = m_text;
@@ -131,7 +131,7 @@ void TileGraphic::updateText() const {
                 row < rowsOfText.size() &&
                 col < rowsOfText.at(row).size()
             ) {
-                c = rowsOfText.at(row).at(col).toLatin1();
+                c = rowsOfText.at(row).at(col);
             }
             ASSERT_TR(FontImage::get()->positions().contains(c));
             m_bufferInterface->updateTileGraphicText(

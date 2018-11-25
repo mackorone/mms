@@ -32,7 +32,7 @@ public:
     void setMouseGraphic(const MouseGraphic* mouseGraphic);
 
     // Retrieves OpenGL version info
-    QVector<QString> getOpenGLVersionInfo();
+    QStringList getOpenGLVersionInfo();
 
     void shutdown();
 

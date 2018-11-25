@@ -36,10 +36,6 @@ Polygon Tile::getFullPolygon() const {
     return m_fullPolygon;
 }
 
-Polygon Tile::getInteriorPolygon() const {
-    return m_interiorPolygon;
-}
-
 Polygon Tile::getWallPolygon(Direction direction) const {
     return m_wallPolygons.value(direction);
 }

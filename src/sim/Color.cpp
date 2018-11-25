@@ -56,8 +56,8 @@ const QMap<QString, Color>& STRING_TO_COLOR() {
     return map;
 }
 
-const QMap<Color, char>& COLOR_TO_CHAR() {
-    static const QMap<Color, char> map = {
+const QMap<Color, QChar>& COLOR_TO_CHAR() {
+    static const QMap<Color, QChar> map = {
         {Color::BLACK      , 'k'},
         {Color::BLUE       , 'b'},
         {Color::GRAY       , 'a'},
@@ -79,8 +79,8 @@ const QMap<Color, char>& COLOR_TO_CHAR() {
     return map;
 }
 
-const QMap<char, Color>& CHAR_TO_COLOR() {
-    static const QMap<char, Color> map =
+const QMap<QChar, Color>& CHAR_TO_COLOR() {
+    static const QMap<QChar, Color> map =
         ContainerUtilities::inverse(COLOR_TO_CHAR());
     return map;
 }

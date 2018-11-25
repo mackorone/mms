@@ -326,18 +326,6 @@ void Window::mouseAlgoTabInit() {
     );
     speedSlider->setValue(100.0 / m_speedBox->maximum() - 1.0);
 
-    // Add the input buttons
-    QHBoxLayout* inputButtonsLayout = new QHBoxLayout();
-    inputButtonsLayout->addWidget(new QLabel("Input Buttons"));
-    for (int i = 0; i < 2; i += 1) {
-        QPushButton* button = new QPushButton(QString::number(i));
-        button->setEnabled(false);
-        button->setMinimumSize(3, 0);
-        inputButtonsLayout->addWidget(button);
-        m_mouseAlgoInputButtons.append(button);
-    }
-    controlLayout->addLayout(inputButtonsLayout);
-
     // Add the build and run output
     QHBoxLayout* bottomLayout = new QHBoxLayout();
     layout->addLayout(bottomLayout);
@@ -743,23 +731,6 @@ void Window::startRun() {
         }
     });
 
-    // Connect the input buttons to the algorithm
-    for (int i = 0; i < m_mouseAlgoInputButtons.size(); i += 1) {
-        QPushButton* button = m_mouseAlgoInputButtons.at(i);
-        connect(button, &QPushButton::clicked, this, [=](){
-            button->setEnabled(false);
-            interface->inputButtonWasPressed(i);
-        });
-        connect(
-            interface,
-            &MouseInterface::inputButtonWasAcknowledged,
-            this,
-            [=](int button) {
-                m_mouseAlgoInputButtons.at(button)->setEnabled(true);
-            }
-        );
-    }
-
     // Clean up on exit
     connect(
         process,
@@ -799,9 +770,6 @@ void Window::startRun() {
         // UI updates on successful start
         m_map.setView(m_view);
         m_mouseAlgoPauseButton->setEnabled(true);
-        for (QPushButton* button : m_mouseAlgoInputButtons) {
-            button->setEnabled(true);
-        }
     } 
     else {
         // Clean up the failed process
@@ -880,9 +848,6 @@ void Window::removeMouseFromMaze() {
     // TODO: MACK - most of these shouldn't be necessary
     // Clean up the UI
     mouseAlgoResume();
-    for (QPushButton* button : m_mouseAlgoInputButtons) {
-        button->setEnabled(false);
-    }
 }
 
 void Window::cancelBuild() {
@@ -989,7 +954,7 @@ QStringList Window::processText(const QString& text) {
     // refactor this so that we're not copying QStrings between lists.
 
     // Separate the text by line
-    QStringList parts = SimUtilities::splitLines(text);
+    QStringList parts = text.split("\n");
 
     // We'll return list of complete lines
     QStringList lines;
