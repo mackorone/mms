@@ -11,17 +11,14 @@ namespace mms {
 class Tile {
 
 public:
+
     Tile();
+    Tile(int x, int y, int distance, QMap<Direction, bool> walls);
 
     int getX() const;
     int getY() const;
-    void setPos(int x, int y);
-
-    bool isWall(Direction direction) const;
-    void setWall(Direction direction, bool isWall);
-
     int getDistance() const;
-    void setDistance(int distance);
+    bool isWall(Direction direction) const;
 
     Polygon getFullPolygon() const;
     Polygon getInteriorPolygon() const;
@@ -31,10 +28,11 @@ public:
     void initPolygons(int mazeWidth, int mazeHeight);
 
 private:
+
     int m_x;
     int m_y;
-    QMap<Direction, bool> m_walls;
     int m_distance;
+    QMap<Direction, bool> m_walls;
 
     Polygon m_fullPolygon;
     Polygon m_interiorPolygon;

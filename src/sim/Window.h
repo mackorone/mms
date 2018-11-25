@@ -18,7 +18,6 @@
 #include "Map.h"
 #include "Maze.h"
 #include "MazeView.h"
-#include "MouseAlgoStatsWidget.h"
 #include "MouseGraphic.h"
 #include "MouseInterface.h"
 
@@ -34,22 +33,10 @@ public:
     void closeEvent(QCloseEvent* event);
     void resizeEvent(QResizeEvent* event);
 
-signals:
-
-    // Emits this signal when a user presses an input button
-    void inputButtonWasPressed(int button);
-
-    // Emits this signal when the mouse algo can't start
-    void mouseAlgoCannotStart(QString errorString);
-
 private:
 
     // The map object
     Map m_map;
-
-    // Some map GUI elements
-    QRadioButton* m_truthButton;
-    QRadioButton* m_viewButton;
 
     // The maze and the true view of the maze
     Maze* m_maze;
@@ -64,9 +51,6 @@ private:
     // Helper function for updating the maze 
     void loadMazeFile(QString path);
     void setMaze(Maze* maze);
-
-    // Helper function for editing settings
-    void editSettings();
 
     // ----- MouseAlgosTab ----- //
 
@@ -124,8 +108,6 @@ private:
     void cancelRun();
     void cancelProcess(QProcess* process, QLabel* status);
 
-    MouseAlgoStatsWidget* m_mouseAlgoStatsWidget;
-
     void mouseAlgoPause();
     void mouseAlgoResume();
     QPushButton* m_mouseAlgoPauseButton;
@@ -135,11 +117,6 @@ private:
     QVector<ConfigDialogField> mouseAlgoGetFields();
 
     QStringList processText(const QString& text);
-
-    // ----- Misc ----- //
-
-    QMap<QString, QLabel*> m_runStats;
-    QPair<QStringList, QVector<QVariant>> getRunStats() const;
 };
 
 } 

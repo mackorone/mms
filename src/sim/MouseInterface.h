@@ -113,6 +113,7 @@ private:
     bool hasOpposingWall(int x, int y, Direction d) const;
     QPair<QPair<int, int>, Direction> getOpposingWall(
         int x, int y, Direction d) const;
+    bool withinMaze(int x, int y) const;
 
     // Returns the center of a given tile
     Coordinate getCenterOfTile(int x, int y) const;

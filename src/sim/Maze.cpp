@@ -1,277 +1,287 @@
 #include "Maze.h"
 
-#include <QDebug>
-#include <QString>
+#include <QFile>
+#include <QTextStream>
 #include <QQueue>
 
 #include "Assert.h"
 #include "Logging.h"
-#include "MazeChecker.h"
-#include "MazeFileType.h"
-#include "MazeFileUtilities.h"
-#include "MazeUtilities.h"
+#include "SimUtilities.h"
 #include "Tile.h"
 
 namespace mms {
 
 Maze* Maze::fromFile(const QString& path) {
-    BasicMaze basicMaze;
-    try {
-        basicMaze = MazeFileUtilities::load(path);
-    }
-    catch (const std::exception& e) {
-        qWarning().nospace()
-            << "Unable to initialize maze from file " << path << ": "
-            << QString(e.what()) << ".";
+
+    // Format:
+    //
+    //     X Y N E S W
+    //
+    // Example:
+    //
+    //     0 0 0 1 1 1
+    //     0 1 1 0 0 1
+    //     1 0 0 0 1 1
+    //     1 1 1 1 0 0
+    //     2 0 0 1 1 0
+    //     2 1 1 1 0 1
+    //
+    // Result:
+    //
+    //     +---+---+---+
+    //     |       |   |
+    //     +   +   +   +
+    //     |   |       |
+    //     +---+---+---+
+
+    // Open the file
+    QFile file(path);
+    if (!file.open(QFile::ReadOnly)) {
         return nullptr;
     }
-    return new Maze(basicMaze);
-}
 
-Maze* Maze::fromAlgo(const QByteArray& bytes) {
-    // TODO: MACK - dedup with fromFile
-    // TODO: MACK - rename this to fromBytes
+    // Read the file and populate the basic maze
     BasicMaze basicMaze;
-    try {
-        basicMaze = MazeFileUtilities::loadBytes(bytes);
+    QTextStream stream(&file);
+    QString line;
+    while (stream.readLineInto(&line)) {
+        
+        // Tokenize the line
+        QStringList tokens = line.split(" ", QString::SkipEmptyParts);
+        if (tokens.size() != 6) {
+            return nullptr;
+        }
+
+        // Extract numeric values
+        bool ok = true;
+        int x = tokens.at(0).toInt(&ok);
+        int y = tokens.at(1).toInt(&ok);
+        bool n = tokens.at(2).toInt(&ok) == 1;
+        bool e = tokens.at(3).toInt(&ok) == 1;
+        bool s = tokens.at(4).toInt(&ok) == 1;
+        bool w = tokens.at(5).toInt(&ok) == 1;
+        if (!ok) {
+            return nullptr;
+        }
+
+        // Fill out the maze as necessary
+        while (basicMaze.size() <= x) {
+            QVector<QMap<Direction, bool>> column;
+            basicMaze.append(column);
+        }
+        while (basicMaze.at(x).size() <= y) {
+            QMap<Direction, bool> walls;
+            basicMaze[x].append(walls);
+        }
+
+        // Add values for the current cell
+        QMap<Direction, bool> walls;
+        walls[Direction::NORTH] = n;
+        walls[Direction::EAST] = e;
+        walls[Direction::SOUTH] = s;
+        walls[Direction::WEST] = w;
+        basicMaze[x][y] = walls;
     }
-    catch (const std::exception& e) {
-        qWarning().nospace()
-            << "Unable to initialize maze from bytes " << bytes << ": "
-            << QString(e.what()) << ".";
+
+    // Check if the maze is valid
+    if (!isValid(basicMaze)) {
         return nullptr;
     }
+
     return new Maze(basicMaze);
-}
-
-Maze::Maze(BasicMaze basicMaze) {
-
-    // Validate the maze
-    MazeValidity validity = MazeChecker::checkMaze(basicMaze);
-
-    // Check to see if it's a valid maze
-    m_isValidMaze = (
-        validity == MazeValidity::EXPLORABLE ||
-        validity == MazeValidity::OFFICIAL
-    );
-    m_isOfficialMaze = (
-        validity == MazeValidity::OFFICIAL
-    );
-
-    // TODO: MACK - fix maze saving
-    /*
-    // Optionally save the maze
-    if (P()->saveGeneratedMaze()) {
-        MazeFileType type = STRING_TO_MAZE_FILE_TYPE().value(P()->generatedMazeType());
-        QString generatedMazeFilePath = Directory::get()->getResMazeDirectory() +
-            P()->generatedMazeFile() + "." + MAZE_FILE_TYPE_TO_SUFFIX().value(type);
-        bool success = false; // MazeFileUtilities::save(basicMaze, generatedMazeFilePath, type);
-        if (success) {
-            qInfo().noquote().nospace()
-                << "Maze saved to \"" << generatedMazeFilePath << "\".";
-        }
-        else {
-            qWarning().noquote().nospace()
-                << "Unable to save maze to \"" << generatedMazeFilePath << "\".";
-        }
-    }
-    */
-
-    // TODO: MACK - make it possible to do rotate and mirroring on the fly
-    /*
-    // Mirror and rotate the maze
-    if (P()->mazeMirrored()) {
-        basicMaze = mirrorAcrossVertical(basicMaze);
-        qInfo().noquote().nospace()
-            << "Mirroring the maze across the vertical.";
-    }
-    for (int i = 0; i < P()->mazeRotations(); i += 1) {
-        basicMaze = rotateCounterClockwise(basicMaze);
-        qInfo().noquote().nospace()
-            << "Rotating the maze counter-clockwise (" << i + 1 << ").";
-    }
-    */
-
-    // Load the maze given by the maze generation algorithm
-    m_maze = initializeFromBasicMaze(basicMaze);
 }
 
 int Maze::getWidth() const {
-    return m_maze.size();
+    return m_tiles.size();
 }
 
 int Maze::getHeight() const {
-    return (0 < m_maze.size() ? m_maze.at(0).size() : 0);
-}
-
-bool Maze::withinMaze(int x, int y) const {
-    return 0 <= x && x < getWidth() && 0 <= y && y < getHeight();
+    return m_tiles.at(0).size();
 }
 
 const Tile* Maze::getTile(int x, int y) const {
-    ASSERT_TR(withinMaze(x, y));
-    return &m_maze.at(x).at(y);
+    ASSERT_LE(0, x);
+    ASSERT_LE(0, y);
+    ASSERT_LT(x, getWidth());
+    ASSERT_LT(y, getHeight());
+    return &m_tiles.at(x).at(y);
 }
 
-int Maze::getMaximumDistance() const {
-    int max = 0;
-    for (int x = 0; x < getWidth(); x += 1) {
-        for (int y = 0; y < getHeight(); y += 1) {
-            if (max < getTile(x, y)->getDistance()) {
-                max = getTile(x, y)->getDistance();
-            }
-        }
-    }
-    return max;
-}
-
-bool Maze::isValidMaze() const {
-    return m_isValidMaze;
-}
-
-bool Maze::isOfficialMaze() const {
-    return m_isOfficialMaze;
-}
-
-bool Maze::isCenterTile(int x, int y) const {
-    const auto centerPositions = 
-        MazeUtilities::getCenterPositions(getWidth(), getHeight());
-    return centerPositions.contains({x, y});
-}
-
-QVector<QVector<Tile>> Maze::initializeFromBasicMaze(const BasicMaze& basicMaze) {
-    // TODO: MACK - assert valid here
-    QVector<QVector<Tile>> maze;
+Maze::Maze(BasicMaze basicMaze) {
+    QVector<QVector<int>> distances = getDistances(basicMaze);
     for (int x = 0; x < basicMaze.size(); x += 1) {
         QVector<Tile> column;
         for (int y = 0; y < basicMaze.at(x).size(); y += 1) {
-            Tile tile;
-            tile.setPos(x, y);
-            for (Direction direction : DIRECTIONS()) {
-                tile.setWall(direction, basicMaze.at(x).at(y).value(direction));
-            }
+            Tile tile(x, y, distances.at(x).at(y), basicMaze.at(x).at(y));
             tile.initPolygons(basicMaze.size(), basicMaze.at(x).size());
-            column.push_back(tile);
+            column.append(tile);
         }
-        maze.push_back(column);
+        m_tiles.append(column);
     }
-    maze = setTileDistances(maze);
-    return maze;
 }
 
-BasicMaze Maze::mirrorAcrossVertical(const BasicMaze& basicMaze) {
-    static QMap<Direction, Direction> verticalOpposites {
-        {Direction::NORTH, Direction::NORTH},
-        {Direction::EAST, Direction::WEST},
-        {Direction::SOUTH, Direction::SOUTH},
-        {Direction::WEST, Direction::EAST},
-    };
-    // TODO: MACK - test this
-    BasicMaze mirrored;
+bool Maze::isValid(const BasicMaze& basicMaze) {
+    return (
+        isNonempty(basicMaze) &&
+        isRectangular(basicMaze) &&
+        isEnclosed(basicMaze) &&
+        isConsistent(basicMaze)
+    );
+}
+
+bool Maze::isNonempty(const BasicMaze& basicMaze) {
+    return 0 < basicMaze.size() && 0 < basicMaze.at(0).size();
+}
+
+bool Maze::isRectangular(const BasicMaze& basicMaze) {
+    for (int x = 0; x < basicMaze.size() - 1; x += 1) {
+        if (basicMaze.at(x).size() != basicMaze.at(x + 1).size()) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool Maze::isEnclosed(const BasicMaze& basicMaze) {
+    int width = basicMaze.size();
+    int height = basicMaze.at(0).size();
+    for (int x = 0; x < width; x += 1) {
+        for (int y = 0; y < height; y += 1) {
+            QMap<Direction, bool> walls = basicMaze.at(x).at(y);
+            if (x == 0 && !walls.value(Direction::WEST)) {
+                return false;
+            }
+            if (y == 0 && !walls.value(Direction::SOUTH)) {
+                return false;
+            }
+            if (x == width - 1 && !walls.value(Direction::EAST)) {
+                return false;
+            }
+            if (y == height - 1 && !walls.value(Direction::NORTH)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+bool Maze::isConsistent(const BasicMaze& basicMaze) {
+    int width = basicMaze.size();
+    int height = basicMaze.at(0).size();
     for (int x = 0; x < basicMaze.size(); x += 1) {
-        QVector<BasicTile> column;
         for (int y = 0; y < basicMaze.at(x).size(); y += 1) {
-            BasicTile tile;
-            for (Direction direction : DIRECTIONS()) {
-                tile.insert(
-                    direction,
-                    basicMaze
-                        .at(basicMaze.size() - 1 - x)
-                        .at(y)
-                        .value(verticalOpposites.value(direction))
-                );
+            QMap<Direction, bool> walls = basicMaze.at(x).at(y);
+            if (
+                0 < x &&
+                walls.value(Direction::WEST) &&
+                !basicMaze.at(x - 1).at(y).value(Direction::EAST)
+            ) {
+                return false;
             }
-            column.push_back(tile);
+            if (
+                0 < y &&
+                walls.value(Direction::SOUTH) &&
+                !basicMaze.at(x).at(y - 1).value(Direction::NORTH)
+            ) {
+                return false;
+            }
+            if (
+                x < width - 1 &&
+                walls.value(Direction::EAST) &&
+                !basicMaze.at(x + 1).at(y).value(Direction::WEST)
+            ) {
+                return false;
+            }
+            if (
+                y < height - 1 &&
+                walls.value(Direction::NORTH) &&
+                !basicMaze.at(x).at(y + 1).value(Direction::SOUTH)
+            ) {
+                return false;
+            }
         }
-        mirrored.push_back(column);
     }
-    return mirrored; 
+    return true;
 }
 
-BasicMaze Maze::rotateCounterClockwise(const BasicMaze& basicMaze) {
-    BasicMaze rotated;
+QVector<QVector<int>> Maze::getDistances(BasicMaze basicMaze) {
+
+    // Initialize all positions with default value
+    QVector<QVector<int>> distances;
     for (int x = 0; x < basicMaze.size(); x += 1) {
-        QVector<BasicTile> row;
-        for (int y = basicMaze.at(x).size() - 1; y >= 0; y -= 1) {
-            BasicTile tile;
-            int rotatedTileX = basicMaze.at(x).size() - 1 - y;
-            tile.insert(Direction::NORTH, basicMaze.at(x).at(y).value(Direction::EAST));
-            tile.insert(Direction::EAST, basicMaze.at(x).at(y).value(Direction::SOUTH));
-            tile.insert(Direction::SOUTH, basicMaze.at(x).at(y).value(Direction::WEST));
-            tile.insert(Direction::WEST, basicMaze.at(x).at(y).value(Direction::NORTH));
-            if (rotated.size() <= rotatedTileX) {
-                rotated.push_back({tile});
-            }
-            else {
-                rotated[rotatedTileX].push_back(tile);
-            }
+        QVector<int> column;
+        for (int y = 0; y < basicMaze.at(x).size(); y += 1) {
+            column.append(-1);
         }
-    }
-    return rotated;
-}
-
-QVector<QVector<Tile>> Maze::setTileDistances(QVector<QVector<Tile>> maze) {
-
-    // TODO: MACK - dedup some of this with hasNoInaccessibleLocations
-
-    // The maze is guarenteed to be nonempty and rectangular
-    int width = maze.size();
-    int height = maze.at(0).size();
-
-    // Helper lambda for retrieving and adjacent tile if one exists, nullptr if not
-    // TODO: MACK - this should be in maze utilities too
-    auto getNeighbor = [&maze, &width, &height](int x, int y, Direction direction) {
-        switch (direction) {
-            case Direction::NORTH:
-                return (y < height - 1 ? &maze[x][y + 1] : nullptr);
-            case Direction::EAST:
-                return (x < width - 1 ? &maze[x + 1][y] : nullptr);
-            case Direction::SOUTH:
-                return (0 < y ? &maze[x][y - 1] : nullptr);
-            case Direction::WEST:
-                return (0 < x ? &maze[x - 1][y] : nullptr);
-        }
-    };
-
-    // Determine all of the center tiles
-    // TODO: MACK - use the maze checker function for this
-    QVector<Tile*> centerTiles;
-            centerTiles.push_back(&maze[(width - 1) / 2][(height - 1) / 2]);
-    if (width % 2 == 0) {
-            centerTiles.push_back(&maze[ width      / 2][(height - 1) / 2]);
-        if (height % 2 == 0) {
-            centerTiles.push_back(&maze[(width - 1) / 2][ height      / 2]);
-            centerTiles.push_back(&maze[ width      / 2][ height      / 2]);
-        }
-    }
-    else if (height % 2 == 0) {
-            centerTiles.push_back(&maze[(width - 1) / 2][ height      / 2]);
+        distances.append(column);
     }
 
-    // The queue for the BFS
-    QQueue<Tile*> discovered;
-
-    // Set the distances of the center tiles and push them to the queue
-    for (Tile* tile : centerTiles) {
-        tile->setDistance(0); 
-        discovered.enqueue(tile);
+    // Set the distances of the center positions to 0 and enqueue them
+    QQueue<QPair<int, int>> discovered;
+    int width = basicMaze.size();
+    int height = basicMaze.at(0).size();
+    for (QPair<int, int> position : getCenterPositions(width, height)) {
+        distances[position.first][position.second] = 0;
+        discovered.enqueue(position);
     }
 
-    // Now do a BFS
+    // Perform a breadth first search
     while (!discovered.empty()){
-        Tile* tile = discovered.dequeue();
+        QPair<int, int> position = discovered.dequeue();
+        int x = position.first;
+        int y = position.second;
         for (Direction direction : DIRECTIONS()) {
-            if (!tile->isWall(direction)) {
-                Tile* neighbor = getNeighbor(tile->getX(), tile->getY(), direction);
-                if (neighbor != nullptr && neighbor->getDistance() == -1) {
-                    neighbor->setDistance(tile->getDistance() + 1);
-                    discovered.enqueue(neighbor);
+            if (!basicMaze.at(x).at(y).value(direction)) {
+                int nx = x;
+                int ny = y;
+                if (direction == Direction::NORTH) {
+                    ny += 1;
+                }
+                if (direction == Direction::EAST) {
+                    nx += 1;
+                }
+                if (direction == Direction::SOUTH) {
+                    ny -= 1;
+                }
+                if (direction == Direction::WEST) {
+                    nx -= 1;
+                }
+                if (distances.at(nx).at(ny) == -1) {
+                    distances[nx][ny] = distances.at(x).at(y) + 1;
+                    discovered.enqueue({nx, ny});
                 }
             }
         }
     }
+    return distances;
+}
 
-    return maze;
+QVector<QPair<int, int>> Maze::getCenterPositions(int width, int height) {
+
+    // +---+---+
+    // | C | D |
+    // +---+---+
+    // | A | B |
+    // +---+---+
+    QPair<int, int> A = {(width - 1) / 2, (height - 1) / 2};
+    QPair<int, int> B = {width / 2, (height - 1) / 2};
+    QPair<int, int> C = {(width - 1) / 2, height / 2};
+    QPair<int, int> D = {width / 2, height / 2};
+
+    QVector<QPair<int, int>> positions;
+    positions.append(A);
+    if (width % 2 == 0 && height % 2 == 0) {
+        positions.append(B);
+        positions.append(C);
+        positions.append(D);
+    }
+    else if (width % 2 == 0) {
+        positions.append(B);
+    }
+    else if (height % 2 == 0) {
+        positions.append(C);
+    }
+    return positions; 
 }
 
 } 

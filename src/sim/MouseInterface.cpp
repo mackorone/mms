@@ -201,7 +201,7 @@ void MouseInterface::reset() {
 
 void MouseInterface::setTileColor(int x, int y, char color) {
 
-    if (!m_maze->withinMaze(x, y)) {
+    if (!withinMaze(x, y)) {
         qWarning().noquote().nospace()
             << "There is no tile at position (" << x << ", " << y << ") and"
             << " thus you cannot set its color.";
@@ -222,7 +222,7 @@ void MouseInterface::setTileColor(int x, int y, char color) {
 
 void MouseInterface::clearTileColor(int x, int y) {
 
-    if (!m_maze->withinMaze(x, y)) {
+    if (!withinMaze(x, y)) {
         qWarning().noquote().nospace()
             << "There is no tile at position (" << x << ", " << y << "), and"
             << " thus you cannot clear its color.";
@@ -242,7 +242,7 @@ void MouseInterface::clearAllTileColor() {
 
 void MouseInterface::setTileText(int x, int y, const QString& text) {
 
-    if (!m_maze->withinMaze(x, y)) {
+    if (!withinMaze(x, y)) {
         qWarning().noquote().nospace()
             << "There is no tile at position (" << x << ", " << y << "), and"
             << " thus you cannot set its text to \"" << text << "\".";
@@ -271,7 +271,7 @@ void MouseInterface::setTileText(int x, int y, const QString& text) {
 
 void MouseInterface::clearTileText(int x, int y) {
 
-    if (!m_maze->withinMaze(x, y)) {
+    if (!withinMaze(x, y)) {
         qWarning().noquote().nospace()
             << "There is no tile at position (" << x << ", " << y << "), and"
             << " thus you cannot clear its text.";
@@ -291,7 +291,7 @@ void MouseInterface::clearAllTileText() {
 
 void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) {
 
-    if (!m_maze->withinMaze(x, y)) {
+    if (!withinMaze(x, y)) {
         qWarning().noquote().nospace()
             << "There is no tile at position (" << x << ", " << y << "), and"
             << " thus you cannot declare any of its walls.";
@@ -320,7 +320,7 @@ void MouseInterface::declareWall(int x, int y, char direction, bool wallExists) 
 
 void MouseInterface::undeclareWall(int x, int y, char direction) {
 
-    if (!m_maze->withinMaze(x, y)) {
+    if (!withinMaze(x, y)) {
         qWarning().noquote().nospace()
             << "There is no tile at position (" << x << ", " << y << "), and"
             << " thus you cannot undeclare any of its walls.";
@@ -404,7 +404,7 @@ bool MouseInterface::isWall(QPair<QPair<int, int>, Direction> wall) const {
     int x = wall.first.first;
     int y = wall.first.second;
     Direction direction = wall.second;
-    ASSERT_TR(m_maze->withinMaze(x, y));
+    ASSERT_TR(withinMaze(x, y));
     return m_maze->getTile(x, y)->isWall(direction);
 }
 
@@ -514,8 +514,15 @@ void MouseInterface::moveALittle(double progress) {
     }
 }
 
+bool MouseInterface::withinMaze(int x, int y) const {
+    return (
+        0 <= x && x < m_maze->getWidth() &&
+        0 <= y && y < m_maze->getHeight()
+    );
+}
+
 Coordinate MouseInterface::getCenterOfTile(int x, int y) const {
-    ASSERT_TR(m_maze->withinMaze(x, y));
+    ASSERT_TR(withinMaze(x, y));
     Coordinate centerOfTile = Coordinate::Cartesian(
         Dimensions::tileLength() * (static_cast<double>(x) + 0.5),
         Dimensions::tileLength() * (static_cast<double>(y) + 0.5)

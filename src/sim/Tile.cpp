@@ -1,13 +1,19 @@
 #include "Tile.h"
 
+#include "Assert.h"
 #include "Dimensions.h"
 
 namespace mms {
 
-Tile::Tile() : m_x(-1), m_y(-1), m_distance(-1) {
-    for (Direction direction : DIRECTIONS()) {
-        m_walls.insert(direction, false);
-    }
+Tile::Tile() {
+    ASSERT_NEVER_RUNS();
+}
+
+Tile::Tile(int x, int y, int distance, QMap<Direction, bool> walls) :
+    m_x(x),
+    m_y(y),
+    m_walls(walls),
+    m_distance(distance) {
 }
 
 int Tile::getX() const {
@@ -18,25 +24,12 @@ int Tile::getY() const {
     return m_y;
 }
 
-void Tile::setPos(int x, int y) {
-    m_x = x;
-    m_y = y;
-}
-
-bool Tile::isWall(Direction direction) const {
-    return m_walls.value(direction);
-}
-
-void Tile::setWall(Direction direction, bool isWall) {
-    m_walls[direction] = isWall;
-}
-
 int Tile::getDistance() const {
     return m_distance;
 }
 
-void Tile::setDistance(int distance) {
-    m_distance= distance;
+bool Tile::isWall(Direction direction) const {
+    return m_walls.value(direction);
 }
 
 Polygon Tile::getFullPolygon() const {

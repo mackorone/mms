@@ -53,7 +53,6 @@ Window::Window(QWidget *parent) :
         m_runButton(new QPushButton("Run")),
         m_runStatus(new QLabel()),
         m_runOutput(new QPlainTextEdit()),
-        m_mouseAlgoStatsWidget(new MouseAlgoStatsWidget()),
         m_mouseAlgoPauseButton(new QPushButton("Pause")) {
 
     // First, some bookkeeping; we have to explicitly allow the
@@ -125,71 +124,6 @@ Window::Window(QWidget *parent) :
     connect(quitAction, &QAction::triggered, this, &Window::close);
     fileMenu->addAction(quitAction);
 
-
-
-    // Settings
-    /*
-    QAction* settingsAction = new QAction(tr("&Settings"), this);
-    connect(settingsAction, &QAction::triggered, this, &Window::editSettings);
-    fileMenu->addAction(settingsAction);
-    */
-
-    // Save the maze
-    // TODO: MACK - select the maze type here...
-    /*
-    QAction* saveMazeAction = new QAction(tr("&Save Maze As ..."), this);
-    connect(saveMazeAction, &QAction::triggered, this, [=](){
-        QString filename = QFileDialog::getSaveFileName(
-            this,
-            tr("Save File"),
-            "",
-            tr("Images (*.png *.xpm *.jpg)")
-        );
-        qDebug() << filename;
-    });
-    fileMenu->addAction(saveMazeAction);
-    */
-
-    // Add maze algorithm menu items
-    /*
-    QMenu* mazeAlgoMenu = menuBar()->addMenu(tr("&Maze Algorithm"));
-    QAction* importAction = new QAction(tr("&Import"), this);
-    // TODO: MACK - just to maze algo tab here?
-    connect(
-        importAction, &QAction::triggered,
-        mazeAlgosTab, &MazeAlgosTab::import
-    );
-    mazeAlgoMenu->addAction(importAction);
-    QAction* editAction = new QAction(tr("&Edit"), this);
-    connect(editAction, &QAction::triggered, this, [=](){
-        // TODO: MACK
-    });
-    mazeAlgoMenu->addAction(editAction);
-    QAction* buildAction = new QAction(tr("&Build"), this);
-    connect(buildAction, &QAction::triggered, this, [=](){
-        // TODO: MACK
-    });
-    mazeAlgoMenu->addAction(buildAction);
-    QAction* runAction = new QAction(tr("&Run"), this);
-    connect(runAction, &QAction::triggered, this, [=](){
-        // TODO: MACK
-    });
-    mazeAlgoMenu->addAction(runAction);
-
-    // Add some model-related menu items
-    QMenu* simulationMenu = menuBar()->addMenu(tr("&Mouse"));
-    QAction* pauseAction = new QAction(tr("&Pause"), this);
-    connect(pauseAction, &QAction::triggered, this, [=](){
-        // TODO: MACK
-    });
-    simulationMenu->addAction(pauseAction);
-    QAction* stopAction = new QAction(tr("&Stop"), this);
-    connect(stopAction, &QAction::triggered, this, [=](){
-        // TODO: MACK
-    });
-    simulationMenu->addAction(stopAction);
-    */
-
     // Resize the window
     resize(
         SettingsMisc::getRecentWindowWidth(),
@@ -223,122 +157,7 @@ Window::Window(QWidget *parent) :
         m_commandQueueTimer, &QTimer::timeout,
         this, &Window::processQueuedCommands
     );
-
-    // TODO: MACK - this is very expensive - fix it
-    /*
-    // Start the info loop
-    QTimer* otherTimer = new QTimer();
-    QLinkedList<double>* timestamps = new QLinkedList<double>();
-    int numFrames = 10;
-    connect(otherTimer, &QTimer::timeout, this, [=](){
-        double now = SimUtilities::getHighResTimestamp();
-        timestamps->append(now);
-        if (timestamps->size() > numFrames) {
-            double then = timestamps->takeFirst();
-            double fps = numFrames / (now - then);
-        }
-        QPair<QStringList, QVector<QVariant>> runStats = getRunStats();
-        QStringList keys = runStats.first;
-        QVector<QVariant> values = runStats.second;
-        for (int i = 0; i < keys.size(); i += 1) {
-            QString text = values.at(i).toString();
-            if (values.at(i).type() == QVariant::Double) {
-                text = QString::number(values.at(i).toDouble(), 'f', 3);
-            }
-            m_runStats.value(keys.at(i))->setText(text);
-        }
-    });
-    //otherTimer->start(100); // 10 fps
-    */
 }
-
-/*
-void Window::modelStep() {
-    static double DT
-    static double prev = SimUtilities::getHighResTimestamp();
-    static double acc = 0.0;
-    double now = SimUtilities::getHighResTimestamp();
-    acc += (now - prev) * 1.0; // m_simSpeed; TODO: MACK
-    prev = now;
-    while (acc >= DT) {
-        update(DT);
-        acc -= DT;
-        // TODO: MACK - check for collisions ...
-        // std::thread collisionDetector(&Model::checkCollision, this);
-    }
-}
-
-void Window::update(double dt) {
-
-    // Ensure the maze/mouse aren't updated in this loop
-    m_mutex.lock();
-
-    // If there's nothing to update, sleep for a little bit
-    if (m_mouse == nullptr || m_paused) {
-        m_mutex.unlock();
-        return;
-    }
-
-    // Calculate the amount of sim time that should pass during this iteration
-    Duration elapsedSimTimeForThisIteration = Duration::Seconds(dt);
-
-    // Update the sim time
-    SimTime::get()->incrementElapsedSimTime(elapsedSimTimeForThisIteration);
-
-    // Update the position of the mouse
-    m_mouse->update(elapsedSimTimeForThisIteration);
-
-    // Retrieve the current discretized location of the mouse
-    QPair<int, int> location = m_mouse->getCurrentDiscretizedTranslation();
-
-    // If we're ever outside of the maze, crash. It would be cool to have
-    // some "out of bounds" state but I haven't implemented that yet. We
-    // continue here to make sure that we join with the other thread.
-    if (!m_maze->withinMaze(location.first, location.second)) {
-        m_mouse->setCrashed();
-        m_mutex.unlock();
-        return;
-    }
-
-    // Retrieve the tile at current location
-    const Tile* tileAtLocation = m_maze->getTile(location.first, location.second);
-
-    // If this is a new tile, update the set of traversed tiles
-    if (!m_stats->traversedTileLocations.contains(location)) {
-        m_stats->traversedTileLocations.insert(location);
-        if (m_stats->closestDistanceToCenter == -1 ||
-                tileAtLocation->getDistance() < m_stats->closestDistanceToCenter) {
-            m_stats->closestDistanceToCenter = tileAtLocation->getDistance(); 
-        }
-        // Alert any listeners that a new tile was entered
-        emit newTileLocationTraversed(location.first, location.second);
-    }
-
-    // If we've returned to the origin, reset the departure time
-    if (location.first == 0 && location.second == 0) {
-        m_stats->timeOfOriginDeparture = Duration::Seconds(-1);
-    }
-
-    // Otherwise, if we've just left the origin, update the departure time
-    else if (m_stats->timeOfOriginDeparture < Duration::Seconds(0)) {
-        m_stats->timeOfOriginDeparture = SimTime::get()->elapsedSimTime();
-    }
-
-    // Separately, if we're in the center, update the best time to center
-    if (m_maze->isCenterTile(location.first, location.second)) {
-        Duration timeToCenter = SimTime::get()->elapsedSimTime() - m_stats->timeOfOriginDeparture;
-        if (
-            m_stats->bestTimeToCenter < Duration::Seconds(0) ||
-            timeToCenter < m_stats->bestTimeToCenter
-        ) {
-            m_stats->bestTimeToCenter = timeToCenter;
-        }
-    }
-
-    // Release the mutex
-    m_mutex.unlock();
-}
-*/
 
 void Window::resizeEvent(QResizeEvent* event) {
     SettingsMisc::setRecentWindowWidth(event->size().width());
@@ -346,16 +165,23 @@ void Window::resizeEvent(QResizeEvent* event) {
 }
 
 void Window::closeEvent(QCloseEvent *event) {
-    // Graceful shutdown
-    cancelBuild();
     cancelRun();
+    cancelBuild();
     m_map.shutdown();
     QMainWindow::closeEvent(event);
 }
 
 void Window::loadMazeFile(QString path) {
     Maze* maze = Maze::fromFile(path);
-    if (maze != nullptr) {
+    if (maze == nullptr) {
+        QMessageBox::warning(
+            this,
+            "Invalid Maze",
+            "Cannot run mouse algorithm because the maze is invalid. The maze "
+            "must be nonempty, rectangular, enclosed, and self-consistent."
+        );
+    }
+    else {
         setMaze(maze);
     }
 }
@@ -396,139 +222,6 @@ void Window::setMaze(Maze* maze) {
     delete oldMaze;
     delete oldTruth;
 }
-
-void Window::editSettings() {
-
-    ConfigDialog dialog(
-        "Edit",
-        "Settings",
-        {
-        },
-        false // No "Remove" button
-    );
-
-    // Cancel was pressed
-    if (dialog.exec() == QDialog::Rejected) {
-        return;
-    }
-}
-
-QPair<QStringList, QVector<QVariant>> Window::getRunStats() const {
-
-    static QStringList keys = {
-        "Tiles Traversed",
-        "Closest Distance to Center",
-        "Current X (m)",
-        "Current Y (m)",
-        "Current Rotation (deg)",
-        "Current X Tile",
-        "Current Y Tile",
-        "Current Direction",
-        "Elapsed Real Time",
-        "Elapsed Sim Time",
-        "Time Since Origin Departure",
-        "Best Time to Center",
-        "Crashed",
-    };
-
-    QVector<QVariant> values;
-
-    /*
-    // This means the mouse isn't in the maze
-    if (stats.closestDistanceToCenter < 0) {
-        for (int i = 0; i < keys.size(); i += 1) {
-            values.append("N/A");
-        }
-    }
-    else {
-        // TODO: MACK - m_mouse can be null here :/ ...
-        values.append(
-            QString::number(stats.traversedTileLocations.size()) + " / " +
-            QString::number(m_maze->getWidth() * m_maze->getHeight())
-        );
-        values.append(stats.closestDistanceToCenter);
-        values.append(m_mouse->getCurrentTranslation().getX().getMeters());
-        values.append(m_mouse->getCurrentTranslation().getY().getMeters());
-        values.append(m_mouse->getCurrentRotation().getDegreesZeroTo360());
-        values.append(m_mouse->getCurrentDiscretizedTranslation().first);
-        values.append(m_mouse->getCurrentDiscretizedTranslation().second);
-        values.append(DIRECTION_TO_STRING().value(m_mouse->getCurrentDiscretizedRotation()));
-        values.append(SimUtilities::formatDuration(SimTime::get()->elapsedRealTime()));
-        values.append(SimUtilities::formatDuration(SimTime::get()->elapsedSimTime()));
-        values.append(
-            stats.timeOfOriginDeparture.getSeconds() < 0
-            ? "NONE"
-            : SimUtilities::formatDuration(
-                SimTime::get()->elapsedSimTime() - stats.timeOfOriginDeparture)
-        );
-        values.append(
-            stats.bestTimeToCenter.getSeconds() < 0
-            ? "NONE"
-            : SimUtilities::formatDuration(stats.bestTimeToCenter)
-        );
-        values.append((m_mouse->didCrash() ? "TRUE" : "FALSE"));
-    }
-    */
-
-    return {keys, values};
-}
-
-#if(0)
-QVector<QPair<QString, QVariant>> Window::getAlgoOptions() const {
-    return {
-        // Mouse Info
-        // TODO: MACK - interface type not finalized
-        {"Interface Type",
-            m_runInterface == nullptr
-            ? "NONE"
-            : INTERFACE_TYPE_TO_STRING().value(m_runInterface->getInterfaceType(false))
-        },
-        /*
-        QString("Initial Direction:           ") + (m_runInterface == nullptr ? "NONE" :
-            m_runInterface->getStaticOptions().initialDirection),
-        QString("Tile Text Num Rows:          ") + (m_runInterface == nullptr ? "NONE" :
-            QString::number(m_runInterface->getStaticOptions().tileTextNumberOfRows)),
-        QString("Tile Text Num Cols:          ") + (m_runInterface == nullptr ? "NONE" :
-            QString::number(m_runInterface->getStaticOptions().tileTextNumberOfCols)),
-        */
-        {"Allow Omniscience",
-            m_runInterface == nullptr
-            ? "NONE"
-            : m_runInterface->getDynamicOptions().allowOmniscience ? "TRUE" : "FALSE"
-        },
-        {"Declare Both Wall Halves",
-            m_runInterface == nullptr
-            ? "NONE"
-            : m_runInterface->getDynamicOptions().declareBothWallHalves ? "TRUE" : "FALSE"
-        },
-        {"Auto Set Tile Text",
-            m_runInterface == nullptr
-            ? "NONE"
-            : m_runInterface->getDynamicOptions().setTileTextWhenDistanceDeclared ? "TRUE" : "FALSE"
-        },
-        {"Auto Set Tile Base Color",
-            m_runInterface == nullptr
-            ? "NONE"
-            : m_runInterface->getDynamicOptions().setTileBaseColorWhenDistanceDeclaredCorrectly ? "TRUE" : "FALSE"
-        }
-        // TODO: MACK
-        /*
-        QString("Wheel Speed Fraction:        ") +
-            (m_runInterface == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE().value(m_runInterface->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
-            QString::number(m_runInterface->getStaticOptions().wheelSpeedFraction))),
-        QString("Declare Wall On Read:        ") +
-            (m_runInterface == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE().value(m_runInterface->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
-            (m_runInterface->getDynamicOptions().declareWallOnRead ? "TRUE" : "FALSE"))),
-        QString("Use Tile Edge Movements:     ") +
-            (m_runInterface == nullptr ? "NONE" :
-            (STRING_TO_INTERFACE_TYPE().value(m_runInterface->getStaticOptions().interfaceType) != InterfaceType::DISCRETE ? "N/A" :
-            (m_runInterface->getDynamicOptions().useTileEdgeMovements ? "TRUE" : "FALSE"))),
-        */
-    };
-}
-#endif
 
 void Window::mouseAlgoTabInit() {
 
@@ -653,7 +346,6 @@ void Window::mouseAlgoTabInit() {
     m_mouseAlgoOutputTabWidget->addTab(m_buildOutput, "Build Output");
     m_mouseAlgoOutputTabWidget->addTab(m_runOutput, "Run Output");
     m_mouseAlgoOutputTabWidget->addTab(m_runOutput, "Run Output");
-    m_mouseAlgoOutputTabWidget->addTab(m_mouseAlgoStatsWidget, "Stats");
 
     // Set the default values for some widgets
     for (QPlainTextEdit* output : {
@@ -666,10 +358,6 @@ void Window::mouseAlgoTabInit() {
         font.setPointSize(10);
         output->document()->setDefaultFont(font);
     }
-
-    // Add the algo run stats
-    QPair<QStringList, QVector<QVariant>> runStats = getRunStats();
-    m_mouseAlgoStatsWidget->init(runStats.first);
 
     // Add the mouse algos
     mouseAlgoRefresh(SettingsMisc::getRecentMouseAlgo());
@@ -1014,15 +702,6 @@ void Window::startRun() {
         );
         return;
     }
-    if (!m_maze->isValidMaze()) {
-        QMessageBox::warning(
-            this,
-            "Invalid Maze",
-            "Cannot run mouse algorithm because the maze is invalid. The maze "
-            "must be nonempty, rectangular, enclosed, and self-consistent."
-        );
-        return;
-    }
 
     // TODO: MACK - delete the font files too
 
@@ -1069,16 +748,8 @@ void Window::startRun() {
         QPushButton* button = m_mouseAlgoInputButtons.at(i);
         connect(button, &QPushButton::clicked, this, [=](){
             button->setEnabled(false);
-            // Note: we can't call inputButtonWasPressed directly because
-            // it's not thread-safe; instead, we use a queued connection
-            emit inputButtonWasPressed(i);
+            interface->inputButtonWasPressed(i);
         });
-        connect(
-            this,
-            &Window::inputButtonWasPressed,
-            interface,
-            &MouseInterface::inputButtonWasPressed
-        );
         connect(
             interface,
             &MouseInterface::inputButtonWasAcknowledged,
