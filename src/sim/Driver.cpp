@@ -3,7 +3,6 @@
 #include <QApplication>
 
 #include "Assert.h"
-#include "ColorManager.h"
 #include "FontImage.h"
 #include "Logging.h"
 #include "Settings.h"
@@ -23,7 +22,6 @@ int Driver::drive(int argc, char* argv[]) {
     // Initialize singletons
     Logging::init();
     Settings::init();
-    ColorManager::init();
     FontImage::init();
     SimTime::init();
 

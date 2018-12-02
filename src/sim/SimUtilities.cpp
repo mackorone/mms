@@ -42,16 +42,31 @@ QString SimUtilities::boolToStr(bool value) {
 QVector<TriangleGraphic> SimUtilities::polygonToTriangleGraphics(
         const Polygon& polygon,
         Color color,
-        double alpha) {
+        unsigned char alpha) {
     QVector<Triangle> triangles = polygon.getTriangles();
     QVector<TriangleGraphic> triangleGraphics;
     RGB colorValues = COLOR_TO_RGB().value(color);
     for (Triangle triangle : triangles) {
-        triangleGraphics.push_back({
-            {triangle.p1.getX().getMeters(), triangle.p1.getY().getMeters(), colorValues, alpha},
-            {triangle.p2.getX().getMeters(), triangle.p2.getY().getMeters(), colorValues, alpha},
-            {triangle.p3.getX().getMeters(), triangle.p3.getY().getMeters(), colorValues, alpha}
-        });
+        TriangleGraphic graphic;
+        graphic.p1 = {
+            triangle.p1.getX().getMeters(),
+            triangle.p1.getY().getMeters(),
+            colorValues,
+            alpha,
+        };
+        graphic.p2 = {
+            triangle.p2.getX().getMeters(),
+            triangle.p2.getY().getMeters(),
+            colorValues,
+            alpha,
+        };
+        graphic.p3 = {
+            triangle.p3.getX().getMeters(),
+            triangle.p3.getY().getMeters(),
+            colorValues,
+            alpha,
+        };
+        triangleGraphics.append(graphic);
     }
     return triangleGraphics;
 }

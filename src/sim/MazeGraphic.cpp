@@ -10,11 +10,11 @@ MazeGraphic::MazeGraphic(
     for (int x = 0; x < maze->getWidth(); x += 1) {
         QVector<TileGraphic> column;
         for (int y = 0; y < maze->getHeight(); y += 1) {
-            column.push_back(TileGraphic(
+            column.append(TileGraphic(
                 maze->getTile(x, y),
                 bufferInterface));
         }
-        m_tileGraphics.push_back(column);
+        m_tileGraphics.append(column);
     }
     ASSERT_EQ(getWidth(), maze->getWidth());
     ASSERT_EQ(getHeight(), maze->getHeight());

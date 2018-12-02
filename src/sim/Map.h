@@ -48,6 +48,10 @@ private:
     QOpenGLDebugLogger m_openGLLogger;
     void initOpenGLLogger();
 
+    // TODO: MACK
+    // m_maze shouldn't be necessary
+    // MazeView should be MazeGraphic
+
     // No ownership here - only pointers
     const Maze* m_maze;
     const MazeView* m_view;
@@ -76,8 +80,6 @@ private:
     void repopulateVertexBufferObjects(
         const QVector<TriangleGraphic>& mouseBuffer);
     void drawMap(
-        const Coordinate& currentMouseTranslation,
-        const Angle& currentMouseRotation,
         QOpenGLShaderProgram* program,
         QOpenGLVertexArrayObject* vao,
         int vboStartingIndex,

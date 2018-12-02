@@ -30,10 +30,10 @@ QPair<int, int> BufferInterface::getTileGraphicTextMaxSize() {
     return m_tileGraphicTextCache.getTileGraphicTextMaxSize();
 }
 
-void BufferInterface::insertIntoGraphicCpuBuffer(const Polygon& polygon, Color color, double alpha) {
+void BufferInterface::insertIntoGraphicCpuBuffer(const Polygon& polygon, Color color, unsigned char alpha) {
     QVector<TriangleGraphic> tgs = SimUtilities::polygonToTriangleGraphics(polygon, color, alpha);
     for (int i = 0; i < tgs.size(); i += 1) {
-        m_graphicCpuBuffer->push_back(tgs.at(i));
+        m_graphicCpuBuffer->append(tgs.at(i));
     }
 }
 
@@ -53,8 +53,8 @@ void BufferInterface::insertIntoTextureCpuBuffer() {
         {0.0, 0.0, 0.0, 1.0},
         {0.0, 0.0, 0.0, 0.0},
     };
-    m_textureCpuBuffer->push_back(t1);
-    m_textureCpuBuffer->push_back(t2);
+    m_textureCpuBuffer->append(t1);
+    m_textureCpuBuffer->append(t2);
 }
 
 void BufferInterface::updateTileGraphicBaseColor(int x, int y, Color color) {
@@ -68,7 +68,7 @@ void BufferInterface::updateTileGraphicBaseColor(int x, int y, Color color) {
     }
 }
 
-void BufferInterface::updateTileGraphicWallColor(int x, int y, Direction direction, Color color, double alpha) {
+void BufferInterface::updateTileGraphicWallColor(int x, int y, Direction direction, Color color, unsigned char alpha) {
     int index = getTileGraphicWallStartingIndex(x, y, direction);
     RGB rgb = COLOR_TO_RGB().value(color);
     for (int i = 0; i < 2; i += 1) {

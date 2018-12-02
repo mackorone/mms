@@ -5,10 +5,11 @@
 namespace mms {
 
 struct VertexGraphic {
-    double x; // x position
-    double y; // y position
-    RGB rgb;  // rgb values
-    double a; // alpha value
+    float x; // x position
+    float y; // y position
+    // TODO: OPTIMIZE COLOR VALUES
+    RGB rgb; // rgb values
+    unsigned char a; // alpha value
 };
 
 } 

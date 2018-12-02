@@ -104,6 +104,7 @@ private:
     void removeMouseFromMaze();
 
     // Cancel running processes
+    void cancelAllProcesses();
     void cancelBuild();
     void cancelRun();
     void cancelProcess(QProcess* process, QLabel* status);

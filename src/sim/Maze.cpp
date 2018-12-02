@@ -5,9 +5,6 @@
 #include <QQueue>
 
 #include "Assert.h"
-#include "Logging.h"
-#include "SimUtilities.h"
-#include "Tile.h"
 
 namespace mms {
 

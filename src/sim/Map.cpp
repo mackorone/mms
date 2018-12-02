@@ -1,5 +1,6 @@
 #include "Map.h"
 
+#include <QElapsedTimer>
 #include <QFile>
 
 #include "Assert.h"
@@ -105,40 +106,30 @@ void Map::initializeGL() {
 
 void Map::paintGL() {
 
+    // TODO: MACK - optimize this
+
+    QElapsedTimer timer;
+    timer.start();
+
     // If the view hasn't been set yet, just draw black
     if (m_view == nullptr) {
         glClear(GL_COLOR_BUFFER_BIT);
         return;
     }
 
-    Coordinate currentMouseTranslation;
-    Angle currentMouseRotation;
     QVector<TriangleGraphic> mouseBuffer;
     if (m_mouseGraphic != nullptr) {
-        auto currentPosition = m_mouseGraphic->getCurrentMousePosition();
-        currentMouseTranslation = currentPosition.first;
-        currentMouseRotation = currentPosition.second;
-        mouseBuffer = m_mouseGraphic->draw(
-            currentMouseTranslation,
-            currentMouseRotation);
+        mouseBuffer = m_mouseGraphic->draw();
     }
 
     // Re-populate both vertex buffer objects
     repopulateVertexBufferObjects(mouseBuffer);
-
-    // Clear the screen
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    // Enable scissoring so that the maps are only draw in specified locations.
-    glEnable(GL_SCISSOR_TEST);
 
     // Determine the starting index of the mouse
     int mouseTrianglesStartingIndex = m_view->getGraphicCpuBuffer()->size();
 
     // Draw the tiles
     drawMap(
-        currentMouseTranslation,
-        currentMouseRotation,
         &m_polygonProgram,
         &m_polygonVAO,
         0,
@@ -148,8 +139,6 @@ void Map::paintGL() {
     // Overlay the tile text
     if (m_textureAtlas != nullptr) {
         drawMap(
-            currentMouseTranslation,
-            currentMouseRotation,
             &m_textureProgram,
             &m_textureVAO,
             0,
@@ -159,17 +148,14 @@ void Map::paintGL() {
 
     // Draw the mouse
     drawMap(
-        currentMouseTranslation,
-        currentMouseRotation,
         &m_polygonProgram,
         &m_polygonVAO,
         3 * m_view->getGraphicCpuBuffer()->size(),
         3 * mouseBuffer.size()
     );
 
-    // Disable scissoring so that the glClear can take effect, and so that
-    // drawn text isn't clipped at all
-    glDisable(GL_SCISSOR_TEST);
+    // TODO: MACK
+    qDebug() << "PAINT NS:" << timer.nsecsElapsed();
 }
 
 void Map::resizeGL(int width, int height) {
@@ -214,19 +200,19 @@ void Map::initPolygonProgram() {
     m_polygonProgram.enableAttributeArray("coordinate");
     m_polygonProgram.setAttributeBuffer(
         "coordinate", // name
-        GL_DOUBLE, // type
+        GL_FLOAT, // type
         0, // offset (bytes)
         2, // tupleSize (number of elements in the attribute array)
-        6 * sizeof(double) // stride (bytes between vertices)
+        2 * sizeof(float) + 4 * sizeof(unsigned char)// stride (bytes between vertices)
     );
 
     m_polygonProgram.enableAttributeArray("inColor");
     m_polygonProgram.setAttributeBuffer(
         "inColor", // name
-        GL_DOUBLE, // type
-        2 * sizeof(double), // offset (bytes)
+        GL_UNSIGNED_BYTE, // type
+        2 * sizeof(float), // offset (bytes)
         4, // tupleSize (number of elements in the attribute array)
-        6 * sizeof(double) // stride (bytes between vertices)
+        2 * sizeof(float) + 4 * sizeof(unsigned char) // stride (bytes between vertices)
     );
 
     m_polygonVBO.release();
@@ -272,19 +258,19 @@ void Map::initTextureProgram() {
     m_textureProgram.enableAttributeArray("coordinate");
     m_textureProgram.setAttributeBuffer(
         "coordinate", // name
-        GL_DOUBLE, // type
+        GL_FLOAT, // type
         0, // offset (bytes)
         2, // tupleSize (number of elements in the attribute array)
-        4 * sizeof(double) // stride (bytes between vertices)
+        4 * sizeof(float) // stride (bytes between vertices)
     );
 
     m_textureProgram.enableAttributeArray("inTextureCoordinate");
     m_textureProgram.setAttributeBuffer(
         "inTextureCoordinate", // name
-        GL_DOUBLE, // type
-        2 * sizeof(double), // offset (bytes)
+        GL_FLOAT, // type
+        2 * sizeof(float), // offset (bytes)
         2, // tupleSize (number of elements in the attribute array)
-        4 * sizeof(double) // stride (bytes between vertices)
+        4 * sizeof(float) // stride (bytes between vertices)
     );
 
     // Load the bitmap texture into the texture atlas
@@ -338,12 +324,11 @@ void Map::repopulateVertexBufferObjects(const QVector<TriangleGraphic>& mouseBuf
 }
 
 void Map::drawMap(
-        const Coordinate& currentMouseTranslation,
-        const Angle& currentMouseRotation,
-        QOpenGLShaderProgram* program,
-        QOpenGLVertexArrayObject* vao,
-        int vboStartingIndex,
-        int count) {
+    QOpenGLShaderProgram* program,
+    QOpenGLVertexArrayObject* vao,
+    int vboStartingIndex,
+    int count
+) {
 
     // Start using the program and vertex array object
     program->bind();
@@ -364,7 +349,6 @@ void Map::drawMap(
         m_windowHeight
     );
 
-    glScissor(0, 0, m_windowWidth, m_windowHeight);
     program->setUniformValue("transformationMatrix", transformationMatrix);
     glDrawArrays(GL_TRIANGLES, vboStartingIndex, count);
 

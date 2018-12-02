@@ -20,7 +20,7 @@ TileGraphic::TileGraphic(
     BufferInterface* bufferInterface) :
     m_tile(tile),
     m_bufferInterface(bufferInterface),
-    m_color(ColorManager::get()->getTileBaseColor()) {
+    m_color(ColorManager::getTileBaseColor()) {
 }
 
 void TileGraphic::setColor(Color color) {
@@ -51,7 +51,7 @@ void TileGraphic::drawPolygons() const {
 
     // Draw the base of the tile
     m_bufferInterface->insertIntoGraphicCpuBuffer(
-        m_tile->getFullPolygon(), m_color, 1.0);
+        m_tile->getFullPolygon(), m_color, 255);
 
     // Draw each of the walls of the tile
     for (Direction direction : DIRECTIONS()) {
@@ -66,8 +66,8 @@ void TileGraphic::drawPolygons() const {
     for (Polygon polygon : m_tile->getCornerPolygons()) {
         m_bufferInterface->insertIntoGraphicCpuBuffer(
             polygon,
-            ColorManager::get()->getTileCornerColor(),
-            1.0);
+            ColorManager::getTileCornerColor(),
+            255);
     }
 }
 
@@ -159,51 +159,11 @@ void TileGraphic::updateWall(Direction direction) const {
 }
 
 QPair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction) const {
-
-    // Declare the wall color and alpha, assign defaults
-    Color wallColor = ColorManager::get()->getTileWallColor();
-    float wallAlpha = 1.0;
-
-    // If the wall was declared, use the wall color and tile base color ...
-    if (m_declaredWalls.contains(direction)) {
-        if (m_declaredWalls.value(direction)) {
-            // Correct declaration
-            if (m_tile->isWall(direction)) {
-                wallColor = ColorManager::get()->getTileWallColor();
-            }
-            // Incorrect declaration
-            else {
-                wallColor = ColorManager::get()->getIncorrectlyDeclaredWallColor();
-            }
-        }
-        else {
-            // Incorrect declaration
-            if (m_tile->isWall(direction)) {
-                wallColor = ColorManager::get()->getIncorrectlyDeclaredNoWallColor();
-            }
-            // Correct declaration
-            else {
-                wallAlpha = 0.0;
-            }
-        }
+    Color wallColor = ColorManager::getTileWallColor();
+    float wallAlpha = 255;
+    if (!m_declaredWalls.value(direction)) {
+        wallAlpha = 0;
     }
-
-    // ... otherwise, use the undeclared walls colors
-    else {
-        if (m_tile->isWall(direction)) {
-            wallColor = ColorManager::get()->getUndeclaredWallColor();
-        }
-        else {
-            wallColor = ColorManager::get()->getUndeclaredNoWallColor();
-        }
-    }
-    
-    // If the wall color is the same as the default tile base color,
-    // we interpret that to mean that the walls should be transparent
-    if (wallColor == ColorManager::get()->getTileBaseColor()) {
-        wallAlpha = 0.0;
-    }
-
     return {wallColor, wallAlpha};
 }
 

@@ -165,14 +165,14 @@ void Window::resizeEvent(QResizeEvent* event) {
 }
 
 void Window::closeEvent(QCloseEvent *event) {
-    cancelRun();
-    cancelBuild();
+    cancelAllProcesses();
     m_map.shutdown();
     QMainWindow::closeEvent(event);
 }
 
 void Window::loadMazeFile(QString path) {
     Maze* maze = Maze::fromFile(path);
+    // TODO: MACK - check if file exists
     if (maze == nullptr) {
         QMessageBox::warning(
             this,
@@ -189,8 +189,7 @@ void Window::loadMazeFile(QString path) {
 void Window::setMaze(Maze* maze) {
 
     // Stop running maze/mouse algos
-    // TODO: MACK -stop the build too?
-    cancelRun();
+    cancelAllProcesses();
 
     // Next, update the maze and truth
     Maze* oldMaze = m_maze;
@@ -848,6 +847,11 @@ void Window::removeMouseFromMaze() {
     // TODO: MACK - most of these shouldn't be necessary
     // Clean up the UI
     mouseAlgoResume();
+}
+
+void Window::cancelAllProcesses() {
+    cancelBuild();
+    cancelRun();
 }
 
 void Window::cancelBuild() {

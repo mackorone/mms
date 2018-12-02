@@ -3,9 +3,9 @@
 namespace mms {
 
 struct RGB {
-    double r;
-    double g;
-    double b;
+    unsigned char r;
+    unsigned char g;
+    unsigned char b;
 };
 
 } 

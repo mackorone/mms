@@ -150,55 +150,55 @@ void Tile::initWallPolygons(int mazeWidth, int mazeHeight) {
     Coordinate innerLowerRightPoint = m_interiorPolygon.getVertices().at(3);
 
     QVector<Coordinate> northWall;
-    northWall.push_back(innerUpperLeftPoint);
-    northWall.push_back(Coordinate::Cartesian(
+    northWall.append(innerUpperLeftPoint);
+    northWall.append(Coordinate::Cartesian(
         innerUpperLeftPoint.getX(),
         outerUpperLeftPoint.getY()
     ));
-    northWall.push_back(Coordinate::Cartesian(
+    northWall.append(Coordinate::Cartesian(
         innerUpperRightPoint.getX(),
         outerUpperRightPoint.getY()
     ));
-    northWall.push_back(innerUpperRightPoint);
+    northWall.append(innerUpperRightPoint);
     m_wallPolygons.insert(Direction::NORTH, Polygon(northWall));
 
     QVector<Coordinate> eastWall;
-    eastWall.push_back(innerLowerRightPoint);
-    eastWall.push_back(innerUpperRightPoint);
-    eastWall.push_back(Coordinate::Cartesian(
+    eastWall.append(innerLowerRightPoint);
+    eastWall.append(innerUpperRightPoint);
+    eastWall.append(Coordinate::Cartesian(
         outerUpperRightPoint.getX(),
         innerUpperRightPoint.getY()
     ));
-    eastWall.push_back(Coordinate::Cartesian(
+    eastWall.append(Coordinate::Cartesian(
         outerLowerRightPoint.getX(),
         innerLowerRightPoint.getY()
     ));
     m_wallPolygons.insert(Direction::EAST, Polygon(eastWall));
 
     QVector<Coordinate> southWall;
-    southWall.push_back(Coordinate::Cartesian(
+    southWall.append(Coordinate::Cartesian(
         innerLowerLeftPoint.getX(),
         outerLowerLeftPoint.getY()
     ));
-    southWall.push_back(innerLowerLeftPoint);
-    southWall.push_back(innerLowerRightPoint);
-    southWall.push_back(Coordinate::Cartesian(
+    southWall.append(innerLowerLeftPoint);
+    southWall.append(innerLowerRightPoint);
+    southWall.append(Coordinate::Cartesian(
         innerLowerRightPoint.getX(),
         outerLowerRightPoint.getY()
     ));
     m_wallPolygons.insert(Direction::SOUTH, Polygon(southWall));
 
     QVector<Coordinate> westWall;
-    westWall.push_back(Coordinate::Cartesian(
+    westWall.append(Coordinate::Cartesian(
         outerLowerLeftPoint.getX(),
         innerLowerLeftPoint.getY()
     ));
-    westWall.push_back(Coordinate::Cartesian(
+    westWall.append(Coordinate::Cartesian(
         outerUpperLeftPoint.getX(),
         innerUpperLeftPoint.getY()
     ));
-    westWall.push_back(innerUpperLeftPoint);
-    westWall.push_back(innerLowerLeftPoint);
+    westWall.append(innerUpperLeftPoint);
+    westWall.append(innerLowerLeftPoint);
     m_wallPolygons.insert(Direction::WEST, Polygon(westWall));
 }
 
@@ -215,56 +215,56 @@ void Tile::initCornerPolygons(int mazeWidth, int mazeHeight) {
     Coordinate innerLowerRightPoint = m_interiorPolygon.getVertices().at(3);
 
     QVector<Coordinate> lowerLeftCorner;
-    lowerLeftCorner.push_back(outerLowerLeftPoint);
-    lowerLeftCorner.push_back(Coordinate::Cartesian(
+    lowerLeftCorner.append(outerLowerLeftPoint);
+    lowerLeftCorner.append(Coordinate::Cartesian(
         outerLowerLeftPoint.getX(),
         innerLowerLeftPoint.getY()
     ));
-    lowerLeftCorner.push_back(innerLowerLeftPoint);
-    lowerLeftCorner.push_back(Coordinate::Cartesian(
+    lowerLeftCorner.append(innerLowerLeftPoint);
+    lowerLeftCorner.append(Coordinate::Cartesian(
         innerLowerLeftPoint.getX(),
         outerLowerLeftPoint.getY()
     ));
-    m_cornerPolygons.push_back(Polygon(lowerLeftCorner));
+    m_cornerPolygons.append(Polygon(lowerLeftCorner));
 
     QVector<Coordinate> upperLeftCorner;
-    upperLeftCorner.push_back(Coordinate::Cartesian(
+    upperLeftCorner.append(Coordinate::Cartesian(
         outerUpperLeftPoint.getX(),
         innerUpperLeftPoint.getY()
     ));
-    upperLeftCorner.push_back(outerUpperLeftPoint);
-    upperLeftCorner.push_back(Coordinate::Cartesian(
+    upperLeftCorner.append(outerUpperLeftPoint);
+    upperLeftCorner.append(Coordinate::Cartesian(
         innerUpperLeftPoint.getX(),
         outerUpperLeftPoint.getY()
     ));
-    upperLeftCorner.push_back(innerUpperLeftPoint);
-    m_cornerPolygons.push_back(Polygon(upperLeftCorner));
+    upperLeftCorner.append(innerUpperLeftPoint);
+    m_cornerPolygons.append(Polygon(upperLeftCorner));
 
     QVector<Coordinate> upperRightCorner;
-    upperRightCorner.push_back(innerUpperRightPoint);
-    upperRightCorner.push_back(Coordinate::Cartesian(
+    upperRightCorner.append(innerUpperRightPoint);
+    upperRightCorner.append(Coordinate::Cartesian(
         innerUpperRightPoint.getX(),
         outerUpperRightPoint.getY()
     ));
-    upperRightCorner.push_back(outerUpperRightPoint);
-    upperRightCorner.push_back(Coordinate::Cartesian(
+    upperRightCorner.append(outerUpperRightPoint);
+    upperRightCorner.append(Coordinate::Cartesian(
         outerUpperRightPoint.getX(),
         innerUpperRightPoint.getY()
     ));
-    m_cornerPolygons.push_back(Polygon(upperRightCorner));
+    m_cornerPolygons.append(Polygon(upperRightCorner));
 
     QVector<Coordinate> lowerRightCorner;
-    lowerRightCorner.push_back(Coordinate::Cartesian(
+    lowerRightCorner.append(Coordinate::Cartesian(
         innerLowerRightPoint.getX(),
         outerLowerRightPoint.getY()
     ));
-    lowerRightCorner.push_back(innerLowerRightPoint);
-    lowerRightCorner.push_back(Coordinate::Cartesian(
+    lowerRightCorner.append(innerLowerRightPoint);
+    lowerRightCorner.append(Coordinate::Cartesian(
         outerLowerRightPoint.getX(),
         innerLowerRightPoint.getY()
     ));
-    lowerRightCorner.push_back(outerLowerRightPoint);
-    m_cornerPolygons.push_back(Polygon(lowerRightCorner));
+    lowerRightCorner.append(outerLowerRightPoint);
+    m_cornerPolygons.append(Polygon(lowerRightCorner));
 }
 
 } 

@@ -397,7 +397,7 @@ double MouseInterface::progressRequired(Movement movement) {
 
 void MouseInterface::clearTileColorImpl(int x, int y) {
     m_view->getMazeGraphic()->setTileColor(
-        x, y, ColorManager::get()->getTileBaseColor());
+        x, y, ColorManager::getTileBaseColor());
 }
 
 void MouseInterface::clearTileTextImpl(int x, int y) {

@@ -32,7 +32,7 @@ public:
     static QVector<TriangleGraphic> polygonToTriangleGraphics(
         const Polygon& polygon,
         Color color,
-        double alpha);
+        unsigned char alpha);
 
 };
 

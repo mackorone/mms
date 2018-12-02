@@ -133,7 +133,7 @@ QVector<double> TransformationMatrix::multiply4x4Matrices(
             for (int k = 0; k < 4; k++) {
                 value += left.at(4*i+k) * right.at(4*k+j);
             }
-            result.push_back(value);
+            result.append(value);
         }
     }
     ASSERT_EQ(result.size(), 16);

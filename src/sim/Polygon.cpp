@@ -64,12 +64,12 @@ Polygon Polygon::translate(const Coordinate& translation) const {
 
     QVector<Coordinate> vertices;
     for (const Coordinate& vertex : m_vertices) {
-        vertices.push_back(GeometryUtilities::translateVertex(vertex, translation));
+        vertices.append(GeometryUtilities::translateVertex(vertex, translation));
     }
 
     QVector<Triangle> triangles;
     for (const Triangle& triangle : m_triangles) {
-        triangles.push_back({
+        triangles.append({
             GeometryUtilities::translateVertex(triangle.p1, translation),
             GeometryUtilities::translateVertex(triangle.p2, translation),
             GeometryUtilities::translateVertex(triangle.p3, translation),
@@ -83,12 +83,12 @@ Polygon Polygon::rotateAroundPoint(const Angle& angle, const Coordinate& point) 
 
     QVector<Coordinate> vertices;
     for (const Coordinate& vertex : m_vertices) {
-        vertices.push_back(GeometryUtilities::rotateVertexAroundPoint(vertex, point, angle));
+        vertices.append(GeometryUtilities::rotateVertexAroundPoint(vertex, point, angle));
     }
 
     QVector<Triangle> triangles;
     for (const Triangle& triangle : m_triangles) {
-        triangles.push_back({
+        triangles.append({
             GeometryUtilities::rotateVertexAroundPoint(triangle.p1, point, angle),
             GeometryUtilities::rotateVertexAroundPoint(triangle.p2, point, angle),
             GeometryUtilities::rotateVertexAroundPoint(triangle.p3, point, angle),
@@ -126,7 +126,7 @@ QVector<Triangle> Polygon::triangulate(QVector<Coordinate> vertices) {
     // Populate the output vector
     QVector<Triangle> triangles;
     for (auto it = result.begin(); it != result.end(); it++) {
-        triangles.push_back({
+        triangles.append({
             Coordinate::Cartesian(Distance::Meters((*it)[0].x), Distance::Meters((*it)[0].y)),
             Coordinate::Cartesian(Distance::Meters((*it)[1].x), Distance::Meters((*it)[1].y)),
             Coordinate::Cartesian(Distance::Meters((*it)[2].x), Distance::Meters((*it)[2].y)),

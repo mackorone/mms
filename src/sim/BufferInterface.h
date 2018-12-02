@@ -33,12 +33,12 @@ public:
     QPair<int, int> getTileGraphicTextMaxSize();
 
     // Fills the graphic cpu buffer and texture cpu buffer
-    void insertIntoGraphicCpuBuffer(const Polygon& polygon, Color color, double alpha);
+    void insertIntoGraphicCpuBuffer(const Polygon& polygon, Color color, unsigned char alpha);
     void insertIntoTextureCpuBuffer();
 
     // These methods are inexpensive, and may be called many times
     void updateTileGraphicBaseColor(int x, int y, Color color);
-    void updateTileGraphicWallColor(int x, int y, Direction direction, Color color, double alpha);
+    void updateTileGraphicWallColor(int x, int y, Direction direction, Color color, unsigned char alpha);
     void updateTileGraphicText(int x, int y, int numRows, int numCols, int row, int col, QChar c);
 
 private:
