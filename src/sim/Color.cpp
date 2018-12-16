@@ -1,7 +1,5 @@
 #include "Color.h"
 
-#include "ContainerUtilities.h"
-
 namespace mms {
 
 const QMap<QChar, Color>& CHAR_TO_COLOR() {

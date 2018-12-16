@@ -17,10 +17,14 @@ public:
         const Maze* maze,
         BufferInterface* bufferInterface);
 
-    void setTileColor(int x, int y, Color color);
-    void declareWall(int x, int y, Direction direction, bool isWall);
-    void undeclareWall(int x, int y, Direction direction);
-    void setTileText(int x, int y, const QString& text);
+    void setWall(int x, int y, Direction direction);
+    void clearWall(int x, int y, Direction direction);
+
+    void setColor(int x, int y, Color color);
+    void clearColor(int x, int y);
+
+    void setText(int x, int y, const QString& text);
+    void clearText(int x, int y);
 
     // TODO: MACK - rename these
     // TODO: MACK - why is only one of these const?
@@ -30,10 +34,6 @@ public:
 private:
 
     QVector<QVector<TileGraphic>> m_tileGraphics;
-
-    int getWidth() const;
-    int getHeight() const;
-    bool withinMaze(int x, int y) const;
 
 };
 

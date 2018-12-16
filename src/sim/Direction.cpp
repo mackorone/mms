@@ -1,7 +1,5 @@
 #include "Direction.h"
 
-#include "ContainerUtilities.h"
-
 namespace mms {
 
 const QVector<Direction>& DIRECTIONS() {
@@ -44,6 +42,16 @@ const QMap<Direction, Direction>& DIRECTION_OPPOSITE() {
     return map;
 }
 
+const QMap<QChar, Direction>& CHAR_TO_DIRECTION() {
+    static const QMap<QChar, Direction> map = {
+        {'n', Direction::NORTH},
+        {'e', Direction::EAST},
+        {'s', Direction::SOUTH},
+        {'w', Direction::WEST},
+    };
+    return map;
+}
+
 const QMap<Direction, Angle>& DIRECTION_TO_ANGLE() {
     static const QMap<Direction, Angle> map = {
         {Direction::NORTH, Angle::Degrees(90)},
@@ -51,38 +59,6 @@ const QMap<Direction, Angle>& DIRECTION_TO_ANGLE() {
         {Direction::SOUTH, Angle::Degrees(270)},
         {Direction::WEST, Angle::Degrees(180)},
     };
-    return map;
-}
-
-const QMap<Direction, QString>& DIRECTION_TO_STRING() {
-    static const QMap<Direction, QString> map = {
-        {Direction::NORTH, "NORTH"},
-        {Direction::EAST, "EAST"},
-        {Direction::SOUTH, "SOUTH"},
-        {Direction::WEST, "WEST"},
-    };
-    return map;
-}
-
-const QMap<QString, Direction>& STRING_TO_DIRECTION() {
-    static const QMap<QString, Direction> map =
-        ContainerUtilities::inverse(DIRECTION_TO_STRING());
-    return map;
-}
-
-const QMap<Direction, QChar>& DIRECTION_TO_CHAR() {
-    static const QMap<Direction, QChar> map = {
-        {Direction::NORTH, 'n'},
-        {Direction::EAST, 'e'},
-        {Direction::SOUTH, 's'},
-        {Direction::WEST, 'w'},
-    };
-    return map;
-};
-
-const QMap<QChar, Direction>& CHAR_TO_DIRECTION() {
-    static const QMap<QChar, Direction> map =
-        ContainerUtilities::inverse(DIRECTION_TO_CHAR());
     return map;
 }
 

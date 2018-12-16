@@ -6,7 +6,6 @@
 #include "FontImage.h"
 #include "Logging.h"
 #include "Settings.h"
-#include "SimTime.h"
 #include "Window.h"
 
 namespace mms {
@@ -23,7 +22,6 @@ int Driver::drive(int argc, char* argv[]) {
     Logging::init();
     Settings::init();
     FontImage::init();
-    SimTime::init();
 
     // Create the main window
     Window window;

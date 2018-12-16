@@ -13,22 +13,13 @@ void Logging::init() {
 }
 
 void Logging::handler(
-        QtMsgType type,
-        const QMessageLogContext& context,
-        const QString& msg) {
+    QtMsgType type,
+    const QMessageLogContext& context,
+    const QString& msg) {
 
     ASSERT_FA(STDOUT == nullptr);
     
-    static const QMap<QtMsgType, QString> mapping {
-        {QtDebugMsg,    "DEBUG"   },
-        {QtInfoMsg,     "INFO"    },
-        {QtWarningMsg,  "WARN"    },
-        {QtCriticalMsg, "CRITICAL"},
-        {QtFatalMsg,    "FATAL"   },
-    };
-
-    QString formatted = QString("[%1][%2:%3] - %4").arg(
-        mapping.value(type),
+    QString formatted = QString("[%1:%2] - %3").arg(
         context.file,
         QString::number(context.line),
         msg

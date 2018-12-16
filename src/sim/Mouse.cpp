@@ -13,9 +13,7 @@
 
 namespace mms {
 
-Mouse::Mouse(const Maze* maze) :
-    m_maze(maze),
-    m_crashed(false) {
+Mouse::Mouse() {
 
     // The initial translation of the mouse is just the center of the starting tile
     Distance halfOfTileDistance = Dimensions::halfTileLength();
@@ -23,10 +21,7 @@ Mouse::Mouse(const Maze* maze) :
     m_currentTranslation = m_initialTranslation;
 
     // The initial rotation of the mouse is determined by the starting tile walls
-    Direction optimalStartingDirection = Direction::NORTH;
-    m_startedDirection = optimalStartingDirection;
-    m_startingDirection = m_startedDirection;
-    m_initialRotation = DIRECTION_TO_ANGLE().value(m_startingDirection);
+    m_initialRotation = DIRECTION_TO_ANGLE().value(Direction::NORTH);
     m_currentRotation = m_initialRotation;
 
     // Initialize the body, wheels, and sensors, such that they have the
@@ -71,21 +66,11 @@ Mouse::Mouse(const Maze* maze) :
     m_initialWheelPolygon.getTriangles();
 }
 
-bool Mouse::didCrash() const {
-    return m_crashed;
-}
-
-void Mouse::setCrashed() {
-    m_crashed = true;
-}
-
 void Mouse::reset() {
     teleport(
-        getInitialTranslation(),
-        DIRECTION_TO_ANGLE().value(m_startingDirection)
+        m_initialTranslation,
+        DIRECTION_TO_ANGLE().value(Direction::NORTH)
     );
-    m_startedDirection = m_startingDirection;
-    m_crashed = false;
 }
 
 void Mouse::teleport(const Coordinate& translation, const Angle& rotation) {
@@ -93,37 +78,16 @@ void Mouse::teleport(const Coordinate& translation, const Angle& rotation) {
     m_currentRotation = rotation;
 }
 
-Direction Mouse::getStartedDirection() const {
-    return m_startedDirection;
-}
-
-void Mouse::setStartingDirection(Direction direction) {
-    m_startingDirection = direction;
-}
-
-const Coordinate& Mouse::getInitialTranslation() const {
-    return m_initialTranslation;
-}
-
-const Coordinate& Mouse::getCurrentTranslation() const {
-    return m_currentTranslation;
-}
-
-const Angle& Mouse::getCurrentRotation() const {
-    return m_currentRotation;
-}
-
 QPair<int, int> Mouse::getCurrentDiscretizedTranslation() const {
     static Distance tileLength = Dimensions::tileLength();
-    Coordinate currentTranslation = getCurrentTranslation();
-    int x = static_cast<int>(qFloor(currentTranslation.getX() / tileLength));
-    int y = static_cast<int>(qFloor(currentTranslation.getY() / tileLength));
+    int x = static_cast<int>(qFloor(m_currentTranslation.getX() / tileLength));
+    int y = static_cast<int>(qFloor(m_currentTranslation.getY() / tileLength));
     return {x, y};
 }
 
 Direction Mouse::getCurrentDiscretizedRotation() const {
     int dir = static_cast<int>(qFloor(
-        (getCurrentRotation() + Angle::Degrees(45)).getRadiansZeroTo2pi() /
+        (m_currentRotation + Angle::Degrees(45)).getRadiansZeroTo2pi() /
         Angle::Degrees(90).getRadiansZeroTo2pi()
     ));
     switch (dir) {
@@ -140,32 +104,20 @@ Direction Mouse::getCurrentDiscretizedRotation() const {
     }
 }
 
-Polygon Mouse::getCurrentBodyPolygon(
-        const Coordinate& currentTranslation,
-        const Angle& currentRotation) const {
-    return getCurrentPolygon(
-        m_initialBodyPolygon,
-        currentTranslation,
-        currentRotation);
+Polygon Mouse::getCurrentBodyPolygon() const {
+    return getCurrentPolygon(m_initialBodyPolygon);
 }
 
-Polygon Mouse::getCurrentWheelPolygon(
-        const Coordinate& currentTranslation,
-        const Angle& currentRotation) const {
-    return getCurrentPolygon(
-        m_initialWheelPolygon,
-        currentTranslation,
-        currentRotation
-    );
+Polygon Mouse::getCurrentWheelPolygon() const {
+    return getCurrentPolygon(m_initialWheelPolygon);
 }
 
-Polygon Mouse::getCurrentPolygon(
-        const Polygon& initialPolygon,
-        const Coordinate& currentTranslation,
-        const Angle& currentRotation) const {
+Polygon Mouse::getCurrentPolygon(const Polygon& initialPolygon) const {
     return initialPolygon
-        .translate(currentTranslation - getInitialTranslation())
-        .rotateAroundPoint(currentRotation - m_initialRotation, currentTranslation);
+        .translate(m_currentTranslation - m_initialTranslation)
+        .rotateAroundPoint(
+            m_currentRotation - m_initialRotation,
+            m_currentTranslation);
 }
 
 } 

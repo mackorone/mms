@@ -16,28 +16,30 @@ MazeGraphic::MazeGraphic(
         }
         m_tileGraphics.append(column);
     }
-    ASSERT_EQ(getWidth(), maze->getWidth());
-    ASSERT_EQ(getHeight(), maze->getHeight());
 }
 
-void MazeGraphic::setTileColor(int x, int y, Color color) {
-    ASSERT_TR(withinMaze(x, y));
+void MazeGraphic::setWall(int x, int y, Direction direction) {
+    m_tileGraphics[x][y].setWall(direction);
+}
+
+void MazeGraphic::clearWall(int x, int y, Direction direction) {
+    m_tileGraphics[x][y].clearWall(direction);
+}
+
+void MazeGraphic::setColor(int x, int y, Color color) {
     m_tileGraphics[x][y].setColor(color);
 }
 
-void MazeGraphic::declareWall(int x, int y, Direction direction, bool isWall) {
-    ASSERT_TR(withinMaze(x, y));
-    m_tileGraphics[x][y].declareWall(direction, isWall);
+void MazeGraphic::clearColor(int x, int y) {
+    m_tileGraphics[x][y].clearColor();
 }
 
-void MazeGraphic::undeclareWall(int x, int y, Direction direction) {
-    ASSERT_TR(withinMaze(x, y));
-    m_tileGraphics[x][y].undeclareWall(direction);
-}
-
-void MazeGraphic::setTileText(int x, int y, const QString& text) {
-    ASSERT_TR(withinMaze(x, y));
+void MazeGraphic::setText(int x, int y, const QString& text) {
     m_tileGraphics[x][y].setText(text);
+}
+
+void MazeGraphic::clearText(int x, int y) {
+    m_tileGraphics[x][y].clearText();
 }
 
 void MazeGraphic::drawPolygons() const {
@@ -56,18 +58,6 @@ void MazeGraphic::drawTextures() {
             m_tileGraphics[x][y].drawTextures();
         }
     }
-}
-
-int MazeGraphic::getWidth() const {
-    return m_tileGraphics.size();
-}
-
-int MazeGraphic::getHeight() const {
-    return (m_tileGraphics.size() > 0 ? m_tileGraphics.at(0).size() : 0);
-}
-
-bool MazeGraphic::withinMaze(int x, int y) const {
-    return 0 <= x && x < getWidth() && 0 <= y && y < getHeight();
 }
 
 } 

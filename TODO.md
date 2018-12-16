@@ -1,20 +1,19 @@
 Release
 =======
 - Clean up mouse algo template
+    - setWall and clearWall
     - Add Python bindings
+- Add reset button
+- Fix UI updates on mouse algo start/stop
+- Disable pause button when algo completes
+- Respond with "bump" (or something) if can't move forward
+- Update the build and run status when the algorithm changes
+- Better UI for mazes included with the simulator
 - Publish installation and usage guides
     - Update the wiki
     - Make some video tutorials
     - Page for common error message for failed commands
-- Fix pause button
-- Add reset button
-- Fix UI updates on mouse algo start/stop
-- Disable pause button when algo completes
-- Improve FPS bugs
-- Respond with "bump" (or something) if can't move forward
-- Update the build and run status when the algorithm changes
-- Add a "new algo" wizard to make it easy to bootstap a new algo
-    - Auto-populate build and run commands
+- Run and build command should be lists of strings, not single string
 
 Cleanup
 =======
@@ -42,6 +41,7 @@ Cleanup
     - Audit pass-by-reference or pass-by-value in lambdas
 - Make classes as QObjects
     - Make sure all QObjects have parents
+- Make sure all QObject membors are stored on the heap
 - QSet instead of QVector in some places
 - Use tr() on all user-facing strings to make text translatable
 - Use uniform syntax for signal/slot connections
@@ -57,9 +57,22 @@ Cleanup
 - Rename Tile to Cell
 - Rename the whole texture vs polygon thing
 - Rename TriangleTexture and VertexTexture
+- Position vs. location vs. coordinate, direction vs. rotation vs. angle
+- Shrink icon file size
 
 Wishlist
 ========
+- Add a "new algo" wizard to make it easy to bootstap a new algo
+    - Auto-populate build and run commands
+- Run "communication" tab (sim input and responses)
+- FPS optimizations
+    - Use one buffer for static attributes, one for dynamic
+        - Static: tile xy-coords, tile corner color, texture v-coords
+        - Dynamic: tile base color, tile wall alpha, texture xyu-coords
+    - Ensure data in VBOs is aligned properly
+    - Memmap for better attribute streaming
+    - Use unsigned char for texture v-coord
+    - Use index buffer objects
 - Make a system for quickly checking stats on many mazes
     - solved or not
     - how many steps

@@ -5,9 +5,9 @@
     <file>resources/fonts/DroidSansMono.png</file>
     <file>resources/fonts/Hack-Regular.png</file>
     <file>resources/fonts/Unispace-Bold.png</file>
-    <file>resources/mice/default.xml</file>
-    <file>resources/mice/megamouse.xml</file>
-    <file>resources/mice/omniwheel.xml</file>
+    <file>resources/icons/edit.png</file>
+    <file>resources/icons/open.png</file>
+    <file>resources/icons/plus.png</file>
     <file>resources/mazes/blank.num</file>
     <file>resources/mazes/example1.num</file>
     <file>resources/mazes/example2.num</file>

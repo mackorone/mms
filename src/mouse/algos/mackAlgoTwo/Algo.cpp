@@ -108,18 +108,6 @@ void Algo::solve(Interface* interface) {
 }
 
 bool Algo::shouldColorVisitedCells() const {
-    // 1 to enable, 0 to disable
-    if (m_mouse->wasInputButtonPressed(1)) {
-        if (m_mouse->wasInputButtonPressed(0)) {
-            m_mouse->acknowledgeInputButtonPressed(1);
-            m_mouse->acknowledgeInputButtonPressed(0);
-            return false;
-        }
-        return true;
-    }
-    if (m_mouse->wasInputButtonPressed(0)) {
-        m_mouse->acknowledgeInputButtonPressed(0);
-    }
     return false;
 }
 
@@ -128,11 +116,11 @@ byte Algo::colorVisitedCellsDelayMs() const {
 }
 
 bool Algo::resetButtonPressed() {
-    return m_mouse->wasInputButtonPressed(2);
+    return m_mouse->wasReset();
 }
 
 void Algo::acknowledgeResetButtonPressed() {
-    m_mouse->acknowledgeInputButtonPressed(2);
+    m_mouse->ackReset();
 }
 
 twobyte Algo::getTurnCost() {
@@ -145,10 +133,7 @@ twobyte Algo::getStraightAwayCost(byte length) {
 
 void Algo::reset() {
 
-    // First, reset the position in the simulator
-    m_mouse->reset();
-
-    // Then acknowledge that the button was pressed (and potentially sleep)
+    // Acknowledge that the button was pressed
     acknowledgeResetButtonPressed();
 
 #if (!SIMULATOR)

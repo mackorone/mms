@@ -154,8 +154,9 @@ void Map::paintGL() {
         3 * mouseBuffer.size()
     );
 
-    // TODO: MACK
-    qDebug() << "PAINT NS:" << timer.nsecsElapsed();
+    // TODO: upforgrabs
+    // Optimize this code
+    // qDebug() << "PAINT NS:" << timer.nsecsElapsed();
 }
 
 void Map::resizeGL(int width, int height) {

@@ -16,10 +16,6 @@ QStringList Resources::getMazes() {
     return getFiles(getMazesPath());
 }
 
-QStringList Resources::getMice() {
-    return getFiles(":/resources/mice/");
-}
-
 QStringList Resources::getFiles(QString path) {
     QStringList files;
     for (const auto& info : QDir(path).entryInfoList()) {

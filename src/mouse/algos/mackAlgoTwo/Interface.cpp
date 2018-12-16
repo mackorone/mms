@@ -11,7 +11,7 @@ extern volatile bool buttonPressed;
 
 int Interface::getMazeWidth() {
 #if (SIMULATOR)
-    PRINT("getMazeWidth");
+    PRINT("getWidth");
     READ_AND_RETURN_INT();
 #else
     return 16;
@@ -20,7 +20,7 @@ int Interface::getMazeWidth() {
 
 int Interface::getMazeHeight() {
 #if (SIMULATOR)
-    PRINT("getMazeHeight");
+    PRINT("getHeight");
     READ_AND_RETURN_INT();
 #else
     return 16;
@@ -75,64 +75,57 @@ void Interface::turnLeft() {
 #endif
 }
 
-void Interface::reset() {
-#if (SIMULATOR)
-    PRINT("reset");
-    READ();
-#endif
-}
-
 void Interface::setTileColor(int x, int y, char color) {
 #if (SIMULATOR)
-    PRINT("setTileColor", x, y, color);
+    PRINT("setColor", x, y, color);
 #endif
 }
 
 void Interface::clearTileColor(int x, int y) {
 #if (SIMULATOR)
-    PRINT("clearTileColor", x, y);
+    PRINT("clearColor", x, y);
 #endif
 }
 
 void Interface::clearAllTileColor() {
 #if (SIMULATOR)
-    PRINT("clearAllTileColor");
+    PRINT("clearAllColor");
 #endif
 }
 
 void Interface::setTileText(int x, int y, const std::string& text) {
 #if (SIMULATOR)
-    PRINT("setTileText", x, y, text);
+    PRINT("setText", x, y, text);
 #endif
 }
 
 void Interface::clearTileText(int x, int y) {
 #if (SIMULATOR)
-    PRINT("clearTileText", x, y);
+    PRINT("clearText", x, y);
 #endif
 }
 
 void Interface::clearAllTileText() {
 #if (SIMULATOR)
-    PRINT("clearAllTileText");
+    PRINT("clearAllText");
 #endif
 }
 
 void Interface::declareWall(int x, int y, char direction, bool wallExists) {
 #if (SIMULATOR)
-    PRINT("declareWall", x, y, direction, boolToString(wallExists));
+    PRINT("setWall", x, y, direction, boolToString(wallExists));
 #endif
 }
 
 void Interface::undeclareWall(int x, int y, char direction) {
 #if (SIMULATOR)
-    PRINT("undeclareWall", x, y, direction);
+    PRINT("clearWall", x, y, direction);
 #endif
 }
 
-bool Interface::wasInputButtonPressed(int inputButton) {
+bool Interface::wasReset() {
 #if (SIMULATOR)
-    PRINT("wasInputButtonPressed", inputButton);
+    PRINT("wasReset");
     READ_AND_RETURN_BOOL();
 #else
     if (inputButton == 2) {
@@ -142,9 +135,9 @@ bool Interface::wasInputButtonPressed(int inputButton) {
 #endif
 }
 
-void Interface::acknowledgeInputButtonPressed(int inputButton) {
+void Interface::ackReset() {
 #if (SIMULATOR)
-    PRINT("acknowledgeInputButtonPressed", inputButton);
+    PRINT("ackReset");
     READ();
 #else
     if (inputButton == 2) {

@@ -9,10 +9,8 @@
 
 namespace mms {
 
-TileGraphic::TileGraphic() :
-    m_tile(nullptr),
-    m_bufferInterface(nullptr),
-    m_color(Color::BLACK) {
+TileGraphic::TileGraphic() {
+    ASSERT_NEVER_RUNS();
 }
 
 TileGraphic::TileGraphic(
@@ -23,23 +21,33 @@ TileGraphic::TileGraphic(
     m_color(ColorManager::getTileBaseColor()) {
 }
 
+void TileGraphic::setWall(Direction direction) {
+    m_walls[direction] = true;
+    updateWall(direction);
+}
+
+void TileGraphic::clearWall(Direction direction) {
+    m_walls.remove(direction);
+    updateWall(direction);
+}
+
 void TileGraphic::setColor(Color color) {
     m_color = color;
     updateColor();
 }
 
-void TileGraphic::declareWall(Direction direction, bool isWall) {
-    m_declaredWalls[direction] = isWall;
-    updateWall(direction);
-}
-
-void TileGraphic::undeclareWall(Direction direction) {
-    m_declaredWalls.remove(direction);
-    updateWall(direction);
+void TileGraphic::clearColor() {
+    m_color = ColorManager::getTileBaseColor();
+    updateColor();
 }
 
 void TileGraphic::setText(const QString& text) {
     m_text = text;
+    updateText();
+}
+
+void TileGraphic::clearText() {
+    m_text = "";
     updateText();
 }
 
@@ -55,11 +63,10 @@ void TileGraphic::drawPolygons() const {
 
     // Draw each of the walls of the tile
     for (Direction direction : DIRECTIONS()) {
-        QPair<Color, float> colorAndAlpha = deduceWallColorAndAlpha(direction);
         m_bufferInterface->insertIntoGraphicCpuBuffer(
             m_tile->getWallPolygon(direction),
-            colorAndAlpha.first,
-            colorAndAlpha.second);
+            ColorManager::getTileWallColor(),
+            getWallAlpha(direction));
     }
 
     // Draw the corners of the tile
@@ -84,17 +91,22 @@ void TileGraphic::drawTextures() {
     updateText();
 }
 
+void TileGraphic::updateWall(Direction direction) const {
+    m_bufferInterface->updateTileGraphicWallColor(
+        m_tile->getX(),
+        m_tile->getY(),
+        direction,
+        ColorManager::getTileWallColor(),
+        getWallAlpha(direction)
+    );
+}
+
+
 void TileGraphic::updateColor() const {
     m_bufferInterface->updateTileGraphicBaseColor(
         m_tile->getX(),
         m_tile->getY(),
         m_color);
-}
-
-void TileGraphic::updateWalls() const {
-    for (Direction direction : DIRECTIONS()) {
-        updateWall(direction);
-    }
 }
 
 void TileGraphic::updateText() const {
@@ -147,24 +159,14 @@ void TileGraphic::updateText() const {
     }
 }
 
-void TileGraphic::updateWall(Direction direction) const {
-    QPair<Color, float> colorAndAlpha = deduceWallColorAndAlpha(direction);
-    m_bufferInterface->updateTileGraphicWallColor(
-        m_tile->getX(),
-        m_tile->getY(),
-        direction,
-        colorAndAlpha.first,
-        colorAndAlpha.second
-    );
-}
-
-QPair<Color, float> TileGraphic::deduceWallColorAndAlpha(Direction direction) const {
-    Color wallColor = ColorManager::getTileWallColor();
-    float wallAlpha = 255;
-    if (!m_declaredWalls.value(direction)) {
-        wallAlpha = 0;
+unsigned char TileGraphic::getWallAlpha(Direction direction) const {
+    if (m_walls.value(direction)) {
+        return 255;
     }
-    return {wallColor, wallAlpha};
+    if (m_tile->isWall(direction)) {
+        return 64;
+    }
+    return 0;
 }
 
 } 

@@ -19,7 +19,6 @@ public:
     void moveForward();
     void turnRight();
     void turnLeft();
-    void reset();
 
     // Tile color
     void setTileColor(int x, int y, char color);
@@ -36,8 +35,8 @@ public:
     void undeclareWall(int x, int y, char direction);
 
     // Input buttons
-    bool wasInputButtonPressed(int inputButton);
-    void acknowledgeInputButtonPressed(int inputButton);
+    bool wasReset();
+    void ackReset();
 
 private:
 
