@@ -8,14 +8,12 @@ namespace mms {
 class SettingsMazeFiles {
 
 public:
-
     SettingsMazeFiles() = delete;
-    static QStringList getSettingsMazeFiles();
-    static void addMazeFile(const QString& path);
-    static void removeMazeFile(const QString& path);
+    static QStringList getAllPaths();
+    static void addPath(QString path);
+    static void removePath(QString path);
 
 private:
-
     static const QString GROUP;
     static const QString KEY_PATH;
 

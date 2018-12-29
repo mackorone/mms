@@ -10,8 +10,8 @@ public:
 
     SettingsMisc() = delete;
 
-    static QString getRecentMazeAlgo();
-    static void setRecentMazeAlgo(const QString& name);
+    static QString getRecentMazeFile();
+    static void setRecentMazeFile(const QString& path);
 
     static QString getRecentMouseAlgo();
     static void setRecentMouseAlgo(const QString& name);

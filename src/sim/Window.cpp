@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QDoubleSpinBox>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QFrame>
 #include <QGroupBox>
 #include <QHBoxLayout>
@@ -24,6 +25,7 @@
 #include "Dimensions.h"
 #include "FontImage.h"
 #include "ProcessUtilities.h"
+#include "SettingsMazeFiles.h"
 #include "SettingsMouseAlgos.h"
 #include "SettingsMisc.h"
 #include "SimUtilities.h"
@@ -35,6 +37,7 @@ Window::Window(QWidget *parent) :
     m_map(new Map()),
     m_maze(nullptr),
     m_truth(nullptr),
+    m_mazeFileComboBox(new QComboBox()),
     m_mouse(nullptr),
     m_mouseGraphic(nullptr),
     m_view(nullptr),
@@ -63,10 +66,11 @@ Window::Window(QWidget *parent) :
     m_isPaused(false),
     m_wasReset(false) {
 
-    QShortcut* shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q), this);
-    connect(shortcut, &QShortcut::activated, this, [=](){close();});
-    QShortcut* sc = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_W), this);
-    connect(sc, &QShortcut::activated, this, [=](){close();});
+    // Keyboard shortcuts for closing the window
+    QShortcut* ctrl_q = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q), this);
+    QShortcut* ctrl_w = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_W), this);
+    connect(ctrl_q, &QShortcut::activated, this, &QMainWindow::close);
+    connect(ctrl_w, &QShortcut::activated, this, &QMainWindow::close);
 
     // Add the splitter to the window
     QSplitter* splitter = new QSplitter();
@@ -121,73 +125,34 @@ Window::Window(QWidget *parent) :
     // Maze
     QLabel* mazeLabel = new QLabel("Maze");
     QLabel* mouseLabel = new QLabel("Mouse");
-    mazeLabel->setAlignment(Qt::AlignCenter);
-    mouseLabel->setAlignment(Qt::AlignCenter);
     mazeLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
     mouseLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
 
 
+    // TODO: MACK - save the maze on successful load
+    // TODO: MACK - purge mazes if they fail to load
+
     configLayout->addWidget(mazeLabel, 0, 0, 1, 1);
-    QComboBox* mazeBox = new QComboBox();
-    mazeBox->addItem("A");
-    mazeBox->addItem("B");
-    configLayout->addWidget(mazeBox, 0, 1, 1, 2);
-
-
-    // TODO: Add the default mazes
-    // TODO: MACK - save the loaded mazes, 
-    /*
-    QString Resources::getMazesPath() {
-        return ":/resources/mazes/";
-    }
-
-    QStringList Resources::getMazes() {
-        QStringList files;
-        for (const auto& info : QDir(getMazesPath()).entryInfoList()) {
-            files.append(info.absoluteFilePath());
-        }
-        return files;
-    }
-    */
-
-
-    /*
-    for (const QString& path : Resources::getMazes()) {
-        ASSERT_TR(path.startsWith(Resources::getMazesPath()));
-        QString name = path.right(
-            path.size() -
-            Resources::getMazesPath().size()
-        );
-        connect(action, &QAction::triggered, this, [=](){
-            loadMazeFile(path);
-        });
-        chooseMazeMenu->addAction(action);
-    }
-    */
-
+    configLayout->addWidget(m_mazeFileComboBox, 0, 1, 1, 2);
+    connect(
+        m_mazeFileComboBox,
+        QOverload<const QString &>::of(&QComboBox::activated),
+        this,
+        &Window::onMazeFileComboBoxChanged
+    );
 
 
     QToolButton* button = new QToolButton();
     button->setIcon(QIcon(":/resources/icons/open.png"));
 
+    configLayout->addWidget(button, 0, 3, 1, 1);
+    connect(button, &QToolButton::clicked, this, &Window::onMazeFileButtonPressed);
+
     m_mouseAlgoEditButton->setIcon(QIcon(":/resources/icons/edit.png"));
     m_mouseAlgoImportButton->setIcon(QIcon(":/resources/icons/plus.png"));
 
-    configLayout->addWidget(button, 0, 3, 1, 1);
-    connect(
-        button, &QToolButton::clicked,
-        this, [=](){
-            QString path = QFileDialog::getOpenFileName(
-                this,
-                tr("Load Maze")
-                //"",
-                //tr("Images (*.png *.xpm *.jpg)")
-            );
-            if (!path.isNull()) {
-                loadMazeFile(path);
-            }
-        }
-    );
+
+
 
     // Mouse
     configLayout->addWidget(mouseLabel, 1, 0, 1, 1);
@@ -265,8 +230,22 @@ Window::Window(QWidget *parent) :
     // Minor layout stuff
     panel->layout()->setContentsMargins(6, 6, 6, 6);
 
-    // Load a maze
-    loadMazeFile(":/resources/mazes/blank.num");
+    // Remove maze files that no longer exist
+    for (const auto& path : SettingsMazeFiles::getAllPaths()) {
+        if (!QFileInfo::exists(path)) {
+            SettingsMazeFiles::removePath(path);
+        }
+    }
+
+    // Load the recently used maze
+    QString path = SettingsMisc::getRecentMazeFile();
+    Maze* maze = Maze::fromFile(path);
+    if (maze == nullptr) {
+        path = ":/resources/mazes/blank.num";
+        maze = Maze::fromFile(path);
+    }
+    refreshMazeFileComboBox(path);
+    updateMazeAndPath(maze, path);
 
     // TODO: MACK - remember splitter sizes
     splitter->setSizes({
@@ -320,19 +299,58 @@ void Window::closeEvent(QCloseEvent *event) {
     QMainWindow::closeEvent(event);
 }
 
-void Window::loadMazeFile(QString path) {
-
-    // Create maze object
-    Maze* maze = Maze::fromFile(path);
-    if (maze == nullptr) {
-        QMessageBox::warning(
-            this,
-            "Invalid Maze File",
-            "The following is not a valid maze file:\n\n" + path + "\n\n "
-            "The maze must be nonempty, rectangular, enclosed, and consistent."
-        );
+void Window::onMazeFileButtonPressed() {
+    QString path = QFileDialog::getOpenFileName(this, tr("Load Maze"));
+    if (path.isNull()) {
         return;
     }
+    Maze* maze = Maze::fromFile(path);
+    if (maze == nullptr) {
+        showInvalidMazeFileWarning(path);
+        return;
+    }
+    SettingsMazeFiles::addPath(path);
+    refreshMazeFileComboBox(path);
+    updateMazeAndPath(maze, path);
+}
+
+void Window::onMazeFileComboBoxChanged(QString path) {
+    Maze* maze = Maze::fromFile(path);
+    if (maze == nullptr) {
+        refreshMazeFileComboBox(m_currentMazeFile);
+        showInvalidMazeFileWarning(path);
+        return;
+    }
+    updateMazeAndPath(maze, path);
+}
+
+void Window::showInvalidMazeFileWarning(QString path) {
+    QMessageBox::warning(
+        this,
+        "Invalid Maze File",
+        "The following is not a valid maze file:\n\n" + path + "\n\n "
+        "The maze must be nonempty, rectangular, enclosed, and consistent."
+    );
+}
+
+void Window::refreshMazeFileComboBox(QString selected) {
+    m_mazeFileComboBox->clear();
+    for (const auto& info : QDir(":/resources/mazes/").entryInfoList()) {
+        m_mazeFileComboBox->addItem(info.absoluteFilePath());
+    }
+    for (const auto& path : SettingsMazeFiles::getAllPaths()) {
+        m_mazeFileComboBox->addItem(path);
+    }
+    m_mazeFileComboBox->setCurrentText(selected);
+}
+
+void Window::updateMazeAndPath(Maze* maze, QString path) {
+    updateMaze(maze);
+    m_currentMazeFile = path;
+    SettingsMisc::setRecentMazeFile(path);
+}
+
+void Window::updateMaze(Maze* maze) {
 
     // Stop running maze/mouse algos
     cancelAllProcesses();
@@ -1347,6 +1365,7 @@ void Window::setText(int x, int y, QString text) {
         chars.insert(FontImage::characters().at(i));
     }
     int size = text.size();
+    // TODO: MACK - shouldn't be hardcoded here
     if (size > 10) {
         size = 10;
     }

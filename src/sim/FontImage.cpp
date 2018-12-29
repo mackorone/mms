@@ -3,15 +3,17 @@
 namespace mms {
 
 QString FontImage::path() {
-    return ":/resources/fonts/Unispace-Bold.png";
+    return ":/resources/fonts/Hack-Regular.png";
 }
 
 QString FontImage::characters() {
     // Must match the font image, else the wrong
     // characters will be displayed on the tiles
-    return
-        " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNO"
-        "PQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+    return (
+        " !\"#$%&'()*+,-./0123456789:;<=>?"
+        "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
+        "`abcdefghijklmnopqrstuvwxyz{|}~"
+    );
 }
 
 

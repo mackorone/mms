@@ -3,12 +3,12 @@ Release
 - Clean up mouse algo template
     - setWall and clearWall
     - Add Python bindings
-- Add reset button
 - Fix UI updates on mouse algo start/stop
 - Disable pause button when algo completes
 - Respond with "bump" (or something) if can't move forward
 - Update the build and run status when the algorithm changes
 - Better UI for mazes included with the simulator
+- Make sure setText with empty string works as expected
 - Publish installation and usage guides
     - Update the wiki
     - Make some video tutorials
@@ -20,7 +20,6 @@ Cleanup
 - Add unit tests
 - Lint the codebase
 - Remove superfluous include statements
-- Remove all unnecessary settings classes
 - Look into using vsync so the graphics don't tear
 - MacOS retina https://github.com/vispy/vispy/issues/99
 - Don't actually log within mouse interface - surface errors a different way

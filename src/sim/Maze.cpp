@@ -32,6 +32,9 @@ Maze* Maze::fromFile(const QString& path) {
     //     +---+---+---+
 
     // Open the file
+    if (path.isEmpty()) {
+        return nullptr;
+    }
     QFile file(path);
     if (!file.open(QFile::ReadOnly)) {
         return nullptr;

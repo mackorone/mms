@@ -77,8 +77,15 @@ private:
     Maze* m_maze;
     MazeView* m_truth;
 
-    // Helper function for updating the maze 
-    void loadMazeFile(QString path);
+    // Update the maze
+    QString m_currentMazeFile;
+    QComboBox* m_mazeFileComboBox;
+    void onMazeFileButtonPressed();
+    void onMazeFileComboBoxChanged(QString path);
+    void showInvalidMazeFileWarning(QString path);
+    void refreshMazeFileComboBox(QString selected);
+    void updateMazeAndPath(Maze* maze, QString path);
+    void updateMaze(Maze* maze);
 
     // ----- Build -----
 
