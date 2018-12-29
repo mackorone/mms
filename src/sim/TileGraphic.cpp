@@ -145,7 +145,7 @@ void TileGraphic::updateText() const {
             ) {
                 c = rowsOfText.at(row).at(col);
             }
-            ASSERT_TR(FontImage::get()->positions().contains(c));
+            ASSERT_TR(FontImage::positions().contains(c));
             m_bufferInterface->updateTileGraphicText(
                 m_tile->getX(),
                 m_tile->getY(),

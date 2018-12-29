@@ -21,8 +21,8 @@ QPair<int, int> TileGraphicTextCache::getTileGraphicTextMaxSize() const {
 }
 
 QPair<double, double> TileGraphicTextCache::getFontImageCharacterPosition(QChar c) const {
-    ASSERT_TR(FontImage::get()->positions().contains(c));
-    return FontImage::get()->positions().value(c);
+    ASSERT_TR(FontImage::positions().contains(c));
+    return FontImage::positions().value(c);
 }
 
 QPair<Coordinate, Coordinate> TileGraphicTextCache::getTileGraphicTextPosition(

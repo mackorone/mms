@@ -275,15 +275,15 @@ void Map::initTextureProgram() {
     );
 
     // Load the bitmap texture into the texture atlas
-    if (QFile::exists(FontImage::get()->imageFilePath())) {
+    if (QFile::exists(FontImage::path())) {
         m_textureAtlas = new QOpenGLTexture(QImage(
-            FontImage::get()->imageFilePath()
+            FontImage::path()
         ).mirrored());
     }
     else {
         qWarning()
             << "Font image file does not exist:"
-            << FontImage::get()->imageFilePath();
+            << FontImage::path();
     }
 
     m_polygonVBO.release();

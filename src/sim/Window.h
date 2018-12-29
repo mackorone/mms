@@ -186,7 +186,7 @@ private:
     void clearColor(int x, int y);
     void clearAllColor();
 
-    void setText(int x, int y, const QString& text);
+    void setText(int x, int y, QString text);
     void clearText(int x, int y);
     void clearAllText();
 

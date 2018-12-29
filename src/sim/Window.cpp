@@ -24,7 +24,6 @@
 #include "Dimensions.h"
 #include "FontImage.h"
 #include "ProcessUtilities.h"
-#include "Resources.h"
 #include "SettingsMouseAlgos.h"
 #include "SettingsMisc.h"
 #include "SimUtilities.h"
@@ -136,6 +135,21 @@ Window::Window(QWidget *parent) :
 
 
     // TODO: Add the default mazes
+    // TODO: MACK - save the loaded mazes, 
+    /*
+    QString Resources::getMazesPath() {
+        return ":/resources/mazes/";
+    }
+
+    QStringList Resources::getMazes() {
+        QStringList files;
+        for (const auto& info : QDir(getMazesPath()).entryInfoList()) {
+            files.append(info.absoluteFilePath());
+        }
+        return files;
+    }
+    */
+
 
     /*
     for (const QString& path : Resources::getMazes()) {
@@ -252,7 +266,7 @@ Window::Window(QWidget *parent) :
     panel->layout()->setContentsMargins(6, 6, 6, 6);
 
     // Load a maze
-    loadMazeFile(Resources::getMazes().at(2));
+    loadMazeFile(":/resources/mazes/blank.num");
 
     // TODO: MACK - remember splitter sizes
     splitter->setSizes({
@@ -1323,28 +1337,31 @@ void Window::clearAllColor() {
     m_tilesWithColor.clear();
 }
 
-void Window::setText(int x, int y, const QString& text) {
+void Window::setText(int x, int y, QString text) {
     if (!isWithinMaze(x, y)) {
         return;
     }
-
-    // Ensure that all characters are valid
-    QString filtered;
-    for (int i = 0; i < text.size(); i += 1) {
-        QChar c = text.at(i);
-        if (!FontImage::get()->positions().contains(c)) {
-            qWarning().noquote().nospace()
-                << "Unable to set the tile text for unprintable character \""
-                << (c == '\n' ? "\\n" :
-                   (c == '\t' ? "\\t" :
-                   (c == '\r' ? "\\r" : QString(c))))
-                << "\". Using the character \"?\" instead.";
-            c = '?';
-        }
-        filtered += c;
+    // TODO: MACK - clean this up
+    QSet<QChar> chars;
+    for (int i = 0; i < FontImage::characters().size(); i += 1) {
+        chars.insert(FontImage::characters().at(i));
     }
-
-    m_view->getMazeGraphic()->setText(x, y, filtered);
+    int size = text.size();
+    if (size > 10) {
+        size = 10;
+    }
+    for (int i = 0; i < size; i += 1) {
+        if (!chars.contains(text.at(i))) {
+            text.replace(i, 1, "?");
+        }
+    }
+    /*
+    static QRegExp regex = QRegExp(
+        QString("[^") + FontImage::characters() + QString("]")
+    );
+    text.replace(regex, "?");
+    */
+    m_view->getMazeGraphic()->setText(x, y, text);
     m_tilesWithText.insert({x, y});
 }
 
