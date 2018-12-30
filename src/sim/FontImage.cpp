@@ -3,7 +3,7 @@
 namespace mms {
 
 QString FontImage::path() {
-    return ":/resources/fonts/Hack-Regular.png";
+    return ":/resources/fonts/Unispace-Bold.png";
 }
 
 QString FontImage::characters() {

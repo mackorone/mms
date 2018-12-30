@@ -18,8 +18,6 @@
 #include <QTimer>
 #include <QToolButton>
 
-#include "Assert.h"
-#include "ConfigDialogField.h"
 #include "Map.h"
 #include "Maze.h"
 #include "MazeView.h"
@@ -53,33 +51,13 @@ public:
 
 private:
 
-    // ----- UI -----
-
-    // The OpenGL widget (i.e., the graphics)
-    Map* m_map;
-
-    // The mouse, its graphic, its view of the maze
-    Mouse* m_mouse;
-    MouseGraphic* m_mouseGraphic;
-    MazeView* m_view;
-
-    // Controls
-    QComboBox* m_mouseAlgoComboBox;
-    QToolButton* m_mouseAlgoEditButton;
-    QToolButton* m_mouseAlgoImportButton;
-    QTabWidget* m_mouseAlgoOutputTabWidget;
-    void mouseAlgoEdit();
-    void mouseAlgoImport();
-
     // ----- Maze -----
 
-    // The maze and the true view of the maze
     Maze* m_maze;
     MazeView* m_truth;
-
-    // Update the maze
     QString m_currentMazeFile;
     QComboBox* m_mazeFileComboBox;
+
     void onMazeFileButtonPressed();
     void onMazeFileComboBoxChanged(QString path);
     void showInvalidMazeFileWarning(QString path);
@@ -87,21 +65,68 @@ private:
     void updateMazeAndPath(Maze* maze, QString path);
     void updateMaze(Maze* maze);
 
-    // ----- Build -----
+    // ----- Algo config -----
 
-    // Build-related members
-    QProcess* m_buildProcess;
-    QPushButton* m_buildButton;
-    QLabel* m_buildStatus;
+    QComboBox* m_mouseAlgoComboBox;
+    QToolButton* m_mouseAlgoEditButton;
+
+    void onMouseAlgoEditButtonPressed();
+    void onMouseAlgoImportButtonPressed();
+    void refreshMouseAlgoComboBox(QString selected);
+
+    // ----- Algo output -----
+
+    QTabWidget* m_mouseAlgoOutputTabWidget;
     QPlainTextEdit* m_buildOutput;
+    QPlainTextEdit* m_runOutput;
+
+    // ----- Algo build -----
+
+    QPushButton* m_buildButton;
+    QProcess* m_buildProcess;
+    QLabel* m_buildStatus;
+
     void startBuild();
+    void cancelBuild();
     void onBuildExit(int exitCode, QProcess::ExitStatus exitStatus);
 
-    // Run-related members
-    QProcess* m_runProcess;
+    // ----- Algo run -----
+
     QPushButton* m_runButton;
+    QProcess* m_runProcess;
     QLabel* m_runStatus;
-    QPlainTextEdit* m_runOutput;
+
+    // The mouse, its graphic, its view of the maze
+    Mouse* m_mouse;
+    MouseGraphic* m_mouseGraphic;
+    MazeView* m_view;
+
+    // Run-related members
+    // TODO: MACK
+    void startRun();
+    void cancelRun();
+    void onRunExit(int exitCode, QProcess::ExitStatus exitStatus);
+    void removeMouseFromMaze();
+
+    // ----- Misc -----
+
+    // The OpenGL widget (i.e., the graphics)
+    Map* m_map;
+
+    // Cache
+    QSet<QPair<int, int>> m_tilesWithColor;
+    QSet<QPair<int, int>> m_tilesWithText;
+
+    // Cancel running processes
+    void cancelAllProcesses();
+    void cancelProcess(QProcess* process, QLabel* status);
+
+    // ----- Communication -----
+
+    QStringList processText(const QString& text);
+
+    // Execute a request, return a response
+    QString dispatch(const QString& command);
 
     // A buffer to hold incomplete commands, ensures we only
     // process commands once they're terminated with a newline
@@ -115,46 +140,16 @@ private:
     void processQueuedCommands();
     QTimer* m_commandQueueTimer;
 
-    // TODO: MACK
-    double m_step;
-    QSlider* m_speedSlider;
-    void scheduleAnotherCall();
-    void mouseAlgoPause();
-    void mouseAlgoResume();
-    QPushButton* m_resetButton;
-    QPushButton* m_pauseButton;
-    bool m_isPaused;
-
-    // TODO: MACK
-    void startRun();
-    void onRunExit(int exitCode, QProcess::ExitStatus exitStatus);
-    void removeMouseFromMaze();
-
-    // Cancel running processes
-    void cancelAllProcesses();
-    void cancelBuild();
-    void cancelRun();
-    void cancelProcess(QProcess* process, QLabel* status);
-
-    void mouseAlgoRefresh(const QString& name = "");
-    QVector<ConfigDialogField> mouseAlgoGetFields();
-
-    QStringList processText(const QString& text);
-
-/////////////////////////////////////////////////////////
-// TODO: MACK
-
-
-    // Execute a request, return a response
-    QString dispatch(const QString& command);
-
-    // A user pressed an input button in the UI
-    void inputButtonWasPressed(int button);
+    // ----- Movement -----
 
     // TODO: MACK
     bool isMoving();
     double progressRemaining();
     void moveALittle(double progress);
+
+    double m_step;
+    QSlider* m_speedSlider;
+    void scheduleAnotherCall();
 
     // State used for asynchronous mouse movement
     void updateStartingLocationAndDirection();
@@ -164,14 +159,17 @@ private:
     double m_progress;
     double progressRequired(Movement movement);
 
-    // Returns the center of a given tile
-    Coordinate getCenterOfTile(int x, int y) const;
+    // ----- Interaction ----
 
-    QSet<QPair<int, int>> m_tilesWithColor;
-    QSet<QPair<int, int>> m_tilesWithText;
-
+    // TODO: MACK
+    void mouseAlgoPause();
+    void mouseAlgoResume();
+    QPushButton* m_resetButton;
+    QPushButton* m_pauseButton;
+    bool m_isPaused;
     bool m_wasReset;
-    void resetButtonPressed();
+    void onPauseButtonPressed();
+    void onResetButtonPressed();
 
     // ----- API -----
 
@@ -200,11 +198,12 @@ private:
     bool wasReset();
     void ackReset();
 
-    // ----- API Helpers -----
+    // ----- Helpers -----
 
     bool isWall(Wall wall) const;
     bool isWithinMaze(int x, int y) const;
     Wall getOpposingWall(Wall wall) const;
+    Coordinate getCenterOfTile(int x, int y) const;
 };
 
 } 

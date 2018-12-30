@@ -34,10 +34,26 @@ namespace mms {
 
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
-    m_map(new Map()),
+
+    // Maze
     m_maze(nullptr),
     m_truth(nullptr),
+    m_currentMazeFile(QString()),
     m_mazeFileComboBox(new QComboBox()),
+
+    // Algo config
+    m_mouseAlgoComboBox(new QComboBox()),
+    m_mouseAlgoEditButton(new QToolButton()),
+
+    // Algo output
+    m_mouseAlgoOutputTabWidget(new QTabWidget()),
+    m_buildOutput(new QPlainTextEdit()),
+    m_runOutput(new QPlainTextEdit()),
+
+    // Algo build
+
+
+    m_map(new Map()),
     m_mouse(nullptr),
     m_mouseGraphic(nullptr),
     m_view(nullptr),
@@ -45,21 +61,18 @@ Window::Window(QWidget *parent) :
     m_movement(Movement::NONE),
     m_progress(0.0),
 
+    // Build
+    m_buildButton(new QPushButton("Build")),
+    m_buildProcess(nullptr),
+    m_buildStatus(new QLabel()),
+
     // TODO: MACK
     m_step(0.0),
 
     // MouseAlgosTab
-    m_mouseAlgoComboBox(new QComboBox()),
-    m_mouseAlgoEditButton(new QToolButton()),
-    m_mouseAlgoImportButton(new QToolButton()),
-    m_buildProcess(nullptr),
-    m_buildButton(new QPushButton("Build")),
-    m_buildStatus(new QLabel()),
-    m_buildOutput(new QPlainTextEdit()),
     m_runProcess(nullptr),
     m_runButton(new QPushButton("Run")),
     m_runStatus(new QLabel()),
-    m_runOutput(new QPlainTextEdit()),
     m_resetButton(new QPushButton("Reset")),
     m_pauseButton(new QPushButton("Pause")),
     m_speedSlider(new QSlider(Qt::Horizontal)),
@@ -72,67 +85,86 @@ Window::Window(QWidget *parent) :
     connect(ctrl_q, &QShortcut::activated, this, &QMainWindow::close);
     connect(ctrl_w, &QShortcut::activated, this, &QMainWindow::close);
 
-    // Add the splitter to the window
+    // Add the map and panel to the window
+    QVBoxLayout* panelLayout = new QVBoxLayout();
+    panelLayout->setContentsMargins(0, 6, 6, 6);
+    QWidget* panel = new QWidget();
+    panel->setLayout(panelLayout);
     QSplitter* splitter = new QSplitter();
-    splitter->setHandleWidth(6);
+    splitter->setHandleWidth(9);
+    splitter->addWidget(m_map);
+    splitter->addWidget(panel);
     setCentralWidget(splitter);
 
-    // Add a container for the maze stats, map and options
-    QWidget* mapHolder = new QWidget();
-    QVBoxLayout* mapHolderLayout = new QVBoxLayout();
-    mapHolder->setLayout(mapHolderLayout);
-    splitter->addWidget(mapHolder);
-
-    // Add the map (and set some layout props)
-    mapHolderLayout->addWidget(m_map);
-    mapHolderLayout->setContentsMargins(0, 0, 0, 0);
-    mapHolderLayout->setSpacing(0);
-    m_map->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
-
-    //  ----- Create the mouse algos tab
-
-    // First, set up all of the button connections
-    connect(
-        m_mouseAlgoEditButton, &QPushButton::clicked,
-        this, &Window::mouseAlgoEdit
-    );
-    connect(
-        m_mouseAlgoImportButton, &QPushButton::clicked,
-        this, &Window::mouseAlgoImport
-    );
-    connect(
-        m_buildButton, &QPushButton::clicked,
-        this, &Window::startBuild
-    );
-    connect(
-        m_runButton, &QPushButton::clicked,
-        this, &Window::startRun
-    );
-
-    // Set up the layout
-    QVBoxLayout* layout = new QVBoxLayout();
-    QWidget* panel = new QWidget();
-    panel->setLayout(layout);
-    QGridLayout* topLayout = new QGridLayout();
-    layout->addLayout(topLayout);
-
-    // Config 
+    // Add the upper parts of the panel
     QGroupBox* configGroupBox = new QGroupBox("Config");
-    topLayout->addWidget(configGroupBox, 0, 1, 1, 1);
     QGridLayout* configLayout = new QGridLayout();
     configGroupBox->setLayout(configLayout);
+    QGroupBox* controlsGroupBox = new QGroupBox("Controls");
+    QGridLayout* controlsLayout = new QGridLayout();
+    controlsGroupBox->setLayout(controlsLayout);
+    QHBoxLayout* upperLayout = new QHBoxLayout();
+    upperLayout->addWidget(controlsGroupBox);
+    upperLayout->addWidget(configGroupBox);
+    panelLayout->addLayout(upperLayout);
 
-    // Maze
+    // Add the mouse algo build and run buttons
+    controlsLayout->addWidget(m_buildButton, 0, 0);
+    controlsLayout->addWidget(m_runButton, 1, 0);
+    connect(m_buildButton, &QPushButton::clicked, this, &Window::startBuild);
+    connect(m_runButton, &QPushButton::clicked, this, &Window::startRun);
+
+    // Add the mouse algo build and run statuses
+    controlsLayout->addWidget(m_buildStatus, 0, 1);
+    controlsLayout->addWidget(m_runStatus, 1, 1);
+    for (QLabel* label : {m_buildStatus, m_runStatus}) {
+        label->setAlignment(Qt::AlignCenter);   
+        label->setFrameStyle(QFrame::StyledPanel | QFrame::Plain);
+        label->setMinimumWidth(90);
+    }
+
+    // Add mouse algo pause and reset buttons
+    controlsLayout->addWidget(m_pauseButton, 0, 2, 1, 1);
+    controlsLayout->addWidget(m_resetButton, 0, 3, 1, 1);
+    connect(
+        m_pauseButton,
+        &QPushButton::clicked,
+        this,
+        &Window::onPauseButtonPressed
+    );
+    connect(
+        m_resetButton,
+        &QPushButton::pressed,
+        this,
+        &Window::onResetButtonPressed
+    ); 
+
+
+
+
+
+
+    // TODO: MACK
+    // Add mouse algo speed
+    controlsLayout->addWidget(m_speedSlider, 1, 2, 1, 2);
+    m_speedSlider->setRange(1, 7);
+    m_speedSlider->setTickInterval(1);
+
+
+
+
+
+
+    // Add config box labels
     QLabel* mazeLabel = new QLabel("Maze");
     QLabel* mouseLabel = new QLabel("Mouse");
-    mazeLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-    mouseLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-
-
-    // TODO: MACK - save the maze on successful load
-    // TODO: MACK - purge mazes if they fail to load
-
     configLayout->addWidget(mazeLabel, 0, 0, 1, 1);
+    configLayout->addWidget(mouseLabel, 1, 0, 1, 1);
+    QSizePolicy policy = QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    mazeLabel->setSizePolicy(policy);
+    mouseLabel->setSizePolicy(policy);
+
+    // Add maze file combo box
     configLayout->addWidget(m_mazeFileComboBox, 0, 1, 1, 2);
     connect(
         m_mazeFileComboBox,
@@ -141,78 +173,54 @@ Window::Window(QWidget *parent) :
         &Window::onMazeFileComboBoxChanged
     );
 
-
-    QToolButton* button = new QToolButton();
-    button->setIcon(QIcon(":/resources/icons/open.png"));
-
-    configLayout->addWidget(button, 0, 3, 1, 1);
-    connect(button, &QToolButton::clicked, this, &Window::onMazeFileButtonPressed);
-
-    m_mouseAlgoEditButton->setIcon(QIcon(":/resources/icons/edit.png"));
-    m_mouseAlgoImportButton->setIcon(QIcon(":/resources/icons/plus.png"));
-
-
-
-
-    // Mouse
-    configLayout->addWidget(mouseLabel, 1, 0, 1, 1);
+    // Add mouse algo combo box
     configLayout->addWidget(m_mouseAlgoComboBox, 1, 1, 1, 2);
-    configLayout->addWidget(m_mouseAlgoEditButton, 1, 3, 1, 1);
-    configLayout->addWidget(m_mouseAlgoImportButton, 1, 4, 1, 1);
     connect(
-        m_mouseAlgoComboBox, &QComboBox::currentTextChanged,
-        this, [=](QString name){
+        m_mouseAlgoComboBox,
+        &QComboBox::currentTextChanged,
+        this,
+        [=](QString name){
             SettingsMisc::setRecentMouseAlgo(name);
         }
     );
 
-    // Actions groupbox
-    QGroupBox* controlsGroupBox = new QGroupBox("Controls");
-    topLayout->addWidget(controlsGroupBox, 0, 0, 1, 1);
-    QGridLayout* controlsLayout = new QGridLayout();
-    controlsGroupBox->setLayout(controlsLayout);
-
-    controlsLayout->addWidget(m_buildButton, 0, 0);
-    controlsLayout->addWidget(m_buildStatus, 0, 1);
-    controlsLayout->addWidget(m_runButton, 1, 0);
-    controlsLayout->addWidget(m_runStatus, 1, 1);
-    for (QLabel* label : {m_buildStatus, m_runStatus}) {
-        label->setAlignment(Qt::AlignCenter);   
-        label->setFrameStyle(QFrame::StyledPanel | QFrame::Plain);
-        label->setMinimumWidth(90);
-    }
-
-    // Runtime controls group box
-    controlsLayout->addWidget(m_pauseButton, 0, 2, 1, 1);
-    controlsLayout->addWidget(m_resetButton, 0, 3, 1, 1);
-    double maxSpeed = 3000.0; // progress points per second
-    m_speedSlider->setRange(1, 7);
-    m_speedSlider->setTickInterval(1);
-    controlsLayout->addWidget(m_speedSlider, 1, 2, 1, 2);
-
-    // Set up the pause button initial state
-    m_pauseButton->setEnabled(false);
-
+    // Add maze file load button
+    QToolButton* mazeFileOpenButton = new QToolButton();
+    configLayout->addWidget(mazeFileOpenButton, 0, 3, 1, 1);
+    mazeFileOpenButton->setIcon(QIcon(":/resources/icons/open.png"));
     connect(
-        m_resetButton, &QPushButton::pressed,
-        this, &Window::resetButtonPressed);
+        mazeFileOpenButton,
+        &QToolButton::clicked,
+        this, 
+        &Window::onMazeFileButtonPressed
+    );
 
-    mouseAlgoResume();
+    // Add mouse algo edit button
+    configLayout->addWidget(m_mouseAlgoEditButton, 1, 3, 1, 1);
+    m_mouseAlgoEditButton->setIcon(QIcon(":/resources/icons/edit.png"));
+    connect(
+        m_mouseAlgoEditButton,
+        &QPushButton::clicked,
+        this,
+        &Window::onMouseAlgoEditButtonPressed
+    );
 
-    // Add the build and run output
-    QHBoxLayout* bottomLayout = new QHBoxLayout();
-    layout->addLayout(bottomLayout);
-    m_mouseAlgoOutputTabWidget = new QTabWidget();
-    bottomLayout->addWidget(m_mouseAlgoOutputTabWidget);
+    // Add mouse algo import button
+    QToolButton* mouseAlgoImportButton = new QToolButton();
+    configLayout->addWidget(mouseAlgoImportButton, 1, 4, 1, 1);
+    mouseAlgoImportButton->setIcon(QIcon(":/resources/icons/plus.png"));
+    connect(
+        mouseAlgoImportButton,
+        &QPushButton::clicked,
+        this,
+        &Window::onMouseAlgoImportButtonPressed
+    );
+
+    // Add the build and run outputs to the panel
+    panelLayout->addWidget(m_mouseAlgoOutputTabWidget);
     m_mouseAlgoOutputTabWidget->addTab(m_buildOutput, "Build Output");
     m_mouseAlgoOutputTabWidget->addTab(m_runOutput, "Run Output");
-    m_mouseAlgoOutputTabWidget->addTab(m_runOutput, "Run Output");
-
-    // Set the default values for some widgets
-    for (QPlainTextEdit* output : {
-        m_buildOutput,
-        m_runOutput,
-    }) {
+    for (QPlainTextEdit* output : {m_buildOutput, m_runOutput}) {
         output->setReadOnly(true);
         output->setLineWrapMode(QPlainTextEdit::NoWrap);
         QFont font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
@@ -220,19 +228,22 @@ Window::Window(QWidget *parent) :
         output->document()->setDefaultFont(font);
     }
 
+
+
+
+
+
+
+    mouseAlgoResume();
+
     // Add the mouse algos
-    mouseAlgoRefresh(SettingsMisc::getRecentMouseAlgo());
+    refreshMouseAlgoComboBox(SettingsMisc::getRecentMouseAlgo());
 
     //  ----- Create the mouse algos tab
 
-    splitter->addWidget(panel);
-
-    // Minor layout stuff
-    panel->layout()->setContentsMargins(6, 6, 6, 6);
-
     // Remove maze files that no longer exist
     for (const auto& path : SettingsMazeFiles::getAllPaths()) {
-        if (!QFileInfo::exists(path)) {
+        if (path.isEmpty() || !QFileInfo::exists(path)) {
             SettingsMazeFiles::removePath(path);
         }
     }
@@ -386,33 +397,15 @@ void Window::updateMaze(Maze* maze) {
     delete oldTruth;
 }
 
-void Window::mouseAlgoEdit() {
+void Window::onMouseAlgoEditButtonPressed() {
 
+    // Create the dialog with initial values
     QString name = m_mouseAlgoComboBox->currentText();
-
-    QVector<ConfigDialogField> fields = mouseAlgoGetFields();
-    ConfigDialogField nameField = fields.at(0);
-    ConfigDialogField dirPathField = fields.at(1);
-    ConfigDialogField buildCommandField = fields.at(2);
-    ConfigDialogField runCommandField = fields.at(3);
-
-    nameField.initialLineEditValue = name;
-    dirPathField.initialLineEditValue = SettingsMouseAlgos::getDirPath(name);
-    buildCommandField.initialLineEditValue =
-        SettingsMouseAlgos::getBuildCommand(name);
-    runCommandField.initialLineEditValue =
-        SettingsMouseAlgos::getRunCommand(name);
-
     ConfigDialog dialog(
-        "Edit",
-        "Mouse Algorithm",
-        {
-            nameField,
-            dirPathField,
-            buildCommandField,
-            runCommandField,
-        },
-        true // Include a "Remove" button
+        name,
+        SettingsMouseAlgos::getDirPath(name),
+        SettingsMouseAlgos::getBuildCommand(name),
+        SettingsMouseAlgos::getRunCommand(name)
     );
 
     // Cancel was pressed
@@ -423,43 +416,28 @@ void Window::mouseAlgoEdit() {
     // Remove was pressed
     if (dialog.removeButtonPressed()) {
         SettingsMouseAlgos::remove(name);
-        mouseAlgoRefresh();
+        refreshMouseAlgoComboBox("");
         return;
     }
 
     // OK was pressed
-    QString newName = dialog.getLineEditValue(nameField.label);
+    QString newName = dialog.getName();
     SettingsMouseAlgos::update(
         name,
         newName,
-        dialog.getLineEditValue(dirPathField.label),
-        dialog.getLineEditValue(buildCommandField.label),
-        dialog.getLineEditValue(runCommandField.label)
+        dialog.getDirectory(),
+        dialog.getBuildCommand(),
+        dialog.getRunCommand()
     );
 
     // Update the mouse algos
-    mouseAlgoRefresh(newName);
+    refreshMouseAlgoComboBox(newName);
 }
 
-void Window::mouseAlgoImport() {
+void Window::onMouseAlgoImportButtonPressed() {
 
-    QVector<ConfigDialogField> fields = mouseAlgoGetFields();
-    ConfigDialogField nameField = fields.at(0);
-    ConfigDialogField dirPathField = fields.at(1);
-    ConfigDialogField buildCommandField = fields.at(2);
-    ConfigDialogField runCommandField = fields.at(3);
-
-    ConfigDialog dialog(
-        "Import",
-        "Mouse Algorithm",
-        {
-            nameField,
-            dirPathField,
-            buildCommandField,
-            runCommandField,
-        },
-        false // No "Remove" button
-    );
+    // Create an empty dialog
+    ConfigDialog dialog("", "", "", "");
 
     // Cancel was pressed
     if (dialog.exec() == QDialog::Rejected) {
@@ -467,16 +445,29 @@ void Window::mouseAlgoImport() {
     }
 
     // Ok was pressed
-    QString name = dialog.getLineEditValue(nameField.label);
+    QString newName = dialog.getName();
     SettingsMouseAlgos::add(
-        name,
-        dialog.getLineEditValue(dirPathField.label),
-        dialog.getLineEditValue(buildCommandField.label),
-        dialog.getLineEditValue(runCommandField.label)
+        newName,
+        dialog.getDirectory(),
+        dialog.getBuildCommand(),
+        dialog.getRunCommand()
     );
 
     // Update the mouse algos
-    mouseAlgoRefresh(name);
+    refreshMouseAlgoComboBox(newName);
+}
+
+void Window::refreshMouseAlgoComboBox(QString selected) {
+    m_mouseAlgoComboBox->clear();
+    for (const auto& name : SettingsMouseAlgos::names()) {
+        m_mouseAlgoComboBox->addItem(name);
+    }
+    m_mouseAlgoComboBox->setCurrentText(selected);
+    bool isNonempty = m_mouseAlgoComboBox->count();
+    m_mouseAlgoComboBox->setEnabled(isNonempty);
+    m_mouseAlgoEditButton->setEnabled(isNonempty);
+    m_buildButton->setEnabled(isNonempty);
+    m_runButton->setEnabled(isNonempty);
 }
 
 void Window::startBuild() {
@@ -947,49 +938,6 @@ void Window::mouseAlgoResume() {
     );
 }
 
-void Window::mouseAlgoRefresh(const QString& name) {
-    m_mouseAlgoComboBox->clear();
-    for (const QString& algoName : SettingsMouseAlgos::names()) {
-        m_mouseAlgoComboBox->addItem(algoName);
-    }
-    int index = m_mouseAlgoComboBox->findText(name);
-    if (index != -1) {
-        m_mouseAlgoComboBox->setCurrentIndex(index);
-    }
-    bool isEmpty = (m_mouseAlgoComboBox->count() == 0);
-    m_mouseAlgoComboBox->setEnabled(!isEmpty);
-    m_mouseAlgoEditButton->setEnabled(!isEmpty);
-    m_buildButton->setEnabled(!isEmpty);
-    m_runButton->setEnabled(!isEmpty);
-}
-
-QVector<ConfigDialogField> Window::mouseAlgoGetFields() {
-
-    ConfigDialogField nameField;
-    nameField.label = "Name";
-    nameField.type = ConfigDialogFieldType::STRING;
-    nameField.allowEmptyLineEditValue = false;
-
-    ConfigDialogField dirPathField;
-    dirPathField.label = "Directory";
-    dirPathField.type = ConfigDialogFieldType::DIRECTORY;
-
-    ConfigDialogField buildCommandField;
-    buildCommandField.label = "Build Command";
-    buildCommandField.type = ConfigDialogFieldType::STRING;
-
-    ConfigDialogField runCommandField;
-    runCommandField.label = "Run Command";
-    runCommandField.type = ConfigDialogFieldType::STRING;
-
-    return {
-        nameField,
-        dirPathField,
-        buildCommandField,
-        runCommandField,
-    };
-}
-
 QStringList Window::processText(const QString& text) {
 
     // TODO: upforgrabs
@@ -1222,16 +1170,12 @@ void Window::moveALittle(double progress) {
     }
 }
 
-Coordinate Window::getCenterOfTile(int x, int y) const {
-    ASSERT_TR(isWithinMaze(x, y));
-    Coordinate centerOfTile = Coordinate::Cartesian(
-        Dimensions::tileLength() * (static_cast<double>(x) + 0.5),
-        Dimensions::tileLength() * (static_cast<double>(y) + 0.5)
-    );
-    return centerOfTile;
+void Window::onPauseButtonPressed() {
+    // TODO: MACK
+    mouseAlgoPause();
 }
 
-void Window::resetButtonPressed() {
+void Window::onResetButtonPressed() {
     // TODO: MACK - need to queue this command
     if (m_runProcess == nullptr) {
         return;
@@ -1429,6 +1373,15 @@ Wall Window::getOpposingWall(Wall wall) const {
         case Direction::WEST:
             return {wall.x - 1, wall.y, Direction::EAST};
     }
+}
+
+Coordinate Window::getCenterOfTile(int x, int y) const {
+    ASSERT_TR(isWithinMaze(x, y));
+    Coordinate centerOfTile = Coordinate::Cartesian(
+        Dimensions::tileLength() * (static_cast<double>(x) + 0.5),
+        Dimensions::tileLength() * (static_cast<double>(y) + 0.5)
+    );
+    return centerOfTile;
 }
 
 } 

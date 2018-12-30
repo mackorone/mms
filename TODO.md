@@ -7,7 +7,6 @@ Release
 - Disable pause button when algo completes
 - Respond with "bump" (or something) if can't move forward
 - Update the build and run status when the algorithm changes
-- Better UI for mazes included with the simulator
 - Make sure setText with empty string works as expected
 - Publish installation and usage guides
     - Update the wiki

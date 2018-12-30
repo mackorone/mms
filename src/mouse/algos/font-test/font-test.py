@@ -6,6 +6,11 @@ def command(*args):
     print(*args, file=sys.stderr)
 
 
+def request(*args):
+    command(*args)
+    return int(input())
+
+
 CHARS = (
     " !\"#$%&'()*+,-./0123456789:;<=>?"
     "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
@@ -13,9 +18,11 @@ CHARS = (
 )
 
 
+width = request("getWidth")
+height = request("getHeight")
 index = 0
-for x in range(16):
-    for y in range(16):
+for x in range(width):
+    for y in range(height):
         text = ""
         for i in range(10):
             text += CHARS[index]

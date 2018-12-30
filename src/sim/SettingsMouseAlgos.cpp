@@ -2,7 +2,6 @@
 
 #include "Assert.h"
 #include "ConfigDialog.h"
-#include "ConfigDialogField.h"
 #include "Settings.h"
 
 namespace mms {

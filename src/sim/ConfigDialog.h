@@ -5,8 +5,6 @@
 #include <QLineEdit>
 #include <QGridLayout>
 
-#include "ConfigDialogField.h"
-
 namespace mms {
 
 class ConfigDialog : public QDialog {
@@ -16,28 +14,34 @@ class ConfigDialog : public QDialog {
 public:
 
     ConfigDialog(
-        const QString& action,
-        const QString& object,
-        const QVector<ConfigDialogField>& fields,
-        bool includeRemoveButton);
+        QString name,
+        QString directory,
+        QString buildCommand,
+        QString runCommand);
 
+    QString getName();
+    QString getDirectory();
+    QString getBuildCommand();
+    QString getRunCommand();
     bool removeButtonPressed();
-    QString getLineEditValue(const QString& label);
 
 private:
 
+    QLineEdit* m_name;
+    QLineEdit* m_directory;
+    QLineEdit* m_buildCommand;
+    QLineEdit* m_runCommand;
     bool m_removeButtonPressed;
     QDialogButtonBox* m_buttons;
-    QVector<ConfigDialogField> m_fields;
-    QMap<QString, QLineEdit*> m_lineEdits;
 
-    // Helper functions for append input fields to the layout
-    void addLabel(QString text, QGridLayout* layout, int row);
-    void appendTextField(ConfigDialogField field, QGridLayout* layout);
+    void onBrowseButtonPressed();
+    void onRemoveButtonPressed();
+    void validate(QString name);
 
-    // If invalid, disable the OK button
-    void validate();
-
+    void appendRow(
+        QGridLayout* layout,
+        QString label,
+        QLineEdit* lineEdit);
 };
 
 } 
