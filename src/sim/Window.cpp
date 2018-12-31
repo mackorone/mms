@@ -905,22 +905,27 @@ void Window::dispatchCommand(QString command) {
     ) {
         QStringList tokens = command.split(" ", QString::SkipEmptyParts);
         if (tokens.size() != 4) {
+            printInvalidCommand(command);
             return;
         }
         if (!(tokens.at(0) == "setWall" || tokens.at(0) == "clearWall")) {
+            printInvalidCommand(command);
             return;
         }
         bool ok = true;
         int x = tokens.at(1).toInt(&ok);
         int y = tokens.at(2).toInt(&ok);
         if (!ok) {
+            printInvalidCommand(command);
             return;
         }
         if (tokens.at(3).size() != 1) {
+            printInvalidCommand(command);
             return;
         }
         QChar direction = tokens.at(3).at(0);
         if (!CHAR_TO_DIRECTION().contains(direction)) {
+            printInvalidCommand(command);
             return;
         }
         if (command.startsWith("setWall")) {
@@ -936,22 +941,27 @@ void Window::dispatchCommand(QString command) {
     else if (command.startsWith("setColor")) {
         QStringList tokens = command.split(" ", QString::SkipEmptyParts);
         if (tokens.size() != 4) {
+            printInvalidCommand(command);
             return;
         }
         if (tokens.at(0) != "setColor") {
+            printInvalidCommand(command);
             return;
         }
         bool ok = true;
         int x = tokens.at(1).toInt(&ok);
         int y = tokens.at(2).toInt(&ok);
         if (!ok) {
+            printInvalidCommand(command);
             return;
         }
         if (tokens.at(3).size() != 1) {
+            printInvalidCommand(command);
             return;
         }
         QChar color = tokens.at(3).at(0);
         if (!CHAR_TO_COLOR().contains(color)) {
+            printInvalidCommand(command);
             return;
         }
         setColor(x, y, color);
@@ -959,15 +969,18 @@ void Window::dispatchCommand(QString command) {
     else if (command.startsWith("clearColor")) {
         QStringList tokens = command.split(" ", QString::SkipEmptyParts);
         if (tokens.size() != 3) {
+            printInvalidCommand(command);
             return;
         }
         if (tokens.at(0) != "clearColor") {
+            printInvalidCommand(command);
             return;
         }
         bool ok = true;
         int x = tokens.at(1).toInt(&ok);
         int y = tokens.at(2).toInt(&ok);
         if (!ok) {
+            printInvalidCommand(command);
             return;
         }
         clearColor(x, y);
@@ -975,9 +988,11 @@ void Window::dispatchCommand(QString command) {
     else if (command.startsWith("clearAllColor")) {
         QStringList tokens = command.split(" ", QString::SkipEmptyParts);
         if (tokens.size() != 1) {
+            printInvalidCommand(command);
             return;
         }
         if (tokens.at(0) != "clearAllColor") {
+            printInvalidCommand(command);
             return;
         }
         clearAllColor();
@@ -989,6 +1004,7 @@ void Window::dispatchCommand(QString command) {
         int thirdSpace = command.indexOf(" ", secondSpace + 1);
         QString function = command.left(firstSpace);
         if (function != "setText") {
+            printInvalidCommand(command);
             return;
         }
         QString xString = command.mid(firstSpace + 1, secondSpace - firstSpace);
@@ -997,6 +1013,7 @@ void Window::dispatchCommand(QString command) {
         int x = xString.toInt(&ok);
         int y = yString.toInt(&ok);
         if (!ok) {
+            printInvalidCommand(command);
             return;
         }
         QString text = command.mid(thirdSpace + 1);
@@ -1005,15 +1022,18 @@ void Window::dispatchCommand(QString command) {
     else if (command.startsWith("clearText")) {
         QStringList tokens = command.split(" ", QString::SkipEmptyParts);
         if (tokens.size() != 3) {
+            printInvalidCommand(command);
             return;
         }
         if (tokens.at(0) != "clearText") {
+            printInvalidCommand(command);
             return;
         }
         bool ok = true;
         int x = tokens.at(1).toInt(&ok);
         int y = tokens.at(2).toInt(&ok);
         if (!ok) {
+            printInvalidCommand(command);
             return;
         }
         clearText(x, y);
@@ -1021,9 +1041,11 @@ void Window::dispatchCommand(QString command) {
     else if (command.startsWith("clearAllText")) {
         QStringList tokens = command.split(" ", QString::SkipEmptyParts);
         if (tokens.size() != 1) {
+            printInvalidCommand(command);
             return;
         }
         if (tokens.at(0) != "clearAllText") {
+            printInvalidCommand(command);
             return;
         }
         clearAllText();
@@ -1041,6 +1063,7 @@ void Window::dispatchCommand(QString command) {
 QString Window::executeCommand(QString command) {
     QStringList tokens = command.split(" ", QString::SkipEmptyParts);
     if (tokens.size() != 1) {
+        printInvalidCommand(command);
         return INVALID;
     }
     QString function = tokens.at(0);
@@ -1079,8 +1102,13 @@ QString Window::executeCommand(QString command) {
         return ACK;
     }
     else {
+        printInvalidCommand(command);
         return INVALID;
     }
+}
+
+void Window::printInvalidCommand(QString command) {
+    m_runOutput->appendPlainText("[INVALID] " + command);
 }
 
 void Window::processQueuedCommands() {
@@ -1096,7 +1124,10 @@ void Window::processQueuedCommands() {
             response = executeCommand(m_commandQueue.head());
         }
         if (!response.isEmpty()) {
-            m_runProcess->write((response + "\n").toStdString().c_str());
+            // Drop all invalid commands on the floor
+            if (response != INVALID) {
+                m_runProcess->write((response + "\n").toStdString().c_str());
+            }
             m_commandQueue.dequeue();
         }
         else {

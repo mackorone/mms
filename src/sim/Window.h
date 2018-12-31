@@ -143,6 +143,7 @@ private:
 
     void dispatchCommand(QString command);
     QString executeCommand(QString command);
+    void printInvalidCommand(QString command);
     void processQueuedCommands();
 
     // ----- Movement -----
