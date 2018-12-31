@@ -1,18 +1,17 @@
 Release
 =======
 - Buffer algorithm stderr logs
-- Add text widget for run communication
-- Test on Windows
 - Test on Mac
-- Publish simulator installation guides
-- Build static binaries
+- Test on Windows
 - Update the wiki
+- Publish simulator installation guides
 - Make some video tutorials
-- Wiki page for common error message for failed commands
+- Build static binaries
 - Post on HackerNews
 - Advertise on Facebook
 - Reach out to schools
 - Reach our to Micromouse sites
+- Wiki page for common error message for failed commands
 
 Wishlist
 ========
@@ -26,6 +25,7 @@ Wishlist
     - Memmap for better attribute streaming
     - Use unsigned char for texture v-coord
     - Use index buffer objects
+- Display commands and responses
 - Make a system for quickly checking stats on many mazes
     - solved or not
     - how many steps

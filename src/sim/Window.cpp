@@ -73,12 +73,8 @@ Window::Window(QWidget *parent) :
 
     // Algo output
     m_mouseAlgoOutputTabWidget(new QTabWidget()),
-    m_buildOutputHolder(new QWidget()),
-    m_runOutputHolder(new QWidget()),
     m_buildOutput(new QPlainTextEdit()),
-    m_runStderr(new QPlainTextEdit()),
-    m_runCommunication(new QPlainTextEdit()),
-    m_runCommunicationEnabled(new QCheckBox()),
+    m_runOutput(new QPlainTextEdit()),
 
     // Algo build
     m_buildButton(new QPushButton("Build")),
@@ -252,46 +248,11 @@ Window::Window(QWidget *parent) :
         &Window::onMouseAlgoImportButtonPressed
     );
 
-    // Format the build output holder
-    QGridLayout* buildOutputHolderLayout = new QGridLayout();
-    buildOutputHolderLayout->setContentsMargins(6, 6, 6, 6);
-    m_buildOutputHolder->setLayout(buildOutputHolderLayout);
-    QLabel* buildOutputLabel = new QLabel("All Output (stdout/stderr)");
-    buildOutputLabel->setAlignment(Qt::AlignRight);
-    buildOutputHolderLayout->addWidget(buildOutputLabel, 0, 0, 1, 1);
-    buildOutputHolderLayout->addWidget(m_buildOutput, 1, 0, 1, 1);
-
-    // Format the run output holder
-    connect(
-        m_runCommunicationEnabled,
-        &QCheckBox::stateChanged,
-        this,
-        &Window::onRunCommunicationEnabledStateChange
-    );
-    m_runCommunicationEnabled->setChecked(true);
-    m_runCommunicationEnabled->setChecked(false);
-    QGridLayout* runOutputHolderLayout = new QGridLayout();
-    runOutputHolderLayout->setContentsMargins(6, 6, 6, 6);
-    m_runOutputHolder->setLayout(runOutputHolderLayout);
-    QLabel* runLogsLabel = new QLabel("Logs (stderr)");
-    m_runCommunicationEnabled->setText("Commands (stdout)");
-    runLogsLabel->setAlignment(Qt::AlignRight);
-    // m_runCommunicationEnabled->setAlignment(Qt::AlignRight);
-    m_runCommunicationEnabled->setLayoutDirection(Qt::RightToLeft);
-    runOutputHolderLayout->addWidget(runLogsLabel, 0, 0, 1, 1);
-    runOutputHolderLayout->addWidget(m_runCommunicationEnabled, 0, 1, 1, 1);
-    runOutputHolderLayout->addWidget(m_runStderr, 1, 0, 1, 1);
-    runOutputHolderLayout->addWidget(m_runCommunication, 1, 1, 1, 1);
-
-    // Add the build and run outputs to the panel, format the text edits
+    // Add the build and run outputs to the panel
     panelLayout->addWidget(m_mouseAlgoOutputTabWidget);
-    m_mouseAlgoOutputTabWidget->addTab(m_buildOutputHolder, "Build Output");
-    m_mouseAlgoOutputTabWidget->addTab(m_runOutputHolder, "Run Output");
-    for (QPlainTextEdit* output : {
-        m_buildOutput,
-        m_runStderr, 
-        m_runCommunication
-    }) {
+    m_mouseAlgoOutputTabWidget->addTab(m_buildOutput, "Build Output");
+    m_mouseAlgoOutputTabWidget->addTab(m_runOutput, "Run Output");
+    for (QPlainTextEdit* output : {m_buildOutput, m_runOutput}) {
         output->setReadOnly(true);
         output->setLineWrapMode(QPlainTextEdit::NoWrap);
         QFont font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
@@ -458,8 +419,7 @@ void Window::onMouseAlgoComboBoxChanged(QString name) {
     m_buildOutput->clear();
     m_runStatus->setText("");
     m_runStatus->setStyleSheet("");
-    m_runStderr->clear();
-    m_runCommunication->clear();
+    m_runOutput->clear();
     SettingsMisc::setRecentMouseAlgo(name);
 }
 
@@ -534,17 +494,6 @@ void Window::refreshMouseAlgoComboBox(QString selected) {
     m_mouseAlgoEditButton->setEnabled(isNonempty);
     m_buildButton->setEnabled(isNonempty);
     m_runButton->setEnabled(isNonempty);
-}
-
-void Window::onRunCommunicationEnabledStateChange(int state) {
-    if (state == Qt::Checked) {
-        m_runCommunication->setStyleSheet("");
-    }
-    else {
-        m_runCommunication->setStyleSheet(
-            "QPlainTextEdit { background: rgb(216, 216, 216); }"
-        );
-    }
 }
 
 void Window::cancelProcess(QProcess* process, QLabel* status) {
@@ -625,7 +574,7 @@ void Window::startBuild() {
 
     // Clear the ouput and bring it to the front
     m_buildOutput->clear();
-    m_mouseAlgoOutputTabWidget->setCurrentWidget(m_buildOutputHolder);
+    m_mouseAlgoOutputTabWidget->setCurrentWidget(m_buildOutput);
 
     // Start the build process
     if (ProcessUtilities::start(buildCommand, directory, process)) {
@@ -746,9 +695,6 @@ void Window::startRun() {
         QString output = process->readAllStandardOutput();
         QStringList commands = processText(output);
         for (QString command : commands) {
-            if (m_runCommunicationEnabled->isChecked()) {
-                m_runCommunication->appendPlainText(command);
-            }
             dispatchCommand(command);
         }
     });
@@ -759,7 +705,7 @@ void Window::startRun() {
         if (output.endsWith("\n")) {
             output.truncate(output.size() - 1);
         }
-        m_runStderr->appendPlainText(output);
+        m_runOutput->appendPlainText(output);
     });
 
     // Clean up on exit
@@ -773,9 +719,8 @@ void Window::startRun() {
     );
 
     // Clear the ouput and bring it to the front
-    m_runStderr->clear();
-    m_runCommunication->clear();
-    m_mouseAlgoOutputTabWidget->setCurrentWidget(m_runOutputHolder);
+    m_runOutput->clear();
+    m_mouseAlgoOutputTabWidget->setCurrentWidget(m_runOutput);
 
     // Start the run process
     if (ProcessUtilities::start(runCommand, directory, process)) {
@@ -808,7 +753,7 @@ void Window::startRun() {
     } 
     else {
         // Clean up the failed process
-        m_runStderr->appendPlainText(process->errorString());
+        m_runOutput->appendPlainText(process->errorString());
         m_runStatus->setText("ERROR");
         m_runStatus->setStyleSheet(ERROR_STYLE_SHEET);
         removeMouseFromMaze();
@@ -960,27 +905,22 @@ void Window::dispatchCommand(QString command) {
     ) {
         QStringList tokens = command.split(" ", QString::SkipEmptyParts);
         if (tokens.size() != 4) {
-            printInvalidCommand(command);
             return;
         }
         if (!(tokens.at(0) == "setWall" || tokens.at(0) == "clearWall")) {
-            printInvalidCommand(command);
             return;
         }
         bool ok = true;
         int x = tokens.at(1).toInt(&ok);
         int y = tokens.at(2).toInt(&ok);
         if (!ok) {
-            printInvalidCommand(command);
             return;
         }
         if (tokens.at(3).size() != 1) {
-            printInvalidCommand(command);
             return;
         }
         QChar direction = tokens.at(3).at(0);
         if (!CHAR_TO_DIRECTION().contains(direction)) {
-            printInvalidCommand(command);
             return;
         }
         if (command.startsWith("setWall")) {
@@ -996,27 +936,22 @@ void Window::dispatchCommand(QString command) {
     else if (command.startsWith("setColor")) {
         QStringList tokens = command.split(" ", QString::SkipEmptyParts);
         if (tokens.size() != 4) {
-            printInvalidCommand(command);
             return;
         }
         if (tokens.at(0) != "setColor") {
-            printInvalidCommand(command);
             return;
         }
         bool ok = true;
         int x = tokens.at(1).toInt(&ok);
         int y = tokens.at(2).toInt(&ok);
         if (!ok) {
-            printInvalidCommand(command);
             return;
         }
         if (tokens.at(3).size() != 1) {
-            printInvalidCommand(command);
             return;
         }
         QChar color = tokens.at(3).at(0);
         if (!CHAR_TO_COLOR().contains(color)) {
-            printInvalidCommand(command);
             return;
         }
         setColor(x, y, color);
@@ -1024,18 +959,15 @@ void Window::dispatchCommand(QString command) {
     else if (command.startsWith("clearColor")) {
         QStringList tokens = command.split(" ", QString::SkipEmptyParts);
         if (tokens.size() != 3) {
-            printInvalidCommand(command);
             return;
         }
         if (tokens.at(0) != "clearColor") {
-            printInvalidCommand(command);
             return;
         }
         bool ok = true;
         int x = tokens.at(1).toInt(&ok);
         int y = tokens.at(2).toInt(&ok);
         if (!ok) {
-            printInvalidCommand(command);
             return;
         }
         clearColor(x, y);
@@ -1043,11 +975,9 @@ void Window::dispatchCommand(QString command) {
     else if (command.startsWith("clearAllColor")) {
         QStringList tokens = command.split(" ", QString::SkipEmptyParts);
         if (tokens.size() != 1) {
-            printInvalidCommand(command);
             return;
         }
         if (tokens.at(0) != "clearAllColor") {
-            printInvalidCommand(command);
             return;
         }
         clearAllColor();
@@ -1059,7 +989,6 @@ void Window::dispatchCommand(QString command) {
         int thirdSpace = command.indexOf(" ", secondSpace + 1);
         QString function = command.left(firstSpace);
         if (function != "setText") {
-            printInvalidCommand(command);
             return;
         }
         QString xString = command.mid(firstSpace + 1, secondSpace - firstSpace);
@@ -1068,7 +997,6 @@ void Window::dispatchCommand(QString command) {
         int x = xString.toInt(&ok);
         int y = yString.toInt(&ok);
         if (!ok) {
-            printInvalidCommand(command);
             return;
         }
         QString text = command.mid(thirdSpace + 1);
@@ -1077,18 +1005,15 @@ void Window::dispatchCommand(QString command) {
     else if (command.startsWith("clearText")) {
         QStringList tokens = command.split(" ", QString::SkipEmptyParts);
         if (tokens.size() != 3) {
-            printInvalidCommand(command);
             return;
         }
         if (tokens.at(0) != "clearText") {
-            printInvalidCommand(command);
             return;
         }
         bool ok = true;
         int x = tokens.at(1).toInt(&ok);
         int y = tokens.at(2).toInt(&ok);
         if (!ok) {
-            printInvalidCommand(command);
             return;
         }
         clearText(x, y);
@@ -1096,11 +1021,9 @@ void Window::dispatchCommand(QString command) {
     else if (command.startsWith("clearAllText")) {
         QStringList tokens = command.split(" ", QString::SkipEmptyParts);
         if (tokens.size() != 1) {
-            printInvalidCommand(command);
             return;
         }
         if (tokens.at(0) != "clearAllText") {
-            printInvalidCommand(command);
             return;
         }
         clearAllText();
@@ -1118,7 +1041,6 @@ void Window::dispatchCommand(QString command) {
 QString Window::executeCommand(QString command) {
     QStringList tokens = command.split(" ", QString::SkipEmptyParts);
     if (tokens.size() != 1) {
-        printInvalidCommand(command);
         return INVALID;
     }
     QString function = tokens.at(0);
@@ -1157,13 +1079,8 @@ QString Window::executeCommand(QString command) {
         return ACK;
     }
     else {
-        printInvalidCommand(command);
         return INVALID;
     }
-}
-
-void Window::printInvalidCommand(QString command) {
-    m_runCommunication->appendPlainText("[INVALID] " + command);
 }
 
 void Window::processQueuedCommands() {
