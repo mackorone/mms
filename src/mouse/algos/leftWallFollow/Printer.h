@@ -16,13 +16,13 @@
 #define HAS_4TH_ARG(...) GET_6TH_ELEMENT(__VA_ARGS__, true, false, false, false, false)
 
 #define PRINT_FNAME(FNAME, ...) {\
-    std::cerr << FNAME;\
+    std::cout << FNAME;\
 };
 
 #define PRINT_ARG(HAS_FUNC, GET_FUNC, ...) {\
     if (HAS_FUNC(__VA_ARGS__)) {\
-        std::cerr << " ";\
-        std::cerr << GET_FUNC(__VA_ARGS__, "", "", "", "");\
+        std::cout << " ";\
+        std::cout << GET_FUNC(__VA_ARGS__, "", "", "", "");\
     }\
 }
 
@@ -32,5 +32,5 @@
     PRINT_ARG(HAS_2ND_ARG, GET_2ND_ARG, __VA_ARGS__);\
     PRINT_ARG(HAS_3RD_ARG, GET_3RD_ARG, __VA_ARGS__);\
     PRINT_ARG(HAS_4TH_ARG, GET_4TH_ARG, __VA_ARGS__);\
-    std::cerr << std::endl;\
+    std::cout << std::endl;\
 }

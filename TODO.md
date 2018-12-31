@@ -1,17 +1,23 @@
 Release
 =======
-- Clean up mouse algo template
-    - Add Python bindings
-- Publish installation and usage guides
-    - Update the wiki
-    - Make some video tutorials
-    - Page for common error message for failed commands
+- Buffer algorithm stderr logs
+- Add text widget for run communication
+- Test on Windows
+- Test on Mac
+- Publish simulator installation guides
+- Build static binaries
+- Update the wiki
+- Make some video tutorials
+- Wiki page for common error message for failed commands
+- Post on HackerNews
+- Advertise on Facebook
+- Reach out to schools
+- Reach our to Micromouse sites
 
 Wishlist
 ========
 - Add a "new algo" wizard to make it easy to bootstap a new algo
     - Auto-populate build and run commands
-- Run "communication" tab (sim input and responses)
 - FPS optimizations
     - Use one buffer for static attributes, one for dynamic
         - Static: tile xy-coords, tile corner color, texture v-coords
@@ -30,6 +36,9 @@ Cleanup
 - Run and build command should be lists of strings, not single string
 - Add unit tests
 - Lint the codebase
+- Rather than showing a warning message box if build and run commands are
+  empty, just disable the buttons if they're empty (may also have to validate
+  that directory is nonempty within the config diaglog)
 - Remove superfluous include statements
 - Move mouse-related state from window class into mouse class 
 - Look into using vsync so the graphics don't tear

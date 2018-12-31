@@ -73,8 +73,12 @@ Window::Window(QWidget *parent) :
 
     // Algo output
     m_mouseAlgoOutputTabWidget(new QTabWidget()),
+    m_buildOutputHolder(new QWidget()),
+    m_runOutputHolder(new QWidget()),
     m_buildOutput(new QPlainTextEdit()),
-    m_runOutput(new QPlainTextEdit()),
+    m_runStderr(new QPlainTextEdit()),
+    m_runCommunication(new QPlainTextEdit()),
+    m_runCommunicationEnabled(new QCheckBox()),
 
     // Algo build
     m_buildButton(new QPushButton("Build")),
@@ -248,11 +252,46 @@ Window::Window(QWidget *parent) :
         &Window::onMouseAlgoImportButtonPressed
     );
 
-    // Add the build and run outputs to the panel
+    // Format the build output holder
+    QGridLayout* buildOutputHolderLayout = new QGridLayout();
+    buildOutputHolderLayout->setContentsMargins(6, 6, 6, 6);
+    m_buildOutputHolder->setLayout(buildOutputHolderLayout);
+    QLabel* buildOutputLabel = new QLabel("All Output (stdout/stderr)");
+    buildOutputLabel->setAlignment(Qt::AlignRight);
+    buildOutputHolderLayout->addWidget(buildOutputLabel, 0, 0, 1, 1);
+    buildOutputHolderLayout->addWidget(m_buildOutput, 1, 0, 1, 1);
+
+    // Format the run output holder
+    connect(
+        m_runCommunicationEnabled,
+        &QCheckBox::stateChanged,
+        this,
+        &Window::onRunCommunicationEnabledStateChange
+    );
+    m_runCommunicationEnabled->setChecked(true);
+    m_runCommunicationEnabled->setChecked(false);
+    QGridLayout* runOutputHolderLayout = new QGridLayout();
+    runOutputHolderLayout->setContentsMargins(6, 6, 6, 6);
+    m_runOutputHolder->setLayout(runOutputHolderLayout);
+    QLabel* runLogsLabel = new QLabel("Logs (stderr)");
+    m_runCommunicationEnabled->setText("Commands (stdout)");
+    runLogsLabel->setAlignment(Qt::AlignRight);
+    // m_runCommunicationEnabled->setAlignment(Qt::AlignRight);
+    m_runCommunicationEnabled->setLayoutDirection(Qt::RightToLeft);
+    runOutputHolderLayout->addWidget(runLogsLabel, 0, 0, 1, 1);
+    runOutputHolderLayout->addWidget(m_runCommunicationEnabled, 0, 1, 1, 1);
+    runOutputHolderLayout->addWidget(m_runStderr, 1, 0, 1, 1);
+    runOutputHolderLayout->addWidget(m_runCommunication, 1, 1, 1, 1);
+
+    // Add the build and run outputs to the panel, format the text edits
     panelLayout->addWidget(m_mouseAlgoOutputTabWidget);
-    m_mouseAlgoOutputTabWidget->addTab(m_buildOutput, "Build Output");
-    m_mouseAlgoOutputTabWidget->addTab(m_runOutput, "Run Output");
-    for (QPlainTextEdit* output : {m_buildOutput, m_runOutput}) {
+    m_mouseAlgoOutputTabWidget->addTab(m_buildOutputHolder, "Build Output");
+    m_mouseAlgoOutputTabWidget->addTab(m_runOutputHolder, "Run Output");
+    for (QPlainTextEdit* output : {
+        m_buildOutput,
+        m_runStderr, 
+        m_runCommunication
+    }) {
         output->setReadOnly(true);
         output->setLineWrapMode(QPlainTextEdit::NoWrap);
         QFont font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
@@ -419,7 +458,8 @@ void Window::onMouseAlgoComboBoxChanged(QString name) {
     m_buildOutput->clear();
     m_runStatus->setText("");
     m_runStatus->setStyleSheet("");
-    m_runOutput->clear();
+    m_runStderr->clear();
+    m_runCommunication->clear();
     SettingsMisc::setRecentMouseAlgo(name);
 }
 
@@ -494,6 +534,17 @@ void Window::refreshMouseAlgoComboBox(QString selected) {
     m_mouseAlgoEditButton->setEnabled(isNonempty);
     m_buildButton->setEnabled(isNonempty);
     m_runButton->setEnabled(isNonempty);
+}
+
+void Window::onRunCommunicationEnabledStateChange(int state) {
+    if (state == Qt::Checked) {
+        m_runCommunication->setStyleSheet("");
+    }
+    else {
+        m_runCommunication->setStyleSheet(
+            "QPlainTextEdit { background: rgb(216, 216, 216); }"
+        );
+    }
 }
 
 void Window::cancelProcess(QProcess* process, QLabel* status) {
@@ -574,7 +625,7 @@ void Window::startBuild() {
 
     // Clear the ouput and bring it to the front
     m_buildOutput->clear();
-    m_mouseAlgoOutputTabWidget->setCurrentWidget(m_buildOutput);
+    m_mouseAlgoOutputTabWidget->setCurrentWidget(m_buildOutputHolder);
 
     // Start the build process
     if (ProcessUtilities::start(buildCommand, directory, process)) {
@@ -690,22 +741,25 @@ void Window::startRun() {
     // Instantiate a new process
     QProcess* process = new QProcess();
 
-    // Print stdout
+    // Process commands from stdout
     connect(process, &QProcess::readyReadStandardOutput, this, [=](){
         QString output = process->readAllStandardOutput();
+        QStringList commands = processText(output);
+        for (QString command : commands) {
+            if (m_runCommunicationEnabled->isChecked()) {
+                m_runCommunication->appendPlainText(command);
+            }
+            dispatchCommand(command);
+        }
+    });
+
+    // Print stderr
+    connect(process, &QProcess::readyReadStandardError, this, [=](){
+        QString output = process->readAllStandardError();
         if (output.endsWith("\n")) {
             output.truncate(output.size() - 1);
         }
-        m_runOutput->appendPlainText(output);
-    });
-
-    // Process commands from stderr
-    connect(process, &QProcess::readyReadStandardError, this, [=](){
-        QString output = process->readAllStandardError();
-        QStringList commands = processText(output);
-        for (QString command : commands) {
-            dispatchCommand(command);
-        }
+        m_runStderr->appendPlainText(output);
     });
 
     // Clean up on exit
@@ -719,8 +773,9 @@ void Window::startRun() {
     );
 
     // Clear the ouput and bring it to the front
-    m_runOutput->clear();
-    m_mouseAlgoOutputTabWidget->setCurrentWidget(m_runOutput);
+    m_runStderr->clear();
+    m_runCommunication->clear();
+    m_mouseAlgoOutputTabWidget->setCurrentWidget(m_runOutputHolder);
 
     // Start the run process
     if (ProcessUtilities::start(runCommand, directory, process)) {
@@ -753,7 +808,7 @@ void Window::startRun() {
     } 
     else {
         // Clean up the failed process
-        m_runOutput->appendPlainText(process->errorString());
+        m_runStderr->appendPlainText(process->errorString());
         m_runStatus->setText("ERROR");
         m_runStatus->setStyleSheet(ERROR_STYLE_SHEET);
         removeMouseFromMaze();
@@ -1108,7 +1163,7 @@ QString Window::executeCommand(QString command) {
 }
 
 void Window::printInvalidCommand(QString command) {
-    m_runOutput->appendPlainText("[INVALID] " + command);
+    m_runCommunication->appendPlainText("[INVALID] " + command);
 }
 
 void Window::processQueuedCommands() {

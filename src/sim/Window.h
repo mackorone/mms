@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QChar>
+#include <QCheckBox>
 #include <QCloseEvent>
 #include <QComboBox>
 #include <QLabel>
@@ -85,9 +86,14 @@ private:
     static const QString ERROR_STYLE_SHEET;
 
     QTabWidget* m_mouseAlgoOutputTabWidget;
+    QWidget* m_buildOutputHolder;
+    QWidget* m_runOutputHolder;
     QPlainTextEdit* m_buildOutput;
-    QPlainTextEdit* m_runOutput;
+    QPlainTextEdit* m_runStderr;
+    QPlainTextEdit* m_runCommunication;
+    QCheckBox* m_runCommunicationEnabled;
 
+    void onRunCommunicationEnabledStateChange(int state);
     void cancelProcess(QProcess* process, QLabel* status);
     void cancelAllProcesses();
 

@@ -20,7 +20,7 @@ void Algo::solve(Interface* interface) {
         Maze::WIDTH <= 16 &&
         Maze::HEIGHT <= 16
     )) {
-        std::cout << "ERROR - Maze::WIDTH and Maze::HEIGHT must be in [1, 16]"
+        std::cerr << "ERROR - Maze::WIDTH and Maze::HEIGHT must be in [1, 16]"
                   << std::endl;
         return;
     }
@@ -30,7 +30,7 @@ void Algo::solve(Interface* interface) {
         Maze::WIDTH == m_mouse->mazeWidth() &&
         Maze::HEIGHT == m_mouse->mazeHeight()
     )) {
-        std::cout << "WARNING - configured for "
+        std::cerr << "WARNING - configured for "
                   << static_cast<unsigned int>(Maze::WIDTH) << " x "
                   << static_cast<unsigned int>(Maze::HEIGHT)
                   << " maze, but actual maze size is "
@@ -80,7 +80,7 @@ void Algo::solve(Interface* interface) {
 
         // If the maze is unsolvable, give up
         if (m_mode == Mode::GIVEUP) {
-            std::cout << "Unsolvable maze detected. I'm giving up..."
+            std::cerr << "Unsolvable maze detected. I'm giving up..."
                       << std::endl;
             break;
         }
@@ -161,7 +161,7 @@ void Algo::step() {
 
     // Update the mode if we've reached the destination
     if (m_mode == Mode::CENTER && inCenter(m_x, m_y)) {
-        std::cout << "Success!" << std::endl;
+        std::cerr << "Success!" << std::endl;
         m_mode = Mode::ORIGIN;
     }
     if (m_mode == Mode::ORIGIN && inOrigin(m_x, m_y)) {
@@ -544,7 +544,7 @@ void Algo::turnAroundUpdateState() {
 void Algo::moveForwardUpdateState() {
     m_x += (m_d == Direction::EAST  ? 1 : (m_d == Direction::WEST  ? -1 : 0));
     m_y += (m_d == Direction::NORTH ? 1 : (m_d == Direction::SOUTH ? -1 : 0));
-    std::cout << "Moving to ("
+    std::cerr << "Moving to ("
               << static_cast<unsigned int>(m_x) << ", "
               << static_cast<unsigned int>(m_y) << ")"
               << std::endl;

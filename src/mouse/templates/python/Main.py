@@ -11,7 +11,7 @@ class MouseCrashedError(Exception):
     pass
 
 def command(*args, return_type=None):
-    print(*args, file=sys.stderr)
+    print(*args)
     if return_type:
         response = input()
         if return_type == bool:
