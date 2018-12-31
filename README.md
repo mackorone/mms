@@ -138,7 +138,7 @@ support as the current version.
 | Name                                                          | Author            | Use Case              |
 |---------------------------------------------------------------|-------------------|-----------------------|
 | [polypartition](https://github.com/ivanfratric/polypartition) | Ivan Fratric      | Polygon Triangulation |
-| [qt](https://www.qt.io/)                                      | The Qt Company    | Framework and GUI     |
+| [Qt](https://www.qt.io/)                                      | The Qt Company    | Framework and GUI     |
 
 ## Authors
 
