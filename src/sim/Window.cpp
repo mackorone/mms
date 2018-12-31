@@ -12,6 +12,7 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
+#include <QPixmap>
 #include <QShortcut>
 #include <QSplitter>
 #include <QTabWidget>
@@ -174,7 +175,15 @@ Window::Window(QWidget *parent) :
     ); 
 
     // Add mouse algo speed
-    controlsLayout->addWidget(m_speedSlider, 1, 2, 1, 2);
+    QLabel* turtle = new QLabel();
+    QLabel* rabbit = new QLabel();
+    turtle->setPixmap(QPixmap(":/resources/icons/turtle.png"));
+    rabbit->setPixmap(QPixmap(":/resources/icons/rabbit.png"));
+    QHBoxLayout* speedLayout = new QHBoxLayout();
+    speedLayout->addWidget(turtle);
+    speedLayout->addWidget(m_speedSlider);
+    speedLayout->addWidget(rabbit);
+    controlsLayout->addLayout(speedLayout, 1, 2, 1, 2);
     m_speedSlider->setRange(0, SPEED_SLIDER_MAX);
     m_speedSlider->setValue(SPEED_SLIDER_DEFAULT);
 
@@ -517,7 +526,7 @@ void Window::startBuild() {
         QMessageBox::warning(
             this,
             QString("Empty Directory"),
-            QString("Directory for algorithm \"%1\" is empty.").arg(
+            QString("Directory for \"%1\" is empty.").arg(
                 m_mouseAlgoComboBox->currentText()
             )
         );
@@ -527,7 +536,7 @@ void Window::startBuild() {
         QMessageBox::warning(
             this,
             QString("Empty Build Command"),
-            QString("Build command for algorithm \"%1\" is empty.").arg(
+            QString("Build command for \"%1\" is empty.").arg(
                 m_mouseAlgoComboBox->currentText()
             )
         );
@@ -652,7 +661,7 @@ void Window::startRun() {
         QMessageBox::warning(
             this,
             "Empty Directory",
-            QString("Directory for algorithm \"%1\" is empty.").arg(
+            QString("Directory for \"%1\" is empty.").arg(
                 name
             )
         );
@@ -662,20 +671,13 @@ void Window::startRun() {
         QMessageBox::warning(
             this,
             "Empty Run Command",
-            QString("Run command for algorithm \"%1\" is empty.").arg(
+            QString("Run command for \"%1\" is empty.").arg(
                 name
             )
         );
         return;
     }
-    if (m_maze == nullptr) {
-        QMessageBox::warning(
-            this,
-            "No Maze",
-            "You must load a maze before running a mouse algorithm."
-        );
-        return;
-    }
+    ASSERT_FA(m_maze == nullptr);
 
     // Remove the old mouse, add a new mouse
     removeMouseFromMaze();
@@ -774,6 +776,7 @@ void Window::onRunExit(int exitCode, QProcess::ExitStatus exitStatus) {
     // Only enabled while mouse is running
     m_pauseButton->setEnabled(false);
     m_resetButton->setEnabled(false);
+    m_resetButton->setText("Reset");
     m_wasReset = false;
 
     // Update the run button
@@ -850,14 +853,18 @@ void Window::onPauseButtonPressed() {
     m_isPaused = !m_isPaused;
     if (m_isPaused) {
         m_pauseButton->setText("Resume");
+        m_runStatus->setText("PAUSED");
     }
     else {
         m_pauseButton->setText("Pause");
+        m_runStatus->setText("RUNNING");
         processQueuedCommands();
     }
 }
 
 void Window::onResetButtonPressed() {
+    m_resetButton->setEnabled(false);
+    m_resetButton->setText("Waiting");
     m_wasReset = true;
 }
 
@@ -1358,6 +1365,8 @@ void Window::ackReset() {
     m_movement = Movement::NONE;
     m_movementProgress = 0.0;
     m_movementStepSize = 0.0;
+    m_resetButton->setEnabled(true);
+    m_resetButton->setText("Reset");
     m_wasReset = false;
 }
 

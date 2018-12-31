@@ -8,6 +8,8 @@
     <file>resources/icons/edit.png</file>
     <file>resources/icons/open.png</file>
     <file>resources/icons/plus.png</file>
+    <file>resources/icons/rabbit.png</file>
+    <file>resources/icons/turtle.png</file>
     <file>resources/mazes/blank.num</file>
     <file>resources/mazes/example1.num</file>
     <file>resources/mazes/example2.num</file>
