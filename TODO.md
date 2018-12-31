@@ -1,14 +1,29 @@
 Release
 =======
 - Clean up mouse algo template
-    - setWall and clearWall
     - Add Python bindings
 - Publish installation and usage guides
     - Update the wiki
     - Make some video tutorials
     - Page for common error message for failed commands
-- Panel is too large, set max size for maze file combo box
-- Reset button causes mack algo to fail ... why?
+
+Wishlist
+========
+- Add a "new algo" wizard to make it easy to bootstap a new algo
+    - Auto-populate build and run commands
+- Run "communication" tab (sim input and responses)
+- FPS optimizations
+    - Use one buffer for static attributes, one for dynamic
+        - Static: tile xy-coords, tile corner color, texture v-coords
+        - Dynamic: tile base color, tile wall alpha, texture xyu-coords
+    - Ensure data in VBOs is aligned properly
+    - Memmap for better attribute streaming
+    - Use unsigned char for texture v-coord
+    - Use index buffer objects
+- Make a system for quickly checking stats on many mazes
+    - solved or not
+    - how many steps
+    - ave # of steps
 
 Cleanup
 =======
@@ -53,21 +68,3 @@ Cleanup
 - Rename TriangleTexture and VertexTexture
 - Position vs. location vs. coordinate, direction vs. rotation vs. angle
 - Shrink icon file size
-
-Wishlist
-========
-- Add a "new algo" wizard to make it easy to bootstap a new algo
-    - Auto-populate build and run commands
-- Run "communication" tab (sim input and responses)
-- FPS optimizations
-    - Use one buffer for static attributes, one for dynamic
-        - Static: tile xy-coords, tile corner color, texture v-coords
-        - Dynamic: tile base color, tile wall alpha, texture xyu-coords
-    - Ensure data in VBOs is aligned properly
-    - Memmap for better attribute streaming
-    - Use unsigned char for texture v-coord
-    - Use index buffer objects
-- Make a system for quickly checking stats on many mazes
-    - solved or not
-    - how many steps
-    - ave # of steps

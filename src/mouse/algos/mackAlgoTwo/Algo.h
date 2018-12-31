@@ -5,7 +5,6 @@
 #include "Heap.h"
 #include "Interface.h"
 #include "Maze.h"
-#include "Options.h"
 
 class Algo {
 

@@ -6,41 +6,29 @@ class Interface {
 
 public:
 
-    // Maze Dimensions
-    int getMazeWidth();
-    int getMazeHeight();
+    int mazeWidth();
+    int mazeHeight();
 
-    // Wall existence
-    bool isWallFront();
-    bool isWallRight();
-    bool isWallLeft();
+    bool wallFront();
+    bool wallRight();
+    bool wallLeft();
 
-    // Movement
     void moveForward();
     void turnRight();
     void turnLeft();
-    void reset();
 
-    // Tile color
-    void setTileColor(int x, int y, char color);
-    void clearTileColor(int x, int y);
-    void clearAllTileColor();
+    void setWall(int x, int y, char direction);
+    void clearWall(int x, int y, char direction);
 
-    // Tile text
-    void setTileText(int x, int y, const std::string& text);
-    void clearTileText(int x, int y);
-    void clearAllTileText();
+    void setColor(int x, int y, char color);
+    void clearColor(int x, int y);
+    void clearAllColor();
 
-    // Tile walls
-    void declareWall(int x, int y, char direction, bool wallExists);
-    void undeclareWall(int x, int y, char direction);
+    void setText(int x, int y, std::string text);
+    void clearText(int x, int y);
+    void clearAllText();
 
-    // Input buttons
-    bool wasInputButtonPressed(int inputButton);
-    void acknowledgeInputButtonPressed(int inputButton);
-
-private:
-
-    std::string boolToString(bool value);
+    bool wasReset();
+    void ackReset();
 
 };

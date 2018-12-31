@@ -48,9 +48,9 @@ private:
     QOpenGLDebugLogger m_openGLLogger;
     void initOpenGLLogger();
 
-    // TODO: MACK
-    // m_maze shouldn't be necessary
-    // MazeView should be MazeGraphic
+    // TODO: upforgrabs
+    // m_maze shouldn't be necessary,
+    // MazeView should actually be MazeGraphic
 
     // No ownership here - only pointers
     const Maze* m_maze;

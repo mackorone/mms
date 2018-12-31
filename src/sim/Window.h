@@ -47,7 +47,10 @@ public:
 
 private:
 
+    // ----- Graphics -----
+
     Map* m_map;
+    void scheduleMapUpdate();
 
     // ----- Maze -----
 

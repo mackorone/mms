@@ -188,6 +188,7 @@ Window::Window(QWidget *parent) :
     mouseLabel->setSizePolicy(policy);
 
     // Add maze file combo box
+    m_mazeFileComboBox->setMinimumContentsLength(1);
     configLayout->addWidget(m_mazeFileComboBox, 0, 1, 1, 2);
     connect(
         m_mazeFileComboBox,
@@ -197,6 +198,7 @@ Window::Window(QWidget *parent) :
     );
 
     // Add mouse algo combo box
+    m_mouseAlgoComboBox->setMinimumContentsLength(1);
     configLayout->addWidget(m_mouseAlgoComboBox, 1, 1, 1, 2);
     connect(
         m_mouseAlgoComboBox,
@@ -249,10 +251,11 @@ Window::Window(QWidget *parent) :
         output->document()->setDefaultFont(font);
     }
 
-    //  ----- Create the mouse algos tab
-
-    // Add the mouse algos
-    refreshMouseAlgoComboBox(SettingsMisc::getRecentMouseAlgo());
+    // Resize the window and make the map square
+    int windowWidth = SettingsMisc::getRecentWindowWidth();
+    int windowHeight = SettingsMisc::getRecentWindowHeight();
+    resize(windowWidth, windowHeight);
+    splitter->setSizes({windowHeight, windowWidth - windowHeight});
 
     // Remove maze files that no longer exist
     for (const auto& path : SettingsMazeFiles::getAllPaths()) {
@@ -271,28 +274,24 @@ Window::Window(QWidget *parent) :
     refreshMazeFileComboBox(path);
     updateMazeAndPath(maze, path);
 
-    // TODO: MACK - remember splitter sizes
-    splitter->setSizes({
-        SettingsMisc::getRecentWindowHeight(),
-        SettingsMisc::getRecentWindowWidth() - SettingsMisc::getRecentWindowHeight()
-    });
+    // Add the mouse algos
+    refreshMouseAlgoComboBox(SettingsMisc::getRecentMouseAlgo());
 
-    // Resize the window
-    resize(
-        SettingsMisc::getRecentWindowWidth(),
-        SettingsMisc::getRecentWindowHeight()
+    // Configure command queue timer
+    m_commandQueueTimer->setSingleShot(true);
+    connect(
+        m_commandQueueTimer,
+        &QTimer::timeout,
+        this,
+        &Window::processQueuedCommands
     );
 
     // Start the graphics loop
-    // TODO: upforgrabs
-    // Make fps configurable
     double secondsPerFrame = 1.0 / 60;
     QTimer* mapTimer = new QTimer();
     connect(
         mapTimer, &QTimer::timeout,
         this, [=](){
-            // TODO: MACK - this makes the graphics look choppy
-            // - fix this to only run when dialog is open
             // Hack to prevent file dialog from locking up...
             static double then = SimUtilities::getHighResTimestamp();
             double now = SimUtilities::getHighResTimestamp();
@@ -304,12 +303,6 @@ Window::Window(QWidget *parent) :
         }
     );
     mapTimer->start(secondsPerFrame * 1000);
-
-    m_commandQueueTimer->setSingleShot(true);
-    connect(
-        m_commandQueueTimer, &QTimer::timeout,
-        this, &Window::processQueuedCommands
-    );
 }
 
 void Window::resizeEvent(QResizeEvent* event) {
@@ -865,28 +858,7 @@ void Window::onPauseButtonPressed() {
 }
 
 void Window::onResetButtonPressed() {
-
-    // Stop processing queued commands
-    ASSERT_FA(m_runProcess == nullptr);
-    m_commandQueueTimer->stop();
-    m_commandQueue.clear();
-
-    // If the mouse was moving, pretend that the movement
-    // finished so that the algorithm doesn't block forever
-    if (isMoving()) {
-        m_runProcess->write((ACK + "\n").toStdString().c_str());
-    }
-
-    // Reset the mouse
-    m_mouse->reset();
     m_wasReset = true;
-
-    // Reset movement state
-    m_startingLocation = {0, 0};
-    m_startingDirection = Direction::NORTH;
-    m_movement = Movement::NONE;
-    m_movementProgress = 0.0;
-    m_movementStepSize = 0.0;
 }
 
 QStringList Window::processText(QString text) {
@@ -1352,27 +1324,10 @@ void Window::setText(int x, int y, QString text) {
     if (!isWithinMaze(x, y)) {
         return;
     }
-    // TODO: MACK - clean this up
-    QSet<QChar> chars;
-    for (int i = 0; i < FontImage::characters().size(); i += 1) {
-        chars.insert(FontImage::characters().at(i));
-    }
-    int size = text.size();
-    // TODO: MACK - shouldn't be hardcoded here
-    if (size > 10) {
-        size = 10;
-    }
-    for (int i = 0; i < size; i += 1) {
-        if (!chars.contains(text.at(i))) {
-            text.replace(i, 1, "?");
-        }
-    }
-    /*
     static QRegExp regex = QRegExp(
         QString("[^") + FontImage::characters() + QString("]")
     );
     text.replace(regex, "?");
-    */
     m_view->getMazeGraphic()->setText(x, y, text);
     m_tilesWithText.insert({x, y});
 }
@@ -1397,6 +1352,12 @@ bool Window::wasReset() {
 }
 
 void Window::ackReset() {
+    m_mouse->reset();
+    m_startingLocation = {0, 0};
+    m_startingDirection = Direction::NORTH;
+    m_movement = Movement::NONE;
+    m_movementProgress = 0.0;
+    m_movementStepSize = 0.0;
     m_wasReset = false;
 }
 

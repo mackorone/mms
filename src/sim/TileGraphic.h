@@ -27,7 +27,8 @@ public:
     void setText(const QString& text);
     void clearText();
 
-    // TODO: MACK - rename these to "reload" or something
+    // TODO: upforgrabs
+    // Rename these to "reload" or something
     void drawPolygons() const;
     void drawTextures();
 
@@ -43,8 +44,8 @@ private:
     QString m_text;
 
     // Helper functions
-    // TODO: MACK - do I need these anymore?
-    // TODO: MACK - rename these to "refresh" or something
+    // TODO: upforgrabs
+    // Rename these to "refresh" or something
     void updateWall(Direction direction) const;
     void updateColor() const;
     void updateText() const;

@@ -106,10 +106,11 @@ void Map::initializeGL() {
 
 void Map::paintGL() {
 
-    // TODO: MACK - optimize this
-
-    QElapsedTimer timer;
-    timer.start();
+    // TODO: upforgrabs
+    // Optimize this code
+    //
+    // QElapsedTimer timer;
+    // timer.start();
 
     // If the view hasn't been set yet, just draw black
     if (m_view == nullptr) {
@@ -124,9 +125,6 @@ void Map::paintGL() {
 
     // Re-populate both vertex buffer objects
     repopulateVertexBufferObjects(mouseBuffer);
-
-    // Determine the starting index of the mouse
-    int mouseTrianglesStartingIndex = m_view->getGraphicCpuBuffer()->size();
 
     // Draw the tiles
     drawMap(
@@ -156,7 +154,8 @@ void Map::paintGL() {
 
     // TODO: upforgrabs
     // Optimize this code
-    // qDebug() << "PAINT NS:" << timer.nsecsElapsed();
+    //
+    // qDebug() << timer.nsecsElapsed();
 }
 
 void Map::resizeGL(int width, int height) {
@@ -342,7 +341,8 @@ void Map::drawMap(
         program->setUniformValue("texture", 0);
     }
     
-    // TODO: MACK - this should be QTransform, no?
+    // TODO: upforgrabs
+    // This should be QTransform
     QMatrix4x4 transformationMatrix = TransformationMatrix::get(
         m_maze->getWidth(),
         m_maze->getHeight(),

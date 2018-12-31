@@ -49,8 +49,8 @@ void MazeView::initText(int numRows, int numCols) {
         {numRows, numCols}
     );
         
-    // TODO: MACK - this is kind of confusing
-    // - I should insert and then update (get rid of draw method)
+    // TODO: upforgrabs
+    // The naming ("draw") is kind of confusing
     m_textureCpuBuffer.clear();
     m_mazeGraphic.drawTextures();
 }

@@ -6,7 +6,7 @@
 #define READ()\
 std::string input;\
 std::cin >> input;\
-if (input.at(0) == '!') {\
+if (input == "crash" || input == "invalid") {\
     throw;\
 }
 

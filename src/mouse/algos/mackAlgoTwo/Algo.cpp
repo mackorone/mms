@@ -7,14 +7,6 @@
 #include "History.h"
 #include "Maze.h"
 #include "Mode.h"
-#include "Options.h"
-
-#if (!SIMULATOR) 
-extern char movesBuffer[256];
-extern byte moveBufferIndex;
-extern volatile bool movesReady;
-extern volatile bool movesDoneAndWallsSet;
-#endif
 
 void Algo::solve(Interface* interface) {
 
@@ -28,26 +20,22 @@ void Algo::solve(Interface* interface) {
         Maze::WIDTH <= 16 &&
         Maze::HEIGHT <= 16
     )) {
-#if (SIMULATOR)
         std::cout << "ERROR - Maze::WIDTH and Maze::HEIGHT must be in [1, 16]"
                   << std::endl;
-#endif
         return;
     }
 
     // Ensure that the maze size is as expected
     if (!(
-        Maze::WIDTH == m_mouse->getMazeWidth() &&
-        Maze::HEIGHT == m_mouse->getMazeHeight()
+        Maze::WIDTH == m_mouse->mazeWidth() &&
+        Maze::HEIGHT == m_mouse->mazeHeight()
     )) {
-#if (SIMULATOR)
         std::cout << "WARNING - configured for "
                   << static_cast<unsigned int>(Maze::WIDTH) << " x "
                   << static_cast<unsigned int>(Maze::HEIGHT)
                   << " maze, but actual maze size is "
-                  << m_mouse->getMazeWidth() << " x "
-                  << m_mouse->getMazeHeight() << std::endl;
-#endif
+                  << m_mouse->mazeWidth() << " x "
+                  << m_mouse->mazeHeight() << std::endl;
     }
 
     // Initialize the (perimeter of the) maze
@@ -78,15 +66,9 @@ void Algo::solve(Interface* interface) {
     while (true) {
 
         // Clear all tile color, and color the center
-        m_mouse->clearAllTileColor();
-        m_mouse->setTileColor(0, 0, 'G');
+        m_mouse->clearAllColor();
+        m_mouse->setColor(0, 0, 'G');
         colorCenter('G');
-
-#if (!SIMULATOR)
-        while (!movesDoneAndWallsSet) {
-            // Wait for the walls to be ready
-        }
-#endif
 
         // If requested, reset the mouse state and undo cell wall info
         if (resetButtonPressed()) {
@@ -98,10 +80,8 @@ void Algo::solve(Interface* interface) {
 
         // If the maze is unsolvable, give up
         if (m_mode == Mode::GIVEUP) {
-#if (SIMULATOR)
             std::cout << "Unsolvable maze detected. I'm giving up..."
                       << std::endl;
-#endif
             break;
         }
     }
@@ -136,16 +116,6 @@ void Algo::reset() {
     // Acknowledge that the button was pressed
     acknowledgeResetButtonPressed();
 
-#if (!SIMULATOR)
-    delay(300);
-    while (!resetButtonPressed()) {
-        // Wait until the button is pressed again to
-        // signify that we're ready to start moving again
-    }
-    acknowledgeResetButtonPressed();
-    delay(300);
-#endif
-
     // Reset some state
     m_x = 0;
     m_y = 0;
@@ -159,7 +129,7 @@ void Algo::reset() {
         byte cell = History::cell(cellAndData);
         byte data = History::data(cellAndData);
         for (byte direction = 0; direction < 4; direction += 1) {
-            if (data >> direction + 4 & 1) {
+            if ((data >> (direction + 4)) & 1) {
                 unsetCellWall(cell, direction, true);
             }
         }
@@ -170,10 +140,6 @@ void Algo::step() {
 
     // Read the walls if unknown
     readWalls();
-
-#if (!SIMULATOR)
-    movesDoneAndWallsSet = false;
-#endif
 
     // Get the current cell
     byte current = Maze::getCell(m_x, m_y);
@@ -190,23 +156,12 @@ void Algo::step() {
     // Draw the path from the current position to the destination
     drawPath(start);
 
-#if (!SIMULATOR)
-    moveBufferIndex = 0;
-#endif
-
     // Move along the path as far as possible
     followPath(start);
 
-#if (!SIMULATOR)
-    movesBuffer[moveBufferIndex] = '\0';
-    movesReady = true;
-#endif
-
     // Update the mode if we've reached the destination
     if (m_mode == Mode::CENTER && inCenter(m_x, m_y)) {
-#if (SIMULATOR)
         std::cout << "Success!" << std::endl;
-#endif
         m_mode = Mode::ORIGIN;
     }
     if (m_mode == Mode::ORIGIN && inOrigin(m_x, m_y)) {
@@ -252,7 +207,7 @@ byte Algo::generatePath(byte start) {
             }
         }
         if (colorVisitedCells) {
-            m_mouse->setTileColor(Maze::getX(cell), Maze::getY(cell), 'Y');
+            m_mouse->setColor(Maze::getX(cell), Maze::getY(cell), 'Y');
         }
         if (cell == getClosestDestinationCell()) {
             Heap::clear();
@@ -268,7 +223,6 @@ byte Algo::generatePath(byte start) {
 }
 
 void Algo::drawPath(byte start) {
-#if (SIMULATOR)
     // This is probably a little two cutesy for it's own good. Oh well...
     byte current = start;
     for (byte i = 0; i < 2; i += 1) {
@@ -279,16 +233,15 @@ void Algo::drawPath(byte start) {
                 if (!Maze::isKnown(current, Maze::getNextDirection(current))) {
                     break;
                 }
-                m_mouse->setTileColor(Maze::getX(next), Maze::getY(next), 'V');
+                m_mouse->setColor(Maze::getX(next), Maze::getY(next), 'V');
             }
             // Draw the "intended" moves
             else {
-                m_mouse->setTileColor(Maze::getX(next), Maze::getY(next), 'B');
+                m_mouse->setColor(Maze::getX(next), Maze::getY(next), 'B');
             }
             current = next;
         }
     }
-#endif
 }
 
 void Algo::followPath(byte start) {
@@ -393,7 +346,7 @@ bool Algo::inOrigin(byte x, byte y) {
 void Algo::colorCenter(char color) {
     for (byte x = Maze::CLLX; x <= Maze::CURX; x += 1) {
         for (byte y = Maze::CLLY; y <= Maze::CURY; y += 1) {
-            m_mouse->setTileColor(x, y, color);
+            m_mouse->setColor(x, y, color);
         }
     }
 }
@@ -552,7 +505,7 @@ void Algo::readWalls() {
             setCellWall(Maze::getCell(m_x, m_y), direction, isWall);
 
             // Set the "learned" bit, as well as "walls" bit
-            data |= 1 << direction + 4;
+            data |= 1 << (direction + 4);
             if (isWall) {
                 data |= 1 << direction;
             }
@@ -566,11 +519,11 @@ void Algo::readWalls() {
 bool Algo::readWall(byte direction) {
     switch ((direction - m_d + 4) % 4) {
         case 0:
-            return m_mouse->isWallFront();
+            return m_mouse->wallFront();
         case 1:
-            return m_mouse->isWallRight();
+            return m_mouse->wallRight();
         case 3:
-            return m_mouse->isWallLeft();
+            return m_mouse->wallLeft();
     }
     // We should never get here
     ASSERT_TR(false);
@@ -591,76 +544,52 @@ void Algo::turnAroundUpdateState() {
 void Algo::moveForwardUpdateState() {
     m_x += (m_d == Direction::EAST  ? 1 : (m_d == Direction::WEST  ? -1 : 0));
     m_y += (m_d == Direction::NORTH ? 1 : (m_d == Direction::SOUTH ? -1 : 0));
-#if (SIMULATOR)
     std::cout << "Moving to ("
               << static_cast<unsigned int>(m_x) << ", "
               << static_cast<unsigned int>(m_y) << ")"
               << std::endl;
-#endif
 }
 
 void Algo::moveForward() {
     moveForwardUpdateState();
-#if (SIMULATOR)
     m_mouse->moveForward();
-#else
-    movesBuffer[moveBufferIndex] = 'f';
-    moveBufferIndex += 1;
-#endif
 }
 
 void Algo::leftAndForward() {
     turnLeftUpdateState();
     moveForwardUpdateState();
-#if (SIMULATOR)
     m_mouse->turnLeft();
     m_mouse->moveForward();
-#else
-    movesBuffer[moveBufferIndex] = 'l';
-    moveBufferIndex += 1;
-#endif
 }
 
 void Algo::rightAndForward() {
     turnRightUpdateState();
     moveForwardUpdateState();
-#if (SIMULATOR)
     m_mouse->turnRight();
     m_mouse->moveForward();
-#else
-    movesBuffer[moveBufferIndex] = 'r';
-    moveBufferIndex += 1;
-#endif
 }
 
 void Algo::aroundAndForward() {
     turnAroundUpdateState();
     moveForwardUpdateState();
-#if (SIMULATOR)
     m_mouse->turnLeft();
     m_mouse->turnLeft();
     m_mouse->moveForward();
-#else
-    movesBuffer[moveBufferIndex] = 'a';
-    moveBufferIndex += 1;
-    movesBuffer[moveBufferIndex] = 'f';
-    moveBufferIndex += 1;
-#endif
 }
 
 void Algo::setCellDistance(byte cell, twobyte distance) {
     Maze::setDistance(cell, distance);
-#if (SIMULATOR)
     std::ostringstream ss;
     ss << distance;
-    m_mouse->setTileText(Maze::getX(cell), Maze::getY(cell), ss.str());
-#endif
+    m_mouse->setText(Maze::getX(cell), Maze::getY(cell), ss.str());
 }
 
 void Algo::setCellWall(byte cell, byte direction, bool isWall, bool bothSides) {
     Maze::setWall(cell, direction, isWall);
     static char directionChars[] = {'n', 'e', 's', 'w'};
-    m_mouse->declareWall(Maze::getX(cell), Maze::getY(cell), directionChars[direction], isWall);
+    if (isWall) {
+        m_mouse->setWall(Maze::getX(cell), Maze::getY(cell), directionChars[direction]);
+    }
     if (bothSides && hasNeighboringCell(cell, direction)) {
         byte neighboringCell = getNeighboringCell(cell, direction);
         setCellWall(neighboringCell, getOppositeDirection(direction), isWall, false);
@@ -668,9 +597,9 @@ void Algo::setCellWall(byte cell, byte direction, bool isWall, bool bothSides) {
 }
 
 void Algo::unsetCellWall(byte cell, byte direction, bool bothSides) {
-    Maze::unsetWall(cell, direction);
+    Maze::clearWall(cell, direction);
     static char directionChars[] = {'n', 'e', 's', 'w'};
-    m_mouse->undeclareWall(Maze::getX(cell), Maze::getY(cell), directionChars[direction]);
+    m_mouse->clearWall(Maze::getX(cell), Maze::getY(cell), directionChars[direction]);
     if (bothSides && hasNeighboringCell(cell, direction)) {
         byte neighboringCell = getNeighboringCell(cell, direction);
         unsetCellWall(neighboringCell, getOppositeDirection(direction), false);

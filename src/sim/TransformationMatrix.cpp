@@ -42,7 +42,6 @@ QMatrix4x4 TransformationMatrix::get(
         0.0, 0.0, 0.0,                                  1.0,
     };
 
-    // TODO: MACK
     QPair<int, int> windowSize = {mapWidthPixels, mapHeightPixels};
     QPair<int, int> fullMapPosition = {5, 5};
     QPair<int, int> fullMapSize = {
@@ -86,8 +85,10 @@ QMatrix4x4 TransformationMatrix::get(
     
     // Step 3: Construct the translation matrix. Note that here we ensure that
     // the maze is centered within the map boundaries.
-    double pixelLowerLeftCornerX = fullMapPosition.first + 0.5 * (fullMapSize.first - pixelWidth);
-    double pixelLowerLeftCornerY = fullMapPosition.second + 0.5 * (fullMapSize.second - pixelHeight);
+    double pixelLowerLeftCornerX =
+        fullMapPosition.first + 0.5 * (fullMapSize.first - pixelWidth);
+    double pixelLowerLeftCornerY =
+        fullMapPosition.second + 0.5 * (fullMapSize.second - pixelHeight);
     QPair<double, double> openGlLowerLeftCorner =
         pixelToOpenGl({pixelLowerLeftCornerX, pixelLowerLeftCornerY}, windowSize);
     QVector<double> translationMatrix = {

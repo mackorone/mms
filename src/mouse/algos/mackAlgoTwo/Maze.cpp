@@ -27,12 +27,12 @@ void Maze::setWall(byte x, byte y, byte direction, bool isWall) {
     setWall(getCell(x, y), direction, isWall);
 }
 
-void Maze::unsetWall(byte x, byte y, byte direction) {
-    unsetWall(getCell(x, y), direction);
+void Maze::clearWall(byte x, byte y, byte direction) {
+    clearWall(getCell(x, y), direction);
 }
 
 bool Maze::isKnown(byte cell, byte direction) {
-    return (m_data[cell] >> direction + 4) & 1;
+    return (m_data[cell] >> (direction + 4)) & 1;
 }
 
 bool Maze::isWall(byte cell, byte direction) {
@@ -40,13 +40,13 @@ bool Maze::isWall(byte cell, byte direction) {
 }
 
 void Maze::setWall(byte cell, byte direction, bool isWall) {
-    m_data[cell] |= 1 << direction + 4;
+    m_data[cell] |= 1 << (direction + 4);
     m_data[cell] =
         (m_data[cell] & ~(1 << direction)) | (isWall ? 1 << direction : 0);
 }
 
-void Maze::unsetWall(byte cell, byte direction) {
-    m_data[cell] &= ~(1 << direction + 4);
+void Maze::clearWall(byte cell, byte direction) {
+    m_data[cell] &= ~(1 << (direction + 4));
     m_data[cell] &= ~(1 << direction);
 }
 

@@ -26,8 +26,8 @@ public:
     void setText(int x, int y, const QString& text);
     void clearText(int x, int y);
 
-    // TODO: MACK - rename these
-    // TODO: MACK - why is only one of these const?
+    // TODO: upforgrabs
+    // Why is only one of these const?
     void drawPolygons() const;
     void drawTextures();
 
