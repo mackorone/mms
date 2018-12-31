@@ -23,7 +23,6 @@ const QVector<Direction>& DIRECTIONS();
 
 const QMap<Direction, Direction>& DIRECTION_ROTATE_LEFT();
 const QMap<Direction, Direction>& DIRECTION_ROTATE_RIGHT();
-const QMap<Direction, Direction>& DIRECTION_OPPOSITE();
 
 const QMap<QChar, Direction>& CHAR_TO_DIRECTION();
 const QMap<Direction, Angle>& DIRECTION_TO_ANGLE();

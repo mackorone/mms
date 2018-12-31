@@ -32,16 +32,6 @@ const QMap<Direction, Direction>& DIRECTION_ROTATE_RIGHT() {
     return map;
 }
 
-const QMap<Direction, Direction>& DIRECTION_OPPOSITE() {
-    static const QMap<Direction, Direction> map = {
-        {Direction::NORTH, Direction::SOUTH},
-        {Direction::EAST, Direction::WEST},
-        {Direction::SOUTH, Direction::NORTH},
-        {Direction::WEST, Direction::EAST},
-    };
-    return map;
-}
-
 const QMap<QChar, Direction>& CHAR_TO_DIRECTION() {
     static const QMap<QChar, Direction> map = {
         {'n', Direction::NORTH},

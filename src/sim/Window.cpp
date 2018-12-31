@@ -17,6 +17,7 @@
 #include <QTabWidget>
 #include <QTimer>
 #include <QVBoxLayout>
+#include <QtMath>
 
 #include "Assert.h"
 #include "Color.h"
@@ -32,8 +33,32 @@
 
 namespace mms {
 
+const QString Window::IN_PROGRESS_STYLE_SHEET =
+    "QLabel { background: rgb(255, 255, 100); }";
+const QString Window::COMPLETE_STYLE_SHEET =
+    "QLabel { background: rgb(150, 255, 100); }";
+const QString Window::CANCELED_STYLE_SHEET =
+    "QLabel { background: rgb(180, 180, 180); }";
+const QString Window::FAILED_STYLE_SHEET =
+    "QLabel { background: rgb(255, 150, 150); }";
+const QString Window::ERROR_STYLE_SHEET =
+    "QLabel { background: rgb(230, 150, 230); }";
+
+const QString Window::ACK = "ack";
+const QString Window::CRASH = "crash";
+const QString Window::INVALID = "invalid";
+
+const int Window::SPEED_SLIDER_MAX = 99;
+const int Window::SPEED_SLIDER_DEFAULT = 33;
+const double Window::PROGRESS_REQUIRED_FOR_MOVE = 100.0;
+const double Window::PROGRESS_REQUIRED_FOR_TURN = 33.33;
+const double Window::MIN_PROGRESS_PER_SECOND = 10.0;
+const double Window::MAX_PROGRESS_PER_SECOND = 5000.0;
+const double Window::MAX_SLEEP_SECONDS = 0.008;
+
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
+    m_map(new Map()),
 
     // Maze
     m_maze(nullptr),
@@ -51,33 +76,40 @@ Window::Window(QWidget *parent) :
     m_runOutput(new QPlainTextEdit()),
 
     // Algo build
-
-
-    m_map(new Map()),
-    m_mouse(nullptr),
-    m_mouseGraphic(nullptr),
-    m_view(nullptr),
-    m_commandQueueTimer(new QTimer()),
-    m_movement(Movement::NONE),
-    m_progress(0.0),
-
-    // Build
     m_buildButton(new QPushButton("Build")),
     m_buildProcess(nullptr),
     m_buildStatus(new QLabel()),
 
-    // TODO: MACK
-    m_step(0.0),
-
-    // MouseAlgosTab
-    m_runProcess(nullptr),
+    // Algo run
     m_runButton(new QPushButton("Run")),
+    m_runProcess(nullptr),
     m_runStatus(new QLabel()),
-    m_resetButton(new QPushButton("Reset")),
-    m_pauseButton(new QPushButton("Pause")),
-    m_speedSlider(new QSlider(Qt::Horizontal)),
+    m_mouse(nullptr),
+    m_view(nullptr),
+    m_mouseGraphic(nullptr),
+
+    // Pause/reset
     m_isPaused(false),
-    m_wasReset(false) {
+    m_wasReset(false),
+    m_pauseButton(new QPushButton("Pause")),
+    m_resetButton(new QPushButton("Reset")),
+
+    // Communication
+    m_communicationBuffer(QStringList()),
+    m_commandQueue(QQueue<QString>()),
+    m_commandQueueTimer(new QTimer()),
+
+    // Movement
+    m_startingLocation({0, 0}),
+    m_startingDirection(Direction::NORTH),
+    m_movement(Movement::NONE),
+    m_movementProgress(0.0),
+    m_movementStepSize(0.0),
+    m_speedSlider(new QSlider(Qt::Horizontal)),
+
+    // Helpers
+    m_tilesWithColor(QSet<QPair<int, int>>()),
+    m_tilesWithText(QSet<QPair<int, int>>()) {
 
     // Keyboard shortcuts for closing the window
     QShortcut* ctrl_q = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q), this);
@@ -124,6 +156,8 @@ Window::Window(QWidget *parent) :
     }
 
     // Add mouse algo pause and reset buttons
+    m_pauseButton->setEnabled(false);
+    m_resetButton->setEnabled(false);
     controlsLayout->addWidget(m_pauseButton, 0, 2, 1, 1);
     controlsLayout->addWidget(m_resetButton, 0, 3, 1, 1);
     connect(
@@ -139,21 +173,10 @@ Window::Window(QWidget *parent) :
         &Window::onResetButtonPressed
     ); 
 
-
-
-
-
-
-    // TODO: MACK
     // Add mouse algo speed
     controlsLayout->addWidget(m_speedSlider, 1, 2, 1, 2);
-    m_speedSlider->setRange(1, 7);
-    m_speedSlider->setTickInterval(1);
-
-
-
-
-
+    m_speedSlider->setRange(0, SPEED_SLIDER_MAX);
+    m_speedSlider->setValue(SPEED_SLIDER_DEFAULT);
 
     // Add config box labels
     QLabel* mazeLabel = new QLabel("Maze");
@@ -179,9 +202,7 @@ Window::Window(QWidget *parent) :
         m_mouseAlgoComboBox,
         &QComboBox::currentTextChanged,
         this,
-        [=](QString name){
-            SettingsMisc::setRecentMouseAlgo(name);
-        }
+        &Window::onMouseAlgoComboBoxChanged
     );
 
     // Add maze file load button
@@ -228,18 +249,10 @@ Window::Window(QWidget *parent) :
         output->document()->setDefaultFont(font);
     }
 
-
-
-
-
-
-
-    mouseAlgoResume();
+    //  ----- Create the mouse algos tab
 
     // Add the mouse algos
     refreshMouseAlgoComboBox(SettingsMisc::getRecentMouseAlgo());
-
-    //  ----- Create the mouse algos tab
 
     // Remove maze files that no longer exist
     for (const auto& path : SettingsMazeFiles::getAllPaths()) {
@@ -397,13 +410,24 @@ void Window::updateMaze(Maze* maze) {
     delete oldTruth;
 }
 
+void Window::onMouseAlgoComboBoxChanged(QString name) {
+    cancelAllProcesses();
+    m_buildStatus->setText("");
+    m_buildStatus->setStyleSheet("");
+    m_buildOutput->clear();
+    m_runStatus->setText("");
+    m_runStatus->setStyleSheet("");
+    m_runOutput->clear();
+    SettingsMisc::setRecentMouseAlgo(name);
+}
+
 void Window::onMouseAlgoEditButtonPressed() {
 
     // Create the dialog with initial values
     QString name = m_mouseAlgoComboBox->currentText();
     ConfigDialog dialog(
         name,
-        SettingsMouseAlgos::getDirPath(name),
+        SettingsMouseAlgos::getDirectory(name),
         SettingsMouseAlgos::getBuildCommand(name),
         SettingsMouseAlgos::getRunCommand(name)
     );
@@ -470,28 +494,33 @@ void Window::refreshMouseAlgoComboBox(QString selected) {
     m_runButton->setEnabled(isNonempty);
 }
 
+void Window::cancelProcess(QProcess* process, QLabel* status) {
+    if (process == nullptr) {
+        return;
+    }
+    process->kill();
+    process->waitForFinished();
+    status->setText("CANCELED");
+    status->setStyleSheet(CANCELED_STYLE_SHEET);
+}
+
+void Window::cancelAllProcesses() {
+    cancelBuild();
+    cancelRun();
+}
+
 void Window::startBuild() {
 
     // Only one build at a time
     ASSERT_TR(m_buildProcess == nullptr);
 
-    // Get the command and directory
-    QString algoName = m_mouseAlgoComboBox->currentText();
-    QString command = SettingsMouseAlgos::getBuildCommand(algoName);
-    QString dirPath = SettingsMouseAlgos::getDirPath(algoName);
+    // Extract the relevant config
+    QString name = m_mouseAlgoComboBox->currentText();
+    QString directory = SettingsMouseAlgos::getDirectory(name);
+    QString buildCommand = SettingsMouseAlgos::getBuildCommand(name);
 
     // Validation
-    if (command.isEmpty()) {
-        QMessageBox::warning(
-            this,
-            QString("Empty Build Command"),
-            QString("Build command for algorithm \"%1\" is empty.").arg(
-                m_mouseAlgoComboBox->currentText()
-            )
-        );
-        return;
-    }
-    if (dirPath.isEmpty()) {
+    if (directory.isEmpty()) {
         QMessageBox::warning(
             this,
             QString("Empty Directory"),
@@ -501,11 +530,21 @@ void Window::startBuild() {
         );
         return;
     }
+    if (buildCommand.isEmpty()) {
+        QMessageBox::warning(
+            this,
+            QString("Empty Build Command"),
+            QString("Build command for algorithm \"%1\" is empty.").arg(
+                m_mouseAlgoComboBox->currentText()
+            )
+        );
+        return;
+    }
 
     // Instantiate a new process
     QProcess* process = new QProcess(this);
 
-    // Display build stdout and stderr
+    // Display stdout and stderr
     connect(process, &QProcess::readyReadStandardOutput, this, [=](){
         QString output = process->readAllStandardOutput();
         if (output.endsWith("\n")) {
@@ -531,12 +570,12 @@ void Window::startBuild() {
         &Window::onBuildExit
     );
 
-    // Clean the ouput and bring it to the front
+    // Clear the ouput and bring it to the front
     m_buildOutput->clear();
     m_mouseAlgoOutputTabWidget->setCurrentWidget(m_buildOutput);
 
     // Start the build process
-    if (ProcessUtilities::start(command, dirPath, process)) {
+    if (ProcessUtilities::start(buildCommand, directory, process)) {
 
         // Save a pointer to the process
         m_buildProcess = process;
@@ -545,28 +584,32 @@ void Window::startBuild() {
         disconnect(
             m_buildButton,
             &QPushButton::clicked,
-            this, &Window::startBuild);
+            this,
+            &Window::startBuild
+        );
         connect(
             m_buildButton,
             &QPushButton::clicked,
-            this, &Window::cancelBuild);
+            this,
+            &Window::cancelBuild
+        );
         m_buildButton->setText("Cancel");
 
         // Update the build status
         m_buildStatus->setText("BUILDING");
-        m_buildStatus->setStyleSheet(
-            "QLabel { background: rgb(255, 255, 100); }"
-        );
+        m_buildStatus->setStyleSheet(IN_PROGRESS_STYLE_SHEET);
     }
     else {
         // Clean up the failed process
         m_buildOutput->appendPlainText(process->errorString());
         m_buildStatus->setText("ERROR");
-        m_buildStatus->setStyleSheet(
-            "QLabel { background: rgb(230, 150, 230); }"
-        );
+        m_buildStatus->setStyleSheet(ERROR_STYLE_SHEET);
         delete process;
     }
+}
+
+void Window::cancelBuild() {
+    cancelProcess(m_buildProcess, m_buildStatus);
 }
 
 void Window::onBuildExit(int exitCode, QProcess::ExitStatus exitStatus) {
@@ -575,112 +618,30 @@ void Window::onBuildExit(int exitCode, QProcess::ExitStatus exitStatus) {
     disconnect(
         m_buildButton,
         &QPushButton::clicked,
-        this, &Window::cancelBuild);
+        this,
+        &Window::cancelBuild
+    );
     connect(
         m_buildButton,
         &QPushButton::clicked,
-        this, &Window::startBuild);
+        this,
+        &Window::startBuild
+    );
     m_buildButton->setText("Build");
 
     // Update the build status
     if (exitStatus == QProcess::NormalExit && exitCode == 0) {
         m_buildStatus->setText("COMPLETE");
-        m_buildStatus->setStyleSheet(
-            "QLabel { background: rgb(150, 255, 100); }"
-        );
+        m_buildStatus->setStyleSheet(COMPLETE_STYLE_SHEET);
     }
     else {
         m_buildStatus->setText("FAILED");
-        m_buildStatus->setStyleSheet(
-            "QLabel { background: rgb(255, 150, 150); }"
-        );
+        m_buildStatus->setStyleSheet(FAILED_STYLE_SHEET);
     }
 
-    // Clean up the build process
+    // Clean up
     delete m_buildProcess;
     m_buildProcess = nullptr;
-}
-
-void Window::processCommand(QString command) {
-
-	// TODO: MACK - print things that don't look like a command
-    /*
-    HERE'S THE API:
-    setColor
-    setText
-    setWall
-    along with clear and clearAll
-    */
-
-    // Process no-response commands inline
-    if (
-        command.startsWith("setColor") ||
-        command.startsWith("clearColor") ||
-        command.startsWith("clearAllColor") ||
-        command.startsWith("setText") ||
-        command.startsWith("clearText") ||
-        command.startsWith("clearAllText") ||
-        command.startsWith("setWall") ||
-        command.startsWith("clearWall")
-    ) {
-        dispatch(command);
-        return;
-    }
-
-    // Enqueue the serial command, process it if
-    // future processing is not already scheduled
-    m_commandQueue.enqueue(command);
-    if (!m_commandQueueTimer->isActive()) {
-        processQueuedCommands();
-    }
-}
-
-void Window::processQueuedCommands() {
-    // TODO: MACK - check for paused
-    while (!m_commandQueue.isEmpty() && !m_isPaused) {
-        if (isMoving()) {
-            // Move a little bit
-            // TODO: MACK _ we should actually store the speed value used
-            //  double seconds = SimUtilities::getHighResTimestamp() - m_lastTimestamp;
-            //  double meters = m_metersPerSecond * seconds;
-            //  int ticks = static_cast<int>(meters * 100);
-            moveALittle(m_step);
-            if (!isMoving()) {
-                QString response = "ACK";
-                // qDebug() << "ASYNC RESPONSE:" << response;
-                m_runProcess->write((response + "\n").toStdString().c_str());
-                m_commandQueue.dequeue();
-            }
-            else {
-                scheduleAnotherCall();
-                break;
-            }
-        }
-        else {
-            QString response = dispatch(m_commandQueue.head());
-            if (!response.isEmpty()) {
-                m_runProcess->write((response + "\n").toStdString().c_str());
-                m_commandQueue.dequeue();
-            } else {
-                scheduleAnotherCall();
-                break;
-            }
-            continue;
-        }
-    }
-}
-
-void Window::scheduleAnotherCall() {
-    double MAX_SECONDS = 0.008;
-    double pRemaining = progressRemaining();
-    int speed = m_speedSlider->value() * 50;
-    double secondsRemaining = pRemaining / speed;
-    if (secondsRemaining > MAX_SECONDS) {
-        secondsRemaining = MAX_SECONDS;
-        pRemaining = secondsRemaining * speed;
-    }
-    m_step = pRemaining;
-    m_commandQueueTimer->start(secondsRemaining * 1000);
 }
 
 void Window::startRun() {
@@ -688,34 +649,32 @@ void Window::startRun() {
     // Only one algo running at a time
     ASSERT_TR(m_runProcess == nullptr);
 
-    // Get the command and directory
-    QString algoName = m_mouseAlgoComboBox->currentText();
-    QString dirPath = SettingsMouseAlgos::getDirPath(algoName);
-    QString command = SettingsMouseAlgos::getRunCommand(algoName);
+    // Extract the relevant config
+    QString name = m_mouseAlgoComboBox->currentText();
+    QString directory = SettingsMouseAlgos::getDirectory(name);
+    QString runCommand = SettingsMouseAlgos::getRunCommand(name);
 
-    // Perform config validation
-    if (command.isEmpty()) {
-        QMessageBox::warning(
-            this,
-            "Empty Run Command",
-            QString("Run command for algorithm \"%1\" is empty.").arg(
-                algoName
-            )
-        );
-        return;
-    }
-    if (dirPath.isEmpty()) {
+    // Validation
+    if (directory.isEmpty()) {
         QMessageBox::warning(
             this,
             "Empty Directory",
             QString("Directory for algorithm \"%1\" is empty.").arg(
-                algoName
+                name
             )
         );
         return;
     }
-
-    // Validate the maze
+    if (runCommand.isEmpty()) {
+        QMessageBox::warning(
+            this,
+            "Empty Run Command",
+            QString("Run command for algorithm \"%1\" is empty.").arg(
+                name
+            )
+        );
+        return;
+    }
     if (m_maze == nullptr) {
         QMessageBox::warning(
             this,
@@ -725,22 +684,16 @@ void Window::startRun() {
         return;
     }
 
-    // TODO: MACK - delete the font files too
-
-    // Remove the mouse from the maze
+    // Remove the old mouse, add a new mouse
     removeMouseFromMaze();
-
-    // Generate the mouse
     m_mouse = new Mouse();
     m_view = new MazeView(m_maze);
     m_mouseGraphic = new MouseGraphic(m_mouse);
+    m_map->setView(m_view);
+    m_map->setMouseGraphic(m_mouseGraphic);
 
-    // New interface and process
+    // Instantiate a new process
     QProcess* process = new QProcess();
-
-    // Clear the output, and jump to it
-    m_runOutput->clear();
-    m_mouseAlgoOutputTabWidget->setCurrentWidget(m_runOutput);
 
     // Print stdout
     connect(process, &QProcess::readyReadStandardOutput, this, [=](){
@@ -753,10 +706,10 @@ void Window::startRun() {
 
     // Process commands from stderr
     connect(process, &QProcess::readyReadStandardError, this, [=](){
-        QString text = process->readAllStandardError();
-        QStringList commands = processText(text);
+        QString output = process->readAllStandardError();
+        QStringList commands = processText(output);
         for (QString command : commands) {
-            processCommand(command);
+            dispatchCommand(command);
         }
     });
 
@@ -770,88 +723,101 @@ void Window::startRun() {
         &Window::onRunExit
     );
 
-    // Start the run process
-    if (ProcessUtilities::start(command, dirPath, process)) {
+    // Clear the ouput and bring it to the front
+    m_runOutput->clear();
+    m_mouseAlgoOutputTabWidget->setCurrentWidget(m_runOutput);
 
+    // Start the run process
+    if (ProcessUtilities::start(runCommand, directory, process)) {
+
+        // Save a pointer to the process
         m_runProcess = process;
-        m_map->setView(m_view);
-        m_map->setMouseGraphic(m_mouseGraphic);
 
         // Update the run button
         disconnect(
             m_runButton,
             &QPushButton::clicked,
-            this, &Window::startRun);
+            this,
+            &Window::startRun
+        );
         connect(
             m_runButton,
             &QPushButton::clicked,
-            this, &Window::cancelRun);
+            this,
+            &Window::cancelRun
+        );
         m_runButton->setText("Cancel");
 
         // Update the run status
         m_runStatus->setText("RUNNING");
-        m_runStatus->setStyleSheet(
-            "QLabel { background: rgb(255, 255, 100); }"
-        );
+        m_runStatus->setStyleSheet(IN_PROGRESS_STYLE_SHEET);
 
-        // TODO: MACK - most of these shouldn't be necessary
-        // UI updates on successful start
-        m_map->setView(m_view);
+        // Only enabled while mouse is running
         m_pauseButton->setEnabled(true);
+        m_resetButton->setEnabled(true);
     } 
     else {
         // Clean up the failed process
         m_runOutput->appendPlainText(process->errorString());
         m_runStatus->setText("ERROR");
-        m_runStatus->setStyleSheet(
-            "QLabel { background: rgb(230, 150, 230); }"
-        );
+        m_runStatus->setStyleSheet(ERROR_STYLE_SHEET);
         removeMouseFromMaze();
         delete process;
     }
 }
 
+void Window::cancelRun() {
+    cancelProcess(m_runProcess, m_runStatus);
+    removeMouseFromMaze();
+}
+
 void Window::onRunExit(int exitCode, QProcess::ExitStatus exitStatus) {
 
-    // TODO: MACK - deduplicate this with onBuildExit
+    // Always unpause on exit
+    if (m_isPaused) {
+        onPauseButtonPressed();
+    }
+
+    // Only enabled while mouse is running
+    m_pauseButton->setEnabled(false);
+    m_resetButton->setEnabled(false);
+    m_wasReset = false;
 
     // Update the run button
     disconnect(
         m_runButton,
         &QPushButton::clicked,
-        this, &Window::cancelRun);
+        this,
+        &Window::cancelRun
+    );
     connect(
         m_runButton,
         &QPushButton::clicked,
-        this, &Window::startRun);
+        this,
+        &Window::startRun
+    );
     m_runButton->setText("Run");
 
-    // Update the status label, call stderrPostAction
+    // Update the status label
     if (exitStatus == QProcess::NormalExit && exitCode == 0) {
         m_runStatus->setText("COMPLETE");
-        m_runStatus->setStyleSheet(
-            "QLabel { background: rgb(150, 255, 100); }"
-        );
+        m_runStatus->setStyleSheet(COMPLETE_STYLE_SHEET);
     }
     else {
         m_runStatus->setText("FAILED");
-        m_runStatus->setStyleSheet(
-            "QLabel { background: rgb(255, 150, 150); }"
-        );
+        m_runStatus->setStyleSheet(FAILED_STYLE_SHEET);
     }
 
-    // Clean up
+    // Clean up (stop producing commands)
     delete m_runProcess;
     m_runProcess = nullptr;
-    m_commandBuffer.clear();
-    // TODO: MACK - make sure this works as expected
+
+    // Stop consuming queued commands
     m_commandQueueTimer->stop();
     m_commandQueue.clear();
 }
 
 void Window::removeMouseFromMaze() {
-
-    // Put the maze in a mouseless state
 
     // No-op if no mouse
     if (m_mouse == nullptr) {
@@ -872,90 +838,70 @@ void Window::removeMouseFromMaze() {
     delete m_mouseGraphic;
     m_mouseGraphic = nullptr;
 
-    // Reset movement related state
+    // Reset communication state
+    m_communicationBuffer.clear();
+
+    // Reset movement state
+    m_startingLocation = {0, 0};
+    m_startingDirection = Direction::NORTH;
     m_movement = Movement::NONE;
-    m_progress = 0.0;
-    m_wasReset = false;
+    m_movementProgress = 0.0;
+    m_movementStepSize = 0.0;
 
-    // TODO: MACK - most of these shouldn't be necessary
-    // Clean up the UI
-    mouseAlgoResume();
+    // Reset other mouse state
+    m_tilesWithColor.clear();
+    m_tilesWithText.clear();
 }
 
-void Window::cancelAllProcesses() {
-    cancelBuild();
-    cancelRun();
-}
-
-void Window::cancelBuild() {
-    cancelProcess(m_buildProcess, m_buildStatus);
-}
-
-void Window::cancelRun() {
-    cancelProcess(m_runProcess, m_runStatus);
-    removeMouseFromMaze();
-}
-
-void Window::cancelProcess(QProcess* process, QLabel* status) {
-    if (process == nullptr) {
-        return;
+void Window::onPauseButtonPressed() {
+    m_isPaused = !m_isPaused;
+    if (m_isPaused) {
+        m_pauseButton->setText("Resume");
     }
-    process->kill();
-    process->waitForFinished();
-    status->setText("CANCELED");
-    status->setStyleSheet(
-        "QLabel { background: rgb(180, 180, 180); }"
-    );
+    else {
+        m_pauseButton->setText("Pause");
+        processQueuedCommands();
+    }
 }
 
-void Window::mouseAlgoPause() {
-    m_isPaused = true;
-    m_pauseButton->setText("Resume");
-    disconnect(
-        m_pauseButton, &QPushButton::clicked,
-        this, &Window::mouseAlgoPause
-    );
-    connect(
-        m_pauseButton, &QPushButton::clicked,
-        this, &Window::mouseAlgoResume
-    );
-    connect(
-        m_pauseButton, &QPushButton::clicked,
-        this, &Window::processQueuedCommands
-    );
+void Window::onResetButtonPressed() {
+
+    // Stop processing queued commands
+    ASSERT_FA(m_runProcess == nullptr);
+    m_commandQueueTimer->stop();
+    m_commandQueue.clear();
+
+    // If the mouse was moving, pretend that the movement
+    // finished so that the algorithm doesn't block forever
+    if (isMoving()) {
+        m_runProcess->write((ACK + "\n").toStdString().c_str());
+    }
+
+    // Reset the mouse
+    m_mouse->reset();
+    m_wasReset = true;
+
+    // Reset movement state
+    m_startingLocation = {0, 0};
+    m_startingDirection = Direction::NORTH;
+    m_movement = Movement::NONE;
+    m_movementProgress = 0.0;
+    m_movementStepSize = 0.0;
 }
 
-void Window::mouseAlgoResume() {
-    m_isPaused = false;
-    m_pauseButton->setText("Pause");
-    disconnect(
-        m_pauseButton, &QPushButton::clicked,
-        this, &Window::mouseAlgoResume
-    );
-    connect(
-        m_pauseButton, &QPushButton::clicked,
-        this, &Window::mouseAlgoPause
-    );
-}
+QStringList Window::processText(QString text) {
 
-QStringList Window::processText(const QString& text) {
-
-    // TODO: upforgrabs
-    // Determine whether or not this function is perf sensitive. If so,
-    // refactor this so that we're not copying QStrings between lists.
+    QStringList lines;
 
     // Separate the text by line
     QStringList parts = text.split("\n");
-
-    // We'll return list of complete lines
-    QStringList lines;
 
     // If the text has at least one newline character, we definitely have a
     // complete line; combine it with the contents of the buffer and append
     // it to the list of lines to be returned
     if (1 < parts.size()) {
-        lines.append(m_commandBuffer.join("") + parts.at(0));
-        m_commandBuffer.clear();
+        lines.append(m_communicationBuffer.join("") + parts.at(0));
+        m_communicationBuffer.clear();
     }
 
     // All newline-separated parts in the text are lines
@@ -965,154 +911,240 @@ QStringList Window::processText(const QString& text) {
 
     // Store the last part of the text (empty string if the text ended
     // with newline) in the buffer, to be combined with future input
-    m_commandBuffer.append(parts.at(parts.size() - 1));
+    m_communicationBuffer.append(parts.at(parts.size() - 1));
 
     return lines;
 }
 
-QString Window::dispatch(const QString& command) {
+void Window::dispatchCommand(QString command) {
 
-    // TODO: upforgrabs
-    // These functions should have sanity checks, e.g., correct
-    // types, not finalizing static options more than once, etc.
+    // For performance reasons, handle no-response commands inline (don't queue
+    // them with the commands that elicit a response, just perform the action)
+    if (
+        command.startsWith("setWall") ||
+        command.startsWith("clearWall")
+    ) {
+        QStringList tokens = command.split(" ", QString::SkipEmptyParts);
+        if (tokens.size() != 4) {
+            return;
+        }
+        if (!(tokens.at(0) == "setWall" || tokens.at(0) == "clearWall")) {
+            return;
+        }
+        bool ok = true;
+        int x = tokens.at(1).toInt(&ok);
+        int y = tokens.at(2).toInt(&ok);
+        if (!ok) {
+            return;
+        }
+        if (tokens.at(3).size() != 1) {
+            return;
+        }
+        QChar direction = tokens.at(3).at(0);
+        if (!CHAR_TO_DIRECTION().contains(direction)) {
+            return;
+        }
+        if (command.startsWith("setWall")) {
+            setWall(x, y, direction);
+        }
+        else if (command.startsWith("clearWall")) {
+            clearWall(x, y, direction);
+        }
+        else {
+            ASSERT_NEVER_RUNS();
+        }
+    }
+    else if (command.startsWith("setColor")) {
+        QStringList tokens = command.split(" ", QString::SkipEmptyParts);
+        if (tokens.size() != 4) {
+            return;
+        }
+        if (tokens.at(0) != "setColor") {
+            return;
+        }
+        bool ok = true;
+        int x = tokens.at(1).toInt(&ok);
+        int y = tokens.at(2).toInt(&ok);
+        if (!ok) {
+            return;
+        }
+        if (tokens.at(3).size() != 1) {
+            return;
+        }
+        QChar color = tokens.at(3).at(0);
+        if (!CHAR_TO_COLOR().contains(color)) {
+            return;
+        }
+        setColor(x, y, color);
+    }
+    else if (command.startsWith("clearColor")) {
+        QStringList tokens = command.split(" ", QString::SkipEmptyParts);
+        if (tokens.size() != 3) {
+            return;
+        }
+        if (tokens.at(0) != "clearColor") {
+            return;
+        }
+        bool ok = true;
+        int x = tokens.at(1).toInt(&ok);
+        int y = tokens.at(2).toInt(&ok);
+        if (!ok) {
+            return;
+        }
+        clearColor(x, y);
+    }
+    else if (command.startsWith("clearAllColor")) {
+        QStringList tokens = command.split(" ", QString::SkipEmptyParts);
+        if (tokens.size() != 1) {
+            return;
+        }
+        if (tokens.at(0) != "clearAllColor") {
+            return;
+        }
+        clearAllColor();
+    }
+    else if (command.startsWith("setText")) {
+        // Special parsing to allow space characters in the text
+        int firstSpace = command.indexOf(" ");
+        int secondSpace = command.indexOf(" ", firstSpace + 1);
+        int thirdSpace = command.indexOf(" ", secondSpace + 1);
+        QString function = command.left(firstSpace);
+        if (function != "setText") {
+            return;
+        }
+        QString xString = command.mid(firstSpace + 1, secondSpace - firstSpace);
+        QString yString = command.mid(secondSpace + 1, thirdSpace - secondSpace);
+        bool ok = true;
+        int x = xString.toInt(&ok);
+        int y = yString.toInt(&ok);
+        if (!ok) {
+            return;
+        }
+        QString text = command.mid(thirdSpace + 1);
+        setText(x, y, text);
+    }
+    else if (command.startsWith("clearText")) {
+        QStringList tokens = command.split(" ", QString::SkipEmptyParts);
+        if (tokens.size() != 3) {
+            return;
+        }
+        if (tokens.at(0) != "clearText") {
+            return;
+        }
+        bool ok = true;
+        int x = tokens.at(1).toInt(&ok);
+        int y = tokens.at(2).toInt(&ok);
+        if (!ok) {
+            return;
+        }
+        clearText(x, y);
+    }
+    else if (command.startsWith("clearAllText")) {
+        QStringList tokens = command.split(" ", QString::SkipEmptyParts);
+        if (tokens.size() != 1) {
+            return;
+        }
+        if (tokens.at(0) != "clearAllText") {
+            return;
+        }
+        clearAllText();
+    }
+    else {
+        // Enqueue the serial command, process it if
+        // future processing is not already scheduled
+        m_commandQueue.enqueue(command);
+        if (!m_commandQueueTimer->isActive()) {
+            processQueuedCommands();
+        }
+    }
+}
 
-
-    // TODO: MACK - set/unset wall? set and clear?
-
-    static const QString ACK_STRING = "ACK";
-    static const QString NO_ACK_STRING = "";
-    static const QString ERROR_STRING = "!";
-
+QString Window::executeCommand(QString command) {
     QStringList tokens = command.split(" ", QString::SkipEmptyParts);
+    if (tokens.size() != 1) {
+        return INVALID;
+    }
     QString function = tokens.at(0);
-
-    // TODO: MACK - if it returns a response, it should be serial
-
-    if (function == "getWidth") {
-        return QString::number(getWidth());
+    if (function == "mazeWidth") {
+        return QString::number(mazeWidth());
     }
-    else if (function == "getHeight") {
-        return QString::number(getHeight());
+    else if (function == "mazeHeight") {
+        return QString::number(mazeHeight());
     }
-    else if (function == "isWallFront") {
-        return SimUtilities::boolToStr(isWallFront());
+    else if (function == "wallFront") {
+        return boolToString(wallFront());
     }
-    else if (function == "isWallRight") {
-        return SimUtilities::boolToStr(isWallRight());
+    else if (function == "wallRight") {
+        return boolToString(wallRight());
     }
-    else if (function == "isWallLeft") {
-        return SimUtilities::boolToStr(isWallLeft());
+    else if (function == "wallLeft") {
+        return boolToString(wallLeft());
     }
     else if (function == "moveForward") {
         bool success = moveForward();
-        return success ? NO_ACK_STRING : ERROR_STRING;
+        return success ? "" : CRASH;
     }
     else if (function == "turnRight") {
         turnRight();
-        return NO_ACK_STRING;
+        return "";
     }
     else if (function == "turnLeft") {
         turnLeft();
-        return NO_ACK_STRING;
-    }
-    else if (function == "setColor") {
-        int x = SimUtilities::strToInt(tokens.at(1));
-        int y = SimUtilities::strToInt(tokens.at(2));
-        QChar color = SimUtilities::strToChar(tokens.at(3));
-        setColor(x, y, color);
-        return NO_ACK_STRING;
-    }
-    else if (function == "clearColor") {
-        int x = SimUtilities::strToInt(tokens.at(1));
-        int y = SimUtilities::strToInt(tokens.at(2));
-        clearColor(x, y);
-        return NO_ACK_STRING;
-    }
-    else if (function == "clearAllColor") {
-        clearAllColor();
-        return NO_ACK_STRING;
-    }
-    else if (function == "setText") {
-        int x = SimUtilities::strToInt(tokens.at(1));
-        int y = SimUtilities::strToInt(tokens.at(2));
-        // TODO: MACK - don't allow empty string
-        QString text = "";
-        if (3 < tokens.size()) {
-            text = tokens.at(3);
-        }
-        setText(x, y, text);
-        return NO_ACK_STRING;
-    }
-    else if (function == "clearText") {
-        int x = SimUtilities::strToInt(tokens.at(1));
-        int y = SimUtilities::strToInt(tokens.at(2));
-        clearText(x, y);
-        return NO_ACK_STRING;
-    }
-    else if (function == "clearAllText") {
-        clearAllText();
-        return NO_ACK_STRING;
-    }
-    else if (function == "setWall") {
-        int x = SimUtilities::strToInt(tokens.at(1));
-        int y = SimUtilities::strToInt(tokens.at(2));
-        QChar direction = SimUtilities::strToChar(tokens.at(3));
-        bool wallExists = SimUtilities::strToBool(tokens.at(4));
-        if (wallExists) {
-            setWall(x, y, direction);
-        }
-        return NO_ACK_STRING;
-    }
-    else if (function == "clearWall") {
-        int x = SimUtilities::strToInt(tokens.at(1));
-        int y = SimUtilities::strToInt(tokens.at(2));
-        QChar direction = SimUtilities::strToChar(tokens.at(3));
-        clearWall(x, y, direction);
-        return NO_ACK_STRING;
+        return "";
     }
     else if (function == "wasReset") {
-        return SimUtilities::boolToStr(wasReset());
+        return boolToString(wasReset());
     }
     else if (function == "ackReset") {
         ackReset();
-        return ACK_STRING;
+        return ACK;
     }
-
-    // TODO: MACK - print something here
-    return ERROR_STRING;
+    else {
+        return INVALID;
+    }
 }
 
-void Window::updateStartingLocationAndDirection() {
-    m_startingLocation = m_mouse->getCurrentDiscretizedTranslation();
-    m_startingDirection = m_mouse->getCurrentDiscretizedRotation();
+void Window::processQueuedCommands() {
+    while (!m_commandQueue.isEmpty() && !m_isPaused) {
+        QString response = "";
+        if (isMoving()) {
+            updateMouseProgress(m_movementStepSize);
+            if (!isMoving()) {
+                response = ACK;
+            }
+        }
+        else {
+            response = executeCommand(m_commandQueue.head());
+        }
+        if (!response.isEmpty()) {
+            m_runProcess->write((response + "\n").toStdString().c_str());
+            m_commandQueue.dequeue();
+        }
+        else {
+            scheduleMouseProgressUpdate();
+            break;
+        }
+    }
 }
 
 double Window::progressRequired(Movement movement) {
     switch (movement) {
         case Movement::MOVE_FORWARD:
-            return 100.0;
+            return PROGRESS_REQUIRED_FOR_MOVE;
         case Movement::TURN_RIGHT:
         case Movement::TURN_LEFT:
-            return 33.33;
+            return PROGRESS_REQUIRED_FOR_TURN;
         default:
             ASSERT_NEVER_RUNS();
     }
 }
 
-bool Window::isMoving() {
-    return m_movement != Movement::NONE;
-}
+void Window::updateMouseProgress(double progress) {
 
-double Window::progressRemaining() {
-    return progressRequired(m_movement) - m_progress;
-}
-
-void Window::moveALittle(double progress) {
-
+    // Determine the destination of the mouse.
     QPair<int, int> destinationLocation = m_startingLocation;
-    Angle startingRotation = DIRECTION_TO_ANGLE().value(m_startingDirection);
-    Angle destinationRotation = startingRotation;
-
+    Angle destinationRotation =
+        DIRECTION_TO_ANGLE().value(m_startingDirection);
     if (m_movement == Movement::MOVE_FORWARD) {
         if (m_startingDirection == Direction::NORTH) {
             destinationLocation.second += 1;
@@ -1130,6 +1162,9 @@ void Window::moveALittle(double progress) {
             ASSERT_NEVER_RUNS();
         }
     }
+    // Explicity add or subtract 90 degrees so that the mouse is guaranteed to
+    // only rotate 90 degrees (using DIRECTION_ROTATE can cause the mouse to
+    // rotate 270 degrees in the opposite direction in some cases)
     else if (m_movement == Movement::TURN_RIGHT) {
         destinationRotation -= Angle::Degrees(90);
     }
@@ -1140,76 +1175,93 @@ void Window::moveALittle(double progress) {
         ASSERT_NEVER_RUNS();
     }
 
-    m_progress += progress;
-
+    // Increment the movement progress, calculate fraction complete
+    m_movementProgress += progress;
     double required = progressRequired(m_movement);
-    double remaining = progressRemaining();
-
-    if (remaining < 0.0) {
-        remaining = 0.0;
+    double remaining = required - m_movementProgress;
+    if (remaining < 0) {
+        remaining = 0;
     }
+    double fraction = 1.0 - (remaining / required);
 
-    double two = 1.0 - (remaining / required);
-    double one = 1.0 - two;
-
-
-    // TODO: MACK
-    Coordinate start =
+    // Calculate the current translation and rotation
+    Coordinate startingTranslation =
         getCenterOfTile(m_startingLocation.first, m_startingLocation.second);
-    Coordinate end =
+    Coordinate destinationTranslation =
         getCenterOfTile(destinationLocation.first, destinationLocation.second);
+    Angle startingRotation =
+        DIRECTION_TO_ANGLE().value(m_startingDirection);
+    Coordinate currentTranslation =
+        startingTranslation * (1.0 - fraction) +
+        destinationTranslation * fraction;
+    Angle currentRotation =
+        startingRotation * (1.0 - fraction) +
+        destinationRotation * fraction;
 
-    m_mouse->teleport(
-        start * one + end * two,
-        startingRotation * one + destinationRotation * two
-    );
-
+    // Teleport the mouse, reset movement state if done
+    m_mouse->teleport(currentTranslation, currentRotation);
     if (remaining == 0.0) {
+        m_startingLocation = m_mouse->getCurrentDiscretizedTranslation();
+        m_startingDirection = m_mouse->getCurrentDiscretizedRotation();
         m_movement = Movement::NONE;
-        m_progress = 0.0;
+        m_movementProgress = 0.0;
+        m_movementStepSize = 0.0;
     }
 }
 
-void Window::onPauseButtonPressed() {
-    // TODO: MACK
-    mouseAlgoPause();
-}
+void Window::scheduleMouseProgressUpdate() {
+    
+    // Calculate progressRemaining, should be nonzero
+    double required = progressRequired(m_movement);
+    double progressRemaining = required - m_movementProgress;
+    ASSERT_LT(0.0, progressRemaining);
 
-void Window::onResetButtonPressed() {
-    // TODO: MACK - need to queue this command
-    if (m_runProcess == nullptr) {
-        return;
+    // Calculate progressPerSecond for non-linear slider
+    double value = static_cast<double>(m_speedSlider->value());
+    double fraction = value / SPEED_SLIDER_MAX;
+    double rangeMin = qPow(MIN_PROGRESS_PER_SECOND, .25);
+    double rangeMax = qPow(MAX_PROGRESS_PER_SECOND, .25);
+    double rangeValue = (1.0 - fraction) * rangeMin + fraction * rangeMax;
+    double progressPerSecond = qPow(rangeValue, 4);
+
+    // Determine seconds remaing
+    double secondsRemaining = progressRemaining / progressPerSecond;
+    if (secondsRemaining > MAX_SLEEP_SECONDS) {
+        secondsRemaining = MAX_SLEEP_SECONDS;
+        progressRemaining = secondsRemaining * progressPerSecond;
     }
-    m_wasReset = true;
-    m_commandQueue.clear();
-    m_movement = Movement::NONE;
-    m_progress = 0.0;
-    m_runProcess->write("ACK\n");
-    m_mouse->reset();
+
+    // Update step size, set the timer
+    m_movementStepSize = progressRemaining;
+    m_commandQueueTimer->start(secondsRemaining * 1000);
 }
 
-int Window::getWidth() {
+bool Window::isMoving() {
+    return m_movement != Movement::NONE;
+}
+
+int Window::mazeWidth() {
     return m_maze->getWidth();
 }
 
-int Window::getHeight() {
+int Window::mazeHeight() {
     return m_maze->getHeight();
 }
 
-bool Window::isWallFront() {
+bool Window::wallFront() {
     QPair<int, int> position = m_mouse->getCurrentDiscretizedTranslation();
     Direction direction = m_mouse->getCurrentDiscretizedRotation();
     return isWall({position.first, position.second, direction});
 }
 
-bool Window::isWallRight() {
+bool Window::wallRight() {
     QPair<int, int> position = m_mouse->getCurrentDiscretizedTranslation();
     Direction direction =
         DIRECTION_ROTATE_RIGHT().value(m_mouse->getCurrentDiscretizedRotation());
     return isWall({position.first, position.second, direction});
 }
 
-bool Window::isWallLeft() {
+bool Window::wallLeft() {
     QPair<int, int> position = m_mouse->getCurrentDiscretizedTranslation();
     Direction direction =
         DIRECTION_ROTATE_LEFT().value(m_mouse->getCurrentDiscretizedRotation());
@@ -1217,21 +1269,18 @@ bool Window::isWallLeft() {
 }
 
 bool Window::moveForward() {
-    if (isWallFront()) {
+    if (wallFront()) {
         return false;
     }
-    updateStartingLocationAndDirection();
     m_movement = Movement::MOVE_FORWARD;
     return true;
 }
 
 void Window::turnRight() {
-    updateStartingLocationAndDirection();
     m_movement = Movement::TURN_RIGHT;
 }
 
 void Window::turnLeft() {
-    updateStartingLocationAndDirection();
     m_movement = Movement::TURN_LEFT;
 }
 
@@ -1349,6 +1398,10 @@ bool Window::wasReset() {
 
 void Window::ackReset() {
     m_wasReset = false;
+}
+
+QString Window::boolToString(bool value) const {
+    return value ? "true" : "false";
 }
 
 bool Window::isWall(Wall wall) const {

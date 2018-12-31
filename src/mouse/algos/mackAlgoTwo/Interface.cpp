@@ -11,7 +11,7 @@ extern volatile bool buttonPressed;
 
 int Interface::getMazeWidth() {
 #if (SIMULATOR)
-    PRINT("getWidth");
+    PRINT("mazeWidth");
     READ_AND_RETURN_INT();
 #else
     return 16;
@@ -20,7 +20,7 @@ int Interface::getMazeWidth() {
 
 int Interface::getMazeHeight() {
 #if (SIMULATOR)
-    PRINT("getHeight");
+    PRINT("mazeHeight");
     READ_AND_RETURN_INT();
 #else
     return 16;
@@ -29,7 +29,7 @@ int Interface::getMazeHeight() {
 
 bool Interface::isWallFront() {
 #if (SIMULATOR)
-    PRINT("isWallFront");
+    PRINT("wallFront");
     READ_AND_RETURN_BOOL();
 #else
     return walls_global[1];
@@ -38,7 +38,7 @@ bool Interface::isWallFront() {
 
 bool Interface::isWallRight() {
 #if (SIMULATOR)
-    PRINT("isWallRight");
+    PRINT("wallRight");
     READ_AND_RETURN_BOOL();
 #else
     return walls_global[2];
@@ -47,7 +47,7 @@ bool Interface::isWallRight() {
 
 bool Interface::isWallLeft() {
 #if (SIMULATOR)
-    PRINT("isWallLeft");
+    PRINT("wallLeft");
     READ_AND_RETURN_BOOL();
 #else
     return walls_global[0];
@@ -113,7 +113,9 @@ void Interface::clearAllTileText() {
 
 void Interface::declareWall(int x, int y, char direction, bool wallExists) {
 #if (SIMULATOR)
-    PRINT("setWall", x, y, direction, boolToString(wallExists));
+    if (wallExists) {
+        PRINT("setWall", x, y, direction);
+    }
 #endif
 }
 

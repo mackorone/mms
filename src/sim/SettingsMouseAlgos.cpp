@@ -8,7 +8,7 @@ namespace mms {
 
 const QString SettingsMouseAlgos::GROUP = "mouseAlgos";
 const QString SettingsMouseAlgos::KEY_NAME = "name";
-const QString SettingsMouseAlgos::KEY_DIR_PATH = "dirPath";
+const QString SettingsMouseAlgos::KEY_DIR_PATH = "directory";
 const QString SettingsMouseAlgos::KEY_BUILD_COMMAND = "buildCommand";
 const QString SettingsMouseAlgos::KEY_RUN_COMMAND = "runCommand";
 
@@ -16,7 +16,7 @@ QStringList SettingsMouseAlgos::names() {
     return Settings::get()->values(GROUP, KEY_NAME);
 }
 
-QString SettingsMouseAlgos::getDirPath(const QString& name) {
+QString SettingsMouseAlgos::getDirectory(const QString& name) {
     return getValue(name, KEY_DIR_PATH);
 }
 
@@ -30,13 +30,13 @@ QString SettingsMouseAlgos::getRunCommand(const QString& name) {
 
 void SettingsMouseAlgos::add(
     const QString& name,
-    const QString& dirPath,
+    const QString& directory,
     const QString& buildCommand,
     const QString& runCommand
 ) {
     Settings::get()->add(GROUP, {
         {KEY_NAME, name},
-        {KEY_DIR_PATH, dirPath},
+        {KEY_DIR_PATH, directory},
         {KEY_BUILD_COMMAND, buildCommand},
         {KEY_RUN_COMMAND, runCommand},
     });
@@ -45,13 +45,13 @@ void SettingsMouseAlgos::add(
 void SettingsMouseAlgos::update(
     const QString& name,
     const QString& newName,
-    const QString& newDirPath,
+    const QString& newDirectory,
     const QString& newBuildCommand,
     const QString& newRunCommand
 ) {
     Settings::get()->update(GROUP, KEY_NAME, name, {
         {KEY_NAME, newName},
-        {KEY_DIR_PATH, newDirPath},
+        {KEY_DIR_PATH, newDirectory},
         {KEY_BUILD_COMMAND, newBuildCommand},
         {KEY_RUN_COMMAND, newRunCommand},
     });

@@ -191,17 +191,17 @@ double Interface::readGyro() {
 }
 
 bool Interface::wallFront() {
-    PRINT("isWallFront");
+    PRINT("wallFront");
     READ_AND_RETURN_BOOL();
 }
 
 bool Interface::wallRight() {
-    PRINT("isWallRight");
+    PRINT("wallRight");
     READ_AND_RETURN_BOOL();
 }
 
 bool Interface::wallLeft() {
-    PRINT("isWallLeft");
+    PRINT("wallLeft");
     READ_AND_RETURN_BOOL();
 }
 

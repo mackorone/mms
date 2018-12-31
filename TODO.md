@@ -3,27 +3,22 @@ Release
 - Clean up mouse algo template
     - setWall and clearWall
     - Add Python bindings
-- Fix UI updates on mouse algo start/stop
-- Disable pause button when algo completes
-- Respond with "bump" (or something) if can't move forward
-- Update the build and run status when the algorithm changes
-- Make sure setText with empty string works as expected
 - Publish installation and usage guides
     - Update the wiki
     - Make some video tutorials
     - Page for common error message for failed commands
-- Run and build command should be lists of strings, not single string
+- Panel is too large, set max size for maze file combo box
+- Reset button causes mack algo to fail ... why?
 
 Cleanup
 =======
+- Run and build command should be lists of strings, not single string
 - Add unit tests
 - Lint the codebase
 - Remove superfluous include statements
+- Move mouse-related state from window class into mouse class 
 - Look into using vsync so the graphics don't tear
 - MacOS retina https://github.com/vispy/vispy/issues/99
-- Don't actually log within mouse interface - surface errors a different way
-- Call all "algo stop" functions during Window initialization
-    - Deduplicate initialization with "stop algo" code (and "failed algo" code)
 - Make a note about why we write NO_ACK_STRING for some dispatched commands
     - It's a speed optimization, similar to UDP vs. TCP
 - Kill SimUtilities
@@ -41,6 +36,7 @@ Cleanup
     - Make sure all QObjects have parents
 - Make sure all QObject membors are stored on the heap
 - QSet instead of QVector in some places
+- QStringLiteral instead of QString
 - Use tr() on all user-facing strings to make text translatable
 - Use uniform syntax for signal/slot connections
 - Fix up so that -Wall -Werror -pedantic-error flags pass

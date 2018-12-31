@@ -5,16 +5,12 @@
 #include <QComboBox>
 #include <QLabel>
 #include <QMainWindow>
-#include <QMap>
-#include <QObject>
 #include <QPair>
 #include <QPlainTextEdit>
 #include <QProcess>
 #include <QPushButton>
 #include <QQueue>
 #include <QSet>
-#include <QState>
-#include <QStateMachine>
 #include <QTimer>
 #include <QToolButton>
 
@@ -51,6 +47,8 @@ public:
 
 private:
 
+    Map* m_map;
+
     // ----- Maze -----
 
     Maze* m_maze;
@@ -70,15 +68,25 @@ private:
     QComboBox* m_mouseAlgoComboBox;
     QToolButton* m_mouseAlgoEditButton;
 
+    void onMouseAlgoComboBoxChanged(QString name);
     void onMouseAlgoEditButtonPressed();
     void onMouseAlgoImportButtonPressed();
     void refreshMouseAlgoComboBox(QString selected);
 
-    // ----- Algo output -----
+    // ----- Algo processes-----
+
+    static const QString IN_PROGRESS_STYLE_SHEET;
+    static const QString COMPLETE_STYLE_SHEET;
+    static const QString CANCELED_STYLE_SHEET;
+    static const QString FAILED_STYLE_SHEET;
+    static const QString ERROR_STYLE_SHEET;
 
     QTabWidget* m_mouseAlgoOutputTabWidget;
     QPlainTextEdit* m_buildOutput;
     QPlainTextEdit* m_runOutput;
+
+    void cancelProcess(QProcess* process, QLabel* status);
+    void cancelAllProcesses();
 
     // ----- Algo build -----
 
@@ -96,89 +104,77 @@ private:
     QProcess* m_runProcess;
     QLabel* m_runStatus;
 
-    // The mouse, its graphic, its view of the maze
-    Mouse* m_mouse;
-    MouseGraphic* m_mouseGraphic;
-    MazeView* m_view;
-
-    // Run-related members
-    // TODO: MACK
     void startRun();
     void cancelRun();
     void onRunExit(int exitCode, QProcess::ExitStatus exitStatus);
+
+    Mouse* m_mouse;
+    MazeView* m_view;
+    MouseGraphic* m_mouseGraphic;
+
     void removeMouseFromMaze();
 
-    // ----- Misc -----
+    // ----- Pause/reset ----
 
-    // The OpenGL widget (i.e., the graphics)
-    Map* m_map;
-
-    // Cache
-    QSet<QPair<int, int>> m_tilesWithColor;
-    QSet<QPair<int, int>> m_tilesWithText;
-
-    // Cancel running processes
-    void cancelAllProcesses();
-    void cancelProcess(QProcess* process, QLabel* status);
-
-    // ----- Communication -----
-
-    QStringList processText(const QString& text);
-
-    // Execute a request, return a response
-    QString dispatch(const QString& command);
-
-    // A buffer to hold incomplete commands, ensures we only
-    // process commands once they're terminated with a newline
-    QStringList m_commandBuffer;
-
-    // Handle a single command
-    void processCommand(QString command);
-
-    // For processing serial commands asynchronously
-    QQueue<QString> m_commandQueue;
-    void processQueuedCommands();
-    QTimer* m_commandQueueTimer;
-
-    // ----- Movement -----
-
-    // TODO: MACK
-    bool isMoving();
-    double progressRemaining();
-    void moveALittle(double progress);
-
-    double m_step;
-    QSlider* m_speedSlider;
-    void scheduleAnotherCall();
-
-    // State used for asynchronous mouse movement
-    void updateStartingLocationAndDirection();
-    QPair<int, int> m_startingLocation;
-    Direction m_startingDirection;
-    Movement m_movement;
-    double m_progress;
-    double progressRequired(Movement movement);
-
-    // ----- Interaction ----
-
-    // TODO: MACK
-    void mouseAlgoPause();
-    void mouseAlgoResume();
-    QPushButton* m_resetButton;
-    QPushButton* m_pauseButton;
     bool m_isPaused;
     bool m_wasReset;
+    QPushButton* m_pauseButton;
+    QPushButton* m_resetButton;
+
     void onPauseButtonPressed();
     void onResetButtonPressed();
 
+    // ----- Communication -----
+
+    static const QString ACK;
+    static const QString CRASH;
+    static const QString INVALID;
+
+    // A buffer to hold incomplete commands, only
+    // process once they're terminated with a newline
+    QStringList m_communicationBuffer;
+    QStringList processText(QString text);
+
+    QQueue<QString> m_commandQueue;
+    QTimer* m_commandQueueTimer;
+
+    void dispatchCommand(QString command);
+    QString executeCommand(QString command);
+    void processQueuedCommands();
+
+    // ----- Movement -----
+
+    static const int SPEED_SLIDER_MAX;
+    static const int SPEED_SLIDER_DEFAULT;
+    static const double PROGRESS_REQUIRED_FOR_MOVE;
+    static const double PROGRESS_REQUIRED_FOR_TURN;
+    static const double MIN_PROGRESS_PER_SECOND;
+    static const double MAX_PROGRESS_PER_SECOND;
+    static const double MAX_SLEEP_SECONDS;
+
+    // TODO: upforgrabs
+    // Encapsulate this state in the mouse class
+
+    QPair<int, int> m_startingLocation;
+    Direction m_startingDirection;
+    Movement m_movement;
+    double m_movementProgress;
+    double m_movementStepSize;
+    QSlider* m_speedSlider;
+
+    double progressRequired(Movement movement);
+    void updateMouseProgress(double progress);
+    void scheduleMouseProgressUpdate();
+    bool isMoving();
+
     // ----- API -----
 
-    int getWidth();
-    int getHeight();
+    int mazeWidth();
+    int mazeHeight();
 
-    bool isWallFront();
-    bool isWallRight();
-    bool isWallLeft();
+    bool wallFront();
+    bool wallRight();
+    bool wallLeft();
 
     bool moveForward();
     void turnRight();
@@ -200,6 +196,10 @@ private:
 
     // ----- Helpers -----
 
+    QSet<QPair<int, int>> m_tilesWithColor;
+    QSet<QPair<int, int>> m_tilesWithText;
+
+    QString boolToString(bool value) const;
     bool isWall(Wall wall) const;
     bool isWithinMaze(int x, int y) const;
     Wall getOpposingWall(Wall wall) const;

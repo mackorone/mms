@@ -44,12 +44,9 @@ void SettingsMisc::setRecentWindowHeight(int height) {
 }
 
 int SettingsMisc::getNumber(QString key, int defaultValue) {
-    int number = -1;
-    QString value = getValue(key);
-    if (SimUtilities::isInt(value)) {
-        number = SimUtilities::strToInt(value);
-    }
-    if (number < 0) {
+    bool ok = true;
+    int number = getValue(key).toInt(&ok);
+    if (!ok) {
         number = defaultValue;
         setValue(key, QString::number(number));
     }
