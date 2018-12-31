@@ -1,6 +1,5 @@
 Release
 =======
-- Buffer algorithm stderr logs
 - Test on Mac
 - Test on Windows
 - Update the wiki

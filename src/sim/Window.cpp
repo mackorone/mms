@@ -96,7 +96,8 @@ Window::Window(QWidget *parent) :
     m_resetButton(new QPushButton("Reset")),
 
     // Communication
-    m_communicationBuffer(QStringList()),
+    m_logBuffer(QStringList()),
+    m_commandBuffer(QStringList()),
     m_commandQueue(QQueue<QString>()),
     m_commandQueueTimer(new QTimer()),
 
@@ -690,22 +691,22 @@ void Window::startRun() {
     // Instantiate a new process
     QProcess* process = new QProcess();
 
-    // Process commands from stdout
-    connect(process, &QProcess::readyReadStandardOutput, this, [=](){
-        QString output = process->readAllStandardOutput();
-        QStringList commands = processText(output);
-        for (QString command : commands) {
-            dispatchCommand(command);
-        }
-    });
-
     // Print stderr
     connect(process, &QProcess::readyReadStandardError, this, [=](){
         QString output = process->readAllStandardError();
-        if (output.endsWith("\n")) {
-            output.truncate(output.size() - 1);
+        QStringList logs = processText(output, &m_logBuffer);
+        for (QString log : logs) {
+            m_runOutput->appendPlainText(log);
         }
-        m_runOutput->appendPlainText(output);
+    });
+
+    // Process commands from stdout
+    connect(process, &QProcess::readyReadStandardOutput, this, [=](){
+        QString output = process->readAllStandardOutput();
+        QStringList commands = processText(output, &m_commandBuffer);
+        for (QString command : commands) {
+            dispatchCommand(command);
+        }
     });
 
     // Clean up on exit
@@ -835,7 +836,8 @@ void Window::removeMouseFromMaze() {
     m_mouseGraphic = nullptr;
 
     // Reset communication state
-    m_communicationBuffer.clear();
+    m_logBuffer.clear();
+    m_commandBuffer.clear();
 
     // Reset movement state
     m_startingLocation = {0, 0};
@@ -868,7 +870,7 @@ void Window::onResetButtonPressed() {
     m_wasReset = true;
 }
 
-QStringList Window::processText(QString text) {
+QStringList Window::processText(QString text, QStringList* buffer) {
 
     QStringList lines;
 
@@ -879,8 +881,8 @@ QStringList Window::processText(QString text) {
     // complete line; combine it with the contents of the buffer and append
     // it to the list of lines to be returned
     if (1 < parts.size()) {
-        lines.append(m_communicationBuffer.join("") + parts.at(0));
-        m_communicationBuffer.clear();
+        lines.append(buffer->join("") + parts.at(0));
+        buffer->clear();
     }
 
     // All newline-separated parts in the text are lines
@@ -890,7 +892,7 @@ QStringList Window::processText(QString text) {
 
     // Store the last part of the text (empty string if the text ended
     // with newline) in the buffer, to be combined with future input
-    m_communicationBuffer.append(parts.at(parts.size() - 1));
+    buffer->append(parts.at(parts.size() - 1));
 
     return lines;
 }

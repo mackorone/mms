@@ -133,10 +133,11 @@ private:
     static const QString CRASH;
     static const QString INVALID;
 
-    // A buffer to hold incomplete commands, only
-    // process once they're terminated with a newline
-    QStringList m_communicationBuffer;
-    QStringList processText(QString text);
+    // Buffers to hold incomplete output, only
+    // process once terminated with a newline
+    QStringList m_logBuffer;
+    QStringList m_commandBuffer;
+    QStringList processText(QString text, QStringList* buffer);
 
     QQueue<QString> m_commandQueue;
     QTimer* m_commandQueueTimer;
