@@ -875,6 +875,7 @@ QStringList Window::processText(QString text, QStringList* buffer) {
     QStringList lines;
 
     // Separate the text by line
+    text.replace("\r", "");  // Windows compatibility
     QStringList parts = text.split("\n");
 
     // If the text has at least one newline character, we definitely have a

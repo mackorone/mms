@@ -11,6 +11,7 @@ Release
 - Reach out to schools
 - Reach our to Micromouse sites
 - Wiki page for common error message for failed commands
+- Fix mack algo assertion failure on Windows
 
 Wishlist
 ========
