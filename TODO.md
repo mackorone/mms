@@ -1,7 +1,6 @@
 Release
 =======
 - Test on Mac
-- Test on Windows
 - Update the wiki
 - Publish simulator installation guides
 - Make some video tutorials
@@ -10,8 +9,6 @@ Release
 - Advertise on Facebook
 - Reach out to schools
 - Reach our to Micromouse sites
-- Wiki page for common error message for failed commands
-- Fix mack algo assertion failure on Windows
 
 Wishlist
 ========
@@ -30,9 +27,11 @@ Wishlist
     - solved or not
     - how many steps
     - ave # of steps
+- Add more builtin mazes, rename them
 
 Cleanup
 =======
+- Fix mack algo assertion failure on Windows when reset pressed
 - Run and build command should be lists of strings, not single string
 - Add unit tests
 - Lint the codebase
