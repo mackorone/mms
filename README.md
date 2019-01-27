@@ -4,7 +4,8 @@
 
 ## Table of Contents
 
-TODO
+1. [Introduction](https://github.com/mackorone/mms#introduction)
+1. [Installation](https://github.com/mackorone/mms#installation)
 
 ## Introduction
 
@@ -52,7 +53,7 @@ make
 ../../bin/sim
 ```
 
-## Quick Start
+## Writing An Algorithm
 
 #### Step 1: Create a directory for your algorithm:
 
@@ -86,10 +87,6 @@ Here's an example:
 
 ![](https://github.com/mackorone/mms/wiki/images/edit.png)
 
-
-## Configuration
-
-## How It Works
 
 ## Mouse API
 
@@ -149,7 +146,7 @@ void ackReset();
 * **Action:** None
 * **Response:** `true` if there is a wall to the right of the robot, else `false`
 
-#### `wallRight`
+#### `wallLeft`
 * **Args:** None
 * **Action:** None
 * **Response:** `true` if there is a wall to the left of the robot, else `false`
@@ -159,7 +156,7 @@ void ackReset();
 * **Action:** Move the robot forward by one cell
 * **Response:**
   * `crash` if there is a wall in front of the robot
-  * `ack` once the movement completes
+  * else `ack` once the movement completes
 
 #### `turnRight`
 * **Args:** None
@@ -191,9 +188,29 @@ void ackReset();
 * **Args:**
   * `X` - The X coordinate of the cell
   * `Y` - The Y coordinate of the cell
-  * `C` - The character of the desired [color](https://github.com/mackorone/mms#cell-color)
+  * `C` - The character of the desired color
 * **Action:** Set the color of the cell at the given position
 * **Response:** None
+
+The available colors are as follows:
+
+| Char | Color       |
+|------|-------------|
+|  k   | Black       | 
+|  b   | Blue        | 
+|  a   | Gray        | 
+|  c   | Cyan        | 
+|  g   | Green       | 
+|  o   | Orange      | 
+|  r   | Red         | 
+|  w   | White       | 
+|  y   | Yellow      | 
+|  B   | Dark Blue   | 
+|  C   | Dark Cyan   | 
+|  A   | Dark Gray   | 
+|  G   | Dark Green  | 
+|  R   | Dark Red    | 
+|  Y   | Dark Yellow | 
 
 #### `clearColor X Y`
 * **Args:**
@@ -211,9 +228,20 @@ void ackReset();
 * **Args:**
   * `X` - The X coordinate of the cell
   * `Y` - The Y coordinate of the cell
-  * `TEXT` - The desired [text](https://github.com/mackorone/mms#cell-text), max length 10
+  * `TEXT` - The desired text, max length 10
 * **Action:** Set the text of the cell at the given position
 * **Response:** None
+
+The available characters are as follows:
+
+|   |   |   |   |   |   |   |   |   |   |   |   |      |   |   |   |
+|---|---|---|---|---|---|---|---|---|---|---|---|------|---|---|---|
+|   | ! | " | # | $ | % | & | ' | ( | ) | * | + |  ,   | - | . | / |
+| 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | : | ; |  <   | = | > | ? |
+| @ | A | B | C | D | E | F | G | H | I | J | K |  L   | M | N | O |
+| P | Q | R | S | T | U | V | W | X | Y | Z | [ |  \   | ] | ^ | _ |
+| ` | a | b | c | d | e | f | g | h | i | j | k |  l   | m | n | o |
+| p | q | r | s | t | u | v | w | x | y | z | { |&#124;| } | ~ |   |
 
 #### `clearText X Y`
 * **Args:**
@@ -237,97 +265,47 @@ void ackReset();
 * **Action:** Allow the mouse to be moved back to the start of the maze
 * **Response:** `ack` once the movement completes
 
+## Maze Files
 
-## Cell Walls
+Format:
 
-## Cell Color
+    X Y N E S W
 
-## Cell Text
+Example:
 
-## Reset Button
+    0 0 0 1 1 1
+    0 1 1 0 0 1
+    1 0 0 0 1 1
+    1 1 1 1 0 0
+    2 0 0 1 1 0
+    2 1 1 1 0 1
 
-## Speed Controls
+Result:
 
-## Reset Button
+    +---+---+---+
+    |       |   |
+    +   +   +   +
+    |   |       |
+    +---+---+---+
 
-## Maze Format
+Requirements for use with simulator:
 
-    // Format:
-    //
-    //     X Y N E S W
-    //
-    // Example:
-    //
-    //     0 0 0 1 1 1
-    //     0 1 1 0 0 1
-    //     1 0 0 0 1 1
-    //     1 1 1 1 0 0
-    //     2 0 0 1 1 0
-    //     2 1 1 1 0 1
-    //
-    // Result:
-    //
-    //     +---+---+---+
-    //     |       |   |
-    //     +   +   +   +
-    //     |   |       |
-    //     +---+---+---+
+* Nonempty
+* Rectangular
+* Fully enclosed
+* Internally consistent
 
+Additional requirements for official Micromouse mazes:
 
-    * Loading mazes in many different formats (`.MAZ`, `.MZ2`, `.num`, `.map`)
+* No inaccessible locations
+* Exactly three starting walls
+* Only one entrance to the center
+* Has a hollow center, i.e., the center peg has no walls attached to it
+* Has walls attached to every peg except the center peg
+* Is unsolvable by a wall-following robot
 
-#### Validity checks
-
-### The `.maz` format
-
-1. Each `.maz` file consists of `MAZE_WIDTH` by `MAZE_HEIGHT` newline-separated lines
-2. Each line consists of 6 whitespace (preferably single-space) separated tokens
-3. The first 2 tokens represent the `x` and `y` position of the tile, respectively
-4. The last 4 tokens represent the existence of `north`, `east`, `south`, and
-   `west` walls, respectively; `1` indicates the presence of wall and `0`
-   indicates the absence of a wall
-5. The lines should be sorted in order of their `x` position, and then
-   subsorted in order of their `y` position
-
-### Notes
-
-1. The presence/absence of walls must be consistent between rows. That is, if a
-   wall is present to the north of a particular tile, it should also be present to
-   the south of the tile directly above the first tile.
-2. In order for a maze file to be valid, the maze must be bounded on all sides.
-
-### Example
-
-A valid 3x2 maze file might look like:
-
-```
-0 0 0 1 1 1
-0 1 1 0 0 1
-1 0 0 0 1 1
-1 1 1 0 0 0
-2 0 1 1 1 0
-2 1 1 1 1 0
-```
-
-And the maze corresponding to the file would look like:
-
-```
-|---------------------------------------------|
-|                                             |
-|                                             |
-|                                             |
-|     (0,1)           (1,1)         (2,1)     |
-|                                             |
-|                                             |
-|                              ---------------|
-|               |                             |
-|               |                             |
-|               |                             |
-|     (0,0)     |     (1,0)         (2,0)     |
-|               |                             |
-|               |                             |
-|---------------|-----------------------------|
-```
+Note: other formats are not supported, however there is a CLI tool that can
+easily convert between formats: https://github.com/mackorone/maze
 
 ## Previous Versions
 
