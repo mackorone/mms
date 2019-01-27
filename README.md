@@ -1,6 +1,6 @@
 # mms
 
-![](https://github.com/mackorone/mms/img/mms.gif)
+![](https://github.com/mackorone/mms/blob/master/img/mms.gif)
 
 ## Table of Contents
 
