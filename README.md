@@ -93,11 +93,15 @@ Here's an example:
 
 ## Mouse API
 
-Your algorithm can communicate with the simulator via stdin/stdout. To issue a
-command, simply print to stdout. To read a response, simply read from stdin.
-All valid commands are listed below. Invalid commands are simply ignored.
+Algorithms communicate with the simulator via stdin/stdout. To issue a command,
+simply print to stdout. To read a response, simply read from stdin. All valid
+commands are listed below. Invalid commands are simply ignored.
+
+For commands that return a response, it's recommended to wait for the response
+before issuing additional commands.
 
 #### Summary 
+
 ```c++
 int mazeWidth();
 int mazeHeight();
@@ -126,87 +130,113 @@ void ackReset();
 ```
 
 #### `mazeWidth`
-* **Arguments:** None
-* **Response:** The integer height of the maze
-* **Result:** None
+* **Args:** None
+* **Action:** None
+* **Response:** The height of the maze
 
 #### `mazeHeight`
-* **Arguments:** None
-* **Response:** The integer width of the maze
-* **Result:** None
+* **Args:** None
+* **Action:** None
+* **Response:** The width of the maze
 
 #### `wallFront`
-* **Arguments:** None
-* **Response:** `true` if there's a wall in front of the robot, else `false`
-* **Result:** None
+* **Args:** None
+* **Action:** None
+* **Response:** `true` if there is a wall in front of the robot, else `false`
 
 #### `wallRight`
-* **Arguments:** None
-* **Response:** `true` if there's a wall to the right of the robot, else `false`
-* **Result:** None
+* **Args:** None
+* **Action:** None
+* **Response:** `true` if there is a wall to the right of the robot, else `false`
 
-#### `wallLeft`
-* Action: None
-* Arguments: None
-* Returns: "true" if there's a wall to the left of the robot, else "false"
+#### `wallRight`
+* **Args:** None
+* **Action:** None
+* **Response:** `true` if there is a wall to the left of the robot, else `false`
 
 #### `moveForward`
-* Action: Move the robot forward by one cell
-* Arguments: None
-* Returns: "ack" once the movement is complete, or "crash"
+* **Args:** None
+* **Action:** Move the robot forward by one cell
+* **Response:**
+  * `crash` if there is a wall in front of the robot
+  * `ack` once the movement completes
 
 #### `turnRight`
-* Action: Turn the robot ninty degrees to the right
-* Arguments: None
-* Returns: "ack" once the movement is complete
+* **Args:** None
+* **Action:** Turn the robot ninty degrees to the right
+* **Response:** `ack` once the movement completes
 
 #### `turnLeft`
-* Action: Turn the robot ninty degrees to the left
-* Arguments: None
-* Returns: "ack" once the movement is complete
+* **Args:** None
+* **Action:** Turn the robot ninty degrees to the left
+* **Response:** `ack` once the movement completes
 
-#### `setWall`
-* Action: Display a wall at the given position
-* Arguments:
-  * Integer X position
-  * Integer Y position
-  * Character direction ("n", "e", "s", or "w")
-* Returns: None
+#### `setWall X Y D`
+* **Args:**
+  * `X` - The X coordinate of the cell
+  * `Y` - The Y coordinate of the cell
+  * `D` - The direction of the wall: `n`, `e`, `s`, or `w`
+* **Action:** Display a wall at the given position
+* **Response:** None
 
-#### `clearWall`
-* Action: Clear the wall at the given position
-* Arguments:
-  * Integer X position
-  * Integer Y position
-  * Character direction ("n", "e", "s", or "w")
-* Returns: None
+#### `clearWall X Y D`
+* **Args:**
+  * `X` - The X coordinate of the cell
+  * `Y` - The Y coordinate of the cell
+  * `D` - The direction of the wall: `n`, `e`, `s`, or `w`
+* **Action:** Clear the wall at the given position
+* **Response:** None
 
-#### `setColor`
-* Action: Set the color of the cell at the given position
-* Arguments:
-  * Integer X position
-  * Integer Y position
-  * Character color (see [Cell Color](https://github.com/mackorone/mms#cell-color))
-* Returns: None
+#### `setColor X Y C`
+* **Args:**
+  * `X` - The X coordinate of the cell
+  * `Y` - The Y coordinate of the cell
+  * `C` - The character of the desired [color](https://github.com/mackorone/mms#cell-color)
+* **Action:** Set the color of the cell at the given position
+* **Response:** None
 
-#### `setColor`
-* Action: Set the color of the cell at the given position
-* Arguments:
-  * Integer X position
-  * Integer Y position
-  * Character color (see [Cell Color](https://github.com/mackorone/mms#cell-color))
-* Returns: None
+#### `clearColor X Y`
+* **Args:**
+  * `X` - The X coordinate of the cell
+  * `Y` - The Y coordinate of the cell
+* **Action:** Clear the color of the cell at the given position
+* **Response:** None
 
-    void setColor(int x, int y, char color);
-    void clearColor(int x, int y);
-    void clearAllColor();
+#### `clearAllColor`
+* **Args:** None
+* **Action:** Clear the color of all cells
+* **Response:** None
 
-    void setText(int x, int y, std::string text);
-    void clearText(int x, int y);
-    void clearAllText();
+#### `setText X Y TEXT`
+* **Args:**
+  * `X` - The X coordinate of the cell
+  * `Y` - The Y coordinate of the cell
+  * `TEXT` - The desired [text](https://github.com/mackorone/mms#cell-text), max length 10
+* **Action:** Set the text of the cell at the given position
+* **Response:** None
 
-    bool wasReset();
-    void ackReset();
+#### `clearText X Y`
+* **Args:**
+  * `X` - The X coordinate of the cell
+  * `Y` - The Y coordinate of the cell
+* **Action:** Clear the text of the cell at the given position
+* **Response:** None
+
+#### `clearAllColor`
+* **Args:** None
+* **Action:** Clear the text of all cells
+* **Response:** None
+
+#### `wasReset`
+* **Args:** None
+* **Action:** None
+* **Response:** `true` if the reset button was pressed, else `false`
+
+#### `ackReset`
+* **Args:** None
+* **Action:** Allow the mouse to be moved back to the start of the maze
+* **Response:** `ack` once the movement completes
+
 
 ## Cell Walls
 
