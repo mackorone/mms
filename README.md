@@ -52,7 +52,7 @@ make
 ../../bin/sim
 ```
 
-## Writing An Algorithm
+## Quick Start
 
 #### Step 1: Create a directory for your algorithm:
 
@@ -87,17 +87,136 @@ Here's an example:
 ![](https://github.com/mackorone/mms/wiki/images/edit.png)
 
 
-##  Button
+## Configuration
 
-## Reset Button
+## How It Works
 
 ## Mouse API
+
+Your algorithm can communicate with the simulator via stdin/stdout. To issue a
+command, simply print to stdout. To read a response, simply read from stdin.
+All valid commands are listed below. Invalid commands are simply ignored.
+
+#### Summary 
+```c++
+int mazeWidth();
+int mazeHeight();
+
+bool wallFront();
+bool wallRight();
+bool wallLeft();
+
+void moveForward();
+void turnRight();
+void turnLeft();
+
+void setWall(int x, int y, char direction);
+void clearWall(int x, int y, char direction);
+
+void setColor(int x, int y, char color);
+void clearColor(int x, int y);
+void clearAllColor();
+
+void setText(int x, int y, std::string text);
+void clearText(int x, int y);
+void clearAllText();
+
+bool wasReset();
+void ackReset();
+```
+
+#### `mazeWidth`
+* **Arguments:** None
+* **Response:** The integer height of the maze
+* **Result:** None
+
+#### `mazeHeight`
+* **Arguments:** None
+* **Response:** The integer width of the maze
+* **Result:** None
+
+#### `wallFront`
+* **Arguments:** None
+* **Response:** `true` if there's a wall in front of the robot, else `false`
+* **Result:** None
+
+#### `wallRight`
+* **Arguments:** None
+* **Response:** `true` if there's a wall to the right of the robot, else `false`
+* **Result:** None
+
+#### `wallLeft`
+* Action: None
+* Arguments: None
+* Returns: "true" if there's a wall to the left of the robot, else "false"
+
+#### `moveForward`
+* Action: Move the robot forward by one cell
+* Arguments: None
+* Returns: "ack" once the movement is complete, or "crash"
+
+#### `turnRight`
+* Action: Turn the robot ninty degrees to the right
+* Arguments: None
+* Returns: "ack" once the movement is complete
+
+#### `turnLeft`
+* Action: Turn the robot ninty degrees to the left
+* Arguments: None
+* Returns: "ack" once the movement is complete
+
+#### `setWall`
+* Action: Display a wall at the given position
+* Arguments:
+  * Integer X position
+  * Integer Y position
+  * Character direction ("n", "e", "s", or "w")
+* Returns: None
+
+#### `clearWall`
+* Action: Clear the wall at the given position
+* Arguments:
+  * Integer X position
+  * Integer Y position
+  * Character direction ("n", "e", "s", or "w")
+* Returns: None
+
+#### `setColor`
+* Action: Set the color of the cell at the given position
+* Arguments:
+  * Integer X position
+  * Integer Y position
+  * Character color (see [Cell Color](https://github.com/mackorone/mms#cell-color))
+* Returns: None
+
+#### `setColor`
+* Action: Set the color of the cell at the given position
+* Arguments:
+  * Integer X position
+  * Integer Y position
+  * Character color (see [Cell Color](https://github.com/mackorone/mms#cell-color))
+* Returns: None
+
+    void setColor(int x, int y, char color);
+    void clearColor(int x, int y);
+    void clearAllColor();
+
+    void setText(int x, int y, std::string text);
+    void clearText(int x, int y);
+    void clearAllText();
+
+    bool wasReset();
+    void ackReset();
 
 ## Cell Walls
 
 ## Cell Color
 
 ## Cell Text
+
+## Reset Button
+
+## Speed Controls
 
 ## Reset Button
 
@@ -179,10 +298,12 @@ And the maze corresponding to the file would look like:
 |               |                             |
 |---------------|-----------------------------|
 ```
-## Older Versions
 
-Previous incarnations of mms exist in the `old/` directory. Feel free to take a
-look, but previous versions are currently unsupported.
+## Previous Versions
+
+Previous versions of mms exist in the `old/` directory. Feel free to take a
+look, but only the most recent version is supported.
+
 
 ## Dependencies
 
