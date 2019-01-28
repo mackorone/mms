@@ -39,28 +39,53 @@ Previous versions of *mms* exist in the `old/` directory.
 
 ## Installation
 
-#### Pre-compiled Binaries
+In the near future, we'll provide pre-compiled binaries. Until then, you need
+to build from source. At a high level, the steps are as follows:
 
-In the near future, we'll provide pre-compiled binaries on these three platforms:
+1. Install Qt and other dependencies
+1. Build `mms/src/sim/sim.pro`
+1. Run `mms/bin/sim`
 
-* Windows
-* Mac OS X
-* Linux 
+#### Windows
 
-Until then, you'll have to build from source.
+TODO
 
-#### Build From Source
+#### Mac OS
 
-1. Download Qt (see [this download page](https://www.qt.io/download/))
-1. Use the `sim.pro` file in `src/sim` to configure and build the project
-1. Run the resultant binary
+TODO
 
-For example, on Ubuntu, run the following:
+#### Linux (Ubuntu)
+
+Qt installation option #1: use the command line
+```
+sudo apt-get install qt5-default
+```
+
+Qt installation option #2: use the installer
+
+1. Download the Qt open source installer: https://www.qt.io/download/
+1. Make the installer executable: `chmod +x qt-unified-linux-x64-3.0.6-online.run`
+1. Run the installer executable: `./qt-unified-linux-x64-3.0.6-online.run`
+1. If you don't already have a Qt account, you'll need to make one
+1. When prompted to select components, [choose "Desktop gcc 64-bit"](https://github.com/mackorone/mms/blob/master/img/qt-install-ubuntu.png)
+1. Once the installer finishes, the `qmake` binary can be found in the installation directory
+
+More documentation:
+
+* https://wiki.qt.io/Install_Qt_5_on_Ubuntu
+* http://doc.qt.io/qt-5/linux.html
+
+Clone, build, and run the project:
 
 ```bash
-cd src/sim
-qmake
-make
+# Clone the repo
+git clone git@github.com:mackorone/mms.git
+
+# Build the simulator
+cd mms/src/sim
+qmake && make
+
+# Run the simulator
 ../../bin/sim
 ```
 

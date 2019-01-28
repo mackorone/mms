@@ -202,7 +202,7 @@ Window::Window(QWidget *parent) :
     configLayout->addWidget(m_mazeFileComboBox, 0, 1, 1, 2);
     connect(
         m_mazeFileComboBox,
-        QOverload<const QString &>::of(&QComboBox::activated),
+        static_cast<void(QComboBox::*)(const QString&)>(&QComboBox::activated),
         this,
         &Window::onMazeFileComboBoxChanged
     );

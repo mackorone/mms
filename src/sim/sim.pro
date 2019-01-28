@@ -5,6 +5,7 @@ QT += widgets
 
 TEMPLATE = app
 
+CONFIG += c++11
 CONFIG += debug
 CONFIG += object_parallel_to_source
 CONFIG += qt
