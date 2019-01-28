@@ -343,12 +343,6 @@ Additional requirements for official Micromouse mazes:
 Other formats are not supported at this time. However there is a CLI tool that can easily convert between formats: https://github.com/mackorone/maze
 
 
-## Previous Versions
-
-Previous versions of mms exist in the `old/` directory. Feel free to take a
-look, but only the most recent version is supported.
-
-
 ## Acknowledgements
 
 | Name                                                          | Author            | Used For              |
