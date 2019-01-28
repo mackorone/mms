@@ -5,6 +5,7 @@
 ## Table of Contents
 
 1. [Introduction](https://github.com/mackorone/mms#introduction)
+1. [Tutorials](https://github.com/mackorone/mms#tutorials)
 1. [Installation](https://github.com/mackorone/mms#installation)
 1. [Quick Start](https://github.com/mackorone/mms#quick-start)
 1. [Mouse API](https://github.com/mackorone/mms#mouse-api)
@@ -35,6 +36,11 @@ With it, you can:
 For information about Micromouse, see the [Micromouse Wikipedia page](http://en.wikipedia.org/wiki/Micromouse).
 
 Previous versions of mms exist in the `old/` directory.
+
+
+## Tutorials
+
+- Quick start: https://youtu.be/q84R8Gd99q0
 
 
 ## Installation

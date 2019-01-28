@@ -4,9 +4,6 @@ import sys
 
 # ----- API -----
 
-class InvalidCommandError(Exception):
-    pass
-
 class MouseCrashedError(Exception):
     pass
 

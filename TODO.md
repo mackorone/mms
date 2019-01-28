@@ -1,12 +1,10 @@
 Release
 =======
 - Test on Mac
-- Update the wiki
 - Publish simulator installation guides
 - Make some video tutorials
 - Build static binaries
 - Post on HackerNews
-- Advertise on Facebook
 - Reach out to schools
 - Reach our to Micromouse sites
 
