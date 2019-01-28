@@ -48,7 +48,18 @@ to build from source. At a high level, the steps are as follows:
 
 #### Windows
 
-TODO
+Install Qt:
+
+1. Download the Qt open source installer: https://www.qt.io/download/
+1. If you don't already have a Qt account, you'll need to make one
+1. When prompted to select components, [choose "MinGW 7.3.0 64-bit"](https://github.com/mackorone/mms/blob/master/img/qt-install-windows-1.png)
+
+Build the project using QtCreator:
+
+1. Download or clone *mms*
+1. Run QtCreator and open `mms/src/sim/sim/pro` 
+1. Configure the project to [use "Desktop Qt 5.12.0 MinGW 64-bit"](https://github.com/mackorone/mms/blob/master/img/qt-install-windows-2.png)
+1. Build and run the project
 
 #### Mac OS
 
@@ -242,7 +253,7 @@ void ackReset();
 * **Action:** Clear the text of the cell at the given position
 * **Response:** None
 
-#### `clearAllColor`
+#### `clearAllText`
 * **Args:** None
 * **Action:** Clear the text of all cells
 * **Response:** None
@@ -292,18 +303,9 @@ The available colors are as follows:
 
 ## Cell Text
 
-The available characters are as follows:
-
-|   |   |   |   |   |   |   |   |   |   |   |   |      |   |   |   |
-|---|---|---|---|---|---|---|---|---|---|---|---|------|---|---|---|
-|   | ! | " | # | $ | % | & | ' | ( | ) | * | + |  ,   | - | . | / |
-| 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | : | ; |  <   | = | > | ? |
-| @ | A | B | C | D | E | F | G | H | I | J | K |  L   | M | N | O |
-| P | Q | R | S | T | U | V | W | X | Y | Z | [ |  \   | ] | ^ | _ |
-| ` | a | b | c | d | e | f | g | h | i | j | k |  l   | m | n | o |
-| p | q | r | s | t | u | v | w | x | y | z | { |&#124;| } | ~ |   |
-
-Any invalid characters, such as a newline or tab, will be replaced with `?`.
+[All printable ASCII characters](http://facweb.cs.depaul.edu/sjost/it212/documents/ascii-pr.htm),
+except for `<DEL>`, can be used as cell text. Any invalid characters, such as a
+newline or tab, will be replaced with `?`.
 
 When no algorithm is running, the simulator displays the distance of each cell
 from the center of the maze.
@@ -365,7 +367,7 @@ Additional requirements for official Micromouse mazes:
 * Has walls attached to every peg except the center peg
 * Is unsolvable by a wall-following robot
 
-Other formats are not supported at this time. However there is a CLI tool that can easily convert between formats: https://github.com/mackorone/maze
+Other formats are not supported at this time. However, there is a CLI tool that can easily convert between formats: https://github.com/mackorone/maze
 
 
 ## Acknowledgements
