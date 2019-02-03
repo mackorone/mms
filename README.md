@@ -5,7 +5,7 @@
 ## Table of Contents
 
 1. [Introduction](https://github.com/mackorone/mms#introduction)
-1. [Installation](https://github.com/mackorone/mms#installation)
+1. [Download](https://github.com/mackorone/mms#download)
 1. [Quick Start](https://github.com/mackorone/mms#quick-start)
 1. [Mouse API](https://github.com/mackorone/mms#mouse-api)
 1. [Cell Walls](https://github.com/mackorone/mms#cell-walls)
@@ -13,6 +13,7 @@
 1. [Cell Text](https://github.com/mackorone/mms#cell-text)
 1. [Reset Button](https://github.com/mackorone/mms#reset-button)
 1. [Maze File Format](https://github.com/mackorone/mms#maze-file-format)
+1. [Building From Source](https://github.com/mackorone/mms#building-from-source)
 1. [Acknowledgements](https://github.com/mackorone/mms#acknowledgements)
 
 ## Introduction
@@ -32,95 +33,26 @@ With it, you can:
 * Test your algorithm on custom maze files
 * Write code in any language you want
 
-For information about Micromouse, see the [Micromouse Wikipedia page](http://en.wikipedia.org/wiki/Micromouse).
-
 Previous versions of *mms* exist in the `old/` directory.
 
+For information about Micromouse, see the [Micromouse Wikipedia page](http://en.wikipedia.org/wiki/Micromouse).
 
-## Installation
+## Download
 
-In the near future, we'll provide pre-compiled binaries. Until then, you need
-to build from source. At a high level, the steps are as follows:
+Coming soon! For now, see [Building From Source](https://github.com/mackorone/mms#building-from-source).
 
-1. Install Qt and other dependencies
-1. Build `mms/src/sim/sim.pro`
-1. Run `mms/bin/sim`
-
-#### Windows
-
-Install Qt:
-
-1. Download the Qt open source installer: https://www.qt.io/download/
-1. If you don't already have a Qt account, you'll need to make one
-1. When prompted to select components, [choose "MinGW 7.3.0 64-bit"](https://github.com/mackorone/mms/blob/master/img/qt-install-windows-1.png)
-
-Build the project using QtCreator:
-
-1. Download or clone *mms*
-1. Run QtCreator and open `mms/src/sim/sim/pro` 
-1. Configure the project to [use "Desktop Qt 5.12.0 MinGW 64-bit"](https://github.com/mackorone/mms/blob/master/img/qt-install-windows-2.png)
-1. Build and run the project
-
-#### Mac OS
-
-TODO
-
-#### Linux (Ubuntu)
-
-Qt installation option #1: use the command line
-```
-sudo apt-get install qt5-default
-```
-
-Qt installation option #2: use the installer
-
-1. Download the Qt open source installer: https://www.qt.io/download/
-1. Make the installer executable: `chmod +x qt-unified-linux-x64-3.0.6-online.run`
-1. Run the installer executable: `./qt-unified-linux-x64-3.0.6-online.run`
-1. If you don't already have a Qt account, you'll need to make one
-1. When prompted to select components, [choose "Desktop gcc 64-bit"](https://github.com/mackorone/mms/blob/master/img/qt-install-ubuntu.png)
-1. Once the installer finishes, the `qmake` binary can be found in the installation directory
-
-More documentation:
-
-* https://wiki.qt.io/Install_Qt_5_on_Ubuntu
-* http://doc.qt.io/qt-5/linux.html
-
-Clone, build, and run the project:
-
-```bash
-# Clone the repo
-git clone git@github.com:mackorone/mms.git
-
-# Build the simulator
-cd mms/src/sim
-qmake && make
-
-# Run the simulator
-../../bin/sim
-```
 
 ## Quick Start
 
-#### Step 1: Create a new directory:
+Writing a Micromouse algorithm is easy! Here are some available templates:
 
-```bash
-mkdir ~/Desktop/MyAlgo
-```
+- C++: [mackorone/mms-cpp](https://github.com/mackorone/mms-cpp)
+- Python: [mackorone/mms-python](https://github.com/mackorone/mms-python)
 
-#### Step 2: Copy over the template files:
-
-```bash
-cp src/mouse/templates/python/* ~/Desktop/MyAlgo
-```
-
-#### Step 3: Configure your algorithm:
-
-Here are some examples:
-
-![](https://github.com/mackorone/mms/blob/master/img/python.png)
-![](https://github.com/mackorone/mms/blob/master/img/cpp.png)
-
+If a template for a particular language is missing, don't fret! Writing your
+own template is as easy as writing to stdout, reading from stdin, and
+implementing the [mouse API](https://github.com/mackorone/mms#mouse-api) below.
+If you have a template you'd like to share, please make a pull request!
 
 ## Mouse API
 
@@ -131,7 +63,7 @@ commands are listed below. Invalid commands are simply ignored.
 For commands that return a response, it's recommended to wait for the response
 before issuing additional commands.
 
-#### Summary 
+#### Summary
 
 ```c++
 int mazeWidth();
@@ -141,7 +73,7 @@ bool wallFront();
 bool wallRight();
 bool wallLeft();
 
-void moveForward();
+void moveForward();  // can result in "crash"
 void turnRight();
 void turnLeft();
 
@@ -152,7 +84,7 @@ void setColor(int x, int y, char color);
 void clearColor(int x, int y);
 void clearAllColor();
 
-void setText(int x, int y, std::string text);
+void setText(int x, int y, const std::string& text);
 void clearText(int x, int y);
 void clearAllText();
 
@@ -269,6 +201,31 @@ void ackReset();
 * **Response:** `ack` once the movement completes
 
 
+#### Example
+
+```c++
+Algorithm Request (stdout)  Simulator Response (stdin)   
+--------------------------  --------------------------
+mazeWidth                   16
+mazeWidth                   16
+wallLeft                    true
+setWall 0 0 W               <NO RESPONSE>
+wallFront                   false
+moveForward                 ack
+turnLeft                    ack
+wallFront                   true
+moveForward                 crash
+setColor 0 1 r              <NO RESPONSE>
+setText 0 1 whoops          <NO RESPONSE>
+wasReset                    false
+...                       
+wasReset                    true
+clearAllColor               <NO RESPONSE>
+clearAllText                <NO RESPONSE>
+ackReset                    ack
+```
+
+
 ## Cell Walls
 
 Cell walls allow the robot to diplay where it thinks walls exist, and where it
@@ -352,11 +309,11 @@ Result:
 
 Requirements for use with simulator:
 
-* Nonempty
-* Rectangular
-* Fully enclosed
-* Internally consistent
-  * E.g., if cell (0,1) has a north wall, then tile (0,2) should have a south wall
+* Maze must be nonempty
+* Maze must be rectangular
+* Maze must be fully enclosed
+* Maze must be internally consistent
+  * E.g., if cell (0,1) has a north wall, tile (0,2) should have a south wall
 
 Additional requirements for official Micromouse mazes:
 
@@ -367,8 +324,69 @@ Additional requirements for official Micromouse mazes:
 * Has walls attached to every peg except the center peg
 * Is unsolvable by a wall-following robot
 
-Other formats are not supported at this time. However, there is a CLI tool that can easily convert between formats: https://github.com/mackorone/maze
+Other formats are not supported at this time. However, there is a CLI tool that
+can easily convert between formats:
+[mackorone/maze](https://github.com/mackorone/maze).
 
+
+## Building From Source
+
+If you want to write code for the simulator itself, you'll need to build the
+project from source. Below are some OS-specific instructions.
+
+#### Windows
+
+Install Qt:
+
+1. Download the Qt open source installer: https://www.qt.io/download/
+1. If you don't already have a Qt account, you'll need to make one
+1. When prompted to select components, [choose "MinGW 7.3.0 64-bit"](https://github.com/mackorone/mms/blob/master/img/qt-install-windows-1.png)
+
+Build the project using QtCreator:
+
+1. Download or clone *mms*
+1. Run QtCreator and open `mms/src/sim/sim/pro` 
+1. Configure the project to [use "Desktop Qt 5.12.0 MinGW 64-bit"](https://github.com/mackorone/mms/blob/master/img/qt-install-windows-2.png)
+1. Build and run the project
+
+#### Mac OS
+
+COMING SOON
+
+#### Linux (Ubuntu)
+
+Qt installation option #1: use the command line
+```
+sudo apt-get install qt5-default
+```
+
+Qt installation option #2: use the installer
+
+1. Download the Qt open source installer: https://www.qt.io/download/
+1. Make the installer executable: `chmod +x qt-unified-linux-x64-3.0.6-online.run`
+1. Run the installer executable: `./qt-unified-linux-x64-3.0.6-online.run`
+1. If you don't already have a Qt account, you'll need to make one
+1. When prompted to select components, [choose "Desktop gcc 64-bit"](https://github.com/mackorone/mms/blob/master/img/qt-install-ubuntu.png)
+1. Once the installer finishes, the `qmake` binary can be found in the installation directory
+
+More documentation:
+
+* https://wiki.qt.io/Install_Qt_5_on_Ubuntu
+* http://doc.qt.io/qt-5/linux.html
+
+Clone, build, and run the project:
+
+```bash
+# Clone the repo
+git clone git@github.com:mackorone/mms.git
+
+# Build the simulator
+cd mms/src/sim
+qmake && make
+
+# Run the simulator
+../../bin/sim
+```
 
 ## Acknowledgements
 

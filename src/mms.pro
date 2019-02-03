@@ -14,7 +14,7 @@ SOURCES += $$files(*.cpp, true)
 HEADERS += $$files(*.h, true)
 RESOURCES = resources.qrc
 
-DESTDIR     = ../../bin
-MOC_DIR     = ../../build/moc/sim
-OBJECTS_DIR = ../../build/obj/sim
-RCC_DIR     = ../../build/rcc/sim
+DESTDIR     = ../bin
+MOC_DIR     = ../build/moc
+OBJECTS_DIR = ../build/obj
+RCC_DIR     = ../build/rcc
