@@ -1,12 +1,7 @@
 Release
 =======
-- Test on Mac
-- Publish simulator installation guides
-- Make some video tutorials
-- Build static binaries
+- Pre-compiled binaries on Mac
 - Post on HackerNews
-- Reach out to schools
-- Reach our to Micromouse sites
 
 Wishlist
 ========
@@ -20,7 +15,6 @@ Wishlist
     - Memmap for better attribute streaming
     - Use unsigned char for texture v-coord
     - Use index buffer objects
-- Display commands and responses
 - Make a system for quickly checking stats on many mazes
     - solved or not
     - how many steps
@@ -40,9 +34,6 @@ Cleanup
 - Move mouse-related state from window class into mouse class 
 - Look into using vsync so the graphics don't tear
 - MacOS retina https://github.com/vispy/vispy/issues/99
-- Make a note about why we write NO_ACK_STRING for some dispatched commands
-    - It's a speed optimization, similar to UDP vs. TCP
-- Kill SimUtilities
 - Get rid of unnecessary QString wrapping, like QString(<SOME-QSTRING>)
 - Use keyword explicit on one argument constructors
 - Mark some default constructors as ASSERT NEVER RUNS
@@ -53,9 +44,8 @@ Cleanup
     - Pass other arguments by reference when possible
 - Replace lambdas with normal methods (easy to reason about)
     - Audit pass-by-reference or pass-by-value in lambdas
-- Make classes as QObjects
-    - Make sure all QObjects have parents
-- Make sure all QObject membors are stored on the heap
+- Make sure all QObjects have parents
+- Make sure all QObject members are stored on the heap
 - QSet instead of QVector in some places
 - QStringLiteral instead of QString
 - Use tr() on all user-facing strings to make text translatable
@@ -66,7 +56,6 @@ Cleanup
     - pedantic-errors: Flag even the most pedantic of errors
 - Put MazeView into MazeGraphic (it should all be encapsulated in there)
 - Pointers to wall polygons in each tile, save space by not breaking up walls/corners into multiple tiles
-- Optimize for space in the TEXTURE_CPU_BUFFER and GRAPHIC_CPU_BUFFER - Don't repeat vertices
 - Convert primitive types to GL types (or vice versa)
 - Change "bool foo(false)" to "bool foo = false" for primitive - they look like function calls
 - Rename Tile to Cell
