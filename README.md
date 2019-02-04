@@ -39,7 +39,15 @@ For information about Micromouse, see the [Micromouse Wikipedia page](http://en.
 
 ## Download
 
-Coming soon! For now, see [Building From Source](https://github.com/mackorone/mms#building-from-source).
+You can download pre-compiled binaries from the
+[releases](https://github.com/mackorone/mms/releases) page. Simply download the
+assert corresponding to your platform:
+
+- Windows: Download and unzip `windows.zip` and run the "mms" application
+- Mac OSX: Coming soon!
+
+If pre-compiled binaries for your platform are unavailable, you'll have to
+[build from source](https://github.com/mackorone/mms#building-from-source).
 
 
 ## Quick Start
@@ -332,7 +340,9 @@ can easily convert between formats:
 ## Building From Source
 
 If you want to write code for the simulator itself, you'll need to build the
-project from source. Below are some OS-specific instructions.
+project from source. Below are some OS-specific instructions. If instructions
+for your platform are unavailable, you can probably still run the simulator,
+you'll just have to figure it out on your own for now.
 
 #### Windows
 
@@ -348,10 +358,6 @@ Build the project using QtCreator:
 1. Run QtCreator and open `mms/src/sim/sim/pro` 
 1. Configure the project to [use "Desktop Qt 5.12.0 MinGW 64-bit"](https://github.com/mackorone/mms/blob/master/img/qt-install-windows-2.png)
 1. Build and run the project
-
-#### Mac OS
-
-COMING SOON
 
 #### Linux (Ubuntu)
 
