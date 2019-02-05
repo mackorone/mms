@@ -2,7 +2,7 @@
 
 #include <QApplication>
 
-#include "Assert.h"
+#include "AssertMacros.h"
 #include "Logging.h"
 #include "Settings.h"
 #include "Window.h"

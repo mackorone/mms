@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-#include "Assert.h"
+#include "AssertMacros.h"
 #include "Dimensions.h"
 
 namespace mms {

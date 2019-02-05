@@ -1,6 +1,6 @@
 #include "Tile.h"
 
-#include "Assert.h"
+#include "AssertMacros.h"
 #include "Dimensions.h"
 
 namespace mms {

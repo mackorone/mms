@@ -1,6 +1,6 @@
 #include "ColorManager.h"
 
-#include "Assert.h"
+#include "AssertMacros.h"
 
 namespace mms {
 

@@ -43,8 +43,8 @@ You can download pre-compiled binaries from the
 [releases](https://github.com/mackorone/mms/releases) page. Simply download the
 assert corresponding to your platform:
 
-- Windows: Download and unzip `windows.zip` and run the "mms" application
-- Mac OSX: Coming soon!
+- Windows: Download and unzip `windows.zip` and run the "mms" exe
+- macOS: Download and unzip `macos.zip` and run the "mms" app
 
 If pre-compiled binaries for your platform are unavailable, you'll have to
 [build from source](https://github.com/mackorone/mms#building-from-source).
@@ -355,8 +355,25 @@ Install Qt:
 Build the project using QtCreator:
 
 1. Download or clone *mms*
-1. Run QtCreator and open `mms/src/sim/sim/pro` 
+1. Run QtCreator and open `mms/src/mms.pro` 
 1. Configure the project to [use "Desktop Qt 5.12.0 MinGW 64-bit"](https://github.com/mackorone/mms/blob/master/img/qt-install-windows-2.png)
+1. Build and run the project
+
+#### macOS
+
+Install Xcode: https://developer.apple.com/xcode/
+
+Install Qt:
+
+1. Download the Qt open source installer: https://www.qt.io/download/
+1. If you don't already have a Qt account, you'll need to make one
+1. When prompted to select components, [choose "macOS"](https://github.com/mackorone/mms/blob/master/img/qt-install-macos-1.png)
+
+Build the project using QtCreator:
+
+1. Download or clone *mms*
+1. Run QtCreator and open `mms/src/mms.pro`
+1. Configure the project to [use "Desktop Qt 5.12.1 clang 64bit"](https://github.com/mackorone/mms/blob/master/img/qt-install-macos-2.png)
 1. Build and run the project
 
 #### Linux (Ubuntu)
@@ -387,7 +404,7 @@ Clone, build, and run the project:
 git clone git@github.com:mackorone/mms.git
 
 # Build the simulator
-cd mms/src/sim
+cd mms/src
 qmake && make
 
 # Run the simulator

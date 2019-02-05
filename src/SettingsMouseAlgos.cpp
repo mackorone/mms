@@ -1,6 +1,6 @@
 #include "SettingsMouseAlgos.h"
 
-#include "Assert.h"
+#include "AssertMacros.h"
 #include "ConfigDialog.h"
 #include "Settings.h"
 

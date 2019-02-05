@@ -1,6 +1,6 @@
 #include "MazeGraphic.h"
 
-#include "Assert.h"
+#include "AssertMacros.h"
 
 namespace mms {
 

@@ -3,7 +3,7 @@
 #include <QElapsedTimer>
 #include <QFile>
 
-#include "Assert.h"
+#include "AssertMacros.h"
 #include "Dimensions.h"
 #include "FontImage.h"
 #include "Logging.h"

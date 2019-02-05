@@ -2,7 +2,7 @@
 
 #include <QtMath>
 
-#include "../Assert.h"
+#include "../AssertMacros.h"
 
 namespace mms {
 

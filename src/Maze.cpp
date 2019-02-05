@@ -4,7 +4,7 @@
 #include <QTextStream>
 #include <QQueue>
 
-#include "Assert.h"
+#include "AssertMacros.h"
 
 namespace mms {
 

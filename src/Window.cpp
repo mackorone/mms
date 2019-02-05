@@ -20,7 +20,7 @@
 #include <QVBoxLayout>
 #include <QtMath>
 
-#include "Assert.h"
+#include "AssertMacros.h"
 #include "Color.h"
 #include "ColorManager.h"
 #include "ConfigDialog.h"

@@ -1,6 +1,6 @@
 #include "Distance.h"
 
-#include "../Assert.h"
+#include "../AssertMacros.h"
 
 namespace mms {
 

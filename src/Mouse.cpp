@@ -7,7 +7,7 @@
 
 #include "units/Distance.h"
 
-#include "Assert.h"
+#include "AssertMacros.h"
 #include "Dimensions.h"
 #include "GeometryUtilities.h"
 

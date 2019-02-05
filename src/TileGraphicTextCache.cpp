@@ -1,6 +1,6 @@
 #include "TileGraphicTextCache.h"
 
-#include "Assert.h"
+#include "AssertMacros.h"
 #include "FontImage.h"
 
 namespace mms {

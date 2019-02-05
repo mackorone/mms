@@ -3,7 +3,7 @@
 #include <QCoreApplication>
 #include <QSettings>
 
-#include "Assert.h"
+#include "AssertMacros.h"
 
 namespace mms {
 
