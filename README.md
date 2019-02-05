@@ -45,6 +45,9 @@ assert corresponding to your platform:
 
 - Windows: Download and unzip `windows.zip` and run the "mms" exe
 - macOS: Download and unzip `macos.zip` and run the "mms" app
+  - Note: you may get warnings about running an application from an
+    unidentified developer. To get past those warnings, control-click on the
+    app and select "Open" (as opposed to simply double-clicking on the app).
 
 If pre-compiled binaries for your platform are unavailable, you'll have to
 [build from source](https://github.com/mackorone/mms#building-from-source).
