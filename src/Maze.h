@@ -24,6 +24,10 @@ private:
     QVector<QVector<Tile>> m_tiles;
     explicit Maze(BasicMaze basicMaze);
 
+    // Maze file formats
+    static Maze* fromMapFile(QVector<QString> lines);
+    static Maze* fromNumFile(QVector<QString> lines);
+
     // Validate the maze
     static bool isValid(const BasicMaze& basicMaze);
     static bool isNonempty(const BasicMaze& basicMaze);

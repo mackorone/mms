@@ -1,8 +1,3 @@
-Release
-=======
-- Pre-compiled binaries on Mac
-- Post on HackerNews
-
 Wishlist
 ========
 - Add a "new algo" wizard to make it easy to bootstap a new algo

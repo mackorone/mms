@@ -10,6 +10,132 @@ namespace mms {
 
 Maze* Maze::fromFile(const QString& path) {
 
+    // Open the file
+    if (path.isEmpty()) {
+        return nullptr;
+    }
+    QFile file(path);
+    if (!file.open(QFile::ReadOnly)) {
+        return nullptr;
+    }
+
+    // Read the lines into a vector
+    QString line;
+    QVector<QString> lines;
+    QTextStream stream(&file);
+    while (stream.readLineInto(&line)) {
+        lines.append(line);
+    }
+
+    // Try map format first, then num
+    Maze* maze = fromMapFile(lines);
+    if (maze != nullptr) {
+        return maze;
+    }
+    return fromNumFile(lines);
+}
+
+int Maze::getWidth() const {
+    return m_tiles.size();
+}
+
+int Maze::getHeight() const {
+    return m_tiles.at(0).size();
+}
+
+const Tile* Maze::getTile(int x, int y) const {
+    ASSERT_LE(0, x);
+    ASSERT_LE(0, y);
+    ASSERT_LT(x, getWidth());
+    ASSERT_LT(y, getHeight());
+    return &m_tiles.at(x).at(y);
+}
+
+Maze::Maze(BasicMaze basicMaze) {
+    QVector<QVector<int>> distances = getDistances(basicMaze);
+    for (int x = 0; x < basicMaze.size(); x += 1) {
+        QVector<Tile> column;
+        for (int y = 0; y < basicMaze.at(x).size(); y += 1) {
+            Tile tile(x, y, distances.at(x).at(y), basicMaze.at(x).at(y));
+            tile.initPolygons(basicMaze.size(), basicMaze.at(x).size());
+            column.append(tile);
+        }
+        m_tiles.append(column);
+    }
+}
+
+Maze* Maze::fromMapFile(QVector<QString> lines) {
+    // Format:
+    //
+    //     +---+---+---+
+    //     |       |   |
+    //     +   +   +   +
+    //     |   |       |
+    //     +---+---+---+
+
+    // Flip the lines to process them from bottom to top
+    for (int i = 0; i < lines.size() / 2; i += 1) {
+        int j = lines.size() - 1 - i;
+        QString one = lines.at(i);
+        QString two = lines.at(j);
+        lines[i] = two;
+        lines[j] = one;
+    }
+
+    BasicMaze basicMaze;
+    for (int y = 0; y < lines.size() / 2; y += 1) {
+	    for (int x = 0; x < lines.at(y).size() / 4; x += 1) {
+
+            // Fill out the maze as necessary
+            while (basicMaze.size() <= x) {
+                QVector<QMap<Direction, bool>> column;
+                basicMaze.append(column);
+            }
+            while (basicMaze.at(x).size() <= y) {
+                QMap<Direction, bool> walls;
+                basicMaze[x].append(walls);
+            }
+
+            // Calculate the edges of the cell:
+            //
+            //    west v
+            //         +---+ < north
+            //         |   |
+            // south > +---+
+            //             ^ east
+            //
+            int north = 2 * (y + 1);
+            int south = 2 * (y + 0);
+            int east = 4 * (x + 1);
+            int west = 4 * (x + 0);
+
+            // Check bounds
+            if (lines.size() <= north) {
+                return nullptr;
+            }
+            if (lines.at(south + 1).size() <= east) {
+                return nullptr;
+            }
+
+            // Add values for the current cell
+            QMap<Direction, bool> walls;
+            walls[Direction::NORTH] = lines.at(north).at(west + 2) != ' ';
+            walls[Direction::EAST]  = lines.at(south + 1).at(east) != ' ';
+            walls[Direction::SOUTH] = lines.at(south).at(west + 2) != ' ';
+            walls[Direction::WEST]  = lines.at(south + 1).at(west) != ' ';
+            basicMaze[x][y] = walls;
+        }
+    }
+
+    // Check if the maze is valid
+    if (!isValid(basicMaze)) {
+        return nullptr;
+    }
+
+    return new Maze(basicMaze);
+}
+
+Maze* Maze::fromNumFile(QVector<QString> lines) {
     // Format:
     //
     //     X Y N E S W
@@ -31,21 +157,9 @@ Maze* Maze::fromFile(const QString& path) {
     //     |   |       |
     //     +---+---+---+
 
-    // Open the file
-    if (path.isEmpty()) {
-        return nullptr;
-    }
-    QFile file(path);
-    if (!file.open(QFile::ReadOnly)) {
-        return nullptr;
-    }
-
-    // Read the file and populate the basic maze
     BasicMaze basicMaze;
-    QTextStream stream(&file);
-    QString line;
-    while (stream.readLineInto(&line)) {
-        
+    for (QString line : lines) {
+
         // Tokenize the line
         QStringList tokens = line.split(" ", QString::SkipEmptyParts);
         if (tokens.size() != 6) {
@@ -89,35 +203,6 @@ Maze* Maze::fromFile(const QString& path) {
     }
 
     return new Maze(basicMaze);
-}
-
-int Maze::getWidth() const {
-    return m_tiles.size();
-}
-
-int Maze::getHeight() const {
-    return m_tiles.at(0).size();
-}
-
-const Tile* Maze::getTile(int x, int y) const {
-    ASSERT_LE(0, x);
-    ASSERT_LE(0, y);
-    ASSERT_LT(x, getWidth());
-    ASSERT_LT(y, getHeight());
-    return &m_tiles.at(x).at(y);
-}
-
-Maze::Maze(BasicMaze basicMaze) {
-    QVector<QVector<int>> distances = getDistances(basicMaze);
-    for (int x = 0; x < basicMaze.size(); x += 1) {
-        QVector<Tile> column;
-        for (int y = 0; y < basicMaze.at(x).size(); y += 1) {
-            Tile tile(x, y, distances.at(x).at(y), basicMaze.at(x).at(y));
-            tile.initPolygons(basicMaze.size(), basicMaze.at(x).size());
-            column.append(tile);
-        }
-        m_tiles.append(column);
-    }
 }
 
 bool Maze::isValid(const BasicMaze& basicMaze) {
