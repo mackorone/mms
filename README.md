@@ -308,6 +308,10 @@ Also note that official Micromouse mazes have additional requirements:
 * Has walls attached to every peg except the center peg
 * Is unsolvable by a wall-following robot
 
+Here are some links to collections of maze files:
+* [micromouseonline/mazefiles](https://github.com/micromouseonline/mazefiles)
+* http://www.tcp4me.com/mmr/mazes/
+
 #### Map format
 
 Example:
