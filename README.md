@@ -12,7 +12,7 @@
 1. [Cell Color](https://github.com/mackorone/mms#cell-color)
 1. [Cell Text](https://github.com/mackorone/mms#cell-text)
 1. [Reset Button](https://github.com/mackorone/mms#reset-button)
-1. [Maze File Format](https://github.com/mackorone/mms#maze-file-format)
+1. [Maze Files](https://github.com/mackorone/mms#maze-files)
 1. [Building From Source](https://github.com/mackorone/mms#building-from-source)
 1. [Acknowledgements](https://github.com/mackorone/mms#acknowledgements)
 
@@ -288,7 +288,46 @@ internal state and then call `ackReset` to send the robot back to the beginning
 of the maze.
 
 
-## Maze File Format
+## Maze Files
+
+The simulator supports a few different maze file formats, as specified below.
+If your format isn't supported, feel free to put up a pull request.
+
+Note that, in order to use a maze in the simulator, it must be:
+
+* Nonempty
+* Rectangular
+* Fully enclosed
+
+Also note that official Micromouse mazes have additional requirements:
+
+* No inaccessible locations
+* Exactly three starting walls
+* Only one entrance to the center
+* Has a hollow center, i.e., the center peg has no walls attached to it
+* Has walls attached to every peg except the center peg
+* Is unsolvable by a wall-following robot
+
+#### Map format
+
+Format:
+
+    +---+---+---+
+    |       |   |
+    +   +   +   +
+    |   |       |
+    +---+---+---+
+
+* Each cell is 4 spaces wide and 2 spaces tall
+* All characters besides spaces count as walls
+* Walls are determined by checking the locations marked with an "x":
+
+    + x +
+    x   x
+    + x +
+
+
+#### Num format
 
 Format:
 
@@ -317,28 +356,6 @@ Result:
     +   +   +   +
     |   |       |
     +---+---+---+
-
-Requirements for use with simulator:
-
-* Maze must be nonempty
-* Maze must be rectangular
-* Maze must be fully enclosed
-* Maze must be internally consistent
-  * E.g., if cell (0,1) has a north wall, tile (0,2) should have a south wall
-
-Additional requirements for official Micromouse mazes:
-
-* No inaccessible locations
-* Exactly three starting walls
-* Only one entrance to the center
-* Has a hollow center, i.e., the center peg has no walls attached to it
-* Has walls attached to every peg except the center peg
-* Is unsolvable by a wall-following robot
-
-Other formats are not supported at this time. However, there is a CLI tool that
-can easily convert between formats:
-[mackorone/maze](https://github.com/mackorone/maze).
-
 
 ## Building From Source
 
