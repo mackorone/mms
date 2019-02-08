@@ -310,7 +310,7 @@ Also note that official Micromouse mazes have additional requirements:
 
 #### Map format
 
-Format:
+Example:
 
     +---+---+---+
     |       |   |
@@ -322,9 +322,11 @@ Format:
 * All characters besides spaces count as walls
 * Walls are determined by checking the locations marked with an "x":
 
-    + x +
-    x   x
-    + x +
+```
++ x +
+x   x
++ x +
+```
 
 
 #### Num format
