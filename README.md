@@ -322,7 +322,7 @@ Example:
     |   |       |
     +---+---+---+
 
-* Each cell is 4 spaces wide and 2 spaces tall
+* Each cell is 5 spaces wide and 3 spaces tall
 * All characters besides spaces count as walls
 * Walls are determined by checking the locations marked with an "x":
 
