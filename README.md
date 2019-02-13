@@ -41,7 +41,7 @@ For information about Micromouse, see the [Micromouse Wikipedia page](http://en.
 
 You can download pre-compiled binaries from the
 [releases](https://github.com/mackorone/mms/releases) page. Simply download the
-assert corresponding to your platform:
+asset corresponding to your platform:
 
 - Windows: Download and unzip `windows.zip` and run the "mms" exe
 - macOS: Download and unzip `macos.zip` and run the "mms" app
