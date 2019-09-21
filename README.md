@@ -57,6 +57,7 @@ If pre-compiled binaries for your platform are unavailable, you'll have to
 
 Writing a Micromouse algorithm is easy! Here are some available templates:
 
+- C: [mackorone/mms-c](https://github.com/mackorone/mms-c)
 - C++: [mackorone/mms-cpp](https://github.com/mackorone/mms-cpp)
 - Python: [mackorone/mms-python](https://github.com/mackorone/mms-python)
 
