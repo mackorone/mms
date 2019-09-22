@@ -59,6 +59,7 @@ Writing a Micromouse algorithm is easy! Here are some available templates:
 
 - C: [mackorone/mms-c](https://github.com/mackorone/mms-c)
 - C++: [mackorone/mms-cpp](https://github.com/mackorone/mms-cpp)
+- Java: [mackorone/mms-java](https://github.com/mackorone/mms-java)
 - Python: [mackorone/mms-python](https://github.com/mackorone/mms-python)
 
 If a template for a particular language is missing, don't fret! Writing your
