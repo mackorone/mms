@@ -15,7 +15,8 @@ public:
 
     MazeGraphic(
         const Maze* maze,
-        BufferInterface* bufferInterface);
+        BufferInterface* bufferInterface,
+        bool isTruthView);
 
     void setWall(int x, int y, Direction direction);
     void clearWall(int x, int y, Direction direction);
@@ -30,6 +31,8 @@ public:
     // Why is only one of these const?
     void drawPolygons() const;
     void drawTextures();
+
+    void refreshColors();
 
 private:
 

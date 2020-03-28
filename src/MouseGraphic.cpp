@@ -13,12 +13,12 @@ QVector<TriangleGraphic> MouseGraphic::draw() const {
     QVector<TriangleGraphic> buffer;
     buffer.append(SimUtilities::polygonToTriangleGraphics(
         m_mouse->getCurrentWheelPolygon(),
-        ColorManager::getMouseWheelColor(),
+        ColorManager::get()->getMouseWheelColor(),
         255
     ));
     buffer.append(SimUtilities::polygonToTriangleGraphics(
         m_mouse->getCurrentBodyPolygon(),
-        ColorManager::getMouseBodyColor(),
+        ColorManager::get()->getMouseBodyColor(),
         255
     ));
     return buffer;

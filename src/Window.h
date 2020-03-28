@@ -66,6 +66,10 @@ private:
     void updateMazeAndPath(Maze* maze, QString path);
     void updateMaze(Maze* maze);
 
+    // ----- Colors -----
+
+    void onColorButtonPressed();
+
     // ----- Algo config -----
 
     QComboBox* m_mouseAlgoComboBox;

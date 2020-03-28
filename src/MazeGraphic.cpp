@@ -6,13 +6,15 @@ namespace mms {
 
 MazeGraphic::MazeGraphic(
         const Maze* maze,
-        BufferInterface* bufferInterface) {
+        BufferInterface* bufferInterface,
+        bool isTruthView) {
     for (int x = 0; x < maze->getWidth(); x += 1) {
         QVector<TileGraphic> column;
         for (int y = 0; y < maze->getHeight(); y += 1) {
             column.append(TileGraphic(
                 maze->getTile(x, y),
-                bufferInterface));
+                bufferInterface,
+                isTruthView));
         }
         m_tileGraphics.append(column);
     }
@@ -56,6 +58,14 @@ void MazeGraphic::drawTextures() {
     for (int x = 0; x < m_tileGraphics.size(); x += 1) {
         for (int y = 0; y < m_tileGraphics.at(x).size(); y += 1) {
             m_tileGraphics[x][y].drawTextures();
+        }
+    }
+}
+
+void MazeGraphic::refreshColors() {
+    for (int x = 0; x < m_tileGraphics.size(); x += 1) {
+        for (int y = 0; y < m_tileGraphics.at(x).size(); y += 1) {
+            m_tileGraphics[x][y].refreshColors();
         }
     }
 }

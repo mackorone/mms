@@ -15,10 +15,13 @@ TileGraphic::TileGraphic() {
 
 TileGraphic::TileGraphic(
     const Tile* tile,
-    BufferInterface* bufferInterface) :
+    BufferInterface* bufferInterface,
+    bool isTruthView) :
     m_tile(tile),
     m_bufferInterface(bufferInterface),
-    m_color(ColorManager::getTileBaseColor()) {
+    m_color(ColorManager::get()->getTileBaseColor()),
+    m_colorWasSet(false),
+    m_isTruthView(isTruthView) {
 }
 
 void TileGraphic::setWall(Direction direction) {
@@ -33,11 +36,13 @@ void TileGraphic::clearWall(Direction direction) {
 
 void TileGraphic::setColor(Color color) {
     m_color = color;
+    m_colorWasSet = true;
     updateColor();
 }
 
 void TileGraphic::clearColor() {
-    m_color = ColorManager::getTileBaseColor();
+    m_color = ColorManager::get()->getTileBaseColor();
+    m_colorWasSet = false;
     updateColor();
 }
 
@@ -65,7 +70,7 @@ void TileGraphic::drawPolygons() const {
     for (Direction direction : DIRECTIONS()) {
         m_bufferInterface->insertIntoGraphicCpuBuffer(
             m_tile->getWallPolygon(direction),
-            ColorManager::getTileWallColor(),
+            getWallColor(direction),
             getWallAlpha(direction));
     }
 
@@ -73,7 +78,7 @@ void TileGraphic::drawPolygons() const {
     for (Polygon polygon : m_tile->getCornerPolygons()) {
         m_bufferInterface->insertIntoGraphicCpuBuffer(
             polygon,
-            ColorManager::getTileCornerColor(),
+            ColorManager::get()->getTileCornerColor(),
             255);
     }
 }
@@ -91,22 +96,31 @@ void TileGraphic::drawTextures() {
     updateText();
 }
 
+void TileGraphic::refreshColors() {
+    updateColor();
+    for (Direction d: DIRECTIONS()) {
+        updateWall(d);
+    }
+}
+
 void TileGraphic::updateWall(Direction direction) const {
     m_bufferInterface->updateTileGraphicWallColor(
         m_tile->getX(),
         m_tile->getY(),
         direction,
-        ColorManager::getTileWallColor(),
+        getWallColor(direction),
         getWallAlpha(direction)
     );
 }
 
 
 void TileGraphic::updateColor() const {
+    Color default_ = ColorManager::get()->getTileBaseColor();
+    Color color = m_colorWasSet ? m_color : default_;
     m_bufferInterface->updateTileGraphicBaseColor(
         m_tile->getX(),
         m_tile->getY(),
-        m_color);
+        color);
 }
 
 void TileGraphic::updateText() const {
@@ -159,12 +173,30 @@ void TileGraphic::updateText() const {
     }
 }
 
+Color TileGraphic::getWallColor(Direction direction) const {
+    if (m_walls.value(direction)) {
+        if (m_isTruthView) {
+            return ColorManager::get()->getTileWallColor();
+        }
+        else {
+            return ColorManager::get()->getTileWallIsSetColor();
+        }
+    }
+    // Undeclared wall color
+    return ColorManager::get()->getTileWallColor();
+}
+
 unsigned char TileGraphic::getWallAlpha(Direction direction) const {
     if (m_walls.value(direction)) {
         return 255;
     }
     if (m_tile->isWall(direction)) {
-        return 64;
+        if (m_isTruthView) {
+            return 255;
+        }
+        else {
+            return ColorManager::get()->getTileWallNotSetAlpha();
+        }
     }
     return 0;
 }

@@ -14,7 +14,7 @@ class MazeView {
 
 public:
 
-    MazeView(const Maze* maze);
+    MazeView(const Maze* maze, bool isTruthView);
     MazeGraphic* getMazeGraphic();
     void initTileGraphicText(int numRows, int numCols);
     const QVector<TriangleGraphic>* getGraphicCpuBuffer() const;

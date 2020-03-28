@@ -3,6 +3,7 @@
 #include <QApplication>
 
 #include "AssertMacros.h"
+#include "ColorManager.h"
 #include "Logging.h"
 #include "Settings.h"
 #include "Window.h"
@@ -20,6 +21,7 @@ int Driver::drive(int argc, char* argv[]) {
     // Initialize singletons
     Logging::init();
     Settings::init();
+    ColorManager::init();
 
     // Create the main window
     Window window;

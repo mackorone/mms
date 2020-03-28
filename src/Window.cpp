@@ -22,6 +22,7 @@
 
 #include "AssertMacros.h"
 #include "Color.h"
+#include "ColorDialog.h"
 #include "ColorManager.h"
 #include "ConfigDialog.h"
 #include "Dimensions.h"
@@ -207,6 +208,17 @@ Window::Window(QWidget *parent) :
         &Window::onMazeFileComboBoxChanged
     );
 
+    // Add color dialog button
+    QToolButton* colorButton = new QToolButton();
+    colorButton->setIcon(QIcon(":/resources/icons/color.png"));
+    configLayout->addWidget(colorButton, 0, 4, 1, 1);
+    connect(
+        colorButton,
+        &QPushButton::clicked,
+        this,
+        &Window::onColorButtonPressed
+    );
+
     // Add mouse algo combo box
     m_mouseAlgoComboBox->setMinimumContentsLength(1);
     configLayout->addWidget(m_mouseAlgoComboBox, 1, 1, 1, 2);
@@ -351,6 +363,40 @@ void Window::onMazeFileComboBoxChanged(QString path) {
     updateMazeAndPath(maze, path);
 }
 
+void Window::onColorButtonPressed() {
+    ColorDialog dialog(
+        CHAR_TO_COLOR().key(ColorManager::get()->getTileBaseColor()),
+        CHAR_TO_COLOR().key(ColorManager::get()->getTileWallColor()),
+        CHAR_TO_COLOR().key(ColorManager::get()->getMouseBodyColor()),
+        CHAR_TO_COLOR().key(ColorManager::get()->getMouseWheelColor()),
+        CHAR_TO_COLOR().key(ColorManager::get()->getTileWallIsSetColor()),
+        ColorManager::get()->getTileWallNotSetAlpha()
+    );
+
+    // Cancel was pressed
+    if (dialog.exec() == QDialog::Rejected) {
+        return;
+    }
+
+    // Update the settings (disk and in-memory cache)
+    ColorManager::get()->update(
+        CHAR_TO_COLOR().value(dialog.getTileBaseColor()),
+        CHAR_TO_COLOR().value(dialog.getTileWallColor()),
+        CHAR_TO_COLOR().value(dialog.getMouseBodyColor()),
+        CHAR_TO_COLOR().value(dialog.getMouseWheelColor()),
+        CHAR_TO_COLOR().value(dialog.getTileWallIsSetColor()),
+        dialog.getTileWallNotSetAlpha()
+    );
+
+    // Redraw the "truth" view with the new colors
+    m_truth->getMazeGraphic()->refreshColors();
+
+    // Redraw the mouse's view with the new colors
+    if (m_view != nullptr) {
+        m_view->getMazeGraphic()->refreshColors();
+    }
+}
+
 void Window::showInvalidMazeFileWarning(QString path) {
     QMessageBox::warning(
         this,
@@ -386,7 +432,7 @@ void Window::updateMaze(Maze* maze) {
     Maze* oldMaze = m_maze;
     MazeView* oldTruth = m_truth;
     m_maze = maze;
-    m_truth = new MazeView(m_maze);
+    m_truth = new MazeView(m_maze, true);
 
     // The truth has walls declared and distance as text
     MazeGraphic* mazeGraphic = m_truth->getMazeGraphic();
@@ -683,7 +729,7 @@ void Window::startRun() {
     // Remove the old mouse, add a new mouse
     removeMouseFromMaze();
     m_mouse = new Mouse();
-    m_view = new MazeView(m_maze);
+    m_view = new MazeView(m_maze, false);
     m_mouseGraphic = new MouseGraphic(m_mouse);
     m_map->setView(m_view);
     m_map->setMouseGraphic(m_mouseGraphic);

@@ -16,7 +16,8 @@ public:
     TileGraphic();
     TileGraphic(
         const Tile* tile,
-        BufferInterface* bufferInterface);
+        BufferInterface* bufferInterface,
+        bool isTruthView);
 
     void setWall(Direction direction);
     void clearWall(Direction direction);
@@ -32,6 +33,8 @@ public:
     void drawPolygons() const;
     void drawTextures();
 
+    void refreshColors();
+
 private:
 
     // Input and output objects
@@ -41,6 +44,7 @@ private:
     // Visual state
     QMap<Direction, bool> m_walls;
     Color m_color;
+    bool m_colorWasSet;
     QString m_text;
 
     // Helper functions
@@ -50,6 +54,8 @@ private:
     void updateColor() const;
     void updateText() const;
     
+    bool m_isTruthView;
+    Color getWallColor(Direction direction) const;
     unsigned char getWallAlpha(Direction direction) const;
 };
 

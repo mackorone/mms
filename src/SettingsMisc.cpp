@@ -1,7 +1,6 @@
 #include "SettingsMisc.h"
 
 #include "Settings.h"
-#include "SimUtilities.h"
 
 namespace mms {
 

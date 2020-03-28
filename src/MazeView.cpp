@@ -6,14 +6,14 @@
 
 namespace mms {
 
-MazeView::MazeView(const Maze* maze) :
+MazeView::MazeView(
+        const Maze* maze,
+        bool isTruthView) :
         m_bufferInterface(
             {maze->getWidth(), maze->getHeight()},
             &m_graphicCpuBuffer,
             &m_textureCpuBuffer),
-        m_mazeGraphic(
-            maze,
-            &m_bufferInterface) {
+        m_mazeGraphic(maze, &m_bufferInterface, isTruthView) {
 
     // Establish the coordinates for the tile text characters
     initText(2, 5);
