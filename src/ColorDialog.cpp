@@ -62,12 +62,12 @@ ColorDialog::ColorDialog(
     groupBox->setLayout(gridLayout);
 
     // Add a row for each field
-    appendRow(gridLayout, "Cell Base Color", m_tileBaseColor);
-    appendRow(gridLayout, "Cell Wall Color", m_tileWallColor);
+    appendRow(gridLayout, "Maze Floor Color", m_tileBaseColor);
+    appendRow(gridLayout, "Maze Wall Color", m_tileWallColor);
     appendRow(gridLayout, "Mouse Body Color", m_mouseBodyColor);
     appendRow(gridLayout, "Mouse Wheel Color", m_mouseWheelColor);
-    appendRow(gridLayout, "Color of Set Wall", m_tileWallIsSetColor);
-    appendRow(gridLayout, "Alpha of Unset Wall", m_tileWallNotSetAlpha);
+    appendRow(gridLayout, "setWall() Color", m_tileWallIsSetColor);
+    appendRow(gridLayout, "clearWall() Alpha", m_tileWallNotSetAlpha);
 
     // Add OK and cancel buttons
     m_buttons = new QDialogButtonBox(
