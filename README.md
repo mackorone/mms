@@ -437,7 +437,7 @@ cd mms/src
 qmake && make
 
 # Run the simulator
-../../bin/sim
+../../bin/mms
 ```
 
 ## Acknowledgements
