@@ -56,7 +56,7 @@ If pre-compiled binaries for your platform are unavailable, you'll have to
 ## Quick Start
 
 Writing a Micromouse algorithm is easy! Here are some available templates:
-
+- Arduino: [mackorone/mms-arduino](https://github.com/mackorone/mms-arduino)
 - C: [mackorone/mms-c](https://github.com/mackorone/mms-c)
 - C++: [mackorone/mms-cpp](https://github.com/mackorone/mms-cpp)
 - Java: [mackorone/mms-java](https://github.com/mackorone/mms-java)
