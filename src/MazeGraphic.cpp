@@ -53,7 +53,7 @@ void MazeGraphic::drawPolygons() const {
     }
 }
 
-void MazeGraphic::drawTextures() {
+void MazeGraphic::drawTextures() const {
     // Fill the TEXTURE_CPU_BUFFER
     for (int x = 0; x < m_tileGraphics.size(); x += 1) {
         for (int y = 0; y < m_tileGraphics.at(x).size(); y += 1) {

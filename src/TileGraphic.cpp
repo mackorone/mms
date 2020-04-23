@@ -83,7 +83,7 @@ void TileGraphic::drawPolygons() const {
     }
 }
 
-void TileGraphic::drawTextures() {
+void TileGraphic::drawTextures() const {
     // Insert all of the triangle texture objects into the buffer ...
     QPair<int, int> maxRowsAndCols =
         m_bufferInterface->getTileGraphicTextMaxSize();

@@ -27,10 +27,8 @@ public:
     void setText(int x, int y, const QString& text);
     void clearText(int x, int y);
 
-    // TODO: upforgrabs
-    // Why is only one of these const?
     void drawPolygons() const;
-    void drawTextures();
+    void drawTextures() const;
 
     void refreshColors();
 

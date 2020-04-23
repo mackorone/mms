@@ -31,7 +31,7 @@ public:
     // TODO: upforgrabs
     // Rename these to "reload" or something
     void drawPolygons() const;
-    void drawTextures();
+    void drawTextures() const;
 
     void refreshColors();
 
