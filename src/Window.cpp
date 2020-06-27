@@ -917,6 +917,7 @@ void Window::onResetButtonPressed() {
     m_resetButton->setEnabled(false);
     m_resetButton->setText("Waiting");
     m_wasReset = true;
+    disabledMovement = true;
 }
 
 QStringList Window::processText(QString text, QStringList* buffer) {
