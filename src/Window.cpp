@@ -1112,7 +1112,7 @@ QString Window::executeCommand(QString command) {
         return boolToString(wallLeft());
     }
     else if (function == "moveForward") {
-        if (disabledMovement) return Window::CRASH;
+        if (disabledMovement) return CRASH;
         bool success;
         if (tokens.size() == 2) {
             int distance = tokens.at(1).toInt();
@@ -1128,12 +1128,12 @@ QString Window::executeCommand(QString command) {
         return success ? "" : CRASH;
     }
     else if (function == "turnRight") {
-        if (disabledMovement) return Window::CRASH;
+        if (disabledMovement) return CRASH;
         turnRight();
         return "";
     }
     else if (function == "turnLeft") {
-        if (disabledMovement) return Window::CRASH;
+        if (disabledMovement) return CRASH;
         turnLeft();
         return "";
     }
