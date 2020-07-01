@@ -168,6 +168,7 @@ private:
     Movement m_movement;
     double m_movementProgress;
     double m_movementStepSize;
+    int m_moveLength;
     QSlider* m_speedSlider;
 
     double progressRequired(Movement movement);
@@ -180,11 +181,11 @@ private:
     int mazeWidth();
     int mazeHeight();
 
-    bool wallFront();
+    bool wallFront(int distance);
     bool wallRight();
     bool wallLeft();
 
-    bool moveForward();
+    bool moveForward(int distance);
     void turnRight();
     void turnLeft();
 

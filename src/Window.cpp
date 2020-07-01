@@ -1089,10 +1089,13 @@ void Window::dispatchCommand(QString command) {
 
 QString Window::executeCommand(QString command) {
     QStringList tokens = command.split(" ", QString::SkipEmptyParts);
-    if (tokens.size() != 1) {
+    if (tokens.size() < 1 || tokens.size() > 2) {
         return INVALID;
     }
     QString function = tokens.at(0);
+    if (tokens.size() == 2 && function != "moveForward") {
+        return INVALID;
+    }
     if (function == "mazeWidth") {
         return QString::number(mazeWidth());
     }
@@ -1100,7 +1103,7 @@ QString Window::executeCommand(QString command) {
         return QString::number(mazeHeight());
     }
     else if (function == "wallFront") {
-        return boolToString(wallFront());
+        return boolToString(wallFront(1));
     }
     else if (function == "wallRight") {
         return boolToString(wallRight());
@@ -1109,7 +1112,11 @@ QString Window::executeCommand(QString command) {
         return boolToString(wallLeft());
     }
     else if (function == "moveForward") {
-        bool success = moveForward();
+        int distance = 1;
+        if (tokens.size() == 2) {
+            distance = tokens.at(1).toInt();
+        }
+        bool success = moveForward(distance);
         return success ? "" : CRASH;
     }
     else if (function == "turnRight") {
@@ -1178,16 +1185,16 @@ void Window::updateMouseProgress(double progress) {
         DIRECTION_TO_ANGLE().value(m_startingDirection);
     if (m_movement == Movement::MOVE_FORWARD) {
         if (m_startingDirection == Direction::NORTH) {
-            destinationLocation.second += 1;
+            destinationLocation.second += m_moveLength;
         }
         else if (m_startingDirection == Direction::EAST) {
-            destinationLocation.first += 1;
+            destinationLocation.first += m_moveLength;
         }
         else if (m_startingDirection == Direction::SOUTH) {
-            destinationLocation.second -= 1;
+            destinationLocation.second -= m_moveLength;
         }
         else if (m_startingDirection == Direction::WEST) {
-            destinationLocation.first -= 1;
+            destinationLocation.first -= m_moveLength;
         }
         else {
             ASSERT_NEVER_RUNS();
@@ -1279,10 +1286,40 @@ int Window::mazeHeight() {
     return m_maze->getHeight();
 }
 
-bool Window::wallFront() {
+bool Window::wallFront(int distance) {
     QPair<int, int> position = m_mouse->getCurrentDiscretizedTranslation();
     Direction direction = m_mouse->getCurrentDiscretizedRotation();
-    return isWall({position.first, position.second, direction});
+    // check distance in front to make sure there are no obstructing walls
+    int firstIncrement;
+    int secondIncrement;
+    switch (direction) {
+        case Direction::NORTH:
+            firstIncrement = 0;
+            secondIncrement = 1;
+            break;
+        case Direction::SOUTH:
+            firstIncrement = 0;
+            secondIncrement = -1;
+            break;
+        case Direction::EAST:
+            firstIncrement = 1;
+            secondIncrement = 0;
+            break;
+        case Direction::WEST:
+            firstIncrement = -1;
+            secondIncrement = 0;
+            break;
+    }
+    int first = position.first;
+    int second = position.second;
+    for (int i = 0; i < distance; i++) {
+        if(isWall({first, second, direction})) {
+            return true;
+        }
+        first += firstIncrement;
+        second += secondIncrement;
+    }
+    return false;
 }
 
 bool Window::wallRight() {
@@ -1299,8 +1336,10 @@ bool Window::wallLeft() {
     return isWall({position.first, position.second, direction});
 }
 
-bool Window::moveForward() {
-    if (wallFront()) {
+bool Window::moveForward(int distance) {
+    m_moveLength = distance;
+    // check for crashes and negative distances
+    if (distance < 0 || wallFront(distance)) {
         return false;
     }
     m_movement = Movement::MOVE_FORWARD;
