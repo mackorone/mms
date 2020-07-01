@@ -169,6 +169,7 @@ private:
     double m_movementProgress;
     double m_movementStepSize;
     QSlider* m_speedSlider;
+    bool disabledMovement = false;
 
     double progressRequired(Movement movement);
     void updateMouseProgress(double progress);

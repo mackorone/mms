@@ -734,6 +734,9 @@ void Window::startRun() {
     m_map->setView(m_view);
     m_map->setMouseGraphic(m_mouseGraphic);
 
+    // Enable movement
+    disabledMovement = false;
+
     // Instantiate a new process
     QProcess* process = new QProcess();
 
@@ -1109,14 +1112,28 @@ QString Window::executeCommand(QString command) {
         return boolToString(wallLeft());
     }
     else if (function == "moveForward") {
-        bool success = moveForward();
+        if (disabledMovement) return Window::CRASH;
+        bool success;
+        if (tokens.size() == 2) {
+            int distance = tokens.at(1).toInt();
+            success = moveForward(distance);
+        }
+        else {
+            success = moveForward();
+        }
+        // disable movement commands after a crash
+        if (!success) {
+            disabledMovement = true;
+        }
         return success ? "" : CRASH;
     }
     else if (function == "turnRight") {
+        if (disabledMovement) return Window::CRASH;
         turnRight();
         return "";
     }
     else if (function == "turnLeft") {
+        if (disabledMovement) return Window::CRASH;
         turnLeft();
         return "";
     }
@@ -1125,6 +1142,7 @@ QString Window::executeCommand(QString command) {
     }
     else if (function == "ackReset") {
         ackReset();
+        disabledMovement = false;
         return ACK;
     }
     else {
