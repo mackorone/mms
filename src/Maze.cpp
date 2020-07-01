@@ -51,6 +51,10 @@ const Tile* Maze::getTile(int x, int y) const {
     return &m_tiles.at(x).at(y);
 }
 
+bool Maze::isInCenter(QPair<int, int> location) const {
+    return getCenterPositions(getWidth(), getHeight()).contains(location);
+}
+
 Maze::Maze(BasicMaze basicMaze) {
     QVector<QVector<int>> distances = getDistances(basicMaze);
     for (int x = 0; x < basicMaze.size(); x += 1) {

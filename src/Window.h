@@ -13,12 +13,14 @@
 #include <QSet>
 #include <QTimer>
 #include <QToolButton>
+#include <QGridLayout>
 
 #include "Map.h"
 #include "Maze.h"
 #include "MazeView.h"
 #include "Mouse.h"
 #include "MouseGraphic.h"
+#include "Stats.h"
 
 namespace mms {
 
@@ -176,6 +178,10 @@ private:
     void updateMouseProgress(double progress);
     void scheduleMouseProgressUpdate();
     bool isMoving();
+
+    // ----- Scoreboard -----
+    Stats* stats;
+    void createStat(QString name, enum StatsEnum stat, int labelRow, int labelCol, int valueRow, int valueCol, QGridLayout* layout);
 
     // ----- API -----
 
