@@ -90,7 +90,7 @@ bool wallFront();
 bool wallRight();
 bool wallLeft();
 
-void moveForward();  // can result in "crash"
+void moveForward(int distance = 1); // can result in "crash"
 void turnRight();
 void turnLeft();
 
@@ -134,9 +134,11 @@ void ackReset();
 * **Action:** None
 * **Response:** `true` if there is a wall to the left of the robot, else `false`
 
-#### `moveForward`
-* **Args:** None
-* **Action:** Move the robot forward by one cell
+#### `moveForward distance`
+* **Args:**
+  * `distance` - (optional) The number of cells to move
+* **Action:** Move the robot forward by the specified number of cells, one cell
+by default
 * **Response:**
   * `crash` if there is a wall in front of the robot
   * else `ack` once the movement completes
