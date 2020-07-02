@@ -8,6 +8,7 @@
 1. [Download](https://github.com/mackorone/mms#download)
 1. [Quick Start](https://github.com/mackorone/mms#quick-start)
 1. [Mouse API](https://github.com/mackorone/mms#mouse-api)
+1. [Scorekeeping](https://github.com/mackorone/mms#scorekeeping)
 1. [Cell Walls](https://github.com/mackorone/mms#cell-walls)
 1. [Cell Color](https://github.com/mackorone/mms#cell-color)
 1. [Cell Text](https://github.com/mackorone/mms#cell-text)
@@ -243,6 +244,35 @@ clearAllText                <NO RESPONSE>
 ackReset                    ack
 ```
 
+
+## Scorekeeping
+
+The Stats tab displays information that can be used to score an algorithm's 
+efficiency. This tab displays stats such as the total distance and total number 
+of turns. It also displays the distance and number of turns for the algorithm's 
+best start-to-finish run, if the algorithm makes multiple runs from the start 
+tile to the goal. The distance and number of turns for the current 
+start-to-finish run is also displayed.
+
+There is another value displayed, called Effective Distance. This number may 
+differ from Distance if `moveForward` is called with the optional distance 
+parameter. If `moveForward` is called with an integer greater than 2, each tile 
+after the second tile will add only half a point to the effective distance. This 
+simulates a mouse driving faster if it can drive in a straight line for more 
+than a few tiles. For example, `moveForward(5)` will increase the distance by 5 
+but will increase the effective distance by only 3.5. A mouse will incur a 
+15-point penalty on its next run's Effective Distance if it uses `ackReset` to
+return to the start tile.
+
+A final score is computed for the algorithm after it terminates. A lower score 
+is better. The final score depends on the best start-to-finish run and on the 
+overall run, according to the following equation.
+
+`score = best run turns + best run effective distance + 0.1 * (total turns + 
+total effective distance)`
+
+The mouse must reach the goal to receive a score. If the mouse never reaches the
+goal, the score will be 2000.
 
 ## Cell Walls
 
