@@ -291,7 +291,9 @@ The reset button makes it possible to test crash handling code. Press the
 button to simulate a crash. Your algorithm should periodically check if the
 button was pressed via `wasReset`. If so, your algorithm should reset any
 internal state and then call `ackReset` to send the robot back to the beginning
-of the maze.
+of the maze. After a crash, the commands `moveForward`, `turnRight`, and
+`turnLeft` will be ignored (the simulator will return "crash" and the mouse will
+not move) until `ackReset` is called.
 
 
 ## Maze Files
