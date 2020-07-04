@@ -1358,10 +1358,14 @@ bool Window::moveForward(int distance) {
 
 void Window::turnRight() {
     m_movement = Movement::TURN_RIGHT;
+    m_doomedToCrash = false;
+    m_movesRemaining = 0;
 }
 
 void Window::turnLeft() {
     m_movement = Movement::TURN_LEFT;
+    m_doomedToCrash = false;
+    m_movesRemaining = 0;
 }
 
 void Window::setWall(int x, int y, QChar direction) {
