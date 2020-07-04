@@ -166,9 +166,10 @@ private:
     QPair<int, int> m_startingLocation;
     Direction m_startingDirection;
     Movement m_movement;
+    bool m_doomedToCrash; // if the requested movement will result in a crash
+    int m_movesRemaining; // the number of allowable forward steps remaining
     double m_movementProgress;
     double m_movementStepSize;
-    int m_moveLength;
     QSlider* m_speedSlider;
 
     double progressRequired(Movement movement);

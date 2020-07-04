@@ -106,6 +106,8 @@ Window::Window(QWidget *parent) :
     m_startingLocation({0, 0}),
     m_startingDirection(Direction::NORTH),
     m_movement(Movement::NONE),
+    m_doomedToCrash(false),
+    m_movesRemaining(0),
     m_movementProgress(0.0),
     m_movementStepSize(0.0),
     m_speedSlider(new QSlider(Qt::Horizontal)),
@@ -1103,7 +1105,7 @@ QString Window::executeCommand(QString command) {
         return QString::number(mazeHeight());
     }
     else if (function == "wallFront") {
-        return boolToString(wallFront(1));
+        return boolToString(wallFront(0));
     }
     else if (function == "wallRight") {
         return boolToString(wallRight());
@@ -1145,7 +1147,12 @@ void Window::processQueuedCommands() {
         if (isMoving()) {
             updateMouseProgress(m_movementStepSize);
             if (!isMoving()) {
-                response = ACK;
+                if (m_doomedToCrash) {
+                    response = CRASH;
+                }
+                else {
+                    response = ACK;
+                }
             }
         }
         else {
@@ -1185,16 +1192,16 @@ void Window::updateMouseProgress(double progress) {
         DIRECTION_TO_ANGLE().value(m_startingDirection);
     if (m_movement == Movement::MOVE_FORWARD) {
         if (m_startingDirection == Direction::NORTH) {
-            destinationLocation.second += m_moveLength;
+            destinationLocation.second += 1;
         }
         else if (m_startingDirection == Direction::EAST) {
-            destinationLocation.first += m_moveLength;
+            destinationLocation.first += 1;
         }
         else if (m_startingDirection == Direction::SOUTH) {
-            destinationLocation.second -= m_moveLength;
+            destinationLocation.second -= 1;
         }
         else if (m_startingDirection == Direction::WEST) {
-            destinationLocation.first -= m_moveLength;
+            destinationLocation.first -= 1;
         }
         else {
             ASSERT_NEVER_RUNS();
@@ -1241,9 +1248,12 @@ void Window::updateMouseProgress(double progress) {
     if (remaining == 0.0) {
         m_startingLocation = m_mouse->getCurrentDiscretizedTranslation();
         m_startingDirection = m_mouse->getCurrentDiscretizedRotation();
-        m_movement = Movement::NONE;
         m_movementProgress = 0.0;
         m_movementStepSize = 0.0;
+        m_movesRemaining -= 1;
+        if (m_movesRemaining == 0) {
+            m_movement = Movement::NONE;
+        }
     }
 }
 
@@ -1289,37 +1299,21 @@ int Window::mazeHeight() {
 bool Window::wallFront(int distance) {
     QPair<int, int> position = m_mouse->getCurrentDiscretizedTranslation();
     Direction direction = m_mouse->getCurrentDiscretizedRotation();
-    // check distance in front to make sure there are no obstructing walls
-    int firstIncrement;
-    int secondIncrement;
     switch (direction) {
         case Direction::NORTH:
-            firstIncrement = 0;
-            secondIncrement = 1;
+            position.second += distance;
             break;
         case Direction::SOUTH:
-            firstIncrement = 0;
-            secondIncrement = -1;
+            position.second -= distance;
             break;
         case Direction::EAST:
-            firstIncrement = 1;
-            secondIncrement = 0;
+            position.first += distance;
             break;
         case Direction::WEST:
-            firstIncrement = -1;
-            secondIncrement = 0;
+            position.first -= distance;
             break;
     }
-    int first = position.first;
-    int second = position.second;
-    for (int i = 0; i < distance; i++) {
-        if(isWall({first, second, direction})) {
-            return true;
-        }
-        first += firstIncrement;
-        second += secondIncrement;
-    }
-    return false;
+    return isWall({position.first, position.second, direction});
 }
 
 bool Window::wallRight() {
@@ -1337,12 +1331,26 @@ bool Window::wallLeft() {
 }
 
 bool Window::moveForward(int distance) {
-    m_moveLength = distance;
-    // check for crashes and negative distances
-    if (distance < 0 || wallFront(distance)) {
+    // Non-positive distances aren't allowed
+    if (distance < 1) {
         return false;
     }
+    // Special case for a wall directly in front of the mouse, else
+    // the wall won't be detected until after the mouse starts moving
+    if (wallFront(0)) {
+        return false;
+    }
+    // Compute the number of allowable moves
+    int moves = 1;
+    while (moves < distance) {
+        if (wallFront(moves)) {
+            break;
+        }
+        moves += 1;
+    }
     m_movement = Movement::MOVE_FORWARD;
+    m_doomedToCrash = (moves != distance);
+    m_movesRemaining = moves;
     return true;
 }
 

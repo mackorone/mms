@@ -134,13 +134,12 @@ void ackReset();
 * **Action:** None
 * **Response:** `true` if there is a wall to the left of the robot, else `false`
 
-#### `moveForward distance`
+#### `moveForward [N]`
 * **Args:**
-  * `distance` - (optional) The number of cells to move
-* **Action:** Move the robot forward by the specified number of cells, one cell
-by default
+  * `N` - (optional) The number of cells to move forward, default `1`
+* **Action:** Move the robot forward the specified number of cells
 * **Response:**
-  * `crash` if there is a wall in front of the robot
+  * `crash` if `N < 1` or the mouse cannot complete the movement
   * else `ack` once the movement completes
 
 #### `turnRight`
