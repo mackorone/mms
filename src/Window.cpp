@@ -1250,7 +1250,9 @@ void Window::updateMouseProgress(double progress) {
         m_startingDirection = m_mouse->getCurrentDiscretizedRotation();
         m_movementProgress = 0.0;
         m_movementStepSize = 0.0;
-        m_movesRemaining -= 1;
+        if (m_movement == Movement::MOVE_FORWARD) {
+            m_movesRemaining -= 1;
+        }
         if (m_movesRemaining == 0) {
             m_movement = Movement::NONE;
         }
