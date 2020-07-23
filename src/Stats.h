@@ -30,6 +30,7 @@ public:
     void finishRun(); // A run finishes when the mouse enters the goal.
     void endUnfinishedRun(); // A run ends unfinished when the mouse returns to the start tile
     void penalizeForReset(); // Applies a penalty when the mouse resets to the start tile
+    QString getStat(StatsEnum stat); // Return the current value of the requested stat
 
 private:
     QMap<StatsEnum, float> statValues;
@@ -42,6 +43,7 @@ private:
     void setStat(StatsEnum stat, float value);
     static float getEffectiveDistance(int distance);
     void reset(StatsEnum stat);
+    bool isInteger(StatsEnum stat);
 };
 
 }

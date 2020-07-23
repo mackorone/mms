@@ -105,6 +105,7 @@ void clearAllColor();
 void setText(int x, int y, const std::string& text);
 void clearText(int x, int y);
 void clearAllText();
+float getStat(char* stat);
 
 bool wasReset();
 void ackReset();
@@ -208,6 +209,23 @@ void ackReset();
 * **Args:** None
 * **Action:** Clear the text of all cells
 * **Response:** None
+
+#### `getStat`
+* **Args:**
+  * `stat`: A string representing the stat to query. Available stats are:
+    * `total-distance (int)`
+    * `total-turns (int)`
+    * `best-run-distance (int)`
+    * `best-run-turns (int)`
+    * `current-run-distance (int)`
+    * `current-run-turns (int)`
+    * `total-effective-distance (float)`
+    * `best-run-effective-distance (float)`
+    * `current-run-effective-distance (float)`
+    * `score (float)`
+* **Action:** None
+* **Response:** The value of the stat, or `-1` if no value exists yet. The value will either be a float or integer, according to the types listed above.
+
 
 #### `wasReset`
 * **Args:** None

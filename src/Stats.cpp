@@ -127,4 +127,32 @@ void Stats::penalizeForReset() {
     penalty = 15;
 }
 
+bool Stats::isInteger(StatsEnum stat) {
+    // Returns true if the stat represents an integer value
+    return (stat == StatsEnum::TOTAL_DISTANCE
+            || stat == StatsEnum::TOTAL_TURNS
+            || stat == StatsEnum::BEST_RUN_DISTANCE
+            || stat == StatsEnum::BEST_RUN_TURNS
+            || stat == StatsEnum::CURRENT_RUN_DISTANCE
+            || stat == StatsEnum::CURRENT_RUN_TURNS
+            );
+}
+
+QString Stats::getStat(StatsEnum stat) {
+    QString statText = textField[stat]->text();
+    // Cast the stat to an integer if it's supposed to be an integer
+    if (isInteger(stat)) {
+        bool converted;
+        statText = QString::number(statText.toInt(&converted));
+        if (converted) {
+            return statText;
+        }
+        else {
+            // Return empty string if integer conversion failed
+            return "";
+        }
+    }
+    return statText;
+}
+
 }
