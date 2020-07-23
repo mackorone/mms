@@ -1117,7 +1117,8 @@ QString Window::executeCommand(QString command) {
         return INVALID;
     }
     QString function = tokens.at(0);
-    if (tokens.size() == 2 && function != "moveForward") {
+    if (tokens.size() == 2 &&
+            !(function == "moveForward" || function == "getStat")) {
         return INVALID;
     }
     if (function == "mazeWidth") {
@@ -1157,6 +1158,53 @@ QString Window::executeCommand(QString command) {
     else if (function == "ackReset") {
         ackReset();
         return ACK;
+    }
+    else if (function == "getStat") {
+        if (tokens.size() != 2) {
+            return INVALID;
+        }
+        QString stat = tokens.at(1);
+        // Convert stat to a StatsEnum
+        StatsEnum statsEnum;
+        if (stat == "total-distance") {
+            statsEnum = StatsEnum::TOTAL_DISTANCE;
+        }
+        else if (stat == "total-turns") {
+            statsEnum = StatsEnum::TOTAL_TURNS;
+        }
+        else if (stat == "best-run-distance") {
+            statsEnum = StatsEnum::BEST_RUN_DISTANCE;
+        }
+        else if (stat == "best-run-turns") {
+            statsEnum = StatsEnum::BEST_RUN_TURNS;
+        }
+        else if (stat == "current-run-distance") {
+            statsEnum = StatsEnum::CURRENT_RUN_DISTANCE;
+        }
+        else if (stat == "current-run-turns") {
+            statsEnum = StatsEnum::CURRENT_RUN_TURNS;
+        }
+        else if (stat == "total-effective-distance") {
+            statsEnum = StatsEnum::TOTAL_EFFECTIVE_DISTANCE;
+        }
+        else if (stat == "best-run-effective-distance") {
+            statsEnum = StatsEnum::BEST_RUN_EFFECTIVE_DISTANCE;
+        }
+        else if (stat == "current-run-effective-distance") {
+            statsEnum = StatsEnum::CURRENT_RUN_EFFECTIVE_DISTANCE;
+        }
+        else if (stat == "score") {
+            statsEnum = StatsEnum::SCORE;
+        }
+        else {
+            return INVALID;
+        }
+        QString statValue = stats->getStat(statsEnum);
+        if (statValue == "") {
+            // Cannot return an empty string. Return -1 to indicate empty field.
+            return "-1";
+        }
+        return statValue;
     }
     else {
         return INVALID;
