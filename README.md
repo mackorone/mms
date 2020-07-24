@@ -102,13 +102,14 @@ void setColor(int x, int y, char color);
 void clearColor(int x, int y);
 void clearAllColor();
 
-void setText(int x, int y, const std::string& text);
+void setText(int x, int y, string text);
 void clearText(int x, int y);
 void clearAllText();
-float getStat(char* stat);
 
 bool wasReset();
 void ackReset();
+
+int/float getStat(string stat);
 ```
 
 #### `mazeWidth`
@@ -210,6 +211,17 @@ void ackReset();
 * **Action:** Clear the text of all cells
 * **Response:** None
 
+
+#### `wasReset`
+* **Args:** None
+* **Action:** None
+* **Response:** `true` if the reset button was pressed, else `false`
+
+#### `ackReset`
+* **Args:** None
+* **Action:** Allow the mouse to be moved back to the start of the maze
+* **Response:** `ack` once the movement completes
+
 #### `getStat`
 * **Args:**
   * `stat`: A string representing the stat to query. Available stats are:
@@ -225,17 +237,6 @@ void ackReset();
     * `score (float)`
 * **Action:** None
 * **Response:** The value of the stat, or `-1` if no value exists yet. The value will either be a float or integer, according to the types listed above.
-
-
-#### `wasReset`
-* **Args:** None
-* **Action:** None
-* **Response:** `true` if the reset button was pressed, else `false`
-
-#### `ackReset`
-* **Args:** None
-* **Action:** Allow the mouse to be moved back to the start of the maze
-* **Response:** `ack` once the movement completes
 
 
 #### Example
