@@ -493,6 +493,10 @@ qmake && make
 ../../bin/mms
 ```
 
+## Related Projects
+
+- [@zdasaro](https://github.com/zdasaro) wrote a proxy for the Priceton University Robotics Club: [mms-competition-proxy](https://github.com/zdasaro/mms-competition-proxy)
+
 ## Acknowledgements
 
 | Name                                                          | Author            | Used For              |
