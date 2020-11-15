@@ -15,6 +15,7 @@
 1. [Reset Button](https://github.com/mackorone/mms#reset-button)
 1. [Maze Files](https://github.com/mackorone/mms#maze-files)
 1. [Building From Source](https://github.com/mackorone/mms#building-from-source)
+1. [Related Projects](https://github.com/mackorone/mms#related-projects)
 1. [Acknowledgements](https://github.com/mackorone/mms#acknowledgements)
 
 ## Introduction
