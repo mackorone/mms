@@ -51,9 +51,14 @@ const QString Window::CRASH = "crash";
 const QString Window::INVALID = "invalid";
 
 const int Window::SPEED_SLIDER_MAX = 99;
-const int Window::SPEED_SLIDER_DEFAULT = 33;
-const double Window::PROGRESS_REQUIRED_FOR_MOVE = 100.0;
-const double Window::PROGRESS_REQUIRED_FOR_TURN = 33.33;
+const int Window::SPEED_SLIDER_DEFAULT = 40;
+const double Window::PROGRESS_REQUIRED_FOR_MOVE     = 100.0;
+const double Window::PROGRESS_REQUIRED_FOR_HALFMOVE = 100.0 / 2;
+const double Window::PROGRESS_REQUIRED_FOR_EDGEMOVE = 100.0 * 2 / 3;
+const double Window::PROGRESS_REQUIRED_FOR_TURN     = 33.33;
+const double Window::PROGRESS_REQUIRED_FOR_RUNTURN  = 33.33 * 1.5;
+const double Window::PROGRESS_REQUIRED_FOR_BACKTURN = 33.33 * 2;
+const double Window::PROGRESS_REQUIRED_FOR_HALFTURN = 33.33 / 2;
 const double Window::MIN_PROGRESS_PER_SECOND = 10.0;
 const double Window::MAX_PROGRESS_PER_SECOND = 5000.0;
 const double Window::MAX_SLEEP_SECONDS = 0.008;
@@ -103,7 +108,7 @@ Window::Window(QWidget *parent) :
     m_commandQueueTimer(new QTimer()),
 
     // Movement
-    m_startingLocation({0, 0}),
+    m_startingLocation({1, 1}),
     m_startingDirection(Direction::NORTH),
     m_movement(Movement::NONE),
     m_doomedToCrash(false),
@@ -268,6 +273,7 @@ Window::Window(QWidget *parent) :
 
     // Add stats labels
     stats = new Stats();
+
     createStat("Total Distance", StatsEnum::TOTAL_DISTANCE, 0, 0, 0, 1, statsLayout);
     createStat("Total Effective Distance", StatsEnum::TOTAL_EFFECTIVE_DISTANCE, 1, 0, 1, 1, statsLayout);
     createStat("Total Turns", StatsEnum::TOTAL_TURNS, 2, 0, 2, 1, statsLayout);
@@ -278,6 +284,27 @@ Window::Window(QWidget *parent) :
     createStat("Best Run Effective Distance", StatsEnum::BEST_RUN_EFFECTIVE_DISTANCE, 4, 0, 4, 1, statsLayout);
     createStat("Best Run Turns", StatsEnum::BEST_RUN_TURNS, 5, 0, 5, 1, statsLayout);
     createStat("Score", StatsEnum::SCORE, 6, 0, 6, 1, statsLayout);
+
+    createStat("COUNT_TURNLEFT45", StatsEnum::COUNT_TURNLEFT45, 3, 2, 3, 3, statsLayout);
+    createStat("COUNT_TURNRIGHT45", StatsEnum::COUNT_TURNRIGHT45, 4, 2, 4, 3, statsLayout);
+    createStat("COUNT_TURNLEFT90", StatsEnum::COUNT_TURNLEFT90, 5, 2, 5, 3, statsLayout);
+    createStat("COUNT_TURNRIGHT90", StatsEnum::COUNT_TURNRIGHT90, 6, 2, 6, 3, statsLayout);
+    createStat("COUNT_TURNBACK180", StatsEnum::COUNT_TURNBACK180, 7, 0, 7, 1, statsLayout);
+    createStat("COUNT_FULLFORWARD", StatsEnum::COUNT_FULLFORWARD, 7, 2, 7, 3, statsLayout);
+    createStat("COUNT_HALFFORWARD", StatsEnum::COUNT_HALFFORWARD, 8, 0, 8, 1, statsLayout);
+    createStat("COUNT_EDGEFORWARD", StatsEnum::COUNT_EDGEFORWARD, 8, 2, 8, 3, statsLayout);
+
+    createStat("COUNT_RUNLEFT ", StatsEnum::COUNT_RUNLEFT, 9, 0, 9, 1, statsLayout);
+    createStat("COUNT_RUNRIGHT", StatsEnum::COUNT_RUNRIGHT, 9, 2, 9, 3, statsLayout);
+
+    createStat("TOTAL SPEED(sec)", StatsEnum::SPEEDSUM, 10, 0, 10, 1, statsLayout);
+
+    createStat("SPEED_RUNLEFT(sec)",     StatsEnum::SPEED_RUNLEFT,  11, 0, 11, 1, statsLayout);
+    createStat("SPEED_RUNRIGHT(sec)",    StatsEnum::SPEED_RUNRIGHT, 11, 2, 11, 3, statsLayout);
+    createStat("SPEED_TURNLEFT45(sec)",  StatsEnum::SPEED_TURNLEFT45,  12, 0, 12, 1, statsLayout);
+    createStat("SPEED_TURNRIGHT45(sec)", StatsEnum::SPEED_TURNRIGHT45, 12, 2, 12, 3, statsLayout);
+    createStat("SPEED_HALFFORWARD(sec)", StatsEnum::SPEED_HALFFORWARD, 13, 0, 13, 1, statsLayout);
+    createStat("SPEED_EDGEFORWARD(sec)", StatsEnum::SPEED_EDGEFORWARD, 13, 2, 13, 3, statsLayout);
 
     // Add the build and run outputs to the panel
     panelLayout->addWidget(m_mouseAlgoOutputTabWidget);
@@ -299,7 +326,7 @@ Window::Window(QWidget *parent) :
     splitter->setSizes({windowHeight, windowWidth - windowHeight});
 
     // Remove maze files that no longer exist
-    for (const auto& path : SettingsMazeFiles::getAllPaths()) {
+    foreach (const auto& path ,  SettingsMazeFiles::getAllPaths()) {
         if (path.isEmpty() || !QFileInfo::exists(path)) {
             SettingsMazeFiles::removePath(path);
         }
@@ -428,10 +455,11 @@ void Window::showInvalidMazeFileWarning(QString path) {
 
 void Window::refreshMazeFileComboBox(QString selected) {
     m_mazeFileComboBox->clear();
-    for (const auto& info : QDir(":/resources/mazes/").entryInfoList()) {
+    foreach (const auto& info , QDir(":/resources/mazes/").entryInfoList()) {
+
         m_mazeFileComboBox->addItem(info.absoluteFilePath());
     }
-    for (const auto& path : SettingsMazeFiles::getAllPaths()) {
+    foreach (const auto& path , SettingsMazeFiles::getAllPaths()) {
         m_mazeFileComboBox->addItem(path);
     }
     m_mazeFileComboBox->setCurrentText(selected);
@@ -553,7 +581,7 @@ void Window::onMouseAlgoImportButtonPressed() {
 
 void Window::refreshMouseAlgoComboBox(QString selected) {
     m_mouseAlgoComboBox->clear();
-    for (const auto& name : SettingsMouseAlgos::names()) {
+    foreach (const auto& name , SettingsMouseAlgos::names()) {
         m_mouseAlgoComboBox->addItem(name);
     }
     m_mouseAlgoComboBox->setCurrentText(selected);
@@ -714,6 +742,7 @@ void Window::onBuildExit(int exitCode, QProcess::ExitStatus exitStatus) {
     m_buildProcess = nullptr;
 }
 
+
 void Window::startRun() {
 
     // Only one algo running at a time
@@ -762,7 +791,7 @@ void Window::startRun() {
     connect(process, &QProcess::readyReadStandardError, this, [=](){
         QString output = process->readAllStandardError();
         QStringList logs = processText(output, &m_logBuffer);
-        for (QString log : logs) {
+        foreach (QString log , logs) {
             m_runOutput->appendPlainText(log);
         }
     });
@@ -771,7 +800,7 @@ void Window::startRun() {
     connect(process, &QProcess::readyReadStandardOutput, this, [=](){
         QString output = process->readAllStandardOutput();
         QStringList commands = processText(output, &m_commandBuffer);
-        for (QString command : commands) {
+        foreach (QString command , commands ) {
             dispatchCommand(command);
         }
     });
@@ -821,6 +850,8 @@ void Window::startRun() {
         // Only enabled while mouse is running
         m_pauseButton->setEnabled(true);
         m_resetButton->setEnabled(true);
+
+        m_sliderValue = m_speedSlider->value();
     } 
     else {
         // Clean up the failed process
@@ -835,6 +866,15 @@ void Window::startRun() {
 void Window::cancelRun() {
     cancelProcess(m_runProcess, m_runStatus);
     removeMouseFromMaze();
+
+    m_speedSlider->setValue(SPEED_SLIDER_DEFAULT);
+}
+
+void Window::stopRun(QString msg) {
+    m_runOutput->appendPlainText(msg);
+    m_movementProgress = 0.0;
+    m_movementStepSize = 0.0;
+    m_movement = Movement::NONE;
 }
 
 void Window::onRunExit(int exitCode, QProcess::ExitStatus exitStatus) {
@@ -910,7 +950,7 @@ void Window::removeMouseFromMaze() {
     m_commandBuffer.clear();
 
     // Reset movement state
-    m_startingLocation = {0, 0};
+    m_startingLocation = {1, 1};
     m_startingDirection = Direction::NORTH;
     m_movement = Movement::NONE;
     m_movementProgress = 0.0;
@@ -1003,7 +1043,9 @@ void Window::dispatchCommand(QString command) {
             clearWall(x, y, direction);
         }
         else {
-            ASSERT_NEVER_RUNS();
+            stopRun("Stop running because of an exceptional command!");
+            //ASSERT_NEVER_RUNS();
+            return;
         }
     }
     else if (command.startsWith("setColor")) {
@@ -1112,13 +1154,14 @@ void Window::dispatchCommand(QString command) {
 }
 
 QString Window::executeCommand(QString command) {
+
     QStringList tokens = command.split(" ", QString::SkipEmptyParts);
     if (tokens.size() < 1 || tokens.size() > 2) {
         return INVALID;
     }
     QString function = tokens.at(0);
     if (tokens.size() == 2 &&
-            !(function == "moveForward" || function == "getStat")) {
+            !(function == "moveFullForward" || function == "moveHalfForward" || function == "moveEdgeForward" || function == "getStat")) {
         return INVALID;
     }
     if (function == "mazeWidth") {
@@ -1136,7 +1179,7 @@ QString Window::executeCommand(QString command) {
     else if (function == "wallLeft") {
         return boolToString(wallLeft());
     }
-    else if (function == "moveForward") {
+    else if (function == "moveFullForward") {
         int distance = 1;
         if (tokens.size() == 2) {
             distance = tokens.at(1).toInt();
@@ -1144,12 +1187,52 @@ QString Window::executeCommand(QString command) {
         bool success = moveForward(distance);
         return success ? "" : CRASH;
     }
+    else if (function == "moveHalfForward") {
+        int distance = 1;
+        if (tokens.size() == 2) {
+            distance = tokens.at(1).toInt();
+        }
+        bool success = moveHalfForward(distance);
+        return success ? "" : CRASH;
+    }
+    else if (function == "moveEdgeForward") {
+        int distance = 1;
+        if (tokens.size() == 2) {
+            distance = tokens.at(1).toInt();
+        }
+        bool success = moveEdgeForward(distance);
+        return success ? "" : CRASH;
+    }
+    else if (function == "completeRun") {
+        completeRun();
+        return ACK;
+    }
+    else if (function == "turnBack") {
+        turnBack();
+        return "";
+    }
+    else if (function == "turnRight45") {
+        turnRight45();
+        return "";
+    }
+    else if (function == "turnLeft45") {
+        turnLeft45();
+        return "";
+    }
     else if (function == "turnRight") {
         turnRight();
         return "";
     }
     else if (function == "turnLeft") {
         turnLeft();
+        return "";
+    }
+    else if (function == "runRight") {
+        runRight();
+        return "";
+    }
+    else if (function == "runLeft") {
+        runLeft();
         return "";
     }
     else if (function == "wasReset") {
@@ -1160,6 +1243,7 @@ QString Window::executeCommand(QString command) {
         return ACK;
     }
     else if (function == "getStat") {
+
         if (tokens.size() != 2) {
             return INVALID;
         }
@@ -1244,24 +1328,57 @@ void Window::processQueuedCommands() {
 
 double Window::progressRequired(Movement movement) {
     switch (movement) {
-        case Movement::MOVE_FORWARD:
+        case Movement::MOVE_FULLFORWARD:
             return PROGRESS_REQUIRED_FOR_MOVE;
+        case Movement::MOVE_HALFFORWARD:
+            return PROGRESS_REQUIRED_FOR_HALFMOVE;
+        case Movement::MOVE_EDGEFORWARD:
+            return PROGRESS_REQUIRED_FOR_EDGEMOVE;
+        case Movement::TURN_RIGHT45:
+        case Movement::TURN_LEFT45:
+            return PROGRESS_REQUIRED_FOR_HALFTURN;
+        case Movement::RUN_RIGHT:
+        case Movement::RUN_LEFT:
+            return PROGRESS_REQUIRED_FOR_RUNTURN;
         case Movement::TURN_RIGHT:
         case Movement::TURN_LEFT:
             return PROGRESS_REQUIRED_FOR_TURN;
+        case Movement::TURN_BACK:
+            return PROGRESS_REQUIRED_FOR_BACKTURN;
         default:
-            ASSERT_NEVER_RUNS();
+        stopRun("Stop running because of an exceptional movement!");
+        //ASSERT_NEVER_RUNS();
+        return 0.0f;
     }
+    return 0.0f;
 }
 
 void Window::updateMouseProgress(double progress) {
 
     // Determine the destination of the mouse.
     QPair<int, int> destinationLocation = m_startingLocation;
-    Angle destinationRotation =
-        DIRECTION_TO_ANGLE().value(m_startingDirection);
-    if (m_movement == Movement::MOVE_FORWARD) {
-        if (m_startingDirection == Direction::NORTH) {
+    Angle destinationRotation = DIRECTION_TO_ANGLE().value(m_startingDirection);
+    if (m_movement == Movement::MOVE_FULLFORWARD) {
+         if (m_startingDirection == Direction::NORTH) {
+            destinationLocation.second += 2;
+        }
+        else if (m_startingDirection == Direction::EAST) {
+            destinationLocation.first += 2;
+        }
+        else if (m_startingDirection == Direction::SOUTH) {
+            destinationLocation.second -= 2;
+        }
+        else if (m_startingDirection == Direction::WEST) {
+            destinationLocation.first -= 2;
+        }
+        else {
+            stopRun("Stop running because of an exceptional movement!");
+            //ASSERT_NEVER_RUNS();
+            return;
+        }
+    }
+    else if (m_movement == Movement::MOVE_HALFFORWARD) {
+          if (m_startingDirection == Direction::NORTH) {
             destinationLocation.second += 1;
         }
         else if (m_startingDirection == Direction::EAST) {
@@ -1274,20 +1391,83 @@ void Window::updateMouseProgress(double progress) {
             destinationLocation.first -= 1;
         }
         else {
-            ASSERT_NEVER_RUNS();
+            stopRun("Stop running because of an exceptional movement!");
+            //ASSERT_NEVER_RUNS();
+            return;
+        }
+    }
+    else if (m_movement == Movement::MOVE_EDGEFORWARD) {
+        if (m_startingDirection == Direction::NORTHWEST) {
+            destinationLocation.first -= 1;
+            destinationLocation.second += 1;
+        }
+        else if (m_startingDirection == Direction::NORTHEAST) {
+            destinationLocation.first += 1;
+            destinationLocation.second += 1;
+        }
+        else if (m_startingDirection == Direction::SOUTHEAST) {
+            destinationLocation.first += 1;
+            destinationLocation.second -= 1;
+        }
+        else if (m_startingDirection == Direction::SOUTHWEST) {
+            destinationLocation.first -= 1;
+            destinationLocation.second -= 1;
+        }
+        else if (m_startingDirection == Direction::WESTNORTH) {
+            destinationLocation.first -= 1;
+            destinationLocation.second += 1;
+        }
+        else if (m_startingDirection == Direction::EASTNORTH) {
+            destinationLocation.first += 1;
+            destinationLocation.second += 1;
+        }
+        else if (m_startingDirection == Direction::EASTSOUTH) {
+            destinationLocation.first += 1;
+            destinationLocation.second -= 1;
+        }
+        else if (m_startingDirection == Direction::WESTSOUTH) {
+            destinationLocation.first -= 1;
+            destinationLocation.second -= 1;
+        }
+        else {
+            stopRun("Stop running because of an exceptional movement!");
+            //ASSERT_NEVER_RUNS();
+            return;
         }
     }
     // Explicity add or subtract 90 degrees so that the mouse is guaranteed to
     // only rotate 90 degrees (using DIRECTION_ROTATE can cause the mouse to
     // rotate 270 degrees in the opposite direction in some cases)
+    else if (m_movement == Movement::TURN_RIGHT45) {
+        destinationRotation -= Angle::Degrees(45);
+    }
+    else if (m_movement == Movement::TURN_LEFT45) {
+        destinationRotation += Angle::Degrees(45);
+    }
+    else if (m_movement == Movement::RUN_RIGHT) {
+        destinationRotation -= Angle::Degrees(90);
+    }
+    else if (m_movement == Movement::RUN_LEFT) {
+        destinationRotation += Angle::Degrees(90);
+    }
     else if (m_movement == Movement::TURN_RIGHT) {
         destinationRotation -= Angle::Degrees(90);
     }
     else if (m_movement == Movement::TURN_LEFT) {
         destinationRotation += Angle::Degrees(90);
     }
+    else if (m_movement == Movement::TURN_BACK) {
+        destinationRotation += Angle::Degrees(180);
+    }
     else {
-        ASSERT_NEVER_RUNS();
+        stopRun("Stop running because of an exceptional movement!");
+        //ASSERT_NEVER_RUNS();
+        return;
+    }
+
+    if( isWithinMaze(destinationLocation.first/2, destinationLocation.second/2 ) == false ) {
+        stopRun("Stop running because of outbound maze movement!");
+        return;
     }
 
     // Increment the movement progress, calculate fraction complete
@@ -1299,40 +1479,69 @@ void Window::updateMouseProgress(double progress) {
     }
     double fraction = 1.0 - (remaining / required);
 
-    // Calculate the current translation and rotation
-    Coordinate startingTranslation =
-        getCenterOfTile(m_startingLocation.first, m_startingLocation.second);
-    Coordinate destinationTranslation =
-        getCenterOfTile(destinationLocation.first, destinationLocation.second);
-    Angle startingRotation =
-        DIRECTION_TO_ANGLE().value(m_startingDirection);
-    Coordinate currentTranslation =
-        startingTranslation * (1.0 - fraction) +
-        destinationTranslation * fraction;
-    Angle currentRotation =
-        startingRotation * (1.0 - fraction) +
-        destinationRotation * fraction;
+    // Calculate the current translation and rotation for moving straight or turn 45 or 90 degree
+    Coordinate startingTranslation = getCenterOfTile(m_startingLocation.first, m_startingLocation.second);
+    Coordinate destinationTranslation = getCenterOfTile(destinationLocation.first, destinationLocation.second);
 
-    // Teleport the mouse, reset movement state if done
+    Angle startingRotation = DIRECTION_TO_ANGLE().value(m_startingDirection);
+    Coordinate currentTranslation = startingTranslation * (1.0 - fraction) + destinationTranslation * fraction;
+    Angle currentRotation =         startingRotation * (1.0 - fraction) + destinationRotation * fraction;
+
+    // Calculate the current translation and rotation for a curv turn
+    if (m_movement == Movement::RUN_RIGHT || m_movement == Movement::RUN_LEFT) {
+
+        if (m_startingDirection == Direction::NORTH) {
+            if (m_movement == Movement::RUN_RIGHT) {
+                currentTranslation += Coordinate::Cartesian( Dimensions::halfTileLength() * (1.0 - currentRotation.getSin()) * +1,  Dimensions::halfTileLength()*currentRotation.getCos() * +1 );
+            }
+            else if (m_movement == Movement::RUN_LEFT) {
+                currentTranslation += Coordinate::Cartesian( Dimensions::halfTileLength() * (1.0 - currentRotation.getSin()) * -1,  Dimensions::halfTileLength()*currentRotation.getCos() * -1 );
+            }
+        }
+        else if (m_startingDirection == Direction::EAST) {
+            if (m_movement == Movement::RUN_RIGHT) {
+                currentTranslation += Coordinate::Cartesian( Dimensions::halfTileLength() * (      currentRotation.getSin()) * -1,  Dimensions::halfTileLength()*(1.0 - currentRotation.getCos()) * -1 );
+            }
+            else if (m_movement == Movement::RUN_LEFT) {
+                currentTranslation += Coordinate::Cartesian( Dimensions::halfTileLength() * (      currentRotation.getSin()) * +1,  Dimensions::halfTileLength()*(1.0 - currentRotation.getCos()) * +1);
+            }
+        }
+        else if (m_startingDirection == Direction::SOUTH) {
+            if (m_movement == Movement::RUN_RIGHT) {
+                currentTranslation += Coordinate::Cartesian( Dimensions::halfTileLength() * (1.0 + currentRotation.getSin()) * -1,  Dimensions::halfTileLength()*(      currentRotation.getCos()) * +1 );
+            }
+            else if (m_movement == Movement::RUN_LEFT) {
+                currentTranslation += Coordinate::Cartesian( Dimensions::halfTileLength() * (1.0 + currentRotation.getSin()) * +1,  Dimensions::halfTileLength()*(      currentRotation.getCos()) * -1);
+            }
+        }
+        else if (m_startingDirection == Direction::WEST) {
+            if (m_movement == Movement::RUN_RIGHT) {
+                currentTranslation += Coordinate::Cartesian( Dimensions::halfTileLength() * (      currentRotation.getSin()) * -1,  Dimensions::halfTileLength()*(1.0 + currentRotation.getCos()) * +1);
+            }
+            else if (m_movement == Movement::RUN_LEFT) {
+                currentTranslation += Coordinate::Cartesian( Dimensions::halfTileLength() * (      currentRotation.getSin()) * +1,  Dimensions::halfTileLength()*(1.0 + currentRotation.getCos()) * -1);
+            }
+        }else {
+            stopRun("Stop running because of a wrong direction!");
+            return;
+        }
+
+    }
+
     m_mouse->teleport(currentTranslation, currentRotation);
     if (remaining == 0.0) {
-        m_startingLocation = m_mouse->getCurrentDiscretizedTranslation();
+
+        m_startingLocation = m_mouse->getCurrentHalfDiscretizedTranslation();
         m_startingDirection = m_mouse->getCurrentDiscretizedRotation();
         m_movementProgress = 0.0;
         m_movementStepSize = 0.0;
-        if (m_movement == Movement::MOVE_FORWARD) {
+        if( (m_movement == Movement::MOVE_FULLFORWARD) || (m_movement == Movement::MOVE_HALFFORWARD) ||  (m_movement == Movement::MOVE_EDGEFORWARD) ){
             m_movesRemaining -= 1;
         }
         if (m_movesRemaining == 0) {
             m_movement = Movement::NONE;
         }
-        // determine if the goal was reached
-        if (m_maze->isInCenter(m_startingLocation)) {
-            stats->finishRun(); // record a completed start-to-finish run
-        }
-        else if (m_startingLocation.first == 0 && m_startingLocation.second == 0) {
-            stats->endUnfinishedRun();
-        }
+
     }
 }
 
@@ -1361,7 +1570,9 @@ void Window::scheduleMouseProgressUpdate() {
     // Update step size, set the timer
     m_movementStepSize = progressRemaining;
     m_commandQueueTimer->start(secondsRemaining * 1000);
+
 }
+
 
 bool Window::isMoving() {
     return m_movement != Movement::NONE;
@@ -1373,7 +1584,24 @@ void Window::createStat(QString name, enum StatsEnum stat, int labelRow, int lab
     QLineEdit* textbox = new QLineEdit();
     textbox->setReadOnly(true);
     stats->bindText(stat, textbox);
-    layout->addWidget(textbox, valueRow, valueCol);
+    layout->addWidget(textbox, valueRow, valueCol);    
+
+    switch( stat ) {
+        case StatsEnum::SPEED_TURNLEFT45:
+        case StatsEnum::SPEED_TURNRIGHT45:
+        case StatsEnum::SPEED_HALFFORWARD:
+        case StatsEnum::SPEED_EDGEFORWARD:
+            connect(
+                textbox,
+                &QLineEdit::textChanged,
+                this,
+                &Window::statusRun
+            );
+            break;
+        default : break;
+    }
+
+
 }
 
 int Window::mazeWidth() {
@@ -1400,6 +1628,7 @@ bool Window::wallFront(int distance) {
         case Direction::WEST:
             position.first -= distance;
             break;
+        default : break; 
     }
     return isWall({position.first, position.second, direction});
 }
@@ -1419,6 +1648,7 @@ bool Window::wallLeft() {
 }
 
 bool Window::moveForward(int distance) {
+
     // Non-positive distances aren't allowed
     if (distance < 1) {
         return false;
@@ -1432,33 +1662,192 @@ bool Window::moveForward(int distance) {
     int moves = 1;
     while (moves < distance) {
         if (wallFront(moves)) {
-            break;
+            stopRun("Stop running because of a wall!");
+            return false;
         }
         moves += 1;
     }
-    m_movement = Movement::MOVE_FORWARD;
+    m_movement = Movement::MOVE_FULLFORWARD;
     m_doomedToCrash = (moves != distance);
     m_movesRemaining = moves;
-    if (m_startingLocation.first == 0 && m_startingLocation.second == 0) {
+
+    if (m_startingLocation.first == 1 && m_startingLocation.second == 1) {
         stats->startRun();
     }
     // increase the stats by the distance that will be travelled
-    stats->addDistance(moves);
+
+    switch(distance) {
+       case 1:
+        m_speedSlider->setValue(m_sliderValue);
+        break;
+       case 2 :
+        m_speedSlider->setValue(m_sliderValue*1.25);
+        break;
+        case 3:
+        m_speedSlider->setValue(m_sliderValue*1.5);
+        break;
+         default :
+        m_speedSlider->setValue(m_sliderValue*2.0);
+        break;
+    }
+
+    stats->addDistance(StatsEnum::COUNT_FULLFORWARD, distance);
+
     return true;
+}
+
+bool Window::moveHalfForward(int distance) {
+
+    // Non-positive distances aren't allowed
+    if (distance < 1) {
+        return false;
+    }
+    // Special case for a wall directly in front of the mouse, else
+    // the wall won't be detected until after the mouse starts moving
+    //if (wallFront(0)) {
+    //    return false;
+    //}
+    // Compute the number of allowable moves
+    int moves = 1;
+    int dis = distance/2 ;
+    if( dis == 0 ) dis = 1;
+    while (moves < dis) {
+        if (wallFront(moves)) {
+            stopRun("Stop running because of a wall!");
+            return false;
+        }
+        moves = dis;
+    }
+    m_movement = Movement::MOVE_HALFFORWARD;
+    m_doomedToCrash = (moves != dis);
+    m_movesRemaining = distance;
+
+    if (m_startingLocation.first == 1 && m_startingLocation.second == 1) {
+        stats->startRun();
+    }
+
+    switch(distance) {
+       case 1:
+        m_speedSlider->setValue(m_sliderValue);
+        break;
+       case 2 :
+        m_speedSlider->setValue(m_sliderValue*1.25);
+        break;
+        case 3:
+        m_speedSlider->setValue(m_sliderValue*1.5);
+        break;
+         default :
+        m_speedSlider->setValue(m_sliderValue*2.0);
+        break;
+    }
+
+    // increase the stats by the distance that will be travelled
+    stats->addDistance(StatsEnum::COUNT_HALFFORWARD, distance);
+    return true;
+}
+
+bool Window::moveEdgeForward(int distance) {
+
+    // Non-positive distances aren't allowed
+    if (distance < 1) {
+        return false;
+    }
+    // Special case for a wall directly in front of the mouse, else
+    // the wall won't be detected until after the mouse starts moving
+    //if (wallFront(0)) {
+    //    return false;
+    // }
+    // Compute the number of allowable moves
+    int moves = 1;
+    //while (moves < distance) {
+    //    if (wallFront(moves)) {
+    //        break;
+    //    }
+    moves = distance;
+    //}
+    m_movement = Movement::MOVE_EDGEFORWARD;
+    m_doomedToCrash = (moves != distance);
+    m_movesRemaining = moves;
+
+
+    //if (m_startingLocation.first == 1 && m_startingLocation.second == 1) {
+    //    stats->startRun();
+    //}
+    // increase the stats by the distance that will be travelled
+
+    switch(distance) {
+       case 1:
+        m_speedSlider->setValue(m_sliderValue);
+        break;
+       case 2 :
+        m_speedSlider->setValue(m_sliderValue*1.25);
+        break;
+        case 3:
+        m_speedSlider->setValue(m_sliderValue*1.5);
+        break;
+         default :
+        m_speedSlider->setValue(m_sliderValue*2.0);
+        break;
+    }
+
+    stats->addDistance(StatsEnum::COUNT_EDGEFORWARD, distance);
+    return true;
+}
+
+void Window::turnBack() {
+    m_movement = Movement::TURN_BACK;
+    m_doomedToCrash = false;
+    m_movesRemaining = 0;
+    stats->addTurn(StatsEnum::COUNT_TURNBACK180);
+    m_speedSlider->setValue(m_sliderValue);
+}
+
+void Window::turnRight45() {
+    m_movement = Movement::TURN_RIGHT45;
+    m_doomedToCrash = false;
+    m_movesRemaining = 0;
+    stats->addTurn(StatsEnum::COUNT_TURNRIGHT45);
+    m_speedSlider->setValue(m_sliderValue);
+}
+
+void Window::turnLeft45() {    
+    m_movement = Movement::TURN_LEFT45;
+    m_doomedToCrash = false;
+    m_movesRemaining = 0;
+    stats->addTurn(StatsEnum::COUNT_TURNLEFT45);
+    m_speedSlider->setValue(m_sliderValue);
 }
 
 void Window::turnRight() {
     m_movement = Movement::TURN_RIGHT;
     m_doomedToCrash = false;
     m_movesRemaining = 0;
-    stats->addTurn();
+    stats->addTurn(StatsEnum::COUNT_TURNRIGHT90);
+    m_speedSlider->setValue(m_sliderValue);
 }
 
 void Window::turnLeft() {
     m_movement = Movement::TURN_LEFT;
     m_doomedToCrash = false;
     m_movesRemaining = 0;
-    stats->addTurn();
+    stats->addTurn(StatsEnum::COUNT_TURNLEFT90);
+    m_speedSlider->setValue(m_sliderValue);
+}
+
+void Window::runRight() {
+    m_movement = Movement::RUN_RIGHT;
+    m_doomedToCrash = false;
+    m_movesRemaining = 0;
+    stats->addTurn(StatsEnum::COUNT_RUNRIGHT);
+    m_speedSlider->setValue(m_sliderValue);
+}
+
+void Window::runLeft() {
+    m_movement = Movement::RUN_LEFT;
+    m_doomedToCrash = false;
+    m_movesRemaining = 0;
+    stats->addTurn(StatsEnum::COUNT_RUNLEFT);
+    m_speedSlider->setValue(m_sliderValue);
 }
 
 void Window::setWall(int x, int y, QChar direction) {
@@ -1546,7 +1935,7 @@ void Window::clearText(int x, int y) {
 }
 
 void Window::clearAllText() {
-    for (QPair<int, int> position : m_tilesWithText) {
+    for (const QPair<int, int> position : m_tilesWithText) {
         m_view->getMazeGraphic()->clearText(position.first, position.second);
     }
     m_tilesWithText.clear();
@@ -1557,8 +1946,9 @@ bool Window::wasReset() {
 }
 
 void Window::ackReset() {
+
     m_mouse->reset();
-    m_startingLocation = {0, 0};
+    m_startingLocation = {1, 1};
     m_startingDirection = Direction::NORTH;
     m_movement = Movement::NONE;
     m_movementProgress = 0.0;
@@ -1568,6 +1958,14 @@ void Window::ackReset() {
     m_wasReset = false;
     stats->penalizeForReset();
     stats->endUnfinishedRun();
+}
+
+void Window::completeRun() {
+    stats->finishRun(); // record a completed start-to-finish run
+}
+
+void Window::statusRun() {
+    stats->updateScore();
 }
 
 QString Window::boolToString(bool value) const {
@@ -1595,16 +1993,24 @@ Wall Window::getOpposingWall(Wall wall) const {
             return {wall.x, wall.y - 1, Direction::NORTH};
         case Direction::WEST:
             return {wall.x - 1, wall.y, Direction::EAST};
+       default : break;
     }
+    return {wall.x, wall.y, Direction::NORTH}; // no meaning
 }
 
-Coordinate Window::getCenterOfTile(int x, int y) const {
-    ASSERT_TR(isWithinMaze(x, y));
+Coordinate Window::getCenterOfTile(int x, int y) const {      
+    //ASSERT_TR(isWithinMaze((x-1)/2, (y-1)/2));
+
+    if( isWithinMaze((x-1)/2, (y-1)/2) == false ) {
+        x = 0, y = 0;
+    }
+
     Coordinate centerOfTile = Coordinate::Cartesian(
-        Dimensions::tileLength() * (static_cast<double>(x) + 0.5),
-        Dimensions::tileLength() * (static_cast<double>(y) + 0.5)
+        Dimensions::halfTileLength() * (static_cast<double>(x)),
+        Dimensions::halfTileLength() * (static_cast<double>(y))
     );
     return centerOfTile;
 }
+
 
 } 

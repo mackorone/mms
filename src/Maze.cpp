@@ -162,7 +162,7 @@ Maze* Maze::fromNumFile(QVector<QString> lines) {
     //     +---+---+---+
 
     BasicMaze basicMaze;
-    for (QString line : lines) {
+    foreach (QString line , lines) {
 
         // Tokenize the line
         QStringList tokens = line.split(" ", QString::SkipEmptyParts);
@@ -309,7 +309,7 @@ QVector<QVector<int>> Maze::getDistances(BasicMaze basicMaze) {
     QQueue<QPair<int, int>> discovered;
     int width = basicMaze.size();
     int height = basicMaze.at(0).size();
-    for (QPair<int, int> position : getCenterPositions(width, height)) {
+    for (const QPair<int, int> position : getCenterPositions(width, height)) {
         distances[position.first][position.second] = 0;
         discovered.enqueue(position);
     }

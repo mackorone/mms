@@ -14,6 +14,14 @@ enum class Direction {
     EAST,
     SOUTH,
     WEST,
+    NORTHEAST,
+    NORTHWEST,
+    SOUTHEAST,
+    SOUTHWEST,
+    EASTNORTH,
+    EASTSOUTH,
+    WESTNORTH,
+    WESTSOUTH,
 };
 
 // This vector serves two functions:

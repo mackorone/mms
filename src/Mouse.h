@@ -27,6 +27,7 @@ public:
     void teleport(const Coordinate& translation, const Angle& rotation);
 
     // Gets the current discretized translation and rotation of the mouse
+    QPair<int, int> getCurrentHalfDiscretizedTranslation() const;
     QPair<int, int> getCurrentDiscretizedTranslation() const;
     Direction getCurrentDiscretizedRotation() const;
 

@@ -153,7 +153,9 @@ QVector<QMap<QString, QString>> Settings::getGroup(QString group) {
     for (int i = 0; i < size; i += 1) {
         settings.setArrayIndex(i);
         QMap<QString, QString> map;
-        for (QString key : settings.allKeys()) {
+
+//        for (QString key : settings.allKeys()) {
+        foreach (QString key , settings.allKeys()) {
             map[key] = settings.value(key).toString();
         }
         entries.append(map);

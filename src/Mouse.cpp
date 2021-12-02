@@ -4,6 +4,7 @@
 #include <QPair>
 #include <QVector>
 #include <QtMath>
+#include <QMessageBox>
 
 #include "units/Distance.h"
 
@@ -78,6 +79,22 @@ void Mouse::teleport(const Coordinate& translation, const Angle& rotation) {
     m_currentRotation = rotation;
 }
 
+
+QPair<int, int> Mouse::getCurrentHalfDiscretizedTranslation() const {
+    static Distance halfTileLength = Dimensions::halfTileLength();
+    double  tx = m_currentTranslation.getX().getMeters() * 1000.0f;
+    double  ty = m_currentTranslation.getY().getMeters() * 1000.0f;
+    double  hd = halfTileLength.getMeters() * 1000.0f;
+    int     txi = qFloor( tx ) ;
+    int     hdi = qFloor( hd )  ;
+    int     tyi = qFloor( ty ) ;
+
+    int x = static_cast<int>(qFloor(  txi / hdi ) );
+    int y = static_cast<int>(qFloor(  tyi / hdi ) );
+
+    return {x, y};
+}
+
 QPair<int, int> Mouse::getCurrentDiscretizedTranslation() const {
     static Distance tileLength = Dimensions::tileLength();
     int x = static_cast<int>(qFloor(m_currentTranslation.getX() / tileLength));
@@ -87,21 +104,31 @@ QPair<int, int> Mouse::getCurrentDiscretizedTranslation() const {
 
 Direction Mouse::getCurrentDiscretizedRotation() const {
     int dir = static_cast<int>(qFloor(
-        (m_currentRotation + Angle::Degrees(45)).getRadiansZeroTo2pi() /
-        Angle::Degrees(90).getRadiansZeroTo2pi()
+        (m_currentRotation + Angle::Degrees(22.5)).getRadiansZeroTo2pi() /
+        Angle::Degrees(45).getRadiansZeroTo2pi()
     ));
+
     switch (dir) {
         case 0:
             return Direction::EAST;
-        case 1:
-            return Direction::NORTH;
         case 2:
+            return Direction::NORTH;
+        case 4:
             return Direction::WEST;
-        case 3:
+        case 6:
             return Direction::SOUTH;
+        case 1:
+            return Direction::NORTHEAST;
+        case 3:
+            return Direction::NORTHWEST;
+        case 5:
+            return Direction::SOUTHWEST;
+        case 7:
+            return Direction::SOUTHEAST;
         default:
             ASSERT_NEVER_RUNS();
     }
+    return Direction::NORTH; // no meaning
 }
 
 Polygon Mouse::getCurrentBodyPolygon() const {

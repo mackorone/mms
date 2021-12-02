@@ -1,21 +1,18 @@
-<!DOCTYPE RCC><RCC version="1.0">
-<qresource>
-    <file>resources/fonts/BPmono.png</file>
-    <file>resources/fonts/DejaVuSansMono.png</file>
-    <file>resources/fonts/DroidSansMono.png</file>
-    <file>resources/fonts/Hack-Regular.png</file>
-    <file>resources/fonts/Unispace-Bold.png</file>
-    <file>resources/icons/color.png</file>
-    <file>resources/icons/edit.png</file>
-    <file>resources/icons/open.png</file>
-    <file>resources/icons/plus.png</file>
-    <file>resources/icons/rabbit.png</file>
-    <file>resources/icons/turtle.png</file>
-    <file>resources/mazes/blank.num</file>
-    <file>resources/mazes/example1.num</file>
-    <file>resources/mazes/example2.num</file>
-    <file>resources/mazes/example3.num</file>
-    <file>resources/mazes/example4.num</file>
-    <file>resources/mazes/example5.num</file>
-</qresource>
+<RCC>
+    <qresource prefix="/">
+        <file>resources/fonts/BPmono.png</file>
+        <file>resources/fonts/DejaVuSansMono.png</file>
+        <file>resources/fonts/DroidSansMono.png</file>
+        <file>resources/fonts/Hack-Regular.png</file>
+        <file>resources/fonts/Unispace-Bold.png</file>
+        <file>resources/icons/color.png</file>
+        <file>resources/icons/edit.png</file>
+        <file>resources/icons/open.png</file>
+        <file>resources/icons/plus.png</file>
+        <file>resources/icons/rabbit.png</file>
+        <file>resources/icons/turtle.png</file>
+        <file>resources/mazes/blank.num</file>
+        <file>resources/mazes/example1.num</file>
+        <file>resources/mazes/test.num</file>
+    </qresource>
 </RCC>
