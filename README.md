@@ -92,9 +92,16 @@ bool wallFront();
 bool wallRight();
 bool wallLeft();
 
-void moveForward(int distance = 1); // can result in "crash"
+void moveFullForward(int distance = 1); // can result in "crash"
+void moveHalfForward(int distance = 1); // FullForward = 2*HalfForward
+void moveEdgeForward(int distance = 1)
 void turnRight();
 void turnLeft();
+void turnRight45();
+void turnLeft45();
+void turnBack();
+void runRight();
+void runLeft();
 
 void setWall(int x, int y, char direction);
 void clearWall(int x, int y, char direction);
@@ -138,23 +145,67 @@ int/float getStat(string stat);
 * **Action:** None
 * **Response:** `true` if there is a wall to the left of the robot, else `false`
 
-#### `moveForward [N]`
+
+#### `moveFullForward [N]`
 * **Args:**
   * `N` - (optional) The number of cells to move forward, default `1`
-* **Action:** Move the robot forward the specified number of cells
+* **Action:** Move the robot full-size forward the specified number of cells
+* **Response:**
+  * `crash` if `N < 1` or the mouse cannot complete the movement
+  * else `ack` once the movement completes
+
+#### `moveHalfForward [N]`
+* **Args:**
+  * `N` - (optional) The number of cells to move forward, default `1`
+* **Action:** Move the robot half-size forward the specified number of cells
+* **Response:**
+  * `crash` if `N < 1` or the mouse cannot complete the movement
+  * else `ack` once the movement completes
+
+#### `moveEdgeForward [N]`
+* **Args:**
+  * `N` - (optional) The number of cells to move diagonal forward, default `1`
+* **Action:** Move the robot edge forward the specified number of cells from a cell's edge
 * **Response:**
   * `crash` if `N < 1` or the mouse cannot complete the movement
   * else `ack` once the movement completes
 
 #### `turnRight`
 * **Args:** None
-* **Action:** Turn the robot ninty degrees to the right
+* **Action:** Turn the robot ninty degrees to the right from a cell's center
 * **Response:** `ack` once the movement completes
 
 #### `turnLeft`
 * **Args:** None
-* **Action:** Turn the robot ninty degrees to the left
+* **Action:** Turn the robot ninty degrees to the left from a cell's center
 * **Response:** `ack` once the movement completes
+
+#### `turnRight45`
+* **Args:** None
+* **Action:** Turn the robot 45 degrees to the right from a cell's edge
+* **Response:** `ack` once the movement completes
+
+#### `turnLeft45`
+* **Args:** None
+* **Action:** Turn the robot 45 degrees to the left from a cell's edge
+* **Response:** `ack` once the movement completes
+
+#### `turnBack`
+* **Args:** None
+* **Action:** Turn the robot 180 degrees to the left from a cell's center
+* **Response:** `ack` once the movement completes
+
+
+#### `runRight`
+* **Args:** None
+* **Action:** Curv-Turn the robot ninty degrees to the right from a cell's edge
+* **Response:** `ack` once the movement completes
+
+#### `runLeft`
+* **Args:** None
+* **Action:** Curv-Turn the robot ninty degrees to the left from a cell's edge
+* **Response:** `ack` once the movement completes
+
 
 #### `setWall X Y D`
 * **Args:**
@@ -250,8 +301,12 @@ mazeWidth                   16
 wallLeft                    true
 setWall 0 0 W               <NO RESPONSE>
 wallFront                   false
-moveForward                 ack
+moveFullForward             ack
+moveHalfForward             ack
+moveEdgeForward             ack
 turnLeft                    ack
+turnLeft45                  ack
+runLeft                     ack
 wallFront                   true
 moveForward                 crash
 setColor 0 1 r              <NO RESPONSE>
