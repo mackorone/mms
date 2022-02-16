@@ -165,7 +165,7 @@ Maze* Maze::fromNumFile(QVector<QString> lines) {
     for (QString line : lines) {
 
         // Tokenize the line
-        QStringList tokens = line.split(" ", QString::SkipEmptyParts);
+        QStringList tokens = line.split(" ", Qt::SkipEmptyParts);
         if (tokens.size() != 6) {
             return nullptr;
         }

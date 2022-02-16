@@ -25,7 +25,7 @@ void Logging::handler(
         msg
     );
 
-    *STDOUT << formatted << endl;
+    *STDOUT << formatted << Qt::endl;
 }
 
 } 

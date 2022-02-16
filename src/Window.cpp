@@ -8,11 +8,11 @@
 #include <QFrame>
 #include <QGroupBox>
 #include <QHBoxLayout>
-#include <QLinkedList>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QPixmap>
+#include <QRegularExpression>
 #include <QShortcut>
 #include <QSplitter>
 #include <QTabWidget>
@@ -117,8 +117,8 @@ Window::Window(QWidget *parent) :
     m_tilesWithText(QSet<QPair<int, int>>()) {
 
     // Keyboard shortcuts for closing the window
-    QShortcut* ctrl_q = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q), this);
-    QShortcut* ctrl_w = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_W), this);
+    QShortcut* ctrl_q = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_Q), this);
+    QShortcut* ctrl_w = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_W), this);
     connect(ctrl_q, &QShortcut::activated, this, &QMainWindow::close);
     connect(ctrl_w, &QShortcut::activated, this, &QMainWindow::close);
 
@@ -208,7 +208,7 @@ Window::Window(QWidget *parent) :
     configLayout->addWidget(m_mazeFileComboBox, 0, 1, 1, 2);
     connect(
         m_mazeFileComboBox,
-        static_cast<void(QComboBox::*)(const QString&)>(&QComboBox::activated),
+        &QComboBox::textActivated,
         this,
         &Window::onMazeFileComboBoxChanged
     );
@@ -976,7 +976,7 @@ void Window::dispatchCommand(QString command) {
         command.startsWith("setWall") ||
         command.startsWith("clearWall")
     ) {
-        QStringList tokens = command.split(" ", QString::SkipEmptyParts);
+        QStringList tokens = command.split(" ", Qt::SkipEmptyParts);
         if (tokens.size() != 4) {
             return;
         }
@@ -1007,7 +1007,7 @@ void Window::dispatchCommand(QString command) {
         }
     }
     else if (command.startsWith("setColor")) {
-        QStringList tokens = command.split(" ", QString::SkipEmptyParts);
+        QStringList tokens = command.split(" ", Qt::SkipEmptyParts);
         if (tokens.size() != 4) {
             return;
         }
@@ -1030,7 +1030,7 @@ void Window::dispatchCommand(QString command) {
         setColor(x, y, color);
     }
     else if (command.startsWith("clearColor")) {
-        QStringList tokens = command.split(" ", QString::SkipEmptyParts);
+        QStringList tokens = command.split(" ", Qt::SkipEmptyParts);
         if (tokens.size() != 3) {
             return;
         }
@@ -1046,7 +1046,7 @@ void Window::dispatchCommand(QString command) {
         clearColor(x, y);
     }
     else if (command.startsWith("clearAllColor")) {
-        QStringList tokens = command.split(" ", QString::SkipEmptyParts);
+        QStringList tokens = command.split(" ", Qt::SkipEmptyParts);
         if (tokens.size() != 1) {
             return;
         }
@@ -1076,7 +1076,7 @@ void Window::dispatchCommand(QString command) {
         setText(x, y, text);
     }
     else if (command.startsWith("clearText")) {
-        QStringList tokens = command.split(" ", QString::SkipEmptyParts);
+        QStringList tokens = command.split(" ", Qt::SkipEmptyParts);
         if (tokens.size() != 3) {
             return;
         }
@@ -1092,7 +1092,7 @@ void Window::dispatchCommand(QString command) {
         clearText(x, y);
     }
     else if (command.startsWith("clearAllText")) {
-        QStringList tokens = command.split(" ", QString::SkipEmptyParts);
+        QStringList tokens = command.split(" ", Qt::SkipEmptyParts);
         if (tokens.size() != 1) {
             return;
         }
@@ -1112,7 +1112,7 @@ void Window::dispatchCommand(QString command) {
 }
 
 QString Window::executeCommand(QString command) {
-    QStringList tokens = command.split(" ", QString::SkipEmptyParts);
+    QStringList tokens = command.split(" ", Qt::SkipEmptyParts);
     if (tokens.size() < 1 || tokens.size() > 2) {
         return INVALID;
     }
@@ -1529,7 +1529,7 @@ void Window::setText(int x, int y, QString text) {
     if (!isWithinMaze(x, y)) {
         return;
     }
-    static QRegExp regex = QRegExp(
+    static QRegularExpression regex = QRegularExpression(
         QString("[^") + FontImage::characters() + QString("]")
     );
     text.replace(regex, "?");

@@ -46,6 +46,10 @@ You can download pre-compiled binaries from the
 asset corresponding to your platform:
 
 - Windows: Download and unzip `windows.zip` and run the "mms" exe
+  - Note: you may get a warning like "Microsoft Defender SmartScreen prevented
+    an unrecognized app from starting. Running this app might put your PC at
+    risk." To get past that warning, click "More info" and then "Run anyway"
+
 - macOS: Download and unzip `macos.zip` and run the "mms" app
   - Note: you may get warnings about running an application from an
     unidentified developer. To get past those warnings, control-click on the
@@ -431,15 +435,15 @@ you'll just have to figure it out on your own for now.
 
 Install Qt:
 
-1. Download the Qt open source installer: https://www.qt.io/download/
+1. Download the Qt open source installer: https://www.qt.io/download-qt-installer
 1. If you don't already have a Qt account, you'll need to make one
-1. When prompted to select components, [choose "MinGW 7.3.0 64-bit"](https://github.com/mackorone/mms/blob/master/img/qt-install-windows-1.png)
+1. When prompted to select components, [choose "MinGW"](https://github.com/mackorone/mms/blob/master/img/qt-install-windows-1.png)
 
 Build the project using QtCreator:
 
 1. Download or clone *mms*
 1. Run QtCreator and open `mms/src/mms.pro` 
-1. Configure the project to [use "Desktop Qt 5.12.0 MinGW 64-bit"](https://github.com/mackorone/mms/blob/master/img/qt-install-windows-2.png)
+1. Configure the project to [use "MinGW"](https://github.com/mackorone/mms/blob/master/img/qt-install-windows-2.png)
 1. Build and run the project
 
 #### macOS
@@ -448,7 +452,7 @@ Install Xcode: https://developer.apple.com/xcode/
 
 Install Qt:
 
-1. Download the Qt open source installer: https://www.qt.io/download/
+1. Download the Qt open source installer: https://www.qt.io/download-qt-installer
 1. If you don't already have a Qt account, you'll need to make one
 1. When prompted to select components, [choose "macOS"](https://github.com/mackorone/mms/blob/master/img/qt-install-macos-1.png)
 
@@ -456,7 +460,7 @@ Build the project using QtCreator:
 
 1. Download or clone *mms*
 1. Run QtCreator and open `mms/src/mms.pro`
-1. Configure the project to [use "Desktop Qt 5.12.1 clang 64bit"](https://github.com/mackorone/mms/blob/master/img/qt-install-macos-2.png)
+1. Configure the project to [use "clang 64bit"](https://github.com/mackorone/mms/blob/master/img/qt-install-macos-2.png)
 1. Build and run the project
 
 #### Linux (Ubuntu)
@@ -468,7 +472,7 @@ sudo apt-get install qt5-default
 
 Qt installation option #2: use the installer
 
-1. Download the Qt open source installer: https://www.qt.io/download/
+1. Download the Qt open source installer: https://www.qt.io/download-qt-installer
 1. Make the installer executable: `chmod +x qt-unified-linux-x64-3.0.6-online.run`
 1. Run the installer executable: `./qt-unified-linux-x64-3.0.6-online.run`
 1. If you don't already have a Qt account, you'll need to make one

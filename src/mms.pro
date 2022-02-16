@@ -1,7 +1,8 @@
 QT += core
 QT += gui
-QT += xml
+QT += openglwidgets
 QT += widgets
+QT += xml
 
 TEMPLATE = app
 

@@ -9,7 +9,7 @@ bool ProcessUtilities::start(
     const QString& directory,
     QProcess* process
 ) {
-    QStringList args = command.split(' ', QString::SkipEmptyParts);
+    QStringList args = command.split(' ', Qt::SkipEmptyParts);
     QString bin;
     if (!args.isEmpty()) {
         bin = args.at(0);

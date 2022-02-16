@@ -4,8 +4,8 @@
 #include <QOpenGLDebugLogger>
 #include <QOpenGLFunctions>
 #include <QOpenGLShaderProgram> 
-#include <QOpenGLTexture> 
-#include <QOpenGLVertexArrayObject> 
+#include <QOpenGLTexture>
+#include <QOpenGLVertexArrayObject>
 #include <QOpenGLWidget>
 #include <QVector>
 
