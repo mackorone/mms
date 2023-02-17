@@ -1,6 +1,6 @@
 QT += core
 QT += gui
-QT += openglwidgets
+QT += opengl
 QT += widgets
 QT += xml
 
