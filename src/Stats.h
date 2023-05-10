@@ -6,6 +6,23 @@
 namespace mms {
 
 enum class StatsEnum{
+    SPEED_RUNLEFT,
+    SPEED_RUNRIGHT,
+    SPEED_TURNLEFT45,
+    SPEED_TURNRIGHT45,
+    SPEED_HALFFORWARD,
+    SPEED_EDGEFORWARD,
+    SPEEDSUM,
+    COUNT_RUNLEFT,
+    COUNT_RUNRIGHT,
+    COUNT_TURNLEFT45,
+    COUNT_TURNRIGHT45,
+    COUNT_TURNLEFT90,
+    COUNT_TURNRIGHT90,
+    COUNT_TURNBACK180,
+    COUNT_FULLFORWARD,
+    COUNT_HALFFORWARD,
+    COUNT_EDGEFORWARD,
     TOTAL_DISTANCE,
     TOTAL_TURNS,
     BEST_RUN_DISTANCE,
@@ -22,9 +39,10 @@ class Stats
 {
 public:
     Stats();
+    void updateScore();
     void resetAll(); // Reset all score stats
-    void addDistance(int distance); // Increase the distance and effective distance
-    void addTurn(); // Increment the number of turns
+    void addDistance(StatsEnum stat, int distance); // Increase the distance and effective distance
+    void addTurn(StatsEnum stat); // Increment the number of turns
     void bindText(StatsEnum stat, QLineEdit* uiText); // Indicate which QLineEdit to use for that stat
     void startRun(); // A run starts when the mouse exits the starting tile.
     void finishRun(); // A run finishes when the mouse enters the goal.
@@ -38,7 +56,6 @@ private:
     bool startedRun;
     bool solved;
     float penalty;
-    void updateScore();
     void increment(StatsEnum stat, float increase);
     void setStat(StatsEnum stat, float value);
     static float getEffectiveDistance(int distance);
