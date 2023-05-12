@@ -63,6 +63,8 @@ const double Window::MIN_PROGRESS_PER_SECOND = 10.0;
 const double Window::MAX_PROGRESS_PER_SECOND = 5000.0;
 const double Window::MAX_SLEEP_SECONDS = 0.008;
 
+boolean real=false;
+
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
     m_map(new Map()),
@@ -100,6 +102,10 @@ Window::Window(QWidget *parent) :
     m_wasReset(false),
     m_pauseButton(new QPushButton("Pause")),
     m_resetButton(new QPushButton("Reset")),
+
+    // Realistic button
+    m_isReal(false),
+    m_realButton(new QPushButton("Realistic")),
 
     // Communication
     m_logBuffer(QStringList()),
@@ -168,11 +174,13 @@ Window::Window(QWidget *parent) :
         label->setMinimumWidth(90);
     }
 
-    // Add mouse algo pause and reset buttons
+    // Add mouse algo pause and reset and realistic buttons
     m_pauseButton->setEnabled(false);
     m_resetButton->setEnabled(false);
+    m_realButton->setEnabled(false);
     controlsLayout->addWidget(m_pauseButton, 0, 2, 1, 1);
     controlsLayout->addWidget(m_resetButton, 0, 3, 1, 1);
+    controlsLayout->addWidget(m_realButton, 0, 4, 1, 1);
     connect(
         m_pauseButton,
         &QPushButton::clicked,
@@ -184,7 +192,13 @@ Window::Window(QWidget *parent) :
         &QPushButton::pressed,
         this,
         &Window::onResetButtonPressed
-    ); 
+    );
+    connect(
+        m_realButton,
+        &QPushButton::pressed,
+        this,
+        &Window::onRealButtonPressed
+    );
 
     // Add mouse algo speed
     QLabel* turtle = new QLabel();
@@ -850,6 +864,7 @@ void Window::startRun() {
         // Only enabled while mouse is running
         m_pauseButton->setEnabled(true);
         m_resetButton->setEnabled(true);
+        m_realButton->setEnabled(true);
 
         m_sliderValue = m_speedSlider->value();
     } 
@@ -884,9 +899,14 @@ void Window::onRunExit(int exitCode, QProcess::ExitStatus exitStatus) {
         onPauseButtonPressed();
     }
 
+    if(m_isReal){
+        onRealButtonPressed();
+    }
+
     // Only enabled while mouse is running
     m_pauseButton->setEnabled(false);
     m_resetButton->setEnabled(false);
+    m_realButton->setEnabled(false);
     m_resetButton->setText("Reset");
     m_wasReset = false;
 
@@ -971,6 +991,18 @@ void Window::onPauseButtonPressed() {
         m_pauseButton->setText("Pause");
         m_runStatus->setText("RUNNING");
         processQueuedCommands();
+    }
+}
+
+void Window::onRealButtonPressed() {
+    m_isReal = !m_isReal;
+    if (m_isReal) {
+        m_realButton->setText("Unreal");
+        real=true;
+    }
+    else {
+        m_realButton->setText("Realistic");
+        real=false;
     }
 }
 
@@ -1676,6 +1708,8 @@ bool Window::moveForward(int distance) {
     }
     // increase the stats by the distance that will be travelled
 
+    if(real)
+    {
     switch(distance) {
     case 1:
         m_speedSlider->setValue(m_sliderValue);
@@ -1690,7 +1724,7 @@ bool Window::moveForward(int distance) {
         m_speedSlider->setValue(m_sliderValue*2.0);
         break;
     }
-
+    }
     stats->addDistance(StatsEnum::COUNT_FULLFORWARD, distance);
 
     return true;
@@ -1725,6 +1759,8 @@ if (m_startingLocation.first == 1 && m_startingLocation.second == 1) {
     stats->startRun();
 }
 
+if(real)
+{
 switch(distance) {
 case 1:
     m_speedSlider->setValue(m_sliderValue);
@@ -1738,6 +1774,7 @@ case 3:
 default :
     m_speedSlider->setValue(m_sliderValue*2.0);
     break;
+}
 }
 
 // increase the stats by the distance that will be travelled
@@ -1773,7 +1810,8 @@ bool Window::moveEdgeForward(int distance) {
     //    stats->startRun();
     //}
     // increase the stats by the distance that will be travelled
-
+    if(real)
+    {
     switch(distance) {
     case 1:
         m_speedSlider->setValue(m_sliderValue);
@@ -1788,7 +1826,7 @@ bool Window::moveEdgeForward(int distance) {
         m_speedSlider->setValue(m_sliderValue*2.0);
         break;
     }
-
+    }
     stats->addDistance(StatsEnum::COUNT_EDGEFORWARD, distance);
     return true;
 }
@@ -1798,6 +1836,7 @@ void Window::turnBack() {
     m_doomedToCrash = false;
     m_movesRemaining = 0;
     stats->addTurn(StatsEnum::COUNT_TURNBACK180);
+    if(real)
     m_speedSlider->setValue(m_sliderValue);
 }
 
@@ -1806,6 +1845,7 @@ void Window::turnRight45() {
     m_doomedToCrash = false;
     m_movesRemaining = 0;
     stats->addTurn(StatsEnum::COUNT_TURNRIGHT45);
+    if(real)
     m_speedSlider->setValue(m_sliderValue);
 }
 
@@ -1814,6 +1854,7 @@ void Window::turnLeft45() {
     m_doomedToCrash = false;
     m_movesRemaining = 0;
     stats->addTurn(StatsEnum::COUNT_TURNLEFT45);
+    if(real)
     m_speedSlider->setValue(m_sliderValue);
 }
 
@@ -1823,6 +1864,7 @@ void Window::turnRight() {
     m_doomedToCrash = false;
     m_movesRemaining = 0;
     stats->addTurn(StatsEnum::COUNT_TURNRIGHT90);
+    if(real)
     m_speedSlider->setValue(m_sliderValue);
 }
 
@@ -1831,6 +1873,7 @@ void Window::turnLeft() {
     m_doomedToCrash = false;
     m_movesRemaining = 0;
     stats->addTurn(StatsEnum::COUNT_TURNLEFT90);
+    if(real)
     m_speedSlider->setValue(m_sliderValue);
 }
 
@@ -1839,6 +1882,7 @@ void Window::runRight() {
     m_doomedToCrash = false;
     m_movesRemaining = 0;
     stats->addTurn(StatsEnum::COUNT_RUNRIGHT);
+    if(real)
     m_speedSlider->setValue(m_sliderValue);
 }
 
@@ -1847,6 +1891,7 @@ void Window::runLeft() {
     m_doomedToCrash = false;
     m_movesRemaining = 0;
     stats->addTurn(StatsEnum::COUNT_RUNLEFT);
+    if(real)
     m_speedSlider->setValue(m_sliderValue);
 }
 

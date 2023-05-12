@@ -141,6 +141,13 @@ private:
     void onPauseButtonPressed();
     void onResetButtonPressed();
 
+    // ----- Run Realistic -----
+
+    boolean m_isReal;
+    QPushButton* m_realButton;
+
+    void onRealButtonPressed();
+
     // ----- Communication -----
 
     static const QString ACK;
