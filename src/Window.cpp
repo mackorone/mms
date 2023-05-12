@@ -928,6 +928,7 @@ void Window::onRunExit(int exitCode, QProcess::ExitStatus exitStatus) {
     // Update the status label
     if (exitStatus == QProcess::NormalExit && exitCode == 0) {
         m_runStatus->setText("COMPLETE");
+        executeCommand("completeRun");
         m_runStatus->setStyleSheet(COMPLETE_STYLE_SHEET);
     }
     else {
@@ -1573,7 +1574,6 @@ void Window::updateMouseProgress(double progress) {
         if (m_movesRemaining == 0) {
             m_movement = Movement::NONE;
         }
-
     }
 }
 
