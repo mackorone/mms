@@ -13,6 +13,7 @@
 1. [Cell Color](https://github.com/mackorone/mms#cell-color)
 1. [Cell Text](https://github.com/mackorone/mms#cell-text)
 1. [Reset Button](https://github.com/mackorone/mms#reset-button)
+1. [Realistic Button](https://github.com/mackorone/mms#realistic-button)
 1. [Maze Files](https://github.com/mackorone/mms#maze-files)
 1. [Building From Source](https://github.com/mackorone/mms#building-from-source)
 1. [Related Projects](https://github.com/mackorone/mms#related-projects)
@@ -400,6 +401,14 @@ button to simulate a crash. Your algorithm should periodically check if the
 button was pressed via `wasReset`. If so, your algorithm should reset any
 internal state and then call `ackReset` to send the robot back to the beginning
 of the maze.
+
+## Realistic Button
+
+The realistic button allows you to manipulate speed. During the real life 
+competition you will often want to control speed over a long distance run 
+compared to a small distance run. So the Unreal option removes this restriction
+of speed whereas the Realistic option creates a bound over small distance run and 
+creates max speed on a long distance run.
 
 
 ## Maze Files
