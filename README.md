@@ -45,6 +45,8 @@ You can download pre-compiled binaries from the
 [releases](https://github.com/mackorone/mms/releases) page. Simply download the
 asset corresponding to your platform:
 
+The updated version of this mms can be found in my [pre-release](https://github.com/Blaze-Leo/mms/releases) page.
+
 - Windows: Download and unzip `windows.zip` and run the "mms" exe
 - macOS: Download and unzip `macos.zip` and run the "mms" app
   - Note: you may get warnings about running an application from an
