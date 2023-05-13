@@ -998,7 +998,7 @@ void Window::onPauseButtonPressed() {
 void Window::onRealButtonPressed() {
     m_isReal = !m_isReal;
     if (m_isReal) {
-        m_realButton->setText("Unreal");
+        m_realButton->setText("Unrealistic");
         real=true;
     }
     else {
