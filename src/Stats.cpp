@@ -32,6 +32,30 @@ void Stats::resetAll() {
             statValues[key] = 0;
             textField[key]->setText("");
         }
+        else if( key == StatsEnum::SPEED_RUNLEFT )  {
+            //statValues[key] = 0.01;
+            //textField[key]->setText(QString::number(statValues[key]));
+        }
+        else if( key == StatsEnum::SPEED_RUNRIGHT ) {
+            //statValues[key] = 0.02;
+            //textField[key]->setText(QString::number(statValues[key]));
+        }
+        else if( key == StatsEnum::SPEED_TURNLEFT45 )  {
+            //statValues[key] = 0.01;
+            //textField[key]->setText(QString::number(statValues[key]));
+        }
+        else if( key == StatsEnum::SPEED_TURNRIGHT45 ) {
+            //statValues[key] = 0.02;
+            //textField[key]->setText(QString::number(statValues[key]));
+        }
+        else if( key == StatsEnum::SPEED_HALFFORWARD ) {
+            //statValues[key] = 0.03;
+            //textField[key]->setText(QString::number(statValues[key]));
+        }
+        else if( key == StatsEnum::SPEED_EDGEFORWARD ) {
+            //statValues[key] = 0.04;
+            //textField[key]->setText(QString::number(statValues[key]));
+        }
         else if (key == StatsEnum::SCORE) {
             // Score is set in updateScore()
             continue;
@@ -44,8 +68,9 @@ void Stats::resetAll() {
     updateScore();
 }
 
-void Stats::addDistance(int distance) {
+void Stats::addDistance(StatsEnum stat, int distance) {
     float effectiveDistance = getEffectiveDistance(distance);
+    increment(stat, distance);
     increment(StatsEnum::TOTAL_DISTANCE, distance);
     increment(StatsEnum::TOTAL_EFFECTIVE_DISTANCE, effectiveDistance);
     if (startedRun) {
@@ -55,7 +80,11 @@ void Stats::addDistance(int distance) {
     updateScore();
 }
 
-void Stats::addTurn() {
+void Stats::addTurn(StatsEnum stat) {
+
+    increment(stat, 1);
+
+
     increment(StatsEnum::TOTAL_TURNS, 1);
     if (startedRun) {
         increment(StatsEnum::CURRENT_RUN_TURNS, 1);
@@ -74,11 +103,25 @@ void Stats::setStat(StatsEnum stat, float value) {
 
 void Stats::bindText(StatsEnum stat, QLineEdit* uiText) {
     textField[stat] = uiText;
+
+    switch( stat ) {
+    case StatsEnum::SPEED_RUNLEFT:
+    case StatsEnum::SPEED_RUNRIGHT:
+    case StatsEnum::SPEED_TURNLEFT45:
+    case StatsEnum::SPEED_TURNRIGHT45:
+    case StatsEnum::SPEED_HALFFORWARD:
+    case StatsEnum::SPEED_EDGEFORWARD:
+        textField[stat]->setReadOnly(false);
+        break;
+    default : break;
+    }
+
 }
 
 void Stats::updateScore() {
     // if solved, score = best_run_turns + best_run_effective_distance + 0.1*(total_turns + total_effective_distance)
-    float score;
+    float score,speed;
+
     if (solved) {
         score = statValues[StatsEnum::BEST_RUN_EFFECTIVE_DISTANCE] + statValues[StatsEnum::BEST_RUN_TURNS]
                 + 0.1* (statValues[StatsEnum::TOTAL_EFFECTIVE_DISTANCE] + statValues[StatsEnum::TOTAL_TURNS]);
@@ -87,6 +130,20 @@ void Stats::updateScore() {
         score = 2000; // default score
     }
     textField[StatsEnum::SCORE]->setText(QString::number(score));
+
+    statValues[StatsEnum::SPEED_EDGEFORWARD] = QVariant(textField[StatsEnum::SPEED_EDGEFORWARD]->text()).toDouble() ;
+    statValues[StatsEnum::SPEED_HALFFORWARD] = QVariant(textField[StatsEnum::SPEED_HALFFORWARD]->text()).toDouble() ;
+    statValues[StatsEnum::SPEED_TURNLEFT45]  = QVariant(textField[StatsEnum::SPEED_TURNLEFT45]->text()).toDouble() ;
+    statValues[StatsEnum::SPEED_TURNRIGHT45] = QVariant(textField[StatsEnum::SPEED_TURNRIGHT45]->text()).toDouble() ;
+    statValues[StatsEnum::SPEED_RUNLEFT]  = QVariant(textField[StatsEnum::SPEED_RUNLEFT]->text()).toDouble() ;
+    statValues[StatsEnum::SPEED_RUNRIGHT] = QVariant(textField[StatsEnum::SPEED_RUNRIGHT]->text()).toDouble() ;
+
+    speed = statValues[StatsEnum::COUNT_EDGEFORWARD] * statValues[StatsEnum::SPEED_EDGEFORWARD] + statValues[StatsEnum::COUNT_HALFFORWARD] * statValues[StatsEnum::SPEED_HALFFORWARD]
+            + statValues[StatsEnum::COUNT_TURNLEFT45] * statValues[StatsEnum::SPEED_TURNLEFT45] + statValues[StatsEnum::COUNT_TURNRIGHT45] * statValues[StatsEnum::SPEED_TURNRIGHT45]
+            + statValues[StatsEnum::COUNT_RUNLEFT] * statValues[StatsEnum::SPEED_RUNLEFT] + statValues[StatsEnum::COUNT_RUNRIGHT] * statValues[StatsEnum::SPEED_RUNRIGHT] ;
+
+    textField[StatsEnum::SPEEDSUM]->setText(QString::number(speed));
+
 }
 
 float Stats::getEffectiveDistance(int distance) {
@@ -105,6 +162,7 @@ void Stats::startRun() {
 }
 
 void Stats::finishRun() {
+
     startedRun = false;
     solved = true;
     float currentScore = statValues[StatsEnum::CURRENT_RUN_TURNS] + statValues[StatsEnum::CURRENT_RUN_EFFECTIVE_DISTANCE];
@@ -115,7 +173,9 @@ void Stats::finishRun() {
         setStat(StatsEnum::BEST_RUN_DISTANCE, statValues[StatsEnum::CURRENT_RUN_DISTANCE]);
         setStat(StatsEnum::BEST_RUN_EFFECTIVE_DISTANCE, statValues[StatsEnum::CURRENT_RUN_EFFECTIVE_DISTANCE]);
     }
+
     updateScore();
+
 }
 
 void Stats::endUnfinishedRun() {
