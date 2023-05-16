@@ -47,6 +47,10 @@ You can download pre-compiled binaries from the
 asset corresponding to your platform:
 
 - Windows: Download and unzip `windows.zip` and run the "mms" exe
+  - Note: you may get a warning like "Microsoft Defender SmartScreen prevented
+    an unrecognized app from starting. Running this app might put your PC at
+    risk." To get past that warning, click "More info" and then "Run anyway"
+
 - macOS: Download and unzip `macos.zip` and run the "mms" app
   - Note: you may get warnings about running an application from an
     unidentified developer. To get past those warnings, control-click on the
