@@ -50,8 +50,8 @@ const QString Window::ACK = "ack";
 const QString Window::CRASH = "crash";
 const QString Window::INVALID = "invalid";
 
-const int Window::SPEED_SLIDER_MAX = 200;
-const int Window::SPEED_SLIDER_DEFAULT = 100;
+const int Window::SPEED_SLIDER_MAX = 100;
+const int Window::SPEED_SLIDER_DEFAULT = 50;
 const double Window::PROGRESS_REQUIRED_FOR_MOVE     = 100.0;
 const double Window::PROGRESS_REQUIRED_FOR_HALFMOVE = 100.0 / 2;
 const double Window::PROGRESS_REQUIRED_FOR_EDGEMOVE = 100.0 * 2 / 3;
@@ -760,6 +760,7 @@ void Window::onBuildExit(int exitCode, QProcess::ExitStatus exitStatus) {
 void Window::startRun() {
 
     // Only one algo running at a time
+    m_speedSlider->setValue(SPEED_SLIDER_DEFAULT);
     ASSERT_TR(m_runProcess == nullptr);
 
     // Extract the relevant config
