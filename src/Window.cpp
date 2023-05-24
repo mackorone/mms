@@ -299,7 +299,7 @@ Window::Window(QWidget *parent) :
     splitter->setSizes({windowHeight, windowWidth - windowHeight});
 
     // Remove maze files that no longer exist
-    for (const auto& path : SettingsMazeFiles::getAllPaths()) {
+    foreach (const auto& path ,  SettingsMazeFiles::getAllPaths()) {
         if (path.isEmpty() || !QFileInfo::exists(path)) {
             SettingsMazeFiles::removePath(path);
         }
@@ -428,10 +428,11 @@ void Window::showInvalidMazeFileWarning(QString path) {
 
 void Window::refreshMazeFileComboBox(QString selected) {
     m_mazeFileComboBox->clear();
-    for (const auto& info : QDir(":/resources/mazes/").entryInfoList()) {
+    foreach (const auto& info , QDir(":/resources/mazes/").entryInfoList()) {
+
         m_mazeFileComboBox->addItem(info.absoluteFilePath());
     }
-    for (const auto& path : SettingsMazeFiles::getAllPaths()) {
+    foreach (const auto& path , SettingsMazeFiles::getAllPaths()) {
         m_mazeFileComboBox->addItem(path);
     }
     m_mazeFileComboBox->setCurrentText(selected);
@@ -553,7 +554,7 @@ void Window::onMouseAlgoImportButtonPressed() {
 
 void Window::refreshMouseAlgoComboBox(QString selected) {
     m_mouseAlgoComboBox->clear();
-    for (const auto& name : SettingsMouseAlgos::names()) {
+    foreach (const auto& name , SettingsMouseAlgos::names()) {
         m_mouseAlgoComboBox->addItem(name);
     }
     m_mouseAlgoComboBox->setCurrentText(selected);
@@ -762,7 +763,7 @@ void Window::startRun() {
     connect(process, &QProcess::readyReadStandardError, this, [=](){
         QString output = process->readAllStandardError();
         QStringList logs = processText(output, &m_logBuffer);
-        for (QString log : logs) {
+        foreach (QString log , logs) {
             m_runOutput->appendPlainText(log);
         }
     });
@@ -771,7 +772,7 @@ void Window::startRun() {
     connect(process, &QProcess::readyReadStandardOutput, this, [=](){
         QString output = process->readAllStandardOutput();
         QStringList commands = processText(output, &m_commandBuffer);
-        for (QString command : commands) {
+        foreach (QString command , commands ) {
             dispatchCommand(command);
         }
     });
@@ -1546,7 +1547,7 @@ void Window::clearText(int x, int y) {
 }
 
 void Window::clearAllText() {
-    for (QPair<int, int> position : m_tilesWithText) {
+    for (const QPair<int, int> position : m_tilesWithText) {
         m_view->getMazeGraphic()->clearText(position.first, position.second);
     }
     m_tilesWithText.clear();
