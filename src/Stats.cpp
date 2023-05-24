@@ -44,8 +44,9 @@ void Stats::resetAll() {
     updateScore();
 }
 
-void Stats::addDistance(int distance) {
+void Stats::addDistance(StatsEnum stat, int distance) {
     float effectiveDistance = getEffectiveDistance(distance);
+    increment(stat, distance);
     increment(StatsEnum::TOTAL_DISTANCE, distance);
     increment(StatsEnum::TOTAL_EFFECTIVE_DISTANCE, effectiveDistance);
     if (startedRun) {
@@ -55,7 +56,10 @@ void Stats::addDistance(int distance) {
     updateScore();
 }
 
-void Stats::addTurn() {
+void Stats::addTurn(StatsEnum stat) {
+
+    increment(stat, 1);
+    
     increment(StatsEnum::TOTAL_TURNS, 1);
     if (startedRun) {
         increment(StatsEnum::CURRENT_RUN_TURNS, 1);

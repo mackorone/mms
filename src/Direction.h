@@ -14,9 +14,6 @@ enum class Direction {
     EAST,
     SOUTH,
     WEST,
-};
-
-enum class SemiDirection {
     NORTHEAST,
     NORTHWEST,
     SOUTHEAST,
@@ -25,7 +22,7 @@ enum class SemiDirection {
     EASTSOUTH,
     WESTNORTH,
     WESTSOUTH,
-}
+};
 
 // This vector serves two functions:
 // 1) A convenient way to enumerate through all of the directions

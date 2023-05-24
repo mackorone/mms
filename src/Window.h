@@ -28,6 +28,10 @@ enum class Movement {
     MOVE_FORWARD,
     TURN_RIGHT,
     TURN_LEFT,
+    MOVE_HALFFORWARD,
+    MOVE_EDGEFORWARD,
+    TURN_RIGHT45,
+    TURN_LEFT45,
     NONE,
 };
 
@@ -115,6 +119,7 @@ private:
 
     void startRun();
     void cancelRun();
+    void stopRun(QString msg);
     void onRunExit(int exitCode, QProcess::ExitStatus exitStatus);
 
     Mouse* m_mouse;
@@ -157,6 +162,9 @@ private:
     static const int SPEED_SLIDER_MAX;
     static const int SPEED_SLIDER_DEFAULT;
     static const double PROGRESS_REQUIRED_FOR_MOVE;
+    static const double PROGRESS_REQUIRED_FOR_HALFMOVE;
+    static const double PROGRESS_REQUIRED_FOR_EDGEMOVE;
+    static const double PROGRESS_REQUIRED_FOR_HALFTURN;
     static const double PROGRESS_REQUIRED_FOR_TURN;
     static const double MIN_PROGRESS_PER_SECOND;
     static const double MAX_PROGRESS_PER_SECOND;
@@ -166,10 +174,11 @@ private:
     // Encapsulate this state in the mouse class
 
     QPair<int, int> m_startingLocation;
-    Direction m_startingDirection;
+    Direction m_startingDirection, m_destinationDirection;
     Movement m_movement;
     bool m_doomedToCrash; // if the requested movement will result in a crash
     int m_movesRemaining; // the number of allowable forward steps remaining
+    int m_sliderValue;
     double m_movementProgress;
     double m_movementStepSize;
     QSlider* m_speedSlider;
@@ -189,12 +198,17 @@ private:
     int mazeHeight();
 
     bool wallFront(int distance);
+    bool wallDiagonal(int distance);
     bool wallRight();
     bool wallLeft();
 
     bool moveForward(int distance);
+    bool moveHalfForward(int distance);
+    bool moveEdgeForward(int distance);
     void turnRight();
     void turnLeft();
+    void turnRight45();
+    void turnLeft45();
 
     void setWall(int x, int y, QChar direction);
     void clearWall(int x, int y, QChar direction);
