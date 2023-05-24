@@ -3,6 +3,7 @@ QT += gui
 QT += opengl
 QT += widgets
 QT += xml
+QT += openglwidgets
 
 TEMPLATE = app
 
