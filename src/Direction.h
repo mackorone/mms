@@ -16,6 +16,17 @@ enum class Direction {
     WEST,
 };
 
+enum class SemiDirection {
+    NORTHEAST,
+    NORTHWEST,
+    SOUTHEAST,
+    SOUTHWEST,
+    EASTNORTH,
+    EASTSOUTH,
+    WESTNORTH,
+    WESTSOUTH,
+}
+
 // This vector serves two functions:
 // 1) A convenient way to enumerate through all of the directions
 // 2) Determines the location of wall information in the vertex buffer

@@ -8,6 +8,14 @@ const QVector<Direction>& DIRECTIONS() {
         Direction::EAST,
         Direction::SOUTH,
         Direction::WEST,
+        SemiDirection::NORTHEAST,
+        SemiDirection::NORTHWEST,
+        SemiDirection::SOUTHEAST,
+        SemiDirection::SOUTHWEST,
+        SemiDirection::EASTNORTH,
+        SemiDirection::EASTSOUTH,
+        SemiDirection::WESTNORTH,
+        SemiDirection::WESTSOUTH,
     };
     return vector;
 }
@@ -48,6 +56,14 @@ const QMap<Direction, Angle>& DIRECTION_TO_ANGLE() {
         {Direction::EAST, Angle::Degrees(0)},
         {Direction::SOUTH, Angle::Degrees(270)},
         {Direction::WEST, Angle::Degrees(180)},
+        {SemiDirection::NORTHEAST, Angle::Degrees(45)},
+        {SemiDirection::NORTHWEST, Angle::Degrees(135)},
+        {SemiDirection::SOUTHEAST, Angle::Degrees(315)},
+        {SemiDirection::SOUTHWEST, Angle::Degrees(225)},
+        {SemiDirection::EASTNORTH, Angle::Degrees(45)},
+        {SemiDirection::EASTSOUTH, Angle::Degrees(315)},
+        {SemiDirection::WESTNORTH, Angle::Degrees(135)},
+        {SemiDirection::WESTSOUTH, Angle::Degrees(225)},
     };
     return map;
 }
