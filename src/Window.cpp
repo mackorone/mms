@@ -850,7 +850,9 @@ void Window::cancelRun() {
 }
 
 void Window::stopRun(QString msg) {
-    m_runOutput->appendPlainText(msg);
+    m_startingLocation = m_mouse->getCurrentHalfDiscretizedTranslation();
+    QString s ="{"+ QString::number(m_startingLocation.first/2)+","+QString::number(m_startingLocation.second/2)+"}";
+    m_runOutput->appendPlainText("ERROR : "+msg+" at "+s+"\n");
     m_movementProgress = 0.0;
     m_movementStepSize = 0.0;
     m_movement = Movement::NONE;
@@ -1367,22 +1369,6 @@ void Window::updateMouseProgress(double progress) {
             destinationLocation.first -= 1;
             destinationLocation.second -= 1;
         }
-        else if (m_startingDirection == Direction::WESTNORTH) {
-            destinationLocation.first -= 1;
-            destinationLocation.second += 1;
-        }
-        else if (m_startingDirection == Direction::EASTNORTH) {
-            destinationLocation.first += 1;
-            destinationLocation.second += 1;
-        }
-        else if (m_startingDirection == Direction::EASTSOUTH) {
-            destinationLocation.first += 1;
-            destinationLocation.second -= 1;
-        }
-        else if (m_startingDirection == Direction::WESTSOUTH) {
-            destinationLocation.first -= 1;
-            destinationLocation.second -= 1;
-        }
         else {
             stopRun("Unexpected Mouse Direction when moving DIAGONAL");
             //ASSERT_NEVER_RUNS();
@@ -1655,7 +1641,7 @@ bool Window::moveDiagonal(int distance) {
     int moves = 2;
     while (moves < distance) {
         if (wallFront(moves)) {
-            stopRun("Stopped running because of a wall when moving DIAGONAL");
+            stopRun("Stopped running because of a wall or without turning 45 when moving DIAGONAL");
             return false;
         }
         moves += 1;
