@@ -1519,38 +1519,54 @@ bool Window::wallFront(int distance) {
 }
 
 bool Window::wallDiagonal(int distance) {
-    return false;
-    /*QPair<int, int> position = m_mouse->getCurrentDiscretizedTranslation();
+
+    QPair<int, int> position = m_mouse->getCurrentHalfDiscretizedTranslation();
     Direction direction = m_mouse->getCurrentDiscretizedRotation();
-    bool wall=false;
+    int posx=position.first;
+    int posy=position.second;
+
     switch (direction) {
-    case  Direction::NORTHEAST:
-        position.first += distance-1;
-        position.second += distance-1;
-        wall=isWall({position.first, position.second, Direction::EAST});
-        wall=wall && isWall({position.first+1, position.second, Direction::NORTH});
+    case Direction::NORTHEAST:
+        posx+=distance;
+        posy+=distance;;
         break;
     case Direction::NORTHWEST:
-        position.first += distance-1;
-        position.second -= distance-1;
-        wall=isWall({position.first, position.second, Direction::WEST});
-        wall=wall && isWall({position.first+1, position.second, Direction::NORTH});
+        posx-=distance;;
+        posy+=distance;;
         break;
     case Direction::SOUTHEAST:
-        position.first -= distance-1;
-        position.second += distance-1;
-        wall=isWall({position.first, position.second, Direction::EAST});
-        wall=wall && isWall({position.first-1, position.second, Direction::SOUTH});
+        posx+=distance;;
+        posy-=distance;;
         break;
     case Direction::SOUTHWEST:
-        position.first -= distance-1;
-        position.second -= distance-1;
-        wall=isWall({position.first, position.second, Direction::WEST});
-        wall=wall && isWall({position.first-1, position.second, Direction::SOUTH});
+        posx-=distance;;
+        posy-=distance;;
         break;
     default:
-        ASSERT_NEVER_RUNS();
-    }*/
+        stopRun("Diagonal Run with wrong direction");
+    }
+
+    if(!isWithinMaze(posx,posy,true))
+        return true;
+
+    if(posx%2==0 && posy%2==0){
+        bool temp=false;
+        temp = isWall({(posx-1)/2, (posy-1)/2, Direction::NORTH});
+        temp = temp || isWall({(posx-1)/2, (posy-1)/2, Direction::EAST});
+        temp = temp || isWall({posx/2, posy/2, Direction::SOUTH});
+        temp = temp || isWall({posx/2, posy/2, Direction::WEST});
+
+        return temp;
+    }
+
+    if(posx%2==1 && posy%2==1)
+        return false;
+
+    if(posx%2==1)
+        return isWall({posx/2, posy/2, Direction::SOUTH});
+    else
+        return isWall({posx/2, posy/2, Direction::WEST});
+
 }
 
 bool Window::wallRight() {
@@ -1628,18 +1644,19 @@ bool Window::moveDiagonal(int distance) {
     }
     // Special case for a wall directly in front of the mouse, else
     // the wall won't be detected until after the mouse starts moving
-    if (wallDiagonal(0) || wallDiagonal(distance)) {
+    if (wallDiagonal(1)) {
         return false;
     }
     // Compute the number of allowable moves
-    int moves = 2;
-    while (moves < distance) {
-        if (wallFront(moves)) {
+    int moves = 1;
+    while (moves <= distance) {
+        if (wallDiagonal(moves)) {
             stopRun("Stopped running because of a wall or without turning 45 when moving DIAGONAL");
             return false;
         }
         moves += 1;
     }
+    moves--;
     m_movement = Movement::MOVE_DIAGONAL;
     m_doomedToCrash = (moves != distance);
     m_movesRemaining = moves;
