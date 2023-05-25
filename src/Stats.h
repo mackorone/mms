@@ -21,7 +21,7 @@ enum class StatsEnum{
     COUNT_TURNRIGHT90,
     COUNT_FORWARD,
     COUNT_HALFFORWARD,
-    COUNT_EDGEFORWARD,
+    COUNT_DIAGONAL,
     SCORE // has a text box but is not saved in an array
 };
 

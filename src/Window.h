@@ -29,7 +29,7 @@ enum class Movement {
     TURN_RIGHT,
     TURN_LEFT,
     MOVE_HALFFORWARD,
-    MOVE_EDGEFORWARD,
+    MOVE_DIAGONAL,
     TURN_RIGHT45,
     TURN_LEFT45,
     NONE,
@@ -204,7 +204,7 @@ private:
 
     bool moveForward(int distance);
     bool moveHalfForward(int distance);
-    bool moveEdgeForward(int distance);
+    bool moveDiagonal(int distance);
     void turnRight();
     void turnLeft();
     void turnRight45();
@@ -231,7 +231,7 @@ private:
 
     QString boolToString(bool value) const;
     bool isWall(Wall wall) const;
-    bool isWithinMaze(int x, int y) const;
+    bool isWithinMaze(int x, int y, bool half) const;
     Wall getOpposingWall(Wall wall) const;
     Coordinate getCenterOfTile(int x, int y) const;
 };

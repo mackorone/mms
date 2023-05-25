@@ -283,13 +283,13 @@ Window::Window(QWidget *parent) :
     createStat("Best Run Turns", StatsEnum::BEST_RUN_TURNS, 5, 0, 5, 1, statsLayout);
     createStat("Score", StatsEnum::SCORE, 6, 0, 6, 1, statsLayout);
 
-    createStat("COUNT_TURNLEFT45", StatsEnum::COUNT_TURNLEFT45, 3, 2, 3, 3, statsLayout);
-    createStat("COUNT_TURNRIGHT45", StatsEnum::COUNT_TURNRIGHT45, 4, 2, 4, 3, statsLayout);
-    createStat("COUNT_TURNLEFT90", StatsEnum::COUNT_TURNLEFT90, 5, 2, 5, 3, statsLayout);
-    createStat("COUNT_TURNRIGHT90", StatsEnum::COUNT_TURNRIGHT90, 6, 2, 6, 3, statsLayout);
-    createStat("COUNT_FORWARD", StatsEnum::COUNT_FORWARD, 7, 2, 7, 3, statsLayout);
-    createStat("COUNT_HALFFORWARD", StatsEnum::COUNT_HALFFORWARD, 8, 0, 8, 1, statsLayout);
-    createStat("COUNT_EDGEFORWARD", StatsEnum::COUNT_EDGEFORWARD, 8, 2, 8, 3, statsLayout);
+    createStat("Total Left 45 Turn", StatsEnum::COUNT_TURNLEFT45, 3, 2, 3, 3, statsLayout);
+    createStat("Total Right 45 Turn", StatsEnum::COUNT_TURNRIGHT45, 4, 2, 4, 3, statsLayout);
+    createStat("Total Left 90 Turn", StatsEnum::COUNT_TURNLEFT90, 5, 2, 5, 3, statsLayout);
+    createStat("Total Right 90 Turn", StatsEnum::COUNT_TURNRIGHT90, 6, 2, 6, 3, statsLayout);
+    createStat("Total Forward", StatsEnum::COUNT_FORWARD, 7, 2, 7, 3, statsLayout);
+    createStat("Total Half Forward", StatsEnum::COUNT_HALFFORWARD, 8, 0, 8, 1, statsLayout);
+    createStat("Total Diagonal", StatsEnum::COUNT_DIAGONAL, 8, 2, 8, 3, statsLayout);
 
     // Add the build and run outputs to the panel
     panelLayout->addWidget(m_mouseAlgoOutputTabWidget);
@@ -1022,7 +1022,9 @@ void Window::dispatchCommand(QString command) {
             clearWall(x, y, direction);
         }
         else {
-            ASSERT_NEVER_RUNS();
+            stopRun("Unexpected command!");
+            //ASSERT_NEVER_RUNS();
+            return;
         }
     }
     else if (command.startsWith("setColor")) {
@@ -1137,7 +1139,7 @@ QString Window::executeCommand(QString command) {
     }
     QString function = tokens.at(0);
     if (tokens.size() == 2 &&
-        !(function == "moveForward" || function == "moveHalfForward" || function == "moveEdgeForward" || function == "getStat")) {
+        !(function == "moveForward" || function == "moveHalfForward" || function == "moveDiagonal" || function == "getStat")) {
         return INVALID;
     }
     if (function == "mazeWidth") {
@@ -1171,12 +1173,12 @@ QString Window::executeCommand(QString command) {
         bool success = moveHalfForward(distance);
         return success ? "" : CRASH;
     }
-    else if (function == "moveEdgeForward") {
+    else if (function == "moveDiagonal") {
         int distance = 1;
         if (tokens.size() == 2) {
             distance = tokens.at(1).toInt();
         }
-        bool success = moveEdgeForward(distance);
+        bool success = moveDiagonal(distance);
         return success ? "" : CRASH;
     }
     else if (function == "turnRight45") {
@@ -1295,7 +1297,7 @@ double Window::progressRequired(Movement movement) {
         return PROGRESS_REQUIRED_FOR_TURN;
     case Movement::MOVE_HALFFORWARD:
         return PROGRESS_REQUIRED_FOR_HALFMOVE;
-    case Movement::MOVE_EDGEFORWARD:
+    case Movement::MOVE_DIAGONAL:
         return PROGRESS_REQUIRED_FOR_EDGEMOVE;
     case Movement::TURN_RIGHT45:
     case Movement::TURN_LEFT45:
@@ -1324,7 +1326,9 @@ void Window::updateMouseProgress(double progress) {
             destinationLocation.first -= 2;
         }
         else {
-            ASSERT_NEVER_RUNS();
+            stopRun("Unexpected Mouse Direction when moving FORWARD");
+            //ASSERT_NEVER_RUNS();
+            return;
         }
     }
     else if (m_movement == Movement::MOVE_HALFFORWARD) {
@@ -1341,10 +1345,12 @@ void Window::updateMouseProgress(double progress) {
             destinationLocation.first -= 1;
         }
         else {
-            ASSERT_NEVER_RUNS();
+            stopRun("Unexpected Mouse Direction when moving HALFFORWARD");
+            //ASSERT_NEVER_RUNS();
+            return;
         }
     }
-    else if (m_movement == Movement::MOVE_EDGEFORWARD) {
+    else if (m_movement == Movement::MOVE_DIAGONAL) {
         if (m_startingDirection == Direction::NORTHWEST) {
             destinationLocation.first -= 1;
             destinationLocation.second += 1;
@@ -1378,7 +1384,9 @@ void Window::updateMouseProgress(double progress) {
             destinationLocation.second -= 1;
         }
         else {
-            ASSERT_NEVER_RUNS();
+            stopRun("Unexpected Mouse Direction when moving DIAGONAL");
+            //ASSERT_NEVER_RUNS();
+            return;
         }
     }
     // Explicity add or subtract 90 degrees so that the mouse is guaranteed to
@@ -1397,11 +1405,13 @@ void Window::updateMouseProgress(double progress) {
         destinationRotation += Angle::Degrees(90);
     }
     else {
-        ASSERT_NEVER_RUNS();
+        stopRun("Unexpected Command");
+        //ASSERT_NEVER_RUNS();
+        return;
     }
 
-    if( isWithinMaze(destinationLocation.first/2, destinationLocation.second/2 ) == false ) {
-        stopRun("Stopped running because of outbound maze movement!");
+    if( isWithinMaze(destinationLocation.first, destinationLocation.second, true ) == false ) {
+        stopRun("Map outbound mouse movement");
         return;
     }
 
@@ -1432,20 +1442,22 @@ void Window::updateMouseProgress(double progress) {
     m_mouse->teleport(currentTranslation, currentRotation);
     if (remaining == 0.0) {
         m_startingLocation = m_mouse->getCurrentHalfDiscretizedTranslation();
+        int temp1=m_startingLocation.first/2;
+        int temp2=m_startingLocation.second/2;
         m_startingDirection = m_mouse->getCurrentDiscretizedRotation();
         m_movementProgress = 0.0;
         m_movementStepSize = 0.0;
-        if (m_movement == Movement::MOVE_FORWARD || (m_movement == Movement::MOVE_HALFFORWARD) ||  (m_movement == Movement::MOVE_EDGEFORWARD) ){
+        if (m_movement == Movement::MOVE_FORWARD || (m_movement == Movement::MOVE_HALFFORWARD) ||  (m_movement == Movement::MOVE_DIAGONAL) ){
             m_movesRemaining -= 1;
         }
         if (m_movesRemaining == 0) {
             m_movement = Movement::NONE;
         }
         // determine if the goal was reached
-        if (m_maze->isInCenter(m_startingLocation)) {
+        if (m_maze->isInCenter({temp1,temp2})) {
             stats->finishRun(); // record a completed start-to-finish run
         }
-        else if (m_startingLocation.first == 0 && m_startingLocation.second == 0) {
+        else if (m_startingLocation.first == 1 && m_startingLocation.second == 1) {
             stats->endUnfinishedRun();
         }
     }
@@ -1515,8 +1527,7 @@ bool Window::wallFront(int distance) {
     case Direction::WEST:
         position.first -= distance;
         break;
-    default:
-        ASSERT_NEVER_RUNS();
+    default : break;
     }
     return isWall({position.first, position.second, direction});
 }
@@ -1584,7 +1595,8 @@ bool Window::moveForward(int distance) {
     int moves = 1;
     while (moves < distance) {
         if (wallFront(moves)) {
-            break;
+            stopRun("Stopped running because of a wall when moving FORWARD");
+            return false;
         }
         moves += 1;
     }
@@ -1606,29 +1618,30 @@ bool Window::moveHalfForward(int distance) {
     }
     // Special case for a wall directly in front of the mouse, else
     // the wall won't be detected until after the mouse starts moving
-    if (wallFront(0)) {
-        return false;
-    }
+    //if (wallFront(0)) {
+    //    return false;
+    //}
     // Compute the number of allowable moves
-    int moves = 2;
-    while (moves < distance) {
-        if (wallFront(moves/2)) {
-            break;
+    int moves = 1;
+    int dis = distance/2 ;
+    if( dis == 0 ) dis = 1;
+    while (moves < dis) {
+        if (wallFront(moves)) {
+            stopRun("Stopped running because of a wall when moving HALFFORWARD");
+            return false;
         }
-        moves += 1;
+        moves = dis;
     }
     m_movement = Movement::MOVE_HALFFORWARD;
-    m_doomedToCrash = (moves != distance);
-    m_movesRemaining = moves;
+    m_doomedToCrash = (moves != dis);
+    m_movesRemaining = distance;
+
     if (m_startingLocation.first == 1 && m_startingLocation.second == 1) {
         stats->startRun();
     }
-    // increase the stats by the distance that will be travelled
-    stats->addDistance(StatsEnum::COUNT_HALFFORWARD, distance);
-    return true;
-}
+    }
 
-bool Window::moveEdgeForward(int distance) {
+bool Window::moveDiagonal(int distance) {
     // Non-positive distances aren't allowed
     if (distance < 1) {
         return false;
@@ -1641,19 +1654,20 @@ bool Window::moveEdgeForward(int distance) {
     // Compute the number of allowable moves
     int moves = 2;
     while (moves < distance) {
-        if (wallDiagonal(moves/2)) {
-            break;
+        if (wallFront(moves)) {
+            stopRun("Stopped running because of a wall when moving DIAGONAL");
+            return false;
         }
         moves += 1;
     }
-    m_movement = Movement::MOVE_EDGEFORWARD;
+    m_movement = Movement::MOVE_DIAGONAL;
     m_doomedToCrash = (moves != distance);
     m_movesRemaining = moves;
     if (m_startingLocation.first == 1 && m_startingLocation.second == 1) {
         stats->startRun();
     }
     // increase the stats by the distance that will be travelled
-    stats->addDistance(StatsEnum::COUNT_EDGEFORWARD, distance);
+    stats->addDistance(StatsEnum::COUNT_DIAGONAL, distance);
     return true;
 }
 
@@ -1686,7 +1700,7 @@ void Window::turnLeft45() {
 }
 
 void Window::setWall(int x, int y, QChar direction) {
-    if (!isWithinMaze(x, y)) {
+    if (!isWithinMaze(x, y, false)) {
         return;
     }
     if (!CHAR_TO_DIRECTION().contains(direction)) {
@@ -1695,7 +1709,7 @@ void Window::setWall(int x, int y, QChar direction) {
     Direction d = CHAR_TO_DIRECTION().value(direction);
     m_view->getMazeGraphic()->setWall(x, y, d);
     Wall opposingWall = getOpposingWall({x, y, d});
-    if (isWithinMaze(opposingWall.x, opposingWall.y)) {
+    if (isWithinMaze(opposingWall.x, opposingWall.y, false)) {
         m_view->getMazeGraphic()->setWall(
             opposingWall.x,
             opposingWall.y,
@@ -1705,7 +1719,7 @@ void Window::setWall(int x, int y, QChar direction) {
 }
 
 void Window::clearWall(int x, int y, QChar direction) {
-    if (!isWithinMaze(x, y)) {
+    if (!isWithinMaze(x, y, false)) {
         return;
     }
     if (!CHAR_TO_DIRECTION().contains(direction)) {
@@ -1714,7 +1728,7 @@ void Window::clearWall(int x, int y, QChar direction) {
     Direction d = CHAR_TO_DIRECTION().value(direction);
     m_view->getMazeGraphic()->clearWall(x, y, d);
     Wall opposingWall = getOpposingWall({x, y, d});
-    if (isWithinMaze(opposingWall.x, opposingWall.y)) {
+    if (isWithinMaze(opposingWall.x, opposingWall.y, false)) {
         m_view->getMazeGraphic()->clearWall(
             opposingWall.x,
             opposingWall.y,
@@ -1724,7 +1738,7 @@ void Window::clearWall(int x, int y, QChar direction) {
 }
 
 void Window::setColor(int x, int y, QChar color) {
-    if (!isWithinMaze(x, y)) {
+    if (!isWithinMaze(x, y,false)) {
         return;
     }
     if (!CHAR_TO_COLOR().contains(color)) {
@@ -1735,7 +1749,7 @@ void Window::setColor(int x, int y, QChar color) {
 }
 
 void Window::clearColor(int x, int y) {
-    if (!isWithinMaze(x, y)) {
+    if (!isWithinMaze(x, y, false)) {
         return;
     }
     m_view->getMazeGraphic()->clearColor(x, y);
@@ -1750,7 +1764,7 @@ void Window::clearAllColor() {
 }
 
 void Window::setText(int x, int y, QString text) {
-    if (!isWithinMaze(x, y)) {
+    if (!isWithinMaze(x, y, false)) {
         return;
     }
     static QRegularExpression regex = QRegularExpression(
@@ -1762,7 +1776,7 @@ void Window::setText(int x, int y, QString text) {
 }
 
 void Window::clearText(int x, int y) {
-    if (!isWithinMaze(x, y)) {
+    if (!isWithinMaze(x, y, false)) {
         return;
     }
     m_view->getMazeGraphic()->clearText(x, y);
@@ -1802,11 +1816,21 @@ bool Window::isWall(Wall wall) const {
     return m_maze->getTile(wall.x, wall.y)->isWall(wall.d);
 }
 
-bool Window::isWithinMaze(int x, int y) const {
-    return (
-        0 <= x && x < m_maze->getWidth() &&
-        0 <= y && y < m_maze->getHeight()
-        );
+bool Window::isWithinMaze(int x, int y, bool half) const {
+    if(half)
+    {
+        return (
+            0 < x && x < 2*m_maze->getWidth()-1 &&
+            0 < y && y < 2*m_maze->getHeight()-1
+            );
+    }
+    else
+    {
+        return (
+            0 <= x && x < m_maze->getWidth() &&
+            0 <= y && y < m_maze->getHeight()
+            );
+    }
 }
 
 Wall Window::getOpposingWall(Wall wall) const {
@@ -1826,7 +1850,7 @@ Wall Window::getOpposingWall(Wall wall) const {
 
 Coordinate Window::getCenterOfTile(int x, int y) const {
 
-    if( isWithinMaze((x-1)/2, (y-1)/2) == false ) {
+    if( isWithinMaze(x, y, true) == false ) {
         x = 0, y = 0;
     }
 
