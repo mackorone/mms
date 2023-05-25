@@ -434,8 +434,8 @@ void Window::showInvalidMazeFileWarning(QString path) {
         this,
         "Invalid Maze File",
         "The following is not a valid maze file:\n\n" + path + "\n\n "
-                                                               "The maze must be nonempty, rectangular, enclosed, and consistent."
-        );
+        "The maze must be nonempty, rectangular, enclosed, and consistent."
+    );
 }
 
 void Window::refreshMazeFileComboBox(QString selected) {
