@@ -1800,8 +1800,8 @@ bool Window::isWithinMaze(int x, int y, bool half) const {
     if(half)
     {
         return (
-            0 < x && x < 2*m_maze->getWidth()-1 &&
-            0 < y && y < 2*m_maze->getHeight()-1
+            0 < x && x < 2*m_maze->getWidth() &&
+            0 < y && y < 2*m_maze->getHeight()
             );
     }
     else
