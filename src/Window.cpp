@@ -1602,12 +1602,6 @@ bool Window::moveHalfForward(int distance) {
     if (distance < 1) {
         return false;
     }
-    // Special case for a wall directly in front of the mouse, else
-    // the wall won't be detected until after the mouse starts moving
-    //if (wallFront(0)) {
-    //    return false;
-    //}
-    // Compute the number of allowable moves
     int moves = 1;
     int dis = distance/2 ;
     if( dis == 0 ) dis = 1;
@@ -1622,9 +1616,9 @@ bool Window::moveHalfForward(int distance) {
     m_doomedToCrash = (moves != dis);
     m_movesRemaining = distance;
 
-    if (m_startingLocation.first == 1 && m_startingLocation.second == 1) {
-        stats->startRun();
-    }
+    // increase the stats by the distance that will be travelled
+	stats->addDistance(StatsEnum::COUNT_HALFFORWARD, distance);
+	return true;
     }
 
 bool Window::moveDiagonal(int distance) {
