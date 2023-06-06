@@ -71,6 +71,8 @@ Writing a Micromouse algorithm is easy! Here are some available templates:
 | Java | [mackorone/mms-java](https://github.com/mackorone/mms-java)
 | JavaScript | [mackorone/mms-javascript](https://github.com/mackorone/mms-javascript)
 | Python | [mackorone/mms-python](https://github.com/mackorone/mms-python)
+| Rust | [hardliner66/mms-rs](https://github.com/hardliner66/mms-rs)
+
 
 If a template for a particular language is missing, don't fret! Writing your
 own template is as easy as writing to stdout, reading from stdin, and
