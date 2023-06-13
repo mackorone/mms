@@ -81,18 +81,8 @@ void Mouse::teleport(const Coordinate& translation, const Angle& rotation) {
 
 QPair<int, int> Mouse::getCurrentHalfDiscretizedTranslation() const {
     static Distance halfTileLength = Dimensions::halfTileLength();
-
-    double  tx = m_currentTranslation.getX().getMeters() * 1000.0f;
-    double  ty = m_currentTranslation.getY().getMeters() * 1000.0f;
-    double  hd = halfTileLength.getMeters() * 1000.0f;
-
-    int     txi = qFloor( tx ) ;
-    int     hdi = qFloor( hd )  ;
-    int     tyi = qFloor( ty ) ;
-
-    int x = static_cast<int>(qFloor(  txi / hdi ) );
-    int y = static_cast<int>(qFloor(  tyi / hdi ) );
-
+    int x = static_cast<int>(qFloor(m_currentTranslation.getX() / halfTileLength));
+    int y = static_cast<int>(qFloor(m_currentTranslation.getY() / halfTileLength));
     return {x, y};
 }
 
