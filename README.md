@@ -16,6 +16,7 @@
 1. [Maze Files](https://github.com/mackorone/mms#maze-files)
 1. [Building From Source](https://github.com/mackorone/mms#building-from-source)
 1. [Related Projects](https://github.com/mackorone/mms#related-projects)
+1. [Citations](https://github.com/mackorone/mms#citations)
 1. [Acknowledgements](https://github.com/mackorone/mms#acknowledgements)
 
 ## Introduction
@@ -249,7 +250,7 @@ int/float getStat(string stat);
 #### Example
 
 ```c++
-Algorithm Request (stdout)  Simulator Response (stdin)   
+Algorithm Request (stdout)  Simulator Response (stdin)
 --------------------------  --------------------------
 mazeWidth                   16
 mazeWidth                   16
@@ -263,7 +264,7 @@ moveForward                 crash
 setColor 0 1 r              <NO RESPONSE>
 setText 0 1 whoops          <NO RESPONSE>
 wasReset                    false
-...                       
+...
 wasReset                    true
 clearAllColor               <NO RESPONSE>
 clearAllText                <NO RESPONSE>
@@ -273,28 +274,28 @@ ackReset                    ack
 
 ## Scorekeeping
 
-The Stats tab displays information that can be used to score an algorithm's 
-efficiency. This tab displays stats such as the total distance and total number 
-of turns. It also displays the distance and number of turns for the algorithm's 
-best start-to-finish run, if the algorithm makes multiple runs from the start 
-tile to the goal. The distance and number of turns for the current 
+The Stats tab displays information that can be used to score an algorithm's
+efficiency. This tab displays stats such as the total distance and total number
+of turns. It also displays the distance and number of turns for the algorithm's
+best start-to-finish run, if the algorithm makes multiple runs from the start
+tile to the goal. The distance and number of turns for the current
 start-to-finish run is also displayed.
 
-There is another value displayed, called Effective Distance. This number may 
-differ from Distance if `moveForward` is called with the optional distance 
-parameter. If `moveForward` is called with an integer greater than 2, each tile 
-after the second tile will add only half a point to the effective distance. This 
-simulates a mouse driving faster if it can drive in a straight line for more 
-than a few tiles. For example, `moveForward(5)` will increase the distance by 5 
-but will increase the effective distance by only 3.5. A mouse will incur a 
+There is another value displayed, called Effective Distance. This number may
+differ from Distance if `moveForward` is called with the optional distance
+parameter. If `moveForward` is called with an integer greater than 2, each tile
+after the second tile will add only half a point to the effective distance. This
+simulates a mouse driving faster if it can drive in a straight line for more
+than a few tiles. For example, `moveForward(5)` will increase the distance by 5
+but will increase the effective distance by only 3.5. A mouse will incur a
 15-point penalty on its next run's Effective Distance if it uses `ackReset` to
 return to the start tile.
 
-A final score is computed for the algorithm after it terminates. A lower score 
-is better. The final score depends on the best start-to-finish run and on the 
+A final score is computed for the algorithm after it terminates. A lower score
+is better. The final score depends on the best start-to-finish run and on the
 overall run, according to the following equation.
 
-`score = best run turns + best run effective distance + 0.1 * (total turns + 
+`score = best run turns + best run effective distance + 0.1 * (total turns +
 total effective distance)`
 
 The mouse must reach the goal to receive a score. If the mouse never reaches the
@@ -315,21 +316,21 @@ The available colors are as follows:
 
 | Char | Color       |
 |------|-------------|
-|  k   | Black       | 
-|  b   | Blue        | 
-|  a   | Gray        | 
-|  c   | Cyan        | 
-|  g   | Green       | 
-|  o   | Orange      | 
-|  r   | Red         | 
-|  w   | White       | 
-|  y   | Yellow      | 
-|  B   | Dark Blue   | 
-|  C   | Dark Cyan   | 
-|  A   | Dark Gray   | 
-|  G   | Dark Green  | 
-|  R   | Dark Red    | 
-|  Y   | Dark Yellow | 
+|  k   | Black       |
+|  b   | Blue        |
+|  a   | Gray        |
+|  c   | Cyan        |
+|  g   | Green       |
+|  o   | Orange      |
+|  r   | Red         |
+|  w   | White       |
+|  y   | Yellow      |
+|  B   | Dark Blue   |
+|  C   | Dark Cyan   |
+|  A   | Dark Gray   |
+|  G   | Dark Green  |
+|  R   | Dark Red    |
+|  Y   | Dark Yellow |
 
 
 ## Cell Text
@@ -444,7 +445,7 @@ Install Qt:
 Build the project using QtCreator:
 
 1. Download or clone *mms*
-1. Run QtCreator and open `mms/src/mms.pro` 
+1. Run QtCreator and open `mms/src/mms.pro`
 1. Configure the project to [use "MinGW"](https://github.com/mackorone/mms/blob/master/img/qt-install-windows-2.png)
 1. Build and run the project
 
@@ -469,7 +470,7 @@ Build the project using QtCreator:
 
 Install Qt:
 
-1. Download the Qt open source installer: https://www.qt.io/download-qt-installer-oss 
+1. Download the Qt open source installer: https://www.qt.io/download-qt-installer-oss
 1. Make the installer executable: `chmod +x qt-unified-linux-x64-3.0.6-online.run`
 1. Run the installer executable: `./qt-unified-linux-x64-3.0.6-online.run`
 1. If you don't already have a Qt account, you'll need to make one
@@ -493,6 +494,40 @@ qmake && make
 ## Related Projects
 
 - [@zdasaro](https://github.com/zdasaro) wrote a proxy for the Priceton University Robotics Club: [mms-competition-proxy](https://github.com/zdasaro/mms-competition-proxy)
+- [@P1n3appl3](https://github.com/P1n3appl3) created an Arch Linux package: [mms-git](https://aur.archlinux.org/packages/mms-git/)
+
+## Citations
+
+Feel free to open a pull request if you want your work listed here!
+
+#### Papers
+
+- <https://link.springer.com/article/10.1007/s42452-021-04239-7>
+- <https://ictaes.org/wp-content/uploads/2020/09/IJAE-2020-Vol.03-No.02/7_Sanjaya_Vol3_No2.pdf>
+- <https://www.researchgate.net/publication/361212084_International_Journal_of_Advanced_Engineering_Optimizing_Tremaux_Algorithm_in_Micromouse_Using_Potential_Values>
+
+#### Posts
+
+- <https://medium.com/@minikiraniamayadharmasiri/micromouse-from-scratch-algorithm-maze-traversal-shortest-path-floodfill-741242e8510>
+- <https://www.technologyx2.com/proj_robot_rover/2020/6/15/project-micromouse-robot-simulator>
+- <http://iamsudharsan.com/maze-solver-robot/>
+- <https://www.instructables.com/Micro-Mouse-for-Beginnersth/>
+- <http://micromouseusa.com/?p=2288>
+
+#### Videos
+
+- <https://www.youtube.com/watch?v=6y4nrnfZ1k0>
+- <https://www.youtube.com/watch?v=-r8a8aPRYAQ>
+
+#### Repos
+
+- <https://github.com/sohamroy19/a-maze-jerry>
+- <https://github.com/Madhunc5229/MicroMouse_MazeSolver>
+- <https://github.com/Karansutradhar/Maze-Solver-Robot-Depth-First-Search>
+- <https://github.com/nalindas9/enpm809y-final-project>
+- <https://github.com/james-ralph8555/DrexelMicromouse2020>
+- <https://github.com/darshit-desai/Maze-Solver-simulation-using-Wall-Following-Algorithm-OOP>
+
 
 ## Acknowledgements
 
