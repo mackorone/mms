@@ -26,10 +26,10 @@ namespace mms {
 
 enum class Movement {
     MOVE_FORWARD,
-    TURN_RIGHT,
-    TURN_LEFT,
     MOVE_HALFFORWARD,
     MOVE_DIAGONAL,
+    TURN_RIGHT,
+    TURN_LEFT,
     TURN_RIGHT45,
     TURN_LEFT45,
     NONE,
@@ -198,6 +198,7 @@ private:
     int mazeHeight();
 
     bool wallFront(int distance);
+    bool wallHalfFront(int distance);
     bool wallDiagonal(int distance);
     bool wallRight();
     bool wallLeft();
