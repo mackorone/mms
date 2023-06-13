@@ -437,7 +437,7 @@ you'll just have to figure it out on your own for now.
 
 Install Qt:
 
-1. Download the Qt open source installer: https://www.qt.io/download-qt-installer
+1. Download the Qt open source installer: https://www.qt.io/download-qt-installer-oss
 1. If you don't already have a Qt account, you'll need to make one
 1. When prompted to select components, [choose "MinGW"](https://github.com/mackorone/mms/blob/master/img/qt-install-windows-1.png)
 
@@ -454,7 +454,7 @@ Install Xcode: https://developer.apple.com/xcode/
 
 Install Qt:
 
-1. Download the Qt open source installer: https://www.qt.io/download-qt-installer
+1. Download the Qt open source installer: https://www.qt.io/download-qt-installer-oss
 1. If you don't already have a Qt account, you'll need to make one
 1. When prompted to select components, [choose "macOS"](https://github.com/mackorone/mms/blob/master/img/qt-install-macos-1.png)
 
@@ -467,24 +467,14 @@ Build the project using QtCreator:
 
 #### Linux (Ubuntu)
 
-Qt installation option #1: use the command line
-```
-sudo apt-get install qt5-default
-```
+Install Qt:
 
-Qt installation option #2: use the installer
-
-1. Download the Qt open source installer: https://www.qt.io/download-qt-installer
+1. Download the Qt open source installer: https://www.qt.io/download-qt-installer-oss 
 1. Make the installer executable: `chmod +x qt-unified-linux-x64-3.0.6-online.run`
 1. Run the installer executable: `./qt-unified-linux-x64-3.0.6-online.run`
 1. If you don't already have a Qt account, you'll need to make one
 1. When prompted to select components, [choose "Desktop gcc 64-bit"](https://github.com/mackorone/mms/blob/master/img/qt-install-ubuntu.png)
 1. Once the installer finishes, the `qmake` binary can be found in the installation directory
-
-More documentation:
-
-* https://wiki.qt.io/Install_Qt_5_on_Ubuntu
-* http://doc.qt.io/qt-5/linux.html
 
 Clone, build, and run the project:
 
