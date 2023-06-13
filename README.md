@@ -1,6 +1,6 @@
 # mms <a href="https://www.buymeacoffee.com/mackorone"><img align="right" height=36 alt="Save the Children" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"></a>
 
-![](https://github.com/mackorone/mms/blob/master/img/mms.gif)
+![](img/mms.gif)
 
 ## Table of Contents
 
