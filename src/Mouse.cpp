@@ -37,12 +37,12 @@ Mouse::Mouse() {
     Coordinate centerOfMass = Coordinate::Cartesian(
         Distance::Meters(0.06),
         Distance::Meters(0.06)
-        );
+    );
     for (int i = 0; i < bodyVertices.size(); i += 1) {
         bodyVertices[i] = GeometryUtilities::translateVertex(
             bodyVertices.at(i),
             centerOfMass
-            );
+        );
     }
     m_initialBodyPolygon = Polygon(bodyVertices);
 
@@ -57,7 +57,7 @@ Mouse::Mouse() {
         wheelVertices[i] = GeometryUtilities::translateVertex(
             wheelVertices.at(i),
             centerOfMass
-            );
+        );
     }
     m_initialWheelPolygon = Polygon(wheelVertices);
 
@@ -71,7 +71,7 @@ void Mouse::reset() {
     teleport(
         m_initialTranslation,
         DIRECTION_TO_ANGLE().value(Direction::NORTH)
-        );
+    );
 }
 
 void Mouse::teleport(const Coordinate& translation, const Angle& rotation) {
@@ -136,4 +136,4 @@ Polygon Mouse::getCurrentPolygon(const Polygon& initialPolygon) const {
             m_currentTranslation);
 }
 
-}
+} 
