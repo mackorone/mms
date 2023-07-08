@@ -6,19 +6,15 @@
 namespace mms {
 
 class GeometryUtilities {
+ public:
+  GeometryUtilities() = delete;
 
-public:
+  static Coordinate translateVertex(const Coordinate &vertex,
+                                    const Coordinate &translation);
 
-    GeometryUtilities() = delete;
-
-    static Coordinate translateVertex(
-        const Coordinate& vertex,
-        const Coordinate& translation);
-
-    static Coordinate rotateVertexAroundPoint(
-        const Coordinate& vertex,
-        const Coordinate& point,
-        const Angle& angle);
+  static Coordinate rotateVertexAroundPoint(const Coordinate &vertex,
+                                            const Coordinate &point,
+                                            const Angle &angle);
 };
 
-} 
+}  // namespace mms

@@ -11,32 +11,28 @@
 namespace mms {
 
 class MazeView {
+ public:
+  MazeView(const Maze *maze, bool isTruthView);
+  MazeGraphic *getMazeGraphic();
+  void initTileGraphicText(int numRows, int numCols);
+  const QVector<TriangleGraphic> *getGraphicCpuBuffer() const;
+  const QVector<TriangleTexture> *getTextureCpuBuffer() const;
 
-public:
+ private:
+  // These vectors contain the triangles that will actually be drawn
+  QVector<TriangleGraphic> m_graphicCpuBuffer;
+  QVector<TriangleTexture> m_textureCpuBuffer;
 
-    MazeView(const Maze* maze, bool isTruthView);
-    MazeGraphic* getMazeGraphic();
-    void initTileGraphicText(int numRows, int numCols);
-    const QVector<TriangleGraphic>* getGraphicCpuBuffer() const;
-    const QVector<TriangleTexture>* getTextureCpuBuffer() const;
+  // The buffer interface provides abstractions which the MazeGraphic
+  // uses to populate the vector of TriangleGraphic objects
+  BufferInterface m_bufferInterface;
 
-private:
+  // The MazeGraphic is essentially a "handle" into the above vectors;
+  // it provides a high-level API for modifying their contents
+  MazeGraphic m_mazeGraphic;
 
-    // These vectors contain the triangles that will actually be drawn
-    QVector<TriangleGraphic> m_graphicCpuBuffer;
-    QVector<TriangleTexture> m_textureCpuBuffer;
-
-    // The buffer interface provides abstractions which the MazeGraphic
-    // uses to populate the vector of TriangleGraphic objects
-    BufferInterface m_bufferInterface;
-
-    // The MazeGraphic is essentially a "handle" into the above vectors;
-    // it provides a high-level API for modifying their contents
-    MazeGraphic m_mazeGraphic;
-
-    // Helper method for initializing TileGraphic text
-    void initText(int numRows, int numCols);
-
+  // Helper method for initializing TileGraphic text
+  void initText(int numRows, int numCols);
 };
 
-} 
+}  // namespace mms

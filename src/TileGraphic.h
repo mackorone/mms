@@ -10,53 +10,48 @@
 namespace mms {
 
 class TileGraphic {
+ public:
+  TileGraphic();
+  TileGraphic(const Tile *tile, BufferInterface *bufferInterface,
+              bool isTruthView);
 
-public:
+  void setWall(Direction direction);
+  void clearWall(Direction direction);
 
-    TileGraphic();
-    TileGraphic(
-        const Tile* tile,
-        BufferInterface* bufferInterface,
-        bool isTruthView);
+  void setColor(const Color color);
+  void clearColor();
 
-    void setWall(Direction direction);
-    void clearWall(Direction direction);
+  void setText(const QString &text);
+  void clearText();
 
-    void setColor(const Color color);
-    void clearColor();
+  // TODO: upforgrabs
+  // Rename these to "reload" or something
+  void drawPolygons() const;
+  void drawTextures() const;
 
-    void setText(const QString& text);
-    void clearText();
+  void refreshColors();
 
-    // TODO: upforgrabs
-    // Rename these to "reload" or something
-    void drawPolygons() const;
-    void drawTextures() const;
+ private:
+  // Input and output objects
+  const Tile *m_tile;
+  BufferInterface *m_bufferInterface;
 
-    void refreshColors();
+  // Visual state
+  QMap<Direction, bool> m_walls;
+  Color m_color;
+  bool m_colorWasSet;
+  QString m_text;
 
-private:
+  // Helper functions
+  // TODO: upforgrabs
+  // Rename these to "refresh" or something
+  void updateWall(Direction direction) const;
+  void updateColor() const;
+  void updateText() const;
 
-    // Input and output objects
-    const Tile* m_tile;
-    BufferInterface* m_bufferInterface;
-
-    // Visual state
-    QMap<Direction, bool> m_walls;
-    Color m_color;
-    bool m_colorWasSet;
-    QString m_text;
-
-    // Helper functions
-    // TODO: upforgrabs
-    // Rename these to "refresh" or something
-    void updateWall(Direction direction) const;
-    void updateColor() const;
-    void updateText() const;
-    
-    bool m_isTruthView;
-    Color getWallColor(Direction direction) const;
-    unsigned char getWallAlpha(Direction direction) const;
+  bool m_isTruthView;
+  Color getWallColor(Direction direction) const;
+  unsigned char getWallAlpha(Direction direction) const;
 };
 
-} 
+}  // namespace mms

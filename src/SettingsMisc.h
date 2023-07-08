@@ -5,35 +5,31 @@
 namespace mms {
 
 class SettingsMisc {
+ public:
+  SettingsMisc() = delete;
 
-public:
+  static QString getRecentMazeFile();
+  static void setRecentMazeFile(const QString &path);
 
-    SettingsMisc() = delete;
+  static QString getRecentMouseAlgo();
+  static void setRecentMouseAlgo(const QString &name);
 
-    static QString getRecentMazeFile();
-    static void setRecentMazeFile(const QString& path);
+  static int getRecentWindowWidth();
+  static void setRecentWindowWidth(int width);
 
-    static QString getRecentMouseAlgo();
-    static void setRecentMouseAlgo(const QString& name);
+  static int getRecentWindowHeight();
+  static void setRecentWindowHeight(int height);
 
-    static int getRecentWindowWidth();
-    static void setRecentWindowWidth(int width);
+ private:
+  static const QString GROUP;
+  static const QString KEY_RECENT_MAZE_ALGO;
+  static const QString KEY_RECENT_MOUSE_ALGO;
+  static const QString KEY_RECENT_WINDOW_WIDTH;
+  static const QString KEY_RECENT_WINDOW_HEIGHT;
 
-    static int getRecentWindowHeight();
-    static void setRecentWindowHeight(int height);
-
-private:
-
-    static const QString GROUP;
-    static const QString KEY_RECENT_MAZE_ALGO;
-    static const QString KEY_RECENT_MOUSE_ALGO;
-    static const QString KEY_RECENT_WINDOW_WIDTH;
-    static const QString KEY_RECENT_WINDOW_HEIGHT;
-
-    static int getNumber(QString key, int defaultValue);
-    static QString getValue(const QString& key);
-    static void setValue(const QString& key, const QString& value);
-
+  static int getNumber(QString key, int defaultValue);
+  static QString getValue(const QString &key);
+  static void setValue(const QString &key, const QString &value);
 };
 
-} 
+}  // namespace mms

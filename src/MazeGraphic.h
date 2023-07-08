@@ -10,32 +10,26 @@
 namespace mms {
 
 class MazeGraphic {
+ public:
+  MazeGraphic(const Maze *maze, BufferInterface *bufferInterface,
+              bool isTruthView);
 
-public:
+  void setWall(int x, int y, Direction direction);
+  void clearWall(int x, int y, Direction direction);
 
-    MazeGraphic(
-        const Maze* maze,
-        BufferInterface* bufferInterface,
-        bool isTruthView);
+  void setColor(int x, int y, Color color);
+  void clearColor(int x, int y);
 
-    void setWall(int x, int y, Direction direction);
-    void clearWall(int x, int y, Direction direction);
+  void setText(int x, int y, const QString &text);
+  void clearText(int x, int y);
 
-    void setColor(int x, int y, Color color);
-    void clearColor(int x, int y);
+  void drawPolygons() const;
+  void drawTextures() const;
 
-    void setText(int x, int y, const QString& text);
-    void clearText(int x, int y);
+  void refreshColors();
 
-    void drawPolygons() const;
-    void drawTextures() const;
-
-    void refreshColors();
-
-private:
-
-    QVector<QVector<TileGraphic>> m_tileGraphics;
-
+ private:
+  QVector<QVector<TileGraphic>> m_tileGraphics;
 };
 
-} 
+}  // namespace mms

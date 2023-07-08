@@ -8,49 +8,40 @@
 namespace mms {
 
 class Settings {
+ public:
+  static void init();
+  static Settings *get();
 
-public:
+  // --- Non-array Functions --- //
 
-    static void init();
-    static Settings* get();
+  QString value(QString group, QString key);
+  void update(QString group, QString key, QString value);
 
-    // --- Non-array Functions --- //
+  // --- Array-group Functions --- //
 
-    QString value(QString group, QString key);
-    void update(QString group, QString key, QString value);
+  // Returns all values for the given group and key
+  QStringList values(QString group, QString key);
 
-    // --- Array-group Functions --- //
+  // Adds the given entry to the given group
+  void add(QString group, QMap<QString, QString> entry);
 
-    // Returns all values for the given group and key
-    QStringList values(QString group, QString key);
+  // Removes all entries from group with value for key
+  void remove(QString group, QString key, QString value);
 
-    // Adds the given entry to the given group
-    void add(QString group, QMap<QString, QString> entry);
+  // Returns all entries in group with value for key
+  QVector<QMap<QString, QString>> find(QString group, QString key,
+                                       QString value);
 
-    // Removes all entries from group with value for key
-    void remove(QString group, QString key, QString value);
+  // Updates all entries in group with value for key
+  void update(QString group, QString key, QString value,
+              QMap<QString, QString> changes);
 
-    // Returns all entries in group with value for key
-    QVector<QMap<QString, QString>> find(
-        QString group,
-        QString key,
-        QString value);
+ private:
+  Settings();
+  static Settings *INSTANCE;
 
-    // Updates all entries in group with value for key
-    void update(
-        QString group,
-        QString key,
-        QString value,
-        QMap<QString, QString> changes);
-
-private:
-
-    Settings();
-    static Settings* INSTANCE;
-
-    // Returns all entries for a given group
-    QVector<QMap<QString, QString>> getGroup(QString group);
-
+  // Returns all entries for a given group
+  QVector<QMap<QString, QString>> getGroup(QString group);
 };
 
-} 
+}  // namespace mms
