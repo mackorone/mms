@@ -28,7 +28,7 @@ public:
 
     // Gets the current discretized translation and rotation of the mouse
     QPair<int, int> getCurrentDiscretizedTranslation() const;
-    Direction getCurrentDiscretizedRotation() const;
+    SemiDirection getCurrentDiscretizedRotation() const;
 
     // Retrieves the polygon of just the body of the mouse
     Polygon getCurrentBodyPolygon() const;
@@ -48,4 +48,4 @@ private:
     Polygon getCurrentPolygon(const Polygon& initialPolygon) const;
 };
 
-} 
+}

@@ -58,6 +58,8 @@ const double Window::MIN_PROGRESS_PER_SECOND = 10.0;
 const double Window::MAX_PROGRESS_PER_SECOND = 5000.0;
 const double Window::MAX_SLEEP_SECONDS = 0.008;
 
+const SemiDirection Window::INITIAL_STARTING_DIRECTION = SemiDirection::NORTH;
+
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
     m_map(new Map()),
@@ -104,7 +106,7 @@ Window::Window(QWidget *parent) :
 
     // Movement
     m_startingLocation({0, 0}),
-    m_startingDirection(Direction::NORTH),
+    m_startingDirection(INITIAL_STARTING_DIRECTION),
     m_movement(Movement::NONE),
     m_doomedToCrash(false),
     m_movesRemaining(0),
@@ -158,7 +160,7 @@ Window::Window(QWidget *parent) :
     controlsLayout->addWidget(m_buildStatus, 0, 1);
     controlsLayout->addWidget(m_runStatus, 1, 1);
     for (QLabel* label : {m_buildStatus, m_runStatus}) {
-        label->setAlignment(Qt::AlignCenter);   
+        label->setAlignment(Qt::AlignCenter);
         label->setFrameStyle(QFrame::StyledPanel | QFrame::Plain);
         label->setMinimumWidth(90);
     }
@@ -179,7 +181,7 @@ Window::Window(QWidget *parent) :
         &QPushButton::pressed,
         this,
         &Window::onResetButtonPressed
-    ); 
+    );
 
     // Add mouse algo speed
     QLabel* turtle = new QLabel();
@@ -241,7 +243,7 @@ Window::Window(QWidget *parent) :
     connect(
         mazeFileOpenButton,
         &QToolButton::clicked,
-        this, 
+        this,
         &Window::onMazeFileButtonPressed
     );
 
@@ -459,7 +461,7 @@ void Window::updateMaze(Maze* maze) {
     for (int x = 0; x < m_maze->getWidth(); x += 1) {
         for (int y = 0; y < m_maze->getHeight(); y += 1) {
             const Tile* tile = m_maze->getTile(x, y);
-            for (Direction d : DIRECTIONS()) {
+            for (Direction d : CARDINAL_DIRECTIONS()) {
                 if (tile->isWall(d)) {
                     mazeGraphic->setWall(x, y, d);
                 }
@@ -821,7 +823,7 @@ void Window::startRun() {
         // Only enabled while mouse is running
         m_pauseButton->setEnabled(true);
         m_resetButton->setEnabled(true);
-    } 
+    }
     else {
         // Clean up the failed process
         m_runOutput->appendPlainText(process->errorString());
@@ -911,7 +913,7 @@ void Window::removeMouseFromMaze() {
 
     // Reset movement state
     m_startingLocation = {0, 0};
-    m_startingDirection = Direction::NORTH;
+    m_startingDirection = INITIAL_STARTING_DIRECTION;
     m_movement = Movement::NONE;
     m_movementProgress = 0.0;
     m_movementStepSize = 0.0;
@@ -1261,16 +1263,16 @@ void Window::updateMouseProgress(double progress) {
     Angle destinationRotation =
         DIRECTION_TO_ANGLE().value(m_startingDirection);
     if (m_movement == Movement::MOVE_FORWARD) {
-        if (m_startingDirection == Direction::NORTH) {
+        if (m_startingDirection == SemiDirection::NORTH) {
             destinationLocation.second += 1;
         }
-        else if (m_startingDirection == Direction::EAST) {
+        else if (m_startingDirection == SemiDirection::EAST) {
             destinationLocation.first += 1;
         }
-        else if (m_startingDirection == Direction::SOUTH) {
+        else if (m_startingDirection == SemiDirection::SOUTH) {
             destinationLocation.second -= 1;
         }
-        else if (m_startingDirection == Direction::WEST) {
+        else if (m_startingDirection == SemiDirection::WEST) {
             destinationLocation.first -= 1;
         }
         else {
@@ -1337,7 +1339,7 @@ void Window::updateMouseProgress(double progress) {
 }
 
 void Window::scheduleMouseProgressUpdate() {
-    
+
     // Calculate progressRemaining, should be nonzero
     double required = progressRequired(m_movement);
     double progressRemaining = required - m_movementProgress;
@@ -1386,7 +1388,8 @@ int Window::mazeHeight() {
 
 bool Window::wallFront(int distance) {
     QPair<int, int> position = m_mouse->getCurrentDiscretizedTranslation();
-    Direction direction = m_mouse->getCurrentDiscretizedRotation();
+    Direction direction = SEMI_TO_CARDINAL().value(
+        m_mouse->getCurrentDiscretizedRotation());
     switch (direction) {
         case Direction::NORTH:
             position.second += distance;
@@ -1406,15 +1409,17 @@ bool Window::wallFront(int distance) {
 
 bool Window::wallRight() {
     QPair<int, int> position = m_mouse->getCurrentDiscretizedTranslation();
-    Direction direction =
-        DIRECTION_ROTATE_RIGHT().value(m_mouse->getCurrentDiscretizedRotation());
+    Direction direction = SEMI_TO_CARDINAL().value(
+        DIRECTION_ROTATE_90_RIGHT().value(
+            m_mouse->getCurrentDiscretizedRotation()));
     return isWall({position.first, position.second, direction});
 }
 
 bool Window::wallLeft() {
     QPair<int, int> position = m_mouse->getCurrentDiscretizedTranslation();
-    Direction direction =
-        DIRECTION_ROTATE_LEFT().value(m_mouse->getCurrentDiscretizedRotation());
+    Direction direction = SEMI_TO_CARDINAL().value(
+        DIRECTION_ROTATE_90_LEFT().value(
+            m_mouse->getCurrentDiscretizedRotation()));
     return isWall({position.first, position.second, direction});
 }
 
@@ -1476,7 +1481,7 @@ void Window::setWall(int x, int y, QChar direction) {
             opposingWall.x,
             opposingWall.y,
             opposingWall.d
-        ); 
+        );
     }
 }
 
@@ -1495,7 +1500,7 @@ void Window::clearWall(int x, int y, QChar direction) {
             opposingWall.x,
             opposingWall.y,
             opposingWall.d
-        ); 
+        );
     }
 }
 
@@ -1559,7 +1564,7 @@ bool Window::wasReset() {
 void Window::ackReset() {
     m_mouse->reset();
     m_startingLocation = {0, 0};
-    m_startingDirection = Direction::NORTH;
+    m_startingDirection = INITIAL_STARTING_DIRECTION;
     m_movement = Movement::NONE;
     m_movementProgress = 0.0;
     m_movementStepSize = 0.0;
@@ -1607,4 +1612,4 @@ Coordinate Window::getCenterOfTile(int x, int y) const {
     return centerOfTile;
 }
 
-} 
+}

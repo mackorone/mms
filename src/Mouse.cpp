@@ -21,7 +21,7 @@ Mouse::Mouse() {
     m_currentTranslation = m_initialTranslation;
 
     // The initial rotation of the mouse is determined by the starting tile walls
-    m_initialRotation = DIRECTION_TO_ANGLE().value(Direction::NORTH);
+    m_initialRotation = DIRECTION_TO_ANGLE().value(SemiDirection::NORTH);
     m_currentRotation = m_initialRotation;
 
     // Initialize the body, wheels, and sensors, such that they have the
@@ -66,10 +66,13 @@ Mouse::Mouse() {
     m_initialWheelPolygon.getTriangles();
 }
 
+// TODO: upforgrabs
+// The initial direction probably shouldn't be hardcoded here nor in
+// constructor. Instead, it should be set by the calling code.
 void Mouse::reset() {
     teleport(
         m_initialTranslation,
-        DIRECTION_TO_ANGLE().value(Direction::NORTH)
+        DIRECTION_TO_ANGLE().value(SemiDirection::NORTH)
     );
 }
 
@@ -85,20 +88,28 @@ QPair<int, int> Mouse::getCurrentDiscretizedTranslation() const {
     return {x, y};
 }
 
-Direction Mouse::getCurrentDiscretizedRotation() const {
+SemiDirection Mouse::getCurrentDiscretizedRotation() const {
     int dir = static_cast<int>(qFloor(
-        (m_currentRotation + Angle::Degrees(45)).getRadiansZeroTo2pi() /
-        Angle::Degrees(90).getRadiansZeroTo2pi()
+        (m_currentRotation + Angle::Degrees(22.5)).getRadiansZeroTo2pi() /
+        Angle::Degrees(45).getRadiansZeroTo2pi()
     ));
     switch (dir) {
         case 0:
-            return Direction::EAST;
+            return SemiDirection::EAST;
         case 1:
-            return Direction::NORTH;
+            return SemiDirection::NORTHEAST;
         case 2:
-            return Direction::WEST;
+            return SemiDirection::NORTH;
         case 3:
-            return Direction::SOUTH;
+            return SemiDirection::NORTHWEST;
+        case 4:
+            return SemiDirection::WEST;
+        case 5:
+            return SemiDirection::SOUTHWEST;
+        case 6:
+            return SemiDirection::SOUTH;
+        case 7:
+            return SemiDirection::SOUTHEAST;
         default:
             ASSERT_NEVER_RUNS();
     }
@@ -120,4 +131,4 @@ Polygon Mouse::getCurrentPolygon(const Polygon& initialPolygon) const {
             m_currentTranslation);
 }
 
-} 
+}

@@ -138,7 +138,7 @@ int BufferInterface::getTileGraphicBaseStartingIndex(int x, int y) {
 }
 
 int BufferInterface::getTileGraphicWallStartingIndex(int x, int y, Direction direction) {
-    return  2 + trianglesPerTile() * (m_mazeSize.second * x + y) + (2 * DIRECTIONS().indexOf(direction));
+    return  2 + trianglesPerTile() * (m_mazeSize.second * x + y) + (2 * CARDINAL_DIRECTIONS().indexOf(direction));
 }
 
 int BufferInterface::getTileGraphicCornerStartingIndex(int x, int y, int cornerNumber) {
@@ -151,4 +151,4 @@ int BufferInterface::getTileGraphicTextStartingIndex(int x, int y, int row, int 
     return triangleTexturesPerTile * (m_mazeSize.second * x + y) + 2 * (row * maxRowsAndCols.second + col);
 }
 
-} 
+}

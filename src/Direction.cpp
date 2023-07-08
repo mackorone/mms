@@ -2,7 +2,7 @@
 
 namespace mms {
 
-const QVector<Direction>& DIRECTIONS() {
+const QVector<Direction>& CARDINAL_DIRECTIONS() {
     static const QVector<Direction> vector = {
         Direction::NORTH,
         Direction::EAST,
@@ -12,22 +12,78 @@ const QVector<Direction>& DIRECTIONS() {
     return vector;
 }
 
-const QMap<Direction, Direction>& DIRECTION_ROTATE_LEFT() {
-    static const QMap<Direction, Direction> map = {
-        {Direction::NORTH, Direction::WEST},
-        {Direction::EAST, Direction::NORTH},
-        {Direction::SOUTH, Direction::EAST},
-        {Direction::WEST, Direction::SOUTH},
+const QSet<SemiDirection>& ORDINAL_DIRECTIONS() {
+    static const QSet<SemiDirection> vector = {
+        SemiDirection::NORTHEAST,
+        SemiDirection::NORTHWEST,
+        SemiDirection::SOUTHEAST,
+        SemiDirection::SOUTHWEST,
+    };
+    return vector;
+}
+
+const QMap<SemiDirection, Direction>& SEMI_TO_CARDINAL() {
+    static const QMap<SemiDirection, Direction> map = {
+        {SemiDirection::NORTH, Direction::NORTH},
+        {SemiDirection::SOUTH, Direction::SOUTH},
+        {SemiDirection::EAST, Direction::EAST},
+        {SemiDirection::WEST, Direction::WEST},
     };
     return map;
 }
 
-const QMap<Direction, Direction>& DIRECTION_ROTATE_RIGHT() {
-    static const QMap<Direction, Direction> map = {
-        {Direction::NORTH, Direction::EAST},
-        {Direction::EAST, Direction::SOUTH},
-        {Direction::SOUTH, Direction::WEST},
-        {Direction::WEST, Direction::NORTH},
+const QMap<SemiDirection, SemiDirection>& DIRECTION_ROTATE_45_LEFT() {
+    static const QMap<SemiDirection, SemiDirection> map = {
+        {SemiDirection::NORTH, SemiDirection::NORTHWEST},
+        {SemiDirection::SOUTH, SemiDirection::SOUTHEAST},
+        {SemiDirection::EAST, SemiDirection::NORTHEAST},
+        {SemiDirection::WEST, SemiDirection::SOUTHWEST},
+        {SemiDirection::NORTHEAST, SemiDirection::NORTH},
+        {SemiDirection::NORTHWEST, SemiDirection::WEST},
+        {SemiDirection::SOUTHEAST, SemiDirection::EAST},
+        {SemiDirection::SOUTHWEST, SemiDirection::SOUTH},
+    };
+    return map;
+}
+
+const QMap<SemiDirection, SemiDirection>& DIRECTION_ROTATE_45_RIGHT() {
+    static const QMap<SemiDirection, SemiDirection> map = {
+        {SemiDirection::NORTH, SemiDirection::NORTHEAST},
+        {SemiDirection::SOUTH, SemiDirection::SOUTHWEST},
+        {SemiDirection::EAST, SemiDirection::SOUTHEAST},
+        {SemiDirection::WEST, SemiDirection::NORTHWEST},
+        {SemiDirection::NORTHEAST, SemiDirection::EAST},
+        {SemiDirection::NORTHWEST, SemiDirection::NORTH},
+        {SemiDirection::SOUTHEAST, SemiDirection::SOUTH},
+        {SemiDirection::SOUTHWEST, SemiDirection::WEST},
+    };
+    return map;
+}
+
+const QMap<SemiDirection, SemiDirection>& DIRECTION_ROTATE_90_LEFT() {
+    static const QMap<SemiDirection, SemiDirection> map = {
+        {SemiDirection::NORTH, SemiDirection::WEST},
+        {SemiDirection::SOUTH, SemiDirection::EAST},
+        {SemiDirection::EAST, SemiDirection::NORTH},
+        {SemiDirection::WEST, SemiDirection::SOUTH},
+        {SemiDirection::NORTHEAST, SemiDirection::NORTHWEST},
+        {SemiDirection::NORTHWEST, SemiDirection::SOUTHWEST},
+        {SemiDirection::SOUTHEAST, SemiDirection::NORTHEAST},
+        {SemiDirection::SOUTHWEST, SemiDirection::SOUTHEAST},
+    };
+    return map;
+}
+
+const QMap<SemiDirection, SemiDirection>& DIRECTION_ROTATE_90_RIGHT() {
+    static const QMap<SemiDirection, SemiDirection> map = {
+        {SemiDirection::NORTH, SemiDirection::EAST},
+        {SemiDirection::SOUTH, SemiDirection::WEST},
+        {SemiDirection::EAST, SemiDirection::SOUTH},
+        {SemiDirection::WEST, SemiDirection::NORTH},
+        {SemiDirection::NORTHEAST, SemiDirection::SOUTHEAST},
+        {SemiDirection::NORTHWEST, SemiDirection::NORTHEAST},
+        {SemiDirection::SOUTHEAST, SemiDirection::SOUTHWEST},
+        {SemiDirection::SOUTHWEST, SemiDirection::NORTHWEST},
     };
     return map;
 }
@@ -42,14 +98,18 @@ const QMap<QChar, Direction>& CHAR_TO_DIRECTION() {
     return map;
 }
 
-const QMap<Direction, Angle>& DIRECTION_TO_ANGLE() {
-    static const QMap<Direction, Angle> map = {
-        {Direction::NORTH, Angle::Degrees(90)},
-        {Direction::EAST, Angle::Degrees(0)},
-        {Direction::SOUTH, Angle::Degrees(270)},
-        {Direction::WEST, Angle::Degrees(180)},
+const QMap<SemiDirection, Angle>& DIRECTION_TO_ANGLE() {
+    static const QMap<SemiDirection, Angle> map = {
+        {SemiDirection::EAST,      Angle::Degrees(0)},
+        {SemiDirection::NORTHEAST, Angle::Degrees(45)},
+        {SemiDirection::NORTH,     Angle::Degrees(90)},
+        {SemiDirection::NORTHWEST, Angle::Degrees(135)},
+        {SemiDirection::WEST,      Angle::Degrees(180)},
+        {SemiDirection::SOUTHWEST, Angle::Degrees(225)},
+        {SemiDirection::SOUTH,     Angle::Degrees(270)},
+        {SemiDirection::SOUTHEAST, Angle::Degrees(315)},
     };
     return map;
 }
 
-} 
+}

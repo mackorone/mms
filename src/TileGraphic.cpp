@@ -67,7 +67,7 @@ void TileGraphic::drawPolygons() const {
         m_tile->getFullPolygon(), m_color, 255);
 
     // Draw each of the walls of the tile
-    for (Direction direction : DIRECTIONS()) {
+    for (Direction direction : CARDINAL_DIRECTIONS()) {
         m_bufferInterface->insertIntoGraphicCpuBuffer(
             m_tile->getWallPolygon(direction),
             getWallColor(direction),
@@ -98,7 +98,7 @@ void TileGraphic::drawTextures() const {
 
 void TileGraphic::refreshColors() {
     updateColor();
-    for (Direction d: DIRECTIONS()) {
+    for (Direction d: CARDINAL_DIRECTIONS()) {
         updateWall(d);
     }
 }
@@ -201,4 +201,4 @@ unsigned char TileGraphic::getWallAlpha(Direction direction) const {
     return 0;
 }
 
-} 
+}

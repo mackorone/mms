@@ -165,8 +165,10 @@ private:
     // TODO: upforgrabs
     // Encapsulate this state in the mouse class
 
+    static const SemiDirection INITIAL_STARTING_DIRECTION;
+
     QPair<int, int> m_startingLocation;
-    Direction m_startingDirection;
+    SemiDirection m_startingDirection;
     Movement m_movement;
     bool m_doomedToCrash; // if the requested movement will result in a crash
     int m_movesRemaining; // the number of allowable forward steps remaining
@@ -222,4 +224,4 @@ private:
     Coordinate getCenterOfTile(int x, int y) const;
 };
 
-} 
+}

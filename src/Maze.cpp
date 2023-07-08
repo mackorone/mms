@@ -319,7 +319,7 @@ QVector<QVector<int>> Maze::getDistances(BasicMaze basicMaze) {
         QPair<int, int> position = discovered.dequeue();
         int x = position.first;
         int y = position.second;
-        for (Direction direction : DIRECTIONS()) {
+        for (Direction direction : CARDINAL_DIRECTIONS()) {
             if (!basicMaze.at(x).at(y).value(direction)) {
                 int nx = x;
                 int ny = y;
@@ -370,7 +370,7 @@ QVector<QPair<int, int>> Maze::getCenterPositions(int width, int height) {
     else if (height % 2 == 0) {
         positions.append(C);
     }
-    return positions; 
+    return positions;
 }
 
-} 
+}
