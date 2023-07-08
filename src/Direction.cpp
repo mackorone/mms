@@ -88,6 +88,20 @@ const QMap<SemiDirection, SemiDirection>& DIRECTION_ROTATE_90_RIGHT() {
     return map;
 }
 
+const QMap<SemiDirection, SemiDirection>& DIRECTION_ROTATE_180() {
+    static const QMap<SemiDirection, SemiDirection> map = {
+        {SemiDirection::NORTH, SemiDirection::SOUTH},
+        {SemiDirection::SOUTH, SemiDirection::NORTH},
+        {SemiDirection::EAST, SemiDirection::WEST},
+        {SemiDirection::WEST, SemiDirection::EAST},
+        {SemiDirection::NORTHEAST, SemiDirection::SOUTHWEST},
+        {SemiDirection::NORTHWEST, SemiDirection::SOUTHEAST},
+        {SemiDirection::SOUTHEAST, SemiDirection::NORTHWEST},
+        {SemiDirection::SOUTHWEST, SemiDirection::NORTHEAST},
+    };
+    return map;
+}
+
 const QMap<QChar, Direction>& CHAR_TO_DIRECTION() {
     static const QMap<QChar, Direction> map = {
         {'n', Direction::NORTH},

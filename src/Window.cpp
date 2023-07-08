@@ -1128,14 +1128,17 @@ QString Window::executeCommand(QString command) {
     else if (function == "mazeHeight") {
         return QString::number(mazeHeight());
     }
+    // TODO: upforgrabs
+    // Once additional movements are fully supported, these methods will likely
+    // need to take an optional argument specifying half or full distance
     else if (function == "wallFront") {
         return boolToString(wallFront(0));
     }
     else if (function == "wallRight") {
-        return boolToString(wallRight());
+        return boolToString(wallRight(0));
     }
     else if (function == "wallLeft") {
-        return boolToString(wallLeft());
+        return boolToString(wallLeft(0));
     }
     else if (function == "moveForward") {
         int distance = 1;
@@ -1439,25 +1442,71 @@ int Window::mazeHeight() {
     return m_maze->getHeight();
 }
 
-bool Window::wallFront(int distance) {
+bool Window::wallFront(int halfStepsAhead) {
     return isWall(
         m_mouse->getCurrentDiscretizedTranslation(),
         m_mouse->getCurrentDiscretizedRotation(),
-        distance * 2  // halfStepsAhead
+        halfStepsAhead
     );
 }
 
-bool Window::wallRight() {
+bool Window::wallRight(int halfStepsAhead) {
     return isWall(
         m_mouse->getCurrentDiscretizedTranslation(),
-        DIRECTION_ROTATE_90_RIGHT().value(m_mouse->getCurrentDiscretizedRotation())
+        DIRECTION_ROTATE_90_RIGHT().value(m_mouse->getCurrentDiscretizedRotation()),
+        halfStepsAhead
     );
 }
 
-bool Window::wallLeft() {
+bool Window::wallLeft(int halfStepsAhead) {
     return isWall(
         m_mouse->getCurrentDiscretizedTranslation(),
-        DIRECTION_ROTATE_90_LEFT().value(m_mouse->getCurrentDiscretizedRotation())
+        DIRECTION_ROTATE_90_LEFT().value(m_mouse->getCurrentDiscretizedRotation()),
+        halfStepsAhead
+    );
+}
+
+bool Window::wallBack(int halfStepsAhead) {
+    return isWall(
+        m_mouse->getCurrentDiscretizedTranslation(),
+        DIRECTION_ROTATE_180().value(m_mouse->getCurrentDiscretizedRotation()),
+        halfStepsAhead
+    );
+}
+
+bool Window::wallFrontRight(int halfStepsAhead) {
+    return isWall(
+        m_mouse->getCurrentDiscretizedTranslation(),
+        DIRECTION_ROTATE_45_RIGHT().value(m_mouse->getCurrentDiscretizedRotation()),
+        halfStepsAhead
+    );
+}
+
+bool Window::wallFrontLeft(int halfStepsAhead) {
+    return isWall(
+        m_mouse->getCurrentDiscretizedTranslation(),
+        DIRECTION_ROTATE_45_LEFT().value(m_mouse->getCurrentDiscretizedRotation()),
+        halfStepsAhead
+    );
+}
+
+bool Window::wallBackRight(int halfStepsAhead) {
+    return isWall(
+        m_mouse->getCurrentDiscretizedTranslation(),
+        DIRECTION_ROTATE_90_RIGHT().value(
+            DIRECTION_ROTATE_45_RIGHT().value(
+                m_mouse->getCurrentDiscretizedRotation())),
+        halfStepsAhead
+    );
+}
+
+bool Window::wallBackLeft(int halfStepsAhead) {
+    return isWall(
+        m_mouse->getCurrentDiscretizedTranslation(),
+        DIRECTION_ROTATE_90_LEFT().value(
+            DIRECTION_ROTATE_45_LEFT().value(
+                m_mouse->getCurrentDiscretizedRotation())),
+        halfStepsAhead
     );
 }
 
@@ -1468,13 +1517,14 @@ bool Window::moveForward(int distance) {
     }
     // Special case for a wall directly in front of the mouse, else
     // the wall won't be detected until after the mouse starts moving
-    if (wallFront(0)) {
+    if (wallFront(0) || wallFront(1)) {
         return false;
     }
     // Compute the number of allowable moves
     int moves = 1;
     while (moves < distance) {
-        if (wallFront(moves)) {
+        int numHalfSteps = moves * 2;
+        if (wallFront(numHalfSteps) || wallFront(numHalfSteps + 1)) {
             break;
         }
         moves += 1;

@@ -39,6 +39,7 @@ const QMap<SemiDirection, SemiDirection>& DIRECTION_ROTATE_45_LEFT();
 const QMap<SemiDirection, SemiDirection>& DIRECTION_ROTATE_45_RIGHT();
 const QMap<SemiDirection, SemiDirection>& DIRECTION_ROTATE_90_LEFT();
 const QMap<SemiDirection, SemiDirection>& DIRECTION_ROTATE_90_RIGHT();
+const QMap<SemiDirection, SemiDirection>& DIRECTION_ROTATE_180();
 
 const QMap<QChar, Direction>& CHAR_TO_DIRECTION();
 const QMap<SemiDirection, Angle>& DIRECTION_TO_ANGLE();

@@ -194,9 +194,16 @@ private:
     int mazeWidth();
     int mazeHeight();
 
-    bool wallFront(int distance);
-    bool wallRight();
-    bool wallLeft();
+    // Is there a wall in front of the mouse N half-steps ahead of where it
+    // currently is? Zero means current position of the mouse.
+    bool wallFront(int halfStepsAhead);
+    bool wallRight(int halfStepsAhead);
+    bool wallLeft(int halfStepsAhead);
+    bool wallBack(int halfStepsAhead);
+    bool wallFrontRight(int halfStepsAhead);
+    bool wallFrontLeft(int halfStepsAhead);
+    bool wallBackRight(int halfStepsAhead);
+    bool wallBackLeft(int halfStepsAhead);
 
     bool moveForward(int distance);
     void turnRight();
