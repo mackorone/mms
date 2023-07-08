@@ -206,8 +206,7 @@ private:
     bool wallBackLeft(int halfStepsAhead);
 
     bool moveForward(int distance);
-    void turnRight();
-    void turnLeft();
+    void turn(Movement movement);
 
     void setWall(int x, int y, QChar direction);
     void clearWall(int x, int y, QChar direction);

@@ -1148,12 +1148,20 @@ QString Window::executeCommand(QString command) {
         bool success = moveForward(distance);
         return success ? "" : CRASH;
     }
-    else if (function == "turnRight") {
-        turnRight();
+    else if (function == "turnRight" || function == "turnRight90") {
+        turn(Movement::TURN_RIGHT_90);
         return "";
     }
-    else if (function == "turnLeft") {
-        turnLeft();
+    else if (function == "turnLeft" || function == "turnLeft90") {
+        turn(Movement::TURN_LEFT_90);
+        return "";
+    }
+    else if (function == "turnRight45") {
+        turn(Movement::TURN_RIGHT_45);
+        return "";
+    }
+    else if (function == "turnLeft45") {
+        turn(Movement::TURN_LEFT_45);
         return "";
     }
     else if (function == "wasReset") {
@@ -1544,17 +1552,18 @@ bool Window::moveForward(int distance) {
     return true;
 }
 
-void Window::turnRight() {
-    m_movement = Movement::TURN_RIGHT_90;
-    m_doomedToCrash = false;
-    m_movesRemaining = 0;
-    stats->addTurn();
-}
+void Window::turn(Movement movement) {
+    ASSERT_TR(
+        movement == Movement::TURN_LEFT_45
+        || movement == Movement::TURN_LEFT_90
+        || movement == Movement::TURN_RIGHT_45
+        || movement == Movement::TURN_RIGHT_90);
 
-void Window::turnLeft() {
-    m_movement = Movement::TURN_LEFT_90;
+    m_movement = movement;
     m_doomedToCrash = false;
     m_movesRemaining = 0;
+    // TODO: upforgrabs
+    // Half turns shouldn't count as full turn
     stats->addTurn();
 }
 

@@ -103,6 +103,9 @@ void moveForward(int distance = 1); // can result in "crash"
 void turnRight();
 void turnLeft();
 
+void turnRight45();
+void turnLeft45();
+
 void setWall(int x, int y, char direction);
 void clearWall(int x, int y, char direction);
 
@@ -153,14 +156,24 @@ int/float getStat(string stat);
   * `crash` if `N < 1` or the mouse cannot complete the movement
   * else `ack` once the movement completes
 
-#### `turnRight`
+#### `turnRight` or `turnRight90`
 * **Args:** None
 * **Action:** Turn the robot ninty degrees to the right
 * **Response:** `ack` once the movement completes
 
-#### `turnLeft`
+#### `turnLeft` or `turnLeft90`
 * **Args:** None
 * **Action:** Turn the robot ninty degrees to the left
+* **Response:** `ack` once the movement completes
+
+#### `turnRight45`
+* **Args:** None
+* **Action:** Turn the robot forty-five degrees to the right
+* **Response:** `ack` once the movement completes
+
+#### `turnLeft45`
+* **Args:** None
+* **Action:** Turn the robot forty-five degrees to the left
 * **Response:** `ack` once the movement completes
 
 #### `setWall X Y D`
