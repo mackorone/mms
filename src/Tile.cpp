@@ -12,8 +12,8 @@ Tile::Tile() {
 Tile::Tile(int x, int y, int distance, QMap<Direction, bool> walls) :
     m_x(x),
     m_y(y),
-    m_walls(walls),
-    m_distance(distance) {
+    m_distance(distance),
+    m_walls(walls) {
 }
 
 int Tile::getX() const {
@@ -77,8 +77,8 @@ void Tile::initPolygons(int mazeWidth, int mazeHeight) {
     // Order is important
     initFullPolygon(mazeWidth, mazeHeight);
     initInteriorPolygon(mazeWidth, mazeHeight);
-    initWallPolygons(mazeWidth, mazeHeight);
-    initCornerPolygons(mazeWidth, mazeHeight);
+    initWallPolygons();
+    initCornerPolygons();
 }
 
 
@@ -137,7 +137,7 @@ void Tile::initInteriorPolygon(int mazeWidth, int mazeHeight) {
     });
 }
 
-void Tile::initWallPolygons(int mazeWidth, int mazeHeight) {
+void Tile::initWallPolygons() {
 
     Coordinate outerLowerLeftPoint = m_fullPolygon.getVertices().at(0);
     Coordinate outerUpperLeftPoint = m_fullPolygon.getVertices().at(1);
@@ -202,7 +202,7 @@ void Tile::initWallPolygons(int mazeWidth, int mazeHeight) {
     m_wallPolygons.insert(Direction::WEST, Polygon(westWall));
 }
 
-void Tile::initCornerPolygons(int mazeWidth, int mazeHeight) {
+void Tile::initCornerPolygons() {
 
     Coordinate outerLowerLeftPoint = m_fullPolygon.getVertices().at(0);
     Coordinate outerUpperLeftPoint = m_fullPolygon.getVertices().at(1);
@@ -267,4 +267,4 @@ void Tile::initCornerPolygons(int mazeWidth, int mazeHeight) {
     m_cornerPolygons.append(Polygon(lowerRightCorner));
 }
 
-} 
+}

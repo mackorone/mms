@@ -40,8 +40,8 @@ private:
 
     void initFullPolygon(int mazeWidth, int mazeHeight);
     void initInteriorPolygon(int mazeWidth, int mazeHeight);
-    void initWallPolygons(int mazeWidth, int mazeHeight);
-    void initCornerPolygons(int mazeWidth, int mazeHeight);
+    void initWallPolygons();
+    void initCornerPolygons();
 };
 
-} 
+}
