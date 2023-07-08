@@ -25,9 +25,14 @@
 namespace mms {
 
 enum class Movement {
-    MOVE_FORWARD,
-    TURN_RIGHT,
-    TURN_LEFT,
+    MOVE_STRAIGHT_HALF,
+    MOVE_STRAIGHT_FULL,
+    MOVE_DIAGONAL_HALF,
+    MOVE_DIAGONAL_FULL,
+    TURN_RIGHT_45,
+    TURN_RIGHT_90,
+    TURN_LEFT_45,
+    TURN_LEFT_90,
     NONE,
 };
 
@@ -156,8 +161,6 @@ private:
 
     static const int SPEED_SLIDER_MAX;
     static const int SPEED_SLIDER_DEFAULT;
-    static const double PROGRESS_REQUIRED_FOR_MOVE;
-    static const double PROGRESS_REQUIRED_FOR_TURN;
     static const double MIN_PROGRESS_PER_SECOND;
     static const double MAX_PROGRESS_PER_SECOND;
     static const double MAX_SLEEP_SECONDS;

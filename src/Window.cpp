@@ -52,8 +52,6 @@ const QString Window::INVALID = "invalid";
 
 const int Window::SPEED_SLIDER_MAX = 99;
 const int Window::SPEED_SLIDER_DEFAULT = 33;
-const double Window::PROGRESS_REQUIRED_FOR_MOVE = 100.0;
-const double Window::PROGRESS_REQUIRED_FOR_TURN = 33.33;
 const double Window::MIN_PROGRESS_PER_SECOND = 10.0;
 const double Window::MAX_PROGRESS_PER_SECOND = 5000.0;
 const double Window::MAX_SLEEP_SECONDS = 0.008;
@@ -1247,11 +1245,20 @@ void Window::processQueuedCommands() {
 
 double Window::progressRequired(Movement movement) {
     switch (movement) {
-        case Movement::MOVE_FORWARD:
-            return PROGRESS_REQUIRED_FOR_MOVE;
-        case Movement::TURN_RIGHT:
-        case Movement::TURN_LEFT:
-            return PROGRESS_REQUIRED_FOR_TURN;
+        case Movement::MOVE_STRAIGHT_HALF:
+            return 50.0;
+        case Movement::MOVE_STRAIGHT_FULL:
+            return 100.0;
+        case Movement::MOVE_DIAGONAL_HALF:
+            return 70.71;  // 50 * sqrt(2)
+        case Movement::MOVE_DIAGONAL_FULL:
+            return 141.42;  // 100 * sqrt(2)
+        case Movement::TURN_RIGHT_45:
+        case Movement::TURN_LEFT_45:
+            return 16.66;
+        case Movement::TURN_RIGHT_90:
+        case Movement::TURN_LEFT_90:
+            return 33.33;
         default:
             ASSERT_NEVER_RUNS();
     }
@@ -1263,30 +1270,71 @@ void Window::updateMouseProgress(double progress) {
     SemiPosition destinationLocation = m_startingPosition;
     Angle destinationRotation =
         DIRECTION_TO_ANGLE().value(m_startingDirection);
-    if (m_movement == Movement::MOVE_FORWARD) {
+    if (
+        m_movement == Movement::MOVE_STRAIGHT_HALF ||
+        m_movement == Movement::MOVE_STRAIGHT_FULL
+    ) {
+        int numHalfSteps = 1;
+        if (m_movement == Movement::MOVE_STRAIGHT_FULL) {
+            numHalfSteps = 2;
+        }
         if (m_startingDirection == SemiDirection::NORTH) {
-            destinationLocation.y += 2;
+            destinationLocation.y += numHalfSteps;
         }
         else if (m_startingDirection == SemiDirection::EAST) {
-            destinationLocation.x += 2;
+            destinationLocation.x += numHalfSteps;
         }
         else if (m_startingDirection == SemiDirection::SOUTH) {
-            destinationLocation.y -= 2;
+            destinationLocation.y -= numHalfSteps;
         }
         else if (m_startingDirection == SemiDirection::WEST) {
-            destinationLocation.x -= 2;
+            destinationLocation.x -= numHalfSteps;
         }
         else {
             ASSERT_NEVER_RUNS();
         }
     }
-    // Explicity add or subtract 90 degrees so that the mouse is guaranteed to
-    // only rotate 90 degrees (using DIRECTION_ROTATE can cause the mouse to
-    // rotate 270 degrees in the opposite direction in some cases)
-    else if (m_movement == Movement::TURN_RIGHT) {
+    else if (
+        m_movement == Movement::MOVE_DIAGONAL_HALF ||
+        m_movement == Movement::MOVE_DIAGONAL_FULL
+    ) {
+        int numHalfSteps = 1;
+        if (m_movement == Movement::MOVE_DIAGONAL_FULL) {
+            numHalfSteps = 2;
+        }
+        if (m_startingDirection == SemiDirection::NORTHEAST) {
+            destinationLocation.x += numHalfSteps;
+            destinationLocation.y += numHalfSteps;
+        }
+        else if (m_startingDirection == SemiDirection::NORTHWEST) {
+            destinationLocation.x -= numHalfSteps;
+            destinationLocation.y += numHalfSteps;
+        }
+        else if (m_startingDirection == SemiDirection::SOUTHEAST) {
+            destinationLocation.x += numHalfSteps;
+            destinationLocation.y -= numHalfSteps;
+        }
+        else if (m_startingDirection == SemiDirection::SOUTHWEST) {
+            destinationLocation.x -= numHalfSteps;
+            destinationLocation.y -= numHalfSteps;
+        }
+        else {
+            ASSERT_NEVER_RUNS();
+        }
+    }
+    // Explicity add or subtract depending on direction so that the mouse is
+    // guaranteed to only rotate that much (using DIRECTION_ROTATE can cause
+    // the mouse to rotate 270 degrees in the opposite direction in some cases)
+    else if (m_movement == Movement::TURN_RIGHT_45) {
+        destinationRotation -= Angle::Degrees(45);
+    }
+    else if (m_movement == Movement::TURN_LEFT_45) {
+        destinationRotation += Angle::Degrees(45);
+    }
+    else if (m_movement == Movement::TURN_RIGHT_90) {
         destinationRotation -= Angle::Degrees(90);
     }
-    else if (m_movement == Movement::TURN_LEFT) {
+    else if (m_movement == Movement::TURN_LEFT_90) {
         destinationRotation += Angle::Degrees(90);
     }
     else {
@@ -1322,8 +1370,11 @@ void Window::updateMouseProgress(double progress) {
         m_startingDirection = m_mouse->getCurrentDiscretizedRotation();
         m_movementProgress = 0.0;
         m_movementStepSize = 0.0;
-        if (m_movement == Movement::MOVE_FORWARD) {
+        if (m_movement == Movement::MOVE_STRAIGHT_FULL) {
             m_movesRemaining -= 1;
+        }
+        else if (m_movesRemaining > 0) {
+            ASSERT_NEVER_RUNS();
         }
         if (m_movesRemaining == 0) {
             m_movement = Movement::NONE;
@@ -1428,7 +1479,7 @@ bool Window::moveForward(int distance) {
         }
         moves += 1;
     }
-    m_movement = Movement::MOVE_FORWARD;
+    m_movement = Movement::MOVE_STRAIGHT_FULL;
     m_doomedToCrash = (moves != distance);
     m_movesRemaining = moves;
     // TODO: upforgrabs
@@ -1444,14 +1495,14 @@ bool Window::moveForward(int distance) {
 }
 
 void Window::turnRight() {
-    m_movement = Movement::TURN_RIGHT;
+    m_movement = Movement::TURN_RIGHT_90;
     m_doomedToCrash = false;
     m_movesRemaining = 0;
     stats->addTurn();
 }
 
 void Window::turnLeft() {
-    m_movement = Movement::TURN_LEFT;
+    m_movement = Movement::TURN_LEFT_90;
     m_doomedToCrash = false;
     m_movesRemaining = 0;
     stats->addTurn();
@@ -1730,6 +1781,8 @@ Wall Window::getOpposingWall(Wall wall) const {
             return {wall.x, wall.y - 1, Direction::NORTH};
         case Direction::WEST:
             return {wall.x - 1, wall.y, Direction::EAST};
+        default:
+            ASSERT_NEVER_RUNS();
     }
 }
 
