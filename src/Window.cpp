@@ -58,6 +58,7 @@ const double Window::MIN_PROGRESS_PER_SECOND = 10.0;
 const double Window::MAX_PROGRESS_PER_SECOND = 5000.0;
 const double Window::MAX_SLEEP_SECONDS = 0.008;
 
+const SemiPosition Window::INITIAL_STARTING_POSITION = {1, 1};
 const SemiDirection Window::INITIAL_STARTING_DIRECTION = SemiDirection::NORTH;
 
 Window::Window(QWidget *parent) :
@@ -105,7 +106,7 @@ Window::Window(QWidget *parent) :
     m_commandQueueTimer(new QTimer()),
 
     // Movement
-    m_startingLocation({0, 0}),
+    m_startingPosition(INITIAL_STARTING_POSITION),
     m_startingDirection(INITIAL_STARTING_DIRECTION),
     m_movement(Movement::NONE),
     m_doomedToCrash(false),
@@ -912,7 +913,7 @@ void Window::removeMouseFromMaze() {
     m_commandBuffer.clear();
 
     // Reset movement state
-    m_startingLocation = {0, 0};
+    m_startingPosition = INITIAL_STARTING_POSITION;
     m_startingDirection = INITIAL_STARTING_DIRECTION;
     m_movement = Movement::NONE;
     m_movementProgress = 0.0;
@@ -1259,21 +1260,21 @@ double Window::progressRequired(Movement movement) {
 void Window::updateMouseProgress(double progress) {
 
     // Determine the destination of the mouse.
-    QPair<int, int> destinationLocation = m_startingLocation;
+    SemiPosition destinationLocation = m_startingPosition;
     Angle destinationRotation =
         DIRECTION_TO_ANGLE().value(m_startingDirection);
     if (m_movement == Movement::MOVE_FORWARD) {
         if (m_startingDirection == SemiDirection::NORTH) {
-            destinationLocation.second += 1;
+            destinationLocation.y += 2;
         }
         else if (m_startingDirection == SemiDirection::EAST) {
-            destinationLocation.first += 1;
+            destinationLocation.x += 2;
         }
         else if (m_startingDirection == SemiDirection::SOUTH) {
-            destinationLocation.second -= 1;
+            destinationLocation.y -= 2;
         }
         else if (m_startingDirection == SemiDirection::WEST) {
-            destinationLocation.first -= 1;
+            destinationLocation.x -= 2;
         }
         else {
             ASSERT_NEVER_RUNS();
@@ -1302,10 +1303,9 @@ void Window::updateMouseProgress(double progress) {
     double fraction = 1.0 - (remaining / required);
 
     // Calculate the current translation and rotation
-    Coordinate startingTranslation =
-        getCenterOfTile(m_startingLocation.first, m_startingLocation.second);
-    Coordinate destinationTranslation =
-        getCenterOfTile(destinationLocation.first, destinationLocation.second);
+    Coordinate startingTranslation = getCoordinate(m_startingPosition);
+    Coordinate destinationTranslation = getCoordinate(destinationLocation);
+
     Angle startingRotation =
         DIRECTION_TO_ANGLE().value(m_startingDirection);
     Coordinate currentTranslation =
@@ -1318,7 +1318,7 @@ void Window::updateMouseProgress(double progress) {
     // Teleport the mouse, reset movement state if done
     m_mouse->teleport(currentTranslation, currentRotation);
     if (remaining == 0.0) {
-        m_startingLocation = m_mouse->getCurrentDiscretizedTranslation();
+        m_startingPosition = m_mouse->getCurrentDiscretizedTranslation();
         m_startingDirection = m_mouse->getCurrentDiscretizedRotation();
         m_movementProgress = 0.0;
         m_movementStepSize = 0.0;
@@ -1329,10 +1329,12 @@ void Window::updateMouseProgress(double progress) {
             m_movement = Movement::NONE;
         }
         // determine if the goal was reached
-        if (m_maze->isInCenter(m_startingLocation)) {
+        if (m_maze->isInCenter(m_startingPosition.toMazeLocation())) {
             stats->finishRun(); // record a completed start-to-finish run
         }
-        else if (m_startingLocation.first == 0 && m_startingLocation.second == 0) {
+        else if (
+            m_startingPosition.toMazeLocation().first == 0 &&
+            m_startingPosition.toMazeLocation().second == 0) {
             stats->endUnfinishedRun();
         }
     }
@@ -1387,7 +1389,7 @@ int Window::mazeHeight() {
 }
 
 bool Window::wallFront(int distance) {
-    QPair<int, int> position = m_mouse->getCurrentDiscretizedTranslation();
+    QPair<int, int> position = m_mouse->getCurrentDiscretizedTranslation().toMazeLocation();
     Direction direction = SEMI_TO_CARDINAL().value(
         m_mouse->getCurrentDiscretizedRotation());
     switch (direction) {
@@ -1408,7 +1410,7 @@ bool Window::wallFront(int distance) {
 }
 
 bool Window::wallRight() {
-    QPair<int, int> position = m_mouse->getCurrentDiscretizedTranslation();
+    QPair<int, int> position = m_mouse->getCurrentDiscretizedTranslation().toMazeLocation();
     Direction direction = SEMI_TO_CARDINAL().value(
         DIRECTION_ROTATE_90_RIGHT().value(
             m_mouse->getCurrentDiscretizedRotation()));
@@ -1416,7 +1418,7 @@ bool Window::wallRight() {
 }
 
 bool Window::wallLeft() {
-    QPair<int, int> position = m_mouse->getCurrentDiscretizedTranslation();
+    QPair<int, int> position = m_mouse->getCurrentDiscretizedTranslation().toMazeLocation();
     Direction direction = SEMI_TO_CARDINAL().value(
         DIRECTION_ROTATE_90_LEFT().value(
             m_mouse->getCurrentDiscretizedRotation()));
@@ -1444,7 +1446,11 @@ bool Window::moveForward(int distance) {
     m_movement = Movement::MOVE_FORWARD;
     m_doomedToCrash = (moves != distance);
     m_movesRemaining = moves;
-    if (m_startingLocation.first == 0 && m_startingLocation.second == 0) {
+    // TODO: upforgrabs
+    // Starting position shouldn't be hardcoded here since it can depend on maze
+    if (
+        m_startingPosition.toMazeLocation().first == 0 &&
+        m_startingPosition.toMazeLocation().second == 0) {
         stats->startRun();
     }
     // increase the stats by the distance that will be travelled
@@ -1563,7 +1569,7 @@ bool Window::wasReset() {
 
 void Window::ackReset() {
     m_mouse->reset();
-    m_startingLocation = {0, 0};
+    m_startingPosition = INITIAL_STARTING_POSITION;
     m_startingDirection = INITIAL_STARTING_DIRECTION;
     m_movement = Movement::NONE;
     m_movementProgress = 0.0;
@@ -1603,13 +1609,14 @@ Wall Window::getOpposingWall(Wall wall) const {
     }
 }
 
-Coordinate Window::getCenterOfTile(int x, int y) const {
-    ASSERT_TR(isWithinMaze(x, y));
-    Coordinate centerOfTile = Coordinate::Cartesian(
-        Dimensions::tileLength() * (static_cast<double>(x) + 0.5),
-        Dimensions::tileLength() * (static_cast<double>(y) + 0.5)
+Coordinate Window::getCoordinate(SemiPosition semiPos) const {
+    QPair<int, int> mazeLocation = semiPos.toMazeLocation();
+    ASSERT_TR(isWithinMaze(mazeLocation.first, mazeLocation.second));
+    Coordinate coordinate = Coordinate::Cartesian(
+        Dimensions::halfTileLength() * static_cast<double>(semiPos.x),
+        Dimensions::halfTileLength() * static_cast<double>(semiPos.y)
     );
-    return centerOfTile;
+    return coordinate;
 }
 
 }

@@ -13,6 +13,10 @@
 
 namespace mms {
 
+QPair<int, int> SemiPosition::toMazeLocation() {
+    return {x / 2, y / 2};
+}
+
 Mouse::Mouse() {
 
     // The initial translation of the mouse is just the center of the starting tile
@@ -81,10 +85,13 @@ void Mouse::teleport(const Coordinate& translation, const Angle& rotation) {
     m_currentRotation = rotation;
 }
 
-QPair<int, int> Mouse::getCurrentDiscretizedTranslation() const {
-    static Distance tileLength = Dimensions::tileLength();
-    int x = static_cast<int>(qFloor(m_currentTranslation.getX() / tileLength));
-    int y = static_cast<int>(qFloor(m_currentTranslation.getY() / tileLength));
+SemiPosition Mouse::getCurrentDiscretizedTranslation() const {
+    static Distance halfTileLength = Dimensions::halfTileLength();
+    static Distance quarterTileLength = Dimensions::quarterTileLength();
+    int x = static_cast<int>(
+        qFloor((m_currentTranslation.getX() + quarterTileLength) / halfTileLength));
+    int y = static_cast<int>(
+        qFloor((m_currentTranslation.getY() + quarterTileLength) / halfTileLength));
     return {x, y};
 }
 

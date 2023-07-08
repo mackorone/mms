@@ -165,9 +165,10 @@ private:
     // TODO: upforgrabs
     // Encapsulate this state in the mouse class
 
+    static const SemiPosition INITIAL_STARTING_POSITION;
     static const SemiDirection INITIAL_STARTING_DIRECTION;
 
-    QPair<int, int> m_startingLocation;
+    SemiPosition m_startingPosition;
     SemiDirection m_startingDirection;
     Movement m_movement;
     bool m_doomedToCrash; // if the requested movement will result in a crash
@@ -221,7 +222,7 @@ private:
     bool isWall(Wall wall) const;
     bool isWithinMaze(int x, int y) const;
     Wall getOpposingWall(Wall wall) const;
-    Coordinate getCenterOfTile(int x, int y) const;
+    Coordinate getCoordinate(SemiPosition semiPos) const;
 };
 
 }

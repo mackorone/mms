@@ -14,6 +14,31 @@
 
 namespace mms {
 
+struct SemiPosition {
+    // In most contexts, (x, y) coordinates refer to cell positions within the
+    // maze, in which the bottom left cell has coordinates (0, 0). Within this
+    // struct, however, (x, y) coordinates refer to semi-positions within the
+    // maze. Here are the semi-positions for the bottom left cell of the maze.
+    //
+    //        |               |
+    //      (0,2)---(1,2)---(2,2)-
+    //        |               |
+    //        |               |
+    //        |               |
+    //      (0,1)   (1,1)   (2,1)-
+    //        |               |
+    //        |               |
+    //        |               |
+    //      (0,0)---(1,0)---(2,0)-
+    //
+    // These semi-positions allow the mouse to traverse the maze in ordinal
+    // directions (northeast, northwest, etc.)
+    int x;
+    int y;
+
+    QPair<int, int> toMazeLocation();
+};
+
 class Mouse {
 
 public:
@@ -27,7 +52,7 @@ public:
     void teleport(const Coordinate& translation, const Angle& rotation);
 
     // Gets the current discretized translation and rotation of the mouse
-    QPair<int, int> getCurrentDiscretizedTranslation() const;
+    SemiPosition getCurrentDiscretizedTranslation() const;
     SemiDirection getCurrentDiscretizedRotation() const;
 
     // Retrieves the polygon of just the body of the mouse
