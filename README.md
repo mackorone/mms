@@ -99,10 +99,12 @@ bool wallFront();
 bool wallRight();
 bool wallLeft();
 
-void moveForward(int distance = 1); // can result in "crash"
+// Both of these commands result in "crash"
+void moveForward(int distance = 1);
+void moveForwardHalf();
+
 void turnRight();
 void turnLeft();
-
 void turnRight45();
 void turnLeft45();
 
@@ -154,6 +156,13 @@ int/float getStat(string stat);
 * **Action:** Move the robot forward the specified number of cells
 * **Response:**
   * `crash` if `N < 1` or the mouse cannot complete the movement
+  * else `ack` once the movement completes
+
+#### `moveForwardHalf`
+* **Args:** None
+* **Action:** Move the robot forward half of a cell, center-to-edge or vice versa
+* **Response:**
+  * `crash` if the mouse cannot complete the movement
   * else `ack` once the movement completes
 
 #### `turnRight` or `turnRight90`

@@ -108,7 +108,7 @@ Window::Window(QWidget *parent) :
     m_startingDirection(INITIAL_STARTING_DIRECTION),
     m_movement(Movement::NONE),
     m_doomedToCrash(false),
-    m_movesRemaining(0),
+    m_halfStepsToMoveForward(0),
     m_movementProgress(0.0),
     m_movementStepSize(0.0),
     m_speedSlider(new QSlider(Qt::Horizontal)),
@@ -1129,8 +1129,10 @@ QString Window::executeCommand(QString command) {
         return QString::number(mazeHeight());
     }
     // TODO: upforgrabs
-    // Once additional movements are fully supported, these methods will likely
-    // need to take an optional argument specifying half or full distance
+    // It's a bit awkward that these methods only check for walls half-cell
+    // distances away. This makes it inconvenient to explore the maze with
+    // edge-based movements. We should update these to take an optional
+    // numHalfSteps argument and add other directions as well.
     else if (function == "wallFront") {
         return boolToString(wallFront(0));
     }
@@ -1145,7 +1147,12 @@ QString Window::executeCommand(QString command) {
         if (tokens.size() == 2) {
             distance = tokens.at(1).toInt();
         }
-        bool success = moveForward(distance);
+        int numHalfSteps = distance * 2;
+        bool success = moveForward(numHalfSteps);
+        return success ? "" : CRASH;
+    }
+    else if (function == "moveForwardHalf") {
+        bool success = moveForward(1);
         return success ? "" : CRASH;
     }
     else if (function == "turnRight" || function == "turnRight90") {
@@ -1259,7 +1266,7 @@ double Window::progressRequired(Movement movement) {
         case Movement::MOVE_STRAIGHT_HALF:
             return 50.0;
         case Movement::MOVE_STRAIGHT_FULL:
-            return 100.0;
+            return 50.0 * m_halfStepsToMoveForward;
         case Movement::MOVE_DIAGONAL_HALF:
             return 70.71;  // 50 * sqrt(2)
         case Movement::MOVE_DIAGONAL_FULL:
@@ -1285,21 +1292,17 @@ void Window::updateMouseProgress(double progress) {
         m_movement == Movement::MOVE_STRAIGHT_HALF ||
         m_movement == Movement::MOVE_STRAIGHT_FULL
     ) {
-        int numHalfSteps = 1;
-        if (m_movement == Movement::MOVE_STRAIGHT_FULL) {
-            numHalfSteps = 2;
-        }
         if (m_startingDirection == SemiDirection::NORTH) {
-            destinationLocation.y += numHalfSteps;
+            destinationLocation.y += m_halfStepsToMoveForward;
         }
         else if (m_startingDirection == SemiDirection::EAST) {
-            destinationLocation.x += numHalfSteps;
+            destinationLocation.x += m_halfStepsToMoveForward;
         }
         else if (m_startingDirection == SemiDirection::SOUTH) {
-            destinationLocation.y -= numHalfSteps;
+            destinationLocation.y -= m_halfStepsToMoveForward;
         }
         else if (m_startingDirection == SemiDirection::WEST) {
-            destinationLocation.x -= numHalfSteps;
+            destinationLocation.x -= m_halfStepsToMoveForward;
         }
         else {
             ASSERT_NEVER_RUNS();
@@ -1309,25 +1312,21 @@ void Window::updateMouseProgress(double progress) {
         m_movement == Movement::MOVE_DIAGONAL_HALF ||
         m_movement == Movement::MOVE_DIAGONAL_FULL
     ) {
-        int numHalfSteps = 1;
-        if (m_movement == Movement::MOVE_DIAGONAL_FULL) {
-            numHalfSteps = 2;
-        }
         if (m_startingDirection == SemiDirection::NORTHEAST) {
-            destinationLocation.x += numHalfSteps;
-            destinationLocation.y += numHalfSteps;
+            destinationLocation.x += m_halfStepsToMoveForward;
+            destinationLocation.y += m_halfStepsToMoveForward;
         }
         else if (m_startingDirection == SemiDirection::NORTHWEST) {
-            destinationLocation.x -= numHalfSteps;
-            destinationLocation.y += numHalfSteps;
+            destinationLocation.x -= m_halfStepsToMoveForward;
+            destinationLocation.y += m_halfStepsToMoveForward;
         }
         else if (m_startingDirection == SemiDirection::SOUTHEAST) {
-            destinationLocation.x += numHalfSteps;
-            destinationLocation.y -= numHalfSteps;
+            destinationLocation.x += m_halfStepsToMoveForward;
+            destinationLocation.y -= m_halfStepsToMoveForward;
         }
         else if (m_startingDirection == SemiDirection::SOUTHWEST) {
-            destinationLocation.x -= numHalfSteps;
-            destinationLocation.y -= numHalfSteps;
+            destinationLocation.x -= m_halfStepsToMoveForward;
+            destinationLocation.y -= m_halfStepsToMoveForward;
         }
         else {
             ASSERT_NEVER_RUNS();
@@ -1355,6 +1354,17 @@ void Window::updateMouseProgress(double progress) {
     // Increment the movement progress, calculate fraction complete
     m_movementProgress += progress;
     double required = progressRequired(m_movement);
+    if (m_movement == Movement::MOVE_STRAIGHT_FULL) {
+        ASSERT_EQ(m_halfStepsToMoveForward % 2, 0);
+    }
+    else if (m_movement == Movement::MOVE_DIAGONAL_FULL) {
+        ASSERT_EQ(m_halfStepsToMoveForward, 2);
+    }
+    else if (
+        m_movement == Movement::MOVE_STRAIGHT_HALF ||
+        m_movement == Movement::MOVE_DIAGONAL_HALF) {
+        ASSERT_EQ(m_halfStepsToMoveForward, 1);
+    }
     double remaining = required - m_movementProgress;
     if (remaining < 0) {
         remaining = 0;
@@ -1381,15 +1391,10 @@ void Window::updateMouseProgress(double progress) {
         m_startingDirection = m_mouse->getCurrentDiscretizedRotation();
         m_movementProgress = 0.0;
         m_movementStepSize = 0.0;
-        if (m_movement == Movement::MOVE_STRAIGHT_FULL) {
-            m_movesRemaining -= 1;
-        }
-        else if (m_movesRemaining > 0) {
-            ASSERT_NEVER_RUNS();
-        }
-        if (m_movesRemaining == 0) {
-            m_movement = Movement::NONE;
-        }
+        m_movement = Movement::NONE;
+        m_halfStepsToMoveForward = 0;
+        // TODO: upforgrabs
+        // This if-else can probably be moved outside of the enclosing if-block
         // determine if the goal was reached
         if (m_maze->isInCenter(m_startingPosition.toMazeLocation())) {
             stats->finishRun(); // record a completed start-to-finish run
@@ -1518,28 +1523,49 @@ bool Window::wallBackLeft(int halfStepsAhead) {
     );
 }
 
-bool Window::moveForward(int distance) {
+bool Window::moveForward(int numHalfSteps) {
     // Non-positive distances aren't allowed
-    if (distance < 1) {
+    if (numHalfSteps < 1) {
         return false;
     }
     // Special case for a wall directly in front of the mouse, else
     // the wall won't be detected until after the mouse starts moving
-    if (wallFront(0) || wallFront(1)) {
+    if (wallFront(0)) {
         return false;
     }
+
     // Compute the number of allowable moves
-    int moves = 1;
-    while (moves < distance) {
-        int numHalfSteps = moves * 2;
-        if (wallFront(numHalfSteps) || wallFront(numHalfSteps + 1)) {
+    int allowableHalfSteps = 1;
+    while (allowableHalfSteps < numHalfSteps) {
+        if (wallFront(allowableHalfSteps)) {
             break;
         }
-        moves += 1;
+        allowableHalfSteps += 1;
     }
-    m_movement = Movement::MOVE_STRAIGHT_FULL;
-    m_doomedToCrash = (moves != distance);
-    m_movesRemaining = moves;
+    m_doomedToCrash = (allowableHalfSteps != numHalfSteps);
+    m_halfStepsToMoveForward = allowableHalfSteps;
+
+    // Update m_movement based on current direction and requested steps
+    SemiDirection semiDir = m_mouse->getCurrentDiscretizedRotation();
+    if (!ORDINAL_DIRECTIONS().contains(semiDir)) {
+        if (numHalfSteps == 1) {
+            m_movement = Movement::MOVE_STRAIGHT_HALF;
+        }
+        else {
+            ASSERT_TR(numHalfSteps % 2 == 0);
+            m_movement = Movement::MOVE_STRAIGHT_FULL;
+        }
+    }
+    else {
+        if (numHalfSteps == 1) {
+            m_movement = Movement::MOVE_DIAGONAL_HALF;
+        }
+        else {
+            ASSERT_EQ(numHalfSteps, 2);
+            m_movement = Movement::MOVE_DIAGONAL_FULL;
+        }
+    }
+
     // TODO: upforgrabs
     // Starting position shouldn't be hardcoded here since it can depend on maze
     if (
@@ -1547,8 +1573,12 @@ bool Window::moveForward(int distance) {
         m_startingPosition.toMazeLocation().second == 0) {
         stats->startRun();
     }
+    // TODO: upforgrabs
+    // Half steps shouldn't count as a full move
     // increase the stats by the distance that will be travelled
-    stats->addDistance(moves);
+    stats->addDistance(numHalfSteps);
+
+    // Return true so that the allowable movement can be executed
     return true;
 }
 
@@ -1560,8 +1590,10 @@ void Window::turn(Movement movement) {
         || movement == Movement::TURN_RIGHT_90);
 
     m_movement = movement;
+    // TODO: upforgrabs
+    // Setting these member variables should be unnecessary here
     m_doomedToCrash = false;
-    m_movesRemaining = 0;
+    m_halfStepsToMoveForward = 0;
     // TODO: upforgrabs
     // Half turns shouldn't count as full turn
     stats->addTurn();

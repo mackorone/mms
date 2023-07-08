@@ -175,7 +175,7 @@ private:
     SemiDirection m_startingDirection;
     Movement m_movement;
     bool m_doomedToCrash; // if the requested movement will result in a crash
-    int m_movesRemaining; // the number of allowable forward steps remaining
+    int m_halfStepsToMoveForward; // the number of allowable half-steps for the movement
     double m_movementProgress;
     double m_movementStepSize;
     QSlider* m_speedSlider;
@@ -205,7 +205,7 @@ private:
     bool wallBackRight(int halfStepsAhead);
     bool wallBackLeft(int halfStepsAhead);
 
-    bool moveForward(int distance);
+    bool moveForward(int numHalfSteps);
     void turn(Movement movement);
 
     void setWall(int x, int y, QChar direction);
