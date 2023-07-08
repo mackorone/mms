@@ -18,6 +18,14 @@ Wishlist
 
 Cleanup
 =======
+- Edge-based movement
+    - Fix stats for non-standard movements
+    - Make it possible to check for walls a full step away
+    - Support curve turns and other fancy movements
+    - Update all templates to include new methods
+    - Update the README and explain edge-based movements
+    - Make it possible to accelerate the mouse
+    - Make it possible to draw lines connecting semi-positions
 - Fix mack algo assertion failure on Windows when reset pressed
 - Run and build command should be lists of strings, not single string
 - Add unit tests
@@ -26,7 +34,7 @@ Cleanup
   empty, just disable the buttons if they're empty (may also have to validate
   that directory is nonempty within the config diaglog)
 - Remove superfluous include statements
-- Move mouse-related state from window class into mouse class 
+- Move mouse-related state from window class into mouse class
 - Look into using vsync so the graphics don't tear
 - MacOS retina https://github.com/vispy/vispy/issues/99
 - Get rid of unnecessary QString wrapping, like QString(<SOME-QSTRING>)
