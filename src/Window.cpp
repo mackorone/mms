@@ -1389,40 +1389,25 @@ int Window::mazeHeight() {
 }
 
 bool Window::wallFront(int distance) {
-    QPair<int, int> position = m_mouse->getCurrentDiscretizedTranslation().toMazeLocation();
-    Direction direction = SEMI_TO_CARDINAL().value(
-        m_mouse->getCurrentDiscretizedRotation());
-    switch (direction) {
-        case Direction::NORTH:
-            position.second += distance;
-            break;
-        case Direction::SOUTH:
-            position.second -= distance;
-            break;
-        case Direction::EAST:
-            position.first += distance;
-            break;
-        case Direction::WEST:
-            position.first -= distance;
-            break;
-    }
-    return isWall({position.first, position.second, direction});
+    return isWall(
+        m_mouse->getCurrentDiscretizedTranslation(),
+        m_mouse->getCurrentDiscretizedRotation(),
+        distance * 2  // halfStepsAhead
+    );
 }
 
 bool Window::wallRight() {
-    QPair<int, int> position = m_mouse->getCurrentDiscretizedTranslation().toMazeLocation();
-    Direction direction = SEMI_TO_CARDINAL().value(
-        DIRECTION_ROTATE_90_RIGHT().value(
-            m_mouse->getCurrentDiscretizedRotation()));
-    return isWall({position.first, position.second, direction});
+    return isWall(
+        m_mouse->getCurrentDiscretizedTranslation(),
+        DIRECTION_ROTATE_90_RIGHT().value(m_mouse->getCurrentDiscretizedRotation())
+    );
 }
 
 bool Window::wallLeft() {
-    QPair<int, int> position = m_mouse->getCurrentDiscretizedTranslation().toMazeLocation();
-    Direction direction = SEMI_TO_CARDINAL().value(
-        DIRECTION_ROTATE_90_LEFT().value(
-            m_mouse->getCurrentDiscretizedRotation()));
-    return isWall({position.first, position.second, direction});
+    return isWall(
+        m_mouse->getCurrentDiscretizedTranslation(),
+        DIRECTION_ROTATE_90_LEFT().value(m_mouse->getCurrentDiscretizedRotation())
+    );
 }
 
 bool Window::moveForward(int distance) {
@@ -1585,8 +1570,147 @@ QString Window::boolToString(bool value) const {
     return value ? "true" : "false";
 }
 
-bool Window::isWall(Wall wall) const {
-    return m_maze->getTile(wall.x, wall.y)->isWall(wall.d);
+bool Window::isWall(SemiPosition semiPos, SemiDirection semiDir) const {
+    ASSERT_LE(0, semiPos.x);
+    ASSERT_LE(semiPos.x, m_maze->getWidth() * 2);
+    ASSERT_LE(0, semiPos.y);
+    ASSERT_LE(semiPos.y, m_maze->getHeight() * 2);
+
+    // Maze locations
+    auto mazeLocation = semiPos.toMazeLocation();
+    int mazeX = mazeLocation.first;
+    int mazeY = mazeLocation.second;
+
+    // The mouse should never be inside a corner
+    if (semiPos.x % 2 == 0 && semiPos.y % 2 == 0) {
+        ASSERT_NEVER_RUNS();
+    }
+    // We're in the center of the cell
+    else if (semiPos.x % 2 == 1 && semiPos.y % 2 == 1) {
+        if (ORDINAL_DIRECTIONS().contains(semiDir)) {
+            // We're aiming at a corner
+            return true;
+        }
+        Direction d = SEMI_TO_CARDINAL().value(semiDir);
+        return m_maze->getTile(mazeX, mazeY)->isWall(d);
+    }
+    // We're on the vertical edge of a cell
+    else if (semiPos.x % 2 == 0 && semiPos.y % 2 == 1) {
+        // Facing a corner post
+        if (semiDir == SemiDirection::NORTH || semiDir == SemiDirection::SOUTH) {
+            return true;
+        }
+        // Facing center of cell
+        else if (semiDir == SemiDirection::EAST || semiDir == SemiDirection::WEST) {
+            return false;
+        }
+        else if (semiDir == SemiDirection::NORTHEAST) {
+            // On the edge of the maze, no walls outside
+            if (semiPos.x == m_maze->getWidth() * 2) {
+                return false;
+            }
+            return m_maze->getTile(mazeX, mazeY)->isWall(Direction::NORTH);
+        }
+        else if (semiDir == SemiDirection::SOUTHEAST) {
+            // On the edge of the maze, no walls outside
+            if (semiPos.x == m_maze->getWidth() * 2) {
+                return false;
+            }
+            return m_maze->getTile(mazeX, mazeY)->isWall(Direction::SOUTH);
+        }
+        else if (semiDir == SemiDirection::NORTHWEST) {
+            // On the edge of the maze, no walls outside
+            if (semiPos.x == 0) {
+                return false;
+            }
+            return m_maze->getTile(mazeX - 1, mazeY)->isWall(Direction::NORTH);
+        }
+        else if (semiDir == SemiDirection::SOUTHWEST) {
+            // On the edge of the maze, no walls outside
+            if (semiPos.x == 0) {
+                return false;
+            }
+            return m_maze->getTile(mazeX - 1, mazeY)->isWall(Direction::SOUTH);
+        }
+    }
+    // We're on the horizontal edge of a cell
+    else if (semiPos.x % 2 == 1 && semiPos.y % 2 == 0) {
+        // Facing a corner post
+        if (semiDir == SemiDirection::EAST || semiDir == SemiDirection::WEST) {
+            return true;
+        }
+        // Facing center of cell
+        else if (semiDir == SemiDirection::NORTH || semiDir == SemiDirection::SOUTH) {
+            return false;
+        }
+        else if (semiDir == SemiDirection::NORTHEAST) {
+            // On the edge of the maze, no walls outside
+            if (semiPos.y == m_maze->getHeight() * 2) {
+                return false;
+            }
+            return m_maze->getTile(mazeX, mazeY)->isWall(Direction::EAST);
+        }
+        else if (semiDir == SemiDirection::NORTHWEST) {
+            // On the edge of the maze, no walls outside
+            if (semiPos.y == m_maze->getHeight() * 2) {
+                return false;
+            }
+            return m_maze->getTile(mazeX, mazeY)->isWall(Direction::WEST);
+        }
+        else if (semiDir == SemiDirection::SOUTHEAST) {
+            // On the edge of the maze, no walls outside
+            if (semiPos.y == 0) {
+                return false;
+            }
+            return m_maze->getTile(mazeX, mazeY - 1)->isWall(Direction::EAST);
+        }
+        else if (semiDir == SemiDirection::SOUTHWEST) {
+            // On the edge of the maze, no walls outside
+            if (semiPos.y == 0) {
+                return false;
+            }
+            return m_maze->getTile(mazeX, mazeY - 1)->isWall(Direction::WEST);
+        }
+    }
+    else {
+        ASSERT_NEVER_RUNS();
+    }
+}
+
+bool Window::isWall(SemiPosition semiPos, SemiDirection semiDir, int halfStepsAhead) const {
+    switch (semiDir) {
+        case SemiDirection::NORTH:
+            semiPos.y += halfStepsAhead;
+            break;
+        case SemiDirection::SOUTH:
+            semiPos.y -= halfStepsAhead;
+            break;
+        case SemiDirection::EAST:
+            semiPos.x += halfStepsAhead;
+            break;
+        case SemiDirection::WEST:
+            semiPos.x -= halfStepsAhead;
+            break;
+        case SemiDirection::NORTHEAST:
+            semiPos.x += halfStepsAhead;
+            semiPos.y += halfStepsAhead;
+            break;
+        case SemiDirection::NORTHWEST:
+            semiPos.x -= halfStepsAhead;
+            semiPos.y += halfStepsAhead;
+            break;
+        case SemiDirection::SOUTHEAST:
+            semiPos.x += halfStepsAhead;
+            semiPos.y -= halfStepsAhead;
+            break;
+        case SemiDirection::SOUTHWEST:
+            semiPos.x -= halfStepsAhead;
+            semiPos.y -= halfStepsAhead;
+            break;
+        default:
+            ASSERT_NEVER_RUNS();
+    }
+    return isWall(semiPos, semiDir);
 }
 
 bool Window::isWithinMaze(int x, int y) const {

@@ -219,7 +219,8 @@ private:
     QSet<QPair<int, int>> m_tilesWithText;
 
     QString boolToString(bool value) const;
-    bool isWall(Wall wall) const;
+    bool isWall(SemiPosition semiPos, SemiDirection semiDir) const;
+    bool isWall(SemiPosition semiPos, SemiDirection semiDir, int halfStepsAhead) const;
     bool isWithinMaze(int x, int y) const;
     Wall getOpposingWall(Wall wall) const;
     Coordinate getCoordinate(SemiPosition semiPos) const;
