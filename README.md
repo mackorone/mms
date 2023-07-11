@@ -99,7 +99,7 @@ bool wallFront();
 bool wallRight();
 bool wallLeft();
 
-// Both of these commands result in "crash"
+// Both of these commands can result in "crash"
 void moveForward(int distance = 1);
 void moveForwardHalf();
 
