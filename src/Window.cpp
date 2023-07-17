@@ -1,5 +1,3 @@
-#include "Window.h"
-
 #include <QAction>
 #include <QDebug>
 #include <QDoubleSpinBox>
@@ -32,6 +30,7 @@
 #include "SettingsMisc.h"
 #include "SettingsMouseAlgos.h"
 #include "SimUtilities.h"
+#include "Window.h"
 
 namespace mms {
 
@@ -975,8 +974,8 @@ QString Window::executeCommand(QString command) {
     return INVALID;
   }
   QString function = tokens.at(0);
-  if (tokens.size() == 2 &&
-      !(function == "moveForward" || function == "getStat")) {
+  if (tokens.size() == 2 && function != "moveForward" &&
+      function != "moveForwardHalf" && function != "getStat") {
     return INVALID;
   }
   if (function == "mazeWidth") {
@@ -1004,7 +1003,11 @@ QString Window::executeCommand(QString command) {
     bool success = moveForward(numHalfSteps);
     return success ? "" : CRASH;
   } else if (function == "moveForwardHalf") {
-    bool success = moveForward(1);
+    int numHalfSteps = 1;
+    if (tokens.size() == 2) {
+      numHalfSteps = tokens.at(1).toInt();
+    }
+    bool success = moveForward(numHalfSteps);
     return success ? "" : CRASH;
   } else if (function == "turnRight" || function == "turnRight90") {
     turn(Movement::TURN_RIGHT_90);
@@ -1094,14 +1097,10 @@ void Window::processQueuedCommands() {
 
 double Window::progressRequired(Movement movement) {
   switch (movement) {
-    case Movement::MOVE_STRAIGHT_HALF:
-      return 50.0;
-    case Movement::MOVE_STRAIGHT_FULL:
+    case Movement::MOVE_STRAIGHT:
       return 50.0 * m_halfStepsToMoveForward;
-    case Movement::MOVE_DIAGONAL_HALF:
-      return 70.71;  // 50 * sqrt(2)
-    case Movement::MOVE_DIAGONAL_FULL:
-      return 141.42;  // 100 * sqrt(2)
+    case Movement::MOVE_DIAGONAL:
+      return 70.71 * m_halfStepsToMoveForward;
     case Movement::TURN_RIGHT_45:
     case Movement::TURN_LEFT_45:
       return 16.66;
@@ -1117,8 +1116,7 @@ void Window::updateMouseProgress(double progress) {
   // Determine the destination of the mouse.
   SemiPosition destinationLocation = m_startingPosition;
   Angle destinationRotation = DIRECTION_TO_ANGLE().value(m_startingDirection);
-  if (m_movement == Movement::MOVE_STRAIGHT_HALF ||
-      m_movement == Movement::MOVE_STRAIGHT_FULL) {
+  if (m_movement == Movement::MOVE_STRAIGHT) {
     if (m_startingDirection == SemiDirection::NORTH) {
       destinationLocation.y += m_halfStepsToMoveForward;
     } else if (m_startingDirection == SemiDirection::EAST) {
@@ -1130,8 +1128,7 @@ void Window::updateMouseProgress(double progress) {
     } else {
       ASSERT_NEVER_RUNS();
     }
-  } else if (m_movement == Movement::MOVE_DIAGONAL_HALF ||
-             m_movement == Movement::MOVE_DIAGONAL_FULL) {
+  } else if (m_movement == Movement::MOVE_DIAGONAL) {
     if (m_startingDirection == SemiDirection::NORTHEAST) {
       destinationLocation.x += m_halfStepsToMoveForward;
       destinationLocation.y += m_halfStepsToMoveForward;
@@ -1166,14 +1163,6 @@ void Window::updateMouseProgress(double progress) {
   // Increment the movement progress, calculate fraction complete
   m_movementProgress += progress;
   double required = progressRequired(m_movement);
-  if (m_movement == Movement::MOVE_STRAIGHT_FULL) {
-    ASSERT_EQ(m_halfStepsToMoveForward % 2, 0);
-  } else if (m_movement == Movement::MOVE_DIAGONAL_FULL) {
-    ASSERT_EQ(m_halfStepsToMoveForward, 2);
-  } else if (m_movement == Movement::MOVE_STRAIGHT_HALF ||
-             m_movement == Movement::MOVE_DIAGONAL_HALF) {
-    ASSERT_EQ(m_halfStepsToMoveForward, 1);
-  }
   double remaining = required - m_movementProgress;
   if (remaining < 0) {
     remaining = 0;
@@ -1335,19 +1324,9 @@ bool Window::moveForward(int numHalfSteps) {
   // Update m_movement based on current direction and requested steps
   SemiDirection semiDir = m_mouse->getCurrentDiscretizedRotation();
   if (!ORDINAL_DIRECTIONS().contains(semiDir)) {
-    if (numHalfSteps == 1) {
-      m_movement = Movement::MOVE_STRAIGHT_HALF;
-    } else {
-      ASSERT_TR(numHalfSteps % 2 == 0);
-      m_movement = Movement::MOVE_STRAIGHT_FULL;
-    }
+    m_movement = Movement::MOVE_STRAIGHT;
   } else {
-    if (numHalfSteps == 1) {
-      m_movement = Movement::MOVE_DIAGONAL_HALF;
-    } else {
-      ASSERT_EQ(numHalfSteps, 2);
-      m_movement = Movement::MOVE_DIAGONAL_FULL;
-    }
+    m_movement = Movement::MOVE_DIAGONAL;
   }
 
   // TODO: upforgrabs
