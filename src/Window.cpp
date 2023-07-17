@@ -974,26 +974,80 @@ QString Window::executeCommand(QString command) {
     return INVALID;
   }
   QString function = tokens.at(0);
-  if (tokens.size() == 2 && function != "moveForward" &&
-      function != "moveForwardHalf" && function != "getStat") {
+  if (tokens.size() == 2 && function != "getStat" &&
+      function != "moveForward" && function != "moveForwardHalf" &&
+      function != "wallFront" && function != "wallBack" &&
+      function != "wallLeft" && function != "wallRight" &&
+      function != "wallFrontRight" && function != "wallFrontLeft" &&
+      function != "wallBackRight" && function != "wallBackLeft") {
     return INVALID;
   }
   if (function == "mazeWidth") {
     return QString::number(mazeWidth());
   } else if (function == "mazeHeight") {
     return QString::number(mazeHeight());
-  }
-  // TODO: upforgrabs
-  // It's a bit awkward that these methods only check for walls half-cell
-  // distances away. This makes it inconvenient to explore the maze with
-  // edge-based movements. We should update these to take an optional
-  // numHalfSteps argument and add other directions as well.
-  else if (function == "wallFront") {
-    return boolToString(wallFront(0));
-  } else if (function == "wallRight") {
-    return boolToString(wallRight(0));
+  } else if (function == "wallFront") {
+    int halfStepsAway = 1;
+    if (tokens.size() == 2) {
+      halfStepsAway = tokens.at(1).toInt();
+    }
+    // The "wallFront" and such methods take "halfStepsAway", which represents
+    // the number of moves "head" of the current move to simulator before
+    // checking if a wall is a half-step away. To check if a wall is directly
+    // in front of the mouse, we provide halfStepsAhead=0. The potential wall
+    // would be 1 half-step away, which is a bit more intuitive from the
+    // perspective of the API, hence the -1 here.
+    int halfStepsAhead = halfStepsAway - 1;
+    return boolToString(wallFront(halfStepsAhead));
+  } else if (function == "wallBack") {
+    int halfStepsAway = 1;
+    if (tokens.size() == 2) {
+      halfStepsAway = tokens.at(1).toInt();
+    }
+    int halfStepsAhead = halfStepsAway - 1;
+    return boolToString(wallBack(halfStepsAhead));
   } else if (function == "wallLeft") {
-    return boolToString(wallLeft(0));
+    int halfStepsAway = 1;
+    if (tokens.size() == 2) {
+      halfStepsAway = tokens.at(1).toInt();
+    }
+    int halfStepsAhead = halfStepsAway - 1;
+    return boolToString(wallLeft(halfStepsAhead));
+  } else if (function == "wallRight") {
+    int halfStepsAway = 1;
+    if (tokens.size() == 2) {
+      halfStepsAway = tokens.at(1).toInt();
+    }
+    int halfStepsAhead = halfStepsAway - 1;
+    return boolToString(wallRight(halfStepsAhead));
+  } else if (function == "wallFrontRight") {
+    int halfStepsAway = 1;
+    if (tokens.size() == 2) {
+      halfStepsAway = tokens.at(1).toInt();
+    }
+    int halfStepsAhead = halfStepsAway - 1;
+    return boolToString(wallFrontRight(halfStepsAhead));
+  } else if (function == "wallFrontLeft") {
+    int halfStepsAway = 1;
+    if (tokens.size() == 2) {
+      halfStepsAway = tokens.at(1).toInt();
+    }
+    int halfStepsAhead = halfStepsAway - 1;
+    return boolToString(wallFrontLeft(halfStepsAhead));
+  } else if (function == "wallBackRight") {
+    int halfStepsAway = 1;
+    if (tokens.size() == 2) {
+      halfStepsAway = tokens.at(1).toInt();
+    }
+    int halfStepsAhead = halfStepsAway - 1;
+    return boolToString(wallBackRight(halfStepsAhead));
+  } else if (function == "wallBackLeft") {
+    int halfStepsAway = 1;
+    if (tokens.size() == 2) {
+      halfStepsAway = tokens.at(1).toInt();
+    }
+    int halfStepsAhead = halfStepsAway - 1;
+    return boolToString(wallBackLeft(halfStepsAhead));
   } else if (function == "moveForward") {
     int distance = 1;
     if (tokens.size() == 2) {
@@ -1475,7 +1529,7 @@ bool Window::isWall(SemiPosition semiPos, SemiDirection semiDir) const {
   int mazeX = mazeLocation.first;
   int mazeY = mazeLocation.second;
 
-  // The mouse should never be inside a corner
+  // Should never be inside a corner
   if (semiPos.x % 2 == 0 && semiPos.y % 2 == 0) {
     ASSERT_NEVER_RUNS();
   }
@@ -1565,39 +1619,49 @@ bool Window::isWall(SemiPosition semiPos, SemiDirection semiDir) const {
 
 bool Window::isWall(SemiPosition semiPos, SemiDirection semiDir,
                     int halfStepsAhead) const {
-  switch (semiDir) {
-    case SemiDirection::NORTH:
-      semiPos.y += halfStepsAhead;
-      break;
-    case SemiDirection::SOUTH:
-      semiPos.y -= halfStepsAhead;
-      break;
-    case SemiDirection::EAST:
-      semiPos.x += halfStepsAhead;
-      break;
-    case SemiDirection::WEST:
-      semiPos.x -= halfStepsAhead;
-      break;
-    case SemiDirection::NORTHEAST:
-      semiPos.x += halfStepsAhead;
-      semiPos.y += halfStepsAhead;
-      break;
-    case SemiDirection::NORTHWEST:
-      semiPos.x -= halfStepsAhead;
-      semiPos.y += halfStepsAhead;
-      break;
-    case SemiDirection::SOUTHEAST:
-      semiPos.x += halfStepsAhead;
-      semiPos.y -= halfStepsAhead;
-      break;
-    case SemiDirection::SOUTHWEST:
-      semiPos.x -= halfStepsAhead;
-      semiPos.y -= halfStepsAhead;
-      break;
-    default:
-      ASSERT_NEVER_RUNS();
+  // Check all possible wall locations between the starting position and the
+  // ending position; if any, then there is a wall obstructing the path.
+  if (isWall(semiPos, semiDir)) {
+    return true;
   }
-  return isWall(semiPos, semiDir);
+  for (int i = 1; i <= halfStepsAhead; i += 1) {
+    switch (semiDir) {
+      case SemiDirection::NORTH:
+        semiPos.y += 1;
+        break;
+      case SemiDirection::SOUTH:
+        semiPos.y -= 1;
+        break;
+      case SemiDirection::EAST:
+        semiPos.x += 1;
+        break;
+      case SemiDirection::WEST:
+        semiPos.x -= 1;
+        break;
+      case SemiDirection::NORTHEAST:
+        semiPos.x += 1;
+        semiPos.y += 1;
+        break;
+      case SemiDirection::NORTHWEST:
+        semiPos.x -= 1;
+        semiPos.y += 1;
+        break;
+      case SemiDirection::SOUTHEAST:
+        semiPos.x += 1;
+        semiPos.y -= 1;
+        break;
+      case SemiDirection::SOUTHWEST:
+        semiPos.x -= 1;
+        semiPos.y -= 1;
+        break;
+      default:
+        ASSERT_NEVER_RUNS();
+    }
+    if (isWall(semiPos, semiDir)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool Window::isWithinMaze(int x, int y) const {
