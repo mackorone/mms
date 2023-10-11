@@ -12,8 +12,8 @@ const QVector<Direction> &CARDINAL_DIRECTIONS() {
   return vector;
 }
 
-const QSet<SemiDirection> &ORDINAL_DIRECTIONS() {
-  static const QSet<SemiDirection> vector = {
+const QVector<SemiDirection> &ORDINAL_DIRECTIONS() {
+  static const QVector<SemiDirection> vector = {
       SemiDirection::NORTHEAST,
       SemiDirection::NORTHWEST,
       SemiDirection::SOUTHEAST,

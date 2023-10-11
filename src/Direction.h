@@ -1,8 +1,6 @@
 #pragma once
 
-#include <QDebug>
 #include <QMap>
-#include <QString>
 #include <QVector>
 
 #include "units/Angle.h"
@@ -32,7 +30,7 @@ enum class SemiDirection {
 // 2) Determines the location of wall information in the vertex buffer
 const QVector<Direction> &CARDINAL_DIRECTIONS();
 
-const QSet<SemiDirection> &ORDINAL_DIRECTIONS();
+const QVector<SemiDirection> &ORDINAL_DIRECTIONS();
 const QMap<SemiDirection, Direction> &SEMI_TO_CARDINAL();
 
 const QMap<SemiDirection, SemiDirection> &DIRECTION_ROTATE_45_LEFT();
