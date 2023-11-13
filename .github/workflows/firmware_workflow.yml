@@ -8,14 +8,13 @@ on:
       - "*"
   pull_request:
 
-#
 jobs:
   make_gui:
     runs-on: ubuntu-latest
     name: GUI
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install Deps
         run: |
           apt update
