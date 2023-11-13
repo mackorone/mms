@@ -12,7 +12,9 @@ CONFIG += object_parallel_to_source
 CONFIG += qt
 
 SOURCES += $$files(*.cpp, true)
+SOURCES -= Window.cpp
 HEADERS += $$files(*.h, true)
+HEADERS -= Window.h
 RESOURCES = resources.qrc
 
 DESTDIR     = ../bin
