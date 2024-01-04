@@ -48,6 +48,10 @@ class Window : public QMainWindow {
   void closeEvent(QCloseEvent *event);
   void resizeEvent(QResizeEvent *event);
 
+  void onMazeFileComboBoxChanged(QString path);
+
+  void startRun();
+
  private:
   // ----- Graphics -----
 
@@ -62,7 +66,7 @@ class Window : public QMainWindow {
   QComboBox *m_mazeFileComboBox;
 
   void onMazeFileButtonPressed();
-  void onMazeFileComboBoxChanged(QString path);
+
   void showInvalidMazeFileWarning(QString path);
   void refreshMazeFileComboBox(QString selected);
   void updateMazeAndPath(Maze *maze, QString path);
@@ -113,7 +117,6 @@ class Window : public QMainWindow {
   QProcess *m_runProcess;
   QLabel *m_runStatus;
 
-  void startRun();
   void cancelRun();
   void onRunExit(int exitCode, QProcess::ExitStatus exitStatus);
 

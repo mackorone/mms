@@ -1,4 +1,5 @@
 #include <QAction>
+#include <QApplication>
 #include <QDebug>
 #include <QDoubleSpinBox>
 #include <QFileDialog>
@@ -50,7 +51,11 @@ const QString Window::CRASH = "crash";
 const QString Window::INVALID = "invalid";
 
 const int Window::SPEED_SLIDER_MAX = 99;
+#ifdef CLI
+const int Window::SPEED_SLIDER_DEFAULT = SPEED_SLIDER_MAX;
+#else
 const int Window::SPEED_SLIDER_DEFAULT = 33;
+#endif
 const double Window::MIN_PROGRESS_PER_SECOND = 10.0;
 const double Window::MAX_PROGRESS_PER_SECOND = 5000.0;
 const double Window::MAX_SLEEP_SECONDS = 0.008;
@@ -755,6 +760,9 @@ void Window::onRunExit(int exitCode, QProcess::ExitStatus exitStatus) {
   // Stop consuming queued commands
   m_commandQueueTimer->stop();
   m_commandQueue.clear();
+#ifdef CLI
+  QCoreApplication::exit(exitCode);
+#endif
 }
 
 void Window::removeMouseFromMaze() {
