@@ -19,6 +19,10 @@
 #include <QVBoxLayout>
 #include <QtMath>
 
+#ifdef CLI
+#include<QDebug>
+#endif
+
 #include "AssertMacros.h"
 #include "Color.h"
 #include "ColorDialog.h"
@@ -395,6 +399,9 @@ void Window::showInvalidMazeFileWarning(QString path) {
       "The following is not a valid maze file:\n\n" + path +
           "\n\n "
           "The maze must be nonempty, rectangular, enclosed, and consistent.");
+#ifdef CLI
+    QCoreApplication::exit(-12);
+#endif
 }
 
 void Window::refreshMazeFileComboBox(QString selected) {
@@ -715,10 +722,16 @@ void Window::startRun() {
   } else {
     // Clean up the failed process
     m_runOutput->appendPlainText(process->errorString());
+#ifdef CLI
+    qDebug() << process->errorString();
+#endif
     m_runStatus->setText("ERROR");
     m_runStatus->setStyleSheet(ERROR_STYLE_SHEET);
     removeMouseFromMaze();
     delete process;
+#ifdef CLI
+    QCoreApplication::exit(-10);
+#endif
   }
 }
 
