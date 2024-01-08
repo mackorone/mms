@@ -227,3 +227,5 @@ FakesAssemblies/
 *.Debug
 *.Release
 *.exe
+
+build-*
