@@ -1,11 +1,11 @@
-#include "ConfigDialog.h"
-
 #include <QFileDialog>
 #include <QGroupBox>
 #include <QLabel>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
+
+#include "ConfigDialog.h"
 
 namespace mms {
 
@@ -50,6 +50,10 @@ ConfigDialog::ConfigDialog(QString name, QString directory,
   }
 
   // Add the group box and buttons to dialog
+  QLabel *hint = new QLabel(
+      "Hint: Within the build and run commands, if any filepaths contain "
+      "spaces, wrap them in quotes like this: \"/foo bar/a.out\"");
+  mainLayout->addWidget(hint);
   mainLayout->addWidget(groupBox);
   mainLayout->addWidget(m_buttons);
 

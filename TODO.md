@@ -1,5 +1,6 @@
 Wishlist
 ========
+- Display an error when an invalid command is received
 - Add a "new algo" wizard to make it easy to bootstap a new algo
     - Auto-populate build and run commands
 - FPS optimizations
@@ -27,7 +28,6 @@ Cleanup
     - Make it possible to accelerate the mouse
     - Make it possible to draw lines connecting semi-positions
 - Fix mack algo assertion failure on Windows when reset pressed
-- Run and build command should be lists of strings, not single string
 - Add unit tests
 - Lint the codebase
 - Rather than showing a warning message box if build and run commands are
