@@ -76,6 +76,7 @@ Window::Window(QWidget *parent)
       m_mouseAlgoOutputTabWidget(new QTabWidget()),
       m_buildOutput(new QPlainTextEdit()),
       m_runOutput(new QPlainTextEdit()),
+      m_simOutput(new QPlainTextEdit()),
 
       // Algo build
       m_buildButton(new QPushButton("Build")),
@@ -259,8 +260,9 @@ Window::Window(QWidget *parent)
   panelLayout->addWidget(m_mouseAlgoOutputTabWidget);
   m_mouseAlgoOutputTabWidget->addTab(m_buildOutput, "Build Output");
   m_mouseAlgoOutputTabWidget->addTab(m_runOutput, "Run Output");
+  m_mouseAlgoOutputTabWidget->addTab(m_simOutput, "Simulator Logs");
   m_mouseAlgoOutputTabWidget->addTab(statsWidget, "Stats");
-  for (QPlainTextEdit *output : {m_buildOutput, m_runOutput}) {
+  for (QPlainTextEdit *output : {m_buildOutput, m_runOutput, m_simOutput}) {
     output->setReadOnly(true);
     output->setLineWrapMode(QPlainTextEdit::NoWrap);
     QFont font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
@@ -452,6 +454,7 @@ void Window::onMouseAlgoComboBoxChanged(QString name) {
   m_runStatus->setText("");
   m_runStatus->setStyleSheet("");
   m_runOutput->clear();
+  m_simOutput->clear();
   stats->resetAll();
   SettingsMisc::setRecentMouseAlgo(name);
 }
@@ -685,6 +688,7 @@ void Window::startRun() {
 
   // Clear the ouput and bring it to the front
   m_runOutput->clear();
+  m_simOutput->clear();
   m_mouseAlgoOutputTabWidget->setCurrentWidget(m_runOutput);
 
   // reset score
@@ -1137,8 +1141,15 @@ void Window::processQueuedCommands() {
       response = executeCommand(m_commandQueue.head());
     }
     if (!response.isEmpty()) {
-      // Drop all invalid commands on the floor
-      if (response != INVALID) {
+      if (response == INVALID) {
+        // Display invalid commands to the user, but only change the active tab
+        // on the first error (else this can become annoying)
+        if (m_simOutput->document()->isEmpty()) {
+          m_mouseAlgoOutputTabWidget->setCurrentWidget(m_simOutput);
+        }
+        m_simOutput->appendPlainText(
+            QString("Invalid command: " + m_commandQueue.head() + ""));
+      } else {
         m_runProcess->write((response + "\n").toStdString().c_str());
       }
       m_commandQueue.dequeue();

@@ -1,6 +1,6 @@
 Wishlist
 ========
-- Display an error when an invalid command is received
+- Add a version number somewhere to make it easier to provide user support
 - Add a "new algo" wizard to make it easy to bootstap a new algo
     - Auto-populate build and run commands
 - FPS optimizations

@@ -93,6 +93,7 @@ class Window : public QMainWindow {
   QTabWidget *m_mouseAlgoOutputTabWidget;
   QPlainTextEdit *m_buildOutput;
   QPlainTextEdit *m_runOutput;
+  QPlainTextEdit *m_simOutput;
 
   void cancelProcess(QProcess *process, QLabel *status);
   void cancelAllProcesses();
