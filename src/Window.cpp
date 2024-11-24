@@ -863,6 +863,9 @@ bool Window::dispatchCommand(QString command) {
     }
     bool ok = true;
     int x = tokens.at(1).toInt(&ok);
+    if (!ok) {
+      return false;
+    }
     int y = tokens.at(2).toInt(&ok);
     if (!ok) {
       return false;
@@ -895,6 +898,9 @@ bool Window::dispatchCommand(QString command) {
     }
     bool ok = true;
     int x = tokens.at(1).toInt(&ok);
+    if (!ok) {
+      return false;
+    }
     int y = tokens.at(2).toInt(&ok);
     if (!ok) {
       return false;
@@ -920,6 +926,9 @@ bool Window::dispatchCommand(QString command) {
     }
     bool ok = true;
     int x = tokens.at(1).toInt(&ok);
+    if (!ok) {
+      return false;
+    }
     int y = tokens.at(2).toInt(&ok);
     if (!ok) {
       return false;
@@ -953,6 +962,9 @@ bool Window::dispatchCommand(QString command) {
     QString yString = command.mid(secondSpace + 1, thirdSpace - secondSpace);
     bool ok = true;
     int x = xString.toInt(&ok);
+    if (!ok) {
+      return false;
+    }
     int y = yString.toInt(&ok);
     if (!ok) {
       return false;
@@ -972,6 +984,9 @@ bool Window::dispatchCommand(QString command) {
     }
     bool ok = true;
     int x = tokens.at(1).toInt(&ok);
+    if (!ok) {
+      return false;
+    }
     int y = tokens.at(2).toInt(&ok);
     if (!ok) {
       return false;
