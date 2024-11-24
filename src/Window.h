@@ -149,7 +149,8 @@ class Window : public QMainWindow {
   QQueue<QString> m_commandQueue;
   QTimer *m_commandQueueTimer;
 
-  void dispatchCommand(QString command);
+  // Return true on success, false on failure
+  bool dispatchCommand(QString command);
   QString executeCommand(QString command);
   void processQueuedCommands();
 

@@ -676,7 +676,15 @@ void Window::startRun() {
     QString output = process->readAllStandardOutput();
     QStringList commands = processText(output, &m_commandBuffer);
     for (QString command : commands) {
-      dispatchCommand(command);
+      bool success = dispatchCommand(command);
+      if (!success) {
+        // Display invalid commands to the user, but only change the active tab
+        // on the first error (else this can become annoying)
+        if (m_simOutput->document()->isEmpty()) {
+          m_mouseAlgoOutputTabWidget->setCurrentWidget(m_simOutput);
+        }
+        m_simOutput->appendPlainText(QString("Invalid command: " + command));
+      }
     }
   });
 
@@ -842,91 +850,104 @@ QStringList Window::processText(QString text, QStringList *buffer) {
   return lines;
 }
 
-void Window::dispatchCommand(QString command) {
+bool Window::dispatchCommand(QString command) {
   // For performance reasons, handle no-response commands inline (don't queue
   // them with the commands that elicit a response, just perform the action)
   if (command.startsWith("setWall") || command.startsWith("clearWall")) {
     QStringList tokens = command.split(" ", Qt::SkipEmptyParts);
     if (tokens.size() != 4) {
-      return;
+      return false;
     }
     if (!(tokens.at(0) == "setWall" || tokens.at(0) == "clearWall")) {
-      return;
+      return false;
     }
     bool ok = true;
     int x = tokens.at(1).toInt(&ok);
     int y = tokens.at(2).toInt(&ok);
     if (!ok) {
-      return;
+      return false;
     }
     if (tokens.at(3).size() != 1) {
-      return;
+      return false;
     }
     QChar direction = tokens.at(3).at(0);
     if (!CHAR_TO_DIRECTION().contains(direction)) {
-      return;
+      return false;
     }
     if (command.startsWith("setWall")) {
       setWall(x, y, direction);
+      return true;
     } else if (command.startsWith("clearWall")) {
       clearWall(x, y, direction);
+      return true;
     } else {
       ASSERT_NEVER_RUNS();
     }
-  } else if (command.startsWith("setColor")) {
+  }
+
+  if (command.startsWith("setColor")) {
     QStringList tokens = command.split(" ", Qt::SkipEmptyParts);
     if (tokens.size() != 4) {
-      return;
+      return false;
     }
     if (tokens.at(0) != "setColor") {
-      return;
+      return false;
     }
     bool ok = true;
     int x = tokens.at(1).toInt(&ok);
     int y = tokens.at(2).toInt(&ok);
     if (!ok) {
-      return;
+      return false;
     }
     if (tokens.at(3).size() != 1) {
-      return;
+      return false;
     }
     QChar color = tokens.at(3).at(0);
     if (!CHAR_TO_COLOR().contains(color)) {
-      return;
+      return false;
     }
     setColor(x, y, color);
-  } else if (command.startsWith("clearColor")) {
+    return true;
+  }
+
+  if (command.startsWith("clearColor")) {
     QStringList tokens = command.split(" ", Qt::SkipEmptyParts);
     if (tokens.size() != 3) {
-      return;
+      return false;
     }
     if (tokens.at(0) != "clearColor") {
-      return;
+      return false;
     }
     bool ok = true;
     int x = tokens.at(1).toInt(&ok);
     int y = tokens.at(2).toInt(&ok);
     if (!ok) {
-      return;
+      return false;
     }
     clearColor(x, y);
-  } else if (command.startsWith("clearAllColor")) {
+    return true;
+  }
+
+  if (command.startsWith("clearAllColor")) {
     QStringList tokens = command.split(" ", Qt::SkipEmptyParts);
     if (tokens.size() != 1) {
-      return;
+      return false;
     }
     if (tokens.at(0) != "clearAllColor") {
-      return;
+      return false;
     }
     clearAllColor();
-  } else if (command.startsWith("setText")) {
+    return true;
+  }
+
+  if (command.startsWith("setText")) {
     // Special parsing to allow space characters in the text
     int firstSpace = command.indexOf(" ");
     int secondSpace = command.indexOf(" ", firstSpace + 1);
     int thirdSpace = command.indexOf(" ", secondSpace + 1);
     QString function = command.left(firstSpace);
     if (function != "setText") {
-      return;
+      return false;
     }
     QString xString = command.mid(firstSpace + 1, secondSpace - firstSpace);
     QString yString = command.mid(secondSpace + 1, thirdSpace - secondSpace);
@@ -934,42 +955,50 @@ void Window::dispatchCommand(QString command) {
     int x = xString.toInt(&ok);
     int y = yString.toInt(&ok);
     if (!ok) {
-      return;
+      return false;
     }
     QString text = command.mid(thirdSpace + 1);
     setText(x, y, text);
-  } else if (command.startsWith("clearText")) {
+    return true;
+  }
+
+  if (command.startsWith("clearText")) {
     QStringList tokens = command.split(" ", Qt::SkipEmptyParts);
     if (tokens.size() != 3) {
-      return;
+      return false;
     }
     if (tokens.at(0) != "clearText") {
-      return;
+      return false;
     }
     bool ok = true;
     int x = tokens.at(1).toInt(&ok);
     int y = tokens.at(2).toInt(&ok);
     if (!ok) {
-      return;
+      return false;
     }
     clearText(x, y);
-  } else if (command.startsWith("clearAllText")) {
+    return true;
+  }
+
+  if (command.startsWith("clearAllText")) {
     QStringList tokens = command.split(" ", Qt::SkipEmptyParts);
     if (tokens.size() != 1) {
-      return;
+      return false;
     }
     if (tokens.at(0) != "clearAllText") {
-      return;
+      return false;
     }
     clearAllText();
-  } else {
-    // Enqueue the serial command, process it if
-    // future processing is not already scheduled
-    m_commandQueue.enqueue(command);
-    if (!m_commandQueueTimer->isActive()) {
-      processQueuedCommands();
-    }
+    return true;
   }
+
+  // Enqueue the serial command, process it if
+  // future processing is not already scheduled
+  m_commandQueue.enqueue(command);
+  if (!m_commandQueueTimer->isActive()) {
+    processQueuedCommands();
+  }
+  return true;
 }
 
 QString Window::executeCommand(QString command) {
@@ -1148,7 +1177,7 @@ void Window::processQueuedCommands() {
           m_mouseAlgoOutputTabWidget->setCurrentWidget(m_simOutput);
         }
         m_simOutput->appendPlainText(
-            QString("Invalid command: " + m_commandQueue.head() + ""));
+            QString("Invalid command: " + m_commandQueue.head()));
       } else {
         m_runProcess->write((response + "\n").toStdString().c_str());
       }
