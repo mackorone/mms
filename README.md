@@ -43,22 +43,29 @@ For information about Micromouse, see the [Micromouse Wikipedia page](http://en.
 ## Download
 
 You can download pre-compiled binaries from the
-[releases](https://github.com/mackorone/mms/releases) page. Simply download the
-asset corresponding to your platform:
+[releases](https://github.com/mackorone/mms/releases) page.
 
-- Windows: Download and unzip `windows.zip` and run the "mms" exe
-  - Note: you may get a warning like "Microsoft Defender SmartScreen prevented
-    an unrecognized app from starting. Running this app might put your PC at
-    risk." To get past that warning, click "More info" and then "Run anyway"
-
-- macOS: Download and unzip `macos.zip` and run the "mms" app
-  - Note: you may get warnings about running an application from an
-    unidentified developer. To get past those warnings, control-click on the
-    app and select "Open" (as opposed to simply double-clicking on the app).
+- Linux: Download and unzip `linux.zip` and run `mms-x86_64.AppImage`
+- macOS: Download and unzip `macos.zip` and run `mms.app`
+- Windows: Download and unzip `windows.zip` and run `mms/mms.exe`
 
 If pre-compiled binaries for your platform are unavailable, you'll have to
 [build from source](https://github.com/mackorone/mms#building-from-source).
 
+> [!IMPORTANT]
+> The macOS version fails with the following error:
+> > "mms.app" is damaged and can’t be opened. You should move it to the Trash.
+>
+>  To get past the error, manually remove the quarantine attribute:
+> ```
+> xattr -d com.apple.quarantine mms.app
+> ```
+
+> [!NOTE]
+> On Windows, you may get a warning like:
+> > Microsoft Defender SmartScreen prevented an unrecognized app from starting. Running this app might put your PC at risk.
+>
+> To get past that warning, click "More info" and then "Run anyway."
 
 ## Quick Start
 
@@ -96,9 +103,10 @@ before issuing additional commands.
 int mazeWidth();
 int mazeHeight();
 
-bool wallFront();
-bool wallRight();
-bool wallLeft();
+bool wallFront(int numHalfSteps = 1);
+bool wallRight(int numHalfSteps = 1);
+bool wallLeft(int numHalfSteps = 1);
+bool wallBack(int numHalfSteps = 1);
 
 // Both of these commands can result in "crash"
 void moveForward(int distance = 1);
@@ -136,20 +144,29 @@ int/float getStat(string stat);
 * **Action:** None
 * **Response:** The width of the maze
 
-#### `wallFront`
-* **Args:** None
+#### `wallFront [N]`
+* **Args:**
+  * `N` - (optional) Check for a wall this many half-steps away, default `1`
 * **Action:** None
-* **Response:** `true` if there is a wall in front of the robot, else `false`
+* **Response:** `true` if there is a wall, else `false`
 
-#### `wallRight`
+#### `wallRight [N]`
 * **Args:** None
+  * `N` - (optional) Check for a wall this many half-steps away, default `1`
 * **Action:** None
-* **Response:** `true` if there is a wall to the right of the robot, else `false`
+* **Response:** `true` if there is a wall, else `false`
 
-#### `wallLeft`
+#### `wallLeft [N]`
 * **Args:** None
+  * `N` - (optional) Check for a wall this many half-steps away, default `1`
 * **Action:** None
-* **Response:** `true` if there is a wall to the left of the robot, else `false`
+* **Response:** `true` if there is a wall, else `false`
+
+#### `wallBack [N]`
+* **Args:** None
+  * `N` - (optional) Check for a wall this many half-steps away, default `1`
+* **Action:** None
+* **Response:** `true` if there is a wall, else `false`
 
 #### `moveForward [N]`
 * **Args:**
@@ -515,14 +532,14 @@ qmake && make
 ../../bin/mms
 ```
 
-## Related Projects
+## Related Works
+
+Feel free to open a pull request if you want your work listed here!
+
+#### Projects
 
 - [@zdasaro](https://github.com/zdasaro) wrote a proxy for the Priceton University Robotics Club: [mms-competition-proxy](https://github.com/zdasaro/mms-competition-proxy)
 - [@P1n3appl3](https://github.com/P1n3appl3) created an Arch Linux package: [mms-git](https://aur.archlinux.org/packages/mms-git/)
-
-## Citations
-
-Feel free to open a pull request if you want your work listed here!
 
 #### Papers
 
@@ -536,12 +553,13 @@ Feel free to open a pull request if you want your work listed here!
 - <https://www.technologyx2.com/proj_robot_rover/2020/6/15/project-micromouse-robot-simulator>
 - <http://iamsudharsan.com/maze-solver-robot/>
 - <https://www.instructables.com/Micro-Mouse-for-Beginnersth/>
-- <http://micromouseusa.com/?p=2288>
+- <https://projects.ieeebruins.com/micromouse/floodfill-module>
 
 #### Videos
 
 - <https://www.youtube.com/watch?v=6y4nrnfZ1k0>
 - <https://www.youtube.com/watch?v=-r8a8aPRYAQ>
+- <https://www.youtube.com/watch?v=0YId4SPJrWo>
 
 #### Repos
 
@@ -551,6 +569,7 @@ Feel free to open a pull request if you want your work listed here!
 - <https://github.com/nalindas9/enpm809y-final-project>
 - <https://github.com/james-ralph8555/DrexelMicromouse2020>
 - <https://github.com/darshit-desai/Maze-Solver-simulation-using-Wall-Following-Algorithm-OOP>
+- <https://github.com/omkarchittar/Wall_Following_Robot>
 
 
 ## Acknowledgements

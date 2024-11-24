@@ -1,8 +1,23 @@
 Wishlist
 ========
-- Add a version number somewhere to make it easier to provide user support
+- Display better error messages for invalid commands
+- Write an app/algorithm for manually running commands
+- Add a standalone CLI for quickly checking stats on many mazes:
+    - Solved or not, how many steps, ave # of steps, etc.
+    - https://github.com/mackorone/mms/issues/35
 - Add a "new algo" wizard to make it easy to bootstap a new algo
     - Auto-populate build and run commands
+- Add more builtin mazes, rename them
+- Edge-based movement
+    - Fix stats for non-standard movements
+    - Support curve turns and other fancy movements
+        - https://github.com/mackorone/mms/issues/31
+    - Update all templates to include new methods
+    - Make it possible to accelerate the mouse
+    - Make it possible to draw lines connecting semi-positions
+
+Cleanup
+=======
 - FPS optimizations
     - Use one buffer for static attributes, one for dynamic
         - Static: tile xy-coords, tile corner color, texture v-coords
@@ -11,22 +26,6 @@ Wishlist
     - Memmap for better attribute streaming
     - Use unsigned char for texture v-coord
     - Use index buffer objects
-- Make a system for quickly checking stats on many mazes
-    - solved or not
-    - how many steps
-    - ave # of steps
-- Add more builtin mazes, rename them
-
-Cleanup
-=======
-- Edge-based movement
-    - Fix stats for non-standard movements
-    - Make it possible to check for walls a full step away
-    - Support curve turns and other fancy movements
-    - Update all templates to include new methods
-    - Update the README and explain edge-based movements
-    - Make it possible to accelerate the mouse
-    - Make it possible to draw lines connecting semi-positions
 - Fix mack algo assertion failure on Windows when reset pressed
 - Add unit tests
 - Lint the codebase
@@ -65,4 +64,3 @@ Cleanup
 - Rename the whole texture vs polygon thing
 - Rename TriangleTexture and VertexTexture
 - Position vs. location vs. coordinate, direction vs. rotation vs. angle
-- Shrink icon file size
