@@ -1,4 +1,5 @@
 #include <QAction>
+#include <QApplication>
 #include <QDebug>
 #include <QDoubleSpinBox>
 #include <QFileDialog>
@@ -17,6 +18,10 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QtMath>
+
+#ifdef CLI
+#include<QDebug>
+#endif
 
 #include "AssertMacros.h"
 #include "Color.h"
@@ -50,7 +55,11 @@ const QString Window::CRASH = "crash";
 const QString Window::INVALID = "invalid";
 
 const int Window::SPEED_SLIDER_MAX = 99;
+#ifdef CLI
+const int Window::SPEED_SLIDER_DEFAULT = SPEED_SLIDER_MAX;
+#else
 const int Window::SPEED_SLIDER_DEFAULT = 33;
+#endif
 const double Window::MIN_PROGRESS_PER_SECOND = 10.0;
 const double Window::MAX_PROGRESS_PER_SECOND = 5000.0;
 const double Window::MAX_SLEEP_SECONDS = 0.008;
@@ -392,6 +401,9 @@ void Window::showInvalidMazeFileWarning(QString path) {
       "The following is not a valid maze file:\n\n" + path +
           "\n\n "
           "The maze must be nonempty, rectangular, enclosed, and consistent.");
+#ifdef CLI
+    QCoreApplication::exit(-12);
+#endif
 }
 
 void Window::refreshMazeFileComboBox(QString selected) {
@@ -722,10 +734,16 @@ void Window::startRun() {
   } else {
     // Clean up the failed process
     m_runOutput->appendPlainText(process->errorString());
+#ifdef CLI
+    qDebug() << process->errorString();
+#endif
     m_runStatus->setText("ERROR");
     m_runStatus->setStyleSheet(ERROR_STYLE_SHEET);
     removeMouseFromMaze();
     delete process;
+#ifdef CLI
+    QCoreApplication::exit(-10);
+#endif
   }
 }
 
@@ -767,6 +785,9 @@ void Window::onRunExit(int exitCode, QProcess::ExitStatus exitStatus) {
   // Stop consuming queued commands
   m_commandQueueTimer->stop();
   m_commandQueue.clear();
+#ifdef CLI
+  QCoreApplication::exit(exitCode);
+#endif
 }
 
 void Window::removeMouseFromMaze() {
