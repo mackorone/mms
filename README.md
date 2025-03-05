@@ -296,7 +296,7 @@ Algorithm Request (stdout)  Simulator Response (stdin)
 mazeWidth                   16
 mazeWidth                   16
 wallLeft                    true
-setWall 0 0 W               <NO RESPONSE>
+setWall 0 0 w               <NO RESPONSE>
 wallFront                   false
 moveForward                 ack
 turnLeft                    ack
