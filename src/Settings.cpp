@@ -129,7 +129,11 @@ void Settings::update(QString group, QString key, QString value,
 Settings::Settings() {
   QCoreApplication::setOrganizationName("mackorone");
   QCoreApplication::setOrganizationDomain("www.github.com/mackorone");
-  QCoreApplication::setApplicationName("mms");
+  QString applicationName = "mms";
+#ifdef CLI
+  applicationName = "mmm-cli";
+#endif
+  QCoreApplication::setApplicationName(applicationName);
 }
 
 QVector<QMap<QString, QString>> Settings::getGroup(QString group) {

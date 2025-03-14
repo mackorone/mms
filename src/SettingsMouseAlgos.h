@@ -21,6 +21,7 @@ class SettingsMouseAlgos {
                      const QString &newBuildCommand,
                      const QString &newRunCommand);
   static void remove(const QString &name);
+  static void removeall();
 
  private:
   static const QString GROUP;
