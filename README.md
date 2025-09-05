@@ -81,7 +81,7 @@ Writing a Micromouse algorithm is easy! Here are some available templates:
 | JavaScript | [mackorone/mms-javascript](https://github.com/mackorone/mms-javascript)
 | Python | [mackorone/mms-python](https://github.com/mackorone/mms-python)
 | Rust | [hardliner66/mms-rs](https://github.com/hardliner66/mms-rs)
-| Zig | [kouosi/mms-zig](https://github.com/kouosi/mms-zig)
+| Zig | [kouosi/mms_zig](https://codeberg.org/kouosi/mms_zig)
 
 
 If a template for a particular language is missing, don't fret! Writing your
