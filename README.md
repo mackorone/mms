@@ -525,9 +525,12 @@ Clone, build, and run the project:
 # Clone the repo
 git clone git@github.com:mackorone/mms.git
 
-# Build the simulator
+# Build the simulator (gui)
 cd mms/src
-qmake && make
+qmake mms.pro && make
+
+# (Optional) Build the simulator (cli)
+qmake mms-cli.pro && make
 
 # Run the simulator
 ../../bin/mms

@@ -1,0 +1,42 @@
+name: Build MMS
+
+on:
+  push:
+    branches:
+      - "main"
+    tags:
+      - "*"
+  pull_request:
+
+jobs:
+  make_gui:
+    runs-on: ubuntu-latest
+    name: GUI
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Deps
+        run: |
+          apt update
+          apt install qt5-qmake build-essential
+      - name: Make Bin
+        run: |
+          cd src
+          qmake mms.pro
+          make
+
+  make_cli:
+    runs-on: ubuntu-latest
+    name: CLI
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Deps
+        run: |
+          apt update
+          apt install qt5-qmake build-essential
+      - name: Make Bin
+        run: |
+          cd src
+          qmake mms-cli.pro
+          make
