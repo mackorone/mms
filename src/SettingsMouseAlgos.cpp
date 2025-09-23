@@ -56,6 +56,14 @@ void SettingsMouseAlgos::remove(const QString &name) {
   Settings::get()->remove(GROUP, KEY_NAME, name);
 }
 
+
+void SettingsMouseAlgos::removeall() {
+    auto values = Settings::get()->values(GROUP, KEY_NAME);
+    foreach(auto value, values){
+        Settings::get()->remove(GROUP, KEY_NAME, value);
+    }
+}
+
 QString SettingsMouseAlgos::getValue(const QString &name, const QString &key) {
   const auto &vector = Settings::get()->find(GROUP, KEY_NAME, name);
   return (vector.size() == 0 ? "" : vector.at(0).value(key));
